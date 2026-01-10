@@ -1,0 +1,3 @@
+.task-list-item.is-checked[data-task="v"] {
+    text-decoration: none;
+}

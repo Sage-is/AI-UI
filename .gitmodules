@@ -1,0 +1,3 @@
+[submodule "submodules/open-webui"]
+	path = submodules/open-webui
+	url = git@github.com:open-webui/open-webui.git
