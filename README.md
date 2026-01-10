@@ -29,28 +29,14 @@ Sage WebUI transforms how you interact with AI. Built for privacy and flexibilit
 ```bash
 git clone https://github.com/Sage-is/AI-UI.git
 cd WEB-AI-Sage-WebUI
-make it_run
+make it_build_n_run
 ```
 
-Open [http://localhost:8080](http://localhost:8080) and create your admin account.
 
-### Docker Compose
+Now open [http://localhost:8080](http://localhost:8080) and create your admin account.
 
-```bash
-git clone https://github.com/Sage-is/AI-UI.git
-cd WEB-AI-Sage-WebUI
-docker compose -f docker-compositions/docker-compose.yaml up -d
-```
+If you want to do front end dev and see changes to svelte files live, go instead to [http://localhost:5173/](http://localhost:5173/) as this will update on file change.
 
-### Docker (Manual)
-
-```bash
-docker run -d -p 3000:8080 \
-  -v sage-webui:/app/backend/data \
-  --name sage-webui \
-  --restart always \
-  ghcr.io/startr/sage-webui:latest
-```
 
 ## Available Make Commands
 
@@ -62,8 +48,8 @@ docker run -d -p 3000:8080 \
 
 ## Core Features
 
-- **Multi-Model Chat** — Switch between different AI models in the same conversation
-- **Document RAG** — Upload PDFs, docs, and websites directly into your chats
+- **Multi-Model Chat** — Switch between different AI models in the same chat or even talk to multiple AI models at the same time
+- **Knowledge Bases** — Create RAG-powered AIs by uploading PDFs, docs, and websites directly into your chats or into Workshop Knoweldge
 - **Code Execution** — Built-in Python environment with custom function support
 - **Voice & Video** — Hands-free conversations with speech-to-text and text-to-speech
 - **Image Generation** — Integrate DALL-E, ComfyUI, or AUTOMATIC1111
@@ -83,7 +69,7 @@ Sage WebUI works out of the box, but you can customize it:
 
 ## Documentation
 
-- [Installation Guide](./docs/INSTALLATION.md)
+
 - [Configuration Options](./docs/README.md)
 - [API Reference](./API/examples.md)
 - [Development Workflow](./docs/DEVELOPMENT_WORKFLOW.md)
@@ -94,8 +80,7 @@ Sage WebUI works out of the box, but you can customize it:
 
 ## Community
 
-- **Discord:** [Join our community](https://discord.gg/5rJgdTnV4s)
-- **Model Hub:** [Sage.Education](https://sage.education/models) — Download custom models and prompts
+- **Discord:** [Join our community](https://discord.gg/#TODO)
 - **Issues:** [Report bugs](https://github.com/Sage-is/AI-UI/issues)
 
 ## License
