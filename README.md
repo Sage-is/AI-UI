@@ -100,8 +100,19 @@ Sage WebUI works out of the box, but you can customize it:
 
 ## License
 
-[Apache 2.0 License](LICENSE)
+[GNU Affero General Public License v3](LICENSE)
+
+The GNU Affero General Public License (AGPL) v3 is used here because this project (Sage WebUI) is a web-based AI interface that runs as a network service, and AGPL ensures that any modifications or derivative works—especially those deployed online—must also be open-sourced under the same license. This prevents proprietary exploitation of the codebase while allowing free use and modification.
+
+It protects developers by:
+
+- Enforcing copyleft: Any changes or extensions to the software must be shared back with the community, preserving the open-source nature and preventing companies from taking the code private without contributing improvements.
+- Safeguarding against SaaS loopholes: Unlike GPL, AGPL closes the "SaaS loophole" by requiring source code availability for network-accessible versions, ensuring users can access and modify the software even when it's hosted as a service.
+- Promoting collaboration: It encourages contributions by guaranteeing that enhancements benefit everyone, reducing the risk of forks diverging into incompatible proprietary versions.
+- Legal clarity: It provides strong protections against patent claims and ensures freedom to run, study, share, and modify the code, with no warranties but clear liability limits.
+
+This aligns with the project's privacy-first ethos, as it keeps AI interfaces open and accountable. If you meant a different license or aspect, clarify.
 
 ---
 
-Built by [Startr](https://startr.cloud/) and contributors worldwide.
+Built by [Sage.is](https://sage.is)(*part of [Startr](https://startr.cloud/)*) and contributors worldwide.
