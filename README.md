@@ -1,6 +1,6 @@
 # Sage WebUI
 
-## v1.0.5
+## v1.1.1 *our first public release*
 
 **Sage.is an AI interface that puts you in control.**
 
