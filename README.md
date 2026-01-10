@@ -28,7 +28,7 @@ Sage WebUI transforms how you interact with AI. Built for privacy and flexibilit
 
 ```bash
 git clone https://github.com/Sage-is/AI-UI.git
-cd WEB-AI-Sage-WebUI
+cd AI-UI
 make it_build_n_run
 ```
 
