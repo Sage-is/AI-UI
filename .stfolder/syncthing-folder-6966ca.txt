@@ -1,0 +1,5 @@
+# This directory is a Syncthing folder marker.
+# Do not delete.
+
+folderID: q3adt-pueon
+created: 2025-08-27T15:59:53Z
