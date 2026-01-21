@@ -29,6 +29,9 @@
 		removeAllDetails
 	} from '$lib/utils';
 	import { WEBUI_BASE_URL } from '$lib/constants';
+	import { getBranding, type BrandingConfig } from '$lib/apis/configs';
+
+	let branding: BrandingConfig | null = null;
 
 	import Name from './Name.svelte';
 	import ProfileImage from './ProfileImage.svelte';
@@ -570,6 +573,7 @@
 
 	onMount(async () => {
 		// console.log('ResponseMessage mounted');
+		branding = await getBranding();
 
 		await tick();
 		if (buttonsContainerElement) {
@@ -608,8 +612,9 @@
 	>
 		<div class={`shrink-0 ltr:mr-3 rtl:ml-3 hidden @lg:flex mt-1 `}>
 			<ProfileImage
-				src={model?.info?.meta?.profile_image_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
+				src={model?.info?.meta?.profile_image_url ?? branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
 				className={'size-8 assistant-message-profile-image'}
+				{branding}
 			/>
 		</div>
 

@@ -3,6 +3,7 @@
 
 	import { flyAndScale } from '$lib/utils/transitions';
 	import { WEBUI_BASE_URL } from '$lib/constants';
+	import { getBranding } from '$lib/apis/configs';
 	import { getUserActiveStatusById } from '$lib/apis/users';
 
 	export let side = 'right';
@@ -12,6 +13,17 @@
 	let show = false;
 
 	let active = false;
+	let branding: { logo_url?: string; favicon_url?: string } = {};
+
+	import { onMount } from 'svelte';
+
+	onMount(async () => {
+		try {
+			branding = await getBranding();
+		} catch (err) {
+			console.error('Failed to load branding:', err);
+		}
+	});
 
 	const getActiveStatus = async () => {
 		const res = await getUserActiveStatusById(localStorage.token, user.id).catch((error) => {
@@ -53,7 +65,7 @@
 					<div class="py-8 relative bg-gray-900 rounded-t-lg">
 						<img
 							crossorigin="anonymous"
-							src={user?.profile_image_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
+							src={user?.profile_image_url ?? branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
 							class=" absolute -bottom-5 left-3 size-12 ml-0.5 object-cover rounded-full -translate-y-[1px]"
 							alt="profile"
 						/>

@@ -6,6 +6,7 @@
 
 	import { mobile, settings, user } from '$lib/stores';
 	import { WEBUI_BASE_URL } from '$lib/constants';
+	import type { Branding } from '$lib/apis/configs';
 
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import { copyToClipboard, sanitizeResponseContent } from '$lib/utils';
@@ -24,6 +25,8 @@
 
 	export let unloadModelHandler: (modelValue: string) => void = () => {};
 	export let pinModelHandler: (modelId: string) => void = () => {};
+
+	export let branding: Branding | null = null;
 
 	export let onClick: () => void = () => {};
 
@@ -76,7 +79,7 @@
 				<Tooltip content={$user?.role === 'admin' ? (item?.value ?? '') : ''} placement="top-start">
 					<img
 						src={item.model?.info?.meta?.profile_image_url ??
-							`${WEBUI_BASE_URL}/static/icons/favicon.png`}
+							branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
 						alt="Model"
 						class="rounded-full size-5 flex items-center"
 					/>

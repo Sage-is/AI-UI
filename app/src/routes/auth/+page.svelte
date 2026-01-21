@@ -10,6 +10,7 @@
 
 	import { getBackendConfig } from '$lib/apis';
 	import { ldapUserSignIn, getSessionUser, userSignIn, userSignUp } from '$lib/apis/auths';
+	import { getBranding } from '$lib/apis/configs';
 
 	import { WEBUI_API_BASE_URL, WEBUI_BASE_URL } from '$lib/constants';
 	import { WEBUI_NAME, config, user, socket } from '$lib/stores';
@@ -22,6 +23,7 @@
 	const i18n = getContext('i18n');
 
 	let loaded = false;
+	let branding = {};
 
 	let mode = $config?.features.enable_ldap ? 'ldap' : 'signin';
 
@@ -147,6 +149,19 @@
 		const logo = document.getElementById('logo');
 
 		if (logo) {
+			// If custom branding logo is set, use it (with dark mode variant support)
+			if (branding?.logo_url || branding?.logo_dark_url) {
+				const isDarkMode = document.documentElement.classList.contains('dark');
+				if (isDarkMode && branding?.logo_dark_url) {
+					logo.src = branding.logo_dark_url;
+				} else if (branding?.logo_url) {
+					logo.src = branding.logo_url;
+				}
+				logo.style.filter = '';
+				return;
+			}
+
+			// Fallback to default logo behavior
 			const isDarkMode = document.documentElement.classList.contains('dark');
 
 			if (isDarkMode) {
@@ -171,6 +186,32 @@
 			goto(redirectPath);
 		}
 		await checkOauthCallback();
+
+		// Load branding
+		try {
+			branding = await getBranding();
+			console.log('Loaded branding:', branding);
+			
+			// Apply custom colors if set
+			if (branding.primary_color) {
+				document.documentElement.style.setProperty('--brand-primary', branding.primary_color);
+			}
+			if (branding.accent_color) {
+				document.documentElement.style.setProperty('--brand-accent', branding.accent_color);
+			}
+			
+			// Update favicon if custom one is set
+			if (branding.favicon_url) {
+				const favicon = document.querySelector('link[rel="icon"]') || document.createElement('link');
+				favicon.setAttribute('rel', 'icon');
+				favicon.setAttribute('href', branding.favicon_url);
+				if (!document.querySelector('link[rel="icon"]')) {
+					document.head.appendChild(favicon);
+				}
+			}
+		} catch (err) {
+			console.error('Failed to load branding:', err);
+		}
 
 		loaded = true;
 		setLogoImage();
@@ -203,20 +244,6 @@
 	<div class="w-full absolute top-0 left-0 right-0 h-8 drag-region" />
 
 	{#if loaded}
-		<div class="fixed m-10 z-50">
-			<div class="flex space-x-2">
-				<div class=" self-center">
-					<img
-						id="logo"
-						crossorigin="anonymous"
-						src="{WEBUI_BASE_URL}/static/icons/favicon.png"
-						class=" w-6 rounded-full"
-						alt=""
-					/>
-				</div>
-			</div>
-		</div>
-
 		<div
 			class="fixed bg-transparent min-h-screen w-full flex justify-center font-primary z-50 text-black dark:text-white"
 		>
@@ -227,7 +254,7 @@
 							class="flex items-center justify-center gap-3 text-xl sm:text-2xl text-center font-semibold dark:text-gray-200"
 						>
 							<div>
-								{$i18n.t('Signing in to {{WEBUI_NAME}}', { WEBUI_NAME: $WEBUI_NAME })}
+								{$i18n.t('Signing in to {{WEBUI_NAME}}', { WEBUI_NAME: branding?.title || $WEBUI_NAME })}
 							</div>
 
 							<div>
@@ -245,22 +272,37 @@
 									submitHandler();
 								}}
 							>
+								<!-- Centered Logo -->
+								<div class="flex justify-center mb-6">
+									<img
+										id="logo"
+										crossorigin="anonymous"
+										src={branding?.logo_url || `${WEBUI_BASE_URL}/static/icons/favicon.png`}
+										class="w-16 h-16 rounded-full"
+										alt="Logo"
+									/>
+								</div>
+
 								<div class="mb-1">
 									<div class=" text-2xl font-medium">
 										{#if $config?.onboarding ?? false}
-											{$i18n.t(`Get started with {{WEBUI_NAME}}`, { WEBUI_NAME: $WEBUI_NAME })}
+											{$i18n.t(`Get started with {{WEBUI_NAME}}`, { WEBUI_NAME: branding?.title || $WEBUI_NAME })}
 										{:else if mode === 'ldap'}
-											{$i18n.t(`Sign in to {{WEBUI_NAME}} with LDAP`, { WEBUI_NAME: $WEBUI_NAME })}
+											{$i18n.t(`Sign in to {{WEBUI_NAME}} with LDAP`, { WEBUI_NAME: branding?.title || $WEBUI_NAME })}
 										{:else if mode === 'signin'}
-											{$i18n.t(`Sign in to {{WEBUI_NAME}}`, { WEBUI_NAME: $WEBUI_NAME })}
+											{$i18n.t(`Sign in to {{WEBUI_NAME}}`, { WEBUI_NAME: branding?.title || $WEBUI_NAME })}
 										{:else}
-											{$i18n.t(`Sign up to {{WEBUI_NAME}}`, { WEBUI_NAME: $WEBUI_NAME })}
+											{$i18n.t(`Sign up to {{WEBUI_NAME}}`, { WEBUI_NAME: branding?.title || $WEBUI_NAME })}
 										{/if}
 									</div>
 
-									{#if $config?.onboarding ?? false}
+									{#if branding?.subtitle}
 										<div class="mt-1 text-xs font-medium text-gray-600 dark:text-gray-500">
-											ⓘ {$WEBUI_NAME}
+											{branding?.subtitle}
+										</div>
+									{:else if $config?.onboarding ?? false}
+										<div class="mt-1 text-xs font-medium text-gray-600 dark:text-gray-500">
+											ⓘ {branding?.title || $WEBUI_NAME}
 											{$i18n.t(
 												'does not make any external connections, and your data stays securely on your locally hosted server.'
 											)}

@@ -48,6 +48,7 @@
 	import { uploadFile } from '$lib/apis/files';
 	import { generateAutoCompletion } from '$lib/apis';
 	import { deleteFileById } from '$lib/apis/files';
+	import { getBranding, type Branding } from '$lib/apis/configs';
 
 	import { WEBUI_BASE_URL, WEBUI_API_BASE_URL, PASTED_TEXT_CHARACTER_LIMIT } from '$lib/constants';
 
@@ -393,6 +394,8 @@
 
 	let user = null;
 	export let placeholder = '';
+
+	let branding: Branding | null = null;
 
 	let visionCapableModels = [];
 	$: visionCapableModels = (atSelectedModel?.id ? [atSelectedModel.id] : selectedModels).filter(
@@ -768,6 +771,13 @@
 	onMount(async () => {
 		loaded = true;
 
+		// Fetch branding for fallback logo
+		try {
+			branding = await getBranding();
+		} catch (e) {
+			console.error('Failed to load branding:', e);
+		}
+
 		window.setTimeout(() => {
 			const chatInput = document.getElementById('chat-input');
 			chatInput?.focus();
@@ -866,7 +876,7 @@
 										alt="model profile"
 										class="size-3.5 max-w-[28px] object-cover rounded-full"
 										src={$models.find((model) => model.id === atSelectedModel.id)?.info?.meta
-											?.profile_image_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
+											?.profile_image_url ?? branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
 									/>
 									<div class="translate-y-[0.5px]">
 										Talking to <span class=" font-medium">{atSelectedModel.name}</span>

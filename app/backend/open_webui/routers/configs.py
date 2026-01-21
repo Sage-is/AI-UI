@@ -335,9 +335,15 @@ async def get_banners(
 @router.get("/branding", response_model=BrandingModel)
 async def get_branding(request: Request):
     """Get branding configuration - publicly accessible for unauthenticated users"""
+    import logging
+    log = logging.getLogger(__name__)
     branding_data = request.app.state.config.BRANDING
+    log.info(f"GET /branding - raw data: {branding_data}, type: {type(branding_data)}")
     if isinstance(branding_data, dict):
-        return BrandingModel(**branding_data)
+        result = BrandingModel(**branding_data)
+        log.info(f"GET /branding - returning: {result.model_dump()}")
+        return result
+    log.info(f"GET /branding - returning non-dict: {branding_data}")
     return branding_data
 
 
@@ -348,8 +354,12 @@ async def set_branding(
     user=Depends(get_admin_user),
 ):
     """Set branding configuration - requires admin privileges"""
+    import logging
+    log = logging.getLogger(__name__)
     data = form_data.model_dump()
+    log.info(f"POST /branding - saving data: {data}")
     request.app.state.config.BRANDING = data
+    log.info(f"POST /branding - after save, BRANDING = {request.app.state.config.BRANDING}")
     return BrandingModel(**data)
 
 

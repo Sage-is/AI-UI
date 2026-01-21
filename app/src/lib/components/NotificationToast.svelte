@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { WEBUI_BASE_URL } from '$lib/constants';
 	import { settings, playingNotificationSound, isLastActiveTab } from '$lib/stores';
+	import { getBranding } from '$lib/apis/configs';
 	import DOMPurify from 'dompurify';
 
 	import { marked } from 'marked';
@@ -12,7 +13,15 @@
 	export let title: string = 'HI';
 	export let content: string;
 
-	onMount(() => {
+	let branding: { logo_url?: string; favicon_url?: string } = {};
+
+	onMount(async () => {
+		try {
+			branding = await getBranding();
+		} catch (err) {
+			console.error('Failed to load branding:', err);
+		}
+
 		if (!navigator.userActivation.hasBeenActive) {
 			return;
 		}
@@ -39,7 +48,7 @@
 	}}
 >
 	<div class="shrink-0 self-top -translate-y-0.5">
-		<img src="{WEBUI_BASE_URL}/static/icons/favicon.png" alt="favicon" class="size-7 rounded-full" />
+		<img src={branding?.favicon_url || branding?.logo_url || `${WEBUI_BASE_URL}/static/icons/favicon.png`} alt="favicon" class="size-7 rounded-full" />
 	</div>
 
 	<div>

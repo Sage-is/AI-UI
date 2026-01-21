@@ -3,6 +3,7 @@
 	const i18n = getContext('i18n');
 
 	import { WEBUI_BASE_URL } from '$lib/constants';
+	import { getBranding } from '$lib/apis/configs';
 
 	import Marquee from './common/Marquee.svelte';
 	import SlideShow from './common/SlideShow.svelte';
@@ -11,10 +12,33 @@
 	export let show = true;
 	export let getStartedHandler = () => {};
 
+	let branding = {};
+
+	async function loadBranding() {
+		try {
+			branding = await getBranding();
+		} catch (err) {
+			console.error('Failed to load branding:', err);
+		}
+	}
+
 	function setLogoImage() {
 		const logo = document.getElementById('logo');
 
 		if (logo) {
+			// If custom branding logo is set, use it
+			if (branding?.logo_url || branding?.logo_dark_url) {
+				const isDarkMode = document.documentElement.classList.contains('dark');
+				if (isDarkMode && branding?.logo_dark_url) {
+					logo.src = branding.logo_dark_url;
+				} else if (branding?.logo_url) {
+					logo.src = branding.logo_url;
+				}
+				logo.style.filter = '';
+				return;
+			}
+
+			// Fallback to default logo behavior
 			const isDarkMode = document.documentElement.classList.contains('dark');
 
 			if (isDarkMode) {
@@ -33,7 +57,11 @@
 		}
 	}
 
-	$: if (show) {
+	onMount(() => {
+		loadBranding();
+	});
+
+	$: if (show && branding) {
 		setLogoImage();
 	}
 </script>
@@ -46,7 +74,7 @@
 					<img
 						id="logo"
 						crossorigin="anonymous"
-						src="{WEBUI_BASE_URL}/static/icons/favicon.png"
+						src={branding?.logo_url || `${WEBUI_BASE_URL}/static/icons/favicon.png`}
 						class=" w-6 rounded-full"
 						alt="logo"
 					/>
