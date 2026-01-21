@@ -1437,6 +1437,35 @@ except Exception as e:
 WEBUI_BANNERS = PersistentConfig("WEBUI_BANNERS", "ui.banners", banners)
 
 
+####################################
+# Branding / Theme
+####################################
+
+
+class BrandingModel(BaseModel):
+    logo_url: Optional[str] = None
+    logo_dark_url: Optional[str] = None
+    favicon_url: Optional[str] = None
+    title: Optional[str] = None
+    subtitle: Optional[str] = None
+    primary_color: Optional[str] = None
+    accent_color: Optional[str] = None
+
+
+try:
+    branding = json.loads(os.environ.get("WEBUI_BRANDING", "{}"))
+    branding = BrandingModel(**branding)
+except Exception as e:
+    log.exception(f"Error loading WEBUI_BRANDING: {e}")
+    branding = BrandingModel()
+
+WEBUI_BRANDING = PersistentConfig(
+    "WEBUI_BRANDING",
+    "ui.branding",
+    branding.model_dump() if hasattr(branding, 'model_dump') else branding.dict()
+)
+
+
 SHOW_ADMIN_DETAILS = PersistentConfig(
     "SHOW_ADMIN_DETAILS",
     "auth.admin.show",

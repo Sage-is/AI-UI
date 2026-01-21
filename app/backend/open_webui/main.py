@@ -269,6 +269,7 @@ from open_webui.config import (
     WEBUI_AUTH,
     WEBUI_NAME,
     WEBUI_BANNERS,
+    WEBUI_BRANDING,
     WEBHOOK_URL,
     ADMIN_EMAIL,
     SHOW_ADMIN_DETAILS,
@@ -664,6 +665,7 @@ app.state.config.RESPONSE_WATERMARK = RESPONSE_WATERMARK
 app.state.config.USER_PERMISSIONS = USER_PERMISSIONS
 app.state.config.WEBHOOK_URL = WEBHOOK_URL
 app.state.config.BANNERS = WEBUI_BANNERS
+app.state.config.BRANDING = WEBUI_BRANDING
 app.state.config.MODEL_ORDER_LIST = MODEL_ORDER_LIST
 
 
