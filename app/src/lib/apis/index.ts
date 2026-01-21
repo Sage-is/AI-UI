@@ -50,7 +50,7 @@ async function api(url: string, method = 'GET', body?: any, context = '') {
 }
 
 export const getModels = async (
-	connections: object | null = null,
+	connections: Record<string, any> | null = null,
 	base: boolean = false,
 	refresh: boolean = false
 ) => {
@@ -88,7 +88,7 @@ export const getModels = async (
 	let models = res?.data ?? [];
 
 	if (connections && !base) {
-		let localModels = [];
+		let localModels: any[] = [];
 
 		if (connections) {
 			const OPENAI_API_BASE_URLS = connections.OPENAI_API_BASE_URLS;
@@ -271,7 +271,7 @@ export const getToolServerData = async (url: string) => {
 	return data;
 };
 
-export const getToolServersData = async (i18n, servers: object[]) => {
+export const getToolServersData = async (i18n: any, servers: any[]) => {
 	return (
 		await Promise.all(
 			servers
@@ -307,14 +307,19 @@ export const getToolServersData = async (i18n, servers: object[]) => {
 };
 
 export const executeToolServer = async (
+	token: string,
 	url: string,
 	name: string,
 	params: Record<string, any>,
-	serverData: { openapi: any; info: any; specs: any }
+	serverData?: { openapi: any; info: any; specs: any }
 ) => {
 	let error = null;
 
 	try {
+		if (!serverData) {
+			throw new Error('Tool server data not provided');
+		}
+
 		// Find the matching operationId in the OpenAPI spec
 		const matchingRoute = Object.entries(serverData.openapi.paths).find(([_, methods]) =>
 			Object.entries(methods as any).some(([__, operation]: any) => operation.operationId === name)
@@ -383,7 +388,8 @@ export const executeToolServer = async (
 
 		// Prepare headers and request options
 		const headers: Record<string, string> = {
-			'Content-Type': 'application/json'
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`
 		};
 
 		let requestOptions: RequestInit = {
@@ -930,6 +936,9 @@ export const getBackendConfig = async (fetch: any = globalThis.fetch) => {
 		throw err;
 	}
 };
+
+export const updateBackendConfig = async (config: object) =>
+    api(`${WEBUI_BASE_URL}/api/config`, 'POST', config, 'updateBackendConfig');
 
 export const getChangelog = async () =>
 	api(`${WEBUI_BASE_URL}/api/changelog`, 'GET', null, 'getChangelog');

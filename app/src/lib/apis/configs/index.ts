@@ -104,3 +104,11 @@ export const setBanners = async (token: string, banners: Banner[]) =>
 	api(`${WEBUI_API_BASE_URL}/configs/banners`, token, 'POST', {
 		banners: banners
 	}, 'setBanners');
+
+export const getUIConfig = async (token: string) =>
+	api(`${WEBUI_API_BASE_URL}/configs/ui`, token, 'GET', null, 'getUIConfig');
+
+export const setUIConfig = async (token: string, config: object) =>
+	api(`${WEBUI_API_BASE_URL}/configs/ui`, token, 'POST', {
+		...config
+	}, 'setUIConfig');

@@ -8,6 +8,7 @@
 	import { config } from '$lib/stores';
 	import { getBackendConfig } from '$lib/apis';
 	import Database from './Settings/Database.svelte';
+	import Theme from './Settings/Theme.svelte';
 
 	import General from './Settings/General.svelte';
 	import Pipelines from './Settings/Pipelines.svelte';
@@ -38,6 +39,7 @@
 
 		selectedTab = [
 			'general',
+			'theme',
 			'connections',
 			'models',
 			'evaluations',
@@ -120,6 +122,31 @@
 				</svg>
 			</div>
 			<div class=" self-center">{$i18n.t('General')}</div>
+		</button>
+
+		<button
+			id="theme"
+			class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
+			'theme'
+				? ''
+				: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+			on:click={() => {
+				goto('/admin/settings/theme');
+			}}
+		>
+			<div class=" self-center mr-2">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 16 16"
+					fill="currentColor"
+					class="w-4 h-4"
+				>
+					<path
+						d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0ZM4.5 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3ZM7 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM9.5 5.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3ZM12 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
+					/>
+				</svg>
+			</div>
+			<div class=" self-center">{$i18n.t('Theme')}</div>
 		</button>
 
 		<button
@@ -424,6 +451,13 @@
 				saveHandler={async () => {
 					toast.success($i18n.t('Settings saved successfully!'));
 
+					await tick();
+					await config.set(await getBackendConfig());
+				}}
+			/>
+		{:else if selectedTab === 'theme'}
+			<Theme
+				on:save={async () => {
 					await tick();
 					await config.set(await getBackendConfig());
 				}}

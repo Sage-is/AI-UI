@@ -60,9 +60,10 @@ export const knowledge: Writable<null | Document[]> = writable(null);
 export const tools = writable(null);
 export const functions = writable(null);
 
-export const toolServers = writable([]);
+export const toolServers: Writable<any[]> = writable([]);
 
 export const banners: Writable<Banner[]> = writable([]);
+
 
 export const settings: Writable<Settings> = writable({});
 
@@ -138,8 +139,8 @@ type OllamaModelDetails = {
 };
 
 type Settings = {
-	pinnedModels?: never[];
-	toolServers?: never[];
+	pinnedModels?: any[];
+	toolServers?: any[];
 	detectArtifacts?: boolean;
 	showUpdateToast?: boolean;
 	showChangelog?: boolean;
@@ -151,6 +152,7 @@ type Settings = {
 	notificationSoundAlways?: boolean;
 	stylizedPdfExport?: boolean;
 	notifications?: any;
+
 	imageCompression?: boolean;
 	imageCompressionSize?: any;
 	widescreenMode?: null;
@@ -171,9 +173,10 @@ type Settings = {
 	iframeSandboxAllowForms?: boolean;
 	iframeSandboxAllowSameOrigin?: boolean;
 	scrollOnBranchChange?: boolean;
-	directConnections?: null;
+	directConnections?: any;
 	chatBubble?: boolean;
 	copyFormatted?: boolean;
+
 	models?: string[];
 	conversationMode?: boolean;
 	speechAutoSend?: boolean;
@@ -190,6 +193,7 @@ type Settings = {
 	system?: string;
 	seed?: number;
 	temperature?: string;
+
 	repeat_penalty?: string;
 	top_k?: string;
 	top_p?: string;
@@ -259,15 +263,20 @@ type Config = {
 		enable_autocomplete_generation: boolean;
 		enable_direct_connections: boolean;
 		enable_version_update_check: boolean;
+		enable_websocket?: boolean;
+		enable_notes?: boolean;
 	};
 	oauth: {
 		providers: {
+
 			[key: string]: string;
 		};
 	};
 	ui?: {
 		pending_user_overlay_title?: string;
 		pending_user_overlay_description?: string;
+		theme?: string;
+		custom_css?: string;
 	};
 };
 
@@ -283,4 +292,6 @@ type SessionUser = {
 	name: string;
 	role: string;
 	profile_image_url: string;
+	expires_at?: number;
 };
+
