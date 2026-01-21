@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { io } from 'socket.io-client';
 	import { spring } from 'svelte/motion';
 	import PyodideWorker from '$lib/workers/pyodide.worker?worker';
@@ -60,12 +60,12 @@
 
 	const bc = new BroadcastChannel('active-tab-channel');
 
-	let tokenTimer = null;
+	let tokenTimer: ReturnType<typeof setInterval> | null = null;
 
 	const BREAKPOINT = 768;
 
-	const setupSocket = async (enableWebsocket) => {
-		const _socket = io(`${WEBUI_BASE_URL}` || undefined, {
+	const setupSocket = async (enableWebsocket: boolean) => {
+		const _socket = io(`${WEBUI_BASE_URL}` || '', {
 			reconnection: true,
 			reconnectionDelay: 1000,
 			reconnectionDelayMax: 5000,
@@ -102,10 +102,10 @@
 		});
 	};
 
-	const executePythonAsWorker = async (id, code, cb) => {
-		let result = null;
-		let stdout = null;
-		let stderr = null;
+	const executePythonAsWorker = async (id: string, code: string, cb: (data: any) => void) => {
+		let result: any = null;
+		let stdout: any = null;
+		let stderr: any = null;
 
 		let executing = true;
 		let packages = [
@@ -203,9 +203,9 @@
 		};
 	};
 
-	const executeTool = async (data, cb) => {
-		const toolServer = $settings?.toolServers?.find((server) => server.url === data.server?.url);
-		const toolServerData = $toolServers?.find((server) => server.url === data.server?.url);
+	const executeTool = async (data: any, cb: (data: any) => void) => {
+		const toolServer = $settings?.toolServers?.find((server: any) => server.url === data.server?.url);
+		const toolServerData = $toolServers?.find((server: any) => server.url === data.server?.url);
 
 		console.log('executeTool', data, toolServer);
 
@@ -236,7 +236,7 @@
 		}
 	};
 
-	const chatEventHandler = async (event, cb) => {
+	const chatEventHandler = async (event: any, cb: any) => {
 		const chat = $page.url.pathname.includes(`/c/${event.chat_id}`);
 
 		let isFocused = document.visibilityState !== 'visible';
@@ -300,7 +300,7 @@
 			} else if (type === 'chat:tags') {
 				tags.set(await getAllTags(localStorage.token));
 			}
-		} else if (data?.session_id === $socket.id) {
+		} else if (data?.session_id === $socket?.id) {
 			if (type === 'execute:python') {
 				console.log('execute:python', data);
 				executePythonAsWorker(data.id, data.code, cb);
@@ -308,7 +308,7 @@
 				console.log('execute:tool', data);
 				executeTool(data, cb);
 			} else if (type === 'request:chat:completion') {
-				console.log(data, $socket.id);
+				console.log(data, $socket?.id);
 				const { session_id, channel, form_data, model } = data;
 
 				try {
@@ -388,7 +388,7 @@
 					console.error('chatCompletion', error);
 					cb(error);
 				} finally {
-					$socket.emit(channel, {
+					$socket?.emit(channel, {
 						done: true
 					});
 				}
@@ -398,7 +398,7 @@
 		}
 	};
 
-	const channelEventHandler = async (event) => {
+	const channelEventHandler = async (event: any) => {
 		if (event.data?.type === 'typing') {
 			return;
 		}
@@ -542,7 +542,13 @@
 		// Call visibility change handler initially to set state on load
 		handleVisibilityChange();
 
-		theme.set(localStorage.theme);
+		if (localStorage.theme) {
+			theme.set(localStorage.theme);
+		} else if ($config?.ui?.theme) {
+			theme.set($config.ui.theme);
+		} else {
+			theme.set('system');
+		}
 
 		mobile.set(window.innerWidth < BREAKPOINT);
 
@@ -599,6 +605,11 @@
 	<title>{$WEBUI_NAME}</title>
 	<link crossorigin="anonymous" rel="icon" href="{WEBUI_BASE_URL}/static/icons/favicon.png" />
 
+	{#if $config?.ui?.custom_css}
+		<style>
+			{@html $config.ui.custom_css}
+		</style>
+	{/if}
 	<!-- rosepine themes have been disabled as it's not up to date with our latest version. -->
 	<!-- feel free to make a PR to fix if anyone wants to see it return -->
 	<!-- <link rel="stylesheet" type="text/css" href="/themes/rosepine.css" />

@@ -708,7 +708,9 @@ except Exception as e:
 
 for file_path in (FRONTEND_BUILD_DIR / "static").glob("**/*"):
     if file_path.is_file():
-        target_path = STATIC_DIR / file_path.relative_to((FRONTEND_BUILD_DIR / "static"))
+        target_path = STATIC_DIR / file_path.relative_to(
+            (FRONTEND_BUILD_DIR / "static")
+        )
         target_path.parent.mkdir(parents=True, exist_ok=True)
         try:
             log.info(f"[STATIC] Copying {file_path} -> {target_path}")
@@ -719,7 +721,9 @@ for file_path in (FRONTEND_BUILD_DIR / "static").glob("**/*"):
 frontend_favicon = FRONTEND_BUILD_DIR / "static" / "favicon.png"
 if frontend_favicon.exists():
     try:
-        log.info(f"[STATIC] Copying favicon: {frontend_favicon} -> {STATIC_DIR / 'favicon.png'}")
+        log.info(
+            f"[STATIC] Copying favicon: {frontend_favicon} -> {STATIC_DIR / 'favicon.png'}"
+        )
         shutil.copyfile(frontend_favicon, STATIC_DIR / "favicon.png")
     except Exception as e:
         log.error(f"[STATIC] Failed to copy favicon: {e}")
@@ -727,7 +731,9 @@ if frontend_favicon.exists():
 frontend_splash = FRONTEND_BUILD_DIR / "static" / "splash.png"
 if frontend_splash.exists():
     try:
-        log.info(f"[STATIC] Copying splash: {frontend_splash} -> {STATIC_DIR / 'splash.png'}")
+        log.info(
+            f"[STATIC] Copying splash: {frontend_splash} -> {STATIC_DIR / 'splash.png'}"
+        )
         shutil.copyfile(frontend_splash, STATIC_DIR / "splash.png")
     except Exception as e:
         log.error(f"[STATIC] Failed to copy splash: {e}")
@@ -735,7 +741,9 @@ if frontend_splash.exists():
 frontend_loader = FRONTEND_BUILD_DIR / "static" / "loader.js"
 if frontend_loader.exists():
     try:
-        log.info(f"[STATIC] Copying loader: {frontend_loader} -> {STATIC_DIR / 'loader.js'}")
+        log.info(
+            f"[STATIC] Copying loader: {frontend_loader} -> {STATIC_DIR / 'loader.js'}"
+        )
         shutil.copyfile(frontend_loader, STATIC_DIR / "loader.js")
     except Exception as e:
         log.error(f"[STATIC] Failed to copy loader: {e}")
@@ -1127,10 +1135,21 @@ RESPONSE_WATERMARK = PersistentConfig(
     os.environ.get("RESPONSE_WATERMARK", ""),
 )
 
+UI_THEME = PersistentConfig(
+    "UI_THEME",
+    "ui.theme",
+    os.environ.get("UI_THEME", "system"),
+)
+
+UI_CUSTOM_CSS = PersistentConfig(
+    "UI_CUSTOM_CSS",
+    "ui.custom_css",
+    os.environ.get("UI_CUSTOM_CSS", ""),
+)
+
 
 USER_PERMISSIONS_WORKSHOP_MODELS_ACCESS = (
-    os.environ.get("USER_PERMISSIONS_WORKSHOP_MODELS_ACCESS", "False").lower()
-    == "true"
+    os.environ.get("USER_PERMISSIONS_WORKSHOP_MODELS_ACCESS", "False").lower() == "true"
 )
 
 USER_PERMISSIONS_WORKSHOP_KNOWLEDGE_ACCESS = (
@@ -1236,7 +1255,6 @@ USER_PERMISSIONS_FEATURES_DIRECT_TOOL_SERVERS = (
 )
 
 
-
 USER_PERMISSIONS_FEATURES_IMAGE_GENERATION = (
     os.environ.get("USER_PERMISSIONS_FEATURES_IMAGE_GENERATION", "True").lower()
     == "true"
@@ -1282,7 +1300,6 @@ DEFAULT_USER_PERMISSIONS = {
     },
     "features": {
         "direct_tool_servers": USER_PERMISSIONS_FEATURES_DIRECT_TOOL_SERVERS,
-
         "image_generation": USER_PERMISSIONS_FEATURES_IMAGE_GENERATION,
         "code_interpreter": USER_PERMISSIONS_FEATURES_CODE_INTERPRETER,
         "notes": USER_PERMISSIONS_FEATURES_NOTES,
@@ -1570,8 +1587,6 @@ ENABLE_TITLE_GENERATION = PersistentConfig(
     "task.title.enable",
     os.environ.get("ENABLE_TITLE_GENERATION", "True").lower() == "true",
 )
-
-
 
 
 ENABLE_RETRIEVAL_QUERY_GENERATION = PersistentConfig(

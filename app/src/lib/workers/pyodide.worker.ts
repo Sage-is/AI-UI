@@ -125,7 +125,7 @@ matplotlib.pyplot.show = show`);
 		// 		}
 		// 	});
 		// });
-	} catch (error) {
+	} catch (error: any) {
 		self.stderr = error.toString();
 	}
 
@@ -167,7 +167,7 @@ function processResult(result: any): any {
 		}
 		// Stringify anything that's left (e.g., Proxy objects that cannot be directly processed)
 		return JSON.stringify(result);
-	} catch (err) {
+	} catch (err: any) {
 		// In case something unexpected happens, we return a stringified fallback
 		return `[processResult error]: ${err.message || err.toString()}`;
 	}

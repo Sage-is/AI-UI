@@ -1,4 +1,7 @@
 // Google Drive Picker API configuration
+declare const gapi: any;
+declare const google: any;
+
 let API_KEY = '';
 let CLIENT_ID = '';
 
