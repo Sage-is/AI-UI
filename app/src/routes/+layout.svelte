@@ -42,6 +42,7 @@
 	import i18n, { initI18n, getLanguages, changeLanguage } from '$lib/i18n';
 	import { bestMatchingLanguage } from '$lib/utils';
 	import { getAllTags, getChatList } from '$lib/apis/chats';
+	import { getBranding } from '$lib/apis/configs';
 	import NotificationToast from '$lib/components/NotificationToast.svelte';
 	import AppSidebar from '$lib/components/app/AppSidebar.svelte';
 	import { chatCompletion } from '$lib/apis/openai';
@@ -61,6 +62,7 @@
 	const bc = new BroadcastChannel('active-tab-channel');
 
 	let tokenTimer: ReturnType<typeof setInterval> | null = null;
+	let branding: { favicon_url?: string; logo_url?: string; logo_dark_url?: string; title?: string; subtitle?: string; primary_color?: string; accent_color?: string } = {};
 
 	const BREAKPOINT = 768;
 
@@ -275,9 +277,9 @@
 
 					if ($isLastActiveTab) {
 						if ($settings?.notificationEnabled ?? false) {
-							new Notification(`${title} • Sage.is AI`, {
+							new Notification(`${title} • ${branding?.title || 'Sage.is AI'}`, {
 								body: content,
-								icon: `${WEBUI_BASE_URL}/static/icons/favicon.png`
+								icon: branding?.favicon_url || branding?.logo_url || `${WEBUI_BASE_URL}/static/icons/favicon.png`
 							});
 						}
 					}
@@ -424,9 +426,9 @@
 			if (type === 'message') {
 				if ($isLastActiveTab) {
 					if ($settings?.notificationEnabled ?? false) {
-						new Notification(`${data?.user?.name} (#${event?.channel?.name}) • Sage.is AI`, {
+						new Notification(`${data?.user?.name} (#${event?.channel?.name}) • ${branding?.title || 'Sage.is AI'}`, {
 							body: data?.content,
-							icon: data?.user?.profile_image_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`
+							icon: data?.user?.profile_image_url ?? branding?.favicon_url ?? branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`
 						});
 					}
 				}
@@ -497,6 +499,13 @@
 	onMount(async () => {
 		if (typeof window !== 'undefined' && window.applyTheme) {
 			window.applyTheme();
+		}
+
+		// Load branding early for favicon and other global settings
+		try {
+			branding = await getBranding();
+		} catch (err) {
+			console.error('Failed to load branding:', err);
 		}
 
 		if (window?.electronAPI) {
@@ -602,8 +611,8 @@
 </script>
 
 <svelte:head>
-	<title>{$WEBUI_NAME}</title>
-	<link crossorigin="anonymous" rel="icon" href="{WEBUI_BASE_URL}/static/icons/favicon.png" />
+	<title>{branding?.title || $WEBUI_NAME}</title>
+	<link crossorigin="anonymous" rel="icon" href={branding?.favicon_url || `${WEBUI_BASE_URL}/static/icons/favicon.png`} />
 
 	{#if $config?.ui?.custom_css}
 		<style>

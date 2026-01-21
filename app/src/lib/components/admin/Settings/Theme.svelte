@@ -3,6 +3,7 @@
 	import type { Writable } from 'svelte/store';
 	import type { i18n as i18nType } from 'i18next';
 	import { getBranding, setBranding, type Branding } from '$lib/apis/configs';
+	import { WEBUI_NAME } from '$lib/stores';
 	import { toast } from 'svelte-sonner';
 
 	const i18n: Writable<i18nType> = getContext('i18n');
@@ -129,7 +130,7 @@
 					<input
 						id="title"
 						class="w-full rounded-lg py-2 px-4 text-sm dark:text-gray-300 dark:bg-gray-850 outline-none"
-						placeholder="Sage AI UI Workshop"
+						placeholder={$WEBUI_NAME}
 						bind:value={branding.title}
 					/>
 					<div class="text-xs text-gray-500 mt-1">
@@ -144,7 +145,7 @@
 					<input
 						id="subtitle"
 						class="w-full rounded-lg py-2 px-4 text-sm dark:text-gray-300 dark:bg-gray-850 outline-none"
-						placeholder="Powered by Sage AI UI Workshop"
+						placeholder="Powered by Sage.is AI UI"
 						bind:value={branding.subtitle}
 					/>
 					<div class="text-xs text-gray-500 mt-1">

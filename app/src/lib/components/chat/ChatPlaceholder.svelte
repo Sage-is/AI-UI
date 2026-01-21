@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { WEBUI_BASE_URL } from '$lib/constants';
+	import { getBranding } from '$lib/apis/configs';
 	import { marked } from 'marked';
 
 	import { config, user, models as _models, temporaryChatEnabled } from '$lib/stores';
@@ -22,6 +23,7 @@
 
 	let mounted = false;
 	let selectedModelIdx = 0;
+	let branding: { logo_url?: string; favicon_url?: string } = {};
 
 	$: if (modelIds.length > 0) {
 		selectedModelIdx = models.length - 1;
@@ -29,8 +31,13 @@
 
 	$: models = modelIds.map((id) => $_models.find((m) => m.id === id));
 
-	onMount(() => {
+	onMount(async () => {
 		mounted = true;
+		try {
+			branding = await getBranding();
+		} catch (err) {
+			console.error('Failed to load branding:', err);
+		}
 	});
 </script>
 
@@ -54,7 +61,7 @@
 						>
 							<img
 								crossorigin="anonymous"
-								src={model?.info?.meta?.profile_image_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
+								src={model?.info?.meta?.profile_image_url ?? branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
 								class=" size-[2.7rem] rounded-full border-[1px] border-gray-100 dark:border-none"
 								alt="logo"
 								draggable="false"

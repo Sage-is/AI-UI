@@ -1,9 +1,20 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import Plus from '$lib/components/icons/Plus.svelte';
 	import { WEBUI_BASE_URL } from '$lib/constants';
+	import { getBranding } from '$lib/apis/configs';
 
 	let selected = '';
+	let branding: { logo_url?: string; favicon_url?: string } = {};
+
+	onMount(async () => {
+		try {
+			branding = await getBranding();
+		} catch (err) {
+			console.error('Failed to load branding:', err);
+		}
+	});
 </script>
 
 <div class="min-w-[4.5rem] bg-gray-50 dark:bg-gray-950 flex gap-2.5 flex-col pt-8">
@@ -50,7 +61,7 @@
 			}}
 		>
 			<img
-				src="{WEBUI_BASE_URL}/static/icons/favicon.png"
+				src={branding?.logo_url || `${WEBUI_BASE_URL}/static/icons/favicon.png`}
 				class="size-10 {selected === '' ? 'rounded-2xl' : 'rounded-full'}"
 				alt="logo"
 				draggable="false"

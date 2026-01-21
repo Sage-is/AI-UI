@@ -39,6 +39,7 @@
 		importChat
 	} from '$lib/apis/chats';
 	import { createNewFolder, getFolders, updateFolderParentIdById } from '$lib/apis/folders';
+	import { getBranding } from '$lib/apis/configs';
 	import { WEBUI_BASE_URL } from '$lib/constants';
 
 	import ArchivedChatsModal from './ArchivedChatsModal.svelte';
@@ -65,6 +66,7 @@
 	let navElement;
 	let shiftKey = false;
 
+	let branding: { logo_url?: string; logo_dark_url?: string } = {};
 	let selectedChatId = null;
 	let showDropdown = false;
 	let showPinnedChat = true;
@@ -330,6 +332,13 @@
 	onMount(async () => {
 		showPinnedChat = localStorage?.showPinnedChat ? localStorage.showPinnedChat === 'true' : true;
 
+		// Load branding for sidebar logo
+		try {
+			branding = await getBranding();
+		} catch (err) {
+			console.error('Failed to load branding:', err);
+		}
+
 		mobile.subscribe((value) => {
 			if ($showSidebar && value) {
 				showSidebar.set(false);
@@ -531,7 +540,7 @@
 					<div class="self-center mx-1.5">
 						<img
 							crossorigin="anonymous"
-							src="{WEBUI_BASE_URL}/static/icons/favicon.png"
+							src={branding?.logo_url || `${WEBUI_BASE_URL}/static/icons/favicon.png`}
 							class="sidebar-new-chat-icon size-5 -translate-x-1.5 rounded-full"
 							alt="logo"
 						/>
@@ -696,7 +705,7 @@
 										<img
 											crossorigin="anonymous"
 											src={model?.info?.meta?.profile_image_url ??
-												`${WEBUI_BASE_URL}/static/icons/favicon.png`}
+												branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
 											class=" size-5 rounded-full -translate-x-[0.5px]"
 											alt="logo"
 										/>

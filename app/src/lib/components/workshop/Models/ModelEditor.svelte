@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { models, tools, functions, knowledge as knowledgeCollections, user } from '$lib/stores';
 	import { WEBUI_BASE_URL } from '$lib/constants';
+	import { getBranding, type Branding } from '$lib/apis/configs';
 
 	const dispatch = createEventDispatcher();
 
@@ -44,6 +45,8 @@
 	let showPreview = false;
 
 	let loaded = false;
+
+	let branding: Branding | null = null;
 
 	// ///////////
 	// model
@@ -212,6 +215,13 @@
 		await tools.set(await getTools(localStorage.token));
 		await functions.set(await getFunctions(localStorage.token));
 		await knowledgeCollections.set([...(await getKnowledgeBases(localStorage.token))]);
+
+		// Fetch branding for fallback logo
+		try {
+			branding = await getBranding();
+		} catch (e) {
+			console.error('Failed to load branding:', e);
+		}
 
 		// Scroll to top 'workshop-container' element
 		const workshopContainer = document.getElementById('workshop-container');
@@ -405,7 +415,21 @@
 					submitHandler();
 				}}
 			>
-				<div class="self-center md:self-start flex justify-center my-2 shrink-0">
+
+
+				<div class="w-full">
+					<div class="mt-2 my-2 flex flex-col">
+						<div class="flex-1">
+							<div>
+								<input
+									class="text-3xl font-semibold w-full bg-transparent outline-hidden"
+									placeholder={$i18n.t('Model Name')}
+									bind:value={name}
+									required
+								/>
+							</div>
+
+											<div style="--ml:auto;">
 					<div class="self-center">
 						<button
 							class="rounded-xl flex shrink-0 items-center {info.meta.profile_image_url !==
@@ -425,7 +449,7 @@
 								/>
 							{:else}
 								<img
-									src="{WEBUI_BASE_URL}/static/icons/favicon.png"
+									src={branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
 									alt="model profile"
 									class=" rounded-xl size-72 md:size-60 object-cover shrink-0"
 								/>
@@ -470,18 +494,6 @@
 						</div>
 					</div>
 				</div>
-
-				<div class="w-full">
-					<div class="mt-2 my-2 flex flex-col">
-						<div class="flex-1">
-							<div>
-								<input
-									class="text-3xl font-semibold w-full bg-transparent outline-hidden"
-									placeholder={$i18n.t('Model Name')}
-									bind:value={name}
-									required
-								/>
-							</div>
 						</div>
 
 						<div class="flex-1">

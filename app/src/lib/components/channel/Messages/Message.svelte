@@ -13,9 +13,18 @@
 	import { getContext, onMount } from 'svelte';
 	const i18n = getContext<Writable<i18nType>>('i18n');
 
+	onMount(async () => {
+		try {
+			branding = await getBranding();
+		} catch (err) {
+			console.error('Failed to load branding:', err);
+		}
+	});
+
 	import { settings, user, shortCodesToEmojis } from '$lib/stores';
 
 	import { WEBUI_BASE_URL } from '$lib/constants';
+	import { getBranding } from '$lib/apis/configs';
 
 	import Markdown from '$lib/components/chat/Messages/Markdown.svelte';
 	import ProfileImage from '$lib/components/chat/Messages/ProfileImage.svelte';
@@ -43,6 +52,7 @@
 	export let onThread: Function = () => {};
 	export let onReaction: Function = () => {};
 
+	let branding: { logo_url?: string; favicon_url?: string } = {};
 	let showButtons = false;
 
 	let edit = false;
@@ -143,7 +153,7 @@
 				{#if showUserProfile}
 					<ProfilePreview user={message.user}>
 						<ProfileImage
-							src={message.user?.profile_image_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
+							src={message.user?.profile_image_url ?? branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
 							className={'size-8 translate-y-1 ml-0.5'}
 						/>
 					</ProfilePreview>

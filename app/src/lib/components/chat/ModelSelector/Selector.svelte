@@ -26,6 +26,7 @@
 	import { toast } from 'svelte-sonner';
 	import { capitalizeFirstLetter, sanitizeResponseContent, splitStream } from '$lib/utils';
 	import { getModels } from '$lib/apis';
+	import { getBranding, type Branding } from '$lib/apis/configs';
 
 	import ChevronDown from '$lib/components/icons/ChevronDown.svelte';
 	import Check from '$lib/components/icons/Check.svelte';
@@ -59,6 +60,8 @@
 	export let triggerClassName = 'text-lg';
 
 	export let pinModelHandler: (modelId: string) => void = () => {};
+
+	let branding: Branding | null = null;
 
 	let tagsContainerElement;
 
@@ -291,6 +294,13 @@
 	onMount(async () => {
 		ollamaVersion = await getOllamaVersion(localStorage.token).catch((error) => false);
 
+		// Fetch branding for fallback logo
+		try {
+			branding = await getBranding();
+		} catch (e) {
+			console.error('Failed to load branding:', e);
+		}
+
 		if (items) {
 			tags = items
 				.filter((item) => !(item.model?.info?.meta?.hidden ?? false))
@@ -514,6 +524,7 @@
 						{value}
 						{pinModelHandler}
 						{unloadModelHandler}
+						{branding}
 						onClick={() => {
 							value = item.value;
 							selectedModelIdx = index;

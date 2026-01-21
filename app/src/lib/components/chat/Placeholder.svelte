@@ -18,6 +18,7 @@
 	} from '$lib/stores';
 	import { sanitizeResponseContent, extractCurlyBraceWords } from '$lib/utils';
 	import { WEBUI_BASE_URL } from '$lib/constants';
+	import { getBranding } from '$lib/apis/configs';
 
 	import Suggestions from './Suggestions.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
@@ -60,6 +61,7 @@
 
 	let models = [];
 
+	let branding: { logo_url?: string; favicon_url?: string } = {};
 	let selectedModelIdx = 0;
 
 	$: if (selectedModels.length > 0) {
@@ -68,7 +70,13 @@
 
 	$: models = selectedModels.map((id) => $_models.find((m) => m.id === id));
 
-	onMount(() => {});
+	onMount(async () => {
+		try {
+			branding = await getBranding();
+		} catch (err) {
+			console.error('Failed to load branding:', err);
+		}
+	});
 </script>
 
 <div class="m-auto w-full max-w-6xl px-2 @2xl:px-20 translate-y-6 py-24 text-center">
@@ -126,7 +134,7 @@
 									>
 										<img
 											crossorigin="anonymous"
-											src={model?.info?.meta?.profile_image_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
+											src={model?.info?.meta?.profile_image_url ?? branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}}
 											class=" size-9 @sm:size-10 rounded-full border-[1px] border-gray-100 dark:border-none"
 											aria-hidden="true"
 											draggable="false"

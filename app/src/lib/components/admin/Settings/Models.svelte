@@ -37,6 +37,7 @@
 	import EyeSlash from '$lib/components/icons/EyeSlash.svelte';
 	import Eye from '$lib/components/icons/Eye.svelte';
 	import { WEBUI_BASE_URL } from '$lib/constants';
+	import { getBranding, type Branding } from '$lib/apis/configs';
 
 	let shiftKey = false;
 
@@ -47,6 +48,8 @@
 
 	let workshopModels = null;
 	let baseModels = null;
+
+	let branding: Branding | null = null;
 
 	let filteredModels = [];
 	let selectedModelId = null;
@@ -207,6 +210,14 @@
 
 	onMount(async () => {
 		await init();
+
+		// Fetch branding for fallback logo
+		try {
+			branding = await getBranding();
+		} catch (e) {
+			console.error('Failed to load branding:', e);
+		}
+
 		const id = $page.url.searchParams.get('id');
 
 		if (id) {
@@ -333,7 +344,7 @@
 										: 'opacity-50 dark:opacity-50'} "
 								>
 									<img
-										src={model?.meta?.profile_image_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
+										src={model?.meta?.profile_image_url ?? branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
 										alt="modelfile profile"
 										class=" rounded-full w-full h-auto object-cover"
 									/>
