@@ -5,7 +5,7 @@ from typing import Optional
 
 from open_webui.utils.auth import get_admin_user, get_verified_user
 from open_webui.config import get_config, save_config
-from open_webui.config import BannerModel
+from open_webui.config import BannerModel, BrandingModel
 
 from open_webui.utils.tools import get_tool_server_data, get_tool_servers_data
 
@@ -325,6 +325,32 @@ async def get_banners(
     user=Depends(get_verified_user),
 ):
     return request.app.state.config.BANNERS
+
+
+############################
+# Branding
+############################
+
+
+@router.get("/branding", response_model=BrandingModel)
+async def get_branding(request: Request):
+    """Get branding configuration - publicly accessible for unauthenticated users"""
+    branding_data = request.app.state.config.BRANDING
+    if isinstance(branding_data, dict):
+        return BrandingModel(**branding_data)
+    return branding_data
+
+
+@router.post("/branding", response_model=BrandingModel)
+async def set_branding(
+    request: Request,
+    form_data: BrandingModel,
+    user=Depends(get_admin_user),
+):
+    """Set branding configuration - requires admin privileges"""
+    data = form_data.model_dump()
+    request.app.state.config.BRANDING = data
+    return BrandingModel(**data)
 
 
 ############################
