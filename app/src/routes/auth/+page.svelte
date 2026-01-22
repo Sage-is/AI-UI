@@ -191,7 +191,7 @@
 		try {
 			branding = await getBranding();
 			console.log('Loaded branding:', branding);
-			
+
 			// Apply custom colors if set
 			if (branding.primary_color) {
 				document.documentElement.style.setProperty('--brand-primary', branding.primary_color);
@@ -199,10 +199,11 @@
 			if (branding.accent_color) {
 				document.documentElement.style.setProperty('--brand-accent', branding.accent_color);
 			}
-			
+
 			// Update favicon if custom one is set
 			if (branding.favicon_url) {
-				const favicon = document.querySelector('link[rel="icon"]') || document.createElement('link');
+				const favicon =
+					document.querySelector('link[rel="icon"]') || document.createElement('link');
 				favicon.setAttribute('rel', 'icon');
 				favicon.setAttribute('href', branding.favicon_url);
 				if (!document.querySelector('link[rel="icon"]')) {
@@ -254,7 +255,9 @@
 							class="flex items-center justify-center gap-3 text-xl sm:text-2xl text-center font-semibold dark:text-gray-200"
 						>
 							<div>
-								{$i18n.t('Signing in to {{WEBUI_NAME}}', { WEBUI_NAME: branding?.title || $WEBUI_NAME })}
+								{$i18n.t('Signing in to {{WEBUI_NAME}}', {
+									WEBUI_NAME: branding?.title || $WEBUI_NAME
+								})}
 							</div>
 
 							<div>
@@ -286,13 +289,21 @@
 								<div class="mb-1">
 									<div class=" text-2xl font-medium">
 										{#if $config?.onboarding ?? false}
-											{$i18n.t(`Get started with {{WEBUI_NAME}}`, { WEBUI_NAME: branding?.title || $WEBUI_NAME })}
+											{$i18n.t(`Get started with {{WEBUI_NAME}}`, {
+												WEBUI_NAME: branding?.title || $WEBUI_NAME
+											})}
 										{:else if mode === 'ldap'}
-											{$i18n.t(`Sign in to {{WEBUI_NAME}} with LDAP`, { WEBUI_NAME: branding?.title || $WEBUI_NAME })}
+											{$i18n.t(`Sign in to {{WEBUI_NAME}} with LDAP`, {
+												WEBUI_NAME: branding?.title || $WEBUI_NAME
+											})}
 										{:else if mode === 'signin'}
-											{$i18n.t(`Sign in to {{WEBUI_NAME}}`, { WEBUI_NAME: branding?.title || $WEBUI_NAME })}
+											{$i18n.t(`Sign in to {{WEBUI_NAME}}`, {
+												WEBUI_NAME: branding?.title || $WEBUI_NAME
+											})}
 										{:else}
-											{$i18n.t(`Sign up to {{WEBUI_NAME}}`, { WEBUI_NAME: branding?.title || $WEBUI_NAME })}
+											{$i18n.t(`Sign up to {{WEBUI_NAME}}`, {
+												WEBUI_NAME: branding?.title || $WEBUI_NAME
+											})}
 										{/if}
 									</div>
 
@@ -391,6 +402,15 @@
 											</button>
 										{:else}
 											<button
+												style="
+														--p:1em 1.5em;
+														--m:auto;
+														--radius: 9999px;
+														--weight: 500;
+														--size: 0.875rem;
+														--py: 0.625rem;
+
+													"
 												class="bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
 												type="submit"
 											>
