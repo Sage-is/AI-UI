@@ -20,6 +20,7 @@ PORT_MAPPING ?= 8080:8080
 VOLUME_DATA ?= sage-open-webui:/app/backend/data
 ENV_FILE := $$(pwd)/.env:/app/.env
 FRONTEND_SRC := $$(pwd)/app/src/:/app/src/
+STATIC_SRC := $$(pwd)/app/static/:/app/static/
 BACKEND_SRC := $$(pwd)/app/backend/:/app/backend/
 
 # Release version detection (prefers release/* branch name, falls back to latest tag)
@@ -75,6 +76,7 @@ DEV_RUN_ARGS := --rm -p $(PORT_MAPPING) \
 	-v $(VOLUME_DATA) \
 	-v $(ENV_FILE) \
 	-v $(FRONTEND_SRC) \
+	-v $(STATIC_SRC) \
 	--name $(CONTAINER_NAME)
 
 it_stop:
