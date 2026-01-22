@@ -45,7 +45,7 @@
 			if (sessionUser?.token) {
 				localStorage.token = sessionUser.token;
 			}
-			toast.success($i18n.t(`You're now logged in.`));
+			toast.success($i18n.t(`Logging in.`));
 
 			// Calculate redirect path early
 			const redirectPath = querystringValue('redirect') || '/';
