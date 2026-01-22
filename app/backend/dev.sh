@@ -30,6 +30,7 @@ fi
 
 # Set CORS for development mode
 export CORS_ALLOW_ORIGIN=http://localhost:5173
+export SKIP_STATIC_CLEANUP=true
 
 WEBUI_SECRET_KEY="$WEBUI_SECRET_KEY" \
 exec uvicorn open_webui.main:app \

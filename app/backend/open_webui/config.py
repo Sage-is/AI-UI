@@ -693,60 +693,64 @@ STATIC_DIR = Path(os.getenv("STATIC_DIR", OPEN_WEBUI_DIR / "static")).resolve()
 log.info(f"[STATIC] Using STATIC_DIR: {STATIC_DIR}")
 log.info(f"[STATIC] Using FRONTEND_BUILD_DIR: {FRONTEND_BUILD_DIR}")
 
-try:
-    if STATIC_DIR.exists():
-        log.info(f"[STATIC] Clearing STATIC_DIR: {STATIC_DIR}")
-        for item in STATIC_DIR.iterdir():
-            if item.is_file() or item.is_symlink():
-                try:
-                    log.info(f"[STATIC] Removing file/symlink: {item}")
-                    item.unlink()
-                except Exception as e:
-                    log.error(f"[STATIC] Failed to remove {item}: {e}")
-except Exception as e:
-    log.error(f"[STATIC] Error clearing STATIC_DIR: {e}")
+SKIP_STATIC_CLEANUP = os.environ.get("SKIP_STATIC_CLEANUP", "false").lower() == "true"
+if SKIP_STATIC_CLEANUP:
+    log.info("[STATIC] SKIP_STATIC_CLEANUP is true, skipping static file cleanup and copy.")
+else:
+    try:
+        if STATIC_DIR.exists():
+            log.info(f"[STATIC] Clearing STATIC_DIR: {STATIC_DIR}")
+            for item in STATIC_DIR.iterdir():
+                if item.is_file() or item.is_symlink():
+                    try:
+                        log.info(f"[STATIC] Removing file/symlink: {item}")
+                        item.unlink()
+                    except Exception as e:
+                        log.error(f"[STATIC] Failed to remove {item}: {e}")
+    except Exception as e:
+        log.error(f"[STATIC] Error clearing STATIC_DIR: {e}")
 
-for file_path in (FRONTEND_BUILD_DIR / "static").glob("**/*"):
-    if file_path.is_file():
-        target_path = STATIC_DIR / file_path.relative_to(
-            (FRONTEND_BUILD_DIR / "static")
-        )
-        target_path.parent.mkdir(parents=True, exist_ok=True)
+    for file_path in (FRONTEND_BUILD_DIR / "static").glob("**/*"):
+        if file_path.is_file():
+            target_path = STATIC_DIR / file_path.relative_to(
+                (FRONTEND_BUILD_DIR / "static")
+            )
+            target_path.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                log.info(f"[STATIC] Copying {file_path} -> {target_path}")
+                shutil.copyfile(file_path, target_path)
+            except Exception as e:
+                log.error(f"[STATIC] Failed to copy {file_path} to {target_path}: {e}")
+
+    frontend_favicon = FRONTEND_BUILD_DIR / "static" / "favicon.png"
+    if frontend_favicon.exists():
         try:
-            log.info(f"[STATIC] Copying {file_path} -> {target_path}")
-            shutil.copyfile(file_path, target_path)
+            log.info(
+                f"[STATIC] Copying favicon: {frontend_favicon} -> {STATIC_DIR / 'favicon.png'}"
+            )
+            shutil.copyfile(frontend_favicon, STATIC_DIR / "favicon.png")
         except Exception as e:
-            log.error(f"[STATIC] Failed to copy {file_path} to {target_path}: {e}")
+            log.error(f"[STATIC] Failed to copy favicon: {e}")
 
-frontend_favicon = FRONTEND_BUILD_DIR / "static" / "favicon.png"
-if frontend_favicon.exists():
-    try:
-        log.info(
-            f"[STATIC] Copying favicon: {frontend_favicon} -> {STATIC_DIR / 'favicon.png'}"
-        )
-        shutil.copyfile(frontend_favicon, STATIC_DIR / "favicon.png")
-    except Exception as e:
-        log.error(f"[STATIC] Failed to copy favicon: {e}")
+    frontend_splash = FRONTEND_BUILD_DIR / "static" / "splash.png"
+    if frontend_splash.exists():
+        try:
+            log.info(
+                f"[STATIC] Copying splash: {frontend_splash} -> {STATIC_DIR / 'splash.png'}"
+            )
+            shutil.copyfile(frontend_splash, STATIC_DIR / "splash.png")
+        except Exception as e:
+            log.error(f"[STATIC] Failed to copy splash: {e}")
 
-frontend_splash = FRONTEND_BUILD_DIR / "static" / "splash.png"
-if frontend_splash.exists():
-    try:
-        log.info(
-            f"[STATIC] Copying splash: {frontend_splash} -> {STATIC_DIR / 'splash.png'}"
-        )
-        shutil.copyfile(frontend_splash, STATIC_DIR / "splash.png")
-    except Exception as e:
-        log.error(f"[STATIC] Failed to copy splash: {e}")
-
-frontend_loader = FRONTEND_BUILD_DIR / "static" / "loader.js"
-if frontend_loader.exists():
-    try:
-        log.info(
-            f"[STATIC] Copying loader: {frontend_loader} -> {STATIC_DIR / 'loader.js'}"
-        )
-        shutil.copyfile(frontend_loader, STATIC_DIR / "loader.js")
-    except Exception as e:
-        log.error(f"[STATIC] Failed to copy loader: {e}")
+    frontend_loader = FRONTEND_BUILD_DIR / "static" / "loader.js"
+    if frontend_loader.exists():
+        try:
+            log.info(
+                f"[STATIC] Copying loader: {frontend_loader} -> {STATIC_DIR / 'loader.js'}"
+            )
+            shutil.copyfile(frontend_loader, STATIC_DIR / "loader.js")
+        except Exception as e:
+            log.error(f"[STATIC] Failed to copy loader: {e}")
 
 
 ####################################
