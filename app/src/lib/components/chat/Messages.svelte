@@ -401,9 +401,13 @@
 	{#if Object.keys(history?.messages ?? {}).length == 0}
 		<ChatPlaceholder modelIds={selectedModels} {atSelectedModel} {onSelect} />
 	{:else}
-		<div class="w-full pt-2">
+		<div
+			style="--d:flex; --fd:column" 
+			class="w-full pt-2">
 			{#key chatId}
-				<div class="w-full">
+				<div 
+					style="--d:flex; --fd:column" 
+					class="w-full">
 					{#if messages.at(0)?.parentId !== null}
 						<Loader
 							on:visible={(e) => {

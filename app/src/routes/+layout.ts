@@ -16,12 +16,14 @@ export const load = async ({ fetch, url }) => {
         console.error('Failed to fetch backend config', e);
     }
 
-    // Try to fetch user session
-    try {
-        user = await getSessionUser(fetch);
-    } catch (error) {
-        // User is not authenticated or session expired
-        user = null;
+    // Skip session check on auth page to avoid unnecessary 403 errors
+    if (!url.pathname.startsWith('/auth')) {
+        try {
+            user = await getSessionUser(fetch);
+        } catch (error) {
+            // User is not authenticated or session expired
+            user = null;
+        }
     }
 
     // Auth Guard: If not logged in and not on auth page/unprotected routes
