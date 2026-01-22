@@ -507,6 +507,7 @@
 				{#if id === $chatId}
 					<!-- Shortcut support using "delete-chat-button" id -->
 					<button
+						style="--d:none"
 						id="delete-chat-button"
 						class="hidden"
 						on:click={() => {
