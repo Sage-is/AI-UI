@@ -515,7 +515,9 @@
 				{/if}
 			</div>
 
-			<div class="px-3 max-h-64 overflow-y-auto group relative">
+			<div
+				style="--ofy:auto; --maxh:16rem; --p:0 1em"
+				class="relative">
 				{#each filteredItems as item, index}
 					<ModelItem
 						{selectedModelIdx}

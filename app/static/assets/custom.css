@@ -248,6 +248,10 @@
 	--color-white: #fff;
 }
 
+html {
+	font-size: 120%;
+}
+
 button {
 	-webkit-appearance: none;
 	border-radius: 0;
@@ -258,6 +262,9 @@ button {
 	margin: 0;
 	cursor: pointer;
 	border: none;
+	border-radius: 1em;
+	border-top-right-radius: 1em;
+  	border-bottom-right-radius: 1em;
 	color: inherit;
 	font: inherit;
 	display: flex;
