@@ -1508,4 +1508,8 @@
 		-ms-overflow-style: none; /* IE and Edge */
 		scrollbar-width: none; /* Firefox */
 	}
+
+	button{
+		margin: 0 0.25rem 0 0;
+	}
 </style>
