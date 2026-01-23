@@ -1017,7 +1017,7 @@
 						}}
 					>
 						<button
-							style="--radius: 1em"
+							style="--radius: 1em; --w:100%"
 							on:click={() => {
 								showDropdown = !showDropdown;
 							}}
