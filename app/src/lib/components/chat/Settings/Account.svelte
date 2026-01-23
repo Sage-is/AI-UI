@@ -47,7 +47,7 @@
 			});
 		}
 
-		const updatedUser = await updateUserProfile(localStorage.token, name, profileImageUrl).catch(
+		const updatedUser = await updateUserProfile(name, profileImageUrl).catch(
 			(error) => {
 				toast.error(`${error}`);
 			}
@@ -55,7 +55,7 @@
 
 		if (updatedUser) {
 			// Get Session User Info
-			const sessionUser = await getSessionUser(localStorage.token).catch((error) => {
+			const sessionUser = await getSessionUser().catch((error) => {
 				toast.error(`${error}`);
 				return null;
 			});
@@ -67,7 +67,7 @@
 	};
 
 	const createAPIKeyHandler = async () => {
-		APIKey = await createAPIKey(localStorage.token);
+		APIKey = await createAPIKey();
 		if (APIKey) {
 			toast.success($i18n.t('API Key created.'));
 		} else {
@@ -80,7 +80,7 @@
 		profileImageUrl = $user?.profile_image_url;
 		webhookUrl = $settings?.notifications?.webhook_url ?? '';
 
-		APIKey = await getAPIKey(localStorage.token).catch((error) => {
+		APIKey = await getAPIKey().catch((error) => {
 			console.log(error);
 			return '';
 		});
