@@ -300,14 +300,13 @@
 >
 	{#if confirmEdit}
 		<div
-			class=" w-full flex justify-between rounded-lg px-[11px] py-[6px] {id === $chatId ||
+			id="chat-title-input-container-{id}"
+			style="--radius:9999px; --w:100%; --m:0; {id === $chatId ||
 			confirmEdit
-				? 'bg-gray-100 dark:bg-gray-900'
+				? '--bg: var(--color-gray-100); --dark-bg: var(--color-gray-900);'
 				: selected
-					? 'bg-gray-100 dark:bg-gray-950'
-					: 'group-hover:bg-gray-100 dark:group-hover:bg-gray-950'}  whitespace-nowrap text-ellipsis relative {generating
-				? 'cursor-not-allowed'
-				: ''}"
+					? '--bg: var(--color-gray-100); --dark-bg: var(--color-gray-950);'
+					: '--bg: transparent; --dark-bg: transparent;'}"
 		>
 			<input
 				id="chat-title-input-{id}"

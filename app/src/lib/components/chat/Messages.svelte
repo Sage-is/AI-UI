@@ -452,7 +452,7 @@
 						/>
 					{/each}
 				</div>
-				<div class="pb-12" />
+
 				{#if bottomPadding}
 					<div class="  pb-6" />
 				{/if}

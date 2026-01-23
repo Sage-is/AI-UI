@@ -57,7 +57,7 @@
 <div class="flex flex-col h-full justify-between text-sm">
 	<div class="space-y-3 pr-1.5">
 		<div>
-			<div class="mb-2 text-sm font-medium">{$i18n.t('Theme & Branding')}</div>
+			<div class="mb-2 text-sm font-medium">{$i18n.t('Theme & Branding')}  (Beta)</div>
 		</div>
 
 		<hr class="dark:border-gray-850" />
@@ -159,6 +159,7 @@
 			<!-- Color Settings -->
 			<div class="space-y-3">
 				<div class="text-sm font-medium">{$i18n.t('Color Settings')}</div>
+                <p>Note: These are not used at the moment.</p>
 				
 				<div>
 					<label class="block text-sm font-medium mb-2" for="primary-color">
