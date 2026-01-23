@@ -146,7 +146,7 @@
 					/>
 				</svg>
 			</div>
-			<div class=" self-center">{$i18n.t('Theme')}</div>
+			<div class=" self-center">{$i18n.t('Theme')}  (Beta)</div>
 		</button>
 
 		<button
