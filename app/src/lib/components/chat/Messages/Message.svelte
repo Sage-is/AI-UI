@@ -44,7 +44,7 @@
 </script>
 
 <div
-	style="--m:auto; --w: {$settings?.widescreenMode ?? null ? '100%' : 'var(--max-content-width)'}"
+	style="--m:auto; --w:100%; --maxw: 100%; --maxw-sm:{$settings?.widescreenMode ?? null ? '100%' : 'calc(var(--max-content-width))'};  --p:1em;"
 	class="flex flex-col mx-auto rounded-lg group"
 >
 	{#if history.messages[messageId]}

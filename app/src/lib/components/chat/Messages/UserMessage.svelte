@@ -602,3 +602,10 @@
 		</div>
 	</div>
 </div>
+
+<style>
+	button {
+		margin: 0 0 0 0.25rem;
+	}
+
+</style>
