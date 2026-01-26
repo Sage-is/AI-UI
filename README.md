@@ -4,8 +4,8 @@
 
 **Sage.is an AI interface that puts you in control.**
 
-[![GitHub stars](https://img.shields.io/github/stars/Startr/WEB-AI-Sage-WebUI?style=social)](https://github.com/Sage-is/AI-UI)
-[![License](https://img.shields.io/github/license/Startr/WEB-AI-Sage-WebUI)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/Sage-is/AI-UI?style=social)](https://github.com/Sage-is/AI-UI)
+[![License](https://img.shields.io/badge/License-AGPL_v3%2B-blue)](LICENSE)
 [![Discord](https://img.shields.io/badge/Discord-Community-blue?logo=discord&logoColor=white)](https://discord.gg/3BtwHkXS)
 
 Sage WebUI transforms how you interact with AI. Built for privacy and flexibility, it runs entirely on your infrastructure while supporting the latest AI models from Ollama, OpenAI, and beyond.
