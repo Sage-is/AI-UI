@@ -92,7 +92,7 @@
 										<th scope="col" class="px-3 py-2 text-right" />
 									</tr>
 								</thead>
-								<tbody>
+								<tbody style="--d:flex;--fd:column">
 									{#each memories as memory}
 										<tr class="border-b border-gray-50 dark:border-gray-850 items-center">
 											<td class="px-3 py-1">

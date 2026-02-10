@@ -352,7 +352,7 @@
 												<th scope="col" class="px-3 py-2 text-right" />
 											</tr>
 										</thead>
-										<tbody>
+										<tbody style="--d:flex;--fd:column">
 											{#each chats as chat, idx}
 												<tr
 													class="bg-transparent {idx !== chats.length - 1 &&

@@ -371,7 +371,7 @@
 					<th scope="col" class="px-3 py-2 text-right" />
 				</tr>
 			</thead>
-			<tbody class="">
+			<tbody style="--d:flex;--fd:column">
 				{#each users as user, userIdx}
 					<tr class="bg-white dark:bg-gray-900 dark:border-gray-850 text-xs">
 						<td class="px-3 py-1 min-w-[7rem] w-28">
