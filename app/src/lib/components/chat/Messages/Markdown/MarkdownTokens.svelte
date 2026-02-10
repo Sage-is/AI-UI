@@ -148,7 +148,7 @@
 							{/each}
 						</tr>
 					</thead>
-					<tbody>
+					<tbody style="--d:flex;--fd:column">
 						{#each token.rows as row, rowIdx}
 							<tr class="bg-white dark:bg-gray-900 dark:border-gray-850 text-xs">
 								{#each row ?? [] as cell, cellIdx}

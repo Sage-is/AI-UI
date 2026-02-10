@@ -303,7 +303,7 @@
 					<th scope="col" class="px-3 py-1.5 text-right cursor-pointer select-none w-0"> </th>
 				</tr>
 			</thead>
-			<tbody class="">
+			<tbody style="--d:flex;--fd:column">
 				{#each paginatedFeedbacks as feedback (feedback.id)}
 					<tr
 						class="bg-white dark:bg-gray-900 dark:border-gray-850 text-xs cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-850/50 transition"

@@ -502,7 +502,7 @@
 					</th>
 				</tr>
 			</thead>
-			<tbody class="">
+			<tbody style="--d:flex; --fd:column">
 				{#each sortedModels as model, modelIdx (model.id)}
 					<tr
 						class="bg-white dark:bg-gray-900 dark:border-gray-850 text-xs group cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-850/50 transition"

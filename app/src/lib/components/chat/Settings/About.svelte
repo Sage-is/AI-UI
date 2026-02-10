@@ -37,7 +37,7 @@
 					cells.forEach(cell => {
 						html += `<th class="border border-gray-300 dark:border-gray-600 px-2 py-1 text-left">${cell}</th>\n`;
 					});
-					html += '</tr>\n</thead>\n<tbody>\n';
+					html += '</tr>\n</thead>\n<tbody style="--d:flex;--fd:column">\n';
 					isHeader = false;
 				} else if (!isHeader && cells.length > 0) {
 					html += '<tr class="hover:bg-gray-50 dark:hover:bg-gray-700">\n';
@@ -212,7 +212,9 @@
 				style="margin: 3rem auto;
 					width: fit-content;
 					font-family: monospace;
-					margin:auto"
+					--radius: 0.5rem;
+					margin:auto;
+					--p: 2rem;"
 				class="text-xs text-gray-400 dark:text-gray-500">
 			Copyright (c) 2023-2025 <a href="https://sage.is" target="_blank" class="underline"
 								>The Sage.is</a> Team 

@@ -99,10 +99,7 @@
 	>
 		<button
 			id="general"
-			class="px-0.5 py-1 min-w-fit rounded-lg flex-1 lg:flex-none flex text-right transition {selectedTab ===
-			'general'
-				? ''
-				: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+			style="{selectedTab === 'general' ? 'font-weight: 600;' : ''}"
 			on:click={() => {
 				goto('/admin/settings/general');
 			}}
@@ -126,10 +123,7 @@
 
 		<button
 			id="theme"
-			class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
-			'theme'
-				? ''
-				: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+			style="{selectedTab === 'theme' ? 'font-weight: 600;' : ''}"
 			on:click={() => {
 				goto('/admin/settings/theme');
 			}}
@@ -151,10 +145,7 @@
 
 		<button
 			id="connections"
-			class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
-			'connections'
-				? ''
-				: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+			style="{selectedTab === 'connections' ? 'font-weight: 600;' : ''}"
 			on:click={() => {
 				goto('/admin/settings/connections');
 			}}
@@ -176,10 +167,7 @@
 
 		<button
 			id="models"
-			class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
-			'models'
-				? ''
-				: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+			style="{selectedTab === 'models' ? 'font-weight: 600;' : ''}"
 			on:click={() => {
 				goto('/admin/settings/models');
 			}}
@@ -203,10 +191,7 @@
 
 		<button
 			id="evaluations"
-			class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
-			'evaluations'
-				? ''
-				: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+			style="{selectedTab === 'evaluations' ? 'font-weight: 600;' : ''}"
 			on:click={() => {
 				goto('/admin/settings/evaluations');
 			}}
@@ -219,10 +204,7 @@
 
 		<button
 			id="tools"
-			class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
-			'tools'
-				? ''
-				: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+			style="{selectedTab === 'tools' ? 'font-weight: 600;' : ''}"
 			on:click={() => {
 				goto('/admin/settings/tools');
 			}}
@@ -246,10 +228,7 @@
 
 		<button
 			id="documents"
-			class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
-			'documents'
-				? ''
-				: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+			style="{selectedTab === 'documents' ? 'font-weight: 600;' : ''}"
 			on:click={() => {
 				goto('/admin/settings/documents');
 			}}
@@ -277,10 +256,7 @@
 
 		<button
 			id="code-execution"
-			class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
-			'code-execution'
-				? ''
-				: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+			style="{selectedTab === 'code-execution' ? 'font-weight: 600;' : ''}"
 			on:click={() => {
 				goto('/admin/settings/code-execution');
 			}}
@@ -304,10 +280,7 @@
 
 		<button
 			id="interface"
-			class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
-			'interface'
-				? ''
-				: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+			style="{selectedTab === 'interface' ? 'font-weight: 600;' : ''}"
 			on:click={() => {
 				goto('/admin/settings/interface');
 			}}
@@ -331,10 +304,7 @@
 
 		<button
 			id="audio"
-			class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
-			'audio'
-				? ''
-				: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+			style="{selectedTab === 'audio' ? 'font-weight: 600;' : ''}"
 			on:click={() => {
 				goto('/admin/settings/audio');
 			}}
@@ -359,10 +329,7 @@
 
 		<button
 			id="images"
-			class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
-			'images'
-				? ''
-				: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+			style="{selectedTab === 'images' ? 'font-weight: 600;' : ''}"
 			on:click={() => {
 				goto('/admin/settings/images');
 			}}
@@ -386,10 +353,7 @@
 
 		<button
 			id="pipelines"
-			class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
-			'pipelines'
-				? ''
-				: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+			style="{selectedTab === 'pipelines' ? 'font-weight: 600;' : ''}"
 			on:click={() => {
 				goto('/admin/settings/pipelines');
 			}}
@@ -417,10 +381,7 @@
 
 		<button
 			id="db"
-			class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
-			'db'
-				? ''
-				: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+			style="{selectedTab === 'db' ? 'font-weight: 600;' : ''}"
 			on:click={() => {
 				goto('/admin/settings/db');
 			}}
@@ -525,3 +486,9 @@
 		{/if}
 	</div>
 </div>
+
+<style>
+	button {
+		padding: 0.6em 0.6em;
+	}
+</style>
