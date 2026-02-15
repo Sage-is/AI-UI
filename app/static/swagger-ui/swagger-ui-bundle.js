@@ -61913,7 +61913,7 @@
 						return '</thead>\n';
 					}),
 					(cC.tbody_open = function () {
-						return '<tbody>\n';
+						return '<tbody style="--d:flex;--fd:column">\n';
 					}),
 					(cC.tbody_close = function () {
 						return '</tbody>\n';
