@@ -144,13 +144,14 @@
 				}}
 			>
 				<div
-					class=" {$showCallOverlay || $showOverview || $showArtifacts
+					style="--h:100%"
+	class="{$showCallOverlay || $showOverview || $showArtifacts
 						? ' h-screen  w-full'
-						: 'px-6 py-4'} h-full"
+						: 'px-6 py-4'}"
 				>
 					{#if $showCallOverlay}
 						<div
-							class=" h-full max-h-[100dvh] bg-white text-gray-700 dark:bg-black dark:text-gray-300 flex justify-center"
+							style="--h:100%; --maxh:100dvh; --bgc:#fff; --c:var(--color-gray-700, #4e4e4e); --dark-bgc:#000; --dark-c:var(--color-gray-300, #cdcdcd); --d:flex; --jc:center"
 						>
 							<CallOverlay
 								bind:files
@@ -193,8 +194,10 @@
 		<!-- if $showControls -->
 
 		{#if $showControls}
-			<PaneResizer class="relative flex w-2 items-center justify-center bg-background group">
-				<div class="z-10 flex h-7 w-5 items-center justify-center rounded-xs">
+			<PaneResizer style="--pos:relative; --d:flex; --w:0.5rem; --ai:center; --jc:center"
+	class="bg-background group">
+				<div style="--z:10; --d:flex; --h:1.75rem; --w:1.25rem; --ai:center; --jc:center"
+	class="rounded-xs">
 					<EllipsisVertical className="size-4 invisible group-hover:visible" />
 				</div>
 			</PaneResizer>
@@ -222,17 +225,18 @@
 				showControls.set(false);
 			}}
 			collapsible={true}
-			class=" z-10 "
+			style="--z:10"
 		>
 			{#if $showControls}
-				<div class="flex max-h-full min-h-full">
+				<div style="--d:flex; --maxh:100%; --minh:100%">
 					<div
-						class="w-full {($showOverview || $showArtifacts) && !$showCallOverlay
+						style="--w:100%; --z:40; --pe:auto; --ofy:auto"
+	class="{($showOverview || $showArtifacts) && !$showCallOverlay
 							? ' '
-							: 'px-4 py-4 bg-white dark:shadow-lg dark:bg-gray-850  border border-gray-100 dark:border-gray-850'} z-40 pointer-events-auto overflow-y-auto scrollbar-hidden"
+							: 'px-4 py-4 bg-white dark:shadow-lg dark:bg-gray-850  border border-gray-100 dark:border-gray-850'} scrollbar-hidden"
 					>
 						{#if $showCallOverlay}
-							<div class="w-full h-full flex justify-center">
+							<div style="--w:100%; --h:100%; --d:flex; --jc:center">
 								<CallOverlay
 									bind:files
 									{submitPrompt}

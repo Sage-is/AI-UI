@@ -89,15 +89,15 @@
 	});
 </script>
 
-<div class="px-1 mb-1 flex justify-center space-x-2 relative z-10" id="search-container">
-	<div class="flex w-full rounded-xl" id="chat-search">
-		<div class="self-center py-2 rounded-l-xl bg-transparent dark:text-gray-300">
+<div style="--px:0.25rem; --mb:0.25rem; --d:flex; --jc:center; --g:0.5rem; --pos:relative; --z:10" id="search-container">
+	<div style="--d:flex; --w:100%; --radius:0.75rem" id="chat-search">
+		<div style="--as:center; --py:0.5rem; --btlr:0.75rem; --bblr:0.75rem; --bgc:transparent; --dark-c:var(--color-gray-300, #cdcdcd)">
 			<Search />
 		</div>
 
 		<input
 			id="search-input"
-			class="w-full rounded-r-xl py-1.5 pl-2.5 text-sm bg-transparent dark:text-gray-300 outline-hidden"
+			style="--w:100%; --btrr:0.75rem; --bbrr:0.75rem; --py:0.375rem; --pl:0.625rem; --size:0.875rem; --bgc:transparent; --dark-c:var(--color-gray-300, #cdcdcd); --oe:none"
 			placeholder={placeholder ? placeholder : $i18n.t('Search')}
 			bind:value
 			on:input={() => {
@@ -148,9 +148,9 @@
 		/>
 
 		{#if showClearButton && value}
-			<div class="self-center pl-1.5 translate-y-[0.5px] rounded-l-xl bg-transparent">
+			<div style="--as:center; --pl:0.375rem; --translatey:0.5px; --btlr:0.75rem; --bblr:0.75rem; --bgc:transparent">
 				<button
-					class="p-0.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-900 transition"
+					style="--p:0.125rem; --radius:9999px; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={clearSearchInput}
 				>
 					<XMark className="size-3" strokeWidth="2" />
@@ -162,7 +162,7 @@
 	{#if focused && (filteredOptions.length > 0 || filteredTags.length > 0)}
 		<!-- svelte-ignore a11y-no-static-element-interactions -->
 		<div
-			class="absolute top-0 mt-8 left-0 right-1 border border-gray-100 dark:border-gray-900 bg-gray-50 dark:bg-gray-950 rounded-lg z-10 shadow-lg"
+			style="--pos:absolute; --top:0; --mt:2rem; --left:0; --right:0.25rem; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-900, #171717); --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-950, #0d0d0d); --radius:0.5rem; --z:10; --shadow:4"
 			id="search-options-container"
 			in:fade={{ duration: 50 }}
 			on:mouseenter={() => {
@@ -172,14 +172,16 @@
 				selectedIdx = 0;
 			}}
 		>
-			<div class="px-2 py-2 text-xs group">
+			<div style="--px:0.5rem; --py:0.5rem; --size:0.75rem"
+	class="group">
 				{#if filteredTags.length > 0}
-					<div class="px-1 font-medium dark:text-gray-300 text-gray-700 mb-1">Tags</div>
+					<div style="--px:0.25rem; --weight:500; --dark-c:var(--color-gray-300, #cdcdcd); --c:var(--color-gray-700, #4e4e4e); --mb:0.25rem">Tags</div>
 
-					<div class="max-h-60 overflow-auto">
+					<div style="--maxh:15rem; --of:auto">
 						{#each filteredTags as tag, tagIdx}
 							<button
-								class=" px-1.5 py-0.5 flex gap-1 hover:bg-gray-100 dark:hover:bg-gray-900 w-full rounded {selectedIdx ===
+								style="--px:0.375rem; --py:0.125rem; --d:flex; --g:0.25rem; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --w:100%; --radius:0.25rem"
+	class="{selectedIdx ===
 								tagIdx
 									? 'bg-gray-100 dark:bg-gray-900'
 									: ''}"
@@ -195,25 +197,26 @@
 									dispatch('input');
 								}}
 							>
-								<div class="dark:text-gray-300 text-gray-700 font-medium line-clamp-1 shrink-0">
+								<div style="--dark-c:var(--color-gray-300, #cdcdcd); --c:var(--color-gray-700, #4e4e4e); --weight:500; --line-clamp:1; --fs:0">
 									{tag.name}
 								</div>
 
-								<div class=" text-gray-500 line-clamp-1">
+								<div style="--c:var(--color-gray-500, #9b9b9b); --line-clamp:1">
 									{tag.id}
 								</div>
 							</button>
 						{/each}
 					</div>
 				{:else if filteredOptions.length > 0}
-					<div class="px-1 font-medium dark:text-gray-300 text-gray-700 mb-1">
+					<div style="--px:0.25rem; --weight:500; --dark-c:var(--color-gray-300, #cdcdcd); --c:var(--color-gray-700, #4e4e4e); --mb:0.25rem">
 						{$i18n.t('Search options')}
 					</div>
 
-					<div class=" max-h-60 overflow-auto">
+					<div style="--maxh:15rem; --of:auto">
 						{#each filteredOptions as option, optionIdx}
 							<button
-								class=" px-1.5 py-0.5 flex gap-1 hover:bg-gray-100 dark:hover:bg-gray-900 w-full rounded {selectedIdx ===
+								style="--px:0.375rem; --py:0.125rem; --d:flex; --g:0.25rem; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --w:100%; --radius:0.25rem"
+	class="{selectedIdx ===
 								optionIdx
 									? 'bg-gray-100 dark:bg-gray-900'
 									: ''}"
@@ -229,9 +232,9 @@
 									dispatch('input');
 								}}
 							>
-								<div class="dark:text-gray-300 text-gray-700 font-medium">{option.name}</div>
+								<div style="--dark-c:var(--color-gray-300, #cdcdcd); --c:var(--color-gray-700, #4e4e4e); --weight:500">{option.name}</div>
 
-								<div class=" text-gray-500 line-clamp-1">
+								<div style="--c:var(--color-gray-500, #9b9b9b); --line-clamp:1">
 									{option.description}
 								</div>
 							</button>

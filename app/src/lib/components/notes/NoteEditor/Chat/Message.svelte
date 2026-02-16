@@ -20,16 +20,18 @@
 	let textAreaElement: HTMLTextAreaElement;
 </script>
 
-<div class="flex flex-col gap-1 group">
-	<div class="flex items-center justify-between pt-1">
-		<div class="py-1 text-sm font-semibold uppercase min-w-[6rem] text-left rounded-lg transition">
+<div style="--d:flex; --fd:column; --g:0.25rem"
+	class="group">
+	<div style="--d:flex; --ai:center; --jc:space-between; --pt:0.25rem">
+		<div style="--py:0.25rem; --size:0.875rem; --weight:600; --tt:uppercase; --minw:6rem; --ta:left; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)">
 			{$i18n.t(message.role)}
 		</div>
 
-		<div class="flex items-center gap-2">
+		<div style="--d:flex; --ai:center; --g:0.5rem">
 			<Tooltip placement="top" content={$i18n.t('Insert')}>
 				<button
-					class=" text-transparent group-hover:text-gray-500 dark:hover:text-gray-300 transition"
+					style="--c:transparent; --hvr-dark-c:var(--color-gray-300, #cdcdcd); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="group-hover:text-gray-500"
 					on:click={() => {
 						onInsert();
 					}}
@@ -40,7 +42,8 @@
 
 			<Tooltip placement="top" content={$i18n.t('Edit')}>
 				<button
-					class=" text-transparent group-hover:text-gray-500 dark:hover:text-gray-300 transition"
+					style="--c:transparent; --hvr-dark-c:var(--color-gray-300, #cdcdcd); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="group-hover:text-gray-500"
 					on:click={() => {
 						onEdit();
 					}}
@@ -51,7 +54,8 @@
 
 			<Tooltip placement="top" content={$i18n.t('Delete')}>
 				<button
-					class=" text-transparent group-hover:text-gray-500 dark:hover:text-gray-300 transition"
+					style="--c:transparent; --hvr-dark-c:var(--color-gray-300, #cdcdcd); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="group-hover:text-gray-500"
 					on:click={() => {
 						onDelete();
 					}}
@@ -62,7 +66,7 @@
 						viewBox="0 0 24 24"
 						stroke-width="2"
 						stroke="currentColor"
-						class="size-4"
+						style="--w:1rem; --h:1rem"
 					>
 						<path
 							stroke-linecap="round"
@@ -75,7 +79,7 @@
 		</div>
 	</div>
 
-	<div class="flex-1">
+	<div style="--fx:1 1 0%">
 		<!-- $i18n.t('a user') -->
 		<!-- $i18n.t('an assistant') -->
 
@@ -95,7 +99,8 @@
 				}}
 			/>
 		{:else}
-			<div class=" markdown-prose-sm text-sm">
+			<div style="--size:0.875rem"
+	class="markdown-prose-sm">
 				<Markdown id={`note-message-${idx}`} content={message.content} />
 			</div>
 		{/if}

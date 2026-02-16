@@ -44,7 +44,7 @@
 
 	<div slot="content">
 		<DropdownMenu.Content
-			class="w-full max-w-[200px] rounded-xl px-1 py-1  border-gray-300/30 dark:border-gray-700/50 z-50 bg-white dark:bg-gray-850 dark:text-white shadow-sm"
+			style="--w:100%; --maxw:200px; --radius:0.75rem; --px:0.25rem; --py:0.25rem; --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.5); --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850, #262626); --dark-c:#fff; --shadow:1"
 			sideOffset={15}
 			alignOffset={-8}
 			side="top"
@@ -53,24 +53,24 @@
 		>
 			{#if !$mobile}
 				<DropdownMenu.Item
-					class="flex gap-2 items-center px-3 py-2 text-sm  font-medium cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800  rounded-xl"
+					style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.75rem"
 					on:click={() => {
 						screenCaptureHandler();
 					}}
 				>
 					<CameraSolid />
-					<div class=" line-clamp-1">{$i18n.t('Capture')}</div>
+					<div style="--line-clamp:1">{$i18n.t('Capture')}</div>
 				</DropdownMenu.Item>
 			{/if}
 
 			<DropdownMenu.Item
-				class="flex gap-2 items-center px-3 py-2 text-sm font-medium cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl"
+				style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.75rem"
 				on:click={() => {
 					uploadFilesHandler();
 				}}
 			>
 				<DocumentArrowUpSolid />
-				<div class="line-clamp-1">{$i18n.t('Upload Files')}</div>
+				<div style="--line-clamp:1">{$i18n.t('Upload Files')}</div>
 			</DropdownMenu.Item>
 		</DropdownMenu.Content>
 	</div>

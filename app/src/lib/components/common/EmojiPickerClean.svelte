@@ -31,17 +31,17 @@
 	</DropdownMenu.Trigger>
 	
 	<DropdownMenu.Content
-		class="max-w-full w-80 bg-gray-50 dark:bg-gray-850 rounded-lg z-9999 shadow-lg dark:text-white"
+		style="--maxw:100%; --w:20rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-850, #262626); --radius:0.5rem; --z:9999; --shadow:4; --dark-c:#fff"
 		sideOffset={8}
 		{side}
 		{align}
 		transition={flyAndScale}
 	>
 		<!-- Search Input -->
-		<div class="mb-1 px-3 pt-2 pb-2">
+		<div style="--mb:0.25rem; --px:0.75rem; --pt:0.5rem; --pb:0.5rem">
 			<input
 				type="text"
-				class="w-full text-sm bg-transparent outline-hidden"
+				style="--w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
 				placeholder="Search emojis..."
 				on:input={(e) => {
 					// TODO: Implement search filtering
@@ -49,43 +49,45 @@
 			/>
 		</div>
 
-		<div class="h-80 overflow-y-auto p-2">
+		<div style="--h:20rem; --ofy:auto; --p:0.5rem">
 			{#each Object.entries(emojiData) as [category, emojiString]}
-				<div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">{category}</div>
-				<div class="grid grid-cols-8 gap-1 mb-3">
+				<div style="--size:0.75rem; --weight:500; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4); --mb:0.5rem">{category}</div>
+				<div style="--d:grid; --gtc:repeat(8, minmax(0, 1fr)); --g:0.25rem; --mb:0.75rem">
 					{#each getEmojisForCategory(category) as emoji}
 						<!-- LOGIC: Check if the category is the one that needs skin tone options -->
 						{#if category === 'People & Body'}
 							<DropdownMenu.Sub>
 								<DropdownMenu.SubTrigger 
-									class="p-1.5 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition flex items-center justify-center text-lg"
+									style="--p:0.375rem; --radius:0.5rem; --cur:pointer; --hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-700, #4e4e4e); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --d:flex; --ai:center; --jc:center; --size:1.125rem"
 								>
 									<span class="emoji-font">{emoji}</span>
 								</DropdownMenu.SubTrigger>
 								<DropdownMenu.SubContent 
-									class="bg-gray-50 dark:bg-gray-850 rounded-lg shadow-lg p-2"
+									style="--bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-850, #262626); --radius:0.5rem; --shadow:4; --p:0.5rem"
 								>
 									<!-- Base emoji (no skin tone) -->
 									<DropdownMenu.Item 
-										class="p-1.5 rounded cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+										style="--p:0.375rem; --radius:0.25rem; --cur:pointer; --hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-700, #4e4e4e); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 										on:click={() => selectEmoji(emoji)}
 									>
-										<span class="emoji-font text-lg">{emoji}</span>
+										<span style="--size:1.125rem"
+	class="emoji-font">{emoji}</span>
 									</DropdownMenu.Item>
 									<!-- Skin tone variants -->
 									{#each SKIN_TONE_MODIFIERS as modifier}
 										<DropdownMenu.Item 
-											class="p-1.5 rounded cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+											style="--p:0.375rem; --radius:0.25rem; --cur:pointer; --hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-700, #4e4e4e); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 											on:click={() => selectEmoji(emoji + modifier)}
 										>
-											<span class="emoji-font text-lg">{emoji + modifier}</span>
+											<span style="--size:1.125rem"
+	class="emoji-font">{emoji + modifier}</span>
 										</DropdownMenu.Item>
 									{/each}
 								</DropdownMenu.SubContent>
 							</DropdownMenu.Sub>
 						{:else}
 							<button 
-								class="p-1.5 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition flex items-center justify-center text-lg"
+								style="--p:0.375rem; --radius:0.5rem; --cur:pointer; --hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-700, #4e4e4e); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --d:flex; --ai:center; --jc:center; --size:1.125rem"
 								on:click={() => selectEmoji(emoji)}
 							>
 								<span class="emoji-font">{emoji}</span>

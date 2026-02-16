@@ -843,41 +843,43 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 		showDeleteConfirm = false;
 	}}
 >
-	<div class=" text-sm text-gray-500">
-		{$i18n.t('This will delete')} <span class="  font-semibold">{note.title}</span>.
+	<div style="--size:0.875rem; --c:var(--color-gray-500, #9b9b9b)">
+		{$i18n.t('This will delete')} <span style="--weight:600">{note.title}</span>.
 	</div>
 </DeleteConfirmDialog>
 
-<PaneGroup direction="horizontal" class="w-full h-full">
-	<Pane defaultSize={70} minSize={30} class="h-full flex flex-col w-full relative">
-		<div class="relative flex-1 w-full h-full flex justify-center pt-[11px]" id="note-editor">
+<PaneGroup direction="horizontal" style="--w:100%; --h:100%">
+	<Pane defaultSize={70} minSize={30} style="--h:100%; --d:flex; --fd:column; --w:100%; --pos:relative">
+		<div style="--pos:relative; --fx:1 1 0%; --w:100%; --h:100%; --d:flex; --jc:center; --pt:11px" id="note-editor">
 			{#if loading}
-				<div class=" absolute top-0 bottom-0 left-0 right-0 flex">
-					<div class="m-auto">
+				<div style="--pos:absolute; --top:0; --bottom:0; --left:0; --right:0; --d:flex">
+					<div style="--m:auto">
 						<Spinner className="size-5" />
 					</div>
 				</div>
 			{:else}
-				<div class=" w-full flex flex-col {loading ? 'opacity-20' : ''}">
+				<div style="--w:100%; --d:flex; --fd:column"
+	class="{loading ? 'opacity-20' : ''}">
 					<div
-						class="shrink-0 w-full flex justify-between items-center px-3.5 mb-1.5"
+						style="--fs:0; --w:100%; --d:flex; --jc:space-between; --ai:center; --px:0.875rem; --mb:0.375rem"
 						id="note-header"
 					>
-						<div class="w-full flex items-center">
+						<div style="--w:100%; --d:flex; --ai:center">
 							<div
-								class="{$showSidebar
+								style="--d:flex; --fx:none; --ai:center; --pr:0.25rem; --translatex:-0.25rem"
+	class="{$showSidebar
 									? 'md:hidden pl-0.5'
-									: ''} flex flex-none items-center pr-1 -translate-x-1"
+									: ''}"
 							>
 								<button
 									id="sidebar-toggle-button"
-									class="cursor-pointer p-1.5 flex rounded-xl hover:bg-gray-100 dark:hover:bg-gray-850 transition"
+									style="--cur:pointer; --p:0.375rem; --d:flex; --radius:0.75rem; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 									on:click={() => {
 										showSidebar.set(!$showSidebar);
 									}}
 									aria-label="Toggle Sidebar"
 								>
-									<div class=" m-auto self-center">
+									<div style="--m:auto; --as:center">
 										<MenuLines />
 									</div>
 								</button>
@@ -885,7 +887,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 
 							<input
 								id="note-title-input"
-								class="w-full text-2xl font-medium bg-transparent outline-hidden"
+								style="--w:100%; --size:1.5rem; --weight:500; --bgc:transparent; --oe:none"
 								type="text"
 								bind:value={note.title}
 								placeholder={titleGenerating ? $i18n.t('Generating...') : $i18n.t('Title')}
@@ -909,11 +911,11 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 
 							{#if titleInputFocused && !titleGenerating}
 								<div
-									class="flex self-center items-center space-x-1.5 z-10 translate-y-[0.5px] -translate-x-[0.5px] pl-2"
+									style="--d:flex; --as:center; --ai:center; --g:0.375rem; --z:10; --translatey:0.5px; --translatex:-0.5px; --pl:0.5rem"
 								>
 									<Tooltip content={$i18n.t('Generate')}>
 										<button
-											class=" self-center dark:hover:text-white transition"
+											style="--as:center; --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 											id="generate-title-button"
 											on:click={(e) => {
 												e.preventDefault();
@@ -930,12 +932,13 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 								</div>
 							{/if}
 
-							<div class="flex items-center gap-0.5 translate-x-1" id="note-controls">
+							<div style="--d:flex; --ai:center; --g:0.125rem; --translatex:0.25rem" id="note-controls">
 								{#if editor}
 									<div>
-										<div class="flex items-center gap-0.5 self-center min-w-fit" dir="ltr">
+										<div style="--d:flex; --ai:center; --g:0.125rem; --as:center; --minw:fit-content" dir="ltr">
 											<button
-												class="self-center p-1 hover:enabled:bg-black/5 dark:hover:enabled:bg-white/5 dark:hover:enabled:text-white hover:enabled:text-black rounded-md transition disabled:cursor-not-allowed disabled:text-gray-500 disabled:hover:text-gray-500"
+												style="--as:center; --p:0.25rem; --radius:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="hover:enabled:bg-black/5 dark:hover:enabled:bg-white/5 dark:hover:enabled:text-white hover:enabled:text-black disabled:cursor-not-allowed disabled:text-gray-500 disabled:hover:text-gray-500"
 												on:click={() => {
 													editor.chain().focus().undo().run();
 													// versionNavigateHandler('prev');
@@ -946,7 +949,8 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 											</button>
 
 											<button
-												class="self-center p-1 hover:enabled:bg-black/5 dark:hover:enabled:bg-white/5 dark:hover:enabled:text-white hover:enabled:text-black rounded-md transition disabled:cursor-not-allowed disabled:text-gray-500 disabled:hover:text-gray-500"
+												style="--as:center; --p:0.25rem; --radius:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="hover:enabled:bg-black/5 dark:hover:enabled:bg-white/5 dark:hover:enabled:text-white hover:enabled:text-black disabled:cursor-not-allowed disabled:text-gray-500 disabled:hover:text-gray-500"
 												on:click={() => {
 													editor.chain().focus().redo().run();
 													// versionNavigateHandler('next');
@@ -961,7 +965,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 
 								<Tooltip placement="top" content={$i18n.t('Chat')} className="cursor-pointer">
 									<button
-										class="p-1.5 bg-transparent hover:bg-white/5 transition rounded-lg"
+										style="--p:0.375rem; --bgc:transparent; --hvr-bgc:rgb(255 255 255 / 0.05); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
 										on:click={() => {
 											if (showPanel && selectedPanel === 'chat') {
 												showPanel = false;
@@ -979,7 +983,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 
 								<Tooltip placement="top" content={$i18n.t('Controls')} className="cursor-pointer">
 									<button
-										class="p-1.5 bg-transparent hover:bg-white/5 transition rounded-lg"
+										style="--p:0.375rem; --bgc:transparent; --hvr-bgc:rgb(255 255 255 / 0.05); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
 										on:click={() => {
 											if (showPanel && selectedPanel === 'settings') {
 												showPanel = false;
@@ -1027,7 +1031,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 										showDeleteConfirm = true;
 									}}
 								>
-									<div class="p-1 bg-transparent hover:bg-white/5 transition rounded-lg">
+									<div style="--p:0.25rem; --bgc:transparent; --hvr-bgc:rgb(255 255 255 / 0.05); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem">
 										<EllipsisHorizontal className="size-5" />
 									</div>
 								</NoteMenu>
@@ -1035,9 +1039,10 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 						</div>
 					</div>
 
-					<div class="  px-2.5" id="note-meta-info">
+					<div style="--px:0.625rem" id="note-meta-info">
 						<div
-							class=" flex w-full bg-transparent overflow-x-auto scrollbar-none"
+							style="--d:flex; --w:100%; --bgc:transparent; --ofx:auto"
+	class="scrollbar-none"
 							on:wheel={(e) => {
 								if (e.deltaY !== 0) {
 									e.preventDefault();
@@ -1046,9 +1051,9 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 							}}
 						>
 							<div
-								class="flex gap-1 items-center text-xs font-medium text-gray-500 dark:text-gray-500 w-fit"
+								style="--d:flex; --g:0.25rem; --ai:center; --size:0.75rem; --weight:500; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-500, #9b9b9b); --w:fit-content"
 							>
-								<button class=" flex items-center gap-1 w-fit py-1 px-1.5 rounded-lg min-w-fit">
+								<button style="--d:flex; --ai:center; --g:0.25rem; --w:fit-content; --py:0.25rem; --px:0.375rem; --radius:0.5rem; --minw:fit-content">
 									<Calendar className="size-3.5" strokeWidth="2" />
 
 									<!-- check for same date, yesterday, last week, and other -->
@@ -1075,7 +1080,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 								</button>
 
 								<button
-									class=" flex items-center gap-1 w-fit py-1 px-1.5 rounded-lg min-w-fit"
+									style="--d:flex; --ai:center; --g:0.25rem; --w:fit-content; --py:0.25rem; --px:0.375rem; --radius:0.5rem; --minw:fit-content"
 									on:click={() => {
 										showAccessControlModal = true;
 									}}
@@ -1087,7 +1092,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 								</button>
 
 								{#if editor}
-									<div class="flex items-center gap-1 px-1 min-w-fit">
+									<div style="--d:flex; --ai:center; --g:0.25rem; --px:0.25rem; --minw:fit-content">
 										<div>
 											{$i18n.t('{{COUNT}} words', {
 												COUNT: wordCount
@@ -1105,14 +1110,15 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 					</div>
 
 					<div
-						class=" flex-1 w-full h-full overflow-auto px-3.5 pb-20 relative pt-2.5"
+						style="--fx:1 1 0%; --w:100%; --h:100%; --of:auto; --px:0.875rem; --pb:5rem; --pos:relative; --pt:0.625rem"
 						id="note-content-container"
 					>
 						{#if editing}
 							<div
-								class="w-full h-full fixed top-0 left-0 {streaming
+								style="--w:100%; --h:100%; --pos:fixed; --top:0; --left:0; --d:flex; --ai:center; --jc:center; --z:10; --cur:not-allowed"
+	class="{streaming
 									? ''
-									: ' backdrop-blur-xs  bg-white/10 dark:bg-gray-900/10'} flex items-center justify-center z-10 cursor-not-allowed"
+									: ' backdrop-blur-xs  bg-white/10 dark:bg-gray-900/10'}"
 							></div>
 						{/if}
 
@@ -1218,12 +1224,12 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 			{/if}
 		</div>
 		<div
-			class="absolute z-20 bottom-0 right-0 p-3.5 max-w-full w-full flex"
+			style="--pos:absolute; --z:20; --bottom:0; --right:0; --p:0.875rem; --maxw:100%; --w:100%; --d:flex"
 			id="note-bottom-bar"
 		>
-			<div class="flex gap-1 w-full min-w-full justify-between">
+			<div style="--d:flex; --g:0.25rem; --w:100%; --minw:100%; --jc:space-between">
 				{#if recording}
-					<div class="flex-1 w-full">
+					<div style="--fx:1 1 0%; --w:100%">
 						<VoiceRecording
 							bind:recording
 							className="p-1 w-full max-w-full"
@@ -1295,7 +1301,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 					>
 						<Tooltip content={$i18n.t('Record')} placement="top">
 							<div
-								class="cursor-pointer p-2.5 flex rounded-full border border-gray-50 bg-white dark:border-none dark:bg-gray-850 hover:bg-gray-50 dark:hover:bg-gray-800 transition shadow-xl"
+								style="--cur:pointer; --p:0.625rem; --d:flex; --radius:9999px; --b:1px solid; --bc:var(--color-gray-50, #f9f9f9); --bgc:#fff; --dark-bs:none; --dark-bgc:var(--color-gray-850, #262626); --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --shadow:5"
 							>
 								<MicSolid className="size-4.5" />
 							</div>
@@ -1303,12 +1309,12 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 					</RecordMenu>
 
 					<div
-						class="cursor-pointer flex gap-0.5 rounded-full border border-gray-50 dark:border-gray-850 dark:bg-gray-850 transition shadow-xl"
+						style="--cur:pointer; --d:flex; --g:0.125rem; --radius:9999px; --b:1px solid; --bc:var(--color-gray-50, #f9f9f9); --dark-bc:var(--color-gray-850, #262626); --dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --shadow:5"
 					>
 						<Tooltip content={$i18n.t('AI')} placement="top">
 							{#if editing}
 								<button
-									class="p-2 flex justify-center items-center hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition shrink-0"
+									style="--p:0.5rem; --d:flex; --jc:center; --ai:center; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:9999px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --fs:0"
 									on:click={() => {
 										stopResponseHandler();
 									}}
@@ -1327,7 +1333,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 									}}
 								>
 									<div
-										class="cursor-pointer p-2.5 flex rounded-full border border-gray-50 bg-white dark:border-none dark:bg-gray-850 hover:bg-gray-50 dark:hover:bg-gray-800 transition shadow-xl"
+										style="--cur:pointer; --p:0.625rem; --d:flex; --radius:9999px; --b:1px solid; --bc:var(--color-gray-50, #f9f9f9); --bgc:#fff; --dark-bs:none; --dark-bgc:var(--color-gray-850, #262626); --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --shadow:5"
 									>
 										<SparklesSolid />
 									</div>

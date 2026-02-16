@@ -67,15 +67,15 @@
 
 <div
 	id={`floating-buttons-${id}`}
-	class="absolute rounded-lg mt-1 text-xs z-9999"
-	style="display: none"
+	style="--pos:absolute; --radius:0.5rem; --mt:0.25rem; --size:0.75rem; --z:9999; display: none"
 >
 	{#if !floatingInput}
 		<div
-			class="flex flex-row gap-0.5 shrink-0 p-1 bg-white dark:bg-gray-850 dark:text-gray-100 text-medium rounded-lg shadow-xl"
+			style="--d:flex; --fd:row; --g:0.125rem; --fs:0; --p:0.25rem; --bgc:#fff; --dark-bgc:var(--color-gray-850, #262626); --dark-c:var(--color-gray-100, #ececec); --radius:0.5rem; --shadow:5"
+	class="text-medium"
 		>
 			<button
-				class="px-1 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-sm flex items-center gap-1 min-w-fit"
+				style="--px:0.25rem; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.125rem; --d:flex; --ai:center; --g:0.25rem; --minw:fit-content"
 				on:click={async () => {
 					selectedText = window.getSelection().toString();
 					floatingInput = true;
@@ -90,27 +90,27 @@
 				}}
 			>
 				<ChatBubble className="size-3 shrink-0" />
-				<div class="shrink-0">{$i18n.t('Ask')}</div>
+				<div style="--fs:0">{$i18n.t('Ask')}</div>
 			</button>
 			<button
-				class="px-1 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-sm flex items-center gap-1 min-w-fit"
+				style="--px:0.25rem; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.125rem; --d:flex; --ai:center; --g:0.25rem; --minw:fit-content"
 				on:click={() => {
 					selectedText = window.getSelection().toString();
 					explainHandler();
 				}}
 			>
 				<LightBulb className="size-3 shrink-0" />
-				<div class="shrink-0">{$i18n.t('Explain')}</div>
+				<div style="--fs:0">{$i18n.t('Explain')}</div>
 			</button>
 		</div>
 	{:else}
 		<div
-			class="py-1 flex dark:text-gray-100 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-850 w-72 rounded-full shadow-xl"
+			style="--py:0.25rem; --d:flex; --dark-c:var(--color-gray-100, #ececec); --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-800, #333); --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --w:18rem; --radius:9999px; --shadow:5"
 		>
 			<input
 				type="text"
 				id="floating-message-input"
-				class="ml-5 bg-transparent outline-hidden w-full flex-1 text-sm"
+				style="--ml:1.25rem; --bgc:transparent; --oe:none; --w:100%; --fx:1 1 0%; --size:0.875rem"
 				placeholder={$i18n.t('Ask a question')}
 				bind:value={floatingInputValue}
 				on:keydown={(e) => {
@@ -120,11 +120,12 @@
 				}}
 			/>
 
-			<div class="ml-1 mr-2">
+			<div style="--ml:0.25rem; --mr:0.5rem">
 				<button
-					class="{floatingInputValue !== ''
+					style="--tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.375rem; --m:0.125rem; --as:center"
+	class="{floatingInputValue !== ''
 						? 'bg-black text-white hover:bg-gray-900 dark:bg-white dark:text-black dark:hover:bg-gray-100 '
-						: 'text-white bg-gray-200 dark:text-gray-900 dark:bg-gray-700 disabled'} transition rounded-full p-1.5 m-0.5 self-center"
+						: 'text-white bg-gray-200 dark:text-gray-900 dark:bg-gray-700 disabled'}"
 					on:click={() => {
 						askHandler();
 					}}
@@ -133,7 +134,7 @@
 						xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 16 16"
 						fill="currentColor"
-						class="size-4"
+						style="--w:1rem; --h:1rem"
 					>
 						<path
 							fill-rule="evenodd"

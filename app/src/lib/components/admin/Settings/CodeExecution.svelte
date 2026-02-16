@@ -31,23 +31,24 @@
 </script>
 
 <form
-	class="flex flex-col h-full justify-between space-y-3 text-sm"
+	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.75rem; --size:0.875rem"
 	on:submit|preventDefault={async () => {
 		await submitHandler();
 		saveHandler();
 	}}
 >
-	<div class=" space-y-3 overflow-y-scroll scrollbar-hidden h-full">
+	<div style="--g:0.75rem; --ofy:scroll; --h:100%"
+	class="scrollbar-hidden">
 		{#if config}
 			<div>
-				<div class="mb-3.5">
-					<div class=" mb-2.5 text-base font-medium">{$i18n.t('General')}</div>
+				<div style="--mb:0.875rem">
+					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('General')}</div>
 
-					<hr class=" border-gray-100 dark:border-gray-850 my-2" />
+					<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem" />
 
-					<div class="mb-2.5">
-						<div class=" flex w-full justify-between">
-							<div class=" self-center text-xs font-medium">
+					<div style="--mb:0.625rem">
+						<div style="--d:flex; --w:100%; --jc:space-between">
+							<div style="--as:center; --size:0.75rem; --weight:500">
 								{$i18n.t('Enable Code Execution')}
 							</div>
 
@@ -55,12 +56,12 @@
 						</div>
 					</div>
 
-					<div class="mb-2.5">
-						<div class="flex w-full justify-between">
-							<div class=" self-center text-xs font-medium">{$i18n.t('Code Execution Engine')}</div>
-							<div class="flex items-center relative">
+					<div style="--mb:0.625rem">
+						<div style="--d:flex; --w:100%; --jc:space-between">
+							<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Code Execution Engine')}</div>
+							<div style="--d:flex; --ai:center; --pos:relative">
 								<select
-									class="dark:bg-gray-900 w-fit pr-8 rounded-sm px-2 p-1 text-xs bg-transparent outline-hidden text-right"
+									style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
 									bind:value={config.CODE_EXECUTION_ENGINE}
 									placeholder={$i18n.t('Select a engine')}
 									required
@@ -74,7 +75,7 @@
 						</div>
 
 						{#if config.CODE_EXECUTION_ENGINE === 'jupyter'}
-							<div class="text-gray-500 text-xs">
+							<div style="--c:var(--color-gray-500, #9b9b9b); --size:0.75rem">
 								{$i18n.t(
 									'Warning: Jupyter execution enables arbitrary code execution, posing severe security risks—proceed with extreme caution.'
 								)}
@@ -83,15 +84,16 @@
 					</div>
 
 					{#if config.CODE_EXECUTION_ENGINE === 'jupyter'}
-						<div class="mb-2.5 flex flex-col gap-1.5 w-full">
-							<div class="text-xs font-medium">
+						<div style="--mb:0.625rem; --d:flex; --fd:column; --g:0.375rem; --w:100%">
+							<div style="--size:0.75rem; --weight:500">
 								{$i18n.t('Jupyter URL')}
 							</div>
 
-							<div class="flex w-full">
-								<div class="flex-1">
+							<div style="--d:flex; --w:100%">
+								<div style="--fx:1 1 0%">
 									<input
-										class="w-full text-sm py-0.5 placeholder:text-gray-300 dark:placeholder:text-gray-700 bg-transparent outline-hidden"
+										style="--w:100%; --size:0.875rem; --py:0.125rem; --bgc:transparent; --oe:none"
+	class="placeholder:text-gray-300 dark:placeholder:text-gray-700"
 										type="text"
 										placeholder={$i18n.t('Enter Jupyter URL')}
 										bind:value={config.CODE_EXECUTION_JUPYTER_URL}
@@ -101,15 +103,15 @@
 							</div>
 						</div>
 
-						<div class="mb-2.5 flex flex-col gap-1.5 w-full">
-							<div class=" flex gap-2 w-full items-center justify-between">
-								<div class="text-xs font-medium">
+						<div style="--mb:0.625rem; --d:flex; --fd:column; --g:0.375rem; --w:100%">
+							<div style="--d:flex; --g:0.5rem; --w:100%; --ai:center; --jc:space-between">
+								<div style="--size:0.75rem; --weight:500">
 									{$i18n.t('Jupyter Auth')}
 								</div>
 
 								<div>
 									<select
-										class="dark:bg-gray-900 w-fit pr-8 rounded-sm px-2 p-1 text-xs bg-transparent outline-hidden text-left"
+										style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:left"
 										bind:value={config.CODE_EXECUTION_JUPYTER_AUTH}
 										placeholder={$i18n.t('Select an auth method')}
 									>
@@ -121,8 +123,8 @@
 							</div>
 
 							{#if config.CODE_EXECUTION_JUPYTER_AUTH}
-								<div class="flex w-full gap-2">
-									<div class="flex-1">
+								<div style="--d:flex; --w:100%; --g:0.5rem">
+									<div style="--fx:1 1 0%">
 										{#if config.CODE_EXECUTION_JUPYTER_AUTH === 'password'}
 											<SensitiveInput
 												type="text"
@@ -143,15 +145,15 @@
 							{/if}
 						</div>
 
-						<div class="flex gap-2 w-full items-center justify-between">
-							<div class="text-xs font-medium">
+						<div style="--d:flex; --g:0.5rem; --w:100%; --ai:center; --jc:space-between">
+							<div style="--size:0.75rem; --weight:500">
 								{$i18n.t('Code Execution Timeout')}
 							</div>
 
 							<div class="">
 								<Tooltip content={$i18n.t('Enter timeout in seconds')}>
 									<input
-										class="dark:bg-gray-900 w-fit rounded-sm px-2 p-1 text-xs bg-transparent outline-hidden text-right"
+										style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
 										type="number"
 										bind:value={config.CODE_EXECUTION_JUPYTER_TIMEOUT}
 										placeholder={$i18n.t('e.g. 60')}
@@ -163,14 +165,14 @@
 					{/if}
 				</div>
 
-				<div class="mb-3.5">
-					<div class=" mb-2.5 text-base font-medium">{$i18n.t('Code Interpreter')}</div>
+				<div style="--mb:0.875rem">
+					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('Code Interpreter')}</div>
 
-					<hr class=" border-gray-100 dark:border-gray-850 my-2" />
+					<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem" />
 
-					<div class="mb-2.5">
-						<div class=" flex w-full justify-between">
-							<div class=" self-center text-xs font-medium">
+					<div style="--mb:0.625rem">
+						<div style="--d:flex; --w:100%; --jc:space-between">
+							<div style="--as:center; --size:0.75rem; --weight:500">
 								{$i18n.t('Enable Code Interpreter')}
 							</div>
 
@@ -179,14 +181,14 @@
 					</div>
 
 					{#if config.ENABLE_CODE_INTERPRETER}
-						<div class="mb-2.5">
-							<div class="  flex w-full justify-between">
-								<div class=" self-center text-xs font-medium">
+						<div style="--mb:0.625rem">
+							<div style="--d:flex; --w:100%; --jc:space-between">
+								<div style="--as:center; --size:0.75rem; --weight:500">
 									{$i18n.t('Code Interpreter Engine')}
 								</div>
-								<div class="flex items-center relative">
+								<div style="--d:flex; --ai:center; --pos:relative">
 									<select
-										class="dark:bg-gray-900 w-fit pr-8 rounded-sm px-2 p-1 text-xs bg-transparent outline-hidden text-right"
+										style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
 										bind:value={config.CODE_INTERPRETER_ENGINE}
 										placeholder={$i18n.t('Select a engine')}
 										required
@@ -200,7 +202,7 @@
 							</div>
 
 							{#if config.CODE_INTERPRETER_ENGINE === 'jupyter'}
-								<div class="text-gray-500 text-xs">
+								<div style="--c:var(--color-gray-500, #9b9b9b); --size:0.75rem">
 									{$i18n.t(
 										'Warning: Jupyter execution enables arbitrary code execution, posing severe security risks—proceed with extreme caution.'
 									)}
@@ -209,15 +211,16 @@
 						</div>
 
 						{#if config.CODE_INTERPRETER_ENGINE === 'jupyter'}
-							<div class="mb-2.5 flex flex-col gap-1.5 w-full">
-								<div class="text-xs font-medium">
+							<div style="--mb:0.625rem; --d:flex; --fd:column; --g:0.375rem; --w:100%">
+								<div style="--size:0.75rem; --weight:500">
 									{$i18n.t('Jupyter URL')}
 								</div>
 
-								<div class="flex w-full">
-									<div class="flex-1">
+								<div style="--d:flex; --w:100%">
+									<div style="--fx:1 1 0%">
 										<input
-											class="w-full text-sm py-0.5 placeholder:text-gray-300 dark:placeholder:text-gray-700 bg-transparent outline-hidden"
+											style="--w:100%; --size:0.875rem; --py:0.125rem; --bgc:transparent; --oe:none"
+	class="placeholder:text-gray-300 dark:placeholder:text-gray-700"
 											type="text"
 											placeholder={$i18n.t('Enter Jupyter URL')}
 											bind:value={config.CODE_INTERPRETER_JUPYTER_URL}
@@ -227,15 +230,15 @@
 								</div>
 							</div>
 
-							<div class="mb-2.5 flex flex-col gap-1.5 w-full">
-								<div class="flex gap-2 w-full items-center justify-between">
-									<div class="text-xs font-medium">
+							<div style="--mb:0.625rem; --d:flex; --fd:column; --g:0.375rem; --w:100%">
+								<div style="--d:flex; --g:0.5rem; --w:100%; --ai:center; --jc:space-between">
+									<div style="--size:0.75rem; --weight:500">
 										{$i18n.t('Jupyter Auth')}
 									</div>
 
 									<div>
 										<select
-											class="dark:bg-gray-900 w-fit pr-8 rounded-sm px-2 p-1 text-xs bg-transparent outline-hidden text-left"
+											style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:left"
 											bind:value={config.CODE_INTERPRETER_JUPYTER_AUTH}
 											placeholder={$i18n.t('Select an auth method')}
 										>
@@ -247,8 +250,8 @@
 								</div>
 
 								{#if config.CODE_INTERPRETER_JUPYTER_AUTH}
-									<div class="flex w-full gap-2">
-										<div class="flex-1">
+									<div style="--d:flex; --w:100%; --g:0.5rem">
+										<div style="--fx:1 1 0%">
 											{#if config.CODE_INTERPRETER_JUPYTER_AUTH === 'password'}
 												<SensitiveInput
 													type="text"
@@ -269,15 +272,15 @@
 								{/if}
 							</div>
 
-							<div class="flex gap-2 w-full items-center justify-between">
-								<div class="text-xs font-medium">
+							<div style="--d:flex; --g:0.5rem; --w:100%; --ai:center; --jc:space-between">
+								<div style="--size:0.75rem; --weight:500">
 									{$i18n.t('Code Execution Timeout')}
 								</div>
 
 								<div class="">
 									<Tooltip content={$i18n.t('Enter timeout in seconds')}>
 										<input
-											class="dark:bg-gray-900 w-fit rounded-sm px-2 p-1 text-xs bg-transparent outline-hidden text-right"
+											style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
 											type="number"
 											bind:value={config.CODE_INTERPRETER_JUPYTER_TIMEOUT}
 											placeholder={$i18n.t('e.g. 60')}
@@ -288,11 +291,11 @@
 							</div>
 						{/if}
 
-						<hr class="border-gray-100 dark:border-gray-850 my-2" />
+						<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem" />
 
 						<div>
-							<div class="py-0.5 w-full">
-								<div class=" mb-2.5 text-xs font-medium">
+							<div style="--py:0.125rem; --w:100%">
+								<div style="--mb:0.625rem; --size:0.75rem; --weight:500">
 									{$i18n.t('Code Interpreter Prompt Template')}
 								</div>
 
@@ -316,9 +319,9 @@
 			</div>
 		{/if}
 	</div>
-	<div class="flex justify-end pt-3 text-sm font-medium">
+	<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
 		<button
-			class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			type="submit"
 		>
 			{$i18n.t('Save')}

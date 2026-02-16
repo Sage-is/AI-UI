@@ -24,15 +24,15 @@
 </script>
 
 <Modal bind:show size="lg">
-	<div class="px-5 pt-4 dark:text-gray-300 text-gray-700">
-		<div class="flex justify-between items-start">
-			<div class="text-xl font-semibold">
+	<div style="--px:1.25rem; --pt:1rem; --dark-c:var(--color-gray-300, #cdcdcd); --c:var(--color-gray-700, #4e4e4e)">
+		<div style="--d:flex; --jc:space-between; --ai:flex-start">
+			<div style="--size:1.25rem; --weight:600">
 				{$i18n.t("What's New in")}
 				{$WEBUI_NAME}
 				<Confetti x={[-1, -0.25]} y={[0, 0.5]} />
 			</div>
 			<button
-				class="self-center"
+				style="--as:center"
 				on:click={() => {
 					localStorage.version = $config.version;
 					show = false;
@@ -44,31 +44,33 @@
 				</XMark>
 			</button>
 		</div>
-		<div class="flex items-center mt-1">
-			<div class="text-sm dark:text-gray-200">{$i18n.t('Release Notes')}</div>
-			<div class="flex self-center w-[1px] h-6 mx-2.5 bg-gray-200 dark:bg-gray-700" />
-			<div class="text-sm dark:text-gray-200">
+		<div style="--d:flex; --ai:center; --mt:0.25rem">
+			<div style="--size:0.875rem; --dark-c:var(--color-gray-200, #e3e3e3)">{$i18n.t('Release Notes')}</div>
+			<div style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-200, #e3e3e3); --dark-bgc:var(--color-gray-700, #4e4e4e)" />
+			<div style="--size:0.875rem; --dark-c:var(--color-gray-200, #e3e3e3)">
 				v{WEBUI_VERSION}
 			</div>
 		</div>
 	</div>
 
-	<div class=" w-full p-4 px-5 text-gray-700 dark:text-gray-100">
-		<div class=" overflow-y-scroll max-h-96 scrollbar-hidden">
-			<div class="mb-3">
+	<div style="--w:100%; --p:1rem; --px:1.25rem; --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-100, #ececec)">
+		<div style="--ofy:scroll; --maxh:24rem"
+	class="scrollbar-hidden">
+			<div style="--mb:0.75rem">
 				{#if changelog}
 					{#each Object.keys(changelog) as version}
-						<div class=" mb-3 pr-2">
-							<div class="font-semibold text-xl mb-1 dark:text-white">
+						<div style="--mb:0.75rem; --pr:0.5rem">
+							<div style="--weight:600; --size:1.25rem; --mb:0.25rem; --dark-c:#fff">
 								v{version} - {changelog[version].date}
 							</div>
 
-							<hr class="border-gray-100 dark:border-gray-850 my-2" />
+							<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem" />
 
 							{#each Object.keys(changelog[version]).filter((section) => section !== 'date') as section}
 								<div class="">
 									<div
-										class="font-semibold uppercase text-xs {section === 'added'
+										style="--weight:600; --tt:uppercase; --size:0.75rem; --w:fit-content; --px:0.75rem; --radius:9999px; --my:0.625rem"
+	class="{section === 'added'
 											? 'text-white bg-blue-600'
 											: section === 'fixed'
 												? 'text-white bg-green-600'
@@ -76,18 +78,18 @@
 													? 'text-white bg-yellow-600'
 													: section === 'removed'
 														? 'text-white bg-red-600'
-														: ''}  w-fit px-3 rounded-full my-2.5"
+														: ''}"
 									>
 										{section}
 									</div>
 
-									<div class="my-2.5 px-1.5">
+									<div style="--my:0.625rem; --px:0.375rem">
 										{#each Object.keys(changelog[version][section]) as item}
-											<div class="text-sm mb-2">
-												<div class="font-semibold uppercase">
+											<div style="--size:0.875rem; --mb:0.5rem">
+												<div style="--weight:600; --tt:uppercase">
 													{changelog[version][section][item].title}
 												</div>
-												<div class="mb-2 mt-1">{changelog[version][section][item].content}</div>
+												<div style="--mb:0.5rem; --mt:0.25rem">{changelog[version][section][item].content}</div>
 											</div>
 										{/each}
 									</div>
@@ -98,7 +100,7 @@
 				{/if}
 			</div>
 		</div>
-		<div class="flex justify-end pt-3 text-sm font-medium">
+		<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
 			<button
 				on:click={async () => {
 					localStorage.version = $config.version;
@@ -106,9 +108,9 @@
 					await updateUserSettings(localStorage.token, { ui: $settings });
 					show = false;
 				}}
-				class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+				style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			>
-				<span class="relative">{$i18n.t("Okay, Let's Go!")}</span>
+				<span style="--pos:relative">{$i18n.t("Okay, Let's Go!")}</span>
 			</button>
 		</div>
 	</div>

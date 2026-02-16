@@ -135,7 +135,7 @@
 {/if}
 
 {#if ($config?.license_metadata?.seats ?? null) !== null && total && total > $config?.license_metadata?.seats}
-	<div class=" mt-1 mb-2 text-xs text-red-500">
+	<div style="--mt:0.25rem; --mb:0.5rem; --size:0.75rem; --c:#ef4444">
 		<Banner
 			className="mx-0"
 			banner={{
@@ -150,43 +150,43 @@
 {/if}
 
 {#if users === null || total === null}
-	<div class="my-10">
+	<div style="--my:2.5rem">
 		<Spinner className="size-5" />
 	</div>
 {:else}
-	<div class="mt-0.5 mb-2 gap-1 flex flex-col md:flex-row justify-between">
-		<div class="flex md:self-center text-lg font-medium px-0.5">
+	<div style="--mt:0.125rem; --mb:0.5rem; --g:0.25rem; --d:flex; --fd:column; --fd-md:row; --jc:space-between">
+		<div style="--d:flex; --as-md:center; --size:1.125rem; --weight:500; --px:0.125rem">
 			<div class="flex-shrink-0">
 				{$i18n.t('Users')}
 			</div>
-			<div class="flex self-center w-[1px] h-6 mx-2.5 bg-gray-50 dark:bg-gray-850" />
+			<div style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-850, #262626)" />
 
 			{#if ($config?.license_metadata?.seats ?? null) !== null}
 				{#if total > $config?.license_metadata?.seats}
-					<span class="text-lg font-medium text-red-500"
+					<span style="--size:1.125rem; --weight:500; --c:#ef4444"
 						>{total} of {$config?.license_metadata?.seats}
-						<span class="text-sm font-normal">available users</span></span
+						<span style="--size:0.875rem; --weight:400">available users</span></span
 					>
 				{:else}
-					<span class="text-lg font-medium text-gray-500 dark:text-gray-300"
+					<span style="--size:1.125rem; --weight:500; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-300, #cdcdcd)"
 						>{total} of {$config?.license_metadata?.seats}
-						<span class="text-sm font-normal">available users</span></span
+						<span style="--size:0.875rem; --weight:400">available users</span></span
 					>
 				{/if}
 			{:else}
-				<span class="text-lg font-medium text-gray-500 dark:text-gray-300">{total}</span>
+				<span style="--size:1.125rem; --weight:500; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-300, #cdcdcd)">{total}</span>
 			{/if}
 		</div>
 
-		<div class="flex gap-1">
-			<div class=" flex w-full space-x-2">
-				<div class="flex flex-1">
-					<div class=" self-center ml-1 mr-3">
+		<div style="--d:flex; --g:0.25rem">
+			<div style="--d:flex; --w:100%; --g:0.5rem">
+				<div style="--d:flex; --fx:1 1 0%">
+					<div style="--as:center; --ml:0.25rem; --mr:0.75rem">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 20 20"
 							fill="currentColor"
-							class="w-4 h-4"
+							style="--w:1rem; --h:1rem"
 						>
 							<path
 								fill-rule="evenodd"
@@ -196,7 +196,7 @@
 						</svg>
 					</div>
 					<input
-						class=" w-full text-sm pr-4 py-1 rounded-r-xl outline-hidden bg-transparent"
+						style="--w:100%; --size:0.875rem; --pr:1rem; --py:0.25rem; --btrr:0.75rem; --bbrr:0.75rem; --oe:none; --bgc:transparent"
 						bind:value={query}
 						placeholder={$i18n.t('Search')}
 					/>
@@ -205,7 +205,7 @@
 				<div>
 					<Tooltip content={$i18n.t('Add User')}>
 						<button
-							class=" p-2 rounded-xl hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-850 transition font-medium text-sm flex items-center space-x-1"
+							style="--p:0.5rem; --radius:0.75rem; --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-900, #171717); --hvr-dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
 							on:click={() => {
 								showAddUserModal = !showAddUserModal;
 							}}
@@ -219,25 +219,26 @@
 	</div>
 
 	<div
-		class="scrollbar-hidden relative whitespace-nowrap overflow-x-auto max-w-full rounded-sm pt-0.5"
+		style="--pos:relative; --ws:nowrap; --ofx:auto; --maxw:100%; --radius:0.125rem; --pt:0.125rem"
+	class="scrollbar-hidden"
 	>
 		<table
-			class="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-auto max-w-full rounded-sm"
+			style="--w:100%; --size:0.875rem; --ta:left; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4); table-layout:auto; --maxw:100%; --radius:0.125rem"
 		>
 			<thead
-				class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-850 dark:text-gray-400 -translate-y-0.5"
+				style="--size:0.75rem; --c:var(--color-gray-700, #4e4e4e); --tt:uppercase; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-850, #262626); --dark-c:var(--color-gray-400, #b4b4b4); --translatey:-0.125rem"
 			>
 				<tr class="">
 					<th
 						scope="col"
-						class="px-3 py-1.5 cursor-pointer select-none"
+						style="--px:0.75rem; --py:0.375rem; --cur:pointer; --us:none"
 						on:click={() => setSortKey('role')}
 					>
-						<div class="flex gap-1.5 items-center">
+						<div style="--d:flex; --g:0.375rem; --ai:center">
 							{$i18n.t('Role')}
 
 							{#if orderBy === 'role'}
-								<span class="font-normal"
+								<span style="--weight:400"
 									>{#if direction === 'asc'}
 										<ChevronUp className="size-2" />
 									{:else}
@@ -245,7 +246,7 @@
 									{/if}
 								</span>
 							{:else}
-								<span class="invisible">
+								<span style="--v:hidden">
 									<ChevronUp className="size-2" />
 								</span>
 							{/if}
@@ -253,14 +254,14 @@
 					</th>
 					<th
 						scope="col"
-						class="px-3 py-1.5 cursor-pointer select-none"
+						style="--px:0.75rem; --py:0.375rem; --cur:pointer; --us:none"
 						on:click={() => setSortKey('name')}
 					>
-						<div class="flex gap-1.5 items-center">
+						<div style="--d:flex; --g:0.375rem; --ai:center">
 							{$i18n.t('Name')}
 
 							{#if orderBy === 'name'}
-								<span class="font-normal"
+								<span style="--weight:400"
 									>{#if direction === 'asc'}
 										<ChevronUp className="size-2" />
 									{:else}
@@ -268,7 +269,7 @@
 									{/if}
 								</span>
 							{:else}
-								<span class="invisible">
+								<span style="--v:hidden">
 									<ChevronUp className="size-2" />
 								</span>
 							{/if}
@@ -276,14 +277,14 @@
 					</th>
 					<th
 						scope="col"
-						class="px-3 py-1.5 cursor-pointer select-none"
+						style="--px:0.75rem; --py:0.375rem; --cur:pointer; --us:none"
 						on:click={() => setSortKey('email')}
 					>
-						<div class="flex gap-1.5 items-center">
+						<div style="--d:flex; --g:0.375rem; --ai:center">
 							{$i18n.t('Email')}
 
 							{#if orderBy === 'email'}
-								<span class="font-normal"
+								<span style="--weight:400"
 									>{#if direction === 'asc'}
 										<ChevronUp className="size-2" />
 									{:else}
@@ -291,7 +292,7 @@
 									{/if}
 								</span>
 							{:else}
-								<span class="invisible">
+								<span style="--v:hidden">
 									<ChevronUp className="size-2" />
 								</span>
 							{/if}
@@ -300,14 +301,14 @@
 
 					<th
 						scope="col"
-						class="px-3 py-1.5 cursor-pointer select-none"
+						style="--px:0.75rem; --py:0.375rem; --cur:pointer; --us:none"
 						on:click={() => setSortKey('last_active_at')}
 					>
-						<div class="flex gap-1.5 items-center">
+						<div style="--d:flex; --g:0.375rem; --ai:center">
 							{$i18n.t('Last Active')}
 
 							{#if orderBy === 'last_active_at'}
-								<span class="font-normal"
+								<span style="--weight:400"
 									>{#if direction === 'asc'}
 										<ChevronUp className="size-2" />
 									{:else}
@@ -315,7 +316,7 @@
 									{/if}
 								</span>
 							{:else}
-								<span class="invisible">
+								<span style="--v:hidden">
 									<ChevronUp className="size-2" />
 								</span>
 							{/if}
@@ -323,13 +324,13 @@
 					</th>
 					<th
 						scope="col"
-						class="px-3 py-1.5 cursor-pointer select-none"
+						style="--px:0.75rem; --py:0.375rem; --cur:pointer; --us:none"
 						on:click={() => setSortKey('created_at')}
 					>
-						<div class="flex gap-1.5 items-center">
+						<div style="--d:flex; --g:0.375rem; --ai:center">
 							{$i18n.t('Created at')}
 							{#if orderBy === 'created_at'}
-								<span class="font-normal"
+								<span style="--weight:400"
 									>{#if direction === 'asc'}
 										<ChevronUp className="size-2" />
 									{:else}
@@ -337,7 +338,7 @@
 									{/if}
 								</span>
 							{:else}
-								<span class="invisible">
+								<span style="--v:hidden">
 									<ChevronUp className="size-2" />
 								</span>
 							{/if}
@@ -346,14 +347,14 @@
 
 					<th
 						scope="col"
-						class="px-3 py-1.5 cursor-pointer select-none"
+						style="--px:0.75rem; --py:0.375rem; --cur:pointer; --us:none"
 						on:click={() => setSortKey('oauth_sub')}
 					>
-						<div class="flex gap-1.5 items-center">
+						<div style="--d:flex; --g:0.375rem; --ai:center">
 							{$i18n.t('OAuth ID')}
 
 							{#if orderBy === 'oauth_sub'}
-								<span class="font-normal"
+								<span style="--weight:400"
 									>{#if direction === 'asc'}
 										<ChevronUp className="size-2" />
 									{:else}
@@ -361,22 +362,22 @@
 									{/if}
 								</span>
 							{:else}
-								<span class="invisible">
+								<span style="--v:hidden">
 									<ChevronUp className="size-2" />
 								</span>
 							{/if}
 						</div>
 					</th>
 
-					<th scope="col" class="px-3 py-2 text-right" />
+					<th scope="col" style="--px:0.75rem; --py:0.5rem; --ta:right" />
 				</tr>
 			</thead>
 			<tbody style="--d:flex;--fd:column">
 				{#each users as user, userIdx}
-					<tr class="bg-white dark:bg-gray-900 dark:border-gray-850 text-xs">
-						<td class="px-3 py-1 min-w-[7rem] w-28">
+					<tr style="--bgc:#fff; --dark-bgc:var(--color-gray-900, #171717); --dark-bc:var(--color-gray-850, #262626); --size:0.75rem">
+						<td style="--px:0.75rem; --py:0.25rem; --minw:7rem; --w:7rem">
 							<button
-								class=" translate-y-0.5"
+								style="--translatey:0.125rem"
 								on:click={() => {
 									selectedUser = user;
 									showEditUserModal = !showEditUserModal;
@@ -388,10 +389,10 @@
 								/>
 							</button>
 						</td>
-						<td class="px-3 py-1 font-medium text-gray-900 dark:text-white w-max">
-							<div class="flex flex-row w-max">
+						<td style="--px:0.75rem; --py:0.25rem; --weight:500; --c:var(--color-gray-900, #171717); --dark-c:#fff; --w:max-content">
+							<div style="--d:flex; --fd:row; --w:max-content">
 								<img
-									class=" rounded-full w-6 h-6 object-cover mr-2.5"
+									style="--radius:9999px; --w:1.5rem; --h:1.5rem; --objf:cover; --mr:0.625rem"
 									src={user?.profile_image_url?.startsWith(WEBUI_BASE_URL) ||
 									user.profile_image_url.startsWith('https://www.gravatar.com/avatar/') ||
 									user.profile_image_url.startsWith('data:')
@@ -400,27 +401,27 @@
 									alt="user"
 								/>
 
-								<div class=" font-medium self-center">{user.name}</div>
+								<div style="--weight:500; --as:center">{user.name}</div>
 							</div>
 						</td>
-						<td class=" px-3 py-1"> {user.email} </td>
+						<td style="--px:0.75rem; --py:0.25rem"> {user.email} </td>
 
-						<td class=" px-3 py-1">
+						<td style="--px:0.75rem; --py:0.25rem">
 							{dayjs(user.last_active_at * 1000).fromNow()}
 						</td>
 
-						<td class=" px-3 py-1">
+						<td style="--px:0.75rem; --py:0.25rem">
 							{dayjs(user.created_at * 1000).format('LL')}
 						</td>
 
-						<td class=" px-3 py-1"> {user.oauth_sub ?? ''} </td>
+						<td style="--px:0.75rem; --py:0.25rem"> {user.oauth_sub ?? ''} </td>
 
-						<td class="px-3 py-1 text-right">
-							<div class="flex justify-end w-full">
+						<td style="--px:0.75rem; --py:0.25rem; --ta:right">
+							<div style="--d:flex; --jc:flex-end; --w:100%">
 								{#if $config.features.enable_admin_chat_access && user.role !== 'admin'}
 									<Tooltip content={$i18n.t('Chats')}>
 										<button
-											class="self-center w-fit text-sm px-2 py-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
+											style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.75rem"
 											on:click={async () => {
 												showUserChatsModal = !showUserChatsModal;
 												selectedUser = user;
@@ -433,7 +434,7 @@
 
 								<Tooltip content={$i18n.t('Edit User')}>
 									<button
-										class="self-center w-fit text-sm px-2 py-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
+										style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.75rem"
 										on:click={async () => {
 											showEditUserModal = !showEditUserModal;
 											selectedUser = user;
@@ -445,7 +446,7 @@
 											viewBox="0 0 24 24"
 											stroke-width="1.5"
 											stroke="currentColor"
-											class="w-4 h-4"
+											style="--w:1rem; --h:1rem"
 										>
 											<path
 												stroke-linecap="round"
@@ -459,7 +460,7 @@
 								{#if user.role !== 'admin'}
 									<Tooltip content={$i18n.t('Delete User')}>
 										<button
-											class="self-center w-fit text-sm px-2 py-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
+											style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.75rem"
 											on:click={async () => {
 												showDeleteConfirmDialog = true;
 												selectedUser = user;
@@ -471,7 +472,7 @@
 												viewBox="0 0 24 24"
 												stroke-width="1.5"
 												stroke="currentColor"
-												class="w-4 h-4"
+												style="--w:1rem; --h:1rem"
 											>
 												<path
 													stroke-linecap="round"
@@ -490,7 +491,7 @@
 		</table>
 	</div>
 
-	<div class=" text-gray-500 text-xs mt-1.5 text-right">
+	<div style="--c:var(--color-gray-500, #9b9b9b); --size:0.75rem; --mt:0.375rem; --ta:right">
 		ⓘ {$i18n.t("Click on the user role button to change a user's role.")}
 	</div>
 
@@ -499,7 +500,7 @@
 
 {#if !$config?.license_metadata}
 	{#if total > 50}
-		<div class="text-sm">
+		<div style="--size:0.875rem">
 			<Markdown
 				content={`
 > [!NOTE]

@@ -102,18 +102,20 @@
 {#if filteredItems.length > 0}
 	<div
 		id="commands-container"
-		class="px-2 mb-2 text-left w-full absolute bottom-0 left-0 right-0 z-10"
+		style="--px:0.5rem; --mb:0.5rem; --ta:left; --w:100%; --pos:absolute; --bottom:0; --left:0; --right:0; --z:10"
 	>
-		<div class="flex w-full rounded-xl border border-gray-100 dark:border-gray-850">
-			<div class="flex flex-col w-full rounded-xl bg-white dark:bg-gray-900 dark:text-gray-100">
+		<div style="--d:flex; --w:100%; --radius:0.75rem; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)">
+			<div style="--d:flex; --fd:column; --w:100%; --radius:0.75rem; --bgc:#fff; --dark-bgc:var(--color-gray-900, #171717); --dark-c:var(--color-gray-100, #ececec)">
 				<div
-					class="m-1 overflow-y-auto p-1 rounded-r-lg space-y-0.5 scrollbar-hidden max-h-60"
+					style="--m:0.25rem; --ofy:auto; --p:0.25rem; --btrr:0.5rem; --bbrr:0.5rem; --g:0.125rem; --maxh:15rem"
+	class="scrollbar-hidden"
 					id="command-options-container"
 					bind:this={container}
 				>
 					{#each filteredItems as model, modelIdx}
 						<button
-							class="px-3 py-1.5 rounded-xl w-full text-left {modelIdx === selectedIdx
+							style="--px:0.75rem; --py:0.375rem; --radius:0.75rem; --w:100%; --ta:left"
+	class="{modelIdx === selectedIdx
 								? 'bg-gray-50 dark:bg-gray-850 selected-command-option-button'
 								: ''}"
 							type="button"
@@ -125,12 +127,12 @@
 							}}
 							on:focus={() => {}}
 						>
-							<div class="flex font-medium text-black dark:text-gray-100 line-clamp-1">
+							<div style="--d:flex; --weight:500; --c:#000; --dark-c:var(--color-gray-100, #ececec); --line-clamp:1">
 								<img
 									src={model?.info?.meta?.profile_image_url ??
 										branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
 									alt={model?.name ?? model.id}
-									class="rounded-full size-6 items-center mr-2"
+									style="--radius:9999px; --w:1.5rem; --h:1.5rem; --ai:center; --mr:0.5rem"
 								/>
 								{model.name}
 							</div>

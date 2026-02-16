@@ -126,10 +126,10 @@
 
 <Modal size="sm" bind:show>
 	<div>
-		<div class=" flex justify-between dark:text-gray-300 px-5 pt-4 pb-2">
-			<div class=" text-lg font-medium self-center">{$i18n.t('Add User')}</div>
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300, #cdcdcd); --px:1.25rem; --pt:1rem; --pb:0.5rem">
+			<div style="--size:1.125rem; --weight:500; --as:center">{$i18n.t('Add User')}</div>
 			<button
-				class="self-center"
+				style="--as:center"
 				on:click={() => {
 					show = false;
 				}}
@@ -138,21 +138,23 @@
 			</button>
 		</div>
 
-		<div class="flex flex-col md:flex-row w-full px-4 pb-3 md:space-x-4 dark:text-gray-200">
-			<div class=" flex flex-col w-full sm:flex-row sm:justify-center sm:space-x-6">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1rem; --pb:0.75rem; --g-md:1rem; --dark-c:var(--color-gray-200, #e3e3e3)">
+			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				<form
-					class="flex flex-col w-full"
+					style="--d:flex; --fd:column; --w:100%"
 					on:submit|preventDefault={() => {
 						submitHandler();
 					}}
 				>
 					<div
-						class="flex -mt-2 mb-1.5 gap-1 scrollbar-none overflow-x-auto w-fit text-center text-sm font-medium rounded-full bg-transparent dark:text-gray-200"
+						style="--d:flex; --mt:-0.5rem; --mb:0.375rem; --g:0.25rem; --ofx:auto; --w:fit-content; --ta:center; --size:0.875rem; --weight:500; --radius:9999px; --bgc:transparent; --dark-c:var(--color-gray-200, #e3e3e3)"
+	class="scrollbar-none"
 					>
 						<button
-							class="min-w-fit p-1.5 {tab === ''
+							style="--minw:fit-content; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{tab === ''
 								? ''
-								: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition"
+								: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
 							type="button"
 							on:click={() => {
 								tab = '';
@@ -160,9 +162,10 @@
 						>
 
 						<button
-							class="min-w-fit p-1.5 {tab === 'import'
+							style="--minw:fit-content; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{tab === 'import'
 								? ''
-								: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition"
+								: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
 							type="button"
 							on:click={() => {
 								tab = 'import';
@@ -170,14 +173,15 @@
 						>
 					</div>
 
-					<div class="px-1">
+					<div style="--px:0.25rem">
 						{#if tab === ''}
-							<div class="flex flex-col w-full mb-3">
-								<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Role')}</div>
+							<div style="--d:flex; --fd:column; --w:100%; --mb:0.75rem">
+								<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('Role')}</div>
 
-								<div class="flex-1">
+								<div style="--fx:1 1 0%">
 									<select
-										class="w-full capitalize rounded-lg text-sm bg-transparent dark:disabled:text-gray-500 outline-hidden"
+										style="--w:100%; --tt:capitalize; --radius:0.5rem; --size:0.875rem; --bgc:transparent; --oe:none"
+	class="dark:disabled:text-gray-500"
 										bind:value={_user.role}
 										placeholder={$i18n.t('Enter Role')}
 										required
@@ -189,12 +193,13 @@
 								</div>
 							</div>
 
-							<div class="flex flex-col w-full mt-1">
-								<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Name')}</div>
+							<div style="--d:flex; --fd:column; --w:100%; --mt:0.25rem">
+								<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('Name')}</div>
 
-								<div class="flex-1">
+								<div style="--fx:1 1 0%">
 									<input
-										class="w-full text-sm bg-transparent disabled:text-gray-500 dark:disabled:text-gray-500 outline-hidden"
+										style="--w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+	class="disabled:text-gray-500 dark:disabled:text-gray-500"
 										type="text"
 										bind:value={_user.name}
 										placeholder={$i18n.t('Enter Full Name')}
@@ -204,14 +209,15 @@
 								</div>
 							</div>
 
-							<hr class=" border-gray-100 dark:border-gray-850 my-2.5 w-full" />
+							<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.625rem; --w:100%" />
 
-							<div class="flex flex-col w-full">
-								<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Email')}</div>
+							<div style="--d:flex; --fd:column; --w:100%">
+								<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('Email')}</div>
 
-								<div class="flex-1">
+								<div style="--fx:1 1 0%">
 									<input
-										class="w-full text-sm bg-transparent disabled:text-gray-500 dark:disabled:text-gray-500 outline-hidden"
+										style="--w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+	class="disabled:text-gray-500 dark:disabled:text-gray-500"
 										type="email"
 										bind:value={_user.email}
 										placeholder={$i18n.t('Enter Email')}
@@ -220,12 +226,13 @@
 								</div>
 							</div>
 
-							<div class="flex flex-col w-full mt-1">
-								<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Password')}</div>
+							<div style="--d:flex; --fd:column; --w:100%; --mt:0.25rem">
+								<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('Password')}</div>
 
-								<div class="flex-1">
+								<div style="--fx:1 1 0%">
 									<input
-										class="w-full text-sm bg-transparent disabled:text-gray-500 dark:disabled:text-gray-500 outline-hidden"
+										style="--w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+	class="disabled:text-gray-500 dark:disabled:text-gray-500"
 										type="password"
 										bind:value={_user.password}
 										placeholder={$i18n.t('Enter Password')}
@@ -235,7 +242,7 @@
 							</div>
 						{:else if tab === 'import'}
 							<div>
-								<div class="mb-3 w-full">
+								<div style="--mb:0.75rem; --w:100%">
 									<input
 										id="upload-user-csv-input"
 										hidden
@@ -245,7 +252,7 @@
 									/>
 
 									<button
-										class="w-full text-sm font-medium py-3 bg-transparent hover:bg-gray-100 border border-dashed dark:border-gray-850 dark:hover:bg-gray-850 text-center rounded-xl"
+										style="--w:100%; --size:0.875rem; --weight:500; --py:0.75rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100, #ececec); --b:1px solid; --bs:dashed; --dark-bc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-850, #262626); --ta:center; --radius:0.75rem"
 										type="button"
 										on:click={() => {
 											document.getElementById('upload-user-csv-input')?.click();
@@ -259,12 +266,12 @@
 									</button>
 								</div>
 
-								<div class=" text-xs text-gray-500">
+								<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">
 									ⓘ {$i18n.t(
 										'Ensure your CSV file includes 4 columns in this order: Name, Email, Password, Role.'
 									)}
 									<a
-										class="underline dark:text-gray-200"
+										style="--td:underline; --dark-c:var(--color-gray-200, #e3e3e3)"
 										href="{WEBUI_BASE_URL}/static/user-import.csv"
 									>
 										{$i18n.t('Click here to download user import template file.')}
@@ -274,9 +281,10 @@
 						{/if}
 					</div>
 
-					<div class="flex justify-end pt-3 text-sm font-medium">
+					<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
 						<button
-							class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full flex flex-row space-x-1 items-center {loading
+							style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
+	class="{loading
 								? ' cursor-not-allowed'
 								: ''}"
 							type="submit"
@@ -285,7 +293,7 @@
 							{$i18n.t('Save')}
 
 							{#if loading}
-								<div class="ml-2 self-center">
+								<div style="--ml:0.5rem; --as:center">
 									<Spinner />
 								</div>
 							{/if}

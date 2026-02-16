@@ -54,51 +54,51 @@
 
 	<slot name="content">
 		<DropdownMenu.Content
-			class="max-w-full w-[240px] rounded-lg z-9999 bg-white dark:bg-black dark:text-white shadow-lg"
+			style="--maxw:100%; --w:240px; --radius:0.5rem; --z:9999; --bgc:#fff; --dark-bgc:#000; --dark-c:#fff; --shadow:4"
 			sideOffset={8}
 			{side}
 			{align}
 			transition={flyAndScale}
 		>
 			{#if user}
-				<div class=" flex flex-col gap-2 w-full rounded-lg">
-					<div class="py-8 relative bg-gray-900 rounded-t-lg">
+				<div style="--d:flex; --fd:column; --g:0.5rem; --w:100%; --radius:0.5rem">
+					<div style="--py:2rem; --pos:relative; --bgc:var(--color-gray-900, #171717); --btlr:0.5rem; --btrr:0.5rem">
 						<img
 							crossorigin="anonymous"
 							src={user?.profile_image_url ?? branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
-							class=" absolute -bottom-5 left-3 size-12 ml-0.5 object-cover rounded-full -translate-y-[1px]"
+							style="--pos:absolute; --bottom:-1.25rem; --left:0.75rem; --w:3rem; --h:3rem; --ml:0.125rem; --objf:cover; --radius:9999px; --translatey:-1px"
 							alt="profile"
 						/>
 					</div>
 
-					<div class=" flex flex-col pt-4 pb-2.5 px-4">
-						<div class=" -mb-1">
-							<span class="font-medium text-sm line-clamp-1"> {user.name} </span>
+					<div style="--d:flex; --fd:column; --pt:1rem; --pb:0.625rem; --px:1rem">
+						<div style="--mb:-0.25rem">
+							<span style="--weight:500; --size:0.875rem; --line-clamp:1"> {user.name} </span>
 						</div>
 
-						<div class=" flex items-center gap-2">
+						<div style="--d:flex; --ai:center; --g:0.5rem">
 							{#if active}
 								<div>
-									<span class="relative flex size-2">
+									<span style="--pos:relative; --d:flex; --w:0.5rem; --h:0.5rem">
 										<span
-											class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"
+											style="animation:ping 1s cubic-bezier(0, 0, 0.2, 1) infinite; --pos:absolute; --d:inline-flex; --h:100%; --w:100%; --radius:9999px; --bgc:#4ade80; --op:0.75"
 										/>
-										<span class="relative inline-flex rounded-full size-2 bg-green-500" />
+										<span style="--pos:relative; --d:inline-flex; --radius:9999px; --w:0.5rem; --h:0.5rem; --bgc:#22c55e" />
 									</span>
 								</div>
 
-								<div class=" -translate-y-[1px]">
-									<span class="text-xs"> Active </span>
+								<div style="--translatey:-1px">
+									<span style="--size:0.75rem"> Active </span>
 								</div>
 							{:else}
 								<div>
-									<span class="relative flex size-2">
-										<span class="relative inline-flex rounded-full size-2 bg-gray-500" />
+									<span style="--pos:relative; --d:flex; --w:0.5rem; --h:0.5rem">
+										<span style="--pos:relative; --d:inline-flex; --radius:9999px; --w:0.5rem; --h:0.5rem; --bgc:var(--color-gray-500, #9b9b9b)" />
 									</span>
 								</div>
 
-								<div class=" -translate-y-[1px]">
-									<span class="text-xs"> Away </span>
+								<div style="--translatey:-1px">
+									<span style="--size:0.75rem"> Away </span>
 								</div>
 							{/if}
 						</div>

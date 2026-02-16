@@ -7,21 +7,20 @@
 	export let opacity = 1;
 </script>
 
-<div class="relative">
+<div style="--pos:relative">
 	{#if show}
-		<div class="absolute w-full h-full flex">
+		<div style="--pos:absolute; --w:100%; --h:100%; --d:flex">
 			<div
-				class="absolute rounded-sm"
-				style="inset: -10px; opacity: {opacity}; backdrop-filter: blur(5px);"
+				style="--pos:absolute; --radius:0.125rem; inset: -10px; opacity: {opacity}; backdrop-filter: blur(5px);"
 			/>
 
-			<div class="flex w-full flex-col justify-center">
-				<div class=" py-3">
+			<div style="--d:flex; --w:100%; --fd:column; --jc:center">
+				<div style="--py:0.75rem">
 					<Spinner className="ml-2" />
 				</div>
 
 				{#if content !== ''}
-					<div class="text-center text-gray-100 text-xs font-medium z-50">
+					<div style="--ta:center; --c:var(--color-gray-100, #ececec); --size:0.75rem; --weight:500; --z:50">
 						{content}
 					</div>
 				{/if}

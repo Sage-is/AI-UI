@@ -42,14 +42,15 @@
 </script>
 
 <Modal bind:show size="lg">
-	<div class="font-primary px-6 py-5 w-full flex flex-col justify-center dark:text-gray-400">
-		<div class=" pb-2">
-			<div class="flex items-start justify-between">
+	<div style="--px:1.5rem; --py:1.25rem; --w:100%; --d:flex; --fd:column; --jc:center; --dark-c:var(--color-gray-400, #b4b4b4)"
+	class="font-primary">
+		<div style="--pb:0.5rem">
+			<div style="--d:flex; --ai:flex-start; --jc:space-between">
 				<div>
-					<div class=" font-medium text-lg dark:text-gray-100">
+					<div style="--weight:500; --size:1.125rem; --dark-c:var(--color-gray-100, #ececec)">
 						<a
 							href="#"
-							class="hover:underline line-clamp-1"
+							style="--hvr-td:underline; --line-clamp:1"
 							on:click|preventDefault={() => {
 								if (!isPDF && item.url) {
 									window.open(
@@ -76,37 +77,37 @@
 			</div>
 
 			<div>
-				<div class="flex flex-col items-center md:flex-row gap-1 justify-between w-full">
-					<div class=" flex flex-wrap text-sm gap-1 text-gray-500">
+				<div style="--d:flex; --fd:column; --ai:center; --fd-md:row; --g:0.25rem; --jc:space-between; --w:100%">
+					<div style="--d:flex; --fw:wrap; --size:0.875rem; --g:0.25rem; --c:var(--color-gray-500, #9b9b9b)">
 						{#if item?.type === 'collection'}
 							{#if item?.type}
-								<div class="capitalize shrink-0">{item.type}</div>
+								<div style="--tt:capitalize; --fs:0">{item.type}</div>
 								•
 							{/if}
 
 							{#if item?.description}
-								<div class="line-clamp-1">{item.description}</div>
+								<div style="--line-clamp:1">{item.description}</div>
 								•
 							{/if}
 
 							{#if item?.created_at}
-								<div class="capitalize shrink-0">
+								<div style="--tt:capitalize; --fs:0">
 									{dayjs(item.created_at * 1000).format('LL')}
 								</div>
 							{/if}
 						{/if}
 
 						{#if item.size}
-							<div class="capitalize shrink-0">{formatFileSize(item.size)}</div>
+							<div style="--tt:capitalize; --fs:0">{formatFileSize(item.size)}</div>
 							•
 						{/if}
 
 						{#if item?.file?.data?.content}
-							<div class="capitalize shrink-0">
+							<div style="--tt:capitalize; --fs:0">
 								{getLineCount(item?.file?.data?.content ?? '')} extracted lines
 							</div>
 
-							<div class="flex items-center gap-1 shrink-0">
+							<div style="--d:flex; --ai:center; --g:0.25rem; --fs:0">
 								<Info />
 
 								Formatting may be inconsistent from source.
@@ -114,7 +115,7 @@
 						{/if}
 
 						{#if item?.knowledge}
-							<div class="capitalize shrink-0">
+							<div style="--tt:capitalize; --fs:0">
 								{$i18n.t('Knowledge Base')}
 							</div>
 						{/if}
@@ -131,7 +132,7 @@
 											'Default to segmented retrieval for focused and relevant content extraction, this is recommended for most cases.'
 										)}
 							>
-								<div class="flex items-center gap-1.5 text-xs">
+								<div style="--d:flex; --ai:center; --g:0.375rem; --size:0.75rem">
 									{#if enableFullContent}
 										{$i18n.t('Using Entire Document')}
 									{:else}
@@ -151,12 +152,13 @@
 			</div>
 		</div>
 
-		<div class="max-h-[75vh] overflow-auto">
+		<div style="--maxh:75vh; --of:auto">
 			{#if item?.type === 'collection'}
 				<div>
 					{#each item?.files as file}
-						<div class="flex items-center gap-2 mb-2">
-							<div class="flex-shrink-0 text-xs">
+						<div style="--d:flex; --ai:center; --g:0.5rem; --mb:0.5rem">
+							<div style="--size:0.75rem"
+	class="flex-shrink-0">
 								{file?.meta?.name}
 							</div>
 						</div>
@@ -166,20 +168,21 @@
 				<iframe
 					title={item?.name}
 					src={`${WEBUI_API_BASE_URL}/files/${item.id}/content`}
-					class="w-full h-[70vh] border-0 rounded-lg mt-4"
+					style="--w:100%; --h:70vh; --bw:0; --radius:0.5rem; --mt:1rem"
 				/>
 			{:else}
 				{#if isAudio}
 					<audio
 						src={`${WEBUI_API_BASE_URL}/files/${item.id}/content`}
-						class="w-full border-0 rounded-lg mb-2"
+						style="--w:100%; --bw:0; --radius:0.5rem; --mb:0.5rem"
 						controls
 						playsinline
 					/>
 				{/if}
 
 				{#if item?.file?.data}
-					<div class="max-h-96 overflow-scroll scrollbar-hidden text-xs whitespace-pre-wrap">
+					<div style="--maxh:24rem; --of:scroll; --size:0.75rem; --ws:pre-wrap"
+	class="scrollbar-hidden">
 						{item?.file?.data?.content ?? 'No content'}
 					</div>
 				{/if}

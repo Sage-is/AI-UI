@@ -187,16 +187,17 @@
 	};
 </script>
 
-<div class="flex flex-col h-full justify-between text-sm" id="tab-general">
-	<div class="  overflow-y-scroll max-h-[28rem] lg:max-h-full">
+<div style="--d:flex; --fd:column; --h:100%; --jc:space-between; --size:0.875rem" id="tab-general">
+	<div style="--ofy:scroll; --maxh:28rem; --maxh-lg:100%">
 		<div class="">
-			<div class=" mb-1 text-sm font-medium">{$i18n.t('WebUI Settings')}</div>
+			<div style="--mb:0.25rem; --size:0.875rem; --weight:500">{$i18n.t('WebUI Settings')}</div>
 
-			<div class="flex w-full justify-between">
-				<div class=" self-center text-xs font-medium">{$i18n.t('Theme')}</div>
-				<div class="flex items-center relative">
+			<div style="--d:flex; --w:100%; --jc:space-between">
+				<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Theme')}</div>
+				<div style="--d:flex; --ai:center; --pos:relative">
 					<select
-						class="dark:bg-gray-900 w-fit pr-8 rounded-sm py-2 px-2 text-xs bg-transparent text-right {$settings.highContrastMode
+						style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --pr:2rem; --radius:0.125rem; --py:0.5rem; --px:0.5rem; --size:0.75rem; --bgc:transparent; --ta:right"
+	class="{$settings.highContrastMode
 							? ''
 							: 'outline-hidden'}"
 						bind:value={selectedTheme}
@@ -213,11 +214,12 @@
 				</div>
 			</div>
 
-			<div class=" flex w-full justify-between">
-				<div class=" self-center text-xs font-medium">{$i18n.t('Language')}</div>
-				<div class="flex items-center relative">
+			<div style="--d:flex; --w:100%; --jc:space-between">
+				<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Language')}</div>
+				<div style="--d:flex; --ai:center; --pos:relative">
 					<select
-						class="dark:bg-gray-900 w-fit pr-8 rounded-sm py-2 px-2 text-xs bg-transparent text-right {$settings.highContrastMode
+						style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --pr:2rem; --radius:0.125rem; --py:0.5rem; --px:0.5rem; --size:0.75rem; --bgc:transparent; --ta:right"
+	class="{$settings.highContrastMode
 							? ''
 							: 'outline-hidden'}"
 						bind:value={lang}
@@ -233,10 +235,10 @@
 				</div>
 			</div>
 			{#if $i18n.language === 'en-US'}
-				<div class="mb-2 text-xs text-gray-400 dark:text-gray-500">
+				<div style="--mb:0.5rem; --size:0.75rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b)">
 					Couldn't find your language?
 					<a
-						class=" text-gray-300 font-medium underline"
+						style="--c:var(--color-gray-300, #cdcdcd); --weight:500; --td:underline"
 						href="https://github.com/Sage-is/AI-UI/blob/main/docs/CONTRIBUTING.md#-translations-and-internationalization"
 						target="_blank"
 					>
@@ -246,20 +248,20 @@
 			{/if}
 
 			<div>
-				<div class=" py-0.5 flex w-full justify-between">
-					<div class=" self-center text-xs font-medium">{$i18n.t('Notifications')}</div>
+				<div style="--py:0.125rem; --d:flex; --w:100%; --jc:space-between">
+					<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Notifications')}</div>
 
 					<button
-						class="p-1 px-3 text-xs flex rounded-sm transition"
+						style="--p:0.25rem; --px:0.75rem; --size:0.75rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={() => {
 							toggleNotification();
 						}}
 						type="button"
 					>
 						{#if notificationEnabled === true}
-							<span class="ml-2 self-center">{$i18n.t('On')}</span>
+							<span style="--ml:0.5rem; --as:center">{$i18n.t('On')}</span>
 						{:else}
-							<span class="ml-2 self-center">{$i18n.t('Off')}</span>
+							<span style="--ml:0.5rem; --as:center">{$i18n.t('Off')}</span>
 						{/if}
 					</button>
 				</div>
@@ -267,10 +269,10 @@
 		</div>
 
 		{#if $user?.role === 'admin' || ($user?.permissions.chat?.system_prompt ?? true)}
-			<hr class="border-gray-50 dark:border-gray-850 my-3" />
+			<hr style="--bc:var(--color-gray-50, #f9f9f9); --dark-bc:var(--color-gray-850, #262626); --my:0.75rem" />
 
 			<div>
-				<div class=" my-2.5 text-sm font-medium">{$i18n.t('System Prompt')}</div>
+				<div style="--my:0.625rem; --size:0.875rem; --weight:500">{$i18n.t('System Prompt')}</div>
 				<Textarea
 					bind:value={system}
 					className={'w-full text-sm outline-hidden resize-vertical' +
@@ -284,11 +286,11 @@
 		{/if}
 
 		{#if $user?.role === 'admin' || ($user?.permissions.chat?.controls ?? true)}
-			<div class="mt-2 space-y-3 pr-1.5">
-				<div class="flex justify-between items-center text-sm">
-					<div class="  font-medium">{$i18n.t('Advanced Parameters')}</div>
+			<div style="--mt:0.5rem; --g:0.75rem; --pr:0.375rem">
+				<div style="--d:flex; --jc:space-between; --ai:center; --size:0.875rem">
+					<div style="--weight:500">{$i18n.t('Advanced Parameters')}</div>
 					<button
-						class=" text-xs font-medium text-gray-500"
+						style="--size:0.75rem; --weight:500; --c:var(--color-gray-500, #9b9b9b)"
 						type="button"
 						on:click={() => {
 							showAdvanced = !showAdvanced;
@@ -303,9 +305,9 @@
 		{/if}
 	</div>
 
-	<div class="flex justify-end pt-3 text-sm font-medium">
+	<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
 		<button
-			class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			on:click={() => {
 				saveHandler();
 			}}

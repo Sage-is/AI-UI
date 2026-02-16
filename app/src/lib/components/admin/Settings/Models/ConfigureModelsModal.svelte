@@ -120,12 +120,13 @@
 
 <Modal size="sm" bind:show>
 	<div>
-		<div class=" flex justify-between dark:text-gray-100 px-5 pt-4 pb-2">
-			<div class=" text-lg font-medium self-center font-primary">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-100, #ececec); --px:1.25rem; --pt:1rem; --pb:0.5rem">
+			<div style="--size:1.125rem; --weight:500; --as:center"
+	class="font-primary">
 				{$i18n.t('Settings')}
 			</div>
 			<button
-				class="self-center"
+				style="--as:center"
 				on:click={() => {
 					show = false;
 				}}
@@ -134,19 +135,19 @@
 			</button>
 		</div>
 
-		<div class="flex flex-col md:flex-row w-full px-5 pb-4 md:space-x-4 dark:text-gray-200">
-			<div class=" flex flex-col w-full sm:flex-row sm:justify-center sm:space-x-6">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1.25rem; --pb:1rem; --g-md:1rem; --dark-c:var(--color-gray-200, #e3e3e3)">
+			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				{#if config}
 					<form
-						class="flex flex-col w-full"
+						style="--d:flex; --fd:column; --w:100%"
 						on:submit|preventDefault={() => {
 							submitHandler();
 						}}
 					>
 						<div>
-							<div class="flex flex-col w-full">
+							<div style="--d:flex; --fd:column; --w:100%">
 								<button
-									class="mb-1 flex gap-2"
+									style="--mb:0.25rem; --d:flex; --g:0.5rem"
 									type="button"
 									on:click={() => {
 										sortKey = 'model';
@@ -168,10 +169,10 @@
 											});
 									}}
 								>
-									<div class="text-xs text-gray-500">{$i18n.t('Reorder Models')}</div>
+									<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('Reorder Models')}</div>
 
 									{#if sortKey === 'model'}
-										<span class="font-normal self-center">
+										<span style="--weight:400; --as:center">
 											{#if sortOrder === 'asc'}
 												<ChevronUp className="size-3" />
 											{:else}
@@ -179,7 +180,7 @@
 											{/if}
 										</span>
 									{:else}
-										<span class="invisible">
+										<span style="--v:hidden">
 											<ChevronUp className="size-3" />
 										</span>
 									{/if}
@@ -189,40 +190,41 @@
 							</div>
 						</div>
 
-						<hr class=" border-gray-100 dark:border-gray-700/10 my-2.5 w-full" />
+						<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:rgb(78 78 78 / 0.1); --my:0.625rem; --w:100%" />
 
 						<div>
-							<div class="flex flex-col w-full">
-								<div class="mb-1 flex justify-between">
-									<div class="text-xs text-gray-500">{$i18n.t('Default Models')}</div>
+							<div style="--d:flex; --fd:column; --w:100%">
+								<div style="--mb:0.25rem; --d:flex; --jc:space-between">
+									<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('Default Models')}</div>
 								</div>
 
-								<div class="flex items-center -mr-1">
+								<div style="--d:flex; --ai:center; --mr:-0.25rem">
 									<select
-										class="w-full py-1 text-sm rounded-lg bg-transparent {selectedModelId
+										style="--w:100%; --py:0.25rem; --size:0.875rem; --radius:0.5rem; --bgc:transparent; --oe:none"
+	class="{selectedModelId
 											? ''
-											: 'text-gray-500'} placeholder:text-gray-300 dark:placeholder:text-gray-700 outline-hidden"
+											: 'text-gray-500'} placeholder:text-gray-300 dark:placeholder:text-gray-700"
 										bind:value={selectedModelId}
 									>
 										<option value="">{$i18n.t('Select a model')}</option>
 										{#each $models as model}
-											<option value={model.id} class="bg-gray-50 dark:bg-gray-700"
+											<option value={model.id} style="--bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-700, #4e4e4e)"
 												>{model.name}</option
 											>
 										{/each}
 									</select>
 								</div>
 
-								<!-- <hr class=" border-gray-100 dark:border-gray-700/10 my-2.5 w-full" /> -->
+								<!-- <hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:rgb(78 78 78 / 0.1); --my:0.625rem; --w:100%" /> -->
 
 								{#if defaultModelIds.length > 0}
-									<div class="flex flex-col">
+									<div style="--d:flex; --fd:column">
 										{#each defaultModelIds as modelId, modelIdx}
-											<div class=" flex gap-2 w-full justify-between items-center">
-												<div class=" text-sm flex-1 py-1 rounded-lg">
+											<div style="--d:flex; --g:0.5rem; --w:100%; --jc:space-between; --ai:center">
+												<div style="--size:0.875rem; --fx:1 1 0%; --py:0.25rem; --radius:0.5rem">
 													{$models.find((model) => model.id === modelId)?.name}
 												</div>
-												<div class="shrink-0">
+												<div style="--fs:0">
 													<button
 														type="button"
 														on:click={() => {
@@ -238,17 +240,17 @@
 										{/each}
 									</div>
 								{:else}
-									<div class="text-gray-500 text-xs text-center py-2">
+									<div style="--c:var(--color-gray-500, #9b9b9b); --size:0.75rem; --ta:center; --py:0.5rem">
 										{$i18n.t('No models selected')}
 									</div>
 								{/if}
 							</div>
 						</div>
 
-						<div class="flex justify-between pt-3 text-sm font-medium gap-1.5">
+						<div style="--d:flex; --jc:space-between; --pt:0.75rem; --size:0.875rem; --weight:500; --g:0.375rem">
 							<Tooltip content={$i18n.t('This will delete all models including custom models')}>
 								<button
-									class="px-3.5 py-1.5 text-sm font-medium dark:bg-black dark:hover:bg-gray-950 dark:text-white bg-white text-black hover:bg-gray-100 transition rounded-full flex flex-row space-x-1 items-center"
+									style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --dark-bgc:#000; --hvr-dark-bgc:var(--color-gray-950, #0d0d0d); --dark-c:#fff; --bgc:#fff; --c:#000; --hvr-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
 									type="button"
 									on:click={() => {
 										showResetModal = true;
@@ -260,7 +262,8 @@
 							</Tooltip>
 
 							<button
-								class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full flex flex-row space-x-1 items-center {loading
+								style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
+	class="{loading
 									? ' cursor-not-allowed'
 									: ''}"
 								type="submit"
@@ -269,7 +272,7 @@
 								{$i18n.t('Save')}
 
 								{#if loading}
-									<div class="ml-2 self-center">
+									<div style="--ml:0.5rem; --as:center">
 										<Spinner />
 									</div>
 								{/if}

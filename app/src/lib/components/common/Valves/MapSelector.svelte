@@ -76,6 +76,6 @@
 	});
 </script>
 
-<div class=" z-10 w-full">
-	<div bind:this={mapElement} class="h-96 z-10" />
+<div style="--z:10; --w:100%">
+	<div bind:this={mapElement} style="--h:24rem; --z:10" />
 </div>

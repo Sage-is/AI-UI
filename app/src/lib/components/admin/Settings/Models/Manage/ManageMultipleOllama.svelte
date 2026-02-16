@@ -10,9 +10,9 @@
 </script>
 
 {#if ollamaConfig}
-	<div class="flex-1 mb-2.5 pr-1.5 rounded-lg bg-gray-50 dark:text-gray-300 dark:bg-gray-850">
+	<div style="--fx:1 1 0%; --mb:0.625rem; --pr:0.375rem; --radius:0.5rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626)">
 		<select
-			class="w-full py-2 px-4 text-sm outline-hidden bg-transparent"
+			style="--w:100%; --py:0.5rem; --px:1rem; --size:0.875rem; --oe:none; --bgc:transparent"
 			bind:value={selectedUrlIdx}
 			placeholder={$i18n.t('Select an Ollama instance')}
 		>

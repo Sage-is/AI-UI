@@ -47,10 +47,10 @@
 
 <Modal size="sm" bind:show>
 	<div>
-		<div class=" flex justify-between dark:text-gray-300 px-5 pt-4 pb-2">
-			<div class=" text-lg font-medium self-center">{$i18n.t('Edit User')}</div>
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300, #cdcdcd); --px:1.25rem; --pt:1rem; --pb:0.5rem">
+			<div style="--size:1.125rem; --weight:500; --as:center">{$i18n.t('Edit User')}</div>
 			<button
-				class="self-center"
+				style="--as:center"
 				on:click={() => {
 					show = false;
 				}}
@@ -59,41 +59,42 @@
 			</button>
 		</div>
 
-		<div class="flex flex-col md:flex-row w-full md:space-x-4 dark:text-gray-200">
-			<div class=" flex flex-col w-full sm:flex-row sm:justify-center sm:space-x-6">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --g-md:1rem; --dark-c:var(--color-gray-200, #e3e3e3)">
+			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				<form
-					class="flex flex-col w-full"
+					style="--d:flex; --fd:column; --w:100%"
 					on:submit|preventDefault={() => {
 						submitHandler();
 					}}
 				>
-					<div class=" flex items-center rounded-md px-5 py-2 w-full">
-						<div class=" self-center mr-5">
+					<div style="--d:flex; --ai:center; --radius:0.375rem; --px:1.25rem; --py:0.5rem; --w:100%">
+						<div style="--as:center; --mr:1.25rem">
 							<img
 								src={selectedUser.profile_image_url}
-								class=" max-w-[55px] object-cover rounded-full"
+								style="--maxw:55px; --objf:cover; --radius:9999px"
 								alt="User profile"
 							/>
 						</div>
 
 						<div>
-							<div class=" self-center capitalize font-semibold">{selectedUser.name}</div>
+							<div style="--as:center; --tt:capitalize; --weight:600">{selectedUser.name}</div>
 
-							<div class="text-xs text-gray-500">
+							<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">
 								{$i18n.t('Created at')}
 								{dayjs(selectedUser.created_at * 1000).format('LL')}
 							</div>
 						</div>
 					</div>
 
-					<div class=" px-5 pt-3 pb-5">
-						<div class=" flex flex-col space-y-1.5">
-							<div class="flex flex-col w-full">
-								<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Role')}</div>
+					<div style="--px:1.25rem; --pt:0.75rem; --pb:1.25rem">
+						<div style="--d:flex; --fd:column; --g:0.375rem">
+							<div style="--d:flex; --fd:column; --w:100%">
+								<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('Role')}</div>
 
-								<div class="flex-1">
+								<div style="--fx:1 1 0%">
 									<select
-										class="w-full dark:bg-gray-900 text-sm bg-transparent disabled:text-gray-500 dark:disabled:text-gray-500 outline-hidden"
+										style="--w:100%; --dark-bgc:var(--color-gray-900, #171717); --size:0.875rem; --bgc:transparent; --oe:none"
+	class="disabled:text-gray-500 dark:disabled:text-gray-500"
 										bind:value={_user.role}
 										disabled={_user.id == sessionUser.id}
 										required
@@ -105,12 +106,13 @@
 								</div>
 							</div>
 
-							<div class="flex flex-col w-full">
-								<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Email')}</div>
+							<div style="--d:flex; --fd:column; --w:100%">
+								<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('Email')}</div>
 
-								<div class="flex-1">
+								<div style="--fx:1 1 0%">
 									<input
-										class="w-full text-sm bg-transparent disabled:text-gray-500 dark:disabled:text-gray-500 outline-hidden"
+										style="--w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+	class="disabled:text-gray-500 dark:disabled:text-gray-500"
 										type="email"
 										bind:value={_user.email}
 										placeholder={$i18n.t('Enter Email')}
@@ -120,12 +122,12 @@
 								</div>
 							</div>
 
-							<div class="flex flex-col w-full">
-								<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Name')}</div>
+							<div style="--d:flex; --fd:column; --w:100%">
+								<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('Name')}</div>
 
-								<div class="flex-1">
+								<div style="--fx:1 1 0%">
 									<input
-										class="w-full text-sm bg-transparent outline-hidden"
+										style="--w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
 										type="text"
 										bind:value={_user.name}
 										placeholder={$i18n.t('Enter Name')}
@@ -135,12 +137,12 @@
 								</div>
 							</div>
 
-							<div class="flex flex-col w-full">
-								<div class=" mb-1 text-xs text-gray-500">{$i18n.t('New Password')}</div>
+							<div style="--d:flex; --fd:column; --w:100%">
+								<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('New Password')}</div>
 
-								<div class="flex-1">
+								<div style="--fx:1 1 0%">
 									<input
-										class="w-full text-sm bg-transparent outline-hidden"
+										style="--w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
 										type="password"
 										placeholder={$i18n.t('Enter New Password')}
 										bind:value={_user.password}
@@ -150,9 +152,9 @@
 							</div>
 						</div>
 
-						<div class="flex justify-end pt-3 text-sm font-medium">
+						<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
 							<button
-								class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full flex flex-row space-x-1 items-center"
+								style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
 								type="submit"
 							>
 								{$i18n.t('Save')}

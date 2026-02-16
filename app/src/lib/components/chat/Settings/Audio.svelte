@@ -155,7 +155,7 @@
 
 <form
 	id="tab-audio"
-	class="flex flex-col h-full justify-between space-y-3 text-sm"
+	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.75rem; --size:0.875rem"
 	on:submit|preventDefault={async () => {
 		saveSettings({
 			audio: {
@@ -176,16 +176,16 @@
 		dispatch('save');
 	}}
 >
-	<div class=" space-y-3 overflow-y-scroll max-h-[28rem] lg:max-h-full">
+	<div style="--g:0.75rem; --ofy:scroll; --maxh:28rem; --maxh-lg:100%">
 		<div>
-			<div class=" mb-1 text-sm font-medium">{$i18n.t('STT Settings')}</div>
+			<div style="--mb:0.25rem; --size:0.875rem; --weight:500">{$i18n.t('STT Settings')}</div>
 
 			{#if $config.audio.stt.engine !== 'web'}
-				<div class=" py-0.5 flex w-full justify-between">
-					<div class=" self-center text-xs font-medium">{$i18n.t('Speech-to-Text Engine')}</div>
-					<div class="flex items-center relative">
+				<div style="--py:0.125rem; --d:flex; --w:100%; --jc:space-between">
+					<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Speech-to-Text Engine')}</div>
+					<div style="--d:flex; --ai:center; --pos:relative">
 						<select
-							class="dark:bg-gray-900 w-fit pr-8 rounded-sm px-2 p-1 text-xs bg-transparent outline-hidden text-right"
+							style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
 							bind:value={STTEngine}
 							placeholder="Select an engine"
 						>
@@ -195,10 +195,10 @@
 					</div>
 				</div>
 
-				<div class=" py-0.5 flex w-full justify-between">
-					<div class=" self-center text-xs font-medium">{$i18n.t('Language')}</div>
+				<div style="--py:0.125rem; --d:flex; --w:100%; --jc:space-between">
+					<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Language')}</div>
 
-					<div class="flex items-center relative text-xs px-3">
+					<div style="--d:flex; --ai:center; --pos:relative; --size:0.75rem; --px:0.75rem">
 						<Tooltip
 							content={$i18n.t(
 								'The language of the input audio. Supplying the input language in ISO-639-1 (e.g. en) format will improve accuracy and latency. Leave blank to automatically detect the language.'
@@ -209,42 +209,42 @@
 								type="text"
 								bind:value={STTLanguage}
 								placeholder={$i18n.t('e.g. en')}
-								class=" text-sm text-right bg-transparent dark:text-gray-300 outline-hidden"
+								style="--size:0.875rem; --ta:right; --bgc:transparent; --dark-c:var(--color-gray-300, #cdcdcd); --oe:none"
 							/>
 						</Tooltip>
 					</div>
 				</div>
 			{/if}
 
-			<div class=" py-0.5 flex w-full justify-between">
-				<div class=" self-center text-xs font-medium">
+			<div style="--py:0.125rem; --d:flex; --w:100%; --jc:space-between">
+				<div style="--as:center; --size:0.75rem; --weight:500">
 					{$i18n.t('Instant Auto-Send After Voice Transcription')}
 				</div>
 
 				<button
-					class="p-1 px-3 text-xs flex rounded-sm transition"
+					style="--p:0.25rem; --px:0.75rem; --size:0.75rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						toggleSpeechAutoSend();
 					}}
 					type="button"
 				>
 					{#if speechAutoSend === true}
-						<span class="ml-2 self-center">{$i18n.t('On')}</span>
+						<span style="--ml:0.5rem; --as:center">{$i18n.t('On')}</span>
 					{:else}
-						<span class="ml-2 self-center">{$i18n.t('Off')}</span>
+						<span style="--ml:0.5rem; --as:center">{$i18n.t('Off')}</span>
 					{/if}
 				</button>
 			</div>
 		</div>
 
 		<div>
-			<div class=" mb-1 text-sm font-medium">{$i18n.t('TTS Settings')}</div>
+			<div style="--mb:0.25rem; --size:0.875rem; --weight:500">{$i18n.t('TTS Settings')}</div>
 
-			<div class=" py-0.5 flex w-full justify-between">
-				<div class=" self-center text-xs font-medium">{$i18n.t('Text-to-Speech Engine')}</div>
-				<div class="flex items-center relative">
+			<div style="--py:0.125rem; --d:flex; --w:100%; --jc:space-between">
+				<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Text-to-Speech Engine')}</div>
+				<div style="--d:flex; --ai:center; --pos:relative">
 					<select
-						class="dark:bg-gray-900 w-fit pr-8 rounded-sm px-2 p-1 text-xs bg-transparent outline-hidden text-right"
+						style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
 						bind:value={TTSEngine}
 						placeholder="Select an engine"
 					>
@@ -255,11 +255,11 @@
 			</div>
 
 			{#if TTSEngine === 'browser-kokoro'}
-				<div class=" py-0.5 flex w-full justify-between">
-					<div class=" self-center text-xs font-medium">{$i18n.t('Kokoro.js Dtype')}</div>
-					<div class="flex items-center relative">
+				<div style="--py:0.125rem; --d:flex; --w:100%; --jc:space-between">
+					<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Kokoro.js Dtype')}</div>
+					<div style="--d:flex; --ai:center; --pos:relative">
 						<select
-							class="dark:bg-gray-900 w-fit pr-8 rounded-sm px-2 p-1 text-xs bg-transparent outline-hidden text-right"
+							style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
 							bind:value={TTSEngineConfig.dtype}
 							placeholder="Select dtype"
 						>
@@ -273,51 +273,51 @@
 				</div>
 			{/if}
 
-			<div class=" py-0.5 flex w-full justify-between">
-				<div class=" self-center text-xs font-medium">{$i18n.t('Auto-playback response')}</div>
+			<div style="--py:0.125rem; --d:flex; --w:100%; --jc:space-between">
+				<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Auto-playback response')}</div>
 
 				<button
-					class="p-1 px-3 text-xs flex rounded-sm transition"
+					style="--p:0.25rem; --px:0.75rem; --size:0.75rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						toggleResponseAutoPlayback();
 					}}
 					type="button"
 				>
 					{#if responseAutoPlayback === true}
-						<span class="ml-2 self-center">{$i18n.t('On')}</span>
+						<span style="--ml:0.5rem; --as:center">{$i18n.t('On')}</span>
 					{:else}
-						<span class="ml-2 self-center">{$i18n.t('Off')}</span>
+						<span style="--ml:0.5rem; --as:center">{$i18n.t('Off')}</span>
 					{/if}
 				</button>
 			</div>
 
-			<div class=" py-0.5 flex w-full justify-between">
-				<div class=" self-center text-xs font-medium">{$i18n.t('Speech Playback Speed')}</div>
+			<div style="--py:0.125rem; --d:flex; --w:100%; --jc:space-between">
+				<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Speech Playback Speed')}</div>
 
-				<div class="flex items-center relative text-xs px-3">
+				<div style="--d:flex; --ai:center; --pos:relative; --size:0.75rem; --px:0.75rem">
 					<input
 						type="number"
 						min="0"
 						step="0.01"
 						bind:value={playbackRate}
-						class=" text-sm text-right bg-transparent dark:text-gray-300 outline-hidden"
+						style="--size:0.875rem; --ta:right; --bgc:transparent; --dark-c:var(--color-gray-300, #cdcdcd); --oe:none"
 					/>
 					x
 				</div>
 			</div>
 		</div>
 
-		<hr class=" border-gray-100 dark:border-gray-850" />
+		<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)" />
 
 		{#if TTSEngine === 'browser-kokoro'}
 			{#if TTSModel}
 				<div>
-					<div class=" mb-2.5 text-sm font-medium">{$i18n.t('Set Voice')}</div>
-					<div class="flex w-full">
-						<div class="flex-1">
+					<div style="--mb:0.625rem; --size:0.875rem; --weight:500">{$i18n.t('Set Voice')}</div>
+					<div style="--d:flex; --w:100%">
+						<div style="--fx:1 1 0%">
 							<input
 								list="voice-list"
-								class="w-full text-sm bg-transparent dark:text-gray-300 outline-hidden"
+								style="--w:100%; --size:0.875rem; --bgc:transparent; --dark-c:var(--color-gray-300, #cdcdcd); --oe:none"
 								bind:value={voice}
 								placeholder="Select a voice"
 							/>
@@ -332,10 +332,11 @@
 				</div>
 			{:else}
 				<div>
-					<div class=" mb-2.5 text-sm font-medium flex gap-2 items-center">
+					<div style="--mb:0.625rem; --size:0.875rem; --weight:500; --d:flex; --g:0.5rem; --ai:center">
 						<Spinner className="size-4" />
 
-						<div class=" text-sm font-medium shimmer">
+						<div style="--size:0.875rem; --weight:500"
+	class="shimmer">
 							{$i18n.t('Loading Kokoro.js...')}
 							{TTSModelProgress && TTSModelProgress.status === 'progress'
 								? `(${Math.round(TTSModelProgress.progress * 10) / 10}%)`
@@ -343,49 +344,49 @@
 						</div>
 					</div>
 
-					<div class="text-xs text-gray-500">
+					<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">
 						{$i18n.t('Please do not close the settings page while loading the model.')}
 					</div>
 				</div>
 			{/if}
 		{:else if $config.audio.tts.engine === ''}
 			<div>
-				<div class=" mb-2.5 text-sm font-medium">{$i18n.t('Set Voice')}</div>
-				<div class="flex w-full">
-					<div class="flex-1">
+				<div style="--mb:0.625rem; --size:0.875rem; --weight:500">{$i18n.t('Set Voice')}</div>
+				<div style="--d:flex; --w:100%">
+					<div style="--fx:1 1 0%">
 						<select
-							class="w-full text-sm bg-transparent dark:text-gray-300 outline-hidden"
+							style="--w:100%; --size:0.875rem; --bgc:transparent; --dark-c:var(--color-gray-300, #cdcdcd); --oe:none"
 							bind:value={voice}
 						>
 							<option value="" selected={voice !== ''}>{$i18n.t('Default')}</option>
 							{#each voices.filter((v) => nonLocalVoices || v.localService === true) as _voice}
 								<option
 									value={_voice.name}
-									class="bg-gray-100 dark:bg-gray-700"
+									style="--bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-700, #4e4e4e)"
 									selected={voice === _voice.name}>{_voice.name}</option
 								>
 							{/each}
 						</select>
 					</div>
 				</div>
-				<div class="flex items-center justify-between my-1.5">
-					<div class="text-xs">
+				<div style="--d:flex; --ai:center; --jc:space-between; --my:0.375rem">
+					<div style="--size:0.75rem">
 						{$i18n.t('Allow non-local voices')}
 					</div>
 
-					<div class="mt-1">
+					<div style="--mt:0.25rem">
 						<Switch bind:state={nonLocalVoices} />
 					</div>
 				</div>
 			</div>
 		{:else if $config.audio.tts.engine !== ''}
 			<div>
-				<div class=" mb-2.5 text-sm font-medium">{$i18n.t('Set Voice')}</div>
-				<div class="flex w-full">
-					<div class="flex-1">
+				<div style="--mb:0.625rem; --size:0.875rem; --weight:500">{$i18n.t('Set Voice')}</div>
+				<div style="--d:flex; --w:100%">
+					<div style="--fx:1 1 0%">
 						<input
 							list="voice-list"
-							class="w-full text-sm bg-transparent dark:text-gray-300 outline-hidden"
+							style="--w:100%; --size:0.875rem; --bgc:transparent; --dark-c:var(--color-gray-300, #cdcdcd); --oe:none"
 							bind:value={voice}
 							placeholder="Select a voice"
 						/>
@@ -401,9 +402,9 @@
 		{/if}
 	</div>
 
-	<div class="flex justify-end text-sm font-medium">
+	<div style="--d:flex; --jc:flex-end; --size:0.875rem; --weight:500">
 		<button
-			class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			type="submit"
 		>
 			{$i18n.t('Save')}

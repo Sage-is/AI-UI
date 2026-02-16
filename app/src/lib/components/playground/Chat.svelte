@@ -209,29 +209,29 @@
 	});
 </script>
 
-<div class=" flex flex-col justify-between w-full overflow-y-auto h-full">
-	<div class="mx-auto w-full md:px-0 h-full relative">
-		<div class=" flex flex-col h-full px-3.5">
-			<div class="flex w-full items-start gap-1.5">
+<div style="--d:flex; --fd:column; --jc:space-between; --w:100%; --ofy:auto; --h:100%">
+	<div style="--mx:auto; --w:100%; --px-md:0; --h:100%; --pos:relative">
+		<div style="--d:flex; --fd:column; --h:100%; --px:0.875rem">
+			<div style="--d:flex; --w:100%; --ai:flex-start; --g:0.375rem">
 				<Collapsible
 					className="w-full flex-1"
 					bind:open={showSystem}
 					buttonClassName="w-full rounded-lg text-sm border border-gray-100 dark:border-gray-850 w-full py-1 px-1.5"
 					grow={true}
 				>
-					<div class="flex gap-2 justify-between items-center">
-						<div class=" shrink-0 font-medium ml-1.5">
+					<div style="--d:flex; --g:0.5rem; --jc:space-between; --ai:center">
+						<div style="--fs:0; --weight:500; --ml:0.375rem">
 							{$i18n.t('System Prompt')}
 						</div>
 
 						{#if !showSystem}
-							<div class=" flex-1 text-gray-500 line-clamp-1">
+							<div style="--fx:1 1 0%; --c:var(--color-gray-500, #9b9b9b); --line-clamp:1">
 								{system}
 							</div>
 						{/if}
 
-						<div class="shrink-0">
-							<button class="p-1.5 bg-transparent hover:bg-white/5 transition rounded-lg">
+						<div style="--fs:0">
+							<button style="--p:0.375rem; --bgc:transparent; --hvr-bgc:rgb(255 255 255 / 0.05); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem">
 								{#if showSystem}
 									<ChevronUp className="size-3.5" />
 								{:else}
@@ -242,10 +242,10 @@
 					</div>
 
 					<div slot="content">
-						<div class="pt-1 px-1.5">
+						<div style="--pt:0.25rem; --px:0.375rem">
 							<textarea
 								bind:this={systemTextareaElement}
-								class="w-full h-full bg-transparent resize-none outline-hidden text-sm"
+								style="--w:100%; --h:100%; --bgc:transparent; resize:none; --oe:none; --size:0.875rem"
 								bind:value={system}
 								placeholder={$i18n.t("You're a helpful assistant.")}
 								on:input={() => {
@@ -259,25 +259,25 @@
 			</div>
 
 			<div
-				class=" pb-2.5 flex flex-col justify-between w-full flex-auto overflow-auto h-0"
+				style="--pb:0.625rem; --d:flex; --fd:column; --jc:space-between; --w:100%; --fx:1 1 auto; --of:auto; --h:0"
 				id="messages-container"
 				bind:this={messagesContainerElement}
 			>
-				<div class=" h-full w-full flex flex-col">
-					<div class="flex-1 p-1">
+				<div style="--h:100%; --w:100%; --d:flex; --fd:column">
+					<div style="--fx:1 1 0%; --p:0.25rem">
 						<Messages bind:messages />
 					</div>
 				</div>
 			</div>
 
-			<div class="pb-3">
-				<div class="border border-gray-100 dark:border-gray-850 w-full px-3 py-2.5 rounded-xl">
-					<div class="py-0.5">
+			<div style="--pb:0.75rem">
+				<div style="--b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --w:100%; --px:0.75rem; --py:0.625rem; --radius:0.75rem">
+					<div style="--py:0.125rem">
 						<!-- $i18n.t('a user') -->
 						<!-- $i18n.t('an assistant') -->
 						<textarea
 							bind:value={message}
-							class=" w-full h-full bg-transparent resize-none outline-hidden text-sm"
+							style="--w:100%; --h:100%; --bgc:transparent; resize:none; --oe:none; --size:0.875rem"
 							placeholder={$i18n.t(`Enter {{role}} message here`, {
 								role: role === 'user' ? $i18n.t('a user') : $i18n.t('an assistant')
 							})}
@@ -293,10 +293,10 @@
 						/>
 					</div>
 
-					<div class="flex justify-between">
+					<div style="--d:flex; --jc:space-between">
 						<div>
 							<button
-								class="px-3.5 py-1.5 text-sm font-medium bg-gray-50 hover:bg-gray-100 text-gray-900 dark:bg-gray-850 dark:hover:bg-gray-800 dark:text-gray-200 transition rounded-lg"
+								style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --c:var(--color-gray-900, #171717); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --dark-c:var(--color-gray-200, #e3e3e3); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
 								on:click={() => {
 									role = role === 'user' ? 'assistant' : 'user';
 								}}
@@ -309,14 +309,14 @@
 							</button>
 						</div>
 
-						<div class="flex items-center gap-2">
+						<div style="--d:flex; --ai:center; --g:0.5rem">
 							<div class="">
 								<select
-									class=" bg-transparent border border-gray-100 dark:border-gray-850 rounded-lg py-1 px-2 -mx-0.5 text-sm outline-hidden w-40"
+									style="--bgc:transparent; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --radius:0.5rem; --py:0.25rem; --px:0.5rem; --mx:-0.125rem; --size:0.875rem; --oe:none; --w:10rem"
 									bind:value={selectedModelId}
 								>
 									{#each $models as model}
-										<option value={model.id} class="bg-gray-50 dark:bg-gray-700"
+										<option value={model.id} style="--bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-700, #4e4e4e)"
 											>{model.name}</option
 										>
 									{/each}
@@ -326,7 +326,8 @@
 							{#if !loading}
 								<button
 									disabled={message === ''}
-									class="px-3.5 py-1.5 text-sm font-medium disabled:bg-gray-50 dark:disabled:hover:bg-gray-850 disabled:cursor-not-allowed bg-gray-50 hover:bg-gray-100 text-gray-900 dark:bg-gray-850 dark:hover:bg-gray-800 dark:text-gray-200 transition rounded-lg"
+									style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --c:var(--color-gray-900, #171717); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --dark-c:var(--color-gray-200, #e3e3e3); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
+	class="disabled:bg-gray-50 dark:disabled:hover:bg-gray-850 disabled:cursor-not-allowed"
 									on:click={() => {
 										addHandler();
 										role = role === 'user' ? 'assistant' : 'user';
@@ -336,7 +337,7 @@
 								</button>
 
 								<button
-									class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-lg"
+									style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
 									on:click={() => {
 										submitHandler();
 									}}
@@ -345,7 +346,7 @@
 								</button>
 							{:else}
 								<button
-									class="px-3 py-1.5 text-sm font-medium bg-gray-300 text-black transition rounded-lg"
+									style="--px:0.75rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:var(--color-gray-300, #cdcdcd); --c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
 									on:click={() => {
 										stopResponse();
 									}}

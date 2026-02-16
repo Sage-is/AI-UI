@@ -7,7 +7,7 @@
 	export let messages = [];
 </script>
 
-<div class="py-3 space-y-3">
+<div style="--py:0.75rem; --g:0.75rem">
 	{#each messages as message, idx}
 		<Message
 			{message}

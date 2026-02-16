@@ -47,8 +47,8 @@
 <button
 	aria-roledescription="model-item"
 	aria-label={item.label}
-	style="--radius:9999px; --w:100%; --m:0.2em 0"
-	class="flex group/item w-full text-left font-medium line-clamp-1 select-none items-center rounded-button py-2 pl-3 pr-1.5 text-sm text-gray-700 dark:text-gray-100 outline-hidden transition-all duration-75 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg cursor-pointer data-highlighted:bg-muted {index ===
+	style="--d:flex; --w:100%; --ta:left; --weight:500; --line-clamp:1; --us:none; --ai:center; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --pl:0.75rem; --pr:0.375rem; --size:0.875rem; --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-100, #ececec); --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.5rem; --cur:pointer; --m:0.2em 0"
+	class="group/item data-highlighted:bg-muted {index ===
 	selectedModelIdx
 		? 'bg-gray-100 dark:bg-gray-800 group-hover:bg-transparent'
 		: ''}"
@@ -58,15 +58,16 @@
 		onClick();
 	}}
 >
-	<div class="flex flex-col flex-1 gap-1.5">
+	<div style="--d:flex; --fd:column; --fx:1 1 0%; --g:0.375rem">
 		{#if (item?.model?.tags ?? []).length > 0}
 			<div
-				class="flex gap-0.5 self-center items-start h-full w-full translate-y-[0.5px] overflow-x-auto scrollbar-none"
+				style="--d:flex; --g:0.125rem; --as:center; --ai:flex-start; --h:100%; --w:100%; --translatey:0.5px; --ofx:auto"
+	class="scrollbar-none"
 			>
 				{#each item.model?.tags.sort((a, b) => a.name.localeCompare(b.name)) as tag}
 					<Tooltip content={tag.name} className="flex-shrink-0">
 						<div
-							class=" text-xs font-bold px-1 rounded-sm uppercase bg-gray-500/20 text-gray-700 dark:text-gray-200"
+							style="--size:0.75rem; --weight:700; --px:0.25rem; --radius:0.125rem; --tt:uppercase; --bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-200, #e3e3e3)"
 						>
 							{tag.name}
 						</div>
@@ -75,30 +76,30 @@
 			</div>
 		{/if}
 
-		<div class="flex items-center gap-2">
-			<div class="flex items-center min-w-fit">
+		<div style="--d:flex; --ai:center; --g:0.5rem">
+			<div style="--d:flex; --ai:center; --minw:fit-content">
 				<Tooltip content={$user?.role === 'admin' ? (item?.value ?? '') : ''} placement="top-start">
 					<img
 						src={item.model?.info?.meta?.profile_image_url ??
 							branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
 						alt="Model"
-						class="rounded-full size-5 flex items-center"
+						style="--radius:9999px; --w:1.25rem; --h:1.25rem; --d:flex; --ai:center"
 					/>
 				</Tooltip>
 			</div>
 
-			<div class="flex items-center">
+			<div style="--d:flex; --ai:center">
 				<Tooltip content={`${item.label} (${item.value})`} placement="top-start">
-					<div class="line-clamp-1">
+					<div style="--line-clamp:1">
 						{item.label}
 					</div>
 				</Tooltip>
 			</div>
 
-			<div class=" shrink-0 flex items-center gap-2">
+			<div style="--fs:0; --d:flex; --ai:center; --g:0.5rem">
 				{#if item.model.owned_by === 'ollama'}
 					{#if (item.model.ollama?.details?.parameter_size ?? '') !== ''}
-						<div class="flex items-center translate-y-[0.5px]">
+						<div style="--d:flex; --ai:center; --translatey:0.5px">
 							<Tooltip
 								content={`${
 									item.model.ollama?.details?.quantization_level
@@ -111,26 +112,26 @@
 								}`}
 								className="self-end"
 							>
-								<span class=" text-xs font-medium text-gray-600 dark:text-gray-400 line-clamp-1"
+								<span style="--size:0.75rem; --weight:500; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-400, #b4b4b4); --line-clamp:1"
 									>{item.model.ollama?.details?.parameter_size ?? ''}</span
 								>
 							</Tooltip>
 						</div>
 					{/if}
 					{#if item.model.ollama?.expires_at && new Date(item.model.ollama?.expires_at * 1000) > new Date()}
-						<div class="flex items-center translate-y-[0.5px] px-0.5">
+						<div style="--d:flex; --ai:center; --translatey:0.5px; --px:0.125rem">
 							<Tooltip
 								content={`${$i18n.t('Unloads {{FROM_NOW}}', {
 									FROM_NOW: dayjs(item.model.ollama?.expires_at * 1000).fromNow()
 								})}`}
 								className="self-end"
 							>
-								<div class=" flex items-center">
-									<span class="relative flex size-2">
+								<div style="--d:flex; --ai:center">
+									<span style="--pos:relative; --d:flex; --w:0.5rem; --h:0.5rem">
 										<span
-											class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"
+											style="animation:ping 1s cubic-bezier(0, 0, 0.2, 1) infinite; --pos:absolute; --d:inline-flex; --h:100%; --w:100%; --radius:9999px; --bgc:#4ade80; --op:0.75"
 										/>
-										<span class="relative inline-flex rounded-full size-2 bg-green-500" />
+										<span style="--pos:relative; --d:inline-flex; --radius:9999px; --w:0.5rem; --h:0.5rem; --bgc:#22c55e" />
 									</span>
 								</div>
 							</Tooltip>
@@ -142,12 +143,12 @@
 
 				{#if item.model?.direct}
 					<Tooltip content={`${$i18n.t('Direct')}`}>
-						<div class="translate-y-[1px]">
+						<div style="--translatey:1px">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 16 16"
 								fill="currentColor"
-								class="size-3"
+								style="--w:0.75rem; --h:0.75rem"
 							>
 								<path
 									fill-rule="evenodd"
@@ -159,12 +160,12 @@
 					</Tooltip>
 				{:else if item.model.connection_type === 'external'}
 					<Tooltip content={`${$i18n.t('External')}`}>
-						<div class="translate-y-[1px]">
+						<div style="--translatey:1px">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 16 16"
 								fill="currentColor"
-								class="size-3"
+								style="--w:0.75rem; --h:0.75rem"
 							>
 								<path
 									fill-rule="evenodd"
@@ -187,14 +188,14 @@
 							sanitizeResponseContent(item.model?.info?.meta?.description).replaceAll('\n', '<br>')
 						)}`}
 					>
-						<div class=" translate-y-[1px]">
+						<div style="--translatey:1px">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								fill="none"
 								viewBox="0 0 24 24"
 								stroke-width="1.5"
 								stroke="currentColor"
-								class="w-4 h-4"
+								style="--w:1rem; --h:1rem"
 							>
 								<path
 									stroke-linecap="round"
@@ -209,14 +210,14 @@
 		</div>
 	</div>
 
-	<div class="ml-auto pl-2 pr-1 flex items-center gap-1.5 shrink-0">
+	<div style="--ml:auto; --pl:0.5rem; --pr:0.25rem; --d:flex; --ai:center; --g:0.375rem; --fs:0">
 		{#if $user?.role === 'admin' && item.model.owned_by === 'ollama' && item.model.ollama?.expires_at && new Date(item.model.ollama?.expires_at * 1000) > new Date()}
 			<Tooltip
 				content={`${$i18n.t('Eject')}`}
 				className="flex-shrink-0 group-hover/item:opacity-100 opacity-0 "
 			>
 				<button
-					class="flex"
+					style="--d:flex"
 					on:click={(e) => {
 						e.preventDefault();
 						e.stopPropagation();
@@ -237,7 +238,7 @@
 			}}
 		>
 			<button
-				class="flex"
+				style="--d:flex"
 				on:click={(e) => {
 					e.preventDefault();
 					e.stopPropagation();

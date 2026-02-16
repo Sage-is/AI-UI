@@ -11,43 +11,44 @@
 </script>
 
 <div
-	class="px-4 py-3 shadow-md rounded-xl dark:bg-black bg-white border dark:border-gray-900 w-60 h-20 group"
+	style="--px:1rem; --py:0.75rem; --shadow:3; --radius:0.75rem; --dark-bgc:#000; --bgc:#fff; --b:1px solid; --dark-bc:var(--color-gray-900, #171717); --w:15rem; --h:5rem"
+	class="group"
 >
 	<Tooltip
 		content={data?.message?.error ? data.message.error.content : data.message.content}
-		class="w-full"
+		style="--w:100%"
 		allowHTML={false}
 	>
 		{#if data.message.role === 'user'}
-			<div class="flex w-full">
+			<div style="--d:flex; --w:100%">
 				<ProfileImage
 					src={data.user?.profile_image_url ?? `${WEBUI_BASE_URL}/static/user.png`}
 					className={'size-5 -translate-y-[1px]'}
 				/>
-				<div class="ml-2">
-					<div class=" flex justify-between items-center">
-						<div class="text-xs text-black dark:text-white font-medium line-clamp-1">
+				<div style="--ml:0.5rem">
+					<div style="--d:flex; --jc:space-between; --ai:center">
+						<div style="--size:0.75rem; --c:#000; --dark-c:#fff; --weight:500; --line-clamp:1">
 							{data?.user?.name ?? 'User'}
 						</div>
 					</div>
 
 					{#if data?.message?.error}
-						<div class="text-red-500 line-clamp-2 text-xs mt-0.5">{data.message.error.content}</div>
+						<div style="--c:#ef4444; --line-clamp:2; --size:0.75rem; --mt:0.125rem">{data.message.error.content}</div>
 					{:else}
-						<div class="text-gray-500 line-clamp-2 text-xs mt-0.5">{data.message.content}</div>
+						<div style="--c:var(--color-gray-500, #9b9b9b); --line-clamp:2; --size:0.75rem; --mt:0.125rem">{data.message.content}</div>
 					{/if}
 				</div>
 			</div>
 		{:else}
-			<div class="flex w-full">
+			<div style="--d:flex; --w:100%">
 				<ProfileImage
 					src={data?.model?.info?.meta?.profile_image_url ?? ''}
 					className={'size-5 -translate-y-[1px]'}
 				/>
 
-				<div class="ml-2">
-					<div class=" flex justify-between items-center">
-						<div class="text-xs text-black dark:text-white font-medium line-clamp-1">
+				<div style="--ml:0.5rem">
+					<div style="--d:flex; --jc:space-between; --ai:center">
+						<div style="--size:0.75rem; --c:#000; --dark-c:#fff; --weight:500; --line-clamp:1">
 							{data?.model?.name ?? data?.message?.model ?? 'Assistant'}
 						</div>
 
@@ -67,16 +68,16 @@
 					</div>
 
 					{#if data?.message?.error}
-						<div class="text-red-500 line-clamp-2 text-xs mt-0.5">
+						<div style="--c:#ef4444; --line-clamp:2; --size:0.75rem; --mt:0.125rem">
 							{data.message.error.content}
 						</div>
 					{:else}
-						<div class="text-gray-500 line-clamp-2 text-xs mt-0.5">{data.message.content}</div>
+						<div style="--c:var(--color-gray-500, #9b9b9b); --line-clamp:2; --size:0.75rem; --mt:0.125rem">{data.message.content}</div>
 					{/if}
 				</div>
 			</div>
 		{/if}
 	</Tooltip>
-	<Handle type="target" position={Position.Top} class="w-2 rounded-full dark:bg-gray-900" />
-	<Handle type="source" position={Position.Bottom} class="w-2 rounded-full dark:bg-gray-900" />
+	<Handle type="target" position={Position.Top} style="--w:0.5rem; --radius:9999px; --dark-bgc:var(--color-gray-900, #171717)" />
+	<Handle type="source" position={Position.Bottom} style="--w:0.5rem; --radius:9999px; --dark-bgc:var(--color-gray-900, #171717)" />
 </div>

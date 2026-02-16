@@ -42,9 +42,9 @@
 </script>
 
 {#key mounted}
-	<div class="m-auto w-full max-w-6xl px-8 lg:px-20">
-		<div class="flex justify-start">
-			<div class="flex -space-x-4 mb-0.5" in:fade={{ duration: 200 }}>
+	<div style="--m:auto; --w:100%; --maxw:72rem; --px:2rem; --px-lg:5rem">
+		<div style="--d:flex; --jc:flex-start">
+			<div style="--d:flex; --g:-1rem; --mb:0.125rem" in:fade={{ duration: 200 }}>
 				{#each models as model, modelIdx}
 					<button
 						on:click={() => {
@@ -62,7 +62,7 @@
 							<img
 								crossorigin="anonymous"
 								src={model?.info?.meta?.profile_image_url ?? branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
-								class=" size-[2.7rem] rounded-full border-[1px] border-gray-100 dark:border-none"
+								style="--w:2.7rem; --h:2.7rem; --radius:9999px; --bc:1px; --bc:var(--color-gray-100, #ececec); --dark-bs:none"
 								alt="logo"
 								draggable="false"
 							/>
@@ -78,17 +78,18 @@
 				className="w-full flex justify-start mb-0.5"
 				placement="top"
 			>
-				<div class="flex items-center gap-2 text-gray-500 font-medium text-lg mt-2 w-fit">
+				<div style="--d:flex; --ai:center; --g:0.5rem; --c:var(--color-gray-500, #9b9b9b); --weight:500; --size:1.125rem; --mt:0.5rem; --w:fit-content">
 					<EyeSlash strokeWidth="2.5" className="size-5" />{$i18n.t('Temporary Chat')}
 				</div>
 			</Tooltip>
 		{/if}
 
 		<div
-			class=" mt-2 mb-4 text-3xl text-gray-800 dark:text-gray-100 font-medium text-left flex items-center gap-4 font-primary"
+			style="--mt:0.5rem; --mb:1rem; --size:1.875rem; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-100, #ececec); --weight:500; --ta:left; --d:flex; --ai:center; --g:1rem"
+	class="font-primary"
 		>
 			<div>
-				<div class=" capitalize line-clamp-1" in:fade={{ duration: 200 }}>
+				<div style="--tt:capitalize; --line-clamp:1" in:fade={{ duration: 200 }}>
 					{#if models[selectedModelIdx]?.name}
 						{models[selectedModelIdx]?.name}
 					{:else}
@@ -99,7 +100,8 @@
 				<div in:fade={{ duration: 200, delay: 200 }}>
 					{#if models[selectedModelIdx]?.info?.meta?.description ?? null}
 						<div
-							class="mt-0.5 text-base font-normal text-gray-500 dark:text-gray-400 line-clamp-3 markdown"
+							style="--mt:0.125rem; --size:1rem; --weight:400; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4); --line-clamp:3"
+	class="markdown"
 						>
 							{@html marked.parse(
 								sanitizeResponseContent(
@@ -108,7 +110,7 @@
 							)}
 						</div>
 						{#if models[selectedModelIdx]?.info?.meta?.user}
-							<div class="mt-0.5 text-sm font-normal text-gray-400 dark:text-gray-500">
+							<div style="--mt:0.125rem; --size:0.875rem; --weight:400; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b)">
 								By
 								{#if models[selectedModelIdx]?.info?.meta?.user.community}
 									<a href="https://sage.is/m/{models[selectedModelIdx]?.info?.meta?.user.username}"
@@ -122,7 +124,8 @@
 							</div>
 						{/if}
 					{:else}
-						<div class=" font-medium text-gray-400 dark:text-gray-500 line-clamp-1 font-p">
+						<div style="--weight:500; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b); --line-clamp:1"
+	class="font-p">
 							{$i18n.t('How can I help you today?')}
 						</div>
 					{/if}
@@ -130,7 +133,8 @@
 			</div>
 		</div>
 
-		<div class=" w-full font-primary" in:fade={{ duration: 200, delay: 300 }}>
+		<div style="--w:100%"
+	class="font-primary" in:fade={{ duration: 200, delay: 300 }}>
 			<Suggestions
 				className="grid grid-cols-2"
 				suggestionPrompts={atSelectedModel?.info?.meta?.suggestion_prompts ??

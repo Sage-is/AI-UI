@@ -29,10 +29,10 @@
 </script>
 
 {#if chatList}
-	<div class="text-left text-sm w-full mb-3">
+	<div style="--ta:left; --size:0.875rem; --w:100%; --mb:0.75rem">
 		{#if chatList.length === 0}
 			<div
-				class="text-xs text-gray-500 dark:text-gray-400 text-center px-5 min-h-20 w-full h-full flex justify-center items-center"
+				style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4); --ta:center; --px:1.25rem; --minh:5rem; --w:100%; --h:100%; --d:flex; --jc:center; --ai:center"
 			>
 				{$i18n.t('No chats found')}
 			</div>
@@ -41,9 +41,10 @@
 		{#each chatList as chat, idx (chat.id)}
 			{#if (idx === 0 || (idx > 0 && chat.time_range !== chatList[idx - 1].time_range)) && chat?.time_range}
 				<div
-					class="w-full text-xs text-gray-500 dark:text-gray-500 font-medium {idx === 0
+					style="--w:100%; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-500, #9b9b9b); --weight:500; --pb:0.5rem; --px:0.5rem"
+	class="{idx === 0
 						? ''
-						: 'pt-5'} pb-2 px-2"
+						: 'pt-5'}"
 				>
 					{$i18n.t(chat.time_range)}
 					<!-- localisation keys for time_range to be recognized from the i18next parser (so they don't get automatically removed):
@@ -68,17 +69,17 @@
 			{/if}
 
 			<a
-				class=" w-full flex justify-between items-center rounded-lg text-sm py-2 px-3 hover:bg-gray-50 dark:hover:bg-gray-850"
+				style="--w:100%; --d:flex; --jc:space-between; --ai:center; --radius:0.5rem; --size:0.875rem; --py:0.5rem; --px:0.75rem; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-850, #262626)"
 				draggable="false"
 				href={`/c/${chat.id}`}
 				on:click={() => (show = false)}
 			>
-				<div class="text-ellipsis line-clamp-1 w-full sm:basis-3/5">
+				<div style="text-overflow:ellipsis; --line-clamp:1; --w:100%; --fb-sm:60%">
 					{chat?.title}
 				</div>
 
-				<div class="hidden sm:flex sm:basis-2/5 items-center justify-end">
-					<div class=" text-gray-500 dark:text-gray-400 text-xs">
+				<div style="--d:none; --d-sm:flex; --fb-sm:40%; --ai:center; --jc:flex-end">
+					<div style="--c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4); --size:0.75rem">
 						{dayjs(chat?.updated_at * 1000).calendar()}
 					</div>
 				</div>
@@ -93,7 +94,7 @@
 				}
 			}}
 		>
-			<div class="w-full flex justify-center py-1 text-xs animate-pulse items-center gap-2">
+			<div style="--w:100%; --d:flex; --jc:center; --py:0.25rem; --size:0.75rem; animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; --ai:center; --g:0.5rem">
 				<Spinner className=" size-4" />
 				<div class=" ">Loading...</div>
 			</div>

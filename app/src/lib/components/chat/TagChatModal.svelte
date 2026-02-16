@@ -14,7 +14,7 @@
 </script>
 
 <Modal bind:show size="xs">
-	<div class="px-4 pt-4 pb-5 w-full flex flex-col justify-center">
+	<div style="--px:1rem; --pt:1rem; --pb:1.25rem; --w:100%; --d:flex; --fd:column; --jc:center">
 		<Tags
 			{tags}
 			on:delete={(e) => {

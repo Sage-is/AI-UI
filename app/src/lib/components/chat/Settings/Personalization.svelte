@@ -25,23 +25,23 @@
 
 <form
 	id="tab-personalization"
-	class="flex flex-col h-full justify-between space-y-3 text-sm"
+	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.75rem; --size:0.875rem"
 	on:submit|preventDefault={() => {
 		dispatch('save');
 	}}
 >
-	<div class="py-1 overflow-y-scroll max-h-[28rem] lg:max-h-full">
+	<div style="--py:0.25rem; --ofy:scroll; --maxh:28rem; --maxh-lg:100%">
 		<div>
-			<div class="flex items-center justify-between mb-1">
+			<div style="--d:flex; --ai:center; --jc:space-between; --mb:0.25rem">
 				<Tooltip
 					content={$i18n.t(
 						'This is an experimental feature, it may not function as expected and is subject to change at any time.'
 					)}
 				>
-					<div class="text-sm font-medium">
+					<div style="--size:0.875rem; --weight:500">
 						{$i18n.t('Memory')}
 
-						<span class=" text-xs text-gray-500">({$i18n.t('Experimental')})</span>
+						<span style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">({$i18n.t('Experimental')})</span>
 					</div>
 				</Tooltip>
 
@@ -56,14 +56,14 @@
 			</div>
 		</div>
 
-		<div class="text-xs text-gray-600 dark:text-gray-400">
+		<div style="--size:0.75rem; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-400, #b4b4b4)">
 			<div>
 				{$i18n.t(
 					"You can personalize your interactions with LLMs by adding memories through the 'Manage' button below, making them more helpful and tailored to you."
 				)}
 			</div>
 
-			<!-- <div class="mt-3">
+			<!-- <div style="--mt:0.75rem">
 				To understand what LLM remembers or teach it something new, just chat with it:
 
 				<div>- “Remember that I like concise responses.”</div>
@@ -73,10 +73,10 @@
 			</div> -->
 		</div>
 
-		<div class="mt-3 mb-1 ml-1">
+		<div style="--mt:0.75rem; --mb:0.25rem; --ml:0.25rem">
 			<button
 				type="button"
-				class=" px-3.5 py-1.5 font-medium hover:bg-black/5 dark:hover:bg-white/5 outline outline-1 outline-gray-300 dark:outline-gray-800 rounded-3xl"
+				style="--px:0.875rem; --py:0.375rem; --weight:500; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:var(--color-gray-300, #cdcdcd); outline-color:var(--color-gray-800, #333); --radius:1.5rem"
 				on:click={() => {
 					showManageModal = true;
 				}}
@@ -86,9 +86,9 @@
 		</div>
 	</div>
 
-	<div class="flex justify-end text-sm font-medium">
+	<div style="--d:flex; --jc:flex-end; --size:0.875rem; --weight:500">
 		<button
-			class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			type="submit"
 		>
 			{$i18n.t('Save')}

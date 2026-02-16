@@ -828,20 +828,22 @@
 />
 
 {#if loaded}
-	<div class="w-full font-primary">
-		<div class=" mx-auto inset-x-0 bg-transparent flex justify-center">
+	<div style="--w:100%"
+	class="font-primary">
+		<div style="--mx:auto; --left:0; --right:0; --bgc:transparent; --d:flex; --jc:center">
 			<div
-				class="flex flex-col px-3 {($settings?.widescreenMode ?? null)
+				style="--d:flex; --fd:column; --px:0.75rem; --w:100%"
+	class="{($settings?.widescreenMode ?? null)
 					? 'max-w-full'
-					: 'max-w-6xl'} w-full"
+					: 'max-w-6xl'}"
 			>
-				<div class="relative">
+				<div style="--pos:relative">
 					{#if autoScroll === false && history?.currentId}
 						<div
-							class=" absolute -top-12 left-0 right-0 flex justify-center z-30 pointer-events-none"
+							style="--pos:absolute; --top:-3rem; --left:0; --right:0; --d:flex; --jc:center; --z:30; --pe:none"
 						>
 							<button
-								class=" bg-white border border-gray-100 dark:border-none dark:bg-white/20 p-1.5 rounded-full pointer-events-auto"
+								style="--bgc:#fff; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bs:none; --dark-bgc:rgb(255 255 255 / 0.2); --p:0.375rem; --radius:9999px; --pe:auto"
 								on:click={() => {
 									autoScroll = true;
 									scrollToBottom();
@@ -851,7 +853,7 @@
 									xmlns="http://www.w3.org/2000/svg"
 									viewBox="0 0 20 20"
 									fill="currentColor"
-									class="w-5 h-5"
+									style="--w:1.25rem; --h:1.25rem"
 								>
 									<path
 										fill-rule="evenodd"
@@ -864,27 +866,27 @@
 					{/if}
 				</div>
 
-				<div class="w-full relative">
+				<div style="--w:100%; --pos:relative">
 					{#if atSelectedModel !== undefined}
 						<div
-							class="px-3 pb-0.5 pt-1.5 text-left w-full flex flex-col absolute bottom-0 left-0 right-0 bg-linear-to-t from-white dark:from-gray-900 z-10"
+							style="--px:0.75rem; --pb:0.125rem; --pt:0.375rem; --ta:left; --w:100%; --d:flex; --fd:column; --pos:absolute; --bottom:0; --left:0; --right:0; --bgi:linear-gradient(0deg, var(--tw-gradient-stops)); --tw-gradient-from:#fff; --dark-tw-gradient-from:var(--color-gray-900, #171717); --z:10"
 						>
-							<div class="flex items-center justify-between w-full">
-								<div class="pl-[1px] flex items-center gap-2 text-sm dark:text-gray-500">
+							<div style="--d:flex; --ai:center; --jc:space-between; --w:100%">
+								<div style="--pl:1px; --d:flex; --ai:center; --g:0.5rem; --size:0.875rem; --dark-c:var(--color-gray-500, #9b9b9b)">
 									<img
 										crossorigin="anonymous"
 										alt="model profile"
-										class="size-3.5 max-w-[28px] object-cover rounded-full"
+										style="--w:0.875rem; --h:0.875rem; --maxw:28px; --objf:cover; --radius:9999px"
 										src={$models.find((model) => model.id === atSelectedModel.id)?.info?.meta
 											?.profile_image_url ?? branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
 									/>
-									<div class="translate-y-[0.5px]">
-										Talking to <span class=" font-medium">{atSelectedModel.name}</span>
+									<div style="--translatey:0.5px">
+										Talking to <span style="--weight:500">{atSelectedModel.name}</span>
 									</div>
 								</div>
 								<div>
 									<button
-										class="flex items-center dark:text-gray-500"
+										style="--d:flex; --ai:center; --dark-c:var(--color-gray-500, #9b9b9b)"
 										on:click={() => {
 											atSelectedModel = undefined;
 										}}
@@ -936,9 +938,10 @@
 
 		<div class="{transparentBackground ? 'bg-transparent' : 'bg-white dark:bg-gray-900'} ">
 			<div
-				class="{($settings?.widescreenMode ?? null)
+				style="--px:0.625rem; --mx:auto; --left:0; --right:0"
+	class="{($settings?.widescreenMode ?? null)
 					? 'max-w-full'
-					: 'max-w-6xl'} px-2.5 mx-auto inset-x-0"
+					: 'max-w-6xl'}"
 			>
 				<div class="">
 					<input
@@ -986,22 +989,24 @@
 						/>
 					{:else}
 						<form
-							class="w-full flex flex-col gap-1.5"
+							style="--w:100%; --d:flex; --fd:column; --g:0.375rem"
 							on:submit|preventDefault={() => {
 								// check if selectedModels support image input
 								dispatch('submit', prompt);
 							}}
 						>
 							<div
-								class="flex-1 flex flex-col relative w-full shadow-lg rounded-3xl border border-gray-50 dark:border-gray-850 hover:border-gray-100 focus-within:border-gray-100 hover:dark:border-gray-800 focus-within:dark:border-gray-800 transition px-1 bg-white/90 dark:bg-gray-400/5 dark:text-gray-100"
+								style="--fx:1 1 0%; --d:flex; --fd:column; --pos:relative; --w:100%; --shadow:4; --radius:1.5rem; --b:1px solid; --bc:var(--color-gray-50, #f9f9f9); --dark-bc:var(--color-gray-850, #262626); --hvr-bc:var(--color-gray-100, #ececec); --dark-hvr-bc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --px:0.25rem; --bgc:rgb(255 255 255 / 0.9); --dark-bgc:rgb(180 180 180 / 0.05); --dark-c:var(--color-gray-100, #ececec)"
+	class="focus-within:border-gray-100 focus-within:dark:border-gray-800"
 								dir={$settings?.chatDirection ?? 'auto'}
 							>
 								{#if files.length > 0}
-									<div class="mx-2 mt-2.5 -mb-1 flex items-center flex-wrap gap-2">
+									<div style="--mx:0.5rem; --mt:0.625rem; --mb:-0.25rem; --d:flex; --ai:center; --fw:wrap; --g:0.5rem">
 										{#each files as file, fileIdx}
 											{#if file.type === 'image'}
-												<div class=" relative group">
-													<div class="relative flex items-center">
+												<div style="--pos:relative"
+	class="group">
+													<div style="--pos:relative; --d:flex; --ai:center">
 														<Image
 															src={file.url}
 															alt=""
@@ -1023,7 +1028,7 @@
 																	viewBox="0 0 24 24"
 																	fill="currentColor"
 																	aria-hidden="true"
-																	class="size-4 fill-yellow-300"
+																	style="--w:1rem; --h:1rem; fill:#fde047"
 																>
 																	<path
 																		fill-rule="evenodd"
@@ -1034,9 +1039,10 @@
 															</Tooltip>
 														{/if}
 													</div>
-													<div class=" absolute -top-1 -right-1">
+													<div style="--pos:absolute; --top:-0.25rem; --right:-0.25rem">
 														<button
-															class=" bg-white text-black border border-white rounded-full {($settings?.highContrastMode ??
+															style="--bgc:#fff; --c:#000; --b:1px solid; --bc:#fff; --radius:9999px"
+	class="{($settings?.highContrastMode ??
 															false)
 																? ''
 																: 'outline-hidden focus:outline-hidden group-hover:visible invisible transition'}"
@@ -1052,7 +1058,7 @@
 																viewBox="0 0 20 20"
 																fill="currentColor"
 																aria-hidden="true"
-																class="size-4"
+																style="--w:1rem; --h:1rem"
 															>
 																<path
 																	d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"
@@ -1085,10 +1091,11 @@
 									</div>
 								{/if}
 
-								<div class="px-2.5">
+								<div style="--px:0.625rem">
 									{#if $settings?.richTextInput ?? true}
 										<div
-											class="scrollbar-hidden rtl:text-right ltr:text-left bg-transparent dark:text-gray-100 outline-hidden w-full pt-2.5 pb-[5px] px-1 resize-none h-fit max-h-80 overflow-auto"
+											style="--bgc:transparent; --dark-c:var(--color-gray-100, #ececec); --oe:none; --w:100%; --pt:0.625rem; --pb:5px; --px:0.25rem; resize:none; --h:fit-content; --maxh:20rem; --of:auto"
+	class="scrollbar-hidden rtl:text-right ltr:text-left"
 											id="chat-input-container"
 										>
 											<RichTextInput
@@ -1323,7 +1330,8 @@
 											id="chat-input"
 											dir={$settings?.chatDirection ?? 'auto'}
 											bind:this={chatInputElement}
-											class="scrollbar-hidden bg-transparent dark:text-gray-200 outline-hidden w-full pt-3 px-1 resize-none"
+											style="--bgc:transparent; --dark-c:var(--color-gray-200, #e3e3e3); --oe:none; --w:100%; --pt:0.75rem; --px:0.25rem; resize:none"
+	class="scrollbar-hidden"
 											placeholder={placeholder ? placeholder : $i18n.t('Send a Message')}
 											bind:value={prompt}
 											on:input={() => {
@@ -1568,8 +1576,8 @@
 									{/if}
 								</div>
 
-								<div class=" flex justify-between mt-0.5 mb-2.5 mx-0.5 max-w-full" dir="ltr">
-									<div class="ml-1 self-end flex items-center flex-1 max-w-[80%]">
+								<div style="--d:flex; --jc:space-between; --mt:0.125rem; --mb:0.625rem; --mx:0.125rem; --maxw:100%" dir="ltr">
+									<div style="--ml:0.25rem; --as:flex-end; --d:flex; --ai:center; --fx:1 1 0%; --maxw:80%">
 										<InputMenu
 											bind:selectedToolIds
 											selectedModels={atSelectedModel ? [atSelectedModel.id] : selectedModels}
@@ -1622,14 +1630,15 @@
 											}}
 										>
 											<div
-												class="bg-transparent hover:bg-gray-100 text-gray-800 dark:text-white dark:hover:bg-gray-800 rounded-full p-1.5 outline-hidden focus:outline-hidden"
+												style="--bgc:transparent; --hvr-bgc:var(--color-gray-100, #ececec); --c:var(--color-gray-800, #333); --dark-c:#fff; --hvr-dark-bgc:var(--color-gray-800, #333); --radius:9999px; --p:0.375rem; --oe:none"
+	class="focus:outline-hidden"
 											>
 												<svg
 													xmlns="http://www.w3.org/2000/svg"
 													viewBox="0 0 20 20"
 													aria-hidden="true"
 													fill="currentColor"
-													class="size-5"
+													style="--w:1.25rem; --h:1.25rem"
 												>
 													<path
 														d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"
@@ -1640,10 +1649,11 @@
 
 										{#if $_user && (showToolsButton || (toggleFilters && toggleFilters.length > 0) || showWebSearchButton || showImageGenerationButton || showCodeInterpreterButton)}
 											<div
-												class="flex self-center w-[1px] h-4 mx-1.5 bg-gray-50 dark:bg-gray-800"
+												style="--d:flex; --as:center; --w:1px; --h:1rem; --mx:0.375rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-800, #333)"
 											/>
 
-											<div class="flex gap-1 items-center overflow-x-auto scrollbar-none flex-1">
+											<div style="--d:flex; --g:0.25rem; --ai:center; --ofx:auto; --fx:1 1 0%"
+	class="scrollbar-none">
 												{#if showToolsButton}
 													<Tooltip
 														content={$i18n.t('{{COUNT}} Available Tools', {
@@ -1651,7 +1661,7 @@
 														})}
 													>
 														<button
-															class="translate-y-[0.5px] flex gap-1 items-center text-gray-600 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200 rounded-lg p-1 self-center transition"
+															style="--translatey:0.5px; --d:flex; --g:0.25rem; --ai:center; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-300, #cdcdcd); --hvr-c:var(--color-gray-700, #4e4e4e); --hvr-dark-c:var(--color-gray-200, #e3e3e3); --radius:0.5rem; --p:0.25rem; --as:center; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 															aria-label="Available Tools"
 															type="button"
 															on:click={() => {
@@ -1660,7 +1670,7 @@
 														>
 															<Wrench className="size-4" strokeWidth="1.75" />
 
-															<span class="text-sm font-medium text-gray-600 dark:text-gray-300">
+															<span style="--size:0.875rem; --weight:500; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-300, #cdcdcd)">
 																{toolServers.length + selectedToolIds.length}
 															</span>
 														</button>
@@ -1680,20 +1690,21 @@
 																}
 															}}
 															type="button"
-															class="px-2 @xl:px-2.5 py-2 flex gap-1.5 items-center text-sm rounded-full transition-colors duration-300 focus:outline-hidden max-w-full overflow-hidden hover:bg-gray-50 dark:hover:bg-gray-800 {selectedFilterIds.includes(
+															style="--px:0.5rem; --py:0.5rem; --d:flex; --g:0.375rem; --ai:center; --size:0.875rem; --radius:9999px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:300ms; --maxw:100%; --of:hidden; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --tt:capitalize"
+	class="@xl:px-2.5 focus:outline-hidden {selectedFilterIds.includes(
 																filter.id
 															)
 																? 'text-sky-500 dark:text-sky-300 bg-sky-50 dark:bg-sky-200/5'
-																: 'bg-transparent text-gray-600 dark:text-gray-300  '} capitalize"
+																: 'bg-transparent text-gray-600 dark:text-gray-300  '}"
 														>
 															{#if filter?.icon}
-																<div class="size-4 items-center flex justify-center">
+																<div style="--w:1rem; --h:1rem; --ai:center; --d:flex; --jc:center">
 																	<img
 																		src={filter.icon}
-																		class="size-3.5 {filter.icon.includes('svg')
+																		class="{filter.icon.includes('svg')
 																			? 'dark:invert-[80%]'
 																			: ''}"
-																		style="fill: currentColor;"
+																		style="--w:0.875rem; --h:0.875rem; fill: currentColor;"
 																		alt={filter.name}
 																	/>
 																</div>
@@ -1701,7 +1712,8 @@
 																<Sparkles className="size-4" strokeWidth="1.75" />
 															{/if}
 															<span
-																class="hidden @xl:block whitespace-nowrap overflow-hidden text-ellipsis leading-none pr-0.5"
+																style="--d:none; --ws:nowrap; --of:hidden; text-overflow:ellipsis; --lh:1; --pr:0.125rem"
+	class="@xl:block"
 																>{filter?.name}</span
 															>
 														</button>
@@ -1713,14 +1725,16 @@
 														<button
 															on:click|preventDefault={() => (webSearchEnabled = !webSearchEnabled)}
 															type="button"
-															class="px-2 @xl:px-2.5 py-2 flex gap-1.5 items-center text-sm rounded-full transition-colors duration-300 focus:outline-hidden max-w-full overflow-hidden hover:bg-gray-50 dark:hover:bg-gray-800 {webSearchEnabled ||
+															style="--px:0.5rem; --py:0.5rem; --d:flex; --g:0.375rem; --ai:center; --size:0.875rem; --radius:9999px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:300ms; --maxw:100%; --of:hidden; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333)"
+	class="@xl:px-2.5 focus:outline-hidden {webSearchEnabled ||
 															($settings?.webSearch ?? false) === 'always'
 																? ' text-sky-500 dark:text-sky-300 bg-sky-50 dark:bg-sky-200/5'
 																: 'bg-transparent text-gray-600 dark:text-gray-300 '}"
 														>
 															<GlobeAlt className="size-4" strokeWidth="1.75" />
 															<span
-																class="hidden @xl:block whitespace-nowrap overflow-hidden text-ellipsis leading-none pr-0.5"
+																style="--d:none; --ws:nowrap; --of:hidden; text-overflow:ellipsis; --lh:1; --pr:0.125rem"
+	class="@xl:block"
 																>{$i18n.t('Web Search')}</span
 															>
 														</button>
@@ -1733,13 +1747,15 @@
 															on:click|preventDefault={() =>
 																(imageGenerationEnabled = !imageGenerationEnabled)}
 															type="button"
-															class="px-2 @xl:px-2.5 py-2 flex gap-1.5 items-center text-sm rounded-full transition-colors duration-300 focus:outline-hidden max-w-full overflow-hidden hover:bg-gray-50 dark:hover:bg-gray-800 {imageGenerationEnabled
+															style="--px:0.5rem; --py:0.5rem; --d:flex; --g:0.375rem; --ai:center; --size:0.875rem; --radius:9999px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:300ms; --maxw:100%; --of:hidden; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333)"
+	class="@xl:px-2.5 focus:outline-hidden {imageGenerationEnabled
 																? ' text-sky-500 dark:text-sky-300 bg-sky-50 dark:bg-sky-200/5'
 																: 'bg-transparent text-gray-600 dark:text-gray-300 '}"
 														>
 															<Photo className="size-4" strokeWidth="1.75" />
 															<span
-																class="hidden @xl:block whitespace-nowrap overflow-hidden text-ellipsis leading-none pr-0.5"
+																style="--d:none; --ws:nowrap; --of:hidden; text-overflow:ellipsis; --lh:1; --pr:0.125rem"
+	class="@xl:block"
 																>{$i18n.t('Image')}</span
 															>
 														</button>
@@ -1756,11 +1772,11 @@
 															on:click|preventDefault={() =>
 																(codeInterpreterEnabled = !codeInterpreterEnabled)}
 															type="button"
-															style="--c: var({codeInterpreterEnabled
+															style="--px:0.5rem; --py:0.5rem; --d:flex; --g:0.375rem; --ai:center; --size:0.875rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:300ms; --maxw:100%; --of:hidden; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --c: var({codeInterpreterEnabled
 																		? '--color-sky-500'
 																		: '--color-gray-400'});
 																		--m:0 .2em;"
-															class="px-2 @xl:px-2.5 py-2 flex gap-1.5 items-center text-sm transition-colors duration-300 max-w-full overflow-hidden hover:bg-gray-50 dark:hover:bg-gray-800 {codeInterpreterEnabled
+															class="@xl:px-2.5 {codeInterpreterEnabled
 																? ' text-sky-500 dark:text-sky-300 bg-sky-50 dark:bg-sky-200/5'
 																: 'bg-transparent text-gray-600 dark:text-gray-300 '} {($settings?.highContrastMode ??
 															false)
@@ -1769,7 +1785,8 @@
 														>
 															<CommandLine className="size-4" strokeWidth="1.75" />
 															<span
-																class="hidden @xl:block whitespace-nowrap overflow-hidden text-ellipsis leading-none pr-0.5"
+																style="--d:none; --ws:nowrap; --of:hidden; text-overflow:ellipsis; --lh:1; --pr:0.125rem"
+	class="@xl:block"
 																>{$i18n.t('Code Interpreter')}</span
 															>
 														</button>
@@ -1779,13 +1796,13 @@
 										{/if}
 									</div>
 
-									<div class="self-end flex space-x-1 mr-1 shrink-0">
+									<div style="--as:flex-end; --d:flex; --g:0.25rem; --mr:0.25rem; --fs:0">
 										{#if (!history?.currentId || history.messages[history.currentId]?.done == true) && ($_user?.role === 'admin' || ($_user?.permissions?.chat?.stt ?? true))}
 											<!-- {$i18n.t('Record voice')} -->
 											<Tooltip content={$i18n.t('Dictate')}>
 												<button
 													id="voice-input-button"
-													class=" text-gray-600 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200 transition rounded-full p-1.5 mr-0.5 self-center"
+													style="--c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-300, #cdcdcd); --hvr-c:var(--color-gray-700, #4e4e4e); --hvr-dark-c:var(--color-gray-200, #e3e3e3); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.375rem; --mr:0.125rem; --as:center"
 													type="button"
 													on:click={async () => {
 														try {
@@ -1819,7 +1836,7 @@
 														xmlns="http://www.w3.org/2000/svg"
 														viewBox="0 0 20 20"
 														fill="currentColor"
-														class="w-5 h-5 translate-y-[0.5px]"
+														style="--w:1.25rem; --h:1.25rem; --translatey:0.5px"
 													>
 														<path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z" />
 														<path
@@ -1831,10 +1848,10 @@
 										{/if}
 
 										{#if (taskIds && taskIds.length > 0) || (history.currentId && history.messages[history.currentId]?.done != true)}
-											<div class=" flex items-center">
+											<div style="--d:flex; --ai:center">
 												<Tooltip content={$i18n.t('Stop')}>
 													<button
-														class="bg-white hover:bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-800 transition rounded-full p-1.5"
+														style="--bgc:#fff; --hvr-bgc:var(--color-gray-100, #ececec); --c:var(--color-gray-800, #333); --dark-bgc:var(--color-gray-700, #4e4e4e); --dark-c:#fff; --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.375rem"
 														on:click={() => {
 															stopResponse();
 														}}
@@ -1843,7 +1860,7 @@
 															xmlns="http://www.w3.org/2000/svg"
 															viewBox="0 0 24 24"
 															fill="currentColor"
-															class="size-5"
+															style="--w:1.25rem; --h:1.25rem"
 														>
 															<path
 																fill-rule="evenodd"
@@ -1855,11 +1872,11 @@
 												</Tooltip>
 											</div>
 										{:else if prompt === '' && files.length === 0 && ($_user?.role === 'admin' || ($_user?.permissions?.chat?.call ?? true))}
-											<div class=" flex items-center">
+											<div style="--d:flex; --ai:center">
 												<!-- {$i18n.t('Call')} -->
 												<Tooltip content={$i18n.t('Voice mode')}>
 													<button
-														class=" bg-black text-white hover:bg-gray-900 dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full p-1.5 self-center"
+														style="--bgc:#000; --c:#fff; --hvr-bgc:var(--color-gray-900, #171717); --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.375rem; --as:center"
 														type="button"
 														on:click={async () => {
 															if (selectedModels.length > 1) {
@@ -1918,13 +1935,14 @@
 												</Tooltip>
 											</div>
 										{:else}
-											<div class=" flex items-center">
+											<div style="--d:flex; --ai:center">
 												<Tooltip content={$i18n.t('Send message')}>
 													<button
 														id="send-message-button"
-														class="{!(prompt === '' && files.length === 0)
+														style="--tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.375rem; --as:center"
+	class="{!(prompt === '' && files.length === 0)
 															? 'bg-black text-white hover:bg-gray-900 dark:bg-white dark:text-black dark:hover:bg-gray-100 '
-															: 'text-white bg-gray-200 dark:text-gray-900 dark:bg-gray-700 disabled'} transition rounded-full p-1.5 self-center"
+															: 'text-white bg-gray-200 dark:text-gray-900 dark:bg-gray-700 disabled'}"
 														type="submit"
 														disabled={prompt === '' && files.length === 0}
 													>
@@ -1932,7 +1950,7 @@
 															xmlns="http://www.w3.org/2000/svg"
 															viewBox="0 0 16 16"
 															fill="currentColor"
-															class="size-5"
+															style="--w:1.25rem; --h:1.25rem"
 														>
 															<path
 																fill-rule="evenodd"
@@ -1949,11 +1967,12 @@
 							</div>
 
 							{#if $config?.license_metadata?.input_footer}
-								<div class=" text-xs text-gray-500 text-center line-clamp-1 marked">
+								<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --ta:center; --line-clamp:1"
+	class="marked">
 									{@html DOMPurify.sanitize(marked($config?.license_metadata?.input_footer))}
 								</div>
 							{:else}
-								<div class="mb-1" />
+								<div style="--mb:0.25rem" />
 							{/if}
 						</form>
 					{/if}

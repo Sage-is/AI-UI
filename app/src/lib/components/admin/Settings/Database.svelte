@@ -26,14 +26,15 @@
 </script>
 
 <form
-	class="flex flex-col h-full justify-between space-y-3 text-sm"
+	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.75rem; --size:0.875rem"
 	on:submit|preventDefault={async () => {
 		saveHandler();
 	}}
 >
-	<div class=" space-y-3 overflow-y-scroll scrollbar-hidden h-full">
+	<div style="--g:0.75rem; --ofy:scroll; --h:100%"
+	class="scrollbar-hidden">
 		<div>
-			<div class=" mb-2 text-sm font-medium">{$i18n.t('Database')}</div>
+			<div style="--mb:0.5rem; --size:0.875rem; --weight:500">{$i18n.t('Database')}</div>
 
 			<input
 				id="config-json-input"
@@ -63,17 +64,17 @@
 
 			<button
 				type="button"
-				class=" flex rounded-md py-2 px-3 w-full hover:bg-gray-200 dark:hover:bg-gray-800 transition"
+				style="--d:flex; --radius:0.375rem; --py:0.5rem; --px:0.75rem; --w:100%; --hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={async () => {
 					document.getElementById('config-json-input').click();
 				}}
 			>
-				<div class=" self-center mr-3">
+				<div style="--as:center; --mr:0.75rem">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 16 16"
 						fill="currentColor"
-						class="w-4 h-4"
+						style="--w:1rem; --h:1rem"
 					>
 						<path d="M2 3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3Z" />
 						<path
@@ -83,14 +84,14 @@
 						/>
 					</svg>
 				</div>
-				<div class=" self-center text-sm font-medium">
+				<div style="--as:center; --size:0.875rem; --weight:500">
 					{$i18n.t('Import Config from JSON File')}
 				</div>
 			</button>
 
 			<button
 				type="button"
-				class=" flex rounded-md py-2 px-3 w-full hover:bg-gray-200 dark:hover:bg-gray-800 transition"
+				style="--d:flex; --radius:0.375rem; --py:0.5rem; --px:0.75rem; --w:100%; --hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={async () => {
 					const config = await exportConfig(localStorage.token);
 					const blob = new Blob([JSON.stringify(config)], {
@@ -99,12 +100,12 @@
 					saveAs(blob, `config-${Date.now()}.json`);
 				}}
 			>
-				<div class=" self-center mr-3">
+				<div style="--as:center; --mr:0.75rem">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 16 16"
 						fill="currentColor"
-						class="w-4 h-4"
+						style="--w:1rem; --h:1rem"
 					>
 						<path d="M2 3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3Z" />
 						<path
@@ -114,19 +115,19 @@
 						/>
 					</svg>
 				</div>
-				<div class=" self-center text-sm font-medium">
+				<div style="--as:center; --size:0.875rem; --weight:500">
 					{$i18n.t('Export Config to JSON File')}
 				</div>
 			</button>
 
-			<hr class="border-gray-100 dark:border-gray-850 my-1" />
+			<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.25rem" />
 
 			{#if $config?.features.enable_admin_export ?? true}
-				<div class="  flex w-full justify-between">
-					<!-- <div class=" self-center text-xs font-medium">{$i18n.t('Allow Chat Deletion')}</div> -->
+				<div style="--d:flex; --w:100%; --jc:space-between">
+					<!-- <div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Allow Chat Deletion')}</div> -->
 
 					<button
-						class=" flex rounded-md py-1.5 px-3 w-full hover:bg-gray-200 dark:hover:bg-gray-800 transition"
+						style="--d:flex; --radius:0.375rem; --py:0.375rem; --px:0.75rem; --w:100%; --hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						type="button"
 						on:click={() => {
 							// exportAllUserChats();
@@ -136,12 +137,12 @@
 							});
 						}}
 					>
-						<div class=" self-center mr-3">
+						<div style="--as:center; --mr:0.75rem">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 16 16"
 								fill="currentColor"
-								class="w-4 h-4"
+								style="--w:1rem; --h:1rem"
 							>
 								<path d="M2 3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3Z" />
 								<path
@@ -151,22 +152,22 @@
 								/>
 							</svg>
 						</div>
-						<div class=" self-center text-sm font-medium">{$i18n.t('Download Database')}</div>
+						<div style="--as:center; --size:0.875rem; --weight:500">{$i18n.t('Download Database')}</div>
 					</button>
 				</div>
 
 				<button
-					class=" flex rounded-md py-2 px-3 w-full hover:bg-gray-200 dark:hover:bg-gray-800 transition"
+					style="--d:flex; --radius:0.375rem; --py:0.5rem; --px:0.75rem; --w:100%; --hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						exportAllUserChats();
 					}}
 				>
-					<div class=" self-center mr-3">
+					<div style="--as:center; --mr:0.75rem">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 16 16"
 							fill="currentColor"
-							class="w-4 h-4"
+							style="--w:1rem; --h:1rem"
 						>
 							<path d="M2 3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3Z" />
 							<path
@@ -176,7 +177,7 @@
 							/>
 						</svg>
 					</div>
-					<div class=" self-center text-sm font-medium">
+					<div style="--as:center; --size:0.875rem; --weight:500">
 						{$i18n.t('Export All Chats (All Users)')}
 					</div>
 				</button>
@@ -184,9 +185,9 @@
 		</div>
 	</div>
 
-	<!-- <div class="flex justify-end pt-3 text-sm font-medium">
+	<!-- <div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
 		<button
-			class=" px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-gray-100 transition rounded-lg"
+			style="--px:1rem; --py:0.5rem; --bgc:#047857; --hvr-bgc:#065f46; --c:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
 			type="submit"
 		>
 			{$i18n.t('Save')}

@@ -17,11 +17,12 @@
 	let showValves = false;
 </script>
 
-<div class=" dark:text-white">
-	<div class=" flex items-center justify-between dark:text-gray-100 mb-2">
-		<div class=" text-lg font-medium self-center font-primary">{$i18n.t('Chat Controls')}</div>
+<div style="--dark-c:#fff">
+	<div style="--d:flex; --ai:center; --jc:space-between; --dark-c:var(--color-gray-100, #ececec); --mb:0.5rem">
+		<div style="--size:1.125rem; --weight:500; --as:center"
+	class="font-primary">{$i18n.t('Chat Controls')}</div>
 		<button
-			class="self-center"
+			style="--as:center"
 			on:click={() => {
 				dispatch('close');
 			}}
@@ -30,10 +31,11 @@
 		</button>
 	</div>
 
-	<div class=" dark:text-gray-200 text-sm font-primary py-0.5 px-0.5">
+	<div style="--dark-c:var(--color-gray-200, #e3e3e3); --size:0.875rem; --py:0.125rem; --px:0.125rem"
+	class="font-primary">
 		{#if chatFiles.length > 0}
 			<Collapsible title={$i18n.t('Files')} open={true} buttonClassName="w-full">
-				<div class="flex flex-col gap-1 mt-1.5" slot="content">
+				<div style="--d:flex; --fd:column; --g:0.25rem; --mt:0.375rem" slot="content">
 					{#each chatFiles as file, fileIdx}
 						<FileItem
 							className="w-full"
@@ -58,23 +60,24 @@
 				</div>
 			</Collapsible>
 
-			<hr class="my-2 border-gray-50 dark:border-gray-700/10" />
+			<hr style="--my:0.5rem; --bc:var(--color-gray-50, #f9f9f9); --dark-bc:rgb(78 78 78 / 0.1)" />
 		{/if}
 
 		<Collapsible bind:open={showValves} title={$i18n.t('Valves')} buttonClassName="w-full">
-			<div class="text-sm" slot="content">
+			<div style="--size:0.875rem" slot="content">
 				<Valves show={showValves} />
 			</div>
 		</Collapsible>
 
 		{#if $user?.role === 'admin' || ($user?.permissions.chat?.system_prompt ?? true)}
-			<hr class="my-2 border-gray-50 dark:border-gray-700/10" />
+			<hr style="--my:0.5rem; --bc:var(--color-gray-50, #f9f9f9); --dark-bc:rgb(78 78 78 / 0.1)" />
 
 			<Collapsible title={$i18n.t('System Prompt')} open={true} buttonClassName="w-full">
 				<div class="" slot="content">
 					<textarea
 						bind:value={params.system}
-						class="w-full text-xs outline-hidden resize-vertical {$settings.highContrastMode
+						style="--w:100%; --size:0.75rem; --oe:none"
+	class="resize-vertical {$settings.highContrastMode
 							? 'border-2 border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 p-2.5'
 							: 'py-1.5 bg-transparent'}"
 						rows="4"
@@ -85,10 +88,10 @@
 		{/if}
 
 		{#if $user?.role === 'admin' || ($user?.permissions.chat?.controls ?? true)}
-			<hr class="my-2 border-gray-50 dark:border-gray-700/10" />
+			<hr style="--my:0.5rem; --bc:var(--color-gray-50, #f9f9f9); --dark-bc:rgb(78 78 78 / 0.1)" />
 
 			<Collapsible title={$i18n.t('Advanced Params')} open={true} buttonClassName="w-full">
-				<div class="text-sm mt-1.5" slot="content">
+				<div style="--size:0.875rem; --mt:0.375rem" slot="content">
 					<div>
 						<AdvancedParams admin={$user?.role === 'admin'} custom={true} bind:params />
 					</div>

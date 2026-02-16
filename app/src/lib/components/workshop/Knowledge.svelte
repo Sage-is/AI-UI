@@ -95,31 +95,31 @@
 		}}
 	/>
 
-	<div class="flex flex-col gap-1 my-1.5">
-		<div class="flex justify-between items-center">
-			<div class="flex md:self-center text-xl font-medium px-0.5 items-center">
+	<div style="--d:flex; --fd:column; --g:0.25rem; --my:0.375rem">
+		<div style="--d:flex; --jc:space-between; --ai:center">
+			<div style="--d:flex; --as-md:center; --size:1.25rem; --weight:500; --px:0.125rem; --ai:center">
 				{$i18n.t('Knowledge')}
-				<div class="flex self-center w-[1px] h-6 mx-2.5 bg-gray-50 dark:bg-gray-850" />
-				<span class="text-lg font-medium text-gray-500 dark:text-gray-300"
+				<div style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-850, #262626)" />
+				<span style="--size:1.125rem; --weight:500; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-300, #cdcdcd)"
 					>{filteredItems.length}</span
 				>
 			</div>
 		</div>
 
-		<div class=" flex w-full space-x-2">
-			<div class="flex flex-1">
-				<div class=" self-center ml-1 mr-3">
+		<div style="--d:flex; --w:100%; --g:0.5rem">
+			<div style="--d:flex; --fx:1 1 0%">
+				<div style="--as:center; --ml:0.25rem; --mr:0.75rem">
 					<Search className="size-3.5" />
 				</div>
 				<input
-					class=" w-full text-sm py-1 rounded-r-xl outline-hidden bg-transparent"
+					style="--w:100%; --size:0.875rem; --py:0.25rem; --btrr:0.75rem; --bbrr:0.75rem; --oe:none; --bgc:transparent"
 					bind:value={query}
 					placeholder={$i18n.t('Search Knowledge')}
 				/>
 				{#if query}
-					<div class="self-center pl-1.5 translate-y-[0.5px] rounded-l-xl bg-transparent">
+					<div style="--as:center; --pl:0.375rem; --translatey:0.5px; --btlr:0.75rem; --bblr:0.75rem; --bgc:transparent">
 						<button
-							class="p-0.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-900 transition"
+							style="--p:0.125rem; --radius:9999px; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							on:click={() => {
 								query = '';
 							}}
@@ -132,7 +132,7 @@
 
 			<div>
 				<button
-					class=" px-2 py-2 rounded-xl hover:bg-gray-700/10 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition font-medium text-sm flex items-center space-x-1"
+					style="--px:0.5rem; --py:0.5rem; --radius:0.75rem; --hvr-bgc:rgb(78 78 78 / 0.1); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300, #cdcdcd); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
 					aria-label={$i18n.t('Create Knowledge')}
 					on:click={() => {
 						goto('/workshop/knowledge/create');
@@ -144,10 +144,10 @@
 		</div>
 	</div>
 
-	<div class="mb-5 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2">
+	<div style="--mb:1.25rem; --d:grid; --gtc:repeat(1, minmax(0, 1fr)); --gtc-lg:repeat(2, minmax(0, 1fr)); --gtc-xl:repeat(3, minmax(0, 1fr)); --g:0.5rem">
 		{#each filteredItems as item}
 			<button
-				class=" flex space-x-4 cursor-pointer text-left w-full px-3 py-2 hover:bg-black/5 dark:hover:bg-white/5 transition rounded-xl"
+				style="--d:flex; --g:1rem; --cur:pointer; --ta:left; --w:100%; --px:0.75rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.75rem"
 				on:click={() => {
 					if (item?.meta?.document) {
 						toast.error(
@@ -160,15 +160,15 @@
 					}
 				}}
 			>
-				<div class=" w-full">
-					<div class="flex items-center justify-between -mt-1">
+				<div style="--w:100%">
+					<div style="--d:flex; --ai:center; --jc:space-between; --mt:-0.25rem">
 						{#if item?.meta?.document}
 							<Badge type="muted" content={$i18n.t('Document')} />
 						{:else}
 							<Badge type="success" content={$i18n.t('Collection')} />
 						{/if}
 
-						<div class=" flex self-center -mr-1 translate-y-1">
+						<div style="--d:flex; --as:center; --mr:-0.25rem; --translatey:0.25rem">
 							<ItemMenu
 								on:delete={() => {
 									selectedItem = item;
@@ -178,15 +178,15 @@
 						</div>
 					</div>
 
-					<div class=" self-center flex-1 px-1 mb-1">
-						<div class=" font-semibold line-clamp-1 h-fit">{item.name}</div>
+					<div style="--as:center; --fx:1 1 0%; --px:0.25rem; --mb:0.25rem">
+						<div style="--weight:600; --line-clamp:1; --h:fit-content">{item.name}</div>
 
-						<div class=" text-xs overflow-hidden text-ellipsis line-clamp-1">
+						<div style="--size:0.75rem; --of:hidden; text-overflow:ellipsis; --line-clamp:1">
 							{item.description}
 						</div>
 
-						<div class="mt-3 flex justify-between">
-							<div class="text-xs text-gray-500">
+						<div style="--mt:0.75rem; --d:flex; --jc:space-between">
+							<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">
 								<Tooltip
 									content={item?.user?.email ?? $i18n.t('Deleted User')}
 									className="flex shrink-0"
@@ -199,7 +199,7 @@
 									})}
 								</Tooltip>
 							</div>
-							<div class=" text-xs text-gray-500 line-clamp-1">
+							<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --line-clamp:1">
 								{$i18n.t('Updated')}
 								{dayjs(item.updated_at * 1000).fromNow()}
 							</div>
@@ -210,11 +210,11 @@
 		{/each}
 	</div>
 
-	<div class=" text-gray-500 text-xs mt-1 mb-2">
+	<div style="--c:var(--color-gray-500, #9b9b9b); --size:0.75rem; --mt:0.25rem; --mb:0.5rem">
 		ⓘ {$i18n.t("Use '#' in the prompt input to load and include your knowledge.")}
 	</div>
 {:else}
-	<div class="w-full h-full flex justify-center items-center">
+	<div style="--w:100%; --h:100%; --d:flex; --jc:center; --ai:center">
 		<Spinner className="size-5" />
 	</div>
 {/if}

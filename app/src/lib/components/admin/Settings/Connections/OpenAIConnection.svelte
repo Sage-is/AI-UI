@@ -49,7 +49,7 @@
 	}}
 />
 
-<div class="flex w-full gap-2 items-center">
+<div style="--d:flex; --w:100%; --g:0.5rem; --ai:center">
 	<Tooltip
 		className="w-full relative"
 		content={$i18n.t(`WebUI will make requests to "{{url}}/chat/completions"`, {
@@ -59,26 +59,27 @@
 	>
 		{#if !(config?.enable ?? true)}
 			<div
-				class="absolute top-0 bottom-0 left-0 right-0 opacity-60 bg-white dark:bg-gray-900 z-10"
+				style="--pos:absolute; --top:0; --bottom:0; --left:0; --right:0; --op:0.6; --bgc:#fff; --dark-bgc:var(--color-gray-900, #171717); --z:10"
 			></div>
 		{/if}
-		<div class="flex w-full gap-2">
-			<div class="flex-1 relative">
+		<div style="--d:flex; --w:100%; --g:0.5rem">
+			<div style="--fx:1 1 0%; --pos:relative">
 				<input
-					class=" outline-hidden w-full bg-transparent {pipeline ? 'pr-8' : ''}"
+					style="--oe:none; --w:100%; --bgc:transparent"
+	class="{pipeline ? 'pr-8' : ''}"
 					placeholder={$i18n.t('API Base URL')}
 					bind:value={url}
 					autocomplete="off"
 				/>
 
 				{#if pipeline}
-					<div class=" absolute top-0.5 right-2.5">
+					<div style="--pos:absolute; --top:0.125rem; --right:0.625rem">
 						<Tooltip content="Pipelines">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 24 24"
 								fill="currentColor"
-								class="size-4"
+								style="--w:1rem; --h:1rem"
 							>
 								<path
 									d="M11.644 1.59a.75.75 0 0 1 .712 0l9.75 5.25a.75.75 0 0 1 0 1.32l-9.75 5.25a.75.75 0 0 1-.712 0l-9.75-5.25a.75.75 0 0 1 0-1.32l9.75-5.25Z"
@@ -103,10 +104,10 @@
 		</div>
 	</Tooltip>
 
-	<div class="flex gap-1">
+	<div style="--d:flex; --g:0.25rem">
 		<Tooltip content={$i18n.t('Configure')} className="self-start">
 			<button
-				class="self-center p-1 bg-transparent hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-850 rounded-lg transition"
+				style="--as:center; --p:0.25rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-900, #171717); --hvr-dark-bgc:var(--color-gray-850, #262626); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={() => {
 					showConfigModal = true;
 				}}

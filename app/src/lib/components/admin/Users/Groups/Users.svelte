@@ -44,25 +44,26 @@
 </script>
 
 <div>
-	<div class="flex w-full">
-		<div class="flex flex-1">
-			<div class=" self-center mr-3">
+	<div style="--d:flex; --w:100%">
+		<div style="--d:flex; --fx:1 1 0%">
+			<div style="--as:center; --mr:0.75rem">
 				<Search />
 			</div>
 			<input
-				class=" w-full text-sm pr-4 rounded-r-xl outline-hidden bg-transparent"
+				style="--w:100%; --size:0.875rem; --pr:1rem; --btrr:0.75rem; --bbrr:0.75rem; --oe:none; --bgc:transparent"
 				bind:value={query}
 				placeholder={$i18n.t('Search')}
 			/>
 		</div>
 	</div>
 
-	<div class="mt-3 scrollbar-hidden">
-		<div class="flex flex-col gap-2.5">
+	<div style="--mt:0.75rem"
+	class="scrollbar-hidden">
+		<div style="--d:flex; --fd:column; --g:0.625rem">
 			{#if filteredUsers.length > 0}
 				{#each filteredUsers as user, userIdx (user.id)}
-					<div class="flex flex-row items-center gap-3 w-full text-sm">
-						<div class="flex items-center">
+					<div style="--d:flex; --fd:row; --ai:center; --g:0.75rem; --w:100%; --size:0.875rem">
+						<div style="--d:flex; --ai:center">
 							<Checkbox
 								state={userIds.includes(user.id) ? 'checked' : 'unchecked'}
 								on:change={(e) => {
@@ -75,10 +76,10 @@
 							/>
 						</div>
 
-						<div class="flex w-full items-center justify-between">
+						<div style="--d:flex; --w:100%; --ai:center; --jc:space-between">
 							<Tooltip content={user.email} placement="top-start">
-								<div class="flex">
-									<div class=" font-medium self-center">{user.name}</div>
+								<div style="--d:flex">
+									<div style="--weight:500; --as:center">{user.name}</div>
 								</div>
 							</Tooltip>
 
@@ -89,7 +90,7 @@
 					</div>
 				{/each}
 			{:else}
-				<div class="text-gray-500 text-xs text-center py-2 px-10">
+				<div style="--c:var(--color-gray-500, #9b9b9b); --size:0.75rem; --ta:center; --py:0.5rem; --px:2.5rem">
 					{$i18n.t('No users were found.')}
 				</div>
 			{/if}

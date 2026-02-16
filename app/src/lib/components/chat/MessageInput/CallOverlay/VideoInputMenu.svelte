@@ -26,7 +26,8 @@
 
 	<div slot="content">
 		<DropdownMenu.Content
-			class="w-full max-w-[180px] rounded-lg px-1 py-1.5 border border-gray-300/30 dark:border-gray-700/50 z-9999 bg-white dark:bg-gray-900 dark:text-white shadow-xs"
+			style="--w:100%; --maxw:180px; --radius:0.5rem; --px:0.25rem; --py:0.375rem; --b:1px solid; --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.5); --z:9999; --bgc:#fff; --dark-bgc:var(--color-gray-900, #171717); --dark-c:#fff"
+	class="shadow-xs"
 			sideOffset={6}
 			side="top"
 			align="start"
@@ -34,13 +35,13 @@
 		>
 			{#each devices as device}
 				<DropdownMenu.Item
-					class="flex gap-2 items-center px-3 py-2 text-sm  cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md"
+					style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --cur:pointer; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.375rem"
 					on:click={() => {
 						dispatch('change', device.deviceId);
 					}}
 				>
-					<div class="flex items-center">
-						<div class=" line-clamp-1">
+					<div style="--d:flex; --ai:center">
+						<div style="--line-clamp:1">
 							{device?.label ?? 'Camera'}
 						</div>
 					</div>

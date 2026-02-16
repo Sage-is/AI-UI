@@ -12,7 +12,7 @@
 {#if show}
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<div
-		class="absolute z-20 top-0 right-0 left-0 bottom-0 bg-white/20 dark:bg-black/5 w-full min-h-full h-full flex justify-center overflow-hidden overscroll-contain"
+		style="--pos:absolute; --z:20; --top:0; --right:0; --left:0; --bottom:0; --bgc:rgb(255 255 255 / 0.2); --dark-bgc:rgb(0 0 0 / 0.05); --w:100%; --minh:100%; --h:100%; --d:flex; --jc:center; --of:hidden; overscroll-behavior:contain"
 		on:mousedown={() => {
 			show = false;
 		}}
@@ -20,10 +20,11 @@
 	/>
 
 	<div
-		class="absolute z-30 shadow-xl {side === 'right' ? 'right-0' : 'left-0'} top-0 bottom-0"
+		style="--pos:absolute; --z:30; --shadow:5; --top:0; --bottom:0"
+	class="{side === 'right' ? 'right-0' : 'left-0'}"
 		transition:slide={{ duration: duration, axis: side === 'right' ? 'x' : 'y' }}
 	>
-		<div class="{className} h-full" style="width: {show ? width : '0px'}">
+		<div class="{className}" style="--h:100%; width: {show ? width : '0px'}">
 			<slot />
 		</div>
 	</div>

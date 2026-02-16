@@ -15,10 +15,10 @@
 
 <Modal size="sm" bind:show>
 	<div>
-		<div class=" flex justify-between dark:text-gray-300 px-5 pt-4 pb-2">
-			<div class=" text-lg font-medium self-center">{$i18n.t('Show your support!')}</div>
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300, #cdcdcd); --px:1.25rem; --pt:1rem; --pb:0.5rem">
+			<div style="--size:1.125rem; --weight:500; --as:center">{$i18n.t('Show your support!')}</div>
 			<button
-				class="self-center"
+				style="--as:center"
 				on:click={() => {
 					show = false;
 				}}
@@ -27,41 +27,41 @@
 			</button>
 		</div>
 
-		<div class="flex flex-col md:flex-row w-full px-5 pb-4 md:space-x-4 dark:text-gray-200">
-			<div class=" flex flex-col w-full sm:flex-row sm:justify-center sm:space-x-6">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1.25rem; --pb:1rem; --g-md:1rem; --dark-c:var(--color-gray-200, #e3e3e3)">
+			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				<form
-					class="flex flex-col w-full"
+					style="--d:flex; --fd:column; --w:100%"
 					on:submit|preventDefault={() => {
 						show = false;
 					}}
 				>
-					<div class="px-1 text-sm">
-						<div class="my-2">
+					<div style="--px:0.25rem; --size:0.875rem">
+						<div style="--my:0.5rem">
 							{$i18n.t(
 								'The developers behind this plugin are passionate volunteers from the community. If you find this plugin helpful, please consider contributing to its development.'
 							)}
 						</div>
 
-						<div class="my-2">
+						<div style="--my:0.5rem">
 							{$i18n.t(
 								'Your entire contribution will go directly to the plugin developer; Sage.is AI does not take any percentage. However, the chosen funding platform might have its own fees.'
 							)}
 						</div>
 
-						<hr class="dark:border-gray-800 my-3" />
-						<div class="my-2">
+						<hr style="--dark-bc:var(--color-gray-800, #333); --my:0.75rem" />
+						<div style="--my:0.5rem">
 							{$i18n.t('Support this plugin:')}
 							<a
 								href={manifest.funding_url}
 								target="_blank"
-								class="underline text-blue-400 hover:text-blue-300">{manifest.funding_url}</a
+								style="--td:underline; --c:#60a5fa; --hvr-c:#93c5fd">{manifest.funding_url}</a
 							>
 						</div>
 					</div>
 
-					<div class="flex justify-end pt-3 text-sm font-medium">
+					<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
 						<button
-							class=" px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-gray-100 transition rounded-lg flex flex-row space-x-1 items-center"
+							style="--px:1rem; --py:0.5rem; --bgc:#047857; --hvr-bgc:#065f46; --c:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --d:flex; --fd:row; --g:0.25rem; --ai:center"
 							type="submit"
 						>
 							{$i18n.t('Done')}

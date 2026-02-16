@@ -192,11 +192,11 @@ class Tools:
 	allowPublic={$user?.permissions?.sharing?.public_tools || $user?.role === 'admin'}
 />
 
-<div class=" flex flex-col justify-between w-full overflow-y-auto h-full">
-	<div class="mx-auto w-full md:px-0 h-full">
+<div style="--d:flex; --fd:column; --jc:space-between; --w:100%; --ofy:auto; --h:100%">
+	<div style="--mx:auto; --w:100%; --px-md:0; --h:100%">
 		<form
 			bind:this={formElement}
-			class=" flex flex-col max-h-[100dvh] h-full"
+			style="--d:flex; --fd:column; --maxh:100dvh; --h:100%"
 			on:submit|preventDefault={() => {
 				if (edit) {
 					submitHandler();
@@ -205,13 +205,13 @@ class Tools:
 				}
 			}}
 		>
-			<div class="flex flex-col flex-1 overflow-auto h-0 rounded-lg">
-				<div class="w-full mb-2 flex flex-col gap-0.5">
-					<div class="flex w-full items-center">
-						<div class=" shrink-0 mr-2">
+			<div style="--d:flex; --fd:column; --fx:1 1 0%; --of:auto; --h:0; --radius:0.5rem">
+				<div style="--w:100%; --mb:0.5rem; --d:flex; --fd:column; --g:0.125rem">
+					<div style="--d:flex; --w:100%; --ai:center">
+						<div style="--fs:0; --mr:0.5rem">
 							<Tooltip content={$i18n.t('Back')}>
 								<button
-									class="w-full text-left text-sm py-1.5 px-1 rounded-lg dark:text-gray-300 dark:hover:text-white hover:bg-black/5 dark:hover:bg-gray-850"
+									style="--w:100%; --ta:left; --size:0.875rem; --py:0.375rem; --px:0.25rem; --radius:0.5rem; --dark-c:var(--color-gray-300, #cdcdcd); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:var(--color-gray-850, #262626)"
 									on:click={() => {
 										goto('/workshop/tools');
 									}}
@@ -222,10 +222,11 @@ class Tools:
 							</Tooltip>
 						</div>
 
-						<div class="flex-1">
+						<div style="--fx:1 1 0%">
 							<Tooltip content={$i18n.t('e.g. My Tools')} placement="top-start">
 								<input
-									class="w-full text-2xl font-medium bg-transparent outline-hidden font-primary"
+									style="--w:100%; --size:1.5rem; --weight:500; --bgc:transparent; --oe:none"
+	class="font-primary"
 									type="text"
 									placeholder={$i18n.t('Tool Name')}
 									bind:value={name}
@@ -234,9 +235,9 @@ class Tools:
 							</Tooltip>
 						</div>
 
-						<div class="self-center shrink-0">
+						<div style="--as:center; --fs:0">
 							<button
-								class="bg-gray-50 hover:bg-gray-100 text-black dark:bg-gray-850 dark:hover:bg-gray-800 dark:text-white transition px-2 py-1 rounded-full flex gap-1 items-center"
+								style="--bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --c:#000; --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --px:0.5rem; --py:0.25rem; --radius:9999px; --d:flex; --g:0.25rem; --ai:center"
 								type="button"
 								on:click={() => {
 									showAccessControlModal = true;
@@ -244,22 +245,23 @@ class Tools:
 							>
 								<LockClosed strokeWidth="2.5" className="size-3.5" />
 
-								<div class="text-sm font-medium shrink-0">
+								<div style="--size:0.875rem; --weight:500; --fs:0">
 									{$i18n.t('Access')}
 								</div>
 							</button>
 						</div>
 					</div>
 
-					<div class=" flex gap-2 px-1 items-center">
+					<div style="--d:flex; --g:0.5rem; --px:0.25rem; --ai:center">
 						{#if edit}
-							<div class="text-sm text-gray-500 shrink-0">
+							<div style="--size:0.875rem; --c:var(--color-gray-500, #9b9b9b); --fs:0">
 								{id}
 							</div>
 						{:else}
 							<Tooltip className="w-full" content={$i18n.t('e.g. my_tools')} placement="top-start">
 								<input
-									class="w-full text-sm disabled:text-gray-500 bg-transparent outline-hidden"
+									style="--w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+	class="disabled:text-gray-500"
 									type="text"
 									placeholder={$i18n.t('Tool ID')}
 									bind:value={id}
@@ -275,7 +277,7 @@ class Tools:
 							placement="top-start"
 						>
 							<input
-								class="w-full text-sm bg-transparent outline-hidden"
+								style="--w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
 								type="text"
 								placeholder={$i18n.t('Tool Description')}
 								bind:value={meta.description}
@@ -285,7 +287,7 @@ class Tools:
 					</div>
 				</div>
 
-				<div class="mb-2 flex-1 overflow-auto h-0 rounded-lg">
+				<div style="--mb:0.5rem; --fx:1 1 0%; --of:auto; --h:0; --radius:0.5rem">
 					<CodeEditor
 						bind:this={codeEditor}
 						value={content}
@@ -302,19 +304,19 @@ class Tools:
 					/>
 				</div>
 
-				<div class="pb-3 flex justify-between">
-					<div class="flex-1 pr-3">
-						<div class="text-xs text-gray-500 line-clamp-2">
-							<span class=" font-semibold dark:text-gray-200">{$i18n.t('Warning:')}</span>
+				<div style="--pb:0.75rem; --d:flex; --jc:space-between">
+					<div style="--fx:1 1 0%; --pr:0.75rem">
+						<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --line-clamp:2">
+							<span style="--weight:600; --dark-c:var(--color-gray-200, #e3e3e3)">{$i18n.t('Warning:')}</span>
 							{$i18n.t('Tools are a function calling system with arbitrary code execution')} <br />—
-							<span class=" font-medium dark:text-gray-400"
+							<span style="--weight:500; --dark-c:var(--color-gray-400, #b4b4b4)"
 								>{$i18n.t(`don't install random tools from sources you don't trust.`)}</span
 							>
 						</div>
 					</div>
 
 					<button
-						class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+						style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 						type="submit"
 					>
 						{$i18n.t('Save')}
@@ -331,11 +333,11 @@ class Tools:
 		submitHandler();
 	}}
 >
-	<div class="text-sm text-gray-500">
-		<div class=" bg-yellow-500/20 text-yellow-700 dark:text-yellow-200 rounded-lg px-4 py-3">
+	<div style="--size:0.875rem; --c:var(--color-gray-500, #9b9b9b)">
+		<div style="--bgc:rgb(234 179 8 / 0.2); --c:#a16207; --dark-c:#fef08a; --radius:0.5rem; --px:1rem; --py:0.75rem">
 			<div>{$i18n.t('Please carefully review the following warnings:')}</div>
 
-			<ul class=" mt-1 list-disc pl-4 text-xs">
+			<ul style="--mt:0.25rem; list-style-type:disc; --pl:1rem; --size:0.75rem">
 				<li>
 					{$i18n.t('Tools have a function calling system that allows arbitrary code execution.')}
 				</li>
@@ -343,7 +345,7 @@ class Tools:
 			</ul>
 		</div>
 
-		<div class="my-3">
+		<div style="--my:0.75rem">
 			{$i18n.t(
 				'I acknowledge that I have read and I understand the implications of my action. I am aware of the risks associated with executing arbitrary code and I have verified the trustworthiness of the source.'
 			)}

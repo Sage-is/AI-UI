@@ -59,12 +59,12 @@
 
 <Modal size="lg" bind:show>
 	<div>
-		<div class=" flex justify-between dark:text-gray-300 px-5 pt-4 pb-2">
-			<div class=" text-lg font-medium self-center capitalize">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300, #cdcdcd); --px:1.25rem; --pt:1rem; --pb:0.5rem">
+			<div style="--size:1.125rem; --weight:500; --as:center; --tt:capitalize">
 				{$i18n.t('Citation')}
 			</div>
 			<button
-				class="self-center"
+				style="--as:center"
 				on:click={() => {
 					show = false;
 				}}
@@ -73,13 +73,14 @@
 			</button>
 		</div>
 
-		<div class="flex flex-col md:flex-row w-full px-6 pb-5 md:space-x-4">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1.5rem; --pb:1.25rem; --g-md:1rem">
 			<div
-				class="flex flex-col w-full dark:text-gray-200 overflow-y-scroll max-h-[22rem] scrollbar-hidden"
+				style="--d:flex; --fd:column; --w:100%; --dark-c:var(--color-gray-200, #e3e3e3); --ofy:scroll; --maxh:22rem"
+	class="scrollbar-hidden"
 			>
 				{#each mergedDocuments as document, documentIdx}
-					<div class="flex flex-col w-full">
-						<div class="text-sm font-medium dark:text-gray-300">
+					<div style="--d:flex; --fd:column; --w:100%">
+						<div style="--size:0.875rem; --weight:500; --dark-c:var(--color-gray-300, #cdcdcd)">
 							{$i18n.t('Source')}
 						</div>
 
@@ -90,9 +91,9 @@
 								placement="top-start"
 								tippyOptions={{ duration: [500, 0] }}
 							>
-								<div class="text-sm dark:text-gray-400 flex items-center gap-2 w-fit">
+								<div style="--size:0.875rem; --dark-c:var(--color-gray-400, #b4b4b4); --d:flex; --ai:center; --g:0.5rem; --w:fit-content">
 									<a
-										class="hover:text-gray-500 dark:hover:text-gray-100 underline grow"
+										style="--hvr-c:var(--color-gray-500, #9b9b9b); --hvr-dark-c:var(--color-gray-100, #ececec); --td:underline; --fg:1"
 										href={document?.metadata?.file_id
 											? `${WEBUI_API_BASE_URL}/files/${document?.metadata?.file_id}/content${document?.metadata?.page !== undefined ? `#page=${document.metadata.page + 1}` : ''}`
 											: document.source?.url?.includes('http')
@@ -103,7 +104,7 @@
 										{decodeString(document?.metadata?.name ?? document.source.name)}
 									</a>
 									{#if Number.isInteger(document?.metadata?.page)}
-										<span class="text-xs text-gray-500 dark:text-gray-400">
+										<span style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4)">
 											({$i18n.t('page')}
 											{document.metadata.page + 1})
 										</span>
@@ -111,18 +112,18 @@
 								</div>
 							</Tooltip>
 							{#if document.metadata?.parameters}
-								<div class="text-sm font-medium dark:text-gray-300 mt-2">
+								<div style="--size:0.875rem; --weight:500; --dark-c:var(--color-gray-300, #cdcdcd); --mt:0.5rem">
 									{$i18n.t('Parameters')}
 								</div>
 								<pre
-									class="text-sm dark:text-gray-400 bg-gray-50 dark:bg-gray-800 p-2 rounded-md overflow-auto max-h-40">{JSON.stringify(
+									style="--size:0.875rem; --dark-c:var(--color-gray-400, #b4b4b4); --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-800, #333); --p:0.5rem; --radius:0.375rem; --of:auto; --maxh:10rem">{JSON.stringify(
 										document.metadata.parameters,
 										null,
 										2
 									)}</pre>
 							{/if}
 							{#if showRelevance}
-								<div class="text-sm font-medium dark:text-gray-300 mt-2">
+								<div style="--size:0.875rem; --weight:500; --dark-c:var(--color-gray-300, #cdcdcd); --mt:0.5rem">
 									{$i18n.t('Relevance')}
 								</div>
 								{#if document.distance !== undefined}
@@ -132,7 +133,7 @@
 										placement="top-start"
 										tippyOptions={{ duration: [500, 0] }}
 									>
-										<div class="text-sm my-1 dark:text-gray-400 flex items-center gap-2 w-fit">
+										<div style="--size:0.875rem; --my:0.25rem; --dark-c:var(--color-gray-400, #b4b4b4); --d:flex; --ai:center; --g:0.5rem; --w:fit-content">
 											{#if showPercentage}
 												{@const percentage = calculatePercentage(document.distance)}
 
@@ -145,49 +146,49 @@
 												{/if}
 
 												{#if typeof document?.distance === 'number'}
-													<span class="text-gray-500 dark:text-gray-500">
+													<span style="--c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-500, #9b9b9b)">
 														({(document?.distance ?? 0).toFixed(4)})
 													</span>
 												{/if}
 											{:else if typeof document?.distance === 'number'}
-												<span class="text-gray-500 dark:text-gray-500">
+												<span style="--c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-500, #9b9b9b)">
 													({(document?.distance ?? 0).toFixed(4)})
 												</span>
 											{/if}
 										</div>
 									</Tooltip>
 								{:else}
-									<div class="text-sm dark:text-gray-400">
+									<div style="--size:0.875rem; --dark-c:var(--color-gray-400, #b4b4b4)">
 										{$i18n.t('No distance available')}
 									</div>
 								{/if}
 							{/if}
 						{:else}
-							<div class="text-sm dark:text-gray-400">
+							<div style="--size:0.875rem; --dark-c:var(--color-gray-400, #b4b4b4)">
 								{$i18n.t('No source available')}
 							</div>
 						{/if}
 					</div>
-					<div class="flex flex-col w-full">
-						<div class=" text-sm font-medium dark:text-gray-300 mt-2">
+					<div style="--d:flex; --fd:column; --w:100%">
+						<div style="--size:0.875rem; --weight:500; --dark-c:var(--color-gray-300, #cdcdcd); --mt:0.5rem">
 							{$i18n.t('Content')}
 						</div>
 						{#if document.metadata?.html}
 							<iframe
-								class="w-full border-0 h-auto rounded-none"
+								style="--w:100%; --bw:0; --h:auto; --radius:0"
 								sandbox="allow-scripts allow-forms allow-same-origin"
 								srcdoc={document.document}
 								title={$i18n.t('Content')}
 							></iframe>
 						{:else}
-							<pre class="text-sm dark:text-gray-400 whitespace-pre-line">
+							<pre style="--size:0.875rem; --dark-c:var(--color-gray-400, #b4b4b4); --ws:pre-line">
                 {document.document}
               </pre>
 						{/if}
 					</div>
 
 					{#if documentIdx !== mergedDocuments.length - 1}
-						<hr class="border-gray-100 dark:border-gray-850 my-3" />
+						<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.75rem" />
 					{/if}
 				{/each}
 			</div>

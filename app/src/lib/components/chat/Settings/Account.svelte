@@ -87,8 +87,8 @@
 	});
 </script>
 
-<div id="tab-account" class="flex flex-col h-full justify-between text-sm">
-	<div class=" overflow-y-scroll max-h-[28rem] lg:max-h-full">
+<div id="tab-account" style="--d:flex; --fd:column; --h:100%; --jc:space-between; --size:0.875rem">
+	<div style="--ofy:scroll; --maxh:28rem; --maxh-lg:100%">
 		<input
 			id="profile-image-input"
 			bind:this={profileImageInputElement}
@@ -151,14 +151,14 @@
 			}}
 		/>
 
-		<div class="space-y-1">
-			<!-- <div class=" text-sm font-medium">{$i18n.t('Account')}</div> -->
+		<div style="--g:0.25rem">
+			<!-- <div style="--size:0.875rem; --weight:500">{$i18n.t('Account')}</div> -->
 
-			<div class="flex space-x-5">
-				<div class="flex flex-col">
-					<div class="self-center mt-2">
+			<div style="--d:flex; --g:1.25rem">
+				<div style="--d:flex; --fd:column">
+					<div style="--as:center; --mt:0.5rem">
 						<button
-							class="relative rounded-full dark:bg-gray-700"
+							style="--pos:relative; --radius:9999px; --dark-bgc:var(--color-gray-700, #4e4e4e)"
 							type="button"
 							on:click={() => {
 								profileImageInputElement.click();
@@ -167,18 +167,19 @@
 							<img
 								src={profileImageUrl !== '' ? profileImageUrl : generateInitialsImage(name)}
 								alt="profile"
-								class=" rounded-full size-16 object-cover"
+								style="--radius:9999px; --w:4rem; --h:4rem; --objf:cover"
 							/>
 
 							<div
-								class="absolute flex justify-center rounded-full bottom-0 left-0 right-0 top-0 h-full w-full overflow-hidden bg-gray-700 bg-fixed opacity-0 transition duration-300 ease-in-out hover:opacity-50"
+								style="--pos:absolute; --d:flex; --jc:center; --radius:9999px; --bottom:0; --left:0; --right:0; --top:0; --h:100%; --w:100%; --of:hidden; --bgc:var(--color-gray-700, #4e4e4e); --op:0; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:300ms; --ttf:cubic-bezier(0.4, 0, 0.2, 1); --hvr-op:0.5"
+	class="bg-fixed"
 							>
-								<div class="my-auto text-gray-100">
+								<div style="--my:auto; --c:var(--color-gray-100, #ececec)">
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										viewBox="0 0 20 20"
 										fill="currentColor"
-										class="w-5 h-5"
+										style="--w:1.25rem; --h:1.25rem"
 									>
 										<path
 											d="m2.695 14.762-1.262 3.155a.5.5 0 0 0 .65.65l3.155-1.262a4 4 0 0 0 1.343-.886L17.5 5.501a2.121 2.121 0 0 0-3-3L3.58 13.419a4 4 0 0 0-.885 1.343Z"
@@ -190,12 +191,12 @@
 					</div>
 				</div>
 
-				<div class="flex-1 flex flex-col self-center gap-0.5">
-					<div class=" mb-0.5 text-sm font-medium">{$i18n.t('Profile Image')}</div>
+				<div style="--fx:1 1 0%; --d:flex; --fd:column; --as:center; --g:0.125rem">
+					<div style="--mb:0.125rem; --size:0.875rem; --weight:500">{$i18n.t('Profile Image')}</div>
 
 					<div>
 						<button
-							class=" text-xs text-center text-gray-800 dark:text-gray-400 rounded-full px-4 py-0.5 bg-gray-100 dark:bg-gray-850"
+							style="--size:0.75rem; --ta:center; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-400, #b4b4b4); --radius:9999px; --px:1rem; --py:0.125rem; --bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-850, #262626)"
 							on:click={async () => {
 								if (canvasPixelTest()) {
 									profileImageUrl = generateInitialsImage(name);
@@ -213,7 +214,7 @@
 						>
 
 						<button
-							class=" text-xs text-center text-gray-800 dark:text-gray-400 rounded-full px-4 py-0.5 bg-gray-100 dark:bg-gray-850"
+							style="--size:0.75rem; --ta:center; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-400, #b4b4b4); --radius:9999px; --px:1rem; --py:0.125rem; --bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-850, #262626)"
 							on:click={async () => {
 								const url = await getGravatarUrl(localStorage.token, $user?.email);
 
@@ -222,7 +223,7 @@
 						>
 
 						<button
-							class=" text-xs text-center text-gray-800 dark:text-gray-400 rounded-lg px-2 py-1"
+							style="--size:0.75rem; --ta:center; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-400, #b4b4b4); --radius:0.5rem; --px:0.5rem; --py:0.25rem"
 							on:click={async () => {
 								profileImageUrl = `${WEBUI_BASE_URL}/static/user.png`;
 							}}>{$i18n.t('Remove')}</button
@@ -231,13 +232,13 @@
 				</div>
 			</div>
 
-			<div class="pt-0.5">
-				<div class="flex flex-col w-full">
-					<div class=" mb-1 text-xs font-medium">{$i18n.t('Name')}</div>
+			<div style="--pt:0.125rem">
+				<div style="--d:flex; --fd:column; --w:100%">
+					<div style="--mb:0.25rem; --size:0.75rem; --weight:500">{$i18n.t('Name')}</div>
 
-					<div class="flex-1">
+					<div style="--fx:1 1 0%">
 						<input
-							class="w-full text-sm dark:text-gray-300 bg-transparent outline-hidden"
+							style="--w:100%; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --bgc:transparent; --oe:none"
 							type="text"
 							bind:value={name}
 							required
@@ -248,13 +249,13 @@
 			</div>
 
 			{#if $config?.features?.enable_user_webhooks}
-				<div class="pt-2">
-					<div class="flex flex-col w-full">
-						<div class=" mb-1 text-xs font-medium">{$i18n.t('Notification Webhook')}</div>
+				<div style="--pt:0.5rem">
+					<div style="--d:flex; --fd:column; --w:100%">
+						<div style="--mb:0.25rem; --size:0.75rem; --weight:500">{$i18n.t('Notification Webhook')}</div>
 
-						<div class="flex-1">
+						<div style="--fx:1 1 0%">
 							<input
-								class="w-full rounded-lg py-2 px-4 text-sm dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
 								type="url"
 								placeholder={$i18n.t('Enter your webhook URL')}
 								bind:value={webhookUrl}
@@ -266,17 +267,17 @@
 			{/if}
 		</div>
 
-		<hr class="border-gray-50 dark:border-gray-850 my-2" />
+		<hr style="--bc:var(--color-gray-50, #f9f9f9); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem" />
 
-		<div class="my-2">
+		<div style="--my:0.5rem">
 			<UpdatePassword />
 		</div>
 
 		{#if ($config?.features?.enable_api_key ?? true) || $user?.role === 'admin'}
-			<div class="flex justify-between items-center text-sm mb-2">
-				<div class="  font-medium">{$i18n.t('API keys')}</div>
+			<div style="--d:flex; --jc:space-between; --ai:center; --size:0.875rem; --mb:0.5rem">
+				<div style="--weight:500">{$i18n.t('API keys')}</div>
 				<button
-					class=" text-xs font-medium text-gray-500"
+					style="--size:0.75rem; --weight:500; --c:var(--color-gray-500, #9b9b9b)"
 					type="button"
 					on:click={() => {
 						showAPIKeys = !showAPIKeys;
@@ -285,18 +286,18 @@
 			</div>
 
 			{#if showAPIKeys}
-				<div class="flex flex-col gap-4">
+				<div style="--d:flex; --fd:column; --g:1rem">
 					{#if $user?.role === 'admin'}
-						<div class="justify-between w-full">
-							<div class="flex justify-between w-full">
-								<div class="self-center text-xs font-medium mb-1">{$i18n.t('JWT Token')}</div>
+						<div style="--jc:space-between; --w:100%">
+							<div style="--d:flex; --jc:space-between; --w:100%">
+								<div style="--as:center; --size:0.75rem; --weight:500; --mb:0.25rem">{$i18n.t('JWT Token')}</div>
 							</div>
 
-							<div class="flex">
+							<div style="--d:flex">
 								<SensitiveInput value={localStorage.token} readOnly={true} />
 
 								<button
-									class="ml-1.5 px-1.5 py-1 dark:hover:bg-gray-850 transition rounded-lg"
+									style="--ml:0.375rem; --px:0.375rem; --py:0.25rem; --hvr-dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
 									on:click={() => {
 										copyToClipboard(localStorage.token);
 										JWTTokenCopied = true;
@@ -310,7 +311,7 @@
 											xmlns="http://www.w3.org/2000/svg"
 											viewBox="0 0 20 20"
 											fill="currentColor"
-											class="w-4 h-4"
+											style="--w:1rem; --h:1rem"
 										>
 											<path
 												fill-rule="evenodd"
@@ -323,7 +324,7 @@
 											xmlns="http://www.w3.org/2000/svg"
 											viewBox="0 0 16 16"
 											fill="currentColor"
-											class="w-4 h-4"
+											style="--w:1rem; --h:1rem"
 										>
 											<path
 												fill-rule="evenodd"
@@ -343,18 +344,18 @@
 					{/if}
 
 					{#if $config?.features?.enable_api_key ?? true}
-						<div class="justify-between w-full">
+						<div style="--jc:space-between; --w:100%">
 							{#if $user?.role === 'admin'}
-								<div class="flex justify-between w-full">
-									<div class="self-center text-xs font-medium mb-1">{$i18n.t('API Key')}</div>
+								<div style="--d:flex; --jc:space-between; --w:100%">
+									<div style="--as:center; --size:0.75rem; --weight:500; --mb:0.25rem">{$i18n.t('API Key')}</div>
 								</div>
 							{/if}
-							<div class="flex">
+							<div style="--d:flex">
 								{#if APIKey}
 									<SensitiveInput value={APIKey} readOnly={true} />
 
 									<button
-										class="ml-1.5 px-1.5 py-1 dark:hover:bg-gray-850 transition rounded-lg"
+										style="--ml:0.375rem; --px:0.375rem; --py:0.25rem; --hvr-dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
 										on:click={() => {
 											copyToClipboard(APIKey);
 											APIKeyCopied = true;
@@ -368,7 +369,7 @@
 												xmlns="http://www.w3.org/2000/svg"
 												viewBox="0 0 20 20"
 												fill="currentColor"
-												class="w-4 h-4"
+												style="--w:1rem; --h:1rem"
 											>
 												<path
 													fill-rule="evenodd"
@@ -381,7 +382,7 @@
 												xmlns="http://www.w3.org/2000/svg"
 												viewBox="0 0 16 16"
 												fill="currentColor"
-												class="w-4 h-4"
+												style="--w:1rem; --h:1rem"
 											>
 												<path
 													fill-rule="evenodd"
@@ -399,7 +400,8 @@
 
 									<Tooltip content={$i18n.t('Create new key')}>
 										<button
-											class=" px-1.5 py-1 dark:hover:bg-gray-850transition rounded-lg"
+											style="--px:0.375rem; --py:0.25rem; --radius:0.5rem"
+	class="dark:hover:bg-gray-850transition"
 											on:click={() => {
 												createAPIKeyHandler();
 											}}
@@ -410,7 +412,7 @@
 												viewBox="0 0 24 24"
 												stroke-width="2"
 												stroke="currentColor"
-												class="size-4"
+												style="--w:1rem; --h:1rem"
 											>
 												<path
 													stroke-linecap="round"
@@ -422,7 +424,7 @@
 									</Tooltip>
 								{:else}
 									<button
-										class="flex gap-1.5 items-center font-medium px-3.5 py-1.5 rounded-lg bg-gray-100/70 hover:bg-gray-100 dark:bg-gray-850 dark:hover:bg-gray-850 transition"
+										style="--d:flex; --g:0.375rem; --ai:center; --weight:500; --px:0.875rem; --py:0.375rem; --radius:0.5rem; --bgc:rgb(236 236 236 / 0.7); --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 										on:click={() => {
 											createAPIKeyHandler();
 										}}
@@ -440,9 +442,9 @@
 		{/if}
 	</div>
 
-	<div class="flex justify-end pt-3 text-sm font-medium">
+	<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
 		<button
-			class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			on:click={async () => {
 				const res = await submitHandler();
 

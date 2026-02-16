@@ -22,12 +22,13 @@
 	};
 </script>
 
-<div class="px-0.5 flex {showTagInput ? 'flex-row-reverse' : ''}">
+<div style="--px:0.125rem; --d:flex"
+	class="{showTagInput ? 'flex-row-reverse' : ''}">
 	{#if showTagInput}
-		<div class="flex items-center">
+		<div style="--d:flex; --ai:center">
 			<input
 				bind:value={tagName}
-				class=" px-2 cursor-pointer self-center text-xs h-fit bg-transparent outline-hidden line-clamp-1 w-[6.5rem]"
+				style="--px:0.5rem; --cur:pointer; --as:center; --size:0.75rem; --h:fit-content; --bgc:transparent; --oe:none; --line-clamp:1; --w:6.5rem"
 				placeholder={$i18n.t('Add a tag')}
 				aria-label={$i18n.t('Add a tag')}
 				list="tagOptions"
@@ -50,7 +51,7 @@
 					fill="currentColor"
 					stroke-width="2"
 					aria-hidden="true"
-					class="w-3 h-3"
+					style="--w:0.75rem; --h:0.75rem"
 				>
 					<path
 						fill-rule="evenodd"
@@ -63,20 +64,21 @@
 	{/if}
 
 	<button
-		class=" cursor-pointer self-center p-0.5 flex h-fit items-center dark:hover:bg-gray-700 rounded-full transition border dark:border-gray-600 border-dashed"
+		style="--cur:pointer; --as:center; --p:0.125rem; --d:flex; --h:fit-content; --ai:center; --hvr-dark-bgc:var(--color-gray-700, #4e4e4e); --radius:9999px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --b:1px solid; --dark-bc:var(--color-gray-600, #676767); --bs:dashed; --lh:0.4"
 		type="button"
 		aria-label={$i18n.t('Add Tag')}
 		on:click={() => {
 			showTagInput = !showTagInput;
 		}}
 	>
-		<div class=" m-auto self-center">
+		<div style="--m:auto; --as:center">
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox="0 0 16 16"
 				aria-hidden="true"
 				fill="currentColor"
-				class="w-3 h-3 {showTagInput ? 'rotate-45' : ''} transition-all transform"
+				style="--w:0.75rem; --h:0.75rem; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{showTagInput ? 'rotate-45' : ''} transform"
 			>
 				<path
 					d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z"
@@ -86,6 +88,6 @@
 	</button>
 
 	{#if label && !showTagInput}
-		<span class="text-xs pl-2 self-center">{label}</span>
+		<span style="--size:0.75rem; --pl:0.5rem; --as:center">{label}</span>
 	{/if}
 </div>

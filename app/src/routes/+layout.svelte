@@ -626,10 +626,10 @@
 </svelte:head>
 
 {#if $isApp}
-	<div class="flex flex-row h-screen">
+	<div style="--d:flex; --fd:row; --h:100vh">
 		<AppSidebar />
 
-		<div class="w-full flex-1 max-w-[calc(100%-4.5rem)]">
+		<div style="--w:100%; --fx:1 1 0%; --maxw:calc(100%-4.5rem)">
 			<slot />
 		</div>
 	</div>

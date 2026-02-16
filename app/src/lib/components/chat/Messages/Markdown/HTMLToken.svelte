@@ -27,7 +27,7 @@
 		{#if videoSrc}
 			<!-- svelte-ignore a11y-media-has-caption -->
 			<video
-				class="w-full my-2"
+				style="--w:100%; --my:0.5rem"
 				src={videoSrc.replaceAll('&amp;', '&')}
 				title="Video player"
 				frameborder="0"
@@ -44,7 +44,7 @@
 		{#if audioSrc}
 			<!-- svelte-ignore a11y-media-has-caption -->
 			<audio
-				class="w-full my-2"
+				style="--w:100%; --my:0.5rem"
 				src={audioSrc.replaceAll('&amp;', '&')}
 				title="Audio player"
 				controls
@@ -59,7 +59,7 @@
 		{@const ytId = match && match[1]}
 		{#if ytId}
 			<iframe
-				class="w-full aspect-video my-2"
+				style="--w:100%; aspect-ratio:16 / 9; --my:0.5rem"
 				src={`https://www.youtube.com/embed/${ytId}`}
 				title="YouTube video player"
 				frameborder="0"
@@ -74,7 +74,7 @@
 		{@const iframeSrc = match && match[1]}
 		{#if iframeSrc}
 			<iframe
-				class="w-full my-2"
+				style="--w:100%; --my:0.5rem"
 				src={iframeSrc}
 				title="Embedded content"
 				frameborder="0"
@@ -89,11 +89,12 @@
 		{@const statusTitle = match && match[1]}
 		{@const statusDone = match && match[2] === 'true'}
 		{#if statusTitle}
-			<div class="flex flex-col justify-center -space-y-0.5">
+			<div style="--d:flex; --fd:column; --jc:center; --g:-0.125rem">
 				<div
-					class="{statusDone === false
+					style="--c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-500, #9b9b9b); --line-clamp:1; text-wrap:wrap"
+	class="{statusDone === false
 						? 'shimmer'
-						: ''} text-gray-500 dark:text-gray-500 line-clamp-1 text-wrap"
+						: ''}"
 				>
 					{statusTitle}
 				</div>
@@ -106,7 +107,7 @@
 		{@const fileId = match && match[1]}
 		{#if fileId}
 			<iframe
-				class="w-full my-2"
+				style="--w:100%; --my:0.5rem"
 				src={`${WEBUI_BASE_URL}/api/v1/files/${fileId}/content/html`}
 				title="Content"
 				frameborder="0"

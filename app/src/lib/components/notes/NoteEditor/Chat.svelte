@@ -327,10 +327,10 @@ Based on the user's instruction, update and enhance the existing notes or select
 	});
 </script>
 
-<div class="flex items-center mb-1.5 pt-1.5">
-	<div class=" -translate-x-1.5 flex items-center">
+<div style="--d:flex; --ai:center; --mb:0.375rem; --pt:0.375rem">
+	<div style="--translatex:-0.375rem; --d:flex; --ai:center">
 		<button
-			class="p-0.5 bg-transparent transition rounded-lg"
+			style="--p:0.125rem; --bgc:transparent; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
 			on:click={() => {
 				show = !show;
 			}}
@@ -339,7 +339,7 @@ Based on the user's instruction, update and enhance the existing notes or select
 		</button>
 	</div>
 
-	<div class=" font-medium text-base flex items-center gap-1">
+	<div style="--weight:500; --size:1rem; --d:flex; --ai:center; --g:0.25rem">
 		<div>
 			{$i18n.t('Chat')}
 		</div>
@@ -352,34 +352,37 @@ Based on the user's instruction, update and enhance the existing notes or select
 				position="top"
 				className="inline-block"
 			>
-				<span class="text-gray-500 text-sm">({$i18n.t('Experimental')})</span>
+				<span style="--c:var(--color-gray-500, #9b9b9b); --size:0.875rem">({$i18n.t('Experimental')})</span>
 			</Tooltip>
 		</div>
 	</div>
 </div>
 
-<div class="flex flex-col items-center mb-2 flex-1 @container">
-	<div class=" flex flex-col justify-between w-full overflow-y-auto h-full">
-		<div class="mx-auto w-full md:px-0 h-full relative">
-			<div class=" flex flex-col h-full">
+<div style="--d:flex; --fd:column; --ai:center; --mb:0.5rem; --fx:1 1 0%; "
+	class="@container">
+	<div style="--d:flex; --fd:column; --jc:space-between; --w:100%; --ofy:auto; --h:100%">
+		<div style="--mx:auto; --w:100%; --px-md:0; --h:100%; --pos:relative">
+			<div style="--d:flex; --fd:column; --h:100%">
 				<div
-					class=" pb-2.5 flex flex-col justify-between w-full flex-auto overflow-auto h-0 scrollbar-hidden"
+					style="--pb:0.625rem; --d:flex; --fd:column; --jc:space-between; --w:100%; --fx:1 1 auto; --of:auto; --h:0"
+	class="scrollbar-hidden"
 					id="messages-container"
 					bind:this={messagesContainerElement}
 					on:scroll={onScroll}
 				>
-					<div class=" h-full w-full flex flex-col">
-						<div class="flex-1 p-1">
+					<div style="--h:100%; --w:100%; --d:flex; --fd:column">
+						<div style="--fx:1 1 0%; --p:0.25rem">
 							<Messages bind:messages {onInsert} />
 						</div>
 					</div>
 				</div>
 
-				<div class=" pb-2">
+				<div style="--pb:0.5rem">
 					{#if selectedContent}
-						<div class="text-xs rounded-xl px-3.5 py-3 w-full markdown-prose-xs">
+						<div style="--size:0.75rem; --radius:0.75rem; --px:0.875rem; --py:0.75rem; --w:100%"
+	class="markdown-prose-xs">
 							<blockquote>
-								<div class=" line-clamp-3">
+								<div style="--line-clamp:3">
 									{selectedContent?.text}
 								</div>
 							</blockquote>
@@ -394,7 +397,7 @@ Based on the user's instruction, update and enhance the existing notes or select
 						onSubmit={submitHandler}
 						{onStop}
 					>
-						<div slot="menu" class="flex items-center justify-between gap-2 w-full pr-1">
+						<div slot="menu" style="--d:flex; --ai:center; --jc:space-between; --g:0.5rem; --w:100%; --pr:0.25rem">
 							<div>
 								<Tooltip content={$i18n.t('Edit')} placement="top">
 									<button
@@ -405,13 +408,14 @@ Based on the user's instruction, update and enhance the existing notes or select
 										}}
 										disabled={streaming || loading}
 										type="button"
-										class="px-2 @xl:px-2.5 py-2 flex gap-1.5 items-center text-sm rounded-full transition-colors duration-300 focus:outline-hidden max-w-full overflow-hidden hover:bg-gray-50 dark:hover:bg-gray-800 {editEnabled
+										style="--px:0.5rem; --py:0.5rem; --d:flex; --g:0.375rem; --ai:center; --size:0.875rem; --radius:9999px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:300ms; --maxw:100%; --of:hidden; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333)"
+	class="@xl:px-2.5 focus:outline-hidden {editEnabled
 											? ' text-sky-500 dark:text-sky-300 bg-sky-50 dark:bg-sky-200/5'
 											: 'bg-transparent text-gray-600 dark:text-gray-300 '} disabled:opacity-50 disabled:pointer-events-none"
 									>
 										<PencilSquare className="size-4" strokeWidth="1.75" />
 										<span
-											class="block whitespace-nowrap overflow-hidden text-ellipsis leading-none pr-0.5"
+											style="--d:block; --ws:nowrap; --of:hidden; text-overflow:ellipsis; --lh:1; --pr:0.125rem"
 											>{$i18n.t('Edit')}</span
 										>
 									</button>
@@ -420,11 +424,11 @@ Based on the user's instruction, update and enhance the existing notes or select
 
 							<Tooltip content={selectedModelId}>
 								<select
-									class=" bg-transparent rounded-lg py-1 px-2 -mx-0.5 text-sm outline-hidden w-full text-right pr-5"
+									style="--bgc:transparent; --radius:0.5rem; --py:0.25rem; --px:0.5rem; --mx:-0.125rem; --size:0.875rem; --oe:none; --w:100%; --ta:right; --pr:1.25rem"
 									bind:value={selectedModelId}
 								>
 									{#each $models as model}
-										<option value={model.id} class="bg-gray-50 dark:bg-gray-700"
+										<option value={model.id} style="--bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-700, #4e4e4e)"
 											>{model.name}</option
 										>
 									{/each}

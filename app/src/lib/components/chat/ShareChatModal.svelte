@@ -83,10 +83,10 @@
 
 <Modal bind:show size="md">
 	<div>
-		<div class=" flex justify-between dark:text-gray-300 px-5 pt-4 pb-0.5">
-			<div class=" text-lg font-medium self-center">{$i18n.t('Share Chat')}</div>
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300, #cdcdcd); --px:1.25rem; --pt:1rem; --pb:0.125rem">
+			<div style="--size:1.125rem; --weight:500; --as:center">{$i18n.t('Share Chat')}</div>
 			<button
-				class="self-center"
+				style="--as:center"
 				on:click={() => {
 					show = false;
 				}}
@@ -96,16 +96,16 @@
 		</div>
 
 		{#if chat}
-			<div class="px-5 pt-4 pb-5 w-full flex flex-col justify-center">
-				<div class=" text-sm dark:text-gray-300 mb-1">
+			<div style="--px:1.25rem; --pt:1rem; --pb:1.25rem; --w:100%; --d:flex; --fd:column; --jc:center">
+				<div style="--size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --mb:0.25rem">
 					{#if chat.share_id}
 						<a href="/s/{chat.share_id}" target="_blank"
 							>{$i18n.t('You have shared this chat')}
-							<span class=" underline">{$i18n.t('before')}</span>.</a
+							<span style="--td:underline">{$i18n.t('before')}</span>.</a
 						>
 						{$i18n.t('Click here to')}
 						<button
-							class="underline"
+							style="--td:underline"
 							on:click={async () => {
 								const res = await deleteSharedChatById(localStorage.token, chatId);
 
@@ -123,12 +123,12 @@
 					{/if}
 				</div>
 
-				<div class="flex justify-end">
-					<div class="flex flex-col items-end space-x-1 mt-3">
-						<div class="flex gap-1">
+				<div style="--d:flex; --jc:flex-end">
+					<div style="--d:flex; --fd:column; --ai:flex-end; --g:0.25rem; --mt:0.75rem">
+						<div style="--d:flex; --g:0.25rem">
 							{#if $config?.features.enable_community_sharing}
 								<button
-									class="self-center flex items-center gap-1 px-3.5 py-2 text-sm font-medium bg-gray-100 hover:bg-gray-200 text-gray-800 dark:bg-gray-850 dark:text-white dark:hover:bg-gray-800 transition rounded-full"
+									style="--as:center; --d:flex; --ai:center; --g:0.25rem; --px:0.875rem; --py:0.5rem; --size:0.875rem; --weight:500; --bgc:var(--color-gray-100, #ececec); --hvr-bgc:var(--color-gray-200, #e3e3e3); --c:var(--color-gray-800, #333); --dark-bgc:var(--color-gray-850, #262626); --dark-c:#fff; --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 									type="button"
 									on:click={() => {
 										shareChat();
@@ -140,7 +140,7 @@
 							{/if}
 
 							<button
-								class="self-center flex items-center gap-1 px-3.5 py-2 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+								style="--as:center; --d:flex; --ai:center; --g:0.25rem; --px:0.875rem; --py:0.5rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 								type="button"
 								id="copy-and-share-chat-button"
 								on:click={async () => {

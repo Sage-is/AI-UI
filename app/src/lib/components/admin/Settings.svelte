@@ -92,10 +92,11 @@
 	});
 </script>
 
-<div class="flex flex-col lg:flex-row w-full h-full pb-2 lg:space-x-4">
+<div style="--d:flex; --fd:column; --fd-lg:row; --w:100%; --h:100%; --pb:0.5rem; --g-lg:1rem">
 	<div
 		id="admin-settings-tabs-container"
-		class="tabs flex flex-row overflow-x-auto gap-2.5 max-w-full lg:gap-1 lg:flex-col lg:flex-none lg:w-40 dark:text-gray-200 text-sm font-medium text-left scrollbar-none"
+		style="--d:flex; --fd:row; --ofx:auto; --g:0.625rem; --maxw:100%; --g-lg:0.25rem; --fd-lg:column; --fx-lg:none; --w-lg:10rem; --dark-c:var(--color-gray-200, #e3e3e3); --size:0.875rem; --weight:500; --ta:left"
+	class="tabs scrollbar-none"
 	>
 		<button
 			id="general"
@@ -104,12 +105,12 @@
 				goto('/admin/settings/general');
 			}}
 		>
-			<div class=" self-center mr-2">
+			<div style="--as:center; --mr:0.5rem">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 16 16"
 					fill="currentColor"
-					class="w-4 h-4"
+					style="--w:1rem; --h:1rem"
 				>
 					<path
 						fill-rule="evenodd"
@@ -118,7 +119,7 @@
 					/>
 				</svg>
 			</div>
-			<div class=" self-center">{$i18n.t('General')}</div>
+			<div style="--as:center">{$i18n.t('General')}</div>
 		</button>
 
 		<button
@@ -128,19 +129,19 @@
 				goto('/admin/settings/theme');
 			}}
 		>
-			<div class=" self-center mr-2">
+			<div style="--as:center; --mr:0.5rem">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 16 16"
 					fill="currentColor"
-					class="w-4 h-4"
+					style="--w:1rem; --h:1rem"
 				>
 					<path
 						d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0ZM4.5 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3ZM7 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM9.5 5.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3ZM12 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
 					/>
 				</svg>
 			</div>
-			<div class=" self-center">{$i18n.t('Theme')}  (Beta)</div>
+			<div style="--as:center">{$i18n.t('Theme')}  (Beta)</div>
 		</button>
 
 		<button
@@ -150,19 +151,19 @@
 				goto('/admin/settings/connections');
 			}}
 		>
-			<div class=" self-center mr-2">
+			<div style="--as:center; --mr:0.5rem">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 16 16"
 					fill="currentColor"
-					class="w-4 h-4"
+					style="--w:1rem; --h:1rem"
 				>
 					<path
 						d="M1 9.5A3.5 3.5 0 0 0 4.5 13H12a3 3 0 0 0 .917-5.857 2.503 2.503 0 0 0-3.198-3.019 3.5 3.5 0 0 0-6.628 2.171A3.5 3.5 0 0 0 1 9.5Z"
 					/>
 				</svg>
 			</div>
-			<div class=" self-center">{$i18n.t('Connections')}</div>
+			<div style="--as:center">{$i18n.t('Connections')}</div>
 		</button>
 
 		<button
@@ -172,12 +173,12 @@
 				goto('/admin/settings/models');
 			}}
 		>
-			<div class=" self-center mr-2">
+			<div style="--as:center; --mr:0.5rem">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 20 20"
 					fill="currentColor"
-					class="w-4 h-4"
+					style="--w:1rem; --h:1rem"
 				>
 					<path
 						fill-rule="evenodd"
@@ -186,7 +187,7 @@
 					/>
 				</svg>
 			</div>
-			<div class=" self-center">{$i18n.t('Models')}</div>
+			<div style="--as:center">{$i18n.t('Models')}</div>
 		</button>
 
 		<button
@@ -196,10 +197,10 @@
 				goto('/admin/settings/evaluations');
 			}}
 		>
-			<div class=" self-center mr-2">
+			<div style="--as:center; --mr:0.5rem">
 				<DocumentChartBar />
 			</div>
-			<div class=" self-center">{$i18n.t('Evaluations')}</div>
+			<div style="--as:center">{$i18n.t('Evaluations')}</div>
 		</button>
 
 		<button
@@ -209,12 +210,12 @@
 				goto('/admin/settings/tools');
 			}}
 		>
-			<div class=" self-center mr-2">
+			<div style="--as:center; --mr:0.5rem">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 24 24"
 					fill="currentColor"
-					class="size-4"
+					style="--w:1rem; --h:1rem"
 				>
 					<path
 						fill-rule="evenodd"
@@ -223,7 +224,7 @@
 					/>
 				</svg>
 			</div>
-			<div class=" self-center">{$i18n.t('Tools')}</div>
+			<div style="--as:center">{$i18n.t('Tools')}</div>
 		</button>
 
 		<button
@@ -233,12 +234,12 @@
 				goto('/admin/settings/documents');
 			}}
 		>
-			<div class=" self-center mr-2">
+			<div style="--as:center; --mr:0.5rem">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 24 24"
 					fill="currentColor"
-					class="w-4 h-4"
+					style="--w:1rem; --h:1rem"
 				>
 					<path d="M11.625 16.5a1.875 1.875 0 1 0 0-3.75 1.875 1.875 0 0 0 0 3.75Z" />
 					<path
@@ -251,7 +252,7 @@
 					/>
 				</svg>
 			</div>
-			<div class=" self-center">{$i18n.t('Documents')}</div>
+			<div style="--as:center">{$i18n.t('Documents')}</div>
 		</button>
 
 		<button
@@ -261,12 +262,12 @@
 				goto('/admin/settings/code-execution');
 			}}
 		>
-			<div class=" self-center mr-2">
+			<div style="--as:center; --mr:0.5rem">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 16 16"
 					fill="currentColor"
-					class="size-4"
+					style="--w:1rem; --h:1rem"
 				>
 					<path
 						fill-rule="evenodd"
@@ -275,7 +276,7 @@
 					/>
 				</svg>
 			</div>
-			<div class=" self-center">{$i18n.t('Code Execution')}</div>
+			<div style="--as:center">{$i18n.t('Code Execution')}</div>
 		</button>
 
 		<button
@@ -285,12 +286,12 @@
 				goto('/admin/settings/interface');
 			}}
 		>
-			<div class=" self-center mr-2">
+			<div style="--as:center; --mr:0.5rem">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 16 16"
 					fill="currentColor"
-					class="w-4 h-4"
+					style="--w:1rem; --h:1rem"
 				>
 					<path
 						fill-rule="evenodd"
@@ -299,7 +300,7 @@
 					/>
 				</svg>
 			</div>
-			<div class=" self-center">{$i18n.t('Interface')}</div>
+			<div style="--as:center">{$i18n.t('Interface')}</div>
 		</button>
 
 		<button
@@ -309,12 +310,12 @@
 				goto('/admin/settings/audio');
 			}}
 		>
-			<div class=" self-center mr-2">
+			<div style="--as:center; --mr:0.5rem">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 16 16"
 					fill="currentColor"
-					class="w-4 h-4"
+					style="--w:1rem; --h:1rem"
 				>
 					<path
 						d="M7.557 2.066A.75.75 0 0 1 8 2.75v10.5a.75.75 0 0 1-1.248.56L3.59 11H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.59l3.162-2.81a.75.75 0 0 1 .805-.124ZM12.95 3.05a.75.75 0 1 0-1.06 1.06 5.5 5.5 0 0 1 0 7.78.75.75 0 1 0 1.06 1.06 7 7 0 0 0 0-9.9Z"
@@ -324,7 +325,7 @@
 					/>
 				</svg>
 			</div>
-			<div class=" self-center">{$i18n.t('Audio')}</div>
+			<div style="--as:center">{$i18n.t('Audio')}</div>
 		</button>
 
 		<button
@@ -334,12 +335,12 @@
 				goto('/admin/settings/images');
 			}}
 		>
-			<div class=" self-center mr-2">
+			<div style="--as:center; --mr:0.5rem">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 16 16"
 					fill="currentColor"
-					class="w-4 h-4"
+					style="--w:1rem; --h:1rem"
 				>
 					<path
 						fill-rule="evenodd"
@@ -348,7 +349,7 @@
 					/>
 				</svg>
 			</div>
-			<div class=" self-center">{$i18n.t('Images')}</div>
+			<div style="--as:center">{$i18n.t('Images')}</div>
 		</button>
 
 		<button
@@ -358,12 +359,12 @@
 				goto('/admin/settings/pipelines');
 			}}
 		>
-			<div class=" self-center mr-2">
+			<div style="--as:center; --mr:0.5rem">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 24 24"
 					fill="currentColor"
-					class="size-4"
+					style="--w:1rem; --h:1rem"
 				>
 					<path
 						d="M11.644 1.59a.75.75 0 0 1 .712 0l9.75 5.25a.75.75 0 0 1 0 1.32l-9.75 5.25a.75.75 0 0 1-.712 0l-9.75-5.25a.75.75 0 0 1 0-1.32l9.75-5.25Z"
@@ -376,7 +377,7 @@
 					/>
 				</svg>
 			</div>
-			<div class=" self-center">{$i18n.t('Pipelines')}</div>
+			<div style="--as:center">{$i18n.t('Pipelines')}</div>
 		</button>
 
 		<button
@@ -386,12 +387,12 @@
 				goto('/admin/settings/db');
 			}}
 		>
-			<div class=" self-center mr-2">
+			<div style="--as:center; --mr:0.5rem">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 16 16"
 					fill="currentColor"
-					class="w-4 h-4"
+					style="--w:1rem; --h:1rem"
 				>
 					<path d="M8 7c3.314 0 6-1.343 6-3s-2.686-3-6-3-6 1.343-6 3 2.686 3 6 3Z" />
 					<path
@@ -402,11 +403,12 @@
 					/>
 				</svg>
 			</div>
-			<div class=" self-center">{$i18n.t('Database')}</div>
+			<div style="--as:center">{$i18n.t('Database')}</div>
 		</button>
 	</div>
 
-	<div class="flex-1 mt-3 lg:mt-0 overflow-y-scroll pr-1 scrollbar-hidden">
+	<div style="--fx:1 1 0%; --mt:0.75rem; --mt-lg:0; --ofy:scroll; --pr:0.25rem"
+	class="scrollbar-hidden">
 		{#if selectedTab === 'general'}
 			<General
 				saveHandler={async () => {

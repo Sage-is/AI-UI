@@ -20,8 +20,8 @@
 
 {#each imageUrls as imageUrl, idx (idx)}
 	<div
-		class="image w-full h-full absolute top-0 left-0 bg-cover bg-center transition-opacity duration-1000"
-		style="opacity: {selectedImageIdx === idx ? 1 : 0}; background-image: url('{imageUrl}')"
+		class="image bg-cover bg-center"
+		style="--w:100%; --h:100%; --pos:absolute; --top:0; --left:0; --tn:opacity 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:1000ms; opacity: {selectedImageIdx === idx ? 1 : 0}; background-image: url('{imageUrl}')"
 	></div>
 {/each}
 

@@ -72,8 +72,8 @@
 
 <Modal size="sm" bind:show>
 	<div>
-		<div class=" flex justify-between dark:text-gray-300 px-5 pt-4 pb-1">
-			<div class=" text-lg font-medium self-center">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300, #cdcdcd); --px:1.25rem; --pt:1rem; --pb:0.25rem">
+			<div style="--size:1.125rem; --weight:500; --as:center">
 				{#if edit}
 					{$i18n.t('Edit Channel')}
 				{:else}
@@ -81,7 +81,7 @@
 				{/if}
 			</div>
 			<button
-				class="self-center"
+				style="--as:center"
 				on:click={() => {
 					show = false;
 				}}
@@ -90,20 +90,21 @@
 			</button>
 		</div>
 
-		<div class="flex flex-col md:flex-row w-full px-5 pb-4 md:space-x-4 dark:text-gray-200">
-			<div class=" flex flex-col w-full sm:flex-row sm:justify-center sm:space-x-6">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1.25rem; --pb:1rem; --g-md:1rem; --dark-c:var(--color-gray-200, #e3e3e3)">
+			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				<form
-					class="flex flex-col w-full"
+					style="--d:flex; --fd:column; --w:100%"
 					on:submit|preventDefault={() => {
 						submitHandler();
 					}}
 				>
-					<div class="flex flex-col w-full mt-2">
-						<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Channel Name')}</div>
+					<div style="--d:flex; --fd:column; --w:100%; --mt:0.5rem">
+						<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('Channel Name')}</div>
 
-						<div class="flex-1">
+						<div style="--fx:1 1 0%">
 							<input
-								class="w-full text-sm bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-700 outline-hidden"
+								style="--w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+	class="placeholder:text-gray-300 dark:placeholder:text-gray-700"
 								type="text"
 								bind:value={name}
 								placeholder={$i18n.t('new-channel')}
@@ -112,18 +113,18 @@
 						</div>
 					</div>
 
-					<hr class=" border-gray-100 dark:border-gray-700/10 my-2.5 w-full" />
+					<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:rgb(78 78 78 / 0.1); --my:0.625rem; --w:100%" />
 
-					<div class="my-2 -mx-2">
-						<div class="px-3 py-2 bg-gray-50 dark:bg-gray-950 rounded-lg">
+					<div style="--my:0.5rem; --mx:-0.5rem">
+						<div style="--px:0.75rem; --py:0.5rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-950, #0d0d0d); --radius:0.5rem">
 							<AccessControl bind:accessControl />
 						</div>
 					</div>
 
-					<div class="flex justify-end pt-3 text-sm font-medium gap-1.5">
+					<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500; --g:0.375rem">
 						{#if edit}
 							<button
-								class="px-3.5 py-1.5 text-sm font-medium dark:bg-black dark:hover:bg-black/90 dark:text-white bg-white text-black hover:bg-gray-100 transition rounded-full flex flex-row space-x-1 items-center"
+								style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --dark-bgc:#000; --hvr-dark-bgc:rgb(0 0 0 / 0.9); --dark-c:#fff; --bgc:#fff; --c:#000; --hvr-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
 								type="button"
 								on:click={() => {
 									showDeleteConfirmDialog = true;
@@ -134,7 +135,8 @@
 						{/if}
 
 						<button
-							class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-950 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full flex flex-row space-x-1 items-center {loading
+							style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-950, #0d0d0d); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
+	class="{loading
 								? ' cursor-not-allowed'
 								: ''}"
 							type="submit"
@@ -147,7 +149,7 @@
 							{/if}
 
 							{#if loading}
-								<div class="ml-2 self-center">
+								<div style="--ml:0.5rem; --as:center">
 									<Spinner />
 								</div>
 							{/if}

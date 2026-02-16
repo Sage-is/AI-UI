@@ -185,18 +185,20 @@
 {#if filteredItems.length > 0 || command?.substring(1).startsWith('http')}
 	<div
 		id="commands-container"
-		class="px-2 mb-2 text-left w-full absolute bottom-0 left-0 right-0 z-10"
+		style="--px:0.5rem; --mb:0.5rem; --ta:left; --w:100%; --pos:absolute; --bottom:0; --left:0; --right:0; --z:10"
 	>
-		<div class="flex w-full rounded-xl border border-gray-100 dark:border-gray-850">
-			<div class="flex flex-col w-full rounded-xl bg-white dark:bg-gray-900 dark:text-gray-100">
+		<div style="--d:flex; --w:100%; --radius:0.75rem; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)">
+			<div style="--d:flex; --fd:column; --w:100%; --radius:0.75rem; --bgc:#fff; --dark-bgc:var(--color-gray-900, #171717); --dark-c:var(--color-gray-100, #ececec)">
 				<div
-					class="m-1 overflow-y-auto p-1 rounded-r-xl space-y-0.5 scrollbar-hidden max-h-60"
+					style="--m:0.25rem; --ofy:auto; --p:0.25rem; --btrr:0.75rem; --bbrr:0.75rem; --g:0.125rem; --maxh:15rem"
+	class="scrollbar-hidden"
 					id="command-options-container"
 					bind:this={container}
 				>
 					{#each filteredItems as item, idx}
 						<button
-							class=" px-3 py-1.5 rounded-xl w-full text-left flex justify-between items-center {idx ===
+							style="--px:0.75rem; --py:0.375rem; --radius:0.75rem; --w:100%; --ta:left; --d:flex; --jc:space-between; --ai:center"
+	class="{idx ===
 							selectedIdx
 								? ' bg-gray-50 dark:bg-gray-850 dark:text-gray-100 selected-command-option-button'
 								: ''}"
@@ -210,55 +212,56 @@
 							}}
 						>
 							<div>
-								<div class=" font-medium text-black dark:text-gray-100 flex items-center gap-1">
+								<div style="--weight:500; --c:#000; --dark-c:var(--color-gray-100, #ececec); --d:flex; --ai:center; --g:0.25rem">
 									{#if item.legacy}
 										<div
-											class="bg-gray-500/20 text-gray-700 dark:text-gray-200 rounded-sm uppercase text-xs font-bold px-1 shrink-0"
+											style="--bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-200, #e3e3e3); --radius:0.125rem; --tt:uppercase; --size:0.75rem; --weight:700; --px:0.25rem; --fs:0"
 										>
 											Legacy
 										</div>
 									{:else if item?.meta?.document}
 										<div
-											class="bg-gray-500/20 text-gray-700 dark:text-gray-200 rounded-sm uppercase text-xs font-bold px-1 shrink-0"
+											style="--bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-200, #e3e3e3); --radius:0.125rem; --tt:uppercase; --size:0.75rem; --weight:700; --px:0.25rem; --fs:0"
 										>
 											Document
 										</div>
 									{:else if item?.type === 'file'}
 										<div
-											class="bg-gray-500/20 text-gray-700 dark:text-gray-200 rounded-sm uppercase text-xs font-bold px-1 shrink-0"
+											style="--bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-200, #e3e3e3); --radius:0.125rem; --tt:uppercase; --size:0.75rem; --weight:700; --px:0.25rem; --fs:0"
 										>
 											File
 										</div>
 									{:else if item?.type === 'note'}
 										<div
-											class="bg-blue-500/20 text-blue-700 dark:text-blue-200 rounded-sm uppercase text-xs font-bold px-1 shrink-0"
+											style="--bgc:rgb(59 130 246 / 0.2); --c:#1d4ed8; --dark-c:#bfdbfe; --radius:0.125rem; --tt:uppercase; --size:0.75rem; --weight:700; --px:0.25rem; --fs:0"
 										>
 											Note
 										</div>
 									{:else}
 										<div
-											class="bg-green-500/20 text-green-700 dark:text-green-200 rounded-sm uppercase text-xs font-bold px-1 shrink-0"
+											style="--bgc:rgb(34 197 94 / 0.2); --c:#15803d; --dark-c:#bbf7d0; --radius:0.125rem; --tt:uppercase; --size:0.75rem; --weight:700; --px:0.25rem; --fs:0"
 										>
 											Collection
 										</div>
 									{/if}
 
-									<div class="line-clamp-1">
+									<div style="--line-clamp:1">
 										{decodeString(item?.name)}
 									</div>
 								</div>
 
-								<div class=" text-xs text-gray-600 dark:text-gray-100 line-clamp-1">
+								<div style="--size:0.75rem; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-100, #ececec); --line-clamp:1">
 									{item?.description}
 								</div>
 							</div>
 						</button>
 
-						<!-- <div slot="content" class=" pl-2 pt-1 flex flex-col gap-0.5">
+						<!-- <div slot="content" style="--pl:0.5rem; --pt:0.25rem; --d:flex; --fd:column; --g:0.125rem">
 								{#if !item.legacy && (item?.files ?? []).length > 0}
 									{#each item?.files ?? [] as file, fileIdx}
 										<button
-											class=" px-3 py-1.5 rounded-xl w-full text-left flex justify-between items-center hover:bg-gray-50 dark:hover:bg-gray-850 dark:hover:text-gray-100 selected-command-option-button"
+											style="--px:0.75rem; --py:0.375rem; --radius:0.75rem; --w:100%; --ta:left; --d:flex; --jc:space-between; --ai:center; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-850, #262626); --hvr-dark-c:var(--color-gray-100, #ececec)"
+	class="selected-command-option-button"
 											type="button"
 											on:click={() => {
 												console.log(file);
@@ -269,20 +272,20 @@
 										>
 											<div>
 												<div
-													class=" font-medium text-black dark:text-gray-100 flex items-center gap-1"
+													style="--weight:500; --c:#000; --dark-c:var(--color-gray-100, #ececec); --d:flex; --ai:center; --g:0.25rem"
 												>
 													<div
-														class="bg-gray-500/20 text-gray-700 dark:text-gray-200 rounded-sm uppercase text-xs font-bold px-1 shrink-0"
+														style="--bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-200, #e3e3e3); --radius:0.125rem; --tt:uppercase; --size:0.75rem; --weight:700; --px:0.25rem; --fs:0"
 													>
 														File
 													</div>
 
-													<div class="line-clamp-1">
+													<div style="--line-clamp:1">
 														{file?.meta?.name}
 													</div>
 												</div>
 
-												<div class=" text-xs text-gray-600 dark:text-gray-100 line-clamp-1">
+												<div style="--size:0.75rem; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-100, #ececec); --line-clamp:1">
 													{$i18n.t('Updated')}
 													{dayjs(file.updated_at * 1000).fromNow()}
 												</div>
@@ -290,7 +293,7 @@
 										</button>
 									{/each}
 								{:else}
-									<div class=" text-gray-500 text-xs mt-1 mb-2">
+									<div style="--c:var(--color-gray-500, #9b9b9b); --size:0.75rem; --mt:0.25rem; --mb:0.5rem">
 										{$i18n.t('File not found.')}
 									</div>
 								{/if}
@@ -301,7 +304,8 @@
 							.substring(1)
 							.startsWith('https://youtu.be')}
 						<button
-							class="px-3 py-1.5 rounded-xl w-full text-left bg-gray-50 dark:bg-gray-850 dark:text-gray-100 selected-command-option-button"
+							style="--px:0.75rem; --py:0.375rem; --radius:0.75rem; --w:100%; --ta:left; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-850, #262626); --dark-c:var(--color-gray-100, #ececec)"
+	class="selected-command-option-button"
 							type="button"
 							on:click={() => {
 								if (isValidHttpUrl(command.substring(1))) {
@@ -315,15 +319,16 @@
 								}
 							}}
 						>
-							<div class=" font-medium text-black dark:text-gray-100 line-clamp-1">
+							<div style="--weight:500; --c:#000; --dark-c:var(--color-gray-100, #ececec); --line-clamp:1">
 								{command.substring(1)}
 							</div>
 
-							<div class=" text-xs text-gray-600 line-clamp-1">{$i18n.t('Youtube')}</div>
+							<div style="--size:0.75rem; --c:var(--color-gray-600, #676767); --line-clamp:1">{$i18n.t('Youtube')}</div>
 						</button>
 					{:else if command.substring(1).startsWith('http')}
 						<button
-							class="px-3 py-1.5 rounded-xl w-full text-left bg-gray-50 dark:bg-gray-850 dark:text-gray-100 selected-command-option-button"
+							style="--px:0.75rem; --py:0.375rem; --radius:0.75rem; --w:100%; --ta:left; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-850, #262626); --dark-c:var(--color-gray-100, #ececec)"
+	class="selected-command-option-button"
 							type="button"
 							on:click={() => {
 								if (isValidHttpUrl(command.substring(1))) {
@@ -337,11 +342,11 @@
 								}
 							}}
 						>
-							<div class=" font-medium text-black dark:text-gray-100 line-clamp-1">
+							<div style="--weight:500; --c:#000; --dark-c:var(--color-gray-100, #ececec); --line-clamp:1">
 								{command}
 							</div>
 
-							<div class=" text-xs text-gray-600 line-clamp-1">{$i18n.t('Web')}</div>
+							<div style="--size:0.75rem; --c:var(--color-gray-600, #676767); --line-clamp:1">{$i18n.t('Web')}</div>
 						</button>
 					{/if}
 				</div>

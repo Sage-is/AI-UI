@@ -156,13 +156,13 @@
 </script>
 
 {#if channel}
-	<div class="flex flex-col w-full h-full bg-gray-50 dark:bg-gray-850">
-		<div class="flex items-center justify-between px-3.5 pt-3">
-			<div class=" font-medium text-lg">Thread</div>
+	<div style="--d:flex; --fd:column; --w:100%; --h:100%; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-850, #262626)">
+		<div style="--d:flex; --ai:center; --jc:space-between; --px:0.875rem; --pt:0.75rem">
+			<div style="--weight:500; --size:1.125rem">Thread</div>
 
 			<div>
 				<button
-					class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 p-2"
+					style="--c:var(--color-gray-500, #9b9b9b); --hvr-c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-400, #b4b4b4); --hvr-dark-c:var(--color-gray-300, #cdcdcd); --p:0.5rem"
 					on:click={() => {
 						onClose();
 					}}
@@ -172,7 +172,7 @@
 			</div>
 		</div>
 
-		<div class=" max-h-full w-full overflow-y-auto pt-3" bind:this={messagesContainerElement}>
+		<div style="--maxh:100%; --w:100%; --ofy:auto; --pt:0.75rem" bind:this={messagesContainerElement}>
 			<Messages
 				id={threadId}
 				{channel}
@@ -196,7 +196,7 @@
 				}}
 			/>
 
-			<div class=" pb-[1rem] px-2.5">
+			<div style="--pb:1rem; --px:0.625rem">
 				<MessageInput id={threadId} {typingUsers} {onChange} onSubmit={submitHandler} />
 			</div>
 		</div>

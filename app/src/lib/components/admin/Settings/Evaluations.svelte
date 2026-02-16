@@ -94,22 +94,23 @@
 />
 
 <form
-	class="flex flex-col h-full justify-between text-sm"
+	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --size:0.875rem"
 	on:submit|preventDefault={() => {
 		submitHandler();
 		dispatch('save');
 	}}
 >
-	<div class="overflow-y-scroll scrollbar-hidden h-full">
+	<div style="--ofy:scroll; --h:100%"
+	class="scrollbar-hidden">
 		{#if evaluationConfig !== null}
 			<div class="">
-				<div class="mb-3">
-					<div class=" mb-2.5 text-base font-medium">{$i18n.t('General')}</div>
+				<div style="--mb:0.75rem">
+					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('General')}</div>
 
-					<hr class=" border-gray-100 dark:border-gray-850 my-2" />
+					<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem" />
 
-					<div class="mb-2.5 flex w-full justify-between">
-						<div class=" text-xs font-medium">{$i18n.t('Arena Models')}</div>
+					<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
+						<div style="--size:0.75rem; --weight:500">{$i18n.t('Arena Models')}</div>
 
 						<Tooltip content={$i18n.t(`Message rating should be enabled to use this feature`)}>
 							<Switch bind:state={evaluationConfig.ENABLE_EVALUATION_ARENA_MODELS} />
@@ -118,8 +119,8 @@
 				</div>
 
 				{#if evaluationConfig.ENABLE_EVALUATION_ARENA_MODELS}
-					<div class="mb-3">
-						<div class=" mb-2.5 text-base font-medium flex justify-between items-center">
+					<div style="--mb:0.75rem">
+						<div style="--mb:0.625rem; --size:1rem; --weight:500; --d:flex; --jc:space-between; --ai:center">
 							<div>
 								{$i18n.t('Manage')}
 							</div>
@@ -127,7 +128,7 @@
 							<div>
 								<Tooltip content={$i18n.t('Add Arena Model')}>
 									<button
-										class="p-1"
+										style="--p:0.25rem"
 										type="button"
 										on:click={() => {
 											showAddModel = true;
@@ -139,9 +140,9 @@
 							</div>
 						</div>
 
-						<hr class=" border-gray-100 dark:border-gray-850 my-2" />
+						<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem" />
 
-						<div class="flex flex-col gap-2">
+						<div style="--d:flex; --fd:column; --g:0.5rem">
 							{#if (evaluationConfig?.EVALUATION_ARENA_MODELS ?? []).length > 0}
 								{#each evaluationConfig.EVALUATION_ARENA_MODELS as model, index}
 									<Model
@@ -155,7 +156,7 @@
 									/>
 								{/each}
 							{:else}
-								<div class=" text-center text-xs text-gray-500">
+								<div style="--ta:center; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">
 									{$i18n.t(
 										`Using the default arena model with all models. Click the plus button to add custom models.`
 									)}
@@ -166,17 +167,17 @@
 				{/if}
 			</div>
 		{:else}
-			<div class="flex h-full justify-center">
-				<div class="my-auto">
+			<div style="--d:flex; --h:100%; --jc:center">
+				<div style="--my:auto">
 					<Spinner className="size-6" />
 				</div>
 			</div>
 		{/if}
 	</div>
 
-	<div class="flex justify-end pt-3 text-sm font-medium">
+	<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
 		<button
-			class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			type="submit"
 		>
 			{$i18n.t('Save')}

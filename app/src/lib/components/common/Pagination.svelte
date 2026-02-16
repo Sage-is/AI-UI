@@ -10,22 +10,25 @@
 	export let perPage = 20;
 </script>
 
-<div class="flex justify-center">
+<div style="--d:flex; --jc:center">
 	<Pagination.Root bind:page {count} {perPage} let:pages>
-		<div class="my-2 flex items-center">
+		<div style="--my:0.5rem; --d:flex; --ai:center">
 			<Pagination.PrevButton
-				class="mr-[25px] inline-flex size-8 items-center justify-center rounded-[9px] bg-transparent hover:bg-gray-50 dark:hover:bg-gray-850 active:scale-98 disabled:cursor-not-allowed disabled:text-gray-400 dark:disabled:text-gray-700 hover:disabled:bg-transparent dark:hover:disabled:bg-transparent"
+				style="--mr:25px; --d:inline-flex; --w:2rem; --h:2rem; --ai:center; --jc:center; --radius:9px; --bgc:transparent; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-850, #262626)"
+	class="active:scale-98 disabled:cursor-not-allowed disabled:text-gray-400 dark:disabled:text-gray-700 hover:disabled:bg-transparent dark:hover:disabled:bg-transparent"
 			>
 				<ChevronLeft className="size-4" strokeWidth="2" />
 			</Pagination.PrevButton>
-			<div class="flex items-center gap-2.5">
+			<div style="--d:flex; --ai:center; --g:0.625rem">
 				{#each pages as page (page.key)}
 					{#if page.type === 'ellipsis'}
-						<div class="text-sm font-medium text-foreground-alt">...</div>
+						<div style="--size:0.875rem; --weight:500"
+	class="text-foreground-alt">...</div>
 					{:else}
 						<Pagination.Page
 							{page}
-							class="inline-flex size-8 items-center justify-center rounded-[9px] bg-transparent hover:bg-gray-50 dark:hover:bg-gray-850 text-sm font-medium hover:bg-dark-10 active:scale-98 disabled:cursor-not-allowed disabled:opacity-50 hover:disabled:bg-transparent data-selected:bg-gray-50 data-selected:text-gray-700 data-selected:hover:bg-gray-100 dark:data-selected:bg-gray-850 dark:data-selected:text-gray-50 dark:data-selected:hover:bg-gray-800 transition"
+							style="--d:inline-flex; --w:2rem; --h:2rem; --ai:center; --jc:center; --radius:9px; --bgc:transparent; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-850, #262626); --size:0.875rem; --weight:500; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="hover:bg-dark-10 active:scale-98 disabled:cursor-not-allowed disabled:opacity-50 hover:disabled:bg-transparent data-selected:bg-gray-50 data-selected:text-gray-700 data-selected:hover:bg-gray-100 dark:data-selected:bg-gray-850 dark:data-selected:text-gray-50 dark:data-selected:hover:bg-gray-800"
 						>
 							{page.value}
 						</Pagination.Page>
@@ -33,7 +36,8 @@
 				{/each}
 			</div>
 			<Pagination.NextButton
-				class="ml-[25px]  inline-flex size-8 items-center justify-center rounded-[9px] bg-transparent hover:bg-gray-50 dark:hover:bg-gray-850 active:scale-98 disabled:cursor-not-allowed disabled:text-gray-400 dark:disabled:text-gray-700 hover:disabled:bg-transparent dark:hover:disabled:bg-transparent"
+				style="--ml:25px; --d:inline-flex; --w:2rem; --h:2rem; --ai:center; --jc:center; --radius:9px; --bgc:transparent; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-850, #262626)"
+	class="active:scale-98 disabled:cursor-not-allowed disabled:text-gray-400 dark:disabled:text-gray-700 hover:disabled:bg-transparent dark:hover:disabled:bg-transparent"
 			>
 				<ChevronRight className="size-4" strokeWidth="2" />
 			</Pagination.NextButton>

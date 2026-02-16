@@ -41,22 +41,23 @@
 </script>
 
 <button
-	class="flex gap-2.5 text-left min-w-[var(--width)] w-full dark:bg-gray-850 dark:text-white bg-white text-black border border-gray-100 dark:border-gray-850 rounded-xl px-3.5 py-3.5"
+	style="--d:flex; --g:0.625rem; --ta:left; --minw:var(--width); --w:100%; --dark-bgc:var(--color-gray-850, #262626); --dark-c:#fff; --bgc:#fff; --c:#000; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --radius:0.75rem; --px:0.875rem; --py:0.875rem"
 	on:click={() => {
 		onClick();
 		dispatch('closeToast');
 	}}
 >
-	<div class="shrink-0 self-top -translate-y-0.5">
-		<img src={branding?.favicon_url || branding?.logo_url || `${WEBUI_BASE_URL}/static/icons/favicon.png`} alt="favicon" class="size-7 rounded-full" />
+	<div style="--fs:0; --translatey:-0.125rem"
+	class="self-top">
+		<img src={branding?.favicon_url || branding?.logo_url || `${WEBUI_BASE_URL}/static/icons/favicon.png`} alt="favicon" style="--w:1.75rem; --h:1.75rem; --radius:9999px" />
 	</div>
 
 	<div>
 		{#if title}
-			<div class=" text-[13px] font-medium mb-0.5 line-clamp-1 capitalize">{title}</div>
+			<div style="--size:13px; --weight:500; --mb:0.125rem; --line-clamp:1; --tt:capitalize">{title}</div>
 		{/if}
 
-		<div class=" line-clamp-2 text-xs self-center dark:text-gray-300 font-normal">
+		<div style="--line-clamp:2; --size:0.75rem; --as:center; --dark-c:var(--color-gray-300, #cdcdcd); --weight:400">
 			{@html DOMPurify.sanitize(marked(content))}
 		</div>
 	</div>

@@ -214,7 +214,8 @@
 {#if parentMessage}
 	<div>
 		<div
-			class="flex snap-x snap-mandatory overflow-x-auto scrollbar-hidden"
+			style="--d:flex; scroll-snap-type:x var(--tw-scroll-snap-strictness, proximity); --tw-scroll-snap-strictness:mandatory; --ofx:auto"
+	class="scrollbar-hidden"
 			id="responses-container-{chatId}-{parentMessage.id}"
 		>
 			{#each Object.keys(groupedMessageIds) as modelIdx}
@@ -225,14 +226,15 @@
 						groupedMessageIds[modelIdx].messageIds[groupedMessageIdsIdx[modelIdx]]}
 
 					<div
-						class=" snap-center w-full max-w-full m-1 border {history.messages[messageId]
+						style="scroll-snap-align:center; --w:100%; --maxw:100%; --m:0.25rem; --b:1px solid; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --p:1.25rem; --radius:1rem"
+	class="{history.messages[messageId]
 							?.modelIdx == modelIdx
 							? `bg-gray-50 dark:bg-gray-850 border-gray-100 dark:border-gray-800 border-2 ${
 									$mobile ? 'min-w-full' : 'min-w-80'
 								}`
 							: `border-gray-100 dark:border-gray-850 border-dashed ${
 									$mobile ? 'min-w-full' : 'min-w-80'
-								}`} transition-all p-5 rounded-2xl"
+								}`}"
 						on:click={async () => {
 							if (messageId != _messageId) {
 								let currentMessageId = _messageId;
@@ -291,25 +293,27 @@
 				const _messageId = messageIds[groupedMessageIdsIdx[modelIdx]];
 				return !history.messages[_messageId]?.done ?? false;
 			})}
-				<div class="flex justify-end">
-					<div class="w-full">
+				<div style="--d:flex; --jc:flex-end">
+					<div style="--w:100%">
 						{#if history.messages[messageId]?.merged?.status}
 							{@const message = history.messages[messageId]?.merged}
 
-							<div class="w-full rounded-xl pl-5 pr-2 py-2">
+							<div style="--w:100%; --radius:0.75rem; --pl:1.25rem; --pr:0.5rem; --py:0.5rem">
 								<Name>
 									{$i18n.t('Merged Response')}
 
 									{#if message.timestamp}
 										<span
-											class=" self-center invisible group-hover:visible text-gray-400 text-xs font-medium uppercase ml-0.5 -mt-0.5"
+											style="--as:center; --v:hidden; --c:var(--color-gray-400, #b4b4b4); --size:0.75rem; --weight:500; --tt:uppercase; --ml:0.125rem; --mt:-0.125rem"
+	class="group-hover:visible"
 										>
 											{dayjs(message.timestamp * 1000).format('LT')}
 										</span>
 									{/if}
 								</Name>
 
-								<div class="mt-1 markdown-prose w-full min-w-full">
+								<div style="--mt:0.25rem; --w:100%; --minw:100%"
+	class="markdown-prose">
 									{#if (message?.content ?? '') === ''}
 										<Skeleton />
 									{:else}
@@ -321,14 +325,15 @@
 					</div>
 
 					{#if isLastMessage}
-						<div class=" shrink-0 text-gray-600 dark:text-gray-500 mt-1">
+						<div style="--fs:0; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-500, #9b9b9b); --mt:0.25rem">
 							<Tooltip content={$i18n.t('Merge Responses')} placement="bottom">
 								<button
 									type="button"
 									id="merge-response-button"
-									class="{true
+									style="--p:0.25rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{true
 										? 'visible'
-										: 'invisible group-hover:visible'} p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg dark:hover:text-white hover:text-black transition regenerate-response-button"
+										: 'invisible group-hover:visible'} regenerate-response-button"
 									on:click={() => {
 										mergeResponsesHandler();
 									}}

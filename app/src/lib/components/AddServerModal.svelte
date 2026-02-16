@@ -155,8 +155,9 @@
 
 <Modal size="sm" bind:show>
 	<div>
-		<div class=" flex justify-between dark:text-gray-100 px-5 pt-4 pb-2">
-			<h1 class=" text-lg font-medium self-center font-primary">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-100, #ececec); --px:1.25rem; --pt:1rem; --pb:0.5rem">
+			<h1 style="--size:1.125rem; --weight:500; --as:center"
+	class="font-primary">
 				{#if edit}
 					{$i18n.t('Edit Connection')}
 				{:else}
@@ -164,7 +165,7 @@
 				{/if}
 			</h1>
 			<button
-				class="self-center"
+				style="--as:center"
 				aria-label={$i18n.t('Close Configure Connection Modal')}
 				on:click={() => {
 					show = false;
@@ -174,19 +175,19 @@
 			</button>
 		</div>
 
-		<div class="flex flex-col md:flex-row w-full px-4 pb-4 md:space-x-4 dark:text-gray-200">
-			<div class=" flex flex-col w-full sm:flex-row sm:justify-center sm:space-x-6">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1rem; --pb:1rem; --g-md:1rem; --dark-c:var(--color-gray-200, #e3e3e3)">
+			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				<form
-					class="flex flex-col w-full"
+					style="--d:flex; --fd:column; --w:100%"
 					on:submit={(e) => {
 						e.preventDefault();
 						submitHandler();
 					}}
 				>
-					<div class="px-1">
-						<div class="flex gap-2">
-							<div class="flex flex-col w-full">
-								<div class="flex justify-between mb-0.5">
+					<div style="--px:0.25rem">
+						<div style="--d:flex; --g:0.5rem">
+							<div style="--d:flex; --fd:column; --w:100%">
+								<div style="--d:flex; --jc:space-between; --mb:0.125rem">
 									<label
 										for="api-base-url"
 										class={`text-xs ${($settings?.highContrastMode ?? false) ? 'text-gray-800 dark:text-gray-100' : 'text-gray-500'}`}
@@ -194,7 +195,7 @@
 									>
 								</div>
 
-								<div class="flex flex-1 items-center">
+								<div style="--d:flex; --fx:1 1 0%; --ai:center">
 									<input
 										id="api-base-url"
 										class={`w-full flex-1 text-sm bg-transparent ${($settings?.highContrastMode ?? false) ? 'placeholder:text-gray-700 dark:placeholder:text-gray-100' : 'outline-hidden placeholder:text-gray-300 dark:placeholder:text-gray-700'}`}
@@ -210,7 +211,7 @@
 										className="shrink-0 flex items-center mr-1"
 									>
 										<button
-											class="self-center p-1 bg-transparent hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-850 rounded-lg transition"
+											style="--as:center; --p:0.25rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-900, #171717); --hvr-dark-bgc:var(--color-gray-850, #262626); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 											on:click={() => {
 												verifyHandler();
 											}}
@@ -221,7 +222,7 @@
 												xmlns="http://www.w3.org/2000/svg"
 												viewBox="0 0 20 20"
 												fill="currentColor"
-												class="w-4 h-4"
+												style="--w:1rem; --h:1rem"
 												aria-hidden="true"
 											>
 												<path
@@ -238,7 +239,7 @@
 									</Tooltip>
 								</div>
 
-								<div class="flex-1 flex items-center">
+								<div style="--fx:1 1 0%; --d:flex; --ai:center">
 									<label for="url-or-path" class="sr-only"
 										>{$i18n.t('openapi.json URL or Path')}</label
 									>
@@ -263,16 +264,17 @@
 							})}
 						</div>
 
-						<div class="flex gap-2 mt-2">
-							<div class="flex flex-col w-full">
+						<div style="--d:flex; --g:0.5rem; --mt:0.5rem">
+							<div style="--d:flex; --fd:column; --w:100%">
 								<label
 									for="select-bearer-or-session"
 									class={`text-xs ${($settings?.highContrastMode ?? false) ? 'text-gray-800 dark:text-gray-100' : 'text-gray-500'}`}
 									>{$i18n.t('Auth')}</label
 								>
 
-								<div class="flex gap-2">
-									<div class="flex-shrink-0 self-start">
+								<div style="--d:flex; --g:0.5rem">
+									<div style="--as:flex-start"
+	class="flex-shrink-0">
 										<select
 											id="select-bearer-or-session"
 											class={`w-full text-sm bg-transparent pr-5 ${($settings?.highContrastMode ?? false) ? 'placeholder:text-gray-700 dark:placeholder:text-gray-100' : 'outline-hidden placeholder:text-gray-300 dark:placeholder:text-gray-700'}`}
@@ -283,7 +285,7 @@
 										</select>
 									</div>
 
-									<div class="flex flex-1 items-center">
+									<div style="--d:flex; --fx:1 1 0%; --ai:center">
 										{#if auth_type === 'bearer'}
 											<SensitiveInput
 												bind:value={key}
@@ -303,17 +305,17 @@
 						</div>
 
 						{#if !direct}
-							<hr class=" border-gray-100 dark:border-gray-700/10 my-2.5 w-full" />
+							<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:rgb(78 78 78 / 0.1); --my:0.625rem; --w:100%" />
 
-							<div class="flex gap-2">
-								<div class="flex flex-col w-full">
+							<div style="--d:flex; --g:0.5rem">
+								<div style="--d:flex; --fd:column; --w:100%">
 									<label
 										for="enter-name"
 										class={`mb-0.5 text-xs" ${($settings?.highContrastMode ?? false) ? 'text-gray-800 dark:text-gray-100' : 'text-gray-500'}`}
 										>{$i18n.t('Name')}</label
 									>
 
-									<div class="flex-1">
+									<div style="--fx:1 1 0%">
 										<input
 											id="enter-name"
 											class={`w-full text-sm bg-transparent ${($settings?.highContrastMode ?? false) ? 'placeholder:text-gray-700 dark:placeholder:text-gray-100' : 'outline-hidden placeholder:text-gray-300 dark:placeholder:text-gray-700'}`}
@@ -327,14 +329,14 @@
 								</div>
 							</div>
 
-							<div class="flex flex-col w-full mt-2">
+							<div style="--d:flex; --fd:column; --w:100%; --mt:0.5rem">
 								<label
 									for="description"
 									class={`mb-1 text-xs ${($settings?.highContrastMode ?? false) ? 'text-gray-800 dark:text-gray-100 placeholder:text-gray-700 dark:placeholder:text-gray-100' : 'outline-hidden placeholder:text-gray-300 dark:placeholder:text-gray-700 text-gray-500'}`}
 									>{$i18n.t('Description')}</label
 								>
 
-								<div class="flex-1">
+								<div style="--fx:1 1 0%">
 									<input
 										id="description"
 										class={`w-full text-sm bg-transparent ${($settings?.highContrastMode ?? false) ? 'placeholder:text-gray-700 dark:placeholder:text-gray-100' : 'outline-hidden placeholder:text-gray-300 dark:placeholder:text-gray-700'}`}
@@ -346,20 +348,20 @@
 								</div>
 							</div>
 
-							<hr class=" border-gray-100 dark:border-gray-700/10 my-2.5 w-full" />
+							<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:rgb(78 78 78 / 0.1); --my:0.625rem; --w:100%" />
 
-							<div class="my-2 -mx-2">
-								<div class="px-3 py-2 bg-gray-50 dark:bg-gray-950 rounded-lg">
+							<div style="--my:0.5rem; --mx:-0.5rem">
+								<div style="--px:0.75rem; --py:0.5rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-950, #0d0d0d); --radius:0.5rem">
 									<AccessControl bind:accessControl />
 								</div>
 							</div>
 						{/if}
 					</div>
 
-					<div class="flex justify-end pt-3 text-sm font-medium gap-1.5">
+					<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500; --g:0.375rem">
 						{#if edit}
 							<button
-								class="px-3.5 py-1.5 text-sm font-medium dark:bg-black dark:hover:bg-gray-900 dark:text-white bg-white text-black hover:bg-gray-100 transition rounded-full flex flex-row space-x-1 items-center"
+								style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --dark-bgc:#000; --hvr-dark-bgc:var(--color-gray-900, #171717); --dark-c:#fff; --bgc:#fff; --c:#000; --hvr-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
 								type="button"
 								on:click={() => {
 									onDelete();
@@ -371,7 +373,8 @@
 						{/if}
 
 						<button
-							class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full flex flex-row space-x-1 items-center {loading
+							style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
+	class="{loading
 								? ' cursor-not-allowed'
 								: ''}"
 							type="submit"
@@ -380,7 +383,7 @@
 							{$i18n.t('Save')}
 
 							{#if loading}
-								<div class="ml-2 self-center">
+								<div style="--ml:0.5rem; --as:center">
 									<Spinner />
 								</div>
 							{/if}

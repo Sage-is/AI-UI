@@ -316,17 +316,17 @@
 {#if loaded}
 	{#if onBack}
 		<button
-			class="flex space-x-1"
+			style="--d:flex; --g:0.25rem"
 			on:click={() => {
 				onBack();
 			}}
 		>
-			<div class=" self-center">
+			<div style="--as:center">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 20 20"
 					fill="currentColor"
-					class="h-4 w-4"
+					style="--h:1rem; --w:1rem"
 				>
 					<path
 						fill-rule="evenodd"
@@ -335,11 +335,11 @@
 					/>
 				</svg>
 			</div>
-			<div class=" self-center text-sm font-medium">{'Back'}</div>
+			<div style="--as:center; --size:0.875rem; --weight:500">{'Back'}</div>
 		</button>
 	{/if}
 
-	<div class="w-full max-h-full flex justify-center">
+	<div style="--w:100%; --maxh:100%; --d:flex; --jc:center">
 		<input
 			bind:this={filesInputElement}
 			bind:files={inputFiles}
@@ -410,19 +410,19 @@
 
 		{#if !edit || (edit && model)}
 			<form
-				class="flex flex-col md:flex-row w-full gap-3 md:gap-6"
+				style="--d:flex; --fd:column; --fd-md:row; --w:100%; --g:0.75rem; --g-md:1.5rem"
 				on:submit|preventDefault={() => {
 					submitHandler();
 				}}
 			>
 
 
-				<div class="w-full">
-					<div class="mt-2 my-2 flex flex-col">
-						<div class="flex-1">
+				<div style="--w:100%">
+					<div style="--mt:0.5rem; --my:0.5rem; --d:flex; --fd:column">
+						<div style="--fx:1 1 0%">
 							<div>
 								<input
-									class="text-3xl font-semibold w-full bg-transparent outline-hidden"
+									style="--size:1.875rem; --weight:600; --w:100%; --bgc:transparent; --oe:none"
 									placeholder={$i18n.t('Model Name')}
 									bind:value={name}
 									required
@@ -430,12 +430,13 @@
 							</div>
 
 											<div style="--ml:auto;">
-					<div class="self-center">
+					<div style="--as:center">
 						<button
-							class="rounded-xl flex shrink-0 items-center {info.meta.profile_image_url !==
+							style="--radius:0.75rem; --d:flex; --fs:0; --ai:center; --shadow:5; --pos:relative"
+	class="{info.meta.profile_image_url !==
 							`${WEBUI_BASE_URL}/static/icons/favicon.png`
 								? 'bg-transparent'
-								: 'bg-white'} shadow-xl group relative"
+								: 'bg-white'} group"
 							type="button"
 							on:click={() => {
 								filesInputElement.click();
@@ -445,26 +446,27 @@
 								<img
 									src={info.meta.profile_image_url}
 									alt="model profile"
-									class="rounded-xl size-72 md:size-60 object-cover shrink-0"
+									style="--radius:0.75rem; --w:18rem; --h:18rem; --w-md:15rem; --h-md:15rem; --objf:cover; --fs:0"
 								/>
 							{:else}
 								<img
 									src={branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
 									alt="model profile"
-									class=" rounded-xl size-72 md:size-60 object-cover shrink-0"
+									style="--radius:0.75rem; --w:18rem; --h:18rem; --w-md:15rem; --h-md:15rem; --objf:cover; --fs:0"
 								/>
 							{/if}
 
-							<div class="absolute bottom-0 right-0 z-10">
-								<div class="m-1.5">
+							<div style="--pos:absolute; --bottom:0; --right:0; --z:10">
+								<div style="--m:0.375rem">
 									<div
-										class="shadow-xl p-1 rounded-full border-2 border-white bg-gray-800 text-white group-hover:bg-gray-600 transition dark:border-black dark:bg-white dark:group-hover:bg-gray-200 dark:text-black"
+										style="--shadow:5; --p:0.25rem; --radius:9999px; --bw:2px; --bc:#fff; --bgc:var(--color-gray-800, #333); --c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --dark-bc:#000; --dark-bgc:#fff; --dark-c:#000"
+	class="group-hover:bg-gray-600 dark:group-hover:bg-gray-200"
 									>
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
 											viewBox="0 0 16 16"
 											fill="currentColor"
-											class="size-5"
+											style="--w:1.25rem; --h:1.25rem"
 										>
 											<path
 												fill-rule="evenodd"
@@ -477,13 +479,14 @@
 							</div>
 
 							<div
-								class="absolute top-0 bottom-0 left-0 right-0 bg-white dark:bg-black rounded-lg opacity-0 group-hover:opacity-20 transition"
+								style="--pos:absolute; --top:0; --bottom:0; --left:0; --right:0; --bgc:#fff; --dark-bgc:#000; --radius:0.5rem; --op:0; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="group-hover:opacity-20"
 							></div>
 						</button>
 
-						<div class="flex w-full mt-1 justify-end">
+						<div style="--d:flex; --w:100%; --mt:0.25rem; --jc:flex-end">
 							<button
-								class="px-2 py-1 text-gray-500 rounded-lg text-xs"
+								style="--px:0.5rem; --py:0.25rem; --c:var(--color-gray-500, #9b9b9b); --radius:0.5rem; --size:0.75rem"
 								on:click={() => {
 									info.meta.profile_image_url = `${WEBUI_BASE_URL}/static/icons/favicon.png`;
 								}}
@@ -496,10 +499,10 @@
 				</div>
 						</div>
 
-						<div class="flex-1">
+						<div style="--fx:1 1 0%">
 							<div>
 								<input
-									class="text-xs w-full bg-transparent text-gray-500 outline-hidden"
+									style="--size:0.75rem; --w:100%; --bgc:transparent; --c:var(--color-gray-500, #9b9b9b); --oe:none"
 									placeholder={$i18n.t('Model ID')}
 									bind:value={id}
 									disabled={edit}
@@ -510,12 +513,12 @@
 					</div>
 
 					{#if preset}
-						<div class="my-1">
-							<div class=" text-sm font-semibold mb-1">{$i18n.t('Base Model (From)')}</div>
+						<div style="--my:0.25rem">
+							<div style="--size:0.875rem; --weight:600; --mb:0.25rem">{$i18n.t('Base Model (From)')}</div>
 
 							<div>
 								<select
-									class="text-sm w-full bg-transparent outline-hidden"
+									style="--size:0.875rem; --w:100%; --bgc:transparent; --oe:none"
 									placeholder="Select a base model (e.g. llama3, gpt-4o)"
 									bind:value={info.base_model_id}
 									on:change={(e) => {
@@ -523,23 +526,23 @@
 									}}
 									required
 								>
-									<option value={null} class=" text-gray-900"
+									<option value={null} style="--c:var(--color-gray-900, #171717)"
 										>{$i18n.t('Select a base model')}</option
 									>
 									{#each $models.filter((m) => (model ? m.id !== model.id : true) && !m?.preset && m?.owned_by !== 'arena') as model}
-										<option value={model.id} class=" text-gray-900">{model.name}</option>
+										<option value={model.id} style="--c:var(--color-gray-900, #171717)">{model.name}</option>
 									{/each}
 								</select>
 							</div>
 						</div>
 					{/if}
 
-					<div class="my-1">
-						<div class="mb-1 flex w-full justify-between items-center">
-							<div class=" self-center text-sm font-semibold">{$i18n.t('Description')}</div>
+					<div style="--my:0.25rem">
+						<div style="--mb:0.25rem; --d:flex; --w:100%; --jc:space-between; --ai:center">
+							<div style="--as:center; --size:0.875rem; --weight:600">{$i18n.t('Description')}</div>
 
 							<button
-								class="p-1 text-xs flex rounded-sm transition"
+								style="--p:0.25rem; --size:0.75rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								type="button"
 								aria-pressed={enableDescription ? 'true' : 'false'}
 								aria-label={enableDescription
@@ -550,9 +553,9 @@
 								}}
 							>
 								{#if !enableDescription}
-									<span class="ml-2 self-center">{$i18n.t('Default')}</span>
+									<span style="--ml:0.5rem; --as:center">{$i18n.t('Default')}</span>
 								{:else}
-									<span class="ml-2 self-center">{$i18n.t('Custom')}</span>
+									<span style="--ml:0.5rem; --as:center">{$i18n.t('Custom')}</span>
 								{/if}
 							</button>
 						</div>
@@ -566,7 +569,7 @@
 						{/if}
 					</div>
 
-					<div class=" mt-2 my-1">
+					<div style="--mt:0.5rem; --my:0.25rem">
 						<div class="">
 							<Tags
 								tags={info?.meta?.tags ?? []}
@@ -586,8 +589,8 @@
 						</div>
 					</div>
 
-					<div class="my-2">
-						<div class="px-3 py-2 bg-gray-50 dark:bg-gray-950 rounded-lg">
+					<div style="--my:0.5rem">
+						<div style="--px:0.75rem; --py:0.5rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-950, #0d0d0d); --radius:0.5rem">
 							<AccessControl
 								bind:accessControl
 								accessRoles={['read', 'write']}
@@ -596,16 +599,16 @@
 						</div>
 					</div>
 
-					<hr class=" border-gray-100 dark:border-gray-850 my-1.5" />
+					<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.375rem" />
 
-					<div class="my-2">
-						<div class="flex w-full justify-between">
-							<div class=" self-center text-sm font-semibold">{$i18n.t('Model Params')}</div>
+					<div style="--my:0.5rem">
+						<div style="--d:flex; --w:100%; --jc:space-between">
+							<div style="--as:center; --size:0.875rem; --weight:600">{$i18n.t('Model Params')}</div>
 						</div>
 
-						<div class="mt-2">
-							<div class="my-1">
-								<div class=" text-xs font-semibold mb-2">{$i18n.t('System Prompt')}</div>
+						<div style="--mt:0.5rem">
+							<div style="--my:0.25rem">
+								<div style="--size:0.75rem; --weight:600; --mb:0.5rem">{$i18n.t('System Prompt')}</div>
 								<div>
 									<Textarea
 										className=" text-sm w-full bg-transparent outline-hidden resize-none overflow-y-hidden "
@@ -616,45 +619,45 @@
 								</div>
 							</div>
 
-							<div class="flex w-full justify-between">
-								<div class=" self-center text-xs font-semibold">
+							<div style="--d:flex; --w:100%; --jc:space-between">
+								<div style="--as:center; --size:0.75rem; --weight:600">
 									{$i18n.t('Advanced Params')}
 								</div>
 
 								<button
-									class="p-1 px-3 text-xs flex rounded-sm transition"
+									style="--p:0.25rem; --px:0.75rem; --size:0.75rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 									type="button"
 									on:click={() => {
 										showAdvanced = !showAdvanced;
 									}}
 								>
 									{#if showAdvanced}
-										<span class="ml-2 self-center">{$i18n.t('Hide')}</span>
+										<span style="--ml:0.5rem; --as:center">{$i18n.t('Hide')}</span>
 									{:else}
-										<span class="ml-2 self-center">{$i18n.t('Show')}</span>
+										<span style="--ml:0.5rem; --as:center">{$i18n.t('Show')}</span>
 									{/if}
 								</button>
 							</div>
 
 							{#if showAdvanced}
-								<div class="my-2">
+								<div style="--my:0.5rem">
 									<AdvancedParams admin={true} custom={true} bind:params />
 								</div>
 							{/if}
 						</div>
 					</div>
 
-					<hr class=" border-gray-100 dark:border-gray-850 my-1" />
+					<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.25rem" />
 
-					<div class="my-2">
-						<div class="flex w-full justify-between items-center">
-							<div class="flex w-full justify-between items-center">
-								<div class=" self-center text-sm font-semibold">
+					<div style="--my:0.5rem">
+						<div style="--d:flex; --w:100%; --jc:space-between; --ai:center">
+							<div style="--d:flex; --w:100%; --jc:space-between; --ai:center">
+								<div style="--as:center; --size:0.875rem; --weight:600">
 									{$i18n.t('Prompt suggestions')}
 								</div>
 
 								<button
-									class="p-1 text-xs flex rounded-sm transition"
+									style="--p:0.25rem; --size:0.75rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 									type="button"
 									on:click={() => {
 										if ((info?.meta?.suggestion_prompts ?? null) === null) {
@@ -665,16 +668,16 @@
 									}}
 								>
 									{#if (info?.meta?.suggestion_prompts ?? null) === null}
-										<span class="ml-2 self-center">{$i18n.t('Default')}</span>
+										<span style="--ml:0.5rem; --as:center">{$i18n.t('Default')}</span>
 									{:else}
-										<span class="ml-2 self-center">{$i18n.t('Custom')}</span>
+										<span style="--ml:0.5rem; --as:center">{$i18n.t('Custom')}</span>
 									{/if}
 								</button>
 							</div>
 
 							{#if (info?.meta?.suggestion_prompts ?? null) !== null}
 								<button
-									class="p-1 px-2 text-xs flex rounded-sm transition"
+									style="--p:0.25rem; --px:0.5rem; --size:0.75rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 									type="button"
 									on:click={() => {
 										if (
@@ -692,7 +695,7 @@
 										xmlns="http://www.w3.org/2000/svg"
 										viewBox="0 0 20 20"
 										fill="currentColor"
-										class="w-4 h-4"
+										style="--w:1rem; --h:1rem"
 									>
 										<path
 											d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z"
@@ -703,18 +706,18 @@
 						</div>
 
 						{#if info?.meta?.suggestion_prompts}
-							<div class="flex flex-col space-y-1 mt-1 mb-3">
+							<div style="--d:flex; --fd:column; --g:0.25rem; --mt:0.25rem; --mb:0.75rem">
 								{#if info.meta.suggestion_prompts.length > 0}
 									{#each info.meta.suggestion_prompts as prompt, promptIdx}
-										<div class=" flex rounded-lg">
+										<div style="--d:flex; --radius:0.5rem">
 											<input
-												class=" text-sm w-full bg-transparent outline-hidden border-r border-gray-100 dark:border-gray-850"
+												style="--size:0.875rem; --w:100%; --bgc:transparent; --oe:none; --br:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)"
 												placeholder={$i18n.t('Write a prompt suggestion (e.g. Who are you?)')}
 												bind:value={prompt.content}
 											/>
 
 											<button
-												class="px-2"
+												style="--px:0.5rem"
 												type="button"
 												on:click={() => {
 													info.meta.suggestion_prompts.splice(promptIdx, 1);
@@ -726,55 +729,55 @@
 										</div>
 									{/each}
 								{:else}
-									<div class="text-xs text-center">No suggestion prompts</div>
+									<div style="--size:0.75rem; --ta:center">No suggestion prompts</div>
 								{/if}
 							</div>
 						{/if}
 					</div>
 
-					<hr class=" border-gray-100 dark:border-gray-850 my-1.5" />
+					<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.375rem" />
 
-					<div class="my-2">
+					<div style="--my:0.5rem">
 						<Knowledge bind:selectedItems={knowledge} />
 					</div>
 
-					<div class="my-2">
+					<div style="--my:0.5rem">
 						<ToolsSelector bind:selectedToolIds={toolIds} tools={$tools} />
 					</div>
 
-					<div class="my-2">
+					<div style="--my:0.5rem">
 						<FiltersSelector
 							bind:selectedFilterIds={filterIds}
 							filters={$functions.filter((func) => func.type === 'filter')}
 						/>
 					</div>
 
-					<div class="my-2">
+					<div style="--my:0.5rem">
 						<ActionsSelector
 							bind:selectedActionIds={actionIds}
 							actions={$functions.filter((func) => func.type === 'action')}
 						/>
 					</div>
 
-					<div class="my-2">
+					<div style="--my:0.5rem">
 						<Capabilities bind:capabilities />
 					</div>
 
-					<div class="my-2 text-gray-300 dark:text-gray-700">
-						<div class="flex w-full justify-between mb-2">
-							<div class=" self-center text-sm font-semibold">{$i18n.t('JSON Preview')}</div>
+					<div style="--my:0.5rem; --c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-700, #4e4e4e)">
+						<div style="--d:flex; --w:100%; --jc:space-between; --mb:0.5rem">
+							<div style="--as:center; --size:0.875rem; --weight:600">{$i18n.t('JSON Preview')}</div>
 
 							<button
-								class="p-1 px-3 text-xs flex rounded-sm transition"
+								style="--p:0.25rem; --px:0.75rem; --size:0.75rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								type="button"
 								on:click={() => {
 									showPreview = !showPreview;
 								}}
 							>
 								{#if showPreview}
-									<span class="ml-2 self-center">{$i18n.t('Hide')}</span>
+									<span style="--ml:0.5rem; --as:center">{$i18n.t('Hide')}</span>
 								{:else}
-									<span class="ml-2 self-center">{$i18n.t('Show')}</span>
+									<span style="--ml:0.5rem; --as:center">{$i18n.t('Show')}</span>
 								{/if}
 							</button>
 						</div>
@@ -782,7 +785,7 @@
 						{#if showPreview}
 							<div>
 								<textarea
-									class="text-sm w-full bg-transparent outline-hidden resize-none"
+									style="--size:0.875rem; --w:100%; --bgc:transparent; --oe:none; resize:none"
 									rows="10"
 									value={JSON.stringify(info, null, 2)}
 									disabled
@@ -792,15 +795,16 @@
 						{/if}
 					</div>
 
-					<div class="my-2 flex flex-col gap-3 pb-20">
+					<div style="--my:0.5rem; --d:flex; --fd:column; --g:0.75rem; --pb:5rem">
 						<button
-							class=" text-sm px-3 py-2 transition rounded-lg {loading
+							style="--size:0.875rem; --px:0.75rem; --py:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --d:flex; --w:100%; --jc:center"
+	class="{loading
 								? ' cursor-not-allowed bg-black hover:bg-gray-900 text-white dark:bg-white dark:hover:bg-gray-100 dark:text-black'
-								: 'bg-black hover:bg-gray-900 text-white dark:bg-white dark:hover:bg-gray-100 dark:text-black'} flex w-full justify-center"
+								: 'bg-black hover:bg-gray-900 text-white dark:bg-white dark:hover:bg-gray-100 dark:text-black'}"
 							type="submit"
 							disabled={loading}
 						>
-							<div class=" self-center font-medium">
+							<div style="--as:center; --weight:500">
 								{#if edit}
 									{$i18n.t('Save & Update')}
 								{:else}
@@ -809,7 +813,7 @@
 							</div>
 
 							{#if loading}
-								<div class="ml-1.5 self-center">
+								<div style="--ml:0.375rem; --as:center">
 									<Spinner />
 								</div>
 							{/if}
@@ -817,9 +821,10 @@
 
 						<!-- Save and chat that saves and brings users to a new chat session -->
 						<button
-							class="text-sm px-4 py-3 transition rounded-lg border-2 {loading
+							style="--size:0.875rem; --px:1rem; --py:0.75rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --bw:2px; --d:flex; --w:100%; --jc:center; --ai:center; --g:0.5rem"
+	class="{loading
 								? 'cursor-not-allowed bg-blue-100 border-blue-300 text-blue-600 dark:bg-blue-900/20 dark:border-blue-700 dark:text-blue-400'
-								: 'bg-blue-50 hover:bg-blue-100 border-blue-300 text-blue-700 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:border-blue-700 dark:text-blue-300'} flex w-full justify-center items-center gap-2"
+								: 'bg-blue-50 hover:bg-blue-100 border-blue-300 text-blue-700 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:border-blue-700 dark:text-blue-300'}"
 							type="button"
 							on:click={async () => {
 								// Save first, then navigate to chat
@@ -830,7 +835,7 @@
 							}}
 							disabled={loading}
 						>
-							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<svg style="--w:1rem; --h:1rem" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path
 									stroke-linecap="round"
 									stroke-linejoin="round"
@@ -838,7 +843,7 @@
 									d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
 								></path>
 							</svg>
-							<div class="self-center font-medium">
+							<div style="--as:center; --weight:500">
 								{#if edit}
 									{$i18n.t('Save & Chat')}
 								{:else}

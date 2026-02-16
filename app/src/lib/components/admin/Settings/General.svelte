@@ -113,28 +113,29 @@
 </script>
 
 <form
-	class="flex flex-col h-full justify-between space-y-3 text-sm"
+	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.75rem; --size:0.875rem"
 	on:submit|preventDefault={async () => {
 		updateHandler();
 	}}
 >
-	<div class="mt-0.5 space-y-3 overflow-y-scroll scrollbar-hidden h-full">
+	<div style="--mt:0.125rem; --g:0.75rem; --ofy:scroll; --h:100%"
+	class="scrollbar-hidden">
 		{#if adminConfig !== null}
 			<div class="">
-				<div class="mb-3.5">
-					<div class=" mb-2.5 text-base font-medium">{$i18n.t('General')}</div>
+				<div style="--mb:0.875rem">
+					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('General')}</div>
 
-					<hr class=" border-gray-100 dark:border-gray-850 my-2" />
+					<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem" />
 
-					<div class="mb-2.5">
-						<div class=" mb-1 text-xs font-medium flex space-x-2 items-center">
+					<div style="--mb:0.625rem">
+						<div style="--mb:0.25rem; --size:0.75rem; --weight:500; --d:flex; --g:0.5rem; --ai:center">
 							<div>
 								{$i18n.t('Version')}
 							</div>
 						</div>
-						<div class="flex w-full justify-between items-center">
-							<div class="flex flex-col text-xs text-gray-700 dark:text-gray-200">
-								<div class="flex gap-1">
+						<div style="--d:flex; --w:100%; --jc:space-between; --ai:center">
+							<div style="--d:flex; --fd:column; --size:0.75rem; --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-200, #e3e3e3)">
+								<div style="--d:flex; --g:0.25rem">
 									<Tooltip content={WEBUI_BUILD_HASH}>
 										v{WEBUI_VERSION}
 									</Tooltip>
@@ -154,7 +155,7 @@
 								</div>
 
 								<button
-									class=" underline flex items-center space-x-1 text-xs text-gray-500 dark:text-gray-500"
+									style="--td:underline; --d:flex; --ai:center; --g:0.25rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-500, #9b9b9b)"
 									type="button"
 									on:click={() => {
 										showChangelog.set(true);
@@ -166,7 +167,7 @@
 
 							{#if $config?.features?.enable_version_update_check}
 								<button
-									class=" text-xs px-3 py-1.5 bg-gray-50 hover:bg-gray-100 dark:bg-gray-850 dark:hover:bg-gray-800 transition rounded-lg font-medium"
+									style="--size:0.75rem; --px:0.75rem; --py:0.375rem; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --weight:500"
 									type="button"
 									on:click={() => {
 										checkForVersionUpdates();
@@ -178,19 +179,20 @@
 						</div>
 					</div>
 
-					<div class="mb-2.5">
-						<div class="flex w-full justify-between items-center">
-							<div class="text-xs pr-2">
+					<div style="--mb:0.625rem">
+						<div style="--d:flex; --w:100%; --jc:space-between; --ai:center">
+							<div style="--size:0.75rem; --pr:0.5rem">
 								<div class="">
 									{$i18n.t('Help')}
 								</div>
-								<div class=" text-xs text-gray-500">
+								<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">
 									{$i18n.t('Discover how to use Sage.is AI and seek support from the community.')}
 								</div>
 							</div>
 
 							<a
-								class="flex-shrink-0 text-xs font-medium underline"
+								style="--size:0.75rem; --weight:500; --td:underline"
+	class="flex-shrink-0"
 								href="https://docs.sage.is/"
 								target="_blank"
 							>
@@ -198,8 +200,8 @@
 							</a>
 						</div>
 
-						<div class="mt-1">
-							<div class="flex space-x-1">
+						<div style="--mt:0.25rem">
+							<div style="--d:flex; --g:0.25rem">
 								<a href="https://x.com/Sage_Is_AI" target="_blank">
 									<img
 										alt="X (formerly Twitter) Follow"
@@ -233,40 +235,40 @@
 						</div>
 					</div>
 
-					<div class="mb-2.5">
-						<div class="flex w-full justify-between items-center">
-							<div class="text-xs pr-2">
+					<div style="--mb:0.625rem">
+						<div style="--d:flex; --w:100%; --jc:space-between; --ai:center">
+							<div style="--size:0.75rem; --pr:0.5rem">
 								<div class="">
 									{$i18n.t('License')}
 								</div>
 
 								{#if $config?.license_metadata}
-									<a href="https://docs.sage.is/license" target="_blank" class="text-gray-500 mt-0.5">
-										<span class=" capitalize text-black dark:text-white"
+									<a href="https://docs.sage.is/license" target="_blank" style="--c:var(--color-gray-500, #9b9b9b); --mt:0.125rem">
+										<span style="--tt:capitalize; --c:#000; --dark-c:#fff"
 											>{$config?.license_metadata?.type}
 											license</span
 										>
 										registered to
-										<span class=" capitalize text-black dark:text-white"
+										<span style="--tt:capitalize; --c:#000; --dark-c:#fff"
 											>{$config?.license_metadata?.organization_name}</span
 										>
 										for
-										<span class=" font-medium text-black dark:text-white"
+										<span style="--weight:500; --c:#000; --dark-c:#fff"
 											>{$config?.license_metadata?.seats ?? 'Unlimited'} users.</span
 										>
 									</a>
 									{#if $config?.license_metadata?.html}
-										<div class="mt-0.5">
+										<div style="--mt:0.125rem">
 											{@html DOMPurify.sanitize($config?.license_metadata?.html)}
 										</div>
 									{/if}
 								{:else}
 									<a
-										class=" text-xs hover:underline"
+										style="--size:0.75rem; --hvr-td:underline"
 										href="https://docs.sage.is/license"
 										target="_blank"
 									>
-										<span class="text-gray-500">
+										<span style="--c:var(--color-gray-500, #9b9b9b)">
 											{$i18n.t(
 												'Sage.is AI runs on open source. Always will. No lock-in. No tricks. Full AGPL freedom. Enterprise teams please stand with us. Sponsor the future of Honest and Real Open AI.'
 											)}
@@ -276,7 +278,8 @@
 							</div>
 
 							<!-- <button
-								class="flex-shrink-0 text-xs px-3 py-1.5 bg-gray-50 hover:bg-gray-100 dark:bg-gray-850 dark:hover:bg-gray-800 transition rounded-lg font-medium"
+								style="--size:0.75rem; --px:0.75rem; --py:0.375rem; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --weight:500"
+	class="flex-shrink-0"
 							>
 								{$i18n.t('Activate')}
 							</button> -->
@@ -284,16 +287,16 @@
 					</div>
 				</div>
 
-				<div class="mb-3">
-					<div class=" mb-2.5 text-base font-medium">{$i18n.t('Authentication')}</div>
+				<div style="--mb:0.75rem">
+					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('Authentication')}</div>
 
-					<hr class=" border-gray-100 dark:border-gray-850 my-2" />
+					<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem" />
 
-					<div class="  mb-2.5 flex w-full justify-between">
-						<div class=" self-center text-xs font-medium">{$i18n.t('Default User Role')}</div>
-						<div class="flex items-center relative">
+					<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
+						<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Default User Role')}</div>
+						<div style="--d:flex; --ai:center; --pos:relative">
 							<select
-								class="dark:bg-gray-900 w-fit pr-8 rounded-sm px-2 text-xs bg-transparent outline-hidden text-right"
+								style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
 								bind:value={adminConfig.DEFAULT_USER_ROLE}
 								placeholder="Select a role"
 							>
@@ -304,22 +307,22 @@
 						</div>
 					</div>
 
-					<div class=" mb-2.5 flex w-full justify-between pr-2">
-						<div class=" self-center text-xs font-medium">{$i18n.t('Enable New Sign Ups')}</div>
+					<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between; --pr:0.5rem">
+						<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Enable New Sign Ups')}</div>
 
 						<Switch bind:state={adminConfig.ENABLE_SIGNUP} />
 					</div>
 
-					<div class="mb-2.5 flex w-full items-center justify-between pr-2">
-						<div class=" self-center text-xs font-medium">
+					<div style="--mb:0.625rem; --d:flex; --w:100%; --ai:center; --jc:space-between; --pr:0.5rem">
+						<div style="--as:center; --size:0.75rem; --weight:500">
 							{$i18n.t('Show Admin Details in Account Pending Overlay')}
 						</div>
 
 						<Switch bind:state={adminConfig.SHOW_ADMIN_DETAILS} />
 					</div>
 
-					<div class="mb-2.5">
-						<div class=" self-center text-xs font-medium mb-2">
+					<div style="--mb:0.625rem">
+						<div style="--as:center; --size:0.75rem; --weight:500; --mb:0.5rem">
 							{$i18n.t('Pending User Overlay Title')}
 						</div>
 						<Textarea
@@ -330,8 +333,8 @@
 						/>
 					</div>
 
-					<div class="mb-2.5">
-						<div class=" self-center text-xs font-medium mb-2">
+					<div style="--mb:0.625rem">
+						<div style="--as:center; --size:0.75rem; --weight:500; --mb:0.5rem">
 							{$i18n.t('Pending User Overlay Content')}
 						</div>
 						<Textarea
@@ -342,15 +345,15 @@
 						/>
 					</div>
 
-					<div class="mb-2.5 flex w-full justify-between pr-2">
-						<div class=" self-center text-xs font-medium">{$i18n.t('Enable API Key')}</div>
+					<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between; --pr:0.5rem">
+						<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Enable API Key')}</div>
 
 						<Switch bind:state={adminConfig.ENABLE_API_KEY} />
 					</div>
 
 					{#if adminConfig?.ENABLE_API_KEY}
-						<div class="mb-2.5 flex w-full justify-between pr-2">
-							<div class=" self-center text-xs font-medium">
+						<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between; --pr:0.5rem">
+							<div style="--as:center; --size:0.75rem; --weight:500">
 								{$i18n.t('API Key Endpoint Restrictions')}
 							</div>
 
@@ -358,24 +361,24 @@
 						</div>
 
 						{#if adminConfig?.ENABLE_API_KEY_ENDPOINT_RESTRICTIONS}
-							<div class=" flex w-full flex-col pr-2">
-								<div class=" text-xs font-medium">
+							<div style="--d:flex; --w:100%; --fd:column; --pr:0.5rem">
+								<div style="--size:0.75rem; --weight:500">
 									{$i18n.t('Allowed Endpoints')}
 								</div>
 
 								<input
-									class="w-full mt-1 rounded-lg text-sm dark:text-gray-300 bg-transparent outline-hidden"
+									style="--w:100%; --mt:0.25rem; --radius:0.5rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --bgc:transparent; --oe:none"
 									type="text"
 									placeholder={`e.g.) /api/v1/messages, /api/v1/channels`}
 									bind:value={adminConfig.API_KEY_ALLOWED_ENDPOINTS}
 								/>
 
-								<div class="mt-2 text-xs text-gray-400 dark:text-gray-500">
+								<div style="--mt:0.5rem; --size:0.75rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b)">
 									<!-- https://docs.sage.is/getting-started/advanced-topics/api-endpoints -->
 									<a
 										href="https://docs.sage.is/getting-started/api-endpoints"
 										target="_blank"
-										class=" text-gray-300 font-medium underline"
+										style="--c:var(--color-gray-300, #cdcdcd); --weight:500; --td:underline"
 									>
 										{$i18n.t('To learn more about available endpoints, visit our documentation.')}
 									</a>
@@ -384,68 +387,68 @@
 						{/if}
 					{/if}
 
-					<div class=" mb-2.5 w-full justify-between">
-						<div class="flex w-full justify-between">
-							<div class=" self-center text-xs font-medium">{$i18n.t('JWT Expiration')}</div>
+					<div style="--mb:0.625rem; --w:100%; --jc:space-between">
+						<div style="--d:flex; --w:100%; --jc:space-between">
+							<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('JWT Expiration')}</div>
 						</div>
 
-						<div class="flex mt-2 space-x-2">
+						<div style="--d:flex; --mt:0.5rem; --g:0.5rem">
 							<input
-								class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
 								type="text"
 								placeholder={`e.g.) "30m","1h", "10d". `}
 								bind:value={adminConfig.JWT_EXPIRES_IN}
 							/>
 						</div>
 
-						<div class="mt-2 text-xs text-gray-400 dark:text-gray-500">
+						<div style="--mt:0.5rem; --size:0.75rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b)">
 							{$i18n.t('Valid time units:')}
-							<span class=" text-gray-300 font-medium"
+							<span style="--c:var(--color-gray-300, #cdcdcd); --weight:500"
 								>{$i18n.t("'s', 'm', 'h', 'd', 'w' or '-1' for no expiration.")}</span
 							>
 						</div>
 					</div>
 
-					<div class=" space-y-3">
-						<div class="mt-2 space-y-2 pr-1.5">
-							<div class="flex justify-between items-center text-sm">
-								<div class="  font-medium">{$i18n.t('LDAP')}</div>
+					<div style="--g:0.75rem">
+						<div style="--mt:0.5rem; --g:0.5rem; --pr:0.375rem">
+							<div style="--d:flex; --jc:space-between; --ai:center; --size:0.875rem">
+								<div style="--weight:500">{$i18n.t('LDAP')}</div>
 
-								<div class="mt-1">
+								<div style="--mt:0.25rem">
 									<Switch bind:state={ENABLE_LDAP} />
 								</div>
 							</div>
 
 							{#if ENABLE_LDAP}
-								<div class="flex flex-col gap-1">
-									<div class="flex w-full gap-2">
-										<div class="w-full">
-											<div class=" self-center text-xs font-medium min-w-fit mb-1">
+								<div style="--d:flex; --fd:column; --g:0.25rem">
+									<div style="--d:flex; --w:100%; --g:0.5rem">
+										<div style="--w:100%">
+											<div style="--as:center; --size:0.75rem; --weight:500; --minw:fit-content; --mb:0.25rem">
 												{$i18n.t('Label')}
 											</div>
 											<input
-												class="w-full bg-transparent outline-hidden py-0.5"
+												style="--w:100%; --bgc:transparent; --oe:none; --py:0.125rem"
 												required
 												placeholder={$i18n.t('Enter server label')}
 												bind:value={LDAP_SERVER.label}
 											/>
 										</div>
-										<div class="w-full"></div>
+										<div style="--w:100%"></div>
 									</div>
-									<div class="flex w-full gap-2">
-										<div class="w-full">
-											<div class=" self-center text-xs font-medium min-w-fit mb-1">
+									<div style="--d:flex; --w:100%; --g:0.5rem">
+										<div style="--w:100%">
+											<div style="--as:center; --size:0.75rem; --weight:500; --minw:fit-content; --mb:0.25rem">
 												{$i18n.t('Host')}
 											</div>
 											<input
-												class="w-full bg-transparent outline-hidden py-0.5"
+												style="--w:100%; --bgc:transparent; --oe:none; --py:0.125rem"
 												required
 												placeholder={$i18n.t('Enter server host')}
 												bind:value={LDAP_SERVER.host}
 											/>
 										</div>
-										<div class="w-full">
-											<div class=" self-center text-xs font-medium min-w-fit mb-1">
+										<div style="--w:100%">
+											<div style="--as:center; --size:0.75rem; --weight:500; --minw:fit-content; --mb:0.25rem">
 												{$i18n.t('Port')}
 											</div>
 											<Tooltip
@@ -454,7 +457,7 @@
 												className="w-full"
 											>
 												<input
-													class="w-full bg-transparent outline-hidden py-0.5"
+													style="--w:100%; --bgc:transparent; --oe:none; --py:0.125rem"
 													type="number"
 													placeholder={$i18n.t('Enter server port')}
 													bind:value={LDAP_SERVER.port}
@@ -462,9 +465,9 @@
 											</Tooltip>
 										</div>
 									</div>
-									<div class="flex w-full gap-2">
-										<div class="w-full">
-											<div class=" self-center text-xs font-medium min-w-fit mb-1">
+									<div style="--d:flex; --w:100%; --g:0.5rem">
+										<div style="--w:100%">
+											<div style="--as:center; --size:0.75rem; --weight:500; --minw:fit-content; --mb:0.25rem">
 												{$i18n.t('Application DN')}
 											</div>
 											<Tooltip
@@ -472,15 +475,15 @@
 												placement="top-start"
 											>
 												<input
-													class="w-full bg-transparent outline-hidden py-0.5"
+													style="--w:100%; --bgc:transparent; --oe:none; --py:0.125rem"
 													required
 													placeholder={$i18n.t('Enter Application DN')}
 													bind:value={LDAP_SERVER.app_dn}
 												/>
 											</Tooltip>
 										</div>
-										<div class="w-full">
-											<div class=" self-center text-xs font-medium min-w-fit mb-1">
+										<div style="--w:100%">
+											<div style="--as:center; --size:0.75rem; --weight:500; --minw:fit-content; --mb:0.25rem">
 												{$i18n.t('Application DN Password')}
 											</div>
 											<SensitiveInput
@@ -489,9 +492,9 @@
 											/>
 										</div>
 									</div>
-									<div class="flex w-full gap-2">
-										<div class="w-full">
-											<div class=" self-center text-xs font-medium min-w-fit mb-1">
+									<div style="--d:flex; --w:100%; --g:0.5rem">
+										<div style="--w:100%">
+											<div style="--as:center; --size:0.75rem; --weight:500; --minw:fit-content; --mb:0.25rem">
 												{$i18n.t('Attribute for Mail')}
 											</div>
 											<Tooltip
@@ -501,7 +504,7 @@
 												placement="top-start"
 											>
 												<input
-													class="w-full bg-transparent outline-hidden py-0.5"
+													style="--w:100%; --bgc:transparent; --oe:none; --py:0.125rem"
 													required
 													placeholder={$i18n.t('Example: mail')}
 													bind:value={LDAP_SERVER.attribute_for_mail}
@@ -509,9 +512,9 @@
 											</Tooltip>
 										</div>
 									</div>
-									<div class="flex w-full gap-2">
-										<div class="w-full">
-											<div class=" self-center text-xs font-medium min-w-fit mb-1">
+									<div style="--d:flex; --w:100%; --g:0.5rem">
+										<div style="--w:100%">
+											<div style="--as:center; --size:0.75rem; --weight:500; --minw:fit-content; --mb:0.25rem">
 												{$i18n.t('Attribute for Username')}
 											</div>
 											<Tooltip
@@ -521,7 +524,7 @@
 												placement="top-start"
 											>
 												<input
-													class="w-full bg-transparent outline-hidden py-0.5"
+													style="--w:100%; --bgc:transparent; --oe:none; --py:0.125rem"
 													required
 													placeholder={$i18n.t(
 														'Example: sAMAccountName or uid or userPrincipalName'
@@ -531,9 +534,9 @@
 											</Tooltip>
 										</div>
 									</div>
-									<div class="flex w-full gap-2">
-										<div class="w-full">
-											<div class=" self-center text-xs font-medium min-w-fit mb-1">
+									<div style="--d:flex; --w:100%; --g:0.5rem">
+										<div style="--w:100%">
+											<div style="--as:center; --size:0.75rem; --weight:500; --minw:fit-content; --mb:0.25rem">
 												{$i18n.t('Search Base')}
 											</div>
 											<Tooltip
@@ -541,7 +544,7 @@
 												placement="top-start"
 											>
 												<input
-													class="w-full bg-transparent outline-hidden py-0.5"
+													style="--w:100%; --bgc:transparent; --oe:none; --py:0.125rem"
 													required
 													placeholder={$i18n.t('Example: ou=users,dc=foo,dc=example')}
 													bind:value={LDAP_SERVER.search_base}
@@ -549,21 +552,21 @@
 											</Tooltip>
 										</div>
 									</div>
-									<div class="flex w-full gap-2">
-										<div class="w-full">
-											<div class=" self-center text-xs font-medium min-w-fit mb-1">
+									<div style="--d:flex; --w:100%; --g:0.5rem">
+										<div style="--w:100%">
+											<div style="--as:center; --size:0.75rem; --weight:500; --minw:fit-content; --mb:0.25rem">
 												{$i18n.t('Search Filters')}
 											</div>
 											<input
-												class="w-full bg-transparent outline-hidden py-0.5"
+												style="--w:100%; --bgc:transparent; --oe:none; --py:0.125rem"
 												placeholder={$i18n.t('Example: (&(objectClass=inetOrgPerson)(uid=%s))')}
 												bind:value={LDAP_SERVER.search_filters}
 											/>
 										</div>
 									</div>
-									<div class="text-xs text-gray-400 dark:text-gray-500">
+									<div style="--size:0.75rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b)">
 										<a
-											class=" text-gray-300 font-medium underline"
+											style="--c:var(--color-gray-300, #cdcdcd); --weight:500; --td:underline"
 											href="https://ldap.com/ldap-filters/"
 											target="_blank"
 										>
@@ -571,47 +574,47 @@
 										</a>
 									</div>
 									<div>
-										<div class="flex justify-between items-center text-sm">
-											<div class="  font-medium">{$i18n.t('TLS')}</div>
+										<div style="--d:flex; --jc:space-between; --ai:center; --size:0.875rem">
+											<div style="--weight:500">{$i18n.t('TLS')}</div>
 
-											<div class="mt-1">
+											<div style="--mt:0.25rem">
 												<Switch bind:state={LDAP_SERVER.use_tls} />
 											</div>
 										</div>
 										{#if LDAP_SERVER.use_tls}
-											<div class="flex w-full gap-2">
-												<div class="w-full">
-													<div class=" self-center text-xs font-medium min-w-fit mb-1 mt-1">
+											<div style="--d:flex; --w:100%; --g:0.5rem">
+												<div style="--w:100%">
+													<div style="--as:center; --size:0.75rem; --weight:500; --minw:fit-content; --mb:0.25rem; --mt:0.25rem">
 														{$i18n.t('Certificate Path')}
 													</div>
 													<input
-														class="w-full bg-transparent outline-hidden py-0.5"
+														style="--w:100%; --bgc:transparent; --oe:none; --py:0.125rem"
 														placeholder={$i18n.t('Enter certificate path')}
 														bind:value={LDAP_SERVER.certificate_path}
 													/>
 												</div>
 											</div>
-											<div class="flex justify-between items-center text-xs">
-												<div class=" font-medium">Validate certificate</div>
+											<div style="--d:flex; --jc:space-between; --ai:center; --size:0.75rem">
+												<div style="--weight:500">Validate certificate</div>
 
-												<div class="mt-1">
+												<div style="--mt:0.25rem">
 													<Switch bind:state={LDAP_SERVER.validate_cert} />
 												</div>
 											</div>
-											<div class="flex w-full gap-2">
-												<div class="w-full">
-													<div class=" self-center text-xs font-medium min-w-fit mb-1">
+											<div style="--d:flex; --w:100%; --g:0.5rem">
+												<div style="--w:100%">
+													<div style="--as:center; --size:0.75rem; --weight:500; --minw:fit-content; --mb:0.25rem">
 														{$i18n.t('Ciphers')}
 													</div>
 													<Tooltip content={$i18n.t('Default to ALL')} placement="top-start">
 														<input
-															class="w-full bg-transparent outline-hidden py-0.5"
+															style="--w:100%; --bgc:transparent; --oe:none; --py:0.125rem"
 															placeholder={$i18n.t('Example: ALL')}
 															bind:value={LDAP_SERVER.ciphers}
 														/>
 													</Tooltip>
 												</div>
-												<div class="w-full"></div>
+												<div style="--w:100%"></div>
 											</div>
 										{/if}
 									</div>
@@ -621,51 +624,51 @@
 					</div>
 				</div>
 
-				<div class="mb-3">
-					<div class=" mb-2.5 text-base font-medium">{$i18n.t('Features')}</div>
+				<div style="--mb:0.75rem">
+					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('Features')}</div>
 
-					<hr class=" border-gray-100 dark:border-gray-850 my-2" />
+					<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem" />
 
-					<div class="mb-2.5 flex w-full items-center justify-between pr-2">
-						<div class=" self-center text-xs font-medium">
+					<div style="--mb:0.625rem; --d:flex; --w:100%; --ai:center; --jc:space-between; --pr:0.5rem">
+						<div style="--as:center; --size:0.75rem; --weight:500">
 							{$i18n.t('Enable Community Sharing')}
 						</div>
 
 						<Switch bind:state={adminConfig.ENABLE_COMMUNITY_SHARING} />
 					</div>
 
-					<div class="mb-2.5 flex w-full items-center justify-between pr-2">
-						<div class=" self-center text-xs font-medium">{$i18n.t('Enable Message Rating')}</div>
+					<div style="--mb:0.625rem; --d:flex; --w:100%; --ai:center; --jc:space-between; --pr:0.5rem">
+						<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Enable Message Rating')}</div>
 
 						<Switch bind:state={adminConfig.ENABLE_MESSAGE_RATING} />
 					</div>
 
-					<div class="mb-2.5 flex w-full items-center justify-between pr-2">
-						<div class=" self-center text-xs font-medium">
+					<div style="--mb:0.625rem; --d:flex; --w:100%; --ai:center; --jc:space-between; --pr:0.5rem">
+						<div style="--as:center; --size:0.75rem; --weight:500">
 							{$i18n.t('Notes')} ({$i18n.t('Beta')})
 						</div>
 
 						<Switch bind:state={adminConfig.ENABLE_NOTES} />
 					</div>
 
-					<div class="mb-2.5 flex w-full items-center justify-between pr-2">
-						<div class=" self-center text-xs font-medium">
+					<div style="--mb:0.625rem; --d:flex; --w:100%; --ai:center; --jc:space-between; --pr:0.5rem">
+						<div style="--as:center; --size:0.75rem; --weight:500">
 							{$i18n.t('Spaces')} ({$i18n.t('Beta')})
 						</div>
 
 						<Switch bind:state={adminConfig.ENABLE_CHANNELS} />
 					</div>
 
-					<div class="mb-2.5 flex w-full items-center justify-between pr-2">
-						<div class=" self-center text-xs font-medium">
+					<div style="--mb:0.625rem; --d:flex; --w:100%; --ai:center; --jc:space-between; --pr:0.5rem">
+						<div style="--as:center; --size:0.75rem; --weight:500">
 							{$i18n.t('User Webhooks')}
 						</div>
 
 						<Switch bind:state={adminConfig.ENABLE_USER_WEBHOOKS} />
 					</div>
 
-					<div class="mb-2.5">
-						<div class=" self-center text-xs font-medium mb-2">
+					<div style="--mb:0.625rem">
+						<div style="--as:center; --size:0.75rem; --weight:500; --mb:0.5rem">
 							{$i18n.t('Response Watermark')}
 						</div>
 						<Textarea
@@ -674,35 +677,35 @@
 						/>
 					</div>
 
-					<div class="mb-2.5 w-full justify-between">
-						<div class="flex w-full justify-between">
-							<div class=" self-center text-xs font-medium">{$i18n.t('WebUI URL')}</div>
+					<div style="--mb:0.625rem; --w:100%; --jc:space-between">
+						<div style="--d:flex; --w:100%; --jc:space-between">
+							<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('WebUI URL')}</div>
 						</div>
 
-						<div class="flex mt-2 space-x-2">
+						<div style="--d:flex; --mt:0.5rem; --g:0.5rem">
 							<input
-								class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
 								type="text"
 								placeholder={`e.g.) "http://localhost:3000"`}
 								bind:value={adminConfig.WEBUI_URL}
 							/>
 						</div>
 
-						<div class="mt-2 text-xs text-gray-400 dark:text-gray-500">
+						<div style="--mt:0.5rem; --size:0.75rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b)">
 							{$i18n.t(
 								'Enter the public URL of your WebUI. This URL will be used to generate links in the notifications.'
 							)}
 						</div>
 					</div>
 
-					<div class=" w-full justify-between">
-						<div class="flex w-full justify-between">
-							<div class=" self-center text-xs font-medium">{$i18n.t('Webhook URL')}</div>
+					<div style="--w:100%; --jc:space-between">
+						<div style="--d:flex; --w:100%; --jc:space-between">
+							<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Webhook URL')}</div>
 						</div>
 
-						<div class="flex mt-2 space-x-2">
+						<div style="--d:flex; --mt:0.5rem; --g:0.5rem">
 							<input
-								class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
 								type="text"
 								placeholder={`https://example.com/webhook`}
 								bind:value={webhookUrl}
@@ -714,9 +717,9 @@
 		{/if}
 	</div>
 
-	<div class="flex justify-end pt-3 text-sm font-medium">
+	<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
 		<button
-			class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			type="submit"
 		>
 			{$i18n.t('Save')}

@@ -19,7 +19,8 @@
 			  src.startsWith('/')
 			? src
 			: `${WEBUI_BASE_URL}/static/user.png`}
-	class=" {className} object-cover rounded-full"
+	style="--objf:cover; --radius:9999px"
+	class="{className}"
 	alt="profile"
 	draggable="false"
 />

@@ -40,51 +40,53 @@
 		value = selectedItem.value;
 	}}
 >
-	<Select.Trigger class="relative w-full" aria-label={placeholder}>
+	<Select.Trigger style="--pos:relative; --w:100%" aria-label={placeholder}>
 		<Select.Value
-			class="inline-flex h-input px-0.5 w-full outline-hidden bg-transparent truncate text-lg font-semibold placeholder-gray-400  focus:outline-hidden"
+			style="--d:inline-flex; --px:0.125rem; --w:100%; --oe:none; --bgc:transparent; overflow:hidden; text-overflow:ellipsis; --ws:nowrap; --size:1.125rem; --weight:600"
+	class="h-input placeholder-gray-400 focus:outline-hidden"
 			{placeholder}
 		/>
 		<ChevronDown className="absolute end-2 top-1/2 -translate-y-[45%] size-3.5" strokeWidth="2.5" />
 	</Select.Trigger>
 	<Select.Content
-		class="w-full rounded-lg  bg-white dark:bg-gray-900 dark:text-white shadow-lg border border-gray-300/30 dark:border-gray-700/40  outline-hidden"
+		style="--w:100%; --radius:0.5rem; --bgc:#fff; --dark-bgc:var(--color-gray-900, #171717); --dark-c:#fff; --shadow:4; --b:1px solid; --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.4); --oe:none"
 		transition={flyAndScale}
 		sideOffset={4}
 	>
 		<slot>
 			{#if searchEnabled}
-				<div class="flex items-center gap-2.5 px-5 mt-3.5 mb-3">
+				<div style="--d:flex; --ai:center; --g:0.625rem; --px:1.25rem; --mt:0.875rem; --mb:0.75rem">
 					<Search className="size-4" strokeWidth="2.5" />
 
 					<input
 						bind:value={searchValue}
-						class="w-full text-sm bg-transparent outline-hidden"
+						style="--w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
 						placeholder={searchPlaceholder}
 					/>
 				</div>
 
-				<hr class="border-gray-100 dark:border-gray-850" />
+				<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)" />
 			{/if}
 
-			<div class="px-3 my-2 max-h-80 overflow-y-auto">
+			<div style="--px:0.75rem; --my:0.5rem; --maxh:20rem; --ofy:auto">
 				{#each filteredItems as item}
 					<Select.Item
-						class="flex w-full font-medium line-clamp-1 select-none items-center rounded-button py-2 pl-3 pr-1.5 text-sm  text-gray-700 dark:text-gray-100  outline-hidden transition-all duration-75 hover:bg-gray-100 dark:hover:bg-gray-850 rounded-lg cursor-pointer data-highlighted:bg-muted"
+						style="--d:flex; --w:100%; --weight:500; --line-clamp:1; --us:none; --ai:center; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --pl:0.75rem; --pr:0.375rem; --size:0.875rem; --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-100, #ececec); --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-850, #262626); --radius:0.5rem; --cur:pointer"
+	class="data-highlighted:bg-muted"
 						value={item.value}
 						label={item.label}
 					>
 						{item.label}
 
 						{#if value === item.value}
-							<div class="ml-auto">
+							<div style="--ml:auto">
 								<Check />
 							</div>
 						{/if}
 					</Select.Item>
 				{:else}
 					<div>
-						<div class="block px-5 py-2 text-sm text-gray-700 dark:text-gray-100">
+						<div style="--d:block; --px:1.25rem; --py:0.5rem; --size:0.875rem; --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-100, #ececec)">
 							No results found
 						</div>
 					</div>

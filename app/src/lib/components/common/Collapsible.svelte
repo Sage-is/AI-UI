@@ -91,7 +91,8 @@
 		<!-- svelte-ignore a11y-no-static-element-interactions -->
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<div
-			class="{buttonClassName} cursor-pointer"
+			style="--cur:pointer"
+	class="{buttonClassName}"
 			on:pointerup={() => {
 				if (!disabled) {
 					open = !open;
@@ -99,11 +100,11 @@
 			}}
 		>
 			<div
-				class=" w-full font-medium flex items-center justify-between gap-2 {attributes?.done &&
+				style="--w:100%; --weight:500; --d:flex; --ai:center; --jc:space-between; --g:0.5rem"
+	class="{attributes?.done &&
 				attributes?.done !== 'true'
 					? 'shimmer'
-					: ''}
-			"
+					: ''}"
 			>
 				{#if attributes?.done && attributes?.done !== 'true'}
 					<div>
@@ -153,7 +154,7 @@
 					{/if}
 				</div>
 
-				<div class="flex self-center translate-y-[1px]">
+				<div style="--d:flex; --as:center; --translatey:1px">
 					{#if open}
 						<ChevronUp strokeWidth="3.5" className="size-3.5" />
 					{:else}
@@ -166,7 +167,8 @@
 		<!-- svelte-ignore a11y-no-static-element-interactions -->
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<div
-			class="{buttonClassName} cursor-pointer"
+			style="--cur:pointer"
+	class="{buttonClassName}"
 			on:pointerup={() => {
 				if (!disabled) {
 					open = !open;
@@ -174,11 +176,11 @@
 			}}
 		>
 			<div>
-				<div class="flex items-start justify-between">
+				<div style="--d:flex; --ai:flex-start; --jc:space-between">
 					<slot />
 
 					{#if chevron}
-						<div class="flex self-start translate-y-1">
+						<div style="--d:flex; --as:flex-start; --translatey:0.25rem">
 							{#if open}
 								<ChevronUp strokeWidth="3.5" className="size-3.5" />
 							{:else}
