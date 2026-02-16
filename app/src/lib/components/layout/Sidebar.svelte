@@ -455,9 +455,10 @@
 
 {#if $showSidebar}
 	<div
-		class=" {$isApp
+		style="--pos:fixed; --d-md:none; --z:40; --top:0; --right:0; --left:0; --bottom:0; --bgc:rgb(0 0 0 / 0.6); --w:100%; --minh:100vh; --h:100vh; --d:flex; --jc:center; --of:hidden; overscroll-behavior:contain"
+	class="{$isApp
 			? ' ml-[4.5rem] md:ml-0'
-			: ''} fixed md:hidden z-40 top-0 right-0 left-0 bottom-0 bg-black/60 w-full min-h-screen h-screen flex justify-center overflow-hidden overscroll-contain"
+			: ''}"
 		on:mousedown={() => {
 			showSidebar.set(!$showSidebar);
 		}}
@@ -476,34 +477,35 @@
 <div
 	bind:this={navElement}
 	id="sidebar"
-	class="h-screen max-h-[100dvh] min-h-screen select-none {$showSidebar
+	style="--h:100vh; --maxh:100dvh; --minh:100vh; --us:none; --fs:0; --bgc:var(--color-gray-50, #f9f9f9); --c:var(--color-gray-900, #171717); --dark-bgc:var(--color-gray-950, #0d0d0d); --dark-c:var(--color-gray-200, #e3e3e3); --size:0.875rem; --pos:fixed; --z:50; --top:0; --left:0; --ofx:hidden"
+	class="{$showSidebar
 		? 'md:relative w-[260px] max-w-[260px]'
 		: '-translate-x-[260px] w-[0px]'} {$isApp
 		? `ml-[4.5rem] md:ml-0 `
-		: 'transition-width duration-200 ease-in-out'}  shrink-0 bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-200 text-sm fixed z-50 top-0 left-0 overflow-x-hidden
-        "
+		: 'transition-width duration-200 ease-in-out'}"
 	data-state={$showSidebar}
 >
 	<div
-		class="py-2 my-auto flex flex-col justify-between h-screen max-h-[100dvh] w-[260px] overflow-x-hidden z-50 {$showSidebar
+		style="--py:0.5rem; --my:auto; --d:flex; --fd:column; --jc:space-between; --h:100vh; --maxh:100dvh; --w:260px; --ofx:hidden; --z:50"
+	class="{$showSidebar
 			? ''
 			: 'invisible'}"
 	>
-		<div class="px-1.5 flex justify-between space-x-1 text-gray-600 dark:text-gray-400">
+		<div style="--px:0.375rem; --d:flex; --jc:space-between; --g:0.25rem; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-400, #b4b4b4)">
 			<button
-				class=" cursor-pointer p-[7px] flex rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition"
+				style="--cur:pointer; --p:7px; --d:flex; --radius:0.75rem; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={() => {
 					showSidebar.set(!$showSidebar);
 				}}
 			>
-				<div class=" m-auto self-center">
+				<div style="--m:auto; --as:center">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						fill="none"
 						viewBox="0 0 24 24"
 						stroke-width="2"
 						stroke="currentColor"
-						class="size-5"
+						style="--w:1.25rem; --h:1.25rem"
 					>
 						<path
 							stroke-linecap="round"
@@ -516,7 +518,8 @@
 
 			<a
 				id="sidebar-new-chat-button"
-				class="flex justify-between items-center flex-1 rounded-lg px-2 py-1 h-full text-right hover:bg-gray-100 dark:hover:bg-gray-900 transition no-drag-region"
+				style="--d:flex; --jc:space-between; --ai:center; --fx:1 1 0%; --radius:0.5rem; --px:0.5rem; --py:0.25rem; --h:100%; --ta:right; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="no-drag-region"
 				href="/"
 				draggable="false"
 				on:click={async () => {
@@ -536,16 +539,18 @@
 					}, 0);
 				}}
 			>
-				<div class="flex items-center">
-					<div class="self-center mx-1.5">
+				<div style="--d:flex; --ai:center">
+					<div style="--as:center; --mx:0.375rem">
 						<img
 							crossorigin="anonymous"
 							src={branding?.logo_url || `${WEBUI_BASE_URL}/static/icons/favicon.png`}
-							class="sidebar-new-chat-icon size-5 -translate-x-1.5 rounded-full"
+							style="--w:1.25rem; --h:1.25rem; --translatex:-0.375rem; --radius:9999px"
+	class="sidebar-new-chat-icon"
 							alt="logo"
 						/>
 					</div>
-					<div class=" self-center text-sm text-gray-850 dark:text-white font-primary">
+					<div style="--as:center; --size:0.875rem; --c:var(--color-gray-850, #262626); --dark-c:#fff"
+	class="font-primary">
 						{$i18n.t('New Chat')}
 					</div>
 				</div>
@@ -557,9 +562,9 @@
 		</div>
 
 		<!-- {#if $user?.role === 'admin'}
-			<div class="px-1.5 flex justify-center text-gray-800 dark:text-gray-200">
+			<div style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-200, #e3e3e3)">
 				<a
-					class="grow flex items-center space-x-3 rounded-lg px-2 py-[7px] hover:bg-gray-100 dark:hover:bg-gray-900 transition"
+					style="--fg:1; --d:flex; --ai:center; --g:0.75rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					href="/home"
 					on:click={() => {
 						selectedChatId = null;
@@ -571,39 +576,41 @@
 					}}
 					draggable="false"
 				>
-					<div class="self-center">
+					<div style="--as:center">
 						<Home strokeWidth="2" className="size-[1.1rem]" />
 					</div>
 
-					<div class="flex self-center translate-y-[0.5px]">
-						<div class=" self-center font-medium text-sm font-primary">{$i18n.t('Home')}</div>
+					<div style="--d:flex; --as:center; --translatey:0.5px">
+						<div style="--as:center; --weight:500; --size:0.875rem"
+	class="font-primary">{$i18n.t('Home')}</div>
 					</div>
 				</a>
 			</div>
 		{/if} -->
 
-		<div class="px-1.5 flex justify-center text-gray-800 dark:text-gray-200">
+		<div style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-200, #e3e3e3)">
 			<button
-				class="grow flex items-center space-x-3 rounded-lg px-2 py-[7px] hover:bg-gray-100 dark:hover:bg-gray-900 transition outline-none"
+				style="--fg:1; --d:flex; --ai:center; --g:0.75rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --oe:2px solid transparent"
 				on:click={() => {
 					showSearch.set(true);
 				}}
 				draggable="false"
 			>
-				<div class="self-center">
+				<div style="--as:center">
 					<Search strokeWidth="2" className="size-[1.1rem]" />
 				</div>
 
-				<div class="flex self-center translate-y-[0.5px]">
-					<div class=" self-center text-sm font-primary">{$i18n.t('Search')}</div>
+				<div style="--d:flex; --as:center; --translatey:0.5px">
+					<div style="--as:center; --size:0.875rem"
+	class="font-primary">{$i18n.t('Search')}</div>
 				</div>
 			</button>
 		</div>
 
 		{#if ($config?.features?.enable_notes ?? false) && ($user?.role === 'admin' || ($user?.permissions?.features?.notes ?? true))}
-			<div class="px-1.5 flex justify-center text-gray-800 dark:text-gray-200">
+			<div style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-200, #e3e3e3)">
 				<a
-					class="grow flex items-center space-x-3 rounded-lg px-2 py-[7px] hover:bg-gray-100 dark:hover:bg-gray-900 transition"
+					style="--fg:1; --d:flex; --ai:center; --g:0.75rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					href="/notes"
 					on:click={() => {
 						selectedChatId = null;
@@ -615,9 +622,9 @@
 					}}
 					draggable="false"
 				>
-					<div class="self-center">
+					<div style="--as:center">
 						<svg
-							class="size-4"
+							style="--w:1rem; --h:1rem"
 							aria-hidden="true"
 							xmlns="http://www.w3.org/2000/svg"
 							width="24"
@@ -635,17 +642,18 @@
 						</svg>
 					</div>
 
-					<div class="flex self-center translate-y-[0.5px]">
-						<div class=" self-center text-sm font-primary">{$i18n.t('Notes')}</div>
+					<div style="--d:flex; --as:center; --translatey:0.5px">
+						<div style="--as:center; --size:0.875rem"
+	class="font-primary">{$i18n.t('Notes')}</div>
 					</div>
 				</a>
 			</div>
 		{/if}
 
 		{#if $user?.role === 'admin' || $user?.permissions?.workshop?.models || $user?.permissions?.workshop?.knowledge || $user?.permissions?.workshop?.prompts || $user?.permissions?.workshop?.tools}
-			<div class="px-1.5 flex justify-center text-gray-800 dark:text-gray-200">
+			<div style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-200, #e3e3e3)">
 				<a
-					class="grow flex items-center space-x-3 rounded-lg px-2 py-[7px] hover:bg-gray-100 dark:hover:bg-gray-900 transition"
+					style="--fg:1; --d:flex; --ai:center; --g:0.75rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					href="/workshop"
 					on:click={() => {
 						selectedChatId = null;
@@ -657,14 +665,14 @@
 					}}
 					draggable="false"
 				>
-					<div class="self-center">
+					<div style="--as:center">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							fill="none"
 							viewBox="0 0 24 24"
 							stroke-width="2"
 							stroke="currentColor"
-							class="size-[1.1rem]"
+							style="--w:1.1rem; --h:1.1rem"
 						>
 							<path
 								stroke-linecap="round"
@@ -674,22 +682,23 @@
 						</svg>
 					</div>
 
-					<div class="flex self-center translate-y-[0.5px]">
-						<div class=" self-center text-sm font-primary">{$i18n.t('Workshop')}</div>
+					<div style="--d:flex; --as:center; --translatey:0.5px">
+						<div style="--as:center; --size:0.875rem"
+	class="font-primary">{$i18n.t('Workshop')}</div>
 					</div>
 				</a>
 			</div>
 		{/if}
 
-		<div class="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+		<div style="--pos:relative; --d:flex; --fd:column; --fx:1 1 0%; --ofy:auto; --ofx:hidden">
 			{#if ($models ?? []).length > 0 && ($settings?.pinnedModels ?? []).length > 0}
-				<div class="mt-0.5">
+				<div style="--mt:0.125rem">
 					{#each $settings.pinnedModels as modelId (modelId)}
 						{@const model = $models.find((model) => model.id === modelId)}
 						{#if model}
-							<div class="px-1.5 flex justify-center text-gray-800 dark:text-gray-200">
+							<div style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-200, #e3e3e3)">
 								<a
-									class="grow flex items-center space-x-2.5 rounded-lg px-2 py-[7px] hover:bg-gray-100 dark:hover:bg-gray-900 transition"
+									style="--fg:1; --d:flex; --ai:center; --g:0.625rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 									href="/?model={modelId}"
 									on:click={() => {
 										selectedChatId = null;
@@ -701,18 +710,19 @@
 									}}
 									draggable="false"
 								>
-									<div class="self-center shrink-0">
+									<div style="--as:center; --fs:0">
 										<img
 											crossorigin="anonymous"
 											src={model?.info?.meta?.profile_image_url ??
 												branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
-											class=" size-5 rounded-full -translate-x-[0.5px]"
+											style="--w:1.25rem; --h:1.25rem; --radius:9999px; --translatex:-0.5px"
 											alt="logo"
 										/>
 									</div>
 
-									<div class="flex self-center translate-y-[0.5px]">
-										<div class=" self-center text-sm font-primary line-clamp-1">
+									<div style="--d:flex; --as:center; --translatey:0.5px">
+										<div style="--as:center; --size:0.875rem; --line-clamp:1"
+	class="font-primary">
 											{model?.name ?? modelId}
 										</div>
 									</div>
@@ -819,7 +829,7 @@
 				}}
 			>
 				{#if $pinnedChats.length > 0}
-					<div class="flex flex-col space-y-1 rounded-xl">
+					<div style="--d:flex; --fd:column; --g:0.25rem; --radius:0.75rem">
 						<Folder
 							className=""
 							bind:open={showPinnedChat}
@@ -873,7 +883,8 @@
 							name={$i18n.t('Pinned')}
 						>
 							<div
-								class="ml-3 pl-1 mt-[1px] flex flex-col overflow-y-auto scrollbar-hidden border-s border-gray-100 dark:border-gray-900"
+								style="--ml:0.75rem; --pl:0.25rem; --mt:1px; --d:flex; --fd:column; --ofy:auto; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-900, #171717)"
+	class="scrollbar-hidden border-s"
 							>
 								{#each $pinnedChats as chat, idx (`pinned-chat-${chat?.id ?? idx}`)}
 									<ChatItem
@@ -923,16 +934,18 @@
 					/>
 				{/if}
 
-				<div class=" flex-1 flex flex-col overflow-y-auto scrollbar-hidden">
-					<div class="pt-1.5">
+				<div style="--fx:1 1 0%; --d:flex; --fd:column; --ofy:auto"
+	class="scrollbar-hidden">
+					<div style="--pt:0.375rem">
 						{#if $chats}
 							{#each $chats as chat, idx (`chat-${chat?.id ?? idx}`)}
 								{#if idx === 0 || (idx > 0 && chat.time_range !== $chats[idx - 1].time_range)}
 									<div
-										class="w-full pl-2.5 text-xs text-gray-500 dark:text-gray-500 font-medium {idx ===
+										style="--w:100%; --pl:0.625rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-500, #9b9b9b); --weight:500; --pb:0.375rem"
+	class="{idx ===
 										0
 											? ''
-											: 'pt-5'} pb-1.5"
+											: 'pt-5'}"
 									>
 										{$i18n.t(chat.time_range)}
 										<!-- localisation keys for time_range to be recognized from the i18next parser (so they don't get automatically removed):
@@ -987,7 +1000,7 @@
 									}}
 								>
 									<div
-										class="w-full flex justify-center py-1 text-xs animate-pulse items-center gap-2"
+										style="--w:100%; --d:flex; --jc:center; --py:0.25rem; --size:0.75rem; animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; --ai:center; --g:0.5rem"
 									>
 										<Spinner className=" size-4" />
 										<div class=" ">Loading...</div>
@@ -995,7 +1008,7 @@
 								</Loader>
 							{/if}
 						{:else}
-							<div class="w-full flex justify-center py-1 text-xs animate-pulse items-center gap-2">
+							<div style="--w:100%; --d:flex; --jc:center; --py:0.25rem; --size:0.75rem; animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; --ai:center; --g:0.5rem">
 								<Spinner className=" size-4" />
 								<div class=" ">Loading...</div>
 							</div>
@@ -1005,8 +1018,9 @@
 			</Folder>
 		</div>
 
-		<div class="px-2">
-			<div class="flex flex-col font-primary">
+		<div style="--px:0.5rem">
+			<div style="--d:flex; --fd:column"
+	class="font-primary">
 				{#if $user !== undefined && $user !== null}
 					<UserMenu
 						role={$user?.role}
@@ -1022,15 +1036,14 @@
 								showDropdown = !showDropdown;
 							}}
 						>
-							<div class=" self-center mr-3">
+							<div style="--as:center; --mr:0.75rem">
 								<img
 									src={$user?.profile_image_url}
-									class=" max-w-[30px] object-cover rounded-full"
-									style="--maxw:3em"
+									style="--maxw:30px; --objf:cover; --radius:9999px"
 									alt="User profile"
 								/>
 							</div>
-							<div class=" self-center font-medium">{$user?.name}</div>
+							<div style="--as:center; --weight:500">{$user?.name}</div>
 						</button>
 					</UserMenu>
 				{/if}

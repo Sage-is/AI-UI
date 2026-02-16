@@ -118,37 +118,37 @@
 			deleteHandler(deletePrompt);
 		}}
 	>
-		<div class=" text-sm text-gray-500">
-			{$i18n.t('This will delete')} <span class="  font-semibold">{deletePrompt.command}</span>.
+		<div style="--size:0.875rem; --c:var(--color-gray-500, #9b9b9b)">
+			{$i18n.t('This will delete')} <span style="--weight:600">{deletePrompt.command}</span>.
 		</div>
 	</DeleteConfirmDialog>
 
-	<div class="flex flex-col gap-1 my-1.5">
-		<div class="flex justify-between items-center">
-			<div class="flex md:self-center text-xl font-medium px-0.5 items-center">
+	<div style="--d:flex; --fd:column; --g:0.25rem; --my:0.375rem">
+		<div style="--d:flex; --jc:space-between; --ai:center">
+			<div style="--d:flex; --as-md:center; --size:1.25rem; --weight:500; --px:0.125rem; --ai:center">
 				{$i18n.t('Prompts')}
-				<div class="flex self-center w-[1px] h-6 mx-2.5 bg-gray-50 dark:bg-gray-850" />
-				<span class="text-lg font-medium text-gray-500 dark:text-gray-300"
+				<div style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-850, #262626)" />
+				<span style="--size:1.125rem; --weight:500; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-300, #cdcdcd)"
 					>{filteredItems.length}</span
 				>
 			</div>
 		</div>
 
-		<div class=" flex w-full space-x-2">
-			<div class="flex flex-1">
-				<div class=" self-center ml-1 mr-3">
+		<div style="--d:flex; --w:100%; --g:0.5rem">
+			<div style="--d:flex; --fx:1 1 0%">
+				<div style="--as:center; --ml:0.25rem; --mr:0.75rem">
 					<Search className="size-3.5" />
 				</div>
 				<input
-					class=" w-full text-sm pr-4 py-1 rounded-r-xl outline-hidden bg-transparent"
+					style="--w:100%; --size:0.875rem; --pr:1rem; --py:0.25rem; --btrr:0.75rem; --bbrr:0.75rem; --oe:none; --bgc:transparent"
 					bind:value={query}
 					placeholder={$i18n.t('Search Prompts')}
 				/>
 
 				{#if query}
-					<div class="self-center pl-1.5 translate-y-[0.5px] rounded-l-xl bg-transparent">
+					<div style="--as:center; --pl:0.375rem; --translatey:0.5px; --btlr:0.75rem; --bblr:0.75rem; --bgc:transparent">
 						<button
-							class="p-0.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-900 transition"
+							style="--p:0.125rem; --radius:9999px; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							on:click={() => {
 								query = '';
 							}}
@@ -161,7 +161,7 @@
 
 			<div>
 				<a
-					class=" px-2 py-2 rounded-xl hover:bg-gray-700/10 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition font-medium text-sm flex items-center space-x-1"
+					style="--px:0.5rem; --py:0.5rem; --radius:0.75rem; --hvr-bgc:rgb(78 78 78 / 0.1); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300, #cdcdcd); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
 					href="/workshop/prompts/create"
 				>
 					<Plus className="size-3.5" />
@@ -170,27 +170,27 @@
 		</div>
 	</div>
 
-	<div class="mb-5 gap-2 grid lg:grid-cols-2 xl:grid-cols-3">
+	<div style="--mb:1.25rem; --g:0.5rem; --d:grid; --gtc-lg:repeat(2, minmax(0, 1fr)); --gtc-xl:repeat(3, minmax(0, 1fr))">
 		{#each filteredItems as prompt}
 			<div
-				class=" flex space-x-4 cursor-pointer w-full px-3 py-2 dark:hover:bg-white/5 hover:bg-black/5 rounded-xl transition"
+				style="--d:flex; --g:1rem; --cur:pointer; --w:100%; --px:0.75rem; --py:0.5rem; --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-bgc:rgb(0 0 0 / 0.05); --radius:0.75rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			>
-				<div class=" flex flex-1 space-x-4 cursor-pointer w-full">
+				<div style="--d:flex; --fx:1 1 0%; --g:1rem; --cur:pointer; --w:100%">
 					<a href={`/workshop/prompts/edit?command=${encodeURIComponent(prompt.command)}`}>
-						<div class=" flex-1 flex items-center gap-2 self-center">
-							<div class=" font-semibold line-clamp-1 capitalize">{prompt.title}</div>
-							<div class=" text-xs overflow-hidden text-ellipsis line-clamp-1">
+						<div style="--fx:1 1 0%; --d:flex; --ai:center; --g:0.5rem; --as:center">
+							<div style="--weight:600; --line-clamp:1; --tt:capitalize">{prompt.title}</div>
+							<div style="--size:0.75rem; --of:hidden; text-overflow:ellipsis; --line-clamp:1">
 								{prompt.command}
 							</div>
 						</div>
 
-						<div class=" text-xs px-0.5">
+						<div style="--size:0.75rem; --px:0.125rem">
 							<Tooltip
 								content={prompt?.user?.email ?? $i18n.t('Deleted User')}
 								className="flex shrink-0"
 								placement="top-start"
 							>
-								<div class="shrink-0 text-gray-500">
+								<div style="--fs:0; --c:var(--color-gray-500, #9b9b9b)">
 									{$i18n.t('By {{name}}', {
 										name: capitalizeFirstLetter(
 											prompt?.user?.name ?? prompt?.user?.email ?? $i18n.t('Deleted User')
@@ -201,9 +201,9 @@
 						</div>
 					</a>
 				</div>
-				<div class="flex flex-row gap-0.5 self-center">
+				<div style="--d:flex; --fd:row; --g:0.125rem; --as:center">
 					<a
-						class="self-center w-fit text-sm px-2 py-2 dark:text-gray-300 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
+						style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300, #cdcdcd); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.75rem"
 						type="button"
 						href={`/workshop/prompts/edit?command=${encodeURIComponent(prompt.command)}`}
 					>
@@ -213,7 +213,7 @@
 							viewBox="0 0 24 24"
 							stroke-width="1.5"
 							stroke="currentColor"
-							class="w-4 h-4"
+							style="--w:1rem; --h:1rem"
 						>
 							<path
 								stroke-linecap="round"
@@ -240,7 +240,7 @@
 						onClose={() => {}}
 					>
 						<button
-							class="self-center w-fit text-sm p-1.5 dark:text-gray-300 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
+							style="--as:center; --w:fit-content; --size:0.875rem; --p:0.375rem; --dark-c:var(--color-gray-300, #cdcdcd); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.75rem"
 							type="button"
 						>
 							<EllipsisHorizontal className="size-5" />
@@ -252,8 +252,8 @@
 	</div>
 
 	{#if $user?.role === 'admin'}
-		<div class=" flex justify-end w-full mb-3">
-			<div class="flex space-x-2">
+		<div style="--d:flex; --jc:flex-end; --w:100%; --mb:0.75rem">
+			<div style="--d:flex; --g:0.5rem">
 				<input
 					id="prompts-import-input"
 					bind:this={promptsImportInputElement}
@@ -293,19 +293,19 @@
 				/>
 
 				<button
-					class="flex text-xs items-center space-x-1 px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200 transition"
+					style="--d:flex; --size:0.75rem; --ai:center; --g:0.25rem; --px:0.75rem; --py:0.375rem; --radius:0.75rem; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-800, #333); --hvr-dark-bgc:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-200, #e3e3e3); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						promptsImportInputElement.click();
 					}}
 				>
-					<div class=" self-center mr-2 font-medium line-clamp-1">{$i18n.t('Import Prompts')}</div>
+					<div style="--as:center; --mr:0.5rem; --weight:500; --line-clamp:1">{$i18n.t('Import Prompts')}</div>
 
-					<div class=" self-center">
+					<div style="--as:center">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 16 16"
 							fill="currentColor"
-							class="w-4 h-4"
+							style="--w:1rem; --h:1rem"
 						>
 							<path
 								fill-rule="evenodd"
@@ -318,7 +318,7 @@
 
 				{#if prompts.length}
 					<button
-						class="flex text-xs items-center space-x-1 px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200 transition"
+						style="--d:flex; --size:0.75rem; --ai:center; --g:0.25rem; --px:0.75rem; --py:0.375rem; --radius:0.75rem; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-800, #333); --hvr-dark-bgc:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-200, #e3e3e3); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={async () => {
 							let blob = new Blob([JSON.stringify(prompts)], {
 								type: 'application/json'
@@ -326,16 +326,16 @@
 							saveAs(blob, `prompts-export-${Date.now()}.json`);
 						}}
 					>
-						<div class=" self-center mr-2 font-medium line-clamp-1">
+						<div style="--as:center; --mr:0.5rem; --weight:500; --line-clamp:1">
 							{$i18n.t('Export Prompts')} ({prompts.length})
 						</div>
 
-						<div class=" self-center">
+						<div style="--as:center">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 16 16"
 								fill="currentColor"
-								class="w-4 h-4"
+								style="--w:1rem; --h:1rem"
 							>
 								<path
 									fill-rule="evenodd"
@@ -351,19 +351,19 @@
 	{/if}
 
 	{#if $config?.features.enable_community_sharing}
-		<div class=" my-16">
-			<div class=" text-xl font-medium mb-1 line-clamp-1">
+		<div style="--my:4rem">
+			<div style="--size:1.25rem; --weight:500; --mb:0.25rem; --line-clamp:1">
 				{$i18n.t('Made by Sage.is AI Community')}
 			</div>
 
 			<a
-				class=" flex cursor-pointer items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-850 w-full mb-2 px-3.5 py-1.5 rounded-xl transition"
+				style="--d:flex; --cur:pointer; --ai:center; --jc:space-between; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-850, #262626); --w:100%; --mb:0.5rem; --px:0.875rem; --py:0.375rem; --radius:0.75rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				href="https://sage.is/community"
 				target="_blank"
 			>
-				<div class=" self-center">
-					<div class=" font-semibold line-clamp-1">{$i18n.t('Discover a prompt')}</div>
-					<div class=" text-sm line-clamp-1">
+				<div style="--as:center">
+					<div style="--weight:600; --line-clamp:1">{$i18n.t('Discover a prompt')}</div>
+					<div style="--size:0.875rem; --line-clamp:1">
 						{$i18n.t('Discover, download, and explore custom prompts')}
 					</div>
 				</div>
@@ -377,7 +377,7 @@
 		</div>
 	{/if}
 {:else}
-	<div class="w-full h-full flex justify-center items-center">
+	<div style="--w:100%; --h:100%; --d:flex; --jc:center; --ai:center">
 		<Spinner className="size-5" />
 	</div>
 {/if}

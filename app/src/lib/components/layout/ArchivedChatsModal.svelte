@@ -145,9 +145,9 @@
 	{unarchiveHandler}
 >
 	<div slot="footer">
-		<div class="flex flex-wrap text-sm font-medium gap-1.5 mt-2 m-1 justify-end w-full">
+		<div style="--d:flex; --fw:wrap; --size:0.875rem; --weight:500; --g:0.375rem; --mt:0.5rem; --m:0.25rem; --jc:flex-end; --w:100%">
 			<button
-				class=" px-3.5 py-1.5 font-medium hover:bg-black/5 dark:hover:bg-white/5 outline outline-1 outline-gray-100 dark:outline-gray-800 rounded-3xl"
+				style="--px:0.875rem; --py:0.375rem; --weight:500; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:var(--color-gray-100, #ececec); outline-color:var(--color-gray-800, #333); --radius:1.5rem"
 				on:click={() => {
 					showUnarchiveAllConfirmDialog = true;
 				}}
@@ -156,7 +156,7 @@
 			</button>
 
 			<button
-				class="px-3.5 py-1.5 font-medium hover:bg-black/5 dark:hover:bg-white/5 outline outline-1 outline-gray-100 dark:outline-gray-800 rounded-3xl"
+				style="--px:0.875rem; --py:0.375rem; --weight:500; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:var(--color-gray-100, #ececec); outline-color:var(--color-gray-800, #333); --radius:1.5rem"
 				on:click={() => {
 					exportChatsHandler();
 				}}

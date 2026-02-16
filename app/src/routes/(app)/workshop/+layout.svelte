@@ -51,22 +51,25 @@
 
 {#if loaded}
 	<div
-		class=" relative flex flex-col w-full h-screen max-h-[100dvh] transition-width duration-200 ease-in-out {$showSidebar
+		style="--pos:relative; --d:flex; --fd:column; --w:100%; --h:100vh; --maxh:100dvh; --tdn:200ms; --ttf:cubic-bezier(0.4, 0, 0.2, 1); --maxw:100%"
+	class="transition-width {$showSidebar
 			? 'md:max-w-[calc(100%-260px)]'
-			: ''} max-w-full"
+			: ''}"
 	>
-		<nav class="   px-2.5 pt-1 backdrop-blur-xl drag-region">
-			<div class=" flex items-center gap-1">
-				<div class="{$showSidebar ? 'md:hidden' : ''} self-center flex flex-none items-center">
+		<nav style="--px:0.625rem; --pt:0.25rem; backdrop-filter:blur(24px)"
+	class="drag-region">
+			<div style="--d:flex; --ai:center; --g:0.25rem">
+				<div style="--as:center; --d:flex; --fx:none; --ai:center"
+	class="{$showSidebar ? 'md:hidden' : ''}">
 					<button
 						id="sidebar-toggle-button"
-						class="cursor-pointer p-1.5 flex rounded-xl hover:bg-gray-100 dark:hover:bg-gray-850 transition"
+						style="--cur:pointer; --p:0.375rem; --d:flex; --radius:0.75rem; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={() => {
 							showSidebar.set(!$showSidebar);
 						}}
 						aria-label="Toggle Sidebar"
 					>
-						<div class=" m-auto self-center">
+						<div style="--m:auto; --as:center">
 							<MenuLines />
 						</div>
 					</button>
@@ -74,22 +77,25 @@
 
 				<div class="">
 					<div
-						class="flex gap-1 scrollbar-none overflow-x-auto w-fit text-center text-sm font-medium rounded-full bg-transparent py-1 touch-auto pointer-events-auto"
+						style="--d:flex; --g:0.25rem; --ofx:auto; --w:fit-content; --ta:center; --size:0.875rem; --weight:500; --radius:9999px; --bgc:transparent; --py:0.25rem; touch-action:auto; --pe:auto"
+	class="scrollbar-none"
 					>
 						{#if $user?.role === 'admin' || $user?.permissions?.workshop?.models}
 							<a
-								class="min-w-fit p-1.5 {$page.url.pathname.includes('/workshop/models')
+								style="--minw:fit-content; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{$page.url.pathname.includes('/workshop/models')
 									? ''
-									: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition"
+									: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
 								href="/workshop/models">{$i18n.t('Models')}</a
 							>
 						{/if}
 
 						{#if $user?.role === 'admin' || $user?.permissions?.workshop?.knowledge}
 							<a
-								class="min-w-fit p-1.5 {$page.url.pathname.includes('/workshop/knowledge')
+								style="--minw:fit-content; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{$page.url.pathname.includes('/workshop/knowledge')
 									? ''
-									: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition"
+									: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
 								href="/workshop/knowledge"
 							>
 								{$i18n.t('Knowledge')}
@@ -98,18 +104,20 @@
 
 						{#if $user?.role === 'admin' || $user?.permissions?.workshop?.prompts}
 							<a
-								class="min-w-fit p-1.5 {$page.url.pathname.includes('/workshop/prompts')
+								style="--minw:fit-content; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{$page.url.pathname.includes('/workshop/prompts')
 									? ''
-									: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition"
+									: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
 								href="/workshop/prompts">{$i18n.t('Prompts')}</a
 							>
 						{/if}
 
 						{#if $user?.role === 'admin' || $user?.permissions?.workshop?.tools}
 							<a
-								class="min-w-fit p-1.5 {$page.url.pathname.includes('/workshop/tools')
+								style="--minw:fit-content; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{$page.url.pathname.includes('/workshop/tools')
 									? ''
-									: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition"
+									: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
 								href="/workshop/tools"
 							>
 								{$i18n.t('Tools')}
@@ -118,11 +126,11 @@
 					</div>
 				</div>
 
-				<!-- <div class="flex items-center text-xl font-semibold">{$i18n.t('Workshop')}</div> -->
+				<!-- <div style="--d:flex; --ai:center; --size:1.25rem; --weight:600">{$i18n.t('Workshop')}</div> -->
 			</div>
 		</nav>
 
-		<div class="  pb-1 px-[18px] flex-1 max-h-full overflow-y-auto" id="workshop-container">
+		<div style="--pb:0.25rem; --px:18px; --fx:1 1 0%; --maxh:100%; --ofy:auto" id="workshop-container">
 			<slot />
 		</div>
 	</div>

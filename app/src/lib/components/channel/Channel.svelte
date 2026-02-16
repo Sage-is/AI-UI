@@ -199,19 +199,21 @@
 </svelte:head>
 
 <div
-	class="h-screen max-h-[100dvh] transition-width duration-200 ease-in-out {$showSidebar
+	style="--h:100vh; --maxh:100dvh; --tdn:200ms; --ttf:cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --maxw:100%; --d:flex; --fd:column"
+	class="transition-width {$showSidebar
 		? 'md:max-w-[calc(100%-260px)]'
-		: ''} w-full max-w-full flex flex-col"
+		: ''}"
 	id="channel-container"
 >
-	<PaneGroup direction="horizontal" class="w-full h-full">
-		<Pane defaultSize={50} minSize={50} class="h-full flex flex-col w-full relative">
+	<PaneGroup direction="horizontal" style="--w:100%; --h:100%">
+		<Pane defaultSize={50} minSize={50} style="--h:100%; --d:flex; --fd:column; --w:100%; --pos:relative">
 			<Navbar {channel} />
 
-			<div class="flex-1 overflow-y-auto">
+			<div style="--fx:1 1 0%; --ofy:auto">
 				{#if channel}
 					<div
-						class=" pb-2.5 max-w-full z-10 scrollbar-hidden w-full h-full pt-6 flex-1 flex flex-col-reverse overflow-auto"
+						style="--pb:0.625rem; --maxw:100%; --z:10; --w:100%; --h:100%; --pt:1.5rem; --fx:1 1 0%; --d:flex; --fd:column-reverse; --of:auto"
+	class="scrollbar-hidden"
 						id="messages-container"
 						bind:this={messagesContainerElement}
 						on:scroll={(e) => {
@@ -246,7 +248,7 @@
 				{/if}
 			</div>
 
-			<div class=" pb-[1rem] px-2.5">
+			<div style="--pb:1rem; --px:0.625rem">
 				<MessageInput
 					id="root"
 					{typingUsers}
@@ -266,7 +268,8 @@
 						threadId = null;
 					}}
 				>
-					<div class=" {threadId !== null ? ' h-screen  w-full' : 'px-6 py-4'} h-full">
+					<div style="--h:100%"
+	class="{threadId !== null ? ' h-screen  w-full' : 'px-6 py-4'}">
 						<Thread
 							{threadId}
 							{channel}
@@ -279,15 +282,17 @@
 			{/if}
 		{:else if threadId !== null}
 			<PaneResizer
-				class="relative flex w-[3px] items-center justify-center bg-background group bg-gray-50 dark:bg-gray-850"
+				style="--pos:relative; --d:flex; --w:3px; --ai:center; --jc:center; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-850, #262626)"
+	class="bg-background group"
 			>
-				<div class="z-10 flex h-7 w-5 items-center justify-center rounded-xs">
+				<div style="--z:10; --d:flex; --h:1.75rem; --w:1.25rem; --ai:center; --jc:center"
+	class="rounded-xs">
 					<EllipsisVertical className="size-4 invisible group-hover:visible" />
 				</div>
 			</PaneResizer>
 
-			<Pane defaultSize={50} minSize={30} class="h-full w-full">
-				<div class="h-full w-full shadow-xl">
+			<Pane defaultSize={50} minSize={30} style="--h:100%; --w:100%">
+				<div style="--h:100%; --w:100%; --shadow:5">
 					<Thread
 						{threadId}
 						{channel}

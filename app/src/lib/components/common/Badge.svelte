@@ -12,8 +12,9 @@
 </script>
 
 <div
-	class=" text-xs font-bold {classNames[type] ??
-		classNames['info']}  w-fit px-2 rounded-sm uppercase line-clamp-1 mr-0.5"
+	style="--size:0.75rem; --weight:700; --w:fit-content; --px:0.5rem; --radius:0.125rem; --tt:uppercase; --line-clamp:1; --mr:0.125rem"
+	class="{classNames[type] ??
+		classNames['info']}"
 >
 	{content}
 </div>

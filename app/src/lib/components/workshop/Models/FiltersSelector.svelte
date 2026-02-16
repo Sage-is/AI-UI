@@ -23,21 +23,21 @@
 </script>
 
 <div>
-	<div class="flex w-full justify-between mb-1">
-		<div class=" self-center text-sm font-semibold">{$i18n.t('Filters')}</div>
+	<div style="--d:flex; --w:100%; --jc:space-between; --mb:0.25rem">
+		<div style="--as:center; --size:0.875rem; --weight:600">{$i18n.t('Filters')}</div>
 	</div>
 
-	<div class=" text-xs dark:text-gray-500">
+	<div style="--size:0.75rem; --dark-c:var(--color-gray-500, #9b9b9b)">
 		{$i18n.t('To select filters here, add them to the "Functions" workshop first.')}
 	</div>
 
 	<!-- TODO: Filer order matters -->
-	<div class="flex flex-col">
+	<div style="--d:flex; --fd:column">
 		{#if filters.length > 0}
-			<div class=" flex items-center mt-2 flex-wrap">
+			<div style="--d:flex; --ai:center; --mt:0.5rem; --fw:wrap">
 				{#each Object.keys(_filters) as filter, filterIdx}
-					<div class=" flex items-center gap-2 mr-3">
-						<div class="self-center flex items-center">
+					<div style="--d:flex; --ai:center; --g:0.5rem; --mr:0.75rem">
+						<div style="--as:center; --d:flex; --ai:center">
 							<Checkbox
 								state={_filters[filter].is_global
 									? 'checked'
@@ -54,7 +54,7 @@
 							/>
 						</div>
 
-						<div class=" py-0.5 text-sm w-full capitalize font-medium">
+						<div style="--py:0.125rem; --size:0.875rem; --w:100%; --tt:capitalize; --weight:500">
 							<Tooltip content={_filters[filter].meta.description}>
 								{_filters[filter].name}
 							</Tooltip>

@@ -260,7 +260,7 @@
 <ChangelogModal bind:show={$showChangelog} />
 
 {#if version && compareVersion(version.latest, version.current) && ($settings?.showUpdateToast ?? true)}
-	<div class=" absolute bottom-8 right-8 z-50" in:fade={{ duration: 100 }}>
+	<div style="--pos:absolute; --bottom:2rem; --right:2rem; --z:50" in:fade={{ duration: 100 }}>
 		<UpdateInfoToast
 			{version}
 			on:close={() => {
@@ -272,38 +272,40 @@
 {/if}
 
 {#if $user}
-	<div class="app relative">
+	<div style="--pos:relative"
+	class="app">
 		<div
-			class=" text-gray-700 dark:text-gray-100 bg-white dark:bg-gray-900 h-screen max-h-[100dvh] overflow-auto flex flex-row justify-end"
+			style="--c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-100, #ececec); --bgc:#fff; --dark-bgc:var(--color-gray-900, #171717); --h:100vh; --maxh:100dvh; --of:auto; --d:flex; --fd:row; --jc:flex-end"
 		>
 			{#if !['user', 'admin'].includes($user?.role)}
 				<AccountPending />
 			{:else}
 				{#if localDBChats.length > 0}
-					<div class="fixed w-full h-full flex z-50">
+					<div style="--pos:fixed; --w:100%; --h:100%; --d:flex; --z:50">
 						<div
-							class="absolute w-full h-full backdrop-blur-md bg-white/20 dark:bg-gray-900/50 flex justify-center"
+							style="--pos:absolute; --w:100%; --h:100%; backdrop-filter:blur(12px); --bgc:rgb(255 255 255 / 0.2); --dark-bgc:rgb(23 23 23 / 0.5); --d:flex; --jc:center"
 						>
-							<div class="m-auto pb-44 flex flex-col justify-center">
-								<div class="max-w-md">
-									<div class="text-center dark:text-white text-2xl font-medium z-50">
+							<div style="--m:auto; --pb:11rem; --d:flex; --fd:column; --jc:center">
+								<div style="--maxw:28rem">
+									<div style="--ta:center; --dark-c:#fff; --size:1.5rem; --weight:500; --z:50">
 										Important Update<br /> Action Required for Chat Log Storage
 									</div>
 
-									<div class=" mt-4 text-center text-sm dark:text-gray-200 w-full">
+									<div style="--mt:1rem; --ta:center; --size:0.875rem; --dark-c:var(--color-gray-200, #e3e3e3); --w:100%">
 										{$i18n.t(
 											"Saving chat logs directly to your browser's storage is no longer supported. Please take a moment to download and delete your chat logs by clicking the button below. Don't worry, you can easily re-import your chat logs to the backend through"
 										)}
-										<span class="font-semibold dark:text-white"
+										<span style="--weight:600; --dark-c:#fff"
 											>{$i18n.t('Settings')} > {$i18n.t('Chats')} > {$i18n.t('Import Chats')}</span
 										>. {$i18n.t(
 											'This ensures that your valuable conversations are securely saved to your backend database. Thank you!'
 										)}
 									</div>
 
-									<div class=" mt-6 mx-auto relative group w-fit">
+									<div style="--mt:1.5rem; --mx:auto; --pos:relative; --w:fit-content"
+	class="group">
 										<button
-											class="relative z-20 flex px-5 py-2 rounded-full bg-white border border-gray-100 dark:border-none hover:bg-gray-100 transition font-medium text-sm"
+											style="--pos:relative; --z:20; --d:flex; --px:1.25rem; --py:0.5rem; --radius:9999px; --bgc:#fff; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bs:none; --hvr-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem"
 											on:click={async () => {
 												let blob = new Blob([JSON.stringify(localDBChats)], {
 													type: 'application/json'
@@ -321,7 +323,7 @@
 										</button>
 
 										<button
-											class="text-xs text-center w-full mt-2 text-gray-400 underline"
+											style="--size:0.75rem; --ta:center; --w:100%; --mt:0.5rem; --c:var(--color-gray-400, #b4b4b4); --td:underline"
 											on:click={async () => {
 												localDBChats = [];
 											}}>{$i18n.t('Close')}</button
@@ -338,7 +340,7 @@
 				{#if loaded}
 					<slot />
 				{:else}
-					<div class="w-full flex-1 h-full flex items-center justify-center">
+					<div style="--w:100%; --fx:1 1 0%; --h:100%; --d:flex; --ai:center; --jc:center">
 						<Spinner className="size-5" />
 					</div>
 				{/if}

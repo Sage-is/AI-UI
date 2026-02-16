@@ -43,26 +43,27 @@
 
 <form
 	id="tab-tools"
-	class="flex flex-col h-full justify-between text-sm"
+	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --size:0.875rem"
 	on:submit|preventDefault={() => {
 		updateHandler();
 	}}
 >
-	<div class=" overflow-y-scroll scrollbar-hidden h-full">
+	<div style="--ofy:scroll; --h:100%"
+	class="scrollbar-hidden">
 		{#if servers !== null}
 			<div class="">
-				<div class="pr-1.5">
+				<div style="--pr:0.375rem">
 					<!-- {$i18n.t(`Failed to connect to {{URL}} OpenAPI tool server`, {
 						URL: 'server?.url'
 					})} -->
 					<div class="">
-						<div class="flex justify-between items-center mb-0.5">
-							<div class="font-medium">{$i18n.t('Manage Tool Servers')}</div>
+						<div style="--d:flex; --jc:space-between; --ai:center; --mb:0.125rem">
+							<div style="--weight:500">{$i18n.t('Manage Tool Servers')}</div>
 
 							<Tooltip content={$i18n.t(`Add Connection`)}>
 								<button
 									aria-label={$i18n.t(`Add Connection`)}
-									class="px-1"
+									style="--px:0.25rem"
 									on:click={() => {
 										showConnectionModal = true;
 									}}
@@ -73,7 +74,7 @@
 							</Tooltip>
 						</div>
 
-						<div class="flex flex-col gap-1.5">
+						<div style="--d:flex; --fd:column; --g:0.375rem">
 							{#each servers as server, idx}
 								<Connection
 									bind:connection={server}
@@ -90,7 +91,7 @@
 						</div>
 					</div>
 
-					<div class="my-1.5">
+					<div style="--my:0.375rem">
 						<div
 							class={`text-xs 
 								${($settings?.highContrastMode ?? false) ? 'text-gray-800 dark:text-gray-100' : 'text-gray-500'}`}
@@ -103,9 +104,9 @@
 						</div>
 					</div>
 
-					<div class=" text-xs text-gray-600 dark:text-gray-300 mb-2">
+					<div style="--size:0.75rem; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-300, #cdcdcd); --mb:0.5rem">
 						<a
-							class="underline"
+							style="--td:underline"
 							href="https://github.com/open-webui/openapi-servers"
 							target="_blank">{$i18n.t('Learn more about OpenAPI tool servers.')}</a
 						>
@@ -113,17 +114,17 @@
 				</div>
 			</div>
 		{:else}
-			<div class="flex h-full justify-center">
-				<div class="my-auto">
+			<div style="--d:flex; --h:100%; --jc:center">
+				<div style="--my:auto">
 					<Spinner className="size-6" />
 				</div>
 			</div>
 		{/if}
 	</div>
 
-	<div class="flex justify-end pt-3 text-sm font-medium">
+	<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
 		<button
-			class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			type="submit"
 		>
 			{$i18n.t('Save')}

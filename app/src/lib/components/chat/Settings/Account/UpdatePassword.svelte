@@ -37,15 +37,15 @@
 </script>
 
 <form
-	class="flex flex-col text-sm"
+	style="--d:flex; --fd:column; --size:0.875rem"
 	on:submit|preventDefault={() => {
 		updatePasswordHandler();
 	}}
 >
-	<div class="flex justify-between items-center text-sm">
-		<div class="  font-medium">{$i18n.t('Change Password')}</div>
+	<div style="--d:flex; --jc:space-between; --ai:center; --size:0.875rem">
+		<div style="--weight:500">{$i18n.t('Change Password')}</div>
 		<button
-			class=" text-xs font-medium text-gray-500"
+			style="--size:0.75rem; --weight:500; --c:var(--color-gray-500, #9b9b9b)"
 			type="button"
 			on:click={() => {
 				show = !show;
@@ -54,13 +54,14 @@
 	</div>
 
 	{#if show}
-		<div class=" py-2.5 space-y-1.5">
-			<div class="flex flex-col w-full">
-				<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Current Password')}</div>
+		<div style="--py:0.625rem; --g:0.375rem">
+			<div style="--d:flex; --fd:column; --w:100%">
+				<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('Current Password')}</div>
 
-				<div class="flex-1">
+				<div style="--fx:1 1 0%">
 					<input
-						class="w-full bg-transparent dark:text-gray-300 outline-hidden placeholder:opacity-30"
+						style="--w:100%; --bgc:transparent; --dark-c:var(--color-gray-300, #cdcdcd); --oe:none"
+	class="placeholder:opacity-30"
 						type="password"
 						bind:value={currentPassword}
 						placeholder={$i18n.t('Enter your current password')}
@@ -70,12 +71,13 @@
 				</div>
 			</div>
 
-			<div class="flex flex-col w-full">
-				<div class=" mb-1 text-xs text-gray-500">{$i18n.t('New Password')}</div>
+			<div style="--d:flex; --fd:column; --w:100%">
+				<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('New Password')}</div>
 
-				<div class="flex-1">
+				<div style="--fx:1 1 0%">
 					<input
-						class="w-full bg-transparent text-sm dark:text-gray-300 outline-hidden placeholder:opacity-30"
+						style="--w:100%; --bgc:transparent; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --oe:none"
+	class="placeholder:opacity-30"
 						type="password"
 						bind:value={newPassword}
 						placeholder={$i18n.t('Enter your new password')}
@@ -85,12 +87,13 @@
 				</div>
 			</div>
 
-			<div class="flex flex-col w-full">
-				<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Confirm Password')}</div>
+			<div style="--d:flex; --fd:column; --w:100%">
+				<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('Confirm Password')}</div>
 
-				<div class="flex-1">
+				<div style="--fx:1 1 0%">
 					<input
-						class="w-full bg-transparent text-sm dark:text-gray-300 outline-hidden placeholder:opacity-30"
+						style="--w:100%; --bgc:transparent; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --oe:none"
+	class="placeholder:opacity-30"
 						type="password"
 						bind:value={newPasswordConfirm}
 						placeholder={$i18n.t('Confirm your new password')}
@@ -101,9 +104,9 @@
 			</div>
 		</div>
 
-		<div class="mt-3 flex justify-end">
+		<div style="--mt:0.75rem; --d:flex; --jc:flex-end">
 			<button
-				class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+				style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			>
 				{$i18n.t('Update password')}
 			</button>

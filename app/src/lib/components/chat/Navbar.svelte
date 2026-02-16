@@ -52,35 +52,46 @@
 
 <button
 	id="new-chat-button"
-	class="hidden"
+	style="--d:none"
 	on:click={() => {
 		initNewChat();
 	}}
 	aria-label="New Chat"
 />
 
-<nav class="sticky top-0 z-30 w-full py-1 -mb-8 flex flex-col items-center drag-region">
-	<div class="flex items-center w-full pl-1.5 pr-1">
+<nav style="--pos:sticky; --top:0; --z:30; --w:100%; --py:0.25rem; --mb:-2rem; --d:flex; --fd:column; --ai:center"
+	class="drag-region">
+	<div style="--d:flex; --ai:center; --w:100%; --pl:0.375rem; --pr:0.25rem">
 		<div
-			class=" bg-linear-to-b via-50% from-white via-white to-transparent dark:from-gray-900 dark:via-gray-900 dark:to-transparent pointer-events-none absolute inset-0 -bottom-7 z-[-1]"
+			style="--bgi:linear-gradient(180deg, var(--tw-gradient-stops)); --tw-gradient-from:#fff; --tw-gradient-via:#fff; --tw-gradient-to:transparent; --dark-tw-gradient-from:var(--color-gray-900, #171717); --dark-tw-gradient-via:var(--color-gray-900, #171717); --dark-tw-gradient-to:transparent; --pe:none; --pos:absolute; --inset:0; --bottom:-1.75rem; --z:-1"
+	class="via-50%"
 		></div>
 
-		<div class=" flex max-w-full w-full mx-auto px-1 pt-0.5 bg-transparent">
-			<div class="flex items-center w-full max-w-full">
+		<div style="--d:flex; --maxw:100%; --w:100%; --mx:auto; --p:0.25rem; --pt:0.125rem; --grad:0deg; --grad-color: hsl(273, 99%, 100%)">
+			<div style="--d:flex; --ai:center; --w:100%; --maxw:100%">
 				<div
-					class="{$showSidebar
+					style="--mr:0.25rem; 
+					--as:flex-start; 
+					--d:flex; --fx:none; 
+					--ai:center; 
+					--c:var(--color-gray-600, #676767);
+					{$showSidebar
+					? '--d:none;'
+					: ''}
+					"
+	class="{$showSidebar
 						? 'md:hidden'
-						: ''} mr-1 self-start flex flex-none items-center text-gray-600 dark:text-gray-400"
+						: ''}"
 				>
 					<button
 						id="sidebar-toggle-button"
-						class="cursor-pointer px-2 py-2 flex rounded-xl hover:bg-gray-50 dark:hover:bg-gray-850 transition"
+						style="--cur:pointer; --px:0.5rem; --py:0.5rem; --d:flex; --radius:0.75rem; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={() => {
 							showSidebar.set(!$showSidebar);
 						}}
 						aria-label="Toggle Sidebar"
 					>
-						<div class=" m-auto self-center">
+						<div style="--m:auto; --as:center">
 							<MenuLines />
 						</div>
 					</button>
@@ -88,15 +99,16 @@
 					{#if !$mobile}
 						<Tooltip content={$i18n.t('New Chat')}>
 							<button
-								class=" flex {$showSidebar
+								style="--d:flex; --cur:pointer; --px:0.5rem; --py:0.5rem; --radius:0.75rem; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-400, #b4b4b4); --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{$showSidebar
 									? 'md:hidden'
-									: ''} cursor-pointer px-2 py-2 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-850 transition"
+									: ''}"
 								on:click={() => {
 									initNewChat();
 								}}
 								aria-label="New Chat"
 							>
-								<div class=" m-auto self-center">
+								<div style="--m:auto; --as:center">
 									<PencilSquare className=" size-5" strokeWidth="2" />
 								</div>
 							</button>
@@ -105,17 +117,16 @@
 				</div>
 
 				<div
-					class="flex-1 overflow-hidden max-w-full py-0.5
-			{$showSidebar ? 'ml-1' : ''}
-			"
+					style="--fx:1 1 0%; --of:hidden; --maxw:100%; --py:0.125rem"
+	class="{$showSidebar ? 'ml-1' : ''}"
 				>
 					{#if showModelSelector}
 						<ModelSelector bind:selectedModels showSetDefault={!shareEnabled} />
 					{/if}
 				</div>
 
-				<div class="self-start flex flex-none items-center text-gray-600 dark:text-gray-400">
-					<!-- <div class="md:hidden flex self-center w-[1px] h-5 mx-2 bg-gray-300 dark:bg-stone-700" /> -->
+				<div style="--as:flex-start; --d:flex; --fx:none; --ai:center; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-400, #b4b4b4)">
+					<!-- <div style="--d-md:none; --d:flex; --as:center; --w:1px; --h:1.25rem; --mx:0.5rem; --bgc:var(--color-gray-300, #cdcdcd); --dark-bgc:#44403c" /> -->
 					{#if shareEnabled && chat && (chat.id || $temporaryChatEnabled)}
 						<Menu
 							{chat}
@@ -128,17 +139,17 @@
 							}}
 						>
 							<button
-								class="flex cursor-pointer px-2 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-850 transition"
+								style="--d:flex; --cur:pointer; --px:0.5rem; --py:0.5rem; --radius:0.75rem; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								id="chat-context-menu-button"
 							>
-								<div class=" m-auto self-center">
+								<div style="--m:auto; --as:center">
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										fill="none"
 										viewBox="0 0 24 24"
 										stroke-width="1.5"
 										stroke="currentColor"
-										class="size-5"
+										style="--w:1.25rem; --h:1.25rem"
 									>
 										<path
 											stroke-linecap="round"
@@ -153,13 +164,13 @@
 
 					<Tooltip content={$i18n.t('Controls')}>
 						<button
-							class=" flex cursor-pointer px-2 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-850 transition"
+							style="--d:flex; --cur:pointer; --px:0.5rem; --py:0.5rem; --radius:0.75rem; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							on:click={async () => {
 								await showControls.set(!$showControls);
 							}}
 							aria-label="Controls"
 						>
-							<div class=" m-auto self-center">
+							<div style="--m:auto; --as:center">
 								<AdjustmentsHorizontal className=" size-5" strokeWidth="0.5" />
 							</div>
 						</button>
@@ -168,15 +179,16 @@
 					{#if $mobile}
 						<Tooltip content={$i18n.t('New Chat')}>
 							<button
-								class=" flex {$showSidebar
+								style="--d:flex; --cur:pointer; --px:0.5rem; --py:0.5rem; --radius:0.75rem; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-400, #b4b4b4); --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{$showSidebar
 									? 'md:hidden'
-									: ''} cursor-pointer px-2 py-2 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-850 transition"
+									: ''}"
 								on:click={() => {
 									initNewChat();
 								}}
 								aria-label="New Chat"
 							>
-								<div class=" m-auto self-center">
+								<div style="--m:auto; --as:center">
 									<PencilSquare className=" size-5" strokeWidth="2" />
 								</div>
 							</button>
@@ -195,13 +207,13 @@
 							}}
 						>
 							<div
-								class="select-none flex rounded-xl p-1.5 w-full hover:bg-gray-50 dark:hover:bg-gray-850 transition"
+								style="--us:none; --d:flex; --radius:0.75rem; --p:0.375rem; --w:100%; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							>
-								<div class=" self-center">
+								<div style="--as:center">
 									<span class="sr-only">{$i18n.t('User menu')}</span>
 									<img
 										src={$user?.profile_image_url}
-										class="size-6 object-cover rounded-full"
+										style="--w:1.5rem; --h:1.5rem; --objf:cover; --radius:9999px"
 										alt=""
 										draggable="false"
 									/>
@@ -215,15 +227,15 @@
 	</div>
 
 	{#if $temporaryChatEnabled && $chatId === 'local'}
-		<div class=" w-full z-30 text-center">
-			<div class="text-xs text-gray-500">{$i18n.t('Temporary Chat')}</div>
+		<div style="--w:100%; --z:30; --ta:center">
+			<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('Temporary Chat')}</div>
 		</div>
 	{/if}
 
-	<div class="absolute top-[100%] left-0 right-0 h-fit">
+	<div style="--pos:absolute; --top:100%; --left:0; --right:0; --h:fit-content">
 		{#if !history.currentId && !$chatId && ($banners.length > 0 || ($config?.license_metadata?.type ?? null) === 'trial' || (($config?.license_metadata?.seats ?? null) !== null && $config?.user_count > $config?.license_metadata?.seats))}
-			<div class=" w-full z-30 mt-5">
-				<div class=" flex flex-col gap-1 w-full">
+			<div style="--w:100%; --z:30; --mt:1.25rem">
+				<div style="--d:flex; --fd:column; --g:0.25rem; --w:100%">
 					{#if ($config?.license_metadata?.type ?? null) === 'trial'}
 						<Banner
 							banner={{

@@ -87,8 +87,8 @@
 		}}
 	/>
 {:else}
-	<div class="flex items-center justify-center h-full">
-		<div class=" pb-16">
+	<div style="--d:flex; --ai:center; --jc:center; --h:100%">
+		<div style="--pb:4rem">
 			<Spinner className="size-5" />
 		</div>
 	</div>

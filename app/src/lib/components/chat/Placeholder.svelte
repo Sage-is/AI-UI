@@ -79,23 +79,25 @@
 	});
 </script>
 
-<div class="m-auto w-full max-w-6xl px-2 @2xl:px-20 translate-y-6 py-24 text-center">
+<div style="--m:auto; --w:100%; --maxw:72rem; --px:0.5rem; --translatey:1.5rem; --py:6rem; --ta:center"
+	class="@2xl:px-20">
 	{#if $temporaryChatEnabled}
 		<Tooltip
 			content={$i18n.t("This chat won't appear in history and your messages will not be saved.")}
 			className="w-full flex justify-center mb-0.5"
 			placement="top"
 		>
-			<div class="flex items-center gap-2 text-gray-500 font-medium text-lg my-2 w-fit">
+			<div style="--d:flex; --ai:center; --g:0.5rem; --c:var(--color-gray-500, #9b9b9b); --weight:500; --size:1.125rem; --my:0.5rem; --w:fit-content">
 				<EyeSlash strokeWidth="2.5" className="size-5" />{$i18n.t('Temporary Chat')}
 			</div>
 		</Tooltip>
 	{/if}
 
 	<div
-		class="w-full text-3xl text-gray-800 dark:text-gray-100 text-center flex items-center gap-4 font-primary"
+		style="--w:100%; --size:1.875rem; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-100, #ececec); --ta:center; --d:flex; --ai:center; --g:1rem"
+	class="font-primary"
 	>
-		<div class="w-full flex flex-col justify-center items-center">
+		<div style="--w:100%; --d:flex; --fd:column; --jc:center; --ai:center">
 			{#if $selectedFolder}
 				<FolderTitle
 					folder={$selectedFolder}
@@ -113,9 +115,10 @@
 					}}
 				/>
 			{:else}
-				<div class="flex flex-row justify-center gap-3 @sm:gap-3.5 w-fit px-5 max-w-xl">
-					<div class="flex shrink-0 justify-center">
-						<div class="flex -space-x-4 mb-0.5" in:fade={{ duration: 100 }}>
+				<div style="--d:flex; --fd:row; --jc:center; --g:0.75rem; --w:fit-content; --px:1.25rem; --maxw:36rem"
+	class="@sm:gap-3.5">
+					<div style="--d:flex; --fs:0; --jc:center">
+						<div style="--d:flex; --g:-1rem; --mb:0.125rem" in:fade={{ duration: 100 }}>
 							{#each models as model, modelIdx}
 								<Tooltip
 									content={(models[modelIdx]?.info?.meta?.tags ?? [])
@@ -135,7 +138,8 @@
 										<img
 											crossorigin="anonymous"
 											src={model?.info?.meta?.profile_image_url ?? branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
-											class=" size-9 @sm:size-10 rounded-full border-[1px] border-gray-100 dark:border-none"
+											style="--w:2.25rem; --h:2.25rem; --radius:9999px; --bc:1px; --bc:var(--color-gray-100, #ececec); --dark-bs:none"
+	class="@sm:size-10"
 											aria-hidden="true"
 											draggable="false"
 										/>
@@ -146,7 +150,8 @@
 					</div>
 
 					<div
-						class=" text-3xl @sm:text-3xl line-clamp-1 flex items-center"
+						style="--size:1.875rem; --line-clamp:1; --d:flex; --ai:center"
+	class="@sm:text-3xl"
 						in:fade={{ duration: 100 }}
 					>
 						{#if models[selectedModelIdx]?.name}
@@ -155,7 +160,7 @@
 								placement="top"
 								className=" flex items-center "
 							>
-								<span class="line-clamp-1">
+								<span style="--line-clamp:1">
 									{models[selectedModelIdx]?.name}
 								</span>
 							</Tooltip>
@@ -165,7 +170,7 @@
 					</div>
 				</div>
 
-				<div class="flex mt-1 mb-2">
+				<div style="--d:flex; --mt:0.25rem; --mb:0.5rem">
 					<div in:fade={{ duration: 100, delay: 50 }}>
 						{#if models[selectedModelIdx]?.info?.meta?.description ?? null}
 							<Tooltip
@@ -178,7 +183,8 @@
 								placement="top"
 							>
 								<div
-									class="mt-0.5 px-2 text-sm font-normal text-gray-500 dark:text-gray-400 line-clamp-2 max-w-xl markdown"
+									style="--mt:0.125rem; --px:0.5rem; --size:0.875rem; --weight:400; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4); --line-clamp:2; --maxw:36rem"
+	class="markdown"
 								>
 									{@html marked.parse(
 										sanitizeResponseContent(
@@ -189,7 +195,7 @@
 							</Tooltip>
 
 							{#if models[selectedModelIdx]?.info?.meta?.user}
-								<div class="mt-0.5 text-sm font-normal text-gray-400 dark:text-gray-500">
+								<div style="--mt:0.125rem; --size:0.875rem; --weight:400; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b)">
 									By
 									{#if models[selectedModelIdx]?.info?.meta?.user.community}
 										<a
@@ -209,7 +215,8 @@
 				</div>
 			{/if}
 
-			<div class="text-base font-normal @md:max-w-3xl w-full py-3 {atSelectedModel ? 'mt-2' : ''}">
+			<div style="--size:1rem; --weight:400; --w:100%; --py:0.75rem"
+	class="@md:max-w-3xl {atSelectedModel ? 'mt-2' : ''}">
 				<MessageInput
 					bind:this={messageInput}
 					{history}
@@ -251,14 +258,16 @@
 
 	{#if $selectedFolder}
 		<div
-			class="mx-auto px-4 md:max-w-3xl md:px-6 font-primary min-h-62"
+			style="--mx:auto; --px:1rem; --maxw-md:48rem; --px-md:1.5rem; --minh:15.5rem"
+	class="font-primary"
 			in:fade={{ duration: 200, delay: 200 }}
 		>
 			<FolderPlaceholder folder={$selectedFolder} />
 		</div>
 	{:else}
-		<div class="mx-auto max-w-2xl font-primary mt-2" in:fade={{ duration: 200, delay: 200 }}>
-			<div class="mx-5">
+		<div style="--mx:auto; --maxw:42rem; --mt:0.5rem"
+	class="font-primary" in:fade={{ duration: 200, delay: 200 }}>
+			<div style="--mx:1.25rem">
 				<Suggestions
 					suggestionPrompts={atSelectedModel?.info?.meta?.suggestion_prompts ??
 						models[selectedModelIdx]?.info?.meta?.suggestion_prompts ??

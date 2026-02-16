@@ -103,20 +103,21 @@
 
 {#if models !== null && taskConfig}
 	<form
-		class="flex flex-col h-full justify-between space-y-3 text-sm"
+		style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.75rem; --size:0.875rem"
 		on:submit|preventDefault={() => {
 			updateInterfaceHandler();
 			dispatch('save');
 		}}
 	>
-		<div class="  overflow-y-scroll scrollbar-hidden h-full pr-1.5">
-			<div class="mb-3.5">
-				<div class=" mb-2.5 text-base font-medium">{$i18n.t('Tasks')}</div>
+		<div style="--ofy:scroll; --h:100%; --pr:0.375rem"
+	class="scrollbar-hidden">
+			<div style="--mb:0.875rem">
+				<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('Tasks')}</div>
 
-				<hr class=" border-gray-100 dark:border-gray-850 my-2" />
+				<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem" />
 
-				<div class=" mb-2 font-medium flex items-center">
-					<div class=" text-xs mr-1">{$i18n.t('Task Model')}</div>
+				<div style="--mb:0.5rem; --weight:500; --d:flex; --ai:center">
+					<div style="--size:0.75rem; --mr:0.25rem">{$i18n.t('Task Model')}</div>
 					<Tooltip
 						content={$i18n.t(
 							'A task model is used when performing tasks such as generating titles for chats and web search queries'
@@ -128,7 +129,7 @@
 							viewBox="0 0 24 24"
 							stroke-width="1.5"
 							stroke="currentColor"
-							class="size-3.5"
+							style="--w:0.875rem; --h:0.875rem"
 						>
 							<path
 								stroke-linecap="round"
@@ -139,11 +140,11 @@
 					</Tooltip>
 				</div>
 
-				<div class=" mb-2.5 flex w-full gap-2">
-					<div class="flex-1">
-						<div class=" text-xs mb-1">{$i18n.t('Local Task Model')}</div>
+				<div style="--mb:0.625rem; --d:flex; --w:100%; --g:0.5rem">
+					<div style="--fx:1 1 0%">
+						<div style="--size:0.75rem; --mb:0.25rem">{$i18n.t('Local Task Model')}</div>
 						<select
-							class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+							style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
 							bind:value={taskConfig.TASK_MODEL}
 							placeholder={$i18n.t('Select a model')}
 							on:change={() => {
@@ -167,7 +168,7 @@
 						>
 							<option value="" selected>{$i18n.t('Current Model')}</option>
 							{#each models as model}
-								<option value={model.id} class="bg-gray-100 dark:bg-gray-700">
+								<option value={model.id} style="--bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-700, #4e4e4e)">
 									{model.name}
 									{model?.connection_type === 'local' ? `(${$i18n.t('Local')})` : ''}
 								</option>
@@ -175,10 +176,10 @@
 						</select>
 					</div>
 
-					<div class="flex-1">
-						<div class=" text-xs mb-1">{$i18n.t('External Task Model')}</div>
+					<div style="--fx:1 1 0%">
+						<div style="--size:0.75rem; --mb:0.25rem">{$i18n.t('External Task Model')}</div>
 						<select
-							class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+							style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
 							bind:value={taskConfig.TASK_MODEL_EXTERNAL}
 							placeholder={$i18n.t('Select a model')}
 							on:change={() => {
@@ -202,7 +203,7 @@
 						>
 							<option value="" selected>{$i18n.t('Current Model')}</option>
 							{#each models as model}
-								<option value={model.id} class="bg-gray-100 dark:bg-gray-700">
+								<option value={model.id} style="--bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-700, #4e4e4e)">
 									{model.name}
 									{model?.connection_type === 'local' ? `(${$i18n.t('Local')})` : ''}
 								</option>
@@ -211,8 +212,8 @@
 					</div>
 				</div>
 
-				<div class="mb-2.5 flex w-full items-center justify-between">
-					<div class=" self-center text-xs font-medium">
+				<div style="--mb:0.625rem; --d:flex; --w:100%; --ai:center; --jc:space-between">
+					<div style="--as:center; --size:0.75rem; --weight:500">
 						{$i18n.t('Title Generation')}
 					</div>
 
@@ -220,8 +221,8 @@
 				</div>
 
 				{#if taskConfig.ENABLE_TITLE_GENERATION}
-					<div class="mb-2.5">
-						<div class=" mb-1 text-xs font-medium">{$i18n.t('Title Generation Prompt')}</div>
+					<div style="--mb:0.625rem">
+						<div style="--mb:0.25rem; --size:0.75rem; --weight:500">{$i18n.t('Title Generation Prompt')}</div>
 
 						<Tooltip
 							content={$i18n.t('Leave empty to use the default prompt, or enter a custom prompt')}
@@ -237,8 +238,8 @@
 					</div>
 				{/if}
 
-				<div class="mb-2.5 flex w-full items-center justify-between">
-					<div class=" self-center text-xs font-medium">
+				<div style="--mb:0.625rem; --d:flex; --w:100%; --ai:center; --jc:space-between">
+					<div style="--as:center; --size:0.75rem; --weight:500">
 						{$i18n.t('Follow Up Generation')}
 					</div>
 
@@ -246,8 +247,8 @@
 				</div>
 
 				{#if taskConfig.ENABLE_FOLLOW_UP_GENERATION}
-					<div class="mb-2.5">
-						<div class=" mb-1 text-xs font-medium">{$i18n.t('Follow Up Generation Prompt')}</div>
+					<div style="--mb:0.625rem">
+						<div style="--mb:0.25rem; --size:0.75rem; --weight:500">{$i18n.t('Follow Up Generation Prompt')}</div>
 
 						<Tooltip
 							content={$i18n.t('Leave empty to use the default prompt, or enter a custom prompt')}
@@ -263,8 +264,8 @@
 					</div>
 				{/if}
 
-				<div class="mb-2.5 flex w-full items-center justify-between">
-					<div class=" self-center text-xs font-medium">
+				<div style="--mb:0.625rem; --d:flex; --w:100%; --ai:center; --jc:space-between">
+					<div style="--as:center; --size:0.75rem; --weight:500">
 						{$i18n.t('Tags Generation')}
 					</div>
 
@@ -272,8 +273,8 @@
 				</div>
 
 				{#if taskConfig.ENABLE_TAGS_GENERATION}
-					<div class="mb-2.5">
-						<div class=" mb-1 text-xs font-medium">{$i18n.t('Tags Generation Prompt')}</div>
+					<div style="--mb:0.625rem">
+						<div style="--mb:0.25rem; --size:0.75rem; --weight:500">{$i18n.t('Tags Generation Prompt')}</div>
 
 						<Tooltip
 							content={$i18n.t('Leave empty to use the default prompt, or enter a custom prompt')}
@@ -289,16 +290,16 @@
 					</div>
 				{/if}
 
-				<div class="mb-2.5 flex w-full items-center justify-between">
-					<div class=" self-center text-xs font-medium">
+				<div style="--mb:0.625rem; --d:flex; --w:100%; --ai:center; --jc:space-between">
+					<div style="--as:center; --size:0.75rem; --weight:500">
 						{$i18n.t('Retrieval Query Generation')}
 					</div>
 
 					<Switch bind:state={taskConfig.ENABLE_RETRIEVAL_QUERY_GENERATION} />
 				</div>
 
-				<div class="mb-2.5">
-					<div class=" mb-1 text-xs font-medium">{$i18n.t('Query Generation Prompt')}</div>
+				<div style="--mb:0.625rem">
+					<div style="--mb:0.25rem; --size:0.75rem; --weight:500">{$i18n.t('Query Generation Prompt')}</div>
 
 					<Tooltip
 						content={$i18n.t('Leave empty to use the default prompt, or enter a custom prompt')}
@@ -313,8 +314,8 @@
 					</Tooltip>
 				</div>
 
-				<div class="mb-2.5 flex w-full items-center justify-between">
-					<div class=" self-center text-xs font-medium">
+				<div style="--mb:0.625rem; --d:flex; --w:100%; --ai:center; --jc:space-between">
+					<div style="--as:center; --size:0.75rem; --weight:500">
 						{$i18n.t('Autocomplete Generation')}
 					</div>
 
@@ -324,8 +325,8 @@
 				</div>
 
 				{#if taskConfig.ENABLE_AUTOCOMPLETE_GENERATION}
-					<div class="mb-2.5">
-						<div class=" mb-1 text-xs font-medium">
+					<div style="--mb:0.625rem">
+						<div style="--mb:0.25rem; --size:0.75rem; --weight:500">
 							{$i18n.t('Autocomplete Generation Input Max Length')}
 						</div>
 
@@ -334,7 +335,7 @@
 							placement="top-start"
 						>
 							<input
-								class="w-full outline-hidden bg-transparent"
+								style="--w:100%; --oe:none; --bgc:transparent"
 								bind:value={taskConfig.AUTOCOMPLETE_GENERATION_INPUT_MAX_LENGTH}
 								placeholder={$i18n.t('-1 for no limit, or a positive integer for a specific limit')}
 							/>
@@ -342,8 +343,8 @@
 					</div>
 				{/if}
 
-				<div class="mb-2.5">
-					<div class=" mb-1 text-xs font-medium">{$i18n.t('Image Prompt Generation Prompt')}</div>
+				<div style="--mb:0.625rem">
+					<div style="--mb:0.25rem; --size:0.75rem; --weight:500">{$i18n.t('Image Prompt Generation Prompt')}</div>
 
 					<Tooltip
 						content={$i18n.t('Leave empty to use the default prompt, or enter a custom prompt')}
@@ -358,8 +359,8 @@
 					</Tooltip>
 				</div>
 
-				<div class="mb-2.5">
-					<div class=" mb-1 text-xs font-medium">{$i18n.t('Tools Function Calling Prompt')}</div>
+				<div style="--mb:0.625rem">
+					<div style="--mb:0.25rem; --size:0.75rem; --weight:500">{$i18n.t('Tools Function Calling Prompt')}</div>
 
 					<Tooltip
 						content={$i18n.t('Leave empty to use the default prompt, or enter a custom prompt')}
@@ -375,19 +376,19 @@
 				</div>
 			</div>
 
-			<div class="mb-3.5">
-				<div class=" mb-2.5 text-base font-medium">{$i18n.t('UI')}</div>
+			<div style="--mb:0.875rem">
+				<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('UI')}</div>
 
-				<hr class=" border-gray-100 dark:border-gray-850 my-2" />
+				<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem" />
 
-				<div class="mb-2.5">
-					<div class="flex w-full justify-between">
-						<div class=" self-center text-xs">
+				<div style="--mb:0.625rem">
+					<div style="--d:flex; --w:100%; --jc:space-between">
+						<div style="--as:center; --size:0.75rem">
 							{$i18n.t('Banners')}
 						</div>
 
 						<button
-							class="p-1 px-3 text-xs flex rounded-sm transition"
+							style="--p:0.25rem; --px:0.75rem; --size:0.75rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							type="button"
 							on:click={() => {
 								if (banners.length === 0 || banners.at(-1).content !== '') {
@@ -409,7 +410,7 @@
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 20 20"
 								fill="currentColor"
-								class="w-4 h-4"
+								style="--w:1rem; --h:1rem"
 							>
 								<path
 									d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z"
@@ -422,14 +423,14 @@
 				</div>
 
 				{#if $user?.role === 'admin'}
-					<div class=" space-y-3">
-						<div class="flex w-full justify-between mb-2">
-							<div class=" self-center text-xs">
+					<div style="--g:0.75rem">
+						<div style="--d:flex; --w:100%; --jc:space-between; --mb:0.5rem">
+							<div style="--as:center; --size:0.75rem">
 								{$i18n.t('Default Prompt Suggestions')}
 							</div>
 
 							<button
-								class="p-1 px-3 text-xs flex rounded-sm transition"
+								style="--p:0.25rem; --px:0.75rem; --size:0.75rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								type="button"
 								on:click={() => {
 									if (promptSuggestions.length === 0 || promptSuggestions.at(-1).content !== '') {
@@ -441,7 +442,7 @@
 									xmlns="http://www.w3.org/2000/svg"
 									viewBox="0 0 20 20"
 									fill="currentColor"
-									class="w-4 h-4"
+									style="--w:1rem; --h:1rem"
 								>
 									<path
 										d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z"
@@ -449,28 +450,28 @@
 								</svg>
 							</button>
 						</div>
-						<div class="grid lg:grid-cols-2 flex-col gap-1.5">
+						<div style="--d:grid; --gtc-lg:repeat(2, minmax(0, 1fr)); --fd:column; --g:0.375rem">
 							{#each promptSuggestions as prompt, promptIdx}
 								<div
-									class=" flex border border-gray-100 dark:border-none dark:bg-gray-850 rounded-xl py-1.5"
+									style="--d:flex; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bs:none; --dark-bgc:var(--color-gray-850, #262626); --radius:0.75rem; --py:0.375rem"
 								>
-									<div class="flex flex-col flex-1 pl-1">
-										<div class="flex border-b border-gray-100 dark:border-gray-850 w-full">
+									<div style="--d:flex; --fd:column; --fx:1 1 0%; --pl:0.25rem">
+										<div style="--d:flex; --bb:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --w:100%">
 											<input
-												class="px-3 py-1.5 text-xs w-full bg-transparent outline-hidden border-r border-gray-100 dark:border-gray-850"
+												style="--px:0.75rem; --py:0.375rem; --size:0.75rem; --w:100%; --bgc:transparent; --oe:none; --br:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)"
 												placeholder={$i18n.t('Title (e.g. Tell me a fun fact)')}
 												bind:value={prompt.title[0]}
 											/>
 
 											<input
-												class="px-3 py-1.5 text-xs w-full bg-transparent outline-hidden border-r border-gray-100 dark:border-gray-850"
+												style="--px:0.75rem; --py:0.375rem; --size:0.75rem; --w:100%; --bgc:transparent; --oe:none; --br:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)"
 												placeholder={$i18n.t('Subtitle (e.g. about the Roman Empire)')}
 												bind:value={prompt.title[1]}
 											/>
 										</div>
 
 										<textarea
-											class="px-3 py-1.5 text-xs w-full bg-transparent outline-hidden border-r border-gray-100 dark:border-gray-850 resize-none"
+											style="--px:0.75rem; --py:0.375rem; --size:0.75rem; --w:100%; --bgc:transparent; --oe:none; --br:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); resize:none"
 											placeholder={$i18n.t(
 												'Prompt (e.g. Tell me a fun fact about the Roman Empire)'
 											)}
@@ -480,7 +481,7 @@
 									</div>
 
 									<button
-										class="px-3"
+										style="--px:0.75rem"
 										type="button"
 										on:click={() => {
 											promptSuggestions.splice(promptIdx, 1);
@@ -494,12 +495,12 @@
 						</div>
 
 						{#if promptSuggestions.length > 0}
-							<div class="text-xs text-left w-full mt-2">
+							<div style="--size:0.75rem; --ta:left; --w:100%; --mt:0.5rem">
 								{$i18n.t('Adjusting these settings will apply changes universally to all users.')}
 							</div>
 						{/if}
 
-						<div class="flex items-center justify-end space-x-2 mt-2">
+						<div style="--d:flex; --ai:center; --jc:flex-end; --g:0.5rem; --mt:0.5rem">
 							<input
 								id="prompt-suggestions-import-input"
 								type="file"
@@ -542,7 +543,7 @@
 							/>
 
 							<button
-								class="flex text-xs items-center space-x-1 px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200 transition"
+								style="--d:flex; --size:0.75rem; --ai:center; --g:0.25rem; --px:0.75rem; --py:0.375rem; --radius:0.75rem; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-800, #333); --hvr-dark-bgc:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-200, #e3e3e3); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								type="button"
 								on:click={() => {
 									const input = document.getElementById('prompt-suggestions-import-input');
@@ -551,16 +552,16 @@
 									}
 								}}
 							>
-								<div class=" self-center mr-2 font-medium line-clamp-1">
+								<div style="--as:center; --mr:0.5rem; --weight:500; --line-clamp:1">
 									{$i18n.t('Import Prompt Suggestions')}
 								</div>
 
-								<div class=" self-center">
+								<div style="--as:center">
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										viewBox="0 0 16 16"
 										fill="currentColor"
-										class="w-3.5 h-3.5"
+										style="--w:0.875rem; --h:0.875rem"
 									>
 										<path
 											fill-rule="evenodd"
@@ -573,7 +574,7 @@
 
 							{#if promptSuggestions.length}
 								<button
-									class="flex text-xs items-center space-x-1 px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200 transition"
+									style="--d:flex; --size:0.75rem; --ai:center; --g:0.25rem; --px:0.75rem; --py:0.375rem; --radius:0.75rem; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-800, #333); --hvr-dark-bgc:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-200, #e3e3e3); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 									type="button"
 									on:click={async () => {
 										let blob = new Blob([JSON.stringify(promptSuggestions)], {
@@ -582,16 +583,16 @@
 										saveAs(blob, `prompt-suggestions-export-${Date.now()}.json`);
 									}}
 								>
-									<div class=" self-center mr-2 font-medium line-clamp-1">
+									<div style="--as:center; --mr:0.5rem; --weight:500; --line-clamp:1">
 										{$i18n.t('Export Prompt Suggestions')} ({promptSuggestions.length})
 									</div>
 
-									<div class=" self-center">
+									<div style="--as:center">
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
 											viewBox="0 0 16 16"
 											fill="currentColor"
-											class="w-3.5 h-3.5"
+											style="--w:0.875rem; --h:0.875rem"
 										>
 											<path
 												fill-rule="evenodd"
@@ -608,9 +609,9 @@
 			</div>
 		</div>
 
-		<div class="flex justify-end text-sm font-medium">
+		<div style="--d:flex; --jc:flex-end; --size:0.875rem; --weight:500">
 			<button
-				class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+				style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 				type="submit"
 			>
 				{$i18n.t('Save')}
@@ -618,7 +619,7 @@
 		</div>
 	</form>
 {:else}
-	<div class=" h-full w-full flex justify-center items-center">
+	<div style="--h:100%; --w:100%; --d:flex; --jc:center; --ai:center">
 		<Spinner className="size-5" />
 	</div>
 {/if}

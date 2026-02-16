@@ -120,14 +120,14 @@
 	});
 </script>
 
-<div class=" flex flex-col justify-between w-full overflow-y-auto h-full">
-	<div class="mx-auto w-full md:px-0 h-full">
-		<div class=" flex flex-col h-full px-4">
-			<div class="flex flex-col justify-between mb-1 gap-1">
-				<div class="flex flex-col gap-1 w-full">
-					<div class="flex w-full">
-						<div class="overflow-hidden w-full">
-							<div class="max-w-full">
+<div style="--d:flex; --fd:column; --jc:space-between; --w:100%; --ofy:auto; --h:100%">
+	<div style="--mx:auto; --w:100%; --px-md:0; --h:100%">
+		<div style="--d:flex; --fd:column; --h:100%; --px:1rem">
+			<div style="--d:flex; --fd:column; --jc:space-between; --mb:0.25rem; --g:0.25rem">
+				<div style="--d:flex; --fd:column; --g:0.25rem; --w:100%">
+					<div style="--d:flex; --w:100%">
+						<div style="--of:hidden; --w:100%">
+							<div style="--maxw:100%">
 								<Selector
 									placeholder={$i18n.t('Select a model')}
 									items={$models.map((model) => ({
@@ -144,15 +144,15 @@
 			</div>
 
 			<div
-				class=" pt-0.5 pb-2.5 flex flex-col justify-between w-full flex-auto overflow-auto h-0"
+				style="--pt:0.125rem; --pb:0.625rem; --d:flex; --fd:column; --jc:space-between; --w:100%; --fx:1 1 auto; --of:auto; --h:0"
 				id="messages-container"
 			>
-				<div class=" h-full w-full flex flex-col">
-					<div class="flex-1">
+				<div style="--h:100%; --w:100%; --d:flex; --fd:column">
+					<div style="--fx:1 1 0%">
 						<textarea
 							id="text-completion-textarea"
 							bind:this={textCompletionAreaElement}
-							class="w-full h-full p-3 bg-transparent border border-gray-100 dark:border-gray-850 outline-hidden resize-none rounded-lg text-sm"
+							style="--w:100%; --h:100%; --p:0.75rem; --bgc:transparent; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --oe:none; resize:none; --radius:0.5rem; --size:0.875rem"
 							bind:value={text}
 							placeholder={$i18n.t("You're a helpful assistant.")}
 						/>
@@ -160,10 +160,10 @@
 				</div>
 			</div>
 
-			<div class="pb-3 flex justify-end">
+			<div style="--pb:0.75rem; --d:flex; --jc:flex-end">
 				{#if !loading}
 					<button
-						class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+						style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 						on:click={() => {
 							submitHandler();
 						}}
@@ -172,7 +172,7 @@
 					</button>
 				{:else}
 					<button
-						class="px-3 py-1.5 text-sm font-medium bg-gray-300 text-black transition rounded-full"
+						style="--px:0.75rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:var(--color-gray-300, #cdcdcd); --c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 						on:click={() => {
 							stopResponse();
 						}}

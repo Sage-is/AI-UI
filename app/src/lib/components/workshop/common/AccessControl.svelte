@@ -82,13 +82,13 @@
 	};
 </script>
 
-<div class=" rounded-lg flex flex-col gap-2">
+<div style="--radius:0.5rem; --d:flex; --fd:column; --g:0.5rem">
 	<div class="">
-		<div class=" text-sm font-semibold mb-1">{$i18n.t('Visibility')}</div>
+		<div style="--size:0.875rem; --weight:600; --mb:0.25rem">{$i18n.t('Visibility')}</div>
 
-		<div class="flex gap-2.5 items-center mb-1">
+		<div style="--d:flex; --g:0.625rem; --ai:center; --mb:0.25rem">
 			<div>
-				<div class=" p-2 bg-black/5 dark:bg-white/5 rounded-full">
+				<div style="--p:0.5rem; --bgc:rgb(0 0 0 / 0.05); --dark-bgc:rgb(255 255 255 / 0.05); --radius:9999px">
 					{#if accessControl !== null}
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -96,7 +96,7 @@
 							viewBox="0 0 24 24"
 							stroke-width="1.5"
 							stroke="currentColor"
-							class="w-5 h-5"
+							style="--w:1.25rem; --h:1.25rem"
 						>
 							<path
 								stroke-linecap="round"
@@ -111,7 +111,7 @@
 							viewBox="0 0 24 24"
 							stroke-width="1.5"
 							stroke="currentColor"
-							class="w-5 h-5"
+							style="--w:1.25rem; --h:1.25rem"
 						>
 							<path
 								stroke-linecap="round"
@@ -126,7 +126,8 @@
 			<div>
 				<select
 					id="models"
-					class="outline-hidden bg-transparent text-sm font-medium rounded-lg block w-fit pr-10 max-w-full placeholder-gray-400"
+					style="--oe:none; --bgc:transparent; --size:0.875rem; --weight:500; --radius:0.5rem; --d:block; --w:fit-content; --pr:2.5rem; --maxw:100%"
+	class="placeholder-gray-400"
 					value={accessControl !== null ? 'private' : 'public'}
 					on:change={(e) => {
 						if (e.target.value === 'public') {
@@ -145,13 +146,13 @@
 						}
 					}}
 				>
-					<option class=" text-gray-700" value="private" selected>{$i18n.t('Private')}</option>
+					<option style="--c:var(--color-gray-700, #4e4e4e)" value="private" selected>{$i18n.t('Private')}</option>
 					{#if allowPublic}
-						<option class=" text-gray-700" value="public" selected>{$i18n.t('Public')}</option>
+						<option style="--c:var(--color-gray-700, #4e4e4e)" value="public" selected>{$i18n.t('Public')}</option>
 					{/if}
 				</select>
 
-				<div class=" text-xs text-gray-400 font-medium">
+				<div style="--size:0.75rem; --c:var(--color-gray-400, #b4b4b4); --weight:500">
 					{#if accessControl !== null}
 						{$i18n.t('Only select users and groups with permission can access')}
 					{:else}
@@ -167,34 +168,33 @@
 		)}
 		<div>
 			<div class="">
-				<div class="flex justify-between mb-1.5">
-					<div class="text-sm font-semibold">
+				<div style="--d:flex; --jc:space-between; --mb:0.375rem">
+					<div style="--size:0.875rem; --weight:600">
 						{$i18n.t('Groups')}
 					</div>
 				</div>
 
-				<div class="mb-1">
-					<div class="flex w-full">
-						<div class="flex flex-1 items-center">
-							<div class="w-full px-0.5">
+				<div style="--mb:0.25rem">
+					<div style="--d:flex; --w:100%">
+						<div style="--d:flex; --fx:1 1 0%; --ai:center">
+							<div style="--w:100%; --px:0.125rem">
 								<select
-									class="outline-hidden bg-transparent text-sm rounded-lg block w-full pr-10 max-w-full
-									{selectedGroupId ? '' : 'text-gray-500'}
-									dark:placeholder-gray-500"
+									style="--oe:none; --bgc:transparent; --size:0.875rem; --radius:0.5rem; --d:block; --w:100%; --pr:2.5rem; --maxw:100%"
+	class="{selectedGroupId ? '' : 'text-gray-500'} dark:placeholder-gray-500"
 									bind:value={selectedGroupId}
 								>
-									<option class=" text-gray-700" value="" disabled selected
+									<option style="--c:var(--color-gray-700, #4e4e4e)" value="" disabled selected
 										>{$i18n.t('Select a group')}</option
 									>
 									{#each groups.filter((group) => !accessControl.read.group_ids.includes(group.id)) as group}
-										<option class=" text-gray-700" value={group.id}>{group.name}</option>
+										<option style="--c:var(--color-gray-700, #4e4e4e)" value={group.id}>{group.name}</option>
 									{/each}
 								</select>
 							</div>
 							<!-- <div>
 								<Tooltip content={$i18n.t('Add Group')}>
 									<button
-										class=" p-1 rounded-xl bg-transparent dark:hover:bg-white/5 hover:bg-black/5 transition font-medium text-sm flex items-center space-x-1"
+										style="--p:0.25rem; --radius:0.75rem; --bgc:transparent; --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-bgc:rgb(0 0 0 / 0.05); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
 										type="button"
 										on:click={() => {}}
 									>
@@ -206,13 +206,13 @@
 					</div>
 				</div>
 
-				<hr class=" border-gray-100 dark:border-gray-700/10 mt-1.5 mb-2.5 w-full" />
+				<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:rgb(78 78 78 / 0.1); --mt:0.375rem; --mb:0.625rem; --w:100%" />
 
-				<div class="flex flex-col gap-2 mb-1 px-0.5">
+				<div style="--d:flex; --fd:column; --g:0.5rem; --mb:0.25rem; --px:0.125rem">
 					{#if accessGroups.length > 0}
 						{#each accessGroups as group}
-							<div class="flex items-center gap-3 justify-between text-xs w-full transition">
-								<div class="flex items-center gap-1.5 w-full font-medium">
+							<div style="--d:flex; --ai:center; --g:0.75rem; --jc:space-between; --size:0.75rem; --w:100%; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)">
+								<div style="--d:flex; --ai:center; --g:0.375rem; --w:100%; --weight:500">
 									<div>
 										<UserCircleSolid className="size-4" />
 									</div>
@@ -222,7 +222,7 @@
 									</div>
 								</div>
 
-								<div class="w-full flex justify-end items-center gap-0.5">
+								<div style="--w:100%; --d:flex; --jc:flex-end; --ai:center; --g:0.125rem">
 									<button
 										class=""
 										type="button"
@@ -249,7 +249,7 @@
 									</button>
 
 									<button
-										class=" rounded-full p-1 hover:bg-gray-100 dark:hover:bg-gray-850 transition"
+										style="--radius:9999px; --p:0.25rem; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 										type="button"
 										on:click={() => {
 											accessControl.read.group_ids = accessControl.read.group_ids.filter(
@@ -263,8 +263,8 @@
 							</div>
 						{/each}
 					{:else}
-						<div class="flex items-center justify-center">
-							<div class="text-gray-500 text-xs text-center py-2 px-10">
+						<div style="--d:flex; --ai:center; --jc:center">
+							<div style="--c:var(--color-gray-500, #9b9b9b); --size:0.75rem; --ta:center; --py:0.5rem; --px:2.5rem">
 								{$i18n.t('No groups with access, add a group to grant access')}
 							</div>
 						</div>

@@ -28,9 +28,9 @@
 </script>
 
 <Modal size="full" containerClassName="" className="h-full bg-white dark:bg-gray-900" bind:show>
-	<div class="absolute top-0 right-0 p-5">
+	<div style="--pos:absolute; --top:0; --right:0; --p:1.25rem">
 		<button
-			class="self-center dark:text-white"
+			style="--as:center; --dark-c:#fff"
 			type="button"
 			on:click={() => {
 				show = false;
@@ -39,9 +39,9 @@
 			<XMark className="size-3.5" />
 		</button>
 	</div>
-	<div class="flex flex-col md:flex-row w-full h-full md:space-x-4 dark:text-gray-200">
+	<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --h:100%; --g-md:1rem; --dark-c:var(--color-gray-200, #e3e3e3)">
 		<form
-			class="flex flex-col w-full h-full"
+			style="--d:flex; --fd:column; --w:100%; --h:100%"
 			on:submit|preventDefault={() => {
 				if (name.trim() === '' || content.trim() === '') {
 					toast.error($i18n.t('Please fill in all fields.'));
@@ -59,12 +59,12 @@
 				content = '';
 			}}
 		>
-			<div class=" flex-1 w-full h-full flex justify-center overflow-auto px-5 py-4">
-				<div class=" max-w-3xl py-2 md:py-10 w-full flex flex-col gap-2">
-					<div class="shrink-0 w-full flex justify-between items-center">
-						<div class="w-full">
+			<div style="--fx:1 1 0%; --w:100%; --h:100%; --d:flex; --jc:center; --of:auto; --px:1.25rem; --py:1rem">
+				<div style="--maxw:48rem; --py:0.5rem; --py-md:2.5rem; --w:100%; --d:flex; --fd:column; --g:0.5rem">
+					<div style="--fs:0; --w:100%; --d:flex; --jc:space-between; --ai:center">
+						<div style="--w:100%">
 							<input
-								class="w-full text-3xl font-semibold bg-transparent outline-hidden"
+								style="--w:100%; --size:1.875rem; --weight:600; --bgc:transparent; --oe:none"
 								type="text"
 								bind:value={name}
 								placeholder={$i18n.t('Title')}
@@ -73,7 +73,7 @@
 						</div>
 					</div>
 
-					<div class=" flex-1 w-full h-full">
+					<div style="--fx:1 1 0%; --w:100%; --h:100%">
 						<RichTextInput
 							bind:value={content}
 							placeholder={$i18n.t('Write something...')}
@@ -84,11 +84,11 @@
 			</div>
 
 			<div
-				class="flex flex-row items-center justify-end text-sm font-medium shrink-0 mt-1 p-4 gap-1.5"
+				style="--d:flex; --fd:row; --ai:center; --jc:flex-end; --size:0.875rem; --weight:500; --fs:0; --mt:0.25rem; --p:1rem; --g:0.375rem"
 			>
 				<div class="">
 					{#if voiceInput}
-						<div class=" max-w-full w-full">
+						<div style="--maxw:100%; --w:100%">
 							<VoiceRecording
 								bind:recording={voiceInput}
 								className="p-1"
@@ -106,7 +106,7 @@
 					{:else}
 						<Tooltip content={$i18n.t('Voice Input')}>
 							<button
-								class=" p-2 bg-gray-50 text-gray-700 dark:bg-gray-700 dark:text-white transition rounded-full"
+								style="--p:0.5rem; --bgc:var(--color-gray-50, #f9f9f9); --c:var(--color-gray-700, #4e4e4e); --dark-bgc:var(--color-gray-700, #4e4e4e); --dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 								type="button"
 								on:click={async () => {
 									try {
@@ -138,10 +138,11 @@
 					{/if}
 				</div>
 
-				<div class=" shrink-0">
+				<div style="--fs:0">
 					<Tooltip content={$i18n.t('Save')}>
 						<button
-							class=" px-3.5 py-2 bg-black text-white dark:bg-white dark:text-black transition rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
+							style="--px:0.875rem; --py:0.5rem; --bgc:#000; --c:#fff; --dark-bgc:#fff; --dark-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+	class="disabled:opacity-50 disabled:cursor-not-allowed"
 							type="submit"
 							disabled={voiceInput}
 						>

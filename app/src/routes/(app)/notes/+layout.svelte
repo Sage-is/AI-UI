@@ -34,9 +34,10 @@
 {#if loaded}
 	<div
 		id="note-wrapper"
-		class=" flex flex-col w-full h-screen max-h-[100dvh] transition-width duration-200 ease-in-out {$showSidebar
+		style="--d:flex; --fd:column; --w:100%; --h:100vh; --maxh:100dvh; --tdn:200ms; --ttf:cubic-bezier(0.4, 0, 0.2, 1); --maxw:100%"
+	class="transition-width {$showSidebar
 			? 'md:max-w-[calc(100%-260px)]'
-			: ''} max-w-full"
+			: ''}"
 	>
 		<slot />
 	</div>

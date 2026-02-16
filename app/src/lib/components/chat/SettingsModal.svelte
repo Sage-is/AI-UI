@@ -538,12 +538,12 @@
 </script>
 
 <Modal size="lg" bind:show>
-	<div class="text-gray-700 dark:text-gray-100">
-		<div class=" flex justify-between dark:text-gray-300 px-5 pt-4 pb-1">
-			<div class=" text-lg font-medium self-center">{$i18n.t('Settings')}</div>
+	<div style="--c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-100, #ececec)">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300, #cdcdcd); --px:1.25rem; --pt:1rem; --pb:0.25rem">
+			<div style="--size:1.125rem; --weight:500; --as:center">{$i18n.t('Settings')}</div>
 			<button
 				aria-label={$i18n.t('Close settings modal')}
-				class="self-center"
+				style="--as:center"
 				on:click={() => {
 					show = false;
 				}}
@@ -552,14 +552,15 @@
 			</button>
 		</div>
 
-		<div class="flex flex-col md:flex-row w-full px-4 pt-1 pb-4 md:space-x-4">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1rem; --pt:0.25rem; --pb:1rem; --g-md:1rem">
 			<div
 				role="tablist"
 				id="settings-tabs-container"
-				class="tabs flex flex-row overflow-x-auto gap-2.5 md:gap-1 md:flex-col flex-1 md:flex-none md:w-40 md:min-h-[32rem] md:max-h-[32rem] dark:text-gray-200 text-sm font-medium text-left mb-1 md:mb-0 -translate-y-1"
+				style="--d:flex; --fd:row; --ofx:auto; --g:0.625rem; --g-md:0.25rem; --fd-md:column; --fx:1 1 0%; --fx-md:none; --w-md:10rem; --minh-md:32rem; --maxh-md:32rem; --dark-c:var(--color-gray-200, #e3e3e3); --size:0.875rem; --weight:500; --ta:left; --mb:0.25rem; --mb-md:0; --translatey:-0.25rem"
+	class="tabs"
 			>
-				<div class="hidden md:flex w-full rounded-xl -mb-1 px-0.5 gap-2" id="settings-search">
-					<div class="self-center rounded-l-xl bg-transparent">
+				<div style="--d:none; --d-md:flex; --w:100%; --radius:0.75rem; --mb:-0.25rem; --px:0.125rem; --g:0.5rem" id="settings-search">
+					<div style="--as:center; --btlr:0.75rem; --bblr:0.75rem; --bgc:transparent">
 						<Search
 							className="size-3.5"
 							strokeWidth={($settings?.highContrastMode ?? false) ? '3' : '1.5'}
@@ -596,13 +597,13 @@
 									selectedTab = 'general';
 								}}
 							>
-								<div class=" self-center mr-2">
+								<div style="--as:center; --mr:0.5rem">
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										aria-hidden="true"
 										viewBox="0 0 20 20"
 										fill="currentColor"
-										class="w-4 h-4"
+										style="--w:1rem; --h:1rem"
 									>
 										<path
 											fill-rule="evenodd"
@@ -611,7 +612,7 @@
 										/>
 									</svg>
 								</div>
-								<div class=" self-center">{$i18n.t('General')}</div>
+								<div style="--as:center">{$i18n.t('General')}</div>
 							</button>
 						{:else if tabId === 'interface'}
 							<button
@@ -632,13 +633,13 @@
 									selectedTab = 'interface';
 								}}
 							>
-								<div class=" self-center mr-2">
+								<div style="--as:center; --mr:0.5rem">
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										aria-hidden="true"
 										viewBox="0 0 16 16"
 										fill="currentColor"
-										class="w-4 h-4"
+										style="--w:1rem; --h:1rem"
 									>
 										<path
 											fill-rule="evenodd"
@@ -647,7 +648,7 @@
 										/>
 									</svg>
 								</div>
-								<div class=" self-center">{$i18n.t('Interface')}</div>
+								<div style="--as:center">{$i18n.t('Interface')}</div>
 							</button>
 						{:else if tabId === 'connections'}
 							{#if $user?.role === 'admin' || ($user?.role === 'user' && $config?.features?.enable_direct_connections)}
@@ -669,20 +670,20 @@
 										selectedTab = 'connections';
 									}}
 								>
-									<div class=" self-center mr-2">
+									<div style="--as:center; --mr:0.5rem">
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
 											aria-hidden="true"
 											viewBox="0 0 16 16"
 											fill="currentColor"
-											class="w-4 h-4"
+											style="--w:1rem; --h:1rem"
 										>
 											<path
 												d="M1 9.5A3.5 3.5 0 0 0 4.5 13H12a3 3 0 0 0 .917-5.857 2.503 2.503 0 0 0-3.198-3.019 3.5 3.5 0 0 0-6.628 2.171A3.5 3.5 0 0 0 1 9.5Z"
 											/>
 										</svg>
 									</div>
-									<div class=" self-center">{$i18n.t('Connections')}</div>
+									<div style="--as:center">{$i18n.t('Connections')}</div>
 								</button>
 							{/if}
 						{:else if tabId === 'tools'}
@@ -705,13 +706,13 @@
 										selectedTab = 'tools';
 									}}
 								>
-									<div class=" self-center mr-2">
+									<div style="--as:center; --mr:0.5rem">
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
 											aria-hidden="true"
 											viewBox="0 0 24 24"
 											fill="currentColor"
-											class="size-4"
+											style="--w:1rem; --h:1rem"
 										>
 											<path
 												fill-rule="evenodd"
@@ -720,7 +721,7 @@
 											/>
 										</svg>
 									</div>
-									<div class=" self-center">{$i18n.t('Tools')}</div>
+									<div style="--as:center">{$i18n.t('Tools')}</div>
 								</button>
 							{/if}
 						{:else if tabId === 'personalization'}
@@ -742,10 +743,10 @@
 									selectedTab = 'personalization';
 								}}
 							>
-								<div class=" self-center mr-2">
+								<div style="--as:center; --mr:0.5rem">
 									<User />
 								</div>
-								<div class=" self-center">{$i18n.t('Personalization')}</div>
+								<div style="--as:center">{$i18n.t('Personalization')}</div>
 							</button>
 						{:else if tabId === 'audio'}
 							<button
@@ -766,13 +767,13 @@
 									selectedTab = 'audio';
 								}}
 							>
-								<div class=" self-center mr-2">
+								<div style="--as:center; --mr:0.5rem">
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										aria-hidden="true"
 										viewBox="0 0 16 16"
 										fill="currentColor"
-										class="w-4 h-4"
+										style="--w:1rem; --h:1rem"
 									>
 										<path
 											d="M7.557 2.066A.75.75 0 0 1 8 2.75v10.5a.75.75 0 0 1-1.248.56L3.59 11H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.59l3.162-2.81a.75.75 0 0 1 .805-.124ZM12.95 3.05a.75.75 0 1 0-1.06 1.06 5.5 5.5 0 0 1 0 7.78.75.75 0 1 0 1.06 1.06 7 7 0 0 0 0-9.9Z"
@@ -782,7 +783,7 @@
 										/>
 									</svg>
 								</div>
-								<div class=" self-center">{$i18n.t('Audio')}</div>
+								<div style="--as:center">{$i18n.t('Audio')}</div>
 							</button>
 						{:else if tabId === 'chats'}
 							<button
@@ -803,13 +804,13 @@
 									selectedTab = 'chats';
 								}}
 							>
-								<div class=" self-center mr-2">
+								<div style="--as:center; --mr:0.5rem">
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										aria-hidden="true"
 										viewBox="0 0 16 16"
 										fill="currentColor"
-										class="w-4 h-4"
+										style="--w:1rem; --h:1rem"
 									>
 										<path
 											fill-rule="evenodd"
@@ -818,7 +819,7 @@
 										/>
 									</svg>
 								</div>
-								<div class=" self-center">{$i18n.t('Chats')}</div>
+								<div style="--as:center">{$i18n.t('Chats')}</div>
 							</button>
 						{:else if tabId === 'account'}
 							<button
@@ -839,13 +840,13 @@
 									selectedTab = 'account';
 								}}
 							>
-								<div class=" self-center mr-2">
+								<div style="--as:center; --mr:0.5rem">
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										aria-hidden="true"
 										viewBox="0 0 16 16"
 										fill="currentColor"
-										class="w-4 h-4"
+										style="--w:1rem; --h:1rem"
 									>
 										<path
 											fill-rule="evenodd"
@@ -854,7 +855,7 @@
 										/>
 									</svg>
 								</div>
-								<div class=" self-center">{$i18n.t('Account')}</div>
+								<div style="--as:center">{$i18n.t('Account')}</div>
 							</button>
 						{:else if tabId === 'about'}
 							<button
@@ -875,13 +876,13 @@
 									selectedTab = 'about';
 								}}
 							>
-								<div class=" self-center mr-2">
+								<div style="--as:center; --mr:0.5rem">
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										aria-hidden="true"
 										viewBox="0 0 20 20"
 										fill="currentColor"
-										class="w-4 h-4"
+										style="--w:1rem; --h:1rem"
 									>
 										<path
 											fill-rule="evenodd"
@@ -890,19 +891,20 @@
 										/>
 									</svg>
 								</div>
-								<div class=" self-center">{$i18n.t('About')}</div>
+								<div style="--as:center">{$i18n.t('About')}</div>
 							</button>
 						{/if}
 					{/each}
 				{:else}
-					<div class="text-center text-gray-500 mt-4">
+					<div style="--ta:center; --c:var(--color-gray-500, #9b9b9b); --mt:1rem">
 						{$i18n.t('No results found')}
 					</div>
 				{/if}
 				{#if $user?.role === 'admin'}
 					<a
 						href="/admin/settings"
-						class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none md:mt-auto flex text-left transition {$settings?.highContrastMode
+						style="--px:0.125rem; --py:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --mt-md:auto; --d:flex; --ta:left; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{$settings?.highContrastMode
 							? 'hover:bg-gray-200 dark:hover:bg-gray-800'
 							: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
 						on:click={async (e) => {
@@ -911,13 +913,13 @@
 							show = false;
 						}}
 					>
-						<div class=" self-center mr-2">
+						<div style="--as:center; --mr:0.5rem">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								aria-hidden="true"
 								viewBox="0 0 24 24"
 								fill="currentColor"
-								class="size-4"
+								style="--w:1rem; --h:1rem"
 							>
 								<path
 									fill-rule="evenodd"
@@ -926,11 +928,11 @@
 								/>
 							</svg>
 						</div>
-						<div class=" self-center">{$i18n.t('Admin Settings')}</div>
+						<div style="--as:center">{$i18n.t('Admin Settings')}</div>
 					</a>
 				{/if}
 			</div>
-			<div class="flex-1 md:min-h-[32rem] max-h-[32rem]">
+			<div style="--fx:1 1 0%; --minh-md:32rem; --maxh:32rem">
 				{#if selectedTab === 'general'}
 					<General
 						{getModels}

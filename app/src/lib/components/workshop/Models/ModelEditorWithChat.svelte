@@ -74,23 +74,23 @@
 	});
 </script>
 
-<div class="w-full h-full flex flex-col">
+<div style="--w:100%; --h:100%; --d:flex; --fd:column">
 	<!-- Header with test chat toggle -->
-	<div class="flex justify-between items-center p-4 border-b border-gray-100 dark:border-gray-850">
-		<div class="flex items-center gap-2">
+	<div style="--d:flex; --jc:space-between; --ai:center; --p:1rem; --bb:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)">
+		<div style="--d:flex; --ai:center; --g:0.5rem">
 			{#if onBack}
 				<button
-					class="flex space-x-1"
+					style="--d:flex; --g:0.25rem"
 					on:click={() => {
 						onBack();
 					}}
 				>
-					<div class="self-center">
+					<div style="--as:center">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 20 20"
 							fill="currentColor"
-							class="h-4 w-4"
+							style="--h:1rem; --w:1rem"
 						>
 							<path
 								fill-rule="evenodd"
@@ -99,15 +99,15 @@
 							/>
 						</svg>
 					</div>
-					<div class="self-center text-sm font-medium">{$i18n.t('Back')}</div>
+					<div style="--as:center; --size:0.875rem; --weight:500">{$i18n.t('Back')}</div>
 				</button>
 			{/if}
 		</div>
 		
-		<div class="flex items-center gap-2">
+		<div style="--d:flex; --ai:center; --g:0.5rem">
 			<button
-				class="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg transition-colors
-					{showChat 
+				style="--d:flex; --ai:center; --g:0.5rem; --px:0.75rem; --py:0.375rem; --size:0.875rem; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{showChat 
 						? 'bg-gray-900 text-white dark:bg-white dark:text-black' 
 						: 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700'}"
 				on:click={toggleChat}
@@ -119,7 +119,7 @@
 			<!-- Add Back to Models button -->
 			<a 
 				href="/workshop/models"
-				class="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg transition-colors bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700"
+				style="--d:flex; --ai:center; --g:0.5rem; --px:0.75rem; --py:0.375rem; --size:0.875rem; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1); --bgc:var(--color-gray-100, #ececec); --hvr-bgc:var(--color-gray-200, #e3e3e3); --dark-bgc:var(--color-gray-800, #333); --hvr-dark-bgc:var(--color-gray-700, #4e4e4e)"
 			>
 				<span>{$i18n.t('Back to Models')}</span>
 			</a>
@@ -127,10 +127,10 @@
 	</div>
 
 	<!-- Split view content -->
-	<div class="flex-1 min-h-0">
-		<PaneGroup direction="horizontal" class="w-full h-full">
-			<Pane bind:pane={editorPane} defaultSize={60} class="h-full flex relative max-w-full flex-col">
-				<div class="h-full overflow-auto">
+	<div style="--fx:1 1 0%; --minh:0">
+		<PaneGroup direction="horizontal" style="--w:100%; --h:100%">
+			<Pane bind:pane={editorPane} defaultSize={60} style="--h:100%; --d:flex; --pos:relative; --maxw:100%; --fd:column">
+				<div style="--h:100%; --of:auto">
 					<ModelEditor
 						bind:this={modelEditor}
 						{model}
@@ -144,8 +144,10 @@
 			</Pane>
 
 			<!-- Always show the chat pane (conditional removed) -->
-			<PaneResizer class="relative flex w-2 items-center justify-center bg-background group">
-				<div class="z-10 flex h-7 w-5 items-center justify-center rounded-xs">
+			<PaneResizer style="--pos:relative; --d:flex; --w:0.5rem; --ai:center; --jc:center"
+	class="bg-background group">
+				<div style="--z:10; --d:flex; --h:1.75rem; --w:1.25rem; --ai:center; --jc:center"
+	class="rounded-xs">
 					<EllipsisVertical className="size-4 invisible group-hover:visible" />
 				</div>
 			</PaneResizer>
@@ -157,19 +159,19 @@
 				onCollapse={() => {
 					showChat = false;
 				}}
-				class="h-full flex relative max-w-full flex-col border-l border-gray-100 dark:border-gray-850"
+				style="--h:100%; --d:flex; --pos:relative; --maxw:100%; --fd:column; --bl:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)"
 			>
 				{#if showChat}
 					<ModelTestChat {liveModelData} />
 				{:else}
 					<!-- Show a collapsed state when chat is hidden -->
-					<div class="flex items-center justify-center h-full bg-gray-50 dark:bg-gray-900">
+					<div style="--d:flex; --ai:center; --jc:center; --h:100%; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-900, #171717)">
 						<button
-							class="flex flex-col items-center gap-2 p-4 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+							style="--d:flex; --fd:column; --ai:center; --g:0.5rem; --p:1rem; --c:var(--color-gray-500, #9b9b9b); --hvr-c:var(--color-gray-700, #4e4e4e); --hvr-dark-c:var(--color-gray-300, #cdcdcd); --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							on:click={toggleChat}
 						>
 							<ChatBubbleOval className="size-6" />
-							<span class="text-sm">{$i18n.t('Show Test Chat')}</span>
+							<span style="--size:0.875rem">{$i18n.t('Show Test Chat')}</span>
 						</button>
 					</div>
 				{/if}

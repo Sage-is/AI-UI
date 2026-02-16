@@ -41,36 +41,37 @@
 
 	<div slot="content">
 		<DropdownMenu.Content
-			class="w-full max-w-[190px] text-sm rounded-xl px-1 py-1.5 z-50 bg-white dark:bg-gray-850 dark:text-white shadow-lg font-primary"
+			style="--w:100%; --maxw:190px; --size:0.875rem; --radius:0.75rem; --px:0.25rem; --py:0.375rem; --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850, #262626); --dark-c:#fff; --shadow:4"
+	class="font-primary"
 			sideOffset={-2}
 			side="bottom"
 			align="start"
 			transition={flyAndScale}
 		>
 			<button
-				class="flex rounded-md py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+				style="--d:flex; --radius:0.375rem; --py:0.375rem; --px:0.75rem; --w:100%; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={async () => {
 					createHandler();
 					show = false;
 				}}
 			>
-				<div class=" self-center mr-2">
+				<div style="--as:center; --mr:0.5rem">
 					<PencilSolid />
 				</div>
-				<div class=" self-center truncate">{$i18n.t('New Function')}</div>
+				<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">{$i18n.t('New Function')}</div>
 			</button>
 
 			<button
-				class="flex rounded-md py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+				style="--d:flex; --radius:0.375rem; --py:0.375rem; --px:0.75rem; --w:100%; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={async () => {
 					importFromLinkHandler();
 					show = false;
 				}}
 			>
-				<div class=" self-center mr-2">
+				<div style="--as:center; --mr:0.5rem">
 					<Link />
 				</div>
-				<div class=" self-center truncate">{$i18n.t('Import From Link')}</div>
+				<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">{$i18n.t('Import From Link')}</div>
 			</button>
 		</DropdownMenu.Content>
 	</div>

@@ -116,9 +116,9 @@
 
 <ArchivedChatsModal bind:show={showArchivedChatsModal} onUpdate={handleArchivedChatsChange} />
 
-<div id="tab-chats" class="flex flex-col h-full justify-between space-y-3 text-sm">
-	<div class=" space-y-2 overflow-y-scroll max-h-[28rem] lg:max-h-full">
-		<div class="flex flex-col">
+<div id="tab-chats" style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.75rem; --size:0.875rem">
+	<div style="--g:0.5rem; --ofy:scroll; --maxh:28rem; --maxh-lg:100%">
+		<div style="--d:flex; --fd:column">
 			<input
 				id="chat-import-input"
 				bind:this={chatImportInputElement}
@@ -128,17 +128,17 @@
 				hidden
 			/>
 			<button
-				class=" flex rounded-md py-2 px-3.5 w-full hover:bg-gray-200 dark:hover:bg-gray-800 transition"
+				style="--d:flex; --radius:0.375rem; --py:0.5rem; --px:0.875rem; --w:100%; --hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={() => {
 					chatImportInputElement.click();
 				}}
 			>
-				<div class=" self-center mr-3">
+				<div style="--as:center; --mr:0.75rem">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 16 16"
 						fill="currentColor"
-						class="w-4 h-4"
+						style="--w:1rem; --h:1rem"
 					>
 						<path
 							fill-rule="evenodd"
@@ -147,22 +147,22 @@
 						/>
 					</svg>
 				</div>
-				<div class=" self-center text-sm font-medium">{$i18n.t('Import Chats')}</div>
+				<div style="--as:center; --size:0.875rem; --weight:500">{$i18n.t('Import Chats')}</div>
 			</button>
 
 			{#if $user?.role === 'admin' || ($user.permissions?.chat?.export ?? true)}
 				<button
-					class=" flex rounded-md py-2 px-3.5 w-full hover:bg-gray-200 dark:hover:bg-gray-800 transition"
+					style="--d:flex; --radius:0.375rem; --py:0.5rem; --px:0.875rem; --w:100%; --hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						exportChats();
 					}}
 				>
-					<div class=" self-center mr-3">
+					<div style="--as:center; --mr:0.75rem">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 16 16"
 							fill="currentColor"
-							class="w-4 h-4"
+							style="--w:1rem; --h:1rem"
 						>
 							<path
 								fill-rule="evenodd"
@@ -171,26 +171,26 @@
 							/>
 						</svg>
 					</div>
-					<div class=" self-center text-sm font-medium">{$i18n.t('Export Chats')}</div>
+					<div style="--as:center; --size:0.875rem; --weight:500">{$i18n.t('Export Chats')}</div>
 				</button>
 			{/if}
 		</div>
 
-		<hr class=" border-gray-100 dark:border-gray-850" />
+		<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)" />
 
-		<div class="flex flex-col">
+		<div style="--d:flex; --fd:column">
 			<button
-				class=" flex rounded-md py-2 px-3.5 w-full hover:bg-gray-200 dark:hover:bg-gray-800 transition"
+				style="--d:flex; --radius:0.375rem; --py:0.5rem; --px:0.875rem; --w:100%; --hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={() => {
 					showArchivedChatsModal = true;
 				}}
 			>
-				<div class=" self-center mr-3">
+				<div style="--as:center; --mr:0.75rem">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 24 24"
 						fill="currentColor"
-						class="size-4"
+						style="--w:1rem; --h:1rem"
 					>
 						<path
 							d="M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375Z"
@@ -202,17 +202,17 @@
 						/>
 					</svg>
 				</div>
-				<div class=" self-center text-sm font-medium">{$i18n.t('Archived Chats')}</div>
+				<div style="--as:center; --size:0.875rem; --weight:500">{$i18n.t('Archived Chats')}</div>
 			</button>
 
 			{#if showArchiveConfirm}
-				<div class="flex justify-between rounded-md items-center py-2 px-3.5 w-full transition">
-					<div class="flex items-center space-x-3">
+				<div style="--d:flex; --jc:space-between; --radius:0.375rem; --ai:center; --py:0.5rem; --px:0.875rem; --w:100%; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)">
+					<div style="--d:flex; --ai:center; --g:0.75rem">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 16 16"
 							fill="currentColor"
-							class="w-4 h-4"
+							style="--w:1rem; --h:1rem"
 						>
 							<path d="M2 3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3Z" />
 							<path
@@ -224,9 +224,9 @@
 						<span>{$i18n.t('Are you sure?')}</span>
 					</div>
 
-					<div class="flex space-x-1.5 items-center">
+					<div style="--d:flex; --g:0.375rem; --ai:center">
 						<button
-							class="hover:text-white transition"
+							style="--hvr-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							on:click={() => {
 								archiveAllChatsHandler();
 								showArchiveConfirm = false;
@@ -236,7 +236,7 @@
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 20 20"
 								fill="currentColor"
-								class="w-4 h-4"
+								style="--w:1rem; --h:1rem"
 							>
 								<path
 									fill-rule="evenodd"
@@ -246,7 +246,7 @@
 							</svg>
 						</button>
 						<button
-							class="hover:text-white transition"
+							style="--hvr-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							on:click={() => {
 								showArchiveConfirm = false;
 							}}
@@ -255,7 +255,7 @@
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 20 20"
 								fill="currentColor"
-								class="w-4 h-4"
+								style="--w:1rem; --h:1rem"
 							>
 								<path
 									d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"
@@ -266,17 +266,17 @@
 				</div>
 			{:else}
 				<button
-					class=" flex rounded-md py-2 px-3.5 w-full hover:bg-gray-200 dark:hover:bg-gray-800 transition"
+					style="--d:flex; --radius:0.375rem; --py:0.5rem; --px:0.875rem; --w:100%; --hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						showArchiveConfirm = true;
 					}}
 				>
-					<div class=" self-center mr-3">
+					<div style="--as:center; --mr:0.75rem">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 24 24"
 							fill="currentColor"
-							class="size-4"
+							style="--w:1rem; --h:1rem"
 						>
 							<path
 								d="M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375Z"
@@ -288,18 +288,18 @@
 							/>
 						</svg>
 					</div>
-					<div class=" self-center text-sm font-medium">{$i18n.t('Archive All Chats')}</div>
+					<div style="--as:center; --size:0.875rem; --weight:500">{$i18n.t('Archive All Chats')}</div>
 				</button>
 			{/if}
 
 			{#if showDeleteConfirm}
-				<div class="flex justify-between rounded-md items-center py-2 px-3.5 w-full transition">
-					<div class="flex items-center space-x-3">
+				<div style="--d:flex; --jc:space-between; --radius:0.375rem; --ai:center; --py:0.5rem; --px:0.875rem; --w:100%; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)">
+					<div style="--d:flex; --ai:center; --g:0.75rem">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 16 16"
 							fill="currentColor"
-							class="w-4 h-4"
+							style="--w:1rem; --h:1rem"
 						>
 							<path d="M2 3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3Z" />
 							<path
@@ -311,9 +311,9 @@
 						<span>{$i18n.t('Are you sure?')}</span>
 					</div>
 
-					<div class="flex space-x-1.5 items-center">
+					<div style="--d:flex; --g:0.375rem; --ai:center">
 						<button
-							class="hover:text-white transition"
+							style="--hvr-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							on:click={() => {
 								deleteAllChatsHandler();
 								showDeleteConfirm = false;
@@ -323,7 +323,7 @@
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 20 20"
 								fill="currentColor"
-								class="w-4 h-4"
+								style="--w:1rem; --h:1rem"
 							>
 								<path
 									fill-rule="evenodd"
@@ -333,7 +333,7 @@
 							</svg>
 						</button>
 						<button
-							class="hover:text-white transition"
+							style="--hvr-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							on:click={() => {
 								showDeleteConfirm = false;
 							}}
@@ -342,7 +342,7 @@
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 20 20"
 								fill="currentColor"
-								class="w-4 h-4"
+								style="--w:1rem; --h:1rem"
 							>
 								<path
 									d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"
@@ -353,17 +353,17 @@
 				</div>
 			{:else}
 				<button
-					class=" flex rounded-md py-2 px-3.5 w-full hover:bg-gray-200 dark:hover:bg-gray-800 transition"
+					style="--d:flex; --radius:0.375rem; --py:0.5rem; --px:0.875rem; --w:100%; --hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						showDeleteConfirm = true;
 					}}
 				>
-					<div class=" self-center mr-3">
+					<div style="--as:center; --mr:0.75rem">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 16 16"
 							fill="currentColor"
-							class="w-4 h-4"
+							style="--w:1rem; --h:1rem"
 						>
 							<path
 								fill-rule="evenodd"
@@ -372,7 +372,7 @@
 							/>
 						</svg>
 					</div>
-					<div class=" self-center text-sm font-medium">{$i18n.t('Delete All Chats')}</div>
+					<div style="--as:center; --size:0.875rem; --weight:500">{$i18n.t('Delete All Chats')}</div>
 				</button>
 			{/if}
 		</div>

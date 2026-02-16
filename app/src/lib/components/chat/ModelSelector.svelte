@@ -45,11 +45,13 @@
 	}
 </script>
 
-<div class="flex flex-col w-full items-start">
+<div style="--d:flex; --fd:column; --w:100%; --ai:flex-start">
 	{#each selectedModels as selectedModel, selectedModelIdx}
-		<div class="flex w-full max-w-fit">
-			<div class="overflow-hidden w-full">
-				<div class="max-w-full {($settings?.highContrastMode ?? false) ? 'm-1' : 'mr-1'}">
+		<div style="--d:flex; --w:100%"
+	class="max-w-fit">
+			<div style="--of:hidden; --w:100%">
+				<div style="--maxw:100%"
+	class="{($settings?.highContrastMode ?? false) ? 'm-1' : 'mr-1'}">
 					<Selector
 						id={`${selectedModelIdx}`}
 						placeholder={$i18n.t('Select a model')}
@@ -71,7 +73,8 @@
 			{#if $user?.role === 'admin' || ($user?.permissions?.chat?.multiple_models ?? true)}
 				{#if selectedModelIdx === 0}
 					<div
-						class="  self-center mx-1 disabled:text-gray-600 disabled:hover:text-gray-600 -translate-y-[0.5px]"
+						style="--as:center; --mx:0.25rem; --translatey:-0.5px"
+	class="disabled:text-gray-600 disabled:hover:text-gray-600"
 					>
 						<Tooltip content={$i18n.t('Add Model')}>
 							<button
@@ -88,7 +91,7 @@
 									viewBox="0 0 24 24"
 									stroke-width="2"
 									stroke="currentColor"
-									class="size-3.5"
+									style="--w:0.875rem; --h:0.875rem"
 								>
 									<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
 								</svg>
@@ -97,7 +100,8 @@
 					</div>
 				{:else}
 					<div
-						class="  self-center mx-1 disabled:text-gray-600 disabled:hover:text-gray-600 -translate-y-[0.5px]"
+						style="--as:center; --mx:0.25rem; --translatey:-0.5px"
+	class="disabled:text-gray-600 disabled:hover:text-gray-600"
 					>
 						<Tooltip content={$i18n.t('Remove Model')}>
 							<button
@@ -114,7 +118,7 @@
 									viewBox="0 0 24 24"
 									stroke-width="2"
 									stroke="currentColor"
-									class="size-3"
+									style="--w:0.75rem; --h:0.75rem"
 								>
 									<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15" />
 								</svg>
@@ -129,7 +133,8 @@
 
 {#if showSetDefault}
 	<div
-		class="absolute text-left mt-[1px] ml-1 text-[0.7rem] text-gray-600 dark:text-gray-400 font-primary"
+		style="--pos:absolute; --ta:left; --mt:1px; --ml:0.25rem; --size:0.7rem; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-400, #b4b4b4)"
+	class="font-primary"
 	>
 		<button on:click={saveDefaultModel}> {$i18n.t('Set as default')}</button>
 	</div>

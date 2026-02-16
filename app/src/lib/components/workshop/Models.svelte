@@ -251,32 +251,32 @@
 		}}
 	/>
 
-	<div class="flex flex-col gap-1 mt-1.5">
-		<div class="flex justify-between items-center">
-			<div class="flex items-center md:self-center text-xl font-medium px-0.5">
+	<div style="--d:flex; --fd:column; --g:0.25rem; --mt:0.375rem">
+		<div style="--d:flex; --jc:space-between; --ai:center">
+			<div style="--d:flex; --ai:center; --as-md:center; --size:1.25rem; --weight:500; --px:0.125rem">
 				{$i18n.t('Models')}
-				<div class="flex self-center w-[1px] h-6 mx-2.5 bg-gray-50 dark:bg-gray-850" />
-				<span class="text-lg font-medium text-gray-500 dark:text-gray-300"
+				<div style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-850, #262626)" />
+				<span style="--size:1.125rem; --weight:500; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-300, #cdcdcd)"
 					>{filteredModels.length}</span
 				>
 			</div>
 		</div>
 
-		<div class=" flex flex-1 items-center w-full space-x-2">
-			<div class="flex flex-1 items-center">
-				<div class=" self-center ml-1 mr-3">
+		<div style="--d:flex; --fx:1 1 0%; --ai:center; --w:100%; --g:0.5rem">
+			<div style="--d:flex; --fx:1 1 0%; --ai:center">
+				<div style="--as:center; --ml:0.25rem; --mr:0.75rem">
 					<Search className="size-3.5" />
 				</div>
 				<input
-					class=" w-full text-sm py-1 rounded-r-xl outline-hidden bg-transparent"
+					style="--w:100%; --size:0.875rem; --py:0.25rem; --btrr:0.75rem; --bbrr:0.75rem; --oe:none; --bgc:transparent"
 					bind:value={query}
 					placeholder={$i18n.t('Search Models')}
 				/>
 
 				{#if query}
-					<div class="self-center pl-1.5 translate-y-[0.5px] rounded-l-xl bg-transparent">
+					<div style="--as:center; --pl:0.375rem; --translatey:0.5px; --btlr:0.75rem; --bblr:0.75rem; --bgc:transparent">
 						<button
-							class="p-0.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-900 transition"
+							style="--p:0.125rem; --radius:9999px; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							on:click={() => {
 								query = '';
 							}}
@@ -289,7 +289,7 @@
 
 			<div>
 				<a
-					class=" px-2 py-2 rounded-xl hover:bg-gray-700/10 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition font-medium text-sm flex items-center space-x-1"
+					style="--px:0.5rem; --py:0.5rem; --radius:0.75rem; --hvr-bgc:rgb(78 78 78 / 0.1); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300, #cdcdcd); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
 					href="/workshop/models/create"
 				>
 					<Plus className="size-3.5" />
@@ -300,7 +300,8 @@
 
 	{#if tags.length > 0}
 		<div
-			class=" flex w-full bg-transparent overflow-x-auto scrollbar-none"
+			style="--d:flex; --w:100%; --bgc:transparent; --ofx:auto"
+	class="scrollbar-none"
 			on:wheel={(e) => {
 				if (e.deltaY !== 0) {
 					e.preventDefault();
@@ -309,13 +310,14 @@
 			}}
 		>
 			<div
-				class="flex gap-1 w-fit text-center text-sm font-medium rounded-full"
+				style="--d:flex; --g:0.25rem; --w:fit-content; --ta:center; --size:0.875rem; --weight:500; --radius:9999px"
 				bind:this={tagsContainerElement}
 			>
 				<button
-					class="min-w-fit outline-none p-1.5 {selectedTag === ''
+					style="--minw:fit-content; --oe:2px solid transparent; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize"
+	class="{selectedTag === ''
 						? ''
-						: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition capitalize"
+						: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
 					on:click={() => {
 						selectedTag = '';
 					}}
@@ -325,9 +327,10 @@
 
 				{#each tags as tag}
 					<button
-						class="min-w-fit outline-none p-1.5 {selectedTag === tag
+						style="--minw:fit-content; --oe:2px solid transparent; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize"
+	class="{selectedTag === tag
 							? ''
-							: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition capitalize"
+							: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
 						on:click={() => {
 							selectedTag = tag;
 						}}
@@ -338,42 +341,44 @@
 			</div>
 		</div>
 	{/if}
-	<div class=" my-2 mb-5 gap-2 grid lg:grid-cols-2 xl:grid-cols-3" id="model-list">
+	<div style="--my:0.5rem; --mb:1.25rem; --g:0.5rem; --d:grid; --gtc-lg:repeat(2, minmax(0, 1fr)); --gtc-xl:repeat(3, minmax(0, 1fr))" id="model-list">
 		{#each filteredModels as model (model.id)}
 			<div
-				class=" flex flex-col cursor-pointer w-full px-3 py-2 dark:hover:bg-white/5 hover:bg-black/5 rounded-xl transition"
+				style="--d:flex; --fd:column; --cur:pointer; --w:100%; --px:0.75rem; --py:0.5rem; --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-bgc:rgb(0 0 0 / 0.05); --radius:0.75rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				id="model-item-{model.id}"
 			>
-				<div class="flex gap-4 mt-1 mb-0.5">
-					<div class=" w-[44px]">
+				<div style="--d:flex; --g:1rem; --mt:0.25rem; --mb:0.125rem">
+					<div style="--w:44px">
 						<div
-							class=" rounded-full object-cover {model.is_active
+							style="--radius:9999px; --objf:cover"
+	class="{model.is_active
 								? ''
-								: 'opacity-50 dark:opacity-50'} "
+								: 'opacity-50 dark:opacity-50'}"
 						>
 							<img
 								src={model?.meta?.profile_image_url ?? branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
 								alt="modelfile profile"
-								class=" rounded-full w-full h-auto object-cover"
+								style="--radius:9999px; --w:100%; --h:auto; --objf:cover"
 							/>
 						</div>
 					</div>
 
 					<a
-						class=" flex flex-1 cursor-pointer w-full"
+						style="--d:flex; --fx:1 1 0%; --cur:pointer; --w:100%"
 						href={`/?models=${encodeURIComponent(model.id)}`}
 					>
-						<div class=" flex-1 self-center {model.is_active ? '' : 'text-gray-500'}">
+						<div style="--fx:1 1 0%; --as:center"
+	class="{model.is_active ? '' : 'text-gray-500'}">
 							<Tooltip
 								content={marked.parse(model?.meta?.description ?? model.id)}
 								className=" w-fit"
 								placement="top-start"
 							>
-								<div class=" font-semibold line-clamp-1">{model.name}</div>
+								<div style="--weight:600; --line-clamp:1">{model.name}</div>
 							</Tooltip>
 
-							<div class="flex gap-1 text-xs overflow-hidden">
-								<div class="line-clamp-1">
+							<div style="--d:flex; --g:0.25rem; --size:0.75rem; --of:hidden">
+								<div style="--line-clamp:1">
 									{#if (model?.meta?.description ?? '').trim()}
 										{model?.meta?.description}
 									{:else}
@@ -385,14 +390,14 @@
 					</a>
 				</div>
 
-				<div class="flex justify-between items-center -mb-0.5 px-0.5 mt-1.5">
-					<div class=" text-xs mt-0.5">
+				<div style="--d:flex; --jc:space-between; --ai:center; --mb:-0.125rem; --px:0.125rem; --mt:0.375rem">
+					<div style="--size:0.75rem; --mt:0.125rem">
 						<Tooltip
 							content={model?.user?.email ?? $i18n.t('Deleted User')}
 							className="flex shrink-0"
 							placement="top-start"
 						>
-							<div class="shrink-0 text-gray-500">
+							<div style="--fs:0; --c:var(--color-gray-500, #9b9b9b)">
 								{$i18n.t('By {{name}}', {
 									name: capitalizeFirstLetter(
 										model?.user?.name ?? model?.user?.email ?? $i18n.t('Deleted User')
@@ -402,11 +407,11 @@
 						</Tooltip>
 					</div>
 
-					<div class="flex flex-row gap-0.5 items-center">
+					<div style="--d:flex; --fd:row; --g:0.125rem; --ai:center">
 						{#if shiftKey}
 							<Tooltip content={model?.meta?.hidden ? $i18n.t('Show') : $i18n.t('Hide')}>
 								<button
-									class="self-center w-fit text-sm px-2 py-2 dark:text-gray-300 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
+									style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300, #cdcdcd); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.75rem"
 									type="button"
 									on:click={() => {
 										hideModelHandler(model);
@@ -422,7 +427,7 @@
 
 							<Tooltip content={$i18n.t('Delete')}>
 								<button
-									class="self-center w-fit text-sm px-2 py-2 dark:text-gray-300 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
+									style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300, #cdcdcd); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.75rem"
 									type="button"
 									on:click={() => {
 										deleteModelHandler(model);
@@ -434,7 +439,7 @@
 						{:else}
 							{#if $user?.role === 'admin' || model.user_id === $user?.id || model.access_control.write.group_ids.some( (wg) => group_ids.includes(wg) )}
 								<a
-									class="self-center w-fit text-sm px-2 py-2 dark:text-gray-300 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
+									style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300, #cdcdcd); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.75rem"
 									type="button"
 									href={`/workshop/models/edit?id=${encodeURIComponent(model.id)}`}
 								>
@@ -444,7 +449,7 @@
 										viewBox="0 0 24 24"
 										stroke-width="1.5"
 										stroke="currentColor"
-										class="w-4 h-4"
+										style="--w:1rem; --h:1rem"
 									>
 										<path
 											stroke-linecap="round"
@@ -480,14 +485,14 @@
 								onClose={() => {}}
 							>
 								<button
-									class="self-center w-fit text-sm p-1.5 dark:text-gray-300 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
+									style="--as:center; --w:fit-content; --size:0.875rem; --p:0.375rem; --dark-c:var(--color-gray-300, #cdcdcd); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.75rem"
 									type="button"
 								>
 									<EllipsisHorizontal className="size-5" />
 								</button>
 							</ModelMenu>
 
-							<div class="ml-1">
+							<div style="--ml:0.25rem">
 								<Tooltip content={model.is_active ? $i18n.t('Enabled') : $i18n.t('Disabled')}>
 									<Switch
 										bind:state={model.is_active}
@@ -512,8 +517,8 @@
 	</div>
 
 	{#if $user?.role === 'admin'}
-		<div class=" flex justify-end w-full mb-3">
-			<div class="flex space-x-1">
+		<div style="--d:flex; --jc:flex-end; --w:100%; --mb:0.75rem">
+			<div style="--d:flex; --g:0.25rem">
 				<input
 					id="models-import-input"
 					bind:this={modelsImportInputElement}
@@ -566,19 +571,19 @@
 				/>
 
 				<button
-					class="flex text-xs items-center space-x-1 px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200 transition"
+					style="--d:flex; --size:0.75rem; --ai:center; --g:0.25rem; --px:0.75rem; --py:0.375rem; --radius:0.75rem; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-800, #333); --hvr-dark-bgc:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-200, #e3e3e3); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						modelsImportInputElement.click();
 					}}
 				>
-					<div class=" self-center mr-2 font-medium line-clamp-1">{$i18n.t('Import Models')}</div>
+					<div style="--as:center; --mr:0.5rem; --weight:500; --line-clamp:1">{$i18n.t('Import Models')}</div>
 
-					<div class=" self-center">
+					<div style="--as:center">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 16 16"
 							fill="currentColor"
-							class="w-3.5 h-3.5"
+							style="--w:0.875rem; --h:0.875rem"
 						>
 							<path
 								fill-rule="evenodd"
@@ -591,21 +596,21 @@
 
 				{#if models.length}
 					<button
-						class="flex text-xs items-center space-x-1 px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200 transition"
+						style="--d:flex; --size:0.75rem; --ai:center; --g:0.25rem; --px:0.75rem; --py:0.375rem; --radius:0.75rem; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-800, #333); --hvr-dark-bgc:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-200, #e3e3e3); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={async () => {
 							downloadModels(models);
 						}}
 					>
-						<div class=" self-center mr-2 font-medium line-clamp-1">
+						<div style="--as:center; --mr:0.5rem; --weight:500; --line-clamp:1">
 							{$i18n.t('Export Models')} ({models.length})
 						</div>
 
-						<div class=" self-center">
+						<div style="--as:center">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 16 16"
 								fill="currentColor"
-								class="w-3.5 h-3.5"
+								style="--w:0.875rem; --h:0.875rem"
 							>
 								<path
 									fill-rule="evenodd"
@@ -621,19 +626,19 @@
 	{/if}
 
 	{#if $config?.features.enable_community_sharing}
-		<div class=" my-16">
-			<div class=" text-xl font-medium mb-1 line-clamp-1">
+		<div style="--my:4rem">
+			<div style="--size:1.25rem; --weight:500; --mb:0.25rem; --line-clamp:1">
 				{$i18n.t('Made by Sage.is AI Community')}
 			</div>
 
 			<a
-				class=" flex cursor-pointer items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-850 w-full mb-2 px-3.5 py-1.5 rounded-xl transition"
+				style="--d:flex; --cur:pointer; --ai:center; --jc:space-between; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-850, #262626); --w:100%; --mb:0.5rem; --px:0.875rem; --py:0.375rem; --radius:0.75rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				href="https://sage.is/community"
 				target="_blank"
 			>
-				<div class=" self-center">
-					<div class=" font-semibold line-clamp-1">{$i18n.t('Discover a model')}</div>
-					<div class=" text-sm line-clamp-1">
+				<div style="--as:center">
+					<div style="--weight:600; --line-clamp:1">{$i18n.t('Discover a model')}</div>
+					<div style="--size:0.875rem; --line-clamp:1">
 						{$i18n.t('Discover, download, and explore model presets')}
 					</div>
 				</div>
@@ -647,7 +652,7 @@
 		</div>
 	{/if}
 {:else}
-	<div class="w-full h-full flex justify-center items-center">
+	<div style="--w:100%; --h:100%; --d:flex; --jc:center; --ai:center">
 		<Spinner className="size-5" />
 	</div>
 {/if}

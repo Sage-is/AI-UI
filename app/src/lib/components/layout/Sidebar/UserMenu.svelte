@@ -64,14 +64,15 @@
 
 	<slot name="content">
 		<DropdownMenu.Content
-			class="w-full {className} text-sm rounded-xl px-1 py-1.5 z-50 bg-white dark:bg-gray-850 dark:text-white shadow-lg font-primary"
+			style="--w:100%; --size:0.875rem; --radius:0.75rem; --px:0.25rem; --py:0.375rem; --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850, #262626); --dark-c:#fff; --shadow:4"
+	class="{className} font-primary"
 			sideOffset={4}
 			side="bottom"
 			align="start"
 			transition={(e) => fade(e, { duration: 100 })}
 		>
 			<DropdownMenu.Item
-				class="flex rounded-md py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+				style="--d:flex; --radius:0.375rem; --py:0.375rem; --px:0.75rem; --w:100%; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={async () => {
 					await showSettings.set(true);
 					show = false;
@@ -81,14 +82,14 @@
 					}
 				}}
 			>
-				<div class=" self-center mr-3">
+				<div style="--as:center; --mr:0.75rem">
 					<Settings className="w-5 h-5" strokeWidth="1.5" />
 				</div>
-				<div class=" self-center truncate">{$i18n.t('Settings')}</div>
+				<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">{$i18n.t('Settings')}</div>
 			</DropdownMenu.Item>
 
 			<DropdownMenu.Item
-				class="flex rounded-md py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+				style="--d:flex; --radius:0.375rem; --py:0.375rem; --px:0.75rem; --w:100%; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={() => {
 					dispatch('show', 'archived-chat');
 					show = false;
@@ -98,15 +99,15 @@
 					}
 				}}
 			>
-				<div class=" self-center mr-3">
+				<div style="--as:center; --mr:0.75rem">
 					<ArchiveBox className="size-5" strokeWidth="1.5" />
 				</div>
-				<div class=" self-center truncate">{$i18n.t('Archived Chats')}</div>
+				<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">{$i18n.t('Archived Chats')}</div>
 			</DropdownMenu.Item>
 
 			{#if role === 'admin'}
 				<DropdownMenu.Item
-					class="flex rounded-md py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition select-none"
+					style="--d:flex; --radius:0.375rem; --py:0.375rem; --px:0.75rem; --w:100%; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --us:none"
 					on:click={() => {
 						show = false;
 						if ($mobile) {
@@ -115,14 +116,14 @@
 						goto('/playground');
 					}}
 				>
-					<div class=" self-center mr-3">
+					<div style="--as:center; --mr:0.75rem">
 						<Code className="size-5" strokeWidth="1.5" />
 					</div>
-					<div class=" self-center truncate">{$i18n.t('Playground')}</div>
+					<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">{$i18n.t('Playground')}</div>
 				</DropdownMenu.Item>
 
 				<DropdownMenu.Item
-					class="flex rounded-md py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition select-none"
+					style="--d:flex; --radius:0.375rem; --py:0.375rem; --px:0.75rem; --w:100%; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --us:none"
 					on:click={() => {
 						show = false;
 						if ($mobile) {
@@ -131,19 +132,19 @@
 						goto('/admin/settings');
 					}}
 				>
-					<div class=" self-center mr-3">
+					<div style="--as:center; --mr:0.75rem">
 						<UserGroup className="w-5 h-5" strokeWidth="1.5" />
 					</div>
-					<div class=" self-center truncate">{$i18n.t('Admin Panel')}</div>
+					<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">{$i18n.t('Admin Panel')}</div>
 				</DropdownMenu.Item>
 			{/if}
 
 			{#if help}
-				<hr class=" border-gray-100 dark:border-gray-800 my-1 p-0" />
+				<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-800, #333); --my:0.25rem; --p:0" />
 
 				<!-- {$i18n.t('Help')} -->
 				<DropdownMenu.Item
-					class="flex gap-2 items-center py-1.5 px-3 text-sm select-none w-full cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition"
+					style="--d:flex; --g:0.5rem; --ai:center; --py:0.375rem; --px:0.75rem; --size:0.875rem; --us:none; --w:100%; --cur:pointer; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					id="chat-share-button"
 					on:click={() => {
 						window.open('https://docs.sage.is', '_blank');
@@ -151,12 +152,12 @@
 					}}
 				>
 					<QuestionMarkCircle className="size-5" />
-					<div class="flex items-center">{$i18n.t('Documentation')}</div>
+					<div style="--d:flex; --ai:center">{$i18n.t('Documentation')}</div>
 				</DropdownMenu.Item>
 
 				<!-- Releases -->
 				<DropdownMenu.Item
-					class="flex gap-2 items-center py-1.5 px-3 text-sm select-none w-full cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition"
+					style="--d:flex; --g:0.5rem; --ai:center; --py:0.375rem; --px:0.75rem; --size:0.875rem; --us:none; --w:100%; --cur:pointer; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					id="menu-item-releases"
 					on:click={() => {
 						window.open('https://github.com/Sage-is/AI-UI/releases', '_blank');
@@ -164,11 +165,11 @@
 					}}
 				>
 					<Map className="size-5" />
-					<div class="flex items-center">{$i18n.t('Releases')}</div>
+					<div style="--d:flex; --ai:center">{$i18n.t('Releases')}</div>
 				</DropdownMenu.Item>
 
 				<DropdownMenu.Item
-					class="flex gap-2 items-center py-1.5 px-3 text-sm select-none w-full cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition"
+					style="--d:flex; --g:0.5rem; --ai:center; --py:0.375rem; --px:0.75rem; --size:0.875rem; --us:none; --w:100%; --cur:pointer; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					id="chat-share-button"
 					on:click={() => {
 						showShortcuts.set(!$showShortcuts);
@@ -176,14 +177,14 @@
 					}}
 				>
 					<Keyboard className="size-5" />
-					<div class="flex items-center">{$i18n.t('Keyboard shortcuts')}</div>
+					<div style="--d:flex; --ai:center">{$i18n.t('Keyboard shortcuts')}</div>
 				</DropdownMenu.Item>
 			{/if}
 
-			<hr class=" border-gray-100 dark:border-gray-800 my-1 p-0" />
+			<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-800, #333); --my:0.25rem; --p:0" />
 
 			<DropdownMenu.Item
-				class="flex rounded-md py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+				style="--d:flex; --radius:0.375rem; --py:0.375rem; --px:0.75rem; --w:100%; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={async () => {
 					const res = await userSignOut();
 					user.set(null);
@@ -193,15 +194,15 @@
 					show = false;
 				}}
 			>
-				<div class=" self-center mr-3">
+				<div style="--as:center; --mr:0.75rem">
 					<SignOut className="w-5 h-5" strokeWidth="1.5" />
 				</div>
-				<div class=" self-center truncate">{$i18n.t('Sign Out')}</div>
+				<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">{$i18n.t('Sign Out')}</div>
 			</DropdownMenu.Item>
 
 			{#if usage}
 				{#if usage?.user_ids?.length > 0}
-					<hr class=" border-gray-100 dark:border-gray-800 my-1 p-0" />
+					<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-800, #333); --my:0.25rem; --p:0" />
 
 					<Tooltip
 						content={usage?.model_ids && usage?.model_ids.length > 0
@@ -209,17 +210,17 @@
 							: ''}
 					>
 						<div
-							class="flex rounded-md py-1 px-3 text-xs gap-2.5 items-center"
+							style="--d:flex; --radius:0.375rem; --py:0.25rem; --px:0.75rem; --size:0.75rem; --g:0.625rem; --ai:center"
 							on:mouseenter={() => {
 								getUsageInfo();
 							}}
 						>
-							<div class=" flex items-center">
-								<span class="relative flex size-2">
+							<div style="--d:flex; --ai:center">
+								<span style="--pos:relative; --d:flex; --w:0.5rem; --h:0.5rem">
 									<span
-										class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"
+										style="animation:ping 1s cubic-bezier(0, 0, 0.2, 1) infinite; --pos:absolute; --d:inline-flex; --h:100%; --w:100%; --radius:9999px; --bgc:#4ade80; --op:0.75"
 									/>
-									<span class="relative inline-flex rounded-full size-2 bg-green-500" />
+									<span style="--pos:relative; --d:inline-flex; --radius:9999px; --w:0.5rem; --h:0.5rem; --bgc:#22c55e" />
 								</span>
 							</div>
 
@@ -227,7 +228,7 @@
 								<span class="">
 									{$i18n.t('Active Users')}:
 								</span>
-								<span class=" font-semibold">
+								<span style="--weight:600">
 									{usage?.user_ids?.length}
 								</span>
 							</div>
@@ -236,8 +237,8 @@
 				{/if}
 			{/if}
 
-			<!-- <DropdownMenu.Item class="flex items-center py-1.5 px-3 text-sm ">
-				<div class="flex items-center">Profile</div>
+			<!-- <DropdownMenu.Item style="--d:flex; --ai:center; --py:0.375rem; --px:0.75rem; --size:0.875rem">
+				<div style="--d:flex; --ai:center">Profile</div>
 			</DropdownMenu.Item> -->
 		</DropdownMenu.Content>
 	</slot>

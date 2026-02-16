@@ -23,10 +23,10 @@
 
 <Modal bind:show size="md">
 	<div>
-		<div class=" flex justify-between dark:text-gray-300 px-5 pt-4 pb-0.5">
-			<div class=" text-lg font-medium self-center">{$i18n.t('Available Tools')}</div>
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300, #cdcdcd); --px:1.25rem; --pt:1rem; --pb:0.125rem">
+			<div style="--size:1.125rem; --weight:500; --as:center">{$i18n.t('Available Tools')}</div>
 			<button
-				class="self-center"
+				style="--as:center"
 				on:click={() => {
 					show = false;
 				}}
@@ -37,22 +37,22 @@
 
 		{#if selectedTools.length > 0}
 			{#if $toolServers.length > 0}
-				<div class=" flex justify-between dark:text-gray-300 px-5 pb-1">
-					<div class=" text-base font-medium self-center">{$i18n.t('Tools')}</div>
+				<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300, #cdcdcd); --px:1.25rem; --pb:0.25rem">
+					<div style="--size:1rem; --weight:500; --as:center">{$i18n.t('Tools')}</div>
 				</div>
 			{/if}
 
-			<div class="px-5 pb-3 w-full flex flex-col justify-center">
-				<div class=" text-sm dark:text-gray-300 mb-1">
+			<div style="--px:1.25rem; --pb:0.75rem; --w:100%; --d:flex; --fd:column; --jc:center">
+				<div style="--size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --mb:0.25rem">
 					{#each selectedTools as tool}
 						<Collapsible buttonClassName="w-full mb-0.5">
 							<div>
-								<div class="text-sm font-medium dark:text-gray-100 text-gray-800">
+								<div style="--size:0.875rem; --weight:500; --dark-c:var(--color-gray-100, #ececec); --c:var(--color-gray-800, #333)">
 									{tool?.name}
 								</div>
 
 								{#if tool?.meta?.description}
-									<div class="text-xs text-gray-500">
+									<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">
 										{tool?.meta?.description}
 									</div>
 								{/if}
@@ -68,39 +68,39 @@
 		{/if}
 
 		{#if $toolServers.length > 0}
-			<div class=" flex justify-between dark:text-gray-300 px-5 pb-0.5">
-				<div class=" text-base font-medium self-center">{$i18n.t('Tool Servers')}</div>
+			<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300, #cdcdcd); --px:1.25rem; --pb:0.125rem">
+				<div style="--size:1rem; --weight:500; --as:center">{$i18n.t('Tool Servers')}</div>
 			</div>
 
-			<div class="px-5 pb-5 w-full flex flex-col justify-center">
-				<div class=" text-xs text-gray-600 dark:text-gray-300 mb-2">
+			<div style="--px:1.25rem; --pb:1.25rem; --w:100%; --d:flex; --fd:column; --jc:center">
+				<div style="--size:0.75rem; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-300, #cdcdcd); --mb:0.5rem">
 					{$i18n.t('Sage.is AI can use tools provided by any OpenAPI server.')} <br /><a
-						class="underline"
+						style="--td:underline"
 						href="https://github.com/open-webui/openapi-servers"
 						target="_blank">{$i18n.t('Learn more about OpenAPI tool servers.')}</a
 					>
 				</div>
-				<div class=" text-sm dark:text-gray-300 mb-1">
+				<div style="--size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --mb:0.25rem">
 					{#each $toolServers as toolServer}
 						<Collapsible buttonClassName="w-full" chevron>
 							<div>
-								<div class="text-sm font-medium dark:text-gray-100 text-gray-800">
+								<div style="--size:0.875rem; --weight:500; --dark-c:var(--color-gray-100, #ececec); --c:var(--color-gray-800, #333)">
 									{toolServer?.openapi?.info?.title} - v{toolServer?.openapi?.info?.version}
 								</div>
 
-								<div class="text-xs text-gray-500">
+								<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">
 									{toolServer?.openapi?.info?.description}
 								</div>
 
-								<div class="text-xs text-gray-500">
+								<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">
 									{toolServer?.url}
 								</div>
 							</div>
 
 							<div slot="content">
 								{#each toolServer?.specs ?? [] as tool_spec}
-									<div class="my-1">
-										<div class="font-medium text-gray-800 dark:text-gray-100">
+									<div style="--my:0.25rem">
+										<div style="--weight:500; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-100, #ececec)">
 											{tool_spec?.name}
 										</div>
 

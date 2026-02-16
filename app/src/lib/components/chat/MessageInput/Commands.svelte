@@ -115,11 +115,11 @@
 	{:else}
 		<div
 			id="commands-container"
-			class="px-2 mb-2 text-left w-full absolute bottom-0 left-0 right-0 z-10"
+			style="--px:0.5rem; --mb:0.5rem; --ta:left; --w:100%; --pos:absolute; --bottom:0; --left:0; --right:0; --z:10"
 		>
-			<div class="flex w-full rounded-xl border border-gray-100 dark:border-gray-850">
+			<div style="--d:flex; --w:100%; --radius:0.75rem; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)">
 				<div
-					class="max-h-60 flex flex-col w-full rounded-xl bg-white dark:bg-gray-900 dark:text-gray-100"
+					style="--maxh:15rem; --d:flex; --fd:column; --w:100%; --radius:0.75rem; --bgc:#fff; --dark-bgc:var(--color-gray-900, #171717); --dark-c:var(--color-gray-100, #ececec)"
 				>
 					<Spinner />
 				</div>

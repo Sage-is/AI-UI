@@ -42,7 +42,7 @@
 
 	<div slot="content">
 		<DropdownMenu.Content
-			class="w-full max-w-[180px] rounded-xl px-1 py-1.5 border border-gray-300/30 dark:border-gray-700/50 z-50 bg-white dark:bg-gray-850 dark:text-white shadow-sm"
+			style="--w:100%; --maxw:180px; --radius:0.75rem; --px:0.25rem; --py:0.375rem; --b:1px solid; --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.5); --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850, #262626); --dark-c:#fff; --shadow:1"
 			sideOffset={-2}
 			side="bottom"
 			align="start"
@@ -50,12 +50,12 @@
 		>
 			{#if ['filter', 'action'].includes(func.type)}
 				<div
-					class="flex gap-2 justify-between items-center px-3 py-2 text-sm font-medium cursor-pointerrounded-md"
+					style="--d:flex; --g:0.5rem; --jc:space-between; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --weight:500; --cur:pointerrounded-md"
 				>
-					<div class="flex gap-2 items-center">
+					<div style="--d:flex; --g:0.5rem; --ai:center">
 						<GlobeAlt />
 
-						<div class="flex items-center">{$i18n.t('Global')}</div>
+						<div style="--d:flex; --ai:center">{$i18n.t('Global')}</div>
 					</div>
 
 					<div>
@@ -63,11 +63,11 @@
 					</div>
 				</div>
 
-				<hr class="border-gray-100 dark:border-gray-850 my-1" />
+				<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.25rem" />
 			{/if}
 
 			<DropdownMenu.Item
-				class="flex gap-2 items-center px-3 py-2 text-sm  font-medium cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800  rounded-md"
+				style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.375rem"
 				on:click={() => {
 					editHandler();
 				}}
@@ -78,7 +78,7 @@
 					viewBox="0 0 24 24"
 					stroke-width="1.5"
 					stroke="currentColor"
-					class="w-4 h-4"
+					style="--w:1rem; --h:1rem"
 				>
 					<path
 						stroke-linecap="round"
@@ -87,51 +87,51 @@
 					/>
 				</svg>
 
-				<div class="flex items-center">{$i18n.t('Edit')}</div>
+				<div style="--d:flex; --ai:center">{$i18n.t('Edit')}</div>
 			</DropdownMenu.Item>
 
 			<DropdownMenu.Item
-				class="flex gap-2 items-center px-3 py-2 text-sm  font-medium cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800  rounded-md"
+				style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.375rem"
 				on:click={() => {
 					shareHandler();
 				}}
 			>
 				<Share />
-				<div class="flex items-center">{$i18n.t('Share')}</div>
+				<div style="--d:flex; --ai:center">{$i18n.t('Share')}</div>
 			</DropdownMenu.Item>
 
 			<DropdownMenu.Item
-				class="flex gap-2 items-center px-3 py-2 text-sm  font-medium cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md"
+				style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.375rem"
 				on:click={() => {
 					cloneHandler();
 				}}
 			>
 				<DocumentDuplicate />
 
-				<div class="flex items-center">{$i18n.t('Clone')}</div>
+				<div style="--d:flex; --ai:center">{$i18n.t('Clone')}</div>
 			</DropdownMenu.Item>
 
 			<DropdownMenu.Item
-				class="flex gap-2 items-center px-3 py-2 text-sm  font-medium cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md"
+				style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.375rem"
 				on:click={() => {
 					exportHandler();
 				}}
 			>
 				<ArrowDownTray />
 
-				<div class="flex items-center">{$i18n.t('Export')}</div>
+				<div style="--d:flex; --ai:center">{$i18n.t('Export')}</div>
 			</DropdownMenu.Item>
 
-			<hr class="border-gray-100 dark:border-gray-850 my-1" />
+			<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.25rem" />
 
 			<DropdownMenu.Item
-				class="flex  gap-2  items-center px-3 py-2 text-sm  font-medium cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md"
+				style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.375rem"
 				on:click={() => {
 					deleteHandler();
 				}}
 			>
 				<GarbageBin strokeWidth="2" />
-				<div class="flex items-center">{$i18n.t('Delete')}</div>
+				<div style="--d:flex; --ai:center">{$i18n.t('Delete')}</div>
 			</DropdownMenu.Item>
 		</DropdownMenu.Content>
 	</div>

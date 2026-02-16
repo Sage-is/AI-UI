@@ -26,18 +26,18 @@
 <CodeExecutionModal bind:show={showCodeExecutionModal} codeExecution={selectedCodeExecution} />
 
 {#if codeExecutions.length > 0}
-	<div class="mt-1 mb-2 w-full flex gap-1 items-center flex-wrap">
+	<div style="--mt:0.25rem; --mb:0.5rem; --w:100%; --d:flex; --g:0.25rem; --ai:center; --fw:wrap">
 		{#each codeExecutions as execution (execution.id)}
-			<div class="flex gap-1 text-xs font-semibold">
+			<div style="--d:flex; --g:0.25rem; --size:0.75rem; --weight:600">
 				<button
-					class="flex dark:text-gray-300 py-1 px-1 bg-gray-50 hover:bg-gray-100 dark:bg-gray-850 dark:hover:bg-gray-800 transition rounded-xl max-w-96"
+					style="--d:flex; --dark-c:var(--color-gray-300, #cdcdcd); --py:0.25rem; --px:0.25rem; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.75rem; --maxw:24rem"
 					on:click={() => {
 						selectedCodeExecution = execution;
 						showCodeExecutionModal = true;
 					}}
 				>
 					<div
-						class="bg-white dark:bg-gray-700 rounded-full size-4 flex items-center justify-center"
+						style="--bgc:#fff; --dark-bgc:var(--color-gray-700, #4e4e4e); --radius:9999px; --w:1rem; --h:1rem; --d:flex; --ai:center; --jc:center"
 					>
 						{#if execution?.result}
 							{#if execution.result?.error}
@@ -52,7 +52,8 @@
 						{/if}
 					</div>
 					<div
-						class="flex-1 mx-2 line-clamp-1 code-execution-name {execution?.result ? '' : 'pulse'}"
+						style="--fx:1 1 0%; --mx:0.5rem; --line-clamp:1"
+	class="code-execution-name {execution?.result ? '' : 'pulse'}"
 					>
 						{execution.name}
 					</div>

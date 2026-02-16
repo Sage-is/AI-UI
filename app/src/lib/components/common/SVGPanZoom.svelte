@@ -47,17 +47,18 @@
 	};
 </script>
 
-<div bind:this={sceneParentElement} class="relative {className}">
-	<div bind:this={sceneElement} class="flex h-full max-h-full justify-center items-center">
+<div bind:this={sceneParentElement} style="--pos:relative"
+	class="{className}">
+	<div bind:this={sceneElement} style="--d:flex; --h:100%; --maxh:100%; --jc:center; --ai:center">
 		{@html svg}
 	</div>
 
 	{#if content}
-		<div class=" absolute top-1 right-1">
-			<div class="flex gap-1">
+		<div style="--pos:absolute; --top:0.25rem; --right:0.25rem">
+			<div style="--d:flex; --g:0.25rem">
 				<Tooltip content={$i18n.t('Download as SVG')}>
 					<button
-						class="p-1.5 rounded-lg border border-gray-100 dark:border-none dark:bg-gray-850 hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+						style="--p:0.375rem; --radius:0.5rem; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bs:none; --dark-bgc:var(--color-gray-850, #262626); --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={() => {
 							downloadAsSVG();
 						}}
@@ -68,7 +69,7 @@
 
 				<Tooltip content={$i18n.t('Reset view')}>
 					<button
-						class="p-1.5 rounded-lg border border-gray-100 dark:border-none dark:bg-gray-850 hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+						style="--p:0.375rem; --radius:0.5rem; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bs:none; --dark-bgc:var(--color-gray-850, #262626); --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={() => {
 							resetPanZoomViewport();
 						}}
@@ -79,7 +80,7 @@
 
 				<Tooltip content={$i18n.t('Copy to clipboard')}>
 					<button
-						class="p-1.5 rounded-lg border border-gray-100 dark:border-none dark:bg-gray-850 hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+						style="--p:0.375rem; --radius:0.5rem; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bs:none; --dark-bgc:var(--color-gray-850, #262626); --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={() => {
 							copyToClipboard(content);
 							toast.success($i18n.t('Copied to clipboard'));

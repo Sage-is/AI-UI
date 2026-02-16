@@ -38,12 +38,12 @@
 
 {#if attributes.title !== 'N/A'}
 	<button
-		class="text-xs font-medium w-fit translate-y-[2px] px-2 py-0.5 dark:bg-white/5 dark:text-white/60 dark:hover:text-white bg-gray-50 text-black/60 hover:text-black transition rounded-lg"
+		style="--size:0.75rem; --weight:500; --w:fit-content; --translatey:2px; --px:0.5rem; --py:0.125rem; --dark-bgc:rgb(255 255 255 / 0.05); --dark-c:rgb(255 255 255 / 0.6); --hvr-dark-c:#fff; --bgc:var(--color-gray-50, #f9f9f9); --c:rgb(0 0 0 / 0.6); --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
 		on:click={() => {
 			onClick(id, attributes.data);
 		}}
 	>
-		<span class="line-clamp-1">
+		<span style="--line-clamp:1">
 			{attributes.title ? formattedTitle(attributes.title) : ''}
 		</span>
 	</button>

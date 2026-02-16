@@ -57,22 +57,21 @@
 					}
 				}}
 			>
-				<div class="w-full flex justify-center py-1 text-xs animate-pulse items-center gap-2">
+				<div style="--w:100%; --d:flex; --jc:center; --py:0.25rem; --size:0.75rem; animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; --ai:center; --g:0.5rem">
 					<Spinner className=" size-4" />
 					<div class=" ">Loading...</div>
 				</div>
 			</Loader>
 		{:else if !thread}
 			<div
-				class="px-5
-			
-			{($settings?.widescreenMode ?? null) ? 'max-w-full' : 'max-w-5xl'} mx-auto"
+				style="--px:1.25rem; --mx:auto"
+	class="{($settings?.widescreenMode ?? null) ? 'max-w-full' : 'max-w-5xl'}"
 			>
 				{#if channel}
-					<div class="flex flex-col gap-1.5 pb-5 pt-10">
-						<div class="text-2xl font-medium capitalize">{channel.name}</div>
+					<div style="--d:flex; --fd:column; --g:0.375rem; --pb:1.25rem; --pt:2.5rem">
+						<div style="--size:1.5rem; --weight:500; --tt:capitalize">{channel.name}</div>
 
-						<div class=" text-gray-500">
+						<div style="--c:var(--color-gray-500, #9b9b9b)">
 							{$i18n.t(
 								'This channel was created on {{createdAt}}. This is the very beginning of the {{channelName}} channel.',
 								{
@@ -83,13 +82,13 @@
 						</div>
 					</div>
 				{:else}
-					<div class="flex justify-center text-xs items-center gap-2 py-5">
+					<div style="--d:flex; --jc:center; --size:0.75rem; --ai:center; --g:0.5rem; --py:1.25rem">
 						<div class=" ">Start of the channel</div>
 					</div>
 				{/if}
 
 				{#if messageList.length > 0}
-					<hr class=" border-gray-50 dark:border-gray-700/20 py-2.5 w-full" />
+					<hr style="--bc:var(--color-gray-50, #f9f9f9); --dark-bc:rgb(78 78 78 / 0.2); --py:0.625rem; --w:100%" />
 				{/if}
 			</div>
 		{/if}
@@ -192,6 +191,6 @@
 			/>
 		{/each}
 
-		<div class="pb-6" />
+		<div style="--pb:1.5rem" />
 	</div>
 {/if}

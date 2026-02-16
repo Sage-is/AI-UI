@@ -71,18 +71,20 @@
 
 {#if message}
 	<div
-		class="flex flex-col justify-between px-5 {showUserProfile
+		style="--d:flex; --fd:column; --jc:space-between; --px:1.25rem; --w:100%; --mx:auto; --hvr-bgc:rgb(205 205 205 / 0.05); --hvr-dark-bgc:rgb(78 78 78 / 0.05); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --pos:relative"
+	class="{showUserProfile
 			? 'pt-1.5 pb-0.5'
-			: ''} w-full {($settings?.widescreenMode ?? null)
+			: ''} {($settings?.widescreenMode ?? null)
 			? 'max-w-full'
-			: 'max-w-5xl'} mx-auto group hover:bg-gray-300/5 dark:hover:bg-gray-700/5 transition relative"
+			: 'max-w-5xl'} group"
 	>
 		{#if !edit}
 			<div
-				class=" absolute {showButtons ? '' : 'invisible group-hover:visible'} right-1 -top-2 z-10"
+				style="--pos:absolute; --right:0.25rem; --top:-0.5rem; --z:10"
+	class="{showButtons ? '' : 'invisible group-hover:visible'}"
 			>
 				<div
-					class="flex gap-1 rounded-lg bg-white dark:bg-gray-850 shadow-md p-0.5 border border-gray-100 dark:border-gray-850"
+					style="--d:flex; --g:0.25rem; --radius:0.5rem; --bgc:#fff; --dark-bgc:var(--color-gray-850, #262626); --shadow:3; --p:0.125rem; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)"
 				>
 					<ReactionPicker
 						onClose={() => (showButtons = false)}
@@ -93,7 +95,7 @@
 					>
 						<Tooltip content={$i18n.t('Add Reaction')}>
 							<button
-								class="hover:bg-gray-100 dark:hover:bg-gray-800 transition rounded-lg p-1"
+								style="--hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --p:0.25rem"
 								on:click={() => {
 									showButtons = true;
 								}}
@@ -106,7 +108,7 @@
 					{#if !thread}
 						<Tooltip content={$i18n.t('Reply in Thread')}>
 							<button
-								class="hover:bg-gray-100 dark:hover:bg-gray-800 transition rounded-lg p-1"
+								style="--hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --p:0.25rem"
 								on:click={() => {
 									onThread(message.id);
 								}}
@@ -119,7 +121,7 @@
 					{#if message.user_id === $user?.id || $user?.role === 'admin'}
 						<Tooltip content={$i18n.t('Edit')}>
 							<button
-								class="hover:bg-gray-100 dark:hover:bg-gray-800 transition rounded-lg p-1"
+								style="--hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --p:0.25rem"
 								on:click={() => {
 									edit = true;
 									editedContent = message.content;
@@ -131,7 +133,7 @@
 
 						<Tooltip content={$i18n.t('Delete')}>
 							<button
-								class="hover:bg-gray-100 dark:hover:bg-gray-800 transition rounded-lg p-1"
+								style="--hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --p:0.25rem"
 								on:click={() => (showDeleteConfirmDialog = true)}
 							>
 								<GarbageBin />
@@ -143,7 +145,8 @@
 		{/if}
 
 		<div
-			class=" flex w-full message-{message.id}"
+			style="--d:flex; --w:100%"
+	class="message- {message.id}"
 			id="message-{message.id}"
 			dir={$settings.chatDirection}
 		>
@@ -158,11 +161,12 @@
 						/>
 					</ProfilePreview>
 				{:else}
-					<!-- <div class="w-7 h-7 rounded-full bg-transparent" /> -->
+					<!-- <div style="--w:1.75rem; --h:1.75rem; --radius:9999px; --bgc:transparent" /> -->
 
 					{#if message.created_at}
 						<div
-							class="mt-1.5 flex shrink-0 items-center text-xs self-center invisible group-hover:visible text-gray-500 font-medium first-letter:capitalize"
+							style="--mt:0.375rem; --d:flex; --fs:0; --ai:center; --size:0.75rem; --as:center; --v:hidden; --c:var(--color-gray-500, #9b9b9b); --weight:500"
+	class="group-hover:visible first-letter:capitalize"
 						>
 							<Tooltip content={dayjs(message.created_at / 1000000).format('LLLL')}>
 								{dayjs(message.created_at / 1000000).format('HH:mm')}
@@ -172,19 +176,20 @@
 				{/if}
 			</div>
 
-			<div class="flex-auto w-0 pl-1">
+			<div style="--fx:1 1 auto; --w:0; --pl:0.25rem">
 				{#if showUserProfile}
 					<Name>
-						<div class=" self-end text-base shrink-0 font-medium truncate">
+						<div style="--as:flex-end; --size:1rem; --fs:0; --weight:500; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
 							{message?.user?.name}
 						</div>
 
 						{#if message.created_at}
 							<div
-								class=" self-center text-xs invisible group-hover:visible text-gray-400 font-medium first-letter:capitalize ml-0.5 translate-y-[1px]"
+								style="--as:center; --size:0.75rem; --v:hidden; --c:var(--color-gray-400, #b4b4b4); --weight:500; --ml:0.125rem; --translatey:1px"
+	class="group-hover:visible first-letter:capitalize"
 							>
 								<Tooltip content={dayjs(message.created_at / 1000000).format('LLLL')}>
-									<span class="line-clamp-1">{formatDate(message.created_at / 1000000)}</span>
+									<span style="--line-clamp:1">{formatDate(message.created_at / 1000000)}</span>
 								</Tooltip>
 							</div>
 						{/if}
@@ -192,7 +197,7 @@
 				{/if}
 
 				{#if (message?.data?.files ?? []).length > 0}
-					<div class="my-2.5 w-full flex overflow-x-auto gap-2 flex-wrap">
+					<div style="--my:0.625rem; --w:100%; --d:flex; --ofx:auto; --g:0.5rem; --fw:wrap">
 						{#each message?.data?.files as file}
 							<div>
 								{#if file.type === 'image'}
@@ -213,7 +218,7 @@
 				{/if}
 
 				{#if edit}
-					<div class="py-2">
+					<div style="--py:0.5rem">
 						<Textarea
 							className=" bg-transparent outline-hidden w-full resize-none"
 							bind:value={editedContent}
@@ -230,11 +235,11 @@
 								}
 							}}
 						/>
-						<div class=" mt-2 mb-1 flex justify-end text-sm font-medium">
-							<div class="flex space-x-1.5">
+						<div style="--mt:0.5rem; --mb:0.25rem; --d:flex; --jc:flex-end; --size:0.875rem; --weight:500">
+							<div style="--d:flex; --g:0.375rem">
 								<button
 									id="close-edit-message-button"
-									class="px-4 py-2 bg-white dark:bg-gray-900 hover:bg-gray-100 text-gray-800 dark:text-gray-100 transition rounded-3xl"
+									style="--px:1rem; --py:0.5rem; --bgc:#fff; --dark-bgc:var(--color-gray-900, #171717); --hvr-bgc:var(--color-gray-100, #ececec); --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:1.5rem"
 									on:click={() => {
 										edit = false;
 										editedContent = null;
@@ -245,7 +250,7 @@
 
 								<button
 									id="confirm-edit-message-button"
-									class=" px-4 py-2 bg-gray-900 dark:bg-white hover:bg-gray-850 text-gray-100 dark:text-gray-800 transition rounded-3xl"
+									style="--px:1rem; --py:0.5rem; --bgc:var(--color-gray-900, #171717); --dark-bgc:#fff; --hvr-bgc:var(--color-gray-850, #262626); --c:var(--color-gray-100, #ececec); --dark-c:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:1.5rem"
 									on:click={async () => {
 										onEdit(editedContent);
 										edit = false;
@@ -258,22 +263,24 @@
 						</div>
 					</div>
 				{:else}
-					<div class=" min-w-full markdown-prose">
+					<div style="--minw:100%"
+	class="markdown-prose">
 						<Markdown
 							id={message.id}
 							content={message.content}
-						/>{#if message.created_at !== message.updated_at}<span class="text-gray-500 text-[10px]"
+						/>{#if message.created_at !== message.updated_at}<span style="--c:var(--color-gray-500, #9b9b9b); --size:10px"
 								>(edited)</span
 							>{/if}
 					</div>
 
 					{#if (message?.reactions ?? []).length > 0}
 						<div>
-							<div class="flex items-center flex-wrap gap-y-1.5 gap-1 mt-1 mb-2">
+							<div style="--d:flex; --ai:center; --fw:wrap; row-gap:0.375rem; --g:0.25rem; --mt:0.25rem; --mb:0.5rem">
 								{#each message.reactions as reaction}
 									<Tooltip content={`:${reaction.name}:`}>
 										<button
-											class="flex items-center gap-1.5 transition rounded-xl px-2 py-1 cursor-pointer {reaction.user_ids.includes(
+											style="--d:flex; --ai:center; --g:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.75rem; --px:0.5rem; --py:0.25rem; --cur:pointer"
+	class="{reaction.user_ids.includes(
 												$user?.id
 											)
 												? ' bg-blue-300/10 outline outline-blue-500/50 outline-1'
@@ -288,7 +295,7 @@
 														reaction.name
 													].toLowerCase()}.svg"
 													alt={reaction.name}
-													class=" size-4"
+													style="--w:1rem; --h:1rem"
 													loading="lazy"
 												/>
 											{:else}
@@ -298,7 +305,7 @@
 											{/if}
 
 											{#if reaction.user_ids.length > 0}
-												<div class="text-xs font-medium text-gray-500 dark:text-gray-400">
+												<div style="--size:0.75rem; --weight:500; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4)">
 													{reaction.user_ids?.length}
 												</div>
 											{/if}
@@ -313,7 +320,7 @@
 								>
 									<Tooltip content={$i18n.t('Add Reaction')}>
 										<div
-											class="flex items-center gap-1.5 bg-gray-500/10 hover:outline hover:outline-gray-700/30 dark:hover:outline-gray-300/30 hover:outline-1 transition rounded-xl px-1 py-1 cursor-pointer text-gray-500 dark:text-gray-400"
+											style="--d:flex; --ai:center; --g:0.375rem; --bgc:rgb(155 155 155 / 0.1); outline-style:solid; outline-color:rgb(78 78 78 / 0.3); outline-color:rgb(205 205 205 / 0.3); outline-width:1px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.75rem; --px:0.25rem; --py:0.25rem; --cur:pointer; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4)"
 										>
 											<FaceSmile />
 										</div>
@@ -324,21 +331,21 @@
 					{/if}
 
 					{#if !thread && message.reply_count > 0}
-						<div class="flex items-center gap-1.5 -mt-0.5 mb-1.5">
+						<div style="--d:flex; --ai:center; --g:0.375rem; --mt:-0.125rem; --mb:0.375rem">
 							<button
-								class="flex items-center text-xs py-1 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition"
+								style="--d:flex; --ai:center; --size:0.75rem; --py:0.25rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4); --hvr-c:var(--color-gray-700, #4e4e4e); --hvr-dark-c:var(--color-gray-300, #cdcdcd); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								on:click={() => {
 									onThread(message.id);
 								}}
 							>
-								<span class="font-medium mr-1">
+								<span style="--weight:500; --mr:0.25rem">
 									{$i18n.t('{{COUNT}} Replies', { COUNT: message.reply_count })}</span
 								><span>
 									{' - '}{$i18n.t('Last reply')}
 									{dayjs.unix(message.latest_reply_at / 1000000000).fromNow()}</span
 								>
 
-								<span class="ml-1">
+								<span style="--ml:0.25rem">
 									<ChevronRight className="size-2.5" strokeWidth="3" />
 								</span>
 								<!-- {$i18n.t('View Replies')} -->

@@ -356,14 +356,16 @@
 	closeFocus={false}
 >
 	<DropdownMenu.Trigger
-		class="relative w-full font-primary {($settings?.highContrastMode ?? false)
+		style="--pos:relative; --w:100%"
+	class="font-primary {($settings?.highContrastMode ?? false)
 			? ''
 			: 'outline-hidden focus:outline-hidden'}"
 		aria-label={placeholder}
 		id="model-selector-{id}-button"
 	>
 		<div
-			class="flex w-full text-left px-0.5 bg-transparent truncate {triggerClassName} justify-between {($settings?.highContrastMode ??
+			style="--d:flex; --w:100%; --ta:left; --px:0.125rem; --bgc:transparent; overflow:hidden; text-overflow:ellipsis; --ws:nowrap; --jc:space-between"
+	class="{triggerClassName} {($settings?.highContrastMode ??
 			false)
 				? 'dark:placeholder-gray-100 placeholder-gray-800'
 				: 'placeholder-gray-400'}"
@@ -386,22 +388,23 @@
 	</DropdownMenu.Trigger>
 
 	<DropdownMenu.Content
-		class=" z-40 {$mobile
+		style="--z:40; --maxw:calc(100vw-1rem); --jc:flex-start; --radius:0.75rem; --bgc:#fff; --dark-bgc:var(--color-gray-850, #262626); --dark-c:#fff; --shadow:4; --oe:none"
+	class="{$mobile
 			? `w-full`
-			: `${className}`} max-w-[calc(100vw-1rem)] justify-start rounded-xl  bg-white dark:bg-gray-850 dark:text-white shadow-lg  outline-hidden"
+			: `${className}`}"
 		transition={flyAndScale}
 		side={$mobile ? 'bottom' : 'bottom-start'}
 		sideOffset={3}
 	>
 		<slot>
 			{#if searchEnabled}
-				<div class="flex items-center gap-2.5 px-5 mt-3.5 mb-1.5">
+				<div style="--d:flex; --ai:center; --g:0.625rem; --px:1.25rem; --mt:0.875rem; --mb:0.375rem">
 					<Search className="size-4" strokeWidth="2.5" />
 
 					<input
 						id="model-search-input"
 						bind:value={searchValue}
-						class="w-full text-sm bg-transparent outline-hidden"
+						style="--w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
 						placeholder={searchPlaceholder}
 						autocomplete="off"
 						on:keydown={(e) => {
@@ -425,10 +428,11 @@
 				</div>
 			{/if}
 
-			<div class="px-3">
+			<div style="--px:0.75rem">
 				{#if tags && items.filter((item) => !(item.model?.info?.meta?.hidden ?? false)).length > 0}
 					<div
-						class=" flex w-full bg-white dark:bg-gray-850 overflow-x-auto scrollbar-none"
+						style="--d:flex; --w:100%; --bgc:#fff; --dark-bgc:var(--color-gray-850, #262626); --ofx:auto"
+	class="scrollbar-none"
 						on:wheel={(e) => {
 							if (e.deltaY !== 0) {
 								e.preventDefault();
@@ -437,15 +441,16 @@
 						}}
 					>
 						<div
-							class="flex gap-1 w-fit text-center text-sm font-medium rounded-full bg-transparent px-1.5 pb-0.5"
+							style="--d:flex; --g:0.25rem; --w:fit-content; --ta:center; --size:0.875rem; --weight:500; --radius:9999px; --bgc:transparent; --px:0.375rem; --pb:0.125rem"
 							bind:this={tagsContainerElement}
 						>
 							{#if items.find((item) => item.model?.connection_type === 'local') || items.find((item) => item.model?.connection_type === 'external') || items.find((item) => item.model?.direct) || tags.length > 0}
 								<button
-									class="min-w-fit outline-none p-1.5 {selectedTag === '' &&
+									style="--minw:fit-content; --oe:2px solid transparent; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize"
+	class="{selectedTag === '' &&
 									selectedConnectionType === ''
 										? ''
-										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition capitalize"
+										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
 									on:click={() => {
 										selectedConnectionType = '';
 										selectedTag = '';
@@ -457,9 +462,10 @@
 
 							{#if items.find((item) => item.model?.connection_type === 'local')}
 								<button
-									class="min-w-fit outline-none p-1.5 {selectedConnectionType === 'local'
+									style="--minw:fit-content; --oe:2px solid transparent; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize"
+	class="{selectedConnectionType === 'local'
 										? ''
-										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition capitalize"
+										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
 									on:click={() => {
 										selectedTag = '';
 										selectedConnectionType = 'local';
@@ -471,9 +477,10 @@
 
 							{#if items.find((item) => item.model?.connection_type === 'external')}
 								<button
-									class="min-w-fit outline-none p-1.5 {selectedConnectionType === 'external'
+									style="--minw:fit-content; --oe:2px solid transparent; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize"
+	class="{selectedConnectionType === 'external'
 										? ''
-										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition capitalize"
+										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
 									on:click={() => {
 										selectedTag = '';
 										selectedConnectionType = 'external';
@@ -485,9 +492,10 @@
 
 							{#if items.find((item) => item.model?.direct)}
 								<button
-									class="min-w-fit outline-none p-1.5 {selectedConnectionType === 'direct'
+									style="--minw:fit-content; --oe:2px solid transparent; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize"
+	class="{selectedConnectionType === 'direct'
 										? ''
-										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition capitalize"
+										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
 									on:click={() => {
 										selectedTag = '';
 										selectedConnectionType = 'direct';
@@ -499,9 +507,10 @@
 
 							{#each tags as tag}
 								<button
-									class="min-w-fit outline-none p-1.5 {selectedTag === tag
+									style="--minw:fit-content; --oe:2px solid transparent; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize"
+	class="{selectedTag === tag
 										? ''
-										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition capitalize"
+										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
 									on:click={() => {
 										selectedConnectionType = '';
 										selectedTag = tag;
@@ -516,8 +525,7 @@
 			</div>
 
 			<div
-				style="--ofy:auto; --maxh:16rem; --p:0 1em"
-				class="relative">
+				style="--pos:relative; --ofy:auto; --maxh:16rem; --p:0 1em">
 				{#each filteredItems as item, index}
 					<ModelItem
 						{selectedModelIdx}
@@ -536,7 +544,7 @@
 					/>
 				{:else}
 					<div class="">
-						<div class="block px-3 py-2 text-sm text-gray-700 dark:text-gray-100">
+						<div style="--d:block; --px:0.75rem; --py:0.5rem; --size:0.875rem; --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-100, #ececec)">
 							{$i18n.t('No results found')}
 						</div>
 					</div>
@@ -550,12 +558,13 @@
 						placement="top-start"
 					>
 						<button
-							class="flex w-full font-medium line-clamp-1 select-none items-center rounded-button py-2 pl-3 pr-1.5 text-sm text-gray-700 dark:text-gray-100 outline-hidden transition-all duration-75 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg cursor-pointer data-highlighted:bg-muted"
+							style="--d:flex; --w:100%; --weight:500; --line-clamp:1; --us:none; --ai:center; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --pl:0.75rem; --pr:0.375rem; --size:0.875rem; --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-100, #ececec); --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.5rem; --cur:pointer"
+	class="data-highlighted:bg-muted"
 							on:click={() => {
 								pullModelHandler();
 							}}
 						>
-							<div class=" truncate">
+							<div style="overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
 								{$i18n.t(`Pull "{{searchValue}}" from Ollama.com`, { searchValue: searchValue })}
 							</div>
 						</button>
@@ -564,20 +573,21 @@
 
 				{#each Object.keys($MODEL_DOWNLOAD_POOL) as model}
 					<div
-						class="flex w-full justify-between font-medium select-none rounded-button py-2 pl-3 pr-1.5 text-sm text-gray-700 dark:text-gray-100 outline-hidden transition-all duration-75 rounded-lg cursor-pointer data-highlighted:bg-muted"
+						style="--d:flex; --w:100%; --jc:space-between; --weight:500; --us:none; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --pl:0.75rem; --pr:0.375rem; --size:0.875rem; --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-100, #ececec); --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --radius:0.5rem; --cur:pointer"
+	class="data-highlighted:bg-muted"
 					>
-						<div class="flex">
-							<div class="-ml-2 mr-2.5 translate-y-0.5">
+						<div style="--d:flex">
+							<div style="--ml:-0.5rem; --mr:0.625rem; --translatey:0.125rem">
 								<Spinner />
 							</div>
 
-							<div class="flex flex-col self-start">
-								<div class="flex gap-1">
-									<div class="line-clamp-1">
+							<div style="--d:flex; --fd:column; --as:flex-start">
+								<div style="--d:flex; --g:0.25rem">
+									<div style="--line-clamp:1">
 										Downloading "{model}"
 									</div>
 
-									<div class="shrink-0">
+									<div style="--fs:0">
 										{'pullProgress' in $MODEL_DOWNLOAD_POOL[model]
 											? `(${$MODEL_DOWNLOAD_POOL[model].pullProgress}%)`
 											: ''}
@@ -585,23 +595,23 @@
 								</div>
 
 								{#if 'digest' in $MODEL_DOWNLOAD_POOL[model] && $MODEL_DOWNLOAD_POOL[model].digest}
-									<div class="-mt-1 h-fit text-[0.7rem] dark:text-gray-500 line-clamp-1">
+									<div style="--mt:-0.25rem; --h:fit-content; --size:0.7rem; --dark-c:var(--color-gray-500, #9b9b9b); --line-clamp:1">
 										{$MODEL_DOWNLOAD_POOL[model].digest}
 									</div>
 								{/if}
 							</div>
 						</div>
 
-						<div class="mr-2 ml-1 translate-y-0.5">
+						<div style="--mr:0.5rem; --ml:0.25rem; --translatey:0.125rem">
 							<Tooltip content={$i18n.t('Cancel')}>
 								<button
-									class="text-gray-800 dark:text-gray-100"
+									style="--c:var(--color-gray-800, #333); --dark-c:var(--color-gray-100, #ececec)"
 									on:click={() => {
 										cancelModelPullHandler(model);
 									}}
 								>
 									<svg
-										class="w-4 h-4 text-gray-800 dark:text-white"
+										style="--w:1rem; --h:1rem; --c:var(--color-gray-800, #333); --dark-c:#fff"
 										aria-hidden="true"
 										xmlns="http://www.w3.org/2000/svg"
 										width="24"
@@ -625,9 +635,10 @@
 			</div>
 
 			{#if showTemporaryChatControl}
-				<div class="flex items-center mx-2 mt-1 mb-2">
+				<div style="--d:flex; --ai:center; --mx:0.5rem; --mt:0.25rem; --mb:0.5rem">
 					<button
-						class="flex justify-between w-full font-medium line-clamp-1 select-none items-center rounded-button py-2 px-3 text-sm text-gray-700 dark:text-gray-100 outline-hidden transition-all duration-75 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg cursor-pointer data-highlighted:bg-muted"
+						style="--d:flex; --jc:space-between; --w:100%; --weight:500; --line-clamp:1; --us:none; --ai:center; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --px:0.75rem; --size:0.875rem; --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-100, #ececec); --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.5rem; --cur:pointer"
+	class="data-highlighted:bg-muted"
 						on:click={async () => {
 							temporaryChatEnabled.set(!$temporaryChatEnabled);
 							await goto('/');
@@ -646,7 +657,7 @@
 							show = false;
 						}}
 					>
-						<div class="flex gap-2.5 items-center">
+						<div style="--d:flex; --g:0.625rem; --ai:center">
 							<ChatBubbleOval className="size-4" strokeWidth="2.5" />
 
 							{$i18n.t(`Temporary Chat`)}
@@ -658,11 +669,11 @@
 					</button>
 				</div>
 			{:else}
-				<div class="mb-3"></div>
+				<div style="--mb:0.75rem"></div>
 			{/if}
 
-			<div class="hidden w-[42rem]" />
-			<div class="hidden w-[32rem]" />
+			<div style="--d:none; --w:42rem" />
+			<div style="--d:none; --w:32rem" />
 		</slot>
 	</DropdownMenu.Content>
 </DropdownMenu.Root>

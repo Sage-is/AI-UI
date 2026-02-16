@@ -100,11 +100,12 @@ Renders the following Markdown as alerts:
 
 -->
 <div class={`border-l-4 pl-2.5 ${alertStyles[alert.type].border} my-0.5`}>
-	<div class="{alertStyles[alert.type].text} items-center flex gap-1 py-1.5">
+	<div style="--ai:center; --d:flex; --g:0.25rem; --py:0.375rem"
+	class="{alertStyles[alert.type].text}">
 		<svelte:component this={alertStyles[alert.type].icon} className="inline-block size-4" />
-		<span class=" font-medium">{alert.type}</span>
+		<span style="--weight:500">{alert.type}</span>
 	</div>
-	<div class="pb-2">
+	<div style="--pb:0.5rem">
 		<MarkdownTokens id={`${id}-${tokenIdx}`} tokens={alert.tokens} {onTaskClick} {onSourceClick} />
 	</div>
 </div>

@@ -2,7 +2,7 @@
 	export let className: string = 'size-4';
 </script>
 
-<div class="flex justify-center text-center">
+<div style="--d:flex; --jc:center; --ta:center">
 	<svg
 		aria-hidden="true"
 		class={className}

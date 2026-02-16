@@ -54,203 +54,201 @@
 	});
 </script>
 
-<div class="flex flex-col h-full justify-between text-sm">
-	<div class="space-y-3 pr-1.5">
+<div style="--d:flex; --fd:column; --h:100%; --jc:space-between; --size:0.875rem">
+	<div style="--g:0.75rem; --pr:0.375rem">
 		<div>
-			<div class="mb-2 text-sm font-medium">{$i18n.t('Theme & Branding')}  (Beta)</div>
+			<div style="--mb:0.5rem; --size:0.875rem; --weight:500">{$i18n.t('Theme & Branding')}  (Beta)</div>
 		</div>
 
-		<hr class="dark:border-gray-850" />
+		<hr style="--dark-bc:var(--color-gray-850, #262626)" />
 
 		{#if loading}
-			<div class="text-center py-4">
-				<div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-gray-100"></div>
+			<div style="--ta:center; --py:1rem">
+				<div style="--d:inline-block; animation:spin 1s linear infinite; --radius:9999px; --h:2rem; --w:2rem; border-bottom-width:2px; --bc:var(--color-gray-900, #171717); --dark-bc:var(--color-gray-100, #ececec)"></div>
 			</div>
 		{:else}
 			<!-- Logo Settings -->
-			<div class="space-y-3">
-				<div class="text-sm font-medium">{$i18n.t('Logo Settings')}</div>
+			<div style="--g:0.75rem">
+				<div style="--size:0.875rem; --weight:500">{$i18n.t('Logo Settings')}</div>
 				
 				<div>
-					<label class="block text-sm font-medium mb-2" for="logo-url">
+					<label style="--d:block; --size:0.875rem; --weight:500; --mb:0.5rem" for="logo-url">
 						{$i18n.t('Logo URL (Light Mode)')}
 					</label>
 					<input
 						id="logo-url"
-						class="w-full rounded-lg py-2 px-4 text-sm dark:text-gray-300 dark:bg-gray-850 outline-none"
+						style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:2px solid transparent"
 						placeholder="https://example.com/logo.png"
 						bind:value={branding.logo_url}
 					/>
-					<div class="text-xs text-gray-500 mt-1">
+					<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --mt:0.25rem">
 						{$i18n.t('URL to your logo image for light mode')}
 					</div>
 				</div>
 
 				<div>
-					<label class="block text-sm font-medium mb-2" for="logo-dark-url">
+					<label style="--d:block; --size:0.875rem; --weight:500; --mb:0.5rem" for="logo-dark-url">
 						{$i18n.t('Logo URL (Dark Mode)')}
 					</label>
 					<input
 						id="logo-dark-url"
-						class="w-full rounded-lg py-2 px-4 text-sm dark:text-gray-300 dark:bg-gray-850 outline-none"
+						style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:2px solid transparent"
 						placeholder="https://example.com/logo-dark.png"
 						bind:value={branding.logo_dark_url}
 					/>
-					<div class="text-xs text-gray-500 mt-1">
+					<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --mt:0.25rem">
 						{$i18n.t('URL to your logo image for dark mode (optional, falls back to light mode logo)')}
 					</div>
 				</div>
 
 				<div>
-					<label class="block text-sm font-medium mb-2" for="favicon-url">
+					<label style="--d:block; --size:0.875rem; --weight:500; --mb:0.5rem" for="favicon-url">
 						{$i18n.t('Favicon URL')}
 					</label>
 					<input
 						id="favicon-url"
-						class="w-full rounded-lg py-2 px-4 text-sm dark:text-gray-300 dark:bg-gray-850 outline-none"
+						style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:2px solid transparent"
 						placeholder="https://example.com/favicon.ico"
 						bind:value={branding.favicon_url}
 					/>
-					<div class="text-xs text-gray-500 mt-1">
+					<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --mt:0.25rem">
 						{$i18n.t('URL to your favicon (browser tab icon)')}
 					</div>
 				</div>
 			</div>
 
-			<hr class="dark:border-gray-850" />
+			<hr style="--dark-bc:var(--color-gray-850, #262626)" />
 
 			<!-- Text Settings -->
-			<div class="space-y-3">
-				<div class="text-sm font-medium">{$i18n.t('Text Settings')}</div>
+			<div style="--g:0.75rem">
+				<div style="--size:0.875rem; --weight:500">{$i18n.t('Text Settings')}</div>
 				
 				<div>
-					<label class="block text-sm font-medium mb-2" for="title">
+					<label style="--d:block; --size:0.875rem; --weight:500; --mb:0.5rem" for="title">
 						{$i18n.t('Application Title')}
 					</label>
 					<input
 						id="title"
-						class="w-full rounded-lg py-2 px-4 text-sm dark:text-gray-300 dark:bg-gray-850 outline-none"
+						style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:2px solid transparent"
 						placeholder={$WEBUI_NAME}
 						bind:value={branding.title}
 					/>
-					<div class="text-xs text-gray-500 mt-1">
+					<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --mt:0.25rem">
 						{$i18n.t('Main title displayed in your application')}
 					</div>
 				</div>
 
 				<div>
-					<label class="block text-sm font-medium mb-2" for="subtitle">
+					<label style="--d:block; --size:0.875rem; --weight:500; --mb:0.5rem" for="subtitle">
 						{$i18n.t('Application Subtitle')}
 					</label>
 					<input
 						id="subtitle"
-						class="w-full rounded-lg py-2 px-4 text-sm dark:text-gray-300 dark:bg-gray-850 outline-none"
+						style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:2px solid transparent"
 						placeholder="Powered by Sage.is AI UI"
 						bind:value={branding.subtitle}
 					/>
-					<div class="text-xs text-gray-500 mt-1">
+					<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --mt:0.25rem">
 						{$i18n.t('Subtitle or tagline for your application')}
 					</div>
 				</div>
 			</div>
 
-			<hr class="dark:border-gray-850" />
+			<hr style="--dark-bc:var(--color-gray-850, #262626)" />
 
 			<!-- Color Settings -->
-			<div class="space-y-3">
-				<div class="text-sm font-medium">{$i18n.t('Color Settings')}</div>
+			<div style="--g:0.75rem">
+				<div style="--size:0.875rem; --weight:500">{$i18n.t('Color Settings')}</div>
                 <p>Note: These are not used at the moment.</p>
 				
 				<div>
-					<label class="block text-sm font-medium mb-2" for="primary-color">
+					<label style="--d:block; --size:0.875rem; --weight:500; --mb:0.5rem" for="primary-color">
 						{$i18n.t('Primary Color')}
 					</label>
-					<div class="flex gap-2 items-center">
+					<div style="--d:flex; --g:0.5rem; --ai:center">
 						<input
 							id="primary-color"
 							type="color"
-							class="h-10 w-20 rounded cursor-pointer"
+							style="--h:2.5rem; --w:5rem; --radius:0.25rem; --cur:pointer"
 							bind:value={branding.primary_color}
 						/>
 						<input
 							type="text"
-							class="flex-1 rounded-lg py-2 px-4 text-sm dark:text-gray-300 dark:bg-gray-850 outline-none"
+							style="--fx:1 1 0%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:2px solid transparent"
 							placeholder="#3B82F6"
 							bind:value={branding.primary_color}
 						/>
 					</div>
-					<div class="text-xs text-gray-500 mt-1">
+					<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --mt:0.25rem">
 						{$i18n.t('Main brand color (e.g., buttons, links)')}
 					</div>
 				</div>
 
 				<div>
-					<label class="block text-sm font-medium mb-2" for="accent-color">
+					<label style="--d:block; --size:0.875rem; --weight:500; --mb:0.5rem" for="accent-color">
 						{$i18n.t('Accent Color')}
 					</label>
-					<div class="flex gap-2 items-center">
+					<div style="--d:flex; --g:0.5rem; --ai:center">
 						<input
 							id="accent-color"
 							type="color"
-							class="h-10 w-20 rounded cursor-pointer"
+							style="--h:2.5rem; --w:5rem; --radius:0.25rem; --cur:pointer"
 							bind:value={branding.accent_color}
 						/>
 						<input
 							type="text"
-							class="flex-1 rounded-lg py-2 px-4 text-sm dark:text-gray-300 dark:bg-gray-850 outline-none"
+							style="--fx:1 1 0%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:2px solid transparent"
 							placeholder="#10B981"
 							bind:value={branding.accent_color}
 						/>
 					</div>
-					<div class="text-xs text-gray-500 mt-1">
+					<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --mt:0.25rem">
 						{$i18n.t('Secondary accent color for highlights')}
 					</div>
 				</div>
 			</div>
 
-			<hr class="dark:border-gray-850" />
+			<hr style="--dark-bc:var(--color-gray-850, #262626)" />
 
 			<!-- Preview Section -->
-			<div class="space-y-3">
-				<div class="text-sm font-medium">{$i18n.t('Preview')}</div>
+			<div style="--g:0.75rem">
+				<div style="--size:0.875rem; --weight:500">{$i18n.t('Preview')}</div>
 				
-				<div class="p-4 rounded-lg border dark:border-gray-700 bg-gray-50 dark:bg-gray-850">
-					<div class="flex items-center gap-3 mb-3">
+				<div style="--p:1rem; --radius:0.5rem; --b:1px solid; --dark-bc:var(--color-gray-700, #4e4e4e); --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-850, #262626)">
+					<div style="--d:flex; --ai:center; --g:0.75rem; --mb:0.75rem">
 						{#if branding.logo_url}
 							<img 
 								src={branding.logo_url} 
 								alt="Logo" 
-								class="h-8 w-auto"
+								style="--h:2rem; --w:auto"
 								on:error={() => {}}
 							/>
 						{/if}
 						<div>
 							{#if branding.title}
-								<div class="font-semibold" style="color: {branding.primary_color || 'inherit'}">
+								<div style="--weight:600; color: {branding.primary_color || 'inherit'}">
 									{branding.title}
 								</div>
 							{/if}
 							{#if branding.subtitle}
-								<div class="text-xs text-gray-500">
+								<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">
 									{branding.subtitle}
 								</div>
 							{/if}
 						</div>
 					</div>
 					{#if branding.primary_color || branding.accent_color}
-						<div class="flex gap-2 mt-3">
+						<div style="--d:flex; --g:0.5rem; --mt:0.75rem">
 							{#if branding.primary_color}
-								<div 
-									class="px-3 py-1.5 rounded text-xs text-white"
-									style="background-color: {branding.primary_color}"
+								<div
+									style="--px:0.75rem; --py:0.375rem; --radius:0.25rem; --size:0.75rem; --c:#fff; background-color: {branding.primary_color}"
 								>
 									Primary
 								</div>
 							{/if}
 							{#if branding.accent_color}
-								<div 
-									class="px-3 py-1.5 rounded text-xs text-white"
-									style="background-color: {branding.accent_color}"
+								<div
+									style="--px:0.75rem; --py:0.375rem; --radius:0.25rem; --size:0.75rem; --c:#fff; background-color: {branding.accent_color}"
 								>
 									Accent
 								</div>
@@ -262,14 +260,14 @@
 		{/if}
 	</div>
 
-	<div class="flex justify-end pt-3">
+	<div style="--d:flex; --jc:flex-end; --pt:0.75rem">
 		<button
-			class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			on:click={saveBranding}
 			disabled={saving}
 		>
 			{#if saving}
-				<div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+				<div style="animation:spin 1s linear infinite; --radius:9999px; --h:1rem; --w:1rem; border-bottom-width:2px; --bc:#fff"></div>
 			{/if}
 			{$i18n.t('Save')}
 		</button>

@@ -16,22 +16,23 @@
 	});
 </script>
 
-<div class="flex gap-2 group">
-	<div class="flex items-start pt-1">
+<div style="--d:flex; --g:0.5rem"
+	class="group">
+	<div style="--d:flex; --ai:flex-start; --pt:0.25rem">
 		<div
-			class="px-2 py-1 text-sm font-semibold uppercase min-w-[6rem] text-left rounded-lg transition"
+			style="--px:0.5rem; --py:0.25rem; --size:0.875rem; --weight:600; --tt:uppercase; --minw:6rem; --ta:left; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 		>
 			{$i18n.t(message.role)}
 		</div>
 	</div>
 
-	<div class="flex-1">
+	<div style="--fx:1 1 0%">
 		<!-- $i18n.t('a user') -->
 		<!-- $i18n.t('an assistant') -->
 		<textarea
 			id="{message.role}-{idx}-textarea"
 			bind:this={textAreaElement}
-			class="w-full bg-transparent outline-hidden rounded-lg p-2 text-sm resize-none overflow-hidden"
+			style="--w:100%; --bgc:transparent; --oe:none; --radius:0.5rem; --p:0.5rem; --size:0.875rem; resize:none; --of:hidden"
 			placeholder={$i18n.t(`Enter {{role}} message here`, {
 				role: message.role === 'user' ? $i18n.t('a user') : $i18n.t('an assistant')
 			})}
@@ -50,9 +51,10 @@
 		/>
 	</div>
 
-	<div class=" pt-1">
+	<div style="--pt:0.25rem">
 		<button
-			class=" group-hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-300 transition"
+			style="--dark-c:var(--color-gray-500, #9b9b9b); --hvr-dark-c:var(--color-gray-300, #cdcdcd); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="group-hover:text-gray-500"
 			on:click={() => {
 				onDelete();
 			}}
@@ -63,7 +65,7 @@
 				viewBox="0 0 24 24"
 				stroke-width="2"
 				stroke="currentColor"
-				class="w-5 h-5"
+				style="--w:1.25rem; --h:1.25rem"
 			>
 				<path
 					stroke-linecap="round"
