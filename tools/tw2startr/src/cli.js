@@ -85,6 +85,8 @@ tw2startr — Tailwind CSS to startr.style converter
 
 Usage: tw2startr [options] [glob]
 
+Supports Svelte (.svelte) and HTML (.html) files.
+
 Options:
   --dry-run, -n        Preview changes, don't modify files
   --diff, -d           Show unified diff of changes
@@ -101,6 +103,7 @@ Examples:
   tw2startr --report "src/lib/components/**/*.svelte"
   tw2startr --diff src/lib/components/common/Switch.svelte
   tw2startr --dry-run --diff "app/src/**/*.svelte"
+  tw2startr --dry-run "**/*.html"
 `);
 }
 
@@ -135,7 +138,7 @@ export function findFiles(dir, pattern, excludes = []) {
 
       if (stat.isDirectory()) {
         walk(fullPath);
-      } else if (entry.endsWith('.svelte')) {
+      } else if (entry.endsWith('.svelte') || entry.endsWith('.html')) {
         // Simple glob matching: if pattern is provided, check if path matches
         if (!pattern || matchGlob(fullPath, pattern)) {
           results.push(fullPath);
@@ -196,13 +199,13 @@ export async function run(argv) {
     } else if (args.glob) {
       // Try relative to basePath
       const resolved = path.resolve(args.basePath, args.glob);
-      if (fs.existsSync(resolved) && resolved.endsWith('.svelte')) {
+      if (fs.existsSync(resolved) && (resolved.endsWith('.svelte') || resolved.endsWith('.html'))) {
         files.push(resolved);
       }
     }
   }
 
-  console.log(`Found ${files.length} Svelte file(s)\n`);
+  console.log(`Found ${files.length} file(s)\n`);
 
   if (files.length === 0) {
     console.log('No files to process.');
