@@ -225,7 +225,11 @@ COPY app/static/ /app/build/
 COPY app/src /app/src
 
 # Build frontend (pyodide already fetched above so vite build should be much faster)
-RUN NODE_OPTIONS="--max-old-space-size=4096" npx vite build 
+RUN NODE_OPTIONS="--max-old-space-size=4096" npx vite build
+
+# Copy custom.css into the build output so it's served at /assets/custom.css
+# (must be AFTER vite build, as SvelteKit clears the output directory during build)
+COPY app/static/assets/custom.css /app/build/assets/custom.css
 #########################################################################################
 
 
