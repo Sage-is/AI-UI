@@ -293,5 +293,6 @@ type SessionUser = {
 	role: string;
 	profile_image_url: string;
 	expires_at?: number;
+	info?: Record<string, any>;
 };
 

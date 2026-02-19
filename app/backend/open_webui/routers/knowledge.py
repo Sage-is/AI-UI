@@ -21,7 +21,7 @@ from open_webui.storage.provider import Storage
 
 from open_webui.constants import ERROR_MESSAGES
 from open_webui.utils.auth import get_verified_user
-from open_webui.utils.access_control import has_access, has_permission
+from open_webui.utils.access_control import has_access, has_facilitator_access, has_permission
 
 
 from open_webui.env import SRC_LOG_LEVELS
@@ -44,6 +44,16 @@ async def get_knowledge(user=Depends(get_verified_user)):
 
     if user.role == "admin":
         knowledge_bases = Knowledges.get_knowledge_bases()
+    elif user.role == "facilitator":
+        # Facilitators see their own + group-accessible resources
+        all_bases = Knowledges.get_knowledge_bases()
+        knowledge_bases = [
+            kb
+            for kb in all_bases
+            if kb.user_id == user.id
+            or has_access(user.id, "read", kb.access_control)
+            or has_facilitator_access(user.id, "read", kb.access_control)
+        ]
     else:
         knowledge_bases = Knowledges.get_knowledge_bases_by_user_id(user.id, "read")
 
@@ -92,6 +102,15 @@ async def get_knowledge_list(user=Depends(get_verified_user)):
 
     if user.role == "admin":
         knowledge_bases = Knowledges.get_knowledge_bases()
+    elif user.role == "facilitator":
+        all_bases = Knowledges.get_knowledge_bases()
+        knowledge_bases = [
+            kb
+            for kb in all_bases
+            if kb.user_id == user.id
+            or has_access(user.id, "write", kb.access_control)
+            or has_facilitator_access(user.id, "write", kb.access_control)
+        ]
     else:
         knowledge_bases = Knowledges.get_knowledge_bases_by_user_id(user.id, "write")
 

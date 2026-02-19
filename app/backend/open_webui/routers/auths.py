@@ -43,6 +43,7 @@ from open_webui.utils.auth import (
     create_api_key,
     create_token,
     get_admin_user,
+    get_admin_or_facilitator_user,
     get_verified_user,
     get_current_user,
     get_password_hash,
@@ -71,6 +72,7 @@ log.setLevel(SRC_LOG_LEVELS["MAIN"])
 class SessionUserResponse(Token, UserResponse):
     expires_at: Optional[int] = None
     permissions: Optional[dict] = None
+    info: Optional[dict] = None
 
 
 @router.get("/", response_model=SessionUserResponse)
@@ -126,6 +128,7 @@ async def get_session_user(
         "role": user.role,
         "profile_image_url": user.profile_image_url,
         "permissions": user_permissions,
+        "info": user.info,
     }
 
 
@@ -172,6 +175,110 @@ async def update_password(
             raise HTTPException(400, detail=ERROR_MESSAGES.INVALID_PASSWORD)
     else:
         raise HTTPException(400, detail=ERROR_MESSAGES.INVALID_CRED)
+
+
+############################
+# Claim Account (Temporary -> Permanent)
+############################
+
+
+class ClaimAccountForm(BaseModel):
+    email: str
+    password: str
+
+
+@router.post("/claim", response_model=SessionUserResponse)
+async def claim_account(
+    request: Request,
+    response: Response,
+    form_data: ClaimAccountForm,
+    session_user=Depends(get_current_user),
+):
+    if session_user.role != "temporary":
+        raise HTTPException(400, detail="Only temporary accounts can be claimed")
+
+    # Check if already claimed
+    temp_info = (session_user.info or {}).get("temporary", {})
+    if temp_info.get("claimed"):
+        raise HTTPException(400, detail="This account has already been claimed")
+
+    email = form_data.email.lower().strip()
+
+    if not validate_email_format(email):
+        raise HTTPException(400, detail=ERROR_MESSAGES.INVALID_EMAIL_FORMAT)
+
+    # Check email isn't already taken by another user
+    existing = Users.get_user_by_email(email)
+    if existing and existing.id != session_user.id:
+        raise HTTPException(400, detail=ERROR_MESSAGES.EMAIL_TAKEN)
+
+    # Update password so they can log in again
+    hashed = get_password_hash(form_data.password)
+    Auths.update_user_password_by_id(session_user.id, hashed)
+
+    # Update email in both auth and user tables
+    Auths.update_email_by_id(session_user.id, email)
+
+    # Mark as claimed but keep role as temporary
+    # Admin approval will upgrade them to "user"
+    user_info = session_user.info or {}
+    user_info["temporary"] = {
+        **user_info.get("temporary", {}),
+        "claimed": True,
+        "claimed_at": int(time.time()),
+    }
+
+    Users.update_user_by_id(
+        session_user.id,
+        {
+            "email": email,
+            "info": user_info,
+        },
+    )
+
+    # Generate new token and set cookie (same as signin)
+    expires_delta = parse_duration(request.app.state.config.JWT_EXPIRES_IN)
+    expires_at = None
+    if expires_delta:
+        expires_at = int(time.time()) + int(expires_delta.total_seconds())
+
+    token = create_token(
+        data={"id": session_user.id},
+        expires_delta=expires_delta,
+    )
+
+    datetime_expires_at = (
+        datetime.datetime.fromtimestamp(expires_at, datetime.timezone.utc)
+        if expires_at
+        else None
+    )
+
+    response.set_cookie(
+        key="token",
+        value=token,
+        expires=datetime_expires_at,
+        httponly=True,
+        samesite=WEBUI_AUTH_COOKIE_SAME_SITE,
+        secure=WEBUI_AUTH_COOKIE_SECURE,
+    )
+
+    user = Users.get_user_by_id(session_user.id)
+    user_permissions = get_permissions(
+        user.id, request.app.state.config.USER_PERMISSIONS
+    )
+
+    return {
+        "token": token,
+        "token_type": "Bearer",
+        "expires_at": expires_at,
+        "id": user.id,
+        "email": user.email,
+        "name": user.name,
+        "role": user.role,
+        "profile_image_url": user.profile_image_url,
+        "permissions": user_permissions,
+        "info": user.info,
+    }
 
 
 ############################
@@ -733,7 +840,14 @@ async def signout(request: Request, response: Response):
 
 
 @router.post("/add", response_model=SigninResponse)
-async def add_user(form_data: AddUserForm, user=Depends(get_admin_user)):
+async def add_user(form_data: AddUserForm, user=Depends(get_admin_or_facilitator_user)):
+    # Facilitators can only create temporary users
+    if user.role == "facilitator" and form_data.role != "temporary":
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            detail="Facilitators can only create temporary accounts",
+        )
+
     if not validate_email_format(form_data.email.lower()):
         raise HTTPException(
             status.HTTP_400_BAD_REQUEST, detail=ERROR_MESSAGES.INVALID_EMAIL_FORMAT
@@ -868,7 +982,7 @@ async def update_admin_config(
     request.app.state.config.ENABLE_CHANNELS = form_data.ENABLE_CHANNELS
     request.app.state.config.ENABLE_NOTES = form_data.ENABLE_NOTES
 
-    if form_data.DEFAULT_USER_ROLE in ["pending", "user", "admin"]:
+    if form_data.DEFAULT_USER_ROLE in ["pending", "user", "admin", "facilitator"]:
         request.app.state.config.DEFAULT_USER_ROLE = form_data.DEFAULT_USER_ROLE
 
     pattern = r"^(-1|0|(-?\d+(\.\d+)?)(ms|s|m|h|d|w))$"

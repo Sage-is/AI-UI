@@ -19,7 +19,7 @@ from open_webui.constants import ERROR_MESSAGES
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from open_webui.utils.tools import get_tool_specs
 from open_webui.utils.auth import get_admin_user, get_verified_user
-from open_webui.utils.access_control import has_access, has_permission
+from open_webui.utils.access_control import has_access, has_facilitator_access, has_permission
 from open_webui.env import SRC_LOG_LEVELS
 
 from open_webui.utils.tools import get_tool_servers_data
@@ -94,6 +94,15 @@ async def get_tools(request: Request, user=Depends(get_verified_user)):
 async def get_tool_list(user=Depends(get_verified_user)):
     if user.role == "admin":
         tools = Tools.get_tools()
+    elif user.role == "facilitator":
+        all_tools = Tools.get_tools()
+        tools = [
+            t
+            for t in all_tools
+            if t.user_id == user.id
+            or has_access(user.id, "write", t.access_control)
+            or has_facilitator_access(user.id, "write", t.access_control)
+        ]
     else:
         tools = Tools.get_tools_by_user_id(user.id, "write")
     return tools

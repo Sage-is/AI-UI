@@ -9,7 +9,7 @@ from open_webui.models.prompts import (
 from open_webui.constants import ERROR_MESSAGES
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from open_webui.utils.auth import get_admin_user, get_verified_user
-from open_webui.utils.access_control import has_access, has_permission
+from open_webui.utils.access_control import has_access, has_facilitator_access, has_permission
 
 router = APIRouter()
 
@@ -22,6 +22,15 @@ router = APIRouter()
 async def get_prompts(user=Depends(get_verified_user)):
     if user.role == "admin":
         prompts = Prompts.get_prompts()
+    elif user.role == "facilitator":
+        all_prompts = Prompts.get_prompts()
+        prompts = [
+            p
+            for p in all_prompts
+            if p.user_id == user.id
+            or has_access(user.id, "read", p.access_control)
+            or has_facilitator_access(user.id, "read", p.access_control)
+        ]
     else:
         prompts = Prompts.get_prompts_by_user_id(user.id, "read")
 
@@ -32,6 +41,15 @@ async def get_prompts(user=Depends(get_verified_user)):
 async def get_prompt_list(user=Depends(get_verified_user)):
     if user.role == "admin":
         prompts = Prompts.get_prompts()
+    elif user.role == "facilitator":
+        all_prompts = Prompts.get_prompts()
+        prompts = [
+            p
+            for p in all_prompts
+            if p.user_id == user.id
+            or has_access(user.id, "write", p.access_control)
+            or has_facilitator_access(user.id, "write", p.access_control)
+        ]
     else:
         prompts = Prompts.get_prompts_by_user_id(user.id, "write")
 

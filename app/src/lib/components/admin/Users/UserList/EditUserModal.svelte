@@ -8,11 +8,13 @@
 
 	import Modal from '$lib/components/common/Modal.svelte';
 	import localizedFormat from 'dayjs/plugin/localizedFormat';
+	import relativeTime from 'dayjs/plugin/relativeTime';
 	import XMark from '$lib/components/icons/XMark.svelte';
 
 	const i18n = getContext('i18n');
 	const dispatch = createEventDispatcher();
 	dayjs.extend(localizedFormat);
+	dayjs.extend(relativeTime);
 
 	export let show = false;
 	export let selectedUser;
@@ -26,10 +28,36 @@
 		password: ''
 	};
 
+	let expiresAt = '';
+
+	$: if (_user.role === 'temporary' && _user.info?.temporary?.expires_at) {
+		// Convert epoch seconds to datetime-local format
+		expiresAt = dayjs(_user.info.temporary.expires_at * 1000).format('YYYY-MM-DDTHH:mm');
+	} else if (_user.role === 'temporary' && !_user.info?.temporary?.expires_at) {
+		// Default to 24h from now for new temporary users
+		expiresAt = dayjs().add(24, 'hour').format('YYYY-MM-DDTHH:mm');
+	}
+
 	const submitHandler = async () => {
-		const res = await updateUserById(localStorage.token, selectedUser.id, _user).catch((error) => {
-			toast.error(`${error}`);
-		});
+		const userData = { ..._user };
+
+		// If temporary role, set the expires_at in info
+		if (userData.role === 'temporary' && expiresAt) {
+			const expiresEpoch = Math.floor(new Date(expiresAt).getTime() / 1000);
+			userData.info = {
+				...(userData.info || {}),
+				temporary: {
+					...(userData.info?.temporary || {}),
+					expires_at: expiresEpoch
+				}
+			};
+		}
+
+		const res = await updateUserById(localStorage.token, selectedUser.id, userData).catch(
+			(error) => {
+				toast.error(`${error}`);
+			}
+		);
 
 		if (res) {
 			dispatch('save');
@@ -100,11 +128,35 @@
 										required
 									>
 										<option value="admin">{$i18n.t('Admin')}</option>
+										<option value="facilitator">{$i18n.t('Facilitator')}</option>
 										<option value="user">{$i18n.t('User')}</option>
+										<option value="temporary">{$i18n.t('Temporary')}</option>
 										<option value="pending">{$i18n.t('Pending')}</option>
 									</select>
 								</div>
 							</div>
+
+							{#if _user.role === 'temporary'}
+								<div style="--d:flex; --fd:column; --w:100%">
+									<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('Account Expires')}</div>
+
+									<div style="--fx:1 1 0%">
+										<input
+											style="--w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+											type="datetime-local"
+											bind:value={expiresAt}
+										/>
+									</div>
+									{#if expiresAt}
+										<div style="--size:0.625rem; --c:var(--color-gray-500, #9b9b9b); --mt:0.125rem">
+											{dayjs(expiresAt).fromNow()}
+											{#if dayjs(expiresAt).isBefore(dayjs())}
+												<span style="--c:#ef4444">({$i18n.t('expired')})</span>
+											{/if}
+										</div>
+									{/if}
+								</div>
+							{/if}
 
 							<div style="--d:flex; --fd:column; --w:100%">
 								<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('Email')}</div>

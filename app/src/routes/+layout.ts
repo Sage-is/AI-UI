@@ -16,8 +16,8 @@ export const load = async ({ fetch, url }) => {
         console.error('Failed to fetch backend config', e);
     }
 
-    // Skip session check on auth page to avoid unnecessary 403 errors
-    if (!url.pathname.startsWith('/auth')) {
+    // Skip session check on auth/join pages to avoid unnecessary 403 errors
+    if (!url.pathname.startsWith('/auth') && !url.pathname.startsWith('/join')) {
         try {
             user = await getSessionUser(fetch);
         } catch (error) {
@@ -27,7 +27,7 @@ export const load = async ({ fetch, url }) => {
     }
 
     // Auth Guard: If not logged in and not on auth page/unprotected routes
-    if (!user && !url.pathname.startsWith('/auth')) {
+    if (!user && !url.pathname.startsWith('/auth') && !url.pathname.startsWith('/join')) {
         throw redirect(303, '/auth');
     }
 

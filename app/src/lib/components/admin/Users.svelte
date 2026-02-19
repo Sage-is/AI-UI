@@ -8,6 +8,7 @@
 
 	import UserList from './Users/UserList.svelte';
 	import Groups from './Users/Groups.svelte';
+	import MagicLinks from './Users/MagicLinks.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -15,7 +16,7 @@
 	$: {
 		const pathParts = $page.url.pathname.split('/');
 		const tabFromPath = pathParts[pathParts.length - 1];
-		selectedTab = ['overview', 'groups'].includes(tabFromPath) ? tabFromPath : 'overview';
+		selectedTab = ['overview', 'groups', 'magic-links'].includes(tabFromPath) ? tabFromPath : 'overview';
 	}
 
 	$: if (selectedTab) {
@@ -33,7 +34,7 @@
 	let loaded = false;
 
 	onMount(async () => {
-		if ($user?.role !== 'admin') {
+		if ($user?.role !== 'admin' && $user?.role !== 'facilitator') {
 			await goto('/');
 		}
 
@@ -112,6 +113,37 @@
 			</div>
 			<div style="--as:center">{$i18n.t('Groups')}</div>
 		</button>
+
+		<button
+			id="magic-links"
+			style="--px:0.125rem; --py:0.25rem; --minw:fit-content; --radius:0.5rem; --fx-lg:none; --d:flex; --ta:right; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{selectedTab ===
+			'magic-links'
+				? ''
+				: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+			on:click={() => {
+				goto('/admin/users/magic-links');
+			}}
+		>
+			<div style="--as:center; --mr:0.5rem">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 16 16"
+					fill="currentColor"
+					style="--w:1rem; --h:1rem"
+				>
+					<path fill-rule="evenodd"
+						d="M8.914 6.025a.75.75 0 0 1 1.06 0 3.5 3.5 0 0 1 0 4.95l-2 2a3.5 3.5 0 0 1-5.396-4.402.75.75 0 0 1 1.251.827 2 2 0 0 0 3.085 2.514l2-2a2 2 0 0 0 0-2.828.75.75 0 0 1 0-1.06Z"
+						clip-rule="evenodd"
+					/>
+					<path fill-rule="evenodd"
+						d="M7.086 9.975a.75.75 0 0 1-1.06 0 3.5 3.5 0 0 1 0-4.95l2-2a3.5 3.5 0 0 1 5.396 4.402.75.75 0 0 1-1.251-.827 2 2 0 0 0-3.085-2.514l-2 2a2 2 0 0 0 0 2.828.75.75 0 0 1 0 1.06Z"
+						clip-rule="evenodd"
+					/>
+				</svg>
+			</div>
+			<div style="--as:center">{$i18n.t('Magic Links')}</div>
+		</button>
 	</div>
 
 	<div style="--fx:1 1 0%; --mt:0.25rem; --mt-lg:0; --ofy:scroll">
@@ -119,6 +151,8 @@
 			<UserList />
 		{:else if selectedTab === 'groups'}
 			<Groups />
+		{:else if selectedTab === 'magic-links'}
+			<MagicLinks />
 		{/if}
 	</div>
 </div>

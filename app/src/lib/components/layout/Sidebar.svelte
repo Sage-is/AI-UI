@@ -733,13 +733,13 @@
 				</div>
 			{/if}
 
-			{#if $config?.features?.enable_channels && ($user?.role === 'admin' || $channels.length > 0)}
+			{#if $config?.features?.enable_channels && ($user?.role === 'admin' || $user?.role === 'facilitator' || $channels.length > 0)}
 				<Folder
 					className="px-2 mt-0.5"
 					name={$i18n.t('Spaces')}
 					dragAndDrop={false}
 					onAdd={async () => {
-						if ($user?.role === 'admin') {
+						if ($user?.role === 'admin' || $user?.role === 'facilitator') {
 							await tick();
 
 							setTimeout(() => {

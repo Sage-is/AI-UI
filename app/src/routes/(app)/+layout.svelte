@@ -59,7 +59,7 @@
 	onMount(async () => {
 		if ($user === undefined || $user === null) {
 			await goto('/auth');
-		} else if (['user', 'admin'].includes($user?.role)) {
+		} else if (['user', 'admin', 'facilitator', 'temporary'].includes($user?.role)) {
 			try {
 				// Check if IndexedDB exists
 				DB = await openDB('Chats', 1);
@@ -277,7 +277,7 @@
 		<div
 			style="--c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-100, #ececec); --bgc:#fff; --dark-bgc:var(--color-gray-900, #171717); --h:100vh; --maxh:100dvh; --of:auto; --d:flex; --fd:row; --jc:flex-end"
 		>
-			{#if !['user', 'admin'].includes($user?.role)}
+			{#if !['user', 'admin', 'facilitator', 'temporary'].includes($user?.role)}
 				<AccountPending />
 			{:else}
 				{#if localDBChats.length > 0}

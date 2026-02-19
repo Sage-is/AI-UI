@@ -107,6 +107,26 @@ def has_permission(
     return get_permission(default_permissions, permission_hierarchy)
 
 
+def has_facilitator_access(
+    user_id: str,
+    type: str = "read",
+    access_control: Optional[dict] = None,
+) -> bool:
+    """Check if a facilitator has access to a resource via their facilitated groups."""
+    if access_control is None:
+        return type == "read"
+
+    facilitator_groups = Groups.get_groups_where_facilitator(user_id)
+    facilitator_group_ids = [group.id for group in facilitator_groups]
+    permission_access = access_control.get(type, {})
+    permitted_group_ids = permission_access.get("group_ids", [])
+    permitted_user_ids = permission_access.get("user_ids", [])
+
+    return user_id in permitted_user_ids or any(
+        group_id in permitted_group_ids for group_id in facilitator_group_ids
+    )
+
+
 def has_access(
     user_id: str,
     type: str = "write",

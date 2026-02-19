@@ -121,6 +121,9 @@
 					</div>
 					<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">{$i18n.t('Playground')}</div>
 				</DropdownMenu.Item>
+		{/if}
+
+		{#if role === 'admin' || role === 'facilitator'}
 
 				<DropdownMenu.Item
 					style="--d:flex; --radius:0.375rem; --py:0.375rem; --px:0.75rem; --w:100%; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --us:none"
@@ -129,7 +132,7 @@
 						if ($mobile) {
 							showSidebar.set(false);
 						}
-						goto('/admin/settings');
+						goto(role === 'admin' ? '/admin/settings' : '/admin');
 					}}
 				>
 					<div style="--as:center; --mr:0.75rem">

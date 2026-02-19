@@ -77,6 +77,7 @@ from open_webui.routers import (
     groups,
     files,
     functions,
+    magic_links,
     memories,
     models,
     knowledge,
@@ -467,6 +468,22 @@ https://github.com/Sage-is/AI-UI
 )
 
 
+async def periodic_temporary_account_cleanup():
+    """Periodically deactivate expired temporary accounts (runs every 5 minutes)."""
+    from open_webui.models.users import Users
+
+    while True:
+        try:
+            await asyncio.sleep(300)  # 5 minutes
+            expired_users = Users.get_expired_temporary_users()
+            for u in expired_users:
+                # Deactivate by setting role to "pending" so they can't log in
+                Users.update_user_role_by_id(u.id, "pending")
+                log.info(f"Deactivated expired temporary account: {u.id} ({u.email})")
+        except Exception as e:
+            log.error(f"Error in temporary account cleanup: {e}")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.instance_id = INSTANCE_ID
@@ -501,6 +518,7 @@ async def lifespan(app: FastAPI):
         limiter.total_tokens = THREAD_POOL_SIZE
 
     asyncio.create_task(periodic_usage_pool_cleanup())
+    asyncio.create_task(periodic_temporary_account_cleanup())
 
     if app.state.config.ENABLE_BASE_MODELS_CACHE:
         await get_all_models(
@@ -1137,6 +1155,9 @@ app.include_router(tools.router, prefix="/api/v1/tools", tags=["tools"])
 app.include_router(memories.router, prefix="/api/v1/memories", tags=["memories"])
 app.include_router(folders.router, prefix="/api/v1/folders", tags=["folders"])
 app.include_router(groups.router, prefix="/api/v1/groups", tags=["groups"])
+app.include_router(
+    magic_links.router, prefix="/api/v1/magic-links", tags=["magic-links"]
+)
 app.include_router(files.router, prefix="/api/v1/files", tags=["files"])
 app.include_router(functions.router, prefix="/api/v1/functions", tags=["functions"])
 app.include_router(
