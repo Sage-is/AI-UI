@@ -12,7 +12,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 
 
 from open_webui.utils.auth import get_admin_user, get_verified_user
-from open_webui.utils.access_control import has_access, has_permission
+from open_webui.utils.access_control import has_access, has_facilitator_access, has_permission
 
 
 router = APIRouter()
@@ -27,6 +27,15 @@ router = APIRouter()
 async def get_models(id: Optional[str] = None, user=Depends(get_verified_user)):
     if user.role == "admin":
         return Models.get_models()
+    elif user.role == "facilitator":
+        all_models = Models.get_models()
+        return [
+            m
+            for m in all_models
+            if m.user_id == user.id
+            or has_access(user.id, "write", m.access_control)
+            or has_facilitator_access(user.id, "write", m.access_control)
+        ]
     else:
         return Models.get_models_by_user_id(user.id)
 

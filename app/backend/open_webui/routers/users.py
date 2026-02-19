@@ -25,7 +25,13 @@ from open_webui.env import SRC_LOG_LEVELS
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
 
-from open_webui.utils.auth import get_admin_user, get_password_hash, get_verified_user
+from open_webui.utils.auth import (
+    get_admin_user,
+    get_admin_or_facilitator_user,
+    get_password_hash,
+    get_verified_user,
+)
+from open_webui.utils.facilitator import get_facilitator_scope, can_facilitator_manage_user
 from open_webui.utils.access_control import get_permissions, has_permission
 
 
@@ -89,6 +95,68 @@ async def get_all_users(
     user=Depends(get_admin_user),
 ):
     return Users.get_users()
+
+
+############################
+# Managed Users (Facilitator)
+############################
+
+
+@router.get("/managed", response_model=UserListResponse)
+async def get_managed_users(
+    query: Optional[str] = None,
+    order_by: Optional[str] = None,
+    direction: Optional[str] = None,
+    page: Optional[int] = 1,
+    user=Depends(get_admin_or_facilitator_user),
+):
+    if user.role == "admin":
+        # Admins get all users
+        limit = PAGE_ITEM_COUNT
+        page = max(1, page)
+        skip = (page - 1) * limit
+        filter = {}
+        if query:
+            filter["query"] = query
+        if order_by:
+            filter["order_by"] = order_by
+        if direction:
+            filter["direction"] = direction
+        return Users.get_users(filter=filter, skip=skip, limit=limit)
+
+    # Facilitators get only users in their groups
+    scope = get_facilitator_scope(user.id)
+    managed_user_ids = scope["managed_user_ids"]
+
+    if not managed_user_ids:
+        return {"users": [], "total": 0}
+
+    managed_users = Users.get_users_by_user_ids(managed_user_ids)
+
+    # Apply query filter
+    if query:
+        q = query.lower()
+        managed_users = [
+            u
+            for u in managed_users
+            if q in u.name.lower() or q in u.email.lower()
+        ]
+
+    total = len(managed_users)
+
+    # Apply ordering
+    if order_by:
+        reverse = direction != "asc"
+        if order_by in ("name", "email", "role", "created_at", "last_active_at", "updated_at"):
+            managed_users.sort(key=lambda u: getattr(u, order_by, ""), reverse=reverse)
+
+    # Apply pagination
+    limit = PAGE_ITEM_COUNT
+    page = max(1, page)
+    skip = (page - 1) * limit
+    managed_users = managed_users[skip : skip + limit]
+
+    return {"users": managed_users, "total": total}
 
 
 ############################
@@ -348,27 +416,47 @@ async def get_user_active_status_by_id(user_id: str, user=Depends(get_verified_u
 async def update_user_by_id(
     user_id: str,
     form_data: UserUpdateForm,
-    session_user=Depends(get_admin_user),
+    session_user=Depends(get_admin_or_facilitator_user),
 ):
+    # Facilitator scope check
+    if session_user.role == "facilitator":
+        if not can_facilitator_manage_user(session_user.id, user_id):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You can only manage users in your facilitated groups",
+            )
+        # Facilitators cannot promote users to admin or facilitator
+        target_user = Users.get_user_by_id(user_id)
+        if target_user and target_user.role == "admin":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Facilitators cannot modify admin users",
+            )
+        if form_data.role in ("admin",):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Facilitators cannot assign admin role",
+            )
+
     # Prevent modification of the primary admin user by other admins
     try:
         first_user = Users.get_first_user()
         if first_user:
             if user_id == first_user.id:
                 if session_user.id != user_id:
-                    # If the user trying to update is the primary admin, and they are not the primary admin themselves
                     raise HTTPException(
                         status_code=status.HTTP_403_FORBIDDEN,
                         detail=ERROR_MESSAGES.ACTION_PROHIBITED,
                     )
 
                 if form_data.role != "admin":
-                    # If the primary admin is trying to change their own role, prevent it
                     raise HTTPException(
                         status_code=status.HTTP_403_FORBIDDEN,
                         detail=ERROR_MESSAGES.ACTION_PROHIBITED,
                     )
 
+    except HTTPException:
+        raise
     except Exception as e:
         log.error(f"Error checking primary admin status: {e}")
         raise HTTPException(
@@ -393,15 +481,15 @@ async def update_user_by_id(
             Auths.update_user_password_by_id(user_id, hashed)
 
         Auths.update_email_by_id(user_id, form_data.email.lower())
-        updated_user = Users.update_user_by_id(
-            user_id,
-            {
-                "role": form_data.role,
-                "name": form_data.name,
-                "email": form_data.email.lower(),
-                "profile_image_url": form_data.profile_image_url,
-            },
-        )
+        update_data = {
+            "role": form_data.role,
+            "name": form_data.name,
+            "email": form_data.email.lower(),
+            "profile_image_url": form_data.profile_image_url,
+        }
+        if form_data.info is not None:
+            update_data["info"] = form_data.info
+        updated_user = Users.update_user_by_id(user_id, update_data)
 
         if updated_user:
             return updated_user

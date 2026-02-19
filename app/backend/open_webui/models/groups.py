@@ -192,6 +192,84 @@ class GroupTable:
             except Exception:
                 return False
 
+    def get_facilitator_ids_by_group_id(self, id: str) -> list[str]:
+        group = self.get_group_by_id(id)
+        if group and group.meta:
+            return group.meta.get("facilitator_ids", [])
+        return []
+
+    def add_facilitator_to_group(self, id: str, user_id: str) -> Optional[GroupModel]:
+        try:
+            with get_db() as db:
+                group = db.query(Group).filter_by(id=id).first()
+                if not group:
+                    return None
+
+                meta = group.meta or {}
+                facilitator_ids = meta.get("facilitator_ids", [])
+                if user_id not in facilitator_ids:
+                    facilitator_ids.append(user_id)
+                meta["facilitator_ids"] = facilitator_ids
+
+                group.meta = meta
+                group.updated_at = int(time.time())
+                db.commit()
+                db.refresh(group)
+                return GroupModel.model_validate(group)
+        except Exception as e:
+            log.exception(e)
+            return None
+
+    def remove_facilitator_from_group(
+        self, id: str, user_id: str
+    ) -> Optional[GroupModel]:
+        try:
+            with get_db() as db:
+                group = db.query(Group).filter_by(id=id).first()
+                if not group:
+                    return None
+
+                meta = group.meta or {}
+                facilitator_ids = meta.get("facilitator_ids", [])
+                if user_id in facilitator_ids:
+                    facilitator_ids.remove(user_id)
+                meta["facilitator_ids"] = facilitator_ids
+
+                group.meta = meta
+                group.updated_at = int(time.time())
+                db.commit()
+                db.refresh(group)
+                return GroupModel.model_validate(group)
+        except Exception as e:
+            log.exception(e)
+            return None
+
+    def is_facilitator_of_group(self, user_id: str, group_id: str) -> bool:
+        facilitator_ids = self.get_facilitator_ids_by_group_id(group_id)
+        return user_id in facilitator_ids
+
+    def has_admin_in_group(self, group_id: str) -> bool:
+        from open_webui.models.users import Users
+
+        group = self.get_group_by_id(group_id)
+        if not group or not group.user_ids:
+            return False
+
+        users = Users.get_users_by_user_ids(group.user_ids)
+        return any(u.role == "admin" for u in users)
+
+    def get_groups_where_facilitator(self, user_id: str) -> list[GroupModel]:
+        with get_db() as db:
+            all_groups = [
+                GroupModel.model_validate(group)
+                for group in db.query(Group).order_by(Group.updated_at.desc()).all()
+            ]
+            return [
+                g
+                for g in all_groups
+                if g.meta and user_id in g.meta.get("facilitator_ids", [])
+            ]
+
     def remove_user_from_all_groups(self, user_id: str) -> bool:
         with get_db() as db:
             try:

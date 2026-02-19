@@ -12,7 +12,7 @@
 
 	import { toast } from 'svelte-sonner';
 
-	import { updateUserRole, getUsers, deleteUserById } from '$lib/apis/users';
+	import { updateUserRole, getUsers, getManagedUsers, deleteUserById } from '$lib/apis/users';
 
 	import Pagination from '$lib/components/common/Pagination.svelte';
 	import ChatBubbles from '$lib/components/icons/ChatBubbles.svelte';
@@ -35,6 +35,8 @@
 	import Spinner from '$lib/components/common/Spinner.svelte';
 
 	const i18n = getContext('i18n');
+
+	$: isAdmin = $user?.role === 'admin';
 
 	let page = 1;
 
@@ -80,7 +82,8 @@
 
 	const getUserList = async () => {
 		try {
-			const res = await getUsers(localStorage.token, query, orderBy, direction, page).catch(
+			const fetchFn = $user?.role === 'facilitator' ? getManagedUsers : getUsers;
+			const res = await fetchFn(localStorage.token, query, orderBy, direction, page).catch(
 				(error) => {
 					toast.error(`${error}`);
 					return null;
@@ -384,7 +387,7 @@
 								}}
 							>
 								<Badge
-									type={user.role === 'admin' ? 'info' : user.role === 'user' ? 'success' : 'muted'}
+									type={user.role === 'admin' ? 'info' : user.role === 'facilitator' ? 'warning' : user.role === 'user' ? 'success' : user.role === 'temporary' ? 'muted' : 'muted'}
 									content={$i18n.t(user.role)}
 								/>
 							</button>
@@ -414,7 +417,15 @@
 							{dayjs(user.created_at * 1000).format('LL')}
 						</td>
 
-						<td style="--px:0.75rem; --py:0.25rem"> {user.oauth_sub ?? ''} </td>
+						<td style="--px:0.75rem; --py:0.25rem">
+							{#if user.role === 'temporary' && user.info?.temporary?.expires_at}
+								<span style="{dayjs(user.info.temporary.expires_at * 1000).isBefore(dayjs()) ? '--c:#ef4444' : '--c:var(--color-gray-500, #9b9b9b)'}">
+									{dayjs(user.info.temporary.expires_at * 1000).fromNow()}
+								</span>
+							{:else}
+								{user.oauth_sub ?? ''}
+							{/if}
+						</td>
 
 						<td style="--px:0.75rem; --py:0.25rem; --ta:right">
 							<div style="--d:flex; --jc:flex-end; --w:100%">
@@ -457,7 +468,7 @@
 									</button>
 								</Tooltip>
 
-								{#if user.role !== 'admin'}
+								{#if isAdmin && user.role !== 'admin'}
 									<Tooltip content={$i18n.t('Delete User')}>
 										<button
 											style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.75rem"

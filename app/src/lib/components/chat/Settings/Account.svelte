@@ -7,6 +7,7 @@
 	import { WEBUI_BASE_URL } from '$lib/constants';
 
 	import UpdatePassword from './Account/UpdatePassword.svelte';
+	import ClaimAccount from './Account/ClaimAccount.svelte';
 	import { getGravatarUrl } from '$lib/apis/utils';
 	import { generateInitialsImage, canvasPixelTest } from '$lib/utils';
 	import { copyToClipboard } from '$lib/utils';
@@ -269,9 +270,15 @@
 
 		<hr style="--bc:var(--color-gray-50, #f9f9f9); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem" />
 
-		<div style="--my:0.5rem">
-			<UpdatePassword />
-		</div>
+		{#if $user?.role === 'temporary'}
+			<div style="--my:0.5rem; --p:0.75rem; --radius:0.75rem; --bgc:#fefce8; --dark-bgc:rgb(66 32 6 / 0.3); --b:1px solid; --bc:#fde047; --dark-bc:rgb(161 98 7 / 0.5)">
+				<ClaimAccount />
+			</div>
+		{:else}
+			<div style="--my:0.5rem">
+				<UpdatePassword />
+			</div>
+		{/if}
 
 		{#if ($config?.features?.enable_api_key ?? true) || $user?.role === 'admin'}
 			<div style="--d:flex; --jc:space-between; --ai:center; --size:0.875rem; --mb:0.5rem">

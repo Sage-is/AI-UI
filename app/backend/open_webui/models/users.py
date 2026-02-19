@@ -112,6 +112,7 @@ class UserUpdateForm(BaseModel):
     email: str
     profile_image_url: str
     password: Optional[str] = None
+    info: Optional[dict] = None
 
 
 class UsersTable:
@@ -403,6 +404,26 @@ class UsersTable:
         with get_db() as db:
             users = db.query(User).filter(User.id.in_(user_ids)).all()
             return [user.id for user in users]
+
+    def get_expired_temporary_users(self) -> list[UserModel]:
+        with get_db() as db:
+            now = int(time.time())
+            temp_users = (
+                db.query(User).filter(User.role == "temporary").all()
+            )
+            expired = []
+            for u in temp_users:
+                if u.info and isinstance(u.info, dict):
+                    temp_info = u.info.get("temporary", {})
+                    expires_at = temp_info.get("expires_at")
+                    if expires_at and int(expires_at) < now:
+                        expired.append(UserModel.model_validate(u))
+            return expired
+
+    def get_users_by_ids_in_list(self, user_ids: list[str]) -> list[UserModel]:
+        with get_db() as db:
+            users = db.query(User).filter(User.id.in_(user_ids)).all()
+            return [UserModel.model_validate(user) for user in users]
 
     def get_super_admin_user(self) -> Optional[UserModel]:
         with get_db() as db:

@@ -124,7 +124,7 @@
 	};
 
 	onMount(async () => {
-		if ($user?.role !== 'admin') {
+		if ($user?.role !== 'admin' && $user?.role !== 'facilitator') {
 			await goto('/');
 			return;
 		}
@@ -228,37 +228,39 @@
 
 		<hr style="--mb:0.5rem; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)" />
 
-		<GroupModal
-			bind:show={showDefaultPermissionsModal}
-			tabs={['permissions']}
-			bind:permissions={defaultPermissions}
-			custom={false}
-			onSubmit={updateDefaultPermissionsHandler}
-		/>
+		{#if $user?.role === 'admin'}
+			<GroupModal
+				bind:show={showDefaultPermissionsModal}
+				tabs={['permissions']}
+				bind:permissions={defaultPermissions}
+				custom={false}
+				onSubmit={updateDefaultPermissionsHandler}
+			/>
 
-		<button
-			style="--d:flex; --ai:center; --jc:space-between; --radius:0.5rem; --w:100%; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --pt:0.25rem"
-			on:click={() => {
-				showDefaultPermissionsModal = true;
-			}}
-		>
-			<div style="--d:flex; --ai:center; --g:0.625rem">
-				<div style="--p:0.375rem; --bgc:rgb(0 0 0 / 0.05); --dark-bgc:rgb(255 255 255 / 0.1); --radius:9999px">
-					<UsersSolid className="size-4" />
-				</div>
+			<button
+				style="--d:flex; --ai:center; --jc:space-between; --radius:0.5rem; --w:100%; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --pt:0.25rem"
+				on:click={() => {
+					showDefaultPermissionsModal = true;
+				}}
+			>
+				<div style="--d:flex; --ai:center; --g:0.625rem">
+					<div style="--p:0.375rem; --bgc:rgb(0 0 0 / 0.05); --dark-bgc:rgb(255 255 255 / 0.1); --radius:9999px">
+						<UsersSolid className="size-4" />
+					</div>
 
-				<div style="--ta:left">
-					<div style="--size:0.875rem; --weight:500">{$i18n.t('Default permissions')}</div>
+					<div style="--ta:left">
+						<div style="--size:0.875rem; --weight:500">{$i18n.t('Default permissions')}</div>
 
-					<div style="--d:flex; --size:0.75rem; --mt:0.125rem">
-						{$i18n.t('applies to all users with the "user" role')}
+						<div style="--d:flex; --size:0.75rem; --mt:0.125rem">
+							{$i18n.t('applies to all users with the "user" role')}
+						</div>
 					</div>
 				</div>
-			</div>
 
-			<div>
-				<ChevronRight strokeWidth="2.5" />
-			</div>
-		</button>
+				<div>
+					<ChevronRight strokeWidth="2.5" />
+				</div>
+			</button>
+		{/if}
 	</div>
 {/if}

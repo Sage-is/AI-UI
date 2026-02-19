@@ -66,6 +66,7 @@ export const userSignOut = async () => {
 };
 
 export const addUser = async (
+	token: string,
 	name: string,
 	email: string,
 	password: string,
@@ -91,6 +92,9 @@ export const updateUserPassword = async (password: string, newPassword: string) 
 		password,
 		new_password: newPassword
 	}, 'updateUserPassword');
+
+export const claimAccount = async (email: string, password: string) =>
+	api(`${WEBUI_API_BASE_URL}/auths/claim`, 'POST', { email, password }, 'claimAccount');
 
 export const getSignUpEnabledStatus = async () =>
 	api(`${WEBUI_API_BASE_URL}/auths/signup/enabled`, 'GET', null, 'getSignUpEnabledStatus');

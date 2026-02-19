@@ -11,7 +11,7 @@
 	let loaded = false;
 
 	onMount(async () => {
-		if ($user?.role !== 'admin') {
+		if ($user?.role !== 'admin' && $user?.role !== 'facilitator') {
 			await goto('/');
 		}
 		loaded = true;
@@ -55,36 +55,40 @@
 						style="--d:flex; --g:0.25rem; --ofx:auto; --w:fit-content; --ta:center; --size:0.875rem; --weight:500; --radius:9999px; --bgc:transparent; --pt:0.25rem"
 	class="scrollbar-none"
 					>
-						<a
-							style="--minw:fit-content; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+						{#if $user?.role === 'admin'}
+							<a
+								style="--minw:fit-content; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="{$page.url.pathname.includes('/admin/settings')
-								? ''
-								: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
-							href="/admin/settings">{$i18n.t('Settings')}</a
-						>
+									? ''
+									: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+								href="/admin/settings">{$i18n.t('Settings')}</a
+							>
+						{/if}
 						<a
 							style="--minw:fit-content; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
-	class="{$page.url.pathname.includes('/admin/users')
+	class="{$page.url.pathname === '/admin' || $page.url.pathname.includes('/admin/users')
 								? ''
 								: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
 							href="/admin">{$i18n.t('Users')}</a
 						>
 
-						<a
-							style="--minw:fit-content; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+						{#if $user?.role === 'admin'}
+							<a
+								style="--minw:fit-content; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="{$page.url.pathname.includes('/admin/evaluations')
-								? ''
-								: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
-							href="/admin/evaluations">{$i18n.t('Evaluations')}</a
-						>
+									? ''
+									: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+								href="/admin/evaluations">{$i18n.t('Evaluations')}</a
+							>
 
-						<a
-							style="--minw:fit-content; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+							<a
+								style="--minw:fit-content; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="{$page.url.pathname.includes('/admin/functions')
-								? ''
-								: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
-							href="/admin/functions">{$i18n.t('Functions')}</a
-						>
+									? ''
+									: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+								href="/admin/functions">{$i18n.t('Functions')}</a
+							>
+						{/if}
 					</div>
 				</div>
 			</div>
