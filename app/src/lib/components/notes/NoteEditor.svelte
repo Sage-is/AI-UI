@@ -866,7 +866,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 					>
 						<div style="--w:100%; --d:flex; --ai:center">
 							<div
-								style="--d:flex; --fx:none; --ai:center; --pr:0.25rem; --translatex:-0.25rem"
+								style="--d:flex; --fx:none; --ai:center; --pr:0.25rem; --translatex:-0.25rem; {$showSidebar ? '--d:none' : ''}"
 	class="{$showSidebar
 									? 'md:hidden pl-0.5'
 									: ''}"

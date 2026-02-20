@@ -53,7 +53,7 @@
 	<div style="--d:flex; --maxw:100%; --w:100%; --mx:auto; --px:0.25rem; --pt:0.125rem; --grad:0deg; --grad-color: hsl(273, 100%, 100%)">
 		<div style="--d:flex; --ai:center; --w:100%; --maxw:100%">
 			<div
-				style="--mr:0.25rem; --as:flex-start; --d:flex; --fx:none; --ai:center; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-400, #b4b4b4)"
+				style="--mr:0.25rem; --as:flex-start; --d:flex; --fx:none; --ai:center; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-400, #b4b4b4); {$showSidebar ? '--d:none' : ''}"
 	class="{$showSidebar
 					? 'md:hidden'
 					: ''}"

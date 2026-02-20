@@ -26,7 +26,7 @@
 	>
 		<div style="--d:flex; --ai:center">
 			<div
-				style="--d:flex; --fx:none; --ai:center; --as:flex-end"
+				style="--d:flex; --fx:none; --ai:center; --as:flex-end; {$showSidebar ? '--d:none' : ''}"
 				class={$showSidebar ? 'md:hidden' : ''}
 			>
 				<button
@@ -50,18 +50,10 @@
 				>
 					<a
 						style="--minw:fit-content; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
-						class={$page.url.pathname.includes('/home/notes')
+						class={$page.url.pathname.includes('/notes')
 							? ''
 							: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}
-						href="/playground/notes">{$i18n.t('Notes')}</a
-					>
-
-					<a
-						style="--minw:fit-content; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
-						class={$page.url.pathname.includes('/playground/calendar')
-							? ''
-							: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}
-						href="/playground/completions">{$i18n.t('Calendar')}</a
+						href="/notes">{$i18n.t('Notes')}</a
 					>
 				</div>
 			</div>
