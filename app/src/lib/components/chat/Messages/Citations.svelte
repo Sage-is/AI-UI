@@ -8,6 +8,7 @@
 	const i18n = getContext('i18n');
 
 	export let id = '';
+	export let chatId = '';
 	export let sources = [];
 
 	let citations = [];
@@ -100,6 +101,8 @@
 <CitationsModal
 	bind:show={showCitationModal}
 	citation={selectedCitation}
+	{chatId}
+	messageId={id}
 	{showPercentage}
 	{showRelevance}
 />
