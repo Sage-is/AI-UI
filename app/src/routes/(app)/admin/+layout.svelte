@@ -33,7 +33,7 @@
 		<nav style="--px:0.625rem; --pt:0.25rem; backdrop-filter:blur(24px)" class="drag-region">
 			<div style="--d:flex; --ai:center; --g:0.25rem">
 				<div
-					style="--d:flex; --fx:none; --ai:center; --as:flex-end"
+					style="--d:flex; --fx:none; --ai:center; --as:flex-end; {$showSidebar ? '--d:none' : ''}"
 					class={$showSidebar ? 'md:hidden' : ''}
 				>
 					<button

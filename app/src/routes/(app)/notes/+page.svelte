@@ -12,7 +12,7 @@
 <nav style="--px:0.5rem; --pt:0.25rem; backdrop-filter:blur(24px); --w:100%"
 	class="drag-region">
 	<div style="--d:flex; --ai:center">
-		<div style="--d:flex; --fx:none; --ai:center"
+		<div style="--d:flex; --fx:none; --ai:center; {$showSidebar ? '--d:none' : ''}"
 	class="{$showSidebar ? 'md:hidden' : ''}">
 			<button
 				id="sidebar-toggle-button"

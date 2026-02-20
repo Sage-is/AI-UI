@@ -26,7 +26,7 @@
 	>
 		<div style="--d:flex; --ai:center">
 			<div
-				style="--d:flex; --fx:none; --ai:center; --as:flex-end"
+				style="--d:flex; --fx:none; --ai:center; --as:flex-end; {$showSidebar ? '--d:none' : ''}"
 				class={$showSidebar ? 'md:hidden' : ''}
 			>
 				<button
