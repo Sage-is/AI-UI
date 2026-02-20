@@ -1,12 +1,10 @@
 <script lang="ts">
-	import { onMount, getContext } from 'svelte';
-	import { WEBUI_NAME, showSidebar, functions } from '$lib/stores';
+	import { getContext } from 'svelte';
+	import { WEBUI_NAME, showSidebar } from '$lib/stores';
 	import MenuLines from '$lib/components/icons/MenuLines.svelte';
 	import { page } from '$app/stores';
 
 	const i18n = getContext('i18n');
-
-	onMount(async () => {});
 </script>
 
 <svelte:head>
@@ -50,11 +48,29 @@
 				>
 					<a
 						style="--minw:fit-content; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+						class={['/home', '/home/'].includes($page.url.pathname)
+							? ''
+							: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}
+						href="/home">{$i18n.t('Dashboard')}</a
+					>
+
+					<a
+						style="--minw:fit-content; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						class={$page.url.pathname.includes('/notes')
 							? ''
 							: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}
 						href="/notes">{$i18n.t('Notes')}</a
 					>
+
+					<a
+						style="--minw:fit-content; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+						class="text-gray-300 dark:text-gray-600 cursor-default"
+						href="/home"
+						on:click|preventDefault
+					>
+						{$i18n.t('Calendar')}
+						<span style="--size:0.625rem; --op:0.6; --ml:0.125rem">{$i18n.t('Soon')}</span>
+					</a>
 				</div>
 			</div>
 		</div>
