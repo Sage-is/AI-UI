@@ -64,7 +64,26 @@
 	function updatePosition() {
 		if (!triggerEl) return;
 		const rect = triggerEl.getBoundingClientRect();
-		menuStyle = `position:fixed; bottom:${window.innerHeight - rect.top + 4}px; left:${rect.left}px;`;
+		const vH = window.innerHeight;
+		const vW = window.innerWidth;
+
+		let style = 'position:fixed;';
+
+		// Vertical: bottom half → open upward, top half → open downward
+		if (rect.top > vH / 2) {
+			style += ` bottom:${vH - rect.top + 4}px;`;
+		} else {
+			style += ` top:${rect.bottom + 4}px;`;
+		}
+
+		// Horizontal: right half → align right edge, left half → align left edge
+		if (rect.left > vW / 2) {
+			style += ` right:${vW - rect.right}px;`;
+		} else {
+			style += ` left:${rect.left}px;`;
+		}
+
+		menuStyle = style;
 	}
 
 	function handleWindowPointerdown(e: PointerEvent) {
