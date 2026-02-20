@@ -65,9 +65,9 @@
 	<slot name="content">
 		<DropdownMenu.Content
 			style="--w:100%; --size:0.875rem; --radius:0.75rem; --px:0.25rem; --py:0.375rem; --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850, #262626); --dark-c:#fff; --shadow:4"
-	class="{className} font-primary"
+			class="{className} font-primary"
 			sideOffset={4}
-			side="bottom"
+			side="top"
 			align="start"
 			transition={(e) => fade(e, { duration: 100 })}
 		>
@@ -85,7 +85,9 @@
 				<div style="--as:center; --mr:0.75rem">
 					<Settings className="w-5 h-5" strokeWidth="1.5" />
 				</div>
-				<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">{$i18n.t('Settings')}</div>
+				<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
+					{$i18n.t('Settings')}
+				</div>
 			</DropdownMenu.Item>
 
 			<DropdownMenu.Item
@@ -102,7 +104,9 @@
 				<div style="--as:center; --mr:0.75rem">
 					<ArchiveBox className="size-5" strokeWidth="1.5" />
 				</div>
-				<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">{$i18n.t('Archived Chats')}</div>
+				<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
+					{$i18n.t('Archived Chats')}
+				</div>
 			</DropdownMenu.Item>
 
 			{#if role === 'admin'}
@@ -119,12 +123,13 @@
 					<div style="--as:center; --mr:0.75rem">
 						<Code className="size-5" strokeWidth="1.5" />
 					</div>
-					<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">{$i18n.t('Playground')}</div>
+					<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
+						{$i18n.t('Playground')}
+					</div>
 				</DropdownMenu.Item>
-		{/if}
+			{/if}
 
-		{#if role === 'admin' || role === 'facilitator'}
-
+			{#if role === 'admin' || role === 'facilitator'}
 				<DropdownMenu.Item
 					style="--d:flex; --radius:0.375rem; --py:0.375rem; --px:0.75rem; --w:100%; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --us:none"
 					on:click={() => {
@@ -138,12 +143,16 @@
 					<div style="--as:center; --mr:0.75rem">
 						<UserGroup className="w-5 h-5" strokeWidth="1.5" />
 					</div>
-					<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">{$i18n.t('Admin Panel')}</div>
+					<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
+						{$i18n.t('Admin Panel')}
+					</div>
 				</DropdownMenu.Item>
 			{/if}
 
 			{#if help}
-				<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-800, #333); --my:0.25rem; --p:0" />
+				<hr
+					style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-800, #333); --my:0.25rem; --p:0"
+				/>
 
 				<!-- {$i18n.t('Help')} -->
 				<DropdownMenu.Item
@@ -184,7 +193,9 @@
 				</DropdownMenu.Item>
 			{/if}
 
-			<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-800, #333); --my:0.25rem; --p:0" />
+			<hr
+				style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-800, #333); --my:0.25rem; --p:0"
+			/>
 
 			<DropdownMenu.Item
 				style="--d:flex; --radius:0.375rem; --py:0.375rem; --px:0.75rem; --w:100%; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
@@ -200,12 +211,16 @@
 				<div style="--as:center; --mr:0.75rem">
 					<SignOut className="w-5 h-5" strokeWidth="1.5" />
 				</div>
-				<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">{$i18n.t('Sign Out')}</div>
+				<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
+					{$i18n.t('Sign Out')}
+				</div>
 			</DropdownMenu.Item>
 
 			{#if usage}
 				{#if usage?.user_ids?.length > 0}
-					<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-800, #333); --my:0.25rem; --p:0" />
+					<hr
+						style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-800, #333); --my:0.25rem; --p:0"
+					/>
 
 					<Tooltip
 						content={usage?.model_ids && usage?.model_ids.length > 0
@@ -223,7 +238,9 @@
 									<span
 										style="animation:ping 1s cubic-bezier(0, 0, 0.2, 1) infinite; --pos:absolute; --d:inline-flex; --h:100%; --w:100%; --radius:9999px; --bgc:#4ade80; --op:0.75"
 									/>
-									<span style="--pos:relative; --d:inline-flex; --radius:9999px; --w:0.5rem; --h:0.5rem; --bgc:#22c55e" />
+									<span
+										style="--pos:relative; --d:inline-flex; --radius:9999px; --w:0.5rem; --h:0.5rem; --bgc:#22c55e"
+									/>
 								</span>
 							</div>
 
