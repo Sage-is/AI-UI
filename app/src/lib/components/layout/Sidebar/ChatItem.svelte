@@ -282,7 +282,9 @@
 
 {#if dragged && x && y}
 	<DragGhost {x} {y}>
-		<div style="--bgc:rgb(0 0 0 / 0.8); backdrop-filter:blur(40px); --px:0.5rem; --py:0.25rem; --radius:0.5rem; --w:fit-content; --maxw:10rem">
+		<div
+			style="--bgc:rgb(0 0 0 / 0.8); backdrop-filter:blur(40px); --px:0.5rem; --py:0.25rem; --radius:0.5rem; --w:fit-content; --maxw:10rem"
+		>
 			<div style="--d:flex; --ai:center; --g:0.25rem">
 				<Document className=" size-[18px]" strokeWidth="2" />
 				<div style="--size:0.75rem; --c:#fff; --line-clamp:1">
@@ -302,8 +304,7 @@
 	{#if confirmEdit}
 		<div
 			id="chat-title-input-container-{id}"
-			style="--radius:9999px; --w:100%; --m:0; {id === $chatId ||
-			confirmEdit
+			style="--radius:9999px; --w:100%; --m:0; {id === $chatId || confirmEdit
 				? '--bg: var(--color-gray-100); --dark-bg: var(--color-gray-900);'
 				: selected
 					? '--bg: var(--color-gray-100); --dark-bg: var(--color-gray-950);'
@@ -347,12 +348,11 @@
 	{:else}
 		<a
 			style="--w:100%; --d:flex; --jc:space-between; --radius:0.5rem; --px:11px; --py:6px; --ws:nowrap; text-overflow:ellipsis"
-	class="{id === $chatId ||
-			confirmEdit
+			class={id === $chatId || confirmEdit
 				? 'bg-gray-100 dark:bg-gray-900'
 				: selected
 					? 'bg-gray-100 dark:bg-gray-950'
-					: ' group-hover:bg-gray-100 dark:group-hover:bg-gray-950'}"
+					: ' group-hover:bg-gray-100 dark:group-hover:bg-gray-950'}
 			href="/c/{id}"
 			on:click={() => {
 				dispatch('select');
@@ -394,8 +394,11 @@
 
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<div
-		style="--pos:absolute; --top:4px; --py:0.25rem; --pr:0.125rem; --mr:0.375rem; --pl:1.25rem; --bgi:linear-gradient(270deg, var(--tw-gradient-stops)); --tw-gradient-to:transparent"
-	class="{id === $chatId || confirmEdit
+		style="--pos:absolute; --top:4px; --py:0.25rem; --pr:0.125rem; 
+			--mr:0.375rem; --pl:1.25rem; 
+			--bgi:linear-gradient(270deg, var(--tw-gradient-stops)); 
+			--tw-gradient-to:transparent;"
+		class="{id === $chatId || confirmEdit
 			? 'from-gray-100 dark:from-gray-900'
 			: selected
 				? 'from-gray-100 dark:from-gray-950'
@@ -408,7 +411,7 @@
 		on:mouseleave={(e) => {
 			mouseOver = false;
 		}}
-	>
+		>
 		{#if confirmEdit}
 			<div
 				style="--d:flex; --as:center; --ai:center; --g:0.375rem; --z:10; --translatey:0.5px; --translatex:-0.5px"
