@@ -870,7 +870,7 @@
 								{/if}
 
 								{#if (message?.sources || message?.citations) && (model?.info?.meta?.capabilities?.citations ?? true)}
-									<Citations id={message?.id} sources={message?.sources ?? message?.citations} />
+									<Citations id={message?.id} {chatId} sources={message?.sources ?? message?.citations} />
 								{/if}
 
 								{#if message.code_executions}
