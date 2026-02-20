@@ -887,7 +887,7 @@
 			{/if}
 		</div>
 
-		<div style="--d:flex; --jc:space-between; --ai:center; --pb:0.5rem; --w:100%">
+		<div style="--d:flex; --jc:space-between; --ai:center;  --w:100%">
 			<div>
 				{#if camera}
 					<VideoInputMenu

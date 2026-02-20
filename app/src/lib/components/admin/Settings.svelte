@@ -92,7 +92,7 @@
 	});
 </script>
 
-<div style="--d:flex; --fd:column; --fd-lg:row; --w:100%; --h:100%; --pb:0.5rem; --g-lg:1rem">
+<div style="--d:flex; --fd:column; --fd-lg:row; --w:100%; --h:100%;  --g-lg:1rem">
 	<div
 		id="admin-settings-tabs-container"
 		style="--d:flex; --fd:row; --ofx:auto; --g:0.625rem; --maxw:100%; --g-lg:0.25rem; --fd-lg:column; --fx-lg:none; --w-lg:10rem; --dark-c:var(--color-gray-200, #e3e3e3); --size:0.875rem; --weight:500; --ta:left"

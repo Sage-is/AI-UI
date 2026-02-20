@@ -42,8 +42,8 @@
 </script>
 
 {#key mounted}
-	<div style="--m:auto; --w:100%; --maxw:72rem; --px:2rem; --px-lg:5rem">
-		<div style="--d:flex; --jc:flex-start">
+	<div style="--m:auto; --w:100%; --maxw:72rem; --px:2rem; --px-lg:5rem; --d:flex; --fd:column; --ai:center">
+		<div style="--d:flex; --jc:center">
 			<div style="--d:flex; --g:-1rem; --mb:0.125rem" in:fade={{ duration: 200 }}>
 				{#each models as model, modelIdx}
 					<button
@@ -73,20 +73,20 @@
 		</div>
 
 		{#if $temporaryChatEnabled}
-			<Tooltip
-				content={$i18n.t("This chat won't appear in history and your messages will not be saved.")}
-				className="w-full flex justify-start mb-0.5"
-				placement="top"
-			>
-				<div style="--d:flex; --ai:center; --g:0.5rem; --c:var(--color-gray-500, #9b9b9b); --weight:500; --size:1.125rem; --mt:0.5rem; --w:fit-content">
-					<EyeSlash strokeWidth="2.5" className="size-5" />{$i18n.t('Temporary Chat')}
-				</div>
-			</Tooltip>
+			<div style="--w:100%; --d:flex; --jc:center; --mb:0.125rem">
+				<Tooltip
+					content={$i18n.t("This chat won't appear in history and your messages will not be saved.")}
+					placement="top"
+				>
+					<div style="--d:flex; --ai:center; --g:0.5rem; --c:var(--color-gray-500, #9b9b9b); --weight:500; --size:1.125rem; --mt:0.5rem; --w:fit-content">
+						<EyeSlash strokeWidth="2.5" className="size-5" />{$i18n.t('Temporary Chat')}
+					</div>
+				</Tooltip>
+			</div>
 		{/if}
 
 		<div
-			style="--mt:0.5rem; --mb:1rem; --size:1.875rem; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-100, #ececec); --weight:500; --ta:left; --d:flex; --ai:center; --g:1rem"
-	class="font-primary"
+			style="--mt:0.5rem; --mb:1rem; --size:1.875rem; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-100, #ececec); --weight:500; --ta:center; --d:flex; --ai:center; --g:1rem; --ff:'Archivo', 'Vazirmatn', sans-serif"
 		>
 			<div>
 				<div style="--tt:capitalize; --line-clamp:1" in:fade={{ duration: 200 }}>
@@ -124,8 +124,7 @@
 							</div>
 						{/if}
 					{:else}
-						<div style="--weight:500; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b); --line-clamp:1"
-	class="font-p">
+						<div style="--weight:500; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b); --line-clamp:1">
 							{$i18n.t('How can I help you today?')}
 						</div>
 					{/if}
@@ -133,10 +132,9 @@
 			</div>
 		</div>
 
-		<div style="--w:100%"
-	class="font-primary" in:fade={{ duration: 200, delay: 300 }}>
+		<div style="--w:100%; --maxw:34rem; --ff:'Archivo', 'Vazirmatn', sans-serif; --ta:center" in:fade={{ duration: 200, delay: 300 }}>
 			<Suggestions
-				className="grid grid-cols-2"
+				listStyle="--d:grid; --gtc:repeat(2, minmax(0, 1fr))"
 				suggestionPrompts={atSelectedModel?.info?.meta?.suggestion_prompts ??
 					models[selectedModelIdx]?.info?.meta?.suggestion_prompts ??
 					$config?.default_prompt_suggestions ??

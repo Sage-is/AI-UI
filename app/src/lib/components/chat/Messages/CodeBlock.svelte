@@ -535,7 +535,7 @@
 					/>
 				{:else}
 					<div
-						style="--bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:#000; --dark-c:#fff; --pt:0.5rem; --pb:0.5rem; --px:1rem; --d:flex; --fd:column; --g:0.5rem; --size:0.75rem"
+						style="--bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:#000; --dark-c:#fff; --pt:0.5rem;  --px:1rem; --d:flex; --fd:column; --g:0.5rem; --size:0.75rem"
 	class="rounded-b-lg!"
 					>
 						<span style="--c:var(--color-gray-500, #9b9b9b); font-style:italic">
