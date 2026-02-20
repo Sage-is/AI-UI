@@ -248,7 +248,7 @@
 					{#each chatList as chat, idx (chat.id)}
 						{#if idx === 0 || (idx > 0 && chat.time_range !== chatList[idx - 1].time_range)}
 							<div
-								style="--w:100%; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-500, #9b9b9b); --weight:500; --pb:0.5rem; --px:0.5rem"
+								style="--w:100%; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-500, #9b9b9b); --weight:500;  --px:0.5rem"
 	class="{idx === 0
 									? ''
 									: 'pt-5'}"

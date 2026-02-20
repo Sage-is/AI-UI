@@ -9,6 +9,7 @@
 
 	export let suggestionPrompts = [];
 	export let className = '';
+	export let listStyle = '';
 	export let inputValue = '';
 	export let onSelect = (e) => {};
 
@@ -84,7 +85,7 @@
 
 <div style="--h:10rem; --w:100%">
 	{#if filteredPrompts.length > 0}
-		<div role="list" style="--maxh:10rem; --of:auto; --ai:flex-start"
+		<div role="list" style="--maxh:10rem; --of:auto; --ai:flex-start; {listStyle}"
 	class="scrollbar-none {className}">
 			{#each filteredPrompts as prompt, idx (prompt.id || prompt.content)}
 				<!-- svelte-ignore a11y-no-interactive-element-to-noninteractive-role -->
