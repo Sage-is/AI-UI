@@ -68,7 +68,6 @@
 
 	let branding: { logo_url?: string; logo_dark_url?: string } = {};
 	let selectedChatId = null;
-	let showDropdown = false;
 	let showPinnedChat = true;
 
 	let showCreateChannel = false;
@@ -1038,12 +1037,7 @@
 							}
 						}}
 					>
-						<button
-							style="--radius: 1em; --w:100%"
-							on:click={() => {
-								showDropdown = !showDropdown;
-							}}
-						>
+						<button style="--radius: 1em; --w:100%">
 							<div style="--as:center; --mr:0.75rem">
 								<img
 									src={$user?.profile_image_url}
