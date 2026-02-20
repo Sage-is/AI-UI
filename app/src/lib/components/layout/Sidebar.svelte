@@ -456,9 +456,7 @@
 {#if $showSidebar}
 	<div
 		style="--pos:fixed; --d-md:none; --z:40; --top:0; --right:0; --left:0; --bottom:0; --bgc:rgb(0 0 0 / 0.6); --w:100%; --minh:100vh; --h:100vh; --d:flex; --jc:center; --of:hidden; overscroll-behavior:contain"
-	class="{$isApp
-			? ' ml-[4.5rem] md:ml-0'
-			: ''}"
+		class={$isApp ? ' ml-[4.5rem] md:ml-0' : ''}
 		on:mousedown={() => {
 			showSidebar.set(!$showSidebar);
 		}}
@@ -487,12 +485,13 @@
 >
 	<div
 		style="--py:0.5rem; --my:auto; --d:flex; --fd:column; --jc:space-between; --h:100vh; --maxh:100dvh; --w:260px; --ofx:hidden; --z:50"
-	class="{$showSidebar
-			? ''
-			: 'invisible'}"
+		class={$showSidebar ? '' : 'invisible'}
 	>
-		<div style="--px:0.375rem; --d:flex; --jc:space-between; --g:0.25rem; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-400, #b4b4b4)">
+		<div
+			style="--px:0.375rem; --d:flex; --jc:space-between; --g:0.25rem; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-400, #b4b4b4)"
+		>
 			<button
+				id="sidebar-toggle-button"
 				style="--cur:pointer; --p:7px; --d:flex; --radius:0.75rem; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={() => {
 					showSidebar.set(!$showSidebar);
@@ -519,7 +518,7 @@
 			<a
 				id="sidebar-new-chat-button"
 				style="--d:flex; --jc:space-between; --ai:center; --fx:1 1 0%; --radius:0.5rem; --px:0.5rem; --py:0.25rem; --h:100%; --ta:right; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
-	class="no-drag-region"
+				class="no-drag-region"
 				href="/"
 				draggable="false"
 				on:click={async () => {
@@ -545,12 +544,14 @@
 							crossorigin="anonymous"
 							src={branding?.logo_url || `${WEBUI_BASE_URL}/static/icons/favicon.png`}
 							style="--w:1.25rem; --h:1.25rem; --translatex:-0.375rem; --radius:9999px"
-	class="sidebar-new-chat-icon"
+							class="sidebar-new-chat-icon"
 							alt="logo"
 						/>
 					</div>
-					<div style="--as:center; --size:0.875rem; --c:var(--color-gray-850, #262626); --dark-c:#fff"
-	class="font-primary">
+					<div
+						style="--as:center; --size:0.875rem; --c:var(--color-gray-850, #262626); --dark-c:#fff"
+						class="font-primary"
+					>
 						{$i18n.t('New Chat')}
 					</div>
 				</div>
@@ -588,7 +589,9 @@
 			</div>
 		{/if} -->
 
-		<div style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-200, #e3e3e3)">
+		<div
+			style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-200, #e3e3e3)"
+		>
 			<button
 				style="--fg:1; --d:flex; --ai:center; --g:0.75rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --oe:2px solid transparent"
 				on:click={() => {
@@ -601,14 +604,15 @@
 				</div>
 
 				<div style="--d:flex; --as:center; --translatey:0.5px">
-					<div style="--as:center; --size:0.875rem"
-	class="font-primary">{$i18n.t('Search')}</div>
+					<div style="--as:center; --size:0.875rem" class="font-primary">{$i18n.t('Search')}</div>
 				</div>
 			</button>
 		</div>
 
 		{#if ($config?.features?.enable_notes ?? false) && ($user?.role === 'admin' || ($user?.permissions?.features?.notes ?? true))}
-			<div style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-200, #e3e3e3)">
+			<div
+				style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-200, #e3e3e3)"
+			>
 				<a
 					style="--fg:1; --d:flex; --ai:center; --g:0.75rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					href="/notes"
@@ -643,15 +647,16 @@
 					</div>
 
 					<div style="--d:flex; --as:center; --translatey:0.5px">
-						<div style="--as:center; --size:0.875rem"
-	class="font-primary">{$i18n.t('Notes')}</div>
+						<div style="--as:center; --size:0.875rem" class="font-primary">{$i18n.t('Notes')}</div>
 					</div>
 				</a>
 			</div>
 		{/if}
 
 		{#if $user?.role === 'admin' || $user?.permissions?.workshop?.models || $user?.permissions?.workshop?.knowledge || $user?.permissions?.workshop?.prompts || $user?.permissions?.workshop?.tools}
-			<div style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-200, #e3e3e3)">
+			<div
+				style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-200, #e3e3e3)"
+			>
 				<a
 					style="--fg:1; --d:flex; --ai:center; --g:0.75rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					href="/workshop"
@@ -683,8 +688,9 @@
 					</div>
 
 					<div style="--d:flex; --as:center; --translatey:0.5px">
-						<div style="--as:center; --size:0.875rem"
-	class="font-primary">{$i18n.t('Workshop')}</div>
+						<div style="--as:center; --size:0.875rem" class="font-primary">
+							{$i18n.t('Workshop')}
+						</div>
 					</div>
 				</a>
 			</div>
@@ -696,7 +702,9 @@
 					{#each $settings.pinnedModels as modelId (modelId)}
 						{@const model = $models.find((model) => model.id === modelId)}
 						{#if model}
-							<div style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-200, #e3e3e3)">
+							<div
+								style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-200, #e3e3e3)"
+							>
 								<a
 									style="--fg:1; --d:flex; --ai:center; --g:0.625rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 									href="/?model={modelId}"
@@ -714,15 +722,15 @@
 										<img
 											crossorigin="anonymous"
 											src={model?.info?.meta?.profile_image_url ??
-												branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
+												branding?.logo_url ??
+												`${WEBUI_BASE_URL}/static/icons/favicon.png`}
 											style="--w:1.25rem; --h:1.25rem; --radius:9999px; --translatex:-0.5px"
 											alt="logo"
 										/>
 									</div>
 
 									<div style="--d:flex; --as:center; --translatey:0.5px">
-										<div style="--as:center; --size:0.875rem; --line-clamp:1"
-	class="font-primary">
+										<div style="--as:center; --size:0.875rem; --line-clamp:1" class="font-primary">
 											{model?.name ?? modelId}
 										</div>
 									</div>
@@ -884,7 +892,7 @@
 						>
 							<div
 								style="--ml:0.75rem; --pl:0.25rem; --mt:1px; --d:flex; --fd:column; --ofy:auto; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-900, #171717)"
-	class="scrollbar-hidden border-s"
+								class="scrollbar-hidden border-s"
 							>
 								{#each $pinnedChats as chat, idx (`pinned-chat-${chat?.id ?? idx}`)}
 									<ChatItem
@@ -934,18 +942,14 @@
 					/>
 				{/if}
 
-				<div style="--fx:1 1 0%; --d:flex; --fd:column; --ofy:auto"
-	class="scrollbar-hidden">
+				<div style="--fx:1 1 0%; --d:flex; --fd:column; --ofy:auto" class="scrollbar-hidden">
 					<div style="--pt:0.375rem">
 						{#if $chats}
 							{#each $chats as chat, idx (`chat-${chat?.id ?? idx}`)}
 								{#if idx === 0 || (idx > 0 && chat.time_range !== $chats[idx - 1].time_range)}
 									<div
 										style="--w:100%; --pl:0.625rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-500, #9b9b9b); --weight:500; --pb:0.375rem"
-	class="{idx ===
-										0
-											? ''
-											: 'pt-5'}"
+										class={idx === 0 ? '' : 'pt-5'}
 									>
 										{$i18n.t(chat.time_range)}
 										<!-- localisation keys for time_range to be recognized from the i18next parser (so they don't get automatically removed):
@@ -1008,7 +1012,12 @@
 								</Loader>
 							{/if}
 						{:else}
-							<div style="--w:100%; --d:flex; --jc:center; --py:0.25rem; --size:0.75rem; animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; --ai:center; --g:0.5rem">
+							<div
+								style="--w:100%; --d:flex; --jc:center; 
+									--py:0.25rem; --size:0.75rem; 
+									animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; 
+									--ai:center; --g:0.5rem"
+							>
 								<Spinner className=" size-4" />
 								<div class=" ">Loading...</div>
 							</div>
@@ -1019,8 +1028,7 @@
 		</div>
 
 		<div style="--px:0.5rem">
-			<div style="--d:flex; --fd:column"
-	class="font-primary">
+			<div style="--d:flex; --fd:column" class="font-primary">
 				{#if $user !== undefined && $user !== null}
 					<UserMenu
 						role={$user?.role}
