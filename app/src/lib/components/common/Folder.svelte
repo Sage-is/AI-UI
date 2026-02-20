@@ -119,12 +119,11 @@
 	});
 </script>
 
-<div bind:this={folderElement} style="--pos:relative"
-	class="{className}">
+<div bind:this={folderElement} style="--pos:relative" class={className}>
 	{#if draggedOver}
 		<div
 			style="--pos:absolute; --top:0; --left:0; --w:100%; --h:100%; --bgc:rgb(236 236 236 / 0.5); --dark-bgc:rgb(78 78 78 / 0.2); --z:50; --pe:none; touch-action:none"
-	class="rounded-xs bg-opacity-50 dark:bg-opacity-10"
+			class="rounded-xs bg-opacity-50 dark:bg-opacity-10"
 		></div>
 	{/if}
 
@@ -139,10 +138,24 @@
 		>
 			<!-- svelte-ignore a11y-no-static-element-interactions -->
 			<div
-				style="--w:100%; --radius:0.375rem; --pos:relative; --d:flex; --ai:center; --jc:space-between; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-500, #9b9b9b); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
-	class="group"
+				style="--w:100%; 
+					--of:hidden;
+					--pos:relative; 
+					--d:flex; 
+					--ai:center; 
+					--jc:space-between; 
+					--hvr-bgc:var(--color-gray-100, #ececec); 
+					--hvr-dark-bgc:var(--color-gray-900, #171717); 
+					--c:var(--color-gray-500, #9b9b9b); 
+					--dark-c:var(--color-gray-500, #9b9b9b); 
+					--tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1);
+					--m:0;
+					--radius:0.6rem;"
+				class="group"
 			>
-				<button style="--w:100%; --py:0.375rem; --pl:0.5rem; --d:flex; --ai:center; --g:0.375rem; --size:0.75rem; --weight:500">
+				<button
+					style="--w:100%; --py:0.375rem; --pl:0.5rem; --d:flex; --ai:center; --g:0.375rem; --size:0.75rem; --weight:500"
+				>
 					<div style="--c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-600, #676767)">
 						{#if open}
 							<ChevronDown className=" size-3" strokeWidth="2.5" />
@@ -158,8 +171,9 @@
 
 				{#if onAdd}
 					<button
-						style="--pos:absolute; --z:10; --right:0.5rem; --v:hidden; --as:center; --d:flex; --ai:center; --dark-c:var(--color-gray-300, #cdcdcd)"
-	class="group-hover:visible"
+						id="{id}-add-button"
+						style="--pos:absolute; --z:10; --right:0.5rem; --as:center; --d:flex; --ai:center; --dark-c:var(--color-gray-300, #cdcdcd)"
+						class="group-hover:visible"
 						on:pointerup={(e) => {
 							e.stopPropagation();
 						}}

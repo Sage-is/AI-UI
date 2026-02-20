@@ -942,7 +942,7 @@
 				{/if}
 
 				<div style="--fx:1 1 0%; --d:flex; --fd:column; --ofy:auto" class="scrollbar-hidden">
-					<div style="--pt:0.375rem">
+					<div style="--pt:0.375rem; --radius:0.8rem; --m:0">
 						{#if $chats}
 							{#each $chats as chat, idx (`chat-${chat?.id ?? idx}`)}
 								{#if idx === 0 || (idx > 0 && chat.time_range !== $chats[idx - 1].time_range)}
