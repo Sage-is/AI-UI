@@ -1,3 +1,14 @@
+---
+title: "Kokoro.js TTS Engine Fix"
+description: "Fix for personal audio settings not respecting Kokoro.js TTS engine selection over global config."
+date: 2025-11-28
+tags:
+  - bugfix
+  - tts
+  - audio
+  - kokoro
+---
+
 # Kokoro.js TTS Engine Fix - July 28, 2025
 
 ## Issue Summary
@@ -47,7 +58,7 @@ if (useWebAPI) {
 // BEFORE: Inconsistent condition checking
 } else if ($config.audio.tts.engine !== '') {
 
-// AFTER: Consistent personal-first checking  
+// AFTER: Consistent personal-first checking
 } else if (($settings?.audio?.tts?.engine ?? $config.audio.tts.engine) !== '') {
 ```
 
@@ -62,18 +73,18 @@ if (useWebAPI) {
    - If result is empty/undefined → Use Web API (speechSynthesis)
 
 ### Kokoro.js Engine Features Confirmed Working
-- ✅ Dtype selection (fp32, fp16, q8, q4)
-- ✅ Voice selection from Kokoro.js voice models
-- ✅ Audio quality and playback rate settings
-- ✅ Proper fallback logic when Kokoro.js fails
-- ✅ Worker-based processing for performance
+- Dtype selection (fp32, fp16, q8, q4)
+- Voice selection from Kokoro.js voice models
+- Audio quality and playback rate settings
+- Proper fallback logic when Kokoro.js fails
+- Worker-based processing for performance
 
 ## Testing Results
-- ✅ Personal Kokoro.js settings now properly override global config
-- ✅ Voice selection works correctly with Kokoro.js models
-- ✅ Different dtype settings (fp32, fp16, q8, q4) all functional
-- ✅ Audio output quality confirmed working
-- ✅ Fallback logic maintains system stability
+- Personal Kokoro.js settings now properly override global config
+- Voice selection works correctly with Kokoro.js models
+- Different dtype settings (fp32, fp16, q8, q4) all functional
+- Audio output quality confirmed working
+- Fallback logic maintains system stability
 
 ## Impact
 - **User Experience**: Personal audio preferences now work as expected
@@ -92,7 +103,7 @@ if (useWebAPI) {
 - Maintained development workflow compliance
 
 ---
-**Resolution Status**: ✅ **COMPLETED**  
-**Date**: July 28, 2025  
-**Developer**: GitHub Copilot  
+**Resolution Status**: **COMPLETED**
+**Date**: July 28, 2025
+**Developer**: GitHub Copilot
 **Verified By**: User confirmation of working Kokoro.js TTS

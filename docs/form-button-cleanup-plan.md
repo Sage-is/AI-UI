@@ -1,11 +1,22 @@
+---
+title: "Form Button Cleanup Plan"
+description: "Plan to remove redundant type='button' attributes from forms using preventDefault in Svelte components."
+date: 2026-01-23
+tags:
+  - cleanup
+  - svelte
+  - frontend
+  - forms
+---
+
 # Form Button Cleanup Plan
 
 ## Current Situation
 
 Throughout the application, we have a mixed pattern:
 
-1. ✅ **Good**: Forms use `on:submit|preventDefault` to override default submit behavior
-2. ❌ **Redundant**: Many buttons inside these forms have `type="button"` which is unnecessary
+1. **Good**: Forms use `on:submit|preventDefault` to override default submit behavior
+2. **Redundant**: Many buttons inside these forms have `type="button"` which is unnecessary
 
 ## The Problem
 
@@ -15,10 +26,10 @@ When a form has `on:submit|preventDefault`, ALL buttons inside that form will NO
 <form on:submit|preventDefault={() => submitHandler()}>
   <!-- This button will NOT submit the form by default -->
   <button on:click={doSomething}>Click Me</button>
-  
+
   <!-- This type="button" is REDUNDANT -->
   <button type="button" on:click={doSomething}>Click Me</button>
-  
+
   <!-- Only THIS will trigger the submit handler -->
   <button type="submit">Submit</button>
 </form>
@@ -29,9 +40,9 @@ The `preventDefault` modifier stops the default form submission event, so we don
 ## Established Convention
 
 **In forms with `on:submit|preventDefault`:**
-- ✅ **DO**: Use `type="submit"` for the actual submit button
-- ✅ **DO**: Omit `type` attribute for all other buttons (cleaner, less verbose)
-- ❌ **DON'T**: Use `type="button"` (it's redundant)
+- **DO**: Use `type="submit"` for the actual submit button
+- **DO**: Omit `type` attribute for all other buttons (cleaner, less verbose)
+- **DON'T**: Use `type="button"` (it's redundant)
 
 **Exception - Auth Forms:**
 Auth forms (`app/src/routes/auth/+page.svelte` and submodules equivalent) may use traditional patterns. Review these separately.
@@ -62,7 +73,7 @@ Run a script to:
 3. Verify no unintended side effects
 
 ### Phase 3: Documentation
-1. Add to `CONVENTION.instructions.md` 
+1. Add to `CONVENTION.instructions.md`
 2. Update any development guidelines
 3. Consider adding an ESLint rule or pre-commit hook
 
@@ -77,7 +88,7 @@ Run a script to:
 
 Based on initial scan, affected files include:
 - `app/src/lib/components/ImportModal.svelte`
-- `app/src/lib/components/AddServerModal.svelte` 
+- `app/src/lib/components/AddServerModal.svelte`
 - `app/src/lib/components/AddConnectionModal.svelte`
 - `app/src/lib/components/layout/Sidebar/ChannelModal.svelte`
 - `app/src/lib/components/admin/Functions/FunctionEditor.svelte`
@@ -86,18 +97,18 @@ Based on initial scan, affected files include:
 ## Risks & Mitigation
 
 ### Risk: Breaking Functionality
-**Mitigation**: 
+**Mitigation**:
 - Thorough testing after changes
 - Only remove `type="button"` from forms with confirmed preventDefault
 - Keep git history for easy rollback
 
 ### Risk: Auth Forms Behaving Differently
-**Mitigation**: 
+**Mitigation**:
 - Exclude auth forms from automated cleanup
 - Manual review of authentication flows
 
 ### Risk: Third-party Components
-**Mitigation**: 
+**Mitigation**:
 - Only modify files in `app/src/` initially
 - Be cautious with submodules
 
@@ -114,7 +125,7 @@ The script will:
 
 ## Execution Plan
 
-1. **Review this document** ✓
+1. **Review this document**
 2. Run the cleanup tool with `--dry-run` flag
 3. Review the proposed changes
 4. Execute the actual cleanup

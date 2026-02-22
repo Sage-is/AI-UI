@@ -1,3 +1,14 @@
+---
+title: "Product Stack Diagram"
+description: "Architecture diagram showing client, frontend, backend, data stores, AI providers, and infrastructure."
+date: 2025-11-28
+tags:
+  - architecture
+  - stack
+  - diagram
+  - infrastructure
+---
+
 # Product Stack Diagram
 
 The diagram below illustrates client → frontend → backend flows, data stores, AI providers, and infra.

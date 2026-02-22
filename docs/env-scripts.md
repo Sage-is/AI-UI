@@ -1,3 +1,14 @@
+---
+title: "Environment Management Scripts"
+description: "Documentation for setup_project_env.sh and manage_env.sh environment variable management scripts."
+date: 2025-10-13
+tags:
+  - environment
+  - scripts
+  - configuration
+  - devops
+---
+
 # Environment Management Scripts
 
 This directory contains scripts to help manage environment variables for any project.
@@ -10,7 +21,7 @@ The main script for setting up essential Docker/Makefile configuration variables
 
 **What it sets up:**
 - `IMAGE_NAME`: Docker image name (org/project-name)
-- `GHCR_IMAGE_NAME`: GitHub Container Registry name  
+- `GHCR_IMAGE_NAME`: GitHub Container Registry name
 - `CONTAINER_NAME`: Docker container name
 - `PORT_MAPPING`: Port mapping for container
 - `VOLUME_DATA`: Volume mapping for data persistence
