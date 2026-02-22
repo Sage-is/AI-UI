@@ -275,6 +275,45 @@ bump_release_version:
 	@python3 -c "import re; f='README.md'; ver='$(RELEASE_VERSION)'.lstrip('v'); c=open(f).read(); n=re.sub(r'^## v.*', f'## v{ver}', c, count=1, flags=re.MULTILINE); open(f,'w').write(n); print(f'Updated {f}')"
 	@echo "Version bumped to $(RELEASE_VERSION)"
 
+# WAHA (WhatsApp HTTP API) for Messaging Bridges
+WAHA_PORT ?= 3000
+WAHA_CONTAINER_NAME ?= sage-waha
+WAHA_IMAGE ?= devlikeapro/waha
+WAHA_API_KEY ?=
+WAHA_DASHBOARD_USER ?= admin
+WAHA_DASHBOARD_PASSWORD ?= admin
+
+waha_start:
+	@echo "Starting WAHA (WhatsApp HTTP API) on port $(WAHA_PORT)..."
+	docker run -d --rm \
+		--name $(WAHA_CONTAINER_NAME) \
+		-p $(WAHA_PORT):3000 \
+		$(if $(WAHA_API_KEY),-e WHATSAPP_API_KEY=$(WAHA_API_KEY),) \
+		-e WAHA_DASHBOARD_ENABLED=true \
+		-e WAHA_DASHBOARD_USERNAME=$(WAHA_DASHBOARD_USER) \
+		-e WAHA_DASHBOARD_PASSWORD=$(WAHA_DASHBOARD_PASSWORD) \
+		$(WAHA_IMAGE)
+	@echo ""
+	@echo "WAHA is running:"
+	@echo "  API:       http://localhost:$(WAHA_PORT)/api/"
+	@echo "  Dashboard: http://localhost:$(WAHA_PORT)/dashboard"
+	@echo "  Swagger:   http://localhost:$(WAHA_PORT)/api/docs"
+	@echo ""
+	@echo "Configure your Sage bridge with:"
+	@echo "  WAHA API URL: http://host.docker.internal:$(WAHA_PORT)"
+	@echo "  (use http://localhost:$(WAHA_PORT) if Sage is not in Docker)"
+
+waha_stop:
+	@echo "Stopping WAHA..."
+	docker stop $(WAHA_CONTAINER_NAME) || true
+	@echo "WAHA stopped"
+
+waha_logs:
+	docker logs -f $(WAHA_CONTAINER_NAME)
+
+waha_status:
+	@docker inspect --format='{{.State.Status}}' $(WAHA_CONTAINER_NAME) 2>/dev/null || echo "WAHA container is not running"
+
 .PHONY: it_build it_build_no_cache dev_run it_run it_build_n_run it_build_n_run_no_cache \
 	clean-manifests-dockerhub clean-manifests-ghcr \
 	build-amd64-dockerhub build-arm64-dockerhub \
@@ -282,7 +321,7 @@ bump_release_version:
 	create-manifest-dockerhub create-manifest-ghcr \
 	it_build_multi_arch_push_docker_hub it_build_multi_arch_push_GHCR \
 	it_build_multi_arch_all show-version setup_env setup_env_auto setup_env_template \
-	bump_release_version
+	bump_release_version waha_start waha_stop waha_logs waha_status
 
 
 # Version Management with Git Flow

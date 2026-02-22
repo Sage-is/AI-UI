@@ -24,6 +24,7 @@
 	import Evaluations from './Settings/Evaluations.svelte';
 	import CodeExecution from './Settings/CodeExecution.svelte';
 	import Tools from './Settings/Tools.svelte';
+	import Bridges from './Settings/Bridges.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -51,6 +52,7 @@
 			'audio',
 			'images',
 			'pipelines',
+			'bridges',
 			'db'
 		].includes(tabFromPath)
 			? tabFromPath
@@ -381,6 +383,26 @@
 		</button>
 
 		<button
+			id="bridges"
+			style="{selectedTab === 'bridges' ? 'font-weight: 600;' : ''}"
+			on:click={() => {
+				goto('/admin/settings/bridges');
+			}}
+		>
+			<div style="--as:center; --mr:0.5rem">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 24 24"
+					fill="currentColor"
+					style="--w:1rem; --h:1rem"
+				>
+					<path d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+				</svg>
+			</div>
+			<div style="--as:center">{$i18n.t('Bridges')}</div>
+		</button>
+
+		<button
 			id="db"
 			style="{selectedTab === 'db' ? 'font-weight: 600;' : ''}"
 			on:click={() => {
@@ -473,6 +495,8 @@
 					toast.success($i18n.t('Settings saved successfully!'));
 				}}
 			/>
+		{:else if selectedTab === 'bridges'}
+			<Bridges />
 		{:else if selectedTab === 'db'}
 			<Database
 				saveHandler={() => {

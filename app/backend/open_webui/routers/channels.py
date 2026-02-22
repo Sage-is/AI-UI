@@ -315,6 +315,19 @@ async def post_new_message(
                 active_user_ids,
             )
 
+            # Forward to external bridges (skip if message originated from a bridge)
+            if not (form_data.data and form_data.data.get("bridge")):
+                from open_webui.bridges.outgoing import forward_channel_message_to_bridges
+
+                background_tasks.add_task(
+                    forward_channel_message_to_bridges,
+                    request.app,
+                    channel.id,
+                    message.content,
+                    user.id,
+                    message.id,
+                )
+
         return MessageModel(**message.model_dump())
     except Exception as e:
         log.exception(e)

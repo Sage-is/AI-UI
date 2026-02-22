@@ -44,12 +44,15 @@ If you want to do front end dev and see changes to svelte files live, go instead
 - `make it_stop` — Stop running containers
 - `make it_build` — Build Docker images
 - `make it_clean` — Clean up containers and images
+- `make waha_start` — Start WAHA (WhatsApp bridge) locally
+- `make waha_stop` — Stop WAHA container
 - `make help` — Show all available commands
 
 ## Core Features
 
 - **Multi-Model Chat** — Switch between different AI models in the same chat or even talk to multiple AI models at the same time
 - **Knowledge Bases** — Create RAG-powered AIs by uploading PDFs, docs, and websites directly into your chats or into Workshop Knoweldge
+- **Messaging Bridges** — Connect external platforms like WhatsApp directly to Sage AI for chat or channel mirroring ([docs](./docs/bridges.md))
 - **Code Execution** — Built-in Python environment with custom function support
 - **Voice & Video** — Hands-free conversations with speech-to-text and text-to-speech
 - **Image Generation** — Integrate DALL-E, ComfyUI, or AUTOMATIC1111
@@ -71,12 +74,13 @@ Sage WebUI works out of the box, but you can customize it:
 
 
 - [Configuration Options](./docs/README.md)
+- [Messaging Bridges (WhatsApp, etc.)](./docs/bridges.md)
 - [API Reference](./API/examples.md)
 - [Development Workflow](./docs/DEVELOPMENT_WORKFLOW.md)
-- [API Refactoring Plan](./docs/API_REFACTORING_PLAN.md)
+- [API Refactoring Plan](./docs/api-refactoring-plan.md)
 - [Contributing](./docs/CONTRIBUTING.md)
 - [Bug Fixes & Improvements](./docs/) — Historical documentation of major fixes
-  - [Kokoro.js TTS Fix (July 28, 2025)](./docs/KOKORO_TTS_FIX_2025-07-28.md)
+  - [Kokoro.js TTS Fix (July 28, 2025)](./docs/kokoro-tts-fix-2025-07-28.md)
 
 ## Community
 
