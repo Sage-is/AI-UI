@@ -3083,3 +3083,37 @@ LDAP_ATTRIBUTE_FOR_GROUPS = PersistentConfig(
     "ldap.server.attribute_for_groups",
     os.environ.get("LDAP_ATTRIBUTE_FOR_GROUPS", "memberOf"),
 )
+
+####################################
+# Bridges config
+####################################
+
+ENABLE_BRIDGES = PersistentConfig(
+    "ENABLE_BRIDGES",
+    "bridges.enable",
+    os.environ.get("ENABLE_BRIDGES", "False").lower() == "true",
+)
+
+BRIDGE_DEFAULT_MODEL = PersistentConfig(
+    "BRIDGE_DEFAULT_MODEL",
+    "bridges.default_model",
+    os.environ.get("BRIDGE_DEFAULT_MODEL", ""),
+)
+
+BRIDGE_AUTO_CREATE_USERS = PersistentConfig(
+    "BRIDGE_AUTO_CREATE_USERS",
+    "bridges.auto_create_users",
+    os.environ.get("BRIDGE_AUTO_CREATE_USERS", "True").lower() == "true",
+)
+
+BRIDGE_DEFAULT_USER_ROLE = PersistentConfig(
+    "BRIDGE_DEFAULT_USER_ROLE",
+    "bridges.default_user_role",
+    os.environ.get("BRIDGE_DEFAULT_USER_ROLE", "user"),
+)
+
+BRIDGE_RATE_LIMIT_PER_MINUTE = PersistentConfig(
+    "BRIDGE_RATE_LIMIT_PER_MINUTE",
+    "bridges.rate_limit_per_minute",
+    int(os.environ.get("BRIDGE_RATE_LIMIT_PER_MINUTE", "30")),
+)

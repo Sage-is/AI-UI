@@ -62,6 +62,7 @@ from open_webui.socket.main import (
 )
 from open_webui.routers import (
     audio,
+    bridges,
     images,
     ollama,
     openai,
@@ -323,6 +324,12 @@ from open_webui.config import (
     ENABLE_LDAP_GROUP_MANAGEMENT,
     ENABLE_LDAP_GROUP_CREATION,
     LDAP_ATTRIBUTE_FOR_GROUPS,
+    # Bridges
+    ENABLE_BRIDGES,
+    BRIDGE_DEFAULT_MODEL,
+    BRIDGE_AUTO_CREATE_USERS,
+    BRIDGE_DEFAULT_USER_ROLE,
+    BRIDGE_RATE_LIMIT_PER_MINUTE,
     # Misc
     ENV,
     CACHE_DIR,
@@ -541,7 +548,20 @@ async def lifespan(app: FastAPI):
             None,
         )
 
+    # Initialize Bridge Manager
+    if app.state.config.ENABLE_BRIDGES:
+        from open_webui.bridges.manager import BridgeManager
+
+        app.state.bridge_manager = BridgeManager(app)
+        await app.state.bridge_manager.start()
+    else:
+        app.state.bridge_manager = None
+
     yield
+
+    # Shutdown Bridge Manager
+    if getattr(app.state, "bridge_manager", None):
+        await app.state.bridge_manager.shutdown()
 
     if hasattr(app.state, "redis_task_command_listener"):
         app.state.redis_task_command_listener.cancel()
@@ -689,6 +709,13 @@ app.state.config.MODEL_ORDER_LIST = MODEL_ORDER_LIST
 
 app.state.config.ENABLE_CHANNELS = ENABLE_CHANNELS
 app.state.config.ENABLE_NOTES = ENABLE_NOTES
+
+# Bridges
+app.state.config.ENABLE_BRIDGES = ENABLE_BRIDGES
+app.state.config.BRIDGE_DEFAULT_MODEL = BRIDGE_DEFAULT_MODEL
+app.state.config.BRIDGE_AUTO_CREATE_USERS = BRIDGE_AUTO_CREATE_USERS
+app.state.config.BRIDGE_DEFAULT_USER_ROLE = BRIDGE_DEFAULT_USER_ROLE
+app.state.config.BRIDGE_RATE_LIMIT_PER_MINUTE = BRIDGE_RATE_LIMIT_PER_MINUTE
 app.state.config.ENABLE_COMMUNITY_SHARING = ENABLE_COMMUNITY_SHARING
 app.state.config.ENABLE_MESSAGE_RATING = ENABLE_MESSAGE_RATING
 app.state.config.ENABLE_USER_WEBHOOKS = ENABLE_USER_WEBHOOKS
@@ -1143,6 +1170,7 @@ app.include_router(users.router, prefix="/api/v1/users", tags=["users"])
 
 
 app.include_router(channels.router, prefix="/api/v1/channels", tags=["channels"])
+app.include_router(bridges.router, prefix="/api/v1/bridges", tags=["bridges"])
 app.include_router(chats.router, prefix="/api/v1/chats", tags=["chats"])
 app.include_router(notes.router, prefix="/api/v1/notes", tags=["notes"])
 
