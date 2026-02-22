@@ -100,6 +100,12 @@ class BridgeManager:
     @staticmethod
     def get_available_platforms() -> list[dict]:
         """Get info about all registered platform adapters."""
+        # Ensure adapters are imported so decorators populate the registry
+        if not PLATFORM_ADAPTERS:
+            try:
+                import open_webui.bridges.adapters.whatsapp  # noqa: F401
+            except ImportError:
+                pass
         platforms = []
         for platform, adapter_cls in PLATFORM_ADAPTERS.items():
             info: PlatformInfo = adapter_cls.get_platform_info()
