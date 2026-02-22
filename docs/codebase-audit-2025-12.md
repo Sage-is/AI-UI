@@ -1,3 +1,14 @@
+---
+title: "Codebase Audit Report"
+description: "Audit findings on component structure, state management, and code redundancy from December 2025."
+date: 2025-12-16
+tags:
+  - audit
+  - architecture
+  - technical-debt
+  - review
+---
+
 # Codebase Audit Report
 
 ## Executive Summary

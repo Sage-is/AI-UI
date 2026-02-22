@@ -1,7 +1,17 @@
 ---
+title: "Convention Instructions"
+description: "Development conventions and coding standards applied to all files in the project."
+date: 2025-11-28
+tags:
+  - conventions
+  - standards
+  - meta
+---
+
+---
 applyTo: "*"
 ---
-# Startr Development Workflow
+# Sage.is AI-UI Development Workflow
 
 ## Core Principles
 

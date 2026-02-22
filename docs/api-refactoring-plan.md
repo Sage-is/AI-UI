@@ -1,3 +1,14 @@
+---
+title: "API Layer Refactoring Plan"
+description: "Plan for refactoring repetitive API fetch patterns into DRY helpers across all frontend API modules."
+date: 2025-11-28
+tags:
+  - api
+  - refactoring
+  - frontend
+  - typescript
+---
+
 # API Layer Refactoring Plan
 
 ## 🚨 **CRITICAL DISCOVERY: Evidence of Commit Padding**
@@ -122,7 +133,7 @@ The `app/src/lib/apis/` directory contains **10,025 lines** of repetitive, non-D
 Total API Lines: 10,025
 Largest files:
 - index.ts: 1,637 lines
-- chats/index.ts: 1,097 lines  
+- chats/index.ts: 1,097 lines
 - auths/index.ts: 699 lines
 - ollama/index.ts: 561 lines
 - retrieval/index.ts: 556 lines
@@ -156,7 +167,7 @@ async function api(url: string, token: string, method = 'GET', body?: any, conte
 			},
 			...(body && { body: JSON.stringify(body) })
 		});
-		
+
 		if (!res.ok) throw await res.json();
 		return res.json();
 	} catch (err: any) {

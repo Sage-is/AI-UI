@@ -1,3 +1,14 @@
+---
+title: "Docker Build Optimization Plan"
+description: "Strategy for reducing Docker build times through runtime model downloads and multi-stage builds."
+date: 2025-11-28
+tags:
+  - docker
+  - optimization
+  - build
+  - infrastructure
+---
+
 # Docker Build Optimization Plan
 
 ## Current Performance Issues
@@ -7,7 +18,7 @@
 - Major bottlenecks:
   - PyTorch installation: 120+ seconds
   - `SentenceTransformer` model download: 148+ seconds
-  - `WhisperModel` download: 10+ seconds  
+  - `WhisperModel` download: 10+ seconds
   - `tiktoken` encoding download: 5+ seconds
   - Node.js build: 113+ seconds
   - Python dependencies: 46+ seconds
@@ -52,7 +63,7 @@ wait  # Wait for all downloads to complete
 ```yaml
 volumes:
   - model-cache:/app/backend/data/cache/embedding/models
-  - whisper-cache:/app/backend/data/cache/whisper/models  
+  - whisper-cache:/app/backend/data/cache/whisper/models
   - tiktoken-cache:/app/backend/data/cache/tiktoken
 ```
 
@@ -68,7 +79,7 @@ volumes:
 FROM node:22-bookworm AS base
 # System packages, basic setup
 
-# Stage 2: Python dependencies  
+# Stage 2: Python dependencies
 FROM base AS python-deps
 # Python packages, uv install
 
@@ -81,7 +92,7 @@ FROM frontend AS development
 # Fast rebuild for dev changes
 # Skip model downloads
 
-# Stage 5: Production target  
+# Stage 5: Production target
 FROM frontend AS production
 # Optimized for production
 # Include model pre-downloads if needed
@@ -120,7 +131,7 @@ __pycache__/
 **Proposed Layer Order:**
 1. System packages (rarely change)
 2. Python requirements.txt (change occasionally)
-3. Node package.json (change occasionally) 
+3. Node package.json (change occasionally)
 4. Source code (change frequently)
 5. Static files (change frequently)
 
@@ -153,7 +164,7 @@ dev-fast:
 - [ ] Test with volume mounts
 - [ ] Measure build time improvement
 
-### Phase 2: Multi-Stage Build  
+### Phase 2: Multi-Stage Build
 - [ ] Design stage separation
 - [ ] Create development target
 - [ ] Optimize layer ordering

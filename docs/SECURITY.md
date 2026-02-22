@@ -1,3 +1,13 @@
+---
+title: "Security Policy"
+description: "Vulnerability reporting guidelines, supported versions, and security audit practices."
+date: 2025-11-28
+tags:
+  - security
+  - policy
+  - meta
+---
+
 # Security Policy
 
 Our primary goal is to ensure the protection and confidentiality of sensitive data stored by users on sage-webui.
@@ -13,7 +23,7 @@ Our primary goal is to ensure the protection and confidentiality of sensitive da
 
 Based on a precedent of an unacceptable degree of spamming and unsolicited communications from third-party platforms, we forcefully reaffirm our stance. **We refuse to engage with, join, or monitor any platforms outside of GitHub for vulnerability reporting.** Our reasons are not just procedural but are deep-seated in the ethos of our project, which champions transparency and direct community interaction inherent in the open-source culture. Any attempts to divert our processes to external platforms will be met with outright rejection. This policy is non-negotiable and understands no exceptions.
 
-Any reports or solicitations arriving from sources other than our designated GitHub repository will be dismissed without consideration. We’ve seen how external engagements can dilute and compromise the integrity of community-driven projects, and we’re not here to gamble with the security and privacy of our user community.
+Any reports or solicitations arriving from sources other than our designated GitHub repository will be dismissed without consideration. We've seen how external engagements can dilute and compromise the integrity of community-driven projects, and we're not here to gamble with the security and privacy of our user community.
 
 ## Reporting a Vulnerability
 
