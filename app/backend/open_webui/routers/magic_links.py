@@ -18,6 +18,8 @@ from open_webui.models.magic_links import (
 from open_webui.models.auths import Auths
 from open_webui.models.users import Users
 from open_webui.models.groups import Groups
+from open_webui.models.bridges import BridgeConnections
+from open_webui.bridges.types import OutgoingMessage
 
 from open_webui.constants import ERROR_MESSAGES
 from open_webui.env import SRC_LOG_LEVELS
@@ -139,6 +141,98 @@ async def deactivate_magic_link(
         status_code=status.HTTP_400_BAD_REQUEST,
         detail="Error deactivating magic link",
     )
+
+
+############################
+# Send Magic Link via Bridge
+############################
+
+
+class SendMagicLinkForm(BaseModel):
+    bridge_connection_id: str
+    recipients: list[str]
+    message: str = ""
+
+
+@router.post("/{id}/send")
+async def send_magic_link(
+    request: Request,
+    id: str,
+    form_data: SendMagicLinkForm,
+    user=Depends(get_admin_or_facilitator_user),
+):
+    link = MagicLinks.get_by_id(id)
+    if not link:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=ERROR_MESSAGES.NOT_FOUND,
+        )
+
+    if user.role != "admin" and link.created_by != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=ERROR_MESSAGES.ACCESS_PROHIBITED,
+        )
+
+    if not link.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This magic link is not active",
+        )
+
+    if link.expires_at and int(time.time()) > link.expires_at:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This magic link has expired",
+        )
+
+    connection = BridgeConnections.get_connection_by_id(form_data.bridge_connection_id)
+    if not connection:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Bridge connection not found",
+        )
+
+    bridge_manager = getattr(request.app.state, "bridge_manager", None)
+    if not bridge_manager:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Bridge manager not available",
+        )
+
+    adapter = bridge_manager.get_adapter(form_data.bridge_connection_id)
+    if not adapter:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Bridge adapter not running",
+        )
+
+    webui_url = request.app.state.config.WEBUI_URL
+    url = f"{webui_url}/join/{link.token}"
+    if form_data.message.strip():
+        message_text = f"{form_data.message.strip()}\n{url}"
+    else:
+        message_text = (
+            f"You've been invited to join Sage AI! "
+            f"Click the link below to get started:\n{url}"
+        )
+
+    sent = 0
+    failed = 0
+    for recipient in form_data.recipients:
+        recipient = recipient.strip()
+        if not recipient:
+            continue
+        try:
+            await adapter.send_message(
+                OutgoingMessage(thread_id=recipient, content=message_text)
+            )
+            sent += 1
+        except Exception as e:
+            log.warning(f"Failed to send magic link to {recipient}: {e}")
+            failed += 1
+
+    return {"sent": sent, "failed": failed}
 
 
 ############################

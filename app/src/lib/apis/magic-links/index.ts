@@ -18,5 +18,11 @@ export const deactivateMagicLink = async (token: string, id: string) =>
 export const deleteMagicLink = async (token: string, id: string) =>
 	api(`/magic-links/${id}`, 'DELETE', undefined, token, `deleteMagicLink(${id})`);
 
+export const sendMagicLink = async (
+	token: string,
+	id: string,
+	data: { bridge_connection_id: string; recipients: string[]; message?: string }
+) => api(`/magic-links/${id}/send`, 'POST', data, token, `sendMagicLink(${id})`);
+
 export const redeemMagicLink = async (linkToken: string, name?: string) =>
 	api('/magic-links/redeem', 'POST', { token: linkToken, name }, '', 'redeemMagicLink');
