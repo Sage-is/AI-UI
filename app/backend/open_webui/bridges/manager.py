@@ -106,6 +106,10 @@ class BridgeManager:
                 import open_webui.bridges.adapters.whatsapp  # noqa: F401
             except ImportError:
                 pass
+            try:
+                import open_webui.bridges.adapters.email  # noqa: F401
+            except ImportError:
+                pass
         platforms = []
         for platform, adapter_cls in PLATFORM_ADAPTERS.items():
             info: PlatformInfo = adapter_cls.get_platform_info()
@@ -138,6 +142,10 @@ class BridgeManager:
             import open_webui.bridges.adapters.whatsapp  # noqa: F401
         except ImportError as e:
             log.warning(f"Failed to load WhatsApp adapter: {e}")
+        try:
+            import open_webui.bridges.adapters.email  # noqa: F401
+        except ImportError as e:
+            log.warning(f"Failed to load Email adapter: {e}")
 
     async def _start_connection(self, conn: BridgeConnectionModel) -> bool:
         """Instantiate and connect an adapter for a connection."""
@@ -150,6 +158,12 @@ class BridgeManager:
 
         adapter_cls = PLATFORM_ADAPTERS[conn.platform]
         adapter = adapter_cls(connection_id=conn.id, config=conn.config)
+
+        # Wire incoming handler so polling/push adapters can deliver messages
+        from open_webui.bridges.pipeline import MessagePipeline
+
+        pipeline = MessagePipeline(self.app)
+        adapter.set_incoming_handler(pipeline.process_incoming)
 
         BridgeConnections.update_connection_status(conn.id, "starting")
 

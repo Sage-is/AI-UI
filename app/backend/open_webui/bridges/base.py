@@ -1,6 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Awaitable, Callable, Optional
 
 from open_webui.bridges.types import (
     IncomingMessage,
@@ -19,10 +19,15 @@ class MessageBridge(ABC):
         self.connection_id = connection_id
         self.config = config
         self._connected = False
+        self._incoming_handler: Optional[Callable[[IncomingMessage], Awaitable[None]]] = None
 
     @property
     def connected(self) -> bool:
         return self._connected
+
+    def set_incoming_handler(self, handler: Callable[[IncomingMessage], Awaitable[None]]) -> None:
+        """Set callback for adapters that push messages (polling, websocket, etc.)."""
+        self._incoming_handler = handler
 
     @abstractmethod
     async def connect(self) -> bool:

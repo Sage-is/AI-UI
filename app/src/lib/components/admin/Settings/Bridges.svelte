@@ -388,121 +388,128 @@
 					</select>
 				</div>
 
-				<!-- Platform Config -->
-				{#each getConfigSchema(formPlatform) as field}
-					<div>
-						<label
-							style="--d:block; --size:0.8rem; --weight:500; --mb:0.25rem"
-							for="bridge-config-{field.name}"
-						>
-							{field.label}
-							{#if field.required}<span style="--c:var(--color-red-500)">*</span>{/if}
-						</label>
-						{#if field.type === 'password'}
-							<input
-								id="bridge-config-{field.name}"
-								type="password"
-								bind:value={formConfig[field.name]}
-								placeholder={field.placeholder || ''}
-								style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bg:var(--color-gray-50); --dark-bg:var(--color-gray-800)"
-							/>
-						{:else}
-							<input
-								id="bridge-config-{field.name}"
-								type="text"
-								bind:value={formConfig[field.name]}
-								placeholder={field.placeholder || ''}
-								style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bg:var(--color-gray-50); --dark-bg:var(--color-gray-800)"
-							/>
+				<details open={!!editingBridge}>
+					<summary style="cursor:pointer; font-size:0.85rem; font-weight:500; margin-top:0.5rem"
+						>{$i18n.t('Advanced Settings')}</summary
+					>
+					<div style="--d:flex; --fd:column; --g:0.75rem; --mt:0.75rem">
+						<!-- Platform Config -->
+						{#each getConfigSchema(formPlatform) as field}
+							<div>
+								<label
+									style="--d:block; --size:0.8rem; --weight:500; --mb:0.25rem"
+									for="bridge-config-{field.name}"
+								>
+									{field.label}
+									{#if field.required}<span style="--c:var(--color-red-500)">*</span>{/if}
+								</label>
+								{#if field.type === 'password'}
+									<input
+										id="bridge-config-{field.name}"
+										type="password"
+										bind:value={formConfig[field.name]}
+										placeholder={field.placeholder || ''}
+										style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bg:var(--color-gray-50); --dark-bg:var(--color-gray-800)"
+									/>
+								{:else}
+									<input
+										id="bridge-config-{field.name}"
+										type="text"
+										bind:value={formConfig[field.name]}
+										placeholder={field.placeholder || ''}
+										style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bg:var(--color-gray-50); --dark-bg:var(--color-gray-800)"
+									/>
+								{/if}
+							</div>
+						{/each}
+
+						<!-- Model ID (for ai_chat mode) -->
+						{#if formMode === 'ai_chat'}
+							<div>
+								<label
+									style="--d:block; --size:0.8rem; --weight:500; --mb:0.25rem"
+									for="bridge-model"
+								>
+									{$i18n.t('AI Model ID')}
+								</label>
+								<input
+									id="bridge-model"
+									type="text"
+									bind:value={formModelId}
+									placeholder={$i18n.t('e.g. gpt-4o or leave blank for default')}
+									style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bg:var(--color-gray-50); --dark-bg:var(--color-gray-800)"
+								/>
+							</div>
 						{/if}
+
+						<!-- Channel ID (for channel_bridge mode) -->
+						{#if formMode === 'channel_bridge'}
+							<div>
+								<label
+									style="--d:block; --size:0.8rem; --weight:500; --mb:0.25rem"
+									for="bridge-channel"
+								>
+									{$i18n.t('Sage Channel ID')}
+								</label>
+								<input
+									id="bridge-channel"
+									type="text"
+									bind:value={formChannelId}
+									placeholder={$i18n.t('Channel ID to bridge messages to')}
+									style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bg:var(--color-gray-50); --dark-bg:var(--color-gray-800)"
+								/>
+							</div>
+						{/if}
+
+						<!-- User Provisioning -->
+						<div>
+							<label
+								style="--d:block; --size:0.8rem; --weight:500; --mb:0.25rem"
+								for="bridge-provisioning"
+							>
+								{$i18n.t('User Provisioning')}
+							</label>
+							<select
+								id="bridge-provisioning"
+								bind:value={formUserProvisioning}
+								style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bg:var(--color-gray-50); --dark-bg:var(--color-gray-800)"
+							>
+								<option value="auto_create"
+									>{$i18n.t('Auto Create - Automatically create user accounts')}</option
+								>
+								<option value="pre_approved"
+									>{$i18n.t('Pre-Approved - Only allowlisted users')}</option
+								>
+								<option value="disabled">{$i18n.t('Disabled - No new users')}</option>
+							</select>
+						</div>
+
+						<!-- Allowed IDs -->
+						<div>
+							<label
+								style="--d:block; --size:0.8rem; --weight:500; --mb:0.25rem"
+								for="bridge-allowlist"
+							>
+								{$i18n.t('Allowed IDs (comma-separated, optional)')}
+							</label>
+							<input
+								id="bridge-allowlist"
+								type="text"
+								bind:value={formAllowedIds}
+								placeholder={$i18n.t('e.g. 1234567890@c.us, 0987654321@c.us')}
+								style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bg:var(--color-gray-50); --dark-bg:var(--color-gray-800)"
+							/>
+						</div>
+
+						<!-- Enabled -->
+						<div style="--d:flex; --ai:center; --jc:space-between">
+							<label style="--size:0.8rem; --weight:500" for="bridge-enabled">
+								{$i18n.t('Enabled')}
+							</label>
+							<Switch bind:state={formEnabled} />
+						</div>
 					</div>
-				{/each}
-
-				<!-- Model ID (for ai_chat mode) -->
-				{#if formMode === 'ai_chat'}
-					<div>
-						<label
-							style="--d:block; --size:0.8rem; --weight:500; --mb:0.25rem"
-							for="bridge-model"
-						>
-							{$i18n.t('AI Model ID')}
-						</label>
-						<input
-							id="bridge-model"
-							type="text"
-							bind:value={formModelId}
-							placeholder={$i18n.t('e.g. gpt-4o or leave blank for default')}
-							style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bg:var(--color-gray-50); --dark-bg:var(--color-gray-800)"
-						/>
-					</div>
-				{/if}
-
-				<!-- Channel ID (for channel_bridge mode) -->
-				{#if formMode === 'channel_bridge'}
-					<div>
-						<label
-							style="--d:block; --size:0.8rem; --weight:500; --mb:0.25rem"
-							for="bridge-channel"
-						>
-							{$i18n.t('Sage Channel ID')}
-						</label>
-						<input
-							id="bridge-channel"
-							type="text"
-							bind:value={formChannelId}
-							placeholder={$i18n.t('Channel ID to bridge messages to')}
-							style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bg:var(--color-gray-50); --dark-bg:var(--color-gray-800)"
-						/>
-					</div>
-				{/if}
-
-				<!-- User Provisioning -->
-				<div>
-					<label
-						style="--d:block; --size:0.8rem; --weight:500; --mb:0.25rem"
-						for="bridge-provisioning"
-					>
-						{$i18n.t('User Provisioning')}
-					</label>
-					<select
-						id="bridge-provisioning"
-						bind:value={formUserProvisioning}
-						style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bg:var(--color-gray-50); --dark-bg:var(--color-gray-800)"
-					>
-						<option value="auto_create"
-							>{$i18n.t('Auto Create - Automatically create user accounts')}</option
-						>
-						<option value="pre_approved"
-							>{$i18n.t('Pre-Approved - Only allowlisted users')}</option
-						>
-						<option value="disabled">{$i18n.t('Disabled - No new users')}</option>
-					</select>
-				</div>
-
-				<!-- Allowed IDs -->
-				<div>
-					<label
-						style="--d:block; --size:0.8rem; --weight:500; --mb:0.25rem"
-						for="bridge-allowlist"
-					>
-						{$i18n.t('Allowed IDs (comma-separated, optional)')}
-					</label>
-					<input
-						id="bridge-allowlist"
-						type="text"
-						bind:value={formAllowedIds}
-						placeholder={$i18n.t('e.g. 1234567890@c.us, 0987654321@c.us')}
-						style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bg:var(--color-gray-50); --dark-bg:var(--color-gray-800)"
-					/>
-				</div>
-
-				<!-- Enabled -->
-				<div style="--d:flex; --ai:center; --jc:space-between">
-					<label style="--size:0.8rem; --weight:500" for="bridge-enabled">
-						{$i18n.t('Enabled')}
-					</label>
-					<Switch bind:state={formEnabled} />
-				</div>
+				</details>
 			</div>
 
 			<!-- Actions -->

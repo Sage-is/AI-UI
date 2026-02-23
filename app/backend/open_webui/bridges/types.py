@@ -13,6 +13,7 @@ class Platform(str, Enum):
     MATTERMOST = "mattermost"
     MATRIX = "matrix"
     GOOGLE_CHAT = "google_chat"
+    EMAIL = "email"
 
 
 class BridgeMode(str, Enum):

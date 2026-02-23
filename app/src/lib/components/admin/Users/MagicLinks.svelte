@@ -17,9 +17,11 @@
 		createMagicLink,
 		getMagicLinks,
 		deactivateMagicLink,
-		deleteMagicLink
+		deleteMagicLink,
+		sendMagicLink
 	} from '$lib/apis/magic-links';
 	import { getGroups } from '$lib/apis/groups';
+	import { getBridgeConnections } from '$lib/apis/bridges';
 
 	const i18n = getContext('i18n');
 
@@ -33,6 +35,20 @@
 	let accountDurationHours = 24;
 	let linkExpiresHours = 168; // 7 days
 	let webhookUrl = '';
+
+	// Send-on-create fields
+	let createBridgeId = '';
+	let createRecipients = '';
+	let createMessage = '';
+
+	// Send modal state
+	let showSendModal = false;
+	let sendLinkId = '';
+	let sendBridgeId = '';
+	let sendRecipients = '';
+	let sendMessage = '';
+	let sending = false;
+	let bridgeConnections = [];
 
 	const loadLinks = async () => {
 		try {
@@ -50,6 +66,50 @@
 		}
 	};
 
+	const loadBridges = async () => {
+		try {
+			bridgeConnections = await getBridgeConnections(localStorage.token);
+		} catch (err) {
+			console.error('Failed to load bridges:', err);
+		}
+	};
+
+	const openSendModal = (linkId) => {
+		sendLinkId = linkId;
+		sendBridgeId = bridgeConnections.length > 0 ? bridgeConnections[0].id : '';
+		sendRecipients = '';
+		sendMessage = '';
+		showSendModal = true;
+	};
+
+	const handleSend = async (linkId, bridgeId, recipientsText, message = '') => {
+		const recipients = recipientsText
+			.split(/[,\n]/)
+			.map((r) => r.trim())
+			.filter(Boolean);
+		if (!bridgeId || recipients.length === 0) {
+			toast.error('Please select a bridge and enter at least one recipient');
+			return;
+		}
+		sending = true;
+		try {
+			const result = await sendMagicLink(localStorage.token, linkId, {
+				bridge_connection_id: bridgeId,
+				recipients,
+				message: message || undefined
+			});
+			if (result.failed > 0) {
+				toast.warning(`Sent to ${result.sent}, failed ${result.failed}`);
+			} else {
+				toast.success(`Sent to ${result.sent} recipient${result.sent !== 1 ? 's' : ''}`);
+			}
+			showSendModal = false;
+		} catch (err) {
+			toast.error(`Failed to send: ${err}`);
+		}
+		sending = false;
+	};
+
 	const handleCreate = async () => {
 		try {
 			const data = {
@@ -63,12 +123,21 @@
 			const result = await createMagicLink(localStorage.token, data);
 			if (result) {
 				toast.success('Magic link created');
+
+				// Auto-send if recipients were provided
+				if (createBridgeId && createRecipients.trim()) {
+					await handleSend(result.id, createBridgeId, createRecipients, createMessage);
+				}
+
 				showCreateForm = false;
 				selectedGroupIds = [];
 				maxUses = 10;
 				accountDurationHours = 24;
 				linkExpiresHours = 168;
 				webhookUrl = '';
+				createBridgeId = '';
+				createRecipients = '';
+				createMessage = '';
 				await loadLinks();
 			}
 		} catch (err) {
@@ -108,7 +177,7 @@
 	};
 
 	onMount(async () => {
-		await Promise.all([loadLinks(), loadGroups()]);
+		await Promise.all([loadLinks(), loadGroups(), loadBridges()]);
 	});
 </script>
 
@@ -205,6 +274,52 @@
 				/>
 			</div>
 
+			{#if bridgeConnections.length > 0}
+				<details>
+					<summary style="cursor:pointer; font-size:0.8rem; font-weight:500; color:var(--color-gray-600, #7a7a7a)"
+						>{$i18n.t('Send to recipients (optional)')}</summary
+					>
+					<div style="--d:flex; --fd:column; --g:0.5rem; --mt:0.5rem">
+						<div>
+							<label style="--d:block; --size:0.75rem; --weight:500; --mb:0.25rem; --c:var(--color-gray-600, #7a7a7a); --dark-c:var(--color-gray-400, #b4b4b4)"
+								>{$i18n.t('Bridge')}</label
+							>
+							<select
+								bind:value={createBridgeId}
+								style="--w:100%; --p:0.375rem; --radius:0.5rem; --bc:var(--color-gray-300, #cdcdcd); --dark-bc:var(--color-gray-600, #7a7a7a); --bgc:#fff; --dark-bgc:var(--color-gray-800, #333); --size:0.875rem"
+							>
+								<option value="">{$i18n.t('Select a bridge...')}</option>
+								{#each bridgeConnections as bc}
+									<option value={bc.id}>{bc.name} ({bc.platform})</option>
+								{/each}
+							</select>
+						</div>
+						<div>
+							<label style="--d:block; --size:0.75rem; --weight:500; --mb:0.25rem; --c:var(--color-gray-600, #7a7a7a); --dark-c:var(--color-gray-400, #b4b4b4)"
+								>{$i18n.t('Recipients (one per line or comma-separated)')}</label
+							>
+							<textarea
+								bind:value={createRecipients}
+								rows="3"
+								placeholder={$i18n.t('e.g. 1234567890@c.us')}
+								style="--w:100%; --p:0.375rem; --radius:0.5rem; --bc:var(--color-gray-300, #cdcdcd); --dark-bc:var(--color-gray-600, #7a7a7a); --bgc:#fff; --dark-bgc:var(--color-gray-800, #333); --size:0.875rem; resize:vertical"
+							></textarea>
+						</div>
+						<div>
+							<label style="--d:block; --size:0.75rem; --weight:500; --mb:0.25rem; --c:var(--color-gray-600, #7a7a7a); --dark-c:var(--color-gray-400, #b4b4b4)"
+								>{$i18n.t('Message (optional)')}</label
+							>
+							<textarea
+								bind:value={createMessage}
+								rows="2"
+								placeholder={$i18n.t('Custom message to include with the link')}
+								style="--w:100%; --p:0.375rem; --radius:0.5rem; --bc:var(--color-gray-300, #cdcdcd); --dark-bc:var(--color-gray-600, #7a7a7a); --bgc:#fff; --dark-bgc:var(--color-gray-800, #333); --size:0.875rem; resize:vertical"
+							></textarea>
+						</div>
+					</div>
+				</details>
+			{/if}
+
 			<div style="--d:flex; --g:0.5rem; --jc:flex-end">
 				<button
 					style="--px:0.75rem; --py:0.375rem; --radius:0.5rem; --size:0.875rem; --cur:pointer; --bgc:var(--color-gray-200, #e3e3e3); --dark-bgc:var(--color-gray-700, #4e4e4e)"
@@ -259,6 +374,16 @@
 										{$i18n.t('Copy')}
 									</button>
 								</Tooltip>
+								{#if bridgeConnections.length > 0}
+									<Tooltip content={$i18n.t('Send via Bridge')}>
+										<button
+											style="--px:0.5rem; --py:0.25rem; --radius:0.5rem; --size:0.75rem; --cur:pointer; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-700, #4e4e4e); --c:#3b82f6"
+											on:click={() => openSendModal(link.id)}
+										>
+											{$i18n.t('Send')}
+										</button>
+									</Tooltip>
+								{/if}
 								<button
 									style="--px:0.5rem; --py:0.25rem; --radius:0.5rem; --size:0.75rem; --cur:pointer; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-700, #4e4e4e); --c:#f59e0b"
 									on:click={() => handleDeactivate(link.id)}
@@ -300,3 +425,75 @@
 		</div>
 	{/if}
 </div>
+
+<!-- Send Modal -->
+{#if showSendModal}
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<!-- svelte-ignore a11y-no-static-element-interactions -->
+	<div
+		style="--pos:fixed; --inset:0; --bgc:rgba(0,0,0,0.5); --d:flex; --ai:center; --jc:center; --z:50"
+		on:click|self={() => (showSendModal = false)}
+	>
+		<div
+			style="--bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-900, #171717); --radius:0.75rem; --p:1.5rem; --w:100%; --maxw:28rem; --mx:1rem"
+		>
+			<div style="--weight:600; --size:1rem; --mb:1rem">{$i18n.t('Send Magic Link')}</div>
+
+			<div style="--d:flex; --fd:column; --g:0.75rem">
+				<div>
+					<label style="--d:block; --size:0.75rem; --weight:500; --mb:0.25rem; --c:var(--color-gray-600, #7a7a7a); --dark-c:var(--color-gray-400, #b4b4b4)"
+						>{$i18n.t('Bridge')}</label
+					>
+					<select
+						bind:value={sendBridgeId}
+						style="--w:100%; --p:0.375rem; --radius:0.5rem; --bc:var(--color-gray-300, #cdcdcd); --dark-bc:var(--color-gray-600, #7a7a7a); --bgc:#fff; --dark-bgc:var(--color-gray-800, #333); --size:0.875rem"
+					>
+						{#each bridgeConnections as bc}
+							<option value={bc.id}>{bc.name} ({bc.platform})</option>
+						{/each}
+					</select>
+				</div>
+
+				<div>
+					<label style="--d:block; --size:0.75rem; --weight:500; --mb:0.25rem; --c:var(--color-gray-600, #7a7a7a); --dark-c:var(--color-gray-400, #b4b4b4)"
+						>{$i18n.t('Recipients (one per line or comma-separated)')}</label
+					>
+					<textarea
+						bind:value={sendRecipients}
+						rows="4"
+						placeholder={$i18n.t('e.g. 1234567890@c.us')}
+						style="--w:100%; --p:0.375rem; --radius:0.5rem; --bc:var(--color-gray-300, #cdcdcd); --dark-bc:var(--color-gray-600, #7a7a7a); --bgc:#fff; --dark-bgc:var(--color-gray-800, #333); --size:0.875rem; resize:vertical"
+					></textarea>
+				</div>
+
+				<div>
+					<label style="--d:block; --size:0.75rem; --weight:500; --mb:0.25rem; --c:var(--color-gray-600, #7a7a7a); --dark-c:var(--color-gray-400, #b4b4b4)"
+						>{$i18n.t('Message (optional)')}</label
+					>
+					<textarea
+						bind:value={sendMessage}
+						rows="3"
+						placeholder={$i18n.t('Custom message to include with the link')}
+						style="--w:100%; --p:0.375rem; --radius:0.5rem; --bc:var(--color-gray-300, #cdcdcd); --dark-bc:var(--color-gray-600, #7a7a7a); --bgc:#fff; --dark-bgc:var(--color-gray-800, #333); --size:0.875rem; resize:vertical"
+					></textarea>
+				</div>
+			</div>
+
+			<div style="--d:flex; --g:0.5rem; --jc:flex-end; --mt:1rem">
+				<button
+					style="--px:0.75rem; --py:0.375rem; --radius:0.5rem; --size:0.875rem; --cur:pointer; --bgc:var(--color-gray-200, #e3e3e3); --dark-bgc:var(--color-gray-700, #4e4e4e)"
+					on:click={() => (showSendModal = false)}
+				>
+					{$i18n.t('Cancel')}
+				</button>
+				<button
+					style="--px:0.75rem; --py:0.375rem; --radius:0.5rem; --size:0.875rem; --cur:pointer; --bgc:var(--color-gray-900, #171717); --dark-bgc:#fff; --c:#fff; --dark-c:var(--color-gray-900, #171717); --weight:500"
+					disabled={sending}
+					on:click={() => handleSend(sendLinkId, sendBridgeId, sendRecipients, sendMessage)}
+				>
+					{sending ? $i18n.t('Sending...') : $i18n.t('Send')}
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
