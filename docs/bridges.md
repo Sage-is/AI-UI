@@ -6,6 +6,7 @@ tags:
   - bridges
   - whatsapp
   - telegram
+  - signal
   - email
   - messaging
   - integration
@@ -27,7 +28,7 @@ Sage WebUI can connect to external messaging platforms so users can interact wit
 | Email | Available | SMTP/IMAP (stdlib) | IMAP polling |
 | Slack | Planned | — | — |
 | Discord | Planned | — | — |
-| Signal | Planned | — | — |
+| Signal | Planned | signal-cli-rest-api (Docker) | Webhook or WebSocket |
 | Matrix | Planned | — | — |
 
 ## Quick Start (WhatsApp)
@@ -183,6 +184,66 @@ Send an email to the configured address. Sage will poll IMAP for new messages, p
 | iCloud | smtp.mail.me.com | 587 (STARTTLS) | imap.mail.me.com | 993 (SSL) |
 | Fastmail | smtp.fastmail.com | 465 (SSL) | imap.fastmail.com | 993 (SSL) |
 
+## Quick Start (Signal)
+
+### 1. Start signal-cli-rest-api
+
+Signal integration uses [signal-cli-rest-api](https://github.com/bbernhard/signal-cli-rest-api) — a Go/Java container that exposes signal-cli as an HTTP REST API. Like WAHA for WhatsApp, it runs as a **separate Docker container**.
+
+**Local (same machine as Sage):**
+
+```bash
+make signal_start
+```
+
+This starts signal-cli-rest-api on port 8081 in `json-rpc` mode (persistent JVM, fastest).
+
+### 2. Register or Link a Phone Number
+
+**Option A: Link to your existing Signal account (secondary device):**
+
+Open `http://localhost:8081/v1/qrcodelink?device_name=sage-bridge` in your browser, then scan the QR code from Signal on your phone (Settings > Linked Devices > +).
+
+**Option B: Register a dedicated number:**
+
+```bash
+# Trigger SMS verification
+curl -X POST http://localhost:8081/v1/register/+1234567890
+
+# Verify with the code from SMS
+curl -X POST http://localhost:8081/v1/register/+1234567890/verify/123456
+```
+
+A dedicated number is recommended for production to keep bot traffic separate from your personal messages.
+
+### 3. Configure via Admin UI
+
+1. Go to **Admin Settings > Bridges**
+2. Click **Add Bridge**
+3. Select **Signal** as the platform
+4. Fill in the config:
+   - **API URL**: `http://host.docker.internal:8081` (Docker-to-Docker) or `http://localhost:8081`
+   - **Phone Number**: The registered/linked number (e.g. `+1234567890`)
+   - **Receive Mode**: `webhook` (recommended) or `websocket`
+   - **Webhook URL**: Your public Sage URL (e.g. `https://yourdomain.com/api/v1/bridges/webhook/{connection-id}`) — only for webhook mode
+5. Choose a **Mode** (AI Chat or Channel Bridge)
+6. Click **Create**
+
+### 4. Test It
+
+Send a Signal message to the registered phone number. Sage will receive it via webhook (or WebSocket) and respond through the AI pipeline.
+
+### Signal Notes
+
+- **Separate container** — signal-cli-rest-api runs independently. Sage connects to its REST API via HTTP, same pattern as WAHA for WhatsApp.
+- **json-rpc mode** keeps the JVM running for fastest response times. Use `MODE=native` for lower memory at the cost of slightly slower sends.
+- **No HMAC webhook verification** — signal-cli-rest-api doesn't sign webhook payloads. Secure via Docker network isolation (shared network, no exposed port) or a reverse proxy.
+- **Rate limits** — Signal enforces server-side limits (~1-2 msg/sec sustained). First messages to new contacts are more scrutinized.
+- **Unofficial** — signal-cli is third-party (not by Signal Foundation). Same risk profile as WAHA for WhatsApp. Keep the container updated — Signal protocol changes can break older versions within ~3 months.
+- **Attachments** — send as base64, receive via `GET /v1/attachments/{id}`. All media types supported.
+- **Groups** — supported via group IDs. The bot can send to and receive from Signal groups.
+- **Device limit** — Signal allows max 5 linked devices per primary account.
+
 ## Deployment Topologies
 
 ### Local Development
@@ -278,6 +339,15 @@ Messages from the external platform are posted into a Sage channel, and messages
 | `subject_prefix` | No | Only process emails with subjects matching this prefix |
 | `default_subject` | No | Subject line for outgoing emails (default: `Message from Sage AI`) |
 
+### Per-Connection Config (Signal)
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `api_url` | Yes | URL of the signal-cli-rest-api container (e.g. `http://localhost:8081`) |
+| `phone_number` | Yes | Registered/linked Signal phone number (e.g. `+1234567890`) |
+| `receive_mode` | Yes | `webhook` (recommended) or `websocket` |
+| `webhook_url` | No | Public HTTPS URL for webhook callbacks (required if receive_mode is `webhook`) |
+
 ### User Provisioning Options
 
 | Mode | Behavior |
@@ -294,12 +364,17 @@ Messages from the external platform are posted into a Sage channel, and messages
 | `make waha_stop` | Stop WAHA container |
 | `make waha_logs` | Tail WAHA container logs |
 | `make waha_status` | Check if WAHA is running |
+| `make signal_start` | Start signal-cli-rest-api container on port 8081 |
+| `make signal_stop` | Stop signal-cli-rest-api container |
+| `make signal_logs` | Tail signal-cli-rest-api container logs |
+| `make signal_status` | Check if signal-cli-rest-api is running |
 
 Override defaults with environment variables or `.env`:
 
 ```bash
-WAHA_PORT=3001 make waha_start           # Custom port
-WAHA_API_KEY=secret123 make waha_start   # Set API key
+WAHA_PORT=3001 make waha_start               # Custom port
+WAHA_API_KEY=secret123 make waha_start       # Set API key
+SIGNAL_PORT=8082 make signal_start           # Custom port
 ```
 
 ## API Endpoints
@@ -323,7 +398,7 @@ All endpoints except the webhook require admin authentication.
 
 ## Security
 
-- **Webhook authentication**: WhatsApp uses HMAC-SHA256 signature verification. Telegram uses a `secret_token` header. Email doesn't use webhooks.
+- **Webhook authentication**: WhatsApp uses HMAC-SHA256 signature verification. Telegram uses a `secret_token` header. Signal relies on network-level isolation (no HMAC support in signal-cli-rest-api). Email doesn't use webhooks.
 - **Self-loop prevention**: Email adapter skips messages from its own address. WhatsApp skips `fromMe` messages. Telegram skips messages from the bot's own user ID.
 - **User provisioning**: Configurable per-connection. Use `pre_approved` or `disabled` to restrict who can interact.
 - **Allowlists**: Optional per-connection list of permitted external user IDs.
@@ -408,7 +483,8 @@ app/backend/open_webui/bridges/
 └── adapters/
     ├── whatsapp.py  # WhatsApp via WAHA (webhook-driven)
     ├── telegram.py  # Telegram Bot API (polling or webhook)
-    └── email.py     # Email via SMTP/IMAP (polling-driven, stdlib only)
+    ├── email.py     # Email via SMTP/IMAP (polling-driven, stdlib only)
+    └── signal.py    # Signal via signal-cli-rest-api (webhook or websocket)
 ```
 
 ## Troubleshooting
@@ -418,6 +494,7 @@ app/backend/open_webui/bridges/
 - **WhatsApp**: Verify WAHA is running: `make waha_status` or `curl http://localhost:3000/api/sessions`. Check the WAHA API URL is reachable from inside the Sage Docker container — use `http://host.docker.internal:3000` for Docker-to-Docker communication.
 - **Telegram**: Verify the bot token is correct. Try `curl https://api.telegram.org/bot<TOKEN>/getMe` to test.
 - **Email**: Verify SMTP/IMAP credentials. Gmail requires an App Password with 2FA enabled. Check that IMAP is enabled in your email account settings.
+- **Signal**: Verify signal-cli-rest-api is running: `make signal_status` or `curl http://localhost:8081/v1/about`. Check that a number is registered: `curl http://localhost:8081/v1/accounts`.
 
 ### Webhook not receiving messages
 

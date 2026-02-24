@@ -46,13 +46,15 @@ If you want to do front end dev and see changes to svelte files live, go instead
 - `make it_clean` — Clean up containers and images
 - `make waha_start` — Start WAHA (WhatsApp bridge) locally
 - `make waha_stop` — Stop WAHA container
+- `make signal_start` — Start signal-cli-rest-api (Signal bridge) locally
+- `make signal_stop` — Stop signal-cli-rest-api container
 - `make help` — Show all available commands
 
 ## Core Features
 
 - **Multi-Model Chat** — Switch between different AI models in the same chat or even talk to multiple AI models at the same time
 - **Knowledge Bases** — Create RAG-powered AIs by uploading PDFs, docs, and websites directly into your chats or into Workshop Knoweldge
-- **Messaging Bridges** — Connect external platforms like WhatsApp directly to Sage AI for chat or channel mirroring ([docs](./docs/bridges.md))
+- **Messaging Bridges** — Connect external platforms like WhatsApp, Telegram, Signal, and Email directly to Sage AI for chat or channel mirroring ([docs](./docs/bridges.md))
 - **Code Execution** — Built-in Python environment with custom function support
 - **Voice & Video** — Hands-free conversations with speech-to-text and text-to-speech
 - **Image Generation** — Integrate DALL-E, ComfyUI, or AUTOMATIC1111
