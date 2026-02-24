@@ -138,17 +138,17 @@ Add Signal as the 4th messaging bridge, using [signal-cli-rest-api](https://gith
 
 ### Tasks
 
-- [ ] Create `bridges/adapters/signal.py` — subclass `MessageBridge`, decorate with `@register_adapter("signal")`
-- [ ] Implement webhook mode (primary) — `handle_webhook()` parses envelope JSON from signal-cli-rest-api
-- [ ] Implement WebSocket mode (fallback) — background `asyncio.Task` connects to `ws://signal-api/v1/receive/{number}`
-- [ ] Implement `send_message()` — `POST /v2/send` with text and base64 attachments
-- [ ] Implement `download_media()` — `GET /v1/attachments/{id}`
-- [ ] Implement `health_check()` — `GET /v1/about` or `GET /v1/accounts`
-- [ ] Define `get_platform_info()` config schema (api_url, phone_number, receive_mode, webhook_url)
-- [ ] Add import to `manager.py` (`_load_adapters()` + `get_available_platforms()`)
-- [ ] Add Make targets for signal-cli-rest-api container lifecycle (done)
-- [ ] Update `docs/bridges.md` with Quick Start (done)
-- [ ] Test: webhook receive, websocket receive, send text, send attachment, groups
+- [x] Create `bridges/adapters/signal.py` — subclass `MessageBridge`, decorate with `@register_adapter("signal")`
+- [x] Implement webhook mode (primary) — `handle_webhook()` parses envelope JSON from signal-cli-rest-api
+- [x] Implement WebSocket mode (fallback) — background `asyncio.Task` connects to `ws://signal-api/v1/receive/{number}`
+- [x] Implement `send_message()` — `POST /v2/send` with text and base64 attachments
+- [x] Implement `download_media()` — `GET /v1/attachments/{id}`
+- [x] Implement `health_check()` — `GET /v1/about` or `GET /v1/accounts`
+- [x] Define `get_platform_info()` config schema (api_url, phone_number, receive_mode, webhook_url)
+- [x] Add import to `manager.py` (`_load_adapters()` + `get_available_platforms()`)
+- [x] Add Make targets for signal-cli-rest-api container lifecycle
+- [x] Update `docs/bridges.md` with Quick Start
+- [ ] Test all bridges end-to-end: WhatsApp, Email, Telegram, Signal (webhook receive, websocket receive, send text, send attachment, groups)
 
 ### Config Fields
 
