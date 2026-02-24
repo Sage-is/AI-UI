@@ -314,6 +314,45 @@ waha_logs:
 waha_status:
 	@docker inspect --format='{{.State.Status}}' $(WAHA_CONTAINER_NAME) 2>/dev/null || echo "WAHA container is not running"
 
+# signal-cli-rest-api for Signal Messaging Bridge
+SIGNAL_PORT ?= 8081
+SIGNAL_CONTAINER_NAME ?= sage-signal
+SIGNAL_IMAGE ?= bbernhard/signal-cli-rest-api
+SIGNAL_DATA_DIR ?= $(HOME)/.local/share/signal-cli-sage
+
+signal_start:
+	@echo "Starting signal-cli-rest-api on port $(SIGNAL_PORT)..."
+	@mkdir -p $(SIGNAL_DATA_DIR)
+	docker run -d --rm \
+		--name $(SIGNAL_CONTAINER_NAME) \
+		-p $(SIGNAL_PORT):8080 \
+		-v $(SIGNAL_DATA_DIR):/home/.local/share/signal-cli \
+		-e 'MODE=json-rpc' \
+		$(SIGNAL_IMAGE)
+	@echo ""
+	@echo "signal-cli-rest-api is running:"
+	@echo "  API:     http://localhost:$(SIGNAL_PORT)"
+	@echo "  Swagger: http://localhost:$(SIGNAL_PORT)/v1/about"
+	@echo ""
+	@echo "Next steps:"
+	@echo "  1. Register a number or link a device:"
+	@echo "     Link:     open http://localhost:$(SIGNAL_PORT)/v1/qrcodelink?device_name=sage-bridge"
+	@echo "     Register: curl -X POST http://localhost:$(SIGNAL_PORT)/v1/register/+1234567890"
+	@echo "  2. Configure your Sage bridge with:"
+	@echo "     API URL: http://host.docker.internal:$(SIGNAL_PORT)"
+	@echo "     (use http://localhost:$(SIGNAL_PORT) if Sage is not in Docker)"
+
+signal_stop:
+	@echo "Stopping signal-cli-rest-api..."
+	docker stop $(SIGNAL_CONTAINER_NAME) || true
+	@echo "signal-cli-rest-api stopped"
+
+signal_logs:
+	docker logs -f $(SIGNAL_CONTAINER_NAME)
+
+signal_status:
+	@docker inspect --format='{{.State.Status}}' $(SIGNAL_CONTAINER_NAME) 2>/dev/null || echo "signal-cli-rest-api container is not running"
+
 .PHONY: it_build it_build_no_cache dev_run it_run it_build_n_run it_build_n_run_no_cache \
 	clean-manifests-dockerhub clean-manifests-ghcr \
 	build-amd64-dockerhub build-arm64-dockerhub \
@@ -321,7 +360,8 @@ waha_status:
 	create-manifest-dockerhub create-manifest-ghcr \
 	it_build_multi_arch_push_docker_hub it_build_multi_arch_push_GHCR \
 	it_build_multi_arch_all show-version setup_env setup_env_auto setup_env_template \
-	bump_release_version waha_start waha_stop waha_logs waha_status
+	bump_release_version waha_start waha_stop waha_logs waha_status \
+	signal_start signal_stop signal_logs signal_status
 
 
 # Version Management with Git Flow
