@@ -3,12 +3,9 @@
 	const i18n = getContext('i18n');
 
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import SensitiveInput from '$lib/components/common/SensitiveInput.svelte';
 	import Cog6 from '$lib/components/icons/Cog6.svelte';
 	import AddConnectionModal from '$lib/components/AddConnectionModal.svelte';
 	import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
-
-	import { connect } from 'socket.io-client';
 
 	export let onDelete = () => {};
 	export let onSubmit = () => {};
@@ -62,15 +59,17 @@
 				style="--pos:absolute; --top:0; --bottom:0; --left:0; --right:0; --op:0.6; --bgc:#fff; --dark-bgc:var(--color-gray-900, #171717); --z:10"
 			></div>
 		{/if}
-		<div style="--d:flex; --w:100%; --g:0.5rem">
-			<div style="--fx:1 1 0%; --pos:relative">
-				<input
-					style="--oe:none; --w:100%; --bgc:transparent"
-	class="{pipeline ? 'pr-8' : ''}"
-					placeholder={$i18n.t('API Base URL')}
-					bind:value={url}
-					autocomplete="off"
-				/>
+		<button
+			type="button"
+			style="--d:flex; --w:100%; --g:0.5rem; --ai:center; --cur:pointer; --bgc:transparent; --p:0; --b:none"
+			on:click={() => { showConfigModal = true; }}
+		>
+			<div style="--fx:1 1 0%; --pos:relative; --ta:left">
+				<div
+					style="--w:100%; --bgc:transparent; --oe:none; --p:0.375rem 0.5rem; --size:0.875rem; --c:inherit; --of:hidden; --te:ellipsis; --ws:nowrap"
+				>
+					{url || $i18n.t('API Base URL')}
+				</div>
 
 				{#if pipeline}
 					<div style="--pos:absolute; --top:0.125rem; --right:0.625rem">
@@ -96,16 +95,18 @@
 				{/if}
 			</div>
 
-			<SensitiveInput
-				inputClassName=" outline-hidden bg-transparent w-full"
-				placeholder={$i18n.t('API Key')}
-				bind:value={key}
-			/>
-		</div>
+			<div style="--fx:1 1 0%; --ta:left">
+				<div
+					style="--w:100%; --bgc:transparent; --p:0.375rem 0.5rem; --size:0.875rem; --c:var(--color-gray-400)"
+				>
+					{key ? '••••••••' : $i18n.t('API Key')}
+				</div>
+			</div>
+		</button>
 	</Tooltip>
 
-	<div style="--d:flex; --g:0.25rem">
-		<Tooltip content={$i18n.t('Configure')} className="self-start">
+	<div style="--d:flex; --g:0.25rem; --ai:center">
+		<Tooltip content={$i18n.t('Configure')} className="self-center">
 			<button
 				style="--as:center; --p:0.25rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-900, #171717); --hvr-dark-bgc:var(--color-gray-850, #262626); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={() => {

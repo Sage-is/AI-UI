@@ -342,8 +342,13 @@
 						<select
 							id="bridge-platform"
 							bind:value={formPlatform}
-							style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bg:var(--color-gray-50); --dark-bg:var(--color-gray-800)"
-							on:change={() => (formConfig = {})}
+							style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
+							on:change={() => {
+								formConfig = {};
+								for (const f of getConfigSchema(formPlatform)) {
+									if (f.default) formConfig[f.name] = f.default;
+								}
+							}}
 						>
 							{#each platforms as platform}
 								<option value={platform.platform}>{platform.display_name}</option>
@@ -362,7 +367,7 @@
 						type="text"
 						bind:value={formName}
 						placeholder={$i18n.t('My WhatsApp Bridge')}
-						style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bg:var(--color-gray-50); --dark-bg:var(--color-gray-800)"
+						style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
 					/>
 				</div>
 
@@ -374,7 +379,7 @@
 					<select
 						id="bridge-mode"
 						bind:value={formMode}
-						style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bg:var(--color-gray-50); --dark-bg:var(--color-gray-800)"
+						style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
 					>
 						<option value="ai_chat">{$i18n.t('AI Chat - Direct AI conversations')}</option>
 						<option value="channel_bridge"
@@ -398,13 +403,31 @@
 									{field.label}
 									{#if field.required}<span style="--c:var(--color-red-500)">*</span>{/if}
 								</label>
-								{#if field.type === 'password'}
+								{#if field.type === 'select' && field.options}
+									<select
+										id="bridge-config-{field.name}"
+										bind:value={formConfig[field.name]}
+										style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
+									>
+										{#each field.options as opt}
+											<option value={opt.value}>{opt.label}</option>
+										{/each}
+									</select>
+								{:else if field.type === 'password'}
 									<input
 										id="bridge-config-{field.name}"
 										type="password"
 										bind:value={formConfig[field.name]}
 										placeholder={field.placeholder || ''}
-										style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bg:var(--color-gray-50); --dark-bg:var(--color-gray-800)"
+										style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
+									/>
+								{:else if field.type === 'number'}
+									<input
+										id="bridge-config-{field.name}"
+										type="number"
+										bind:value={formConfig[field.name]}
+										placeholder={field.placeholder || ''}
+										style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
 									/>
 								{:else}
 									<input
@@ -412,7 +435,7 @@
 										type="text"
 										bind:value={formConfig[field.name]}
 										placeholder={field.placeholder || ''}
-										style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bg:var(--color-gray-50); --dark-bg:var(--color-gray-800)"
+										style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
 									/>
 								{/if}
 							</div>
@@ -432,7 +455,7 @@
 									type="text"
 									bind:value={formModelId}
 									placeholder={$i18n.t('e.g. gpt-4o or leave blank for default')}
-									style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bg:var(--color-gray-50); --dark-bg:var(--color-gray-800)"
+									style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
 								/>
 							</div>
 						{/if}
@@ -451,7 +474,7 @@
 									type="text"
 									bind:value={formChannelId}
 									placeholder={$i18n.t('Channel ID to bridge messages to')}
-									style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bg:var(--color-gray-50); --dark-bg:var(--color-gray-800)"
+									style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
 								/>
 							</div>
 						{/if}
@@ -467,7 +490,7 @@
 							<select
 								id="bridge-provisioning"
 								bind:value={formUserProvisioning}
-								style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bg:var(--color-gray-50); --dark-bg:var(--color-gray-800)"
+								style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
 							>
 								<option value="auto_create"
 									>{$i18n.t('Auto Create - Automatically create user accounts')}</option
@@ -492,7 +515,7 @@
 								type="text"
 								bind:value={formAllowedIds}
 								placeholder={$i18n.t('e.g. 1234567890@c.us, 0987654321@c.us')}
-								style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bg:var(--color-gray-50); --dark-bg:var(--color-gray-800)"
+								style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
 							/>
 						</div>
 
