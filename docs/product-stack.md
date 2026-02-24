@@ -20,7 +20,7 @@ graph TD
   end
 
   subgraph Frontend["SvelteKit WebUI"]
-    UI[Svelte + Tailwind]
+    UI["Svelte + Startr.Style + Tailwind"]
     SSE[SSE + Fetch]
     WS[Socket.IO Client]
   end

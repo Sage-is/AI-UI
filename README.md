@@ -70,6 +70,20 @@ Sage WebUI works out of the box, but you can customize it:
 - `ENABLE_RAG` — Enable document processing (default: true)
 
 
+## Styling
+
+Sage WebUI uses [Startr.Style](https://startr.style) — a utility-complete CSS framework under 50KB (8KB gzipped). Instead of class-based utilities, Startr.Style uses inline CSS custom properties for full access to the CSS spec with zero compilation:
+
+```html
+<div style="--d:flex; --ai:center; --g:1rem; --p:1rem; --br:0.5rem">
+  <button style="--bg:var(--color-sky-500); --c:white; --hvr-bg:var(--color-sky-600)">
+    Click me
+  </button>
+</div>
+```
+
+See [Startr.Style docs](https://startr.style) for the full property reference, responsive suffixes (`-sm`, `-md`, `-lg`, `-xl`), dark mode (`--dark-*`), and hover states (`--hvr-*`).
+
 ## Documentation
 
 
@@ -104,4 +118,4 @@ This aligns with the project's privacy-first ethos, as it keeps AI interfaces op
 
 ---
 
-Built by [Sage.is](https://sage.is)(*part of [Startr](https://startr.cloud/)*) and contributors worldwide.
+Built with [Startr.Style](https://startr.style) by [Sage.is](https://sage.is) (*part of [Startr](https://startr.cloud/)*) and contributors worldwide.
