@@ -110,6 +110,10 @@ class BridgeManager:
                 import open_webui.bridges.adapters.email  # noqa: F401
             except ImportError:
                 pass
+            try:
+                import open_webui.bridges.adapters.telegram  # noqa: F401
+            except ImportError:
+                pass
         platforms = []
         for platform, adapter_cls in PLATFORM_ADAPTERS.items():
             info: PlatformInfo = adapter_cls.get_platform_info()
@@ -146,6 +150,10 @@ class BridgeManager:
             import open_webui.bridges.adapters.email  # noqa: F401
         except ImportError as e:
             log.warning(f"Failed to load Email adapter: {e}")
+        try:
+            import open_webui.bridges.adapters.telegram  # noqa: F401
+        except ImportError as e:
+            log.warning(f"Failed to load Telegram adapter: {e}")
 
     async def _start_connection(self, conn: BridgeConnectionModel) -> bool:
         """Instantiate and connect an adapter for a connection."""
