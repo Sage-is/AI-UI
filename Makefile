@@ -4,9 +4,12 @@ ifneq (,$(wildcard ./.env))
     export
 endif
 
+# Derive org/repo from git remote (e.g. git@github.com:Sage-is/AI-UI.git -> sage-is/ai-ui)
+GIT_REPO_SLUG := $(shell git remote get-url origin 2>/dev/null | sed -E 's|.*[:/]([^/]+/[^/]+?)(\.git)?$$|\1|' | tr '[:upper:]' '[:lower:]')
+
 # Configuration variables with defaults (override with .env file)
-IMAGE_NAME ?= startr/app-image
-GHCR_IMAGE_NAME ?= ghcr.io/$(IMAGE_NAME)
+IMAGE_NAME ?= $(GIT_REPO_SLUG)
+GHCR_IMAGE_NAME ?= ghcr.io/$(GIT_REPO_SLUG)
 GIT_TAG := $(shell git tag --sort=-v:refname | sed 's/^v//' | head -n 1)
 IMAGE_TAG := $(if $(GIT_TAG),$(GIT_TAG),latest)
 GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)

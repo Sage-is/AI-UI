@@ -173,7 +173,17 @@
 					<Tooltip content={onAddLabel}>
 						<button
 							id="{id}-add-button"
-							style="--pos:absolute; --z:10; --right:0.5rem; --as:center; --d:flex; --ai:center; --jc:center; --dark-c:var(--color-gray-300, #cdcdcd); --p:0.25rem; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-850, #262626); --radius:9999px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); touch-action:auto"
+							style="--pos:absolute; 
+								--z:10; 
+								--right:0.5rem; 
+								--as:center; --d:flex; 
+								--ai:center; --jc:center; 
+								--dark-c: var(--color-gray-300, #cdcdcd); 
+								--p:0.25rem; --hvr-bgc:var(--color-gray-100, #ececec); 
+								--hvr-dark-bgc:var(--color-gray-850, #262626); 
+								--radius:9999px; 
+								--tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); 
+								--touch-action:auto"
 							class="group-hover:visible"
 							on:pointerup={(e) => {
 								e.stopPropagation();
