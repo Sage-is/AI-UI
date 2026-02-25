@@ -60,6 +60,7 @@
 	let dragged = false;
 
 	let name = '';
+	let isFolderHovered = false;
 
 	const onDragOver = (e) => {
 		e.preventDefault();
@@ -369,7 +370,9 @@
 		deleteHandler();
 	}}
 >
-	<div style="--size:0.875rem; --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-300, #cdcdcd); --fx:1 1 0%; --line-clamp:3">
+	<div
+		style="--size:0.875rem; --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-300, #cdcdcd); --fx:1 1 0%; --line-clamp:3"
+	>
 		{@html DOMPurify.sanitize(
 			$i18n.t('This will delete <strong>{{NAME}}</strong> and <strong>all its contents</strong>.', {
 				NAME: folders[folderId].name
@@ -387,7 +390,9 @@
 
 {#if dragged && x && y}
 	<DragGhost {x} {y}>
-		<div style="--bgc:rgb(0 0 0 / 0.8); backdrop-filter:blur(40px); --px:0.5rem; --py:0.25rem; --radius:0.5rem; --w:fit-content; --maxw:10rem">
+		<div
+			style="--bgc:rgb(0 0 0 / 0.8); backdrop-filter:blur(40px); --px:0.5rem; --py:0.25rem; --radius:0.5rem; --w:fit-content; --maxw:10rem"
+		>
 			<div style="--d:flex; --ai:center; --g:0.25rem">
 				<FolderOpen className="size-3.5" strokeWidth="2" />
 				<div style="--size:0.75rem; --c:#fff; --line-clamp:1">
@@ -398,12 +403,11 @@
 	</DragGhost>
 {/if}
 
-<div bind:this={folderElement} style="--pos:relative"
-	class="{className}" draggable="true">
+<div bind:this={folderElement} style="--pos:relative" class={className} draggable="true">
 	{#if draggedOver}
 		<div
 			style="--pos:absolute; --top:0; --left:0; --w:100%; --h:100%; --bgc:rgb(236 236 236 / 0.5); --dark-bgc:rgb(78 78 78 / 0.2); --z:50; --pe:none; touch-action:none"
-	class="rounded-xs bg-opacity-50 dark:bg-opacity-10"
+			class="rounded-xs bg-opacity-50 dark:bg-opacity-10"
 		></div>
 	{/if}
 
@@ -418,15 +422,17 @@
 		}}
 	>
 		<!-- svelte-ignore a11y-no-static-element-interactions -->
-		<div style="--w:100%"
-	class="group">
+		<div style="--w:100%; --m:0" class="group">
 			<button
 				id="folder-{folderId}-button"
 				style="--pos:relative; --w:100%; --py:0.375rem; --px:0.5rem; --radius:0.375rem; --d:flex; --ai:center; --g:0.375rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-500, #9b9b9b); --weight:500; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
-	class="{$selectedFolder?.id ===
-				folderId
-					? 'bg-gray-100 dark:bg-gray-900'
-					: ''}"
+				class={$selectedFolder?.id === folderId ? 'bg-gray-100 dark:bg-gray-900' : ''}
+				on:mouseenter={() => {
+					isFolderHovered = true;
+				}}
+				on:mouseleave={() => {
+					isFolderHovered = false;
+				}}
 				on:dblclick={() => {
 					renameHandler();
 				}}
@@ -479,8 +485,14 @@
 				</div>
 
 				<button
-					style="--pos:absolute; --z:10; --right:0.5rem; --v:hidden; --as:center; --d:flex; --ai:center; --dark-c:var(--color-gray-300, #cdcdcd)"
-	class="group-hover:visible"
+					style="--pos:absolute; 
+						--z:10; 
+						--right:0.5rem; 
+						--v:{isFolderHovered ? 'visible' : 'hidden'}; 
+						--as:center; 
+						--d:flex; 
+						--ai:center; 
+						--dark-c:var(--color-gray-300, #cdcdcd)"
 					on:pointerup={(e) => {
 						e.stopPropagation();
 					}}
@@ -497,7 +509,10 @@
 							exportHandler();
 						}}
 					>
-						<button style="--p:0.125rem; --hvr-dark-bgc:var(--color-gray-850, #262626); --radius:0.5rem; touch-action:auto" on:click={(e) => {}}>
+						<button
+							style="--p:0.125rem; --hvr-dark-bgc:var(--color-gray-850, #262626); --radius:0.5rem; touch-action:auto"
+							on:click={(e) => {}}
+						>
 							<EllipsisHorizontal className="size-4" strokeWidth="2.5" />
 						</button>
 					</FolderMenu>
@@ -509,7 +524,7 @@
 			{#if (folders[folderId]?.childrenIds ?? []).length > 0 || (folders[folderId].items?.chats ?? []).length > 0}
 				<div
 					style="--ml:0.75rem; --pl:0.25rem; --mt:1px; --d:flex; --fd:column; --ofy:auto; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-900, #171717)"
-	class="scrollbar-hidden border-s"
+					class="scrollbar-hidden border-s"
 				>
 					{#if folders[folderId]?.childrenIds}
 						{@const children = folders[folderId]?.childrenIds

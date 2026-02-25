@@ -72,10 +72,5 @@
 		</button>
 	</div>
 
-	<!-- <div style="--d:flex; --jc:center; --pos:relative; --c:var(--color-gray-400, #b4b4b4)"
-	class="group">
-		<button style="--cur:pointer; --p:0.5rem" on:click={() => {}}>
-			<Plus className="size-4" strokeWidth="2" />
-		</button>
-	</div> -->
+
 </div>
