@@ -20,7 +20,9 @@ Audit of code duplication, dead dependencies, and simplification opportunities a
 
 Remove packages with zero imports in the codebase. No code changes needed — just delete from manifest files.
 
-### Frontend (`package.json`) — 5 packages, ~680KB gzipped
+Verified 2026-02-24 via comprehensive codebase scan (all `.py`, `.ts`, `.svelte`, `.js` files + config files).
+
+### Frontend (`package.json`) — 6 packages, ~710KB gzipped
 
 | Package | Imports Found | Est. Size |
 |---------|---------------|-----------|
@@ -29,20 +31,14 @@ Remove packages with zero imports in the codebase. No code changes needed — ju
 | `@floating-ui/dom` | 0 (bits-ui handles this) | ~30KB |
 | `@mediapipe/tasks-vision` | 0 | ~200KB |
 | `@pyscript/core` | 0 | ~100KB |
+| `@codemirror/lang-javascript` | 0 (other codemirror lang packages used, not this one) | ~30KB |
 
-### Backend (`requirements.txt`) — 23 packages, ~1.1GB
+### Backend (`requirements.txt`) — 23 packages, ~670MB
 
 | Package | Category | Est. Size |
 |---------|----------|-----------|
 | `pymongo` | DB driver | ~50MB |
-| `pytube` | YouTube | ~5MB |
 | `ddgs` | Search | ~10MB |
-| `docx2txt` | Document processing | ~2MB |
-| `unstructured` | Document processing | ~500MB |
-| `pypdf` | PDF | ~20MB |
-| `openpyxl` | Excel | ~30MB |
-| `pyxlsb` | Excel binary | ~5MB |
-| `xlrd` | Excel legacy | ~5MB |
 | `RestrictedPython` | Sandboxing | ~5MB |
 | `fake-useragent` | HTTP spoofing | ~2MB |
 | `tencentcloud-sdk-python` | Tencent Cloud | ~200MB |
@@ -50,13 +46,36 @@ Remove packages with zero imports in the codebase. No code changes needed — ju
 | `langfuse` | Tracing | ~15MB |
 | `argon2-cffi` | Hashing (passlib already used) | ~5MB |
 | `APScheduler` | Scheduling | ~5MB |
-| `nltk` | NLP | ~50MB |
 | `rapidocr-onnxruntime` | OCR | ~100MB |
 | `rank-bm25` | Ranking | ~2MB |
 | `accelerate` | ML | ~100MB |
 | `einops` | Tensors | ~5MB |
 | `sentencepiece` | Tokenization | ~20MB |
 | `PyMySQL` | DB driver (never imported) | ~5MB |
+| `openai` | AI SDK (app uses raw HTTP to OpenAI-compatible APIs) | ~30MB |
+| `anthropic` | AI SDK (app uses raw HTTP) | ~20MB |
+| `google-genai` | AI SDK (app uses raw HTTP) | ~15MB |
+| `google-generativeai` | AI SDK (app uses raw HTTP) | ~15MB |
+| `python-jose` | JWT (replaced by PyJWT[crypto]) | ~5MB |
+| `pypandoc` | Document conversion | ~5MB |
+| `pymdown-extensions` | Markdown extensions (unused) | ~2MB |
+| `firecrawl-py` | Web scraping | ~5MB |
+
+### Investigated but MUST KEEP (transitive runtime deps)
+
+These have zero direct imports but are required by other packages at runtime:
+
+| Package | Required by |
+|---------|------------|
+| `python-multipart` | FastAPI (form/file upload parsing) |
+| `cryptography` | PyJWT[crypto], authlib |
+| `async-timeout` | aiohttp, redis |
+| `psycopg2-binary` | SQLAlchemy (PostgreSQL driver) |
+| `bcrypt` | passlib[bcrypt] |
+| `googleapis-common-protos` | google-cloud-storage |
+| `google-auth-httplib2` | google-api-python-client |
+| `google-auth-oauthlib` | google-api-python-client |
+| `pypdf`, `docx2txt`, `python-pptx`, `unstructured`, `nltk`, `pandas`, `openpyxl`, `pyxlsb`, `xlrd`, `pytube` | `langchain_community.document_loaders` (imported at module level without try/except) |
 
 ---
 
@@ -172,7 +191,8 @@ Add Signal as the 4th messaging bridge, using [signal-cli-rest-api](https://gith
 
 | Phase | Action | Impact | Risk |
 |-------|--------|--------|------|
-| 1 | Remove 28 dead dependencies | **~1.8GB** off install | None |
+| 1 | Remove 29 dead dependencies (6 frontend + 23 backend) | **~1.4GB** off install | None |
 | 2 | Extract 8 helpers/patterns | **~376 lines** removed | Low |
 | 3 | ORM + HTTP client consolidation | **~45MB** + cleaner arch | Medium |
 | 4 | Optional extras split | **~4.5GB** off default | Medium |
+| 5 | Signal Bridge Adapter | Done (2026-02-24) | — |
