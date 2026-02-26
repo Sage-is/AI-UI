@@ -1020,59 +1020,6 @@
 					</div>
 				{/if}
 
-				<!-- Fold/Unfold toggle buttons -->
-				{#if Object.keys(folders).length > 0 || groupedChats.length > 0}
-					<div style="--d:flex; --ai:center; --g:0.25rem; --px:0.75rem; --pt:0.25rem; --pb:0.125rem">
-						{#if Object.keys(folders).length > 0}
-							<Tooltip content={allFoldersCollapsed ? $i18n.t('Unfold Folders') : $i18n.t('Fold Folders')}>
-								<button
-									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.25rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b); --hvr-c:var(--color-gray-600, #676767); --hvr-dark-c:var(--color-gray-300, #cdcdcd); --tn:color 150ms ease"
-									on:click={() => {
-										if (allFoldersCollapsed) {
-											unfoldAllFolders();
-										} else {
-											foldAllFolders();
-										}
-									}}
-								>
-									<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="--w:0.875rem; --h:0.875rem">
-										<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
-									</svg>
-									{#if allFoldersCollapsed}
-										<ChevronDown className="size-2.5" strokeWidth="2.5" />
-									{:else}
-										<ChevronRight className="size-2.5" strokeWidth="2.5" />
-									{/if}
-								</button>
-							</Tooltip>
-						{/if}
-
-						{#if groupedChats.length > 0}
-							<Tooltip content={allDateGroupsCollapsed ? $i18n.t('Unfold Dates') : $i18n.t('Fold Dates')}>
-								<button
-									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.25rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b); --hvr-c:var(--color-gray-600, #676767); --hvr-dark-c:var(--color-gray-300, #cdcdcd); --tn:color 150ms ease"
-									on:click={() => {
-										if (allDateGroupsCollapsed) {
-											unfoldAllDateGroups();
-										} else {
-											foldAllDateGroups();
-										}
-									}}
-								>
-									<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="--w:0.875rem; --h:0.875rem">
-										<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-									</svg>
-									{#if allDateGroupsCollapsed}
-										<ChevronDown className="size-2.5" strokeWidth="2.5" />
-									{:else}
-										<ChevronRight className="size-2.5" strokeWidth="2.5" />
-									{/if}
-								</button>
-							</Tooltip>
-						{/if}
-					</div>
-				{/if}
-
 				{#if folders}
 					<Folders
 						{folders}
@@ -1097,77 +1044,54 @@
 				<div style="--fx:1 1 0%; --d:flex; --fd:column; --ofy:auto" class="scrollbar-hidden">
 					<div style="--pt:0.375rem; --radius:0.8rem; --m:0">
 						{#if $chats}
-							{#each groupedChats as group, groupIdx (`date-group-${group.timeRange}`)}
-								<!-- Date group header -->
-								<!-- svelte-ignore a11y-click-events-have-key-events -->
-								<!-- svelte-ignore a11y-no-static-element-interactions -->
-								<div
-									style="--w:100%; --pl:0.375rem; --pr:0.625rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-500, #9b9b9b); --weight:500; --pb:0.375rem; --d:flex; --ai:center; --g:0.25rem; --cur:pointer; --radius:0.25rem; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:background-color 150ms ease"
-									class={groupIdx === 0 ? '' : 'pt-5'}
-									on:click={() => toggleDateGroup(group.timeRange)}
-								>
-									<div style="--c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-600, #676767); --fs:0">
-										{#if collapsedDateGroups[group.timeRange]}
-											<ChevronRight className="size-3" strokeWidth="2.5" />
-										{:else}
-											<ChevronDown className="size-3" strokeWidth="2.5" />
-										{/if}
-									</div>
-									<div style="--fx:1 1 0%">
-										{$i18n.t(group.timeRange)}
-									</div>
-									{#if collapsedDateGroups[group.timeRange]}
-										<div style="--size:0.625rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-600, #676767)">
-											({group.chats.length})
-										</div>
-									{/if}
-								</div>
-								<!-- localisation keys for time_range to be recognized from the i18next parser (so they don't get automatically removed):
-								{$i18n.t('Today')}
-								{$i18n.t('Yesterday')}
-								{$i18n.t('Previous 7 days')}
-								{$i18n.t('Previous 30 days')}
-								{$i18n.t('January')}
-								{$i18n.t('February')}
-								{$i18n.t('March')}
-								{$i18n.t('April')}
-								{$i18n.t('May')}
-								{$i18n.t('June')}
-								{$i18n.t('July')}
-								{$i18n.t('August')}
-								{$i18n.t('September')}
-								{$i18n.t('October')}
-								{$i18n.t('November')}
-								{$i18n.t('December')}
-								-->
-
-								<!-- Chat items with slide transition -->
-								{#if !collapsedDateGroups[group.timeRange]}
-									<div transition:slide={{ duration: 200, easing: quintOut }}>
-										{#each group.chats as chat (`chat-${chat.id}`)}
-											<ChatItem
-												className=""
-												id={chat.id}
-												title={chat.title}
-												{shiftKey}
-												selected={selectedChatId === chat.id}
-												on:select={() => {
-													selectedChatId = chat.id;
-												}}
-												on:unselect={() => {
-													selectedChatId = null;
-												}}
-												on:change={async () => {
-													initChatList();
-												}}
-												on:tag={(e) => {
-													const { type, name } = e.detail;
-													tagEventHandler(type, name, chat.id);
-												}}
-											/>
-										{/each}
+							{#each $chats as chat, idx (`chat-${chat?.id ?? idx}`)}
+								{#if idx === 0 || (idx > 0 && chat.time_range !== $chats[idx - 1].time_range)}
+									<div
+										style="--w:100%; --pl:0.625rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-500, #9b9b9b); --weight:500; --pb:0.375rem"
+										class={idx === 0 ? '' : 'pt-5'}
+									>
+										{$i18n.t(chat.time_range)}
+										<!-- localisation keys for time_range to be recognized from the i18next parser (so they don't get automatically removed):
+							{$i18n.t('Today')}
+							{$i18n.t('Yesterday')}
+							{$i18n.t('Previous 7 days')}
+							{$i18n.t('Previous 30 days')}
+							{$i18n.t('January')}
+							{$i18n.t('February')}
+							{$i18n.t('March')}
+							{$i18n.t('April')}
+							{$i18n.t('May')}
+							{$i18n.t('June')}
+							{$i18n.t('July')}
+							{$i18n.t('August')}
+							{$i18n.t('September')}
+							{$i18n.t('October')}
+							{$i18n.t('November')}
+							{$i18n.t('December')}
+							-->
 									</div>
 								{/if}
+
+								<ChatItem
+									className=""
+									id={chat.id}
+									title={chat.title}
+									{shiftKey}
+									selected={selectedChatId === chat.id}
+									on:select={() => {
+										selectedChatId = chat.id;
+									}}
+									on:unselect={() => {
+										selectedChatId = null;
+									}}
+									on:change={async () => {
+										initChatList();
+									}}
+									on:tag={(e) => {
+										const { type, name } = e.detail;
+										tagEventHandler(type, name, chat.id);
+									}}
+								/>
 							{/each}
 
 							{#if $scrollPaginationEnabled && !allChatsLoaded}
@@ -1213,7 +1137,7 @@
 							}
 						}}
 					>
-						<button style="--radius: 1em; --w:100%">
+						<button style="--radius: 1em; --w:100%; --p:0.25rem; --d:flex; --ai:center; --g:0.5rem; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)">
 							<div style="--as:center; --mr:0.75rem">
 								<img
 									src={$user?.profile_image_url}

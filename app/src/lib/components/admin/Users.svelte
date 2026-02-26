@@ -64,7 +64,7 @@
 	>
 		<button
 			id="overview"
-			style="--px:0.125rem; --py:0.25rem; --minw:fit-content; --radius:0.5rem; --fx-lg:none; --d:flex; --ta:right; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+			style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx-lg:none; --d:flex; --ta:right; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="{selectedTab ===
 			'overview'
 				? ''
@@ -90,7 +90,7 @@
 
 		<button
 			id="groups"
-			style="--px:0.125rem; --py:0.25rem; --minw:fit-content; --radius:0.5rem; --fx-lg:none; --d:flex; --ta:right; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+			style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx-lg:none; --d:flex; --ta:right; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="{selectedTab ===
 			'groups'
 				? ''
@@ -116,7 +116,7 @@
 
 		<button
 			id="magic-links"
-			style="--px:0.125rem; --py:0.25rem; --minw:fit-content; --radius:0.5rem; --fx-lg:none; --d:flex; --ta:right; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+			style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx-lg:none; --d:flex; --ta:right; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="{selectedTab ===
 			'magic-links'
 				? ''
