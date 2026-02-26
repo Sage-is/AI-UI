@@ -580,7 +580,7 @@
 <div
 	bind:this={navElement}
 	id="sidebar"
-	style="--h:100vh; --maxh:100dvh; --minh:100vh; --us:none; --fs:0; --bgc:var(--color-gray-50, #f9f9f9); --c:var(--color-gray-900, #171717); --dark-bgc:var(--color-gray-950, #0d0d0d); --dark-c:var(--color-gray-200, #e3e3e3); --size:0.875rem; --pos:fixed; --z:50; --top:0; --left:0; --ofx:hidden"
+	style="--h:100vh; --maxh:100dvh; --minh:100vh; --us:none; --fs:0; --bgc:var(--color-gray-50); --c:var(--color-gray-900); --dark-bgc:var(--color-gray-950); --dark-c:var(--color-gray-200); --size:0.875rem; --pos:fixed; --z:50; --top:0; --left:0; --ofx:hidden"
 	class="{$showSidebar
 		? 'md:relative w-[260px] max-w-[260px]'
 		: '-translate-x-[260px] w-[0px]'} {$isApp
@@ -593,11 +593,11 @@
 		class={$showSidebar ? '' : 'invisible'}
 	>
 		<div
-			style="--px:0.375rem; --d:flex; --jc:space-between; --g:0.25rem; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-400, #b4b4b4)"
+			style="--px:0.375rem; --d:flex; --jc:space-between; --g:0.25rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
 		>
 			<button
 				id="sidebar-toggle-button"
-				style="--cur:pointer; --p:7px; --d:flex; --radius:0.75rem; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--cur:pointer; --p:7px; --d:flex; --radius:0.75rem; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={() => {
 					showSidebar.set(!$showSidebar);
 				}}
@@ -622,7 +622,7 @@
 
 			<a
 				id="sidebar-new-chat-button"
-				style="--d:flex; --jc:space-between; --ai:center; --fx:1 1 0%; --radius:0.5rem; --px:0.5rem; --py:0.25rem; --h:100%; --ta:right; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--d:flex; --jc:space-between; --ai:center; --fx:1 1 0%; --radius:0.5rem; --px:0.5rem; --py:0.25rem; --h:100%; --ta:right; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				class="no-drag-region"
 				href="/"
 				draggable="false"
@@ -654,7 +654,7 @@
 						/>
 					</div>
 					<div
-						style="--as:center; --size:0.875rem; --c:var(--color-gray-850, #262626); --dark-c:#fff"
+						style="--as:center; --size:0.875rem; --c:var(--color-gray-850); --dark-c:#fff"
 						class="font-primary"
 					>
 						{$i18n.t('New Chat')}
@@ -668,9 +668,9 @@
 		</div>
 
 		<!-- {#if $user?.role === 'admin'}
-			<div style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-200, #e3e3e3)">
+			<div style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-200)">
 				<a
-					style="--fg:1; --d:flex; --ai:center; --g:0.75rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--fg:1; --d:flex; --ai:center; --g:0.75rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					href="/home"
 					on:click={() => {
 						selectedChatId = null;
@@ -695,10 +695,10 @@
 		{/if} -->
 
 		<div
-			style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-200, #e3e3e3)"
+			style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-200)"
 		>
 			<button
-				style="--fg:1; --d:flex; --ai:center; --g:0.75rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --oe:2px solid transparent"
+				style="--fg:1; --d:flex; --ai:center; --g:0.75rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --oe:2px solid transparent"
 				on:click={() => {
 					showSearch.set(true);
 				}}
@@ -716,10 +716,10 @@
 
 		{#if ($config?.features?.enable_notes ?? false) && ($user?.role === 'admin' || ($user?.permissions?.features?.notes ?? true))}
 			<div
-				style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-200, #e3e3e3)"
+				style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-200)"
 			>
 				<a
-					style="--fg:1; --d:flex; --ai:center; --g:0.75rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--fg:1; --d:flex; --ai:center; --g:0.75rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					href="/notes"
 					on:click={() => {
 						selectedChatId = null;
@@ -760,10 +760,10 @@
 
 		{#if $user?.role === 'admin' || $user?.permissions?.workshop?.models || $user?.permissions?.workshop?.knowledge || $user?.permissions?.workshop?.prompts || $user?.permissions?.workshop?.tools}
 			<div
-				style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-200, #e3e3e3)"
+				style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-200)"
 			>
 				<a
-					style="--fg:1; --d:flex; --ai:center; --g:0.75rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--fg:1; --d:flex; --ai:center; --g:0.75rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					href="/workshop"
 					on:click={() => {
 						selectedChatId = null;
@@ -808,10 +808,10 @@
 						{@const model = $models.find((model) => model.id === modelId)}
 						{#if model}
 							<div
-								style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-200, #e3e3e3)"
+								style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-200)"
 							>
 								<a
-									style="--fg:1; --d:flex; --ai:center; --g:0.625rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+									style="--fg:1; --d:flex; --ai:center; --g:0.625rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 									href="/?model={modelId}"
 									on:click={() => {
 										selectedChatId = null;
@@ -949,7 +949,7 @@
 						{#if $pinnedChats.length > 0}
 							<Tooltip content={showPinnedChat ? $i18n.t('Hide Pinned') : $i18n.t('Show Pinned')}>
 								<button
-									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.25rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b); --hvr-c:var(--color-gray-600, #676767); --hvr-dark-c:var(--color-gray-300, #cdcdcd); --tn:color 150ms ease"
+									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.25rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-300); --tn:color 150ms ease"
 									on:click={() => {
 										showPinnedChat = !showPinnedChat;
 										localStorage.setItem('showPinnedChat', String(showPinnedChat));
@@ -983,7 +983,7 @@
 								content={allFoldersCollapsed ? $i18n.t('Unfold Folders') : $i18n.t('Fold Folders')}
 							>
 								<button
-									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.25rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b); --hvr-c:var(--color-gray-600, #676767); --hvr-dark-c:var(--color-gray-300, #cdcdcd); --tn:color 150ms ease"
+									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.25rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-300); --tn:color 150ms ease"
 									on:click={() => {
 										if (allFoldersCollapsed) {
 											unfoldAllFolders();
@@ -1020,7 +1020,7 @@
 								content={allDateGroupsCollapsed ? $i18n.t('Unfold Dates') : $i18n.t('Fold Dates')}
 							>
 								<button
-									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.25rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b); --hvr-c:var(--color-gray-600, #676767); --hvr-dark-c:var(--color-gray-300, #cdcdcd); --tn:color 150ms ease"
+									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.25rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-300); --tn:color 150ms ease"
 									on:click={() => {
 										if (allDateGroupsCollapsed) {
 											unfoldAllDateGroups();
@@ -1134,7 +1134,7 @@
 							></div>
 						{/if}
 						<div
-							style="--ml:0.75rem; --pl:0.25rem; --mt:1px; --d:flex; --fd:column; --ofy:auto; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-900, #171717)"
+							style="--ml:0.75rem; --pl:0.25rem; --mt:1px; --d:flex; --fd:column; --ofy:auto; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-900)"
 							class="scrollbar-hidden border-s"
 						>
 							{#each $pinnedChats as chat, idx (`pinned-chat-${chat?.id ?? idx}`)}
@@ -1192,12 +1192,12 @@
 								<!-- svelte-ignore a11y-click-events-have-key-events -->
 								<!-- svelte-ignore a11y-no-static-element-interactions -->
 								<div
-									style="--w:100%; --pl:0.375rem; --pr:0.625rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-500, #9b9b9b); --weight:500; --pb:0.375rem; --d:flex; --ai:center; --g:0.25rem; --cur:pointer; --radius:0.25rem; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:background-color 150ms ease"
+									style="--w:100%; --pl:0.375rem; --pr:0.625rem; --size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --weight:500; --pb:0.375rem; --d:flex; --ai:center; --g:0.25rem; --cur:pointer; --radius:0.25rem; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:background-color 150ms ease"
 									class={groupIdx === 0 ? '' : 'pt-5'}
 									on:click={() => toggleDateGroup(group.timeRange)}
 								>
 									<div
-										style="--c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-600, #676767); --fs:0"
+										style="--c:var(--color-gray-300); --dark-c:var(--color-gray-600); --fs:0"
 									>
 										{#if collapsedDateGroups[group.timeRange]}
 											<ChevronRight className="size-3" strokeWidth="2.5" />
@@ -1210,7 +1210,7 @@
 									</div>
 									{#if collapsedDateGroups[group.timeRange]}
 										<div
-											style="--size:0.625rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-600, #676767)"
+											style="--size:0.625rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-600)"
 										>
 											({group.chats.length})
 										</div>
@@ -1308,7 +1308,7 @@
 						}}
 					>
 						<button
-							style="--radius: 1em; --w:100%; --p:0.25rem; --d:flex; --ai:center; --g:0.5rem; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+							style="--radius: 1em; --w:100%; --p:0.25rem; --d:flex; --ai:center; --g:0.5rem; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						>
 							<div style="--as:center; --mr:0.75rem">
 								<img

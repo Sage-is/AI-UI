@@ -71,7 +71,7 @@
 					<div style="--d:flex; --fd:column; --g:0.375rem; --pb:1.25rem; --pt:2.5rem">
 						<div style="--size:1.5rem; --weight:500; --tt:capitalize">{channel.name}</div>
 
-						<div style="--c:var(--color-gray-500, #9b9b9b)">
+						<div style="--c:var(--color-gray-500)">
 							{$i18n.t(
 								'This channel was created on {{createdAt}}. This is the very beginning of the {{channelName}} channel.',
 								{
@@ -88,7 +88,7 @@
 				{/if}
 
 				{#if messageList.length > 0}
-					<hr style="--bc:var(--color-gray-50, #f9f9f9); --dark-bc:rgb(78 78 78 / 0.2); --py:0.625rem; --w:100%" />
+					<hr style="--bc:var(--color-gray-50); --dark-bc:rgb(78 78 78 / 0.2); --py:0.625rem; --w:100%" />
 				{/if}
 			</div>
 		{/if}

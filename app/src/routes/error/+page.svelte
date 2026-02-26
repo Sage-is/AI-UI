@@ -46,7 +46,7 @@
 					<div style="--mt:1.5rem; --mx:auto; --pos:relative; --w:fit-content"
 	class="group">
 						<button
-							style="--pos:relative; --z:20; --d:flex; --px:1.25rem; --py:0.5rem; --radius:9999px; --bgc:var(--color-gray-100, #ececec); --hvr-bgc:var(--color-gray-200, #e3e3e3); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem"
+							style="--pos:relative; --z:20; --d:flex; --px:1.25rem; --py:0.5rem; --radius:9999px; --bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem"
 							on:click={() => {
 								location.href = '/';
 							}}

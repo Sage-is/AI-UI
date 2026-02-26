@@ -2088,7 +2088,7 @@
 				/>
 
 				<div
-					style="--pos:absolute; --top:0; --left:0; --w:100%; --h:100%; --bgi:linear-gradient(0deg, var(--tw-gradient-stops)); --tw-gradient-from:#fff; --tw-gradient-to:rgb(255 255 255 / 0.85); --dark-tw-gradient-from:var(--color-gray-900, #171717); --dark-tw-gradient-to:rgb(23 23 23 / 0.9); --z:0"
+					style="--pos:absolute; --top:0; --left:0; --w:100%; --h:100%; --bgi:linear-gradient(0deg, var(--tw-gradient-stops)); --tw-gradient-from:#fff; --tw-gradient-to:rgb(255 255 255 / 0.85); --dark-tw-gradient-from:var(--color-gray-900); --dark-tw-gradient-to:rgb(23 23 23 / 0.9); --z:0"
 				/>
 			{/if}
 
@@ -2212,7 +2212,7 @@
 								/>
 
 								<div
-									style="--pos:absolute; --bottom:0.25rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --ta:center; --line-clamp:1; --right:0; --left:0"
+									style="--pos:absolute; --bottom:0.25rem; --size:0.75rem; --c:var(--color-gray-500); --ta:center; --line-clamp:1; --right:0; --left:0"
 								>
 									<!-- {$i18n.t('LLMs can make mistakes. Verify important information.')} -->
 								</div>

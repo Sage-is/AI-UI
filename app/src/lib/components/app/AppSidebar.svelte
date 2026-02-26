@@ -17,7 +17,7 @@
 	});
 </script>
 
-<div style="--minw:4.5rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-950, #0d0d0d); --d:flex; --g:0.625rem; --fd:column; --pt:2rem">
+<div style="--minw:4.5rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-950); --d:flex; --g:0.625rem; --fd:column; --pt:2rem">
 	<div style="--d:flex; --jc:center; --pos:relative">
 		{#if selected === 'home'}
 			<div style="--pos:absolute; --top:0; --left:0; --d:flex; --h:100%">
@@ -47,7 +47,7 @@
 		</Tooltip>
 	</div>
 
-	<div style="--mt:-0.25rem; --bc:1.5px; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-900, #171717); --mx:1rem"></div>
+	<div style="--mt:-0.25rem; --bc:1.5px; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-900); --mx:1rem"></div>
 
 	<div style="--d:flex; --jc:center; --pos:relative"
 	class="group">

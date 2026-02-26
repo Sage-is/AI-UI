@@ -134,7 +134,7 @@
 </script>
 
 <div
-	style="--d:flex; --g:0.125rem; --p:0.125rem; --radius:0.5rem; --shadow:4; --bgc:#fff; --c:var(--color-gray-800, #333); --dark-c:#fff; --dark-bgc:var(--color-gray-800, #333); --minw:fit-content"
+	style="--d:flex; --g:0.125rem; --p:0.125rem; --radius:0.5rem; --shadow:4; --bgc:#fff; --c:var(--color-gray-800); --dark-c:#fff; --dark-bgc:var(--color-gray-800); --minw:fit-content"
 >
 	<!-- Heading buttons (first 3 buttons) -->
 	{#each buttons.slice(0, 3) as button (button.id)}

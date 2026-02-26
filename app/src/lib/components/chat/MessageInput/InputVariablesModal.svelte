@@ -53,7 +53,7 @@
 
 <Modal bind:show size="md">
 	<div>
-		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300, #cdcdcd); --px:1.25rem; --pt:1rem; --pb:0.5rem">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.25rem; --pt:1rem; --pb:0.5rem">
 			<div style="--size:1.125rem; --weight:500; --as:center">{$i18n.t('Input Variables')}</div>
 			<button
 				style="--as:center"
@@ -65,7 +65,7 @@
 			</button>
 		</div>
 
-		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1.25rem; --pb:1rem; --g-md:1rem; --dark-c:var(--color-gray-200, #e3e3e3)">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1.25rem; --pb:1rem; --g-md:1rem; --dark-c:var(--color-gray-200)">
 			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				<form
 					style="--d:flex; --fd:column; --w:100%"
@@ -85,7 +85,7 @@
 												{variable}
 
 												{#if variables[variable]?.required ?? true}
-													<span style="--c:var(--color-gray-500, #9b9b9b)">*required</span>
+													<span style="--c:var(--color-gray-500)">*required</span>
 												{/if}
 											</div>
 										</div>
@@ -97,7 +97,7 @@
 													{@const placeholder = variableAttributes?.placeholder ?? ''}
 
 													<select
-														style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)"
+														style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 														bind:value={variableValues[variable]}
 														id="input-variable-{idx}"
 													>
@@ -118,7 +118,7 @@
 															<input
 																type="checkbox"
 																bind:checked={variableValues[variable]}
-																style="--w:0.875rem; --h:0.875rem; --radius:0.25rem; --cur:pointer; --b:1px solid; --bc:var(--color-gray-200, #e3e3e3); --dark-bc:var(--color-gray-700, #4e4e4e)"
+																style="--w:0.875rem; --h:0.875rem; --radius:0.25rem; --cur:pointer; --b:1px solid; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700)"
 																id="input-variable-{idx}"
 																{...variableAttributes}
 															/>
@@ -130,7 +130,7 @@
 
 														<input
 															type="text"
-															style="--fx:1 1 0%; --py:0.25rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --bgc:transparent; --oe:none"
+															style="--fx:1 1 0%; --py:0.25rem; --size:0.875rem; --dark-c:var(--color-gray-300); --bgc:transparent; --oe:none"
 															placeholder="Enter value (true/false)"
 															bind:value={variableValues[variable]}
 															autocomplete="off"
@@ -142,7 +142,7 @@
 														<div style="--pos:relative; --w:1.5rem; --h:1.5rem">
 															<input
 																type="color"
-																style="--w:1.5rem; --h:1.5rem; --radius:0.25rem; --cur:pointer; --b:1px solid; --bc:var(--color-gray-200, #e3e3e3); --dark-bc:var(--color-gray-700, #4e4e4e)"
+																style="--w:1.5rem; --h:1.5rem; --radius:0.25rem; --cur:pointer; --b:1px solid; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700)"
 																value={variableValues[variable]}
 																id="input-variable-{idx}"
 																on:input={(e) => {
@@ -155,7 +155,7 @@
 
 														<input
 															type="text"
-															style="--fx:1 1 0%; --py:0.5rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --bgc:transparent; --oe:none"
+															style="--fx:1 1 0%; --py:0.5rem; --size:0.875rem; --dark-c:var(--color-gray-300); --bgc:transparent; --oe:none"
 															placeholder="Enter hex color (e.g. #FF0000)"
 															bind:value={variableValues[variable]}
 															autocomplete="off"
@@ -165,7 +165,7 @@
 												{:else if variables[variable]?.type === 'date'}
 													<input
 														type="date"
-														style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)"
+														style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 														placeholder={variables[variable]?.placeholder ?? ''}
 														bind:value={variableValues[variable]}
 														autocomplete="off"
@@ -176,7 +176,7 @@
 												{:else if variables[variable]?.type === 'datetime-local'}
 													<input
 														type="datetime-local"
-														style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)"
+														style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 														placeholder={variables[variable]?.placeholder ?? ''}
 														bind:value={variableValues[variable]}
 														autocomplete="off"
@@ -187,7 +187,7 @@
 												{:else if variables[variable]?.type === 'email'}
 													<input
 														type="email"
-														style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)"
+														style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 														placeholder={variables[variable]?.placeholder ?? ''}
 														bind:value={variableValues[variable]}
 														autocomplete="off"
@@ -198,7 +198,7 @@
 												{:else if variables[variable]?.type === 'month'}
 													<input
 														type="month"
-														style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)"
+														style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 														placeholder={variables[variable]?.placeholder ?? ''}
 														bind:value={variableValues[variable]}
 														autocomplete="off"
@@ -209,7 +209,7 @@
 												{:else if variables[variable]?.type === 'number'}
 													<input
 														type="number"
-														style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)"
+														style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 														placeholder={variables[variable]?.placeholder ?? ''}
 														bind:value={variableValues[variable]}
 														autocomplete="off"
@@ -223,7 +223,7 @@
 															<input
 																type="range"
 																bind:value={variableValues[variable]}
-																style="--w:100%; --radius:0.5rem; --py:0.25rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)"
+																style="--w:100%; --radius:0.5rem; --py:0.25rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 																id="input-variable-{idx}"
 																{...variableAttributes}
 															/>
@@ -231,7 +231,7 @@
 
 														<input
 															type="text"
-															style="--py:0.25rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --bgc:transparent; --oe:none; --ta:right"
+															style="--py:0.25rem; --size:0.875rem; --dark-c:var(--color-gray-300); --bgc:transparent; --oe:none; --ta:right"
 															placeholder="Enter value"
 															bind:value={variableValues[variable]}
 															autocomplete="off"
@@ -241,7 +241,7 @@
 
 													<!-- <input
 														type="range"
-														style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)"
+														style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 														placeholder={variables[variable]?.placeholder ?? ''}
 														bind:value={variableValues[variable]}
 														autocomplete="off"
@@ -251,7 +251,7 @@
 												{:else if variables[variable]?.type === 'tel'}
 													<input
 														type="tel"
-														style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)"
+														style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 														placeholder={variables[variable]?.placeholder ?? ''}
 														bind:value={variableValues[variable]}
 														autocomplete="off"
@@ -262,7 +262,7 @@
 												{:else if variables[variable]?.type === 'text'}
 													<input
 														type="text"
-														style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)"
+														style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 														placeholder={variables[variable]?.placeholder ?? ''}
 														bind:value={variableValues[variable]}
 														autocomplete="off"
@@ -273,7 +273,7 @@
 												{:else if variables[variable]?.type === 'time'}
 													<input
 														type="time"
-														style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)"
+														style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 														placeholder={variables[variable]?.placeholder ?? ''}
 														bind:value={variableValues[variable]}
 														autocomplete="off"
@@ -284,7 +284,7 @@
 												{:else if variables[variable]?.type === 'url'}
 													<input
 														type="url"
-														style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)"
+														style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 														placeholder={variables[variable]?.placeholder ?? ''}
 														bind:value={variableValues[variable]}
 														autocomplete="off"
@@ -307,7 +307,7 @@
 
 														<input
 															type="text"
-															style="--w:100%; --py:0.25rem; --ta:left; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --bgc:transparent; --oe:none"
+															style="--w:100%; --py:0.25rem; --ta:left; --size:0.875rem; --dark-c:var(--color-gray-300); --bgc:transparent; --oe:none"
 															placeholder="Enter coordinates (e.g. 51.505, -0.09)"
 															bind:value={variableValues[variable]}
 															autocomplete="off"
@@ -316,7 +316,7 @@
 													</div>
 												{:else}
 													<textarea
-														style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)"
+														style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 														placeholder={variables[variable]?.placeholder ?? ''}
 														bind:value={variableValues[variable]}
 														autocomplete="off"
@@ -328,7 +328,7 @@
 										</div>
 
 										<!-- {#if (valvesSpec.properties[property]?.description ?? null) !== null}
-									<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">
+									<div style="--size:0.75rem; --c:var(--color-gray-500)">
 										{valvesSpec.properties[property].description}
 									</div>
 								{/if} -->
@@ -342,7 +342,7 @@
 
 					<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
 						<button
-							style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#fff; --hvr-bgc:var(--color-gray-100, #ececec); --c:#000; --dark-bgc:#000; --dark-c:#fff; --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+							style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#fff; --hvr-bgc:var(--color-gray-100); --c:#000; --dark-bgc:#000; --dark-c:#fff; --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 							type="button"
 							on:click={() => {
 								show = false;
@@ -352,7 +352,7 @@
 						</button>
 
 						<button
-							style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+							style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 							type="submit"
 						>
 							{$i18n.t('Save')}

@@ -174,7 +174,7 @@
 				</div>
 			</div>
 
-			<div style="--size:0.75rem; --dark-c:var(--color-gray-500, #9b9b9b)">
+			<div style="--size:0.75rem; --dark-c:var(--color-gray-500)">
 				{$i18n.t('To attach knowledge base here, add them to the "Knowledge" workshop first.')}
 			</div>
 		</div>
@@ -220,7 +220,7 @@
 					}}
 				>
 					<div
-						style="--px:0.875rem; --py:0.375rem; --weight:500; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:var(--color-gray-100, #ececec); outline-color:var(--color-gray-850, #262626); --radius:1.5rem"
+						style="--px:0.875rem; --py:0.375rem; --weight:500; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:var(--color-gray-100); outline-color:var(--color-gray-850); --radius:1.5rem"
 					>
 						{$i18n.t('Select Knowledge')}
 					</div>
@@ -228,7 +228,7 @@
 
 				{#if $user?.role === 'admin' || $user?.permissions?.chat?.file_upload}
 					<button
-						style="--px:0.875rem; --py:0.375rem; --weight:500; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:var(--color-gray-100, #ececec); outline-color:var(--color-gray-850, #262626); --radius:1.5rem"
+						style="--px:0.875rem; --py:0.375rem; --weight:500; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:var(--color-gray-100); outline-color:var(--color-gray-850); --radius:1.5rem"
 						type="button"
 						on:click={() => {
 							filesInputElement.click();

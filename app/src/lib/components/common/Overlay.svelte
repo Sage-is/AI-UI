@@ -20,7 +20,7 @@
 				</div>
 
 				{#if content !== ''}
-					<div style="--ta:center; --c:var(--color-gray-100, #ececec); --size:0.75rem; --weight:500; --z:50">
+					<div style="--ta:center; --c:var(--color-gray-100); --size:0.75rem; --weight:500; --z:50">
 						{content}
 					</div>
 				{/if}

@@ -50,10 +50,10 @@
 	];
 
 	const cardStyle =
-		'--d:flex; --fd:column; --radius:0.75rem; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --bw:1px; --bs:solid; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-900, #171717)';
+		'--d:flex; --fd:column; --radius:0.75rem; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --bw:1px; --bs:solid; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-900)';
 
 	const chatItemStyle =
-		'--d:flex; --ai:center; --jc:space-between; --px:0.75rem; --py:0.5rem; --radius:0.375rem; --tn:background-color 150ms ease; --cur:pointer; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-850, #262626)';
+		'--d:flex; --ai:center; --jc:space-between; --px:0.75rem; --py:0.5rem; --radius:0.375rem; --tn:background-color 150ms ease; --cur:pointer; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-850)';
 </script>
 
 <div style="--maxw:56rem; --mx:auto; --px:1.5rem; --py:2rem">
@@ -63,7 +63,7 @@
 			{$i18n.t(getGreeting())}, {$user?.name?.split(' ')[0] ?? ''}
 		</h1>
 		<p
-			style="--size:0.9375rem; --c:var(--color-gray-500, #8e8e8e); --dark-c:var(--color-gray-400, #b4b4b4)"
+			style="--size:0.9375rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)"
 		>
 			{$i18n.t("Welcome to your personal space. Here's what's happening.")}
 		</p>
@@ -80,7 +80,7 @@
 				{#if recentChats.length > 0}
 					<a
 						href="/c/{recentChats[0]?.id}"
-						style="--size:0.75rem; --c:var(--color-gray-400, #b4b4b4); --hvr-c:var(--color-gray-600, #676767); --dark-hvr-c:var(--color-gray-200, #e3e3e3); --tn:color 150ms ease"
+						style="--size:0.75rem; --c:var(--color-gray-400); --hvr-c:var(--color-gray-600); --dark-hvr-c:var(--color-gray-200); --tn:color 150ms ease"
 					>
 						{$i18n.t('View all')} &rarr;
 					</a>
@@ -97,7 +97,7 @@
 								{chat.title}
 							</span>
 							<span
-								style="--size:0.6875rem; --c:var(--color-gray-400, #b4b4b4); --ws:nowrap; --fx:none"
+								style="--size:0.6875rem; --c:var(--color-gray-400); --ws:nowrap; --fx:none"
 							>
 								{formatDate(chat.updated_at * 1000)}
 							</span>
@@ -106,7 +106,7 @@
 				</div>
 			{:else}
 				<p
-					style="--size:0.8125rem; --c:var(--color-gray-400, #b4b4b4); --ta:center; --py:1.5rem; --m:0"
+					style="--size:0.8125rem; --c:var(--color-gray-400); --ta:center; --py:1.5rem; --m:0"
 				>
 					{$i18n.t('No chats yet. Start a conversation!')}
 				</p>
@@ -131,7 +131,7 @@
 								{chat.title}
 							</span>
 							<span
-								style="--size:0.6875rem; --c:var(--color-gray-400, #b4b4b4); --ws:nowrap; --fx:none"
+								style="--size:0.6875rem; --c:var(--color-gray-400); --ws:nowrap; --fx:none"
 							>
 								{formatDate(chat.updated_at * 1000)}
 							</span>
@@ -140,7 +140,7 @@
 				</div>
 			{:else}
 				<p
-					style="--size:0.8125rem; --c:var(--color-gray-400, #b4b4b4); --ta:center; --py:1.5rem; --m:0"
+					style="--size:0.8125rem; --c:var(--color-gray-400); --ta:center; --py:1.5rem; --m:0"
 				>
 					{$i18n.t('Pin a chat from the sidebar to see it here.')}
 				</p>
@@ -150,7 +150,7 @@
 		<!-- Notes -->
 		<a
 			href="/notes"
-			style="{cardStyle}; --p:1.25rem; --tn:background-color 150ms ease, border-color 150ms ease; --cur:pointer; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-850, #262626)"
+			style="{cardStyle}; --p:1.25rem; --tn:background-color 150ms ease, border-color 150ms ease; --cur:pointer; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-850)"
 			class="no-underline"
 		>
 			<div style="--d:flex; --ai:center; --g:0.5rem; --mb:0.5rem">
@@ -158,7 +158,7 @@
 				<h3 style="--size:0.9375rem; --weight:600">{$i18n.t('Notes')}</h3>
 			</div>
 			<p
-				style="--size:0.8125rem; --lh:1.4; --c:var(--color-gray-500, #8e8e8e); --dark-c:var(--color-gray-400, #b4b4b4); --m:0"
+				style="--size:0.8125rem; --lh:1.4; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --m:0"
 			>
 				{$i18n.t('Quick-capture ideas, meeting notes, and thoughts. Always in reach.')}
 			</p>
@@ -173,13 +173,13 @@
 						<h3 style="--size:0.9375rem; --weight:600">{$i18n.t(w.title)}</h3>
 					</div>
 					<span
-						style="--size:0.625rem; --weight:500; --px:0.375rem; --py:0.125rem; --radius:9999px; --bgc:var(--color-gray-200, #d9d9d9); --dark-bgc:var(--color-gray-800, #333); --c:var(--color-gray-500, #8e8e8e); --dark-c:var(--color-gray-400, #b4b4b4)"
+						style="--size:0.625rem; --weight:500; --px:0.375rem; --py:0.125rem; --radius:9999px; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800); --c:var(--color-gray-500); --dark-c:var(--color-gray-400)"
 					>
 						{$i18n.t('Coming Soon')}
 					</span>
 				</div>
 				<p
-					style="--size:0.8125rem; --lh:1.4; --c:var(--color-gray-500, #8e8e8e); --dark-c:var(--color-gray-400, #b4b4b4); --m:0"
+					style="--size:0.8125rem; --lh:1.4; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --m:0"
 				>
 					{$i18n.t(w.desc)}
 				</p>
@@ -193,7 +193,7 @@
 			{$i18n.t('Your AI, Your Way')}
 		</h2>
 		<div
-			style="--size:0.875rem; --lh:1.6; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-400, #b4b4b4)"
+			style="--size:0.875rem; --lh:1.6; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
 		>
 			<p style="--mb:0.75rem">
 				{$i18n.t(

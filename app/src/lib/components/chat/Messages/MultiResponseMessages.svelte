@@ -304,7 +304,7 @@
 
 									{#if message.timestamp}
 										<span
-											style="--as:center; --v:hidden; --c:var(--color-gray-400, #b4b4b4); --size:0.75rem; --weight:500; --tt:uppercase; --ml:0.125rem; --mt:-0.125rem"
+											style="--as:center; --v:hidden; --c:var(--color-gray-400); --size:0.75rem; --weight:500; --tt:uppercase; --ml:0.125rem; --mt:-0.125rem"
 	class="group-hover:visible"
 										>
 											{dayjs(message.timestamp * 1000).format('LT')}
@@ -325,7 +325,7 @@
 					</div>
 
 					{#if isLastMessage}
-						<div style="--fs:0; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-500, #9b9b9b); --mt:0.25rem">
+						<div style="--fs:0; --c:var(--color-gray-600); --dark-c:var(--color-gray-500); --mt:0.25rem">
 							<Tooltip content={$i18n.t('Merge Responses')} placement="bottom">
 								<button
 									type="button"

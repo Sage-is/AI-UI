@@ -117,7 +117,7 @@
 		<!-- Header: title, copy button, close button -->
 		<div
 			id="citation-modal-header"
-			style="--d:flex; --jc:space-between; --ai:center; --dark-c:var(--color-gray-300, #cdcdcd); --px:1.25rem; --pt:1rem; --pb:0.5rem"
+			style="--d:flex; --jc:space-between; --ai:center; --dark-c:var(--color-gray-300); --px:1.25rem; --pt:1rem; --pb:0.5rem"
 		>
 			<div style="--size:1.125rem; --weight:500; --tt:capitalize">
 				{$i18n.t('Citation')}
@@ -139,7 +139,7 @@
 								viewBox="0 0 24 24"
 								stroke-width="2.3"
 								stroke="currentColor"
-								style="--w:1.125rem; --h:1.125rem; --c:var(--color-green-500, #22c55e)"
+								style="--w:1.125rem; --h:1.125rem; --c:var(--color-green-500)"
 							>
 								<path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
 							</svg>
@@ -182,12 +182,12 @@
 			style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1.5rem; --pb:1.25rem; --g-md:1rem"
 		>
 			<div
-				style="--d:flex; --fd:column; --w:100%; --dark-c:var(--color-gray-200, #e3e3e3); --ofy:scroll; --maxh:22rem"
+				style="--d:flex; --fd:column; --w:100%; --dark-c:var(--color-gray-200); --ofy:scroll; --maxh:22rem"
 				class="scrollbar-hidden"
 			>
 				{#each mergedDocuments as document, documentIdx}
 					<div id="citation-source-{documentIdx}" style="--d:flex; --fd:column; --w:100%">
-						<div style="--size:0.875rem; --weight:500; --dark-c:var(--color-gray-300, #cdcdcd)">
+						<div style="--size:0.875rem; --weight:500; --dark-c:var(--color-gray-300)">
 							{$i18n.t('Source')}
 						</div>
 
@@ -199,10 +199,10 @@
 								tippyOptions={{ duration: [500, 0] }}
 							>
 								<div
-									style="--size:0.875rem; --dark-c:var(--color-gray-400, #b4b4b4); --d:flex; --ai:center; --g:0.5rem; --w:fit-content"
+									style="--size:0.875rem; --dark-c:var(--color-gray-400); --d:flex; --ai:center; --g:0.5rem; --w:fit-content"
 								>
 									<a
-										style="--hvr-c:var(--color-gray-500, #9b9b9b); --hvr-dark-c:var(--color-gray-100, #ececec); --td:underline; --fg:1"
+										style="--hvr-c:var(--color-gray-500); --hvr-dark-c:var(--color-gray-100); --td:underline; --fg:1"
 										href={document?.metadata?.file_id
 											? `${WEBUI_API_BASE_URL}/files/${document?.metadata?.file_id}/content${document?.metadata?.page !== undefined ? `#page=${document.metadata.page + 1}` : ''}`
 											: document.source?.url?.includes('http')
@@ -214,7 +214,7 @@
 									</a>
 									{#if Number.isInteger(document?.metadata?.page)}
 										<span
-											style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4)"
+											style="--size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)"
 										>
 											({$i18n.t('page')}
 											{document.metadata.page + 1})
@@ -229,18 +229,18 @@
 								>
 									<summary
 										class="cursor-pointer select-none"
-										style="--weight:500; --dark-c:var(--color-gray-300, #cdcdcd)"
+										style="--weight:500; --dark-c:var(--color-gray-300)"
 									>
 										{$i18n.t('Parameters')}
 									</summary>
 									<div
-										style="--dark-c:var(--color-gray-400, #b4b4b4); --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-800, #333); --p:0.5rem; --radius:0.375rem; --mt:0.25rem; --of:auto; --maxh:10rem"
+										style="--dark-c:var(--color-gray-400); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800); --p:0.5rem; --radius:0.375rem; --mt:0.25rem; --of:auto; --maxh:10rem"
 									>
 										{#if typeof document.metadata.parameters === 'object' && !Array.isArray(document.metadata.parameters)}
 											{#each Object.entries(document.metadata.parameters) as [key, value]}
 												<div style="--d:flex; --g:0.5rem; --py:0.125rem">
 													<span style="--weight:500; --ws:nowrap">{key}:</span>
-													<span style="--c:var(--color-gray-600, #777); --dark-c:var(--color-gray-400, #b4b4b4)">{typeof value === 'object' ? JSON.stringify(value) : value}</span>
+													<span style="--c:var(--color-gray-600); --dark-c:var(--color-gray-400)">{typeof value === 'object' ? JSON.stringify(value) : value}</span>
 												</div>
 											{/each}
 										{:else}
@@ -251,7 +251,7 @@
 							{/if}
 							{#if showRelevance}
 								<div
-									style="--size:0.875rem; --weight:500; --dark-c:var(--color-gray-300, #cdcdcd); --mt:0.5rem"
+									style="--size:0.875rem; --weight:500; --dark-c:var(--color-gray-300); --mt:0.5rem"
 								>
 									{$i18n.t('Relevance')}
 								</div>
@@ -263,7 +263,7 @@
 										tippyOptions={{ duration: [500, 0] }}
 									>
 										<div
-											style="--size:0.875rem; --my:0.25rem; --dark-c:var(--color-gray-400, #b4b4b4); --d:flex; --ai:center; --g:0.5rem; --w:fit-content"
+											style="--size:0.875rem; --my:0.25rem; --dark-c:var(--color-gray-400); --d:flex; --ai:center; --g:0.5rem; --w:fit-content"
 										>
 											{#if showPercentage}
 												{@const percentage = calculatePercentage(document.distance)}
@@ -278,14 +278,14 @@
 
 												{#if typeof document?.distance === 'number'}
 													<span
-														style="--c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-500, #9b9b9b)"
+														style="--c:var(--color-gray-500); --dark-c:var(--color-gray-500)"
 													>
 														({(document?.distance ?? 0).toFixed(4)})
 													</span>
 												{/if}
 											{:else if typeof document?.distance === 'number'}
 												<span
-													style="--c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-500, #9b9b9b)"
+													style="--c:var(--color-gray-500); --dark-c:var(--color-gray-500)"
 												>
 													({(document?.distance ?? 0).toFixed(4)})
 												</span>
@@ -293,20 +293,20 @@
 										</div>
 									</Tooltip>
 								{:else}
-									<div style="--size:0.875rem; --dark-c:var(--color-gray-400, #b4b4b4)">
+									<div style="--size:0.875rem; --dark-c:var(--color-gray-400)">
 										{$i18n.t('No distance available')}
 									</div>
 								{/if}
 							{/if}
 						{:else}
-							<div style="--size:0.875rem; --dark-c:var(--color-gray-400, #b4b4b4)">
+							<div style="--size:0.875rem; --dark-c:var(--color-gray-400)">
 								{$i18n.t('No source available')}
 							</div>
 						{/if}
 					</div>
 					<div id="citation-content-{documentIdx}" style="--d:flex; --fd:column; --w:100%">
 						<div
-							style="--size:0.875rem; --weight:500; --dark-c:var(--color-gray-300, #cdcdcd); --mt:0.5rem"
+							style="--size:0.875rem; --weight:500; --dark-c:var(--color-gray-300); --mt:0.5rem"
 						>
 							{$i18n.t('Content')}
 						</div>
@@ -320,19 +320,19 @@
 						{:else if containsMarkdown(document.document)}
 							<div
 								class="citation-markdown prose dark:prose-invert"
-								style="--size:0.875rem; --dark-c:var(--color-gray-400, #b4b4b4); --maxw:none"
+								style="--size:0.875rem; --dark-c:var(--color-gray-400); --maxw:none"
 							>
 								{@html DOMPurify.sanitize(marked.parse(document.document))}
 							</div>
 						{:else}
 							<pre
-								style="--size:0.875rem; --dark-c:var(--color-gray-400, #b4b4b4); --ws:pre-line">{document.document}</pre>
+								style="--size:0.875rem; --dark-c:var(--color-gray-400); --ws:pre-line">{document.document}</pre>
 						{/if}
 					</div>
 
 					{#if documentIdx !== mergedDocuments.length - 1}
 						<hr
-							style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.75rem"
+							style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.75rem"
 						/>
 					{/if}
 				{/each}

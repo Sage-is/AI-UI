@@ -114,7 +114,7 @@
 			<div style="--mb:0.875rem">
 				<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('Tasks')}</div>
 
-				<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem" />
+				<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 				<div style="--mb:0.5rem; --weight:500; --d:flex; --ai:center">
 					<div style="--size:0.75rem; --mr:0.25rem">{$i18n.t('Task Model')}</div>
@@ -144,7 +144,7 @@
 					<div style="--fx:1 1 0%">
 						<div style="--size:0.75rem; --mb:0.25rem">{$i18n.t('Local Task Model')}</div>
 						<select
-							style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
+							style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 							bind:value={taskConfig.TASK_MODEL}
 							placeholder={$i18n.t('Select a model')}
 							on:change={() => {
@@ -168,7 +168,7 @@
 						>
 							<option value="" selected>{$i18n.t('Current Model')}</option>
 							{#each models as model}
-								<option value={model.id} style="--bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-700, #4e4e4e)">
+								<option value={model.id} style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-700)">
 									{model.name}
 									{model?.connection_type === 'local' ? `(${$i18n.t('Local')})` : ''}
 								</option>
@@ -179,7 +179,7 @@
 					<div style="--fx:1 1 0%">
 						<div style="--size:0.75rem; --mb:0.25rem">{$i18n.t('External Task Model')}</div>
 						<select
-							style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
+							style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 							bind:value={taskConfig.TASK_MODEL_EXTERNAL}
 							placeholder={$i18n.t('Select a model')}
 							on:change={() => {
@@ -203,7 +203,7 @@
 						>
 							<option value="" selected>{$i18n.t('Current Model')}</option>
 							{#each models as model}
-								<option value={model.id} style="--bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-700, #4e4e4e)">
+								<option value={model.id} style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-700)">
 									{model.name}
 									{model?.connection_type === 'local' ? `(${$i18n.t('Local')})` : ''}
 								</option>
@@ -379,7 +379,7 @@
 			<div style="--mb:0.875rem">
 				<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('UI')}</div>
 
-				<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem" />
+				<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 				<div style="--mb:0.625rem">
 					<div style="--d:flex; --w:100%; --jc:space-between">
@@ -453,25 +453,25 @@
 						<div style="--d:grid; --gtc-lg:repeat(2, minmax(0, 1fr)); --fd:column; --g:0.375rem">
 							{#each promptSuggestions as prompt, promptIdx}
 								<div
-									style="--d:flex; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bs:none; --dark-bgc:var(--color-gray-850, #262626); --radius:0.75rem; --py:0.375rem"
+									style="--d:flex; --b:1px solid; --bc:var(--color-gray-100); --dark-bs:none; --dark-bgc:var(--color-gray-850); --radius:0.75rem; --py:0.375rem"
 								>
 									<div style="--d:flex; --fd:column; --fx:1 1 0%; --pl:0.25rem">
-										<div style="--d:flex; --bb:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --w:100%">
+										<div style="--d:flex; --bb:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --w:100%">
 											<input
-												style="--px:0.75rem; --py:0.375rem; --size:0.75rem; --w:100%; --bgc:transparent; --oe:none; --br:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)"
+												style="--px:0.75rem; --py:0.375rem; --size:0.75rem; --w:100%; --bgc:transparent; --oe:none; --br:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 												placeholder={$i18n.t('Title (e.g. Tell me a fun fact)')}
 												bind:value={prompt.title[0]}
 											/>
 
 											<input
-												style="--px:0.75rem; --py:0.375rem; --size:0.75rem; --w:100%; --bgc:transparent; --oe:none; --br:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)"
+												style="--px:0.75rem; --py:0.375rem; --size:0.75rem; --w:100%; --bgc:transparent; --oe:none; --br:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 												placeholder={$i18n.t('Subtitle (e.g. about the Roman Empire)')}
 												bind:value={prompt.title[1]}
 											/>
 										</div>
 
 										<textarea
-											style="--px:0.75rem; --py:0.375rem; --size:0.75rem; --w:100%; --bgc:transparent; --oe:none; --br:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); resize:none"
+											style="--px:0.75rem; --py:0.375rem; --size:0.75rem; --w:100%; --bgc:transparent; --oe:none; --br:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); resize:none"
 											placeholder={$i18n.t(
 												'Prompt (e.g. Tell me a fun fact about the Roman Empire)'
 											)}
@@ -543,7 +543,7 @@
 							/>
 
 							<button
-								style="--d:flex; --size:0.75rem; --ai:center; --g:0.25rem; --px:0.75rem; --py:0.375rem; --radius:0.75rem; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-800, #333); --hvr-dark-bgc:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-200, #e3e3e3); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+								style="--d:flex; --size:0.75rem; --ai:center; --g:0.25rem; --px:0.75rem; --py:0.375rem; --radius:0.75rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								type="button"
 								on:click={() => {
 									const input = document.getElementById('prompt-suggestions-import-input');
@@ -574,7 +574,7 @@
 
 							{#if promptSuggestions.length}
 								<button
-									style="--d:flex; --size:0.75rem; --ai:center; --g:0.25rem; --px:0.75rem; --py:0.375rem; --radius:0.75rem; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-800, #333); --hvr-dark-bgc:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-200, #e3e3e3); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+									style="--d:flex; --size:0.75rem; --ai:center; --g:0.25rem; --px:0.75rem; --py:0.375rem; --radius:0.75rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 									type="button"
 									on:click={async () => {
 										let blob = new Blob([JSON.stringify(promptSuggestions)], {
@@ -611,7 +611,7 @@
 
 		<div style="--d:flex; --jc:flex-end; --size:0.875rem; --weight:500">
 			<button
-				style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+				style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 				type="submit"
 			>
 				{$i18n.t('Save')}

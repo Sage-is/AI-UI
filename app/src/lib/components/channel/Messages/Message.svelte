@@ -84,7 +84,7 @@
 	class="{showButtons ? '' : 'invisible group-hover:visible'}"
 			>
 				<div
-					style="--d:flex; --g:0.25rem; --radius:0.5rem; --bgc:#fff; --dark-bgc:var(--color-gray-850, #262626); --shadow:3; --p:0.125rem; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)"
+					style="--d:flex; --g:0.25rem; --radius:0.5rem; --bgc:#fff; --dark-bgc:var(--color-gray-850); --shadow:3; --p:0.125rem; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 				>
 					<ReactionPicker
 						onClose={() => (showButtons = false)}
@@ -95,7 +95,7 @@
 					>
 						<Tooltip content={$i18n.t('Add Reaction')}>
 							<button
-								style="--hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --p:0.25rem"
+								style="--hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --p:0.25rem"
 								on:click={() => {
 									showButtons = true;
 								}}
@@ -108,7 +108,7 @@
 					{#if !thread}
 						<Tooltip content={$i18n.t('Reply in Thread')}>
 							<button
-								style="--hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --p:0.25rem"
+								style="--hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --p:0.25rem"
 								on:click={() => {
 									onThread(message.id);
 								}}
@@ -121,7 +121,7 @@
 					{#if message.user_id === $user?.id || $user?.role === 'admin'}
 						<Tooltip content={$i18n.t('Edit')}>
 							<button
-								style="--hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --p:0.25rem"
+								style="--hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --p:0.25rem"
 								on:click={() => {
 									edit = true;
 									editedContent = message.content;
@@ -133,7 +133,7 @@
 
 						<Tooltip content={$i18n.t('Delete')}>
 							<button
-								style="--hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --p:0.25rem"
+								style="--hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --p:0.25rem"
 								on:click={() => (showDeleteConfirmDialog = true)}
 							>
 								<GarbageBin />
@@ -165,7 +165,7 @@
 
 					{#if message.created_at}
 						<div
-							style="--mt:0.375rem; --d:flex; --fs:0; --ai:center; --size:0.75rem; --as:center; --v:hidden; --c:var(--color-gray-500, #9b9b9b); --weight:500"
+							style="--mt:0.375rem; --d:flex; --fs:0; --ai:center; --size:0.75rem; --as:center; --v:hidden; --c:var(--color-gray-500); --weight:500"
 	class="group-hover:visible first-letter:capitalize"
 						>
 							<Tooltip content={dayjs(message.created_at / 1000000).format('LLLL')}>
@@ -185,7 +185,7 @@
 
 						{#if message.created_at}
 							<div
-								style="--as:center; --size:0.75rem; --v:hidden; --c:var(--color-gray-400, #b4b4b4); --weight:500; --ml:0.125rem; --translatey:1px"
+								style="--as:center; --size:0.75rem; --v:hidden; --c:var(--color-gray-400); --weight:500; --ml:0.125rem; --translatey:1px"
 	class="group-hover:visible first-letter:capitalize"
 							>
 								<Tooltip content={dayjs(message.created_at / 1000000).format('LLLL')}>
@@ -239,7 +239,7 @@
 							<div style="--d:flex; --g:0.375rem">
 								<button
 									id="close-edit-message-button"
-									style="--px:1rem; --py:0.5rem; --bgc:#fff; --dark-bgc:var(--color-gray-900, #171717); --hvr-bgc:var(--color-gray-100, #ececec); --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:1.5rem"
+									style="--px:1rem; --py:0.5rem; --bgc:#fff; --dark-bgc:var(--color-gray-900); --hvr-bgc:var(--color-gray-100); --c:var(--color-gray-800); --dark-c:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:1.5rem"
 									on:click={() => {
 										edit = false;
 										editedContent = null;
@@ -250,7 +250,7 @@
 
 								<button
 									id="confirm-edit-message-button"
-									style="--px:1rem; --py:0.5rem; --bgc:var(--color-gray-900, #171717); --dark-bgc:#fff; --hvr-bgc:var(--color-gray-850, #262626); --c:var(--color-gray-100, #ececec); --dark-c:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:1.5rem"
+									style="--px:1rem; --py:0.5rem; --bgc:var(--color-gray-900); --dark-bgc:#fff; --hvr-bgc:var(--color-gray-850); --c:var(--color-gray-100); --dark-c:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:1.5rem"
 									on:click={async () => {
 										onEdit(editedContent);
 										edit = false;
@@ -268,7 +268,7 @@
 						<Markdown
 							id={message.id}
 							content={message.content}
-						/>{#if message.created_at !== message.updated_at}<span style="--c:var(--color-gray-500, #9b9b9b); --size:10px"
+						/>{#if message.created_at !== message.updated_at}<span style="--c:var(--color-gray-500); --size:10px"
 								>(edited)</span
 							>{/if}
 					</div>
@@ -305,7 +305,7 @@
 											{/if}
 
 											{#if reaction.user_ids.length > 0}
-												<div style="--size:0.75rem; --weight:500; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4)">
+												<div style="--size:0.75rem; --weight:500; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
 													{reaction.user_ids?.length}
 												</div>
 											{/if}
@@ -320,7 +320,7 @@
 								>
 									<Tooltip content={$i18n.t('Add Reaction')}>
 										<div
-											style="--d:flex; --ai:center; --g:0.375rem; --bgc:rgb(155 155 155 / 0.1); outline-style:solid; outline-color:rgb(78 78 78 / 0.3); outline-color:rgb(205 205 205 / 0.3); outline-width:1px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.75rem; --px:0.25rem; --py:0.25rem; --cur:pointer; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4)"
+											style="--d:flex; --ai:center; --g:0.375rem; --bgc:rgb(155 155 155 / 0.1); outline-style:solid; outline-color:rgb(78 78 78 / 0.3); outline-color:rgb(205 205 205 / 0.3); outline-width:1px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.75rem; --px:0.25rem; --py:0.25rem; --cur:pointer; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)"
 										>
 											<FaceSmile />
 										</div>
@@ -333,7 +333,7 @@
 					{#if !thread && message.reply_count > 0}
 						<div style="--d:flex; --ai:center; --g:0.375rem; --mt:-0.125rem; --mb:0.375rem">
 							<button
-								style="--d:flex; --ai:center; --size:0.75rem; --py:0.25rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4); --hvr-c:var(--color-gray-700, #4e4e4e); --hvr-dark-c:var(--color-gray-300, #cdcdcd); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+								style="--d:flex; --ai:center; --size:0.75rem; --py:0.25rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --hvr-c:var(--color-gray-700); --hvr-dark-c:var(--color-gray-300); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								on:click={() => {
 									onThread(message.id);
 								}}

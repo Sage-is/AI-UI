@@ -41,7 +41,7 @@
 </script>
 
 <button
-	style="--d:flex; --g:0.625rem; --ta:left; --minw:var(--width); --w:100%; --dark-bgc:var(--color-gray-850, #262626); --dark-c:#fff; --bgc:#fff; --c:#000; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --radius:0.75rem; --px:0.875rem; --py:0.875rem"
+	style="--d:flex; --g:0.625rem; --ta:left; --minw:var(--width); --w:100%; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --bgc:#fff; --c:#000; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --radius:0.75rem; --px:0.875rem; --py:0.875rem"
 	on:click={() => {
 		onClick();
 		dispatch('closeToast');
@@ -57,7 +57,7 @@
 			<div style="--size:13px; --weight:500; --mb:0.125rem; --line-clamp:1; --tt:capitalize">{title}</div>
 		{/if}
 
-		<div style="--line-clamp:2; --size:0.75rem; --as:center; --dark-c:var(--color-gray-300, #cdcdcd); --weight:400">
+		<div style="--line-clamp:2; --size:0.75rem; --as:center; --dark-c:var(--color-gray-300); --weight:400">
 			{@html DOMPurify.sanitize(marked(content))}
 		</div>
 	</div>

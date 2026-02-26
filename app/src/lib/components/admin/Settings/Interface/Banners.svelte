@@ -66,12 +66,12 @@
 					required
 				>
 					{#if banner.type == ''}
-						<option value="" selected disabled style="--c:var(--color-gray-900, #171717)">{$i18n.t('Type')}</option>
+						<option value="" selected disabled style="--c:var(--color-gray-900)">{$i18n.t('Type')}</option>
 					{/if}
-					<option value="info" style="--c:var(--color-gray-900, #171717)">{$i18n.t('Info')}</option>
-					<option value="warning" style="--c:var(--color-gray-900, #171717)">{$i18n.t('Warning')}</option>
-					<option value="error" style="--c:var(--color-gray-900, #171717)">{$i18n.t('Error')}</option>
-					<option value="success" style="--c:var(--color-gray-900, #171717)">{$i18n.t('Success')}</option>
+					<option value="info" style="--c:var(--color-gray-900)">{$i18n.t('Info')}</option>
+					<option value="warning" style="--c:var(--color-gray-900)">{$i18n.t('Warning')}</option>
+					<option value="error" style="--c:var(--color-gray-900)">{$i18n.t('Error')}</option>
+					<option value="success" style="--c:var(--color-gray-900)">{$i18n.t('Success')}</option>
 				</select>
 
 				<Textarea

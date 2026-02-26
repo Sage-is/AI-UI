@@ -45,7 +45,7 @@
 {#if !dismissed}
 	{#if mounted}
 		<div
-			style="--top:0; --left:0; --right:0; --p:0.5rem; --px:0.75rem; --d:flex; --jc:center; --ai:center; --pos:relative; --radius:0.75rem; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --c:var(--color-gray-800, #333); --bgc:#fff; --dark-bgc:var(--color-gray-900, #171717); backdrop-filter:blur(24px); --z:30"
+			style="--top:0; --left:0; --right:0; --p:0.5rem; --px:0.75rem; --d:flex; --jc:center; --ai:center; --pos:relative; --radius:0.75rem; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --c:var(--color-gray-800); --bgc:#fff; --dark-bgc:var(--color-gray-900); backdrop-filter:blur(24px); --z:30"
 	class="{className} dark:text-gary-100"
 			transition:fade={{ delay: 100, duration: 300 }}
 		>
@@ -63,13 +63,13 @@
 						<div style="--d:flex; --d-md:none; --w:fit-content; --ai-md:center"
 	class="group">
 							<a
-								style="--c:var(--color-gray-700, #4e4e4e); --dark-c:#fff; --size:0.75rem; --weight:600; --td:underline"
+								style="--c:var(--color-gray-700); --dark-c:#fff; --size:0.75rem; --weight:600; --td:underline"
 								href="{WEBUI_BASE_URL}/assets/files/whitepaper.pdf"
 								target="_blank">Learn More</a
 							>
 
 							<div
-								style="--ml:0.25rem; --c:var(--color-gray-400, #b4b4b4)"
+								style="--ml:0.25rem; --c:var(--color-gray-400)"
 	class="group-hover:text-gray-600 dark:group-hover:text-white"
 							>
 								<!--  -->
@@ -89,7 +89,7 @@
 						</div>
 					{/if}
 				</div>
-				<div style="--fx:1 1 0%; --size:0.75rem; --c:var(--color-gray-700, #4e4e4e); --dark-c:#fff; --maxh:15rem; --ofy:auto">
+				<div style="--fx:1 1 0%; --size:0.75rem; --c:var(--color-gray-700); --dark-c:#fff; --maxh:15rem; --ofy:auto">
 					{@html marked.parse(DOMPurify.sanitize((banner?.content ?? '').replace(/\n/g, '<br>')))}
 				</div>
 			</div>
@@ -98,12 +98,12 @@
 				<div style="--d:none; --d-md:flex; --w:fit-content; --ai-md:center"
 	class="group">
 					<a
-						style="--c:var(--color-gray-700, #4e4e4e); --dark-c:#fff; --size:0.75rem; --weight:600; --td:underline"
+						style="--c:var(--color-gray-700); --dark-c:#fff; --size:0.75rem; --weight:600; --td:underline"
 						href="/"
 						target="_blank">Learn More</a
 					>
 
-					<div style="--ml:0.25rem; --c:var(--color-gray-400, #b4b4b4)"
+					<div style="--ml:0.25rem; --c:var(--color-gray-400)"
 	class="group-hover:text-gray-600 dark:group-hover:text-white">
 						<!--  -->
 						<svg
@@ -126,7 +126,7 @@
 					on:click={() => {
 						dismiss(banner.id);
 					}}
-					style="--mt:-0.25rem; --mb:-0.5rem; --translatey:-1px; --ml:0.375rem; --mr:0.25rem; --c:var(--color-gray-400, #b4b4b4); --hvr-dark-c:#fff"
+					style="--mt:-0.25rem; --mb:-0.5rem; --translatey:-1px; --ml:0.375rem; --mr:0.25rem; --c:var(--color-gray-400); --hvr-dark-c:#fff"
 					>&times;</button
 				>
 			</div>

@@ -100,7 +100,7 @@
 
 	<div slot="content">
 		<DropdownMenu.Content
-			style="--w:100%; --maxw:200px; --radius:0.75rem; --px:0.25rem; --py:0.25rem; --b:1px solid; --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.5); --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850, #262626); --dark-c:#fff; --shadow:1"
+			style="--w:100%; --maxw:200px; --radius:0.75rem; --px:0.25rem; --py:0.25rem; --b:1px solid; --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.5); --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:1"
 			sideOffset={10}
 			alignOffset={-8}
 			side="top"
@@ -150,7 +150,7 @@
 				</div>
 				{#if Object.keys(tools).length > 3}
 					<button
-						style="--d:flex; --w:100%; --jc:center; --ai:center; --size:0.875rem; --weight:500; --cur:pointer; --radius:0.5rem; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333)"
+						style="--d:flex; --w:100%; --jc:center; --ai:center; --size:0.875rem; --weight:500; --cur:pointer; --radius:0.5rem; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800)"
 						on:click={() => {
 							showAllTools = !showAllTools;
 						}}
@@ -162,7 +162,7 @@
 							viewBox="0 0 24 24"
 							stroke-width="2.5"
 							stroke="currentColor"
-							style="--w:0.75rem; --h:0.75rem; --tn:transform 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:200ms; --c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-600, #676767)"
+							style="--w:0.75rem; --h:0.75rem; --tn:transform 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:200ms; --c:var(--color-gray-300); --dark-c:var(--color-gray-600)"
 	class="{showAllTools
 								? 'rotate-180'
 								: ''}"
@@ -184,7 +184,7 @@
 				className="w-full"
 			>
 				<DropdownMenu.Item
-					style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.75rem"
+					style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.75rem"
 	class="{!fileUploadEnabled
 						? 'opacity-50'
 						: ''}"
@@ -216,7 +216,7 @@
 				className="w-full"
 			>
 				<DropdownMenu.Item
-					style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.75rem"
+					style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.75rem"
 	class="{!fileUploadEnabled
 						? 'opacity-50'
 						: ''}"
@@ -234,7 +234,7 @@
 			{#if fileUploadEnabled}
 				{#if $config?.features?.enable_google_drive_integration}
 					<DropdownMenu.Item
-						style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.75rem"
+						style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.75rem"
 						on:click={() => {
 							uploadGoogleDriveHandler();
 						}}
@@ -272,7 +272,7 @@
 				{#if $config?.features?.enable_onedrive_integration}
 					<DropdownMenu.Sub>
 						<DropdownMenu.SubTrigger
-							style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.75rem; --w:100%"
+							style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.75rem; --w:100%"
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -362,13 +362,13 @@
 							<div style="--line-clamp:1">{$i18n.t('Microsoft OneDrive')}</div>
 						</DropdownMenu.SubTrigger>
 						<DropdownMenu.SubContent
-							style="--w:calc(100vw-2rem); --maxw:280px; --radius:0.75rem; --px:0.25rem; --py:0.25rem; --b:1px solid; --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.5); --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850, #262626); --dark-c:#fff; --shadow:1"
+							style="--w:calc(100vw-2rem); --maxw:280px; --radius:0.75rem; --px:0.25rem; --py:0.25rem; --b:1px solid; --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.5); --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:1"
 							side={$mobile ? 'bottom' : 'right'}
 							sideOffset={$mobile ? 5 : 0}
 							alignOffset={$mobile ? 0 : -8}
 						>
 							<DropdownMenu.Item
-								style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.75rem"
+								style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.75rem"
 								on:click={() => {
 									uploadOneDriveHandler('personal');
 								}}
@@ -376,14 +376,14 @@
 								<div style="--line-clamp:1">{$i18n.t('Microsoft OneDrive (personal)')}</div>
 							</DropdownMenu.Item>
 							<DropdownMenu.Item
-								style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.75rem"
+								style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.75rem"
 								on:click={() => {
 									uploadOneDriveHandler('organizations');
 								}}
 							>
 								<div style="--d:flex; --fd:column">
 									<div style="--line-clamp:1">{$i18n.t('Microsoft OneDrive (work/school)')}</div>
-									<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">Includes SharePoint</div>
+									<div style="--size:0.75rem; --c:var(--color-gray-500)">Includes SharePoint</div>
 								</div>
 							</DropdownMenu.Item>
 						</DropdownMenu.SubContent>

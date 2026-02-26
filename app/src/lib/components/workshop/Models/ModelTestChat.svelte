@@ -237,19 +237,19 @@
 	});
 </script>
 
-<div style="--d:flex; --fd:column; --h:100%; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:rgb(23 23 23 / 0.5)">
+<div style="--d:flex; --fd:column; --h:100%; --bgc:var(--color-gray-50); --dark-bgc:rgb(23 23 23 / 0.5)">
 	<!-- Header -->
-	<div style="--d:flex; --ai:center; --jc:space-between; --p:1rem; --bb:1px solid; --bc:var(--color-gray-200, #e3e3e3); --dark-bc:var(--color-gray-700, #4e4e4e)">
+	<div style="--d:flex; --ai:center; --jc:space-between; --p:1rem; --bb:1px solid; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700)">
 		<div style="--d:flex; --ai:center; --g:0.5rem">
 			<EyeSlash className="size-4 text-gray-500" />
-			<h3 style="--size:0.875rem; --weight:500; --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-300, #cdcdcd)">
+			<h3 style="--size:0.875rem; --weight:500; --c:var(--color-gray-700); --dark-c:var(--color-gray-300)">
 				{$i18n.t('Test Chat')}
 			</h3>
 		</div>
 		
 		{#if messages.length > 0}
 			<button
-				style="--size:0.75rem; --px:0.5rem; --py:0.25rem; --c:var(--color-gray-500, #9b9b9b); --hvr-c:var(--color-gray-700, #4e4e4e); --hvr-dark-c:var(--color-gray-300, #cdcdcd); --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--size:0.75rem; --px:0.5rem; --py:0.25rem; --c:var(--color-gray-500); --hvr-c:var(--color-gray-700); --hvr-dark-c:var(--color-gray-300); --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={clearChat}
 			>
 				{$i18n.t('Clear')}
@@ -284,7 +284,7 @@
 		bind:this={messagesContainer}
 	>
 		{#if messages.length === 0}
-			<div style="--ta:center; --c:var(--color-gray-500, #9b9b9b); --mt:2rem">
+			<div style="--ta:center; --c:var(--color-gray-500); --mt:2rem">
 				<div style="--size:0.875rem">{$i18n.t('Start a conversation to test your model')}</div>
 				{#if testModel}
 					<div style="--size:0.75rem; --mt:0.5rem; --op:0.75">
@@ -320,7 +320,7 @@
 	</div>
 
 	<!-- Input -->
-	<div style="--p:1rem; --bt:1px solid; --bc:var(--color-gray-200, #e3e3e3); --dark-bc:var(--color-gray-700, #4e4e4e)">
+	<div style="--p:1rem; --bt:1px solid; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700)">
 		<div style="--d:flex; --g:0.5rem">
 			<div style="--fx:1 1 0%">
 				<textarea
@@ -335,20 +335,20 @@
 					}}
 					rows={1}
 					disabled={!testModel || loading}
-					style="--w:100%; --size:0.875rem; --bgc:#fff; --dark-bgc:var(--color-gray-800, #333); --b:1px solid; --bc:var(--color-gray-300, #cdcdcd); --dark-bc:var(--color-gray-600, #676767); --radius:0.5rem; --px:0.75rem; --py:0.5rem; resize:none; --oe:none; height: auto; min-height: 2.5rem; max-height: 10rem;"
+					style="--w:100%; --size:0.875rem; --bgc:#fff; --dark-bgc:var(--color-gray-800); --b:1px solid; --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --radius:0.5rem; --px:0.75rem; --py:0.5rem; resize:none; --oe:none; height: auto; min-height: 2.5rem; max-height: 10rem;"
 				/>
 			</div>
 			
 			{#if loading}
 				<button
-					style="--px:0.75rem; --py:0.5rem; --size:0.875rem; --bgc:var(--color-gray-300, #cdcdcd); --c:var(--color-gray-600, #676767); --radius:0.5rem; --d:flex; --ai:center; --g:0.25rem"
+					style="--px:0.75rem; --py:0.5rem; --size:0.875rem; --bgc:var(--color-gray-300); --c:var(--color-gray-600); --radius:0.5rem; --d:flex; --ai:center; --g:0.25rem"
 					on:click={stopResponse}
 				>
 					<span>{$i18n.t('Stop')}</span>
 				</button>
 			{:else}
 				<button
-					style="--px:0.75rem; --py:0.5rem; --size:0.875rem; --bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --radius:0.5rem; --hvr-op:0.9; --tn:opacity 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--px:0.75rem; --py:0.5rem; --size:0.875rem; --bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --radius:0.5rem; --hvr-op:0.9; --tn:opacity 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="disabled:opacity-50"
 					disabled={!currentMessage.trim() || !testModel}
 					on:click={sendMessage}
@@ -358,7 +358,7 @@
 			{/if}
 		</div>
 		
-		<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --mt:0.5rem; --d:flex; --ai:center; --g:0.25rem">
+		<div style="--size:0.75rem; --c:var(--color-gray-500); --mt:0.5rem; --d:flex; --ai:center; --g:0.25rem">
 			<EyeSlash className="size-3" />
 			<span>{$i18n.t('Temporary chat - messages won\'t be saved')}</span>
 		</div>

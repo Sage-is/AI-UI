@@ -144,10 +144,10 @@
 					--d:flex; 
 					--ai:center; 
 					--jc:space-between; 
-					--hvr-bgc:var(--color-gray-100, #ececec); 
-					--hvr-dark-bgc:var(--color-gray-900, #171717); 
-					--c:var(--color-gray-500, #9b9b9b); 
-					--dark-c:var(--color-gray-500, #9b9b9b); 
+					--hvr-bgc:var(--color-gray-100); 
+					--hvr-dark-bgc:var(--color-gray-900); 
+					--c:var(--color-gray-500); 
+					--dark-c:var(--color-gray-500); 
 					--tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1);
 					--m:0;
 					--radius:0.6rem;"
@@ -156,7 +156,7 @@
 				<button
 					style="--w:100%; --py:0.375rem; --pl:0.5rem; --d:flex; --ai:center; --g:0.375rem; --size:0.75rem; --weight:500"
 				>
-					<div style="--c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-600, #676767)">
+					<div style="--c:var(--color-gray-300); --dark-c:var(--color-gray-600)">
 						{#if open}
 							<ChevronDown className=" size-3" strokeWidth="2.5" />
 						{:else}
@@ -178,9 +178,9 @@
 								--right:0.5rem; 
 								--as:center; --d:flex; 
 								--ai:center; --jc:center; 
-								--dark-c: var(--color-gray-300, #cdcdcd); 
-								--p:0.25rem; --hvr-bgc:var(--color-gray-100, #ececec); 
-								--hvr-dark-bgc:var(--color-gray-850, #262626); 
+								--dark-c: var(--color-gray-300); 
+								--p:0.25rem; --hvr-bgc:var(--color-gray-100); 
+								--hvr-dark-bgc:var(--color-gray-850); 
 								--radius:9999px; 
 								--tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); 
 								--touch-action:auto"

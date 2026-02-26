@@ -294,7 +294,7 @@
 					<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Image Generation Engine')}</div>
 					<div style="--d:flex; --ai:center; --pos:relative">
 						<select
-							style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --pr:2rem; --cur:pointer; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
+							style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --cur:pointer; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
 							bind:value={config.engine}
 							placeholder={$i18n.t('Select Engine')}
 							on:change={async () => {
@@ -309,7 +309,7 @@
 					</div>
 				</div>
 			</div>
-			<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)" />
+			<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)" />
 
 			<div style="--d:flex; --fd:column; --g:0.5rem">
 				{#if (config?.engine ?? 'automatic1111') === 'automatic1111'}
@@ -318,13 +318,13 @@
 						<div style="--d:flex; --w:100%">
 							<div style="--fx:1 1 0%; --mr:0.5rem">
 								<input
-									style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
+									style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 									placeholder={$i18n.t('Enter URL (e.g. http://127.0.0.1:7860/)')}
 									bind:value={config.automatic1111.AUTOMATIC1111_BASE_URL}
 								/>
 							</div>
 							<button
-								style="--px:0.625rem; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --c:var(--color-gray-800, #333); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --dark-c:var(--color-gray-100, #ececec); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+								style="--px:0.625rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --c:var(--color-gray-800); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:var(--color-gray-100); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								type="button"
 								on:click={async () => {
 									await updateConfigHandler();
@@ -353,10 +353,10 @@
 							</button>
 						</div>
 
-						<div style="--mt:0.5rem; --size:0.75rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b)">
+						<div style="--mt:0.5rem; --size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 							{$i18n.t('Include `--api` flag when running stable-diffusion-webui')}
 							<a
-								style="--c:var(--color-gray-300, #cdcdcd); --weight:500"
+								style="--c:var(--color-gray-300); --weight:500"
 								href="https://github.com/AUTOMATIC1111/stable-diffusion-webui/discussions/3734"
 								target="_blank"
 							>
@@ -375,10 +375,10 @@
 							required={false}
 						/>
 
-						<div style="--mt:0.5rem; --size:0.75rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b)">
+						<div style="--mt:0.5rem; --size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 							{$i18n.t('Include `--api-auth` flag when running stable-diffusion-webui')}
 							<a
-								style="--c:var(--color-gray-300, #cdcdcd); --weight:500"
+								style="--c:var(--color-gray-300); --weight:500"
 								href="https://github.com/AUTOMATIC1111/stable-diffusion-webui/discussions/13993"
 								target="_blank"
 							>
@@ -397,7 +397,7 @@
 								<Tooltip content={$i18n.t('Enter Sampler (e.g. Euler a)')} placement="top-start">
 									<input
 										list="sampler-list"
-										style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
+										style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 										placeholder={$i18n.t('Enter Sampler (e.g. Euler a)')}
 										bind:value={config.automatic1111.AUTOMATIC1111_SAMPLER}
 									/>
@@ -419,7 +419,7 @@
 								<Tooltip content={$i18n.t('Enter Scheduler (e.g. Karras)')} placement="top-start">
 									<input
 										list="scheduler-list"
-										style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
+										style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 										placeholder={$i18n.t('Enter Scheduler (e.g. Karras)')}
 										bind:value={config.automatic1111.AUTOMATIC1111_SCHEDULER}
 									/>
@@ -440,7 +440,7 @@
 							<div style="--fx:1 1 0%; --mr:0.5rem">
 								<Tooltip content={$i18n.t('Enter CFG Scale (e.g. 7.0)')} placement="top-start">
 									<input
-										style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
+										style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 										placeholder={$i18n.t('Enter CFG Scale (e.g. 7.0)')}
 										bind:value={config.automatic1111.AUTOMATIC1111_CFG_SCALE}
 									/>
@@ -454,13 +454,13 @@
 						<div style="--d:flex; --w:100%">
 							<div style="--fx:1 1 0%; --mr:0.5rem">
 								<input
-									style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
+									style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 									placeholder={$i18n.t('Enter URL (e.g. http://127.0.0.1:7860/)')}
 									bind:value={config.comfyui.COMFYUI_BASE_URL}
 								/>
 							</div>
 							<button
-								style="--px:0.625rem; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --c:var(--color-gray-800, #333); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --dark-c:var(--color-gray-100, #ececec); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+								style="--px:0.625rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --c:var(--color-gray-800); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:var(--color-gray-100); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								type="button"
 								on:click={async () => {
 									await updateConfigHandler();
@@ -508,7 +508,7 @@
 
 						{#if config.comfyui.COMFYUI_WORKFLOW}
 							<Textarea
-								style="--w:100%; --radius:0.5rem; --mb:0.25rem; --py:0.5rem; --px:1rem; --size:0.75rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none; resize:none"
+								style="--w:100%; --radius:0.5rem; --mb:0.25rem; --py:0.5rem; --px:1rem; --size:0.75rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none; resize:none"
 	class="disabled:text-gray-600"
 								rows="10"
 								bind:value={config.comfyui.COMFYUI_WORKFLOW}
@@ -537,7 +537,7 @@
 								/>
 
 								<button
-									style="--w:100%; --size:0.875rem; --weight:500; --py:0.5rem; --bgc:transparent; --hvr-bgc:var(--color-gray-50, #f9f9f9); --b:1px solid; --bs:dashed; --bc:var(--color-gray-50, #f9f9f9); --dark-bc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-850, #262626); --ta:center; --radius:0.75rem"
+									style="--w:100%; --size:0.875rem; --weight:500; --py:0.5rem; --bgc:transparent; --hvr-bgc:var(--color-gray-50); --b:1px solid; --bs:dashed; --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-850); --ta:center; --radius:0.75rem"
 									type="button"
 									on:click={() => {
 										document.getElementById('upload-comfyui-workflow-input')?.click();
@@ -548,7 +548,7 @@
 							</div>
 						</div>
 
-						<div style="--mt:0.5rem; --size:0.75rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b)">
+						<div style="--mt:0.5rem; --size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 							{$i18n.t('Make sure to export a workflow.json file as API format from ComfyUI.')}
 						</div>
 					</div>
@@ -570,7 +570,7 @@
 										<div class="">
 											<Tooltip content="Input Key (e.g. text, unet_name, steps)">
 												<input
-													style="--py:0.25rem; --px:0.75rem; --w:6rem; --size:0.75rem; --ta:center; --bgc:transparent; --oe:none; --br:1px solid; --bc:var(--color-gray-50, #f9f9f9); --dark-bc:var(--color-gray-850, #262626)"
+													style="--py:0.25rem; --px:0.75rem; --w:6rem; --size:0.75rem; --ta:center; --bgc:transparent; --oe:none; --br:1px solid; --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850)"
 													placeholder="Key"
 													bind:value={node.key}
 													required
@@ -594,7 +594,7 @@
 								{/each}
 							</div>
 
-							<div style="--mt:0.5rem; --size:0.75rem; --ta:right; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b)">
+							<div style="--mt:0.5rem; --size:0.75rem; --ta:right; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 								{$i18n.t('*Prompt node ID(s) are required for image generation')}
 							</div>
 						</div>
@@ -639,7 +639,7 @@
 			</div>
 
 			{#if config?.enabled}
-				<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)" />
+				<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)" />
 
 				<div>
 					<div style="--mb:0.625rem; --size:0.875rem; --weight:500">{$i18n.t('Set Default Model')}</div>
@@ -650,7 +650,7 @@
 									<Tooltip content={$i18n.t('Enter Model ID')} placement="top-start">
 										<input
 											list="model-list"
-											style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
+											style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 											bind:value={imageGenerationConfig.MODEL}
 											placeholder="Select a model"
 											required
@@ -674,7 +674,7 @@
 						<div style="--fx:1 1 0%; --mr:0.5rem">
 							<Tooltip content={$i18n.t('Enter Image Size (e.g. 512x512)')} placement="top-start">
 								<input
-									style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
+									style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 									placeholder={$i18n.t('Enter Image Size (e.g. 512x512)')}
 									bind:value={imageGenerationConfig.IMAGE_SIZE}
 									required
@@ -690,7 +690,7 @@
 						<div style="--fx:1 1 0%; --mr:0.5rem">
 							<Tooltip content={$i18n.t('Enter Number of Steps (e.g. 50)')} placement="top-start">
 								<input
-									style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
+									style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 									placeholder={$i18n.t('Enter Number of Steps (e.g. 50)')}
 									bind:value={imageGenerationConfig.IMAGE_STEPS}
 									required
@@ -705,7 +705,7 @@
 
 	<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
 		<button
-			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
+			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
 	class="{loading
 				? ' cursor-not-allowed'
 				: ''}"

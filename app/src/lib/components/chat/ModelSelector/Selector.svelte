@@ -388,7 +388,7 @@
 	</DropdownMenu.Trigger>
 
 	<DropdownMenu.Content
-		style="--z:40; --maxw:calc(100vw-1rem); --jc:flex-start; --radius:0.75rem; --bgc:#fff; --dark-bgc:var(--color-gray-850, #262626); --dark-c:#fff; --shadow:4; --oe:none"
+		style="--z:40; --maxw:calc(100vw-1rem); --jc:flex-start; --radius:0.75rem; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:4; --oe:none"
 	class="{$mobile
 			? `w-full`
 			: `${className}`}"
@@ -431,7 +431,7 @@
 			<div style="--px:0.75rem">
 				{#if tags && items.filter((item) => !(item.model?.info?.meta?.hidden ?? false)).length > 0}
 					<div
-						style="--d:flex; --w:100%; --bgc:#fff; --dark-bgc:var(--color-gray-850, #262626); --ofx:auto"
+						style="--d:flex; --w:100%; --bgc:#fff; --dark-bgc:var(--color-gray-850); --ofx:auto"
 	class="scrollbar-none"
 						on:wheel={(e) => {
 							if (e.deltaY !== 0) {
@@ -544,7 +544,7 @@
 					/>
 				{:else}
 					<div class="">
-						<div style="--d:block; --px:0.75rem; --py:0.5rem; --size:0.875rem; --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-100, #ececec)">
+						<div style="--d:block; --px:0.75rem; --py:0.5rem; --size:0.875rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-100)">
 							{$i18n.t('No results found')}
 						</div>
 					</div>
@@ -558,7 +558,7 @@
 						placement="top-start"
 					>
 						<button
-							style="--d:flex; --w:100%; --weight:500; --line-clamp:1; --us:none; --ai:center; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --pl:0.75rem; --pr:0.375rem; --size:0.875rem; --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-100, #ececec); --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.5rem; --cur:pointer"
+							style="--d:flex; --w:100%; --weight:500; --line-clamp:1; --us:none; --ai:center; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --pl:0.75rem; --pr:0.375rem; --size:0.875rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-100); --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-800); --radius:0.5rem; --cur:pointer"
 	class="data-highlighted:bg-muted"
 							on:click={() => {
 								pullModelHandler();
@@ -573,7 +573,7 @@
 
 				{#each Object.keys($MODEL_DOWNLOAD_POOL) as model}
 					<div
-						style="--d:flex; --w:100%; --jc:space-between; --weight:500; --us:none; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --pl:0.75rem; --pr:0.375rem; --size:0.875rem; --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-100, #ececec); --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --radius:0.5rem; --cur:pointer"
+						style="--d:flex; --w:100%; --jc:space-between; --weight:500; --us:none; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --pl:0.75rem; --pr:0.375rem; --size:0.875rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-100); --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --radius:0.5rem; --cur:pointer"
 	class="data-highlighted:bg-muted"
 					>
 						<div style="--d:flex">
@@ -595,7 +595,7 @@
 								</div>
 
 								{#if 'digest' in $MODEL_DOWNLOAD_POOL[model] && $MODEL_DOWNLOAD_POOL[model].digest}
-									<div style="--mt:-0.25rem; --h:fit-content; --size:0.7rem; --dark-c:var(--color-gray-500, #9b9b9b); --line-clamp:1">
+									<div style="--mt:-0.25rem; --h:fit-content; --size:0.7rem; --dark-c:var(--color-gray-500); --line-clamp:1">
 										{$MODEL_DOWNLOAD_POOL[model].digest}
 									</div>
 								{/if}
@@ -605,13 +605,13 @@
 						<div style="--mr:0.5rem; --ml:0.25rem; --translatey:0.125rem">
 							<Tooltip content={$i18n.t('Cancel')}>
 								<button
-									style="--c:var(--color-gray-800, #333); --dark-c:var(--color-gray-100, #ececec)"
+									style="--c:var(--color-gray-800); --dark-c:var(--color-gray-100)"
 									on:click={() => {
 										cancelModelPullHandler(model);
 									}}
 								>
 									<svg
-										style="--w:1rem; --h:1rem; --c:var(--color-gray-800, #333); --dark-c:#fff"
+										style="--w:1rem; --h:1rem; --c:var(--color-gray-800); --dark-c:#fff"
 										aria-hidden="true"
 										xmlns="http://www.w3.org/2000/svg"
 										width="24"
@@ -637,7 +637,7 @@
 			{#if showTemporaryChatControl}
 				<div style="--d:flex; --ai:center; --mx:0.5rem; --mt:0.25rem; --mb:0.5rem">
 					<button
-						style="--d:flex; --jc:space-between; --w:100%; --weight:500; --line-clamp:1; --us:none; --ai:center; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --px:0.75rem; --size:0.875rem; --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-100, #ececec); --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.5rem; --cur:pointer"
+						style="--d:flex; --jc:space-between; --w:100%; --weight:500; --line-clamp:1; --us:none; --ai:center; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --px:0.75rem; --size:0.875rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-100); --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-800); --radius:0.5rem; --cur:pointer"
 	class="data-highlighted:bg-muted"
 						on:click={async () => {
 							temporaryChatEnabled.set(!$temporaryChatEnabled);

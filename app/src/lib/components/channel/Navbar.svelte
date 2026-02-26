@@ -19,7 +19,7 @@
 <nav style="--pos:sticky; --top:0; --z:30; --w:100%; --px:0.375rem; --py:0.375rem; --mb:-2rem; --d:flex; --ai:center"
 	class="drag-region">
 	<div
-		style="--bgi:linear-gradient(180deg, var(--tw-gradient-stops)); --tw-gradient-from:#fff; --tw-gradient-via:#fff; --tw-gradient-to:transparent; --dark-tw-gradient-from:var(--color-gray-900, #171717); --dark-tw-gradient-via:var(--color-gray-900, #171717); --dark-tw-gradient-to:transparent; --pe:none; --pos:absolute; --inset:0; --bottom:-1.75rem; --z:-1"
+		style="--bgi:linear-gradient(180deg, var(--tw-gradient-stops)); --tw-gradient-from:#fff; --tw-gradient-via:#fff; --tw-gradient-to:transparent; --dark-tw-gradient-from:var(--color-gray-900); --dark-tw-gradient-via:var(--color-gray-900); --dark-tw-gradient-to:transparent; --pe:none; --pos:absolute; --inset:0; --bottom:-1.75rem; --z:-1"
 	class="via-50%"
 	></div>
 
@@ -31,8 +31,8 @@
 					--d:flex; 
 					--fx:none; 
 					--ai:center; 
-					--c:var(--color-gray-600, #676767); 
-					--dark-c:var(--color-gray-400, #b4b4b4);
+					--c:var(--color-gray-600); 
+					--dark-c:var(--color-gray-400);
 					{$showSidebar
 					? '--d:none;'
 					: ''}
@@ -41,7 +41,7 @@
 			>
 				<button
 					id="sidebar-toggle-button"
-					style="--cur:pointer; --px:0.5rem; --py:0.5rem; --d:flex; --radius:0.75rem; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--cur:pointer; --px:0.5rem; --py:0.5rem; --d:flex; --radius:0.75rem; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						showSidebar.set(!$showSidebar);
 					}}
@@ -65,7 +65,7 @@
 				{/if}
 			</div>
 
-			<div style="--as:flex-start; --d:flex; --fx:none; --ai:center; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-400, #b4b4b4)">
+			<div style="--as:flex-start; --d:flex; --fx:none; --ai:center; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)">
 				{#if $user !== undefined}
 					<UserMenu
 						className="max-w-[240px]"
@@ -78,7 +78,7 @@
 						}}
 					>
 						<button
-							style="--us:none; --d:flex; --radius:0.75rem; --p:0.375rem; --w:100%; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+							style="--us:none; --d:flex; --radius:0.75rem; --p:0.375rem; --w:100%; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							aria-label="User Menu"
 						>
 							<div style="--as:center">

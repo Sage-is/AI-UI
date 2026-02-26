@@ -444,7 +444,7 @@
 
 		<div style="--d:flex; --ai:center">
 			{#if loading}
-				<div style="--c:var(--color-gray-500, #9b9b9b); --radius:9999px; --cur:not-allowed">
+				<div style="--c:var(--color-gray-500); --radius:9999px; --cur:not-allowed">
 					<svg
 						width="24"
 						height="24"

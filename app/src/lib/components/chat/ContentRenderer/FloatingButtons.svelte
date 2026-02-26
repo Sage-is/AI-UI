@@ -71,11 +71,11 @@
 >
 	{#if !floatingInput}
 		<div
-			style="--d:flex; --fd:row; --g:0.125rem; --fs:0; --p:0.25rem; --bgc:#fff; --dark-bgc:var(--color-gray-850, #262626); --dark-c:var(--color-gray-100, #ececec); --radius:0.5rem; --shadow:5"
+			style="--d:flex; --fd:row; --g:0.125rem; --fs:0; --p:0.25rem; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-100); --radius:0.5rem; --shadow:5"
 	class="text-medium"
 		>
 			<button
-				style="--px:0.25rem; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.125rem; --d:flex; --ai:center; --g:0.25rem; --minw:fit-content"
+				style="--px:0.25rem; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.125rem; --d:flex; --ai:center; --g:0.25rem; --minw:fit-content"
 				on:click={async () => {
 					selectedText = window.getSelection().toString();
 					floatingInput = true;
@@ -93,7 +93,7 @@
 				<div style="--fs:0">{$i18n.t('Ask')}</div>
 			</button>
 			<button
-				style="--px:0.25rem; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.125rem; --d:flex; --ai:center; --g:0.25rem; --minw:fit-content"
+				style="--px:0.25rem; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.125rem; --d:flex; --ai:center; --g:0.25rem; --minw:fit-content"
 				on:click={() => {
 					selectedText = window.getSelection().toString();
 					explainHandler();
@@ -105,7 +105,7 @@
 		</div>
 	{:else}
 		<div
-			style="--py:0.25rem; --d:flex; --dark-c:var(--color-gray-100, #ececec); --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-800, #333); --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --w:18rem; --radius:9999px; --shadow:5"
+			style="--py:0.25rem; --d:flex; --dark-c:var(--color-gray-100); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800); --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --w:18rem; --radius:9999px; --shadow:5"
 		>
 			<input
 				type="text"

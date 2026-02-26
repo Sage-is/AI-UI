@@ -49,7 +49,7 @@
 		<ChevronDown className="absolute end-2 top-1/2 -translate-y-[45%] size-3.5" strokeWidth="2.5" />
 	</Select.Trigger>
 	<Select.Content
-		style="--w:100%; --radius:0.5rem; --bgc:#fff; --dark-bgc:var(--color-gray-900, #171717); --dark-c:#fff; --shadow:4; --b:1px solid; --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.4); --oe:none"
+		style="--w:100%; --radius:0.5rem; --bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-c:#fff; --shadow:4; --b:1px solid; --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.4); --oe:none"
 		transition={flyAndScale}
 		sideOffset={4}
 	>
@@ -65,13 +65,13 @@
 					/>
 				</div>
 
-				<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)" />
+				<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)" />
 			{/if}
 
 			<div style="--px:0.75rem; --my:0.5rem; --maxh:20rem; --ofy:auto">
 				{#each filteredItems as item}
 					<Select.Item
-						style="--d:flex; --w:100%; --weight:500; --line-clamp:1; --us:none; --ai:center; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --pl:0.75rem; --pr:0.375rem; --size:0.875rem; --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-100, #ececec); --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-850, #262626); --radius:0.5rem; --cur:pointer"
+						style="--d:flex; --w:100%; --weight:500; --line-clamp:1; --us:none; --ai:center; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --pl:0.75rem; --pr:0.375rem; --size:0.875rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-100); --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-850); --radius:0.5rem; --cur:pointer"
 	class="data-highlighted:bg-muted"
 						value={item.value}
 						label={item.label}
@@ -86,7 +86,7 @@
 					</Select.Item>
 				{:else}
 					<div>
-						<div style="--d:block; --px:1.25rem; --py:0.5rem; --size:0.875rem; --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-100, #ececec)">
+						<div style="--d:block; --px:1.25rem; --py:0.5rem; --size:0.875rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-100)">
 							No results found
 						</div>
 					</div>

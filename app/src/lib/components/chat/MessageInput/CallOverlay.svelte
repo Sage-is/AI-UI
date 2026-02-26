@@ -715,7 +715,7 @@
 					</div>
 				{:else if loading || assistantSpeaking}
 					<svg
-						style="--w:3rem; --h:3rem; --c:var(--color-gray-900, #171717); --dark-c:var(--color-gray-400, #b4b4b4)"
+						style="--w:3rem; --h:3rem; --c:var(--color-gray-900); --dark-c:var(--color-gray-400)"
 						viewBox="0 0 24 24"
 						fill="currentColor"
 						xmlns="http://www.w3.org/2000/svg"
@@ -796,7 +796,7 @@
 						</div>
 					{:else if loading || assistantSpeaking}
 						<svg
-							style="--w:11rem; --h:11rem; --c:var(--color-gray-900, #171717); --dark-c:var(--color-gray-400, #b4b4b4)"
+							style="--w:11rem; --h:11rem; --c:var(--color-gray-900); --dark-c:var(--color-gray-400)"
 							viewBox="0 0 24 24"
 							fill="currentColor"
 							xmlns="http://www.w3.org/2000/svg"
@@ -899,7 +899,7 @@
 							await startVideoStream();
 						}}
 					>
-						<button style="--p:0.75rem; --radius:9999px; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-900, #171717)" type="button">
+						<button style="--p:0.75rem; --radius:9999px; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-900)" type="button">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 20 20"
@@ -917,7 +917,7 @@
 				{:else}
 					<Tooltip content={$i18n.t('Camera')}>
 						<button
-							style="--p:0.75rem; --radius:9999px; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-900, #171717)"
+							style="--p:0.75rem; --radius:9999px; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-900)"
 							type="button"
 							on:click={async () => {
 								await navigator.mediaDevices.getUserMedia({ video: true });
@@ -971,7 +971,7 @@
 
 			<div>
 				<button
-					style="--p:0.75rem; --radius:9999px; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-900, #171717)"
+					style="--p:0.75rem; --radius:9999px; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-900)"
 					on:click={async () => {
 						await stopAudioStream();
 						await stopVideoStream();

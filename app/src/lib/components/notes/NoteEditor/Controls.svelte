@@ -84,18 +84,18 @@
 				</div>
 			</div>
 
-			<hr style="--my:0.5rem; --bc:var(--color-gray-50, #f9f9f9); --dark-bc:rgb(78 78 78 / 0.1)" />
+			<hr style="--my:0.5rem; --bc:var(--color-gray-50); --dark-bc:rgb(78 78 78 / 0.1)" />
 		{/if}
 
 		<div style="--size:0.75rem; --weight:500; --mb:0.25rem">Model</div>
 
 		<div style="--w:100%">
 			<select style="--w:100%; --bgc:transparent; --size:0.875rem; --oe:none" bind:value={selectedModelId}>
-				<option value="" style="--bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-700, #4e4e4e)" disabled>
+				<option value="" style="--bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-700)" disabled>
 					{$i18n.t('Select a model')}
 				</option>
 				{#each $models.filter((model) => !(model?.info?.meta?.hidden ?? false)) as model}
-					<option value={model.id} style="--bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-700, #4e4e4e)">{model.name}</option>
+					<option value={model.id} style="--bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-700)">{model.name}</option>
 				{/each}
 			</select>
 		</div>

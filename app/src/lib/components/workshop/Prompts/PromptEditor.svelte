@@ -114,7 +114,7 @@
 
 						<div style="--as:center; --fs:0">
 							<button
-								style="--bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --c:#000; --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --px:0.5rem; --py:0.25rem; --radius:9999px; --d:flex; --g:0.25rem; --ai:center"
+								style="--bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --c:#000; --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --px:0.5rem; --py:0.25rem; --radius:9999px; --d:flex; --g:0.25rem; --ai:center"
 								type="button"
 								on:click={() => {
 									showAccessControlModal = true;
@@ -129,7 +129,7 @@
 						</div>
 					</div>
 
-					<div style="--d:flex; --g:0.125rem; --ai:center; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">
+					<div style="--d:flex; --g:0.125rem; --ai:center; --size:0.75rem; --c:var(--color-gray-500)">
 						<div class="">/</div>
 						<input
 							style="--w:100%; --bgc:transparent; --oe:none"
@@ -160,18 +160,18 @@
 					/>
 				</div>
 
-				<div style="--size:0.75rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b)">
+				<div style="--size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 					ⓘ {$i18n.t('Format your variables using brackets like this:')}&nbsp;<span
-						style="--c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-300, #cdcdcd); --weight:500"
+						style="--c:var(--color-gray-600); --dark-c:var(--color-gray-300); --weight:500"
 						>{'{{'}{$i18n.t('variable')}{'}}'}</span
 					>.
 					{$i18n.t('Make sure to enclose them with')}
-					<span style="--c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-300, #cdcdcd); --weight:500">{'{{'}</span>
+					<span style="--c:var(--color-gray-600); --dark-c:var(--color-gray-300); --weight:500">{'{{'}</span>
 					{$i18n.t('and')}
-					<span style="--c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-300, #cdcdcd); --weight:500">{'}}'}</span>.
+					<span style="--c:var(--color-gray-600); --dark-c:var(--color-gray-300); --weight:500">{'}}'}</span>.
 				</div>
 
-				<div style="--size:0.75rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b); --td:underline">
+				<div style="--size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --td:underline">
 					<a href="https://docs.sage.is/features/workshop/prompts" target="_blank">
 						{$i18n.t('To learn more about powerful prompt variables, click here')}
 					</a>

@@ -162,7 +162,7 @@
 			<div class="flex-shrink-0">
 				{$i18n.t('Users')}
 			</div>
-			<div style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-850, #262626)" />
+			<div style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)" />
 
 			{#if ($config?.license_metadata?.seats ?? null) !== null}
 				{#if total > $config?.license_metadata?.seats}
@@ -171,13 +171,13 @@
 						<span style="--size:0.875rem; --weight:400">available users</span></span
 					>
 				{:else}
-					<span style="--size:1.125rem; --weight:500; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-300, #cdcdcd)"
+					<span style="--size:1.125rem; --weight:500; --c:var(--color-gray-500); --dark-c:var(--color-gray-300)"
 						>{total} of {$config?.license_metadata?.seats}
 						<span style="--size:0.875rem; --weight:400">available users</span></span
 					>
 				{/if}
 			{:else}
-				<span style="--size:1.125rem; --weight:500; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-300, #cdcdcd)">{total}</span>
+				<span style="--size:1.125rem; --weight:500; --c:var(--color-gray-500); --dark-c:var(--color-gray-300)">{total}</span>
 			{/if}
 		</div>
 
@@ -208,7 +208,7 @@
 				<div>
 					<Tooltip content={$i18n.t('Add User')}>
 						<button
-							style="--p:0.5rem; --radius:0.75rem; --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-900, #171717); --hvr-dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
+							style="--p:0.5rem; --radius:0.75rem; --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
 							on:click={() => {
 								showAddUserModal = !showAddUserModal;
 							}}
@@ -226,10 +226,10 @@
 	class="scrollbar-hidden"
 	>
 		<table
-			style="--w:100%; --size:0.875rem; --ta:left; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4); table-layout:auto; --maxw:100%; --radius:0.125rem"
+			style="--w:100%; --size:0.875rem; --ta:left; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); table-layout:auto; --maxw:100%; --radius:0.125rem"
 		>
 			<thead
-				style="--size:0.75rem; --c:var(--color-gray-700, #4e4e4e); --tt:uppercase; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-850, #262626); --dark-c:var(--color-gray-400, #b4b4b4); --translatey:-0.125rem"
+				style="--size:0.75rem; --c:var(--color-gray-700); --tt:uppercase; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-400); --translatey:-0.125rem"
 			>
 				<tr class="">
 					<th
@@ -377,7 +377,7 @@
 			</thead>
 			<tbody style="--d:flex;--fd:column">
 				{#each users as user, userIdx}
-					<tr style="--bgc:#fff; --dark-bgc:var(--color-gray-900, #171717); --dark-bc:var(--color-gray-850, #262626); --size:0.75rem">
+					<tr style="--bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-bc:var(--color-gray-850); --size:0.75rem">
 						<td style="--px:0.75rem; --py:0.25rem; --minw:7rem; --w:7rem">
 							<button
 								style="--translatey:0.125rem"
@@ -392,7 +392,7 @@
 								/>
 							</button>
 						</td>
-						<td style="--px:0.75rem; --py:0.25rem; --weight:500; --c:var(--color-gray-900, #171717); --dark-c:#fff; --w:max-content">
+						<td style="--px:0.75rem; --py:0.25rem; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --w:max-content">
 							<div style="--d:flex; --fd:row; --w:max-content">
 								<img
 									style="--radius:9999px; --w:1.5rem; --h:1.5rem; --objf:cover; --mr:0.625rem"
@@ -419,7 +419,7 @@
 
 						<td style="--px:0.75rem; --py:0.25rem">
 							{#if user.role === 'temporary' && user.info?.temporary?.expires_at}
-								<span style="{dayjs(user.info.temporary.expires_at * 1000).isBefore(dayjs()) ? '--c:#ef4444' : '--c:var(--color-gray-500, #9b9b9b)'}">
+								<span style="{dayjs(user.info.temporary.expires_at * 1000).isBefore(dayjs()) ? '--c:#ef4444' : '--c:var(--color-gray-500)'}">
 									{dayjs(user.info.temporary.expires_at * 1000).fromNow()}
 								</span>
 							{:else}
@@ -502,7 +502,7 @@
 		</table>
 	</div>
 
-	<div style="--c:var(--color-gray-500, #9b9b9b); --size:0.75rem; --mt:0.375rem; --ta:right">
+	<div style="--c:var(--color-gray-500); --size:0.75rem; --mt:0.375rem; --ta:right">
 		ⓘ {$i18n.t("Click on the user role button to change a user's role.")}
 	</div>
 

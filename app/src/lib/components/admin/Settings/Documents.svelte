@@ -303,7 +303,7 @@
 				<div style="--mb:0.75rem">
 					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('General')}</div>
 
-					<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem"/>
+					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem"/>
 
 					<div style="--mb:0.625rem; --d:flex; --fd:column; --w:100%; --jc:space-between">
 						<div style="--d:flex; --w:100%; --jc:space-between; --mb:0.25rem">
@@ -312,7 +312,7 @@
 							</div>
 							<div class="">
 								<select
-									style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
+									style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
 									bind:value={RAGConfig.CONTENT_EXTRACTION_ENGINE}
 								>
 									<option value="">{$i18n.t('Default')}</option>
@@ -460,7 +460,7 @@
 								</div>
 								<div class="">
 									<select
-										style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
+										style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
 										bind:value={RAGConfig.DATALAB_MARKER_OUTPUT_FORMAT}
 									>
 										<option value="markdown">{$i18n.t('Markdown')}</option>
@@ -532,7 +532,7 @@
 									</div>
 									<div class="">
 										<select
-											style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
+											style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
 											bind:value={RAGConfig.DOCLING_PICTURE_DESCRIPTION_MODE}
 										>
 											<option value="">{$i18n.t('Default')}</option>
@@ -636,7 +636,7 @@
 							<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Text Splitter')}</div>
 							<div style="--d:flex; --ai:center; --pos:relative">
 								<select
-									style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
+									style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
 									bind:value={RAGConfig.TEXT_SPLITTER}
 								>
 									<option value="">{$i18n.t('Default')} ({$i18n.t('Character')})</option>
@@ -654,7 +654,7 @@
 									</div>
 									<div style="--as:center">
 										<input
-											style="--w:100%; --radius:0.5rem; --py:0.375rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
+											style="--w:100%; --radius:0.5rem; --py:0.375rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 											type="number"
 											placeholder={$i18n.t('Enter Chunk Size')}
 											bind:value={RAGConfig.CHUNK_SIZE}
@@ -671,7 +671,7 @@
 
 									<div style="--as:center">
 										<input
-											style="--w:100%; --radius:0.5rem; --py:0.375rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
+											style="--w:100%; --radius:0.5rem; --py:0.375rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 											type="number"
 											placeholder={$i18n.t('Enter Chunk Overlap')}
 											bind:value={RAGConfig.CHUNK_OVERLAP}
@@ -689,7 +689,7 @@
 					<div style="--mb:0.75rem">
 						<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('Embedding')}</div>
 
-						<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem"/>
+						<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem"/>
 
 						<div style="--mb:0.625rem; --d:flex; --fd:column; --w:100%; --jc:space-between">
 							<div style="--d:flex; --w:100%; --jc:space-between">
@@ -698,7 +698,7 @@
 								</div>
 								<div style="--d:flex; --ai:center; --pos:relative">
 									<select
-										style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
+										style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
 										bind:value={embeddingEngine}
 										placeholder="Select an embedding model engine"
 										on:change={(e) => {
@@ -803,7 +803,7 @@
 
 										{#if embeddingEngine === ''}
 											<button
-												style="--px:0.625rem; --bgc:transparent; --c:var(--color-gray-800, #333); --dark-bgc:transparent; --dark-c:var(--color-gray-100, #ececec); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+												style="--px:0.625rem; --bgc:transparent; --c:var(--color-gray-800); --dark-bgc:transparent; --dark-c:var(--color-gray-100); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 												on:click={() => {
 													embeddingModelUpdateHandler();
 												}}
@@ -834,7 +834,7 @@
 								{/if}
 							</div>
 
-							<div style="--mt:0.25rem; --mb:0.25rem; --size:0.75rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b)">
+							<div style="--mt:0.25rem; --mb:0.25rem; --size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 								{$i18n.t(
 									'Warning: If you update or change your embedding model, you will need to re-import all documents.'
 								)}
@@ -864,7 +864,7 @@
 					<div style="--mb:0.75rem">
 						<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('Retrieval')}</div>
 
-						<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem"/>
+						<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem"/>
 
 						<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
 							<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Full Context Mode')}</div>
@@ -899,7 +899,7 @@
 										</div>
 										<div style="--d:flex; --ai:center; --pos:relative">
 											<select
-												style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
+												style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
 												bind:value={RAGConfig.RAG_RERANKING_ENGINE}
 												placeholder="Select a reranking model engine"
 												on:change={(e) => {
@@ -1004,7 +1004,7 @@
 											/>
 										</div>
 									</div>
-									<div style="--mt:0.25rem; --size:0.75rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b)">
+									<div style="--mt:0.25rem; --size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 										{$i18n.t(
 											'Note: If you set a minimum score, the search will only return documents with a score greater than or equal to the minimum score.'
 										)}
@@ -1058,7 +1058,7 @@
 				<div style="--mb:0.75rem">
 					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('Files')}</div>
 
-					<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem"/>
+					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem"/>
 
 					<FormFieldRow>
 						<svelte:fragment slot="label">{$i18n.t('Allowed File Extensions')}</svelte:fragment>
@@ -1170,7 +1170,7 @@
 				<div style="--mb:0.75rem">
 					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('Integration')}</div>
 
-					<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem"/>
+					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem"/>
 
 					<FormFieldRow>
 						<svelte:fragment slot="label">{$i18n.t('Google Drive')}</svelte:fragment>
@@ -1190,7 +1190,7 @@
 				<div style="--mb:0.75rem">
 					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('Danger Zone')}</div>
 
-					<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem"/>
+					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem"/>
 
 					<FormFieldRow>
 						<svelte:fragment slot="label">{$i18n.t('Reset Upload Directory')}</svelte:fragment>
@@ -1241,7 +1241,7 @@
 		</div>
 		<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
 			<button
-				style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+				style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 				type="submit"
 			>
 				{$i18n.t('Save')}

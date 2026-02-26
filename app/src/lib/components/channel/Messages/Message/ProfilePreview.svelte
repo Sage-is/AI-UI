@@ -62,7 +62,7 @@
 		>
 			{#if user}
 				<div style="--d:flex; --fd:column; --g:0.5rem; --w:100%; --radius:0.5rem">
-					<div style="--py:2rem; --pos:relative; --bgc:var(--color-gray-900, #171717); --btlr:0.5rem; --btrr:0.5rem">
+					<div style="--py:2rem; --pos:relative; --bgc:var(--color-gray-900); --btlr:0.5rem; --btrr:0.5rem">
 						<img
 							crossorigin="anonymous"
 							src={user?.profile_image_url ?? branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
@@ -93,7 +93,7 @@
 							{:else}
 								<div>
 									<span style="--pos:relative; --d:flex; --w:0.5rem; --h:0.5rem">
-										<span style="--pos:relative; --d:inline-flex; --radius:9999px; --w:0.5rem; --h:0.5rem; --bgc:var(--color-gray-500, #9b9b9b)" />
+										<span style="--pos:relative; --d:inline-flex; --radius:9999px; --w:0.5rem; --h:0.5rem; --bgc:var(--color-gray-500)" />
 									</span>
 								</div>
 

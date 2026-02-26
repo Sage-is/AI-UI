@@ -63,7 +63,7 @@
 	>
 		{#if !(config?.enable ?? true)}
 			<div
-				style="--pos:absolute; --top:0; --bottom:0; --left:0; --right:0; --op:0.6; --bgc:#fff; --dark-bgc:var(--color-gray-900, #171717); --z:10"
+				style="--pos:absolute; --top:0; --bottom:0; --left:0; --right:0; --op:0.6; --bgc:#fff; --dark-bgc:var(--color-gray-900); --z:10"
 			></div>
 		{/if}
 
@@ -77,7 +77,7 @@
 	<div style="--d:flex; --g:0.25rem">
 		<Tooltip content={$i18n.t('Manage')} className="self-start">
 			<button
-				style="--as:center; --p:0.25rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-900, #171717); --hvr-dark-bgc:var(--color-gray-850, #262626); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--as:center; --p:0.25rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={() => {
 					showManageModal = true;
 				}}
@@ -89,7 +89,7 @@
 
 		<Tooltip content={$i18n.t('Configure')} className="self-start">
 			<button
-				style="--as:center; --p:0.25rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-900, #171717); --hvr-dark-bgc:var(--color-gray-850, #262626); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--as:center; --p:0.25rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={() => {
 					showConfigModal = true;
 				}}

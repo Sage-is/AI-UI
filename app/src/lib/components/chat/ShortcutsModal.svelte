@@ -95,8 +95,8 @@
 </script>
 
 <Modal bind:show>
-	<div style="--c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-100, #ececec)">
-		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300, #cdcdcd); --px:1.25rem; --pt:1rem">
+	<div style="--c:var(--color-gray-700); --dark-c:var(--color-gray-100)">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.25rem; --pt:1rem">
 			<div style="--size:1.125rem; --weight:500; --as:center">{$i18n.t('Keyboard shortcuts')}</div>
 			<button
 				style="--as:center"
@@ -108,7 +108,7 @@
 			</button>
 		</div>
 
-		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --p:1.25rem; --g-md:1rem; --dark-c:var(--color-gray-200, #e3e3e3)">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --p:1.25rem; --g-md:1rem; --dark-c:var(--color-gray-200)">
 			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				<div style="--d:flex; --fd:column; --g:0.75rem; --w:100%; --as:flex-start">
 					<!-- DRY: Use data structure to eliminate repetitive HTML -->
@@ -127,7 +127,7 @@
 							<div style="--d:flex; --g:0.25rem; --size:0.75rem">
 								{#each shortcut.keys as key}
 									<div
-										style="--h:fit-content; --py:0.25rem; --px:0.5rem; --d:flex; --ai:center; --jc:center; --radius:0.125rem; --b:1px solid; --bc:rgb(0 0 0 / 0.1); --tt:capitalize; --c:var(--color-gray-600, #676767); --dark-bc:rgb(255 255 255 / 0.1); --dark-c:var(--color-gray-300, #cdcdcd)"
+										style="--h:fit-content; --py:0.25rem; --px:0.5rem; --d:flex; --ai:center; --jc:center; --radius:0.125rem; --b:1px solid; --bc:rgb(0 0 0 / 0.1); --tt:capitalize; --c:var(--color-gray-600); --dark-bc:rgb(255 255 255 / 0.1); --dark-c:var(--color-gray-300)"
 									>
 										{key}
 									</div>
@@ -154,7 +154,7 @@
 							<div style="--d:flex; --g:0.25rem; --size:0.75rem">
 								{#each shortcut.keys as key}
 									<div
-										style="--h:fit-content; --py:0.25rem; --px:0.5rem; --d:flex; --ai:center; --jc:center; --radius:0.125rem; --b:1px solid; --bc:rgb(0 0 0 / 0.1); --tt:capitalize; --c:var(--color-gray-600, #676767); --dark-bc:rgb(255 255 255 / 0.1); --dark-c:var(--color-gray-300, #cdcdcd)"
+										style="--h:fit-content; --py:0.25rem; --px:0.5rem; --d:flex; --ai:center; --jc:center; --radius:0.125rem; --b:1px solid; --bc:rgb(0 0 0 / 0.1); --tt:capitalize; --c:var(--color-gray-600); --dark-bc:rgb(255 255 255 / 0.1); --dark-c:var(--color-gray-300)"
 									>
 										{key}
 									</div>
@@ -182,10 +182,10 @@
 				<!-- DRY: Use data structure for input commands -->
 				{#each inputCommands as command}
 					<div style="--d:flex; --jc:space-between; --ai:center">
-						<div style="--size:0.875rem; --c:var(--color-gray-500, #9b9b9b)">
+						<div style="--size:0.875rem; --c:var(--color-gray-500)">
 							{$i18n.t(command.label)}
 						</div>
-						<div style="--c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-300, #cdcdcd); --size:0.875rem; --weight:600">
+						<div style="--c:var(--color-gray-600); --dark-c:var(--color-gray-300); --size:0.875rem; --weight:600">
 							{command.command}
 						</div>
 					</div>

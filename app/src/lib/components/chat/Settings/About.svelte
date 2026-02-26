@@ -106,7 +106,7 @@
 				</div>
 			</div>
 			<div style="--d:flex; --w:100%; --jc:space-between; --ai:center">
-				<div style="--d:flex; --fd:column; --size:0.75rem; --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-200, #e3e3e3)">
+				<div style="--d:flex; --fd:column; --size:0.75rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-200)">
 					<div style="--d:flex; --g:0.25rem">
 						<Tooltip content={WEBUI_BUILD_HASH}>
 							v{WEBUI_VERSION}
@@ -127,7 +127,7 @@
 					</div>
 
 					<button
-						style="--td:underline; --d:flex; --ai:center; --g:0.25rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-500, #9b9b9b)"
+						style="--td:underline; --d:flex; --ai:center; --g:0.25rem; --size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500)"
 						on:click={() => {
 							showChangelog.set(true);
 						}}
@@ -138,7 +138,7 @@
 
 				{#if $config?.features?.enable_version_update_check}
 					<button
-						style="--size:0.75rem; --px:0.75rem; --py:0.375rem; --bgc:var(--color-gray-100, #ececec); --hvr-bgc:var(--color-gray-200, #e3e3e3); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --weight:500"
+						style="--size:0.75rem; --px:0.75rem; --py:0.375rem; --bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --weight:500"
 						on:click={() => {
 							checkForVersionUpdates();
 						}}
@@ -150,24 +150,24 @@
 		</div>
 
 		{#if ollamaVersion}
-			<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)" />
+			<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)" />
 
 			<div>
 				<div style="--mb:0.625rem; --size:0.875rem; --weight:500">{$i18n.t('Ollama Version')}</div>
 				<div style="--d:flex; --w:100%">
-					<div style="--fx:1 1 0%; --size:0.75rem; --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-200, #e3e3e3)">
+					<div style="--fx:1 1 0%; --size:0.75rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-200)">
 						{ollamaVersion ?? 'N/A'}
 					</div>
 				</div>
 			</div>
 		{/if}
 
-		<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)" />
+		<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)" />
 
 		{#if $config?.license_metadata}
 			<div style="--mb:0.5rem; --size:0.75rem">
 				{#if !$WEBUI_NAME.includes('Sage.is AI')}
-					<span style="--c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-300, #cdcdcd); --weight:500">{$WEBUI_NAME}</span> -
+					<span style="--c:var(--color-gray-500); --dark-c:var(--color-gray-300); --weight:500">{$WEBUI_NAME}</span> -
 				{/if}
 
 				<span style="--tt:capitalize">{$config?.license_metadata?.type}</span> license purchased by
@@ -209,7 +209,7 @@
 
 		<div>
 			<pre
-				style="--size:0.75rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b); margin: 3rem auto;
+				style="--size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); margin: 3rem auto;
 					width: fit-content;
 					font-family: monospace;
 					--radius: 0.5rem;
@@ -883,22 +883,22 @@ For more information on this, and how to apply and follow the GNU AGPL, see &lt;
 			</pre>
 		</div>
 
-		<div style="--mt:0.5rem; --size:0.75rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b)">
+		<div style="--mt:0.5rem; --size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 			Sage AI is {$i18n.t('Created by')}
 			<a
-				style="--c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-300, #cdcdcd); --weight:500"
+				style="--c:var(--color-gray-500); --dark-c:var(--color-gray-300); --weight:500"
 				href="https://sage.is"
 				target="_blank">The Sage.Is team</a
 			>
 			part of
 			<a
-				style="--c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-300, #cdcdcd); --weight:500"
+				style="--c:var(--color-gray-500); --dark-c:var(--color-gray-300); --weight:500"
 				href="https://startr.cloud"
 				target="_blank">Startr LLC</a
 			> with the help of:
 		</div>
 
-		<div style="--mt:0.5rem; --size:0.75rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b)">
+		<div style="--mt:0.5rem; --size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 			<!-- License details - Simple clean table display -->
 			<div style="--ofx:auto; width: 40rem;">
 				{@html licenseTableHtml}

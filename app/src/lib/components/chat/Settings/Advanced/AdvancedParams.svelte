@@ -398,7 +398,7 @@
 						<div style="--as:center; --size:0.75rem; --weight:500">
 							{$i18n.t(config.label)}
 							{#if config.suffix}
-								<span style="--c:var(--color-gray-500, #9b9b9b); --pl:0.25rem">({$i18n.t(config.suffix)})</span>
+								<span style="--c:var(--color-gray-500); --pl:0.25rem">({$i18n.t(config.suffix)})</span>
 							{/if}
 						</div>
 						<button
@@ -442,7 +442,7 @@
 							/>
 						{:else if config.type === 'switch'}
 							<div style="--w:100%; --pr:0.25rem; --d:flex; --jc:space-between; --ai:center">
-								<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">
+								<div style="--size:0.75rem; --c:var(--color-gray-500)">
 									{params[config.key] ? 'Enabled' : 'Disabled'}
 								</div>
 								<div style="--pr:0.5rem">
@@ -453,7 +453,7 @@
 							<div style="--fx:1 1 0%">
 								<input
 									type="range"
-									style="--w:100%; --h:0.5rem; --radius:0.5rem; appearance:none; --cur:pointer; --bgc:var(--color-gray-200, #e3e3e3); --dark-bgc:var(--color-gray-700, #4e4e4e)"
+									style="--w:100%; --h:0.5rem; --radius:0.5rem; appearance:none; --cur:pointer; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-700)"
 									bind:value={params[config.key]}
 									min={config.min}
 									max={config.max}

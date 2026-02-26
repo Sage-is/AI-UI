@@ -62,7 +62,7 @@
 							<img
 								crossorigin="anonymous"
 								src={model?.info?.meta?.profile_image_url ?? branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
-								style="--w:2.7rem; --h:2.7rem; --radius:9999px; --bc:1px; --bc:var(--color-gray-100, #ececec); --dark-bs:none"
+								style="--w:2.7rem; --h:2.7rem; --radius:9999px; --bc:1px; --bc:var(--color-gray-100); --dark-bs:none"
 								alt="logo"
 								draggable="false"
 							/>
@@ -78,7 +78,7 @@
 					content={$i18n.t("This chat won't appear in history and your messages will not be saved.")}
 					placement="top"
 				>
-					<div style="--d:flex; --ai:center; --g:0.5rem; --c:var(--color-gray-500, #9b9b9b); --weight:500; --size:1.125rem; --mt:0.5rem; --w:fit-content">
+					<div style="--d:flex; --ai:center; --g:0.5rem; --c:var(--color-gray-500); --weight:500; --size:1.125rem; --mt:0.5rem; --w:fit-content">
 						<EyeSlash strokeWidth="2.5" className="size-5" />{$i18n.t('Temporary Chat')}
 					</div>
 				</Tooltip>
@@ -86,7 +86,7 @@
 		{/if}
 
 		<div
-			style="--mt:0.5rem; --mb:1rem; --size:1.875rem; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-100, #ececec); --weight:500; --ta:center; --d:flex; --ai:center; --g:1rem; --ff:'Archivo', 'Vazirmatn', sans-serif"
+			style="--mt:0.5rem; --mb:1rem; --size:1.875rem; --c:var(--color-gray-800); --dark-c:var(--color-gray-100); --weight:500; --ta:center; --d:flex; --ai:center; --g:1rem; --ff:'Archivo', 'Vazirmatn', sans-serif"
 		>
 			<div>
 				<div style="--tt:capitalize; --line-clamp:1" in:fade={{ duration: 200 }}>
@@ -100,7 +100,7 @@
 				<div in:fade={{ duration: 200, delay: 200 }}>
 					{#if models[selectedModelIdx]?.info?.meta?.description ?? null}
 						<div
-							style="--mt:0.125rem; --size:1rem; --weight:400; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4); --line-clamp:3"
+							style="--mt:0.125rem; --size:1rem; --weight:400; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --line-clamp:3"
 	class="markdown"
 						>
 							{@html marked.parse(
@@ -110,7 +110,7 @@
 							)}
 						</div>
 						{#if models[selectedModelIdx]?.info?.meta?.user}
-							<div style="--mt:0.125rem; --size:0.875rem; --weight:400; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b)">
+							<div style="--mt:0.125rem; --size:0.875rem; --weight:400; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 								By
 								{#if models[selectedModelIdx]?.info?.meta?.user.community}
 									<a href="https://sage.is/m/{models[selectedModelIdx]?.info?.meta?.user.username}"
@@ -124,7 +124,7 @@
 							</div>
 						{/if}
 					{:else}
-						<div style="--weight:500; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b); --line-clamp:1">
+						<div style="--weight:500; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --line-clamp:1">
 							{$i18n.t('How can I help you today?')}
 						</div>
 					{/if}

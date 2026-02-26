@@ -11,7 +11,7 @@
 </script>
 
 <div
-	style="--px:1rem; --py:0.75rem; --shadow:3; --radius:0.75rem; --dark-bgc:#000; --bgc:#fff; --b:1px solid; --dark-bc:var(--color-gray-900, #171717); --w:15rem; --h:5rem"
+	style="--px:1rem; --py:0.75rem; --shadow:3; --radius:0.75rem; --dark-bgc:#000; --bgc:#fff; --b:1px solid; --dark-bc:var(--color-gray-900); --w:15rem; --h:5rem"
 	class="group"
 >
 	<Tooltip
@@ -35,7 +35,7 @@
 					{#if data?.message?.error}
 						<div style="--c:#ef4444; --line-clamp:2; --size:0.75rem; --mt:0.125rem">{data.message.error.content}</div>
 					{:else}
-						<div style="--c:var(--color-gray-500, #9b9b9b); --line-clamp:2; --size:0.75rem; --mt:0.125rem">{data.message.content}</div>
+						<div style="--c:var(--color-gray-500); --line-clamp:2; --size:0.75rem; --mt:0.125rem">{data.message.content}</div>
 					{/if}
 				</div>
 			</div>
@@ -72,12 +72,12 @@
 							{data.message.error.content}
 						</div>
 					{:else}
-						<div style="--c:var(--color-gray-500, #9b9b9b); --line-clamp:2; --size:0.75rem; --mt:0.125rem">{data.message.content}</div>
+						<div style="--c:var(--color-gray-500); --line-clamp:2; --size:0.75rem; --mt:0.125rem">{data.message.content}</div>
 					{/if}
 				</div>
 			</div>
 		{/if}
 	</Tooltip>
-	<Handle type="target" position={Position.Top} style="--w:0.5rem; --radius:9999px; --dark-bgc:var(--color-gray-900, #171717)" />
-	<Handle type="source" position={Position.Bottom} style="--w:0.5rem; --radius:9999px; --dark-bgc:var(--color-gray-900, #171717)" />
+	<Handle type="target" position={Position.Top} style="--w:0.5rem; --radius:9999px; --dark-bgc:var(--color-gray-900)" />
+	<Handle type="source" position={Position.Bottom} style="--w:0.5rem; --radius:9999px; --dark-bgc:var(--color-gray-900)" />
 </div>

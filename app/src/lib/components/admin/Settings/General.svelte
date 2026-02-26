@@ -125,7 +125,7 @@
 				<div style="--mb:0.875rem">
 					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('General')}</div>
 
-					<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem" />
+					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 					<div style="--mb:0.625rem">
 						<div style="--mb:0.25rem; --size:0.75rem; --weight:500; --d:flex; --g:0.5rem; --ai:center">
@@ -134,7 +134,7 @@
 							</div>
 						</div>
 						<div style="--d:flex; --w:100%; --jc:space-between; --ai:center">
-							<div style="--d:flex; --fd:column; --size:0.75rem; --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-200, #e3e3e3)">
+							<div style="--d:flex; --fd:column; --size:0.75rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-200)">
 								<div style="--d:flex; --g:0.25rem">
 									<Tooltip content={WEBUI_BUILD_HASH}>
 										v{WEBUI_VERSION}
@@ -155,7 +155,7 @@
 								</div>
 
 								<button
-									style="--td:underline; --d:flex; --ai:center; --g:0.25rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-500, #9b9b9b)"
+									style="--td:underline; --d:flex; --ai:center; --g:0.25rem; --size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500)"
 									type="button"
 									on:click={() => {
 										showChangelog.set(true);
@@ -167,7 +167,7 @@
 
 							{#if $config?.features?.enable_version_update_check}
 								<button
-									style="--size:0.75rem; --px:0.75rem; --py:0.375rem; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --weight:500"
+									style="--size:0.75rem; --px:0.75rem; --py:0.375rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --weight:500"
 									type="button"
 									on:click={() => {
 										checkForVersionUpdates();
@@ -185,7 +185,7 @@
 								<div class="">
 									{$i18n.t('Help')}
 								</div>
-								<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">
+								<div style="--size:0.75rem; --c:var(--color-gray-500)">
 									{$i18n.t('Discover how to use Sage.is AI and seek support from the community.')}
 								</div>
 							</div>
@@ -243,7 +243,7 @@
 								</div>
 
 								{#if $config?.license_metadata}
-									<a href="https://docs.sage.is/license" target="_blank" style="--c:var(--color-gray-500, #9b9b9b); --mt:0.125rem">
+									<a href="https://docs.sage.is/license" target="_blank" style="--c:var(--color-gray-500); --mt:0.125rem">
 										<span style="--tt:capitalize; --c:#000; --dark-c:#fff"
 											>{$config?.license_metadata?.type}
 											license</span
@@ -268,7 +268,7 @@
 										href="https://docs.sage.is/license"
 										target="_blank"
 									>
-										<span style="--c:var(--color-gray-500, #9b9b9b)">
+										<span style="--c:var(--color-gray-500)">
 											{$i18n.t(
 												'Sage.is AI runs on open source. Always will. No lock-in. No tricks. Full AGPL freedom. Enterprise teams please stand with us. Sponsor the future of Honest and Real Open AI.'
 											)}
@@ -278,7 +278,7 @@
 							</div>
 
 							<!-- <button
-								style="--size:0.75rem; --px:0.75rem; --py:0.375rem; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --weight:500"
+								style="--size:0.75rem; --px:0.75rem; --py:0.375rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --weight:500"
 	class="flex-shrink-0"
 							>
 								{$i18n.t('Activate')}
@@ -290,13 +290,13 @@
 				<div style="--mb:0.75rem">
 					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('Authentication')}</div>
 
-					<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem" />
+					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 					<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
 						<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Default User Role')}</div>
 						<div style="--d:flex; --ai:center; --pos:relative">
 							<select
-								style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
+								style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
 								bind:value={adminConfig.DEFAULT_USER_ROLE}
 								placeholder="Select a role"
 							>
@@ -369,18 +369,18 @@
 								</div>
 
 								<input
-									style="--w:100%; --mt:0.25rem; --radius:0.5rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --bgc:transparent; --oe:none"
+									style="--w:100%; --mt:0.25rem; --radius:0.5rem; --size:0.875rem; --dark-c:var(--color-gray-300); --bgc:transparent; --oe:none"
 									type="text"
 									placeholder={`e.g.) /api/v1/messages, /api/v1/channels`}
 									bind:value={adminConfig.API_KEY_ALLOWED_ENDPOINTS}
 								/>
 
-								<div style="--mt:0.5rem; --size:0.75rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b)">
+								<div style="--mt:0.5rem; --size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 									<!-- https://docs.sage.is/getting-started/advanced-topics/api-endpoints -->
 									<a
 										href="https://docs.sage.is/getting-started/api-endpoints"
 										target="_blank"
-										style="--c:var(--color-gray-300, #cdcdcd); --weight:500; --td:underline"
+										style="--c:var(--color-gray-300); --weight:500; --td:underline"
 									>
 										{$i18n.t('To learn more about available endpoints, visit our documentation.')}
 									</a>
@@ -396,16 +396,16 @@
 
 						<div style="--d:flex; --mt:0.5rem; --g:0.5rem">
 							<input
-								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 								type="text"
 								placeholder={`e.g.) "30m","1h", "10d". `}
 								bind:value={adminConfig.JWT_EXPIRES_IN}
 							/>
 						</div>
 
-						<div style="--mt:0.5rem; --size:0.75rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b)">
+						<div style="--mt:0.5rem; --size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 							{$i18n.t('Valid time units:')}
-							<span style="--c:var(--color-gray-300, #cdcdcd); --weight:500"
+							<span style="--c:var(--color-gray-300); --weight:500"
 								>{$i18n.t("'s', 'm', 'h', 'd', 'w' or '-1' for no expiration.")}</span
 							>
 						</div>
@@ -566,9 +566,9 @@
 											/>
 										</div>
 									</div>
-									<div style="--size:0.75rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b)">
+									<div style="--size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 										<a
-											style="--c:var(--color-gray-300, #cdcdcd); --weight:500; --td:underline"
+											style="--c:var(--color-gray-300); --weight:500; --td:underline"
 											href="https://ldap.com/ldap-filters/"
 											target="_blank"
 										>
@@ -629,7 +629,7 @@
 				<div style="--mb:0.75rem">
 					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('Features')}</div>
 
-					<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem" />
+					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 					<div style="--mb:0.625rem; --d:flex; --w:100%; --ai:center; --jc:space-between; --pr:0.5rem">
 						<div style="--as:center; --size:0.75rem; --weight:500">
@@ -686,14 +686,14 @@
 
 						<div style="--d:flex; --mt:0.5rem; --g:0.5rem">
 							<input
-								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 								type="text"
 								placeholder={`e.g.) "http://localhost:3000"`}
 								bind:value={adminConfig.WEBUI_URL}
 							/>
 						</div>
 
-						<div style="--mt:0.5rem; --size:0.75rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b)">
+						<div style="--mt:0.5rem; --size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 							{$i18n.t(
 								'Enter the public URL of your WebUI. This URL will be used to generate links in the notifications.'
 							)}
@@ -707,7 +707,7 @@
 
 						<div style="--d:flex; --mt:0.5rem; --g:0.5rem">
 							<input
-								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 								type="text"
 								placeholder={`https://example.com/webhook`}
 								bind:value={webhookUrl}
@@ -721,7 +721,7 @@
 
 	<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
 		<button
-			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			type="submit"
 		>
 			{$i18n.t('Save')}

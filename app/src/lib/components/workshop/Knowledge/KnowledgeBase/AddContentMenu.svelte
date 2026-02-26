@@ -29,7 +29,7 @@
 >
 	<Tooltip content={$i18n.t('Add Content')}>
 		<button
-			style="--p:0.375rem; --radius:0.75rem; --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
+			style="--p:0.375rem; --radius:0.75rem; --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
 			on:click={(e) => {
 				e.stopPropagation();
 				show = true;
@@ -50,14 +50,14 @@
 
 	<div slot="content">
 		<DropdownMenu.Content
-			style="--w:100%; --maxw:11rem; --radius:0.75rem; --p:0.25rem; --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850, #262626); --dark-c:#fff; --shadow:1"
+			style="--w:100%; --maxw:11rem; --radius:0.75rem; --p:0.25rem; --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:1"
 			sideOffset={4}
 			side="bottom"
 			align="end"
 			transition={flyAndScale}
 		>
 			<DropdownMenu.Item
-				style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --cur:pointer; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.375rem"
+				style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.375rem"
 				on:click={() => {
 					dispatch('upload', { type: 'files' });
 				}}
@@ -67,7 +67,7 @@
 			</DropdownMenu.Item>
 
 			<DropdownMenu.Item
-				style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --cur:pointer; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.375rem"
+				style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.375rem"
 				on:click={() => {
 					dispatch('upload', { type: 'directory' });
 				}}
@@ -83,7 +83,7 @@
 				className="w-full"
 			>
 				<DropdownMenu.Item
-					style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --cur:pointer; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.375rem"
+					style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.375rem"
 					on:click={() => {
 						dispatch('sync', { type: 'directory' });
 					}}
@@ -94,7 +94,7 @@
 			</Tooltip>
 
 			<DropdownMenu.Item
-				style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --cur:pointer; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.375rem"
+				style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.375rem"
 				on:click={() => {
 					dispatch('upload', { type: 'text' });
 				}}

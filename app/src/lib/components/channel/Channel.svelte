@@ -282,7 +282,7 @@
 			{/if}
 		{:else if threadId !== null}
 			<PaneResizer
-				style="--pos:relative; --d:flex; --w:3px; --ai:center; --jc:center; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-850, #262626)"
+				style="--pos:relative; --d:flex; --w:3px; --ai:center; --jc:center; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)"
 	class="bg-background group"
 			>
 				<div style="--z:10; --d:flex; --h:1.75rem; --w:1.25rem; --ai:center; --jc:center"

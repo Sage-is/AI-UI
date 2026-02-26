@@ -40,7 +40,7 @@
 					</div>
 
 					<div style="--d:flex; --ai:center; --g:0.25rem">
-						<div style="--size:0.75rem; --w:100%; --c:var(--color-gray-500, #9b9b9b); --bgc:transparent; --line-clamp:1">
+						<div style="--size:0.75rem; --w:100%; --c:var(--color-gray-500); --bgc:transparent; --line-clamp:1">
 							{model?.meta?.description ?? model.id}
 						</div>
 					</div>
@@ -50,7 +50,7 @@
 
 		<div style="--d:flex; --ai:center">
 			<button
-				style="--as:center; --w:fit-content; --size:0.875rem; --p:0.375rem; --dark-c:var(--color-gray-300, #cdcdcd); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.75rem"
+				style="--as:center; --w:fit-content; --size:0.875rem; --p:0.375rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.75rem"
 				type="button"
 				on:click={() => {
 					showModel = true;

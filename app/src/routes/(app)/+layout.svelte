@@ -275,7 +275,7 @@
 {#if $user}
 	<div style="--pos:relative" class="app">
 		<div
-			style="--c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-100, #ececec); --bgc:#fff; --dark-bgc:var(--color-gray-900, #171717); --h:100vh; --maxh:100dvh; --of:auto; --d:flex; --fd:row; --jc:flex-end"
+			style="--c:var(--color-gray-700); --dark-c:var(--color-gray-100); --bgc:#fff; --dark-bgc:var(--color-gray-900); --h:100vh; --maxh:100dvh; --of:auto; --d:flex; --fd:row; --jc:flex-end"
 		>
 			{#if !['user', 'admin', 'facilitator', 'temporary'].includes($user?.role)}
 				<AccountPending />
@@ -294,7 +294,7 @@
 									</div>
 
 									<div
-										style="--mt:1rem; --ta:center; --size:0.875rem; --dark-c:var(--color-gray-200, #e3e3e3); --w:100%"
+										style="--mt:1rem; --ta:center; --size:0.875rem; --dark-c:var(--color-gray-200); --w:100%"
 									>
 										{$i18n.t(
 											"Saving chat logs directly to your browser's storage is no longer supported. Please take a moment to download and delete your chat logs by clicking the button below. Don't worry, you can easily re-import your chat logs to the backend through"
@@ -311,7 +311,7 @@
 										class="group"
 									>
 										<button
-											style="--pos:relative; --z:20; --d:flex; --px:1.25rem; --py:0.5rem; --radius:9999px; --bgc:#fff; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bs:none; --hvr-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem"
+											style="--pos:relative; --z:20; --d:flex; --px:1.25rem; --py:0.5rem; --radius:9999px; --bgc:#fff; --b:1px solid; --bc:var(--color-gray-100); --dark-bs:none; --hvr-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem"
 											on:click={async () => {
 												let blob = new Blob([JSON.stringify(localDBChats)], {
 													type: 'application/json'
@@ -329,7 +329,7 @@
 										</button>
 
 										<button
-											style="--size:0.75rem; --ta:center; --w:100%; --mt:0.5rem; --c:var(--color-gray-400, #b4b4b4); --td:underline"
+											style="--size:0.75rem; --ta:center; --w:100%; --mt:0.5rem; --c:var(--color-gray-400); --td:underline"
 											on:click={async () => {
 												localDBChats = [];
 											}}>{$i18n.t('Close')}</button

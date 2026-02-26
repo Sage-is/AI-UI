@@ -126,7 +126,7 @@
 
 <Modal size="sm" bind:show>
 	<div>
-		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300, #cdcdcd); --px:1.25rem; --pt:1rem; --pb:0.5rem">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.25rem; --pt:1rem; --pb:0.5rem">
 			<div style="--size:1.125rem; --weight:500; --as:center">{$i18n.t('Add User')}</div>
 			<button
 				style="--as:center"
@@ -138,7 +138,7 @@
 			</button>
 		</div>
 
-		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1rem; --pb:0.75rem; --g-md:1rem; --dark-c:var(--color-gray-200, #e3e3e3)">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1rem; --pb:0.75rem; --g-md:1rem; --dark-c:var(--color-gray-200)">
 			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				<form
 					style="--d:flex; --fd:column; --w:100%"
@@ -147,7 +147,7 @@
 					}}
 				>
 					<div
-						style="--d:flex; --mt:-0.5rem; --mb:0.375rem; --g:0.25rem; --ofx:auto; --w:fit-content; --ta:center; --size:0.875rem; --weight:500; --radius:9999px; --bgc:transparent; --dark-c:var(--color-gray-200, #e3e3e3)"
+						style="--d:flex; --mt:-0.5rem; --mb:0.375rem; --g:0.25rem; --ofx:auto; --w:fit-content; --ta:center; --size:0.875rem; --weight:500; --radius:9999px; --bgc:transparent; --dark-c:var(--color-gray-200)"
 	class="scrollbar-none"
 					>
 						<button
@@ -176,7 +176,7 @@
 					<div style="--px:0.25rem">
 						{#if tab === ''}
 							<div style="--d:flex; --fd:column; --w:100%; --mb:0.75rem">
-								<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('Role')}</div>
+								<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Role')}</div>
 
 								<div style="--fx:1 1 0%">
 									<select
@@ -196,7 +196,7 @@
 							</div>
 
 							<div style="--d:flex; --fd:column; --w:100%; --mt:0.25rem">
-								<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('Name')}</div>
+								<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Name')}</div>
 
 								<div style="--fx:1 1 0%">
 									<input
@@ -211,10 +211,10 @@
 								</div>
 							</div>
 
-							<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.625rem; --w:100%" />
+							<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.625rem; --w:100%" />
 
 							<div style="--d:flex; --fd:column; --w:100%">
-								<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('Email')}</div>
+								<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Email')}</div>
 
 								<div style="--fx:1 1 0%">
 									<input
@@ -229,7 +229,7 @@
 							</div>
 
 							<div style="--d:flex; --fd:column; --w:100%; --mt:0.25rem">
-								<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('Password')}</div>
+								<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Password')}</div>
 
 								<div style="--fx:1 1 0%">
 									<input
@@ -254,7 +254,7 @@
 									/>
 
 									<button
-										style="--w:100%; --size:0.875rem; --weight:500; --py:0.75rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100, #ececec); --b:1px solid; --bs:dashed; --dark-bc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-850, #262626); --ta:center; --radius:0.75rem"
+										style="--w:100%; --size:0.875rem; --weight:500; --py:0.75rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100); --b:1px solid; --bs:dashed; --dark-bc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-850); --ta:center; --radius:0.75rem"
 										type="button"
 										on:click={() => {
 											document.getElementById('upload-user-csv-input')?.click();
@@ -268,12 +268,12 @@
 									</button>
 								</div>
 
-								<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">
+								<div style="--size:0.75rem; --c:var(--color-gray-500)">
 									ⓘ {$i18n.t(
 										'Ensure your CSV file includes 4 columns in this order: Name, Email, Password, Role.'
 									)}
 									<a
-										style="--td:underline; --dark-c:var(--color-gray-200, #e3e3e3)"
+										style="--td:underline; --dark-c:var(--color-gray-200)"
 										href="{WEBUI_BASE_URL}/static/user-import.csv"
 									>
 										{$i18n.t('Click here to download user import template file.')}
@@ -285,7 +285,7 @@
 
 					<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
 						<button
-							style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
+							style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
 	class="{loading
 								? ' cursor-not-allowed'
 								: ''}"

@@ -159,7 +159,7 @@
 				<div style="--d:flex; --fd:column">
 					<div style="--as:center; --mt:0.5rem">
 						<button
-							style="--pos:relative; --radius:9999px; --dark-bgc:var(--color-gray-700, #4e4e4e)"
+							style="--pos:relative; --radius:9999px; --dark-bgc:var(--color-gray-700)"
 							type="button"
 							on:click={() => {
 								profileImageInputElement.click();
@@ -172,10 +172,10 @@
 							/>
 
 							<div
-								style="--pos:absolute; --d:flex; --jc:center; --radius:9999px; --bottom:0; --left:0; --right:0; --top:0; --h:100%; --w:100%; --of:hidden; --bgc:var(--color-gray-700, #4e4e4e); --op:0; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:300ms; --ttf:cubic-bezier(0.4, 0, 0.2, 1); --hvr-op:0.5"
+								style="--pos:absolute; --d:flex; --jc:center; --radius:9999px; --bottom:0; --left:0; --right:0; --top:0; --h:100%; --w:100%; --of:hidden; --bgc:var(--color-gray-700); --op:0; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:300ms; --ttf:cubic-bezier(0.4, 0, 0.2, 1); --hvr-op:0.5"
 	class="bg-fixed"
 							>
-								<div style="--my:auto; --c:var(--color-gray-100, #ececec)">
+								<div style="--my:auto; --c:var(--color-gray-100)">
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										viewBox="0 0 20 20"
@@ -197,7 +197,7 @@
 
 					<div>
 						<button
-							style="--size:0.75rem; --ta:center; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-400, #b4b4b4); --radius:9999px; --px:1rem; --py:0.125rem; --bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-850, #262626)"
+							style="--size:0.75rem; --ta:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-400); --radius:9999px; --px:1rem; --py:0.125rem; --bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850)"
 							on:click={async () => {
 								if (canvasPixelTest()) {
 									profileImageUrl = generateInitialsImage(name);
@@ -215,7 +215,7 @@
 						>
 
 						<button
-							style="--size:0.75rem; --ta:center; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-400, #b4b4b4); --radius:9999px; --px:1rem; --py:0.125rem; --bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-850, #262626)"
+							style="--size:0.75rem; --ta:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-400); --radius:9999px; --px:1rem; --py:0.125rem; --bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850)"
 							on:click={async () => {
 								const url = await getGravatarUrl(localStorage.token, $user?.email);
 
@@ -224,7 +224,7 @@
 						>
 
 						<button
-							style="--size:0.75rem; --ta:center; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-400, #b4b4b4); --radius:0.5rem; --px:0.5rem; --py:0.25rem"
+							style="--size:0.75rem; --ta:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-400); --radius:0.5rem; --px:0.5rem; --py:0.25rem"
 							on:click={async () => {
 								profileImageUrl = `${WEBUI_BASE_URL}/static/user.png`;
 							}}>{$i18n.t('Remove')}</button
@@ -239,7 +239,7 @@
 
 					<div style="--fx:1 1 0%">
 						<input
-							style="--w:100%; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --bgc:transparent; --oe:none"
+							style="--w:100%; --size:0.875rem; --dark-c:var(--color-gray-300); --bgc:transparent; --oe:none"
 							type="text"
 							bind:value={name}
 							required
@@ -256,7 +256,7 @@
 
 						<div style="--fx:1 1 0%">
 							<input
-								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 								type="url"
 								placeholder={$i18n.t('Enter your webhook URL')}
 								bind:value={webhookUrl}
@@ -268,7 +268,7 @@
 			{/if}
 		</div>
 
-		<hr style="--bc:var(--color-gray-50, #f9f9f9); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem" />
+		<hr style="--bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 		{#if $user?.role === 'temporary'}
 			<div style="--my:0.5rem; --p:0.75rem; --radius:0.75rem; --bgc:#fefce8; --dark-bgc:rgb(66 32 6 / 0.3); --b:1px solid; --bc:#fde047; --dark-bc:rgb(161 98 7 / 0.5)">
@@ -284,7 +284,7 @@
 			<div style="--d:flex; --jc:space-between; --ai:center; --size:0.875rem; --mb:0.5rem">
 				<div style="--weight:500">{$i18n.t('API keys')}</div>
 				<button
-					style="--size:0.75rem; --weight:500; --c:var(--color-gray-500, #9b9b9b)"
+					style="--size:0.75rem; --weight:500; --c:var(--color-gray-500)"
 					type="button"
 					on:click={() => {
 						showAPIKeys = !showAPIKeys;
@@ -304,7 +304,7 @@
 								<SensitiveInput value={localStorage.token} readOnly={true} />
 
 								<button
-									style="--ml:0.375rem; --px:0.375rem; --py:0.25rem; --hvr-dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
+									style="--ml:0.375rem; --px:0.375rem; --py:0.25rem; --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
 									on:click={() => {
 										copyToClipboard(localStorage.token);
 										JWTTokenCopied = true;
@@ -362,7 +362,7 @@
 									<SensitiveInput value={APIKey} readOnly={true} />
 
 									<button
-										style="--ml:0.375rem; --px:0.375rem; --py:0.25rem; --hvr-dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
+										style="--ml:0.375rem; --px:0.375rem; --py:0.25rem; --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
 										on:click={() => {
 											copyToClipboard(APIKey);
 											APIKeyCopied = true;
@@ -431,7 +431,7 @@
 									</Tooltip>
 								{:else}
 									<button
-										style="--d:flex; --g:0.375rem; --ai:center; --weight:500; --px:0.875rem; --py:0.375rem; --radius:0.5rem; --bgc:rgb(236 236 236 / 0.7); --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+										style="--d:flex; --g:0.375rem; --ai:center; --weight:500; --px:0.875rem; --py:0.375rem; --radius:0.5rem; --bgc:rgb(236 236 236 / 0.7); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 										on:click={() => {
 											createAPIKeyHandler();
 										}}
@@ -451,7 +451,7 @@
 
 	<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
 		<button
-			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			on:click={async () => {
 				const res = await submitHandler();
 

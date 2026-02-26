@@ -843,7 +843,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 		showDeleteConfirm = false;
 	}}
 >
-	<div style="--size:0.875rem; --c:var(--color-gray-500, #9b9b9b)">
+	<div style="--size:0.875rem; --c:var(--color-gray-500)">
 		{$i18n.t('This will delete')} <span style="--weight:600">{note.title}</span>.
 	</div>
 </DeleteConfirmDialog>
@@ -873,7 +873,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 							>
 								<button
 									id="sidebar-toggle-button"
-									style="--cur:pointer; --p:0.375rem; --d:flex; --radius:0.75rem; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+									style="--cur:pointer; --p:0.375rem; --d:flex; --radius:0.75rem; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 									on:click={() => {
 										showSidebar.set(!$showSidebar);
 									}}
@@ -1051,7 +1051,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 							}}
 						>
 							<div
-								style="--d:flex; --g:0.25rem; --ai:center; --size:0.75rem; --weight:500; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-500, #9b9b9b); --w:fit-content"
+								style="--d:flex; --g:0.25rem; --ai:center; --size:0.75rem; --weight:500; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --w:fit-content"
 							>
 								<button style="--d:flex; --ai:center; --g:0.25rem; --w:fit-content; --py:0.25rem; --px:0.375rem; --radius:0.5rem; --minw:fit-content">
 									<Calendar className="size-3.5" strokeWidth="2" />
@@ -1301,7 +1301,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 					>
 						<Tooltip content={$i18n.t('Record')} placement="top">
 							<div
-								style="--cur:pointer; --p:0.625rem; --d:flex; --radius:9999px; --b:1px solid; --bc:var(--color-gray-50, #f9f9f9); --bgc:#fff; --dark-bs:none; --dark-bgc:var(--color-gray-850, #262626); --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --shadow:5"
+								style="--cur:pointer; --p:0.625rem; --d:flex; --radius:9999px; --b:1px solid; --bc:var(--color-gray-50); --bgc:#fff; --dark-bs:none; --dark-bgc:var(--color-gray-850); --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --shadow:5"
 							>
 								<MicSolid className="size-4.5" />
 							</div>
@@ -1309,12 +1309,12 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 					</RecordMenu>
 
 					<div
-						style="--cur:pointer; --d:flex; --g:0.125rem; --radius:9999px; --b:1px solid; --bc:var(--color-gray-50, #f9f9f9); --dark-bc:var(--color-gray-850, #262626); --dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --shadow:5"
+						style="--cur:pointer; --d:flex; --g:0.125rem; --radius:9999px; --b:1px solid; --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --shadow:5"
 					>
 						<Tooltip content={$i18n.t('AI')} placement="top">
 							{#if editing}
 								<button
-									style="--p:0.5rem; --d:flex; --jc:center; --ai:center; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:9999px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --fs:0"
+									style="--p:0.5rem; --d:flex; --jc:center; --ai:center; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:9999px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --fs:0"
 									on:click={() => {
 										stopResponseHandler();
 									}}
@@ -1333,7 +1333,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 									}}
 								>
 									<div
-										style="--cur:pointer; --p:0.625rem; --d:flex; --radius:9999px; --b:1px solid; --bc:var(--color-gray-50, #f9f9f9); --bgc:#fff; --dark-bs:none; --dark-bgc:var(--color-gray-850, #262626); --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --shadow:5"
+										style="--cur:pointer; --p:0.625rem; --d:flex; --radius:9999px; --b:1px solid; --bc:var(--color-gray-50); --bgc:#fff; --dark-bs:none; --dark-bgc:var(--color-gray-850); --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --shadow:5"
 									>
 										<SparklesSolid />
 									</div>

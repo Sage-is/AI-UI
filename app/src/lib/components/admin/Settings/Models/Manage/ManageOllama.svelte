@@ -598,7 +598,7 @@
 					<div style="--d:flex; --w:100%">
 						<div style="--fx:1 1 0%; --mr:0.5rem">
 							<input
-								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 								placeholder={$i18n.t('Enter model tag (e.g. {{modelTag}})', {
 									modelTag: 'mistral:7b'
 								})}
@@ -606,7 +606,7 @@
 							/>
 						</div>
 						<button
-							style="--px:0.625rem; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-200, #e3e3e3); --c:var(--color-gray-800, #333); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --dark-c:var(--color-gray-100, #ececec); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+							style="--px:0.625rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-200); --c:var(--color-gray-800); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:var(--color-gray-100); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							on:click={() => {
 								pullModelHandler();
 							}}
@@ -660,10 +660,10 @@
 						</button>
 					</div>
 
-					<div style="--mt:0.5rem; --mb:0.25rem; --size:0.75rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b)">
+					<div style="--mt:0.5rem; --mb:0.25rem; --size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 						{$i18n.t('To access the available model names for downloading,')}
 						<a
-							style="--c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-300, #cdcdcd); --weight:500; --td:underline"
+							style="--c:var(--color-gray-500); --dark-c:var(--color-gray-300); --weight:500; --td:underline"
 							href="https://ollama.com/library"
 							target="_blank">{$i18n.t('click here.')}</a
 						>
@@ -684,7 +684,7 @@
 										<div style="--d:flex; --fd:row; --jc:space-between; --g:1rem; --pr:0.5rem">
 											<div style="--fx:1 1 0%">
 												<div
-													style="--dark-bgc:var(--color-gray-600, #676767); --bgc:var(--color-gray-500, #9b9b9b); --size:0.75rem; --weight:500; --c:var(--color-gray-100, #ececec); --ta:center; --p:0.125rem; --lh:1; --radius:9999px; width: {Math.max(
+													style="--dark-bgc:var(--color-gray-600); --bgc:var(--color-gray-500); --size:0.75rem; --weight:500; --c:var(--color-gray-100); --ta:center; --p:0.125rem; --lh:1; --radius:9999px; width: {Math.max(
 														15,
 														$MODEL_DOWNLOAD_POOL[model].pullProgress ?? 0
 													)}%"
@@ -695,13 +695,13 @@
 
 											<Tooltip content={$i18n.t('Cancel')}>
 												<button
-													style="--c:var(--color-gray-800, #333); --dark-c:var(--color-gray-100, #ececec)"
+													style="--c:var(--color-gray-800); --dark-c:var(--color-gray-100)"
 													on:click={() => {
 														cancelModelPullHandler(model);
 													}}
 												>
 													<svg
-														style="--w:1rem; --h:1rem; --c:var(--color-gray-800, #333); --dark-c:#fff"
+														style="--w:1rem; --h:1rem; --c:var(--color-gray-800); --dark-c:#fff"
 														aria-hidden="true"
 														xmlns="http://www.w3.org/2000/svg"
 														width="24"
@@ -721,7 +721,7 @@
 											</Tooltip>
 										</div>
 										{#if 'digest' in $MODEL_DOWNLOAD_POOL[model]}
-											<div style="--mt:0.25rem; --size:0.75rem; --dark-c:var(--color-gray-500, #9b9b9b); font-size: 0.5rem;">
+											<div style="--mt:0.25rem; --size:0.75rem; --dark-c:var(--color-gray-500); font-size: 0.5rem;">
 												{$MODEL_DOWNLOAD_POOL[model].digest}
 											</div>
 										{/if}
@@ -736,7 +736,7 @@
 					<div style="--mb:0.5rem; --size:0.875rem; --weight:500">{$i18n.t('Delete a model')}</div>
 					<div style="--d:flex; --w:100%">
 						<div
-							style="--fx:1 1 0%; --mr:0.5rem; --pr:0.375rem; --radius:0.5rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626)"
+							style="--fx:1 1 0%; --mr:0.5rem; --pr:0.375rem; --radius:0.5rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850)"
 						>
 							<select
 								style="--w:100%; --py:0.5rem; --px:1rem; --size:0.875rem; --oe:none; --bgc:transparent"
@@ -747,14 +747,14 @@
 									<option value="" disabled selected>{$i18n.t('Select a model')}</option>
 								{/if}
 								{#each ollamaModels as model}
-									<option value={model.id} style="--bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-700, #4e4e4e)"
+									<option value={model.id} style="--bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-700)"
 										>{model.name + ' (' + (model.size / 1024 ** 3).toFixed(1) + ' GB)'}</option
 									>
 								{/each}
 							</select>
 						</div>
 						<button
-							style="--px:0.625rem; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-200, #e3e3e3); --c:var(--color-gray-800, #333); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --dark-c:var(--color-gray-100, #ececec); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+							style="--px:0.625rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-200); --c:var(--color-gray-800); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:var(--color-gray-100); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							on:click={() => {
 								showModelDeleteConfirm = true;
 							}}
@@ -780,7 +780,7 @@
 					<div style="--d:flex; --w:100%">
 						<div style="--fx:1 1 0%; --mr:0.5rem; --d:flex; --fd:column; --g:0.5rem">
 							<input
-								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 								placeholder={$i18n.t('Enter model tag (e.g. {{modelTag}})', {
 									modelTag: 'my-modelfile'
 								})}
@@ -790,7 +790,7 @@
 
 							<textarea
 								bind:value={createModelObject}
-								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-850, #262626); --oe:none; resize:none"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --oe:none; resize:none"
 	class="scrollbar-hidden"
 								rows="6"
 								placeholder={`e.g. {"model": "my-modelfile", "from": "ollama:7b"})`}
@@ -800,7 +800,7 @@
 
 						<div style="--d:flex; --as:flex-start">
 							<button
-								style="--px:0.625rem; --py:0.625rem; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-200, #e3e3e3); --c:var(--color-gray-800, #333); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --dark-c:var(--color-gray-100, #ececec); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+								style="--px:0.625rem; --py:0.625rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-200); --c:var(--color-gray-800); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:var(--color-gray-100); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="disabled:cursor-not-allowed"
 								on:click={() => {
 									createModelHandler();
@@ -831,14 +831,14 @@
 								<div style="--d:flex; --fd:row; --jc:space-between; --g:1rem; --pr:0.5rem">
 									<div style="--fx:1 1 0%">
 										<div
-											style="--dark-bgc:var(--color-gray-600, #676767); --bgc:var(--color-gray-500, #9b9b9b); --size:0.75rem; --weight:500; --c:var(--color-gray-100, #ececec); --ta:center; --p:0.125rem; --lh:1; --radius:9999px; width: {Math.max(15, createModelPullProgress ?? 0)}%"
+											style="--dark-bgc:var(--color-gray-600); --bgc:var(--color-gray-500); --size:0.75rem; --weight:500; --c:var(--color-gray-100); --ta:center; --p:0.125rem; --lh:1; --radius:9999px; width: {Math.max(15, createModelPullProgress ?? 0)}%"
 										>
 											{createModelPullProgress ?? 0}%
 										</div>
 									</div>
 								</div>
 								{#if createModelDigest}
-									<div style="--mt:0.25rem; --size:0.75rem; --dark-c:var(--color-gray-500, #9b9b9b); font-size: 0.5rem;">
+									<div style="--mt:0.25rem; --size:0.75rem; --dark-c:var(--color-gray-500); font-size: 0.5rem;">
 										{createModelDigest}
 									</div>
 								{/if}
@@ -851,7 +851,7 @@
 					<div style="--d:flex; --jc:space-between; --ai:center; --size:0.75rem">
 						<div style="--size:0.875rem; --weight:500">{$i18n.t('Experimental')}</div>
 						<button
-							style="--size:0.75rem; --weight:500; --c:var(--color-gray-500, #9b9b9b)"
+							style="--size:0.75rem; --weight:500; --c:var(--color-gray-500)"
 							type="button"
 							on:click={() => {
 								showExperimentalOllama = !showExperimentalOllama;
@@ -908,7 +908,7 @@
 
 										<button
 											type="button"
-											style="--w:100%; --radius:0.5rem; --ta:left; --py:0.5rem; --px:1rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626)"
+											style="--w:100%; --radius:0.5rem; --ta:left; --py:0.5rem; --px:1rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850)"
 											on:click={() => {
 												modelUploadInputElement.click();
 											}}
@@ -924,7 +924,7 @@
 									<div style="--fx:1 1 0%"
 	class="{modelFileUrl !== '' ? 'mr-2' : ''}">
 										<input
-											style="--w:100%; --radius:0.5rem; --ta:left; --py:0.5rem; --px:1rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
+											style="--w:100%; --radius:0.5rem; --ta:left; --py:0.5rem; --px:1rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 	class="{modelFileUrl !==
 											''
 												? 'mr-2'
@@ -940,7 +940,7 @@
 
 							{#if (modelUploadMode === 'file' && modelInputFile && modelInputFile.length > 0) || (modelUploadMode === 'url' && modelFileUrl !== '')}
 								<button
-									style="--px:0.625rem; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-200, #e3e3e3); --c:var(--color-gray-800, #333); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --dark-c:var(--color-gray-100, #ececec); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+									style="--px:0.625rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-200); --c:var(--color-gray-800); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:var(--color-gray-100); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="disabled:cursor-not-allowed"
 									type="submit"
 									disabled={modelTransferring}
@@ -1002,16 +1002,16 @@
 									</div>
 									<textarea
 										bind:value={modelFileContent}
-										style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-850, #262626); --oe:none; resize:none"
+										style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --oe:none; resize:none"
 										rows="6"
 									/>
 								</div>
 							</div>
 						{/if}
-						<div style="--mt:0.25rem; --size:0.75rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b)">
+						<div style="--mt:0.25rem; --size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 							{$i18n.t('To access the GGUF models available for downloading,')}
 							<a
-								style="--c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-300, #cdcdcd); --weight:500; --td:underline"
+								style="--c:var(--color-gray-500); --dark-c:var(--color-gray-300); --weight:500; --td:underline"
 								href="https://huggingface.co/models?search=gguf"
 								target="_blank">{$i18n.t('click here.')}</a
 							>
@@ -1021,14 +1021,14 @@
 							<div style="--mt:0.5rem">
 								<div style="--mb:0.5rem; --size:0.75rem">{$i18n.t('Upload Progress')}</div>
 
-								<div style="--w:100%; --radius:9999px; --dark-bgc:var(--color-gray-800, #333)">
+								<div style="--w:100%; --radius:9999px; --dark-bgc:var(--color-gray-800)">
 									<div
-										style="--dark-bgc:var(--color-gray-600, #676767); --bgc:var(--color-gray-500, #9b9b9b); --size:0.75rem; --weight:500; --c:var(--color-gray-100, #ececec); --ta:center; --p:0.125rem; --lh:1; --radius:9999px; width: 100%"
+										style="--dark-bgc:var(--color-gray-600); --bgc:var(--color-gray-500); --size:0.75rem; --weight:500; --c:var(--color-gray-100); --ta:center; --p:0.125rem; --lh:1; --radius:9999px; width: 100%"
 									>
 										{uploadMessage}
 									</div>
 								</div>
-								<div style="--mt:0.25rem; --size:0.75rem; --dark-c:var(--color-gray-500, #9b9b9b); font-size: 0.5rem;">
+								<div style="--mt:0.25rem; --size:0.75rem; --dark-c:var(--color-gray-500); font-size: 0.5rem;">
 									{modelFileDigest}
 								</div>
 							</div>
@@ -1036,14 +1036,14 @@
 							<div style="--mt:0.5rem">
 								<div style="--mb:0.5rem; --size:0.75rem">{$i18n.t('Upload Progress')}</div>
 
-								<div style="--w:100%; --radius:9999px; --dark-bgc:var(--color-gray-800, #333)">
+								<div style="--w:100%; --radius:9999px; --dark-bgc:var(--color-gray-800)">
 									<div
-										style="--dark-bgc:var(--color-gray-600, #676767); --bgc:var(--color-gray-500, #9b9b9b); --size:0.75rem; --weight:500; --c:var(--color-gray-100, #ececec); --ta:center; --p:0.125rem; --lh:1; --radius:9999px; width: {Math.max(15, uploadProgress ?? 0)}%"
+										style="--dark-bgc:var(--color-gray-600); --bgc:var(--color-gray-500); --size:0.75rem; --weight:500; --c:var(--color-gray-100); --ta:center; --p:0.125rem; --lh:1; --radius:9999px; width: {Math.max(15, uploadProgress ?? 0)}%"
 									>
 										{uploadProgress ?? 0}%
 									</div>
 								</div>
-								<div style="--mt:0.25rem; --size:0.75rem; --dark-c:var(--color-gray-500, #9b9b9b); font-size: 0.5rem;">
+								<div style="--mt:0.25rem; --size:0.75rem; --dark-c:var(--color-gray-500); font-size: 0.5rem;">
 									{modelFileDigest}
 								</div>
 							</div>

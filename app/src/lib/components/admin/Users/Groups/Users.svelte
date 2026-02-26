@@ -90,7 +90,7 @@
 					</div>
 				{/each}
 			{:else}
-				<div style="--c:var(--color-gray-500, #9b9b9b); --size:0.75rem; --ta:center; --py:0.5rem; --px:2.5rem">
+				<div style="--c:var(--color-gray-500); --size:0.75rem; --ta:center; --py:0.5rem; --px:2.5rem">
 					{$i18n.t('No users were found.')}
 				</div>
 			{/if}

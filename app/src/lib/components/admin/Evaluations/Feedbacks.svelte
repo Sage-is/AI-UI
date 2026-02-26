@@ -172,16 +172,16 @@
 	<div style="--d:flex; --as-md:center; --size:1.125rem; --weight:500; --px:0.125rem">
 		{$i18n.t('Feedback History')}
 
-		<div style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-850, #262626)" />
+		<div style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)" />
 
-		<span style="--size:1.125rem; --weight:500; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-300, #cdcdcd)">{feedbacks.length}</span>
+		<span style="--size:1.125rem; --weight:500; --c:var(--color-gray-500); --dark-c:var(--color-gray-300)">{feedbacks.length}</span>
 	</div>
 
 	{#if feedbacks.length > 0}
 		<div>
 			<Tooltip content={$i18n.t('Export')}>
 				<button
-					style="--p:0.5rem; --radius:0.75rem; --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-900, #171717); --hvr-dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
+					style="--p:0.5rem; --radius:0.75rem; --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
 					on:click={() => {
 						exportHandler();
 					}}
@@ -198,15 +198,15 @@
 	class="scrollbar-hidden"
 >
 	{#if (feedbacks ?? []).length === 0}
-		<div style="--ta:center; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4); --py:0.25rem">
+		<div style="--ta:center; --size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --py:0.25rem">
 			{$i18n.t('No feedbacks found')}
 		</div>
 	{:else}
 		<table
-			style="--w:100%; --size:0.875rem; --ta:left; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4); table-layout:auto; --maxw:100%; --radius:0.125rem"
+			style="--w:100%; --size:0.875rem; --ta:left; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); table-layout:auto; --maxw:100%; --radius:0.125rem"
 		>
 			<thead
-				style="--size:0.75rem; --c:var(--color-gray-700, #4e4e4e); --tt:uppercase; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-850, #262626); --dark-c:var(--color-gray-400, #b4b4b4); --translatey:-0.125rem"
+				style="--size:0.75rem; --c:var(--color-gray-700); --tt:uppercase; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-400); --translatey:-0.125rem"
 			>
 				<tr class="">
 					<th
@@ -307,7 +307,7 @@
 			<tbody style="--d:flex;--fd:column">
 				{#each paginatedFeedbacks as feedback (feedback.id)}
 					<tr
-						style="--bgc:#fff; --dark-bgc:var(--color-gray-900, #171717); --dark-bc:var(--color-gray-850, #262626); --size:0.75rem; --cur:pointer; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:rgb(38 38 38 / 0.5); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+						style="--bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-bc:var(--color-gray-850); --size:0.75rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:rgb(38 38 38 / 0.5); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={() => openFeedbackModal(feedback)}
 					>
 						<td style="--py:0.125rem; --ta:right; --weight:600">
@@ -328,12 +328,12 @@
 							<div style="--d:flex; --fd:column; --ai:flex-start; --g:0.125rem; --h:100%">
 								<div style="--d:flex; --fd:column; --h:100%">
 									{#if feedback.data?.sibling_model_ids}
-										<div style="--weight:600; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-400, #b4b4b4); --fx:1 1 0%">
+										<div style="--weight:600; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); --fx:1 1 0%">
 											{feedback.data?.model_id}
 										</div>
 
 										<Tooltip content={feedback.data.sibling_model_ids.join(', ')}>
-											<div style="--size:0.65rem; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-400, #b4b4b4); --line-clamp:1">
+											<div style="--size:0.65rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); --line-clamp:1">
 												{#if feedback.data.sibling_model_ids.length > 2}
 													<!-- {$i18n.t('and {{COUNT}} more')} -->
 													{feedback.data.sibling_model_ids.slice(0, 2).join(', ')}, {$i18n.t(
@@ -347,7 +347,7 @@
 										</Tooltip>
 									{:else}
 										<div
-											style="--size:0.875rem; --weight:500; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-400, #b4b4b4); --fx:1 1 0%; --py:0.375rem"
+											style="--size:0.875rem; --weight:500; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); --fx:1 1 0%; --py:0.375rem"
 										>
 											{feedback.data?.model_id}
 										</div>
@@ -355,7 +355,7 @@
 								</div>
 							</div>
 						</td>
-						<td style="--px:0.75rem; --py:0.25rem; --ta:right; --weight:500; --c:var(--color-gray-900, #171717); --dark-c:#fff; --w:max-content">
+						<td style="--px:0.75rem; --py:0.25rem; --ta:right; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --w:max-content">
 							<div style="--d:flex; --jc:flex-end">
 								{#if feedback.data.rating.toString() === '1'}
 									<Badge type="info" content={$i18n.t('Won')} />
@@ -378,7 +378,7 @@
 								}}
 							>
 								<button
-									style="--as:center; --w:fit-content; --size:0.875rem; --p:0.375rem; --dark-c:var(--color-gray-300, #cdcdcd); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.75rem"
+									style="--as:center; --w:fit-content; --size:0.875rem; --p:0.375rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.75rem"
 								>
 									<EllipsisHorizontal />
 								</button>
@@ -393,7 +393,7 @@
 
 {#if feedbacks.length > 0}
 	<div style="--d:flex; --fd:column; --jc:flex-end; --w:100%; --ta:right; --g:0.25rem">
-		<div style="--line-clamp:1; --c:var(--color-gray-500, #9b9b9b); --size:0.75rem">
+		<div style="--line-clamp:1; --c:var(--color-gray-500); --size:0.75rem">
 			{$i18n.t('Help us create the best community leaderboard by sharing your feedback history!')}
 		</div>
 
@@ -404,7 +404,7 @@
 				)}
 			>
 				<button
-					style="--d:flex; --size:0.75rem; --ai:center; --px:0.75rem; --py:0.375rem; --radius:0.75rem; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --dark-c:var(--color-gray-200, #e3e3e3); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--d:flex; --size:0.75rem; --ai:center; --px:0.75rem; --py:0.375rem; --radius:0.75rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={async () => {
 						shareHandler();
 					}}

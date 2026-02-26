@@ -12,7 +12,7 @@
 </script>
 
 <button
-	style="outline-style:solid; outline-offset:-1px; outline-color:1.5px; outline-color:var(--color-gray-200, #e3e3e3); outline-color:var(--color-gray-600, #676767); --c:#fff; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.125rem; --d:inline-block; --w:0.875rem; --h:0.875rem; --pos:relative"
+	style="outline-style:solid; outline-offset:-1px; outline-color:1.5px; outline-color:var(--color-gray-200); outline-color:var(--color-gray-600); --c:#fff; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.125rem; --d:inline-block; --w:0.875rem; --h:0.875rem; --pos:relative"
 	class="{state !==
 	'unchecked'
 		? 'bg-black outline-black '
@@ -57,7 +57,7 @@
 			</svg>
 		{:else if indeterminate}
 			<svg
-				style="--w:0.75rem; --h:0.875rem; --c:var(--color-gray-800, #333); --dark-c:#fff"
+				style="--w:0.75rem; --h:0.875rem; --c:var(--color-gray-800); --dark-c:#fff"
 				aria-hidden="true"
 				xmlns="http://www.w3.org/2000/svg"
 				fill="none"

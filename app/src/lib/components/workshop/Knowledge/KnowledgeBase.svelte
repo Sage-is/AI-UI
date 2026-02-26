@@ -621,7 +621,7 @@
 			<div style="--m:auto; --pt:16rem; --d:flex; --fd:column; --jc:center">
 				<div style="--maxw:28rem">
 					<AddFilesPlaceholder>
-						<div style="--mt:0.5rem; --ta:center; --size:0.875rem; --dark-c:var(--color-gray-200, #e3e3e3); --w:100%">
+						<div style="--mt:0.5rem; --ta:center; --size:0.875rem; --dark-c:var(--color-gray-200); --w:100%">
 							Drop any files here to add to my documents
 						</div>
 					</AddFilesPlaceholder>
@@ -703,7 +703,7 @@
 
 						<div style="--as:center; --fs:0">
 							<button
-								style="--bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --c:#000; --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --px:0.5rem; --py:0.25rem; --radius:9999px; --d:flex; --g:0.25rem; --ai:center"
+								style="--bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --c:#000; --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --px:0.5rem; --py:0.25rem; --radius:9999px; --d:flex; --g:0.25rem; --ai:center"
 								type="button"
 								on:click={() => {
 									showAccessControlModal = true;
@@ -721,7 +721,7 @@
 					<div style="--d:flex; --w:100%; --px:0.25rem">
 						<input
 							type="text"
-							style="--ta:left; --size:0.75rem; --w:100%; --c:var(--color-gray-500, #9b9b9b); --bgc:transparent; --oe:none"
+							style="--ta:left; --size:0.75rem; --w:100%; --c:var(--color-gray-500); --bgc:transparent; --oe:none"
 							bind:value={knowledge.description}
 							placeholder="Knowledge Description"
 							on:input={() => {
@@ -742,7 +742,7 @@
 								{#if !showSidepanel}
 									<div style="--translatex:-0.5rem">
 										<button
-											style="--w:100%; --ta:left; --size:0.875rem; --p:0.375rem; --radius:0.5rem; --dark-c:var(--color-gray-300, #cdcdcd); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:var(--color-gray-850, #262626)"
+											style="--w:100%; --ta:left; --size:0.875rem; --p:0.375rem; --radius:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:var(--color-gray-850)"
 											on:click={() => {
 												pane.expand();
 											}}
@@ -754,7 +754,7 @@
 
 								<div style="--fx:1 1 0%; --size:1.25rem; --weight:500">
 									<a
-										style="--hvr-c:var(--color-gray-500, #9b9b9b); --hvr-dark-c:var(--color-gray-100, #ececec); --hvr-td:underline; --fg:1; --line-clamp:1"
+										style="--hvr-c:var(--color-gray-500); --hvr-dark-c:var(--color-gray-100); --hvr-td:underline; --fg:1; --line-clamp:1"
 										href={selectedFile.id ? `/api/v1/files/${selectedFile.id}/content` : '#'}
 										target="_blank"
 									>
@@ -764,7 +764,7 @@
 
 								<div>
 									<button
-										style="--as:center; --w:fit-content; --size:0.875rem; --py:0.25rem; --px:0.625rem; --dark-c:var(--color-gray-300, #cdcdcd); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem"
+										style="--as:center; --w:fit-content; --size:0.875rem; --py:0.25rem; --px:0.625rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem"
 										on:click={() => {
 											updateFileContentHandler();
 										}}
@@ -790,7 +790,7 @@
 						</div>
 					{:else}
 						<div style="--h:100%; --d:flex; --w:100%">
-							<div style="--m:auto; --size:0.75rem; --ta:center; --c:var(--color-gray-200, #e3e3e3); --dark-c:var(--color-gray-700, #4e4e4e)">
+							<div style="--m:auto; --size:0.75rem; --ta:center; --c:var(--color-gray-200); --dark-c:var(--color-gray-700)">
 								{$i18n.t('Drag and drop a file to upload or select a file to view')}
 							</div>
 						</div>
@@ -809,7 +809,7 @@
 							<div style="--fs:0; --mt:0.25rem; --mb:0.5rem; --d:flex; --ai:center">
 								<div style="--mr:0.5rem">
 									<button
-										style="--w:100%; --ta:left; --size:0.875rem; --p:0.375rem; --radius:0.5rem; --dark-c:var(--color-gray-300, #cdcdcd); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:var(--color-gray-850, #262626)"
+										style="--w:100%; --ta:left; --size:0.875rem; --p:0.375rem; --radius:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:var(--color-gray-850)"
 										on:click={() => {
 											selectedFileId = null;
 										}}
@@ -823,7 +823,7 @@
 
 								<div>
 									<button
-										style="--as:center; --w:fit-content; --size:0.875rem; --py:0.25rem; --px:0.625rem; --dark-c:var(--color-gray-300, #cdcdcd); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem"
+										style="--as:center; --w:fit-content; --size:0.875rem; --py:0.25rem; --px:0.625rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem"
 										on:click={() => {
 											updateFileContentHandler();
 										}}
@@ -852,7 +852,7 @@
 			{/if}
 
 			<div
-				style="--d:flex; --py:0.5rem; --radius:1rem; --b:1px solid; --bc:var(--color-gray-50, #f9f9f9); --h:100%; --dark-bc:var(--color-gray-850, #262626)"
+				style="--d:flex; --py:0.5rem; --radius:1rem; --b:1px solid; --bc:var(--color-gray-50); --h:100%; --dark-bc:var(--color-gray-850)"
 	class="{largeScreen ? 'shrink-0 w-72 max-w-72' : 'flex-1'}"
 			>
 				<div style="--d:flex; --fd:column; --w:100%; --g:0.5rem; --radius:0.5rem; --h:100%">
@@ -909,7 +909,7 @@
 								/>
 							</div>
 						{:else}
-							<div style="--my:0.75rem; --d:flex; --fd:column; --jc:center; --ta:center; --c:var(--color-gray-500, #9b9b9b); --size:0.75rem">
+							<div style="--my:0.75rem; --d:flex; --fd:column; --jc:center; --ta:center; --c:var(--color-gray-500); --size:0.75rem">
 								<div>
 									{$i18n.t('No content found')}
 								</div>

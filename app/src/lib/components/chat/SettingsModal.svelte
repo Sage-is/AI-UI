@@ -538,8 +538,8 @@
 </script>
 
 <Modal size="lg" bind:show>
-	<div style="--c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-100, #ececec)">
-		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300, #cdcdcd); --px:1.25rem; --pt:1rem; --pb:0.25rem">
+	<div style="--c:var(--color-gray-700); --dark-c:var(--color-gray-100)">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.25rem; --pt:1rem; --pb:0.25rem">
 			<div style="--size:1.125rem; --weight:500; --as:center">{$i18n.t('Settings')}</div>
 			<button
 				aria-label={$i18n.t('Close settings modal')}
@@ -556,7 +556,7 @@
 			<div
 				role="tablist"
 				id="settings-tabs-container"
-				style="--d:flex; --fd:row; --ofx:auto; --g:0.625rem; --g-md:0.25rem; --fd-md:column; --fx:1 1 0%; --fx-md:none; --w-md:10rem; --minh-md:32rem; --maxh-md:32rem; --dark-c:var(--color-gray-200, #e3e3e3); --size:0.875rem; --weight:500; --ta:left; --mb:0.25rem; --mb-md:0; --translatey:-0.25rem"
+				style="--d:flex; --fd:row; --ofx:auto; --g:0.625rem; --g-md:0.25rem; --fd-md:column; --fx:1 1 0%; --fx-md:none; --w-md:10rem; --minh-md:32rem; --maxh-md:32rem; --dark-c:var(--color-gray-200); --size:0.875rem; --weight:500; --ta:left; --mb:0.25rem; --mb-md:0; --translatey:-0.25rem"
 	class="tabs"
 			>
 				<div style="--d:none; --d-md:flex; --w:100%; --radius:0.75rem; --mb:-0.25rem; --px:0.125rem; --g:0.5rem" id="settings-search">
@@ -585,11 +585,11 @@
 								aria-selected={selectedTab === 'general'}
 								style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab === 'general'
 										? ($settings?.highContrastMode ?? false)
-											? '--bgc:var(--color-gray-200, #e3e3e3); --dark-bgc:var(--color-gray-800, #333)'
+											? '--bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800)'
 											: ''
 										: ($settings?.highContrastMode ?? false)
-											? '--hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333)'
-											: '--c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-600, #676767); --hvr-c:var(--color-gray-700, #4e4e4e); --hvr-dark-c:#fff'}"
+											? '--hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800)'
+											: '--c:var(--color-gray-300); --dark-c:var(--color-gray-600); --hvr-c:var(--color-gray-700); --hvr-dark-c:#fff'}"
 								on:click={() => {
 									selectedTab = 'general';
 								}}
@@ -618,11 +618,11 @@
 								aria-selected={selectedTab === 'interface'}
 								style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab === 'interface'
 										? ($settings?.highContrastMode ?? false)
-											? '--bgc:var(--color-gray-200, #e3e3e3); --dark-bgc:var(--color-gray-800, #333)'
+											? '--bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800)'
 											: ''
 										: ($settings?.highContrastMode ?? false)
-											? '--hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333)'
-											: '--c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-600, #676767); --hvr-c:var(--color-gray-700, #4e4e4e); --hvr-dark-c:#fff'}"
+											? '--hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800)'
+											: '--c:var(--color-gray-300); --dark-c:var(--color-gray-600); --hvr-c:var(--color-gray-700); --hvr-dark-c:#fff'}"
 								on:click={() => {
 									selectedTab = 'interface';
 								}}
@@ -652,11 +652,11 @@
 									aria-selected={selectedTab === 'connections'}
 									style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab === 'connections'
 										? ($settings?.highContrastMode ?? false)
-											? '--bgc:var(--color-gray-200, #e3e3e3); --dark-bgc:var(--color-gray-800, #333)'
+											? '--bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800)'
 											: ''
 										: ($settings?.highContrastMode ?? false)
-											? '--hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333)'
-											: '--c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-600, #676767); --hvr-c:var(--color-gray-700, #4e4e4e); --hvr-dark-c:#fff'}"
+											? '--hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800)'
+											: '--c:var(--color-gray-300); --dark-c:var(--color-gray-600); --hvr-c:var(--color-gray-700); --hvr-dark-c:#fff'}"
 									on:click={() => {
 										selectedTab = 'connections';
 									}}
@@ -685,11 +685,11 @@
 									aria-selected={selectedTab === 'tools'}
 									style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab === 'tools'
 										? ($settings?.highContrastMode ?? false)
-											? '--bgc:var(--color-gray-200, #e3e3e3); --dark-bgc:var(--color-gray-800, #333)'
+											? '--bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800)'
 											: ''
 										: ($settings?.highContrastMode ?? false)
-											? '--hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333)'
-											: '--c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-600, #676767); --hvr-c:var(--color-gray-700, #4e4e4e); --hvr-dark-c:#fff'}"
+											? '--hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800)'
+											: '--c:var(--color-gray-300); --dark-c:var(--color-gray-600); --hvr-c:var(--color-gray-700); --hvr-dark-c:#fff'}"
 									on:click={() => {
 										selectedTab = 'tools';
 									}}
@@ -719,11 +719,11 @@
 								aria-selected={selectedTab === 'personalization'}
 								style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab === 'personalization'
 										? ($settings?.highContrastMode ?? false)
-											? '--bgc:var(--color-gray-200, #e3e3e3); --dark-bgc:var(--color-gray-800, #333)'
+											? '--bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800)'
 											: ''
 										: ($settings?.highContrastMode ?? false)
-											? '--hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333)'
-											: '--c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-600, #676767); --hvr-c:var(--color-gray-700, #4e4e4e); --hvr-dark-c:#fff'}"
+											? '--hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800)'
+											: '--c:var(--color-gray-300); --dark-c:var(--color-gray-600); --hvr-c:var(--color-gray-700); --hvr-dark-c:#fff'}"
 								on:click={() => {
 									selectedTab = 'personalization';
 								}}
@@ -740,11 +740,11 @@
 								aria-selected={selectedTab === 'audio'}
 								style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab === 'audio'
 										? ($settings?.highContrastMode ?? false)
-											? '--bgc:var(--color-gray-200, #e3e3e3); --dark-bgc:var(--color-gray-800, #333)'
+											? '--bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800)'
 											: ''
 										: ($settings?.highContrastMode ?? false)
-											? '--hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333)'
-											: '--c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-600, #676767); --hvr-c:var(--color-gray-700, #4e4e4e); --hvr-dark-c:#fff'}"
+											? '--hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800)'
+											: '--c:var(--color-gray-300); --dark-c:var(--color-gray-600); --hvr-c:var(--color-gray-700); --hvr-dark-c:#fff'}"
 								on:click={() => {
 									selectedTab = 'audio';
 								}}
@@ -774,11 +774,11 @@
 								aria-selected={selectedTab === 'chats'}
 								style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab === 'chats'
 										? ($settings?.highContrastMode ?? false)
-											? '--bgc:var(--color-gray-200, #e3e3e3); --dark-bgc:var(--color-gray-800, #333)'
+											? '--bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800)'
 											: ''
 										: ($settings?.highContrastMode ?? false)
-											? '--hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333)'
-											: '--c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-600, #676767); --hvr-c:var(--color-gray-700, #4e4e4e); --hvr-dark-c:#fff'}"
+											? '--hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800)'
+											: '--c:var(--color-gray-300); --dark-c:var(--color-gray-600); --hvr-c:var(--color-gray-700); --hvr-dark-c:#fff'}"
 								on:click={() => {
 									selectedTab = 'chats';
 								}}
@@ -807,11 +807,11 @@
 								aria-selected={selectedTab === 'account'}
 								style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab === 'account'
 										? ($settings?.highContrastMode ?? false)
-											? '--bgc:var(--color-gray-200, #e3e3e3); --dark-bgc:var(--color-gray-800, #333)'
+											? '--bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800)'
 											: ''
 										: ($settings?.highContrastMode ?? false)
-											? '--hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333)'
-											: '--c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-600, #676767); --hvr-c:var(--color-gray-700, #4e4e4e); --hvr-dark-c:#fff'}"
+											? '--hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800)'
+											: '--c:var(--color-gray-300); --dark-c:var(--color-gray-600); --hvr-c:var(--color-gray-700); --hvr-dark-c:#fff'}"
 								on:click={() => {
 									selectedTab = 'account';
 								}}
@@ -840,11 +840,11 @@
 								aria-selected={selectedTab === 'about'}
 								style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab === 'about'
 										? ($settings?.highContrastMode ?? false)
-											? '--bgc:var(--color-gray-200, #e3e3e3); --dark-bgc:var(--color-gray-800, #333)'
+											? '--bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800)'
 											: ''
 										: ($settings?.highContrastMode ?? false)
-											? '--hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333)'
-											: '--c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-600, #676767); --hvr-c:var(--color-gray-700, #4e4e4e); --hvr-dark-c:#fff'}"
+											? '--hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800)'
+											: '--c:var(--color-gray-300); --dark-c:var(--color-gray-600); --hvr-c:var(--color-gray-700); --hvr-dark-c:#fff'}"
 								on:click={() => {
 									selectedTab = 'about';
 								}}
@@ -869,7 +869,7 @@
 						{/if}
 					{/each}
 				{:else}
-					<div style="--ta:center; --c:var(--color-gray-500, #9b9b9b); --mt:1rem">
+					<div style="--ta:center; --c:var(--color-gray-500); --mt:1rem">
 						{$i18n.t('No results found')}
 					</div>
 				{/if}

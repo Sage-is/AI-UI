@@ -225,7 +225,7 @@
 						</div>
 
 						{#if !showSystem}
-							<div style="--fx:1 1 0%; --c:var(--color-gray-500, #9b9b9b); --line-clamp:1">
+							<div style="--fx:1 1 0%; --c:var(--color-gray-500); --line-clamp:1">
 								{system}
 							</div>
 						{/if}
@@ -271,7 +271,7 @@
 			</div>
 
 			<div style="--pb:0.75rem">
-				<div style="--b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --w:100%; --px:0.75rem; --py:0.625rem; --radius:0.75rem">
+				<div style="--b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --w:100%; --px:0.75rem; --py:0.625rem; --radius:0.75rem">
 					<div style="--py:0.125rem">
 						<!-- $i18n.t('a user') -->
 						<!-- $i18n.t('an assistant') -->
@@ -296,7 +296,7 @@
 					<div style="--d:flex; --jc:space-between">
 						<div>
 							<button
-								style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --c:var(--color-gray-900, #171717); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --dark-c:var(--color-gray-200, #e3e3e3); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
+								style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --c:var(--color-gray-900); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
 								on:click={() => {
 									role = role === 'user' ? 'assistant' : 'user';
 								}}
@@ -312,11 +312,11 @@
 						<div style="--d:flex; --ai:center; --g:0.5rem">
 							<div class="">
 								<select
-									style="--bgc:transparent; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --radius:0.5rem; --py:0.25rem; --px:0.5rem; --mx:-0.125rem; --size:0.875rem; --oe:none; --w:10rem"
+									style="--bgc:transparent; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --radius:0.5rem; --py:0.25rem; --px:0.5rem; --mx:-0.125rem; --size:0.875rem; --oe:none; --w:10rem"
 									bind:value={selectedModelId}
 								>
 									{#each $models as model}
-										<option value={model.id} style="--bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-700, #4e4e4e)"
+										<option value={model.id} style="--bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-700)"
 											>{model.name}</option
 										>
 									{/each}
@@ -326,7 +326,7 @@
 							{#if !loading}
 								<button
 									disabled={message === ''}
-									style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --c:var(--color-gray-900, #171717); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --dark-c:var(--color-gray-200, #e3e3e3); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
+									style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --c:var(--color-gray-900); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
 	class="disabled:bg-gray-50 dark:disabled:hover:bg-gray-850 disabled:cursor-not-allowed"
 									on:click={() => {
 										addHandler();
@@ -337,7 +337,7 @@
 								</button>
 
 								<button
-									style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
+									style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
 									on:click={() => {
 										submitHandler();
 									}}
@@ -346,7 +346,7 @@
 								</button>
 							{:else}
 								<button
-									style="--px:0.75rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:var(--color-gray-300, #cdcdcd); --c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
+									style="--px:0.75rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:var(--color-gray-300); --c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
 									on:click={() => {
 										stopResponse();
 									}}

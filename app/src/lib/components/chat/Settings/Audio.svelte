@@ -185,7 +185,7 @@
 					<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Speech-to-Text Engine')}</div>
 					<div style="--d:flex; --ai:center; --pos:relative">
 						<select
-							style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
+							style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
 							bind:value={STTEngine}
 							placeholder="Select an engine"
 						>
@@ -209,7 +209,7 @@
 								type="text"
 								bind:value={STTLanguage}
 								placeholder={$i18n.t('e.g. en')}
-								style="--size:0.875rem; --ta:right; --bgc:transparent; --dark-c:var(--color-gray-300, #cdcdcd); --oe:none"
+								style="--size:0.875rem; --ta:right; --bgc:transparent; --dark-c:var(--color-gray-300); --oe:none"
 							/>
 						</Tooltip>
 					</div>
@@ -244,7 +244,7 @@
 				<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Text-to-Speech Engine')}</div>
 				<div style="--d:flex; --ai:center; --pos:relative">
 					<select
-						style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
+						style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
 						bind:value={TTSEngine}
 						placeholder="Select an engine"
 					>
@@ -259,7 +259,7 @@
 					<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Kokoro.js Dtype')}</div>
 					<div style="--d:flex; --ai:center; --pos:relative">
 						<select
-							style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
+							style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
 							bind:value={TTSEngineConfig.dtype}
 							placeholder="Select dtype"
 						>
@@ -300,14 +300,14 @@
 						min="0"
 						step="0.01"
 						bind:value={playbackRate}
-						style="--size:0.875rem; --ta:right; --bgc:transparent; --dark-c:var(--color-gray-300, #cdcdcd); --oe:none"
+						style="--size:0.875rem; --ta:right; --bgc:transparent; --dark-c:var(--color-gray-300); --oe:none"
 					/>
 					x
 				</div>
 			</div>
 		</div>
 
-		<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)" />
+		<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)" />
 
 		{#if TTSEngine === 'browser-kokoro'}
 			{#if TTSModel}
@@ -317,7 +317,7 @@
 						<div style="--fx:1 1 0%">
 							<input
 								list="voice-list"
-								style="--w:100%; --size:0.875rem; --bgc:transparent; --dark-c:var(--color-gray-300, #cdcdcd); --oe:none"
+								style="--w:100%; --size:0.875rem; --bgc:transparent; --dark-c:var(--color-gray-300); --oe:none"
 								bind:value={voice}
 								placeholder="Select a voice"
 							/>
@@ -344,7 +344,7 @@
 						</div>
 					</div>
 
-					<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">
+					<div style="--size:0.75rem; --c:var(--color-gray-500)">
 						{$i18n.t('Please do not close the settings page while loading the model.')}
 					</div>
 				</div>
@@ -355,14 +355,14 @@
 				<div style="--d:flex; --w:100%">
 					<div style="--fx:1 1 0%">
 						<select
-							style="--w:100%; --size:0.875rem; --bgc:transparent; --dark-c:var(--color-gray-300, #cdcdcd); --oe:none"
+							style="--w:100%; --size:0.875rem; --bgc:transparent; --dark-c:var(--color-gray-300); --oe:none"
 							bind:value={voice}
 						>
 							<option value="" selected={voice !== ''}>{$i18n.t('Default')}</option>
 							{#each voices.filter((v) => nonLocalVoices || v.localService === true) as _voice}
 								<option
 									value={_voice.name}
-									style="--bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-700, #4e4e4e)"
+									style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-700)"
 									selected={voice === _voice.name}>{_voice.name}</option
 								>
 							{/each}
@@ -386,7 +386,7 @@
 					<div style="--fx:1 1 0%">
 						<input
 							list="voice-list"
-							style="--w:100%; --size:0.875rem; --bgc:transparent; --dark-c:var(--color-gray-300, #cdcdcd); --oe:none"
+							style="--w:100%; --size:0.875rem; --bgc:transparent; --dark-c:var(--color-gray-300); --oe:none"
 							bind:value={voice}
 							placeholder="Select a voice"
 						/>
@@ -404,7 +404,7 @@
 
 	<div style="--d:flex; --jc:flex-end; --size:0.875rem; --weight:500">
 		<button
-			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			type="submit"
 		>
 			{$i18n.t('Save')}

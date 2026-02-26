@@ -151,9 +151,9 @@
 	<div style="--mt:0.125rem; --mb:0.5rem; --g:0.25rem; --d:flex; --fd:column; --fd-md:row; --jc:space-between">
 		<div style="--d:flex; --as-md:center; --size:1.125rem; --weight:500; --px:0.125rem">
 			{$i18n.t('Groups')}
-			<div style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-850, #262626)" />
+			<div style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)" />
 
-			<span style="--size:1.125rem; --weight:500; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-300, #cdcdcd)">{groups.length}</span>
+			<span style="--size:1.125rem; --weight:500; --c:var(--color-gray-500); --dark-c:var(--color-gray-300)">{groups.length}</span>
 		</div>
 
 		<div style="--d:flex; --g:0.25rem">
@@ -172,7 +172,7 @@
 				<div>
 					<Tooltip content={$i18n.t('Create Group')}>
 						<button
-							style="--p:0.5rem; --radius:0.75rem; --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-900, #171717); --hvr-dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
+							style="--p:0.5rem; --radius:0.75rem; --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
 							on:click={() => {
 								showCreateGroupModal = !showCreateGroupModal;
 							}}
@@ -192,13 +192,13 @@
 					{$i18n.t('Organize your users')}
 				</div>
 
-				<div style="--mt:0.25rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd)">
+				<div style="--mt:0.25rem; --size:0.875rem; --dark-c:var(--color-gray-300)">
 					{$i18n.t('Use groups to group your users and assign permissions.')}
 				</div>
 
 				<div style="--mt:0.75rem">
 					<button
-						style="--px:1rem; --py:0.375rem; --size:0.875rem; --radius:9999px; --bgc:#000; --hvr-bgc:var(--color-gray-800, #333); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --d:flex; --ai:center; --g:0.25rem"
+						style="--px:1rem; --py:0.375rem; --size:0.875rem; --radius:9999px; --bgc:#000; --hvr-bgc:var(--color-gray-800); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --d:flex; --ai:center; --g:0.25rem"
 						aria-label={$i18n.t('Create Group')}
 						on:click={() => {
 							showCreateGroupModal = true;
@@ -216,7 +216,7 @@
 					<div style="--w:100%; --fb:40%; --ta:right">Users</div>
 				</div>
 
-				<hr style="--mt:0.375rem; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)" />
+				<hr style="--mt:0.375rem; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)" />
 
 				{#each filteredGroups as group}
 					<div style="--my:0.5rem">
@@ -226,7 +226,7 @@
 			</div>
 		{/if}
 
-		<hr style="--mb:0.5rem; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)" />
+		<hr style="--mb:0.5rem; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)" />
 
 		{#if $user?.role === 'admin'}
 			<GroupModal

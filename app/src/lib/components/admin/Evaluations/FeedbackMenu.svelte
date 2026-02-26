@@ -25,14 +25,14 @@
 
 	<div slot="content">
 		<DropdownMenu.Content
-			style="--w:100%; --maxw:150px; --radius:0.75rem; --px:0.25rem; --py:0.375rem; --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850, #262626); --dark-c:#fff; --shadow:4"
+			style="--w:100%; --maxw:150px; --radius:0.75rem; --px:0.25rem; --py:0.375rem; --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:4"
 			sideOffset={-2}
 			side="bottom"
 			align="start"
 			transition={flyAndScale}
 		>
 			<DropdownMenu.Item
-				style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.375rem; --size:0.875rem; --cur:pointer; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --radius:0.375rem"
+				style="--d:flex; --g:0.5rem; --ai:center; --px:0.75rem; --py:0.375rem; --size:0.875rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.375rem"
 				on:click={() => {
 					dispatch('delete');
 					show = false;

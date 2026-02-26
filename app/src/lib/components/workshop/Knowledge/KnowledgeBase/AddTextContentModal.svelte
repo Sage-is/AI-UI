@@ -39,7 +39,7 @@
 			<XMark className="size-3.5" />
 		</button>
 	</div>
-	<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --h:100%; --g-md:1rem; --dark-c:var(--color-gray-200, #e3e3e3)">
+	<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --h:100%; --g-md:1rem; --dark-c:var(--color-gray-200)">
 		<form
 			style="--d:flex; --fd:column; --w:100%; --h:100%"
 			on:submit|preventDefault={() => {
@@ -106,7 +106,7 @@
 					{:else}
 						<Tooltip content={$i18n.t('Voice Input')}>
 							<button
-								style="--p:0.5rem; --bgc:var(--color-gray-50, #f9f9f9); --c:var(--color-gray-700, #4e4e4e); --dark-bgc:var(--color-gray-700, #4e4e4e); --dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+								style="--p:0.5rem; --bgc:var(--color-gray-50); --c:var(--color-gray-700); --dark-bgc:var(--color-gray-700); --dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 								type="button"
 								on:click={async () => {
 									try {

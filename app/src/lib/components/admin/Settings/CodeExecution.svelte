@@ -44,7 +44,7 @@
 				<div style="--mb:0.875rem">
 					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('General')}</div>
 
-					<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem" />
+					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 					<div style="--mb:0.625rem">
 						<div style="--d:flex; --w:100%; --jc:space-between">
@@ -61,7 +61,7 @@
 							<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Code Execution Engine')}</div>
 							<div style="--d:flex; --ai:center; --pos:relative">
 								<select
-									style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
+									style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
 									bind:value={config.CODE_EXECUTION_ENGINE}
 									placeholder={$i18n.t('Select a engine')}
 									required
@@ -75,7 +75,7 @@
 						</div>
 
 						{#if config.CODE_EXECUTION_ENGINE === 'jupyter'}
-							<div style="--c:var(--color-gray-500, #9b9b9b); --size:0.75rem">
+							<div style="--c:var(--color-gray-500); --size:0.75rem">
 								{$i18n.t(
 									'Warning: Jupyter execution enables arbitrary code execution, posing severe security risks—proceed with extreme caution.'
 								)}
@@ -111,7 +111,7 @@
 
 								<div>
 									<select
-										style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:left"
+										style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:left"
 										bind:value={config.CODE_EXECUTION_JUPYTER_AUTH}
 										placeholder={$i18n.t('Select an auth method')}
 									>
@@ -153,7 +153,7 @@
 							<div class="">
 								<Tooltip content={$i18n.t('Enter timeout in seconds')}>
 									<input
-										style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
+										style="--dark-bgc:var(--color-gray-900); --w:fit-content; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
 										type="number"
 										bind:value={config.CODE_EXECUTION_JUPYTER_TIMEOUT}
 										placeholder={$i18n.t('e.g. 60')}
@@ -168,7 +168,7 @@
 				<div style="--mb:0.875rem">
 					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('Code Interpreter')}</div>
 
-					<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem" />
+					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 					<div style="--mb:0.625rem">
 						<div style="--d:flex; --w:100%; --jc:space-between">
@@ -188,7 +188,7 @@
 								</div>
 								<div style="--d:flex; --ai:center; --pos:relative">
 									<select
-										style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
+										style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
 										bind:value={config.CODE_INTERPRETER_ENGINE}
 										placeholder={$i18n.t('Select a engine')}
 										required
@@ -202,7 +202,7 @@
 							</div>
 
 							{#if config.CODE_INTERPRETER_ENGINE === 'jupyter'}
-								<div style="--c:var(--color-gray-500, #9b9b9b); --size:0.75rem">
+								<div style="--c:var(--color-gray-500); --size:0.75rem">
 									{$i18n.t(
 										'Warning: Jupyter execution enables arbitrary code execution, posing severe security risks—proceed with extreme caution.'
 									)}
@@ -238,7 +238,7 @@
 
 									<div>
 										<select
-											style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:left"
+											style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:left"
 											bind:value={config.CODE_INTERPRETER_JUPYTER_AUTH}
 											placeholder={$i18n.t('Select an auth method')}
 										>
@@ -280,7 +280,7 @@
 								<div class="">
 									<Tooltip content={$i18n.t('Enter timeout in seconds')}>
 										<input
-											style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
+											style="--dark-bgc:var(--color-gray-900); --w:fit-content; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
 											type="number"
 											bind:value={config.CODE_INTERPRETER_JUPYTER_TIMEOUT}
 											placeholder={$i18n.t('e.g. 60')}
@@ -291,7 +291,7 @@
 							</div>
 						{/if}
 
-						<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem" />
+						<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 						<div>
 							<div style="--py:0.125rem; --w:100%">
@@ -321,7 +321,7 @@
 	</div>
 	<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
 		<button
-			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			type="submit"
 		>
 			{$i18n.t('Save')}
