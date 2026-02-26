@@ -134,12 +134,21 @@
 		chatListLoading = false;
 	};
 
-	const init = () => {
+	const init = async () => {
 		if ($searchQuery) {
 			query = $searchQuery;
 			searchQuery.set('');
 		}
 		searchHandler();
+
+		await tick();
+		setTimeout(() => {
+			const searchInput = document.getElementById('search-input');
+			if (searchInput) {
+				const len = query.length;
+				searchInput.setSelectionRange(len, len);
+			}
+		}, 0);
 	};
 
 	const onKeyDown = (e) => {
@@ -188,9 +197,11 @@
 		item?.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
 	};
 
-	onMount(() => {
+	$: if (show) {
 		init();
+	}
 
+	onMount(() => {
 		document.addEventListener('keydown', onKeyDown);
 	});
 
