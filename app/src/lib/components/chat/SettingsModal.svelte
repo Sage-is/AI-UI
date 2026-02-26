@@ -583,16 +583,13 @@
 								role="tab"
 								aria-controls="tab-general"
 								aria-selected={selectedTab === 'general'}
-								class={`px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition
-								${
-									selectedTab === 'general'
+								style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab === 'general'
 										? ($settings?.highContrastMode ?? false)
-											? 'dark:bg-gray-800 bg-gray-200'
+											? '--bgc:var(--color-gray-200, #e3e3e3); --dark-bgc:var(--color-gray-800, #333)'
 											: ''
 										: ($settings?.highContrastMode ?? false)
-											? 'hover:bg-gray-200 dark:hover:bg-gray-800'
-											: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'
-								}`}
+											? '--hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333)'
+											: '--c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-600, #676767); --hvr-c:var(--color-gray-700, #4e4e4e); --hvr-dark-c:#fff'}"
 								on:click={() => {
 									selectedTab = 'general';
 								}}
@@ -619,16 +616,13 @@
 								role="tab"
 								aria-controls="tab-interface"
 								aria-selected={selectedTab === 'interface'}
-								class={`px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition
-								${
-									selectedTab === 'interface'
+								style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab === 'interface'
 										? ($settings?.highContrastMode ?? false)
-											? 'dark:bg-gray-800 bg-gray-200'
+											? '--bgc:var(--color-gray-200, #e3e3e3); --dark-bgc:var(--color-gray-800, #333)'
 											: ''
 										: ($settings?.highContrastMode ?? false)
-											? 'hover:bg-gray-200 dark:hover:bg-gray-800'
-											: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'
-								}`}
+											? '--hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333)'
+											: '--c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-600, #676767); --hvr-c:var(--color-gray-700, #4e4e4e); --hvr-dark-c:#fff'}"
 								on:click={() => {
 									selectedTab = 'interface';
 								}}
@@ -656,16 +650,13 @@
 									role="tab"
 									aria-controls="tab-connections"
 									aria-selected={selectedTab === 'connections'}
-									class={`px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition
-								${
-									selectedTab === 'connections'
+									style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab === 'connections'
 										? ($settings?.highContrastMode ?? false)
-											? 'dark:bg-gray-800 bg-gray-200'
+											? '--bgc:var(--color-gray-200, #e3e3e3); --dark-bgc:var(--color-gray-800, #333)'
 											: ''
 										: ($settings?.highContrastMode ?? false)
-											? 'hover:bg-gray-200 dark:hover:bg-gray-800'
-											: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'
-								}`}
+											? '--hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333)'
+											: '--c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-600, #676767); --hvr-c:var(--color-gray-700, #4e4e4e); --hvr-dark-c:#fff'}"
 									on:click={() => {
 										selectedTab = 'connections';
 									}}
@@ -692,16 +683,13 @@
 									role="tab"
 									aria-controls="tab-tools"
 									aria-selected={selectedTab === 'tools'}
-									class={`px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition
-								${
-									selectedTab === 'tools'
+									style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab === 'tools'
 										? ($settings?.highContrastMode ?? false)
-											? 'dark:bg-gray-800 bg-gray-200'
+											? '--bgc:var(--color-gray-200, #e3e3e3); --dark-bgc:var(--color-gray-800, #333)'
 											: ''
 										: ($settings?.highContrastMode ?? false)
-											? 'hover:bg-gray-200 dark:hover:bg-gray-800'
-											: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'
-								}`}
+											? '--hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333)'
+											: '--c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-600, #676767); --hvr-c:var(--color-gray-700, #4e4e4e); --hvr-dark-c:#fff'}"
 									on:click={() => {
 										selectedTab = 'tools';
 									}}
@@ -729,16 +717,13 @@
 								role="tab"
 								aria-controls="tab-personalization"
 								aria-selected={selectedTab === 'personalization'}
-								class={`px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition
-								${
-									selectedTab === 'personalization'
+								style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab === 'personalization'
 										? ($settings?.highContrastMode ?? false)
-											? 'dark:bg-gray-800 bg-gray-200'
+											? '--bgc:var(--color-gray-200, #e3e3e3); --dark-bgc:var(--color-gray-800, #333)'
 											: ''
 										: ($settings?.highContrastMode ?? false)
-											? 'hover:bg-gray-200 dark:hover:bg-gray-800'
-											: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'
-								}`}
+											? '--hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333)'
+											: '--c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-600, #676767); --hvr-c:var(--color-gray-700, #4e4e4e); --hvr-dark-c:#fff'}"
 								on:click={() => {
 									selectedTab = 'personalization';
 								}}
@@ -753,16 +738,13 @@
 								role="tab"
 								aria-controls="tab-audio"
 								aria-selected={selectedTab === 'audio'}
-								class={`px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition
-								${
-									selectedTab === 'audio'
+								style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab === 'audio'
 										? ($settings?.highContrastMode ?? false)
-											? 'dark:bg-gray-800 bg-gray-200'
+											? '--bgc:var(--color-gray-200, #e3e3e3); --dark-bgc:var(--color-gray-800, #333)'
 											: ''
 										: ($settings?.highContrastMode ?? false)
-											? 'hover:bg-gray-200 dark:hover:bg-gray-800'
-											: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'
-								}`}
+											? '--hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333)'
+											: '--c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-600, #676767); --hvr-c:var(--color-gray-700, #4e4e4e); --hvr-dark-c:#fff'}"
 								on:click={() => {
 									selectedTab = 'audio';
 								}}
@@ -790,16 +772,13 @@
 								role="tab"
 								aria-controls="tab-chats"
 								aria-selected={selectedTab === 'chats'}
-								class={`px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition
-								${
-									selectedTab === 'chats'
+								style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab === 'chats'
 										? ($settings?.highContrastMode ?? false)
-											? 'dark:bg-gray-800 bg-gray-200'
+											? '--bgc:var(--color-gray-200, #e3e3e3); --dark-bgc:var(--color-gray-800, #333)'
 											: ''
 										: ($settings?.highContrastMode ?? false)
-											? 'hover:bg-gray-200 dark:hover:bg-gray-800'
-											: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'
-								}`}
+											? '--hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333)'
+											: '--c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-600, #676767); --hvr-c:var(--color-gray-700, #4e4e4e); --hvr-dark-c:#fff'}"
 								on:click={() => {
 									selectedTab = 'chats';
 								}}
@@ -826,16 +805,13 @@
 								role="tab"
 								aria-controls="tab-account"
 								aria-selected={selectedTab === 'account'}
-								class={`px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition
-								${
-									selectedTab === 'account'
+								style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab === 'account'
 										? ($settings?.highContrastMode ?? false)
-											? 'dark:bg-gray-800 bg-gray-200'
+											? '--bgc:var(--color-gray-200, #e3e3e3); --dark-bgc:var(--color-gray-800, #333)'
 											: ''
 										: ($settings?.highContrastMode ?? false)
-											? 'hover:bg-gray-200 dark:hover:bg-gray-800'
-											: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'
-								}`}
+											? '--hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333)'
+											: '--c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-600, #676767); --hvr-c:var(--color-gray-700, #4e4e4e); --hvr-dark-c:#fff'}"
 								on:click={() => {
 									selectedTab = 'account';
 								}}
@@ -862,16 +838,13 @@
 								role="tab"
 								aria-controls="tab-about"
 								aria-selected={selectedTab === 'about'}
-								class={`px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition
-								${
-									selectedTab === 'about'
+								style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab === 'about'
 										? ($settings?.highContrastMode ?? false)
-											? 'dark:bg-gray-800 bg-gray-200'
+											? '--bgc:var(--color-gray-200, #e3e3e3); --dark-bgc:var(--color-gray-800, #333)'
 											: ''
 										: ($settings?.highContrastMode ?? false)
-											? 'hover:bg-gray-200 dark:hover:bg-gray-800'
-											: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'
-								}`}
+											? '--hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333)'
+											: '--c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-600, #676767); --hvr-c:var(--color-gray-700, #4e4e4e); --hvr-dark-c:#fff'}"
 								on:click={() => {
 									selectedTab = 'about';
 								}}
@@ -903,7 +876,7 @@
 				{#if $user?.role === 'admin'}
 					<a
 						href="/admin/settings"
-						style="--px:0.125rem; --py:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --mt-md:auto; --d:flex; --ta:left; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+						style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --mt-md:auto; --d:flex; --ta:left; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="{$settings?.highContrastMode
 							? 'hover:bg-gray-200 dark:hover:bg-gray-800'
 							: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
