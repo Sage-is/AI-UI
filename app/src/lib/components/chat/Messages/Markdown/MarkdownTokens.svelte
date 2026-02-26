@@ -84,7 +84,7 @@
 <!-- {JSON.stringify(tokens)} -->
 {#each tokens as token, tokenIdx (tokenIdx)}
 	{#if token.type === 'hr'}
-		<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)" />
+		<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)" />
 	{:else if token.type === 'heading'}
 		<svelte:element this={headerComponent(token.depth)} dir="auto">
 			<MarkdownInlineTokens
@@ -124,16 +124,16 @@
 			<div style="--pos:relative; --ofx:auto; --maxw:100%; --radius:0.5rem"
 	class="scrollbar-hidden">
 				<table
-					style="--w:100%; --size:0.875rem; --ta:left; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4); --maxw:100%; --radius:0.75rem"
+					style="--w:100%; --size:0.875rem; --ta:left; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --maxw:100%; --radius:0.75rem"
 				>
 					<thead
-						style="--size:0.75rem; --c:var(--color-gray-700, #4e4e4e); --tt:uppercase; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-850, #262626); --dark-c:var(--color-gray-400, #b4b4b4); --bs:none"
+						style="--size:0.75rem; --c:var(--color-gray-700); --tt:uppercase; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-400); --bs:none"
 					>
 						<tr class="">
 							{#each token.header as header, headerIdx}
 								<th
 									scope="col"
-									style="--px:0.75rem; --py:0.375rem; --cur:pointer; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); {token.align[headerIdx] ? '' : `text-align: ${token.align[headerIdx]}`}"
+									style="--px:0.75rem; --py:0.375rem; --cur:pointer; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); {token.align[headerIdx] ? '' : `text-align: ${token.align[headerIdx]}`}"
 								>
 									<div style="--g:0.375rem; --ta:left">
 										<div style="--fs:0; --wb:normal; overflow-wrap:normal">
@@ -151,10 +151,10 @@
 					</thead>
 					<tbody style="--d:flex;--fd:column">
 						{#each token.rows as row, rowIdx}
-							<tr style="--bgc:#fff; --dark-bgc:var(--color-gray-900, #171717); --dark-bc:var(--color-gray-850, #262626); --size:0.75rem">
+							<tr style="--bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-bc:var(--color-gray-850); --size:0.75rem">
 								{#each row ?? [] as cell, cellIdx}
 									<td
-										style="--px:0.75rem; --py:0.375rem; --c:var(--color-gray-900, #171717); --dark-c:#fff; --w:max-content; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); {token.align[cellIdx] ? `text-align: ${token.align[cellIdx]}` : ''}"
+										style="--px:0.75rem; --py:0.375rem; --c:var(--color-gray-900); --dark-c:#fff; --w:max-content; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); {token.align[cellIdx] ? `text-align: ${token.align[cellIdx]}` : ''}"
 									>
 										<div style="--wb:normal; overflow-wrap:normal">
 											<MarkdownInlineTokens

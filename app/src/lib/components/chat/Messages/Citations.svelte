@@ -114,7 +114,7 @@
 				{#each citations as citation, idx}
 					<button
 						id={`source-${id}-${idx + 1}`}
-						style="--oe:none; --d:flex; --dark-c:var(--color-gray-300, #cdcdcd); --p:0.25rem; --bgc:#fff; --dark-bgc:var(--color-gray-900, #171717); --radius:0.75rem; --maxw:24rem"
+						style="--oe:none; --d:flex; --dark-c:var(--color-gray-300); --p:0.25rem; --bgc:#fff; --dark-bgc:var(--color-gray-900); --radius:0.75rem; --maxw:24rem"
 	class="no-toggle"
 						on:click={() => {
 							showCitationModal = true;
@@ -122,7 +122,7 @@
 						}}
 					>
 						{#if citations.every((c) => c.distances !== undefined)}
-							<div style="--bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-800, #333); --radius:9999px; --w:1rem; --h:1rem">
+							<div style="--bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800); --radius:9999px; --w:1rem; --h:1rem">
 								{idx + 1}
 							</div>
 						{/if}
@@ -142,7 +142,7 @@
 				buttonClassName="w-fit max-w-full"
 			>
 				<div
-					style="--d:flex; --w:100%; --of:auto; --ai:center; --g:0.5rem; --c:var(--color-gray-500, #9b9b9b); --hvr-c:var(--color-gray-600, #676767); --hvr-dark-c:var(--color-gray-400, #b4b4b4); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --cur:pointer"
+					style="--d:flex; --w:100%; --of:auto; --ai:center; --g:0.5rem; --c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-400); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --cur:pointer"
 				>
 					<div
 						style="--fx:1 1 0%; --d:flex; --ai:center; --g:0.25rem; --of:auto; --w:100%; --maxw:100%"
@@ -156,7 +156,7 @@
 							<div style="--d:flex; --size:0.75rem; --weight:500; --ai:center">
 								{#each citations.slice(0, 2) as citation, idx}
 									<button
-										style="--oe:none; --d:flex; --dark-c:var(--color-gray-300, #cdcdcd); --p:0.25rem; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-900, #171717); --hvr-dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.75rem; --maxw:24rem"
+										style="--oe:none; --d:flex; --dark-c:var(--color-gray-300); --p:0.25rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.75rem; --maxw:24rem"
 	class="no-toggle"
 										on:click={() => {
 											showCitationModal = true;
@@ -167,7 +167,7 @@
 										}}
 									>
 										{#if citations.every((c) => c.distances !== undefined)}
-											<div style="--bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-800, #333); --radius:9999px; --w:1rem; --h:1rem">
+											<div style="--bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800); --radius:9999px; --w:1rem; --h:1rem">
 												{idx + 1}
 											</div>
 										{/if}
@@ -196,7 +196,7 @@
 					<div style="--d:flex; --size:0.75rem; --weight:500; --fw:wrap">
 						{#each citations.slice(2) as citation, idx}
 							<button
-								style="--oe:none; --d:flex; --dark-c:var(--color-gray-300, #cdcdcd); --p:0.25rem; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-900, #171717); --hvr-dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.75rem; --maxw:24rem"
+								style="--oe:none; --d:flex; --dark-c:var(--color-gray-300); --p:0.25rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.75rem; --maxw:24rem"
 	class="no-toggle"
 								on:click={() => {
 									showCitationModal = true;
@@ -204,7 +204,7 @@
 								}}
 							>
 								{#if citations.every((c) => c.distances !== undefined)}
-									<div style="--bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-800, #333); --radius:9999px; --w:1rem; --h:1rem">
+									<div style="--bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800); --radius:9999px; --w:1rem; --h:1rem">
 										{idx + 3}
 									</div>
 								{/if}

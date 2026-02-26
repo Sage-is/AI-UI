@@ -75,7 +75,7 @@
 
 <Modal size="lg" bind:show>
 	<div>
-		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300, #cdcdcd); --px:1.25rem; --pt:1rem; --pb:0.25rem">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.25rem; --pt:1rem; --pb:0.25rem">
 			<div style="--size:1.125rem; --weight:500; --as:center">{title}</div>
 			<button
 				style="--as:center"
@@ -98,7 +98,7 @@
 			</button>
 		</div>
 
-		<div style="--d:flex; --fd:column; --w:100%; --px:1.25rem; --pb:1rem; --dark-c:var(--color-gray-200, #e3e3e3)">
+		<div style="--d:flex; --fd:column; --w:100%; --px:1.25rem; --pb:1rem; --dark-c:var(--color-gray-200)">
 			<div style="--d:flex; --w:100%; --g:0.5rem; --mb:0.125rem">
 				<div style="--d:flex; --fx:1 1 0%">
 					<div style="--as:center; --ml:0.25rem; --mr:0.75rem">
@@ -124,7 +124,7 @@
 					{#if query}
 						<div style="--as:center; --pl:0.375rem; --pr:0.25rem; --translatey:0.5px; --btlr:0.75rem; --bblr:0.75rem; --bgc:transparent">
 							<button
-								style="--p:0.125rem; --radius:9999px; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+								style="--p:0.125rem; --radius:9999px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								on:click={() => {
 									query = '';
 									selectedIdx = 0;
@@ -191,7 +191,7 @@
 						<div style="--ta:left; --size:0.875rem; --w:100%; --mb:0.75rem; --maxh:22rem; --ofy:scroll">
 							{#if chatList.length === 0}
 								<div
-									style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4); --ta:center; --px:1.25rem; --minh:5rem; --w:100%; --h:100%; --d:flex; --jc:center; --ai:center"
+									style="--size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --ta:center; --px:1.25rem; --minh:5rem; --w:100%; --h:100%; --d:flex; --jc:center; --ai:center"
 								>
 									{$i18n.t('No results found')}
 								</div>
@@ -200,7 +200,7 @@
 							{#each chatList as chat, idx (chat.id)}
 								{#if (idx === 0 || (idx > 0 && chat.time_range !== chatList[idx - 1].time_range)) && chat?.time_range}
 									<div
-										style="--w:100%; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-500, #9b9b9b); --weight:500;  --px:0.5rem"
+										style="--w:100%; --size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --weight:500;  --px:0.5rem"
 	class="{idx === 0
 											? ''
 											: 'pt-5'}"
@@ -228,7 +228,7 @@
 								{/if}
 
 								<div
-									style="--w:100%; --d:flex; --jc:space-between; --ai:center; --radius:0.5rem; --size:0.875rem; --py:0.5rem; --px:0.75rem; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-850, #262626)"
+									style="--w:100%; --d:flex; --jc:space-between; --ai:center; --radius:0.5rem; --size:0.875rem; --py:0.5rem; --px:0.75rem; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850)"
 									draggable="false"
 								>
 									<a
@@ -242,11 +242,11 @@
 									</a>
 
 									<div style="--fb:40%; --d:flex; --ai:center; --jc:flex-end">
-										<div style="--d:none; --d-sm:flex; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4); --size:0.75rem">
+										<div style="--d:none; --d-sm:flex; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --size:0.75rem">
 											{dayjs(chat?.updated_at * 1000).calendar()}
 										</div>
 
-										<div style="--d:flex; --jc:flex-end; --pl:0.625rem; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-300, #cdcdcd)">
+										<div style="--d:flex; --jc:flex-end; --pl:0.625rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-300)">
 											{#if unarchiveHandler}
 												<Tooltip content={$i18n.t('Unarchive Chat')}>
 													<button
@@ -340,10 +340,10 @@
 							<div style="--ta:left; --size:0.875rem; --w:100%; --mb:0.75rem; --maxh:22rem; --ofy:scroll">
 								<div style="--pos:relative; --ofx:auto">
 									<table
-										style="--w:100%; --size:0.875rem; --ta:left; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-400, #b4b4b4); table-layout:auto"
+										style="--w:100%; --size:0.875rem; --ta:left; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); table-layout:auto"
 									>
 										<thead
-											style="--size:0.75rem; --c:var(--color-gray-700, #4e4e4e); --tt:uppercase; --bgc:transparent; --dark-c:var(--color-gray-200, #e3e3e3); --bc:var(--color-gray-50, #f9f9f9); --dark-bc:var(--color-gray-850, #262626)"
+											style="--size:0.75rem; --c:var(--color-gray-700); --tt:uppercase; --bgc:transparent; --dark-c:var(--color-gray-200); --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850)"
 	class="border-b-1"
 										>
 											<tr>
@@ -357,7 +357,7 @@
 										<tbody style="--d:flex;--fd:column">
 											{#each chats as chat, idx}
 												<tr
-													style="--bgc:transparent; --dark-bgc:var(--color-gray-900, #171717); --bc:var(--color-gray-50, #f9f9f9); --dark-bc:var(--color-gray-850, #262626); --size:0.75rem"
+													style="--bgc:transparent; --dark-bgc:var(--color-gray-900); --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --size:0.75rem"
 	class="{idx !== chats.length - 1 &&
 														'border-b'}"
 												>

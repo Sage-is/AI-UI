@@ -94,7 +94,7 @@
 
 	{#if !small}
 		<div style="--d:flex; --fd:column; --jc:center; --g:-0.125rem; --px:0.625rem; --w:100%">
-			<div style="--dark-c:var(--color-gray-100, #ececec); --size:0.875rem; --weight:500; --line-clamp:1; --mb:0.25rem">
+			<div style="--dark-c:var(--color-gray-100); --size:0.875rem; --weight:500; --line-clamp:1; --mb:0.25rem">
 				{decodeString(name)}
 			</div>
 
@@ -121,14 +121,14 @@
 	{:else}
 		<Tooltip content={decodeString(name)} className="flex flex-col w-full" placement="top-start">
 			<div style="--d:flex; --fd:column; --jc:center; --g:-0.125rem; --px:0.625rem; --w:100%">
-				<div style="--dark-c:var(--color-gray-100, #ececec); --size:0.875rem; --d:flex; --jc:space-between; --ai:center">
+				<div style="--dark-c:var(--color-gray-100); --size:0.875rem; --d:flex; --jc:space-between; --ai:center">
 					{#if loading}
 						<div style="--fs:0; --mr:0.5rem">
 							<Spinner className="size-4" />
 						</div>
 					{/if}
 					<div style="--weight:500; --line-clamp:1; --fx:1 1 0%">{decodeString(name)}</div>
-					<div style="--c:var(--color-gray-500, #9b9b9b); --size:0.75rem; --tt:capitalize; --fs:0">{formatFileSize(size)}</div>
+					<div style="--c:var(--color-gray-500); --size:0.75rem; --tt:capitalize; --fs:0">{formatFileSize(size)}</div>
 				</div>
 			</div>
 		</Tooltip>
@@ -138,7 +138,7 @@
 		<div style="--pos:absolute; --top:-0.25rem; --right:-0.25rem">
 			<button
 				aria-label={$i18n.t('Remove File')}
-				style="--bgc:#fff; --c:#000; --b:1px solid; --bc:var(--color-gray-50, #f9f9f9); --radius:9999px"
+				style="--bgc:#fff; --c:#000; --b:1px solid; --bc:var(--color-gray-50); --radius:9999px"
 	class="{($settings?.highContrastMode ??
 				false)
 					? ''
@@ -152,7 +152,7 @@
 			</button>
 
 			<!-- <button
-				style="--p:0.25rem; --dark-c:var(--color-gray-300, #cdcdcd); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:9999px; --v:hidden; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--p:0.25rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:9999px; --v:hidden; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="group-hover:visible"
 				type="button"
 				on:click={() => {

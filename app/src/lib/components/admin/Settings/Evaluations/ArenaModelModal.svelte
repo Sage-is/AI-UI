@@ -130,7 +130,7 @@
 
 <Modal size="sm" bind:show>
 	<div>
-		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-100, #ececec); --px:1.25rem; --pt:1rem; --pb:0.5rem">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-100); --px:1.25rem; --pt:1rem; --pb:0.5rem">
 			<div style="--size:1.125rem; --weight:500; --as:center"
 	class="font-primary">
 				{#if edit}
@@ -149,7 +149,7 @@
 			</button>
 		</div>
 
-		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1rem; --pb:1rem; --g-md:1rem; --dark-c:var(--color-gray-200, #e3e3e3)">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1rem; --pb:1rem; --g-md:1rem; --dark-c:var(--color-gray-200)">
 			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				<form
 					style="--d:flex; --fd:column; --w:100%"
@@ -236,7 +236,7 @@
 								/>
 
 								<div
-									style="--pos:absolute; --d:flex; --jc:center; --radius:9999px; --bottom:0; --left:0; --right:0; --top:0; --h:100%; --w:100%; --of:hidden; --bgc:var(--color-gray-700, #4e4e4e); --op:0; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:300ms; --ttf:cubic-bezier(0.4, 0, 0.2, 1); --hvr-op:0.5"
+									style="--pos:absolute; --d:flex; --jc:center; --radius:9999px; --bottom:0; --left:0; --right:0; --top:0; --h:100%; --w:100%; --of:hidden; --bgc:var(--color-gray-700); --op:0; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:300ms; --ttf:cubic-bezier(0.4, 0, 0.2, 1); --hvr-op:0.5"
 	class="bg-fixed"
 								>
 									<div style="--my:auto; --c:#fff">
@@ -247,7 +247,7 @@
 						</div>
 						<div style="--d:flex; --g:0.5rem">
 							<div style="--d:flex; --fd:column; --w:100%">
-								<div style="--mb:0.125rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('Name')}</div>
+								<div style="--mb:0.125rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Name')}</div>
 
 								<div style="--fx:1 1 0%">
 									<input
@@ -263,7 +263,7 @@
 							</div>
 
 							<div style="--d:flex; --fd:column; --w:100%">
-								<div style="--mb:0.125rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('ID')}</div>
+								<div style="--mb:0.125rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('ID')}</div>
 
 								<div style="--fx:1 1 0%">
 									<input
@@ -281,7 +281,7 @@
 						</div>
 
 						<div style="--d:flex; --fd:column; --w:100%; --mt:0.5rem">
-							<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('Description')}</div>
+							<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Description')}</div>
 
 							<div style="--fx:1 1 0%">
 								<input
@@ -295,23 +295,23 @@
 							</div>
 						</div>
 
-						<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:rgb(78 78 78 / 0.1); --my:0.625rem; --w:100%" />
+						<hr style="--bc:var(--color-gray-100); --dark-bc:rgb(78 78 78 / 0.1); --my:0.625rem; --w:100%" />
 
 						<div style="--my:0.5rem; --mx:-0.5rem">
-							<div style="--px:0.75rem; --py:0.5rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-950, #0d0d0d); --radius:0.5rem">
+							<div style="--px:0.75rem; --py:0.5rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-950); --radius:0.5rem">
 								<AccessControl bind:accessControl />
 							</div>
 						</div>
 
-						<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:rgb(78 78 78 / 0.1); --my:0.625rem; --w:100%" />
+						<hr style="--bc:var(--color-gray-100); --dark-bc:rgb(78 78 78 / 0.1); --my:0.625rem; --w:100%" />
 
 						<div style="--d:flex; --fd:column; --w:100%">
 							<div style="--mb:0.25rem; --d:flex; --jc:space-between">
-								<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('Models')}</div>
+								<div style="--size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Models')}</div>
 
 								<div>
 									<button
-										style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)"
+										style="--size:0.75rem; --c:var(--color-gray-500)"
 										type="button"
 										on:click={() => {
 											filterMode = filterMode === 'include' ? 'exclude' : 'include';
@@ -347,13 +347,13 @@
 									{/each}
 								</div>
 							{:else}
-								<div style="--c:var(--color-gray-500, #9b9b9b); --size:0.75rem; --ta:center; --py:0.5rem">
+								<div style="--c:var(--color-gray-500); --size:0.75rem; --ta:center; --py:0.5rem">
 									{$i18n.t('Leave empty to include all models or select specific models')}
 								</div>
 							{/if}
 						</div>
 
-						<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:rgb(78 78 78 / 0.1); --my:0.625rem; --w:100%" />
+						<hr style="--bc:var(--color-gray-100); --dark-bc:rgb(78 78 78 / 0.1); --my:0.625rem; --w:100%" />
 
 						<div style="--d:flex; --ai:center">
 							<select
@@ -365,7 +365,7 @@
 							>
 								<option value="">{$i18n.t('Select a model')}</option>
 								{#each $models.filter((m) => m?.owned_by !== 'arena') as model}
-									<option value={model.id} style="--bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-700, #4e4e4e)">{model.name}</option>
+									<option value={model.id} style="--bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-700)">{model.name}</option>
 								{/each}
 							</select>
 
@@ -385,7 +385,7 @@
 					<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500; --g:0.375rem">
 						{#if edit}
 							<button
-								style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --dark-bgc:#000; --hvr-dark-bgc:var(--color-gray-950, #0d0d0d); --dark-c:#fff; --bgc:#fff; --c:#000; --hvr-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
+								style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --dark-bgc:#000; --hvr-dark-bgc:var(--color-gray-950); --dark-c:#fff; --bgc:#fff; --c:#000; --hvr-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
 								type="button"
 								on:click={() => {
 									showDeleteConfirmDialog = true;
@@ -396,7 +396,7 @@
 						{/if}
 
 						<button
-							style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-950, #0d0d0d); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
+							style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-950); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
 	class="{loading
 								? ' cursor-not-allowed'
 								: ''}"

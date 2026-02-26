@@ -459,7 +459,7 @@
 							<div style="--pos:absolute; --bottom:0; --right:0; --z:10">
 								<div style="--m:0.375rem">
 									<div
-										style="--shadow:5; --p:0.25rem; --radius:9999px; --bw:2px; --bc:#fff; --bgc:var(--color-gray-800, #333); --c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --dark-bc:#000; --dark-bgc:#fff; --dark-c:#000"
+										style="--shadow:5; --p:0.25rem; --radius:9999px; --bw:2px; --bc:#fff; --bgc:var(--color-gray-800); --c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --dark-bc:#000; --dark-bgc:#fff; --dark-c:#000"
 	class="group-hover:bg-gray-600 dark:group-hover:bg-gray-200"
 									>
 										<svg
@@ -486,7 +486,7 @@
 
 						<div style="--d:flex; --w:100%; --mt:0.25rem; --jc:flex-end">
 							<button
-								style="--px:0.5rem; --py:0.25rem; --c:var(--color-gray-500, #9b9b9b); --radius:0.5rem; --size:0.75rem"
+								style="--px:0.5rem; --py:0.25rem; --c:var(--color-gray-500); --radius:0.5rem; --size:0.75rem"
 								on:click={() => {
 									info.meta.profile_image_url = `${WEBUI_BASE_URL}/static/icons/favicon.png`;
 								}}
@@ -502,7 +502,7 @@
 						<div style="--fx:1 1 0%">
 							<div>
 								<input
-									style="--size:0.75rem; --w:100%; --bgc:transparent; --c:var(--color-gray-500, #9b9b9b); --oe:none"
+									style="--size:0.75rem; --w:100%; --bgc:transparent; --c:var(--color-gray-500); --oe:none"
 									placeholder={$i18n.t('Model ID')}
 									bind:value={id}
 									disabled={edit}
@@ -526,11 +526,11 @@
 									}}
 									required
 								>
-									<option value={null} style="--c:var(--color-gray-900, #171717)"
+									<option value={null} style="--c:var(--color-gray-900)"
 										>{$i18n.t('Select a base model')}</option
 									>
 									{#each $models.filter((m) => (model ? m.id !== model.id : true) && !m?.preset && m?.owned_by !== 'arena') as model}
-										<option value={model.id} style="--c:var(--color-gray-900, #171717)">{model.name}</option>
+										<option value={model.id} style="--c:var(--color-gray-900)">{model.name}</option>
 									{/each}
 								</select>
 							</div>
@@ -590,7 +590,7 @@
 					</div>
 
 					<div style="--my:0.5rem">
-						<div style="--px:0.75rem; --py:0.5rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-950, #0d0d0d); --radius:0.5rem">
+						<div style="--px:0.75rem; --py:0.5rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-950); --radius:0.5rem">
 							<AccessControl
 								bind:accessControl
 								accessRoles={['read', 'write']}
@@ -599,7 +599,7 @@
 						</div>
 					</div>
 
-					<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.375rem" />
+					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.375rem" />
 
 					<div style="--my:0.5rem">
 						<div style="--d:flex; --w:100%; --jc:space-between">
@@ -647,7 +647,7 @@
 						</div>
 					</div>
 
-					<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.25rem" />
+					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.25rem" />
 
 					<div style="--my:0.5rem">
 						<div style="--d:flex; --w:100%; --jc:space-between; --ai:center">
@@ -711,7 +711,7 @@
 									{#each info.meta.suggestion_prompts as prompt, promptIdx}
 										<div style="--d:flex; --radius:0.5rem">
 											<input
-												style="--size:0.875rem; --w:100%; --bgc:transparent; --oe:none; --br:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)"
+												style="--size:0.875rem; --w:100%; --bgc:transparent; --oe:none; --br:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 												placeholder={$i18n.t('Write a prompt suggestion (e.g. Who are you?)')}
 												bind:value={prompt.content}
 											/>
@@ -735,7 +735,7 @@
 						{/if}
 					</div>
 
-					<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.375rem" />
+					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.375rem" />
 
 					<div style="--my:0.5rem">
 						<Knowledge bind:selectedItems={knowledge} />
@@ -763,7 +763,7 @@
 						<Capabilities bind:capabilities />
 					</div>
 
-					<div style="--my:0.5rem; --c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-700, #4e4e4e)">
+					<div style="--my:0.5rem; --c:var(--color-gray-300); --dark-c:var(--color-gray-700)">
 						<div style="--d:flex; --w:100%; --jc:space-between; --mb:0.5rem">
 							<div style="--as:center; --size:0.875rem; --weight:600">{$i18n.t('JSON Preview')}</div>
 

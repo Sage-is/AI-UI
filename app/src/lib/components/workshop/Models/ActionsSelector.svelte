@@ -27,7 +27,7 @@
 		<div style="--as:center; --size:0.875rem; --weight:600">{$i18n.t('Actions')}</div>
 	</div>
 
-	<div style="--size:0.75rem; --dark-c:var(--color-gray-500, #9b9b9b)">
+	<div style="--size:0.75rem; --dark-c:var(--color-gray-500)">
 		{$i18n.t('To select actions here, add them to the "Functions" workshop first.')}
 	</div>
 

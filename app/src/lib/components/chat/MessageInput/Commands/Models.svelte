@@ -104,8 +104,8 @@
 		id="commands-container"
 		style="--px:0.5rem; --mb:0.5rem; --ta:left; --w:100%; --pos:absolute; --bottom:0; --left:0; --right:0; --z:10"
 	>
-		<div style="--d:flex; --w:100%; --radius:0.75rem; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)">
-			<div style="--d:flex; --fd:column; --w:100%; --radius:0.75rem; --bgc:#fff; --dark-bgc:var(--color-gray-900, #171717); --dark-c:var(--color-gray-100, #ececec)">
+		<div style="--d:flex; --w:100%; --radius:0.75rem; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)">
+			<div style="--d:flex; --fd:column; --w:100%; --radius:0.75rem; --bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-c:var(--color-gray-100)">
 				<div
 					style="--m:0.25rem; --ofy:auto; --p:0.25rem; --btrr:0.5rem; --bbrr:0.5rem; --g:0.125rem; --maxh:15rem"
 	class="scrollbar-hidden"
@@ -127,7 +127,7 @@
 							}}
 							on:focus={() => {}}
 						>
-							<div style="--d:flex; --weight:500; --c:#000; --dark-c:var(--color-gray-100, #ececec); --line-clamp:1">
+							<div style="--d:flex; --weight:500; --c:#000; --dark-c:var(--color-gray-100); --line-clamp:1">
 								<img
 									src={model?.info?.meta?.profile_image_url ??
 										branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}

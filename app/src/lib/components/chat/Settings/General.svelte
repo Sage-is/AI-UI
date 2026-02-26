@@ -196,7 +196,7 @@
 				<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Theme')}</div>
 				<div style="--d:flex; --ai:center; --pos:relative">
 					<select
-						style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --pr:2rem; --radius:0.125rem; --py:0.5rem; --px:0.5rem; --size:0.75rem; --bgc:transparent; --ta:right"
+						style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --py:0.5rem; --px:0.5rem; --size:0.75rem; --bgc:transparent; --ta:right"
 	class="{$settings.highContrastMode
 							? ''
 							: 'outline-hidden'}"
@@ -218,7 +218,7 @@
 				<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Language')}</div>
 				<div style="--d:flex; --ai:center; --pos:relative">
 					<select
-						style="--dark-bgc:var(--color-gray-900, #171717); --w:fit-content; --pr:2rem; --radius:0.125rem; --py:0.5rem; --px:0.5rem; --size:0.75rem; --bgc:transparent; --ta:right"
+						style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --py:0.5rem; --px:0.5rem; --size:0.75rem; --bgc:transparent; --ta:right"
 	class="{$settings.highContrastMode
 							? ''
 							: 'outline-hidden'}"
@@ -235,10 +235,10 @@
 				</div>
 			</div>
 			{#if $i18n.language === 'en-US'}
-				<div style="--mb:0.5rem; --size:0.75rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b)">
+				<div style="--mb:0.5rem; --size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 					Couldn't find your language?
 					<a
-						style="--c:var(--color-gray-300, #cdcdcd); --weight:500; --td:underline"
+						style="--c:var(--color-gray-300); --weight:500; --td:underline"
 						href="https://github.com/Sage-is/AI-UI/blob/main/docs/CONTRIBUTING.md#-translations-and-internationalization"
 						target="_blank"
 					>
@@ -269,7 +269,7 @@
 		</div>
 
 		{#if $user?.role === 'admin' || ($user?.permissions.chat?.system_prompt ?? true)}
-			<hr style="--bc:var(--color-gray-50, #f9f9f9); --dark-bc:var(--color-gray-850, #262626); --my:0.75rem" />
+			<hr style="--bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --my:0.75rem" />
 
 			<div>
 				<div style="--my:0.625rem; --size:0.875rem; --weight:500">{$i18n.t('System Prompt')}</div>
@@ -290,7 +290,7 @@
 				<div style="--d:flex; --jc:space-between; --ai:center; --size:0.875rem">
 					<div style="--weight:500">{$i18n.t('Advanced Parameters')}</div>
 					<button
-						style="--size:0.75rem; --weight:500; --c:var(--color-gray-500, #9b9b9b)"
+						style="--size:0.75rem; --weight:500; --c:var(--color-gray-500)"
 						type="button"
 						on:click={() => {
 							showAdvanced = !showAdvanced;
@@ -307,7 +307,7 @@
 
 	<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
 		<button
-			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			on:click={() => {
 				saveHandler();
 			}}

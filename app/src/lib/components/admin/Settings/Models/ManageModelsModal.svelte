@@ -39,7 +39,7 @@
 
 <Modal size="sm" bind:show>
 	<div>
-		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-100, #ececec); --px:1.25rem; --pt:1rem">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-100); --px:1.25rem; --pt:1rem">
 			<div style="--size:1.125rem; --weight:500; --as:center"
 	class="font-primary">
 				{$i18n.t('Manage Models')}
@@ -54,10 +54,10 @@
 			</button>
 		</div>
 
-		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:0.75rem; --pb:1rem; --g-md:1rem; --dark-c:var(--color-gray-200, #e3e3e3)">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:0.75rem; --pb:1rem; --g-md:1rem; --dark-c:var(--color-gray-200)">
 			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				{#if selected === ''}
-					<div style="--py:1.25rem; --c:var(--color-gray-400, #b4b4b4); --size:0.75rem">
+					<div style="--py:1.25rem; --c:var(--color-gray-400); --size:0.75rem">
 						<div>
 							{$i18n.t('No inference engine with management support found')}
 						</div>
@@ -65,7 +65,7 @@
 				{:else if selected !== null}
 					<div style="--d:flex; --w:100%; --fd:column">
 						<div
-							style="--d:flex; --g:0.25rem; --ofx:auto; --w:fit-content; --ta:center; --size:0.875rem; --weight:500; --radius:9999px; --bgc:transparent; --dark-c:var(--color-gray-200, #e3e3e3)"
+							style="--d:flex; --g:0.25rem; --ofx:auto; --w:fit-content; --ta:center; --size:0.875rem; --weight:500; --radius:9999px; --bgc:transparent; --dark-c:var(--color-gray-200)"
 	class="scrollbar-none"
 						>
 							<button

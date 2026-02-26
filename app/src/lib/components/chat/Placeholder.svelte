@@ -87,14 +87,14 @@
 			className="w-full flex justify-center mb-0.5"
 			placement="top"
 		>
-			<div style="--d:flex; --ai:center; --g:0.5rem; --c:var(--color-gray-500, #9b9b9b); --weight:500; --size:1.125rem; --my:0.5rem; --w:fit-content">
+			<div style="--d:flex; --ai:center; --g:0.5rem; --c:var(--color-gray-500); --weight:500; --size:1.125rem; --my:0.5rem; --w:fit-content">
 				<EyeSlash strokeWidth="2.5" className="size-5" />{$i18n.t('Temporary Chat')}
 			</div>
 		</Tooltip>
 	{/if}
 
 	<div
-		style="--w:100%; --size:1.875rem; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-100, #ececec); --ta:center; --d:flex; --ai:center; --g:1rem"
+		style="--w:100%; --size:1.875rem; --c:var(--color-gray-800); --dark-c:var(--color-gray-100); --ta:center; --d:flex; --ai:center; --g:1rem"
 	class="font-primary"
 	>
 		<div style="--w:100%; --d:flex; --fd:column; --jc:center; --ai:center">
@@ -138,7 +138,7 @@
 										<img
 											crossorigin="anonymous"
 											src={model?.info?.meta?.profile_image_url ?? branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
-											style="--w:2.25rem; --h:2.25rem; --radius:9999px; --bc:1px; --bc:var(--color-gray-100, #ececec); --dark-bs:none"
+											style="--w:2.25rem; --h:2.25rem; --radius:9999px; --bc:1px; --bc:var(--color-gray-100); --dark-bs:none"
 	class="@sm:size-10"
 											aria-hidden="true"
 											draggable="false"
@@ -183,7 +183,7 @@
 								placement="top"
 							>
 								<div
-									style="--mt:0.125rem; --px:0.5rem; --size:0.875rem; --weight:400; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4); --line-clamp:2; --maxw:36rem"
+									style="--mt:0.125rem; --px:0.5rem; --size:0.875rem; --weight:400; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --line-clamp:2; --maxw:36rem"
 	class="markdown"
 								>
 									{@html marked.parse(
@@ -195,7 +195,7 @@
 							</Tooltip>
 
 							{#if models[selectedModelIdx]?.info?.meta?.user}
-								<div style="--mt:0.125rem; --size:0.875rem; --weight:400; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b)">
+								<div style="--mt:0.125rem; --size:0.875rem; --weight:400; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 									By
 									{#if models[selectedModelIdx]?.info?.meta?.user.community}
 										<a

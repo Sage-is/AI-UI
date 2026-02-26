@@ -48,7 +48,7 @@
 
 <Modal bind:show size="sm">
 	<div>
-		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300, #cdcdcd); --px:1.25rem; --pt:1rem; --pb:0.5rem">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.25rem; --pt:1rem; --pb:0.5rem">
 			<div style="--size:1.125rem; --weight:500; --as:center">
 				{$i18n.t('Edit Memory')}
 			</div>
@@ -62,7 +62,7 @@
 			</button>
 		</div>
 
-		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1.25rem; --pb:1rem; --g-md:1rem; --dark-c:var(--color-gray-200, #e3e3e3)">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1.25rem; --pb:1rem; --g-md:1rem; --dark-c:var(--color-gray-200)">
 			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				<form
 					style="--d:flex; --fd:column; --w:100%"
@@ -74,18 +74,18 @@
 						<textarea
 							bind:value={content}
 							rows="6"
-							style="--bgc:transparent; --w:100%; --size:0.875rem; --radius:0.75rem; --p:0.75rem; outline-style:solid; outline-width:1px; outline-color:var(--color-gray-100, #ececec); outline-color:var(--color-gray-800, #333); resize: vertical;"
+							style="--bgc:transparent; --w:100%; --size:0.875rem; --radius:0.75rem; --p:0.75rem; outline-style:solid; outline-width:1px; outline-color:var(--color-gray-100); outline-color:var(--color-gray-800); resize: vertical;"
 							placeholder={$i18n.t('Enter a detail about yourself for your LLMs to recall')}
 						/>
 
-						<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">
+						<div style="--size:0.75rem; --c:var(--color-gray-500)">
 							ⓘ {$i18n.t('Refer to yourself as "User" (e.g., "User is learning Spanish")')}
 						</div>
 					</div>
 
 					<div style="--d:flex; --jc:flex-end; --pt:0.25rem; --size:0.875rem; --weight:500">
 						<button
-							style="--px:1rem; --py:0.5rem; --bgc:#047857; --hvr-bgc:#065f46; --c:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:1.5rem; --d:flex; --fd:row; --g:0.25rem; --ai:center"
+							style="--px:1rem; --py:0.5rem; --bgc:#047857; --hvr-bgc:#065f46; --c:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:1.5rem; --d:flex; --fd:row; --g:0.25rem; --ai:center"
 	class="{loading
 								? ' cursor-not-allowed'
 								: ''}"

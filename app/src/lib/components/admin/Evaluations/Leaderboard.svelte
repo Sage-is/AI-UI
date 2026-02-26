@@ -340,9 +340,9 @@
 			{$i18n.t('Leaderboard')}
 		</div>
 
-		<div style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-850, #262626)" />
+		<div style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)" />
 
-		<span style="--size:1.125rem; --weight:500; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-300, #cdcdcd); --mr:0.375rem"
+		<span style="--size:1.125rem; --weight:500; --c:var(--color-gray-500); --dark-c:var(--color-gray-300); --mr:0.375rem"
 			>{rankedModels.length}</span
 		>
 	</div>
@@ -378,18 +378,18 @@
 		</div>
 	{/if}
 	{#if (rankedModels ?? []).length === 0}
-		<div style="--ta:center; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4); --py:0.25rem">
+		<div style="--ta:center; --size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --py:0.25rem">
 			{$i18n.t('No models found')}
 		</div>
 	{:else}
 		<table
-			style="--w:100%; --size:0.875rem; --ta:left; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4); table-layout:auto; --maxw:100%; --radius:0.25rem"
+			style="--w:100%; --size:0.875rem; --ta:left; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); table-layout:auto; --maxw:100%; --radius:0.25rem"
 	class="{loadingLeaderboard
 				? 'opacity-20'
 				: ''}"
 		>
 			<thead
-				style="--size:0.75rem; --c:var(--color-gray-700, #4e4e4e); --tt:uppercase; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-850, #262626); --dark-c:var(--color-gray-400, #b4b4b4); --translatey:-0.125rem"
+				style="--size:0.75rem; --c:var(--color-gray-700); --tt:uppercase; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-400); --translatey:-0.125rem"
 			>
 				<tr class="">
 					<th
@@ -507,11 +507,11 @@
 			<tbody style="--d:flex; --fd:column">
 				{#each sortedModels as model, modelIdx (model.id)}
 					<tr
-						style="--bgc:#fff; --dark-bgc:var(--color-gray-900, #171717); --dark-bc:var(--color-gray-850, #262626); --size:0.75rem; --cur:pointer; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:rgb(38 38 38 / 0.5); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+						style="--bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-bc:var(--color-gray-850); --size:0.75rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:rgb(38 38 38 / 0.5); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="group"
 						on:click={() => openLeaderboardModelModal(model)}
 					>
-						<td style="--px:0.75rem; --py:0.375rem; --ta:left; --weight:500; --c:var(--color-gray-900, #171717); --dark-c:#fff; --w:fit-content">
+						<td style="--px:0.75rem; --py:0.375rem; --ta:left; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --w:fit-content">
 							<div style="--line-clamp:1">
 								{model?.rating !== '-' ? modelIdx + 1 : '-'}
 							</div>
@@ -526,12 +526,12 @@
 									/>
 								</div>
 
-								<div style="--weight:500; --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-200, #e3e3e3); --pr:1rem">
+								<div style="--weight:500; --c:var(--color-gray-800); --dark-c:var(--color-gray-200); --pr:1rem">
 									{model.name}
 								</div>
 							</div>
 						</td>
-						<td style="--px:0.75rem; --py:0.375rem; --ta:right; --weight:500; --c:var(--color-gray-900, #171717); --dark-c:#fff; --w:max-content">
+						<td style="--px:0.75rem; --py:0.375rem; --ta:right; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --w:max-content">
 							{model.rating}
 						</td>
 
@@ -569,7 +569,7 @@
 	{/if}
 </div>
 
-<div style="--c:var(--color-gray-500, #9b9b9b); --size:0.75rem; --mt:0.375rem; --w:100%; --d:flex; --jc:flex-end">
+<div style="--c:var(--color-gray-500); --size:0.75rem; --mt:0.375rem; --w:100%; --d:flex; --jc:flex-end">
 	<div style="--ta:right">
 		<div style="--line-clamp:1">
 			ⓘ {$i18n.t(

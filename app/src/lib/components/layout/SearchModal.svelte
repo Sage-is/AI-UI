@@ -203,7 +203,7 @@
 </script>
 
 <Modal size="xl" bind:show>
-	<div style="--py:0.625rem; --dark-c:var(--color-gray-300, #cdcdcd); --c:var(--color-gray-700, #4e4e4e)">
+	<div style="--py:0.625rem; --dark-c:var(--color-gray-300); --c:var(--color-gray-700)">
 		<div style="--px:0.875rem; --pb:0.375rem">
 			<SearchInput
 				bind:value={query}
@@ -235,7 +235,7 @@
 			/>
 		</div>
 
-		<!-- <hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.25rem" /> -->
+		<!-- <hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.25rem" /> -->
 
 		<div style="--d:flex; --px:0.75rem; --pb:0.25rem">
 			<div
@@ -244,7 +244,7 @@
 			>
 				{#if chatList}
 					{#if chatList.length === 0}
-						<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4); --ta:center; --px:1.25rem">
+						<div style="--size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --ta:center; --px:1.25rem">
 							{$i18n.t('No results found')}
 						</div>
 					{/if}
@@ -252,7 +252,7 @@
 					{#each chatList as chat, idx (chat.id)}
 						{#if idx === 0 || (idx > 0 && chat.time_range !== chatList[idx - 1].time_range)}
 							<div
-								style="--w:100%; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-500, #9b9b9b); --weight:500;  --px:0.5rem"
+								style="--w:100%; --size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --weight:500;  --px:0.5rem"
 	class="{idx === 0
 									? ''
 									: 'pt-5'}"
@@ -280,7 +280,7 @@
 						{/if}
 
 						<a
-							style="--w:100%; --d:flex; --jc:space-between; --ai:center; --radius:0.5rem; --size:0.875rem; --py:0.5rem; --px:0.75rem; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-850, #262626)"
+							style="--w:100%; --d:flex; --jc:space-between; --ai:center; --radius:0.5rem; --size:0.875rem; --py:0.5rem; --px:0.75rem; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850)"
 	class="{selectedIdx ===
 							idx
 								? 'bg-gray-50 dark:bg-gray-850'
@@ -302,7 +302,7 @@
 								</div>
 							</div>
 
-							<div style="--pl:0.75rem; --fs:0; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4); --size:0.75rem">
+							<div style="--pl:0.75rem; --fs:0; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --size:0.75rem">
 								{dayjs(chat?.updated_at * 1000).calendar()}
 							</div>
 						</a>
@@ -335,7 +335,7 @@
 			>
 				{#if messages === null}
 					<div
-						style="--w:100%; --h:100%; --d:flex; --jc:center; --ai:center; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4); --size:0.875rem"
+						style="--w:100%; --h:100%; --d:flex; --jc:center; --ai:center; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --size:0.875rem"
 					>
 						{$i18n.t('Select a conversation to preview')}
 					</div>

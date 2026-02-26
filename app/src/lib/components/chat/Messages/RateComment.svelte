@@ -111,7 +111,7 @@
 {/if}
 
 <div
-	style="--my:0.625rem; --radius:0.75rem; --px:1rem; --py:0.75rem; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)"
+	style="--my:0.625rem; --radius:0.75rem; --px:1rem; --py:0.75rem; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 	id="message-feedback-{message.id}"
 >
 	<div style="--d:flex; --jc:space-between; --ai:center">
@@ -135,7 +135,7 @@
 				<!-- 1-10 scale -->
 				{#each Array.from({ length: 10 }).map((_, i) => i + 1) as rating}
 					<button
-						style="--w:1.75rem; --h:1.75rem; --size:0.875rem; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+						style="--w:1.75rem; --h:1.75rem; --size:0.875rem; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 	class="{detailedRating ===
 						rating
 							? 'bg-gray-100 dark:bg-gray-800'
@@ -169,7 +169,7 @@
 			<div style="--d:flex; --fw:wrap; --g:0.375rem; --size:0.875rem; --mt:0.375rem">
 				{#each reasons as reason}
 					<button
-						style="--px:0.75rem; --py:0.125rem; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.75rem"
+						style="--px:0.75rem; --py:0.125rem; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.75rem"
 	class="{selectedReason ===
 						reason
 							? 'bg-gray-100 dark:bg-gray-800'
@@ -243,7 +243,7 @@
 		</div>
 
 		<button
-			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			on:click={() => {
 				saveHandler();
 			}}

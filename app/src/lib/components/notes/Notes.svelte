@@ -251,7 +251,7 @@
 				showDeleteConfirm = false;
 			}}
 		>
-			<div style="--size:0.875rem; --c:var(--color-gray-500, #9b9b9b)">
+			<div style="--size:0.875rem; --c:var(--color-gray-500)">
 				{$i18n.t('This will delete')} <span style="--weight:600">{selectedNote.title}</span>.
 			</div>
 		</DeleteConfirmDialog>
@@ -271,7 +271,7 @@
 					{#if query}
 						<div style="--as:center; --pl:0.375rem; --translatey:0.5px; --btlr:0.75rem; --bblr:0.75rem; --bgc:transparent">
 							<button
-								style="--p:0.125rem; --radius:9999px; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+								style="--p:0.125rem; --radius:9999px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								on:click={() => {
 									query = '';
 								}}
@@ -289,7 +289,7 @@
 			{#if Object.keys(notes).length > 0}
 				<div style="--pb:2.5rem">
 					{#each Object.keys(notes) as timeRange}
-						<div style="--w:100%; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-500, #9b9b9b); --weight:500; --pb:0.625rem">
+						<div style="--w:100%; --size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --weight:500; --pb:0.625rem">
 							{$i18n.t(timeRange)}
 						</div>
 
@@ -298,7 +298,7 @@
 						>
 							{#each notes[timeRange] as note, idx (note.id)}
 								<div
-									style="--d:flex; --g:1rem; --cur:pointer; --w:100%; --px:1.125rem; --py:1rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-bgc:rgb(0 0 0 / 0.05); --radius:0.75rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+									style="--d:flex; --g:1rem; --cur:pointer; --w:100%; --px:1.125rem; --py:1rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-bgc:rgb(0 0 0 / 0.05); --radius:0.75rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								>
 									<div style="--d:flex; --fx:1 1 0%; --g:1rem; --cur:pointer; --w:100%">
 										<a
@@ -332,7 +332,7 @@
 															}}
 														>
 															<button
-																style="--as:center; --w:fit-content; --size:0.875rem; --p:0.25rem; --dark-c:var(--color-gray-300, #cdcdcd); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.75rem"
+																style="--as:center; --w:fit-content; --size:0.875rem; --p:0.25rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.75rem"
 																type="button"
 															>
 																<EllipsisHorizontal className="size-5" />
@@ -342,7 +342,7 @@
 												</div>
 
 												<div
-													style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-500, #9b9b9b); --mb:0.75rem; --line-clamp:3; --minh:2.5rem"
+													style="--size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --mb:0.75rem; --line-clamp:3; --minh:2.5rem"
 												>
 													{#if note.data?.content?.md}
 														{note.data?.content?.md}
@@ -361,7 +361,7 @@
 													className="flex shrink-0"
 													placement="top-start"
 												>
-													<div style="--fs:0; --c:var(--color-gray-500, #9b9b9b)">
+													<div style="--fs:0; --c:var(--color-gray-500)">
 														{$i18n.t('By {{name}}', {
 															name: capitalizeFirstLetter(
 																note?.user?.name ?? note?.user?.email ?? $i18n.t('Deleted User')
@@ -380,11 +380,11 @@
 			{:else}
 				<div style="--w:100%; --h:100%; --d:flex; --fd:column; --ai:center; --jc:center">
 					<div style="--pb:5rem; --ta:center">
-						<div style="--size:1.25rem; --weight:500; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-600, #676767)">
+						<div style="--size:1.25rem; --weight:500; --c:var(--color-gray-400); --dark-c:var(--color-gray-600)">
 							{$i18n.t('No Notes')}
 						</div>
 
-						<div style="--mt:0.25rem; --size:0.875rem; --c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-700, #4e4e4e)">
+						<div style="--mt:0.25rem; --size:0.875rem; --c:var(--color-gray-300); --dark-c:var(--color-gray-700)">
 							{$i18n.t('Create your first note by clicking on the plus button below.')}
 						</div>
 					</div>
@@ -396,7 +396,7 @@
 			<div style="--d:flex; --g:0.125rem; --jc:flex-end; --w:100%">
 				<Tooltip content={$i18n.t('Create Note')}>
 					<button
-						style="--cur:pointer; --p:0.625rem; --d:flex; --radius:9999px; --b:1px solid; --bc:var(--color-gray-50, #f9f9f9); --bgc:#fff; --dark-bs:none; --dark-bgc:var(--color-gray-850, #262626); --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --shadow:5"
+						style="--cur:pointer; --p:0.625rem; --d:flex; --radius:9999px; --b:1px solid; --bc:var(--color-gray-50); --bgc:#fff; --dark-bs:none; --dark-bgc:var(--color-gray-850); --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --shadow:5"
 						type="button"
 						on:click={async () => {
 							createNoteHandler();
@@ -407,7 +407,7 @@
 				</Tooltip>
 
 				<!-- <button
-				style="--cur:pointer; --p:0.625rem; --d:flex; --radius:9999px; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-850, #262626); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --shadow:5"
+				style="--cur:pointer; --p:0.625rem; --d:flex; --radius:9999px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --shadow:5"
 			>
 				<SparklesSolid className="size-4" />
 			</button> -->
@@ -436,7 +436,7 @@
 				/>
 
 				<button
-					style="--d:flex; --size:0.75rem; --ai:center; --g:0.25rem; --px:0.75rem; --py:0.375rem; --radius:0.75rem; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-800, #333); --hvr-dark-bgc:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-200, #e3e3e3); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--d:flex; --size:0.75rem; --ai:center; --g:0.25rem; --px:0.75rem; --py:0.375rem; --radius:0.75rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						const notesImportInputElement = document.getElementById('notes-import-input');
 						if (notesImportInputElement) {

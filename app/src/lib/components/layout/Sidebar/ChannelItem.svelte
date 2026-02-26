@@ -43,7 +43,7 @@
 
 <div
 	bind:this={itemElement}
-	style="--w:100%; --radius:0.5rem; --d:flex; --pos:relative; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --px:0.625rem; --py:0.25rem"
+	style="--w:100%; --radius:0.5rem; --d:flex; --pos:relative; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --px:0.625rem; --py:0.25rem"
 	class="{className} group {$page
 		.url.pathname === `/space/${channel.id}`
 		? 'bg-gray-100 dark:bg-gray-900'
@@ -81,14 +81,14 @@
 
 	{#if $user?.role === 'admin'}
 		<button
-			style="--pos:absolute; --z:10; --right:0.5rem; --v:hidden; --as:center; --d:flex; --ai:center; --dark-c:var(--color-gray-300, #cdcdcd)"
+			style="--pos:absolute; --z:10; --right:0.5rem; --v:hidden; --as:center; --d:flex; --ai:center; --dark-c:var(--color-gray-300)"
 	class="group-hover:visible"
 			on:click={(e) => {
 				e.stopPropagation();
 				showEditChannelModal = true;
 			}}
 		>
-			<button style="--p:0.125rem; --hvr-dark-bgc:var(--color-gray-850, #262626); --radius:0.5rem; touch-action:auto" on:click={(e) => {}}>
+			<button style="--p:0.125rem; --hvr-dark-bgc:var(--color-gray-850); --radius:0.5rem; touch-action:auto" on:click={(e) => {}}>
 				<Cog6 className="size-3.5" />
 			</button>
 		</button>

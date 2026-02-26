@@ -52,7 +52,7 @@
 
 <Modal size="lg" bind:show>
 	<div>
-		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300, #cdcdcd); --px:1.25rem; --pt:1rem; --pb:0.25rem">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.25rem; --pt:1rem; --pb:0.25rem">
 			<div style="--size:1.125rem; --weight:500; --as:center">{$i18n.t('Memory')}</div>
 			<button
 				style="--as:center"
@@ -73,16 +73,16 @@
 			</button>
 		</div>
 
-		<div style="--d:flex; --fd:column; --w:100%; --px:1.25rem; --pb:1.25rem; --dark-c:var(--color-gray-200, #e3e3e3)">
+		<div style="--d:flex; --fd:column; --w:100%; --px:1.25rem; --pb:1.25rem; --dark-c:var(--color-gray-200)">
 			<div
-				style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem; --h:28rem; --maxh:100vh; outline-style:solid; outline-width:1px; --radius:0.75rem; outline-color:var(--color-gray-100, #ececec); outline-color:var(--color-gray-800, #333); --mb:1rem; --mt:0.25rem"
+				style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem; --h:28rem; --maxh:100vh; outline-style:solid; outline-width:1px; --radius:0.75rem; outline-color:var(--color-gray-100); outline-color:var(--color-gray-800); --mb:1rem; --mt:0.25rem"
 			>
 				{#if memories.length > 0}
 					<div style="--ta:left; --size:0.875rem; --w:100%; --mb:1rem; --ofy:scroll">
 						<div style="--pos:relative; --ofx:auto">
-							<table style="--w:100%; --size:0.875rem; --ta:left; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-400, #b4b4b4); table-layout:auto">
+							<table style="--w:100%; --size:0.875rem; --ta:left; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); table-layout:auto">
 								<thead
-									style="--size:0.75rem; --c:var(--color-gray-700, #4e4e4e); --tt:uppercase; --bgc:transparent; --dark-c:var(--color-gray-200, #e3e3e3); border-bottom-width:2px; --bc:var(--color-gray-50, #f9f9f9); --dark-bc:var(--color-gray-850, #262626)"
+									style="--size:0.75rem; --c:var(--color-gray-700); --tt:uppercase; --bgc:transparent; --dark-c:var(--color-gray-200); border-bottom-width:2px; --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850)"
 								>
 									<tr>
 										<th scope="col" style="--px:0.75rem; --py:0.5rem"> {$i18n.t('Name')} </th>
@@ -94,7 +94,7 @@
 								</thead>
 								<tbody style="--d:flex;--fd:column">
 									{#each memories as memory}
-										<tr style="--bb:1px solid; --bc:var(--color-gray-50, #f9f9f9); --dark-bc:var(--color-gray-850, #262626); --ai:center">
+										<tr style="--bb:1px solid; --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --ai:center">
 											<td style="--px:0.75rem; --py:0.25rem">
 												<div style="--line-clamp:1">
 													{memory.content}
@@ -177,7 +177,7 @@
 					</div>
 				{:else}
 					<div style="--ta:center; --d:flex; --h:100%; --size:0.875rem; --w:100%">
-						<div style="--my:auto; --pb:2.5rem; --px:1rem; --w:100%; --c:var(--color-gray-500, #9b9b9b)">
+						<div style="--my:auto; --pb:2.5rem; --px:1rem; --w:100%; --c:var(--color-gray-500)">
 							{$i18n.t('Memories accessible by LLMs will be shown here.')}
 						</div>
 					</div>
@@ -185,7 +185,7 @@
 			</div>
 			<div style="--d:flex; --size:0.875rem; --weight:500; --g:0.375rem">
 				<button
-					style="--px:0.875rem; --py:0.375rem; --weight:500; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:var(--color-gray-300, #cdcdcd); outline-color:var(--color-gray-800, #333); --radius:1.5rem"
+					style="--px:0.875rem; --py:0.375rem; --weight:500; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:var(--color-gray-300); outline-color:var(--color-gray-800); --radius:1.5rem"
 					on:click={() => {
 						showAddMemoryModal = true;
 					}}>{$i18n.t('Add Memory')}</button

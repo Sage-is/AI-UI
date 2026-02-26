@@ -13,7 +13,7 @@
 
 <Modal size="lg" bind:show>
 	<div>
-		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300, #cdcdcd); --px:1.25rem; --pt:1rem; --pb:0.5rem">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.25rem; --pt:1rem; --pb:0.5rem">
 			<div style="--size:1.125rem; --weight:500; --as:center; --d:flex; --fd:column; --g:0.125rem; --tt:capitalize">
 				{#if codeExecution?.result}
 					<div>
@@ -56,7 +56,7 @@
 
 		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1rem; --pb:1.25rem">
 			<div
-				style="--d:flex; --fd:column; --w:100%; --dark-c:var(--color-gray-200, #e3e3e3); --ofy:scroll; --maxh:22rem"
+				style="--d:flex; --fd:column; --w:100%; --dark-c:var(--color-gray-200); --ofy:scroll; --maxh:22rem"
 	class="scrollbar-hidden"
 			>
 				<div style="--d:flex; --fd:column; --w:100%">
@@ -78,13 +78,13 @@
 					<div style="--dark-bgc:#202123; --dark-c:#fff; --px:1rem; --py:1rem; --bblr:0.5rem; --bbrr:0.5rem; --d:flex; --fd:column; --g:0.75rem">
 						{#if codeExecution?.result?.error}
 							<div>
-								<div style="--c:var(--color-gray-500, #9b9b9b); --size:0.75rem; --mb:0.25rem">{$i18n.t('ERROR')}</div>
+								<div style="--c:var(--color-gray-500); --size:0.75rem; --mb:0.25rem">{$i18n.t('ERROR')}</div>
 								<div style="--size:0.875rem">{codeExecution?.result?.error}</div>
 							</div>
 						{/if}
 						{#if codeExecution?.result?.output}
 							<div>
-								<div style="--c:var(--color-gray-500, #9b9b9b); --size:0.75rem; --mb:0.25rem">{$i18n.t('OUTPUT')}</div>
+								<div style="--c:var(--color-gray-500); --size:0.75rem; --mb:0.25rem">{$i18n.t('OUTPUT')}</div>
 								<div style="--size:0.875rem">{codeExecution?.result?.output}</div>
 							</div>
 						{/if}
@@ -92,8 +92,8 @@
 				{/if}
 				{#if codeExecution?.result?.files && codeExecution?.result?.files.length > 0}
 					<div style="--d:flex; --fd:column; --w:100%">
-						<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem" />
-						<div style="--size:0.875rem; --weight:500; --dark-c:var(--color-gray-300, #cdcdcd)">
+						<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
+						<div style="--size:0.875rem; --weight:500; --dark-c:var(--color-gray-300)">
 							{$i18n.t('Files')}
 						</div>
 						<ul style="--mt:0.25rem; list-style-type:disc; --pl:1rem; --size:0.75rem">

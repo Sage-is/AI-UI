@@ -437,7 +437,7 @@
 			>
 				<div style="--d:flex; --ai:center; --g:0.125rem; --translatey:1px">
 					<button
-						style="--d:flex; --g:0.25rem; --ai:center; --bs:none; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.375rem; --px:0.375rem; --py:0.125rem"
+						style="--d:flex; --g:0.25rem; --ai:center; --bs:none; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.375rem; --px:0.375rem; --py:0.125rem"
 	class="bg-none"
 						on:click={collapseCodeBlock}
 					>
@@ -452,7 +452,7 @@
 
 					{#if preview && ['html', 'svg'].includes(lang)}
 						<button
-							style="--d:flex; --g:0.25rem; --ai:center; --bs:none; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.375rem; --px:0.375rem; --py:0.125rem"
+							style="--d:flex; --g:0.25rem; --ai:center; --bs:none; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.375rem; --px:0.375rem; --py:0.125rem"
 	class="run-code-button bg-none"
 							on:click={previewCode}
 						>
@@ -474,7 +474,7 @@
 							</div>
 						{:else if run}
 							<button
-								style="--d:flex; --g:0.25rem; --ai:center; --bs:none; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.375rem; --px:0.375rem; --py:0.125rem"
+								style="--d:flex; --g:0.25rem; --ai:center; --bs:none; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.375rem; --px:0.375rem; --py:0.125rem"
 	class="run-code-button bg-none"
 								on:click={async () => {
 									code = _code;
@@ -495,7 +495,7 @@
 
 					{#if save}
 						<button
-							style="--bs:none; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.375rem; --px:0.375rem; --py:0.125rem"
+							style="--bs:none; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.375rem; --px:0.375rem; --py:0.125rem"
 	class="save-code-button bg-none"
 							on:click={saveCode}
 						>
@@ -504,7 +504,7 @@
 					{/if}
 
 					<button
-						style="--bs:none; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.375rem; --px:0.375rem; --py:0.125rem"
+						style="--bs:none; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.375rem; --px:0.375rem; --py:0.125rem"
 	class="copy-code-button bg-none"
 						on:click={copyCode}>{copied ? $i18n.t('Copied') : $i18n.t('Copy')}</button
 					>
@@ -519,7 +519,7 @@
 						? ''
 						: 'rounded-b-lg'}"
 			>
-				<div style="--pt:1.75rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-850, #262626)"></div>
+				<div style="--pt:1.75rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)"></div>
 
 				{#if !collapsed}
 					<CodeEditor
@@ -535,10 +535,10 @@
 					/>
 				{:else}
 					<div
-						style="--bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:#000; --dark-c:#fff; --pt:0.5rem;  --px:1rem; --d:flex; --fd:column; --g:0.5rem; --size:0.75rem"
+						style="--bgc:var(--color-gray-50); --dark-bgc:#000; --dark-c:#fff; --pt:0.5rem;  --px:1rem; --d:flex; --fd:column; --g:0.5rem; --size:0.75rem"
 	class="rounded-b-lg!"
 					>
-						<span style="--c:var(--color-gray-500, #9b9b9b); font-style:italic">
+						<span style="--c:var(--color-gray-500); font-style:italic">
 							{$i18n.t('{{COUNT}} hidden lines', {
 								COUNT: code.split('\n').length
 							})}
@@ -550,24 +550,24 @@
 			{#if !collapsed}
 				<div
 					id="plt-canvas-{id}"
-					style="--bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:#202123; --dark-c:#fff; --maxw:100%; --ofx:auto"
+					style="--bgc:var(--color-gray-50); --dark-bgc:#202123; --dark-c:#fff; --maxw:100%; --ofx:auto"
 	class="scrollbar-hidden"
 				/>
 
 				{#if executing || stdout || stderr || result || files}
 					<div
-						style="--bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:#202123; --dark-c:#fff; --py:1rem; --px:1rem; --d:flex; --fd:column; --g:0.5rem"
+						style="--bgc:var(--color-gray-50); --dark-bgc:#202123; --dark-c:#fff; --py:1rem; --px:1rem; --d:flex; --fd:column; --g:0.5rem"
 	class="rounded-b-lg!"
 					>
 						{#if executing}
 							<div class=" ">
-								<div style="--c:var(--color-gray-500, #9b9b9b); --size:0.75rem; --mb:0.25rem">STDOUT/STDERR</div>
+								<div style="--c:var(--color-gray-500); --size:0.75rem; --mb:0.25rem">STDOUT/STDERR</div>
 								<div style="--size:0.875rem">Running...</div>
 							</div>
 						{:else}
 							{#if stdout || stderr}
 								<div class=" ">
-									<div style="--c:var(--color-gray-500, #9b9b9b); --size:0.75rem; --mb:0.25rem">STDOUT/STDERR</div>
+									<div style="--c:var(--color-gray-500); --size:0.75rem; --mb:0.25rem">STDOUT/STDERR</div>
 									<div
 										style="--size:0.875rem; --ofy:auto"
 	class="{stdout?.split('\n')?.length > 100
@@ -580,7 +580,7 @@
 							{/if}
 							{#if result || files}
 								<div class=" ">
-									<div style="--c:var(--color-gray-500, #9b9b9b); --size:0.75rem; --mb:0.25rem">RESULT</div>
+									<div style="--c:var(--color-gray-500); --size:0.75rem; --mb:0.25rem">RESULT</div>
 									{#if result}
 										<div style="--size:0.875rem">{`${JSON.stringify(result)}`}</div>
 									{/if}

@@ -17,7 +17,7 @@
 	</div>
 
 	<slot
-		><div style="--px:0.5rem; --mt:0.5rem; --ta:center; --size:0.875rem; --dark-c:var(--color-gray-200, #e3e3e3); --w:100%">
+		><div style="--px:0.5rem; --mt:0.5rem; --ta:center; --size:0.875rem; --dark-c:var(--color-gray-200); --w:100%">
 			{#if content}
 				{content}
 			{:else}

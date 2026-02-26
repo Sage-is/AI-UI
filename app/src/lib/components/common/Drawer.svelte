@@ -67,7 +67,7 @@
 	}}
 >
 	<div
-		style="--mt:auto; --w:100%; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-900, #171717); --dark-c:var(--color-gray-100, #ececec); --maxh:100dvh; --ofy:auto"
+		style="--mt:auto; --w:100%; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-900); --dark-c:var(--color-gray-100); --maxh:100dvh; --ofy:auto"
 	class="{className} scrollbar-hidden"
 		on:mousedown={(e) => {
 			e.stopPropagation();

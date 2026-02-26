@@ -61,7 +61,7 @@
 
 <Modal size="md" bind:show>
 	<div>
-		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300, #cdcdcd); --px:1.25rem; --pt:1rem; --pb:0.25rem">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.25rem; --pt:1rem; --pb:0.25rem">
 			<div style="--size:1.125rem; --weight:500; --as:center">
 				{#if edit}
 					{$i18n.t('Edit Folder')}
@@ -79,7 +79,7 @@
 			</button>
 		</div>
 
-		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1.25rem; --pb:1rem; --g-md:1rem; --dark-c:var(--color-gray-200, #e3e3e3)">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1.25rem; --pb:1rem; --g-md:1rem; --dark-c:var(--color-gray-200)">
 			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				<form
 					style="--d:flex; --fd:column; --w:100%"
@@ -88,7 +88,7 @@
 					}}
 				>
 					<div style="--d:flex; --fd:column; --w:100%; --mt:0.25rem">
-						<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('Folder Name')}</div>
+						<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Folder Name')}</div>
 
 						<div style="--fx:1 1 0%">
 							<input
@@ -102,11 +102,11 @@
 						</div>
 					</div>
 
-					<hr style="--bc:var(--color-gray-50, #f9f9f9); --dark-bc:var(--color-gray-850, #262626); --my:0.625rem; --w:100%" />
+					<hr style="--bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --my:0.625rem; --w:100%" />
 
 					{#if $user?.role === 'admin' || ($user?.permissions.chat?.system_prompt ?? true)}
 						<div style="--my:0.25rem">
-							<div style="--mb:0.5rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">Folder {$i18n.t('System Prompt')}</div>
+							<div style="--mb:0.5rem; --size:0.75rem; --c:var(--color-gray-500)">Folder {$i18n.t('System Prompt')}</div>
 							<div>
 								<Textarea
 									className=" text-sm w-full bg-transparent outline-hidden "
@@ -122,7 +122,7 @@
 						<Knowledge bind:selectedItems={data.files}>
 							<div slot="label">
 								<div style="--d:flex; --w:100%; --jc:space-between">
-									<div style="--mb:0.5rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">
+									<div style="--mb:0.5rem; --size:0.75rem; --c:var(--color-gray-500)">
 										{$i18n.t('Knowledge')}
 									</div>
 								</div>
@@ -132,7 +132,7 @@
 
 					<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500; --g:0.375rem">
 						<button
-							style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-950, #0d0d0d); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
+							style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-950); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
 	class="{loading
 								? ' cursor-not-allowed'
 								: ''}"

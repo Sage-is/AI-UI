@@ -131,7 +131,7 @@
 				<Name>
 					{#if message.user}
 						{$i18n.t('You')}
-						<span style="--c:var(--color-gray-500, #9b9b9b); --size:0.875rem; --weight:500">{message?.user ?? ''}</span>
+						<span style="--c:var(--color-gray-500); --size:0.875rem; --weight:500">{message?.user ?? ''}</span>
 					{:else if $settings.showUsername || $_user.name !== user.name}
 						{user.name}
 					{:else}
@@ -140,7 +140,7 @@
 
 					{#if message.timestamp}
 						<div
-							style="--as:center; --size:0.75rem; --v:hidden; --c:var(--color-gray-400, #b4b4b4); --weight:500; --ml:0.125rem; --translatey:1px"
+							style="--as:center; --size:0.75rem; --v:hidden; --c:var(--color-gray-400); --weight:500; --ml:0.125rem; --translatey:1px"
 	class="group-hover:visible first-letter:capitalize"
 						>
 							<Tooltip content={dayjs(message.timestamp * 1000).format('LLLL')}>
@@ -153,7 +153,7 @@
 		{:else if message.timestamp}
 			<div style="--d:flex; --jc:flex-end; --pr:0.5rem; --size:0.75rem">
 				<div
-					style="--size:0.65rem; --v:hidden; --c:var(--color-gray-400, #b4b4b4); --weight:500; --mb:0.125rem"
+					style="--size:0.65rem; --v:hidden; --c:var(--color-gray-400); --weight:500; --mb:0.125rem"
 	class="group-hover:visible first-letter:capitalize"
 				>
 					<Tooltip content={dayjs(message.timestamp * 1000).format('LLLL')}>
@@ -190,7 +190,7 @@
 
 			{#if message.content !== ''}
 				{#if edit === true}
-					<div style="--w:100%; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-800, #333); --radius:1.5rem; --px:1.25rem; --py:0.75rem; --mb:0.5rem">
+					<div style="--w:100%; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800); --radius:1.5rem; --px:1.25rem; --py:0.75rem; --mb:0.5rem">
 						{#if (editedFiles ?? []).length > 0}
 							<div style="--d:flex; --ai:center; --fw:wrap; --g:0.5rem; --mx:-0.5rem; --mb:0.25rem">
 								{#each editedFiles as file, fileIdx}
@@ -280,7 +280,7 @@
 							<div>
 								<button
 									id="save-edit-message-button"
-									style="--px:1rem; --py:0.5rem; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-800, #333); --hvr-dark-bgc:var(--color-gray-700, #4e4e4e); --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-700, #4e4e4e); --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-200, #e3e3e3); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:1.5rem"
+									style="--px:1rem; --py:0.5rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-700); --c:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:1.5rem"
 									on:click={() => {
 										editMessageConfirmHandler(false);
 									}}
@@ -292,7 +292,7 @@
 							<div style="--d:flex; --g:0.375rem">
 								<button
 									id="close-edit-message-button"
-									style="--px:1rem; --py:0.5rem; --bgc:#fff; --dark-bgc:var(--color-gray-900, #171717); --hvr-bgc:var(--color-gray-100, #ececec); --c:var(--color-gray-800, #333); --dark-c:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:1.5rem"
+									style="--px:1rem; --py:0.5rem; --bgc:#fff; --dark-bgc:var(--color-gray-900); --hvr-bgc:var(--color-gray-100); --c:var(--color-gray-800); --dark-c:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:1.5rem"
 									on:click={() => {
 										cancelEditMessage();
 									}}
@@ -302,7 +302,7 @@
 
 								<button
 									id="confirm-edit-message-button"
-									style="--px:1rem; --py:0.5rem; --bgc:var(--color-gray-900, #171717); --dark-bgc:#fff; --hvr-bgc:var(--color-gray-850, #262626); --c:var(--color-gray-100, #ececec); --dark-c:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:1.5rem"
+									style="--px:1rem; --py:0.5rem; --bgc:var(--color-gray-900); --dark-bgc:#fff; --hvr-bgc:var(--color-gray-850); --c:var(--color-gray-100); --dark-c:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:1.5rem"
 									on:click={() => {
 										editMessageConfirmHandler();
 									}}
@@ -331,7 +331,7 @@
 						</div>
 
 						<div
-							style="--d:flex; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-500, #9b9b9b)"
+							style="--d:flex; --c:var(--color-gray-600); --dark-c:var(--color-gray-500)"
 	class="{($settings?.chatBubble ?? true)
 								? 'justify-end'
 								: ''}"
@@ -363,7 +363,7 @@
 
 										{#if messageIndexEdit}
 											<div
-												style="--size:0.875rem; --d:flex; --jc:center; --weight:600; --as:center; --dark-c:var(--color-gray-100, #ececec); --minw:fit-content"
+												style="--size:0.875rem; --d:flex; --jc:center; --weight:600; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content"
 											>
 												<input
 													id="message-index-input-{message.id}"
@@ -384,13 +384,13 @@
 															messageIndexEdit = false;
 														}
 													}}
-													style="--bgc:transparent; --weight:600; --as:center; --dark-c:var(--color-gray-100, #ececec); --minw:fit-content; --oe:none"
+													style="--bgc:transparent; --weight:600; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content; --oe:none"
 												/>/{siblings.length}
 											</div>
 										{:else}
 											<!-- svelte-ignore a11y-no-static-element-interactions -->
 											<div
-												style="--size:0.875rem; --ls:0.1em; --weight:600; --as:center; --dark-c:var(--color-gray-100, #ececec); --minw:fit-content"
+												style="--size:0.875rem; --ls:0.1em; --weight:600; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content"
 												on:dblclick={async () => {
 													messageIndexEdit = true;
 
@@ -538,7 +538,7 @@
 
 										{#if messageIndexEdit}
 											<div
-												style="--size:0.875rem; --d:flex; --jc:center; --weight:600; --as:center; --dark-c:var(--color-gray-100, #ececec); --minw:fit-content"
+												style="--size:0.875rem; --d:flex; --jc:center; --weight:600; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content"
 											>
 												<input
 													id="message-index-input-{message.id}"
@@ -559,13 +559,13 @@
 															messageIndexEdit = false;
 														}
 													}}
-													style="--bgc:transparent; --weight:600; --as:center; --dark-c:var(--color-gray-100, #ececec); --minw:fit-content; --oe:none"
+													style="--bgc:transparent; --weight:600; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content; --oe:none"
 												/>/{siblings.length}
 											</div>
 										{:else}
 											<!-- svelte-ignore a11y-no-static-element-interactions -->
 											<div
-												style="--size:0.875rem; --ls:0.1em; --weight:600; --as:center; --dark-c:var(--color-gray-100, #ececec); --minw:fit-content"
+												style="--size:0.875rem; --ls:0.1em; --weight:600; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content"
 												on:dblclick={async () => {
 													messageIndexEdit = true;
 

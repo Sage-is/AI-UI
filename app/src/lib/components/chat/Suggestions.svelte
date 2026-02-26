@@ -65,7 +65,7 @@
 	}
 </script>
 
-<div style="--mb:0.25rem; --d:flex; --g:0.25rem; --size:0.75rem; --weight:500; --ai:center; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-400, #b4b4b4)">
+<div style="--mb:0.25rem; --d:flex; --g:0.25rem; --size:0.75rem; --weight:500; --ai:center; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)">
 	{#if filteredPrompts.length > 0}
 		<Bolt />
 		{$i18n.t('Suggested')}
@@ -73,7 +73,7 @@
 		<!-- Keine Vorschläge -->
 
 		<div
-			style="--d:flex; --w:100%; --as:flex-start; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-400, #b4b4b4)"
+			style="--d:flex; --w:100%; --as:flex-start; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
 	class="{$settings?.landingPageMode === 'chat'
 				? ' -mt-1'
 				: 'text-center items-center justify-center'}"
@@ -98,22 +98,22 @@
 					<div style="--d:flex; --fd:column; --ta:left">
 						{#if prompt.title && prompt.title[0] !== ''}
 							<div
-								style="--weight:500; --dark-c:var(--color-gray-300, #cdcdcd); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --line-clamp:1"
+								style="--weight:500; --dark-c:var(--color-gray-300); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --line-clamp:1"
 	class="dark:group-hover:text-gray-200"
 							>
 								{prompt.title[0]}
 							</div>
-							<div style="--size:0.75rem; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-400, #b4b4b4); --weight:400; --line-clamp:1">
+							<div style="--size:0.75rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); --weight:400; --line-clamp:1">
 								{prompt.title[1]}
 							</div>
 						{:else}
 							<div
-								style="--weight:500; --dark-c:var(--color-gray-300, #cdcdcd); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --line-clamp:1"
+								style="--weight:500; --dark-c:var(--color-gray-300); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --line-clamp:1"
 	class="dark:group-hover:text-gray-200"
 							>
 								{prompt.content}
 							</div>
-							<div style="--size:0.75rem; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-400, #b4b4b4); --weight:400; --line-clamp:1">
+							<div style="--size:0.75rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); --weight:400; --line-clamp:1">
 								{$i18n.t('Prompt')}
 							</div>
 						{/if}

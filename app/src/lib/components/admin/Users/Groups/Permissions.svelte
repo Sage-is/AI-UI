@@ -82,7 +82,7 @@
 				<div style="--g:0.375rem">
 					<div style="--d:flex; --fd:column; --w:100%">
 						<div style="--mb:0.25rem; --d:flex; --jc:space-between">
-							<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('Model IDs')}</div>
+							<div style="--size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Model IDs')}</div>
 						</div>
 
 						{#if model_ids.length > 0}
@@ -106,13 +106,13 @@
 								{/each}
 							</div>
 						{:else}
-							<div style="--c:var(--color-gray-500, #9b9b9b); --size:0.75rem; --ta:center; --py:0.5rem; --px:2.5rem">
+							<div style="--c:var(--color-gray-500); --size:0.75rem; --ta:center; --py:0.5rem; --px:2.5rem">
 								{$i18n.t('No model IDs')}
 							</div>
 						{/if}
 					</div>
 				</div>
-				<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:rgb(78 78 78 / 0.1); --mt:0.625rem; --mb:0.25rem; --w:100%" />
+				<hr style="--bc:var(--color-gray-100); --dark-bc:rgb(78 78 78 / 0.1); --mt:0.625rem; --mb:0.25rem; --w:100%" />
 
 				<div style="--d:flex; --ai:center">
 					<select
@@ -124,7 +124,7 @@
 					>
 						<option value="">{$i18n.t('Select a model')}</option>
 						{#each $models.filter((m) => m?.owned_by !== 'arena') as model}
-							<option value={model.id} style="--bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-700, #4e4e4e)">{model.name}</option>
+							<option value={model.id} style="--bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-700)">{model.name}</option>
 						{/each}
 					</select>
 
@@ -160,14 +160,14 @@
 				>
 					<option value="" disabled selected>{$i18n.t('Select a model')}</option>
 					{#each permissions.model.filter ? $models.filter( (model) => filterModelIds.includes(model.id) ) : $models.filter((model) => model.id) as model}
-						<option value={model.id} style="--bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-700, #4e4e4e)">{model.name}</option>
+						<option value={model.id} style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-700)">{model.name}</option>
 					{/each}
 				</select>
 			</div>
 		</div>
 	</div>
 
-	<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem" /> -->
+	<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" /> -->
 
 	<div>
 		<div style="--mb:0.5rem; --size:0.875rem; --weight:500">{$i18n.t('Workshop Permissions')}</div>
@@ -209,7 +209,7 @@
 		</div>
 	</div>
 
-	<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem" />
+	<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 	<div>
 		<div style="--mb:0.5rem; --size:0.875rem; --weight:500">{$i18n.t('Sharing Permissions')}</div>
@@ -243,7 +243,7 @@
 		</div>
 	</div>
 
-	<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem" />
+	<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 	<div>
 		<div style="--mb:0.5rem; --size:0.875rem; --weight:500">{$i18n.t('Chat Permissions')}</div>
@@ -354,7 +354,7 @@
 		{/if}
 	</div>
 
-	<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.5rem" />
+	<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 	<div>
 		<div style="--mb:0.5rem; --size:0.875rem; --weight:500">{$i18n.t('Features Permissions')}</div>

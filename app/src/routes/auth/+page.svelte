@@ -254,7 +254,7 @@
 				{#if ($config?.features.auth_trusted_header ?? false) || $config?.features.auth === false}
 					<div style="--my:auto; --pb:2.5rem; --w:100%; --maxw-sm:28rem">
 						<div
-							style="--d:flex; --ai:center; --jc:center; --g:0.75rem; --size:1.25rem; --size-sm:1.5rem; --ta:center; --weight:600; --dark-c:var(--color-gray-200, #e3e3e3)"
+							style="--d:flex; --ai:center; --jc:center; --g:0.75rem; --size:1.25rem; --size-sm:1.5rem; --ta:center; --weight:600; --dark-c:var(--color-gray-200)"
 						>
 							<div>
 								{$i18n.t('Signing in to {{WEBUI_NAME}}', {
@@ -269,7 +269,7 @@
 					</div>
 				{:else}
 					<div style="--my:auto; --d:flex; --fd:column; --jc:center; --ai:center">
-						<div style="--maxw-sm:28rem; --my:auto; --pb:2.5rem; --w:100%; --dark-c:var(--color-gray-100, #ececec)">
+						<div style="--maxw-sm:28rem; --my:auto; --pb:2.5rem; --w:100%; --dark-c:var(--color-gray-100)">
 							<form
 								style="--d:flex; --fd:column; --jc:center"
 								on:submit={(e) => {
@@ -310,11 +310,11 @@
 									</div>
 
 									{#if branding?.subtitle}
-										<div style="--mt:0.25rem; --size:0.75rem; --weight:500; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-500, #9b9b9b)">
+										<div style="--mt:0.25rem; --size:0.75rem; --weight:500; --c:var(--color-gray-600); --dark-c:var(--color-gray-500)">
 											{branding?.subtitle}
 										</div>
 									{:else if $config?.onboarding ?? false}
-										<div style="--mt:0.25rem; --size:0.75rem; --weight:500; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-500, #9b9b9b)">
+										<div style="--mt:0.25rem; --size:0.75rem; --weight:500; --c:var(--color-gray-600); --dark-c:var(--color-gray-500)">
 											ⓘ {branding?.title || $WEBUI_NAME}
 											{$i18n.t(
 												'does not make any external connections, and your data stays securely on your locally hosted server.'
@@ -397,14 +397,14 @@
 									{#if $config?.features.enable_login_form || $config?.features.enable_ldap}
 										{#if mode === 'ldap'}
 											<button
-												style="--bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300, #cdcdcd); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.875rem; --py:0.625rem"
+												style="--bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.875rem; --py:0.625rem"
 												type="submit"
 											>
 												{$i18n.t('Authenticate')}
 											</button>
 										{:else}
 											<button
-												style="--bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300, #cdcdcd); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.875rem; --py:0.625rem; --p:1em 1.5em;
+												style="--bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.875rem; --py:0.625rem; --p:1em 1.5em;
 														--m:auto"
 												type="submit"
 											>
@@ -440,14 +440,14 @@
 									{/if}
 								</div>
 
-								<div style="--mt:1rem; --size:0.75rem; --ta:center; --c:var(--color-gray-500, #9b9b9b)">
+								<div style="--mt:1rem; --size:0.75rem; --ta:center; --c:var(--color-gray-500)">
 									{$i18n.t(
 										'Usage of this service requires strictly necessary cookies for authentication.'
 									)}
 								</div>
 							</form>
 
-							<div style="--mt:1rem; --size:0.75rem; --ta:center; --c:var(--color-gray-500, #9b9b9b)">
+							<div style="--mt:1rem; --size:0.75rem; --ta:center; --c:var(--color-gray-500)">
 								<a href="https://sage.is">Read about Age of Sage</a>
 							</div>
 
@@ -456,7 +456,7 @@
 									<hr style="--w:8rem; --h:1px; --my:1rem; --bw:0; --dark-bgc:rgb(236 236 236 / 0.1); --bgc:rgb(78 78 78 / 0.1)" />
 									{#if $config?.features.enable_login_form || $config?.features.enable_ldap}
 										<span
-											style="--px:0.75rem; --size:0.875rem; --weight:500; --c:var(--color-gray-900, #171717); --dark-c:#fff; --bgc:transparent"
+											style="--px:0.75rem; --size:0.875rem; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --bgc:transparent"
 											>{$i18n.t('or')}</span
 										>
 									{/if}
@@ -466,7 +466,7 @@
 								<div style="--d:flex; --fd:column; --g:0.5rem">
 									{#if $config?.oauth?.providers?.google}
 										<button
-											style="--d:flex; --jc:center; --ai:center; --bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300, #cdcdcd); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.875rem; --py:0.625rem"
+											style="--d:flex; --jc:center; --ai:center; --bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.875rem; --py:0.625rem"
 											on:click={() => {
 												window.location.href = `${WEBUI_BASE_URL}/oauth/google/login`;
 											}}
@@ -495,7 +495,7 @@
 									{/if}
 									{#if $config?.oauth?.providers?.microsoft}
 										<button
-											style="--d:flex; --jc:center; --ai:center; --bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300, #cdcdcd); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.875rem; --py:0.625rem"
+											style="--d:flex; --jc:center; --ai:center; --bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.875rem; --py:0.625rem"
 											on:click={() => {
 												window.location.href = `${WEBUI_BASE_URL}/oauth/microsoft/login`;
 											}}
@@ -525,7 +525,7 @@
 									{/if}
 									{#if $config?.oauth?.providers?.github}
 										<button
-											style="--d:flex; --jc:center; --ai:center; --bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300, #cdcdcd); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.875rem; --py:0.625rem"
+											style="--d:flex; --jc:center; --ai:center; --bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.875rem; --py:0.625rem"
 											on:click={() => {
 												window.location.href = `${WEBUI_BASE_URL}/oauth/github/login`;
 											}}
@@ -545,7 +545,7 @@
 									{/if}
 									{#if $config?.oauth?.providers?.oidc}
 										<button
-											style="--d:flex; --jc:center; --ai:center; --bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300, #cdcdcd); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.875rem; --py:0.625rem"
+											style="--d:flex; --jc:center; --ai:center; --bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.875rem; --py:0.625rem"
 											on:click={() => {
 												window.location.href = `${WEBUI_BASE_URL}/oauth/oidc/login`;
 											}}
@@ -597,7 +597,7 @@
 						</div>
 						{#if $config?.metadata?.login_footer}
 							<div style="--maxw:48rem; --mx:auto">
-								<div style="--mt:0.5rem; --size:0.7rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4)"
+								<div style="--mt:0.5rem; --size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)"
 	class="marked">
 									{@html DOMPurify.sanitize(marked($config?.metadata?.login_footer))}
 								</div>

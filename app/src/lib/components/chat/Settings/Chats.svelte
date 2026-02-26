@@ -128,7 +128,7 @@
 				hidden
 			/>
 			<button
-				style="--d:flex; --radius:0.375rem; --py:0.5rem; --px:0.875rem; --w:100%; --hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--d:flex; --radius:0.375rem; --py:0.5rem; --px:0.875rem; --w:100%; --hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={() => {
 					chatImportInputElement.click();
 				}}
@@ -152,7 +152,7 @@
 
 			{#if $user?.role === 'admin' || ($user.permissions?.chat?.export ?? true)}
 				<button
-					style="--d:flex; --radius:0.375rem; --py:0.5rem; --px:0.875rem; --w:100%; --hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--d:flex; --radius:0.375rem; --py:0.5rem; --px:0.875rem; --w:100%; --hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						exportChats();
 					}}
@@ -176,11 +176,11 @@
 			{/if}
 		</div>
 
-		<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)" />
+		<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)" />
 
 		<div style="--d:flex; --fd:column">
 			<button
-				style="--d:flex; --radius:0.375rem; --py:0.5rem; --px:0.875rem; --w:100%; --hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--d:flex; --radius:0.375rem; --py:0.5rem; --px:0.875rem; --w:100%; --hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={() => {
 					showArchivedChatsModal = true;
 				}}
@@ -266,7 +266,7 @@
 				</div>
 			{:else}
 				<button
-					style="--d:flex; --radius:0.375rem; --py:0.5rem; --px:0.875rem; --w:100%; --hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--d:flex; --radius:0.375rem; --py:0.5rem; --px:0.875rem; --w:100%; --hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						showArchiveConfirm = true;
 					}}
@@ -353,7 +353,7 @@
 				</div>
 			{:else}
 				<button
-					style="--d:flex; --radius:0.375rem; --py:0.5rem; --px:0.875rem; --w:100%; --hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--d:flex; --radius:0.375rem; --py:0.5rem; --px:0.875rem; --w:100%; --hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						showDeleteConfirm = true;
 					}}

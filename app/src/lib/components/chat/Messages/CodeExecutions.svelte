@@ -30,14 +30,14 @@
 		{#each codeExecutions as execution (execution.id)}
 			<div style="--d:flex; --g:0.25rem; --size:0.75rem; --weight:600">
 				<button
-					style="--d:flex; --dark-c:var(--color-gray-300, #cdcdcd); --py:0.25rem; --px:0.25rem; --bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.75rem; --maxw:24rem"
+					style="--d:flex; --dark-c:var(--color-gray-300); --py:0.25rem; --px:0.25rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.75rem; --maxw:24rem"
 					on:click={() => {
 						selectedCodeExecution = execution;
 						showCodeExecutionModal = true;
 					}}
 				>
 					<div
-						style="--bgc:#fff; --dark-bgc:var(--color-gray-700, #4e4e4e); --radius:9999px; --w:1rem; --h:1rem; --d:flex; --ai:center; --jc:center"
+						style="--bgc:#fff; --dark-bgc:var(--color-gray-700); --radius:9999px; --w:1rem; --h:1rem; --d:flex; --ai:center; --jc:center"
 					>
 						{#if execution?.result}
 							{#if execution.result?.error}

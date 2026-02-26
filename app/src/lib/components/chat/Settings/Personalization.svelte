@@ -41,7 +41,7 @@
 					<div style="--size:0.875rem; --weight:500">
 						{$i18n.t('Memory')}
 
-						<span style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">({$i18n.t('Experimental')})</span>
+						<span style="--size:0.75rem; --c:var(--color-gray-500)">({$i18n.t('Experimental')})</span>
 					</div>
 				</Tooltip>
 
@@ -56,7 +56,7 @@
 			</div>
 		</div>
 
-		<div style="--size:0.75rem; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-400, #b4b4b4)">
+		<div style="--size:0.75rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)">
 			<div>
 				{$i18n.t(
 					"You can personalize your interactions with LLMs by adding memories through the 'Manage' button below, making them more helpful and tailored to you."
@@ -76,7 +76,7 @@
 		<div style="--mt:0.75rem; --mb:0.25rem; --ml:0.25rem">
 			<button
 				type="button"
-				style="--px:0.875rem; --py:0.375rem; --weight:500; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:var(--color-gray-300, #cdcdcd); outline-color:var(--color-gray-800, #333); --radius:1.5rem"
+				style="--px:0.875rem; --py:0.375rem; --weight:500; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:var(--color-gray-300); outline-color:var(--color-gray-800); --radius:1.5rem"
 				on:click={() => {
 					showManageModal = true;
 				}}
@@ -88,7 +88,7 @@
 
 	<div style="--d:flex; --jc:flex-end; --size:0.875rem; --weight:500">
 		<button
-			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			type="submit"
 		>
 			{$i18n.t('Save')}

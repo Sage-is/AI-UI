@@ -211,7 +211,7 @@ class Tools:
 						<div style="--fs:0; --mr:0.5rem">
 							<Tooltip content={$i18n.t('Back')}>
 								<button
-									style="--w:100%; --ta:left; --size:0.875rem; --py:0.375rem; --px:0.25rem; --radius:0.5rem; --dark-c:var(--color-gray-300, #cdcdcd); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:var(--color-gray-850, #262626)"
+									style="--w:100%; --ta:left; --size:0.875rem; --py:0.375rem; --px:0.25rem; --radius:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:var(--color-gray-850)"
 									on:click={() => {
 										goto('/workshop/tools');
 									}}
@@ -237,7 +237,7 @@ class Tools:
 
 						<div style="--as:center; --fs:0">
 							<button
-								style="--bgc:var(--color-gray-50, #f9f9f9); --hvr-bgc:var(--color-gray-100, #ececec); --c:#000; --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --px:0.5rem; --py:0.25rem; --radius:9999px; --d:flex; --g:0.25rem; --ai:center"
+								style="--bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --c:#000; --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --px:0.5rem; --py:0.25rem; --radius:9999px; --d:flex; --g:0.25rem; --ai:center"
 								type="button"
 								on:click={() => {
 									showAccessControlModal = true;
@@ -254,7 +254,7 @@ class Tools:
 
 					<div style="--d:flex; --g:0.5rem; --px:0.25rem; --ai:center">
 						{#if edit}
-							<div style="--size:0.875rem; --c:var(--color-gray-500, #9b9b9b); --fs:0">
+							<div style="--size:0.875rem; --c:var(--color-gray-500); --fs:0">
 								{id}
 							</div>
 						{:else}
@@ -306,17 +306,17 @@ class Tools:
 
 				<div style="--pb:0.75rem; --d:flex; --jc:space-between">
 					<div style="--fx:1 1 0%; --pr:0.75rem">
-						<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --line-clamp:2">
-							<span style="--weight:600; --dark-c:var(--color-gray-200, #e3e3e3)">{$i18n.t('Warning:')}</span>
+						<div style="--size:0.75rem; --c:var(--color-gray-500); --line-clamp:2">
+							<span style="--weight:600; --dark-c:var(--color-gray-200)">{$i18n.t('Warning:')}</span>
 							{$i18n.t('Tools are a function calling system with arbitrary code execution')} <br />—
-							<span style="--weight:500; --dark-c:var(--color-gray-400, #b4b4b4)"
+							<span style="--weight:500; --dark-c:var(--color-gray-400)"
 								>{$i18n.t(`don't install random tools from sources you don't trust.`)}</span
 							>
 						</div>
 					</div>
 
 					<button
-						style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+						style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 						type="submit"
 					>
 						{$i18n.t('Save')}
@@ -333,7 +333,7 @@ class Tools:
 		submitHandler();
 	}}
 >
-	<div style="--size:0.875rem; --c:var(--color-gray-500, #9b9b9b)">
+	<div style="--size:0.875rem; --c:var(--color-gray-500)">
 		<div style="--bgc:rgb(234 179 8 / 0.2); --c:#a16207; --dark-c:#fef08a; --radius:0.5rem; --px:1rem; --py:0.75rem">
 			<div>{$i18n.t('Please carefully review the following warnings:')}</div>
 

@@ -133,7 +133,7 @@
 
 {#if showSetDefault}
 	<div
-		style="--pos:absolute; --ta:left; --mt:1px; --ml:0.25rem; --size:0.7rem; --c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-400, #b4b4b4)"
+		style="--pos:absolute; --ta:left; --mt:1px; --ml:0.25rem; --size:0.7rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
 	class="font-primary"
 	>
 		<button on:click={saveDefaultModel}> {$i18n.t('Set as default')}</button>

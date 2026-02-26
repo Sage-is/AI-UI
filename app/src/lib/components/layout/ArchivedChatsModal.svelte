@@ -147,7 +147,7 @@
 	<div slot="footer">
 		<div style="--d:flex; --fw:wrap; --size:0.875rem; --weight:500; --g:0.375rem; --mt:0.5rem; --m:0.25rem; --jc:flex-end; --w:100%">
 			<button
-				style="--px:0.875rem; --py:0.375rem; --weight:500; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:var(--color-gray-100, #ececec); outline-color:var(--color-gray-800, #333); --radius:1.5rem"
+				style="--px:0.875rem; --py:0.375rem; --weight:500; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:var(--color-gray-100); outline-color:var(--color-gray-800); --radius:1.5rem"
 				on:click={() => {
 					showUnarchiveAllConfirmDialog = true;
 				}}
@@ -156,7 +156,7 @@
 			</button>
 
 			<button
-				style="--px:0.875rem; --py:0.375rem; --weight:500; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:var(--color-gray-100, #ececec); outline-color:var(--color-gray-800, #333); --radius:1.5rem"
+				style="--px:0.875rem; --py:0.375rem; --weight:500; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:var(--color-gray-100); outline-color:var(--color-gray-800); --radius:1.5rem"
 				on:click={() => {
 					exportChatsHandler();
 				}}

@@ -160,7 +160,7 @@
 </script>
 
 <div style="--w:100%; --h:100%; --pos:relative">
-	<div style="--pos:absolute; --z:50; --w:100%; --d:flex; --jc:space-between; --dark-c:var(--color-gray-100, #ececec); --px:1rem; --py:0.875rem">
+	<div style="--pos:absolute; --z:50; --w:100%; --d:flex; --jc:space-between; --dark-c:var(--color-gray-100); --px:1rem; --py:0.875rem">
 		<div style="--d:flex; --ai:center; --g:0.625rem">
 			<button
 				style="--as:center; --p:0.125rem"

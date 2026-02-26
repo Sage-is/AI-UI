@@ -275,7 +275,7 @@
 		deleteChatHandler(id);
 	}}
 >
-	<div style="--size:0.875rem; --c:var(--color-gray-500, #9b9b9b); --fx:1 1 0%; --line-clamp:3">
+	<div style="--size:0.875rem; --c:var(--color-gray-500); --fx:1 1 0%; --line-clamp:3">
 		{$i18n.t('This will delete')} <span style="--weight:600">{title}</span>.
 	</div>
 </DeleteConfirmDialog>

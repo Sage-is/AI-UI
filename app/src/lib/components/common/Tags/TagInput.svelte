@@ -64,7 +64,7 @@
 	{/if}
 
 	<button
-		style="--cur:pointer; --as:center; --p:0.125rem; --d:flex; --h:fit-content; --ai:center; --hvr-dark-bgc:var(--color-gray-700, #4e4e4e); --radius:9999px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --b:1px solid; --dark-bc:var(--color-gray-600, #676767); --bs:dashed; --lh:0.4"
+		style="--cur:pointer; --as:center; --p:0.125rem; --d:flex; --h:fit-content; --ai:center; --hvr-dark-bgc:var(--color-gray-700); --radius:9999px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --b:1px solid; --dark-bc:var(--color-gray-600); --bs:dashed; --lh:0.4"
 		type="button"
 		aria-label={$i18n.t('Add Tag')}
 		on:click={() => {

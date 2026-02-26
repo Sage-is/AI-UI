@@ -113,7 +113,7 @@
 		<slot />
 	</DropdownMenu.Trigger>
 	<DropdownMenu.Content
-		style="--maxw:100%; --w:20rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-850, #262626); --radius:0.5rem; --z:9999; --shadow:4; --dark-c:#fff"
+		style="--maxw:100%; --w:20rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --radius:0.5rem; --z:9999; --shadow:4; --dark-c:#fff"
 		sideOffset={8}
 		{side}
 		{align}
@@ -131,14 +131,14 @@
 		<!-- Virtualized Emoji List -->
 		<div style="--w:100%; --d:flex; --jc:flex-start; --h:24rem; --ofy:auto; --px:0.75rem; --pb:0.75rem; --size:0.875rem">
 			{#if emojiRows.length === 0}
-				<div style="--ta:center; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4)">No results</div>
+				<div style="--ta:center; --size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">No results</div>
 			{:else}
 				<div style="--w:100%; --d:flex; --ml:0.125rem">
 					<VirtualList rowHeight={ROW_HEIGHT} items={emojiRows} height={384} let:item>
 						<div style="--w:100%">
 							{#if item.length === 1 && item[0].type === 'group'}
 								<!-- Render group header -->
-								<div style="--size:0.75rem; --weight:500; --mb:0.5rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-400, #b4b4b4)">
+								<div style="--size:0.75rem; --weight:500; --mb:0.5rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
 									{item[0].label}
 								</div>
 							{:else}
@@ -149,17 +149,17 @@
 											<!-- Emoji with skin tone support -->
 											<DropdownMenu.Sub>
 												<DropdownMenu.SubTrigger 
-													style="--p:0.375rem; --radius:0.5rem; --cur:pointer; --hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-700, #4e4e4e); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --d:flex; --ai:center; --jc:center; --size:1.125rem"
+													style="--p:0.375rem; --radius:0.5rem; --cur:pointer; --hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-700); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --d:flex; --ai:center; --jc:center; --size:1.125rem"
 	class="emoji-font"
 												>
 													{emojiItem.emoji}
 												</DropdownMenu.SubTrigger>
 												<DropdownMenu.SubContent 
-													style="--bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-850, #262626); --radius:0.5rem; --shadow:4; --p:0.5rem; --d:grid; --gtc:repeat(3, minmax(0, 1fr)); --g:0.25rem"
+													style="--bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --radius:0.5rem; --shadow:4; --p:0.5rem; --d:grid; --gtc:repeat(3, minmax(0, 1fr)); --g:0.25rem"
 												>
 													<!-- Base emoji (no skin tone) -->
 													<DropdownMenu.Item 
-														style="--p:0.375rem; --radius:0.25rem; --cur:pointer; --hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-700, #4e4e4e); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --size:1.125rem; --d:flex; --ai:center; --jc:center"
+														style="--p:0.375rem; --radius:0.25rem; --cur:pointer; --hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-700); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --size:1.125rem; --d:flex; --ai:center; --jc:center"
 	class="emoji-font"
 														on:click={() => selectEmoji(emojiItem.emoji)}
 													>
@@ -168,7 +168,7 @@
 													<!-- Skin tone variants -->
 													{#each SKIN_TONE_MODIFIERS as modifier}
 														<DropdownMenu.Item 
-															style="--p:0.375rem; --radius:0.25rem; --cur:pointer; --hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-700, #4e4e4e); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --size:1.125rem; --d:flex; --ai:center; --jc:center"
+															style="--p:0.375rem; --radius:0.25rem; --cur:pointer; --hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-700); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --size:1.125rem; --d:flex; --ai:center; --jc:center"
 	class="emoji-font"
 															on:click={() => selectEmoji(emojiItem.emoji + modifier)}
 														>
@@ -187,7 +187,7 @@
 												placement="top"
 											>
 												<button
-													style="--p:0.375rem; --radius:0.5rem; --cur:pointer; --hvr-bgc:var(--color-gray-200, #e3e3e3); --hvr-dark-bgc:var(--color-gray-700, #4e4e4e); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --size:1.125rem; --d:flex; --ai:center; --jc:center"
+													style="--p:0.375rem; --radius:0.5rem; --cur:pointer; --hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-700); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --size:1.125rem; --d:flex; --ai:center; --jc:center"
 	class="emoji-font"
 													on:click={() => selectEmoji(emojiItem.emoji)}
 												>

@@ -91,7 +91,7 @@
 		{#if statusTitle}
 			<div style="--d:flex; --fd:column; --jc:center; --g:-0.125rem">
 				<div
-					style="--c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-500, #9b9b9b); --line-clamp:1; text-wrap:wrap"
+					style="--c:var(--color-gray-500); --dark-c:var(--color-gray-500); --line-clamp:1; text-wrap:wrap"
 	class="{statusDone === false
 						? 'shimmer'
 						: ''}"

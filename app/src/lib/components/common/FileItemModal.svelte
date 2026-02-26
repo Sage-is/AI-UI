@@ -42,12 +42,12 @@
 </script>
 
 <Modal bind:show size="lg">
-	<div style="--px:1.5rem; --py:1.25rem; --w:100%; --d:flex; --fd:column; --jc:center; --dark-c:var(--color-gray-400, #b4b4b4)"
+	<div style="--px:1.5rem; --py:1.25rem; --w:100%; --d:flex; --fd:column; --jc:center; --dark-c:var(--color-gray-400)"
 	class="font-primary">
 		<div style="--pb:0.5rem">
 			<div style="--d:flex; --ai:flex-start; --jc:space-between">
 				<div>
-					<div style="--weight:500; --size:1.125rem; --dark-c:var(--color-gray-100, #ececec)">
+					<div style="--weight:500; --size:1.125rem; --dark-c:var(--color-gray-100)">
 						<a
 							href="#"
 							style="--hvr-td:underline; --line-clamp:1"
@@ -78,7 +78,7 @@
 
 			<div>
 				<div style="--d:flex; --fd:column; --ai:center; --fd-md:row; --g:0.25rem; --jc:space-between; --w:100%">
-					<div style="--d:flex; --fw:wrap; --size:0.875rem; --g:0.25rem; --c:var(--color-gray-500, #9b9b9b)">
+					<div style="--d:flex; --fw:wrap; --size:0.875rem; --g:0.25rem; --c:var(--color-gray-500)">
 						{#if item?.type === 'collection'}
 							{#if item?.type}
 								<div style="--tt:capitalize; --fs:0">{item.type}</div>

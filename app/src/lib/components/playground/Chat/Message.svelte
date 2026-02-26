@@ -53,7 +53,7 @@
 
 	<div style="--pt:0.25rem">
 		<button
-			style="--dark-c:var(--color-gray-500, #9b9b9b); --hvr-dark-c:var(--color-gray-300, #cdcdcd); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+			style="--dark-c:var(--color-gray-500); --hvr-dark-c:var(--color-gray-300); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="group-hover:text-gray-500"
 			on:click={() => {
 				onDelete();

@@ -30,7 +30,7 @@
 		<div style="--d:flex; --ai:center; --g:0.5rem">
 			<Tooltip placement="top" content={$i18n.t('Insert')}>
 				<button
-					style="--c:transparent; --hvr-dark-c:var(--color-gray-300, #cdcdcd); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--c:transparent; --hvr-dark-c:var(--color-gray-300); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="group-hover:text-gray-500"
 					on:click={() => {
 						onInsert();
@@ -42,7 +42,7 @@
 
 			<Tooltip placement="top" content={$i18n.t('Edit')}>
 				<button
-					style="--c:transparent; --hvr-dark-c:var(--color-gray-300, #cdcdcd); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--c:transparent; --hvr-dark-c:var(--color-gray-300); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="group-hover:text-gray-500"
 					on:click={() => {
 						onEdit();
@@ -54,7 +54,7 @@
 
 			<Tooltip placement="top" content={$i18n.t('Delete')}>
 				<button
-					style="--c:transparent; --hvr-dark-c:var(--color-gray-300, #cdcdcd); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--c:transparent; --hvr-dark-c:var(--color-gray-300); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="group-hover:text-gray-500"
 					on:click={() => {
 						onDelete();

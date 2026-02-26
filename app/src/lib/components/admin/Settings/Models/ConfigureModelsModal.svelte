@@ -120,7 +120,7 @@
 
 <Modal size="sm" bind:show>
 	<div>
-		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-100, #ececec); --px:1.25rem; --pt:1rem; --pb:0.5rem">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-100); --px:1.25rem; --pt:1rem; --pb:0.5rem">
 			<div style="--size:1.125rem; --weight:500; --as:center"
 	class="font-primary">
 				{$i18n.t('Settings')}
@@ -135,7 +135,7 @@
 			</button>
 		</div>
 
-		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1.25rem; --pb:1rem; --g-md:1rem; --dark-c:var(--color-gray-200, #e3e3e3)">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1.25rem; --pb:1rem; --g-md:1rem; --dark-c:var(--color-gray-200)">
 			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				{#if config}
 					<form
@@ -169,7 +169,7 @@
 											});
 									}}
 								>
-									<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('Reorder Models')}</div>
+									<div style="--size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Reorder Models')}</div>
 
 									{#if sortKey === 'model'}
 										<span style="--weight:400; --as:center">
@@ -190,12 +190,12 @@
 							</div>
 						</div>
 
-						<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:rgb(78 78 78 / 0.1); --my:0.625rem; --w:100%" />
+						<hr style="--bc:var(--color-gray-100); --dark-bc:rgb(78 78 78 / 0.1); --my:0.625rem; --w:100%" />
 
 						<div>
 							<div style="--d:flex; --fd:column; --w:100%">
 								<div style="--mb:0.25rem; --d:flex; --jc:space-between">
-									<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">{$i18n.t('Default Models')}</div>
+									<div style="--size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Default Models')}</div>
 								</div>
 
 								<div style="--d:flex; --ai:center; --mr:-0.25rem">
@@ -208,14 +208,14 @@
 									>
 										<option value="">{$i18n.t('Select a model')}</option>
 										{#each $models as model}
-											<option value={model.id} style="--bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-700, #4e4e4e)"
+											<option value={model.id} style="--bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-700)"
 												>{model.name}</option
 											>
 										{/each}
 									</select>
 								</div>
 
-								<!-- <hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:rgb(78 78 78 / 0.1); --my:0.625rem; --w:100%" /> -->
+								<!-- <hr style="--bc:var(--color-gray-100); --dark-bc:rgb(78 78 78 / 0.1); --my:0.625rem; --w:100%" /> -->
 
 								{#if defaultModelIds.length > 0}
 									<div style="--d:flex; --fd:column">
@@ -240,7 +240,7 @@
 										{/each}
 									</div>
 								{:else}
-									<div style="--c:var(--color-gray-500, #9b9b9b); --size:0.75rem; --ta:center; --py:0.5rem">
+									<div style="--c:var(--color-gray-500); --size:0.75rem; --ta:center; --py:0.5rem">
 										{$i18n.t('No models selected')}
 									</div>
 								{/if}
@@ -250,7 +250,7 @@
 						<div style="--d:flex; --jc:space-between; --pt:0.75rem; --size:0.875rem; --weight:500; --g:0.375rem">
 							<Tooltip content={$i18n.t('This will delete all models including custom models')}>
 								<button
-									style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --dark-bgc:#000; --hvr-dark-bgc:var(--color-gray-950, #0d0d0d); --dark-c:#fff; --bgc:#fff; --c:#000; --hvr-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
+									style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --dark-bgc:#000; --hvr-dark-bgc:var(--color-gray-950); --dark-c:#fff; --bgc:#fff; --c:#000; --hvr-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
 									type="button"
 									on:click={() => {
 										showResetModal = true;
@@ -262,7 +262,7 @@
 							</Tooltip>
 
 							<button
-								style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
+								style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
 	class="{loading
 									? ' cursor-not-allowed'
 									: ''}"

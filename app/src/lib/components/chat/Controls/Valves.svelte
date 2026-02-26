@@ -152,8 +152,8 @@
 							bind:value={tab}
 							placeholder="Select"
 						>
-							<option value="tools" style="--bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-800, #333)">{$i18n.t('Tools')}</option>
-							<option value="functions" style="--bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-800, #333)"
+							<option value="tools" style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800)">{$i18n.t('Tools')}</option>
+							<option value="functions" style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800)"
 								>{$i18n.t('Functions')}</option
 							>
 						</select>
@@ -168,20 +168,20 @@
 							}}
 						>
 							{#if tab === 'tools'}
-								<option value="" selected disabled style="--bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-800, #333)"
+								<option value="" selected disabled style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800)"
 									>{$i18n.t('Select a tool')}</option
 								>
 
 								{#each $tools as tool, toolIdx}
-									<option value={tool.id} style="--bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-800, #333)">{tool.name}</option>
+									<option value={tool.id} style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800)">{tool.name}</option>
 								{/each}
 							{:else if tab === 'functions'}
-								<option value="" selected disabled style="--bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-800, #333)"
+								<option value="" selected disabled style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800)"
 									>{$i18n.t('Select a function')}</option
 								>
 
 								{#each $functions as func, funcIdx}
-									<option value={func.id} style="--bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-800, #333)">{func.name}</option>
+									<option value={func.id} style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800)">{func.name}</option>
 								{/each}
 							{/if}
 						</select>
@@ -190,7 +190,7 @@
 			</div>
 
 			{#if selectedId}
-				<hr style="--bc:var(--color-gray-50, #f9f9f9); --dark-bc:var(--color-gray-800, #333); --my:0.25rem; --w:100%" />
+				<hr style="--bc:var(--color-gray-50); --dark-bc:var(--color-gray-800); --my:0.25rem; --w:100%" />
 
 				<div style="--my:0.5rem; --size:0.75rem">
 					{#if !loading}

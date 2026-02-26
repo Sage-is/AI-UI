@@ -554,7 +554,7 @@
 							style="--pos:absolute; --top:-3rem; --left:0; --right:0; --d:flex; --jc:center; --z:30; --pe:none"
 						>
 							<button
-								style="--bgc:#fff; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bs:none; --dark-bgc:rgb(255 255 255 / 0.2); --p:0.375rem; --radius:9999px; --pe:auto"
+								style="--bgc:#fff; --b:1px solid; --bc:var(--color-gray-100); --dark-bs:none; --dark-bgc:rgb(255 255 255 / 0.2); --p:0.375rem; --radius:9999px; --pe:auto"
 								on:click={() => {
 									scrollEnd = true;
 									scrollToBottom();
@@ -634,7 +634,7 @@
 					}}
 				>
 					<div
-						style="--fx:1 1 0%; --d:flex; --fd:column; --pos:relative; --w:100%; --radius:1.5rem; --px:0.25rem; --bgc:rgb(103 103 103 / 0.05); --dark-bgc:rgb(180 180 180 / 0.05); --dark-c:var(--color-gray-100, #ececec)"
+						style="--fx:1 1 0%; --d:flex; --fd:column; --pos:relative; --w:100%; --radius:1.5rem; --px:0.25rem; --bgc:rgb(103 103 103 / 0.05); --dark-bgc:rgb(180 180 180 / 0.05); --dark-c:var(--color-gray-100)"
 						dir={$settings?.chatDirection ?? 'auto'}
 					>
 						{#if files.length > 0}
@@ -697,7 +697,7 @@
 
 						<div style="--px:0.625rem">
 							<div
-								style="--ta:left; --bgc:transparent; --dark-c:var(--color-gray-100, #ececec); --oe:none; --w:100%; --pt:0.75rem; --px:0.25rem; resize:none; --h:fit-content; --maxh:20rem; --of:auto"
+								style="--ta:left; --bgc:transparent; --dark-c:var(--color-gray-100); --oe:none; --w:100%; --pt:0.75rem; --px:0.25rem; resize:none; --h:fit-content; --maxh:20rem; --of:auto"
 	class="scrollbar-hidden font-primary"
 							>
 								<RichTextInput
@@ -814,7 +814,7 @@
 											}}
 										>
 											<button
-												style="--bgc:transparent; --hvr-bgc:rgb(255 255 255 / 0.8); --c:var(--color-gray-800, #333); --dark-c:#fff; --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.375rem; --oe:none"
+												style="--bgc:transparent; --hvr-bgc:rgb(255 255 255 / 0.8); --c:var(--color-gray-800); --dark-c:#fff; --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.375rem; --oe:none"
 	class="focus:outline-hidden"
 												type="button"
 												aria-label="More"
@@ -840,7 +840,7 @@
 									<Tooltip content={$i18n.t('Record voice')}>
 										<button
 											id="voice-input-button"
-											style="--c:var(--color-gray-600, #676767); --dark-c:var(--color-gray-300, #cdcdcd); --hvr-c:var(--color-gray-700, #4e4e4e); --hvr-dark-c:var(--color-gray-200, #e3e3e3); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.375rem; --mr:0.125rem; --as:center"
+											style="--c:var(--color-gray-600); --dark-c:var(--color-gray-300); --hvr-c:var(--color-gray-700); --hvr-dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.375rem; --mr:0.125rem; --as:center"
 											type="button"
 											on:click={async () => {
 												try {
@@ -887,7 +887,7 @@
 										<div style="--d:flex; --ai:center">
 											<Tooltip content={$i18n.t('Stop')}>
 												<button
-													style="--bgc:#fff; --hvr-bgc:var(--color-gray-100, #ececec); --c:var(--color-gray-800, #333); --dark-bgc:var(--color-gray-700, #4e4e4e); --dark-c:#fff; --hvr-dark-bgc:var(--color-gray-800, #333); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.375rem"
+													style="--bgc:#fff; --hvr-bgc:var(--color-gray-100); --c:var(--color-gray-800); --dark-bgc:var(--color-gray-700); --dark-c:#fff; --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.375rem"
 													on:click={() => {
 														onStop();
 													}}

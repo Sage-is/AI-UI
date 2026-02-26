@@ -18,7 +18,7 @@
 </script>
 
 <div style="--dark-c:#fff">
-	<div style="--d:flex; --ai:center; --jc:space-between; --dark-c:var(--color-gray-100, #ececec); --mb:0.5rem">
+	<div style="--d:flex; --ai:center; --jc:space-between; --dark-c:var(--color-gray-100); --mb:0.5rem">
 		<div style="--size:1.125rem; --weight:500; --as:center"
 	class="font-primary">{$i18n.t('Chat Controls')}</div>
 		<button
@@ -31,7 +31,7 @@
 		</button>
 	</div>
 
-	<div style="--dark-c:var(--color-gray-200, #e3e3e3); --size:0.875rem; --py:0.125rem; --px:0.125rem"
+	<div style="--dark-c:var(--color-gray-200); --size:0.875rem; --py:0.125rem; --px:0.125rem"
 	class="font-primary">
 		{#if chatFiles.length > 0}
 			<Collapsible title={$i18n.t('Files')} open={true} buttonClassName="w-full">
@@ -60,7 +60,7 @@
 				</div>
 			</Collapsible>
 
-			<hr style="--my:0.5rem; --bc:var(--color-gray-50, #f9f9f9); --dark-bc:rgb(78 78 78 / 0.1)" />
+			<hr style="--my:0.5rem; --bc:var(--color-gray-50); --dark-bc:rgb(78 78 78 / 0.1)" />
 		{/if}
 
 		<Collapsible bind:open={showValves} title={$i18n.t('Valves')} buttonClassName="w-full">
@@ -70,7 +70,7 @@
 		</Collapsible>
 
 		{#if $user?.role === 'admin' || ($user?.permissions.chat?.system_prompt ?? true)}
-			<hr style="--my:0.5rem; --bc:var(--color-gray-50, #f9f9f9); --dark-bc:rgb(78 78 78 / 0.1)" />
+			<hr style="--my:0.5rem; --bc:var(--color-gray-50); --dark-bc:rgb(78 78 78 / 0.1)" />
 
 			<Collapsible title={$i18n.t('System Prompt')} open={true} buttonClassName="w-full">
 				<div class="" slot="content">
@@ -88,7 +88,7 @@
 		{/if}
 
 		{#if $user?.role === 'admin' || ($user?.permissions.chat?.controls ?? true)}
-			<hr style="--my:0.5rem; --bc:var(--color-gray-50, #f9f9f9); --dark-bc:rgb(78 78 78 / 0.1)" />
+			<hr style="--my:0.5rem; --bc:var(--color-gray-50); --dark-bc:rgb(78 78 78 / 0.1)" />
 
 			<Collapsible title={$i18n.t('Advanced Params')} open={true} buttonClassName="w-full">
 				<div style="--size:0.875rem; --mt:0.375rem" slot="content">

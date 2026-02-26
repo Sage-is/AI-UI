@@ -152,7 +152,7 @@
 						<textarea
 							id="text-completion-textarea"
 							bind:this={textCompletionAreaElement}
-							style="--w:100%; --h:100%; --p:0.75rem; --bgc:transparent; --b:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --oe:none; resize:none; --radius:0.5rem; --size:0.875rem"
+							style="--w:100%; --h:100%; --p:0.75rem; --bgc:transparent; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --oe:none; resize:none; --radius:0.5rem; --size:0.875rem"
 							bind:value={text}
 							placeholder={$i18n.t("You're a helpful assistant.")}
 						/>
@@ -163,7 +163,7 @@
 			<div style="--pb:0.75rem; --d:flex; --jc:flex-end">
 				{#if !loading}
 					<button
-						style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+						style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 						on:click={() => {
 							submitHandler();
 						}}
@@ -172,7 +172,7 @@
 					</button>
 				{:else}
 					<button
-						style="--px:0.75rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:var(--color-gray-300, #cdcdcd); --c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+						style="--px:0.75rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:var(--color-gray-300); --c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 						on:click={() => {
 							stopResponse();
 						}}

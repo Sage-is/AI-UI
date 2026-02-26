@@ -375,7 +375,7 @@
 	}}
 >
 	<div
-		style="--size:0.875rem; --c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-300, #cdcdcd); --fx:1 1 0%; --line-clamp:3"
+		style="--size:0.875rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-300); --fx:1 1 0%; --line-clamp:3"
 	>
 		{@html DOMPurify.sanitize(
 			$i18n.t('This will delete <strong>{{NAME}}</strong> and <strong>all its contents</strong>.', {
@@ -429,7 +429,7 @@
 		<div style="--w:100%; --m:0" class="group">
 			<button
 				id="folder-{folderId}-button"
-				style="--pos:relative; --w:100%; --py:0.375rem; --px:0.5rem; --radius:0.375rem; --d:flex; --ai:center; --g:0.375rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-500, #9b9b9b); --weight:500; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--pos:relative; --w:100%; --py:0.375rem; --px:0.5rem; --radius:0.375rem; --d:flex; --ai:center; --g:0.375rem; --size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --weight:500; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				class={$selectedFolder?.id === folderId ? 'bg-gray-100 dark:bg-gray-900' : ''}
 				on:mouseenter={() => {
 					isFolderHovered = true;
@@ -446,7 +446,7 @@
 					selectedFolder.set(folders[folderId]);
 				}}
 			>
-				<div style="--c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-600, #676767)">
+				<div style="--c:var(--color-gray-300); --dark-c:var(--color-gray-600)">
 					{#if open}
 						<ChevronDown className=" size-3" strokeWidth="2.5" />
 					{:else}
@@ -481,7 +481,7 @@
 									edit = false;
 								}
 							}}
-							style="--w:100%; --h:100%; --bgc:transparent; --c:var(--color-gray-500, #9b9b9b); --dark-c:var(--color-gray-500, #9b9b9b); --oe:none"
+							style="--w:100%; --h:100%; --bgc:transparent; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --oe:none"
 						/>
 					{:else}
 						{folders[folderId].name}
@@ -489,7 +489,7 @@
 				</div>
 
 				{#if !open && ((folders[folderId]?.childrenIds ?? []).length + (folders[folderId]?.items?.chats ?? []).length) > 0}
-					<div style="--size:0.625rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-600, #676767); --fs:0">
+					<div style="--size:0.625rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-600); --fs:0">
 						({(folders[folderId]?.childrenIds ?? []).length + (folders[folderId]?.items?.chats ?? []).length})
 					</div>
 				{/if}
@@ -502,7 +502,7 @@
 						--as:center; 
 						--d:flex; 
 						--ai:center; 
-						--dark-c:var(--color-gray-300, #cdcdcd)"
+						--dark-c:var(--color-gray-300)"
 					on:pointerup={(e) => {
 						e.stopPropagation();
 					}}
@@ -520,7 +520,7 @@
 						}}
 					>
 						<button
-							style="--p:0.125rem; --hvr-dark-bgc:var(--color-gray-850, #262626); --radius:0.5rem; touch-action:auto"
+							style="--p:0.125rem; --hvr-dark-bgc:var(--color-gray-850); --radius:0.5rem; touch-action:auto"
 							on:click={(e) => {}}
 						>
 							<EllipsisHorizontal className="size-4" strokeWidth="2.5" />
@@ -533,7 +533,7 @@
 		<div slot="content" style="--w:100%">
 			{#if (folders[folderId]?.childrenIds ?? []).length > 0 || (folders[folderId].items?.chats ?? []).length > 0}
 				<div
-					style="--ml:0.75rem; --pl:0.25rem; --mt:1px; --d:flex; --fd:column; --ofy:auto; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-900, #171717)"
+					style="--ml:0.75rem; --pl:0.25rem; --mt:1px; --d:flex; --fd:column; --ofy:auto; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-900)"
 					class="scrollbar-hidden border-s"
 				>
 					{#if folders[folderId]?.childrenIds}

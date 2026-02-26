@@ -352,7 +352,7 @@ Based on the user's instruction, update and enhance the existing notes or select
 				position="top"
 				className="inline-block"
 			>
-				<span style="--c:var(--color-gray-500, #9b9b9b); --size:0.875rem">({$i18n.t('Experimental')})</span>
+				<span style="--c:var(--color-gray-500); --size:0.875rem">({$i18n.t('Experimental')})</span>
 			</Tooltip>
 		</div>
 	</div>
@@ -408,7 +408,7 @@ Based on the user's instruction, update and enhance the existing notes or select
 										}}
 										disabled={streaming || loading}
 										type="button"
-										style="--px:0.5rem; --py:0.5rem; --d:flex; --g:0.375rem; --ai:center; --size:0.875rem; --radius:9999px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:300ms; --maxw:100%; --of:hidden; --hvr-bgc:var(--color-gray-50, #f9f9f9); --hvr-dark-bgc:var(--color-gray-800, #333)"
+										style="--px:0.5rem; --py:0.5rem; --d:flex; --g:0.375rem; --ai:center; --size:0.875rem; --radius:9999px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:300ms; --maxw:100%; --of:hidden; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800)"
 	class="@xl:px-2.5 focus:outline-hidden {editEnabled
 											? ' text-sky-500 dark:text-sky-300 bg-sky-50 dark:bg-sky-200/5'
 											: 'bg-transparent text-gray-600 dark:text-gray-300 '} disabled:opacity-50 disabled:pointer-events-none"
@@ -428,7 +428,7 @@ Based on the user's instruction, update and enhance the existing notes or select
 									bind:value={selectedModelId}
 								>
 									{#each $models as model}
-										<option value={model.id} style="--bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-700, #4e4e4e)"
+										<option value={model.id} style="--bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-700)"
 											>{model.name}</option
 										>
 									{/each}

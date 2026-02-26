@@ -76,7 +76,7 @@
 
 <div style="--w:100%; --h:100%; --d:flex; --fd:column">
 	<!-- Header with test chat toggle -->
-	<div style="--d:flex; --jc:space-between; --ai:center; --p:1rem; --bb:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)">
+	<div style="--d:flex; --jc:space-between; --ai:center; --p:1rem; --bb:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)">
 		<div style="--d:flex; --ai:center; --g:0.5rem">
 			{#if onBack}
 				<button
@@ -119,7 +119,7 @@
 			<!-- Add Back to Models button -->
 			<a 
 				href="/workshop/models"
-				style="--d:flex; --ai:center; --g:0.5rem; --px:0.75rem; --py:0.375rem; --size:0.875rem; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1); --bgc:var(--color-gray-100, #ececec); --hvr-bgc:var(--color-gray-200, #e3e3e3); --dark-bgc:var(--color-gray-800, #333); --hvr-dark-bgc:var(--color-gray-700, #4e4e4e)"
+				style="--d:flex; --ai:center; --g:0.5rem; --px:0.75rem; --py:0.375rem; --size:0.875rem; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1); --bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700)"
 			>
 				<span>{$i18n.t('Back to Models')}</span>
 			</a>
@@ -159,15 +159,15 @@
 				onCollapse={() => {
 					showChat = false;
 				}}
-				style="--h:100%; --d:flex; --pos:relative; --maxw:100%; --fd:column; --bl:1px solid; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626)"
+				style="--h:100%; --d:flex; --pos:relative; --maxw:100%; --fd:column; --bl:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 			>
 				{#if showChat}
 					<ModelTestChat {liveModelData} />
 				{:else}
 					<!-- Show a collapsed state when chat is hidden -->
-					<div style="--d:flex; --ai:center; --jc:center; --h:100%; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-900, #171717)">
+					<div style="--d:flex; --ai:center; --jc:center; --h:100%; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-900)">
 						<button
-							style="--d:flex; --fd:column; --ai:center; --g:0.5rem; --p:1rem; --c:var(--color-gray-500, #9b9b9b); --hvr-c:var(--color-gray-700, #4e4e4e); --hvr-dark-c:var(--color-gray-300, #cdcdcd); --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+							style="--d:flex; --fd:column; --ai:center; --g:0.5rem; --p:1rem; --c:var(--color-gray-500); --hvr-c:var(--color-gray-700); --hvr-dark-c:var(--color-gray-300); --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							on:click={toggleChat}
 						>
 							<ChatBubbleOval className="size-6" />

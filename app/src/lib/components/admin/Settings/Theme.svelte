@@ -60,11 +60,11 @@
 			<div style="--mb:0.5rem; --size:0.875rem; --weight:500">{$i18n.t('Theme & Branding')}  (Beta)</div>
 		</div>
 
-		<hr style="--dark-bc:var(--color-gray-850, #262626)" />
+		<hr style="--dark-bc:var(--color-gray-850)" />
 
 		{#if loading}
 			<div style="--ta:center; --py:1rem">
-				<div style="--d:inline-block; animation:spin 1s linear infinite; --radius:9999px; --h:2rem; --w:2rem; border-bottom-width:2px; --bc:var(--color-gray-900, #171717); --dark-bc:var(--color-gray-100, #ececec)"></div>
+				<div style="--d:inline-block; animation:spin 1s linear infinite; --radius:9999px; --h:2rem; --w:2rem; border-bottom-width:2px; --bc:var(--color-gray-900); --dark-bc:var(--color-gray-100)"></div>
 			</div>
 		{:else}
 			<!-- Logo Settings -->
@@ -77,11 +77,11 @@
 					</label>
 					<input
 						id="logo-url"
-						style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:2px solid transparent"
+						style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:2px solid transparent"
 						placeholder="https://example.com/logo.png"
 						bind:value={branding.logo_url}
 					/>
-					<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --mt:0.25rem">
+					<div style="--size:0.75rem; --c:var(--color-gray-500); --mt:0.25rem">
 						{$i18n.t('URL to your logo image for light mode')}
 					</div>
 				</div>
@@ -92,11 +92,11 @@
 					</label>
 					<input
 						id="logo-dark-url"
-						style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:2px solid transparent"
+						style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:2px solid transparent"
 						placeholder="https://example.com/logo-dark.png"
 						bind:value={branding.logo_dark_url}
 					/>
-					<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --mt:0.25rem">
+					<div style="--size:0.75rem; --c:var(--color-gray-500); --mt:0.25rem">
 						{$i18n.t('URL to your logo image for dark mode (optional, falls back to light mode logo)')}
 					</div>
 				</div>
@@ -107,17 +107,17 @@
 					</label>
 					<input
 						id="favicon-url"
-						style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:2px solid transparent"
+						style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:2px solid transparent"
 						placeholder="https://example.com/favicon.ico"
 						bind:value={branding.favicon_url}
 					/>
-					<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --mt:0.25rem">
+					<div style="--size:0.75rem; --c:var(--color-gray-500); --mt:0.25rem">
 						{$i18n.t('URL to your favicon (browser tab icon)')}
 					</div>
 				</div>
 			</div>
 
-			<hr style="--dark-bc:var(--color-gray-850, #262626)" />
+			<hr style="--dark-bc:var(--color-gray-850)" />
 
 			<!-- Text Settings -->
 			<div style="--g:0.75rem">
@@ -129,11 +129,11 @@
 					</label>
 					<input
 						id="title"
-						style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:2px solid transparent"
+						style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:2px solid transparent"
 						placeholder={$WEBUI_NAME}
 						bind:value={branding.title}
 					/>
-					<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --mt:0.25rem">
+					<div style="--size:0.75rem; --c:var(--color-gray-500); --mt:0.25rem">
 						{$i18n.t('Main title displayed in your application')}
 					</div>
 				</div>
@@ -144,17 +144,17 @@
 					</label>
 					<input
 						id="subtitle"
-						style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:2px solid transparent"
+						style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:2px solid transparent"
 						placeholder="Powered by Sage.is AI UI"
 						bind:value={branding.subtitle}
 					/>
-					<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --mt:0.25rem">
+					<div style="--size:0.75rem; --c:var(--color-gray-500); --mt:0.25rem">
 						{$i18n.t('Subtitle or tagline for your application')}
 					</div>
 				</div>
 			</div>
 
-			<hr style="--dark-bc:var(--color-gray-850, #262626)" />
+			<hr style="--dark-bc:var(--color-gray-850)" />
 
 			<!-- Color Settings -->
 			<div style="--g:0.75rem">
@@ -174,12 +174,12 @@
 						/>
 						<input
 							type="text"
-							style="--fx:1 1 0%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:2px solid transparent"
+							style="--fx:1 1 0%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:2px solid transparent"
 							placeholder="#3B82F6"
 							bind:value={branding.primary_color}
 						/>
 					</div>
-					<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --mt:0.25rem">
+					<div style="--size:0.75rem; --c:var(--color-gray-500); --mt:0.25rem">
 						{$i18n.t('Main brand color (e.g., buttons, links)')}
 					</div>
 				</div>
@@ -197,24 +197,24 @@
 						/>
 						<input
 							type="text"
-							style="--fx:1 1 0%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:2px solid transparent"
+							style="--fx:1 1 0%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:2px solid transparent"
 							placeholder="#10B981"
 							bind:value={branding.accent_color}
 						/>
 					</div>
-					<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b); --mt:0.25rem">
+					<div style="--size:0.75rem; --c:var(--color-gray-500); --mt:0.25rem">
 						{$i18n.t('Secondary accent color for highlights')}
 					</div>
 				</div>
 			</div>
 
-			<hr style="--dark-bc:var(--color-gray-850, #262626)" />
+			<hr style="--dark-bc:var(--color-gray-850)" />
 
 			<!-- Preview Section -->
 			<div style="--g:0.75rem">
 				<div style="--size:0.875rem; --weight:500">{$i18n.t('Preview')}</div>
 				
-				<div style="--p:1rem; --radius:0.5rem; --b:1px solid; --dark-bc:var(--color-gray-700, #4e4e4e); --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-850, #262626)">
+				<div style="--p:1rem; --radius:0.5rem; --b:1px solid; --dark-bc:var(--color-gray-700); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)">
 					<div style="--d:flex; --ai:center; --g:0.75rem; --mb:0.75rem">
 						{#if branding.logo_url}
 							<img 
@@ -231,7 +231,7 @@
 								</div>
 							{/if}
 							{#if branding.subtitle}
-								<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">
+								<div style="--size:0.75rem; --c:var(--color-gray-500)">
 									{branding.subtitle}
 								</div>
 							{/if}
@@ -262,7 +262,7 @@
 
 	<div style="--d:flex; --jc:flex-end; --pt:0.75rem">
 		<button
-			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			on:click={saveBranding}
 			disabled={saving}
 		>

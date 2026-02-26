@@ -235,7 +235,7 @@
 					<div style="--d:flex; --g:0.5rem">
 						<div style="--fx:1 1 0%">
 							<select
-								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 								bind:value={selectedPipelinesUrlIdx}
 								placeholder={$i18n.t('Select a pipeline url')}
 								on:change={async () => {
@@ -243,12 +243,12 @@
 									await setPipelines();
 								}}
 							>
-								<option value="" selected disabled style="--bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-700, #4e4e4e)"
+								<option value="" selected disabled style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-700)"
 									>{$i18n.t('Select a pipeline url')}</option
 								>
 
 								{#each PIPELINES_LIST as pipelines, idx}
-									<option value={pipelines.idx.toString()} style="--bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-700, #4e4e4e)"
+									<option value={pipelines.idx.toString()} style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-700)"
 										>{pipelines.url}</option
 									>
 								{/each}
@@ -272,7 +272,7 @@
 							/>
 
 							<button
-								style="--w:100%; --size:0.875rem; --weight:500; --py:0.5rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100, #ececec); --b:1px solid; --bs:dashed; --dark-bc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-850, #262626); --ta:center; --radius:0.75rem"
+								style="--w:100%; --size:0.875rem; --weight:500; --py:0.5rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100); --b:1px solid; --bs:dashed; --dark-bc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-850); --ta:center; --radius:0.75rem"
 								type="button"
 								on:click={() => {
 									document.getElementById('pipelines-upload-input')?.click();
@@ -286,7 +286,7 @@
 							</button>
 						</div>
 						<button
-							style="--px:0.625rem; --bgc:var(--color-gray-100, #ececec); --hvr-bgc:var(--color-gray-200, #e3e3e3); --c:var(--color-gray-800, #333); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --dark-c:var(--color-gray-100, #ececec); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+							style="--px:0.625rem; --bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --c:var(--color-gray-800); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:var(--color-gray-100); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							on:click={() => {
 								uploadPipelineHandler();
 							}}
@@ -349,13 +349,13 @@
 					<div style="--d:flex; --w:100%">
 						<div style="--fx:1 1 0%; --mr:0.5rem">
 							<input
-								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 								placeholder={$i18n.t('Enter Github Raw URL')}
 								bind:value={pipelineDownloadUrl}
 							/>
 						</div>
 						<button
-							style="--px:0.625rem; --bgc:var(--color-gray-100, #ececec); --hvr-bgc:var(--color-gray-200, #e3e3e3); --c:var(--color-gray-800, #333); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --dark-c:var(--color-gray-100, #ececec); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+							style="--px:0.625rem; --bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --c:var(--color-gray-800); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:var(--color-gray-100); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							on:click={() => {
 								addPipelineHandler();
 							}}
@@ -410,16 +410,16 @@
 						</button>
 					</div>
 
-					<div style="--mt:0.5rem; --size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">
-						<span style="--weight:600; --dark-c:var(--color-gray-200, #e3e3e3)">Warning:</span> Pipelines are a plugin
+					<div style="--mt:0.5rem; --size:0.75rem; --c:var(--color-gray-500)">
+						<span style="--weight:600; --dark-c:var(--color-gray-200)">Warning:</span> Pipelines are a plugin
 						system with arbitrary code execution —
-						<span style="--weight:500; --dark-c:var(--color-gray-400, #b4b4b4)"
+						<span style="--weight:500; --dark-c:var(--color-gray-400)"
 							>don't fetch random pipelines from sources you don't trust.</span
 						>
 					</div>
 				</div>
 
-				<hr style="--bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-850, #262626); --my:0.75rem; --w:100%" />
+				<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.75rem; --w:100%" />
 
 				{#if pipelines !== null}
 					{#if pipelines.length > 0}
@@ -433,7 +433,7 @@
 								<div style="--d:flex; --g:0.5rem">
 									<div style="--fx:1 1 0%">
 										<select
-											style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
+											style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 											bind:value={selectedPipelineIdx}
 											placeholder={$i18n.t('Select a pipeline')}
 											on:change={async () => {
@@ -442,7 +442,7 @@
 											}}
 										>
 											{#each pipelines as pipeline, idx}
-												<option value={idx} style="--bgc:var(--color-gray-100, #ececec); --dark-bgc:var(--color-gray-700, #4e4e4e)"
+												<option value={idx} style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-700)"
 													>{pipeline.name} ({pipeline.type ?? 'pipe'})</option
 												>
 											{/each}
@@ -450,7 +450,7 @@
 									</div>
 
 									<button
-										style="--px:0.625rem; --bgc:var(--color-gray-100, #ececec); --hvr-bgc:var(--color-gray-200, #e3e3e3); --c:var(--color-gray-800, #333); --dark-bgc:var(--color-gray-850, #262626); --hvr-dark-bgc:var(--color-gray-800, #333); --dark-c:var(--color-gray-100, #ececec); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+										style="--px:0.625rem; --bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --c:var(--color-gray-800); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:var(--color-gray-100); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 										on:click={() => {
 											deletePipelineHandler();
 										}}
@@ -503,7 +503,7 @@
 														<div style="--fx:1 1 0%">
 															{#if valves_spec.properties[property]?.enum ?? null}
 																<select
-																	style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
+																	style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 																	bind:value={valves[property]}
 																>
 																	{#each valves_spec.properties[property].enum as option}
@@ -514,7 +514,7 @@
 																</select>
 															{:else if (valves_spec.properties[property]?.type ?? null) === 'boolean'}
 																<div style="--d:flex; --jc:space-between; --ai:center">
-																	<div style="--size:0.75rem; --c:var(--color-gray-500, #9b9b9b)">
+																	<div style="--size:0.75rem; --c:var(--color-gray-500)">
 																		{valves[property] ? 'Enabled' : 'Disabled'}
 																	</div>
 
@@ -524,7 +524,7 @@
 																</div>
 															{:else}
 																<input
-																	style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50, #f9f9f9); --dark-c:var(--color-gray-300, #cdcdcd); --dark-bgc:var(--color-gray-850, #262626); --oe:none"
+																	style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 																	type="text"
 																	placeholder={valves_spec.properties[property].title}
 																	bind:value={valves[property]}
@@ -570,7 +570,7 @@
 	{#if PIPELINES_LIST !== null && PIPELINES_LIST.length > 0}
 		<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
 			<button
-				style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900, #171717); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100, #ececec); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+				style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 				type="submit"
 			>
 				{$i18n.t('Save')}

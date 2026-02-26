@@ -151,7 +151,7 @@
 				>
 					{#if $showCallOverlay}
 						<div
-							style="--h:100%; --maxh:100dvh; --bgc:#fff; --c:var(--color-gray-700, #4e4e4e); --dark-bgc:#000; --dark-c:var(--color-gray-300, #cdcdcd); --d:flex; --jc:center"
+							style="--h:100%; --maxh:100dvh; --bgc:#fff; --c:var(--color-gray-700); --dark-bgc:#000; --dark-c:var(--color-gray-300); --d:flex; --jc:center"
 						>
 							<CallOverlay
 								bind:files

@@ -156,13 +156,13 @@
 </script>
 
 {#if channel}
-	<div style="--d:flex; --fd:column; --w:100%; --h:100%; --bgc:var(--color-gray-50, #f9f9f9); --dark-bgc:var(--color-gray-850, #262626)">
+	<div style="--d:flex; --fd:column; --w:100%; --h:100%; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)">
 		<div style="--d:flex; --ai:center; --jc:space-between; --px:0.875rem; --pt:0.75rem">
 			<div style="--weight:500; --size:1.125rem">Thread</div>
 
 			<div>
 				<button
-					style="--c:var(--color-gray-500, #9b9b9b); --hvr-c:var(--color-gray-700, #4e4e4e); --dark-c:var(--color-gray-400, #b4b4b4); --hvr-dark-c:var(--color-gray-300, #cdcdcd); --p:0.5rem"
+					style="--c:var(--color-gray-500); --hvr-c:var(--color-gray-700); --dark-c:var(--color-gray-400); --hvr-dark-c:var(--color-gray-300); --p:0.5rem"
 					on:click={() => {
 						onClose();
 					}}
