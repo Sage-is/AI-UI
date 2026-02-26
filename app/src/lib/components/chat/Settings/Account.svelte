@@ -195,7 +195,7 @@
 				<div style="--fx:1 1 0%; --d:flex; --fd:column; --as:center; --g:0.125rem">
 					<div style="--mb:0.125rem; --size:0.875rem; --weight:500">{$i18n.t('Profile Image')}</div>
 
-					<div>
+					<div style="--d:flex; --g:0.375rem">
 						<button
 							style="--size:0.75rem; --ta:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-400); --radius:9999px; --px:1rem; --py:0.125rem; --bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850)"
 							on:click={async () => {

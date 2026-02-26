@@ -172,6 +172,7 @@
 			style="--pos:absolute; --top:0; --mt:4rem; --left:0; --right:0.25rem; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-900); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-950); --radius:0.5rem; --z:10; --shadow:4"
 			id="search-options-container"
 			in:fade={{ duration: 50 }}
+			on:mousedown|preventDefault
 			on:mouseenter={() => {
 				selectedIdx = null;
 			}}
