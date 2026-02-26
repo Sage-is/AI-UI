@@ -97,7 +97,7 @@
 
 		<input
 			id="search-input"
-			style="--w:100%; --btrr:0.75rem; --bbrr:0.75rem; --py:0.375rem; --pl:0.625rem; --size:0.875rem; --bgc:transparent; --dark-c:var(--color-gray-300, #cdcdcd); --oe:none"
+			style="--w:100%; --btrr:0.75rem; --bbrr:0.75rem; --p:0.625rem; --m:1rem; --size:0.875rem; --bgc:transparent; --dark-c:var(--color-gray-300, #cdcdcd); --oe:none"
 			placeholder={placeholder ? placeholder : $i18n.t('Search')}
 			bind:value
 			on:input={() => {

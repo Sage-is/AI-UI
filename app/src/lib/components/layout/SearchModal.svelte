@@ -326,7 +326,7 @@
 			</div>
 			<div
 				id="chat-preview"
-				style="--d:none; --d-md:flex; --fx-md:1 1 0%; --w:100%; --ofy:auto; --h:24rem; --h-md:40rem"
+				style="--d:none; --d-md:flex; --fx-md:2 1 0%; --w:100%; --ofy:auto; --h:24rem; --h-md:40rem"
 	class="scrollbar-hidden"
 			>
 				{#if messages === null}

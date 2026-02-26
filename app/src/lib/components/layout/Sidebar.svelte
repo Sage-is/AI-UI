@@ -41,7 +41,12 @@
 		updateChatFolderIdById,
 		importChat
 	} from '$lib/apis/chats';
-	import { createNewFolder, getFolders, updateFolderParentIdById, updateFolderIsExpandedById } from '$lib/apis/folders';
+	import {
+		createNewFolder,
+		getFolders,
+		updateFolderParentIdById,
+		updateFolderIsExpandedById
+	} from '$lib/apis/folders';
 	import { getBranding } from '$lib/apis/configs';
 	import { WEBUI_BASE_URL } from '$lib/constants';
 
@@ -74,6 +79,7 @@
 	let branding: { logo_url?: string; logo_dark_url?: string } = {};
 	let selectedChatId = null;
 	let showPinnedChat = true;
+	let pinnedDraggedOver = false;
 
 	let showCreateChannel = false;
 
@@ -935,96 +941,47 @@
 					}
 				}}
 			>
-				{#if $pinnedChats.length > 0}
-					<div style="--d:flex; --fd:column; --g:0.25rem; --radius:0.75rem">
-						<Folder
-							className=""
-							bind:open={showPinnedChat}
-							on:change={(e) => {
-								localStorage.setItem('showPinnedChat', e.detail);
-								console.log(e.detail);
-							}}
-							on:import={(e) => {
-								importChatHandler(e.detail, true);
-							}}
-							on:drop={async (e) => {
-								const { type, id, item } = e.detail;
+				<!-- Toggle icon bar: folders, pinned, dates -->
+				{#if Object.keys(folders).length > 0 || $pinnedChats.length > 0 || groupedChats.length > 0}
+					<div
+						style="--d:flex; --ai:center; --g:0.25rem; --px:0.4rem; --pt:0.25rem; --pb:0.125rem"
+					>
+						{#if $pinnedChats.length > 0}
+							<Tooltip content={showPinnedChat ? $i18n.t('Hide Pinned') : $i18n.t('Show Pinned')}>
+								<button
+									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.25rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b); --hvr-c:var(--color-gray-600, #676767); --hvr-dark-c:var(--color-gray-300, #cdcdcd); --tn:color 150ms ease"
+									on:click={() => {
+										showPinnedChat = !showPinnedChat;
+										localStorage.setItem('showPinnedChat', String(showPinnedChat));
+									}}
+								>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke-width="2"
+										stroke="currentColor"
+										style="--w:0.875rem; --h:0.875rem"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
+										/>
+									</svg>
+									{#if showPinnedChat}
+										<ChevronDown className="size-2.5" strokeWidth="2.5" />
+									{:else}
+										<ChevronRight className="size-2.5" strokeWidth="2.5" />
+									{/if}
+								</button>
+							</Tooltip>
+						{/if}
 
-								if (type === 'chat') {
-									let chat = await getChatById(localStorage.token, id).catch((error) => {
-										return null;
-									});
-									if (!chat && item) {
-										chat = await importChat(
-											localStorage.token,
-											item.chat,
-											item?.meta ?? {},
-											false,
-											null,
-											item?.created_at ?? null,
-											item?.updated_at ?? null
-										);
-									}
-
-									if (chat) {
-										console.log(chat);
-										if (chat.folder_id) {
-											const res = await updateChatFolderIdById(
-												localStorage.token,
-												chat.id,
-												null
-											).catch((error) => {
-												toast.error(`${error}`);
-												return null;
-											});
-										}
-
-										if (!chat.pinned) {
-											const res = await toggleChatPinnedStatusById(localStorage.token, chat.id);
-										}
-
-										initChatList();
-									}
-								}
-							}}
-							name={$i18n.t('Pinned')}
-						>
-							<div
-								style="--ml:0.75rem; --pl:0.25rem; --mt:1px; --d:flex; --fd:column; --ofy:auto; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-900, #171717)"
-								class="scrollbar-hidden border-s"
-							>
-								{#each $pinnedChats as chat, idx (`pinned-chat-${chat?.id ?? idx}`)}
-									<ChatItem
-										className=""
-										id={chat.id}
-										title={chat.title}
-										{shiftKey}
-										selected={selectedChatId === chat.id}
-										on:select={() => {
-											selectedChatId = chat.id;
-										}}
-										on:unselect={() => {
-											selectedChatId = null;
-										}}
-										on:change={async () => {
-											initChatList();
-										}}
-										on:tag={(e) => {
-											const { type, name } = e.detail;
-											tagEventHandler(type, name, chat.id);
-										}}
-									/>
-								{/each}
-							</div>
-						</Folder>
-					</div>
-				{/if}
-
-				<!-- Fold/Unfold toggle buttons -->
-				{#if Object.keys(folders).length > 0 || groupedChats.length > 0}
-					<div style="--d:flex; --ai:center; --g:0.25rem; --px:0.75rem; --pt:0.25rem; --pb:0.125rem">
 						{#if Object.keys(folders).length > 0}
-							<Tooltip content={allFoldersCollapsed ? $i18n.t('Unfold Folders') : $i18n.t('Fold Folders')}>
+							<Tooltip
+								content={allFoldersCollapsed ? $i18n.t('Unfold Folders') : $i18n.t('Fold Folders')}
+							>
 								<button
 									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.25rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b); --hvr-c:var(--color-gray-600, #676767); --hvr-dark-c:var(--color-gray-300, #cdcdcd); --tn:color 150ms ease"
 									on:click={() => {
@@ -1035,8 +992,19 @@
 										}
 									}}
 								>
-									<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="--w:0.875rem; --h:0.875rem">
-										<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke-width="2"
+										stroke="currentColor"
+										style="--w:0.875rem; --h:0.875rem"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z"
+										/>
 									</svg>
 									{#if allFoldersCollapsed}
 										<ChevronDown className="size-2.5" strokeWidth="2.5" />
@@ -1048,7 +1016,9 @@
 						{/if}
 
 						{#if groupedChats.length > 0}
-							<Tooltip content={allDateGroupsCollapsed ? $i18n.t('Unfold Dates') : $i18n.t('Fold Dates')}>
+							<Tooltip
+								content={allDateGroupsCollapsed ? $i18n.t('Unfold Dates') : $i18n.t('Fold Dates')}
+							>
 								<button
 									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.25rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-500, #9b9b9b); --hvr-c:var(--color-gray-600, #676767); --hvr-dark-c:var(--color-gray-300, #cdcdcd); --tn:color 150ms ease"
 									on:click={() => {
@@ -1059,8 +1029,19 @@
 										}
 									}}
 								>
-									<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="--w:0.875rem; --h:0.875rem">
-										<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke-width="2"
+										stroke="currentColor"
+										style="--w:0.875rem; --h:0.875rem"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+										/>
 									</svg>
 									{#if allDateGroupsCollapsed}
 										<ChevronDown className="size-2.5" strokeWidth="2.5" />
@@ -1070,6 +1051,115 @@
 								</button>
 							</Tooltip>
 						{/if}
+					</div>
+				{/if}
+
+				<!-- Pinned chats (toggled via icon bar, no header label) -->
+				{#if $pinnedChats.length > 0 && showPinnedChat}
+					<!-- svelte-ignore a11y-no-static-element-interactions -->
+					<div
+						transition:slide={{ duration: 200, easing: quintOut }}
+						style="--d:flex; --fd:column; --g:0.25rem; --radius:0.75rem; --pos:relative"
+						on:dragover|preventDefault|stopPropagation={() => {
+							pinnedDraggedOver = true;
+						}}
+						on:dragleave|preventDefault|stopPropagation={() => {
+							pinnedDraggedOver = false;
+						}}
+						on:drop|preventDefault|stopPropagation={async (e) => {
+							if (e.dataTransfer?.items && e.dataTransfer.items.length > 0) {
+								for (const item of Array.from(e.dataTransfer.items)) {
+									if (item.kind === 'file') {
+										const file = item.getAsFile();
+										if (file && file.type === 'application/json') {
+											const reader = new FileReader();
+											reader.onload = async (event) => {
+												try {
+													const fileContent = JSON.parse(event.target.result);
+													importChatHandler(fileContent, true);
+												} catch (error) {
+													console.error('Error parsing JSON file:', error);
+												}
+											};
+											reader.readAsText(file);
+										}
+									} else {
+										try {
+											const dataTransfer = e.dataTransfer.getData('text/plain');
+											if (dataTransfer) {
+												const data = JSON.parse(dataTransfer);
+												if (data.type === 'chat') {
+													let chat = await getChatById(localStorage.token, data.id).catch(
+														() => null
+													);
+													if (!chat && data.item) {
+														chat = await importChat(
+															localStorage.token,
+															data.item.chat,
+															data.item?.meta ?? {},
+															false,
+															null,
+															data.item?.created_at ?? null,
+															data.item?.updated_at ?? null
+														);
+													}
+													if (chat) {
+														if (chat.folder_id) {
+															await updateChatFolderIdById(localStorage.token, chat.id, null).catch(
+																(error) => {
+																	toast.error(`${error}`);
+																}
+															);
+														}
+														if (!chat.pinned) {
+															await toggleChatPinnedStatusById(localStorage.token, chat.id);
+														}
+														initChatList();
+													}
+												}
+											}
+										} catch {
+											// Not valid JSON drop data
+										}
+									}
+								}
+							}
+							pinnedDraggedOver = false;
+						}}
+					>
+						{#if pinnedDraggedOver}
+							<div
+								style="--pos:absolute; --top:0; --left:0; --w:100%; --h:100%; --bgc:rgb(236 236 236 / 0.5); --dark-bgc:rgb(78 78 78 / 0.2); --z:50; --pe:none; touch-action:none"
+								class="rounded-xs"
+							></div>
+						{/if}
+						<div
+							style="--ml:0.75rem; --pl:0.25rem; --mt:1px; --d:flex; --fd:column; --ofy:auto; --bc:var(--color-gray-100, #ececec); --dark-bc:var(--color-gray-900, #171717)"
+							class="scrollbar-hidden border-s"
+						>
+							{#each $pinnedChats as chat, idx (`pinned-chat-${chat?.id ?? idx}`)}
+								<ChatItem
+									className=""
+									id={chat.id}
+									title={chat.title}
+									{shiftKey}
+									selected={selectedChatId === chat.id}
+									on:select={() => {
+										selectedChatId = chat.id;
+									}}
+									on:unselect={() => {
+										selectedChatId = null;
+									}}
+									on:change={async () => {
+										initChatList();
+									}}
+									on:tag={(e) => {
+										const { type, name } = e.detail;
+										tagEventHandler(type, name, chat.id);
+									}}
+								/>
+							{/each}
+						</div>
 					</div>
 				{/if}
 
@@ -1106,7 +1196,9 @@
 									class={groupIdx === 0 ? '' : 'pt-5'}
 									on:click={() => toggleDateGroup(group.timeRange)}
 								>
-									<div style="--c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-600, #676767); --fs:0">
+									<div
+										style="--c:var(--color-gray-300, #cdcdcd); --dark-c:var(--color-gray-600, #676767); --fs:0"
+									>
 										{#if collapsedDateGroups[group.timeRange]}
 											<ChevronRight className="size-3" strokeWidth="2.5" />
 										{:else}
@@ -1117,7 +1209,9 @@
 										{$i18n.t(group.timeRange)}
 									</div>
 									{#if collapsedDateGroups[group.timeRange]}
-										<div style="--size:0.625rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-600, #676767)">
+										<div
+											style="--size:0.625rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-600, #676767)"
+										>
 											({group.chats.length})
 										</div>
 									{/if}
@@ -1213,7 +1307,9 @@
 							}
 						}}
 					>
-						<button style="--radius: 1em; --w:100%; --p:0.25rem; --d:flex; --ai:center; --g:0.5rem; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)">
+						<button
+							style="--radius: 1em; --w:100%; --p:0.25rem; --d:flex; --ai:center; --g:0.5rem; --hvr-bgc:var(--color-gray-100, #ececec); --hvr-dark-bgc:var(--color-gray-900, #171717); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+						>
 							<div style="--as:center; --mr:0.75rem">
 								<img
 									src={$user?.profile_image_url}
