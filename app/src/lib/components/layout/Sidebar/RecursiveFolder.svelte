@@ -10,7 +10,7 @@
 
 	import { toast } from 'svelte-sonner';
 
-	import { chatId, selectedFolder } from '$lib/stores';
+	import { chatId, selectedFolder, folderCollapseAllTrigger } from '$lib/stores';
 
 	import {
 		deleteFolderById,
@@ -331,6 +331,10 @@
 
 	$: isExpandedUpdateDebounceHandler(open);
 
+	$: if ($folderCollapseAllTrigger) {
+		open = folders[folderId]?.is_expanded ?? false;
+	}
+
 	const renameHandler = async () => {
 		console.log('Edit');
 		await tick();
@@ -483,6 +487,12 @@
 						{folders[folderId].name}
 					{/if}
 				</div>
+
+				{#if !open && ((folders[folderId]?.childrenIds ?? []).length + (folders[folderId]?.items?.chats ?? []).length) > 0}
+					<div style="--size:0.625rem; --c:var(--color-gray-400, #b4b4b4); --dark-c:var(--color-gray-600, #676767); --fs:0">
+						({(folders[folderId]?.childrenIds ?? []).length + (folders[folderId]?.items?.chats ?? []).length})
+					</div>
+				{/if}
 
 				<button
 					style="--pos:absolute; 
