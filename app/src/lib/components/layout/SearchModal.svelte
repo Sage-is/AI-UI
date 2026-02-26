@@ -12,7 +12,7 @@
 	import calendar from 'dayjs/plugin/calendar';
 	import Loader from '../common/Loader.svelte';
 	import { createMessagesList } from '$lib/utils';
-	import { user } from '$lib/stores';
+	import { user, searchQuery } from '$lib/stores';
 	import Messages from '../chat/Messages.svelte';
 	dayjs.extend(calendar);
 
@@ -135,6 +135,10 @@
 	};
 
 	const init = () => {
+		if ($searchQuery) {
+			query = $searchQuery;
+			searchQuery.set('');
+		}
 		searchHandler();
 	};
 
