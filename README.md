@@ -22,6 +22,8 @@ Sage WebUI transforms how you interact with AI. Built for privacy and flexibilit
 
 **Extensible** — Plugin architecture, custom functions, and RAG integration out of the box.
 
+**Community Hub** — Browse, share, and deploy models, prompts, tools, and knowledge across your Sage instances via [community.sage.is](https://community.sage.is).
+
 ## Quick Start
 
 ### Using Make (Recommended)
@@ -54,6 +56,7 @@ If you want to do front end dev and see changes to svelte files live, go instead
 
 - **Multi-Model Chat** — Switch between different AI models in the same chat or even talk to multiple AI models at the same time
 - **Knowledge Bases** — Create RAG-powered AIs by uploading PDFs, docs, and websites directly into your chats or into Workshop Knoweldge
+- **Community Hub** — Browse, share, and deploy community models, prompts, tools, and knowledge directly to your Sage instances ([docs](./docs/community-hub.md))
 - **Messaging Bridges** — Connect external platforms like WhatsApp, Telegram, Signal, and Email directly to Sage AI for chat or channel mirroring ([docs](./docs/bridges.md))
 - **Code Execution** — Built-in Python environment with custom function support
 - **Voice & Video** — Hands-free conversations with speech-to-text and text-to-speech
@@ -94,13 +97,15 @@ See [Startr.Style docs](https://startr.style) for the full property reference, r
 - [API Reference](./API/examples.md)
 - [Development Workflow](./docs/DEVELOPMENT_WORKFLOW.md)
 - [API Refactoring Plan](./docs/api-refactoring-plan.md)
+- [Community Hub Integration](./docs/community-hub.md)
 - [Contributing](./docs/CONTRIBUTING.md)
 - [Bug Fixes & Improvements](./docs/) — Historical documentation of major fixes
   - [Kokoro.js TTS Fix (July 28, 2025)](./docs/kokoro-tts-fix-2025-07-28.md)
 
 ## Community
 
-- **Discord:** [Join our community](https://discord.gg/#TODO)
+- **Community Hub:** [Browse & share models, prompts, tools, and more](https://community.sage.is) — Deploy community items directly to your Sage instances
+- **Discord:** [Join our community](https://discord.gg/3BtwHkXS)
 - **Issues:** [Report bugs](https://github.com/Sage-is/AI-UI/issues)
 
 ## License
