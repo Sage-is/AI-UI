@@ -116,7 +116,7 @@ It protects developers by:
 - Promoting collaboration: It encourages contributions by guaranteeing that enhancements benefit everyone, reducing the risk of forks diverging into incompatible proprietary versions.
 - Legal clarity: It provides strong protections against patent claims and ensures freedom to run, study, share, and modify the code, with no warranties but clear liability limits.
 
-This aligns with the project's privacy-first ethos, as it keeps AI interfaces open and accountable. If you meant a different license or aspect, clarify.
+This aligns with the project's privacy-first ethos, as it keeps AI interfaces open and accountable.
 
 ---
 
