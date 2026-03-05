@@ -15,7 +15,6 @@
 	import Keyboard from '$lib/components/icons/Keyboard.svelte';
 	import ShortcutsModal from '$lib/components/chat/ShortcutsModal.svelte';
 	import Settings from '$lib/components/icons/Settings.svelte';
-	import Code from '$lib/components/icons/Code.svelte';
 	import UserGroup from '$lib/components/icons/UserGroup.svelte';
 	import SignOut from '$lib/components/icons/SignOut.svelte';
 
@@ -153,24 +152,6 @@
 				{$i18n.t('Archived Chats')}
 			</div>
 		</button>
-
-		{#if role === 'admin'}
-			<button
-				style="{itemStyle}; --us:none"
-				on:click={() => {
-					close();
-					if ($mobile) showSidebar.set(false);
-					goto('/playground');
-				}}
-			>
-				<div style="--as:center; --mr:0.75rem">
-					<Code className="size-5" strokeWidth="1.5" />
-				</div>
-				<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
-					{$i18n.t('Playground')}
-				</div>
-			</button>
-		{/if}
 
 		{#if role === 'admin' || role === 'facilitator'}
 			<button

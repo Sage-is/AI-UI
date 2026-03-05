@@ -375,7 +375,7 @@
 					<th scope="col" style="--px:0.75rem; --py:0.5rem; --ta:right" />
 				</tr>
 			</thead>
-			<tbody style="--d:flex;--fd:column">
+			<tbody>
 				{#each users as user, userIdx}
 					<tr style="--bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-bc:var(--color-gray-850); --size:0.75rem">
 						<td style="--px:0.75rem; --py:0.25rem; --minw:7rem; --w:7rem">

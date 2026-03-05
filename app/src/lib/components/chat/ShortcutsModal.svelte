@@ -108,7 +108,7 @@
 			</button>
 		</div>
 
-		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --p:1.25rem; --g-md:1rem; --dark-c:var(--color-gray-200)">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --p:1.25rem; --p: 1rem 0;--bgc: var(--white); --br: 1rem; --shadow: 6">
 			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				<div style="--d:flex; --fd:column; --g:0.75rem; --w:100%; --as:flex-start">
 					<!-- DRY: Use data structure to eliminate repetitive HTML -->
