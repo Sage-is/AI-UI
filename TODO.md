@@ -1,3 +1,9 @@
+## 🔥 Current Active Tasks (March 5, 2026)
+
+### 🔴 Codebase Audit Remediation - NEW TASK
+- [>] **Address findings from March 2026 codebase audit** (see `docs/codebase-audit-2026-03.md`)
+---
+
 ## 🔥 Current Active Tasks (September 10, 2025)
 
 ### 🔶 Config Management - NEW TASK
