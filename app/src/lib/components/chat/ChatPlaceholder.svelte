@@ -134,7 +134,7 @@
 
 		<div style="--w:100%; --maxw:34rem; --ff:'Archivo', 'Vazirmatn', sans-serif; --ta:center" in:fade={{ duration: 200, delay: 300 }}>
 			<Suggestions
-				listStyle="--d:grid; --gtc:repeat(2, minmax(0, 1fr))"
+				listStyle="--d:grid; --gtc-lg:repeat(2, minmax(0, 1fr))"
 				suggestionPrompts={atSelectedModel?.info?.meta?.suggestion_prompts ??
 					models[selectedModelIdx]?.info?.meta?.suggestion_prompts ??
 					$config?.default_prompt_suggestions ??

@@ -65,7 +65,9 @@
 	}
 </script>
 
-<div style="--mb:0.25rem; --d:flex; --g:0.25rem; --size:0.75rem; --weight:500; --ai:center; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)">
+<div
+	style="--mb:0.25rem; --d:flex; --g:0.25rem; --size:0.75rem; --weight:500; --ai:center; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
+>
 	{#if filteredPrompts.length > 0}
 		<Bolt />
 		{$i18n.t('Suggested')}
@@ -74,9 +76,9 @@
 
 		<div
 			style="--d:flex; --w:100%; --as:flex-start; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
-	class="{$settings?.landingPageMode === 'chat'
+			class={$settings?.landingPageMode === 'chat'
 				? ' -mt-1'
-				: 'text-center items-center justify-center'}"
+				: 'text-center items-center justify-center'}
 		>
 			{$WEBUI_NAME} ‧ v{WEBUI_VERSION}
 		</div>
@@ -85,37 +87,45 @@
 
 <div style="--h:10rem; --w:100%; --p: 0 0.2rem;">
 	{#if filteredPrompts.length > 0}
-		<div role="list" style="--maxh:10rem; --of:auto; --ai:flex-start; {listStyle}; gap:0.2rem; --p:0.2rem}"
-	class="scrollbar-none {className}">
+		<div
+			role="list"
+			style="--maxh:10rem; --of:auto; --ai:flex-start; {listStyle}; gap:0.2rem; --p:0.2rem}"
+			class="scrollbar-none {className}"
+		>
 			{#each filteredPrompts as prompt, idx (prompt.id || prompt.content)}
 				<!-- svelte-ignore a11y-no-interactive-element-to-noninteractive-role -->
 				<button
 					role="listitem"
 					class="waterfall group"
-					style="--shadow:6; --d:flex; --fd:column; --fx:1 1 0%; 
-					--fs:0; --w:90%; --px:0.75rem; --py:0.5rem; --radius:0.75rem; --bgc:transparent; 
-					--hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); animation-delay: {idx * 60}ms"
+					style="--m:0.2rem auto; --p:0.6rem; --shadow:6; --d:flex; --fd:column; --fx:1 1 0%; 
+					--fs:0; --w:90%; --radius:0.6rem; --bgc:transparent; 
+					--hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); 
+					animation-delay: {idx *	60}ms"
 					on:click={() => onSelect({ type: 'prompt', data: prompt.content })}
 				>
 					<div style="--d:flex; --fd:column; --ta:left">
 						{#if prompt.title && prompt.title[0] !== ''}
 							<div
 								style="--weight:500; --dark-c:var(--color-gray-300); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --line-clamp:1"
-	class="dark:group-hover:text-gray-200"
+								class="dark:group-hover:text-gray-200"
 							>
 								{prompt.title[0]}
 							</div>
-							<div style="--size:0.75rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); --weight:400; --line-clamp:1">
+							<div
+								style="--size:0.75rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); --weight:400; --line-clamp:1"
+							>
 								{prompt.title[1]}
 							</div>
 						{:else}
 							<div
 								style="--weight:500; --dark-c:var(--color-gray-300); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --line-clamp:1"
-	class="dark:group-hover:text-gray-200"
+								class="dark:group-hover:text-gray-200"
 							>
 								{prompt.content}
 							</div>
-							<div style="--size:0.75rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); --weight:400; --line-clamp:1">
+							<div
+								style="--size:0.75rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); --weight:400; --line-clamp:1"
+							>
 								{$i18n.t('Prompt')}
 							</div>
 						{/if}
