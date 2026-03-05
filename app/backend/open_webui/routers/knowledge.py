@@ -229,7 +229,7 @@ async def reindex_knowledge_files(request: Request, user=Depends(get_verified_us
             failed_files = []
             for file in files:
                 try:
-                    process_file(
+                    await process_file(
                         request,
                         ProcessFileForm(
                             file_id=file.id, collection_name=knowledge_base.id
@@ -350,7 +350,7 @@ class KnowledgeFileIdForm(BaseModel):
 
 
 @router.post("/{id}/file/add", response_model=Optional[KnowledgeFilesResponse])
-def add_file_to_knowledge_by_id(
+async def add_file_to_knowledge_by_id(
     request: Request,
     id: str,
     form_data: KnowledgeFileIdForm,
@@ -388,7 +388,7 @@ def add_file_to_knowledge_by_id(
 
     # Add content to the vector database
     try:
-        process_file(
+        await process_file(
             request,
             ProcessFileForm(file_id=form_data.file_id, collection_name=id),
             user=user,
@@ -435,7 +435,7 @@ def add_file_to_knowledge_by_id(
 
 
 @router.post("/{id}/file/update", response_model=Optional[KnowledgeFilesResponse])
-def update_file_from_knowledge_by_id(
+async def update_file_from_knowledge_by_id(
     request: Request,
     id: str,
     form_data: KnowledgeFileIdForm,
@@ -473,7 +473,7 @@ def update_file_from_knowledge_by_id(
 
     # Add content to the vector database
     try:
-        process_file(
+        await process_file(
             request,
             ProcessFileForm(file_id=form_data.file_id, collection_name=id),
             user=user,

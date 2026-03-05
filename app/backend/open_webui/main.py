@@ -33,10 +33,10 @@ from fastapi import (
     Request,
     UploadFile,
     status,
-    applications,
     BackgroundTasks,
 )
-from fastapi.openapi.docs import get_swagger_ui_html
+from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
+from fastapi.openapi.utils import get_openapi
 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
@@ -251,6 +251,11 @@ from open_webui.config import (
     DOCUMENT_INTELLIGENCE_ENDPOINT,
     DOCUMENT_INTELLIGENCE_KEY,
     MISTRAL_OCR_API_KEY,
+    AI_PARSE_ENABLED,
+    AI_PARSE_DEFAULT_MODEL,
+    AI_PARSE_DEFAULT_PROMPT,
+    AI_PARSE_CHUNK_BEFORE_LLM,
+    AI_PARSE_MAX_CHUNK_SIZE,
     RAG_TEXT_SPLITTER,
     TIKTOKEN_ENCODING_NAME,
     PDF_EXTRACT_IMAGES,
@@ -569,9 +574,9 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="Sage.is AI",
-    docs_url="/docs",
-    openapi_url="/openapi.json",
-    redoc_url= "/redoc" ,  # Set to None to disable Redoc or switch to /redoc
+    docs_url=None,       # Served via explicit routes below to avoid SPA mount conflict
+    openapi_url=None,    # Served via explicit routes below
+    redoc_url=None,      # Served via explicit routes below
     lifespan=lifespan,
 )
 
@@ -816,6 +821,12 @@ app.state.config.DOCLING_PICTURE_DESCRIPTION_API = DOCLING_PICTURE_DESCRIPTION_A
 app.state.config.DOCUMENT_INTELLIGENCE_ENDPOINT = DOCUMENT_INTELLIGENCE_ENDPOINT
 app.state.config.DOCUMENT_INTELLIGENCE_KEY = DOCUMENT_INTELLIGENCE_KEY
 app.state.config.MISTRAL_OCR_API_KEY = MISTRAL_OCR_API_KEY
+
+app.state.config.AI_PARSE_ENABLED = AI_PARSE_ENABLED
+app.state.config.AI_PARSE_DEFAULT_MODEL = AI_PARSE_DEFAULT_MODEL
+app.state.config.AI_PARSE_DEFAULT_PROMPT = AI_PARSE_DEFAULT_PROMPT
+app.state.config.AI_PARSE_CHUNK_BEFORE_LLM = AI_PARSE_CHUNK_BEFORE_LLM
+app.state.config.AI_PARSE_MAX_CHUNK_SIZE = AI_PARSE_MAX_CHUNK_SIZE
 
 app.state.config.TEXT_SPLITTER = RAG_TEXT_SPLITTER
 app.state.config.TIKTOKEN_ENCODING_NAME = TIKTOKEN_ENCODING_NAME
@@ -1836,17 +1847,41 @@ async def serve_cache_file(
     return FileResponse(file_path)
 
 
-def swagger_ui_html(*args, **kwargs):
+################################
+# API Documentation Routes
+# Registered as explicit routes so they are not shadowed by the SPA mount.
+################################
+
+
+@app.get("/openapi.json", include_in_schema=False)
+async def openapi_schema():
+    return JSONResponse(
+        get_openapi(
+            title=app.title,
+            version=app.version,
+            routes=app.routes,
+        )
+    )
+
+
+@app.get("/docs", include_in_schema=False)
+async def swagger_docs():
     return get_swagger_ui_html(
-        *args,
-        **kwargs,
+        openapi_url="/openapi.json",
+        title=f"{app.title} - Swagger UI",
         swagger_js_url="/static/swagger-ui/swagger-ui-bundle.js",
         swagger_css_url="/static/swagger-ui/swagger-ui.css",
         swagger_favicon_url="/static/swagger-ui/favicon.png",
     )
 
 
-applications.get_swagger_ui_html = swagger_ui_html
+@app.get("/redoc", include_in_schema=False)
+async def redoc_docs():
+    return get_redoc_html(
+        openapi_url="/openapi.json",
+        title=f"{app.title} - ReDoc",
+    )
+
 
 if os.path.exists(FRONTEND_BUILD_DIR):
     mimetypes.add_type("text/javascript", ".js")
