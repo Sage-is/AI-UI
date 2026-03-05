@@ -2234,6 +2234,40 @@ MISTRAL_OCR_API_KEY = PersistentConfig(
     os.getenv("MISTRAL_OCR_API_KEY", ""),
 )
 
+####################################
+# AI Document Parsing
+####################################
+
+AI_PARSE_ENABLED = PersistentConfig(
+    "AI_PARSE_ENABLED",
+    "rag.ai_parse.enabled",
+    os.environ.get("AI_PARSE_ENABLED", "True").lower() == "true",
+)
+
+AI_PARSE_DEFAULT_MODEL = PersistentConfig(
+    "AI_PARSE_DEFAULT_MODEL",
+    "rag.ai_parse.model",
+    os.getenv("AI_PARSE_DEFAULT_MODEL", ""),
+)
+
+AI_PARSE_DEFAULT_PROMPT = PersistentConfig(
+    "AI_PARSE_DEFAULT_PROMPT",
+    "rag.ai_parse.prompt",
+    os.getenv("AI_PARSE_DEFAULT_PROMPT", ""),
+)
+
+AI_PARSE_CHUNK_BEFORE_LLM = PersistentConfig(
+    "AI_PARSE_CHUNK_BEFORE_LLM",
+    "rag.ai_parse.chunk_before_llm",
+    os.environ.get("AI_PARSE_CHUNK_BEFORE_LLM", "True").lower() == "true",
+)
+
+AI_PARSE_MAX_CHUNK_SIZE = PersistentConfig(
+    "AI_PARSE_MAX_CHUNK_SIZE",
+    "rag.ai_parse.max_chunk_size",
+    int(os.environ.get("AI_PARSE_MAX_CHUNK_SIZE", "4000")),
+)
+
 BYPASS_EMBEDDING_AND_RETRIEVAL = PersistentConfig(
     "BYPASS_EMBEDDING_AND_RETRIEVAL",
     "rag.bypass_embedding_and_retrieval",

@@ -1,7 +1,19 @@
 ## 🔥 Current Active Tasks (March 5, 2026)
 
+### 🔴 Knowledge Base Ingestion Modes + Admin Cleanup - HIGH PRIORITY
+- [ ] Simpler lost password/single sign on is needed as people forget passwords as they think their minds know how to hold them...
+- [ ] **Add AI-Parsed ingestion mode and clean up admin Documents page** (see `docs/knowledge-ingestion-modes-plan.md`)
+  - [ ] Admin page cleanup — fold engine-specific config with `<details>/<summary>`
+  - [ ] Backend — AI Parser Service (`retrieval/processors/ai_parser.py`)
+  - [ ] Backend — Config additions (`AI_PARSE_ENABLED`, model, prompt defaults)
+  - [ ] Backend — Ingestion mode routing in `process_file()`
+  - [ ] Backend — File upload metadata pass-through
+  - [ ] Frontend — AI Parse admin section in Documents.svelte
+  - [ ] Frontend — Upload flow mode selector (Plain / AI Parse) in KnowledgeBase.svelte
+  - [ ] Testing all modes end-to-end
+
 ### 🔴 Codebase Audit Remediation - NEW TASK
-- [>] **Address findings from March 2026 codebase audit** (see `docs/codebase-audit-2026-03.md`
+- [>] **Address findings from March 2026 codebase audit** (see `docs/codebase-audit-2026-03.md`)
 
 ---
 

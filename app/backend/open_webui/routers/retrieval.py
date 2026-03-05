@@ -41,6 +41,7 @@ from open_webui.retrieval.vector.factory import VECTOR_DB_CLIENT
 
 # Document loaders
 from open_webui.retrieval.loaders.main import Loader
+from open_webui.retrieval.processors.ai_parser import ai_parse_content, DEFAULT_AI_PARSE_PROMPT
 from open_webui.retrieval.loaders.youtube import YoutubeLoader
 
 from open_webui.retrieval.web.utils import get_web_loader
@@ -399,6 +400,12 @@ async def get_rag_config(request: Request, user=Depends(get_admin_user)):
         "DOCUMENT_INTELLIGENCE_ENDPOINT": request.app.state.config.DOCUMENT_INTELLIGENCE_ENDPOINT,
         "DOCUMENT_INTELLIGENCE_KEY": request.app.state.config.DOCUMENT_INTELLIGENCE_KEY,
         "MISTRAL_OCR_API_KEY": request.app.state.config.MISTRAL_OCR_API_KEY,
+        # AI Document Parsing
+        "AI_PARSE_ENABLED": request.app.state.config.AI_PARSE_ENABLED,
+        "AI_PARSE_DEFAULT_MODEL": request.app.state.config.AI_PARSE_DEFAULT_MODEL,
+        "AI_PARSE_DEFAULT_PROMPT": request.app.state.config.AI_PARSE_DEFAULT_PROMPT,
+        "AI_PARSE_CHUNK_BEFORE_LLM": request.app.state.config.AI_PARSE_CHUNK_BEFORE_LLM,
+        "AI_PARSE_MAX_CHUNK_SIZE": request.app.state.config.AI_PARSE_MAX_CHUNK_SIZE,
         # Reranking settings
         "RAG_RERANKING_MODEL": request.app.state.config.RAG_RERANKING_MODEL,
         "RAG_RERANKING_ENGINE": request.app.state.config.RAG_RERANKING_ENGINE,
@@ -459,6 +466,13 @@ class ConfigForm(BaseModel):
     DOCUMENT_INTELLIGENCE_ENDPOINT: Optional[str] = None
     DOCUMENT_INTELLIGENCE_KEY: Optional[str] = None
     MISTRAL_OCR_API_KEY: Optional[str] = None
+
+    # AI Document Parsing
+    AI_PARSE_ENABLED: Optional[bool] = None
+    AI_PARSE_DEFAULT_MODEL: Optional[str] = None
+    AI_PARSE_DEFAULT_PROMPT: Optional[str] = None
+    AI_PARSE_CHUNK_BEFORE_LLM: Optional[bool] = None
+    AI_PARSE_MAX_CHUNK_SIZE: Optional[int] = None
 
     # Reranking settings
     RAG_RERANKING_MODEL: Optional[str] = None
@@ -663,6 +677,33 @@ async def update_rag_config(
         else request.app.state.config.MISTRAL_OCR_API_KEY
     )
 
+    # AI Document Parsing
+    request.app.state.config.AI_PARSE_ENABLED = (
+        form_data.AI_PARSE_ENABLED
+        if form_data.AI_PARSE_ENABLED is not None
+        else request.app.state.config.AI_PARSE_ENABLED
+    )
+    request.app.state.config.AI_PARSE_DEFAULT_MODEL = (
+        form_data.AI_PARSE_DEFAULT_MODEL
+        if form_data.AI_PARSE_DEFAULT_MODEL is not None
+        else request.app.state.config.AI_PARSE_DEFAULT_MODEL
+    )
+    request.app.state.config.AI_PARSE_DEFAULT_PROMPT = (
+        form_data.AI_PARSE_DEFAULT_PROMPT
+        if form_data.AI_PARSE_DEFAULT_PROMPT is not None
+        else request.app.state.config.AI_PARSE_DEFAULT_PROMPT
+    )
+    request.app.state.config.AI_PARSE_CHUNK_BEFORE_LLM = (
+        form_data.AI_PARSE_CHUNK_BEFORE_LLM
+        if form_data.AI_PARSE_CHUNK_BEFORE_LLM is not None
+        else request.app.state.config.AI_PARSE_CHUNK_BEFORE_LLM
+    )
+    request.app.state.config.AI_PARSE_MAX_CHUNK_SIZE = (
+        form_data.AI_PARSE_MAX_CHUNK_SIZE
+        if form_data.AI_PARSE_MAX_CHUNK_SIZE is not None
+        else request.app.state.config.AI_PARSE_MAX_CHUNK_SIZE
+    )
+
     # Reranking settings
     request.app.state.config.RAG_RERANKING_ENGINE = (
         form_data.RAG_RERANKING_ENGINE
@@ -799,6 +840,12 @@ async def update_rag_config(
         "DOCUMENT_INTELLIGENCE_ENDPOINT": request.app.state.config.DOCUMENT_INTELLIGENCE_ENDPOINT,
         "DOCUMENT_INTELLIGENCE_KEY": request.app.state.config.DOCUMENT_INTELLIGENCE_KEY,
         "MISTRAL_OCR_API_KEY": request.app.state.config.MISTRAL_OCR_API_KEY,
+        # AI Document Parsing
+        "AI_PARSE_ENABLED": request.app.state.config.AI_PARSE_ENABLED,
+        "AI_PARSE_DEFAULT_MODEL": request.app.state.config.AI_PARSE_DEFAULT_MODEL,
+        "AI_PARSE_DEFAULT_PROMPT": request.app.state.config.AI_PARSE_DEFAULT_PROMPT,
+        "AI_PARSE_CHUNK_BEFORE_LLM": request.app.state.config.AI_PARSE_CHUNK_BEFORE_LLM,
+        "AI_PARSE_MAX_CHUNK_SIZE": request.app.state.config.AI_PARSE_MAX_CHUNK_SIZE,
         # Reranking settings
         "RAG_RERANKING_MODEL": request.app.state.config.RAG_RERANKING_MODEL,
         "RAG_RERANKING_ENGINE": request.app.state.config.RAG_RERANKING_ENGINE,
@@ -1045,10 +1092,13 @@ class ProcessFileForm(BaseModel):
     file_id: str
     content: Optional[str] = None
     collection_name: Optional[str] = None
+    ingestion_mode: Optional[str] = None  # "plain", "ai_parsed"
+    ai_model: Optional[str] = None  # Override admin default model
+    ai_prompt: Optional[str] = None  # Override admin default prompt
 
 
 @router.post("/process/file")
-def process_file(
+async def process_file(
     request: Request,
     form_data: ProcessFileForm,
     user=Depends(get_verified_user),
@@ -1182,6 +1232,39 @@ def process_file(
                     )
                 ]
             text_content = " ".join([doc.page_content for doc in docs])
+
+        # AI Document Parsing — LLM post-processing
+        if form_data.ingestion_mode == "ai_parsed" and request.app.state.config.AI_PARSE_ENABLED:
+            model_id = form_data.ai_model or request.app.state.config.AI_PARSE_DEFAULT_MODEL
+            prompt = (
+                form_data.ai_prompt
+                or request.app.state.config.AI_PARSE_DEFAULT_PROMPT
+                or DEFAULT_AI_PARSE_PROMPT
+            )
+            if model_id:
+                text_content = await ai_parse_content(
+                    app=request.app,
+                    raw_text=text_content,
+                    model_id=model_id,
+                    prompt=prompt,
+                    user=user,
+                    chunk_before_llm=request.app.state.config.AI_PARSE_CHUNK_BEFORE_LLM,
+                    max_chunk_size=request.app.state.config.AI_PARSE_MAX_CHUNK_SIZE,
+                )
+                # Rebuild docs with AI-parsed content
+                docs = [
+                    Document(
+                        page_content=text_content,
+                        metadata={
+                            **file.meta,
+                            "name": file.filename,
+                            "created_by": file.user_id,
+                            "file_id": file.id,
+                            "source": file.filename,
+                            "ai_parsed": True,
+                        },
+                    )
+                ]
 
         log.debug(f"text_content: {text_content}")
         Files.update_file_data_by_id(
