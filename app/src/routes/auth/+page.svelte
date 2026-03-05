@@ -404,8 +404,16 @@
 											</button>
 										{:else}
 											<button
-												style="--bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.875rem; --py:0.625rem; --p:1em 1.5em;
-														--m:auto"
+												style="--bgc:rgb(78 78 78 / 0.05); 
+													--hvr-bgc:rgb(78 78 78 / 0.1); 
+													--dark-bgc:rgb(236 236 236 / 0.05); 
+													--hvr-dark-bgc:rgb(236 236 236 / 0.1); 
+													--dark-c:var(--color-gray-300); 
+													--hvr-dark-c:#fff; 
+													--tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); 
+													--w:100%; --radius:9999px; --weight:500; --size:0.875rem; --py:0.625rem; --p:1em 1.5em;
+													--m:auto;
+													--d:flex; --jc:center; --ai:center;"
 												type="submit"
 											>
 												{mode === 'signin'

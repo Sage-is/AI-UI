@@ -24,7 +24,6 @@
 	let name = '';
 
 	let webhookUrl = '';
-	let showAPIKeys = false;
 
 	let JWTTokenCopied = false;
 
@@ -48,11 +47,9 @@
 			});
 		}
 
-		const updatedUser = await updateUserProfile(name, profileImageUrl).catch(
-			(error) => {
-				toast.error(`${error}`);
-			}
-		);
+		const updatedUser = await updateUserProfile(name, profileImageUrl).catch((error) => {
+			toast.error(`${error}`);
+		});
 
 		if (updatedUser) {
 			// Get Session User Info
@@ -173,7 +170,7 @@
 
 							<div
 								style="--pos:absolute; --d:flex; --jc:center; --radius:9999px; --bottom:0; --left:0; --right:0; --top:0; --h:100%; --w:100%; --of:hidden; --bgc:var(--color-gray-700); --op:0; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:300ms; --ttf:cubic-bezier(0.4, 0, 0.2, 1); --hvr-op:0.5"
-	class="bg-fixed"
+								class="bg-fixed"
 							>
 								<div style="--my:auto; --c:var(--color-gray-100)">
 									<svg
@@ -252,7 +249,9 @@
 			{#if $config?.features?.enable_user_webhooks}
 				<div style="--pt:0.5rem">
 					<div style="--d:flex; --fd:column; --w:100%">
-						<div style="--mb:0.25rem; --size:0.75rem; --weight:500">{$i18n.t('Notification Webhook')}</div>
+						<div style="--mb:0.25rem; --size:0.75rem; --weight:500">
+							{$i18n.t('Notification Webhook')}
+						</div>
 
 						<div style="--fx:1 1 0%">
 							<input
@@ -271,7 +270,9 @@
 		<hr style="--bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 		{#if $user?.role === 'temporary'}
-			<div style="--my:0.5rem; --p:0.75rem; --radius:0.75rem; --bgc:#fefce8; --dark-bgc:rgb(66 32 6 / 0.3); --b:1px solid; --bc:#fde047; --dark-bc:rgb(161 98 7 / 0.5)">
+			<div
+				style="--my:0.5rem; --p:0.75rem; --radius:0.75rem; --bgc:#fefce8; --dark-bgc:rgb(66 32 6 / 0.3); --b:1px solid; --bc:#fde047; --dark-bc:rgb(161 98 7 / 0.5)"
+			>
 				<ClaimAccount />
 			</div>
 		{:else}
@@ -281,25 +282,53 @@
 		{/if}
 
 		{#if ($config?.features?.enable_api_key ?? true) || $user?.role === 'admin'}
-			<div style="--d:flex; --jc:space-between; --ai:center; --size:0.875rem; --mb:0.5rem">
-				<div style="--weight:500">{$i18n.t('API keys')}</div>
-				<button
-					style="--size:0.75rem; --weight:500; --c:var(--color-gray-500)"
-					type="button"
-					on:click={() => {
-						showAPIKeys = !showAPIKeys;
-					}}>{showAPIKeys ? $i18n.t('Hide') : $i18n.t('Show')}</button
+			<details style="--size:0.875rem">
+				<summary
+					style="--d:flex; --ai:center; --g:0.5rem; --cur:pointer; --us:none; --py:0.25rem; --list-style:none"
 				>
-			</div>
+					<span style="--weight:500">{$i18n.t('API keys')}</span>
+					<details
+						style="--d:inline; --size:0.75rem; 
+					--c:var(--color-gray-400); 
+					--dark-c:var(--color-gray-500);--w: 80%;
+					--m: auto;--b:0"
+						on:click|stopPropagation
+					>
+						<summary style="--cur:pointer; --us:none; --list-style:none">
+							{$i18n.t('What is an API key?')} &#9662;
+						</summary>
+						<div style="--mt:0.375rem; --lh:1.5; --size:0.8rem">
+							<p style="--mb:0.375rem">
+								{$i18n.t(
+									'An API (Application Programming Interface) lets other apps and scripts talk to your Sage AI account — for example, a chatbot on your website, a shortcut on your phone, or a custom workflow.'
+								)}
+							</p>
+							<p style="--mb:0.375rem">
+								{$i18n.t(
+									'Your API key is like a password for those connections. Keep it secret — anyone who has it can act on your behalf.'
+								)}
+							</p>
+							<p>
+								{$i18n.t('To see every available endpoint and try them out, visit the')}
+								<a
+									href="/docs"
+									target="_blank"
+									rel="noopener"
+									style="--c:var(--color-blue-500); --tdn:underline; --weight:500"
+									>{$i18n.t('interactive API documentation')}</a
+								>.
+							</p>
+						</div>
+					</details>
+					<span style="--ml:auto; --size:0.75rem; --weight:500; --c:var(--color-gray-400)"
+						>&#9662;</span
+					>
+				</summary>
 
-			{#if showAPIKeys}
-				<div style="--d:flex; --fd:column; --g:1rem">
+				<div style="--mt:0.5rem; --d:flex; --fd:column; --g:1rem">
 					{#if $user?.role === 'admin'}
-						<div style="--jc:space-between; --w:100%">
-							<div style="--d:flex; --jc:space-between; --w:100%">
-								<div style="--as:center; --size:0.75rem; --weight:500; --mb:0.25rem">{$i18n.t('JWT Token')}</div>
-							</div>
-
+						<div style="--w:100%">
+							<div style="--size:0.75rem; --weight:500; --mb:0.25rem">{$i18n.t('JWT Token')}</div>
 							<div style="--d:flex">
 								<SensitiveInput value={localStorage.token} readOnly={true} />
 
@@ -351,12 +380,8 @@
 					{/if}
 
 					{#if $config?.features?.enable_api_key ?? true}
-						<div style="--jc:space-between; --w:100%">
-							{#if $user?.role === 'admin'}
-								<div style="--d:flex; --jc:space-between; --w:100%">
-									<div style="--as:center; --size:0.75rem; --weight:500; --mb:0.25rem">{$i18n.t('API Key')}</div>
-								</div>
-							{/if}
+						<div style="--w:100%">
+							<div style="--size:0.75rem; --weight:500; --mb:0.25rem">{$i18n.t('API Key')}</div>
 							<div style="--d:flex">
 								{#if APIKey}
 									<SensitiveInput value={APIKey} readOnly={true} />
@@ -407,8 +432,7 @@
 
 									<Tooltip content={$i18n.t('Create new key')}>
 										<button
-											style="--px:0.375rem; --py:0.25rem; --radius:0.5rem"
-	class="dark:hover:bg-gray-850transition"
+											style="--px:0.375rem; --py:0.25rem; --radius:0.5rem; --hvr-dark-bgc:var(--color-gray-850); --tn:background-color 150ms"
 											on:click={() => {
 												createAPIKeyHandler();
 											}}
@@ -431,7 +455,7 @@
 									</Tooltip>
 								{:else}
 									<button
-										style="--d:flex; --g:0.375rem; --ai:center; --weight:500; --px:0.875rem; --py:0.375rem; --radius:0.5rem; --bgc:rgb(236 236 236 / 0.7); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+										style="--d:flex; --g:0.375rem; --ai:center; --weight:500; --px:0.875rem; --py:0.375rem; --radius:0.5rem; --bgc:rgb(236 236 236 / 0.7); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-850); --tn:background-color 150ms"
 										on:click={() => {
 											createAPIKeyHandler();
 										}}
@@ -445,7 +469,7 @@
 						</div>
 					{/if}
 				</div>
-			{/if}
+			</details>
 		{/if}
 	</div>
 

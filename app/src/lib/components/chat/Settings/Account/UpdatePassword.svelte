@@ -5,7 +5,6 @@
 
 	const i18n = getContext('i18n');
 
-	let show = false;
 	let currentPassword = '';
 	let newPassword = '';
 	let newPasswordConfirm = '';
@@ -28,7 +27,7 @@
 			newPasswordConfirm = '';
 		} else {
 			toast.error(
-				`The passwords you entered don't quite match. Please double-check and try again.`
+				$i18n.t(`The passwords you entered don't quite match. Please double-check and try again.`)
 			);
 			newPassword = '';
 			newPasswordConfirm = '';
@@ -42,18 +41,28 @@
 		updatePasswordHandler();
 	}}
 >
-	<div style="--d:flex; --jc:space-between; --ai:center; --size:0.875rem">
-		<div style="--weight:500">{$i18n.t('Change Password')}</div>
-		<button
-			style="--size:0.75rem; --weight:500; --c:var(--color-gray-500)"
-			type="button"
-			on:click={() => {
-				show = !show;
-			}}>{show ? $i18n.t('Hide') : $i18n.t('Show')}</button
-		>
-	</div>
+	<details>
+		<summary style="--d:flex; --ai:center; --g:0.5rem; --cur:pointer; --us:none; --py:0.25rem;">
+			<span style="--weight:500">{$i18n.t('Password')}</span>
+			<details style="--d:inline; --size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --w: 80%; --b:0;
+					--m: auto;"
+				on:click|stopPropagation
+			>
+				<summary style="--cur:pointer; --us:none;">
+					{$i18n.t('Why change my password?')} &#9662;
+				</summary>
+				<div style="--mt:0.375rem; --lh:1.5; --size:0.8rem">
+					<p style="--mb:0.375rem">
+						{$i18n.t('Changing your password regularly helps keep your account secure — especially if you think someone else may have seen it, or if you used the same password on another site that was compromised.')}
+					</p>
+					<p>
+						{$i18n.t("Pick something you haven't used before, and make sure it's hard to guess. A mix of words, numbers, and symbols works well — or try a passphrase like a short sentence only you would know.")}
+					</p>
+				</div>
+			</details>
+			<span style="--ml:auto; --size:0.75rem; --weight:500; --c:var(--color-gray-400)">&#9662;</span>
+		</summary>
 
-	{#if show}
 		<div style="--py:0.625rem; --g:0.375rem">
 			<div style="--d:flex; --fd:column; --w:100%">
 				<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Current Password')}</div>
@@ -61,7 +70,7 @@
 				<div style="--fx:1 1 0%">
 					<input
 						style="--w:100%; --bgc:transparent; --dark-c:var(--color-gray-300); --oe:none"
-	class="placeholder:opacity-30"
+						class="placeholder:opacity-30"
 						type="password"
 						bind:value={currentPassword}
 						placeholder={$i18n.t('Enter your current password')}
@@ -77,7 +86,7 @@
 				<div style="--fx:1 1 0%">
 					<input
 						style="--w:100%; --bgc:transparent; --size:0.875rem; --dark-c:var(--color-gray-300); --oe:none"
-	class="placeholder:opacity-30"
+						class="placeholder:opacity-30"
 						type="password"
 						bind:value={newPassword}
 						placeholder={$i18n.t('Enter your new password')}
@@ -93,7 +102,7 @@
 				<div style="--fx:1 1 0%">
 					<input
 						style="--w:100%; --bgc:transparent; --size:0.875rem; --dark-c:var(--color-gray-300); --oe:none"
-	class="placeholder:opacity-30"
+						class="placeholder:opacity-30"
 						type="password"
 						bind:value={newPasswordConfirm}
 						placeholder={$i18n.t('Confirm your new password')}
@@ -106,10 +115,10 @@
 
 		<div style="--mt:0.75rem; --d:flex; --jc:flex-end">
 			<button
-				style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+				style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:background-color 150ms; --radius:9999px"
 			>
 				{$i18n.t('Update password')}
 			</button>
 		</div>
-	{/if}
+	</details>
 </form>
