@@ -138,7 +138,7 @@
 			</button>
 		</div>
 
-		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1rem; --pb:0.75rem; --g-md:1rem; --dark-c:var(--color-gray-200)">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1rem; --pb:0.75rem; --p: 1rem 0;--bgc: var(--white); --br: 1rem; --shadow: 6">
 			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				<form
 					style="--d:flex; --fd:column; --w:100%"

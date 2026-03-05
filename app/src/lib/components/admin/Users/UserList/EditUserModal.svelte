@@ -74,8 +74,8 @@
 </script>
 
 <Modal size="sm" bind:show>
-	<div>
-		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.25rem; --pt:1rem; --pb:0.5rem">
+	<div style="--bgc: var(--white); --p:1.5rem; --br:1rem; --shadow:6; --w:100%; --maxw:500px">
+		<div style="--d:flex; --jc:space-between; ">
 			<div style="--size:1.125rem; --weight:500; --as:center">{$i18n.t('Edit User')}</div>
 			<button
 				style="--as:center"
@@ -87,7 +87,7 @@
 			</button>
 		</div>
 
-		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --g-md:1rem; --dark-c:var(--color-gray-200)">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%;">
 			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				<form
 					style="--d:flex; --fd:column; --w:100%"
@@ -95,7 +95,7 @@
 						submitHandler();
 					}}
 				>
-					<div style="--d:flex; --ai:center; --radius:0.375rem; --px:1.25rem; --py:0.5rem; --w:100%">
+					<div style="--d:flex; --ai:center; --radius:0.375rem; --py:0.5rem; --w:100%">
 						<div style="--as:center; --mr:1.25rem">
 							<img
 								src={selectedUser.profile_image_url}
@@ -114,7 +114,7 @@
 						</div>
 					</div>
 
-					<div style="--px:1.25rem; --pt:0.75rem; --pb:1.25rem">
+					<div style="--pt:0.75rem; --pb:1.25rem">
 						<div style="--d:flex; --fd:column; --g:0.375rem">
 							<div style="--d:flex; --fd:column; --w:100%">
 								<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Role')}</div>

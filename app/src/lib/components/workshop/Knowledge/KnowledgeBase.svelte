@@ -114,6 +114,7 @@
 	let debounceTimeout = null;
 	let mediaQuery;
 	let dragged = false;
+	let ingestionMode = 'plain'; // 'plain' or 'ai_parsed'
 
 	const createFileFromText = (name, content) => {
 		const blob = new Blob([content], { type: 'text/plain' });
@@ -163,18 +164,23 @@
 		knowledge.files = [...(knowledge.files ?? []), fileItem];
 
 		try {
+			// Build upload metadata
+			let metadata: Record<string, any> = {};
+
 			// If the file is an audio file, provide the language for STT.
-			let metadata = null;
 			if (
 				(file.type.startsWith('audio/') || file.type.startsWith('video/')) &&
 				$settings?.audio?.stt?.language
 			) {
-				metadata = {
-					language: $settings?.audio?.stt?.language
-				};
+				metadata.language = $settings?.audio?.stt?.language;
 			}
 
-			const uploadedFile = await uploadFile(localStorage.token, file, metadata).catch((e) => {
+			// Pass ingestion mode for AI parsing
+			if (ingestionMode && ingestionMode !== 'plain') {
+				metadata.ingestion_mode = ingestionMode;
+			}
+
+			const uploadedFile = await uploadFile(localStorage.token, file, Object.keys(metadata).length > 0 ? metadata : null).catch((e) => {
 				toast.error(`${e}`);
 				return null;
 			});
@@ -887,6 +893,18 @@
 										}}
 									/>
 								</div>
+							</div>
+
+							<div style="--d:flex; --ai:center; --g:0.5rem; --mt:0.375rem; --size:0.75rem; --c:var(--color-gray-500)">
+								<span style="--weight:500; --ws:nowrap">{$i18n.t('Ingestion')}:</span>
+								<label style="--d:flex; --ai:center; --g:0.25rem; --cursor:pointer">
+									<input type="radio" bind:group={ingestionMode} value="plain" />
+									<span>{$i18n.t('Plain')}</span>
+								</label>
+								<label style="--d:flex; --ai:center; --g:0.25rem; --cursor:pointer">
+									<input type="radio" bind:group={ingestionMode} value="ai_parsed" />
+									<span>{$i18n.t('AI Parse')}</span>
+								</label>
 							</div>
 						</div>
 
