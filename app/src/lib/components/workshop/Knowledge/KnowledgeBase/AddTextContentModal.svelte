@@ -27,7 +27,7 @@
 	// Current implementation: Save button is disabled during voice input for safety
 </script>
 
-<Modal size="full" containerClassName="" className="h-full bg-white dark:bg-gray-900" bind:show>
+<Modal size="full" containerClassName="" className="h-full" bind:show>
 	<div style="--pos:absolute; --top:0; --right:0; --p:1.25rem">
 		<button
 			style="--as:center; --dark-c:#fff"
