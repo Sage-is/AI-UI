@@ -47,7 +47,7 @@
 <button
 	aria-roledescription="model-item"
 	aria-label={item.label}
-	style="--d:flex; --w:100%; --ta:left; --weight:500; --line-clamp:1; --us:none; --ai:center; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --pl:0.75rem; --pr:0.375rem; --size:0.875rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-100); --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-800); --radius:0.5rem; --cur:pointer; --m:0.2em 0"
+	style="--d:flex; --w:100%; --ta:left; --weight:500; --line-clamp:1; --us:none; --ai:center; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --pl:0.75rem; --pr:0.375rem; --size:0.875rem; --bg:var(--white); --br: 1rem; --shadow:6; --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-800); --radius:0.5rem; --cur:pointer; --m:0.2em 0"
 	class="group/item data-highlighted:bg-muted {index ===
 	selectedModelIdx
 		? 'bg-gray-100 dark:bg-gray-800 group-hover:bg-transparent'

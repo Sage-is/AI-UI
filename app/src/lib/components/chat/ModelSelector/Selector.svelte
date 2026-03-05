@@ -558,7 +558,7 @@
 						placement="top-start"
 					>
 						<button
-							style="--d:flex; --w:100%; --weight:500; --line-clamp:1; --us:none; --ai:center; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --pl:0.75rem; --pr:0.375rem; --size:0.875rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-100); --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-800); --radius:0.5rem; --cur:pointer"
+							style="--d:flex; --w:100%; --weight:500; --line-clamp:1; --us:none; --ai:center; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --pl:0.75rem; --pr:0.375rem; --size:0.875rem; --bg:var(--white); --br: 1rem; --shadow:6; --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-800); --radius:0.5rem; --cur:pointer"
 	class="data-highlighted:bg-muted"
 							on:click={() => {
 								pullModelHandler();
@@ -573,7 +573,7 @@
 
 				{#each Object.keys($MODEL_DOWNLOAD_POOL) as model}
 					<div
-						style="--d:flex; --w:100%; --jc:space-between; --weight:500; --us:none; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --pl:0.75rem; --pr:0.375rem; --size:0.875rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-100); --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --radius:0.5rem; --cur:pointer"
+						style="--d:flex; --w:100%; --jc:space-between; --weight:500; --us:none; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --pl:0.75rem; --pr:0.375rem; --size:0.875rem; --bg:var(--white); --br: 1rem; --shadow:6; --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --radius:0.5rem; --cur:pointer"
 	class="data-highlighted:bg-muted"
 					>
 						<div style="--d:flex">
@@ -637,7 +637,7 @@
 			{#if showTemporaryChatControl}
 				<div style="--d:flex; --ai:center; --mx:0.5rem; --mt:0.25rem; --mb:0.5rem">
 					<button
-						style="--d:flex; --jc:space-between; --w:100%; --weight:500; --line-clamp:1; --us:none; --ai:center; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --px:0.75rem; --size:0.875rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-100); --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-800); --radius:0.5rem; --cur:pointer"
+						style="--d:flex; --jc:space-between; --w:100%; --weight:500; --line-clamp:1; --us:none; --ai:center; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --px:0.75rem; --size:0.875rem; --bg:var(--white); --br: 1rem; --shadow:6; --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-800); --radius:0.5rem; --cur:pointer"
 	class="data-highlighted:bg-muted"
 						on:click={async () => {
 							temporaryChatEnabled.set(!$temporaryChatEnabled);
