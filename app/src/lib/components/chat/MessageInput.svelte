@@ -936,7 +936,7 @@
 			</div>
 		</div>
 
-		<div class="{transparentBackground ? 'bg-transparent' : 'bg-white dark:bg-gray-900'} ">
+		<div class="{transparentBackground ? 'bg-transparent' : ''} ">
 			<div
 				style="--px:0.625rem; --mx:auto; --left:0; --right:0"
 	class="{($settings?.widescreenMode ?? null)

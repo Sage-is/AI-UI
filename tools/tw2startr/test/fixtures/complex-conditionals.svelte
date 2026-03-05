@@ -6,7 +6,7 @@
 
 <button
 	class="flex items-center gap-2 rounded-lg cursor-pointer text-sm font-medium
-		{isActive ? 'bg-gray-100 dark:bg-gray-800' : 'bg-white dark:bg-gray-900'}
+		{isActive ? 'bg-gray-100 dark:bg-gray-800' : ''}
 		{size === 'lg' ? 'px-4 py-3 text-base' : 'px-3 py-2 text-sm'}
 		hover:bg-gray-50 dark:hover:bg-gray-700 transition"
 >

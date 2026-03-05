@@ -31,7 +31,7 @@ node = html;
 node = document.createElement('div');
 // Apply editor classes for better styling
 node.className =
-'prose dark:prose-invert max-w-none px-4 py-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100';
+'prose dark:prose-invert max-w-none px-4 py-4 text-gray-900 dark:text-gray-100';
 
 node.style.width = `${virtualWidth}px`;
 // node.style.padding = '20px';
