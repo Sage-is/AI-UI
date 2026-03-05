@@ -83,16 +83,18 @@
 	{/if}
 </div>
 
-<div style="--h:10rem; --w:100%">
+<div style="--h:10rem; --w:100%; --p: 0 0.2rem;">
 	{#if filteredPrompts.length > 0}
-		<div role="list" style="--maxh:10rem; --of:auto; --ai:flex-start; {listStyle}"
+		<div role="list" style="--maxh:10rem; --of:auto; --ai:flex-start; {listStyle}; gap:0.2rem; --p:0.2rem}"
 	class="scrollbar-none {className}">
 			{#each filteredPrompts as prompt, idx (prompt.id || prompt.content)}
 				<!-- svelte-ignore a11y-no-interactive-element-to-noninteractive-role -->
 				<button
 					role="listitem"
 					class="waterfall group"
-					style="--d:flex; --fd:column; --fx:1 1 0%; --fs:0; --w:100%; --jc:space-between; --px:0.75rem; --py:0.5rem; --radius:0.75rem; --bgc:transparent; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); animation-delay: {idx * 60}ms"
+					style="--shadow:6; --d:flex; --fd:column; --fx:1 1 0%; 
+					--fs:0; --w:90%; --px:0.75rem; --py:0.5rem; --radius:0.75rem; --bgc:transparent; 
+					--hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); animation-delay: {idx * 60}ms"
 					on:click={() => onSelect({ type: 'prompt', data: prompt.content })}
 				>
 					<div style="--d:flex; --fd:column; --ta:left">
