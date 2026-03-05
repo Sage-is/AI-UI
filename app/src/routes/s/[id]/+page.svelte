@@ -152,7 +152,7 @@
 
 {#if loaded}
 	<div
-		style="--h:100vh; --maxh:100dvh; --w:100%; --d:flex; --fd:column; --c:var(--color-gray-700); --dark-c:var(--color-gray-100); --bgc:#fff; --dark-bgc:var(--color-gray-900)"
+		style="--h:100vh; --maxh:100dvh; --w:100%; --d:flex; --fd:column; --bg:var(--white); --br: 1rem; --shadow:6; --bgc:#fff; --dark-bgc:var(--color-gray-900)"
 	>
 		<div style="--d:flex; --fd:column; --fx:1 1 auto; --jc:center; --pos:relative">
 			<div style="--d:flex; --fd:column; --w:100%; --fx:1 1 auto; --of:auto; --h:0" id="messages-container">

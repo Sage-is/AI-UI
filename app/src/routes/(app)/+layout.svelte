@@ -275,7 +275,7 @@
 {#if $user}
 	<div style="--pos:relative" class="app">
 		<div
-			style="--c:var(--color-gray-700); --dark-c:var(--color-gray-100); --bgc:#fff; --dark-bgc:var(--color-gray-900); --h:100vh; --maxh:100dvh; --of:auto; --d:flex; --fd:row; --jc:flex-end"
+			style="--bg:var(--white); --br: 1rem; --shadow:6; --bgc:#fff; --dark-bgc:var(--color-gray-900); --h:100vh; --maxh:100dvh; --of:auto; --d:flex; --fd:row; --jc:flex-end"
 		>
 			{#if !['user', 'admin', 'facilitator', 'temporary'].includes($user?.role)}
 				<AccountPending />

@@ -95,10 +95,10 @@
 		}}
 	>
 		<div
-			style="--m:auto; --maxw:100%; --minh:fit-content"
+			style="--m:auto; --maxw:100%; --minh:fit-content; --br:1rem; --bg:var(--white); --dark-bg:var(--color-gray-900);"
 	class="{sizeToWidth(size)} {size !== 'full'
 				? 'mx-2'
-				: ''} shadow-3xl scrollbar-hidden {className}"
+				: ''} scrollbar-hidden {className}"
 			in:flyAndScale
 			on:mousedown={(e) => {
 				e.stopPropagation();
