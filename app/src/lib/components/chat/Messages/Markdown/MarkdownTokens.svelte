@@ -133,7 +133,7 @@
 							{#each token.header as header, headerIdx}
 								<th
 									scope="col"
-									style="--px:0.75rem; --py:0.375rem; --cur:pointer; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); {token.align[headerIdx] ? '' : `text-align: ${token.align[headerIdx]}`}"
+									style="--px:0.75rem; --py:0.375rem; --cur:pointer;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); {token.align[headerIdx] ? '' : `text-align: ${token.align[headerIdx]}`}"
 								>
 									<div style="--g:0.375rem; --ta:left">
 										<div style="--fs:0; --wb:normal; overflow-wrap:normal">
@@ -154,7 +154,7 @@
 							<tr style="--bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-bc:var(--color-gray-850); --size:0.75rem">
 								{#each row ?? [] as cell, cellIdx}
 									<td
-										style="--px:0.75rem; --py:0.375rem; --c:var(--color-gray-900); --dark-c:#fff; --w:max-content; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); {token.align[cellIdx] ? `text-align: ${token.align[cellIdx]}` : ''}"
+										style="--px:0.75rem; --py:0.375rem; --c:var(--color-gray-900); --dark-c:#fff; --w:max-content;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); {token.align[cellIdx] ? `text-align: ${token.align[cellIdx]}` : ''}"
 									>
 										<div style="--wb:normal; overflow-wrap:normal">
 											<MarkdownInlineTokens

@@ -554,7 +554,7 @@
 							style="--pos:absolute; --top:-3rem; --left:0; --right:0; --d:flex; --jc:center; --z:30; --pe:none"
 						>
 							<button
-								style="--bgc:#fff; --b:1px solid; --bc:var(--color-gray-100); --dark-bs:none; --dark-bgc:rgb(255 255 255 / 0.2); --p:0.375rem; --radius:9999px; --pe:auto"
+								style="--bgc:#fff;  --bc:var(--color-gray-100); --dark-bs:none; --dark-bgc:rgb(255 255 255 / 0.2); --p:0.375rem; --radius:9999px; --pe:auto"
 								on:click={() => {
 									scrollEnd = true;
 									scrollToBottom();
@@ -652,7 +652,7 @@
 											</div>
 											<div style="--pos:absolute; --top:-0.25rem; --right:-0.25rem">
 												<button
-													style="--bgc:#fff; --c:#000; --b:1px solid; --bc:#fff; --radius:9999px; --v:hidden; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+													style="--bgc:#fff; --c:#000;  --bc:#fff; --radius:9999px; --v:hidden; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="group-hover:visible"
 													type="button"
 													on:click={() => {

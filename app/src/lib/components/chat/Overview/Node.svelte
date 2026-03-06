@@ -11,7 +11,7 @@
 </script>
 
 <div
-	style="--px:1rem; --py:0.75rem; --shadow:3; --radius:0.75rem; --dark-bgc:#000; --bgc:#fff; --b:1px solid; --dark-bc:var(--color-gray-900); --w:15rem; --h:5rem"
+	style="--px:1rem; --py:0.75rem; --shadow:3; --radius:0.75rem; --dark-bgc:#000; --bgc:#fff;  --dark-bc:var(--color-gray-900); --w:15rem; --h:5rem"
 	class="group"
 >
 	<Tooltip

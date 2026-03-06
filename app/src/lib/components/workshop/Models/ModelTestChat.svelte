@@ -239,7 +239,7 @@
 
 <div style="--d:flex; --fd:column; --h:100%; --bgc:var(--color-gray-50); --dark-bgc:rgb(23 23 23 / 0.5)">
 	<!-- Header -->
-	<div style="--d:flex; --ai:center; --jc:space-between; --p:1rem; --bb:1px solid; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700)">
+	<div style="--d:flex; --ai:center; --jc:space-between; --p:1rem;  --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700)">
 		<div style="--d:flex; --ai:center; --g:0.5rem">
 			<EyeSlash className="size-4 text-gray-500" />
 			<h3 style="--size:0.875rem; --weight:500; --c:var(--color-gray-700); --dark-c:var(--color-gray-300)">
@@ -259,7 +259,7 @@
 
 	<!-- Model info -->
 	{#if testModel}
-		<div style="--p:0.75rem; --bgc:#eff6ff; --dark-bgc:rgb(30 58 138 / 0.2); --bb:1px solid; --bc:#bfdbfe; --dark-bc:#1e40af">
+		<div style="--p:0.75rem; --bgc:#eff6ff; --dark-bgc:rgb(30 58 138 / 0.2);  --bc:#bfdbfe; --dark-bc:#1e40af">
 			<div style="--size:0.75rem; --c:#1d4ed8; --dark-c:#93c5fd">
 				<div style="--weight:500">{testModel.name}</div>
 				{#if testModel.base_model_id}
@@ -271,7 +271,7 @@
 			</div>
 		</div>
 	{:else}
-		<div style="--p:0.75rem; --bgc:#fefce8; --dark-bgc:rgb(113 63 18 / 0.2); --bb:1px solid; --bc:#fef08a; --dark-bc:#854d0e">
+		<div style="--p:0.75rem; --bgc:#fefce8; --dark-bgc:rgb(113 63 18 / 0.2);  --bc:#fef08a; --dark-bc:#854d0e">
 			<div style="--size:0.75rem; --c:#a16207; --dark-c:#fde047">
 				{$i18n.t('Configure your model to start testing')}
 			</div>
@@ -335,7 +335,7 @@
 					}}
 					rows={1}
 					disabled={!testModel || loading}
-					style="--w:100%; --size:0.875rem; --bgc:#fff; --dark-bgc:var(--color-gray-800); --b:1px solid; --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --radius:0.5rem; --px:0.75rem; --py:0.5rem; resize:none; --oe:none; height: auto; min-height: 2.5rem; max-height: 10rem;"
+					style="--w:100%; --size:0.875rem; --bgc:#fff; --dark-bgc:var(--color-gray-800);  --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --radius:0.5rem; --px:0.75rem; --py:0.5rem; resize:none; --oe:none; height: auto; min-height: 2.5rem; max-height: 10rem;"
 				/>
 			</div>
 			

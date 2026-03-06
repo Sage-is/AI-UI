@@ -12,11 +12,8 @@
 </script>
 
 <button
-	style="outline-style:solid; outline-offset:-1px; outline-color:1.5px; outline-color:var(--color-gray-200); outline-color:var(--color-gray-600); --c:#fff; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.125rem; --d:inline-block; --w:0.875rem; --h:0.875rem; --pos:relative"
-	class="{state !==
-	'unchecked'
-		? 'bg-black outline-black '
-		: 'hover:outline-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800'} {disabled
+	style="--bw:1.5px; --bs:solid; --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --c:#fff; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.25rem; --d:inline-block; --w:1rem; --h:1rem; --pos:relative; {state !== 'unchecked' ? '--bgc:#000; --bc:#000; --dark-bgc:#fff; --dark-bc:#fff; --dark-c:#000' : ''}"
+	class="{disabled
 		? 'opacity-50 cursor-not-allowed'
 		: ''}"
 	on:click={() => {
@@ -38,10 +35,10 @@
 	type="button"
 	{disabled}
 >
-	<div style="--top:0; --left:0; --pos:absolute; --w:100%; --d:flex; --jc:center">
+	<div style="--top:0; --left:0; --pos:absolute; --w:100%; --h:100%; --d:flex; --jc:center; --ai:center">
 		{#if _state === 'checked'}
 			<svg
-				style="--w:0.875rem; --h:0.875rem"
+				style="--w:0.75rem; --h:0.75rem"
 				aria-hidden="true"
 				xmlns="http://www.w3.org/2000/svg"
 				fill="none"

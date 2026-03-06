@@ -858,7 +858,7 @@
 			{/if}
 
 			<div
-				style="--d:flex; --py:0.5rem; --radius:1rem; --b:1px solid; --bc:var(--color-gray-50); --h:100%; --dark-bc:var(--color-gray-850)"
+				style="--d:flex; --py:0.5rem; --radius:1rem;  --bc:var(--color-gray-50); --h:100%; --dark-bc:var(--color-gray-850)"
 	class="{largeScreen ? 'shrink-0 w-72 max-w-72' : 'flex-1'}"
 			>
 				<div style="--d:flex; --fd:column; --w:100%; --g:0.5rem; --radius:0.5rem; --h:100%">

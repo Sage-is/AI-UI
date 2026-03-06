@@ -49,7 +49,7 @@
 		<ChevronDown className="absolute end-2 top-1/2 -translate-y-[45%] size-3.5" strokeWidth="2.5" />
 	</Select.Trigger>
 	<Select.Content
-		style="--w:100%; --radius:0.5rem; --bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-c:#fff; --shadow:4; --b:1px solid; --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.4); --oe:none"
+		style="--w:100%; --radius:0.5rem; --bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-c:#fff; --shadow:4;  --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.4); --oe:none"
 		transition={flyAndScale}
 		sideOffset={4}
 	>

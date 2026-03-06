@@ -138,7 +138,7 @@
 		<div style="--pos:absolute; --top:-0.25rem; --right:-0.25rem">
 			<button
 				aria-label={$i18n.t('Remove File')}
-				style="--bgc:#fff; --c:#000; --b:1px solid; --bc:var(--color-gray-50); --radius:9999px"
+				style="--bgc:#fff; --c:#000;  --bc:var(--color-gray-50); --radius:9999px"
 	class="{($settings?.highContrastMode ??
 				false)
 					? ''

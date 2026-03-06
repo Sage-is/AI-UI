@@ -24,7 +24,7 @@
 
 	<slot name="content">
 		<DropdownMenu.Content
-			style="--w:100%; --maxw:130px; --radius:0.5rem; --px:0.25rem; --py:0.375rem; --b:1px solid; --bc:var(--color-gray-900); --z:50; --bgc:var(--color-gray-850); --c:#fff"
+			style="--w:100%; --maxw:130px; --radius:0.5rem; --px:0.25rem; --py:0.375rem;  --bc:var(--color-gray-900); --z:50; --bgc:var(--color-gray-850); --c:#fff"
 			sideOffset={8}
 			{side}
 			{align}

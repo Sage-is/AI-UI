@@ -214,7 +214,7 @@
 			<div style="--g:0.75rem">
 				<div style="--size:0.875rem; --weight:500">{$i18n.t('Preview')}</div>
 				
-				<div style="--p:1rem; --radius:0.5rem; --b:1px solid; --dark-bc:var(--color-gray-700); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)">
+				<div style="--p:1rem; --radius:0.5rem;  --dark-bc:var(--color-gray-700); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)">
 					<div style="--d:flex; --ai:center; --g:0.75rem; --mb:0.75rem">
 						{#if branding.logo_url}
 							<img 

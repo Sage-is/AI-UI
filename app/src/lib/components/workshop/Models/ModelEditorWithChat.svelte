@@ -3,6 +3,7 @@
 	import { PaneGroup, Pane, PaneResizer } from 'paneforge';
 	import { models, temporaryChatEnabled } from '$lib/stores';
 	
+	import { WEBUI_BASE_URL } from '$lib/constants';
 	import ModelEditor from './ModelEditor.svelte';
 	import ModelTestChat from './ModelTestChat.svelte';
 	import EllipsisVertical from '$lib/components/icons/EllipsisVertical.svelte';
@@ -76,8 +77,31 @@
 
 <div style="--w:100%; --h:100%; --d:flex; --fd:column">
 	<!-- Header with test chat toggle -->
-	<div style="--d:flex; --jc:space-between; --ai:center; --p:1rem; --bb:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)">
+	<div style="--d:none; --d-md:flex; --jc:space-between; --ai:center; --p:0.2rem;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)">
 		<div style="--d:flex; --ai:center; --g:0.5rem">
+			<button
+				style="--radius:0.5rem; --d:flex; --fs:0; --ai:center; --jc:center; --pos:relative; --w:2rem; --h:2rem; --minw:2rem; --m:0"
+				class="{liveModelData?.meta?.profile_image_url &&
+				liveModelData.meta.profile_image_url !== `${WEBUI_BASE_URL}/static/icons/favicon.png`
+					? 'bg-transparent'
+					: 'bg-white'} group"
+				type="button"
+				on:click={() => {
+					modelEditor?.triggerImageUpload();
+				}}
+				title="Change profile image"
+			>
+				<img
+					src={liveModelData?.meta?.profile_image_url || model?.meta?.profile_image_url || `${WEBUI_BASE_URL}/static/icons/favicon.png`}
+					alt="model profile"
+					style="--radius:0.5rem; --w:2rem; --h:2rem; --objf:cover; --fs:0"
+				/>
+				<div
+					style="--pos:absolute; --top:0; --bottom:0; --left:0; --right:0; --bgc:#fff; --dark-bgc:#000; --radius:0.5rem; --op:0; --tn:opacity 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					class="group-hover:opacity-20"
+				></div>
+			</button>
+
 			{#if onBack}
 				<button
 					style="--d:flex; --g:0.25rem"
@@ -127,10 +151,10 @@
 	</div>
 
 	<!-- Split view content -->
-	<div style="--fx:1 1 0%; --minh:0">
+	<div style="--fx-lg:1 1 0%; --minh:0">
 		<PaneGroup direction="horizontal" style="--w:100%; --h:100%">
-			<Pane bind:pane={editorPane} defaultSize={60} style="--h:100%; --d:flex; --pos:relative; --maxw:100%; --fd:column">
-				<div style="--h:100%; --of:auto">
+			<Pane bind:pane={editorPane} style="--h:100%; --d:flex; --pos:relative; --maxw:100%; --fd:column">
+				<div class="fade-scrollbar" style="--h:100%; --of:auto; --p:0.2rem">
 					<ModelEditor
 						bind:this={modelEditor}
 						{model}
@@ -144,7 +168,7 @@
 			</Pane>
 
 			<!-- Always show the chat pane (conditional removed) -->
-			<PaneResizer style="--pos:relative; --d:flex; --w:0.5rem; --ai:center; --jc:center"
+			<PaneResizer style="--d:none; --d-md:flex; --pos:relative; --w:0.5rem; --ai:center; --jc:center; --m:0"
 	class="bg-background group">
 				<div style="--z:10; --d:flex; --h:1.75rem; --w:1.25rem; --ai:center; --jc:center"
 	class="rounded-xs">
@@ -159,7 +183,15 @@
 				onCollapse={() => {
 					showChat = false;
 				}}
-				style="--h:100%; --d:flex; --pos:relative; --maxw:100%; --fd:column; --bl:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
+				style="
+					--h:100%; 
+					--d:none; --d-md:flex;
+					--pos:relative; 
+					--maxw:100%; 
+					--fd:column; 
+					--bl:1px solid; 
+					--bc:var(--color-gray-100); 
+					--dark-bc:var(--color-gray-850)"
 			>
 				{#if showChat}
 					<ModelTestChat {liveModelData} />

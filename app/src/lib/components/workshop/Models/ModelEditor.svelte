@@ -23,6 +23,7 @@
 	import { toast } from 'svelte-sonner';
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import XMark from '$lib/components/icons/XMark.svelte';
+	import ToggleChip from '$lib/components/common/ToggleChip.svelte';
 	import { getNoteList } from '$lib/apis/notes';
 
 	const i18n = getContext('i18n');
@@ -40,6 +41,10 @@
 
 	let filesInputElement;
 	let inputFiles;
+
+	export const triggerImageUpload = () => {
+		filesInputElement?.click();
+	};
 
 	let showAdvanced = false;
 	let showPreview = false;
@@ -415,106 +420,28 @@
 					submitHandler();
 				}}
 			>
-
-
 				<div style="--w:100%">
 					<div style="--mt:0.5rem; --my:0.5rem; --d:flex; --fd:column">
-						<div style="--fx:1 1 0%">
-							<div>
-								<input
-									style="--size:1.875rem; --weight:600; --w:100%; --bgc:transparent; --oe:none"
-									placeholder={$i18n.t('Model Name')}
-									bind:value={name}
-									required
-								/>
-							</div>
-
-											<div style="--ml:auto;">
-					<div style="--as:center">
-						<button
-							style="--radius:0.75rem; --d:flex; --fs:0; --ai:center; --shadow:5; --pos:relative"
-	class="{info.meta.profile_image_url !==
-							`${WEBUI_BASE_URL}/static/icons/favicon.png`
-								? 'bg-transparent'
-								: 'bg-white'} group"
-							type="button"
-							on:click={() => {
-								filesInputElement.click();
-							}}
-						>
-							{#if info.meta.profile_image_url}
-								<img
-									src={info.meta.profile_image_url}
-									alt="model profile"
-									style="--radius:0.75rem; --w:18rem; --h:18rem; --w-md:15rem; --h-md:15rem; --objf:cover; --fs:0"
-								/>
-							{:else}
-								<img
-									src={branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
-									alt="model profile"
-									style="--radius:0.75rem; --w:18rem; --h:18rem; --w-md:15rem; --h-md:15rem; --objf:cover; --fs:0"
-								/>
-							{/if}
-
-							<div style="--pos:absolute; --bottom:0; --right:0; --z:10">
-								<div style="--m:0.375rem">
-									<div
-										style="--shadow:5; --p:0.25rem; --radius:9999px; --bw:2px; --bc:#fff; --bgc:var(--color-gray-800); --c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --dark-bc:#000; --dark-bgc:#fff; --dark-c:#000"
-	class="group-hover:bg-gray-600 dark:group-hover:bg-gray-200"
-									>
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											viewBox="0 0 16 16"
-											fill="currentColor"
-											style="--w:1.25rem; --h:1.25rem"
-										>
-											<path
-												fill-rule="evenodd"
-												d="M2 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4Zm10.5 5.707a.5.5 0 0 0-.146-.353l-1-1a.5.5 0 0 0-.708 0L9.354 9.646a.5.5 0 0 1-.708 0L6.354 7.354a.5.5 0 0 0-.708 0l-2 2a.5.5 0 0 0-.146.353V12a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5V9.707ZM12 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"
-												clip-rule="evenodd"
-											/>
-										</svg>
-									</div>
-								</div>
-							</div>
-
-							<div
-								style="--pos:absolute; --top:0; --bottom:0; --left:0; --right:0; --bgc:#fff; --dark-bgc:#000; --radius:0.5rem; --op:0; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
-	class="group-hover:opacity-20"
-							></div>
-						</button>
-
-						<div style="--d:flex; --w:100%; --mt:0.25rem; --jc:flex-end">
-							<button
-								style="--px:0.5rem; --py:0.25rem; --c:var(--color-gray-500); --radius:0.5rem; --size:0.75rem"
-								on:click={() => {
-									info.meta.profile_image_url = `${WEBUI_BASE_URL}/static/icons/favicon.png`;
-								}}
-								type="button"
-							>
-								Reset Image</button
-							>
-						</div>
-					</div>
-				</div>
-						</div>
-
-						<div style="--fx:1 1 0%">
-							<div>
-								<input
-									style="--size:0.75rem; --w:100%; --bgc:transparent; --c:var(--color-gray-500); --oe:none"
-									placeholder={$i18n.t('Model ID')}
-									bind:value={id}
-									disabled={edit}
-									required
-								/>
-							</div>
-						</div>
+						<input
+							style="--size:1.875rem; --weight:600; --w:100%; --bgc:transparent; --oe:none"
+							placeholder={$i18n.t('Model Name')}
+							bind:value={name}
+							required
+						/>
+						<input
+							style="--size:0.75rem; --w:100%; --bgc:transparent; --c:var(--color-gray-500); --oe:none"
+							placeholder={$i18n.t('Model ID')}
+							bind:value={id}
+							disabled={edit}
+							required
+						/>
 					</div>
 
 					{#if preset}
 						<div style="--my:0.25rem">
-							<div style="--size:0.875rem; --weight:600; --mb:0.25rem">{$i18n.t('Base Model (From)')}</div>
+							<div style="--size:0.875rem; --weight:600; --mb:0.25rem">
+								{$i18n.t('Base Model (From)')}
+							</div>
 
 							<div>
 								<select
@@ -541,23 +468,11 @@
 						<div style="--mb:0.25rem; --d:flex; --w:100%; --jc:space-between; --ai:center">
 							<div style="--as:center; --size:0.875rem; --weight:600">{$i18n.t('Description')}</div>
 
-							<button
-								style="--p:0.25rem; --size:0.75rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
-								type="button"
-								aria-pressed={enableDescription ? 'true' : 'false'}
-								aria-label={enableDescription
-									? $i18n.t('Custom description enabled')
-									: $i18n.t('Default description enabled')}
-								on:click={() => {
-									enableDescription = !enableDescription;
-								}}
-							>
-								{#if !enableDescription}
-									<span style="--ml:0.5rem; --as:center">{$i18n.t('Default')}</span>
-								{:else}
-									<span style="--ml:0.5rem; --as:center">{$i18n.t('Custom')}</span>
-								{/if}
-							</button>
+							<ToggleChip
+								active={enableDescription}
+								label={$i18n.t('Custom')}
+								on:change={() => { enableDescription = !enableDescription; }}
+							/>
 						</div>
 
 						{#if enableDescription}
@@ -590,7 +505,9 @@
 					</div>
 
 					<div style="--my:0.5rem">
-						<div style="--px:0.75rem; --py:0.5rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-950); --radius:0.5rem">
+						<div
+							style="--px:0.75rem; --py:0.5rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-950); --radius:0.5rem"
+						>
 							<AccessControl
 								bind:accessControl
 								accessRoles={['read', 'write']}
@@ -603,12 +520,16 @@
 
 					<div style="--my:0.5rem">
 						<div style="--d:flex; --w:100%; --jc:space-between">
-							<div style="--as:center; --size:0.875rem; --weight:600">{$i18n.t('Model Params')}</div>
+							<div style="--as:center; --size:0.875rem; --weight:600">
+								{$i18n.t('Model Params')}
+							</div>
 						</div>
 
 						<div style="--mt:0.5rem">
 							<div style="--my:0.25rem">
-								<div style="--size:0.75rem; --weight:600; --mb:0.5rem">{$i18n.t('System Prompt')}</div>
+								<div style="--size:0.75rem; --weight:600; --mb:0.5rem">
+									{$i18n.t('System Prompt')}
+								</div>
 								<div>
 									<Textarea
 										className=" text-sm w-full bg-transparent outline-hidden resize-none overflow-y-hidden "
@@ -619,24 +540,12 @@
 								</div>
 							</div>
 
-							<div style="--d:flex; --w:100%; --jc:space-between">
-								<div style="--as:center; --size:0.75rem; --weight:600">
-									{$i18n.t('Advanced Params')}
-								</div>
-
-								<button
-									style="--p:0.25rem; --px:0.75rem; --size:0.75rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
-									type="button"
-									on:click={() => {
-										showAdvanced = !showAdvanced;
-									}}
-								>
-									{#if showAdvanced}
-										<span style="--ml:0.5rem; --as:center">{$i18n.t('Hide')}</span>
-									{:else}
-										<span style="--ml:0.5rem; --as:center">{$i18n.t('Show')}</span>
-									{/if}
-								</button>
+							<div style="--d:flex; --w:100%; --jc:flex-end">
+								<ToggleChip
+									active={showAdvanced}
+									label={$i18n.t('Advanced Params')}
+									on:change={() => { showAdvanced = !showAdvanced; }}
+								/>
 							</div>
 
 							{#if showAdvanced}
@@ -656,23 +565,17 @@
 									{$i18n.t('Prompt suggestions')}
 								</div>
 
-								<button
-									style="--p:0.25rem; --size:0.75rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
-									type="button"
-									on:click={() => {
+								<ToggleChip
+									active={(info?.meta?.suggestion_prompts ?? null) !== null}
+									label={$i18n.t('Custom')}
+									on:change={() => {
 										if ((info?.meta?.suggestion_prompts ?? null) === null) {
 											info.meta.suggestion_prompts = [{ content: '' }];
 										} else {
 											info.meta.suggestion_prompts = null;
 										}
 									}}
-								>
-									{#if (info?.meta?.suggestion_prompts ?? null) === null}
-										<span style="--ml:0.5rem; --as:center">{$i18n.t('Default')}</span>
-									{:else}
-										<span style="--ml:0.5rem; --as:center">{$i18n.t('Custom')}</span>
-									{/if}
-								</button>
+								/>
 							</div>
 
 							{#if (info?.meta?.suggestion_prompts ?? null) !== null}
@@ -764,22 +667,12 @@
 					</div>
 
 					<div style="--my:0.5rem; --c:var(--color-gray-300); --dark-c:var(--color-gray-700)">
-						<div style="--d:flex; --w:100%; --jc:space-between; --mb:0.5rem">
-							<div style="--as:center; --size:0.875rem; --weight:600">{$i18n.t('JSON Preview')}</div>
-
-							<button
-								style="--p:0.25rem; --px:0.75rem; --size:0.75rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
-								type="button"
-								on:click={() => {
-									showPreview = !showPreview;
-								}}
-							>
-								{#if showPreview}
-									<span style="--ml:0.5rem; --as:center">{$i18n.t('Hide')}</span>
-								{:else}
-									<span style="--ml:0.5rem; --as:center">{$i18n.t('Show')}</span>
-								{/if}
-							</button>
+						<div style="--d:flex; --w:100%; --jc:flex-end; --mb:0.5rem">
+							<ToggleChip
+								active={showPreview}
+								label={$i18n.t('JSON Preview')}
+								on:change={() => { showPreview = !showPreview; }}
+							/>
 						</div>
 
 						{#if showPreview}
@@ -798,9 +691,9 @@
 					<div style="--my:0.5rem; --d:flex; --fd:column; --g:0.75rem; --pb:5rem">
 						<button
 							style="--size:0.875rem; --px:0.75rem; --py:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --d:flex; --w:100%; --jc:center"
-	class="{loading
+							class={loading
 								? ' cursor-not-allowed bg-black hover:bg-gray-900 text-white dark:bg-white dark:hover:bg-gray-100 dark:text-black'
-								: 'bg-black hover:bg-gray-900 text-white dark:bg-white dark:hover:bg-gray-100 dark:text-black'}"
+								: 'bg-black hover:bg-gray-900 text-white dark:bg-white dark:hover:bg-gray-100 dark:text-black'}
 							type="submit"
 							disabled={loading}
 						>
@@ -822,9 +715,9 @@
 						<!-- Save and chat that saves and brings users to a new chat session -->
 						<button
 							style="--size:0.875rem; --px:1rem; --py:0.75rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --bw:2px; --d:flex; --w:100%; --jc:center; --ai:center; --g:0.5rem"
-	class="{loading
+							class={loading
 								? 'cursor-not-allowed bg-blue-100 border-blue-300 text-blue-600 dark:bg-blue-900/20 dark:border-blue-700 dark:text-blue-400'
-								: 'bg-blue-50 hover:bg-blue-100 border-blue-300 text-blue-700 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:border-blue-700 dark:text-blue-300'}"
+								: 'bg-blue-50 hover:bg-blue-100 border-blue-300 text-blue-700 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:border-blue-700 dark:text-blue-300'}
 							type="button"
 							on:click={async () => {
 								// Save first, then navigate to chat

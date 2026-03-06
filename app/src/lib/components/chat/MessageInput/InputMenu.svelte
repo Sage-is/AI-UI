@@ -100,7 +100,7 @@
 
 	<div slot="content">
 		<DropdownMenu.Content
-			style="--w:100%; --maxw:200px; --radius:0.75rem; --px:0.25rem; --py:0.25rem; --b:1px solid; --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.5); --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:1"
+			style="--w:100%; --maxw:200px; --radius:0.75rem; --px:0.25rem; --py:0.25rem;  --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.5); --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:1"
 			sideOffset={10}
 			alignOffset={-8}
 			side="top"
@@ -362,7 +362,7 @@
 							<div style="--line-clamp:1">{$i18n.t('Microsoft OneDrive')}</div>
 						</DropdownMenu.SubTrigger>
 						<DropdownMenu.SubContent
-							style="--w:calc(100vw-2rem); --maxw:280px; --radius:0.75rem; --px:0.25rem; --py:0.25rem; --b:1px solid; --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.5); --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:1"
+							style="--w:calc(100vw-2rem); --maxw:280px; --radius:0.75rem; --px:0.25rem; --py:0.25rem;  --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.5); --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:1"
 							side={$mobile ? 'bottom' : 'right'}
 							sideOffset={$mobile ? 5 : 0}
 							alignOffset={$mobile ? 0 : -8}
