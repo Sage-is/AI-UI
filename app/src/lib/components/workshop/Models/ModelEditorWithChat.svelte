@@ -211,3 +211,31 @@
 		</PaneGroup>
 	</div>
 </div>
+
+<style>
+	.fade-scrollbar {
+		scrollbar-width: thin;
+		scrollbar-color: transparent transparent;
+		transition: scrollbar-color 0.3s ease;
+	}
+	.fade-scrollbar:hover,
+	.fade-scrollbar:active {
+		scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+	}
+	/* WebKit */
+	.fade-scrollbar::-webkit-scrollbar {
+		width: 6px;
+	}
+	.fade-scrollbar::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	.fade-scrollbar::-webkit-scrollbar-thumb {
+		background: transparent;
+		border-radius: 3px;
+		transition: background 0.3s ease;
+	}
+	.fade-scrollbar:hover::-webkit-scrollbar-thumb,
+	.fade-scrollbar:active::-webkit-scrollbar-thumb {
+		background: rgba(0, 0, 0, 0.3);
+	}
+</style>
