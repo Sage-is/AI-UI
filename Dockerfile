@@ -248,7 +248,7 @@ RUN if [ $UID -ne 0 ]; then \
 COPY app/static/ /app/static/
 # 2. Copy to build directory so config.py copies them back during startup
 COPY app/static/ /app/backend/build/static/
-#COPY app/backend/open_webui/static/ /app/backend/open_webui/static/
+#COPY app/backend/sage_is_ai/static/ /app/backend/sage_is_ai/static/
 
 EXPOSE 8080
 
