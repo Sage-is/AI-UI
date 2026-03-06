@@ -127,7 +127,7 @@
 							<div style="--d:flex; --g:0.25rem; --size:0.75rem">
 								{#each shortcut.keys as key}
 									<div
-										style="--h:fit-content; --py:0.25rem; --px:0.5rem; --d:flex; --ai:center; --jc:center; --radius:0.125rem; --b:1px solid; --bc:rgb(0 0 0 / 0.1); --tt:capitalize; --c:var(--color-gray-600); --dark-bc:rgb(255 255 255 / 0.1); --dark-c:var(--color-gray-300)"
+										style="--h:fit-content; --py:0.25rem; --px:0.5rem; --d:flex; --ai:center; --jc:center; --radius:0.125rem;  --bc:rgb(0 0 0 / 0.1); --tt:capitalize; --c:var(--color-gray-600); --dark-bc:rgb(255 255 255 / 0.1); --dark-c:var(--color-gray-300)"
 									>
 										{key}
 									</div>
@@ -154,7 +154,7 @@
 							<div style="--d:flex; --g:0.25rem; --size:0.75rem">
 								{#each shortcut.keys as key}
 									<div
-										style="--h:fit-content; --py:0.25rem; --px:0.5rem; --d:flex; --ai:center; --jc:center; --radius:0.125rem; --b:1px solid; --bc:rgb(0 0 0 / 0.1); --tt:capitalize; --c:var(--color-gray-600); --dark-bc:rgb(255 255 255 / 0.1); --dark-c:var(--color-gray-300)"
+										style="--h:fit-content; --py:0.25rem; --px:0.5rem; --d:flex; --ai:center; --jc:center; --radius:0.125rem;  --bc:rgb(0 0 0 / 0.1); --tt:capitalize; --c:var(--color-gray-600); --dark-bc:rgb(255 255 255 / 0.1); --dark-c:var(--color-gray-300)"
 									>
 										{key}
 									</div>

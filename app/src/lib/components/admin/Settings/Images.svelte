@@ -537,7 +537,7 @@
 								/>
 
 								<button
-									style="--w:100%; --size:0.875rem; --weight:500; --py:0.5rem; --bgc:transparent; --hvr-bgc:var(--color-gray-50); --b:1px solid; --bs:dashed; --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-850); --ta:center; --radius:0.75rem"
+									style="--w:100%; --size:0.875rem; --weight:500; --py:0.5rem; --bgc:transparent; --hvr-bgc:var(--color-gray-50);  --bs:dashed; --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-850); --ta:center; --radius:0.75rem"
 									type="button"
 									on:click={() => {
 										document.getElementById('upload-comfyui-workflow-input')?.click();

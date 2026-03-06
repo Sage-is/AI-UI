@@ -230,7 +230,7 @@
 					</div>
 
 					<!-- <div
-						style="--d:flex; --fd:row; --ofx:auto; --g:0.625rem; --size:0.875rem; --weight:500; --bb:1px solid; border-bottom-color:var(--color-gray-800)"
+						style="--d:flex; --fd:row; --ofx:auto; --g:0.625rem; --size:0.875rem; --weight:500;  border-bottom-color:var(--color-gray-800)"
 	class="tabs scrollbar-hidden"
 					>
 						{#if tabs.includes('display')}

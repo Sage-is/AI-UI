@@ -45,7 +45,7 @@
 {#if !dismissed}
 	{#if mounted}
 		<div
-			style="--top:0; --left:0; --right:0; --p:0.5rem; --px:0.75rem; --d:flex; --jc:center; --ai:center; --pos:relative; --radius:0.75rem; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --c:var(--color-gray-800); --bgc:#fff; --dark-bgc:var(--color-gray-900); backdrop-filter:blur(24px); --z:30"
+			style="--top:0; --left:0; --right:0; --p:0.5rem; --px:0.75rem; --d:flex; --jc:center; --ai:center; --pos:relative; --radius:0.75rem;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --c:var(--color-gray-800); --bgc:#fff; --dark-bgc:var(--color-gray-900); backdrop-filter:blur(24px); --z:30"
 	class="{className} dark:text-gary-100"
 			transition:fade={{ delay: 100, duration: 300 }}
 		>

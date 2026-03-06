@@ -843,7 +843,7 @@
 							style="--pos:absolute; --top:-3rem; --left:0; --right:0; --d:flex; --jc:center; --z:30; --pe:none"
 						>
 							<button
-								style="--bgc:#fff; --b:1px solid; --bc:var(--color-gray-100); --dark-bs:none; --dark-bgc:rgb(255 255 255 / 0.2); --p:0.375rem; --radius:9999px; --pe:auto"
+								style="--bgc:#fff;  --bc:var(--color-gray-100); --dark-bs:none; --dark-bgc:rgb(255 255 255 / 0.2); --p:0.375rem; --radius:9999px; --pe:auto"
 								on:click={() => {
 									autoScroll = true;
 									scrollToBottom();
@@ -996,7 +996,7 @@
 							}}
 						>
 							<div
-								style="--fx:1 1 0%; --d:flex; --fd:column; --pos:relative; --w:100%; --shadow:4; --radius:1.5rem; --b:1px solid; --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --hvr-bc:var(--color-gray-100); --dark-hvr-bc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --px:0.25rem; --bgc:rgb(255 255 255 / 0.9); --dark-bgc:rgb(180 180 180 / 0.05); --dark-c:var(--color-gray-100)"
+								style="--fx:1 1 0%; --d:flex; --fd:column; --pos:relative; --w:100%; --shadow:4; --radius:1.5rem;  --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --hvr-bc:var(--color-gray-100); --dark-hvr-bc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --px:0.25rem; --bgc:rgb(255 255 255 / 0.9); --dark-bgc:rgb(180 180 180 / 0.05); --dark-c:var(--color-gray-100)"
 	class="focus-within:border-gray-100 focus-within:dark:border-gray-800"
 								dir={$settings?.chatDirection ?? 'auto'}
 							>
@@ -1041,7 +1041,7 @@
 													</div>
 													<div style="--pos:absolute; --top:-0.25rem; --right:-0.25rem">
 														<button
-															style="--bgc:#fff; --c:#000; --b:1px solid; --bc:#fff; --radius:9999px"
+															style="--bgc:#fff; --c:#000;  --bc:#fff; --radius:9999px"
 	class="{($settings?.highContrastMode ??
 															false)
 																? ''

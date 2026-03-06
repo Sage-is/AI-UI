@@ -14,7 +14,7 @@
 </script>
 
 <div
-	style="--d:flex; --ai:flex-start; --bgc:#F1F8FE; --dark-bgc:#020C1D; --b:1px solid; --bc:3371D5; --dark-bc:#03113B; --size:#2B6CD4; --dark-size:#6795EC; --radius:0.5rem; --px:0.875rem; --py:0.75rem; --size:0.75rem; --maxw:20rem; --pr:0.5rem; --w:100%; --shadow:4"
+	style="--d:flex; --ai:flex-start; --bgc:#F1F8FE; --dark-bgc:#020C1D;  --bc:3371D5; --dark-bc:#03113B; --size:#2B6CD4; --dark-size:#6795EC; --radius:0.5rem; --px:0.875rem; --py:0.75rem; --size:0.75rem; --maxw:20rem; --pr:0.5rem; --w:100%; --shadow:4"
 >
 	<div style="--fx:1 1 0%; --weight:500">
 		{$i18n.t(`A new version (v{{LATEST_VERSION}}) is now available.`, {

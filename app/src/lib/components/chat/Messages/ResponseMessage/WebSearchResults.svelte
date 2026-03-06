@@ -21,14 +21,14 @@
 		{/if}
 	</div>
 	<div
-		style="--size:0.875rem; --b:1px solid; --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.5); --radius:0.75rem; --mb:0.375rem"
+		style="--size:0.875rem;  --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.5); --radius:0.75rem; --mb:0.375rem"
 		slot="content"
 	>
 		{#if status?.query}
 			<a
 				href="https://www.google.com/search?q={status.query}"
 				target="_blank"
-				style="--d:flex; --w:100%; --ai:center; --p:0.75rem; --px:1rem; --bb:1px solid; --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.5); --jc:space-between; --weight:400; --c:var(--color-gray-800); --dark-c:var(--color-gray-300); --td:none"
+				style="--d:flex; --w:100%; --ai:center; --p:0.75rem; --px:1rem;  --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.5); --jc:space-between; --weight:400; --c:var(--color-gray-800); --dark-c:var(--color-gray-300); --td:none"
 	class="group/item"
 			>
 				<div style="--d:flex; --g:0.5rem; --ai:center">

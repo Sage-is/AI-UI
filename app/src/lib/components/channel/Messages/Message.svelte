@@ -84,7 +84,7 @@
 	class="{showButtons ? '' : 'invisible group-hover:visible'}"
 			>
 				<div
-					style="--d:flex; --g:0.25rem; --radius:0.5rem; --bgc:#fff; --dark-bgc:var(--color-gray-850); --shadow:3; --p:0.125rem; --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
+					style="--d:flex; --g:0.25rem; --radius:0.5rem; --bgc:#fff; --dark-bgc:var(--color-gray-850); --shadow:3; --p:0.125rem;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 				>
 					<ReactionPicker
 						onClose={() => (showButtons = false)}

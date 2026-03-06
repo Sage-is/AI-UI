@@ -48,7 +48,7 @@
 
 	<div slot="content">
 		<DropdownMenu.Content
-			style="--w:100%; --maxw:170px; --radius:0.75rem; --px:0.25rem; --py:0.375rem; --b:1px solid; --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.5); --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:1"
+			style="--w:100%; --maxw:170px; --radius:0.75rem; --px:0.25rem; --py:0.375rem;  --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.5); --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:1"
 			sideOffset={-2}
 			side="bottom"
 			align="start"

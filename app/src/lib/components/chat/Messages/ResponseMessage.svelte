@@ -769,7 +769,7 @@
 									<div>
 										<button
 											id="save-new-message-button"
-											style="--px:1rem; --py:0.5rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-700); --c:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:1.5rem"
+											style="--px:1rem; --py:0.5rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700);  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-700); --c:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:1.5rem"
 											on:click={() => {
 												saveAsCopyHandler();
 											}}

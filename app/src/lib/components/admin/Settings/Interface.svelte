@@ -453,10 +453,10 @@
 						<div style="--d:grid; --gtc-lg:repeat(2, minmax(0, 1fr)); --fd:column; --g:0.375rem">
 							{#each promptSuggestions as prompt, promptIdx}
 								<div
-									style="--d:flex; --b:1px solid; --bc:var(--color-gray-100); --dark-bs:none; --dark-bgc:var(--color-gray-850); --radius:0.75rem; --py:0.375rem"
+									style="--d:flex;  --bc:var(--color-gray-100); --dark-bs:none; --dark-bgc:var(--color-gray-850); --radius:0.75rem; --py:0.375rem"
 								>
 									<div style="--d:flex; --fd:column; --fx:1 1 0%; --pl:0.25rem">
-										<div style="--d:flex; --bb:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --w:100%">
+										<div style="--d:flex;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --w:100%">
 											<input
 												style="--px:0.75rem; --py:0.375rem; --size:0.75rem; --w:100%; --bgc:transparent; --oe:none; --br:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 												placeholder={$i18n.t('Title (e.g. Tell me a fun fact)')}

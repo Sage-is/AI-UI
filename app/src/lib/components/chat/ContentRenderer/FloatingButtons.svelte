@@ -105,7 +105,7 @@
 		</div>
 	{:else}
 		<div
-			style="--py:0.25rem; --d:flex; --dark-c:var(--color-gray-100); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800); --b:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --w:18rem; --radius:9999px; --shadow:5"
+			style="--py:0.25rem; --d:flex; --dark-c:var(--color-gray-100); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800);  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --w:18rem; --radius:9999px; --shadow:5"
 		>
 			<input
 				type="text"

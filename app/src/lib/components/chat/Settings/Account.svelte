@@ -271,7 +271,7 @@
 
 		{#if $user?.role === 'temporary'}
 			<div
-				style="--my:0.5rem; --p:0.75rem; --radius:0.75rem; --bgc:#fefce8; --dark-bgc:rgb(66 32 6 / 0.3); --b:1px solid; --bc:#fde047; --dark-bc:rgb(161 98 7 / 0.5)"
+				style="--my:0.5rem; --p:0.75rem; --radius:0.75rem; --bgc:#fefce8; --dark-bgc:rgb(66 32 6 / 0.3);  --bc:#fde047; --dark-bc:rgb(161 98 7 / 0.5)"
 			>
 				<ClaimAccount />
 			</div>

@@ -94,7 +94,7 @@
 								</thead>
 								<tbody style="--d:flex;--fd:column">
 									{#each memories as memory}
-										<tr style="--bb:1px solid; --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --ai:center">
+										<tr style=" --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --ai:center">
 											<td style="--px:0.75rem; --py:0.25rem">
 												<div style="--line-clamp:1">
 													{memory.content}

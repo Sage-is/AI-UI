@@ -30,7 +30,7 @@
 			<div style="--pos:absolute; --v:hidden; --right:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="group-hover/tags:visible">
 				<button
-					style="--radius:9999px; --b:1px solid; --bgc:#fff; --dark-bgc:var(--color-gray-700); --h:100%; --d:flex; --as:center; --cur:pointer"
+					style="--radius:9999px;  --bgc:#fff; --dark-bgc:var(--color-gray-700); --h:100%; --d:flex; --as:center; --cur:pointer"
 					on:click={() => {
 						dispatch('delete', tag.name);
 					}}

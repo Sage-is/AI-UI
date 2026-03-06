@@ -226,7 +226,7 @@
 						groupedMessageIds[modelIdx].messageIds[groupedMessageIdsIdx[modelIdx]]}
 
 					<div
-						style="scroll-snap-align:center; --w:100%; --maxw:100%; --m:0.25rem; --b:1px solid; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --p:1.25rem; --radius:1rem"
+						style="scroll-snap-align:center; --w:100%; --maxw:100%; --m:0.25rem;  --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --p:1.25rem; --radius:1rem"
 	class="{history.messages[messageId]
 							?.modelIdx == modelIdx
 							? `bg-gray-50 dark:bg-gray-850 border-gray-100 dark:border-gray-800 border-2 ${
