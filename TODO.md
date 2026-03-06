@@ -144,6 +144,10 @@ Features are categorized by priority levels to help focus development efforts:
 
 #### **Priority 2: Improved Sidebar Experience**
 
+- [ ] **Home Dashboard Sidebar Shared Categories**: Nice-to-have sidebar expansion
+  - [ ] Add `Shared with me` and `Shared by me` as new sidebar categories
+  - [ ] Ensure both categories are linked and present filtered shared-chat views
+
 - [ ] **Enhanced Chat Organization**: Better than current folder system
   - [x] Smart auto-categorization by topic
   - [x] Tag-based filtering and search
