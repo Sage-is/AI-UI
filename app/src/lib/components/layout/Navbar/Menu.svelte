@@ -278,7 +278,7 @@
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 24 24"
 							fill="currentColor"
-							style="--w:1rem; --h:1rem; --c:var(--color-green-600); --dark-c:var(--color-green-400)"
+							style="--w:1.25rem; --h:1.25rem; --c:var(--color-green-600); --dark-c:var(--color-green-400)"
 						>
 							<circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="2.5" />
 							<g transform="translate(-2.5, 1)">
