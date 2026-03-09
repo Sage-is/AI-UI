@@ -366,7 +366,7 @@
 >
 	<DropdownMenu.Trigger
 		style="--pos:relative; --w:100%"
-	class="font-primary {($settings?.highContrastMode ?? false)
+		class="font-primary {($settings?.highContrastMode ?? false)
 			? ''
 			: 'outline-hidden focus:outline-hidden'}"
 		aria-label={placeholder}
@@ -374,8 +374,7 @@
 	>
 		<div
 			style="--d:flex; --w:100%; --ta:left; --px:0.125rem; --bgc:transparent; overflow:hidden; text-overflow:ellipsis; --ws:nowrap; --jc:space-between"
-	class="{triggerClassName} {($settings?.highContrastMode ??
-			false)
+			class="{triggerClassName} {($settings?.highContrastMode ?? false)
 				? 'dark:placeholder-gray-100 placeholder-gray-800'
 				: 'placeholder-gray-400'}"
 			on:mouseenter={async () => {
@@ -398,16 +397,16 @@
 
 	<DropdownMenu.Content
 		style="--z:40; --maxw:calc(100vw-1rem); --jc:flex-start; --radius:0.75rem; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:4; --oe:none"
-	class="{$mobile
-			? `w-full`
-			: `${className}`}"
+		class={$mobile ? `w-full` : `${className}`}
 		transition={flyAndScale}
 		side={$mobile ? 'bottom' : 'bottom-start'}
 		sideOffset={3}
 	>
 		<slot>
 			{#if searchEnabled}
-				<div style="--d:flex; --ai:center; --g:0.625rem; --px:1.25rem; --mt:0.875rem; --mb:0.375rem">
+				<div
+					style="--d:flex; --ai:center; --g:0.625rem; --px:1.25rem; --mt:0.875rem; --mb:0.375rem"
+				>
 					<Search className="size-4" strokeWidth="2.5" />
 
 					<input
@@ -441,7 +440,7 @@
 				{#if tags && items.filter((item) => !(item.model?.info?.meta?.hidden ?? false)).length > 0}
 					<div
 						style="--d:flex; --w:100%; --bgc:#fff; --dark-bgc:var(--color-gray-850); --ofx:auto"
-	class="scrollbar-none"
+						class="scrollbar-none"
 						on:wheel={(e) => {
 							if (e.deltaY !== 0) {
 								e.preventDefault();
@@ -450,16 +449,15 @@
 						}}
 					>
 						<div
-							style="--d:flex; --g:0.25rem; --w:fit-content; --ta:center; --size:0.875rem; --weight:500; --radius:9999px; --bgc:transparent; --px:0.375rem; --pb:0.125rem"
+							style="--d:flex; --g:0.25rem; --w:fit-content; --ta:center; --size:0.875rem; --weight:500; --radius:9999px; --bgc:transparent; --p:0.2rem;"
 							bind:this={tagsContainerElement}
 						>
 							{#if items.find((item) => item.model?.connection_type === 'local') || items.find((item) => item.model?.connection_type === 'external') || items.find((item) => item.model?.direct) || tags.length > 0}
 								<button
-									style="--minw:fit-content; --oe:2px solid transparent; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize"
-	class="{selectedTag === '' &&
-									selectedConnectionType === ''
+									style="--minw:fit-content; --oe:2px solid transparent; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize; {selectedTag === '' && selectedConnectionType === '' ? '--weight:bold;' : ''}"
+									class={selectedTag === '' && selectedConnectionType === ''
 										? ''
-										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}
 									on:click={() => {
 										selectedConnectionType = '';
 										selectedTag = '';
@@ -471,10 +469,10 @@
 
 							{#if items.find((item) => item.model?.preset)}
 								<button
-									style="--minw:fit-content; --oe:2px solid transparent; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize"
-	class="{selectedConnectionType === 'agents'
+									style="--minw:fit-content; --oe:2px solid transparent; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize; {selectedConnectionType === 'agents' ? '--weight:bold;' : ''}"
+									class={selectedConnectionType === 'agents'
 										? ''
-										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}
 									on:click={() => {
 										selectedTag = '';
 										selectedConnectionType = 'agents';
@@ -486,10 +484,10 @@
 
 							{#if items.find((item) => item.model?.connection_type === 'local')}
 								<button
-									style="--minw:fit-content; --oe:2px solid transparent; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize"
-	class="{selectedConnectionType === 'local'
+									style="--minw:fit-content; --oe:2px solid transparent; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize; {selectedConnectionType === 'local' ? '--weight:bold;' : ''}"
+									class={selectedConnectionType === 'local'
 										? ''
-										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}
 									on:click={() => {
 										selectedTag = '';
 										selectedConnectionType = 'local';
@@ -501,10 +499,10 @@
 
 							{#if items.find((item) => item.model?.connection_type === 'external')}
 								<button
-									style="--minw:fit-content; --oe:2px solid transparent; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize"
-	class="{selectedConnectionType === 'external'
+									style="--minw:fit-content; --oe:2px solid transparent; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize; {selectedConnectionType === 'external' ? '--weight:bold;' : ''}"
+									class={selectedConnectionType === 'external'
 										? ''
-										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}
 									on:click={() => {
 										selectedTag = '';
 										selectedConnectionType = 'external';
@@ -516,10 +514,10 @@
 
 							{#if items.find((item) => item.model?.direct)}
 								<button
-									style="--minw:fit-content; --oe:2px solid transparent; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize"
-	class="{selectedConnectionType === 'direct'
+									style="--minw:fit-content; --oe:2px solid transparent; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize; {selectedConnectionType === 'direct' ? '--weight:bold;' : ''}"
+									class={selectedConnectionType === 'direct'
 										? ''
-										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}
 									on:click={() => {
 										selectedTag = '';
 										selectedConnectionType = 'direct';
@@ -531,10 +529,10 @@
 
 							{#each tags as tag}
 								<button
-									style="--minw:fit-content; --oe:2px solid transparent; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize"
-	class="{selectedTag === tag
+									style="--minw:fit-content; --oe:2px solid transparent; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize; {selectedTag === tag ? '--weight:bold;' : ''}"
+									class={selectedTag === tag
 										? ''
-										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}
 									on:click={() => {
 										selectedConnectionType = '';
 										selectedTag = tag;
@@ -548,8 +546,7 @@
 				{/if}
 			</div>
 
-			<div
-				style="--pos:relative; --ofy:auto; --maxh:16rem; --p:0 1em">
+			<div style="--pos:relative; --ofy:auto; --maxh:16rem; --p:0 1em">
 				{#each filteredItems as item, index}
 					<ModelItem
 						{selectedModelIdx}
@@ -568,7 +565,9 @@
 					/>
 				{:else}
 					<div class="">
-						<div style="--d:block; --px:0.75rem; --py:0.5rem; --size:0.875rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-100)">
+						<div
+							style="--d:block; --px:0.75rem; --py:0.5rem; --size:0.875rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-100)"
+						>
 							{$i18n.t('No results found')}
 						</div>
 					</div>
@@ -583,7 +582,7 @@
 					>
 						<button
 							style="--d:flex; --w:100%; --weight:500; --line-clamp:1; --us:none; --ai:center; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --pl:0.75rem; --pr:0.375rem; --size:0.875rem; --bg:var(--white); --br: 1rem; --shadow:6; --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-800); --radius:0.5rem; --cur:pointer"
-	class="data-highlighted:bg-muted"
+							class="data-highlighted:bg-muted"
 							on:click={() => {
 								pullModelHandler();
 							}}
@@ -598,7 +597,7 @@
 				{#each Object.keys($MODEL_DOWNLOAD_POOL) as model}
 					<div
 						style="--d:flex; --w:100%; --jc:space-between; --weight:500; --us:none; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --pl:0.75rem; --pr:0.375rem; --size:0.875rem; --bg:var(--white); --br: 1rem; --shadow:6; --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --radius:0.5rem; --cur:pointer"
-	class="data-highlighted:bg-muted"
+						class="data-highlighted:bg-muted"
 					>
 						<div style="--d:flex">
 							<div style="--ml:-0.5rem; --mr:0.625rem; --translatey:0.125rem">
@@ -619,7 +618,9 @@
 								</div>
 
 								{#if 'digest' in $MODEL_DOWNLOAD_POOL[model] && $MODEL_DOWNLOAD_POOL[model].digest}
-									<div style="--mt:-0.25rem; --h:fit-content; --size:0.7rem; --dark-c:var(--color-gray-500); --line-clamp:1">
+									<div
+										style="--mt:-0.25rem; --h:fit-content; --size:0.7rem; --dark-c:var(--color-gray-500); --line-clamp:1"
+									>
 										{$MODEL_DOWNLOAD_POOL[model].digest}
 									</div>
 								{/if}
@@ -662,7 +663,7 @@
 				<div style="--d:flex; --ai:center; --mx:0.5rem; --mt:0.25rem; --mb:0.5rem">
 					<button
 						style="--d:flex; --jc:space-between; --w:100%; --weight:500; --line-clamp:1; --us:none; --ai:center; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --px:0.75rem; --size:0.875rem; --bg:var(--white); --br: 1rem; --shadow:6; --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-800); --radius:0.5rem; --cur:pointer"
-	class="data-highlighted:bg-muted"
+						class="data-highlighted:bg-muted"
 						on:click={async () => {
 							temporaryChatEnabled.set(!$temporaryChatEnabled);
 							await goto('/');
