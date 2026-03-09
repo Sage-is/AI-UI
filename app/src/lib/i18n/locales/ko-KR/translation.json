@@ -1120,7 +1120,7 @@
 	"Saving chat logs directly to your browser's storage is no longer supported. Please take a moment to download and delete your chat logs by clicking the button below. Don't worry, you can easily re-import your chat logs to the backend through": "브라우저의 저장소에 채팅 로그를 직접 저장하는 것은 더 이상 지원되지 않습니다. 아래 버튼을 클릭하여 채팅 로그를 다운로드하고 삭제하세요. 걱정 마세요. 백엔드를 통해 채팅 로그를 쉽게 다시 가져올 수 있습니다.",
 	"Scroll On Branch Change": "브랜치 변경 시 스크롤",
 	"Search": "검색",
-	"Search a model": "모델 검색",
+	"Search for a model": "모델 검색",
 	"Search Base": "검색 기반",
 	"Search Chats": "채팅 검색",
 	"Search Collection": "컬렉션 검색",

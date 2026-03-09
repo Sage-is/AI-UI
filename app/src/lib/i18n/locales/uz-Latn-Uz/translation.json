@@ -1120,7 +1120,7 @@
 	"Saving chat logs directly to your browser's storage is no longer supported. Please take a moment to download and delete your chat logs by clicking the button below. Don't worry, you can easily re-import your chat logs to the backend through": "Chat jurnallarini bevosita brauzeringiz xotirasiga saqlash endi qo‘llab-quvvatlanmaydi. Quyidagi tugmani bosish orqali suhbat jurnallaringizni yuklab oling va oʻchiring. Xavotir olmang, siz chat jurnallarini backend orqali osongina qayta import qilishingiz mumkin",
 	"Scroll On Branch Change": "Filialni o'zgartirish bo'yicha aylantiring",
 	"Search": "Qidiruv",
-	"Search a model": "Modelni qidiring",
+	"Search for a model": "Modelni qidiring",
 	"Search Base": "Qidiruv bazasi",
 	"Search Chats": "Chatlarni qidirish",
 	"Search Collection": "To'plamni qidirish",

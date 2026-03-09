@@ -1120,7 +1120,7 @@
 	"Saving chat logs directly to your browser's storage is no longer supported. Please take a moment to download and delete your chat logs by clicking the button below. Don't worry, you can easily re-import your chat logs to the backend through": "پاراڭ خاتىرىسىنى بىۋاسىتە توركۆرگۈڭىزنىڭ ساقلىشىغا ساقلىغىلى بولمايدۇ. بىر ئاز ۋاقىت چىقىرىپ ئاستىدىكى كۇنۇپكىنى بېسىپ پاراڭ خاتىرىڭىزنى چۈشۈرۈڭ ۋە ئۆچۈرۈڭ. ئەنسىرىمەڭ ، پاراڭ خاتىرىڭىزنى ئارقا سۇپىغا قايتا ئەكىرىسىز",
 	"Scroll On Branch Change": "تارماق ئۆزگەرسە ئېكران يۆتكىلىدۇ",
 	"Search": "ئىزدەش",
-	"Search a model": "مودېل ئىزدەش",
+	"Search for a model": "مودېل ئىزدەش",
 	"Search Base": "ئىزدەش ئاساسى",
 	"Search Chats": "سۆھبەت ئىزدەش",
 	"Search Collection": "توپلام ئىزدەش",

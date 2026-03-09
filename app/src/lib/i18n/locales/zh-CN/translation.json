@@ -1120,7 +1120,7 @@
 	"Saving chat logs directly to your browser's storage is no longer supported. Please take a moment to download and delete your chat logs by clicking the button below. Don't worry, you can easily re-import your chat logs to the backend through": "我们不再支持将对话记录直接保存到浏览器的存储空间。请点击下面的按钮下载并删除您的对话记录。别担心，您可以轻松地将对话记录重新导入到后台。",
 	"Scroll On Branch Change": "切换对话分支时滚动",
 	"Search": "搜索",
-	"Search a model": "搜索模型",
+	"Search for a model": "搜索模型",
 	"Search Base": "搜索库",
 	"Search Chats": "搜索对话",
 	"Search Collection": "搜索内容",

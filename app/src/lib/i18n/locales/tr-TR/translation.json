@@ -1120,7 +1120,7 @@
 	"Saving chat logs directly to your browser's storage is no longer supported. Please take a moment to download and delete your chat logs by clicking the button below. Don't worry, you can easily re-import your chat logs to the backend through": "Sohbet kayıtlarının doğrudan tarayıcınızın depolama alanına kaydedilmesi artık desteklenmemektedir. Lütfen aşağıdaki butona tıklayarak sohbet kayıtlarınızı indirmek ve silmek için bir dakikanızı ayırın. Endişelenmeyin, sohbet günlüklerinizi arkayüze kolayca yeniden aktarabilirsiniz:",
 	"Scroll On Branch Change": "",
 	"Search": "Ara",
-	"Search a model": "Bir model ara",
+	"Search for a model": "Bir model ara",
 	"Search Base": "Temel Ara",
 	"Search Chats": "Sohbetleri Ara",
 	"Search Collection": "Koleksiyon Ara",

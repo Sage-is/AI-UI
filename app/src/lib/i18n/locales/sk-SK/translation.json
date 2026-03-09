@@ -1120,7 +1120,7 @@
 	"Saving chat logs directly to your browser's storage is no longer supported. Please take a moment to download and delete your chat logs by clicking the button below. Don't worry, you can easily re-import your chat logs to the backend through": "Ukladanie záznamov chatu priamo do úložiska vášho prehliadača už nie je podporované. Venujte prosím chvíľu stiahnutiu a vymazaniu svojich záznamov chatu kliknutím na tlačidlo nižšie. Nemajte obavy, môžete ľahko znovu importovať svoje záznamy chatu na backend prostredníctvom",
 	"Scroll On Branch Change": "",
 	"Search": "Vyhľadávanie",
-	"Search a model": "Vyhľadať model",
+	"Search for a model": "Vyhľadať model",
 	"Search Base": "",
 	"Search Chats": "Vyhľadávanie v chate",
 	"Search Collection": "Hľadať kolekciu",

@@ -1120,7 +1120,7 @@
 	"Saving chat logs directly to your browser's storage is no longer supported. Please take a moment to download and delete your chat logs by clicking the button below. Don't worry, you can easily re-import your chat logs to the backend through": "Η αποθήκευση των αρχείων συνομιλίας απευθείας στη μνήμη αποθήκευσης του προγράμματος περιήγησής σας δεν υποστηρίζεται πλέον. Παρακαλώ αφιερώστε λίγο χρόνο να κατεβάσετε και να διαγράψετε τα αρχεία συνομιλίας σας κάνοντας κλικ στο κουμπί παρακάτω. Μην ανησυχείτε, μπορείτε εύκολα να επαναφέρετε τα αρχεία συνομιλιών σας στο backend μέσω",
 	"Scroll On Branch Change": "",
 	"Search": "Αναζήτηση",
-	"Search a model": "Αναζήτηση μοντέλου",
+	"Search for a model": "Αναζήτηση μοντέλου",
 	"Search Base": "Βάση Αναζήτησης",
 	"Search Chats": "Αναζήτηση Συνομιλιών",
 	"Search Collection": "Αναζήτηση Συλλογής",

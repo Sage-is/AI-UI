@@ -1120,7 +1120,7 @@
 	"Saving chat logs directly to your browser's storage is no longer supported. Please take a moment to download and delete your chat logs by clicking the button below. Don't worry, you can easily re-import your chat logs to the backend through": "Xa non se admite gardar registros de chat directamente no almacenamiento da sua navegador. Tómese un momento para descargar y eliminar sus registros de chat haciendo clic no botón a continuación. No te preocupes, puedes volver a importar fácilmente tus registros de chat al backend a través de",
 	"Scroll On Branch Change": "",
 	"Search": "Buscar",
-	"Search a model": "Buscar un modelo",
+	"Search for a model": "Buscar un modelo",
 	"Search Base": "Base de búsqueda",
 	"Search Chats": "Chats de búsqueda",
 	"Search Collection": "Buscar Colección",
