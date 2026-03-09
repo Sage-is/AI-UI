@@ -1120,7 +1120,7 @@
 	"Saving chat logs directly to your browser's storage is no longer supported. Please take a moment to download and delete your chat logs by clicking the button below. Don't worry, you can easily re-import your chat logs to the backend through": "Menyimpan log obrolan secara langsung ke penyimpanan browser Anda tidak lagi didukung. Mohon luangkan waktu sejenak untuk mengunduh dan menghapus log obrolan Anda dengan mengeklik tombol di bawah ini. Jangan khawatir, Anda dapat dengan mudah mengimpor kembali log obrolan Anda ke backend melalui",
 	"Scroll On Branch Change": "",
 	"Search": "Cari",
-	"Search a model": "Mencari model",
+	"Search for a model": "Mencari model",
 	"Search Base": "",
 	"Search Chats": "Cari Obrolan",
 	"Search Collection": "",

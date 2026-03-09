@@ -1120,7 +1120,7 @@
 	"Saving chat logs directly to your browser's storage is no longer supported. Please take a moment to download and delete your chat logs by clicking the button below. Don't worry, you can easily re-import your chat logs to the backend through": "La sauvegarde des journaux de conversation directement dans le stockage de votre navigateur n'est plus prise en charge. Veuillez prendre un instant pour télécharger et supprimer vos journaux de conversation en cliquant sur le bouton ci-dessous. Ne vous inquiétez pas, vous pouvez facilement réimporter vos journaux de conversation dans le backend via",
 	"Scroll On Branch Change": "Défilement lors du changement de branche",
 	"Search": "Recherche",
-	"Search a model": "Rechercher un modèle",
+	"Search for a model": "Rechercher un modèle",
 	"Search Base": "Base de recherche",
 	"Search Chats": "Rechercher des conversations",
 	"Search Collection": "Rechercher une collection",

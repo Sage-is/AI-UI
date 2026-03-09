@@ -1120,7 +1120,7 @@
 	"Saving chat logs directly to your browser's storage is no longer supported. Please take a moment to download and delete your chat logs by clicking the button below. Don't worry, you can easily re-import your chat logs to the backend through": "चैट लॉग को सीधे आपके ब्राउज़र के स्टोरेज में सहेजना अब समर्थित नहीं है। कृपया नीचे दिए गए बटन पर क्लिक करके डाउनलोड करने और अपने चैट लॉग को हटाने के लिए कुछ समय दें। चिंता न करें, आप आसानी से अपने चैट लॉग को बैकएंड पर पुनः आयात कर सकते हैं",
 	"Scroll On Branch Change": "",
 	"Search": "खोजें",
-	"Search a model": "एक मॉडल खोजें",
+	"Search for a model": "एक मॉडल खोजें",
 	"Search Base": "",
 	"Search Chats": "चैट खोजें",
 	"Search Collection": "",

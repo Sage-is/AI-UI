@@ -1120,7 +1120,7 @@
 	"Saving chat logs directly to your browser's storage is no longer supported. Please take a moment to download and delete your chat logs by clicking the button below. Don't worry, you can easily re-import your chat logs to the backend through": "Att spara chatloggar direkt till din webbläsares lagring stöds inte längre. Ta en stund och ladda ner och radera dina chattloggar genom att klicka på knappen nedan. Oroa dig inte, du kan enkelt importera dina chattloggar till backend genom",
 	"Scroll On Branch Change": "Scrolla vid grenbyte",
 	"Search": "Sök",
-	"Search a model": "Sök efter en modell",
+	"Search for a model": "Sök efter en modell",
 	"Search Base": "Sökbas",
 	"Search Chats": "Sök i chattar",
 	"Search Collection": "Sök samling",

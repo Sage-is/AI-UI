@@ -1120,7 +1120,7 @@
 	"Saving chat logs directly to your browser's storage is no longer supported. Please take a moment to download and delete your chat logs by clicking the button below. Don't worry, you can easily re-import your chat logs to the backend through": "การบันทึกบันทึกการสนทนาโดยตรงไปยังที่จัดเก็บในเบราว์เซอร์ของคุณไม่ได้รับการสนับสนุนอีกต่อไป โปรดสละเวลาสักครู่เพื่อดาวน์โหลดและลบบันทึกการสนทนาของคุณโดยคลิกที่ปุ่มด้านล่าง ไม่ต้องกังวล คุณสามารถนำเข้าบันทึกการสนทนาของคุณกลับไปยังส่วนแบ็กเอนด์ได้อย่างง่ายดายผ่าน",
 	"Scroll On Branch Change": "",
 	"Search": "ค้นหา",
-	"Search a model": "ค้นหาโมเดล",
+	"Search for a model": "ค้นหาโมเดล",
 	"Search Base": "",
 	"Search Chats": "ค้นหาแชท",
 	"Search Collection": "",

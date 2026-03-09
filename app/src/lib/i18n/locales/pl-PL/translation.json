@@ -1120,7 +1120,7 @@
 	"Saving chat logs directly to your browser's storage is no longer supported. Please take a moment to download and delete your chat logs by clicking the button below. Don't worry, you can easily re-import your chat logs to the backend through": "Zapisywanie dzienników czatu bezpośrednio w pamięci przeglądarki nie jest już obsługiwane. Prosimy o pobranie i usunięcie dzienników czatu, klikając przycisk poniżej. Nie przejmuj się, możesz łatwo ponownie zaimportować dzienniki czatu do backendu przez",
 	"Scroll On Branch Change": "",
 	"Search": "Szukaj",
-	"Search a model": "Wyszukaj model",
+	"Search for a model": "Wyszukaj model",
 	"Search Base": "Użytkownicy - Baza wyszukiwania",
 	"Search Chats": "Przeszukaj czaty",
 	"Search Collection": "Przeszukaj kolekcję",

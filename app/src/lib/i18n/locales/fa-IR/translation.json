@@ -1120,7 +1120,7 @@
 	"Saving chat logs directly to your browser's storage is no longer supported. Please take a moment to download and delete your chat logs by clicking the button below. Don't worry, you can easily re-import your chat logs to the backend through": "ذخیره گزارش\u200cهای چت مستقیماً در حافظه مرورگر شما دیگر پشتیبانی نمی\u200cشود. لطفاً با کلیک بر روی دکمه زیر، چند لحظه برای دانلود و حذف گزارش های چت خود وقت بگذارید. نگران نباشید، شما به راحتی می توانید گزارش های چت خود را از طریق بکند دوباره وارد کنید",
 	"Scroll On Branch Change": "",
 	"Search": "جستجو",
-	"Search a model": "جستجوی یک مدل",
+	"Search for a model": "جستجوی یک مدل",
 	"Search Base": "پایه جستجو",
 	"Search Chats": "جستجو گفتگوها",
 	"Search Collection": "جستجوی مجموعه\u200cها",

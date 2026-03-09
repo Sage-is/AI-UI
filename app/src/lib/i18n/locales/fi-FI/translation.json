@@ -1120,7 +1120,7 @@
 	"Saving chat logs directly to your browser's storage is no longer supported. Please take a moment to download and delete your chat logs by clicking the button below. Don't worry, you can easily re-import your chat logs to the backend through": "Keskustelulokien tallentaminen suoraan selaimen tallennustilaan ei ole enää tuettu. Lataa ja poista keskustelulokit napsauttamalla alla olevaa painiketta. Älä huoli, voit helposti tuoda keskustelulokit takaisin backendiin",
 	"Scroll On Branch Change": "Vieritä haaran vaihtoon",
 	"Search": "Haku",
-	"Search a model": "Hae mallia",
+	"Search for a model": "Hae mallia",
 	"Search Base": "Hakupohja",
 	"Search Chats": "Hae keskusteluja",
 	"Search Collection": "Hae kokoelmaa",

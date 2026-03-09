@@ -1120,7 +1120,7 @@
 	"Saving chat logs directly to your browser's storage is no longer supported. Please take a moment to download and delete your chat logs by clicking the button below. Don't worry, you can easily re-import your chat logs to the backend through": "Прямое сохранение журналов чата в хранилище вашего браузера больше не поддерживается. Пожалуйста, потратьте минуту, чтобы скачать и удалить ваши журналы чата, нажав на кнопку ниже. Не волнуйтесь, вы легко сможете повторно импортировать свои журналы чата в бэкенд через",
 	"Scroll On Branch Change": "Прокручивать при изменении ветки",
 	"Search": "Поиск",
-	"Search a model": "Поиск по моделям",
+	"Search for a model": "Поиск по моделям",
 	"Search Base": "Поиск в базе",
 	"Search Chats": "Поиск в чатах",
 	"Search Collection": "Поиск коллекции",

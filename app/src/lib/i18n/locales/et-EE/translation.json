@@ -1120,7 +1120,7 @@
 	"Saving chat logs directly to your browser's storage is no longer supported. Please take a moment to download and delete your chat logs by clicking the button below. Don't worry, you can easily re-import your chat logs to the backend through": "Vestluslogi salvestamine otse teie brauseri mällu pole enam toetatud. Palun võtke hetk, et alla laadida ja kustutada oma vestluslogi, klõpsates allpool olevat nuppu. Ärge muretsege, saate hõlpsasti oma vestluslogi tagarakendusse uuesti importida, kasutades",
 	"Scroll On Branch Change": "",
 	"Search": "Otsing",
-	"Search a model": "Otsi mudelit",
+	"Search for a model": "Otsi mudelit",
 	"Search Base": "Otsingu baas",
 	"Search Chats": "Otsi vestlusi",
 	"Search Collection": "Otsi kogust",
