@@ -64,6 +64,28 @@
 	let tokenTimer: ReturnType<typeof setInterval> | null = null;
 	let branding: { favicon_url?: string; logo_url?: string; logo_dark_url?: string; title?: string; subtitle?: string; primary_color?: string; accent_color?: string } = {};
 
+	/**
+	 * Apply admin branding colors as Startr.Style CSS variable overrides.
+	 * Startr.Style's semantic system cascades from --primary and --secondary:
+	 *   --links: var(--primary)
+	 *   --background-alt: color-mix(... var(--primary) ...)
+	 *   --focus: color-mix(... var(--primary) ...)
+	 * So setting --primary here recolors the entire UI automatically.
+	 */
+	const applyBrandingColors = (b: typeof branding) => {
+		const root = document.documentElement;
+		if (b?.primary_color) {
+			root.style.setProperty('--primary', b.primary_color);
+		} else {
+			root.style.removeProperty('--primary');
+		}
+		if (b?.accent_color) {
+			root.style.setProperty('--secondary', b.accent_color);
+		} else {
+			root.style.removeProperty('--secondary');
+		}
+	};
+
 	const BREAKPOINT = 768;
 
 	const setupSocket = async (enableWebsocket: boolean) => {
@@ -497,13 +519,14 @@
 	}
 
 	onMount(async () => {
-		if (typeof window !== 'undefined' && window.applyTheme) {
-			window.applyTheme();
-		}
-
 		// Load branding early for favicon and other global settings
 		try {
 			branding = await getBranding();
+			// Apply admin-configured colors as Startr.Style overrides.
+			// Startr.Style defines --primary and --secondary on :root; setting them here
+			// lets admins customize the entire color cascade (--links, --background-alt,
+			// --focus, etc.) from a single panel — no component changes needed.
+			applyBrandingColors(branding);
 		} catch (err) {
 			console.error('Failed to load branding:', err);
 		}
@@ -585,24 +608,7 @@
 
 		await tick();
 
-		if (
-			document.documentElement.classList.contains('her') &&
-			document.getElementById('progress-bar')
-		) {
-			document.getElementById('splash-screen')?.remove();
-
-			const audio = new Audio(`/audio/greeting.mp3`);
-			const playAudio = () => {
-				audio.play().catch((error) => {
-					console.log('Greeting audio not available:', error.message);
-				});
-				document.removeEventListener('click', playAudio);
-			};
-
-			document.addEventListener('click', playAudio);
-		} else {
-			document.getElementById('splash-screen')?.remove();
-		}
+		document.getElementById('splash-screen')?.remove();
 
 		return () => {
 			window.removeEventListener('resize', onResize);
@@ -619,10 +625,6 @@
 			{@html $config.ui.custom_css}
 		</style>
 	{/if}
-	<!-- rosepine themes have been disabled as it's not up to date with our latest version. -->
-	<!-- feel free to make a PR to fix if anyone wants to see it return -->
-	<!-- <link rel="stylesheet" type="text/css" href="/themes/rosepine.css" />
-	<link rel="stylesheet" type="text/css" href="/themes/rosepine-dawn.css" /> -->
 </svelte:head>
 
 {#if $isApp}

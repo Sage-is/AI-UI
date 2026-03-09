@@ -34,11 +34,32 @@
 		}
 	};
 
+	/**
+	 * Apply branding colors to Startr.Style CSS variables immediately.
+	 * Startr.Style cascades from --primary/--secondary, so setting these
+	 * on :root recolors --links, --background-alt, --focus, etc. automatically.
+	 */
+	const applyBrandingColors = () => {
+		const root = document.documentElement;
+		if (branding.primary_color) {
+			root.style.setProperty('--primary', branding.primary_color);
+		} else {
+			root.style.removeProperty('--primary');
+		}
+		if (branding.accent_color) {
+			root.style.setProperty('--secondary', branding.accent_color);
+		} else {
+			root.style.removeProperty('--secondary');
+		}
+	};
+
 	const saveBranding = async () => {
 		saving = true;
 		try {
 			const token = localStorage.token;
 			await setBranding(token, branding);
+			// Apply colors live so admin sees the effect immediately
+			applyBrandingColors();
 			toast.success($i18n.t('Branding settings saved successfully!'));
 			dispatch('save');
 		} catch (error) {
@@ -156,11 +177,14 @@
 
 			<hr style="--dark-bc:var(--color-gray-850)" />
 
-			<!-- Color Settings -->
+			<!-- Color Settings — overrides Startr.Style --primary and --secondary CSS variables.
+				 These cascade through the entire UI: links, backgrounds, focus rings, etc. -->
 			<div style="--g:0.75rem">
 				<div style="--size:0.875rem; --weight:500">{$i18n.t('Color Settings')}</div>
-                <p>Note: These are not used at the moment.</p>
-				
+				<div style="--size:0.75rem; --c:var(--color-gray-500)">
+					{$i18n.t('Overrides the Startr.Style theme colors. Leave empty to use defaults.')}
+				</div>
+
 				<div>
 					<label style="--d:block; --size:0.875rem; --weight:500; --mb:0.5rem" for="primary-color">
 						{$i18n.t('Primary Color')}
@@ -226,29 +250,30 @@
 						{/if}
 						<div>
 							{#if branding.title}
-								<div style="--weight:600; color: {branding.primary_color || 'inherit'}">
+								<div style="--weight:600; --c:{branding.primary_color || 'var(--primary)'}">
 									{branding.title}
 								</div>
 							{/if}
 							{#if branding.subtitle}
-								<div style="--size:0.75rem; --c:var(--color-gray-500)">
+								<div style="--size:0.75rem; --c:var(--text-muted)">
 									{branding.subtitle}
 								</div>
 							{/if}
 						</div>
 					</div>
+					<!-- Color swatches preview the actual --primary/--secondary overrides -->
 					{#if branding.primary_color || branding.accent_color}
 						<div style="--d:flex; --g:0.5rem; --mt:0.75rem">
 							{#if branding.primary_color}
 								<div
-									style="--px:0.75rem; --py:0.375rem; --radius:0.25rem; --size:0.75rem; --c:#fff; background-color: {branding.primary_color}"
+									style="--px:0.75rem; --py:0.375rem; --radius:0.25rem; --size:0.75rem; --c:#fff; --bgc:{branding.primary_color}"
 								>
 									Primary
 								</div>
 							{/if}
 							{#if branding.accent_color}
 								<div
-									style="--px:0.75rem; --py:0.375rem; --radius:0.25rem; --size:0.75rem; --c:#fff; background-color: {branding.accent_color}"
+									style="--px:0.75rem; --py:0.375rem; --radius:0.25rem; --size:0.75rem; --c:#fff; --bgc:{branding.accent_color}"
 								>
 									Accent
 								</div>

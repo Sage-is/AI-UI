@@ -122,9 +122,9 @@ border-radius: 9999px;
 border-width: 1px;
 }
 
-/* Dark theme scrollbar styles */
-.dark ::-webkit-scrollbar-thumb {
-background-color: rgba(67, 67, 67, 0.8); /* Darker color for dark theme */
+/* Dark theme scrollbar — matches both .dark (Tailwind) and [data-theme="dark"] (Startr.Style) */
+:is(.dark, [data-theme="dark"]) ::-webkit-scrollbar-thumb {
+background-color: rgba(67, 67, 67, 0.8);
 border-color: rgba(0, 0, 0, var(--tw-border-opacity));
 }
 
@@ -175,14 +175,15 @@ animation: shimmer 4s linear infinite;
 color: #818286; /* Fallback color */
 }
 
-:global(.dark) .shimmer {
+/* Dark shimmer — matches both .dark (Tailwind) and [data-theme="dark"] (Startr.Style) */
+:global(:is(.dark, [data-theme="dark"])) .shimmer {
 background: linear-gradient(90deg, #818286 25%, #eae5e5 50%, #818286 75%);
 background-size: 200% 100%;
 background-clip: text;
 -webkit-background-clip: text;
 -webkit-text-fill-color: transparent;
 animation: shimmer 4s linear infinite;
-color: #a1a3a7; /* Darker fallback color for dark mode */
+color: #a1a3a7;
 }
 
 @keyframes smoothFadeIn {

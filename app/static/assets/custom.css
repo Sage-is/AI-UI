@@ -1,6 +1,8 @@
 :root {
-	--links: var(--color-sky-500);
-	--links-hover: var(--color-sky-600);
+	/* Use Startr.Style semantic --primary so links respond to theme/dark mode automatically.
+	   Startr.Style defines: --primary: var(--purple), --links: var(--primary).
+	   Override here only if you want a different link color than --primary. */
+	--links: var(--primary);
 	--max-content-width: 768px;
 	--color-red-50: oklch(0.971 0.013 17.38);
 	--color-red-100: oklch(0.936 0.032 17.717);
