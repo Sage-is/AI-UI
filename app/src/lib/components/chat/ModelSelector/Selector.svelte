@@ -10,8 +10,6 @@
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import { flyAndScale } from '$lib/utils/transitions';
 	import { createEventDispatcher, onMount, getContext, tick } from 'svelte';
-	import { goto } from '$app/navigation';
-
 	import { deleteModel, getOllamaVersion, pullModel, unloadModel } from '$lib/apis/ollama';
 
 	import {
@@ -19,7 +17,6 @@
 		MODEL_DOWNLOAD_POOL,
 		models,
 		mobile,
-		temporaryChatEnabled,
 		settings,
 		config
 	} from '$lib/stores';
@@ -32,8 +29,6 @@
 	import Check from '$lib/components/icons/Check.svelte';
 	import Search from '$lib/components/icons/Search.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import Switch from '$lib/components/common/Switch.svelte';
-	import ChatBubbleOval from '$lib/components/icons/ChatBubbleOval.svelte';
 
 	import ModelItem from './ModelItem.svelte';
 
@@ -45,8 +40,6 @@
 	export let placeholder = 'Select a model';
 	export let searchEnabled = true;
 	export let searchPlaceholder = $i18n.t('Search for an agent or model');
-
-	export let showTemporaryChatControl = false;
 
 	export let items: {
 		label: string;
@@ -659,43 +652,7 @@
 				{/each}
 			</div>
 
-			{#if showTemporaryChatControl}
-				<div style="--d:flex; --ai:center; --mx:0.5rem; --mt:0.25rem; --mb:0.5rem">
-					<button
-						style="--d:flex; --jc:space-between; --w:100%; --weight:500; --line-clamp:1; --us:none; --ai:center; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --px:0.75rem; --size:0.875rem; --bg:var(--white); --br: 1rem; --shadow:6; --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-800); --radius:0.5rem; --cur:pointer"
-						class="data-highlighted:bg-muted"
-						on:click={async () => {
-							temporaryChatEnabled.set(!$temporaryChatEnabled);
-							await goto('/');
-							const newChatButton = document.getElementById('new-chat-button');
-							setTimeout(() => {
-								newChatButton?.click();
-							}, 0);
-
-							// add 'temporary-chat=true' to the URL
-							if ($temporaryChatEnabled) {
-								history.replaceState(null, '', '?temporary-chat=true');
-							} else {
-								history.replaceState(null, '', location.pathname);
-							}
-
-							show = false;
-						}}
-					>
-						<div style="--d:flex; --g:0.625rem; --ai:center">
-							<ChatBubbleOval className="size-4" strokeWidth="2.5" />
-
-							{$i18n.t(`Temporary Chat`)}
-						</div>
-
-						<div>
-							<Switch state={$temporaryChatEnabled} />
-						</div>
-					</button>
-				</div>
-			{:else}
-				<div style="--mb:0.75rem"></div>
-			{/if}
+			<div style="--mb:0.75rem"></div>
 
 			<div style="--d:none; --w:42rem" />
 			<div style="--d:none; --w:32rem" />

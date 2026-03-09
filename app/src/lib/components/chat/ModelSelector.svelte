@@ -1,9 +1,12 @@
 <script lang="ts">
-	import { models, showSettings, settings, user, mobile, config } from '$lib/stores';
+	import { models, showSettings, settings, user, mobile, config, temporaryChatEnabled } from '$lib/stores';
 	import { onMount, tick, getContext } from 'svelte';
 	import { toast } from 'svelte-sonner';
+	import { goto } from '$app/navigation';
 	import Selector from './ModelSelector/Selector.svelte';
 	import Tooltip from '../common/Tooltip.svelte';
+	import Switch from '../common/Switch.svelte';
+	import ChatBubbleOval from '../icons/ChatBubbleOval.svelte';
 
 	import { updateUserSettings } from '$lib/apis/users';
 	const i18n = getContext('i18n');
@@ -43,6 +46,14 @@
 			$models.map((m) => m.id).includes(model) ? model : ''
 		);
 	}
+
+	$: isAlreadyDefault = selectedModels.length === ($settings?.models ?? ['']).length &&
+		selectedModels.every((m, i) => m === ($settings?.models ?? [''])[i]);
+
+	$: showTemporaryChatControl = $user?.role === 'user'
+		? ($user?.permissions?.chat?.temporary ?? true) &&
+			!($user?.permissions?.chat?.temporary_enforced ?? false)
+		: true;
 </script>
 
 <div style="--d:flex; --fd:column; --w:100%; --ai:flex-start">
@@ -60,10 +71,6 @@
 							label: model.name,
 							model: model
 						}))}
-						showTemporaryChatControl={$user?.role === 'user'
-							? ($user?.permissions?.chat?.temporary ?? true) &&
-								!($user?.permissions?.chat?.temporary_enforced ?? false)
-							: true}
 						{pinModelHandler}
 						bind:value={selectedModel}
 					/>
@@ -133,9 +140,37 @@
 
 {#if showSetDefault}
 	<div
-		style="--pos:absolute; --ta:left; --mt:1px; --ml:0.25rem; --size:0.7rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
+		style="--pos:absolute; --ta:left; --mt:-0.6rem; --ml:0.4rem; --size:0.7rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); {isAlreadyDefault ? '--d:none;' : ''}"
 	class="font-primary"
 	>
 		<button on:click={saveDefaultModel}> {$i18n.t('Set as default')}</button>
+	</div>
+{/if}
+
+{#if showTemporaryChatControl}
+	<div style="--mt:0.25rem; --ml:0.25rem">
+		<button
+			style="--d:flex; --jc:space-between; --ai:center; --g:0.5rem; --size:0.7rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); --cur:pointer; --bgc:transparent; --oe:none"
+			class="font-primary"
+			on:click={async () => {
+				temporaryChatEnabled.set(!$temporaryChatEnabled);
+				await goto('/');
+				const newChatButton = document.getElementById('new-chat-button');
+				setTimeout(() => {
+					newChatButton?.click();
+				}, 0);
+				if ($temporaryChatEnabled) {
+					history.replaceState(null, '', '?temporary-chat=true');
+				} else {
+					history.replaceState(null, '', location.pathname);
+				}
+			}}
+		>
+			<div style="--d:flex; --g:0.375rem; --ai:center">
+				<ChatBubbleOval className="size-3" strokeWidth="2.5" />
+				{$i18n.t('Temporary Chat')}
+			</div>
+			<Switch state={$temporaryChatEnabled} />
+		</button>
 	</div>
 {/if}
