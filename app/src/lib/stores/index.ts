@@ -98,6 +98,7 @@ type BaseModel = {
 	name: string;
 	info?: ModelConfig;
 	owned_by: 'ollama' | 'openai' | 'arena';
+	preset?: boolean;
 };
 
 export interface OpenAIModel extends BaseModel {
@@ -250,6 +251,7 @@ type Config = {
 	default_locale: string;
 	default_models: string;
 	default_prompt_suggestions: PromptSuggestion[];
+	default_model_selector_filter?: string;
 	features: {
 		auth: boolean;
 		auth_trusted_header: boolean;
