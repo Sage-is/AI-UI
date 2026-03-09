@@ -53,6 +53,9 @@ export const tags = writable([]);
 
 export const selectedFolder = writable(null);
 
+export const sharedWithMeChats = writable([]);
+export const sharedByMeChats = writable([]);
+
 export const models: Writable<Model[]> = writable([]);
 
 export const prompts: Writable<null | Prompt[]> = writable(null);

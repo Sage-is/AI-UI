@@ -37,6 +37,7 @@
 	export let shareEnabled: boolean = false;
 	export let shareHandler: Function;
 	export let downloadHandler: Function;
+	export let hasShareTargets: boolean = false;
 
 	// export let tagHandler: Function;
 
@@ -271,19 +272,39 @@
 						shareHandler();
 					}}
 				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						viewBox="0 0 24 24"
-						fill="currentColor"
-						style="--w:1rem; --h:1rem"
-					>
-						<path
-							fill-rule="evenodd"
-							d="M15.75 4.5a3 3 0 1 1 .825 2.066l-8.421 4.679a3.002 3.002 0 0 1 0 1.51l8.421 4.679a3 3 0 1 1-.729 1.31l-8.421-4.678a3 3 0 1 1 0-4.132l8.421-4.679a3 3 0 0 1-.096-.755Z"
-							clip-rule="evenodd"
-						/>
-					</svg>
-					<div style="--d:flex; --ai:center">{$i18n.t('Share')}</div>
+					{#if hasShareTargets}
+						<!-- Circled share icon when already shared -->
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							style="--w:1rem; --h:1rem; --c:var(--color-green-600); --dark-c:var(--color-green-400)"
+						>
+							<circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="2.5" />
+							<g transform="translate(-2.5, 1)">
+								<path
+									fill-rule="evenodd"
+									d="M15.75 7.5a1.5 1.5 0 1 1 .412 1.033l-4.21 2.34a1.501 1.501 0 0 1 0 .754l4.21 2.34a1.5 1.5 0 1 1-.364.655l-4.21-2.34a1.5 1.5 0 1 1 0-2.064l4.21-2.34A1.5 1.5 0 0 1 15.75 7.5Z"
+									clip-rule="evenodd"
+								/>
+							</g>
+						</svg>
+						<div style="--d:flex; --ai:center; --c:var(--color-green-600); --dark-c:var(--color-green-400)">{$i18n.t('Shared')}</div>
+					{:else}
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							style="--w:1rem; --h:1rem"
+						>
+							<path
+								fill-rule="evenodd"
+								d="M15.75 4.5a3 3 0 1 1 .825 2.066l-8.421 4.679a3.002 3.002 0 0 1 0 1.51l8.421 4.679a3 3 0 1 1-.729 1.31l-8.421-4.678a3 3 0 1 1 0-4.132l8.421-4.679a3 3 0 0 1-.096-.755Z"
+								clip-rule="evenodd"
+							/>
+						</svg>
+						<div style="--d:flex; --ai:center">{$i18n.t('Share')}</div>
+					{/if}
 				</DropdownMenu.Item>
 			{/if}
 

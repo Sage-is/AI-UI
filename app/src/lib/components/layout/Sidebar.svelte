@@ -24,7 +24,9 @@
 		isApp,
 		models,
 		selectedFolder,
-		folderCollapseAllTrigger
+		folderCollapseAllTrigger,
+		sharedWithMeChats,
+		sharedByMeChats
 	} from '$lib/stores';
 	import { slide } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
@@ -61,7 +63,10 @@
 	import Tooltip from '../common/Tooltip.svelte';
 	import Folders from './Sidebar/Folders.svelte';
 	import { getChannels, createNewChannel } from '$lib/apis/spaces';
+	import { getChatsSharedWithMe, getChatsSharedByMe } from '$lib/apis/chat-shares';
 	import ChannelModal from './Sidebar/ChannelModal.svelte';
+	import SharedWithMeList from './Sidebar/SharedWithMeList.svelte';
+	import SharedByMeList from './Sidebar/SharedByMeList.svelte';
 	import ChannelItem from './Sidebar/ChannelItem.svelte';
 	import PencilSquare from '../icons/PencilSquare.svelte';
 	import Home from '../icons/Home.svelte';
@@ -82,6 +87,8 @@
 	let pinnedDraggedOver = false;
 
 	let showCreateChannel = false;
+	let showSharedWithMe = false;
+	let showSharedByMe = false;
 
 	// Pagination variables
 	let chatListLoading = false;
@@ -185,6 +192,7 @@
 		tags.set(await getAllTags(localStorage.token));
 		pinnedChats.set(await getPinnedChatList(localStorage.token));
 		initFolders();
+		initSharedChats();
 
 		currentChatPage.set(1);
 		allChatsLoaded = false;
@@ -193,6 +201,19 @@
 
 		// Enable pagination
 		scrollPaginationEnabled.set(true);
+	};
+
+	const initSharedChats = async () => {
+		try {
+			sharedWithMeChats.set(await getChatsSharedWithMe(localStorage.token));
+		} catch {
+			sharedWithMeChats.set([]);
+		}
+		try {
+			sharedByMeChats.set(await getChatsSharedByMe(localStorage.token));
+		} catch {
+			sharedByMeChats.set([]);
+		}
 	};
 
 	const loadMoreChats = async () => {
@@ -435,6 +456,8 @@
 
 	onMount(async () => {
 		showPinnedChat = localStorage?.showPinnedChat ? localStorage.showPinnedChat === 'true' : true;
+		showSharedWithMe = localStorage?.showSharedWithMe ? localStorage.showSharedWithMe === 'true' : false;
+		showSharedByMe = localStorage?.showSharedByMe ? localStorage.showSharedByMe === 'true' : false;
 		loadCollapsedDateGroups();
 
 		// Load branding for sidebar logo
@@ -941,8 +964,8 @@
 					}
 				}}
 			>
-				<!-- Toggle icon bar: folders, pinned, dates -->
-				{#if Object.keys(folders).length > 0 || $pinnedChats.length > 0 || groupedChats.length > 0}
+				<!-- Toggle icon bar: folders, pinned, dates, shared -->
+				{#if Object.keys(folders).length > 0 || $pinnedChats.length > 0 || groupedChats.length > 0 || $sharedByMeChats.length > 0 || $sharedWithMeChats.length > 0}
 					<div
 						style="--d:flex; --ai:center; --g:0.25rem; --px:0.4rem; --pt:0.25rem; --pb:0.125rem"
 					>
@@ -1044,6 +1067,72 @@
 										/>
 									</svg>
 									{#if allDateGroupsCollapsed}
+										<ChevronDown className="size-2.5" strokeWidth="2.5" />
+									{:else}
+										<ChevronRight className="size-2.5" strokeWidth="2.5" />
+									{/if}
+								</button>
+							</Tooltip>
+						{/if}
+
+						{#if $sharedByMeChats.length > 0}
+							<Tooltip content={showSharedByMe ? $i18n.t('Hide Shared by Me') : $i18n.t('Show Shared by Me')}>
+								<button
+									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.25rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-300); --tn:color 150ms ease"
+									on:click={() => {
+										showSharedByMe = !showSharedByMe;
+										localStorage.setItem('showSharedByMe', String(showSharedByMe));
+									}}
+								>
+									<!-- Share/outgoing arrow icon -->
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke-width="2"
+										stroke="currentColor"
+										style="--w:0.875rem; --h:0.875rem"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"
+										/>
+									</svg>
+									{#if showSharedByMe}
+										<ChevronDown className="size-2.5" strokeWidth="2.5" />
+									{:else}
+										<ChevronRight className="size-2.5" strokeWidth="2.5" />
+									{/if}
+								</button>
+							</Tooltip>
+						{/if}
+
+						{#if $sharedWithMeChats.length > 0}
+							<Tooltip content={showSharedWithMe ? $i18n.t('Hide Shared with Me') : $i18n.t('Show Shared with Me')}>
+								<button
+									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.25rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-300); --tn:color 150ms ease"
+									on:click={() => {
+										showSharedWithMe = !showSharedWithMe;
+										localStorage.setItem('showSharedWithMe', String(showSharedWithMe));
+									}}
+								>
+									<!-- Envelope icon -->
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke-width="2"
+										stroke="currentColor"
+										style="--w:0.875rem; --h:0.875rem"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
+										/>
+									</svg>
+									{#if showSharedWithMe}
 										<ChevronDown className="size-2.5" strokeWidth="2.5" />
 									{:else}
 										<ChevronRight className="size-2.5" strokeWidth="2.5" />
@@ -1159,6 +1248,36 @@
 									}}
 								/>
 							{/each}
+						</div>
+					</div>
+				{/if}
+
+				<!-- Shared by me (toggled via icon bar) -->
+				{#if $sharedByMeChats.length > 0 && showSharedByMe}
+					<div
+						transition:slide={{ duration: 200, easing: quintOut }}
+						style="--d:flex; --fd:column"
+					>
+						<div
+							style="--ml:0.75rem; --pl:0.25rem; --mt:1px; --d:flex; --fd:column; --ofy:auto; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-900)"
+							class="scrollbar-hidden border-s"
+						>
+							<SharedByMeList items={$sharedByMeChats} />
+						</div>
+					</div>
+				{/if}
+
+				<!-- Shared with me (toggled via icon bar) -->
+				{#if $sharedWithMeChats.length > 0 && showSharedWithMe}
+					<div
+						transition:slide={{ duration: 200, easing: quintOut }}
+						style="--d:flex; --fd:column"
+					>
+						<div
+							style="--ml:0.75rem; --pl:0.25rem; --mt:1px; --d:flex; --fd:column; --ofy:auto; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-900)"
+							class="scrollbar-hidden border-s"
+						>
+							<SharedWithMeList items={$sharedWithMeChats} />
 						</div>
 					</div>
 				{/if}
