@@ -8,6 +8,10 @@ endif
 GIT_REPO_SLUG := $(shell git remote get-url origin 2>/dev/null | sed -E 's|.*[:/]([^/]+/[^/]+?)(\.git)?$$|\1|' | tr '[:upper:]' '[:lower:]')
 
 # Configuration variables with defaults (override with .env file)
+# Variables using ?= are only set if not already defined — so any value in
+# .env (loaded above) takes priority.  This lets existing installs keep their
+# current VOLUME_DATA (e.g. "sage-open-webui:/app/backend/data") while fresh
+# installs get the new default.
 IMAGE_NAME ?= $(GIT_REPO_SLUG)
 GHCR_IMAGE_NAME ?= ghcr.io/$(GIT_REPO_SLUG)
 GIT_TAG := $(shell git tag --sort=-v:refname | sed 's/^v//' | head -n 1)
