@@ -19,6 +19,8 @@
 	import { slide } from 'svelte/transition';
 	import { page } from '$app/stores';
 
+	import { getChatShareTargets } from '$lib/apis/chat-shares';
+
 	import ShareChatModal from '../chat/ShareChatModal.svelte';
 	import ModelSelector from '../chat/ModelSelector.svelte';
 	import Tooltip from '../common/Tooltip.svelte';
@@ -46,6 +48,15 @@
 
 	let showShareChatModal = false;
 	let showDownloadChatModal = false;
+	let hasShareTargets = false;
+
+	$: if ($chatId && shareEnabled) {
+		getChatShareTargets(localStorage.token, $chatId)
+			.then((targets) => { hasShareTargets = targets && targets.length > 0; })
+			.catch(() => { hasShareTargets = false; });
+	} else {
+		hasShareTargets = false;
+	}
 </script>
 
 <ShareChatModal bind:show={showShareChatModal} chatId={$chatId} />
@@ -131,6 +142,7 @@
 						<Menu
 							{chat}
 							{shareEnabled}
+							{hasShareTargets}
 							shareHandler={() => {
 								showShareChatModal = !showShareChatModal;
 							}}
@@ -138,27 +150,35 @@
 								showDownloadChatModal = !showDownloadChatModal;
 							}}
 						>
-							<button
-								style="--d:flex; --cur:pointer; --px:0.5rem; --py:0.5rem; --radius:0.75rem; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
-								id="chat-context-menu-button"
-							>
-								<div style="--m:auto; --as:center">
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										fill="none"
-										viewBox="0 0 24 24"
-										stroke-width="1.5"
-										stroke="currentColor"
-										style="--w:1.25rem; --h:1.25rem"
-									>
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
-										/>
-									</svg>
-								</div>
-							</button>
+							<div style="--pos:relative; --d:inline-flex">
+								<button
+									style="--d:flex; --cur:pointer; --px:0.5rem; --py:0.5rem; --radius:0.75rem; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+									id="chat-context-menu-button"
+								>
+									<div style="--m:auto; --as:center">
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											fill="none"
+											viewBox="0 0 24 24"
+											stroke-width="1.5"
+											stroke="currentColor"
+											style="--w:1.25rem; --h:1.25rem"
+										>
+											<path
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
+											/>
+										</svg>
+									</div>
+								</button>
+								{#if hasShareTargets}
+									<div
+										style="--pos:absolute; --top:0.25rem; --right:0.25rem; --w:0.5rem; --h:0.5rem; --radius:9999px; --bgc:var(--color-green-500); --dark-bgc:var(--color-green-400); --bs:solid; --bw:1.5px; --bc:#fff; --dark-bc:var(--color-gray-850)"
+										title={$i18n.t('Shared with people')}
+									/>
+								{/if}
+							</div>
 						</Menu>
 					{/if}
 

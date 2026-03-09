@@ -541,6 +541,17 @@ class ChatTable:
         except Exception:
             return None
 
+    def get_link_shared_chats_by_user_id(self, user_id: str) -> list[ChatModel]:
+        with get_db() as db:
+            return [
+                ChatModel.model_validate(chat)
+                for chat in db.query(Chat)
+                .filter_by(user_id=user_id)
+                .filter(Chat.share_id.isnot(None))
+                .order_by(Chat.updated_at.desc())
+                .all()
+            ]
+
     def get_chat_by_id_and_user_id(self, id: str, user_id: str) -> Optional[ChatModel]:
         try:
             with get_db() as db:

@@ -71,6 +71,7 @@ from sage_is_ai.routers import (
     tasks,
     auths,
     channels,
+    chat_shares,
     chats,
     notes,
     folders,
@@ -1188,6 +1189,9 @@ app.include_router(users.router, prefix="/api/v1/users", tags=["users"])
 
 app.include_router(channels.router, prefix="/api/v1/channels", tags=["channels"])
 app.include_router(bridges.router, prefix="/api/v1/bridges", tags=["bridges"])
+app.include_router(
+    chat_shares.router, prefix="/api/v1/chats", tags=["chat-shares"]
+)
 app.include_router(chats.router, prefix="/api/v1/chats", tags=["chats"])
 app.include_router(notes.router, prefix="/api/v1/notes", tags=["notes"])
 
