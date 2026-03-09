@@ -1088,6 +1088,12 @@ MODEL_ORDER_LIST = PersistentConfig(
     [],
 )
 
+DEFAULT_MODEL_SELECTOR_FILTER = PersistentConfig(
+    "DEFAULT_MODEL_SELECTOR_FILTER",
+    "ui.default_model_selector_filter",
+    os.environ.get("DEFAULT_MODEL_SELECTOR_FILTER", "agents"),
+)
+
 DEFAULT_USER_ROLE = PersistentConfig(
     "DEFAULT_USER_ROLE",
     "ui.default_user_role",

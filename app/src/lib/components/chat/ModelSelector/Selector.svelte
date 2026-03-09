@@ -44,7 +44,7 @@
 	export let value = '';
 	export let placeholder = 'Select a model';
 	export let searchEnabled = true;
-	export let searchPlaceholder = $i18n.t('Search for a model');
+	export let searchPlaceholder = $i18n.t('Search for an agent or model');
 
 	export let showTemporaryChatControl = false;
 
@@ -74,7 +74,12 @@
 	let searchValue = '';
 
 	let selectedTag = '';
-	let selectedConnectionType = '';
+	let selectedConnectionType = $config?.default_model_selector_filter ?? 'agents';
+
+	// If 'agents' is selected but no agents exist, fall back to 'All'
+	$: if (selectedConnectionType === 'agents' && !items.find((item) => item.model?.preset)) {
+		selectedConnectionType = '';
+	}
 
 	let ollamaVersion = null;
 	let selectedModelIdx = 0;
@@ -111,6 +116,8 @@
 					.filter((item) => {
 						if (selectedConnectionType === '') {
 							return true;
+						} else if (selectedConnectionType === 'agents') {
+							return item.model?.preset === true;
 						} else if (selectedConnectionType === 'local') {
 							return item.model?.connection_type === 'local';
 						} else if (selectedConnectionType === 'external') {
@@ -129,6 +136,8 @@
 					.filter((item) => {
 						if (selectedConnectionType === '') {
 							return true;
+						} else if (selectedConnectionType === 'agents') {
+							return item.model?.preset === true;
 						} else if (selectedConnectionType === 'local') {
 							return item.model?.connection_type === 'local';
 						} else if (selectedConnectionType === 'external') {
@@ -457,6 +466,21 @@
 									}}
 								>
 									{$i18n.t('All')}
+								</button>
+							{/if}
+
+							{#if items.find((item) => item.model?.preset)}
+								<button
+									style="--minw:fit-content; --oe:2px solid transparent; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize"
+	class="{selectedConnectionType === 'agents'
+										? ''
+										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+									on:click={() => {
+										selectedTag = '';
+										selectedConnectionType = 'agents';
+									}}
+								>
+									{$i18n.t('Agents')}
 								</button>
 							{/if}
 

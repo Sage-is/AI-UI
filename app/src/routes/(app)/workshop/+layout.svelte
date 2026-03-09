@@ -86,7 +86,7 @@
 								class={$page.url.pathname.includes('/workshop/models')
 									? ''
 									: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}
-								href="/workshop/models">{$i18n.t('Models')}</a
+								href="/workshop/models">{$i18n.t('Agents')}</a
 							>
 						{/if}
 

@@ -86,7 +86,8 @@
 
 		const res = await setModelsConfig(localStorage.token, {
 			DEFAULT_MODELS: defaultModelIds.join(','),
-			MODEL_ORDER_LIST: modelIds
+			MODEL_ORDER_LIST: modelIds,
+			DEFAULT_MODEL_SELECTOR_FILTER: config?.DEFAULT_MODEL_SELECTOR_FILTER ?? 'agents'
 		});
 
 		if (res) {
@@ -187,6 +188,29 @@
 								</button>
 
 								<ModelList bind:modelIds />
+							</div>
+						</div>
+
+						<hr style="--bc:var(--color-gray-100); --dark-bc:rgb(78 78 78 / 0.1); --my:0.625rem; --w:100%" />
+
+						<div>
+							<div style="--d:flex; --fd:column; --w:100%">
+								<div style="--mb:0.25rem; --d:flex; --jc:space-between">
+									<div style="--size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Default Selector Filter')}</div>
+								</div>
+
+								<div style="--d:flex; --ai:center; --mr:-0.25rem">
+									<select
+										style="--w:100%; --py:0.25rem; --size:0.875rem; --radius:0.5rem; --bgc:transparent; --oe:none"
+										bind:value={config.DEFAULT_MODEL_SELECTOR_FILTER}
+									>
+										<option value="">{$i18n.t('All')}</option>
+										<option value="agents">{$i18n.t('Agents')}</option>
+										<option value="local">{$i18n.t('Local')}</option>
+										<option value="external">{$i18n.t('External')}</option>
+										<option value="direct">{$i18n.t('Direct')}</option>
+									</select>
+								</div>
 							</div>
 						</div>
 

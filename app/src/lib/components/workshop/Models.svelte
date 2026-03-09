@@ -239,7 +239,7 @@
 
 <svelte:head>
 	<title>
-		{$i18n.t('Models')} • {$WEBUI_NAME}
+		{$i18n.t('Agents')} • {$WEBUI_NAME}
 	</title>
 </svelte:head>
 
@@ -254,7 +254,7 @@
 	<div style="--d:flex; --fd:column; --g:0.25rem; --mt:0.375rem">
 		<div style="--d:flex; --jc:space-between; --ai:center">
 			<div style="--d:flex; --ai:center; --as-md:center; --size:1.25rem; --weight:500; --px:0.125rem">
-				{$i18n.t('Models')}
+				{$i18n.t('Agents')}
 				<div style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)" />
 				<span style="--size:1.125rem; --weight:500; --c:var(--color-gray-500); --dark-c:var(--color-gray-300)"
 					>{filteredModels.length}</span
@@ -576,7 +576,7 @@
 						modelsImportInputElement.click();
 					}}
 				>
-					<div style="--as:center; --mr:0.5rem; --weight:500; --line-clamp:1">{$i18n.t('Import Models')}</div>
+					<div style="--as:center; --mr:0.5rem; --weight:500; --line-clamp:1">{$i18n.t('Import Agents')}</div>
 
 					<div style="--as:center">
 						<svg
@@ -602,7 +602,7 @@
 						}}
 					>
 						<div style="--as:center; --mr:0.5rem; --weight:500; --line-clamp:1">
-							{$i18n.t('Export Models')} ({models.length})
+							{$i18n.t('Export Agents')} ({models.length})
 						</div>
 
 						<div style="--as:center">
@@ -637,9 +637,9 @@
 				target="_blank"
 			>
 				<div style="--as:center">
-					<div style="--weight:600; --line-clamp:1">{$i18n.t('Discover a model')}</div>
+					<div style="--weight:600; --line-clamp:1">{$i18n.t('Discover your next agent')}</div>
 					<div style="--size:0.875rem; --line-clamp:1">
-						{$i18n.t('Discover, download, and explore model presets')}
+						{$i18n.t('Discover, download, and explore agents')}
 					</div>
 				</div>
 
