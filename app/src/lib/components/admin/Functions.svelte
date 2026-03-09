@@ -579,7 +579,7 @@
 			target="_blank"
 		>
 			<div style="--as:center">
-				<div style="--weight:600; --line-clamp:1">{$i18n.t('Discover a function')}</div>
+				<div style="--weight:600; --line-clamp:1">{$i18n.t('Discover your next function')}</div>
 				<div style="--size:0.875rem; --line-clamp:1">
 					{$i18n.t('Discover, download, and explore custom functions')}
 				</div>
