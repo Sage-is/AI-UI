@@ -77,6 +77,7 @@
 
 	let editor = null;
 	let note = null;
+	let title = '';
 
 	const newNote = {
 		title: '',
@@ -138,6 +139,7 @@
 
 		if (res) {
 			note = res;
+			title = res.title || '';
 			files = res.data.files || [];
 		} else {
 			goto('/');
@@ -149,22 +151,26 @@
 
 	let debounceTimeout: NodeJS.Timeout | null = null;
 
+	const saveNote = async () => {
+		const titleToSave = title === '' ? $i18n.t('Untitled') : title;
+		note.title = titleToSave;
+		await updateNoteById(localStorage.token, id, {
+			title: titleToSave,
+			data: {
+				files: files
+			},
+			access_control: note?.access_control
+		}).catch((e) => {
+			toast.error(`${e}`);
+		});
+	};
+
 	const changeDebounceHandler = () => {
 		if (debounceTimeout) {
 			clearTimeout(debounceTimeout);
 		}
 
-		debounceTimeout = setTimeout(async () => {
-			const res = await updateNoteById(localStorage.token, id, {
-				title: note?.title === '' ? $i18n.t('Untitled') : note.title,
-				data: {
-					files: files
-				},
-				access_control: note?.access_control
-			}).catch((e) => {
-				toast.error(`${e}`);
-			});
-		}, 200);
+		debounceTimeout = setTimeout(saveNote, 500);
 	};
 
 	$: if (id) {
@@ -221,8 +227,8 @@ JSON format: { "title": "your concise title here" }
 ${content}
 </content>`;
 
-		const oldTitle = JSON.parse(JSON.stringify(note.title));
-		note.title = '';
+		const oldTitle = title;
+		title = '';
 		titleGenerating = true;
 
 		const res = await generateOpenAIChatCompletion(
@@ -252,7 +258,7 @@ ${content}
 					const parsed = JSON.parse(jsonResponse);
 
 					if (parsed && parsed.title) {
-						note.title = parsed.title.trim();
+						title = parsed.title.trim();
 					}
 				}
 			} catch (e) {
@@ -261,9 +267,10 @@ ${content}
 			}
 		}
 
-		if (!note.title) {
-			note.title = oldTitle;
+		if (!title) {
+			title = oldTitle;
 		}
+		note.title = title;
 
 		titleGenerating = false;
 		await tick();
@@ -548,10 +555,10 @@ ${content}
 		console.log('downloadHandler', type);
 		if (type === 'txt') {
 			const blob = new Blob([note.data.content.md], { type: 'text/plain' });
-			saveAs(blob, `${note.title}.txt`);
+			saveAs(blob, `${title}.txt`);
 		} else if (type === 'md') {
 			const blob = new Blob([note.data.content.md], { type: 'text/markdown' });
-			saveAs(blob, `${note.title}.md`);
+			saveAs(blob, `${title}.md`);
 		} else if (type === 'pdf') {
 			await downloadPdf(note);
 		}
@@ -733,16 +740,25 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 		console.log('noteEventHandler', _note);
 		if (_note.id !== id) return;
 
-		if (_note.access_control && _note.access_control !== note.access_control) {
+		if (
+			_note.access_control &&
+			JSON.stringify(_note.access_control) !== JSON.stringify(note.access_control)
+		) {
 			note.access_control = _note.access_control;
 		}
 
-		if (_note.data && _note.data.files) {
+		if (
+			_note.data &&
+			_note.data.files &&
+			JSON.stringify(_note.data.files) !== JSON.stringify(files)
+		) {
 			files = _note.data.files;
 			note.data.files = files;
 		}
 
-		if (_note.title && _note.title) {
+		// Skip title update while user is editing
+		if (_note.title && !titleInputFocused) {
+			title = _note.title;
 			note.title = _note.title;
 		}
 
@@ -816,8 +832,8 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 
 <svelte:head>
 	<title>
-		{note?.title
-			? `${note?.title.length > 30 ? `${note?.title.slice(0, 30)}...` : note?.title} • ${$WEBUI_NAME}`
+		{title
+			? `${title.length > 30 ? `${title.slice(0, 30)}...` : title} • ${$WEBUI_NAME}`
 			: `${$WEBUI_NAME}`}
 	</title>
 </svelte:head>
@@ -844,13 +860,20 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 	}}
 >
 	<div style="--size:0.875rem; --c:var(--color-gray-500)">
-		{$i18n.t('This will delete')} <span style="--weight:600">{note.title}</span>.
+		{$i18n.t('This will delete')} <span style="--weight:600">{title}</span>.
 	</div>
 </DeleteConfirmDialog>
 
 <PaneGroup direction="horizontal" style="--w:100%; --h:100%">
-	<Pane defaultSize={70} minSize={30} style="--h:100%; --d:flex; --fd:column; --w:100%; --pos:relative">
-		<div style="--pos:relative; --fx:1 1 0%; --w:100%; --h:100%; --d:flex; --jc:center; --pt:11px" id="note-editor">
+	<Pane
+		defaultSize={70}
+		minSize={30}
+		style="--h:100%; --d:flex; --fd:column; --w:100%; --pos:relative"
+	>
+		<div
+			style="--pos:relative; --fx:1 1 0%; --w:100%; --h:100%; --d:flex; --jc:center; --pt:11px"
+			id="note-editor"
+		>
 			{#if loading}
 				<div style="--pos:absolute; --top:0; --bottom:0; --left:0; --right:0; --d:flex">
 					<div style="--m:auto">
@@ -858,18 +881,17 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 					</div>
 				</div>
 			{:else}
-				<div style="--w:100%; --d:flex; --fd:column"
-	class="{loading ? 'opacity-20' : ''}">
+				<div style="--w:100%; --d:flex; --fd:column" class={loading ? 'opacity-20' : ''}>
 					<div
 						style="--fs:0; --w:100%; --d:flex; --jc:space-between; --ai:center; --px:0.875rem; --mb:0.375rem"
 						id="note-header"
 					>
 						<div style="--w:100%; --d:flex; --ai:center">
 							<div
-								style="--d:flex; --fx:none; --ai:center; --pr:0.25rem; --translatex:-0.25rem; {$showSidebar ? '--d:none' : ''}"
-	class="{$showSidebar
-									? 'md:hidden pl-0.5'
+								style="--d:flex; --fx:none; --ai:center; --pr:0.25rem; --translatex:-0.25rem; {$showSidebar
+									? '--d:none'
 									: ''}"
+								class={$showSidebar ? 'md:hidden pl-0.5' : ''}
 							>
 								<button
 									id="sidebar-toggle-button"
@@ -887,58 +909,63 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 
 							<input
 								id="note-title-input"
-								style="--w:100%; --size:1.5rem; --weight:500; --bgc:transparent; --oe:none"
+								style="--w:100%; --size:1.5rem; --weight:500; --bgc:transparent; --oe:none; --b:none"
 								type="text"
-								bind:value={note.title}
+								bind:value={title}
 								placeholder={titleGenerating ? $i18n.t('Generating...') : $i18n.t('Title')}
 								disabled={(note?.user_id !== $user?.id && $user?.role !== 'admin') ||
 									titleGenerating}
 								required
-								on:input={changeDebounceHandler}
 								on:focus={() => {
 									titleInputFocused = true;
 								}}
-								on:blur={(e) => {
-									// check if target is generate button
-									if (e.relatedTarget?.id === 'generate-title-button') {
-										return;
-									}
-
+								on:blur={async (e) => {
+									// Don't blur if clicking the generate button
+									if (e.relatedTarget?.id === 'generate-title-button') return;
+									await saveNote();
 									titleInputFocused = false;
-									changeDebounceHandler();
 								}}
 							/>
 
-							{#if titleInputFocused && !titleGenerating}
-								<div
-									style="--d:flex; --as:center; --ai:center; --g:0.375rem; --z:10; --translatey:0.5px; --translatex:-0.5px; --pl:0.5rem"
-								>
-									<Tooltip content={$i18n.t('Generate')}>
-										<button
-											style="--as:center; --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
-											id="generate-title-button"
-											on:click={(e) => {
-												e.preventDefault();
-												e.stopImmediatePropagation();
-												e.stopPropagation();
+							<div
+								style="--d:flex; 
+									--as:center; 
+									--ai:center; 
+									--g:0.375rem; 
+									--pl:0.5rem; 
+								{titleInputFocused && !titleGenerating ? '' : '--d:none; --pe:none; --w:0; --overflow:hidden'}"
+							>
+								<Tooltip content={$i18n.t('Generate')}>
+									<button
+										style="--as:center; --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+										id="generate-title-button"
+										on:click={(e) => {
+											e.preventDefault();
+											e.stopImmediatePropagation();
+											e.stopPropagation();
 
-												generateTitleHandler();
-												titleInputFocused = false;
-											}}
-										>
-											<Sparkles strokeWidth="2" />
-										</button>
-									</Tooltip>
-								</div>
-							{/if}
+											generateTitleHandler();
+											titleInputFocused = false;
+										}}
+									>
+										<Sparkles strokeWidth="2" />
+									</button>
+								</Tooltip>
+							</div>
 
-							<div style="--d:flex; --ai:center; --g:0.125rem; --translatex:0.25rem" id="note-controls">
+							<div
+								style="--d:flex; --ai:center; --g:0.125rem; --translatex:0.25rem"
+								id="note-controls"
+							>
 								{#if editor}
 									<div>
-										<div style="--d:flex; --ai:center; --g:0.125rem; --as:center; --minw:fit-content" dir="ltr">
+										<div
+											style="--d:flex; --ai:center; --g:0.125rem; --as:center; --minw:fit-content"
+											dir="ltr"
+										>
 											<button
 												style="--as:center; --p:0.25rem; --radius:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
-	class="hover:enabled:bg-black/5 dark:hover:enabled:bg-white/5 dark:hover:enabled:text-white hover:enabled:text-black disabled:cursor-not-allowed disabled:text-gray-500 disabled:hover:text-gray-500"
+												class="hover:enabled:bg-black/5 dark:hover:enabled:bg-white/5 dark:hover:enabled:text-white hover:enabled:text-black disabled:cursor-not-allowed disabled:text-gray-500 disabled:hover:text-gray-500"
 												on:click={() => {
 													editor.chain().focus().undo().run();
 													// versionNavigateHandler('prev');
@@ -950,7 +977,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 
 											<button
 												style="--as:center; --p:0.25rem; --radius:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
-	class="hover:enabled:bg-black/5 dark:hover:enabled:bg-white/5 dark:hover:enabled:text-white hover:enabled:text-black disabled:cursor-not-allowed disabled:text-gray-500 disabled:hover:text-gray-500"
+												class="hover:enabled:bg-black/5 dark:hover:enabled:bg-white/5 dark:hover:enabled:text-white hover:enabled:text-black disabled:cursor-not-allowed disabled:text-gray-500 disabled:hover:text-gray-500"
 												on:click={() => {
 													editor.chain().focus().redo().run();
 													// versionNavigateHandler('next');
@@ -1031,7 +1058,9 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 										showDeleteConfirm = true;
 									}}
 								>
-									<div style="--p:0.25rem; --bgc:transparent; --hvr-bgc:rgb(255 255 255 / 0.05); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem">
+									<div
+										style="--p:0.25rem; --bgc:transparent; --hvr-bgc:rgb(255 255 255 / 0.05); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
+									>
 										<EllipsisHorizontal className="size-5" />
 									</div>
 								</NoteMenu>
@@ -1042,7 +1071,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 					<div style="--px:0.625rem" id="note-meta-info">
 						<div
 							style="--d:flex; --w:100%; --bgc:transparent; --ofx:auto"
-	class="scrollbar-none"
+							class="scrollbar-none"
 							on:wheel={(e) => {
 								if (e.deltaY !== 0) {
 									e.preventDefault();
@@ -1053,7 +1082,9 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 							<div
 								style="--d:flex; --g:0.25rem; --ai:center; --size:0.75rem; --weight:500; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --w:fit-content"
 							>
-								<button style="--d:flex; --ai:center; --g:0.25rem; --w:fit-content; --py:0.25rem; --px:0.375rem; --radius:0.5rem; --minw:fit-content">
+								<button
+									style="--d:flex; --ai:center; --g:0.25rem; --w:fit-content; --py:0.25rem; --px:0.375rem; --radius:0.5rem; --minw:fit-content"
+								>
 									<Calendar className="size-3.5" strokeWidth="2" />
 
 									<!-- check for same date, yesterday, last week, and other -->
@@ -1116,9 +1147,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 						{#if editing}
 							<div
 								style="--w:100%; --h:100%; --pos:fixed; --top:0; --left:0; --d:flex; --ai:center; --jc:center; --z:10; --cur:not-allowed"
-	class="{streaming
-									? ''
-									: ' backdrop-blur-xs  bg-white/10 dark:bg-gray-900/10'}"
+								class={streaming ? '' : ' backdrop-blur-xs  bg-white/10 dark:bg-gray-900/10'}
 							></div>
 						{/if}
 
