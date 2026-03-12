@@ -910,7 +910,12 @@
 			element: element,
 			extensions: [
 				StarterKit.configure({
-					link: link
+					link: link,
+					// Disable extensions provided by CodeBlockLowlight and ListKit
+					codeBlock: false,
+					bulletList: false,
+					orderedList: false,
+					listItem: false
 				}),
 				Placeholder.configure({ placeholder }),
 				SelectionDecoration,
