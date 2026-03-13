@@ -35,7 +35,7 @@
 	<div
 		id="note-wrapper"
 		style="--d:flex; --fd:column; --w:100%; --h:100vh; --maxh:100dvh; --tdn:200ms; --ttf:cubic-bezier(0.4, 0, 0.2, 1); --maxw:100%; --transition:max-width var(--tdn) var(--ttf); {$showSidebar
-			? '--maxw:calc(100% - 260px)'
+			? '--maxw:calc(100% - 280px)'
 			: ''}"
 	>
 		<slot />
