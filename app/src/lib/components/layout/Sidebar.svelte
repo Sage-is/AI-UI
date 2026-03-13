@@ -456,7 +456,9 @@
 
 	onMount(async () => {
 		showPinnedChat = localStorage?.showPinnedChat ? localStorage.showPinnedChat === 'true' : true;
-		showSharedWithMe = localStorage?.showSharedWithMe ? localStorage.showSharedWithMe === 'true' : false;
+		showSharedWithMe = localStorage?.showSharedWithMe
+			? localStorage.showSharedWithMe === 'true'
+			: false;
 		showSharedByMe = localStorage?.showSharedByMe ? localStorage.showSharedByMe === 'true' : false;
 		loadCollapsedDateGroups();
 
@@ -599,11 +601,10 @@
 		}
 	}}
 />
-
 <div
 	bind:this={navElement}
 	id="sidebar"
-	style="--h:100vh; --maxh:100dvh; --minh:100vh; --us:none; --fs:0; --bgc:var(--color-gray-50); --c:var(--color-gray-900); --dark-bgc:var(--color-gray-950); --dark-c:var(--color-gray-200); --size:0.875rem; --pos:fixed; --z:50; --top:0; --left:0; --ofx:hidden"
+	style="--h:100dvh; --us:none; --fs:0; --bgc:var(--color-gray-50); --c:var(--color-gray-900); --dark-bgc:var(--color-gray-950); --dark-c:var(--color-gray-200); --size:0.875rem; --pos:fixed; --z:50; --top:0; --left:0; --ofx:hidden; --w:260px;"
 	class="{$showSidebar
 		? 'md:relative w-[260px] max-w-[260px]'
 		: '-translate-x-[260px] w-[0px]'} {$isApp
@@ -966,9 +967,7 @@
 			>
 				<!-- Toggle icon bar: folders, pinned, dates, shared -->
 				{#if Object.keys(folders).length > 0 || $pinnedChats.length > 0 || groupedChats.length > 0 || $sharedByMeChats.length > 0 || $sharedWithMeChats.length > 0}
-					<div
-						style="--d:flex; --ai:center; --g:0.25rem; --px:0.4rem; --pt:0.25rem; --pb:0.125rem"
-					>
+					<div style="--d:flex; --ai:center; --g:0.25rem; --px:0.4rem; --pt:0.25rem; --pb:0.125rem">
 						{#if $pinnedChats.length > 0}
 							<Tooltip content={showPinnedChat ? $i18n.t('Hide Pinned') : $i18n.t('Show Pinned')}>
 								<button
@@ -1076,7 +1075,11 @@
 						{/if}
 
 						{#if $sharedByMeChats.length > 0}
-							<Tooltip content={showSharedByMe ? $i18n.t('Hide Shared by Me') : $i18n.t('Show Shared by Me')}>
+							<Tooltip
+								content={showSharedByMe
+									? $i18n.t('Hide Shared by Me')
+									: $i18n.t('Show Shared by Me')}
+							>
 								<button
 									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.25rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-300); --tn:color 150ms ease"
 									on:click={() => {
@@ -1109,7 +1112,11 @@
 						{/if}
 
 						{#if $sharedWithMeChats.length > 0}
-							<Tooltip content={showSharedWithMe ? $i18n.t('Hide Shared with Me') : $i18n.t('Show Shared with Me')}>
+							<Tooltip
+								content={showSharedWithMe
+									? $i18n.t('Hide Shared with Me')
+									: $i18n.t('Show Shared with Me')}
+							>
 								<button
 									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.25rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-300); --tn:color 150ms ease"
 									on:click={() => {
@@ -1254,10 +1261,7 @@
 
 				<!-- Shared by me (toggled via icon bar) -->
 				{#if $sharedByMeChats.length > 0 && showSharedByMe}
-					<div
-						transition:slide={{ duration: 200, easing: quintOut }}
-						style="--d:flex; --fd:column"
-					>
+					<div transition:slide={{ duration: 200, easing: quintOut }} style="--d:flex; --fd:column">
 						<div
 							style="--ml:0.75rem; --pl:0.25rem; --mt:1px; --d:flex; --fd:column; --ofy:auto; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-900)"
 							class="scrollbar-hidden border-s"
@@ -1269,10 +1273,7 @@
 
 				<!-- Shared with me (toggled via icon bar) -->
 				{#if $sharedWithMeChats.length > 0 && showSharedWithMe}
-					<div
-						transition:slide={{ duration: 200, easing: quintOut }}
-						style="--d:flex; --fd:column"
-					>
+					<div transition:slide={{ duration: 200, easing: quintOut }} style="--d:flex; --fd:column">
 						<div
 							style="--ml:0.75rem; --pl:0.25rem; --mt:1px; --d:flex; --fd:column; --ofy:auto; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-900)"
 							class="scrollbar-hidden border-s"
@@ -1315,9 +1316,7 @@
 									class={groupIdx === 0 ? '' : 'pt-5'}
 									on:click={() => toggleDateGroup(group.timeRange)}
 								>
-									<div
-										style="--c:var(--color-gray-300); --dark-c:var(--color-gray-600); --fs:0"
-									>
+									<div style="--c:var(--color-gray-300); --dark-c:var(--color-gray-600); --fs:0">
 										{#if collapsedDateGroups[group.timeRange]}
 											<ChevronRight className="size-3" strokeWidth="2.5" />
 										{:else}
