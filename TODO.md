@@ -1,4 +1,15 @@
-## 🔥 Current Active Tasks (March 5, 2026)
+## 🔥 Current Active Tasks (March 12, 2026)
+
+### 🔴 Deployment Simplification & Homebrew Tap - HIGHEST PRIORITY
+- [x] Delete `docker-compositions/` (6 Ollama-specific overlay files)
+- [x] Delete `app/scripts/run-compose.sh` (replaced by Makefile targets)
+- [x] Create simplified root `docker-compose.yaml` (single-service, Podman-compatible)
+- [x] Update Makefile: `CONTAINER_RUNTIME` auto-detection (podman > docker), clean Ollama refs
+- [ ] **Tag release and push to GHCR** — `make minor_release` then `make it_build_multi_arch_push_GHCR`
+- [ ] **Verify image pullable** — `podman pull ghcr.io/sage-is/ai-ui:latest`
+- [ ] **Push `Sage-is/homebrew-apps` repo to GitHub** — Formula + `ai-ui` CLI wrapper created locally
+- [ ] **Update `sha256` in `Formula/ai-ui.rb`** after tagging v0.1.0 of homebrew-apps
+- [ ] CapRover one-click template (lower priority, `captain-definition` already works)
 
 ### 🔴 Knowledge Base Ingestion Modes + Admin Cleanup - HIGH PRIORITY
 - [ ] Simpler lost password/single sign on is needed as people forget passwords as they think their minds know how to hold them...

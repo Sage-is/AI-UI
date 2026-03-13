@@ -1,0 +1,18 @@
+services:
+  sage-ai:
+    build: .
+    image: ghcr.io/sage-is/ai-ui:${IMAGE_TAG:-latest}
+    container_name: ${CONTAINER_NAME:-sage-ai}
+    ports:
+      - "${PORT_MAPPING:-8080:8080}"
+    volumes:
+      - ${VOLUME_DATA:-sage-data:/app/backend/data}
+    env_file:
+      - path: .env
+        required: false
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    restart: unless-stopped
+
+volumes:
+  sage-data: {}
