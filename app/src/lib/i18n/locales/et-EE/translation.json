@@ -829,7 +829,7 @@
 	"Location access not allowed": "Asukoha juurdepääs pole lubatud",
 	"Lost": "Kaotanud",
 	"LTR": "LTR",
-	"Made by Sage.is AI Community": "Loodud Sage.is AI kogukonna poolt",
+	"Sage.is AI Community": "Loodud Sage.is AI kogukonna poolt",
 	"Make password visible in the user interface": "",
 	"Make sure to enclose them with": "Veenduge, et need on ümbritsetud järgmisega:",
 	"Make sure to export a workflow.json file as API format from ComfyUI.": "Veenduge, et ekspordite workflow.json faili API formaadis ComfyUI-st.",

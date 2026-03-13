@@ -829,7 +829,7 @@
 	"Location access not allowed": "Standortzugriff nicht erlaubt",
 	"Lost": "Verloren",
 	"LTR": "LTR",
-	"Made by Sage.is AI Community": "Von der OpenWebUI-Community",
+	"Sage.is AI Community": "Von der OpenWebUI-Community",
 	"Make password visible in the user interface": "Passwort im Benutzerinterface sichtbar machen",
 	"Make sure to enclose them with": "Umschließen Sie Variablen mit",
 	"Make sure to export a workflow.json file as API format from ComfyUI.": "Stellen Sie sicher, dass sie eine workflow.json-Datei im API-Format von ComfyUI exportieren.",

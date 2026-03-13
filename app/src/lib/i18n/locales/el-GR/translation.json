@@ -829,7 +829,7 @@
 	"Location access not allowed": "",
 	"Lost": "Χαμένος",
 	"LTR": "LTR",
-	"Made by Sage.is AI Community": "Δημιουργήθηκε από την Κοινότητα OpenWebUI",
+	"Sage.is AI Community": "Δημιουργήθηκε από την Κοινότητα OpenWebUI",
 	"Make password visible in the user interface": "",
 	"Make sure to enclose them with": "Βεβαιωθείτε ότι τα περικλείετε με",
 	"Make sure to export a workflow.json file as API format from ComfyUI.": "Βεβαιωθείτε ότι εξάγετε ένα αρχείο workflow.json ως μορφή API από το ComfyUI.",

@@ -829,7 +829,7 @@
 	"Location access not allowed": "Adgang til placering ikke tilladt",
 	"Lost": "Tabt",
 	"LTR": "LTR",
-	"Made by Sage.is AI Community": "Lavet af OpenWebUI Community",
+	"Sage.is AI Community": "Lavet af OpenWebUI Community",
 	"Make password visible in the user interface": "",
 	"Make sure to enclose them with": "Sørg for at omslutte dem med",
 	"Make sure to export a workflow.json file as API format from ComfyUI.": "Sørg for at eksportere en workflow.json-fil som API-format fra ComfyUI.",
