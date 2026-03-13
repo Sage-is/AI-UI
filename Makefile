@@ -4,6 +4,9 @@ ifneq (,$(wildcard ./.env))
     export
 endif
 
+# Auto-detect container runtime (prefer podman, fall back to docker)
+CONTAINER_RUNTIME ?= $(shell command -v podman 2>/dev/null || echo docker)
+
 # Derive org/repo from git remote (e.g. git@github.com:Sage-is/AI-UI.git -> sage-is/ai-ui)
 GIT_REPO_SLUG := $(shell git remote get-url origin 2>/dev/null | sed -E 's|.*[:/]([^/]+/[^/]+?)(\.git)?$$|\1|' | tr '[:upper:]' '[:lower:]')
 
@@ -87,23 +90,23 @@ DEV_RUN_ARGS := --rm -p $(PORT_MAPPING) \
 	--name $(CONTAINER_NAME)
 
 it_stop:
-	docker rm -f $(CONTAINER_NAME)
+	$(CONTAINER_RUNTIME) rm -f $(CONTAINER_NAME)
 
 it_clean:
-	docker system prune -f
-	docker builder prune --force
+	$(CONTAINER_RUNTIME) system prune -f
+	$(CONTAINER_RUNTIME) builder prune --force
 
 it_gone:
 	@echo "Forcefully stopping and removing $(CONTAINER_NAME)..."
-	docker stop $(CONTAINER_NAME) || true
-	docker rm -f $(CONTAINER_NAME) || true
+	$(CONTAINER_RUNTIME) stop $(CONTAINER_NAME) || true
+	$(CONTAINER_RUNTIME) rm -f $(CONTAINER_NAME) || true
 	@echo "Container $(CONTAINER_NAME) has been removed"
 
 # Build Docker Image with Branch Name
 it_build:
 	@echo "Building Docker image with BuildKit enabled..."
 	@export DOCKER_BUILDKIT=1 && \
-	docker build --load -t $(IMAGE_NAME):$(IMAGE_TAG) \
+	$(CONTAINER_RUNTIME) build --load -t $(IMAGE_NAME):$(IMAGE_TAG) \
 	            -t $(IMAGE_NAME):latest \
 	            -t $(IMAGE_NAME):$(IMAGE_TAG)-$(SAFE_GIT_BRANCH) \
 	            -t $(IMAGE_NAME):$(SAFE_GIT_BRANCH) \
@@ -114,7 +117,7 @@ it_build:
 it_build_no_cache:
 	@echo "Building Docker image without cache and with BuildKit enabled..."
 	@export DOCKER_BUILDKIT=1 && \
-	docker build --no-cache --load -t $(IMAGE_NAME):$(IMAGE_TAG) \
+	$(CONTAINER_RUNTIME) build --no-cache --load -t $(IMAGE_NAME):$(IMAGE_TAG) \
 	                     -t $(IMAGE_NAME):latest \
 	                     -t $(IMAGE_NAME):$(IMAGE_TAG)-$(SAFE_GIT_BRANCH) \
 	                     -t $(IMAGE_NAME):$(SAFE_GIT_BRANCH) \
@@ -131,15 +134,15 @@ build_slim:
 
 it_run_slim:
 	# Run the slim version of the image
-	docker run $(DOCKER_RUN_ARGS) $(IMAGE_NAME).slim:latest
+	$(CONTAINER_RUNTIME) run $(DOCKER_RUN_ARGS) $(IMAGE_NAME).slim:latest
 
 
 dev_run:
-	docker run $(DEV_RUN_ARGS) $(IMAGE_NAME):$(IMAGE_TAG) bash -c "/app/backend/restore_backup_start.sh dev" 
+	$(CONTAINER_RUNTIME) run $(DEV_RUN_ARGS) $(IMAGE_NAME):$(IMAGE_TAG) bash -c "/app/backend/restore_backup_start.sh dev"
 
 # Run targets
 it_run:
-	docker run $(DOCKER_RUN_ARGS) $(IMAGE_NAME):$(IMAGE_TAG)
+	$(CONTAINER_RUNTIME) run $(DOCKER_RUN_ARGS) $(IMAGE_NAME):$(IMAGE_TAG)
 
 # Combine build and dev run targets
 it_build_n_dev_run: it_build
@@ -292,7 +295,7 @@ WAHA_DASHBOARD_PASSWORD ?= admin
 
 waha_start:
 	@echo "Starting WAHA (WhatsApp HTTP API) on port $(WAHA_PORT)..."
-	docker run -d --rm \
+	$(CONTAINER_RUNTIME) run -d --rm \
 		--name $(WAHA_CONTAINER_NAME) \
 		-p $(WAHA_PORT):3000 \
 		$(if $(WAHA_API_KEY),-e WHATSAPP_API_KEY=$(WAHA_API_KEY),) \
@@ -312,14 +315,14 @@ waha_start:
 
 waha_stop:
 	@echo "Stopping WAHA..."
-	docker stop $(WAHA_CONTAINER_NAME) || true
+	$(CONTAINER_RUNTIME) stop $(WAHA_CONTAINER_NAME) || true
 	@echo "WAHA stopped"
 
 waha_logs:
-	docker logs -f $(WAHA_CONTAINER_NAME)
+	$(CONTAINER_RUNTIME) logs -f $(WAHA_CONTAINER_NAME)
 
 waha_status:
-	@docker inspect --format='{{.State.Status}}' $(WAHA_CONTAINER_NAME) 2>/dev/null || echo "WAHA container is not running"
+	@$(CONTAINER_RUNTIME) inspect --format='{{.State.Status}}' $(WAHA_CONTAINER_NAME) 2>/dev/null || echo "WAHA container is not running"
 
 # signal-cli-rest-api for Signal Messaging Bridge
 SIGNAL_PORT ?= 8081
@@ -330,7 +333,7 @@ SIGNAL_DATA_DIR ?= $(HOME)/.local/share/signal-cli-sage
 signal_start:
 	@echo "Starting signal-cli-rest-api on port $(SIGNAL_PORT)..."
 	@mkdir -p $(SIGNAL_DATA_DIR)
-	docker run -d --rm \
+	$(CONTAINER_RUNTIME) run -d --rm \
 		--name $(SIGNAL_CONTAINER_NAME) \
 		-p $(SIGNAL_PORT):8080 \
 		-v $(SIGNAL_DATA_DIR):/home/.local/share/signal-cli \
@@ -351,14 +354,14 @@ signal_start:
 
 signal_stop:
 	@echo "Stopping signal-cli-rest-api..."
-	docker stop $(SIGNAL_CONTAINER_NAME) || true
+	$(CONTAINER_RUNTIME) stop $(SIGNAL_CONTAINER_NAME) || true
 	@echo "signal-cli-rest-api stopped"
 
 signal_logs:
-	docker logs -f $(SIGNAL_CONTAINER_NAME)
+	$(CONTAINER_RUNTIME) logs -f $(SIGNAL_CONTAINER_NAME)
 
 signal_status:
-	@docker inspect --format='{{.State.Status}}' $(SIGNAL_CONTAINER_NAME) 2>/dev/null || echo "signal-cli-rest-api container is not running"
+	@$(CONTAINER_RUNTIME) inspect --format='{{.State.Status}}' $(SIGNAL_CONTAINER_NAME) 2>/dev/null || echo "signal-cli-rest-api container is not running"
 
 .PHONY: it_build it_build_no_cache dev_run it_run it_build_n_run it_build_n_run_no_cache \
 	clean-manifests-dockerhub clean-manifests-ghcr \
@@ -367,7 +370,8 @@ signal_status:
 	create-manifest-dockerhub create-manifest-ghcr \
 	it_build_multi_arch_push_docker_hub it_build_multi_arch_push_GHCR \
 	it_build_multi_arch_all show-version setup_env setup_env_auto setup_env_template \
-	bump_release_version waha_start waha_stop waha_logs waha_status \
+	bump_release_version release_and_push_GHCR hotfix_and_push_GHCR \
+	waha_start waha_stop waha_logs waha_status \
 	signal_start signal_stop signal_logs signal_status
 
 
@@ -404,6 +408,16 @@ release_finish:
 hotfix_finish:
 	git flow hotfix finish "$$(git branch --show-current | sed 's/hotfix\///')" && git push origin develop && git push origin master && git push --tags && git checkout develop
 
+release_and_push_GHCR: release_finish
+	@echo "Building and pushing $(GHCR_IMAGE_NAME):$(IMAGE_TAG) to GHCR..."
+	@make it_build_multi_arch_push_GHCR
+	@echo "Release $(IMAGE_TAG) pushed to GHCR"
+
+hotfix_and_push_GHCR: hotfix_finish
+	@echo "Building and pushing $(GHCR_IMAGE_NAME):$(IMAGE_TAG) to GHCR..."
+	@make it_build_multi_arch_push_GHCR
+	@echo "Hotfix $(IMAGE_TAG) pushed to GHCR"
+
 things_clean:
 	git clean --exclude=!.env -Xdf
 
@@ -412,16 +426,14 @@ it_deploy:
 	caprover deploy --default
 
 it_start:
-	docker start $(CONTAINER_NAME)
+	$(CONTAINER_RUNTIME) start $(CONTAINER_NAME)
 
 it_start_and_build: it_build
-	docker start $(CONTAINER_NAME)
+	$(CONTAINER_RUNTIME) start $(CONTAINER_NAME)
 
 it_update:
-	@echo "Updating LLM models and rebuilding container..."
-	@chmod +x update_ollama_models.sh
-	@./update_ollama_models.sh
+	@echo "Pulling latest changes and rebuilding container..."
 	@git pull
-	docker stop $(CONTAINER_NAME) || true
+	$(CONTAINER_RUNTIME) stop $(CONTAINER_NAME) || true
 	@make it_build
 	@make it_run
