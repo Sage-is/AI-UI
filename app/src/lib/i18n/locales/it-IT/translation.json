@@ -829,7 +829,7 @@
 	"Location access not allowed": "Accesso alla posizione non consentito",
 	"Lost": "Perso",
 	"LTR": "LTR",
-	"Made by Sage.is AI Community": "Realizzato dalla Comunità Sage.is AI",
+	"Sage.is AI Community": "Realizzato dalla Comunità Sage.is AI",
 	"Make password visible in the user interface": "Rendi la password visibile nella interfaccia utente",
 	"Make sure to enclose them with": "Assicurati di racchiuderli con",
 	"Make sure to export a workflow.json file as API format from ComfyUI.": "Assicurati di esportare un file workflow.json come formato API da ComfyUI.",

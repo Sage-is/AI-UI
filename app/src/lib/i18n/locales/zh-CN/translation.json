@@ -829,7 +829,7 @@
 	"Location access not allowed": "不允许访问位置信息",
 	"Lost": "落败",
 	"LTR": "从左至右",
-	"Made by Sage.is AI Community": "由 Sage.is AI 社区制作",
+	"Sage.is AI Community": "由 Sage.is AI 社区制作",
 	"Make password visible in the user interface": "在用户界面中显示密码",
 	"Make sure to enclose them with": "确保将它们包含在内",
 	"Make sure to export a workflow.json file as API format from ComfyUI.": "确保从 ComfyUI 导出 API 格式的 workflow.json 文件。",

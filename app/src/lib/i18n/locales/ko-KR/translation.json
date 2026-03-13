@@ -829,7 +829,7 @@
 	"Location access not allowed": "위치 접근이 허용되지 않음",
 	"Lost": "패배",
 	"LTR": "LTR",
-	"Made by Sage.is AI Community": "OpenWebUI 커뮤니티에 의해 개발됨",
+	"Sage.is AI Community": "OpenWebUI 커뮤니티에 의해 개발됨",
 	"Make password visible in the user interface": "비밀번호 보이기",
 	"Make sure to enclose them with": "꼭 다음으로 감싸세요:",
 	"Make sure to export a workflow.json file as API format from ComfyUI.": "꼭 workflow.json 파일을 ComfyUI의 API 형식대로 내보내세요",
