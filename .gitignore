@@ -1,4 +1,5 @@
 .DS_Store
+.stfolder/
 node_modules
 /app/build
 /app/.svelte-kit
