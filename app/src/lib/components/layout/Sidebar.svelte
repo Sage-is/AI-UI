@@ -604,16 +604,16 @@
 <div
 	bind:this={navElement}
 	id="sidebar"
-	style="--h:100dvh; --us:none; --fs:0; --bgc:var(--color-gray-50); --c:var(--color-gray-900); --dark-bgc:var(--color-gray-950); --dark-c:var(--color-gray-200); --size:0.875rem; --pos:fixed; --z:50; --top:0; --left:0; --ofx:hidden; --w:260px;"
+	style="--h:100dvh; --us:none; --fs:0; --bgc:var(--color-gray-50); --c:var(--color-gray-900); --dark-bgc:var(--color-gray-950); --dark-c:var(--color-gray-200); --size:0.875rem; --pos:fixed; --z:50; --top:0; --left:0; --ofx:hidden;"
 	class="{$showSidebar
-		? 'md:relative w-[260px] max-w-[260px]'
-		: '-translate-x-[260px] w-[0px]'} {$isApp
+		? 'md:relative w-[280px] max-w-[280px]'
+		: '-translate-x-[280px] w-[0px]'} {$isApp
 		? `ml-[4.5rem] md:ml-0 `
 		: 'transition-width duration-200 ease-in-out'}"
 	data-state={$showSidebar}
 >
 	<div
-		style="--py:0.5rem; --my:auto; --d:flex; --fd:column; --jc:space-between; --h:100vh; --maxh:100dvh; --w:260px; --ofx:hidden; --z:50"
+		style="--py:0.5rem; --my:auto; --d:flex; --fd:column; --jc:space-between; --h:100vh; --maxh:100dvh; --ofx:hidden; --z:50"
 		class={$showSidebar ? '' : 'invisible'}
 	>
 		<div

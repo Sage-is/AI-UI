@@ -202,7 +202,7 @@
 	style="--h:100vh; --maxh:100dvh; --tdn:200ms; 
 		--ttf:cubic-bezier(0.4, 0, 0.2, 1); --w:100%; 
 		--maxw:100%; --d:flex; --fd:column; 
-		{$showSidebar ? '--maxw:calc(100% - 260px)' : ''}"
+		{$showSidebar ? '--maxw:calc(100% - 280px)' : ''}"
 	id="channel-container"
 >
 	<PaneGroup direction="horizontal" style="--w:100%; --h:100%">
