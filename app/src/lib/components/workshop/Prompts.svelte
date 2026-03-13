@@ -353,7 +353,7 @@
 	{#if $config?.features.enable_community_sharing}
 		<div style="--my:4rem">
 			<div style="--size:1.25rem; --weight:500; --mb:0.25rem; --line-clamp:1">
-				{$i18n.t('Made by Sage.is AI Community')}
+				{$i18n.t('Sage.is AI Community')}
 			</div>
 
 			<a
