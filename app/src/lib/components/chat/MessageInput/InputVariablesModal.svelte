@@ -14,6 +14,7 @@
 
 	export let show = false;
 	export let variables = {};
+	export let title = '';
 
 	export let onSave = (e) => {};
 
@@ -59,7 +60,7 @@
 					--px:1.25rem; --pt:1rem; --pb:0.5rem">
 			<div style="--size:1.125rem; 
 					--weight:500; 
-					--as:center">{$i18n.t('Input Variables')}</div>
+					--as:center">{title || $i18n.t('Input Variables')}</div>
 			<button
 				style="--as:center"
 				on:click={() => {
@@ -70,7 +71,7 @@
 			</button>
 		</div>
 
-		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1.25rem; --pb:1rem; --p: 1rem 0;--bgc: var(--white); --br: 1rem">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%;--bgc: var(--white); --br: 1rem;">
 			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				<form
 					style="--d:flex; --fd:column; --w:100%"

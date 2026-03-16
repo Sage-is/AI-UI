@@ -108,6 +108,7 @@
 	let inputVariables = {};
 	let inputVariableValues = {};
 	let pendingVariableText = '';
+	let inputVariableTitle = '';
 
 	$: onChange({
 		prompt,
@@ -127,15 +128,16 @@
 		codeInterpreterEnabled
 	});
 
-	const inputVariableHandler = async (text: string) => {
+	const inputVariableHandler = async (text: string, title?: string) => {
 		inputVariables = extractInputVariables(text);
 		if (Object.keys(inputVariables).length > 0) {
 			pendingVariableText = text;
+			inputVariableTitle = title || '';
 			showInputVariablesModal = true;
 		}
 	};
 
-	const textVariableHandler = async (text: string) => {
+	const textVariableHandler = async (text: string, title?: string) => {
 		if (text.includes('{{CLIPBOARD}}')) {
 			const clipboardText = await navigator.clipboard.readText().catch((err) => {
 				toast.error($i18n.t('Failed to read clipboard contents'));
@@ -214,7 +216,7 @@
 			text = text.replaceAll('{{CURRENT_WEEKDAY}}', weekday);
 		}
 
-		inputVariableHandler(text);
+		inputVariableHandler(text, title);
 		return text;
 	};
 
@@ -337,11 +339,11 @@
 		}
 	};
 
-	const insertTextAtCursor = async (text: string) => {
+	const insertTextAtCursor = async (text: string, title?: string) => {
 		const chatInput = document.getElementById('chat-input');
 		if (!chatInput) return;
 
-		text = await textVariableHandler(text);
+		text = await textVariableHandler(text, title);
 
 		if (command) {
 			replaceCommandWithText(text);
@@ -842,6 +844,7 @@
 <InputVariablesModal
 	bind:show={showInputVariablesModal}
 	variables={inputVariables}
+	title={inputVariableTitle}
 	onSave={(variableValues) => {
 		inputVariableValues = { ...inputVariableValues, ...variableValues };
 		replaceVariables(inputVariableValues);
@@ -849,14 +852,11 @@
 />
 
 {#if loaded}
-	<div style="--w:100%"
-	class="font-primary">
+	<div style="--w:100%" class="font-primary">
 		<div style="--mx:auto; --left:0; --right:0; --bgc:transparent; --d:flex; --jc:center">
 			<div
 				style="--d:flex; --fd:column; --px:0.75rem; --w:100%"
-	class="{($settings?.widescreenMode ?? null)
-					? 'max-w-full'
-					: 'max-w-6xl'}"
+				class={($settings?.widescreenMode ?? null) ? 'max-w-full' : 'max-w-6xl'}
 			>
 				<div style="--pos:relative">
 					{#if autoScroll === false && history?.currentId}
@@ -893,13 +893,17 @@
 							style="--px:0.75rem; --pb:0.125rem; --pt:0.375rem; --ta:left; --w:100%; --d:flex; --fd:column; --pos:absolute; --bottom:0; --left:0; --right:0; --bgi:linear-gradient(0deg, var(--tw-gradient-stops)); --tw-gradient-from:#fff; --dark-tw-gradient-from:var(--color-gray-900); --z:10"
 						>
 							<div style="--d:flex; --ai:center; --jc:space-between; --w:100%">
-								<div style="--pl:1px; --d:flex; --ai:center; --g:0.5rem; --size:0.875rem; --dark-c:var(--color-gray-500)">
+								<div
+									style="--pl:1px; --d:flex; --ai:center; --g:0.5rem; --size:0.875rem; --dark-c:var(--color-gray-500)"
+								>
 									<img
 										crossorigin="anonymous"
 										alt="model profile"
 										style="--w:0.875rem; --h:0.875rem; --maxw:28px; --objf:cover; --radius:9999px"
 										src={$models.find((model) => model.id === atSelectedModel.id)?.info?.meta
-											?.profile_image_url ?? branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
+											?.profile_image_url ??
+											branding?.logo_url ??
+											`${WEBUI_BASE_URL}/static/icons/favicon.png`}
 									/>
 									<div style="--translatey:0.5px">
 										Talking to <span style="--weight:500">{atSelectedModel.name}</span>
@@ -960,9 +964,7 @@
 		<div class="{transparentBackground ? 'bg-transparent' : ''} ">
 			<div
 				style="--px:0.625rem; --mx:auto; --left:0; --right:0"
-	class="{($settings?.widescreenMode ?? null)
-					? 'max-w-full'
-					: 'max-w-6xl'}"
+				class={($settings?.widescreenMode ?? null) ? 'max-w-full' : 'max-w-6xl'}
 			>
 				<div class="">
 					<input
@@ -1018,15 +1020,16 @@
 						>
 							<div
 								style="--fx:1 1 0%; --d:flex; --fd:column; --pos:relative; --w:100%; --shadow:4; --radius:1.5rem;  --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --hvr-bc:var(--color-gray-100); --dark-hvr-bc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --px:0.25rem; --bgc:rgb(255 255 255 / 0.9); --dark-bgc:rgb(180 180 180 / 0.05); --dark-c:var(--color-gray-100)"
-	class="focus-within:border-gray-100 focus-within:dark:border-gray-800"
+								class="focus-within:border-gray-100 focus-within:dark:border-gray-800"
 								dir={$settings?.chatDirection ?? 'auto'}
 							>
 								{#if files.length > 0}
-									<div style="--mx:0.5rem; --mt:0.625rem; --mb:-0.25rem; --d:flex; --ai:center; --fw:wrap; --g:0.5rem">
+									<div
+										style="--mx:0.5rem; --mt:0.625rem; --mb:-0.25rem; --d:flex; --ai:center; --fw:wrap; --g:0.5rem"
+									>
 										{#each files as file, fileIdx}
 											{#if file.type === 'image'}
-												<div style="--pos:relative"
-	class="group">
+												<div style="--pos:relative" class="group">
 													<div style="--pos:relative; --d:flex; --ai:center">
 														<Image
 															src={file.url}
@@ -1063,10 +1066,9 @@
 													<div style="--pos:absolute; --top:-0.25rem; --right:-0.25rem">
 														<button
 															style="--bgc:#fff; --c:#000;  --bc:#fff; --radius:9999px"
-	class="{($settings?.highContrastMode ??
-															false)
+															class={($settings?.highContrastMode ?? false)
 																? ''
-																: 'outline-hidden focus:outline-hidden group-hover:visible invisible transition'}"
+																: 'outline-hidden focus:outline-hidden group-hover:visible invisible transition'}
 															type="button"
 															aria-label={$i18n.t('Remove file')}
 															on:click={() => {
@@ -1116,7 +1118,7 @@
 									{#if $settings?.richTextInput ?? true}
 										<div
 											style="--bgc:transparent; --dark-c:var(--color-gray-100); --oe:none; --w:100%; --pt:0.625rem; --pb:5px; --px:0.25rem; resize:none; --h:fit-content; --maxh:20rem; --of:auto"
-	class="scrollbar-hidden rtl:text-right ltr:text-left"
+											class="scrollbar-hidden rtl:text-right ltr:text-left"
 											id="chat-input-container"
 										>
 											<RichTextInput
@@ -1352,7 +1354,7 @@
 											dir={$settings?.chatDirection ?? 'auto'}
 											bind:this={chatInputElement}
 											style="--bgc:transparent; --dark-c:var(--color-gray-200); --oe:none; --w:100%; --pt:0.75rem; --px:0.25rem; resize:none"
-	class="scrollbar-hidden"
+											class="scrollbar-hidden"
 											placeholder={placeholder ? placeholder : $i18n.t('Send a Message')}
 											bind:value={prompt}
 											on:input={() => {
@@ -1597,8 +1599,13 @@
 									{/if}
 								</div>
 
-								<div style="--d:flex; --jc:space-between; --mt:0.125rem; --mb:0.625rem; --mx:0.125rem; --maxw:100%" dir="ltr">
-									<div style="--ml:0.25rem; --as:flex-end; --d:flex; --ai:center; --fx:1 1 0%; --maxw:80%">
+								<div
+									style="--d:flex; --jc:space-between; --mt:0.125rem; --mb:0.625rem; --mx:0.125rem; --maxw:100%"
+									dir="ltr"
+								>
+									<div
+										style="--ml:0.25rem; --as:flex-end; --d:flex; --ai:center; --fx:1 1 0%; --maxw:80%"
+									>
 										<InputMenu
 											bind:selectedToolIds
 											selectedModels={atSelectedModel ? [atSelectedModel.id] : selectedModels}
@@ -1652,7 +1659,7 @@
 										>
 											<div
 												style="--bgc:transparent; --hvr-bgc:var(--color-gray-100); --c:var(--color-gray-800); --dark-c:#fff; --hvr-dark-bgc:var(--color-gray-800); --radius:9999px; --p:0.375rem; --oe:none"
-	class="focus:outline-hidden"
+												class="focus:outline-hidden"
 											>
 												<svg
 													xmlns="http://www.w3.org/2000/svg"
@@ -1673,8 +1680,10 @@
 												style="--d:flex; --as:center; --w:1px; --h:1rem; --mx:0.375rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
 											/>
 
-											<div style="--d:flex; --g:0.25rem; --ai:center; --ofx:auto; --fx:1 1 0%"
-	class="scrollbar-none">
+											<div
+												style="--d:flex; --g:0.25rem; --ai:center; --ofx:auto; --fx:1 1 0%"
+												class="scrollbar-none"
+											>
 												{#if showToolsButton}
 													<Tooltip
 														content={$i18n.t('{{COUNT}} Available Tools', {
@@ -1691,7 +1700,9 @@
 														>
 															<Wrench className="size-4" strokeWidth="1.75" />
 
-															<span style="--size:0.875rem; --weight:500; --c:var(--color-gray-600); --dark-c:var(--color-gray-300)">
+															<span
+																style="--size:0.875rem; --weight:500; --c:var(--color-gray-600); --dark-c:var(--color-gray-300)"
+															>
 																{toolServers.length + selectedToolIds.length}
 															</span>
 														</button>
@@ -1712,7 +1723,7 @@
 															}}
 															type="button"
 															style="--px:0.5rem; --py:0.5rem; --d:flex; --g:0.375rem; --ai:center; --size:0.875rem; --radius:9999px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:300ms; --maxw:100%; --of:hidden; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --tt:capitalize"
-	class="@xl:px-2.5 focus:outline-hidden {selectedFilterIds.includes(
+															class="@xl:px-2.5 focus:outline-hidden {selectedFilterIds.includes(
 																filter.id
 															)
 																? 'text-sky-500 dark:text-sky-300 bg-sky-50 dark:bg-sky-200/5'
@@ -1722,9 +1733,7 @@
 																<div style="--w:1rem; --h:1rem; --ai:center; --d:flex; --jc:center">
 																	<img
 																		src={filter.icon}
-																		class="{filter.icon.includes('svg')
-																			? 'dark:invert-[80%]'
-																			: ''}"
+																		class={filter.icon.includes('svg') ? 'dark:invert-[80%]' : ''}
 																		style="--w:0.875rem; --h:0.875rem; fill: currentColor;"
 																		alt={filter.name}
 																	/>
@@ -1734,8 +1743,7 @@
 															{/if}
 															<span
 																style="--d:none; --ws:nowrap; --of:hidden; text-overflow:ellipsis; --lh:1; --pr:0.125rem"
-	class="@xl:block"
-																>{filter?.name}</span
+																class="@xl:block">{filter?.name}</span
 															>
 														</button>
 													</Tooltip>
@@ -1747,7 +1755,7 @@
 															on:click|preventDefault={() => (webSearchEnabled = !webSearchEnabled)}
 															type="button"
 															style="--px:0.5rem; --py:0.5rem; --d:flex; --g:0.375rem; --ai:center; --size:0.875rem; --radius:9999px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:300ms; --maxw:100%; --of:hidden; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800)"
-	class="@xl:px-2.5 focus:outline-hidden {webSearchEnabled ||
+															class="@xl:px-2.5 focus:outline-hidden {webSearchEnabled ||
 															($settings?.webSearch ?? false) === 'always'
 																? ' text-sky-500 dark:text-sky-300 bg-sky-50 dark:bg-sky-200/5'
 																: 'bg-transparent text-gray-600 dark:text-gray-300 '}"
@@ -1755,8 +1763,7 @@
 															<GlobeAlt className="size-4" strokeWidth="1.75" />
 															<span
 																style="--d:none; --ws:nowrap; --of:hidden; text-overflow:ellipsis; --lh:1; --pr:0.125rem"
-	class="@xl:block"
-																>{$i18n.t('Web Search')}</span
+																class="@xl:block">{$i18n.t('Web Search')}</span
 															>
 														</button>
 													</Tooltip>
@@ -1769,15 +1776,14 @@
 																(imageGenerationEnabled = !imageGenerationEnabled)}
 															type="button"
 															style="--px:0.5rem; --py:0.5rem; --d:flex; --g:0.375rem; --ai:center; --size:0.875rem; --radius:9999px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:300ms; --maxw:100%; --of:hidden; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800)"
-	class="@xl:px-2.5 focus:outline-hidden {imageGenerationEnabled
+															class="@xl:px-2.5 focus:outline-hidden {imageGenerationEnabled
 																? ' text-sky-500 dark:text-sky-300 bg-sky-50 dark:bg-sky-200/5'
 																: 'bg-transparent text-gray-600 dark:text-gray-300 '}"
 														>
 															<Photo className="size-4" strokeWidth="1.75" />
 															<span
 																style="--d:none; --ws:nowrap; --of:hidden; text-overflow:ellipsis; --lh:1; --pr:0.125rem"
-	class="@xl:block"
-																>{$i18n.t('Image')}</span
+																class="@xl:block">{$i18n.t('Image')}</span
 															>
 														</button>
 													</Tooltip>
@@ -1794,8 +1800,8 @@
 																(codeInterpreterEnabled = !codeInterpreterEnabled)}
 															type="button"
 															style="--px:0.5rem; --py:0.5rem; --d:flex; --g:0.375rem; --ai:center; --size:0.875rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:300ms; --maxw:100%; --of:hidden; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --c: var({codeInterpreterEnabled
-																		? '--color-sky-500'
-																		: '--color-gray-400'});
+																? '--color-sky-500'
+																: '--color-gray-400'});
 																		--m:0 .2em;"
 															class="@xl:px-2.5 {codeInterpreterEnabled
 																? ' text-sky-500 dark:text-sky-300 bg-sky-50 dark:bg-sky-200/5'
@@ -1807,8 +1813,7 @@
 															<CommandLine className="size-4" strokeWidth="1.75" />
 															<span
 																style="--d:none; --ws:nowrap; --of:hidden; text-overflow:ellipsis; --lh:1; --pr:0.125rem"
-	class="@xl:block"
-																>{$i18n.t('Code Interpreter')}</span
+																class="@xl:block">{$i18n.t('Code Interpreter')}</span
 															>
 														</button>
 													</Tooltip>
@@ -1961,9 +1966,9 @@
 													<button
 														id="send-message-button"
 														style="--tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.375rem; --as:center"
-	class="{!(prompt === '' && files.length === 0)
+														class={!(prompt === '' && files.length === 0)
 															? 'bg-black text-white hover:bg-gray-900 dark:bg-white dark:text-black dark:hover:bg-gray-100 '
-															: 'text-white bg-gray-200 dark:text-gray-900 dark:bg-gray-700 disabled'}"
+															: 'text-white bg-gray-200 dark:text-gray-900 dark:bg-gray-700 disabled'}
 														type="submit"
 														disabled={prompt === '' && files.length === 0}
 													>
@@ -1988,8 +1993,10 @@
 							</div>
 
 							{#if $config?.license_metadata?.input_footer}
-								<div style="--size:0.75rem; --c:var(--color-gray-500); --ta:center; --line-clamp:1"
-	class="marked">
+								<div
+									style="--size:0.75rem; --c:var(--color-gray-500); --ta:center; --line-clamp:1"
+									class="marked"
+								>
 									{@html DOMPurify.sanitize(marked($config?.license_metadata?.input_footer))}
 								</div>
 							{:else}
