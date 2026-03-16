@@ -304,13 +304,13 @@
 					<th scope="col" style="--px:0.75rem; --py:0.375rem; --ta:right; --cur:pointer; --us:none; --w:0"> </th>
 				</tr>
 			</thead>
-			<tbody style="--d:flex;--fd:column">
+			<tbody style="--d:table">
 				{#each paginatedFeedbacks as feedback (feedback.id)}
 					<tr
 						style="--bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-bc:var(--color-gray-850); --size:0.75rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:rgb(38 38 38 / 0.5); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={() => openFeedbackModal(feedback)}
 					>
-						<td style="--py:0.125rem; --ta:right; --weight:600">
+						<td style="--d:table;--py:0.125rem; --ta:right; --weight:600">
 							<div style="--d:flex; --jc:center">
 								<Tooltip content={feedback?.user?.name}>
 									<div style="--fs:0">
@@ -324,7 +324,7 @@
 							</div>
 						</td>
 
-						<td style="--py:0.25rem; --pl:0.75rem; --d:flex; --fd:column">
+						<td style="--d:table;--py:0.25rem; --pl:0.75rem; --d:flex; --fd:column">
 							<div style="--d:flex; --fd:column; --ai:flex-start; --g:0.125rem; --h:100%">
 								<div style="--d:flex; --fd:column; --h:100%">
 									{#if feedback.data?.sibling_model_ids}
@@ -355,7 +355,7 @@
 								</div>
 							</div>
 						</td>
-						<td style="--px:0.75rem; --py:0.25rem; --ta:right; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --w:max-content">
+						<td style="--d:table;--px:0.75rem; --py:0.25rem; --ta:right; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --w:max-content">
 							<div style="--d:flex; --jc:flex-end">
 								{#if feedback.data.rating.toString() === '1'}
 									<Badge type="info" content={$i18n.t('Won')} />
@@ -367,11 +367,11 @@
 							</div>
 						</td>
 
-						<td style="--px:0.75rem; --py:0.25rem; --ta:right; --weight:500">
+						<td style="--d:table;--px:0.75rem; --py:0.25rem; --ta:right; --weight:500">
 							{dayjs(feedback.updated_at * 1000).fromNow()}
 						</td>
 
-						<td style="--px:0.75rem; --py:0.25rem; --ta:right; --weight:600" on:click={(e) => e.stopPropagation()}>
+						<td style="--d:table;--px:0.75rem; --py:0.25rem; --ta:right; --weight:600" on:click={(e) => e.stopPropagation()}>
 							<FeedbackMenu
 								on:delete={(e) => {
 									deleteFeedbackHandler(feedback.id);

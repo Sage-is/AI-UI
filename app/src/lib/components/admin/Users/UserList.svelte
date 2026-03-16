@@ -378,7 +378,7 @@
 			<tbody>
 				{#each users as user, userIdx}
 					<tr style="--bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-bc:var(--color-gray-850); --size:0.75rem">
-						<td style="--px:0.75rem; --py:0.25rem; --minw:7rem; --w:7rem">
+						<td style="--d:table;--px:0.75rem; --py:0.25rem; --minw:7rem; --w:7rem">
 							<button
 								style="--translatey:0.125rem"
 								on:click={() => {
@@ -392,7 +392,7 @@
 								/>
 							</button>
 						</td>
-						<td style="--px:0.75rem; --py:0.25rem; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --w:max-content">
+						<td style="--d:table;--px:0.75rem; --py:0.25rem; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --w:max-content">
 							<div style="--d:flex; --fd:row; --w:max-content">
 								<img
 									style="--radius:9999px; --w:1.5rem; --h:1.5rem; --objf:cover; --mr:0.625rem"
@@ -407,17 +407,17 @@
 								<div style="--weight:500; --as:center">{user.name}</div>
 							</div>
 						</td>
-						<td style="--px:0.75rem; --py:0.25rem"> {user.email} </td>
+						<td style="--d:table;--px:0.75rem; --py:0.25rem"> {user.email} </td>
 
-						<td style="--px:0.75rem; --py:0.25rem">
+						<td style="--d:table;--px:0.75rem; --py:0.25rem">
 							{dayjs(user.last_active_at * 1000).fromNow()}
 						</td>
 
-						<td style="--px:0.75rem; --py:0.25rem">
+						<td style="--d:table;--px:0.75rem; --py:0.25rem">
 							{dayjs(user.created_at * 1000).format('LL')}
 						</td>
 
-						<td style="--px:0.75rem; --py:0.25rem">
+						<td style="--d:table;--px:0.75rem; --py:0.25rem">
 							{#if user.role === 'temporary' && user.info?.temporary?.expires_at}
 								<span style="{dayjs(user.info.temporary.expires_at * 1000).isBefore(dayjs()) ? '--c:#ef4444' : '--c:var(--color-gray-500)'}">
 									{dayjs(user.info.temporary.expires_at * 1000).fromNow()}
@@ -427,7 +427,7 @@
 							{/if}
 						</td>
 
-						<td style="--px:0.75rem; --py:0.25rem; --ta:right">
+						<td style="--d:table;--px:0.75rem; --py:0.25rem; --ta:right">
 							<div style="--d:flex; --jc:flex-end; --w:100%">
 								{#if $config.features.enable_admin_chat_access && user.role !== 'admin'}
 									<Tooltip content={$i18n.t('Chats')}>

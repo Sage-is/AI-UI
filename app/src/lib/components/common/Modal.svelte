@@ -88,17 +88,21 @@
 		aria-modal="true"
 		role="dialog"
 		style="--pos:fixed; --top:0; --right:0; --left:0; --bottom:0; --bgc:rgb(0 0 0 / 0.6); --w:100%; --h:100vh; --maxh:100dvh; --d:flex; --jc:center; --z:9999; --ofy:auto; overscroll-behavior:contain"
-	class="modal {containerClassName}"
+		class="modal {containerClassName}"
 		in:fade={{ duration: 10 }}
 		on:mousedown={() => {
 			show = false;
 		}}
 	>
 		<div
-			style="--m:auto; --maxw:100%; --minh:fit-content; --br:1rem; --bg:var(--white); --dark-bg:var(--color-gray-900);"
-	class="{sizeToWidth(size)} {size !== 'full'
-				? 'mx-2'
-				: ''} scrollbar-hidden {className}"
+			style="--p: 1rem 2rem; 
+				--m:auto; 
+				--maxw:100%; 
+				--minh:fit-content; 
+				--br:1rem; 
+				--bg:var(--white); 
+				--dark-bg:var(--color-gray-900);"
+			class="{sizeToWidth(size)} {size !== 'full' ? 'mx-2' : ''} scrollbar-hidden {className}"
 			in:flyAndScale
 			on:mousedown={(e) => {
 				e.stopPropagation();
@@ -111,6 +115,7 @@
 
 <style>
 	.modal-content {
+		padding: 1rem;
 		animation: scaleUp 0.1s ease-out forwards;
 	}
 

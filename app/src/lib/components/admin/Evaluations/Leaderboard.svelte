@@ -511,12 +511,12 @@
 	class="group"
 						on:click={() => openLeaderboardModelModal(model)}
 					>
-						<td style="--px:0.75rem; --py:0.375rem; --ta:left; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --w:fit-content">
+						<td style="--d:table;--px:0.75rem; --py:0.375rem; --ta:left; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --w:fit-content">
 							<div style="--line-clamp:1">
 								{model?.rating !== '-' ? modelIdx + 1 : '-'}
 							</div>
 						</td>
-						<td style="--px:0.75rem; --py:0.375rem; --va:middle">
+						<td style="--d:table;--px:0.75rem; --py:0.375rem; --va:middle">
 							<div style="--d:flex; --ai:center; --g:0.5rem">
 								<div style="--fs:0">
 									<img
@@ -531,11 +531,11 @@
 								</div>
 							</div>
 						</td>
-						<td style="--px:0.75rem; --py:0.375rem; --ta:right; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --w:max-content">
+						<td style="--d:table;--px:0.75rem; --py:0.375rem; --ta:right; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --w:max-content">
 							{model.rating}
 						</td>
 
-						<td style="--px:0.75rem; --py:0.375rem; --ta:right; --weight:600; --c:#22c55e">
+						<td style="--d:table;--px:0.75rem; --py:0.375rem; --ta:right; --weight:600; --c:#22c55e">
 							<div style="--w:2.5rem">
 								{#if model.stats.won === '-'}
 									-
@@ -549,7 +549,7 @@
 							</div>
 						</td>
 
-						<td style="--px:0.75rem; --py:0.375rem; --ta:right; --weight:600; --c:#ef4444">
+						<td style="--d:table;--px:0.75rem; --py:0.375rem; --ta:right; --weight:600; --c:#ef4444">
 							<div style="--w:2.5rem">
 								{#if model.stats.lost === '-'}
 									-

@@ -107,6 +107,7 @@
 	let showInputVariablesModal = false;
 	let inputVariables = {};
 	let inputVariableValues = {};
+	let pendingVariableText = '';
 
 	$: onChange({
 		prompt,
@@ -129,6 +130,7 @@
 	const inputVariableHandler = async (text: string) => {
 		inputVariables = extractInputVariables(text);
 		if (Object.keys(inputVariables).length > 0) {
+			pendingVariableText = text;
 			showInputVariablesModal = true;
 		}
 	};
@@ -223,8 +225,27 @@
 
 		if (chatInput) {
 			if ($settings?.richTextInput ?? true) {
-				chatInputElement.replaceVariables(variables);
-				chatInputElement.focus();
+				if (pendingVariableText) {
+					// Replace on the raw string so multiline {{...}} patterns
+					// that got split across ProseMirror nodes are matched correctly
+					const replaced = pendingVariableText.replace(
+						/{{\s*([^|}]+)(?:\|[^}]*)?\s*}}/g,
+						(match, varName) => {
+							const trimmedVarName = varName.trim();
+							return variables.hasOwnProperty(trimmedVarName)
+								? String(variables[trimmedVarName])
+								: match;
+						}
+					);
+					// Clear then re-insert with markdown parsing to preserve formatting
+					chatInputElement?.setText('');
+					chatInputElement?.insertContent(replaced);
+					chatInputElement?.focus();
+					pendingVariableText = '';
+				} else {
+					chatInputElement.replaceVariables(variables);
+					chatInputElement.focus();
+				}
 			} else {
 				// Get current value from the input element
 				let currentValue = chatInput.value || '';
