@@ -92,20 +92,20 @@
 										<th scope="col" style="--px:0.75rem; --py:0.5rem; --ta:right" />
 									</tr>
 								</thead>
-								<tbody style="--d:flex;--fd:column">
+								<tbody style="--d:table">
 									{#each memories as memory}
 										<tr style=" --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --ai:center">
-											<td style="--px:0.75rem; --py:0.25rem">
+											<td style="--d:table;--px:0.75rem; --py:0.25rem">
 												<div style="--line-clamp:1">
 													{memory.content}
 												</div>
 											</td>
-											<td style="--px:0.75rem; --py:0.25rem; --d:none; --d-md:flex; --h:2.5rem">
+											<td style="--d:table;--px:0.75rem; --py:0.25rem; --d:none; --d-md:flex; --h:2.5rem">
 												<div style="--my:auto; --ws:nowrap">
 													{dayjs(memory.updated_at * 1000).format('LLL')}
 												</div>
 											</td>
-											<td style="--px:0.75rem; --py:0.25rem">
+											<td style="--d:table;--px:0.75rem; --py:0.25rem">
 												<div style="--d:flex; --jc:flex-end; --w:100%">
 													<Tooltip content="Edit">
 														<button

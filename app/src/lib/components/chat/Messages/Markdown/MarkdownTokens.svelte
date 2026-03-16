@@ -149,7 +149,7 @@
 							{/each}
 						</tr>
 					</thead>
-					<tbody style="--d:flex;--fd:column">
+					<tbody style="--d:table">
 						{#each token.rows as row, rowIdx}
 							<tr style="--bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-bc:var(--color-gray-850); --size:0.75rem">
 								{#each row ?? [] as cell, cellIdx}

@@ -53,8 +53,13 @@
 
 <Modal bind:show size="md">
 	<div>
-		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.25rem; --pt:1rem; --pb:0.5rem">
-			<div style="--size:1.125rem; --weight:500; --as:center">{$i18n.t('Input Variables')}</div>
+		<div style="--d:flex; 
+					--jc:space-between; 
+					--dark-c:var(--color-gray-300); 
+					--px:1.25rem; --pt:1rem; --pb:0.5rem">
+			<div style="--size:1.125rem; 
+					--weight:500; 
+					--as:center">{$i18n.t('Input Variables')}</div>
 			<button
 				style="--as:center"
 				on:click={() => {
@@ -65,7 +70,7 @@
 			</button>
 		</div>
 
-		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1.25rem; --pb:1rem; --p: 1rem 0;--bgc: var(--white); --br: 1rem; --shadow: 6">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1.25rem; --pb:1rem; --p: 1rem 0;--bgc: var(--white); --br: 1rem">
 			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				<form
 					style="--d:flex; --fd:column; --w:100%"

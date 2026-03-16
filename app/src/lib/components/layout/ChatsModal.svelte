@@ -354,14 +354,14 @@
 												<th scope="col" style="--px:0.75rem; --py:0.5rem; --ta:right" />
 											</tr>
 										</thead>
-										<tbody style="--d:flex;--fd:column">
+										<tbody style="--d:table">
 											{#each chats as chat, idx}
 												<tr
 													style="--bgc:transparent; --dark-bgc:var(--color-gray-900); --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --size:0.75rem"
 	class="{idx !== chats.length - 1 &&
 														'border-b'}"
 												>
-													<td style="--px:0.75rem; --py:0.25rem; --w:66.666667%">
+													<td style="--d:table;--px:0.75rem; --py:0.25rem; --w:66.666667%">
 														<a href="/c/{chat.id}" target="_blank">
 															<div style="--hvr-td:underline; --line-clamp:1">
 																{chat.title}
@@ -369,13 +369,13 @@
 														</a>
 													</td>
 
-													<td style="--px:0.75rem; --py:0.25rem; --d:none; --d-md:flex; --h:2.5rem">
+													<td style="--d:table;--px:0.75rem; --py:0.25rem; --d:none; --d-md:flex; --h:2.5rem">
 														<div style="--my:auto">
 															{dayjs(chat.created_at * 1000).format('LLL')}
 														</div>
 													</td>
 
-													<td style="--px:0.75rem; --py:0.25rem; --ta:right">
+													<td style="--d:table;--px:0.75rem; --py:0.25rem; --ta:right">
 														<div style="--d:flex; --jc:flex-end; --w:100%">
 															{#if unarchiveHandler}
 																<Tooltip content={$i18n.t('Unarchive Chat')}>
