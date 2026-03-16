@@ -74,7 +74,7 @@
 </script>
 
 <Modal size="sm" bind:show>
-	<div style="--bgc: var(--white); --p:1.5rem; --br:1rem; --shadow:6; --w:100%; --maxw:500px">
+	<div style="--bgc: var(--white); --p:1.5rem; --br:1rem; --w:100%; --maxw:500px">
 		<div style="--d:flex; --jc:space-between; ">
 			<div style="--size:1.125rem; --weight:500; --as:center">{$i18n.t('Edit User')}</div>
 			<button
