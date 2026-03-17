@@ -544,7 +544,7 @@
 	"Enter Top K": "Top K كىرگۈزۈڭ",
 	"Enter Top K Reranker": "Top K قايتا تەرتىپلەش كىرگۈزۈڭ",
 	"Enter URL (e.g. http://127.0.0.1:7860/)": "URL كىرگۈزۈڭ (مەسىلەن: http://127.0.0.1:7860/)",
-	"Enter URL (e.g. http://localhost:11434)": "URL كىرگۈزۈڭ (مەسىلەن: http://localhost:11434)",
+	"Enter URL (e.g. http://host.docker.internal:11434 )": "URL كىرگۈزۈڭ (مەسىلەن: http://host.docker.internal:11434 )",
 	"Enter Yacy Password": "Yacy پارول كىرگۈزۈڭ",
 	"Enter Yacy URL (e.g. http://yacy.example.com:8090)": "Yacy URL كىرگۈزۈڭ (مەسىلەن: http://yacy.example.com:8090)",
 	"Enter Yacy Username": "Yacy ئىشلەتكۈچى نامى كىرگۈزۈڭ",

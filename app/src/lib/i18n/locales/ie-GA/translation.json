@@ -544,7 +544,7 @@
 	"Enter Top K": "Cuir isteach Barr K",
 	"Enter Top K Reranker": "Cuir isteach Barr K Reranker",
 	"Enter URL (e.g. http://127.0.0.1:7860/)": "Iontráil URL (m.sh. http://127.0.0.1:7860/)",
-	"Enter URL (e.g. http://localhost:11434)": "Iontráil URL (m.sh. http://localhost:11434)",
+	"Enter URL (e.g. http://host.docker.internal:11434 )": "Iontráil URL (m.sh. http://host.docker.internal:11434 )",
 	"Enter Yacy Password": "Cuir isteach Pasfhocal Yacy",
 	"Enter Yacy URL (e.g. http://yacy.example.com:8090)": "Cuir isteach URL Yacy (m.sh. http://yacy.example.com:8090)",
 	"Enter Yacy Username": "Cuir isteach Ainm Úsáideora Yacy",

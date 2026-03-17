@@ -69,7 +69,7 @@
 
 		<input
 			style="--w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
-			placeholder={$i18n.t('Enter URL (e.g. http://localhost:11434)')}
+			placeholder={$i18n.t('Enter URL (e.g. http://host.docker.internal:11434 )')}
 			bind:value={url}
 		/>
 	</Tooltip>

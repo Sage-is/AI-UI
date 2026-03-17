@@ -544,7 +544,7 @@
 	"Enter Top K": "Masukkan 'Top K'",
 	"Enter Top K Reranker": "",
 	"Enter URL (e.g. http://127.0.0.1:7860/)": "Masukkan URL (cth http://127.0.0.1:7860/)",
-	"Enter URL (e.g. http://localhost:11434)": "Masukkan URL (cth http://localhost:11434)",
+	"Enter URL (e.g. http://host.docker.internal:11434 )": "Masukkan URL (cth http://host.docker.internal:11434 )",
 	"Enter Yacy Password": "",
 	"Enter Yacy URL (e.g. http://yacy.example.com:8090)": "",
 	"Enter Yacy Username": "",

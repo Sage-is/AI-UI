@@ -544,7 +544,7 @@
 	"Enter Top K": "Add meg a Top K értéket",
 	"Enter Top K Reranker": "Add meg a Top K újrarangsorolót",
 	"Enter URL (e.g. http://127.0.0.1:7860/)": "Add meg az URL-t (pl. http://127.0.0.1:7860/)",
-	"Enter URL (e.g. http://localhost:11434)": "Add meg az URL-t (pl. http://localhost:11434)",
+	"Enter URL (e.g. http://host.docker.internal:11434 )": "Add meg az URL-t (pl. http://host.docker.internal:11434 )",
 	"Enter Yacy Password": "",
 	"Enter Yacy URL (e.g. http://yacy.example.com:8090)": "",
 	"Enter Yacy Username": "",

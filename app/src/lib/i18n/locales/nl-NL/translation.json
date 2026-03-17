@@ -544,7 +544,7 @@
 	"Enter Top K": "Voeg Top K toe",
 	"Enter Top K Reranker": "Voer Tok K reranker in",
 	"Enter URL (e.g. http://127.0.0.1:7860/)": "Voer URL in (Bijv. http://127.0.0.1:7860/)",
-	"Enter URL (e.g. http://localhost:11434)": "Voer URL in (Bijv. http://localhost:11434)",
+	"Enter URL (e.g. http://host.docker.internal:11434 )": "Voer URL in (Bijv. http://host.docker.internal:11434 )",
 	"Enter Yacy Password": "",
 	"Enter Yacy URL (e.g. http://yacy.example.com:8090)": "",
 	"Enter Yacy Username": "",
