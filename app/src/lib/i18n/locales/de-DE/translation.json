@@ -544,7 +544,7 @@
 	"Enter Top K": "Geben Sie Top K ein",
 	"Enter Top K Reranker": "Geben Sie Top K für Reranker ein",
 	"Enter URL (e.g. http://127.0.0.1:7860/)": "Geben Sie die URL ein (z. B. http://127.0.0.1:7860/)",
-	"Enter URL (e.g. http://localhost:11434)": "Geben Sie die URL ein (z. B. http://localhost:11434)",
+	"Enter URL (e.g. http://host.docker.internal:11434 )": "Geben Sie die URL ein (z. B. http://host.docker.internal:11434 )",
 	"Enter Yacy Password": "Yacy-Passwort eingeben",
 	"Enter Yacy URL (e.g. http://yacy.example.com:8090)": "Yacy-URL eingeben (z. B. http://yacy.example.com:8090 )",
 	"Enter Yacy Username": "Yacy-Benutzernamen eingeben",

@@ -544,7 +544,7 @@
 	"Enter Top K": "トップ K を入力してください",
 	"Enter Top K Reranker": "トップ K Rerankerを入力してください。",
 	"Enter URL (e.g. http://127.0.0.1:7860/)": "URL を入力してください (例: http://127.0.0.1:7860/)",
-	"Enter URL (e.g. http://localhost:11434)": "URL を入力してください (例: http://localhost:11434)",
+	"Enter URL (e.g. http://host.docker.internal:11434 )": "URL を入力してください (例: http://host.docker.internal:11434 )",
 	"Enter Yacy Password": "Yacyパスワードを入力してください。",
 	"Enter Yacy URL (e.g. http://yacy.example.com:8090)": "Yacy URLを入力してください (例: http://yacy.example.com:8090)",
 	"Enter Yacy Username": "Yacyユーザー名を入力してください。",

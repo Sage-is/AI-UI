@@ -544,7 +544,7 @@
 	"Enter Top K": "Введите Top K",
 	"Enter Top K Reranker": "Введите Top K переоценщика",
 	"Enter URL (e.g. http://127.0.0.1:7860/)": "Введите URL-адрес (например, http://127.0.0.1:7860/)",
-	"Enter URL (e.g. http://localhost:11434)": "Введите URL-адрес (например, http://localhost:11434)",
+	"Enter URL (e.g. http://host.docker.internal:11434 )": "Введите URL-адрес (например, http://host.docker.internal:11434 )",
 	"Enter Yacy Password": "Введите пароль Yacy",
 	"Enter Yacy URL (e.g. http://yacy.example.com:8090)": "Введите URL-адрес Yacy (напр., http://yacy.example.com:8090)",
 	"Enter Yacy Username": "Введите имя пользователя Yacy",

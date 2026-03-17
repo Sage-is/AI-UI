@@ -544,7 +544,7 @@
 	"Enter Top K": "اوپر کے K درج کریں",
 	"Enter Top K Reranker": "",
 	"Enter URL (e.g. http://127.0.0.1:7860/)": "یو آر ایل درج کریں (جیسے کہ http://127.0.0.1:7860/)",
-	"Enter URL (e.g. http://localhost:11434)": "یو آر ایل درج کریں (مثلاً http://localhost:11434)",
+	"Enter URL (e.g. http://host.docker.internal:11434 )": "یو آر ایل درج کریں (مثلاً http://host.docker.internal:11434 )",
 	"Enter Yacy Password": "",
 	"Enter Yacy URL (e.g. http://yacy.example.com:8090)": "",
 	"Enter Yacy Username": "",

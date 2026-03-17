@@ -544,7 +544,7 @@
 	"Enter Top K": "مقدار Top K را وارد کنید",
 	"Enter Top K Reranker": "مقدار Top K بازچینش\u200cگر را وارد کنید",
 	"Enter URL (e.g. http://127.0.0.1:7860/)": "مقدار URL را وارد کنید (مثال http://127.0.0.1:7860/)",
-	"Enter URL (e.g. http://localhost:11434)": "مقدار URL را وارد کنید (مثال http://localhost:11434)",
+	"Enter URL (e.g. http://host.docker.internal:11434 )": "مقدار URL را وارد کنید (مثال http://host.docker.internal:11434 )",
 	"Enter Yacy Password": "",
 	"Enter Yacy URL (e.g. http://yacy.example.com:8090)": "",
 	"Enter Yacy Username": "",

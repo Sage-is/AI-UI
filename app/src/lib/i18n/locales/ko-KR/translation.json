@@ -544,7 +544,7 @@
 	"Enter Top K": "Top K 입력",
 	"Enter Top K Reranker": "Top K 리랭커 입력",
 	"Enter URL (e.g. http://127.0.0.1:7860/)": "URL 입력(예: http://127.0.0.1:7860/)",
-	"Enter URL (e.g. http://localhost:11434)": "URL 입력(예: http://localhost:11434)",
+	"Enter URL (e.g. http://host.docker.internal:11434 )": "URL 입력(예: http://host.docker.internal:11434 )",
 	"Enter Yacy Password": "Yacy 비밀번호 입력",
 	"Enter Yacy URL (e.g. http://yacy.example.com:8090)": "Yacy URL 입력(예: http://yacy.example.com:8090)",
 	"Enter Yacy Username": "Yacy 사용자 이름 입력",

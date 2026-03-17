@@ -544,7 +544,7 @@
 	"Enter Top K": "輸入 Top K 值",
 	"Enter Top K Reranker": "輸入 Top K Reranker",
 	"Enter URL (e.g. http://127.0.0.1:7860/)": "輸入 URL（例如：http://127.0.0.1:7860/）",
-	"Enter URL (e.g. http://localhost:11434)": "輸入 URL（例如：http://localhost:11434）",
+	"Enter URL (e.g. http://host.docker.internal:11434 )": "輸入 URL（例如：http://host.docker.internal:11434 ）",
 	"Enter Yacy Password": "輸入 Yacy 密碼",
 	"Enter Yacy URL (e.g. http://yacy.example.com:8090)": "輸入 Yacy URL（例如：http://yacy.example.com:8090）",
 	"Enter Yacy Username": "輸入 Yacy 使用者名稱",
