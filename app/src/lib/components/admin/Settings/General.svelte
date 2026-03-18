@@ -14,7 +14,7 @@
 	import Switch from '$lib/components/common/Switch.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import { WEBUI_BUILD_HASH, WEBUI_VERSION } from '$lib/constants';
-	import { config, showChangelog } from '$lib/stores';
+	import { config, showChangesAndSetup, setupTriggerReason } from '$lib/stores';
 	import { compareVersion } from '$lib/utils';
 	import { onMount, getContext } from 'svelte';
 	import { toast } from 'svelte-sonner';
@@ -158,10 +158,22 @@
 									style="--td:underline; --d:flex; --ai:center; --g:0.2rem; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500)"
 									type="button"
 									on:click={() => {
-										showChangelog.set(true);
+										setupTriggerReason.set({ hasChangelog: true, needsModels: false, needsUsers: false, manualTrigger: false });
+										showChangesAndSetup.set(true);
 									}}
 								>
 									<div>{$i18n.t("See what's new")}</div>
+								</button>
+
+								<button
+									style="--td:underline; --d:flex; --ai:center; --g:0.2rem; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500)"
+									type="button"
+									on:click={() => {
+										setupTriggerReason.set({ hasChangelog: false, needsModels: false, needsUsers: false, manualTrigger: true });
+										showChangesAndSetup.set(true);
+									}}
+								>
+									<div>{$i18n.t('Run Setup Wizard')}</div>
 								</button>
 							</div>
 

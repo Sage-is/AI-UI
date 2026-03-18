@@ -35,7 +35,8 @@
 		banners,
 		showSettings,
 		showShortcuts,
-		showChangelog,
+		showChangesAndSetup,
+		setupTriggerReason,
 		temporaryChatEnabled,
 		toolServers,
 		showSearch
@@ -43,7 +44,7 @@
 
 	import Sidebar from '$lib/components/layout/Sidebar.svelte';
 	import SettingsModal from '$lib/components/chat/SettingsModal.svelte';
-	import ChangelogModal from '$lib/components/ChangelogModal.svelte';
+	import ChangesAndSetupModal from '$lib/components/ChangesAndSetupModal.svelte';
 	import AccountPending from '$lib/components/layout/Overlay/AccountPending.svelte';
 	import AccountExpired from '$lib/components/layout/Overlay/AccountExpired.svelte';
 	import UpdateInfoToast from '$lib/components/layout/UpdateInfoToast.svelte';
@@ -213,8 +214,14 @@
 				}
 			});
 
-			if ($user?.role === 'admin' && ($settings?.showChangelog ?? true)) {
-				showChangelog.set($settings?.version !== $config.version);
+			if ($user?.role === 'admin') {
+				const hasChangelog = ($settings?.showChangelog ?? true) && ($settings?.version !== $config.version);
+				const needsModels = $models.length === 0;
+				const needsUsers = !($settings?.workingAlone) && !($settings?.setupCompleted);
+				if (hasChangelog || needsModels || needsUsers) {
+					setupTriggerReason.set({ hasChangelog, needsModels, needsUsers, manualTrigger: false });
+					showChangesAndSetup.set(true);
+				}
 			}
 
 			if ($user?.role === 'admin' || ($user?.permissions?.chat?.temporary ?? true)) {
@@ -258,7 +265,7 @@
 </script>
 
 <SettingsModal bind:show={$showSettings} />
-<ChangelogModal bind:show={$showChangelog} />
+<ChangesAndSetupModal bind:show={$showChangesAndSetup} />
 
 {#if version && compareVersion(version.latest, version.current) && ($settings?.showUpdateToast ?? true)}
 	<div style="--pos:absolute; --bottom:2rem; --right:2rem; --z:50" in:fade={{ duration: 100 }}>
