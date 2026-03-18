@@ -33,6 +33,8 @@
 	let openaiConfig: any = null;
 	let ollamaConfig: any = null;
 
+	let openaiExisting = false;
+	let ollamaExisting = false;
 	let hasVerifiedConnection = false;
 
 	onMount(async () => {
@@ -42,9 +44,17 @@
 		if (openaiConfig?.OPENAI_API_BASE_URLS?.length > 0 && openaiConfig.OPENAI_API_BASE_URLS[0]) {
 			openaiUrl = openaiConfig.OPENAI_API_BASE_URLS[0];
 			openaiKey = openaiConfig.OPENAI_API_KEYS?.[0] ?? '';
+			if (openaiConfig.ENABLE_OPENAI_API && openaiKey) {
+				openaiExisting = true;
+				hasVerifiedConnection = true;
+			}
 		}
 		if (ollamaConfig?.OLLAMA_BASE_URLS?.length > 0 && ollamaConfig.OLLAMA_BASE_URLS[0]) {
 			ollamaUrl = ollamaConfig.OLLAMA_BASE_URLS[0];
+			if (ollamaConfig.ENABLE_OLLAMA_API) {
+				ollamaExisting = true;
+				hasVerifiedConnection = true;
+			}
 		}
 	});
 
@@ -158,12 +168,14 @@
 		<!-- OpenAI Card -->
 		<div style="--p:1rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid">
 			<div style="--d:flex; --ai:center; --jc:space-between; --mb:0.6rem">
-				<div style="--size:0.85rem; --weight:600">{$i18n.t('OpenAI API')}</div>
-				{#if openaiVerified}
-					<div style="--size:0.65rem; --c:var(--color-green-600); --weight:500">
-						{$i18n.t('Connected')}
-					</div>
-				{/if}
+				<div style="--d:flex; --ai:center; --g:0.4rem">
+					<span style="--size:0.85rem; --weight:600">{$i18n.t('OpenAI API')}</span>
+					{#if openaiVerified}
+						<span style="--size:0.6rem; --c:var(--color-green-600); --weight:500">{$i18n.t('connected')}</span>
+					{:else if openaiExisting}
+						<span style="--size:0.6rem; --c:var(--color-green-600); --weight:500">{$i18n.t('configured')}</span>
+					{/if}
+				</div>
 			</div>
 
 			<div style="--d:flex; --fd:column; --g:0.5rem">
@@ -202,12 +214,14 @@
 		<!-- Ollama Card -->
 		<div style="--p:1rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid">
 			<div style="--d:flex; --ai:center; --jc:space-between; --mb:0.6rem">
-				<div style="--size:0.85rem; --weight:600">{$i18n.t('Ollama')}</div>
-				{#if ollamaVerified}
-					<div style="--size:0.65rem; --c:var(--color-green-600); --weight:500">
-						{$i18n.t('Connected')}
-					</div>
-				{/if}
+				<div style="--d:flex; --ai:center; --g:0.4rem">
+					<span style="--size:0.85rem; --weight:600">{$i18n.t('Ollama')}</span>
+					{#if ollamaVerified}
+						<span style="--size:0.6rem; --c:var(--color-green-600); --weight:500">{$i18n.t('connected')}</span>
+					{:else if ollamaExisting}
+						<span style="--size:0.6rem; --c:var(--color-green-600); --weight:500">{$i18n.t('configured')}</span>
+					{/if}
+				</div>
 			</div>
 
 			<div style="--d:flex; --fd:column; --g:0.5rem">

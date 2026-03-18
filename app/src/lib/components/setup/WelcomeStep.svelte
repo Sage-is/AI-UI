@@ -110,11 +110,19 @@
 			</label>
 		</div>
 
-		<div style="--d:flex; --jc:flex-end">
+		<div style="--d:flex; --jc:space-between; --ai:center">
+			{#if isFirstRun}
+				<div style="--size:0.65rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --italic:italic; --maxw:20rem">
+					{$i18n.t('Complete the setup and this wizard will not appear again.')}
+				</div>
+			{:else}
+				<div />
+			{/if}
+
 			<button
 				on:click={handleStart}
 				disabled={!canStart}
-				style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:{canStart ? '#000' : 'var(--color-gray-300)'}; --hvr-bgc:{canStart ? 'var(--color-gray-900)' : 'var(--color-gray-300)'}; --c:#fff; --dark-bgc:{canStart ? '#fff' : 'var(--color-gray-600)'}; --dark-c:{canStart ? '#000' : 'var(--color-gray-400)'}; --hvr-dark-bgc:{canStart ? 'var(--color-gray-100)' : 'var(--color-gray-600)'}; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+				style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --shrink:0; --bgc:{canStart ? '#000' : 'var(--color-gray-300)'}; --hvr-bgc:{canStart ? 'var(--color-gray-900)' : 'var(--color-gray-300)'}; --c:#fff; --dark-bgc:{canStart ? '#fff' : 'var(--color-gray-600)'}; --dark-c:{canStart ? '#000' : 'var(--color-gray-400)'}; --hvr-dark-bgc:{canStart ? 'var(--color-gray-100)' : 'var(--color-gray-600)'}; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			>
 				{$i18n.t("Get Started")}
 			</button>
