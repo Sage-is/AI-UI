@@ -76,7 +76,20 @@ export const searchQuery = writable('');
 export const showSettings = writable(false);
 export const showShortcuts = writable(false);
 export const showArchivedChats = writable(false);
-export const showChangelog = writable(false);
+export const showChangesAndSetup = writable(false);
+
+export type SetupTriggerReason = {
+	hasChangelog: boolean;
+	needsModels: boolean;
+	needsUsers: boolean;
+	manualTrigger: boolean;
+};
+export const setupTriggerReason: Writable<SetupTriggerReason> = writable({
+	hasChangelog: false,
+	needsModels: false,
+	needsUsers: false,
+	manualTrigger: false
+});
 
 export const showControls = writable(false);
 export const showOverview = writable(false);
@@ -146,6 +159,7 @@ type OllamaModelDetails = {
 };
 
 type Settings = {
+	version?: string;
 	pinnedModels?: any[];
 	toolServers?: any[];
 	detectArtifacts?: boolean;
@@ -183,6 +197,8 @@ type Settings = {
 	directConnections?: any;
 	chatBubble?: boolean;
 	copyFormatted?: boolean;
+	workingAlone?: boolean;
+	setupCompleted?: boolean;
 
 	models?: string[];
 	conversationMode?: boolean;

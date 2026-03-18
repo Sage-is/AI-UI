@@ -91,6 +91,13 @@
 					defaultValue: true,
 					settingsPath: 'showChangelog',
 					adminOnly: true
+				},
+				{
+					key: 'workingAlone',
+					labelKey: 'Working alone (skip user setup)',
+					defaultValue: false,
+					settingsPath: 'workingAlone',
+					adminOnly: true
 				}
 			]
 		},

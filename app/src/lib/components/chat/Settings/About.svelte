@@ -2,7 +2,7 @@
 	import { getVersionUpdates } from '$lib/apis';
 	import { getOllamaVersion } from '$lib/apis/ollama';
 	import { WEBUI_BUILD_HASH, WEBUI_VERSION } from '$lib/constants';
-	import { WEBUI_NAME, config, showChangelog } from '$lib/stores';
+	import { WEBUI_NAME, config, showChangesAndSetup, setupTriggerReason } from '$lib/stores';
 	import { compareVersion } from '$lib/utils';
 	import { onMount, getContext } from 'svelte';
 	import { licenseMarkdown } from '$lib/data/licenseData';
@@ -129,7 +129,8 @@
 					<button
 						style="--td:underline; --d:flex; --ai:center; --g:0.2rem; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500)"
 						on:click={() => {
-							showChangelog.set(true);
+							setupTriggerReason.set({ hasChangelog: true, needsModels: false, needsUsers: false, manualTrigger: false });
+							showChangesAndSetup.set(true);
 						}}
 					>
 						<div>{$i18n.t("See what's new")}</div>
