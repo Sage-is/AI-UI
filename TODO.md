@@ -13,7 +13,9 @@
 
 ### 🔴 Knowledge Base Ingestion Modes + Admin Cleanup - HIGH PRIORITY
 - [ ] Simpler lost password/single sign on is needed as people forget passwords as they think their minds know how to hold them...
+
 - [ ] **Add AI-Parsed ingestion mode and clean up admin Documents page** (see `docs/knowledge-ingestion-modes-plan.md`)
+
   - [ ] Admin page cleanup — fold engine-specific config with `<details>/<summary>`
   - [ ] Backend — AI Parser Service (`retrieval/processors/ai_parser.py`)
   - [ ] Backend — Config additions (`AI_PARSE_ENABLED`, model, prompt defaults)
@@ -23,27 +25,19 @@
   - [ ] Frontend — Upload flow mode selector (Plain / AI Parse) in KnowledgeBase.svelte
   - [ ] Testing all modes end-to-end
 
-### 🔴 Codebase Audit Remediation - NEW TASK
-- [>] **Address findings from March 2026 codebase audit** (see `docs/codebase-audit-2026-03.md`)
-
----
-
-## 🔥 Open Tasks (carried forward)
-
-### 🔶 Documentation & Admin Management (Aug 2025) - NOT STARTED
-- [ ] **Create Startr Writing Guidelines**: Structure, modernize, and publish house style
-  - [ ] Draft structured guide from legacy notes (clarity-first)
-  - [ ] Add concise Do/Don't examples for each rule
-  - [ ] Publish to `docs/WRITING_GUIDELINES.md`
-  - [ ] Link from `README.md` and `docs/README.md`
-  - [ ] Verify formatting, headings, and internal anchors
-  - [ ] Note future alignment with `CONTRIBUTING.md`
-
 ### 🔶 Docker Build Enhancements - NOT STARTED
 - [ ] **Docker multi-stage build**: Still single FROM stage, build tools ship in production image
   - [ ] Implement multi-stage build with separate builder and runtime stages
   - [ ] Further build time optimizations (currently 5m52s vs 10m+)
   - [ ] Document fast development rebuild workflow
+
+### 🔶 HTML Cleanup Initiative - NOT STARTED
+- [ ] **Replace redundant wrapper divs with unregistered custom elements** to improve semantic clarity
+  - [ ] Audit components for unnecessary wrapper `<div>` elements
+  - [ ] Replace with descriptive custom elements (e.g. `<chat-header>`, `<sidebar-nav>`, `<model-card>`)
+  - [ ] Establish naming convention: lowercase, hyphenated, project-scoped where needed
+  - [ ] Reduce associated CSS resets caused by generic div nesting
+  - [ ] Verify no layout/style regressions after replacements
 
 ### 🔶 API Documentation Enhancement - PARTIAL
 - [ ] **Complete Swagger UI Configuration**: Basic setup done, enhancements remain

@@ -12,7 +12,7 @@
 </script>
 
 <button
-	style="--bw:1.5px; --bs:solid; --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --c:#fff; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.2rem; --d:inline-block; --w:1rem; --h:1rem; --pos:relative; {state !== 'unchecked' ? '--bgc:#000; --bc:#000; --dark-bgc:#fff; --dark-bc:#fff; --dark-c:#000' : ''}"
+	style="--bw:1.5px; --bs:solid; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.2rem; --d:inline-block; --w:1rem; --h:1rem; --pos:relative; {state !== 'unchecked' ? '--bgc:#000; --bc:#000; --dark-bgc:#fff; --dark-bc:#fff; --dark-c:#000' : ''}"
 	class="{disabled
 		? 'opacity-50 cursor-not-allowed'
 		: ''}"

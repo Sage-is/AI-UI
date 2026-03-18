@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { onMount, getContext } from 'svelte';
 	import { getGroups } from '$lib/apis/groups';
+	import { getUsers, getUserById } from '$lib/apis/users';
+	import { user } from '$lib/stores';
 	import Checkbox from '$lib/components/common/Checkbox.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import Search from '$lib/components/icons/Search.svelte';
@@ -20,30 +22,39 @@
 			const allGroups = await getGroups(localStorage.token);
 			groups = allGroups;
 
-			// Extract deduplicated co-members from groups
-			const memberMap = new Map();
-			for (const group of allGroups) {
-				if (group.user_ids) {
-					for (const userId of group.user_ids) {
-						if (!memberMap.has(userId)) {
-							memberMap.set(userId, { id: userId, name: '', email: '' });
+			const currentUserId = $user?.id;
+			const isAdmin = $user?.role === 'admin';
+
+			if (isAdmin) {
+				// Admin sees all users
+				const result = await getUsers(localStorage.token);
+				const allUsers = result?.users ?? result ?? [];
+				coMembers = allUsers
+					.filter((u) => u.id !== currentUserId)
+					.map((u) => ({ id: u.id, name: u.name, email: u.email }));
+			} else {
+				// Non-admin: extract unique user IDs from visible groups
+				const userIds = new Set<string>();
+				for (const group of allGroups) {
+					if (group.user_ids) {
+						for (const uid of group.user_ids) {
+							if (uid !== currentUserId) {
+								userIds.add(uid);
+							}
 						}
 					}
 				}
-			}
 
-			// Fetch user details for co-members
-			if (memberMap.size > 0) {
-				const { getUsers } = await import('$lib/apis/users');
-				const users = await getUsers(localStorage.token);
-				for (const u of users) {
-					if (memberMap.has(u.id)) {
-						memberMap.set(u.id, { id: u.id, name: u.name, email: u.email });
-					}
-				}
+				// Fetch details for each user
+				const userDetails = await Promise.all(
+					Array.from(userIds).map((uid) =>
+						getUserById(localStorage.token, uid).catch(() => null)
+					)
+				);
+				coMembers = userDetails
+					.filter((u) => u && u.name)
+					.map((u) => ({ id: u.id, name: u.name, email: u.email }));
 			}
-
-			coMembers = Array.from(memberMap.values()).filter((m) => m.name);
 		} catch (err) {
 			console.error('Failed to load groups/members:', err);
 		}

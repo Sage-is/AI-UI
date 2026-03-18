@@ -14,6 +14,8 @@ from sage_is_ai.models.chats import (
 from sage_is_ai.models.tags import TagModel, Tags
 from sage_is_ai.models.folders import Folders
 
+from sage_is_ai.models.chat_shares import ChatShares
+from sage_is_ai.models.groups import Groups
 from sage_is_ai.config import ENABLE_ADMIN_CHAT_ACCESS, ENABLE_ADMIN_EXPORT
 from sage_is_ai.constants import ERROR_MESSAGES
 from sage_is_ai.env import SRC_LOG_LEVELS
@@ -347,10 +349,35 @@ async def get_shared_chat_by_id(share_id: str, user=Depends(get_verified_user)):
             status_code=status.HTTP_401_UNAUTHORIZED, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
+    # 1. Try link-based sharing first
+    chat = None
     if user.role == "user" or (user.role == "admin" and not ENABLE_ADMIN_CHAT_ACCESS):
         chat = Chats.get_chat_by_share_id(share_id)
     elif user.role == "admin" and ENABLE_ADMIN_CHAT_ACCESS:
         chat = Chats.get_chat_by_id(share_id)
+
+    # 2. Fallback: try targeted share from chat_shares table
+    if not chat:
+        share = ChatShares.get_share_by_id(share_id)
+        if share:
+            # Verify access: direct user target, group member, or admin
+            has_access = False
+            if share.target_type == "user" and share.target_id == user.id:
+                has_access = True
+            elif share.target_type == "group":
+                group = Groups.get_group_by_id(share.target_id)
+                if group and user.id in (group.user_ids or []):
+                    has_access = True
+            if not has_access and user.role == "admin" and ENABLE_ADMIN_CHAT_ACCESS:
+                has_access = True
+
+            if has_access:
+                effective_chat_id = (
+                    share.snapshot_chat_id
+                    if share.share_mode == "snapshot" and share.snapshot_chat_id
+                    else share.chat_id
+                )
+                chat = Chats.get_chat_by_id(effective_chat_id)
 
     if chat:
         return ChatResponse(**chat.model_dump())

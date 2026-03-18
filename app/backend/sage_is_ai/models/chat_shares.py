@@ -157,6 +157,11 @@ class ChatShareTable:
         shared_chat = Chats.insert_shared_chat_by_chat_id(chat_id)
         return shared_chat.id if shared_chat else None
 
+    def get_share_by_id(self, share_id: str) -> Optional[ChatShareModel]:
+        with get_db() as db:
+            share = db.query(ChatShare).filter_by(id=share_id).first()
+            return ChatShareModel.model_validate(share) if share else None
+
     def get_shares_by_chat_id(self, chat_id: str) -> list[ChatShareModel]:
         with get_db() as db:
             return [

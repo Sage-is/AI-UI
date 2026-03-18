@@ -204,7 +204,34 @@
 			</div>
 		</div>
 
-		<div style="--d:flex; --w:100%; --g:0.5rem">
+		<div style="--d:flex; --ai:center; --w:100%; --g:0.5rem">
+			<div>
+				{#if $user?.role === 'admin'}
+					<AddToolMenu
+						createHandler={() => {
+							goto('/workshop/tools/create');
+						}}
+						importFromLinkHandler={() => {
+							showImportModal = true;
+						}}
+					>
+						<a
+							style="--px:0.5rem; --py:0.5rem; --radius:0.6rem; --hvr-bgc:rgb(78 78 78 / 0.1); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.8rem; --d:flex; --ai:center; --g:0.2rem"
+							href="/workshop/tools/create"
+						>
+							<Plus className="size-3.5" />
+						</a>
+					</AddToolMenu>
+				{:else}
+					<a
+						style="--px:0.5rem; --py:0.5rem; --radius:0.6rem; --hvr-bgc:rgb(78 78 78 / 0.1); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.8rem; --d:flex; --ai:center; --g:0.2rem"
+						href="/workshop/tools/create"
+					>
+						<Plus className="size-3.5" />
+					</a>
+				{/if}
+			</div>
+
 			<div style="--d:flex; --fx:1 1 0%">
 				<div style="--as:center; --ml:0.2rem; --mr:0.6rem">
 					<Search className="size-3.5" />
@@ -225,32 +252,6 @@
 							<XMark className="size-3" strokeWidth="2" />
 						</button>
 					</div>
-				{/if}
-			</div>
-
-			<div>
-				{#if $user?.role === 'admin'}
-					<AddToolMenu
-						createHandler={() => {
-							goto('/workshop/tools/create');
-						}}
-						importFromLinkHandler={() => {
-							showImportModal = true;
-						}}
-					>
-						<div
-							style="--px:0.5rem; --py:0.5rem; --radius:0.6rem; --hvr-bgc:rgb(78 78 78 / 0.1); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.8rem; --d:flex; --ai:center; --g:0.2rem"
-						>
-							<Plus className="size-3.5" />
-						</div>
-					</AddToolMenu>
-				{:else}
-					<a
-						style="--px:0.5rem; --py:0.5rem; --radius:0.6rem; --hvr-bgc:rgb(78 78 78 / 0.1); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.8rem; --d:flex; --ai:center; --g:0.2rem"
-						href="/workshop/tools/create"
-					>
-						<Plus className="size-3.5" />
-					</a>
 				{/if}
 			</div>
 		</div>

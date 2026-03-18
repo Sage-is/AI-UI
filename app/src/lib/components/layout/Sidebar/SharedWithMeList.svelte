@@ -14,7 +14,7 @@
 			<button
 				style="--d:flex; --ai:center; --g:0.5rem; --w:100%; --px:0.625rem; --py:0.4rem; --radius:0.4rem; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:background-color 150ms ease; --ta:left"
 				on:click={() => {
-					goto(`/s/${item.chat_id}`);
+					goto(`/s/${item.share_id}`);
 					if ($mobile) {
 						showSidebar.set(false);
 					}

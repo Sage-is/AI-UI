@@ -83,7 +83,7 @@
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-	<div
+	<modal-element
 		bind:this={modalElement}
 		aria-modal="true"
 		role="dialog"
@@ -110,7 +110,7 @@
 		>
 			<slot />
 		</modal-content>
-	</div>
+	</modal-element>
 {/if}
 
 <style>

@@ -164,7 +164,8 @@
 		);
 
 		dragged = true;
-		itemElement.style.opacity = '0.5'; // Optional: Visual cue to show it's being dragged
+		itemElement.style.opacity = '0.4';
+		document.body.style.cursor = 'grabbing';
 	};
 
 	const onDrag = (event) => {
@@ -177,7 +178,8 @@
 	const onDragEnd = (event) => {
 		event.stopPropagation();
 
-		itemElement.style.opacity = '1'; // Reset visual cue after drag
+		itemElement.style.opacity = '';
+		document.body.style.cursor = '';
 		dragged = false;
 	};
 
@@ -394,9 +396,9 @@
 
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<div
-		style="--pos:absolute; --top:4px; --py:0.2rem; --pr:0.125rem; 
-			--mr:0.4rem; --pl:1.2rem; 
-			--bgi:linear-gradient(270deg, var(--tw-gradient-stops)); 
+		style="--pos:absolute; --top:50%; --translatey:-50%; --py:0.2rem; --pr:0.125rem;
+			--mr:0.4rem; --pl:1.2rem;
+			--bgi:linear-gradient(270deg, var(--tw-gradient-stops));
 			--tw-gradient-to:transparent;"
 		class="{id === $chatId || confirmEdit
 			? 'from-gray-100 dark:from-gray-900'
@@ -414,7 +416,7 @@
 		>
 		{#if confirmEdit}
 			<div
-				style="--d:flex; --as:center; --ai:center; --g:0.4rem; --z:10; --translatey:0.5px; --translatex:-0.5px"
+				style="--d:flex; --as:center; --ai:center; --g:0.4rem; --z:10; --translatex:-0.5px"
 			>
 				<Tooltip content={$i18n.t('Generate')}>
 					<button
