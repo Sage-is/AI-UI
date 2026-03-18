@@ -257,7 +257,17 @@
 		</DeleteConfirmDialog>
 
 		<div style="--d:flex; --fd:column; --g:0.2rem; --px:0.8rem">
-			<div style="--d:flex; --fx:1 1 0%; --ai:center; --w:100%; --g:0.5rem">
+			<div style="--d:flex; --ai:center; --w:100%; --g:0.5rem">
+				<div>
+					<a
+						style="--px:0.5rem; --py:0.5rem; --radius:0.6rem; --hvr-bgc:rgb(78 78 78 / 0.1); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.8rem; --d:flex; --ai:center; --g:0.2rem"
+						aria-label={$i18n.t('Create Note')}
+						href={'#'}
+						on:click|preventDefault={createNoteHandler}
+					>
+						<Plus className="size-3.5" />
+					</a>
+				</div>
 				<div style="--d:flex; --fx:1 1 0%; --ai:center">
 					<div style="--as:center; --ml:0.2rem; --mr:0.6rem">
 						<Search className="size-3.5" />
@@ -392,27 +402,6 @@
 			{/if}
 		</div>
 
-		<div style="--pos:absolute; --bottom:0; --left:0; --right:0; --p:1.2rem; --maxw:100%; --d:flex; --jc:flex-end">
-			<div style="--d:flex; --g:0.125rem; --jc:flex-end; --w:100%">
-				<Tooltip content={$i18n.t('Create Note')}>
-					<button
-						style="--cur:pointer; --p:0.625rem; --d:flex; --radius:9999px;  --bc:var(--color-gray-50); --bgc:#fff; --dark-bs:none; --dark-bgc:var(--color-gray-850); --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --shadow:5"
-						type="button"
-						on:click={async () => {
-							createNoteHandler();
-						}}
-					>
-						<Plus className="size-4.5" strokeWidth="2.5" />
-					</button>
-				</Tooltip>
-
-				<!-- <button
-				style="--cur:pointer; --p:0.625rem; --d:flex; --radius:9999px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --shadow:5"
-			>
-				<SparklesSolid className="size-4" />
-			</button> -->
-			</div>
-		</div>
 
 		<!-- {#if $user?.role === 'admin'}
 		<div style="--d:flex; --jc:flex-end; --w:100%; --mb:0.6rem">

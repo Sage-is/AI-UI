@@ -324,8 +324,10 @@
 		persistCollapsedDateGroups();
 	};
 
-	// Auto-expand group containing active chat
-	$: if ($chatId && groupedChats.length > 0) {
+	// Auto-expand group containing active chat (only when chatId changes)
+	let prevAutoExpandChatId: string | null = null;
+	$: if ($chatId && $chatId !== prevAutoExpandChatId && groupedChats.length > 0) {
+		prevAutoExpandChatId = $chatId;
 		for (const group of groupedChats) {
 			if (group.chats.some((c) => c.id === $chatId) && collapsedDateGroups[group.timeRange]) {
 				delete collapsedDateGroups[group.timeRange];
@@ -334,6 +336,8 @@
 				break;
 			}
 		}
+	} else if (!$chatId) {
+		prevAutoExpandChatId = null;
 	}
 
 	$: allDateGroupsCollapsed =
@@ -968,6 +972,7 @@
 				<!-- Toggle icon bar: folders, pinned, dates, shared -->
 				{#if Object.keys(folders).length > 0 || $pinnedChats.length > 0 || groupedChats.length > 0 || $sharedByMeChats.length > 0 || $sharedWithMeChats.length > 0}
 					<div style="--d:flex; --ai:center; --g:0.2rem; --px:0.4rem; --pt:0.2rem; --pb:0.125rem">
+						<!-- Section toggles: Pinned, Shared by Me, Shared with Me -->
 						{#if $pinnedChats.length > 0}
 							<Tooltip content={showPinnedChat ? $i18n.t('Hide Pinned') : $i18n.t('Show Pinned')}>
 								<button
@@ -992,80 +997,6 @@
 										/>
 									</svg>
 									{#if showPinnedChat}
-										<ChevronDown className="size-2.5" strokeWidth="2.5" />
-									{:else}
-										<ChevronRight className="size-2.5" strokeWidth="2.5" />
-									{/if}
-								</button>
-							</Tooltip>
-						{/if}
-
-						{#if Object.keys(folders).length > 0}
-							<Tooltip
-								content={allFoldersCollapsed ? $i18n.t('Unfold Folders') : $i18n.t('Fold Folders')}
-							>
-								<button
-									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.2rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-300); --tn:color 150ms ease"
-									on:click={() => {
-										if (allFoldersCollapsed) {
-											unfoldAllFolders();
-										} else {
-											foldAllFolders();
-										}
-									}}
-								>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										fill="none"
-										viewBox="0 0 24 24"
-										stroke-width="2"
-										stroke="currentColor"
-										style="--w:0.8rem; --h:0.8rem"
-									>
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z"
-										/>
-									</svg>
-									{#if allFoldersCollapsed}
-										<ChevronDown className="size-2.5" strokeWidth="2.5" />
-									{:else}
-										<ChevronRight className="size-2.5" strokeWidth="2.5" />
-									{/if}
-								</button>
-							</Tooltip>
-						{/if}
-
-						{#if groupedChats.length > 0}
-							<Tooltip
-								content={allDateGroupsCollapsed ? $i18n.t('Unfold Dates') : $i18n.t('Fold Dates')}
-							>
-								<button
-									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.2rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-300); --tn:color 150ms ease"
-									on:click={() => {
-										if (allDateGroupsCollapsed) {
-											unfoldAllDateGroups();
-										} else {
-											foldAllDateGroups();
-										}
-									}}
-								>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										fill="none"
-										viewBox="0 0 24 24"
-										stroke-width="2"
-										stroke="currentColor"
-										style="--w:0.8rem; --h:0.8rem"
-									>
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-										/>
-									</svg>
-									{#if allDateGroupsCollapsed}
 										<ChevronDown className="size-2.5" strokeWidth="2.5" />
 									{:else}
 										<ChevronRight className="size-2.5" strokeWidth="2.5" />
@@ -1147,11 +1078,92 @@
 								</button>
 							</Tooltip>
 						{/if}
+
+						<!-- Separator between section toggles and display toggles -->
+						{#if ($pinnedChats.length > 0 || $sharedByMeChats.length > 0 || $sharedWithMeChats.length > 0) && (Object.keys(folders).length > 0 || groupedChats.length > 0)}
+							<div style="--w:1px; --h:0.6rem; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-700); --mx:0.1rem"></div>
+						{/if}
+
+						<!-- Display toggles: Folders, Fold Dates -->
+						{#if Object.keys(folders).length > 0}
+							<Tooltip
+								content={allFoldersCollapsed ? $i18n.t('Unfold Folders') : $i18n.t('Fold Folders')}
+							>
+								<button
+									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.2rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-300); --tn:color 150ms ease"
+									on:click={() => {
+										if (allFoldersCollapsed) {
+											unfoldAllFolders();
+										} else {
+											foldAllFolders();
+										}
+									}}
+								>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke-width="2"
+										stroke="currentColor"
+										style="--w:0.8rem; --h:0.8rem"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z"
+										/>
+									</svg>
+									{#if allFoldersCollapsed}
+										<ChevronRight className="size-2.5" strokeWidth="2.5" />
+									{:else}
+										<ChevronDown className="size-2.5" strokeWidth="2.5" />
+									{/if}
+								</button>
+							</Tooltip>
+						{/if}
+
+						{#if groupedChats.length > 0}
+							<Tooltip
+								content={allDateGroupsCollapsed ? $i18n.t('Unfold Dates') : $i18n.t('Fold Dates')}
+							>
+								<button
+									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.2rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-300); --tn:color 150ms ease"
+									on:click={() => {
+										if (allDateGroupsCollapsed) {
+											unfoldAllDateGroups();
+										} else {
+											foldAllDateGroups();
+										}
+									}}
+								>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke-width="2"
+										stroke="currentColor"
+										style="--w:0.8rem; --h:0.8rem"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+										/>
+									</svg>
+									{#if allDateGroupsCollapsed}
+										<ChevronRight className="size-2.5" strokeWidth="2.5" />
+									{:else}
+										<ChevronDown className="size-2.5" strokeWidth="2.5" />
+									{/if}
+								</button>
+							</Tooltip>
+						{/if}
 					</div>
 				{/if}
 
-				<!-- Pinned chats (toggled via icon bar, no header label) -->
+				<!-- Pinned chats (toggled via icon bar) -->
 				{#if $pinnedChats.length > 0 && showPinnedChat}
+					<div style="--pl:0.6rem; --pt:0.4rem; --pb:0.2rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --weight:500; --tt:uppercase; --ls:0.03em">{$i18n.t('Pinned')}</div>
 					<!-- svelte-ignore a11y-no-static-element-interactions -->
 					<div
 						transition:slide={{ duration: 200, easing: quintOut }}
@@ -1261,6 +1273,7 @@
 
 				<!-- Shared by me (toggled via icon bar) -->
 				{#if $sharedByMeChats.length > 0 && showSharedByMe}
+					<div style="--pl:0.6rem; --pt:0.4rem; --pb:0.2rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --weight:500; --tt:uppercase; --ls:0.03em">{$i18n.t('Shared by Me')}</div>
 					<div transition:slide={{ duration: 200, easing: quintOut }} style="--d:flex; --fd:column">
 						<div
 							style="--ml:0.6rem; --pl:0.2rem; --mt:1px; --d:flex; --fd:column; --ofy:auto; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-900)"
@@ -1273,6 +1286,7 @@
 
 				<!-- Shared with me (toggled via icon bar) -->
 				{#if $sharedWithMeChats.length > 0 && showSharedWithMe}
+					<div style="--pl:0.6rem; --pt:0.4rem; --pb:0.2rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --weight:500; --tt:uppercase; --ls:0.03em">{$i18n.t('Shared with Me')}</div>
 					<div transition:slide={{ duration: 200, easing: quintOut }} style="--d:flex; --fd:column">
 						<div
 							style="--ml:0.6rem; --pl:0.2rem; --mt:1px; --d:flex; --fd:column; --ofy:auto; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-900)"
@@ -1281,6 +1295,10 @@
 							<SharedWithMeList items={$sharedWithMeChats} />
 						</div>
 					</div>
+				{/if}
+
+				{#if folders && !allFoldersCollapsed}
+					<div style="--pl:0.6rem; --pt:0.4rem; --pb:0.2rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --weight:500; --tt:uppercase; --ls:0.03em">{$i18n.t('Folders')}</div>
 				{/if}
 
 				{#if folders}
@@ -1302,6 +1320,11 @@
 							initChatList();
 						}}
 					/>
+				{/if}
+
+				{#if !allDateGroupsCollapsed}
+				{#if groupedChats.length > 0}
+					<div style="--pl:0.6rem; --pt:0.4rem; --pb:0.2rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --weight:500; --tt:uppercase; --ls:0.03em">{$i18n.t('Recent')}</div>
 				{/if}
 
 				<div style="--fx:1 1 0%; --d:flex; --fd:column; --ofy:auto" class="scrollbar-hidden">
@@ -1411,6 +1434,7 @@
 						{/if}
 					</div>
 				</div>
+				{/if}
 			</Folder>
 		</div>
 

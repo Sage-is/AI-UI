@@ -410,8 +410,9 @@
 <div bind:this={folderElement} style="--pos:relative" class={className} draggable="true">
 	{#if draggedOver}
 		<div
-			style="--pos:absolute; --top:0; --left:0; --w:100%; --h:100%; --bgc:rgb(236 236 236 / 0.5); --dark-bgc:rgb(78 78 78 / 0.2); --z:50; --pe:none; touch-action:none"
-			class="rounded-xs bg-opacity-50 dark:bg-opacity-10"
+			style="--pos:absolute; --top:0; --left:0; --w:100%; --h:100%; --bgc:rgb(0 0 0 / 0.08); --dark-bgc:rgb(255 255 255 / 0.08); --z:50; --p
+          -e:none; touch-action:none; box-shadow:inset 0 0 0 1px rgba(0,0,0,0.15); --radius:0.4rem"
+			class="rounded-xs"
 		></div>
 	{/if}
 
@@ -430,7 +431,9 @@
 			<button
 				id="folder-{folderId}-button"
 				style="--pos:relative; --w:100%; --py:0.4rem; --px:0.5rem; --radius:0.4rem; --d:flex; --ai:center; --g:0.4rem; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --weight:500; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
-				class={$selectedFolder?.id === folderId ? 'bg-gray-100 dark:bg-gray-900' : ''}
+				class="{$selectedFolder?.id === folderId ? 'bg-gray-100 dark:bg-gray-900' : ''} {draggedOver
+					? 'bg-gray-200 dark:bg-gray-800'
+					: ''}"
 				on:mouseenter={() => {
 					isFolderHovered = true;
 				}}
@@ -488,9 +491,12 @@
 					{/if}
 				</div>
 
-				{#if !open && ((folders[folderId]?.childrenIds ?? []).length + (folders[folderId]?.items?.chats ?? []).length) > 0}
-					<div style="--size:0.625rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-600); --fs:0">
-						({(folders[folderId]?.childrenIds ?? []).length + (folders[folderId]?.items?.chats ?? []).length})
+				{#if !open && (folders[folderId]?.childrenIds ?? []).length + (folders[folderId]?.items?.chats ?? []).length > 0}
+					<div
+						style="--size:0.625rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-600); --fs:0"
+					>
+						({(folders[folderId]?.childrenIds ?? []).length +
+							(folders[folderId]?.items?.chats ?? []).length})
 					</div>
 				{/if}
 
