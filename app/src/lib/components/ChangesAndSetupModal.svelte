@@ -12,40 +12,40 @@
 	import ConnectionStep from './setup/ConnectionStep.svelte';
 	import UsersStep from './setup/UsersStep.svelte';
 	import CompleteStep from './setup/CompleteStep.svelte';
-	import StepChooser from './setup/StepChooser.svelte';
 
 	const i18n = getContext('i18n');
 
 	export let show = false;
 
-	type PanelId = 'changelog' | 'chooser' | 'welcome' | 'connection' | 'users' | 'complete';
+	type PanelId = 'changelog' | 'welcome' | 'connection' | 'users' | 'complete';
 
 	let currentIndex = 0;
 	let connectionAdded = false;
 	let usersAdded = false;
 	let workingAloneSelected = false;
 
-	// Manual panel override from StepChooser — null means use auto-computed panels
-	let manualPanels: PanelId[] | null = null;
+	// Dynamic panels set by WelcomeStep's onStart callback — null means use auto-computed
+	let dynamicPanels: PanelId[] | null = null;
 
-	// Pure function: compute panels from trigger reason
-	function computePanels(reason: SetupTriggerReason): PanelId[] {
+	// Determine whether to show wizard (welcome + steps)
+	function needsWizard(reason: SetupTriggerReason): boolean {
+		return reason.needsModels || reason.needsUsers || reason.manualTrigger;
+	}
+
+	// Initial panel list: just changelog? + welcome
+	// The welcome step lets the admin choose which steps to include
+	function computeInitialPanels(reason: SetupTriggerReason): PanelId[] {
 		const p: PanelId[] = [];
 
-		if (reason.manualTrigger) {
-			p.push('chooser');
-		} else {
-			if (reason.hasChangelog) {
-				p.push('changelog');
-			}
-			if (reason.needsModels || reason.needsUsers) {
-				p.push('welcome');
-				if (reason.needsModels) p.push('connection');
-				if (reason.needsUsers) p.push('users');
-				p.push('complete');
-			}
+		if (reason.hasChangelog) {
+			p.push('changelog');
 		}
 
+		if (needsWizard(reason)) {
+			p.push('welcome');
+		}
+
+		// Fallback: if nothing, show changelog
 		if (p.length === 0) {
 			p.push('changelog');
 		}
@@ -54,20 +54,31 @@
 	}
 
 	// All panel state derived via direct $: assignments so Svelte can track them
-	$: autoPanels = show ? computePanels($setupTriggerReason) : [];
-	$: panels = manualPanels ?? autoPanels;
+	$: initialPanels = show ? computeInitialPanels($setupTriggerReason) : [];
+	$: panels = dynamicPanels ?? initialPanels;
 	$: currentPanel = panels[currentIndex] ?? null;
 	$: isWizardMode = panels.some((p) => p !== 'changelog');
 	$: wizardPanels = panels.filter((p) => p !== 'changelog');
 	$: wizardIndex = isWizardMode ? wizardPanels.indexOf(currentPanel) : -1;
+	$: isFirstRun = !$settings?.setupCompleted;
 
 	// Reset state when modal opens
 	$: if (show) {
 		currentIndex = 0;
-		manualPanels = null;
+		dynamicPanels = null;
 		connectionAdded = false;
 		usersAdded = false;
 		workingAloneSelected = false;
+	}
+
+	function goToWizardPanel(wizardIdx: number) {
+		const targetPanel = wizardPanels[wizardIdx];
+		if (targetPanel) {
+			const panelIdx = panels.indexOf(targetPanel);
+			if (panelIdx >= 0) {
+				currentIndex = panelIdx;
+			}
+		}
 	}
 
 	function next() {
@@ -95,13 +106,17 @@
 		show = false;
 	}
 
-	function handleChooserStart(steps: string[]) {
-		const p: PanelId[] = [];
+	// Called by WelcomeStep when admin clicks "Get Started" with selected steps
+	function handleWelcomeStart(steps: string[]) {
+		// Build full panel sequence: everything before welcome + welcome + selected steps + complete
+		const beforeWelcome = panels.slice(0, panels.indexOf('welcome'));
+		const p: PanelId[] = [...beforeWelcome, 'welcome'];
 		if (steps.includes('connection')) p.push('connection');
 		if (steps.includes('users')) p.push('users');
 		p.push('complete');
-		manualPanels = p;
-		currentIndex = 0;
+		dynamicPanels = p;
+		// Advance past welcome to the first real step
+		currentIndex = beforeWelcome.length + 1;
 	}
 
 	function handleChangelogNext() {
@@ -119,9 +134,10 @@
 		show = false;
 	}
 
-	function handleWorkingAlone() {
+	async function handleWorkingAlone() {
 		workingAloneSelected = true;
-		settings.set({ ...$settings, workingAlone: true });
+		await settings.set({ ...$settings, workingAlone: true });
+		await updateUserSettings(localStorage.token, { ui: { ...$settings, workingAlone: true } });
 		next();
 	}
 
@@ -147,12 +163,14 @@
 		</button>
 	</div>
 
-	<!-- Step Progress Indicator (wizard mode only, not for changelog) -->
-	{#if isWizardMode && wizardPanels.length > 1 && currentPanel !== 'changelog'}
+	<!-- Step Progress Indicator (wizard mode only, not for changelog or welcome) -->
+	{#if isWizardMode && wizardPanels.length > 1 && currentPanel !== 'changelog' && currentPanel !== 'welcome'}
 		<div style="--d:flex; --jc:center; --g:0.4rem; --px:1.2rem; --pb:0.5rem">
 			{#each wizardPanels as panel, i}
-				<div
-					style="--w:0.5rem; --h:0.5rem; --radius:9999px; --tn:background-color 200ms ease; --bgc:{i <= wizardIndex ? '#000' : 'var(--color-gray-300)'}; --dark-bgc:{i <= wizardIndex ? '#fff' : 'var(--color-gray-600)'}"
+				<button
+					on:click={() => goToWizardPanel(i)}
+					aria-label={panel}
+					style="--w:0.6rem; --h:0.6rem; --radius:9999px; --p:0; --tn:background-color 200ms ease, transform 150ms ease; --bgc:{i <= wizardIndex ? '#000' : 'var(--color-gray-300)'}; --dark-bgc:{i <= wizardIndex ? '#fff' : 'var(--color-gray-600)'}; cursor:pointer; --hvr-transform:scale(1.3)"
 				/>
 			{/each}
 		</div>
@@ -164,13 +182,10 @@
 			onNext={handleChangelogNext}
 			isLastPanel={panels.length === 1}
 		/>
-	{:else if currentPanel === 'chooser'}
-		<StepChooser onStart={handleChooserStart} />
 	{:else if currentPanel === 'welcome'}
 		<WelcomeStep
-			onNext={next}
-			hasConnectionStep={panels.includes('connection')}
-			hasUsersStep={panels.includes('users')}
+			onStart={handleWelcomeStart}
+			{isFirstRun}
 		/>
 	{:else if currentPanel === 'connection'}
 		<ConnectionStep

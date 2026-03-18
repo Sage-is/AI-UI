@@ -216,9 +216,10 @@
 
 			if ($user?.role === 'admin') {
 				const hasChangelog = ($settings?.showChangelog ?? true) && ($settings?.version !== $config.version);
-				const needsModels = $models.length === 0;
-				const needsUsers = !($settings?.workingAlone) && !($settings?.setupCompleted);
-				if (hasChangelog || needsModels || needsUsers) {
+				const needsSetup = !($settings?.setupCompleted);
+				const needsModels = needsSetup || $models.length === 0;
+				const needsUsers = needsSetup && !($settings?.workingAlone);
+				if (hasChangelog || needsSetup) {
 					setupTriggerReason.set({ hasChangelog, needsModels, needsUsers, manualTrigger: false });
 					showChangesAndSetup.set(true);
 				}
