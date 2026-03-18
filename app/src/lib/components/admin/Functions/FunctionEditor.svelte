@@ -385,9 +385,9 @@ class Pipe:
 					/>
 				</div>
 
-				<div style="--pb:0.75rem; --d:flex; --jc:space-between">
-					<div style="--fx:1 1 0%; --pr:0.75rem">
-						<div style="--size:0.75rem; --c:var(--color-gray-500); --line-clamp:2">
+				<div style="--pb:0.6rem; --d:flex; --jc:space-between">
+					<div style="--fx:1 1 0%; --pr:0.6rem">
+						<div style="--size:0.6rem; --c:var(--color-gray-500); --line-clamp:2">
 							<span style="--weight:600; --dark-c:var(--color-gray-200)">{$i18n.t('Warning:')}</span>
 							{$i18n.t('Functions allow arbitrary code execution.')} <br />—
 							<span style="--weight:500; --dark-c:var(--color-gray-400)"
@@ -415,16 +415,16 @@ class Pipe:
 	}}
 >
 	<div style="--size:0.875rem; --c:var(--color-gray-500)">
-		<div style="--bgc:rgb(234 179 8 / 0.2); --c:#a16207; --dark-c:#fef08a; --radius:0.5rem; --px:1rem; --py:0.75rem">
+		<div style="--bgc:rgb(234 179 8 / 0.2); --c:#a16207; --dark-c:#fef08a; --radius:0.5rem; --px:1rem; --py:0.6rem">
 			<div>{$i18n.t('Please carefully review the following warnings:')}</div>
 
-			<ul style="--mt:0.25rem; list-style-type:disc; --pl:1rem; --size:0.75rem">
+			<ul style="--mt:0.25rem; list-style-type:disc; --pl:1rem; --size:0.6rem">
 				<li>{$i18n.t('Functions allow arbitrary code execution.')}</li>
 				<li>{$i18n.t('Do not install functions from sources you do not fully trust.')}</li>
 			</ul>
 		</div>
 
-		<div style="--my:0.75rem">
+		<div style="--my:0.6rem">
 			{$i18n.t(
 				'I acknowledge that I have read and I understand the implications of my action. I am aware of the risks associated with executing arbitrary code and I have verified the trustworthiness of the source.'
 			)}

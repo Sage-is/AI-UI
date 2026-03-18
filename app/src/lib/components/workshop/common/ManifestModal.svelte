@@ -48,7 +48,7 @@
 							)}
 						</div>
 
-						<hr style="--dark-bc:var(--color-gray-800); --my:0.75rem" />
+						<hr style="--dark-bc:var(--color-gray-800); --my:0.6rem" />
 						<div style="--my:0.5rem">
 							{$i18n.t('Support this plugin:')}
 							<a
@@ -59,7 +59,7 @@
 						</div>
 					</div>
 
-					<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
+					<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.875rem; --weight:500">
 						<button
 							style="--px:1rem; --py:0.5rem; --bgc:#047857; --hvr-bgc:#065f46; --c:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --d:flex; --fd:row; --g:0.25rem; --ai:center"
 							type="submit"

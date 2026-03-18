@@ -70,8 +70,8 @@
 		<div style="--mb:0.5rem; --size:0.875rem; --weight:500">{$i18n.t('Model Permissions')}</div>
 
 		<div style="--mb:0.5rem">
-			<div style="--d:flex; --jc:space-between; --ai:center; --size:0.75rem; --pr:0.5rem">
-				<div style="--size:0.75rem; --weight:500">{$i18n.t('Model Filtering')}</div>
+			<div style="--d:flex; --jc:space-between; --ai:center; --size:0.6rem; --pr:0.5rem">
+				<div style="--size:0.6rem; --weight:500">{$i18n.t('Model Filtering')}</div>
 
 				<Switch bind:state={permissions.model.filter} />
 			</div>
@@ -82,7 +82,7 @@
 				<div style="--g:0.375rem">
 					<div style="--d:flex; --fd:column; --w:100%">
 						<div style="--mb:0.25rem; --d:flex; --jc:space-between">
-							<div style="--size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Model IDs')}</div>
+							<div style="--size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Model IDs')}</div>
 						</div>
 
 						{#if model_ids.length > 0}
@@ -106,7 +106,7 @@
 								{/each}
 							</div>
 						{:else}
-							<div style="--c:var(--color-gray-500); --size:0.75rem; --ta:center; --py:0.5rem; --px:2.5rem">
+							<div style="--c:var(--color-gray-500); --size:0.6rem; --ta:center; --py:0.5rem; --px:2.5rem">
 								{$i18n.t('No model IDs')}
 							</div>
 						{/if}
@@ -145,10 +145,10 @@
 			</div>
 		{/if}
 
-		<div style="--g:0.25rem; --mb:0.75rem">
+		<div style="--g:0.25rem; --mb:0.6rem">
 			<div class="">
-				<div style="--d:flex; --jc:space-between; --ai:center; --size:0.75rem">
-					<div style="--size:0.75rem; --weight:500">{$i18n.t('Default Model')}</div>
+				<div style="--d:flex; --jc:space-between; --ai:center; --size:0.6rem">
+					<div style="--size:0.6rem; --weight:500">{$i18n.t('Default Model')}</div>
 				</div>
 			</div>
 
@@ -173,21 +173,21 @@
 		<div style="--mb:0.5rem; --size:0.875rem; --weight:500">{$i18n.t('Workshop Permissions')}</div>
 
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
-			<div style="--as:center; --size:0.75rem; --weight:500">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Models Access')}
 			</div>
 			<Switch bind:state={permissions.workshop.models} />
 		</div>
 
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
-			<div style="--as:center; --size:0.75rem; --weight:500">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Knowledge Access')}
 			</div>
 			<Switch bind:state={permissions.workshop.knowledge} />
 		</div>
 
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
-			<div style="--as:center; --size:0.75rem; --weight:500">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Prompts Access')}
 			</div>
 			<Switch bind:state={permissions.workshop.prompts} />
@@ -201,7 +201,7 @@
 				)}
 				placement="top-start"
 			>
-				<div style="--as:center; --size:0.75rem; --weight:500">
+				<div style="--as:center; --size:0.6rem; --weight:500">
 					{$i18n.t('Tools Access')}
 				</div>
 				<Switch bind:state={permissions.workshop.tools} />
@@ -215,28 +215,28 @@
 		<div style="--mb:0.5rem; --size:0.875rem; --weight:500">{$i18n.t('Sharing Permissions')}</div>
 
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
-			<div style="--as:center; --size:0.75rem; --weight:500">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Models Public Sharing')}
 			</div>
 			<Switch bind:state={permissions.sharing.public_models} />
 		</div>
 
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
-			<div style="--as:center; --size:0.75rem; --weight:500">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Knowledge Public Sharing')}
 			</div>
 			<Switch bind:state={permissions.sharing.public_knowledge} />
 		</div>
 
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
-			<div style="--as:center; --size:0.75rem; --weight:500">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Prompts Public Sharing')}
 			</div>
 			<Switch bind:state={permissions.sharing.public_prompts} />
 		</div>
 
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
-			<div style="--as:center; --size:0.75rem; --weight:500">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Tools Public Sharing')}
 			</div>
 			<Switch bind:state={permissions.sharing.public_tools} />
@@ -249,7 +249,7 @@
 		<div style="--mb:0.5rem; --size:0.875rem; --weight:500">{$i18n.t('Chat Permissions')}</div>
 
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
-			<div style="--as:center; --size:0.75rem; --weight:500">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Allow File Upload')}
 			</div>
 
@@ -257,7 +257,7 @@
 		</div>
 
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
-			<div style="--as:center; --size:0.75rem; --weight:500">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Allow Chat Controls')}
 			</div>
 
@@ -265,7 +265,7 @@
 		</div>
 
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
-			<div style="--as:center; --size:0.75rem; --weight:500">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Allow Chat System Prompt')}
 			</div>
 
@@ -273,7 +273,7 @@
 		</div>
 
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
-			<div style="--as:center; --size:0.75rem; --weight:500">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Allow Chat Delete')}
 			</div>
 
@@ -281,7 +281,7 @@
 		</div>
 
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
-			<div style="--as:center; --size:0.75rem; --weight:500">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Allow Chat Edit')}
 			</div>
 
@@ -289,7 +289,7 @@
 		</div>
 
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
-			<div style="--as:center; --size:0.75rem; --weight:500">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Allow Chat Share')}
 			</div>
 
@@ -297,7 +297,7 @@
 		</div>
 
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
-			<div style="--as:center; --size:0.75rem; --weight:500">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Allow Chat Export')}
 			</div>
 
@@ -305,14 +305,14 @@
 		</div>
 
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
-			<div style="--as:center; --size:0.75rem; --weight:500">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Allow Speech to Text')}
 			</div>
 
 			<Switch bind:state={permissions.chat.stt} />
 		</div>
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
-			<div style="--as:center; --size:0.75rem; --weight:500">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Allow Text to Speech')}
 			</div>
 
@@ -320,7 +320,7 @@
 		</div>
 
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
-			<div style="--as:center; --size:0.75rem; --weight:500">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Allow Call')}
 			</div>
 
@@ -328,7 +328,7 @@
 		</div>
 
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
-			<div style="--as:center; --size:0.75rem; --weight:500">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Allow Multiple Models in Chat')}
 			</div>
 
@@ -336,7 +336,7 @@
 		</div>
 
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
-			<div style="--as:center; --size:0.75rem; --weight:500">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Allow Temporary Chat')}
 			</div>
 
@@ -345,7 +345,7 @@
 
 		{#if permissions.chat.temporary}
 			<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
-				<div style="--as:center; --size:0.75rem; --weight:500">
+				<div style="--as:center; --size:0.6rem; --weight:500">
 					{$i18n.t('Enforce Temporary Chat')}
 				</div>
 
@@ -360,7 +360,7 @@
 		<div style="--mb:0.5rem; --size:0.875rem; --weight:500">{$i18n.t('Features Permissions')}</div>
 
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
-			<div style="--as:center; --size:0.75rem; --weight:500">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Direct Tool Servers')}
 			</div>
 
@@ -368,7 +368,7 @@
 		</div>
 
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
-			<div style="--as:center; --size:0.75rem; --weight:500">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Web Search')}
 			</div>
 
@@ -376,7 +376,7 @@
 		</div>
 
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
-			<div style="--as:center; --size:0.75rem; --weight:500">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Image Generation')}
 			</div>
 
@@ -384,7 +384,7 @@
 		</div>
 
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
-			<div style="--as:center; --size:0.75rem; --weight:500">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Code Interpreter')}
 			</div>
 
@@ -392,7 +392,7 @@
 		</div>
 
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
-			<div style="--as:center; --size:0.75rem; --weight:500">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Notes')}
 			</div>
 

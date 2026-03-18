@@ -259,17 +259,17 @@
 		<div style="--d:flex; --fd:column; --g:0.25rem; --px:0.875rem">
 			<div style="--d:flex; --fx:1 1 0%; --ai:center; --w:100%; --g:0.5rem">
 				<div style="--d:flex; --fx:1 1 0%; --ai:center">
-					<div style="--as:center; --ml:0.25rem; --mr:0.75rem">
+					<div style="--as:center; --ml:0.25rem; --mr:0.6rem">
 						<Search className="size-3.5" />
 					</div>
 					<input
-						style="--w:100%; --size:0.875rem; --py:0.25rem; --btrr:0.75rem; --bbrr:0.75rem; --oe:none; --bgc:transparent"
+						style="--w:100%; --size:0.875rem; --py:0.25rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 						bind:value={query}
 						placeholder={$i18n.t('Search Notes')}
 					/>
 
 					{#if query}
-						<div style="--as:center; --pl:0.375rem; --translatey:0.5px; --btlr:0.75rem; --bblr:0.75rem; --bgc:transparent">
+						<div style="--as:center; --pl:0.375rem; --translatey:0.5px; --btlr:0.6rem; --bblr:0.6rem; --bgc:transparent">
 							<button
 								style="--p:0.125rem; --radius:9999px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								on:click={() => {
@@ -289,7 +289,7 @@
 			{#if Object.keys(notes).length > 0}
 				<div style="--pb:2.5rem">
 					{#each Object.keys(notes) as timeRange}
-						<div style="--w:100%; --size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --weight:500; --pb:0.625rem">
+						<div style="--w:100%; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --weight:500; --pb:0.625rem">
 							{$i18n.t(timeRange)}
 						</div>
 
@@ -298,7 +298,7 @@
 						>
 							{#each notes[timeRange] as note, idx (note.id)}
 								<div
-									style="--d:flex; --g:1rem; --cur:pointer; --w:100%; --px:1.125rem; --py:1rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-bgc:rgb(0 0 0 / 0.05); --radius:0.75rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+									style="--d:flex; --g:1rem; --cur:pointer; --w:100%; --px:1.125rem; --py:1rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-bgc:rgb(0 0 0 / 0.05); --radius:0.6rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								>
 									<div style="--d:flex; --fx:1 1 0%; --g:1rem; --cur:pointer; --w:100%">
 										<a
@@ -332,7 +332,7 @@
 															}}
 														>
 															<button
-																style="--as:center; --w:fit-content; --size:0.875rem; --p:0.25rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.75rem"
+																style="--as:center; --w:fit-content; --size:0.875rem; --p:0.25rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 																type="button"
 															>
 																<EllipsisHorizontal className="size-5" />
@@ -342,7 +342,7 @@
 												</div>
 
 												<div
-													style="--size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --mb:0.75rem; --line-clamp:3; --minh:2.5rem"
+													style="--size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --mb:0.6rem; --line-clamp:3; --minh:2.5rem"
 												>
 													{#if note.data?.content?.md}
 														{note.data?.content?.md}
@@ -352,7 +352,7 @@
 												</div>
 											</div>
 
-											<div style="--size:0.75rem; --px:0.125rem; --w:100%; --d:flex; --jc:space-between; --ai:center">
+											<div style="--size:0.6rem; --px:0.125rem; --w:100%; --d:flex; --jc:space-between; --ai:center">
 												<div>
 													{dayjs(note.updated_at / 1000000).fromNow()}
 												</div>
@@ -415,7 +415,7 @@
 		</div>
 
 		<!-- {#if $user?.role === 'admin'}
-		<div style="--d:flex; --jc:flex-end; --w:100%; --mb:0.75rem">
+		<div style="--d:flex; --jc:flex-end; --w:100%; --mb:0.6rem">
 			<div style="--d:flex; --g:0.5rem">
 				<input
 					id="notes-import-input"
@@ -436,7 +436,7 @@
 				/>
 
 				<button
-					style="--d:flex; --size:0.75rem; --ai:center; --g:0.25rem; --px:0.75rem; --py:0.375rem; --radius:0.75rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--d:flex; --size:0.6rem; --ai:center; --g:0.25rem; --px:0.6rem; --py:0.375rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						const notesImportInputElement = document.getElementById('notes-import-input');
 						if (notesImportInputElement) {

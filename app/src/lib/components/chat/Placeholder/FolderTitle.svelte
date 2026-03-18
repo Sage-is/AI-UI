@@ -114,10 +114,10 @@
 		</div>
 	</DeleteConfirmDialog>
 
-	<div style="--mb:0.75rem; --px:1.5rem; --jc:space-between; --w:100%; --d:flex; --pos:relative; --ai:center"
+	<div style="--mb:0.6rem; --px:1.5rem; --jc:space-between; --w:100%; --d:flex; --pos:relative; --ai:center"
 	class="@md:max-w-3xl group">
 		<div style="--ta:center; --d:flex; --g:0.875rem; --ai:center">
-			<div style="--radius:9999px; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800); --p:0.75rem; --w:fit-content">
+			<div style="--radius:9999px; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800); --p:0.6rem; --w:fit-content">
 				<Folder className="size-4.5" strokeWidth="2" />
 			</div>
 

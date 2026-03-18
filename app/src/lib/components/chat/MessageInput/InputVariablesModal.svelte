@@ -87,7 +87,7 @@
 
 									<div style="--py:0.125rem; --w:100%; --jc:space-between">
 										<div style="--d:flex; --w:100%; --jc:space-between; --mb:0.375rem">
-											<div style="--as:center; --size:0.75rem; --weight:500">
+											<div style="--as:center; --size:0.6rem; --weight:500">
 												{variable}
 
 												{#if variables[variable]?.required ?? true}
@@ -334,7 +334,7 @@
 										</div>
 
 										<!-- {#if (valvesSpec.properties[property]?.description ?? null) !== null}
-									<div style="--size:0.75rem; --c:var(--color-gray-500)">
+									<div style="--size:0.6rem; --c:var(--color-gray-500)">
 										{valvesSpec.properties[property].description}
 									</div>
 								{/if} -->
@@ -346,7 +346,7 @@
 						{/if}
 					</div>
 
-					<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
+					<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.875rem; --weight:500">
 						<button
 							style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#fff; --hvr-bgc:var(--color-gray-100); --c:#000; --dark-bgc:#000; --dark-c:#fff; --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 							type="button"

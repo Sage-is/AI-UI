@@ -66,7 +66,7 @@
 						<img
 							crossorigin="anonymous"
 							src={user?.profile_image_url ?? branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
-							style="--pos:absolute; --bottom:-1.25rem; --left:0.75rem; --w:3rem; --h:3rem; --ml:0.125rem; --objf:cover; --radius:9999px; --translatey:-1px"
+							style="--pos:absolute; --bottom:-1.25rem; --left:0.6rem; --w:3rem; --h:3rem; --ml:0.125rem; --objf:cover; --radius:9999px; --translatey:-1px"
 							alt="profile"
 						/>
 					</div>
@@ -88,7 +88,7 @@
 								</div>
 
 								<div style="--translatey:-1px">
-									<span style="--size:0.75rem"> Active </span>
+									<span style="--size:0.6rem"> Active </span>
 								</div>
 							{:else}
 								<div>
@@ -98,7 +98,7 @@
 								</div>
 
 								<div style="--translatey:-1px">
-									<span style="--size:0.75rem"> Away </span>
+									<span style="--size:0.6rem"> Away </span>
 								</div>
 							{/if}
 						</div>

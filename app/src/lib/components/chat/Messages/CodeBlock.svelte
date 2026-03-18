@@ -426,13 +426,13 @@
 				<pre class="mermaid">{code}</pre>
 			{/if}
 		{:else}
-			<div style="--pos:absolute; --pl:1rem; --py:0.375rem; --size:0.75rem; --weight:500; --dark-c:#fff"
+			<div style="--pos:absolute; --pl:1rem; --py:0.375rem; --size:0.6rem; --weight:500; --dark-c:#fff"
 	class="text-text-300">
 				{lang}
 			</div>
 
 			<div
-				style="--pos:sticky; --mb:0.25rem; --py:0.25rem; --pr:0.625rem; --d:flex; --ai:center; --jc:flex-end; --z:10; --size:0.75rem; --c:#000; --dark-c:#fff"
+				style="--pos:sticky; --mb:0.25rem; --py:0.25rem; --pr:0.625rem; --d:flex; --ai:center; --jc:flex-end; --z:10; --size:0.6rem; --c:#000; --dark-c:#fff"
 	class="{stickyButtonsClassName}"
 			>
 				<div style="--d:flex; --ai:center; --g:0.125rem; --translatey:1px">
@@ -535,7 +535,7 @@
 					/>
 				{:else}
 					<div
-						style="--bgc:var(--color-gray-50); --dark-bgc:#000; --dark-c:#fff; --pt:0.5rem;  --px:1rem; --d:flex; --fd:column; --g:0.5rem; --size:0.75rem"
+						style="--bgc:var(--color-gray-50); --dark-bgc:#000; --dark-c:#fff; --pt:0.5rem;  --px:1rem; --d:flex; --fd:column; --g:0.5rem; --size:0.6rem"
 	class="rounded-b-lg!"
 					>
 						<span style="--c:var(--color-gray-500); font-style:italic">
@@ -561,13 +561,13 @@
 					>
 						{#if executing}
 							<div class=" ">
-								<div style="--c:var(--color-gray-500); --size:0.75rem; --mb:0.25rem">STDOUT/STDERR</div>
+								<div style="--c:var(--color-gray-500); --size:0.6rem; --mb:0.25rem">STDOUT/STDERR</div>
 								<div style="--size:0.875rem">Running...</div>
 							</div>
 						{:else}
 							{#if stdout || stderr}
 								<div class=" ">
-									<div style="--c:var(--color-gray-500); --size:0.75rem; --mb:0.25rem">STDOUT/STDERR</div>
+									<div style="--c:var(--color-gray-500); --size:0.6rem; --mb:0.25rem">STDOUT/STDERR</div>
 									<div
 										style="--size:0.875rem; --ofy:auto"
 	class="{stdout?.split('\n')?.length > 100
@@ -580,7 +580,7 @@
 							{/if}
 							{#if result || files}
 								<div class=" ">
-									<div style="--c:var(--color-gray-500); --size:0.75rem; --mb:0.25rem">RESULT</div>
+									<div style="--c:var(--color-gray-500); --size:0.6rem; --mb:0.25rem">RESULT</div>
 									{#if result}
 										<div style="--size:0.875rem">{`${JSON.stringify(result)}`}</div>
 									{/if}

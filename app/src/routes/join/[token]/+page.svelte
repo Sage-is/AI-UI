@@ -71,7 +71,7 @@
 				<Spinner className="size-8" />
 			</div>
 		{:else if error}
-			<div style="--ta:center; --p:1rem; --radius:0.75rem; --bgc:#fef2f2; --dark-bgc:#450a0a; --c:#ef4444; --mb:1rem">
+			<div style="--ta:center; --p:1rem; --radius:0.6rem; --bgc:#fef2f2; --dark-bgc:#450a0a; --c:#ef4444; --mb:1rem">
 				{error}
 			</div>
 			<div style="--ta:center">
@@ -96,7 +96,7 @@
 						type="text"
 						bind:value={name}
 						placeholder={$i18n.t('Enter your name (optional)')}
-						style="--w:100%; --p:0.625rem; --radius:0.75rem; --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --bgc:#fff; --dark-bgc:var(--color-gray-800); --size:0.875rem; --oe:none"
+						style="--w:100%; --p:0.625rem; --radius:0.6rem; --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --bgc:#fff; --dark-bgc:var(--color-gray-800); --size:0.875rem; --oe:none"
 						on:keydown={(e) => {
 							if (e.key === 'Enter') {
 								redeem(name || undefined);
@@ -106,7 +106,7 @@
 				</div>
 
 				<button
-					style="--w:100%; --p:0.625rem; --radius:0.75rem; --bgc:var(--color-gray-900); --dark-bgc:#fff; --c:#fff; --dark-c:var(--color-gray-900); --weight:500; --size:0.875rem; --cur:pointer; --tn:opacity 150ms"
+					style="--w:100%; --p:0.625rem; --radius:0.6rem; --bgc:var(--color-gray-900); --dark-bgc:#fff; --c:#fff; --dark-c:var(--color-gray-900); --weight:500; --size:0.875rem; --cur:pointer; --tn:opacity 150ms"
 					on:click={() => redeem(name || undefined)}
 				>
 					{$i18n.t('Join')}

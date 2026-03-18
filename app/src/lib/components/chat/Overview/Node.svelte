@@ -11,7 +11,7 @@
 </script>
 
 <div
-	style="--px:1rem; --py:0.75rem; --shadow:3; --radius:0.75rem; --dark-bgc:#000; --bgc:#fff;  --dark-bc:var(--color-gray-900); --w:15rem; --h:5rem"
+	style="--px:1rem; --py:0.6rem; --shadow:3; --radius:0.6rem; --dark-bgc:#000; --bgc:#fff;  --dark-bc:var(--color-gray-900); --w:15rem; --h:5rem"
 	class="group"
 >
 	<Tooltip
@@ -27,15 +27,15 @@
 				/>
 				<div style="--ml:0.5rem">
 					<div style="--d:flex; --jc:space-between; --ai:center">
-						<div style="--size:0.75rem; --c:#000; --dark-c:#fff; --weight:500; --line-clamp:1">
+						<div style="--size:0.6rem; --c:#000; --dark-c:#fff; --weight:500; --line-clamp:1">
 							{data?.user?.name ?? 'User'}
 						</div>
 					</div>
 
 					{#if data?.message?.error}
-						<div style="--c:#ef4444; --line-clamp:2; --size:0.75rem; --mt:0.125rem">{data.message.error.content}</div>
+						<div style="--c:#ef4444; --line-clamp:2; --size:0.6rem; --mt:0.125rem">{data.message.error.content}</div>
 					{:else}
-						<div style="--c:var(--color-gray-500); --line-clamp:2; --size:0.75rem; --mt:0.125rem">{data.message.content}</div>
+						<div style="--c:var(--color-gray-500); --line-clamp:2; --size:0.6rem; --mt:0.125rem">{data.message.content}</div>
 					{/if}
 				</div>
 			</div>
@@ -48,7 +48,7 @@
 
 				<div style="--ml:0.5rem">
 					<div style="--d:flex; --jc:space-between; --ai:center">
-						<div style="--size:0.75rem; --c:#000; --dark-c:#fff; --weight:500; --line-clamp:1">
+						<div style="--size:0.6rem; --c:#000; --dark-c:#fff; --weight:500; --line-clamp:1">
 							{data?.model?.name ?? data?.message?.model ?? 'Assistant'}
 						</div>
 
@@ -68,11 +68,11 @@
 					</div>
 
 					{#if data?.message?.error}
-						<div style="--c:#ef4444; --line-clamp:2; --size:0.75rem; --mt:0.125rem">
+						<div style="--c:#ef4444; --line-clamp:2; --size:0.6rem; --mt:0.125rem">
 							{data.message.error.content}
 						</div>
 					{:else}
-						<div style="--c:var(--color-gray-500); --line-clamp:2; --size:0.75rem; --mt:0.125rem">{data.message.content}</div>
+						<div style="--c:var(--color-gray-500); --line-clamp:2; --size:0.6rem; --mt:0.125rem">{data.message.content}</div>
 					{/if}
 				</div>
 			</div>

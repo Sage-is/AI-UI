@@ -42,7 +42,7 @@
 				</div>
 			{/if}
 
-			<div style="--px:1.25rem; --pb:0.75rem; --w:100%; --d:flex; --fd:column; --jc:center">
+			<div style="--px:1.25rem; --pb:0.6rem; --w:100%; --d:flex; --fd:column; --jc:center">
 				<div style="--size:0.875rem; --dark-c:var(--color-gray-300); --mb:0.25rem">
 					{#each selectedTools as tool}
 						<Collapsible buttonClassName="w-full mb-0.5">
@@ -52,7 +52,7 @@
 								</div>
 
 								{#if tool?.meta?.description}
-									<div style="--size:0.75rem; --c:var(--color-gray-500)">
+									<div style="--size:0.6rem; --c:var(--color-gray-500)">
 										{tool?.meta?.description}
 									</div>
 								{/if}
@@ -73,7 +73,7 @@
 			</div>
 
 			<div style="--px:1.25rem; --pb:1.25rem; --w:100%; --d:flex; --fd:column; --jc:center">
-				<div style="--size:0.75rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-300); --mb:0.5rem">
+				<div style="--size:0.6rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-300); --mb:0.5rem">
 					{$i18n.t('Sage.is AI can use tools provided by any OpenAPI server.')} <br /><a
 						style="--td:underline"
 						href="https://github.com/open-webui/openapi-servers"
@@ -88,11 +88,11 @@
 									{toolServer?.openapi?.info?.title} - v{toolServer?.openapi?.info?.version}
 								</div>
 
-								<div style="--size:0.75rem; --c:var(--color-gray-500)">
+								<div style="--size:0.6rem; --c:var(--color-gray-500)">
 									{toolServer?.openapi?.info?.description}
 								</div>
 
-								<div style="--size:0.75rem; --c:var(--color-gray-500)">
+								<div style="--size:0.6rem; --c:var(--color-gray-500)">
 									{toolServer?.url}
 								</div>
 							</div>

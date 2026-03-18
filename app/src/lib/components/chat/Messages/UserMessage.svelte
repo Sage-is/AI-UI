@@ -140,7 +140,7 @@
 
 					{#if message.timestamp}
 						<div
-							style="--as:center; --size:0.75rem; --c:var(--color-gray-400); --weight:500; --ml:0.125rem; --translatey:1px"
+							style="--as:center; --size:0.6rem; --c:var(--color-gray-400); --weight:500; --ml:0.125rem; --translatey:1px"
 	class="invisible group-hover:visible first-letter:capitalize"
 						>
 							<Tooltip content={dayjs(message.timestamp * 1000).format('LLLL')}>
@@ -151,7 +151,7 @@
 				</Name>
 			</div>
 		{:else if message.timestamp}
-			<div style="--d:flex; --jc:flex-end; --pr:0.5rem; --size:0.75rem">
+			<div style="--d:flex; --jc:flex-end; --pr:0.5rem; --size:0.6rem">
 				<div
 					style="--size:0.65rem; --c:var(--color-gray-400); --weight:500; --mb:0.125rem"
 	class="invisible group-hover:visible first-letter:capitalize"
@@ -190,7 +190,7 @@
 
 			{#if message.content !== ''}
 				{#if edit === true}
-					<div style="--w:100%; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800); --radius:1.5rem; --px:1.25rem; --py:0.75rem; --mb:0.5rem">
+					<div style="--w:100%; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800); --radius:1.5rem; --px:1.25rem; --py:0.6rem; --mb:0.5rem">
 						{#if (editedFiles ?? []).length > 0}
 							<div style="--d:flex; --ai:center; --fw:wrap; --g:0.5rem; --mx:-0.5rem; --mb:0.25rem">
 								{#each editedFiles as file, fileIdx}

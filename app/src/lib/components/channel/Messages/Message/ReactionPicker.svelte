@@ -119,7 +119,7 @@
 		{align}
 		transition={flyAndScale}
 	>
-		<div style="--mb:0.25rem; --px:0.75rem; --pt:0.5rem; --pb:0.5rem">
+		<div style="--mb:0.25rem; --px:0.6rem; --pt:0.5rem; --pb:0.5rem">
 			<input
 				type="text"
 				style="--w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
@@ -129,16 +129,16 @@
 		</div>
 		
 		<!-- Virtualized Emoji List -->
-		<div style="--w:100%; --d:flex; --jc:flex-start; --h:24rem; --ofy:auto; --px:0.75rem; --pb:0.75rem; --size:0.875rem">
+		<div style="--w:100%; --d:flex; --jc:flex-start; --h:24rem; --ofy:auto; --px:0.6rem; --pb:0.6rem; --size:0.875rem">
 			{#if emojiRows.length === 0}
-				<div style="--ta:center; --size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">No results</div>
+				<div style="--ta:center; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">No results</div>
 			{:else}
 				<div style="--w:100%; --d:flex; --ml:0.125rem">
 					<VirtualList rowHeight={ROW_HEIGHT} items={emojiRows} height={384} let:item>
 						<div style="--w:100%">
 							{#if item.length === 1 && item[0].type === 'group'}
 								<!-- Render group header -->
-								<div style="--size:0.75rem; --weight:500; --mb:0.5rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
+								<div style="--size:0.6rem; --weight:500; --mb:0.5rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
 									{item[0].label}
 								</div>
 							{:else}

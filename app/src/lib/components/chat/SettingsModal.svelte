@@ -564,10 +564,10 @@
 				class="tabs"
 			>
 				<div
-					style="--d:none; --d-md:flex; --w:100%; --radius:0.75rem; --mb:-0.25rem; --px:0.125rem; --g:0.5rem"
+					style="--d:none; --d-md:flex; --w:100%; --radius:0.6rem; --mb:-0.25rem; --px:0.125rem; --g:0.5rem"
 					id="settings-search"
 				>
-					<div style="--as:center; --btlr:0.75rem; --bblr:0.75rem; --bgc:transparent">
+					<div style="--as:center; --btlr:0.6rem; --bblr:0.6rem; --bgc:transparent">
 						<Search
 							className="size-3.5"
 							strokeWidth={($settings?.highContrastMode ?? false) ? '3' : '1.5'}

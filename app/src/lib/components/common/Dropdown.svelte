@@ -30,15 +30,15 @@
 			{align}
 			transition={flyAndScale}
 		>
-			<DropdownMenu.Item style="--d:flex; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --weight:500">
+			<DropdownMenu.Item style="--d:flex; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.875rem; --weight:500">
 				<div style="--d:flex; --ai:center">Profile</div>
 			</DropdownMenu.Item>
 
-			<DropdownMenu.Item style="--d:flex; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --weight:500">
+			<DropdownMenu.Item style="--d:flex; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.875rem; --weight:500">
 				<div style="--d:flex; --ai:center">Profile</div>
 			</DropdownMenu.Item>
 
-			<DropdownMenu.Item style="--d:flex; --ai:center; --px:0.75rem; --py:0.5rem; --size:0.875rem; --weight:500">
+			<DropdownMenu.Item style="--d:flex; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.875rem; --weight:500">
 				<div style="--d:flex; --ai:center">Profile</div>
 			</DropdownMenu.Item>
 		</DropdownMenu.Content>

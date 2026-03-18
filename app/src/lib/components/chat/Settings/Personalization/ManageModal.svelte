@@ -75,41 +75,41 @@
 
 		<div style="--d:flex; --fd:column; --w:100%; --px:1.25rem; --pb:1.25rem; --dark-c:var(--color-gray-200)">
 			<div
-				style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem; --h:28rem; --maxh:100vh; outline-style:solid; outline-width:1px; --radius:0.75rem; outline-color:var(--color-gray-100); outline-color:var(--color-gray-800); --mb:1rem; --mt:0.25rem"
+				style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem; --h:28rem; --maxh:100vh; outline-style:solid; outline-width:1px; --radius:0.6rem; outline-color:var(--color-gray-100); outline-color:var(--color-gray-800); --mb:1rem; --mt:0.25rem"
 			>
 				{#if memories.length > 0}
 					<div style="--ta:left; --size:0.875rem; --w:100%; --mb:1rem; --ofy:scroll">
 						<div style="--pos:relative; --ofx:auto">
 							<table style="--w:100%; --size:0.875rem; --ta:left; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); table-layout:auto">
 								<thead
-									style="--size:0.75rem; --c:var(--color-gray-700); --tt:uppercase; --bgc:transparent; --dark-c:var(--color-gray-200); border-bottom-width:2px; --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850)"
+									style="--size:0.6rem; --c:var(--color-gray-700); --tt:uppercase; --bgc:transparent; --dark-c:var(--color-gray-200); border-bottom-width:2px; --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850)"
 								>
 									<tr>
-										<th scope="col" style="--px:0.75rem; --py:0.5rem"> {$i18n.t('Name')} </th>
-										<th scope="col" style="--px:0.75rem; --py:0.5rem; --d:none; --d-md:flex">
+										<th scope="col" style="--px:0.6rem; --py:0.5rem"> {$i18n.t('Name')} </th>
+										<th scope="col" style="--px:0.6rem; --py:0.5rem; --d:none; --d-md:flex">
 											{$i18n.t('Last Modified')}
 										</th>
-										<th scope="col" style="--px:0.75rem; --py:0.5rem; --ta:right" />
+										<th scope="col" style="--px:0.6rem; --py:0.5rem; --ta:right" />
 									</tr>
 								</thead>
 								<tbody style="--d:table">
 									{#each memories as memory}
 										<tr style=" --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --ai:center">
-											<td style="--d:table;--px:0.75rem; --py:0.25rem">
+											<td style="--d:table;--px:0.6rem; --py:0.25rem">
 												<div style="--line-clamp:1">
 													{memory.content}
 												</div>
 											</td>
-											<td style="--d:table;--px:0.75rem; --py:0.25rem; --d:none; --d-md:flex; --h:2.5rem">
+											<td style="--d:table;--px:0.6rem; --py:0.25rem; --d:none; --d-md:flex; --h:2.5rem">
 												<div style="--my:auto; --ws:nowrap">
 													{dayjs(memory.updated_at * 1000).format('LLL')}
 												</div>
 											</td>
-											<td style="--d:table;--px:0.75rem; --py:0.25rem">
+											<td style="--d:table;--px:0.6rem; --py:0.25rem">
 												<div style="--d:flex; --jc:flex-end; --w:100%">
 													<Tooltip content="Edit">
 														<button
-															style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.75rem"
+															style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 															on:click={() => {
 																selectedMemory = memory;
 																showEditMemoryModal = true;
@@ -135,7 +135,7 @@
 
 													<Tooltip content="Delete">
 														<button
-															style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.75rem"
+															style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 															on:click={async () => {
 																const res = await deleteMemoryById(
 																	localStorage.token,

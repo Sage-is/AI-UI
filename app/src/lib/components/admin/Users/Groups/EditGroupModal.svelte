@@ -282,7 +282,7 @@
 						{/if}
 					</div> -->
 
-					<div style="--d:flex; --jc:space-between; --pt:0.75rem; --size:0.875rem; --weight:500; --g:0.375rem">
+					<div style="--d:flex; --jc:space-between; --pt:0.6rem; --size:0.875rem; --weight:500; --g:0.375rem">
 						{#if edit}
 							<button
 								style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --dark-bgc:#000; --hvr-dark-bgc:var(--color-gray-900); --dark-c:#fff; --bgc:#fff; --c:#000; --hvr-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"

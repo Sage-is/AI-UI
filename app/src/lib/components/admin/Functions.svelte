@@ -234,17 +234,17 @@
 
 	<div style="--d:flex; --w:100%; --g:0.5rem">
 		<div style="--d:flex; --fx:1 1 0%">
-			<div style="--as:center; --ml:0.25rem; --mr:0.75rem">
+			<div style="--as:center; --ml:0.25rem; --mr:0.6rem">
 				<Search className="size-3.5" />
 			</div>
 			<input
-				style="--w:100%; --size:0.875rem; --pr:1rem; --py:0.25rem; --btrr:0.75rem; --bbrr:0.75rem; --oe:none; --bgc:transparent"
+				style="--w:100%; --size:0.875rem; --pr:1rem; --py:0.25rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 				bind:value={query}
 				placeholder={$i18n.t('Search Functions')}
 			/>
 
 			{#if query}
-				<div style="--as:center; --pl:0.375rem; --translatey:0.5px; --btlr:0.75rem; --bblr:0.75rem; --bgc:transparent">
+				<div style="--as:center; --pl:0.375rem; --translatey:0.5px; --btlr:0.6rem; --bblr:0.6rem; --bgc:transparent">
 					<button
 						style="--p:0.125rem; --radius:9999px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={() => {
@@ -267,7 +267,7 @@
 				}}
 			>
 				<div
-					style="--px:0.5rem; --py:0.5rem; --radius:0.75rem; --hvr-bgc:rgb(78 78 78 / 0.1); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
+					style="--px:0.5rem; --py:0.5rem; --radius:0.6rem; --hvr-bgc:rgb(78 78 78 / 0.1); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
 				>
 					<Plus className="size-3.5" />
 				</div>
@@ -326,7 +326,7 @@
 <div style="--mb:1.25rem">
 	{#each filteredItems as func (func.id)}
 		<div
-			style="--d:flex; --g:1rem; --cur:pointer; --w:100%; --px:0.5rem; --py:0.5rem; --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-bgc:rgb(0 0 0 / 0.05); --radius:0.75rem"
+			style="--d:flex; --g:1rem; --cur:pointer; --w:100%; --px:0.5rem; --py:0.5rem; --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-bgc:rgb(0 0 0 / 0.05); --radius:0.6rem"
 		>
 			<a
 				style="--d:flex; --fx:1 1 0%; --g:0.875rem; --cur:pointer; --w:100%"
@@ -336,14 +336,14 @@
 					<div style="--fx:1 1 0%; --as:center; --pl:0.25rem">
 						<div style="--weight:600; --d:flex; --ai:center; --g:0.375rem">
 							<div
-								style="--size:0.75rem; --weight:700; --px:0.25rem; --radius:0.125rem; --tt:uppercase; --line-clamp:1; --bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200)"
+								style="--size:0.6rem; --weight:700; --px:0.25rem; --radius:0.125rem; --tt:uppercase; --line-clamp:1; --bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200)"
 							>
 								{func.type}
 							</div>
 
 							{#if func?.meta?.manifest?.version}
 								<div
-									style="--size:0.75rem; --weight:700; --px:0.25rem; --radius:0.125rem; --line-clamp:1; --bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200)"
+									style="--size:0.6rem; --weight:700; --px:0.25rem; --radius:0.125rem; --line-clamp:1; --bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200)"
 								>
 									v{func?.meta?.manifest?.version ?? ''}
 								</div>
@@ -355,9 +355,9 @@
 						</div>
 
 						<div style="--d:flex; --g:0.375rem; --px:0.25rem">
-							<div style="--c:var(--color-gray-500); --size:0.75rem; --weight:500; --fs:0">{func.id}</div>
+							<div style="--c:var(--color-gray-500); --size:0.6rem; --weight:500; --fs:0">{func.id}</div>
 
-							<div style="--size:0.75rem; --of:hidden; text-overflow:ellipsis; --line-clamp:1">
+							<div style="--size:0.6rem; --of:hidden; text-overflow:ellipsis; --line-clamp:1">
 								{func.meta.description}
 							</div>
 						</div>
@@ -368,7 +368,7 @@
 				{#if shiftKey}
 					<Tooltip content={$i18n.t('Delete')}>
 						<button
-							style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.75rem"
+							style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 							type="button"
 							on:click={() => {
 								deleteHandler(func);
@@ -381,7 +381,7 @@
 					{#if func?.meta?.manifest?.funding_url ?? false}
 						<Tooltip content={$i18n.t('Support')}>
 							<button
-								style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.75rem"
+								style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 								type="button"
 								on:click={() => {
 									selectedFunction = func;
@@ -395,7 +395,7 @@
 
 					<Tooltip content={$i18n.t('Valves')}>
 						<button
-							style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.75rem"
+							style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 							type="button"
 							on:click={() => {
 								selectedFunction = func;
@@ -450,7 +450,7 @@
 						onClose={() => {}}
 					>
 						<button
-							style="--as:center; --w:fit-content; --size:0.875rem; --p:0.375rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.75rem"
+							style="--as:center; --w:fit-content; --size:0.875rem; --p:0.375rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 							type="button"
 						>
 							<EllipsisHorizontal className="size-5" />
@@ -482,7 +482,7 @@
 	{/each}
 </div>
 
-<!-- <div style="--c:var(--color-gray-500); --size:0.75rem; --mt:0.25rem; --mb:0.5rem">
+<!-- <div style="--c:var(--color-gray-500); --size:0.6rem; --mt:0.25rem; --mb:0.5rem">
 	ⓘ {$i18n.t(
 		'Admins have access to all tools at all times; users need tools assigned per model in the workshop.'
 	)}
@@ -504,7 +504,7 @@
 		/>
 
 		<button
-			style="--d:flex; --size:0.75rem; --ai:center; --g:0.25rem; --px:0.75rem; --py:0.375rem; --radius:0.75rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+			style="--d:flex; --size:0.6rem; --ai:center; --g:0.25rem; --px:0.6rem; --py:0.375rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			on:click={() => {
 				functionsImportInputElement.click();
 			}}
@@ -529,7 +529,7 @@
 
 		{#if $functions.length}
 			<button
-				style="--d:flex; --size:0.75rem; --ai:center; --g:0.25rem; --px:0.75rem; --py:0.375rem; --radius:0.75rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--d:flex; --size:0.6rem; --ai:center; --g:0.25rem; --px:0.6rem; --py:0.375rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={async () => {
 					const _functions = await exportFunctions(localStorage.token).catch((error) => {
 						toast.error(`${error}`);
@@ -574,7 +574,7 @@
 		</div>
 
 		<a
-			style="--d:flex; --cur:pointer; --ai:center; --jc:space-between; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --w:100%; --mb:0.5rem; --px:0.875rem; --py:0.375rem; --radius:0.75rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+			style="--d:flex; --cur:pointer; --ai:center; --jc:space-between; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --w:100%; --mb:0.5rem; --px:0.875rem; --py:0.375rem; --radius:0.6rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			href="https://sage.is/community"
 			target="_blank"
 		>
@@ -655,16 +655,16 @@
 	}}
 >
 	<div style="--size:0.875rem; --c:var(--color-gray-500)">
-		<div style="--bgc:rgb(234 179 8 / 0.2); --c:#a16207; --dark-c:#fef08a; --radius:0.5rem; --px:1rem; --py:0.75rem">
+		<div style="--bgc:rgb(234 179 8 / 0.2); --c:#a16207; --dark-c:#fef08a; --radius:0.5rem; --px:1rem; --py:0.6rem">
 			<div>Please carefully review the following warnings:</div>
 
-			<ul style="--mt:0.25rem; list-style-type:disc; --pl:1rem; --size:0.75rem">
+			<ul style="--mt:0.25rem; list-style-type:disc; --pl:1rem; --size:0.6rem">
 				<li>{$i18n.t('Functions allow arbitrary code execution.')}</li>
 				<li>{$i18n.t('Do not install functions from sources you do not fully trust.')}</li>
 			</ul>
 		</div>
 
-		<div style="--my:0.75rem">
+		<div style="--my:0.6rem">
 			{$i18n.t(
 				'I acknowledge that I have read and I understand the implications of my action. I am aware of the risks associated with executing arbitrary code and I have verified the trustworthiness of the source.'
 			)}

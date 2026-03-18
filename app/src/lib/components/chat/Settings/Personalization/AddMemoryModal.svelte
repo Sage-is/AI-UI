@@ -64,11 +64,11 @@
 						<textarea
 							bind:value={content}
 							rows="6"
-							style="--bgc:transparent; --w:100%; --size:0.875rem; --radius:0.75rem; --p:0.75rem; outline-style:solid; outline-width:1px; outline-color:var(--color-gray-100); outline-color:var(--color-gray-800); resize: vertical;"
+							style="--bgc:transparent; --w:100%; --size:0.875rem; --radius:0.6rem; --p:0.6rem; outline-style:solid; outline-width:1px; outline-color:var(--color-gray-100); outline-color:var(--color-gray-800); resize: vertical;"
 							placeholder={$i18n.t('Enter a detail about yourself for your LLMs to recall')}
 						/>
 
-						<div style="--size:0.75rem; --c:var(--color-gray-500)">
+						<div style="--size:0.6rem; --c:var(--color-gray-500)">
 							ⓘ {$i18n.t('Refer to yourself as "User" (e.g., "User is learning Spanish")')}
 						</div>
 					</div>

@@ -194,7 +194,7 @@
 
 					<div style="--d:flex; --g:0.375rem">
 						<button
-							style="--size:0.75rem; --ta:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-400); --radius:9999px; --px:1rem; --py:0.125rem; --bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850)"
+							style="--size:0.6rem; --ta:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-400); --radius:9999px; --px:1rem; --py:0.125rem; --bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850)"
 							on:click={async () => {
 								if (canvasPixelTest()) {
 									profileImageUrl = generateInitialsImage(name);
@@ -212,7 +212,7 @@
 						>
 
 						<button
-							style="--size:0.75rem; --ta:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-400); --radius:9999px; --px:1rem; --py:0.125rem; --bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850)"
+							style="--size:0.6rem; --ta:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-400); --radius:9999px; --px:1rem; --py:0.125rem; --bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850)"
 							on:click={async () => {
 								const url = await getGravatarUrl(localStorage.token, $user?.email);
 
@@ -221,7 +221,7 @@
 						>
 
 						<button
-							style="--size:0.75rem; --ta:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-400); --radius:0.5rem; --px:0.5rem; --py:0.25rem"
+							style="--size:0.6rem; --ta:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-400); --radius:0.5rem; --px:0.5rem; --py:0.25rem"
 							on:click={async () => {
 								profileImageUrl = `${WEBUI_BASE_URL}/static/user.png`;
 							}}>{$i18n.t('Remove')}</button
@@ -232,7 +232,7 @@
 
 			<div style="--pt:0.125rem">
 				<div style="--d:flex; --fd:column; --w:100%">
-					<div style="--mb:0.25rem; --size:0.75rem; --weight:500">{$i18n.t('Name')}</div>
+					<div style="--mb:0.25rem; --size:0.6rem; --weight:500">{$i18n.t('Name')}</div>
 
 					<div style="--fx:1 1 0%">
 						<input
@@ -249,7 +249,7 @@
 			{#if $config?.features?.enable_user_webhooks}
 				<div style="--pt:0.5rem">
 					<div style="--d:flex; --fd:column; --w:100%">
-						<div style="--mb:0.25rem; --size:0.75rem; --weight:500">
+						<div style="--mb:0.25rem; --size:0.6rem; --weight:500">
 							{$i18n.t('Notification Webhook')}
 						</div>
 
@@ -271,7 +271,7 @@
 
 		{#if $user?.role === 'temporary'}
 			<div
-				style="--my:0.5rem; --p:0.75rem; --radius:0.75rem; --bgc:#fefce8; --dark-bgc:rgb(66 32 6 / 0.3);  --bc:#fde047; --dark-bc:rgb(161 98 7 / 0.5)"
+				style="--my:0.5rem; --p:0.6rem; --radius:0.6rem; --bgc:#fefce8; --dark-bgc:rgb(66 32 6 / 0.3);  --bc:#fde047; --dark-bc:rgb(161 98 7 / 0.5)"
 			>
 				<ClaimAccount />
 			</div>
@@ -288,7 +288,7 @@
 				>
 					<span style="--weight:500">{$i18n.t('API keys')}</span>
 					<details
-						style="--d:inline; --size:0.75rem; 
+						style="--d:inline; --size:0.6rem; 
 					--c:var(--color-gray-400); 
 					--dark-c:var(--color-gray-500);--w: 80%;
 					--m: auto;--b:0"
@@ -320,7 +320,7 @@
 							</p>
 						</div>
 					</details>
-					<span style="--ml:auto; --size:0.75rem; --weight:500; --c:var(--color-gray-400)"
+					<span style="--ml:auto; --size:0.6rem; --weight:500; --c:var(--color-gray-400)"
 						>&#9662;</span
 					>
 				</summary>
@@ -328,7 +328,7 @@
 				<div style="--mt:0.5rem; --d:flex; --fd:column; --g:1rem">
 					{#if $user?.role === 'admin'}
 						<div style="--w:100%">
-							<div style="--size:0.75rem; --weight:500; --mb:0.25rem">{$i18n.t('JWT Token')}</div>
+							<div style="--size:0.6rem; --weight:500; --mb:0.25rem">{$i18n.t('JWT Token')}</div>
 							<div style="--d:flex">
 								<SensitiveInput value={localStorage.token} readOnly={true} />
 
@@ -381,7 +381,7 @@
 
 					{#if $config?.features?.enable_api_key ?? true}
 						<div style="--w:100%">
-							<div style="--size:0.75rem; --weight:500; --mb:0.25rem">{$i18n.t('API Key')}</div>
+							<div style="--size:0.6rem; --weight:500; --mb:0.25rem">{$i18n.t('API Key')}</div>
 							<div style="--d:flex">
 								{#if APIKey}
 									<SensitiveInput value={APIKey} readOnly={true} />
@@ -473,7 +473,7 @@
 		{/if}
 	</div>
 
-	<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
+	<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.875rem; --weight:500">
 		<button
 			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			on:click={async () => {

@@ -136,17 +136,17 @@
 
 		<div style="--d:flex; --w:100%; --g:0.5rem">
 			<div style="--d:flex; --fx:1 1 0%">
-				<div style="--as:center; --ml:0.25rem; --mr:0.75rem">
+				<div style="--as:center; --ml:0.25rem; --mr:0.6rem">
 					<Search className="size-3.5" />
 				</div>
 				<input
-					style="--w:100%; --size:0.875rem; --pr:1rem; --py:0.25rem; --btrr:0.75rem; --bbrr:0.75rem; --oe:none; --bgc:transparent"
+					style="--w:100%; --size:0.875rem; --pr:1rem; --py:0.25rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 					bind:value={query}
 					placeholder={$i18n.t('Search Prompts')}
 				/>
 
 				{#if query}
-					<div style="--as:center; --pl:0.375rem; --translatey:0.5px; --btlr:0.75rem; --bblr:0.75rem; --bgc:transparent">
+					<div style="--as:center; --pl:0.375rem; --translatey:0.5px; --btlr:0.6rem; --bblr:0.6rem; --bgc:transparent">
 						<button
 							style="--p:0.125rem; --radius:9999px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							on:click={() => {
@@ -161,7 +161,7 @@
 
 			<div>
 				<a
-					style="--px:0.5rem; --py:0.5rem; --radius:0.75rem; --hvr-bgc:rgb(78 78 78 / 0.1); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
+					style="--px:0.5rem; --py:0.5rem; --radius:0.6rem; --hvr-bgc:rgb(78 78 78 / 0.1); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
 					href="/workshop/prompts/create"
 				>
 					<Plus className="size-3.5" />
@@ -173,18 +173,18 @@
 	<div style="--mb:1.25rem; --g:0.5rem; --d:grid; --gtc-lg:repeat(2, minmax(0, 1fr)); --gtc-xl:repeat(3, minmax(0, 1fr))">
 		{#each filteredItems as prompt}
 			<div
-				style="--d:flex; --g:1rem; --cur:pointer; --w:100%; --px:0.75rem; --py:0.5rem; --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-bgc:rgb(0 0 0 / 0.05); --radius:0.75rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--d:flex; --g:1rem; --cur:pointer; --w:100%; --px:0.6rem; --py:0.5rem; --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-bgc:rgb(0 0 0 / 0.05); --radius:0.6rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			>
 				<div style="--d:flex; --fx:1 1 0%; --g:1rem; --cur:pointer; --w:100%">
 					<a href={`/workshop/prompts/edit?command=${encodeURIComponent(prompt.command)}`}>
 						<div style="--fx:1 1 0%; --d:flex; --ai:center; --g:0.5rem; --as:center">
 							<div style="--weight:600; --line-clamp:1; --tt:capitalize">{prompt.title}</div>
-							<div style="--size:0.75rem; --of:hidden; text-overflow:ellipsis; --line-clamp:1">
+							<div style="--size:0.6rem; --of:hidden; text-overflow:ellipsis; --line-clamp:1">
 								{prompt.command}
 							</div>
 						</div>
 
-						<div style="--size:0.75rem; --px:0.125rem">
+						<div style="--size:0.6rem; --px:0.125rem">
 							<Tooltip
 								content={prompt?.user?.email ?? $i18n.t('Deleted User')}
 								className="flex shrink-0"
@@ -203,7 +203,7 @@
 				</div>
 				<div style="--d:flex; --fd:row; --g:0.125rem; --as:center">
 					<a
-						style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.75rem"
+						style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 						type="button"
 						href={`/workshop/prompts/edit?command=${encodeURIComponent(prompt.command)}`}
 					>
@@ -240,7 +240,7 @@
 						onClose={() => {}}
 					>
 						<button
-							style="--as:center; --w:fit-content; --size:0.875rem; --p:0.375rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.75rem"
+							style="--as:center; --w:fit-content; --size:0.875rem; --p:0.375rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 							type="button"
 						>
 							<EllipsisHorizontal className="size-5" />
@@ -252,7 +252,7 @@
 	</div>
 
 	{#if $user?.role === 'admin'}
-		<div style="--d:flex; --jc:flex-end; --w:100%; --mb:0.75rem">
+		<div style="--d:flex; --jc:flex-end; --w:100%; --mb:0.6rem">
 			<div style="--d:flex; --g:0.5rem">
 				<input
 					id="prompts-import-input"
@@ -293,7 +293,7 @@
 				/>
 
 				<button
-					style="--d:flex; --size:0.75rem; --ai:center; --g:0.25rem; --px:0.75rem; --py:0.375rem; --radius:0.75rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--d:flex; --size:0.6rem; --ai:center; --g:0.25rem; --px:0.6rem; --py:0.375rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						promptsImportInputElement.click();
 					}}
@@ -318,7 +318,7 @@
 
 				{#if prompts.length}
 					<button
-						style="--d:flex; --size:0.75rem; --ai:center; --g:0.25rem; --px:0.75rem; --py:0.375rem; --radius:0.75rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+						style="--d:flex; --size:0.6rem; --ai:center; --g:0.25rem; --px:0.6rem; --py:0.375rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={async () => {
 							let blob = new Blob([JSON.stringify(prompts)], {
 								type: 'application/json'
@@ -357,7 +357,7 @@
 			</div>
 
 			<a
-				style="--d:flex; --cur:pointer; --ai:center; --jc:space-between; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --w:100%; --mb:0.5rem; --px:0.875rem; --py:0.375rem; --radius:0.75rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--d:flex; --cur:pointer; --ai:center; --jc:space-between; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --w:100%; --mb:0.5rem; --px:0.875rem; --py:0.375rem; --radius:0.6rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				href="https://sage.is/community"
 				target="_blank"
 			>

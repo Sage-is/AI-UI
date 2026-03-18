@@ -76,7 +76,7 @@
 </script>
 
 <div style="--d:flex; --fd:column; --h:100%; --jc:space-between; --size:0.875rem">
-	<div style="--g:0.75rem; --pr:0.375rem">
+	<div style="--g:0.6rem; --pr:0.375rem">
 		<div>
 			<div style="--mb:0.5rem; --size:0.875rem; --weight:500">{$i18n.t('Theme & Branding')}  (Beta)</div>
 		</div>
@@ -89,7 +89,7 @@
 			</div>
 		{:else}
 			<!-- Logo Settings -->
-			<div style="--g:0.75rem">
+			<div style="--g:0.6rem">
 				<div style="--size:0.875rem; --weight:500">{$i18n.t('Logo Settings')}</div>
 				
 				<div>
@@ -102,7 +102,7 @@
 						placeholder="https://example.com/logo.png"
 						bind:value={branding.logo_url}
 					/>
-					<div style="--size:0.75rem; --c:var(--color-gray-500); --mt:0.25rem">
+					<div style="--size:0.6rem; --c:var(--color-gray-500); --mt:0.25rem">
 						{$i18n.t('URL to your logo image for light mode')}
 					</div>
 				</div>
@@ -117,7 +117,7 @@
 						placeholder="https://example.com/logo-dark.png"
 						bind:value={branding.logo_dark_url}
 					/>
-					<div style="--size:0.75rem; --c:var(--color-gray-500); --mt:0.25rem">
+					<div style="--size:0.6rem; --c:var(--color-gray-500); --mt:0.25rem">
 						{$i18n.t('URL to your logo image for dark mode (optional, falls back to light mode logo)')}
 					</div>
 				</div>
@@ -132,7 +132,7 @@
 						placeholder="https://example.com/favicon.ico"
 						bind:value={branding.favicon_url}
 					/>
-					<div style="--size:0.75rem; --c:var(--color-gray-500); --mt:0.25rem">
+					<div style="--size:0.6rem; --c:var(--color-gray-500); --mt:0.25rem">
 						{$i18n.t('URL to your favicon (browser tab icon)')}
 					</div>
 				</div>
@@ -141,7 +141,7 @@
 			<hr style="--dark-bc:var(--color-gray-850)" />
 
 			<!-- Text Settings -->
-			<div style="--g:0.75rem">
+			<div style="--g:0.6rem">
 				<div style="--size:0.875rem; --weight:500">{$i18n.t('Text Settings')}</div>
 				
 				<div>
@@ -154,7 +154,7 @@
 						placeholder={$WEBUI_NAME}
 						bind:value={branding.title}
 					/>
-					<div style="--size:0.75rem; --c:var(--color-gray-500); --mt:0.25rem">
+					<div style="--size:0.6rem; --c:var(--color-gray-500); --mt:0.25rem">
 						{$i18n.t('Main title displayed in your application')}
 					</div>
 				</div>
@@ -169,7 +169,7 @@
 						placeholder="Powered by Sage.is AI UI"
 						bind:value={branding.subtitle}
 					/>
-					<div style="--size:0.75rem; --c:var(--color-gray-500); --mt:0.25rem">
+					<div style="--size:0.6rem; --c:var(--color-gray-500); --mt:0.25rem">
 						{$i18n.t('Subtitle or tagline for your application')}
 					</div>
 				</div>
@@ -179,9 +179,9 @@
 
 			<!-- Color Settings — overrides Startr.Style --primary and --secondary CSS variables.
 				 These cascade through the entire UI: links, backgrounds, focus rings, etc. -->
-			<div style="--g:0.75rem">
+			<div style="--g:0.6rem">
 				<div style="--size:0.875rem; --weight:500">{$i18n.t('Color Settings')}</div>
-				<div style="--size:0.75rem; --c:var(--color-gray-500)">
+				<div style="--size:0.6rem; --c:var(--color-gray-500)">
 					{$i18n.t('Overrides the Startr.Style theme colors. Leave empty to use defaults.')}
 				</div>
 
@@ -203,7 +203,7 @@
 							bind:value={branding.primary_color}
 						/>
 					</div>
-					<div style="--size:0.75rem; --c:var(--color-gray-500); --mt:0.25rem">
+					<div style="--size:0.6rem; --c:var(--color-gray-500); --mt:0.25rem">
 						{$i18n.t('Main brand color (e.g., buttons, links)')}
 					</div>
 				</div>
@@ -226,7 +226,7 @@
 							bind:value={branding.accent_color}
 						/>
 					</div>
-					<div style="--size:0.75rem; --c:var(--color-gray-500); --mt:0.25rem">
+					<div style="--size:0.6rem; --c:var(--color-gray-500); --mt:0.25rem">
 						{$i18n.t('Secondary accent color for highlights')}
 					</div>
 				</div>
@@ -235,11 +235,11 @@
 			<hr style="--dark-bc:var(--color-gray-850)" />
 
 			<!-- Preview Section -->
-			<div style="--g:0.75rem">
+			<div style="--g:0.6rem">
 				<div style="--size:0.875rem; --weight:500">{$i18n.t('Preview')}</div>
 				
 				<div style="--p:1rem; --radius:0.5rem;  --dark-bc:var(--color-gray-700); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)">
-					<div style="--d:flex; --ai:center; --g:0.75rem; --mb:0.75rem">
+					<div style="--d:flex; --ai:center; --g:0.6rem; --mb:0.6rem">
 						{#if branding.logo_url}
 							<img 
 								src={branding.logo_url} 
@@ -255,7 +255,7 @@
 								</div>
 							{/if}
 							{#if branding.subtitle}
-								<div style="--size:0.75rem; --c:var(--text-muted)">
+								<div style="--size:0.6rem; --c:var(--text-muted)">
 									{branding.subtitle}
 								</div>
 							{/if}
@@ -263,17 +263,17 @@
 					</div>
 					<!-- Color swatches preview the actual --primary/--secondary overrides -->
 					{#if branding.primary_color || branding.accent_color}
-						<div style="--d:flex; --g:0.5rem; --mt:0.75rem">
+						<div style="--d:flex; --g:0.5rem; --mt:0.6rem">
 							{#if branding.primary_color}
 								<div
-									style="--px:0.75rem; --py:0.375rem; --radius:0.25rem; --size:0.75rem; --c:#fff; --bgc:{branding.primary_color}"
+									style="--px:0.6rem; --py:0.375rem; --radius:0.25rem; --size:0.6rem; --c:#fff; --bgc:{branding.primary_color}"
 								>
 									Primary
 								</div>
 							{/if}
 							{#if branding.accent_color}
 								<div
-									style="--px:0.75rem; --py:0.375rem; --radius:0.25rem; --size:0.75rem; --c:#fff; --bgc:{branding.accent_color}"
+									style="--px:0.6rem; --py:0.375rem; --radius:0.25rem; --size:0.6rem; --c:#fff; --bgc:{branding.accent_color}"
 								>
 									Accent
 								</div>
@@ -285,7 +285,7 @@
 		{/if}
 	</div>
 
-	<div style="--d:flex; --jc:flex-end; --pt:0.75rem">
+	<div style="--d:flex; --jc:flex-end; --pt:0.6rem">
 		<button
 			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			on:click={saveBranding}

@@ -38,7 +38,7 @@
 		transition={flyAndScale}
 	>
 		<!-- Search Input -->
-		<div style="--mb:0.25rem; --px:0.75rem; --pt:0.5rem; --pb:0.5rem">
+		<div style="--mb:0.25rem; --px:0.6rem; --pt:0.5rem; --pb:0.5rem">
 			<input
 				type="text"
 				style="--w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
@@ -51,8 +51,8 @@
 
 		<div style="--h:20rem; --ofy:auto; --p:0.5rem">
 			{#each Object.entries(emojiData) as [category, emojiString]}
-				<div style="--size:0.75rem; --weight:500; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --mb:0.5rem">{category}</div>
-				<div style="--d:grid; --gtc:repeat(8, minmax(0, 1fr)); --g:0.25rem; --mb:0.75rem">
+				<div style="--size:0.6rem; --weight:500; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --mb:0.5rem">{category}</div>
+				<div style="--d:grid; --gtc:repeat(8, minmax(0, 1fr)); --g:0.25rem; --mb:0.6rem">
 					{#each getEmojisForCategory(category) as emoji}
 						<!-- LOGIC: Check if the category is the one that needs skin tone options -->
 						{#if category === 'People & Body'}

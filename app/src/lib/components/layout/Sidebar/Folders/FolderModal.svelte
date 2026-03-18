@@ -88,7 +88,7 @@
 					}}
 				>
 					<div style="--d:flex; --fd:column; --w:100%; --mt:0.25rem">
-						<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Folder Name')}</div>
+						<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Folder Name')}</div>
 
 						<div style="--fx:1 1 0%">
 							<input
@@ -106,7 +106,7 @@
 
 					{#if $user?.role === 'admin' || ($user?.permissions.chat?.system_prompt ?? true)}
 						<div style="--my:0.25rem">
-							<div style="--mb:0.5rem; --size:0.75rem; --c:var(--color-gray-500)">Folder {$i18n.t('System Prompt')}</div>
+							<div style="--mb:0.5rem; --size:0.6rem; --c:var(--color-gray-500)">Folder {$i18n.t('System Prompt')}</div>
 							<div>
 								<Textarea
 									className=" text-sm w-full bg-transparent outline-hidden "
@@ -122,7 +122,7 @@
 						<Knowledge bind:selectedItems={data.files}>
 							<div slot="label">
 								<div style="--d:flex; --w:100%; --jc:space-between">
-									<div style="--mb:0.5rem; --size:0.75rem; --c:var(--color-gray-500)">
+									<div style="--mb:0.5rem; --size:0.6rem; --c:var(--color-gray-500)">
 										{$i18n.t('Knowledge')}
 									</div>
 								</div>
@@ -130,7 +130,7 @@
 						</Knowledge>
 					</div>
 
-					<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500; --g:0.375rem">
+					<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.875rem; --weight:500; --g:0.375rem">
 						<button
 							style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-950); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
 	class="{loading

@@ -249,7 +249,7 @@
 		
 		{#if messages.length > 0}
 			<button
-				style="--size:0.75rem; --px:0.5rem; --py:0.25rem; --c:var(--color-gray-500); --hvr-c:var(--color-gray-700); --hvr-dark-c:var(--color-gray-300); --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--size:0.6rem; --px:0.5rem; --py:0.25rem; --c:var(--color-gray-500); --hvr-c:var(--color-gray-700); --hvr-dark-c:var(--color-gray-300); --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={clearChat}
 			>
 				{$i18n.t('Clear')}
@@ -259,8 +259,8 @@
 
 	<!-- Model info -->
 	{#if testModel}
-		<div style="--p:0.75rem; --bgc:#eff6ff; --dark-bgc:rgb(30 58 138 / 0.2);  --bc:#bfdbfe; --dark-bc:#1e40af">
-			<div style="--size:0.75rem; --c:#1d4ed8; --dark-c:#93c5fd">
+		<div style="--p:0.6rem; --bgc:#eff6ff; --dark-bgc:rgb(30 58 138 / 0.2);  --bc:#bfdbfe; --dark-bc:#1e40af">
+			<div style="--size:0.6rem; --c:#1d4ed8; --dark-c:#93c5fd">
 				<div style="--weight:500">{testModel.name}</div>
 				{#if testModel.base_model_id}
 					<div style="--op:0.75">Base: {testModel.base_model_id}</div>
@@ -271,8 +271,8 @@
 			</div>
 		</div>
 	{:else}
-		<div style="--p:0.75rem; --bgc:#fefce8; --dark-bgc:rgb(113 63 18 / 0.2);  --bc:#fef08a; --dark-bc:#854d0e">
-			<div style="--size:0.75rem; --c:#a16207; --dark-c:#fde047">
+		<div style="--p:0.6rem; --bgc:#fefce8; --dark-bgc:rgb(113 63 18 / 0.2);  --bc:#fef08a; --dark-bc:#854d0e">
+			<div style="--size:0.6rem; --c:#a16207; --dark-c:#fde047">
 				{$i18n.t('Configure your model to start testing')}
 			</div>
 		</div>
@@ -287,7 +287,7 @@
 			<div style="--ta:center; --c:var(--color-gray-500); --mt:2rem">
 				<div style="--size:0.875rem">{$i18n.t('Start a conversation to test your model')}</div>
 				{#if testModel}
-					<div style="--size:0.75rem; --mt:0.5rem; --op:0.75">
+					<div style="--size:0.6rem; --mt:0.5rem; --op:0.75">
 						Not all chat features are available in test chats. <br>
 						{$i18n.t('This is a temporary test chat that won\'t be saved')}
 					</div>
@@ -297,7 +297,7 @@
 			{#each messages as message}
 				<div style="--d:flex"
 	class="{message.role === 'user' ? 'justify-end' : 'justify-start'}">
-					<div style="--maxw:80%; --radius:0.5rem; --px:0.75rem; --py:0.5rem; --size:0.875rem"
+					<div style="--maxw:80%; --radius:0.5rem; --px:0.6rem; --py:0.5rem; --size:0.875rem"
 	class="{message.role === 'user' 
 						? 'bg-gray-900 text-white dark:bg-white dark:text-black' 
 						: 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700'}">
@@ -309,7 +309,7 @@
 							{#if message.loading}
 								<div style="--d:flex; --ai:center; --g:0.25rem; --mt:0.25rem; --op:0.75">
 									<Spinner className="size-3" />
-									<span style="--size:0.75rem">{$i18n.t('Thinking...')}</span>
+									<span style="--size:0.6rem">{$i18n.t('Thinking...')}</span>
 								</div>
 							{/if}
 						{/if}
@@ -335,20 +335,20 @@
 					}}
 					rows={1}
 					disabled={!testModel || loading}
-					style="--w:100%; --size:0.875rem; --bgc:#fff; --dark-bgc:var(--color-gray-800);  --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --radius:0.5rem; --px:0.75rem; --py:0.5rem; resize:none; --oe:none; height: auto; min-height: 2.5rem; max-height: 10rem;"
+					style="--w:100%; --size:0.875rem; --bgc:#fff; --dark-bgc:var(--color-gray-800);  --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --radius:0.5rem; --px:0.6rem; --py:0.5rem; resize:none; --oe:none; height: auto; min-height: 2.5rem; max-height: 10rem;"
 				/>
 			</div>
 			
 			{#if loading}
 				<button
-					style="--px:0.75rem; --py:0.5rem; --size:0.875rem; --bgc:var(--color-gray-300); --c:var(--color-gray-600); --radius:0.5rem; --d:flex; --ai:center; --g:0.25rem"
+					style="--px:0.6rem; --py:0.5rem; --size:0.875rem; --bgc:var(--color-gray-300); --c:var(--color-gray-600); --radius:0.5rem; --d:flex; --ai:center; --g:0.25rem"
 					on:click={stopResponse}
 				>
 					<span>{$i18n.t('Stop')}</span>
 				</button>
 			{:else}
 				<button
-					style="--px:0.75rem; --py:0.5rem; --size:0.875rem; --bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --radius:0.5rem; --hvr-op:0.9; --tn:opacity 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--px:0.6rem; --py:0.5rem; --size:0.875rem; --bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --radius:0.5rem; --hvr-op:0.9; --tn:opacity 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="disabled:opacity-50"
 					disabled={!currentMessage.trim() || !testModel}
 					on:click={sendMessage}
@@ -358,7 +358,7 @@
 			{/if}
 		</div>
 		
-		<div style="--size:0.75rem; --c:var(--color-gray-500); --mt:0.5rem; --d:flex; --ai:center; --g:0.25rem">
+		<div style="--size:0.6rem; --c:var(--color-gray-500); --mt:0.5rem; --d:flex; --ai:center; --g:0.25rem">
 			<EyeSlash className="size-3" />
 			<span>{$i18n.t('Temporary chat - messages won\'t be saved')}</span>
 		</div>

@@ -75,16 +75,16 @@
 				</div>
 
 				{#if codeExecution?.result && (codeExecution?.result?.error || codeExecution?.result?.output)}
-					<div style="--dark-bgc:#202123; --dark-c:#fff; --px:1rem; --py:1rem; --bblr:0.5rem; --bbrr:0.5rem; --d:flex; --fd:column; --g:0.75rem">
+					<div style="--dark-bgc:#202123; --dark-c:#fff; --px:1rem; --py:1rem; --bblr:0.5rem; --bbrr:0.5rem; --d:flex; --fd:column; --g:0.6rem">
 						{#if codeExecution?.result?.error}
 							<div>
-								<div style="--c:var(--color-gray-500); --size:0.75rem; --mb:0.25rem">{$i18n.t('ERROR')}</div>
+								<div style="--c:var(--color-gray-500); --size:0.6rem; --mb:0.25rem">{$i18n.t('ERROR')}</div>
 								<div style="--size:0.875rem">{codeExecution?.result?.error}</div>
 							</div>
 						{/if}
 						{#if codeExecution?.result?.output}
 							<div>
-								<div style="--c:var(--color-gray-500); --size:0.75rem; --mb:0.25rem">{$i18n.t('OUTPUT')}</div>
+								<div style="--c:var(--color-gray-500); --size:0.6rem; --mb:0.25rem">{$i18n.t('OUTPUT')}</div>
 								<div style="--size:0.875rem">{codeExecution?.result?.output}</div>
 							</div>
 						{/if}
@@ -96,7 +96,7 @@
 						<div style="--size:0.875rem; --weight:500; --dark-c:var(--color-gray-300)">
 							{$i18n.t('Files')}
 						</div>
-						<ul style="--mt:0.25rem; list-style-type:disc; --pl:1rem; --size:0.75rem">
+						<ul style="--mt:0.25rem; list-style-type:disc; --pl:1rem; --size:0.6rem">
 							{#each codeExecution?.result?.files as file}
 								<li>
 									<a href={file.url} target="_blank">{file.name}</a>

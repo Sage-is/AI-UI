@@ -379,7 +379,7 @@ Based on the user's instruction, update and enhance the existing notes or select
 
 				<div style="--pb:0.5rem">
 					{#if selectedContent}
-						<div style="--size:0.75rem; --radius:0.75rem; --px:0.875rem; --py:0.75rem; --w:100%"
+						<div style="--size:0.6rem; --radius:0.6rem; --px:0.875rem; --py:0.6rem; --w:100%"
 	class="markdown-prose-xs">
 							<blockquote>
 								<div style="--line-clamp:3">

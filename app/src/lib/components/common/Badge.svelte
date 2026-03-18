@@ -12,7 +12,7 @@
 </script>
 
 <div
-	style="--size:0.75rem; --weight:700; --w:fit-content; --px:0.5rem; --radius:0.125rem; --tt:uppercase; --line-clamp:1; --mr:0.125rem; {colorStyles[type] ?? colorStyles['info']}"
+	style="--size:0.6rem; --weight:700; --w:fit-content; --px:0.5rem; --radius:0.125rem; --tt:uppercase; --line-clamp:1; --mr:0.125rem; {colorStyles[type] ?? colorStyles['info']}"
 >
 	{content}
 </div>

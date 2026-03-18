@@ -690,7 +690,7 @@
 </script>
 
 {#if $showCallOverlay}
-	<div style="--maxw:32rem; --w:100%; --h:100%; --maxh:100dvh; --d:flex; --fd:column; --jc:space-between; --p:0.75rem; --p-md:1.5rem">
+	<div style="--maxw:32rem; --w:100%; --h:100%; --maxh:100dvh; --d:flex; --fd:column; --jc:space-between; --p:0.6rem; --p-md:1.5rem">
 		{#if camera}
 			<button
 				type="button"
@@ -899,7 +899,7 @@
 							await startVideoStream();
 						}}
 					>
-						<button style="--p:0.75rem; --radius:9999px; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-900)" type="button">
+						<button style="--p:0.6rem; --radius:9999px; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-900)" type="button">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 20 20"
@@ -917,7 +917,7 @@
 				{:else}
 					<Tooltip content={$i18n.t('Camera')}>
 						<button
-							style="--p:0.75rem; --radius:9999px; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-900)"
+							style="--p:0.6rem; --radius:9999px; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-900)"
 							type="button"
 							on:click={async () => {
 								await navigator.mediaDevices.getUserMedia({ video: true });
@@ -971,7 +971,7 @@
 
 			<div>
 				<button
-					style="--p:0.75rem; --radius:9999px; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-900)"
+					style="--p:0.6rem; --radius:9999px; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-900)"
 					on:click={async () => {
 						await stopAudioStream();
 						await stopVideoStream();

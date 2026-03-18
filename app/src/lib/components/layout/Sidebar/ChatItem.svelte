@@ -287,7 +287,7 @@
 		>
 			<div style="--d:flex; --ai:center; --g:0.25rem">
 				<Document className=" size-[18px]" strokeWidth="2" />
-				<div style="--size:0.75rem; --c:#fff; --line-clamp:1">
+				<div style="--size:0.6rem; --c:#fff; --line-clamp:1">
 					{title}
 				</div>
 			</div>

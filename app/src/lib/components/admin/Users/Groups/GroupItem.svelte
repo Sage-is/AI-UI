@@ -56,7 +56,7 @@
 />
 
 <button
-	style="--d:flex; --ai:center; --g:0.75rem; --jc:space-between; --px:0.25rem; --size:0.75rem; --w:100%; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	style="--d:flex; --ai:center; --g:0.6rem; --jc:space-between; --px:0.25rem; --size:0.6rem; --w:100%; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	on:click={() => {
 		showEdit = true;
 	}}

@@ -298,13 +298,13 @@
 						{#if history.messages[messageId]?.merged?.status}
 							{@const message = history.messages[messageId]?.merged}
 
-							<div style="--w:100%; --radius:0.75rem; --pl:1.25rem; --pr:0.5rem; --py:0.5rem">
+							<div style="--w:100%; --radius:0.6rem; --pl:1.25rem; --pr:0.5rem; --py:0.5rem">
 								<Name>
 									{$i18n.t('Merged Response')}
 
 									{#if message.timestamp}
 										<span
-											style="--as:center; --v:hidden; --c:var(--color-gray-400); --size:0.75rem; --weight:500; --tt:uppercase; --ml:0.125rem; --mt:-0.125rem"
+											style="--as:center; --v:hidden; --c:var(--color-gray-400); --size:0.6rem; --weight:500; --tt:uppercase; --ml:0.125rem; --mt:-0.125rem"
 	class="group-hover:visible"
 										>
 											{dayjs(message.timestamp * 1000).format('LT')}

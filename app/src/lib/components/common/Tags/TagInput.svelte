@@ -28,7 +28,7 @@
 		<div style="--d:flex; --ai:center">
 			<input
 				bind:value={tagName}
-				style="--px:0.5rem; --cur:pointer; --as:center; --size:0.75rem; --h:fit-content; --bgc:transparent; --oe:none; --line-clamp:1; --w:6.5rem"
+				style="--px:0.5rem; --cur:pointer; --as:center; --size:0.6rem; --h:fit-content; --bgc:transparent; --oe:none; --line-clamp:1; --w:6.5rem"
 				placeholder={$i18n.t('Add a tag')}
 				aria-label={$i18n.t('Add a tag')}
 				list="tagOptions"
@@ -51,7 +51,7 @@
 					fill="currentColor"
 					stroke-width="2"
 					aria-hidden="true"
-					style="--w:0.75rem; --h:0.75rem"
+					style="--w:0.6rem; --h:0.6rem"
 				>
 					<path
 						fill-rule="evenodd"
@@ -77,7 +77,7 @@
 				viewBox="0 0 16 16"
 				aria-hidden="true"
 				fill="currentColor"
-				style="--w:0.75rem; --h:0.75rem; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--w:0.6rem; --h:0.6rem; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="{showTagInput ? 'rotate-45' : ''} transform"
 			>
 				<path
@@ -88,6 +88,6 @@
 	</button>
 
 	{#if label && !showTagInput}
-		<span style="--size:0.75rem; --pl:0.5rem; --as:center">{label}</span>
+		<span style="--size:0.6rem; --pl:0.5rem; --as:center">{label}</span>
 	{/if}
 </div>

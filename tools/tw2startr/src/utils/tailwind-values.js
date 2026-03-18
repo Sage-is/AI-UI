@@ -15,7 +15,7 @@ export const SPACING_SCALE = {
 	'1.5': '0.375rem',
 	'2': '0.5rem',
 	'2.5': '0.625rem',
-	'3': '0.75rem',
+	'3': '0.6rem',
 	'3.5': '0.875rem',
 	'4': '1rem',
 	'5': '1.25rem',
@@ -648,7 +648,7 @@ export const RAW_COLORS = {
 // FONT_SIZES
 // --------------------------------------------------------------------------
 export const FONT_SIZES = {
-	'xs': '0.75rem',
+	'xs': '0.6rem',
 	'sm': '0.875rem',
 	'base': '1rem',
 	'lg': '1.125rem',
@@ -687,7 +687,7 @@ export const BORDER_RADIUS = {
 	'DEFAULT': '0.25rem',
 	'md': '0.375rem',
 	'lg': '0.5rem',
-	'xl': '0.75rem',
+	'xl': '0.6rem',
 	'2xl': '1rem',
 	'3xl': '1.5rem',
 	'full': '9999px',

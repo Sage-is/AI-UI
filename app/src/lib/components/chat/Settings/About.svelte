@@ -96,8 +96,8 @@
 	});
 </script>
 
-<div id="tab-about" style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.75rem; --size:0.875rem; --mb:1.5rem">
-	<div style="--g:0.75rem; --ofy:scroll; --maxh:28rem; --maxh-lg:100%">
+<div id="tab-about" style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.875rem; --mb:1.5rem">
+	<div style="--g:0.6rem; --ofy:scroll; --maxh:28rem; --maxh-lg:100%">
 		<div>
 			<div style="--mb:0.625rem; --size:0.875rem; --weight:500; --d:flex; --g:0.5rem; --ai:center">
 				<div>
@@ -106,7 +106,7 @@
 				</div>
 			</div>
 			<div style="--d:flex; --w:100%; --jc:space-between; --ai:center">
-				<div style="--d:flex; --fd:column; --size:0.75rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-200)">
+				<div style="--d:flex; --fd:column; --size:0.6rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-200)">
 					<div style="--d:flex; --g:0.25rem">
 						<Tooltip content={WEBUI_BUILD_HASH}>
 							v{WEBUI_VERSION}
@@ -127,7 +127,7 @@
 					</div>
 
 					<button
-						style="--td:underline; --d:flex; --ai:center; --g:0.25rem; --size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500)"
+						style="--td:underline; --d:flex; --ai:center; --g:0.25rem; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500)"
 						on:click={() => {
 							showChangelog.set(true);
 						}}
@@ -138,7 +138,7 @@
 
 				{#if $config?.features?.enable_version_update_check}
 					<button
-						style="--size:0.75rem; --px:0.75rem; --py:0.375rem; --bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --weight:500"
+						style="--size:0.6rem; --px:0.6rem; --py:0.375rem; --bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --weight:500"
 						on:click={() => {
 							checkForVersionUpdates();
 						}}
@@ -155,7 +155,7 @@
 			<div>
 				<div style="--mb:0.625rem; --size:0.875rem; --weight:500">{$i18n.t('Ollama Version')}</div>
 				<div style="--d:flex; --w:100%">
-					<div style="--fx:1 1 0%; --size:0.75rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-200)">
+					<div style="--fx:1 1 0%; --size:0.6rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-200)">
 						{ollamaVersion ?? 'N/A'}
 					</div>
 				</div>
@@ -165,7 +165,7 @@
 		<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)" />
 
 		{#if $config?.license_metadata}
-			<div style="--mb:0.5rem; --size:0.75rem">
+			<div style="--mb:0.5rem; --size:0.6rem">
 				{#if !$WEBUI_NAME.includes('Sage.is AI')}
 					<span style="--c:var(--color-gray-500); --dark-c:var(--color-gray-300); --weight:500">{$WEBUI_NAME}</span> -
 				{/if}
@@ -209,7 +209,7 @@
 
 		<div>
 			<pre
-				style="--size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); margin: 3rem auto;
+				style="--size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); margin: 3rem auto;
 					width: fit-content;
 					font-family: monospace;
 					--radius: 0.5rem;
@@ -883,7 +883,7 @@ For more information on this, and how to apply and follow the GNU AGPL, see &lt;
 			</pre>
 		</div>
 
-		<div style="--mt:0.5rem; --size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
+		<div style="--mt:0.5rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 			Sage AI is {$i18n.t('Created by')}
 			<a
 				style="--c:var(--color-gray-500); --dark-c:var(--color-gray-300); --weight:500"
@@ -898,7 +898,7 @@ For more information on this, and how to apply and follow the GNU AGPL, see &lt;
 			> with the help of:
 		</div>
 
-		<div style="--mt:0.5rem; --size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
+		<div style="--mt:0.5rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 			<!-- License details - Simple clean table display -->
 			<div style="--ofx:auto; width: 40rem;">
 				{@html licenseTableHtml}

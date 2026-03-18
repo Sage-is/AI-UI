@@ -727,7 +727,7 @@
 					<div style="--d:flex; --w:100%; --px:0.25rem">
 						<input
 							type="text"
-							style="--ta:left; --size:0.75rem; --w:100%; --c:var(--color-gray-500); --bgc:transparent; --oe:none"
+							style="--ta:left; --size:0.6rem; --w:100%; --c:var(--color-gray-500); --bgc:transparent; --oe:none"
 							bind:value={knowledge.description}
 							placeholder="Knowledge Description"
 							on:input={() => {
@@ -739,7 +739,7 @@
 			</div>
 		</div>
 
-		<div style="--d:flex; --fd:row; --fx:1 1 0%; --h:100%; --maxh:100%; --pb:0.625rem; --g:0.75rem">
+		<div style="--d:flex; --fd:row; --fx:1 1 0%; --h:100%; --maxh:100%; --pb:0.625rem; --g:0.6rem">
 			{#if largeScreen}
 				<div style="--fx:1 1 0%; --d:flex; --jc:flex-start; --w:100%; --h:100%; --maxh:100%">
 					{#if selectedFile}
@@ -796,7 +796,7 @@
 						</div>
 					{:else}
 						<div style="--h:100%; --d:flex; --w:100%">
-							<div style="--m:auto; --size:0.75rem; --ta:center; --c:var(--color-gray-200); --dark-c:var(--color-gray-700)">
+							<div style="--m:auto; --size:0.6rem; --ta:center; --c:var(--color-gray-200); --dark-c:var(--color-gray-700)">
 								{$i18n.t('Drag and drop a file to upload or select a file to view')}
 							</div>
 						</div>
@@ -863,13 +863,13 @@
 			>
 				<div style="--d:flex; --fd:column; --w:100%; --g:0.5rem; --radius:0.5rem; --h:100%">
 					<div style="--w:100%; --h:100%; --d:flex; --fd:column">
-						<div style="--px:0.75rem">
+						<div style="--px:0.6rem">
 							<div style="--d:flex; --mb:0.125rem">
-								<div style="--as:center; --ml:0.25rem; --mr:0.75rem">
+								<div style="--as:center; --ml:0.25rem; --mr:0.6rem">
 									<Search />
 								</div>
 								<input
-									style="--w:100%; --size:0.875rem; --pr:1rem; --py:0.25rem; --btrr:0.75rem; --bbrr:0.75rem; --oe:none; --bgc:transparent"
+									style="--w:100%; --size:0.875rem; --pr:1rem; --py:0.25rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 									bind:value={query}
 									placeholder={$i18n.t('Search Collection')}
 									on:focus={() => {
@@ -895,7 +895,7 @@
 								</div>
 							</div>
 
-							<div style="--d:flex; --ai:center; --g:0.5rem; --mt:0.375rem; --size:0.75rem; --c:var(--color-gray-500)">
+							<div style="--d:flex; --ai:center; --g:0.5rem; --mt:0.375rem; --size:0.6rem; --c:var(--color-gray-500)">
 								<span style="--weight:500; --ws:nowrap">{$i18n.t('Ingestion')}:</span>
 								<label style="--d:flex; --ai:center; --g:0.25rem; --cursor:pointer">
 									<input type="radio" bind:group={ingestionMode} value="plain" />
@@ -909,7 +909,7 @@
 						</div>
 
 						{#if filteredItems.length > 0}
-							<div style="--d:flex; --ofy:auto; --h:100%; --w:100%; --size:0.75rem"
+							<div style="--d:flex; --ofy:auto; --h:100%; --w:100%; --size:0.6rem"
 	class="scrollbar-hidden">
 								<Files
 									small
@@ -927,7 +927,7 @@
 								/>
 							</div>
 						{:else}
-							<div style="--my:0.75rem; --d:flex; --fd:column; --jc:center; --ta:center; --c:var(--color-gray-500); --size:0.75rem">
+							<div style="--my:0.6rem; --d:flex; --fd:column; --jc:center; --ta:center; --c:var(--color-gray-500); --size:0.6rem">
 								<div>
 									{$i18n.t('No content found')}
 								</div>

@@ -58,7 +58,7 @@
 	class="scrollbar-hidden">
 		{#if servers !== null}
 			<div class="">
-				<div style="--mb:0.75rem">
+				<div style="--mb:0.6rem">
 					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('General')}</div>
 
 					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
@@ -99,14 +99,14 @@
 						</div>
 
 						<div style="--my:0.375rem">
-							<div style="--size:0.75rem; --c:var(--color-gray-500)">
+							<div style="--size:0.6rem; --c:var(--color-gray-500)">
 								{$i18n.t('Connect to your own OpenAPI compatible external tool servers.')}
 							</div>
 						</div>
 					</div>
 
 					<!-- <div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
-						<div style="--size:0.75rem; --weight:500">{$i18n.t('Arena Models')}</div>
+						<div style="--size:0.6rem; --weight:500">{$i18n.t('Arena Models')}</div>
 
 						<Tooltip content={$i18n.t(`Message rating should be enabled to use this feature`)}>
 							<Switch bind:state={evaluationConfig.ENABLE_EVALUATION_ARENA_MODELS} />
@@ -123,7 +123,7 @@
 		{/if}
 	</div>
 
-	<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
+	<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.875rem; --weight:500">
 		<button
 			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			type="submit"

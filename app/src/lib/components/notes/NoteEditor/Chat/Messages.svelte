@@ -8,7 +8,7 @@
 	export let onInsert = (content: string) => {};
 </script>
 
-<div style="--g:0.75rem; --pb:3rem">
+<div style="--g:0.6rem; --pb:3rem">
 	{#each messages as message, idx}
 		<Message
 			{message}

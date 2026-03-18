@@ -107,17 +107,17 @@
 						<div>
 							<div style="--as:center; --tt:capitalize; --weight:600">{selectedUser.name}</div>
 
-							<div style="--size:0.75rem; --c:var(--color-gray-500)">
+							<div style="--size:0.6rem; --c:var(--color-gray-500)">
 								{$i18n.t('Created at')}
 								{dayjs(selectedUser.created_at * 1000).format('LL')}
 							</div>
 						</div>
 					</div>
 
-					<div style="--pt:0.75rem; --pb:1.25rem">
+					<div style="--pt:0.6rem; --pb:1.25rem">
 						<div style="--d:flex; --fd:column; --g:0.375rem">
 							<div style="--d:flex; --fd:column; --w:100%">
-								<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Role')}</div>
+								<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Role')}</div>
 
 								<div style="--fx:1 1 0%">
 									<select
@@ -138,7 +138,7 @@
 
 							{#if _user.role === 'temporary'}
 								<div style="--d:flex; --fd:column; --w:100%">
-									<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Account Expires')}</div>
+									<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Account Expires')}</div>
 
 									<div style="--fx:1 1 0%">
 										<input
@@ -159,7 +159,7 @@
 							{/if}
 
 							<div style="--d:flex; --fd:column; --w:100%">
-								<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Email')}</div>
+								<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Email')}</div>
 
 								<div style="--fx:1 1 0%">
 									<input
@@ -175,7 +175,7 @@
 							</div>
 
 							<div style="--d:flex; --fd:column; --w:100%">
-								<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Name')}</div>
+								<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Name')}</div>
 
 								<div style="--fx:1 1 0%">
 									<input
@@ -190,7 +190,7 @@
 							</div>
 
 							<div style="--d:flex; --fd:column; --w:100%">
-								<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('New Password')}</div>
+								<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('New Password')}</div>
 
 								<div style="--fx:1 1 0%">
 									<input
@@ -204,7 +204,7 @@
 							</div>
 						</div>
 
-						<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
+						<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.875rem; --weight:500">
 							<button
 								style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
 								type="submit"

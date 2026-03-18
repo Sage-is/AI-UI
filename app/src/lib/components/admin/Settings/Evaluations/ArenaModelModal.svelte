@@ -158,7 +158,7 @@
 					}}
 				>
 					<div style="--px:0.25rem">
-						<div style="--d:flex; --jc:center; --pb:0.75rem">
+						<div style="--d:flex; --jc:center; --pb:0.6rem">
 							<input
 								bind:this={imageInputElement}
 								type="file"
@@ -247,7 +247,7 @@
 						</div>
 						<div style="--d:flex; --g:0.5rem">
 							<div style="--d:flex; --fd:column; --w:100%">
-								<div style="--mb:0.125rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Name')}</div>
+								<div style="--mb:0.125rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Name')}</div>
 
 								<div style="--fx:1 1 0%">
 									<input
@@ -263,7 +263,7 @@
 							</div>
 
 							<div style="--d:flex; --fd:column; --w:100%">
-								<div style="--mb:0.125rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('ID')}</div>
+								<div style="--mb:0.125rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('ID')}</div>
 
 								<div style="--fx:1 1 0%">
 									<input
@@ -281,7 +281,7 @@
 						</div>
 
 						<div style="--d:flex; --fd:column; --w:100%; --mt:0.5rem">
-							<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Description')}</div>
+							<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Description')}</div>
 
 							<div style="--fx:1 1 0%">
 								<input
@@ -298,7 +298,7 @@
 						<hr style="--bc:var(--color-gray-100); --dark-bc:rgb(78 78 78 / 0.1); --my:0.625rem; --w:100%" />
 
 						<div style="--my:0.5rem; --mx:-0.5rem">
-							<div style="--px:0.75rem; --py:0.5rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-950); --radius:0.5rem">
+							<div style="--px:0.6rem; --py:0.5rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-950); --radius:0.5rem">
 								<AccessControl bind:accessControl />
 							</div>
 						</div>
@@ -307,11 +307,11 @@
 
 						<div style="--d:flex; --fd:column; --w:100%">
 							<div style="--mb:0.25rem; --d:flex; --jc:space-between">
-								<div style="--size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Models')}</div>
+								<div style="--size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Models')}</div>
 
 								<div>
 									<button
-										style="--size:0.75rem; --c:var(--color-gray-500)"
+										style="--size:0.6rem; --c:var(--color-gray-500)"
 										type="button"
 										on:click={() => {
 											filterMode = filterMode === 'include' ? 'exclude' : 'include';
@@ -347,7 +347,7 @@
 									{/each}
 								</div>
 							{:else}
-								<div style="--c:var(--color-gray-500); --size:0.75rem; --ta:center; --py:0.5rem">
+								<div style="--c:var(--color-gray-500); --size:0.6rem; --ta:center; --py:0.5rem">
 									{$i18n.t('Leave empty to include all models or select specific models')}
 								</div>
 							{/if}
@@ -382,7 +382,7 @@
 						</div>
 					</div>
 
-					<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500; --g:0.375rem">
+					<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.875rem; --weight:500; --g:0.375rem">
 						{#if edit}
 							<button
 								style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --dark-bgc:#000; --hvr-dark-bgc:var(--color-gray-950); --dark-c:#fff; --bgc:#fff; --c:#000; --hvr-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"

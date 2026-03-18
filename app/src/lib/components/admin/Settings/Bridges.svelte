@@ -180,7 +180,7 @@
 		</div>
 		<button
 			class="btn btn-primary"
-			style="--d:flex; --ai:center; --g:0.25rem; --px:0.75rem; --py:0.375rem; --br:0.5rem; --bg:var(--color-gray-800); --c:white; --size:0.8rem; --dark-bg:var(--color-gray-200); --dark-c:var(--color-gray-900)"
+			style="--d:flex; --ai:center; --g:0.25rem; --px:0.6rem; --py:0.375rem; --br:0.5rem; --bg:var(--color-gray-800); --c:white; --size:0.8rem; --dark-bg:var(--color-gray-200); --dark-c:var(--color-gray-900)"
 			on:click={openAddModal}
 		>
 			<Plus className="size-3.5" />
@@ -206,22 +206,22 @@
 				<path d="M429.371,429.077c-10.576,0-15.095-3.044-21.934-7.651c-8.446-5.689-18.957-12.77-38.695-12.77c-19.738,0-30.248,7.081-38.694,12.77c-6.839,4.607-11.357,7.651-21.932,7.651c-10.575,0-15.092-3.043-21.931-7.651c-8.445-5.689-18.956-12.77-38.693-12.77c-19.737,0-30.247,7.081-38.691,12.77c-6.838,4.607-11.356,7.651-21.93,7.651s-15.092-3.043-21.931-7.651c-8.445-5.689-18.956-12.77-38.693-12.77c-19.738,0-30.248,7.081-38.693,12.77c-6.838,4.607-11.356,7.651-21.931,7.651c-10.574,0-15.092-3.043-21.93-7.651c-8.445-5.689-18.955-12.77-38.692-12.77v30c10.574,0,15.092,3.043,21.93,7.651c8.445,5.689,18.955,12.77,38.692,12.77c19.737,0,30.248-7.081,38.693-12.77c6.839-4.607,11.356-7.651,21.932-7.651c10.575,0,15.092,3.043,21.931,7.651c8.445,5.689,18.955,12.77,38.692,12.77s30.247-7.081,38.692-12.771c6.838-4.607,11.355-7.65,21.929-7.65c10.575,0,15.093,3.043,21.932,7.651c8.445,5.689,18.956,12.77,38.693,12.77c19.738,0,30.248-7.081,38.694-12.77c6.839-4.607,11.357-7.651,21.932-7.651c10.576,0,15.095,3.044,21.934,7.651c8.446,5.689,18.957,12.77,38.695,12.77s30.249-7.081,38.695-12.77c6.839-4.607,11.358-7.651,21.934-7.651v-30c-19.738,0-30.249,7.081-38.695,12.77C444.466,426.033,439.947,429.077,429.371,429.077z" />
 			</svg>
 			<div>{$i18n.t('No bridge connections configured')}</div>
-			<div style="--size:0.75rem">{$i18n.t('Click "Add Bridge" to connect a messaging platform')}</div>
+			<div style="--size:0.6rem">{$i18n.t('Click "Add Bridge" to connect a messaging platform')}</div>
 		</div>
 	{:else}
 		<div style="--d:flex; --fd:column; --g:0.5rem">
 			{#each bridges as bridge}
 				<div
-					style="--d:flex; --ai:center; --jc:space-between; --p:0.75rem; --br:0.5rem; --b:1px solid var(--color-gray-200); --dark-b:1px solid var(--color-gray-700)"
+					style="--d:flex; --ai:center; --jc:space-between; --p:0.6rem; --br:0.5rem; --b:1px solid var(--color-gray-200); --dark-b:1px solid var(--color-gray-700)"
 				>
-					<div style="--d:flex; --ai:center; --g:0.75rem">
+					<div style="--d:flex; --ai:center; --g:0.6rem">
 						<div
 							class={`${getStatusColor(bridge.status)}`}
 							style="--w:0.5rem; --h:0.5rem; --br:9999px; --fx-sh:none"
 						></div>
 						<div>
 							<div style="--weight:500; --size:0.875rem">{bridge.name}</div>
-							<div style="--size:0.75rem; --c:var(--color-gray-500); --d:flex; --g:0.5rem">
+							<div style="--size:0.6rem; --c:var(--color-gray-500); --d:flex; --g:0.5rem">
 								<span>{getPlatformDisplayName(bridge.platform)}</span>
 								<span>-</span>
 								<span>{bridge.mode === 'ai_chat' ? 'AI Chat' : 'Channel Bridge'}</span>
@@ -323,13 +323,13 @@
 		on:click|self={() => (showModal = false)}
 	>
 		<div
-			style="--bg:var(--color-gray-50); --dark-bg:var(--color-gray-900); --br:0.75rem; --p:1.5rem; --w:100%; --maxw:32rem; --maxh:90vh; --ofy:auto; --mx:1rem"
+			style="--bg:var(--color-gray-50); --dark-bg:var(--color-gray-900); --br:0.6rem; --p:1.5rem; --w:100%; --maxw:32rem; --maxh:90vh; --ofy:auto; --mx:1rem"
 		>
 			<div style="--weight:600; --size:1.1rem; --mb:1rem">
 				{editingBridge ? $i18n.t('Edit Bridge') : $i18n.t('Add Bridge')}
 			</div>
 
-			<div style="--d:flex; --fd:column; --g:0.75rem">
+			<div style="--d:flex; --fd:column; --g:0.6rem">
 				<!-- Platform -->
 				{#if !editingBridge}
 					<div>
@@ -392,7 +392,7 @@
 					<summary style="cursor:pointer; font-size:0.85rem; font-weight:500; margin-top:0.5rem"
 						>{$i18n.t('Advanced Settings')}</summary
 					>
-					<div style="--d:flex; --fd:column; --g:0.75rem; --mt:0.75rem">
+					<div style="--d:flex; --fd:column; --g:0.6rem; --mt:0.6rem">
 						<!-- Platform Config -->
 						{#each getConfigSchema(formPlatform) as field}
 							<div>

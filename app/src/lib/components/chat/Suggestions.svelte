@@ -66,7 +66,7 @@
 </script>
 
 <div
-	style="--mb:0.25rem; --d:flex; --g:0.25rem; --size:0.75rem; --weight:500; --ai:center; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
+	style="--mb:0.25rem; --d:flex; --g:0.25rem; --size:0.6rem; --weight:500; --ai:center; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
 >
 	{#if filteredPrompts.length > 0}
 		<Bolt />
@@ -112,7 +112,7 @@
 								{prompt.title[0]}
 							</div>
 							<div
-								style="--size:0.75rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); --weight:400; --line-clamp:1"
+								style="--size:0.6rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); --weight:400; --line-clamp:1"
 							>
 								{prompt.title[1]}
 							</div>
@@ -124,7 +124,7 @@
 								{prompt.content}
 							</div>
 							<div
-								style="--size:0.75rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); --weight:400; --line-clamp:1"
+								style="--size:0.6rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); --weight:400; --line-clamp:1"
 							>
 								{$i18n.t('Prompt')}
 							</div>

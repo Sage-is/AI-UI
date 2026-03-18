@@ -113,7 +113,7 @@
 		</div>
 
 		<div style="--mt:0.5rem">
-			<div style="--px:0.75rem; --py:0.5rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-950); --radius:0.5rem">
+			<div style="--px:0.6rem; --py:0.5rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-950); --radius:0.5rem">
 				<AccessControl
 					bind:accessControl
 					accessRoles={['read', 'write']}

@@ -45,14 +45,14 @@
 {#if !dismissed}
 	{#if mounted}
 		<div
-			style="--top:0; --left:0; --right:0; --p:0.5rem; --px:0.75rem; --d:flex; --jc:center; --ai:center; --pos:relative; --radius:0.75rem;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --c:var(--color-gray-800); --bgc:#fff; --dark-bgc:var(--color-gray-900); backdrop-filter:blur(24px); --z:30"
+			style="--top:0; --left:0; --right:0; --p:0.5rem; --px:0.6rem; --d:flex; --jc:center; --ai:center; --pos:relative; --radius:0.6rem;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --c:var(--color-gray-800); --bgc:#fff; --dark-bgc:var(--color-gray-900); backdrop-filter:blur(24px); --z:30"
 	class="{className} dark:text-gary-100"
 			transition:fade={{ delay: 100, duration: 300 }}
 		>
 			<div style="--d:flex; --fd:column; --fd-md:row; --ai-md:center; --fx:1 1 0%; --size:0.875rem; --w:fit-content; --g:0.375rem">
 				<div style="--d:flex; --jc:space-between; --as:flex-start">
 					<div
-						style="--size:0.75rem; --weight:700; --w:fit-content; --px:0.5rem; --radius:0.125rem; --tt:uppercase; --line-clamp:1; --mr:0.125rem"
+						style="--size:0.6rem; --weight:700; --w:fit-content; --px:0.5rem; --radius:0.125rem; --tt:uppercase; --line-clamp:1; --mr:0.125rem"
 	class="{classNames[banner.type] ??
 							classNames['info']}"
 					>
@@ -63,7 +63,7 @@
 						<div style="--d:flex; --d-md:none; --w:fit-content; --ai-md:center"
 	class="group">
 							<a
-								style="--c:var(--color-gray-700); --dark-c:#fff; --size:0.75rem; --weight:600; --td:underline"
+								style="--c:var(--color-gray-700); --dark-c:#fff; --size:0.6rem; --weight:600; --td:underline"
 								href="{WEBUI_BASE_URL}/assets/files/whitepaper.pdf"
 								target="_blank">Learn More</a
 							>
@@ -89,7 +89,7 @@
 						</div>
 					{/if}
 				</div>
-				<div style="--fx:1 1 0%; --size:0.75rem; --c:var(--color-gray-700); --dark-c:#fff; --maxh:15rem; --ofy:auto">
+				<div style="--fx:1 1 0%; --size:0.6rem; --c:var(--color-gray-700); --dark-c:#fff; --maxh:15rem; --ofy:auto">
 					{@html marked.parse(DOMPurify.sanitize((banner?.content ?? '').replace(/\n/g, '<br>')))}
 				</div>
 			</div>
@@ -98,7 +98,7 @@
 				<div style="--d:none; --d-md:flex; --w:fit-content; --ai-md:center"
 	class="group">
 					<a
-						style="--c:var(--color-gray-700); --dark-c:#fff; --size:0.75rem; --weight:600; --td:underline"
+						style="--c:var(--color-gray-700); --dark-c:#fff; --size:0.6rem; --weight:600; --td:underline"
 						href="/"
 						target="_blank">Learn More</a
 					>

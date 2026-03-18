@@ -162,7 +162,7 @@
 						? 'max-w-full'
 						: 'max-w-5xl'}"
 				>
-					<div style="--px:0.75rem">
+					<div style="--px:0.6rem">
 						<div style="--size:1.5rem; --weight:600; --line-clamp:1">
 							{title}
 						</div>

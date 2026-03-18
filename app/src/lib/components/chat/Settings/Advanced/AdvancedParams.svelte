@@ -387,7 +387,7 @@
 
 <!-- The entire template is now one clean loop. -->
 <!-- All rendering logic is derived from the `config` object in each iteration. -->
-<div style="--g:0.25rem; --size:0.75rem"
+<div style="--g:0.25rem; --size:0.6rem"
 	class="pb-safe-bottom">
 	{#each allParameters as config (config.key)}
 		{#if !config.adminOnly || admin}
@@ -395,14 +395,14 @@
 				<!-- Header Row (Label, Tooltip, and Toggle Button) -->
 				<Tooltip content={$i18n.t(config.tooltip)} placement="top-start" className="inline-tooltip">
 					<div style="--d:flex; --w:100%; --jc:space-between; --ai:center">
-						<div style="--as:center; --size:0.75rem; --weight:500">
+						<div style="--as:center; --size:0.6rem; --weight:500">
 							{$i18n.t(config.label)}
 							{#if config.suffix}
 								<span style="--c:var(--color-gray-500); --pl:0.25rem">({$i18n.t(config.suffix)})</span>
 							{/if}
 						</div>
 						<button
-							style="--p:0.25rem; --px:0.75rem; --size:0.75rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --fs:0; --oe:none"
+							style="--p:0.25rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --fs:0; --oe:none"
 							type="button"
 							on:click={() => toggleParameter(config)}
 						>
@@ -442,7 +442,7 @@
 							/>
 						{:else if config.type === 'switch'}
 							<div style="--w:100%; --pr:0.25rem; --d:flex; --jc:space-between; --ai:center">
-								<div style="--size:0.75rem; --c:var(--color-gray-500)">
+								<div style="--size:0.6rem; --c:var(--color-gray-500)">
 									{params[config.key] ? 'Enabled' : 'Disabled'}
 								</div>
 								<div style="--pr:0.5rem">
@@ -483,10 +483,10 @@
 			{#each Object.keys(params?.custom_params ?? {}) as key}
 				<div style="--py:0.125rem; --w:100%; --jc:space-between; --mb:0.25rem">
 					<div style="--d:flex; --w:100%; --jc:space-between">
-						<div style="--as:center; --size:0.75rem; --weight:500">
+						<div style="--as:center; --size:0.6rem; --weight:500">
 							<input
 								type="text"
-								style="--size:0.75rem; --w:100%; --bgc:transparent; --oe:2px solid transparent"
+								style="--size:0.6rem; --w:100%; --bgc:transparent; --oe:2px solid transparent"
 								placeholder={$i18n.t('Custom Parameter Name')}
 								value={key}
 								on:change={(e) => {
@@ -503,7 +503,7 @@
 							/>
 						</div>
 						<button
-							style="--p:0.25rem; --px:0.75rem; --size:0.75rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --fs:0; --oe:none"
+							style="--p:0.25rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --fs:0; --oe:none"
 							type="button"
 							on:click={() => {
 								delete params.custom_params[key];

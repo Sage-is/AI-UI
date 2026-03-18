@@ -29,10 +29,10 @@
 </script>
 
 {#if chatList}
-	<div style="--ta:left; --size:0.875rem; --w:100%; --mb:0.75rem">
+	<div style="--ta:left; --size:0.875rem; --w:100%; --mb:0.6rem">
 		{#if chatList.length === 0}
 			<div
-				style="--size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --ta:center; --px:1.25rem; --minh:5rem; --w:100%; --h:100%; --d:flex; --jc:center; --ai:center"
+				style="--size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --ta:center; --px:1.25rem; --minh:5rem; --w:100%; --h:100%; --d:flex; --jc:center; --ai:center"
 			>
 				{$i18n.t('No chats found')}
 			</div>
@@ -41,7 +41,7 @@
 		{#each chatList as chat, idx (chat.id)}
 			{#if (idx === 0 || (idx > 0 && chat.time_range !== chatList[idx - 1].time_range)) && chat?.time_range}
 				<div
-					style="--w:100%; --size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --weight:500;  --px:0.5rem"
+					style="--w:100%; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --weight:500;  --px:0.5rem"
 	class="{idx === 0
 						? ''
 						: 'pt-5'}"
@@ -69,7 +69,7 @@
 			{/if}
 
 			<a
-				style="--w:100%; --d:flex; --jc:space-between; --ai:center; --radius:0.5rem; --size:0.875rem; --py:0.5rem; --px:0.75rem; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850)"
+				style="--w:100%; --d:flex; --jc:space-between; --ai:center; --radius:0.5rem; --size:0.875rem; --py:0.5rem; --px:0.6rem; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850)"
 				draggable="false"
 				href={`/c/${chat.id}`}
 				on:click={() => (show = false)}
@@ -79,7 +79,7 @@
 				</div>
 
 				<div style="--d:none; --d-sm:flex; --fb-sm:40%; --ai:center; --jc:flex-end">
-					<div style="--c:var(--color-gray-500); --dark-c:var(--color-gray-400); --size:0.75rem">
+					<div style="--c:var(--color-gray-500); --dark-c:var(--color-gray-400); --size:0.6rem">
 						{dayjs(chat?.updated_at * 1000).calendar()}
 					</div>
 				</div>
@@ -94,7 +94,7 @@
 				}
 			}}
 		>
-			<div style="--w:100%; --d:flex; --jc:center; --py:0.25rem; --size:0.75rem; animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; --ai:center; --g:0.5rem">
+			<div style="--w:100%; --d:flex; --jc:center; --py:0.25rem; --size:0.6rem; animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; --ai:center; --g:0.5rem">
 				<Spinner className=" size-4" />
 				<div class=" ">Loading...</div>
 			</div>

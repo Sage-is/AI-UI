@@ -304,7 +304,7 @@
 						{#if ENABLE_OPENAI_API}
 							<div class="">
 								<div style="--d:flex; --jc:space-between; --ai:center">
-									<div style="--weight:500; --size:0.75rem">{$i18n.t('Manage OpenAI Compatible API Connections')}</div>
+									<div style="--weight:500; --size:0.6rem">{$i18n.t('Manage OpenAI Compatible API Connections')}</div>
 
 									<Tooltip content={$i18n.t(`Add Connection`)}>
 										<button
@@ -368,7 +368,7 @@
 					{#if ENABLE_OLLAMA_API}
 						<div class="">
 							<div style="--d:flex; --jc:space-between; --ai:center">
-								<div style="--weight:500; --size:0.75rem">{$i18n.t('Manage Ollama API Connections')}</div>
+								<div style="--weight:500; --size:0.6rem">{$i18n.t('Manage Ollama API Connections')}</div>
 
 								<Tooltip content={$i18n.t(`Add Connection`)}>
 									<button
@@ -408,7 +408,7 @@
 								</div>
 							</div>
 
-							<div style="--mt:0.25rem; --size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
+							<div style="--mt:0.25rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 								{$i18n.t('Trouble accessing Ollama?')}
 								<a
 									style="--c:var(--color-gray-300); --weight:500; --td:underline"
@@ -438,7 +438,7 @@
 						</div>
 					</div>
 
-					<div style="--mt:0.25rem; --size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
+					<div style="--mt:0.25rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 						{$i18n.t(
 							'Direct Connections allow users to connect to their own OpenAI compatible API endpoints.'
 						)}
@@ -449,7 +449,7 @@
 
 				<div style="--my:0.5rem">
 					<div style="--d:flex; --jc:space-between; --ai:center; --size:0.875rem">
-						<div style="--size:0.75rem; --weight:500">{$i18n.t('Cache Base Model List')}</div>
+						<div style="--size:0.6rem; --weight:500">{$i18n.t('Cache Base Model List')}</div>
 
 						<div style="--d:flex; --ai:center">
 							<div class="">
@@ -463,7 +463,7 @@
 						</div>
 					</div>
 
-					<div style="--mt:0.25rem; --size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
+					<div style="--mt:0.25rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 						{$i18n.t(
 							'Base Model List Cache speeds up access by fetching base models only at startup or on settings save—faster, but may not show recent base model changes.'
 						)}
@@ -479,7 +479,7 @@
 		{/if}
 	</div>
 
-	<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
+	<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.875rem; --weight:500">
 		<button
 			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			type="submit"

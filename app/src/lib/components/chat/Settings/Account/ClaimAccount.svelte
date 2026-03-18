@@ -72,7 +72,7 @@
 	<!-- Countdown timer - always shown for temp accounts with expiry -->
 	{#if expiresAt}
 		<div style="--d:flex; --ai:center; --g:0.5rem">
-			<div style="--size:0.75rem; --weight:500; {expired ? '--c:#ef4444' : '--c:var(--color-gray-500)'}">
+			<div style="--size:0.6rem; --weight:500; {expired ? '--c:#ef4444' : '--c:var(--color-gray-500)'}">
 				{#if expired}
 					{$i18n.t('Your temporary access has expired')}
 				{:else}
@@ -89,11 +89,11 @@
 			<div style="--weight:600; --size:0.875rem; --c:var(--color-gray-900); --dark-c:#fff">
 				{$i18n.t('Account Under Review')}
 			</div>
-			<div style="--size:0.75rem; --c:var(--color-gray-500)">
+			<div style="--size:0.6rem; --c:var(--color-gray-500)">
 				{$i18n.t("Your account claim has been submitted and is awaiting approval. You can continue using the app during your remaining demo period. Once approved, you'll have full permanent access.")}
 			</div>
 			{#if expiresAt && !expired}
-				<div style="--size:0.75rem; --c:var(--color-gray-500); --mt:0.25rem">
+				<div style="--size:0.6rem; --c:var(--color-gray-500); --mt:0.25rem">
 					{$i18n.t('If your demo period ends before approval, your access may be paused until an administrator reviews your account.')}
 				</div>
 			{/if}
@@ -108,14 +108,14 @@
 				<div style="--weight:600; --size:0.875rem; --c:var(--color-gray-900); --dark-c:#fff">
 					{$i18n.t('Set Up Permanent Account')}
 				</div>
-				<div style="--size:0.75rem; --c:var(--color-gray-500)">
+				<div style="--size:0.6rem; --c:var(--color-gray-500)">
 					{$i18n.t('You have a temporary account. Set an email and password so you can sign in again and request permanent access.')}
 				</div>
 			</div>
 
 			<div style="--d:flex; --fd:column; --g:0.375rem; --py:0.375rem">
 				<div style="--d:flex; --fd:column; --w:100%">
-					<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Email')}</div>
+					<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Email')}</div>
 					<div style="--fx:1 1 0%">
 						<input
 							style="--w:100%; --bgc:transparent; --dark-c:var(--color-gray-300); --oe:none"
@@ -130,7 +130,7 @@
 				</div>
 
 				<div style="--d:flex; --fd:column; --w:100%">
-					<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Password')}</div>
+					<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Password')}</div>
 					<div style="--fx:1 1 0%">
 						<input
 							style="--w:100%; --bgc:transparent; --size:0.875rem; --dark-c:var(--color-gray-300); --oe:none"
@@ -145,7 +145,7 @@
 				</div>
 
 				<div style="--d:flex; --fd:column; --w:100%">
-					<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Confirm Password')}</div>
+					<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Confirm Password')}</div>
 					<div style="--fx:1 1 0%">
 						<input
 							style="--w:100%; --bgc:transparent; --size:0.875rem; --dark-c:var(--color-gray-300); --oe:none"
@@ -176,7 +176,7 @@
 			<div style="--weight:600; --size:0.875rem; --c:var(--color-gray-900); --dark-c:#fff">
 				{$i18n.t('Temporary Account')}
 			</div>
-			<div style="--size:0.75rem; --c:var(--color-gray-500)">
+			<div style="--size:0.6rem; --c:var(--color-gray-500)">
 				{$i18n.t('You are using a temporary account. New account registration is currently closed. Please contact an administrator if you would like to request permanent access.')}
 			</div>
 		</div>

@@ -104,8 +104,8 @@
 		id="commands-container"
 		style="--px:0.5rem; --mb:0.5rem; --ta:left; --w:100%; --pos:absolute; --bottom:0; --left:0; --right:0; --z:10"
 	>
-		<div style="--d:flex; --w:100%; --radius:0.75rem;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)">
-			<div style="--d:flex; --fd:column; --w:100%; --radius:0.75rem; --bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-c:var(--color-gray-100)">
+		<div style="--d:flex; --w:100%; --radius:0.6rem;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)">
+			<div style="--d:flex; --fd:column; --w:100%; --radius:0.6rem; --bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-c:var(--color-gray-100)">
 				<div
 					style="--m:0.25rem; --ofy:auto; --p:0.25rem; --btrr:0.5rem; --bbrr:0.5rem; --g:0.125rem; --maxh:15rem"
 	class="scrollbar-hidden"
@@ -114,7 +114,7 @@
 				>
 					{#each filteredItems as model, modelIdx}
 						<button
-							style="--px:0.75rem; --py:0.375rem; --radius:0.75rem; --w:100%; --ta:left"
+							style="--px:0.6rem; --py:0.375rem; --radius:0.6rem; --w:100%; --ta:left"
 	class="{modelIdx === selectedIdx
 								? 'bg-gray-50 dark:bg-gray-850 selected-command-option-button'
 								: ''}"
