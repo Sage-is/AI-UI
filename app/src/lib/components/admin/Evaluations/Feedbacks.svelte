@@ -168,7 +168,7 @@
 
 <FeedbackModal bind:show={showFeedbackModal} {selectedFeedback} onClose={closeFeedbackModal} />
 
-<div style="--mt:0.125rem; --mb:0.5rem; --g:0.25rem; --d:flex; --fd:row; --jc:space-between">
+<div style="--mt:0.125rem; --mb:0.5rem; --g:0.2rem; --d:flex; --fd:row; --jc:space-between">
 	<div style="--d:flex; --as-md:center; --size:1.125rem; --weight:500; --px:0.125rem">
 		{$i18n.t('Feedback History')}
 
@@ -181,7 +181,7 @@
 		<div>
 			<Tooltip content={$i18n.t('Export')}>
 				<button
-					style="--p:0.5rem; --radius:0.6rem; --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
+					style="--p:0.5rem; --radius:0.6rem; --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.8rem; --d:flex; --ai:center; --g:0.2rem"
 					on:click={() => {
 						exportHandler();
 					}}
@@ -198,12 +198,12 @@
 	class="scrollbar-hidden"
 >
 	{#if (feedbacks ?? []).length === 0}
-		<div style="--ta:center; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --py:0.25rem">
+		<div style="--ta:center; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --py:0.2rem">
 			{$i18n.t('No feedbacks found')}
 		</div>
 	{:else}
 		<table
-			style="--w:100%; --size:0.875rem; --ta:left; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); table-layout:auto; --maxw:100%; --radius:0.125rem"
+			style="--w:100%; --size:0.8rem; --ta:left; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); table-layout:auto; --maxw:100%; --radius:0.125rem"
 		>
 			<thead
 				style="--size:0.6rem; --c:var(--color-gray-700); --tt:uppercase; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-400); --translatey:-0.125rem"
@@ -211,10 +211,10 @@
 				<tr class="">
 					<th
 						scope="col"
-						style="--px:0.6rem; --py:0.375rem; --cur:pointer; --us:none; --w:0.6rem"
+						style="--px:0.6rem; --py:0.4rem; --cur:pointer; --us:none; --w:0.6rem"
 						on:click={() => setSortKey('user')}
 					>
-						<div style="--d:flex; --g:0.375rem; --ai:center; --jc:flex-end">
+						<div style="--d:flex; --g:0.4rem; --ai:center; --jc:flex-end">
 							{$i18n.t('User')}
 							{#if orderBy === 'user'}
 								<span style="--weight:400">
@@ -234,10 +234,10 @@
 
 					<th
 						scope="col"
-						style="--px:0.6rem; --pr:0.375rem; --cur:pointer; --us:none"
+						style="--px:0.6rem; --pr:0.4rem; --cur:pointer; --us:none"
 						on:click={() => setSortKey('model_id')}
 					>
-						<div style="--d:flex; --g:0.375rem; --ai:center">
+						<div style="--d:flex; --g:0.4rem; --ai:center">
 							{$i18n.t('Models')}
 							{#if orderBy === 'model_id'}
 								<span style="--weight:400">
@@ -257,10 +257,10 @@
 
 					<th
 						scope="col"
-						style="--px:0.6rem; --py:0.375rem; --ta:right; --cur:pointer; --us:none; --w:fit-content"
+						style="--px:0.6rem; --py:0.4rem; --ta:right; --cur:pointer; --us:none; --w:fit-content"
 						on:click={() => setSortKey('rating')}
 					>
-						<div style="--d:flex; --g:0.375rem; --ai:center; --jc:flex-end">
+						<div style="--d:flex; --g:0.4rem; --ai:center; --jc:flex-end">
 							{$i18n.t('Result')}
 							{#if orderBy === 'rating'}
 								<span style="--weight:400">
@@ -280,10 +280,10 @@
 
 					<th
 						scope="col"
-						style="--px:0.6rem; --py:0.375rem; --ta:right; --cur:pointer; --us:none; --w:0"
+						style="--px:0.6rem; --py:0.4rem; --ta:right; --cur:pointer; --us:none; --w:0"
 						on:click={() => setSortKey('updated_at')}
 					>
-						<div style="--d:flex; --g:0.375rem; --ai:center; --jc:flex-end">
+						<div style="--d:flex; --g:0.4rem; --ai:center; --jc:flex-end">
 							{$i18n.t('Updated At')}
 							{#if orderBy === 'updated_at'}
 								<span style="--weight:400">
@@ -301,7 +301,7 @@
 						</div>
 					</th>
 
-					<th scope="col" style="--px:0.6rem; --py:0.375rem; --ta:right; --cur:pointer; --us:none; --w:0"> </th>
+					<th scope="col" style="--px:0.6rem; --py:0.4rem; --ta:right; --cur:pointer; --us:none; --w:0"> </th>
 				</tr>
 			</thead>
 			<tbody style="--d:table">
@@ -317,14 +317,14 @@
 										<img
 											src={feedback?.user?.profile_image_url ?? `${WEBUI_BASE_URL}/static/user.png`}
 											alt={feedback?.user?.name}
-											style="--w:1.25rem; --h:1.25rem; --radius:9999px; --objf:cover; --fs:0"
+											style="--w:1.2rem; --h:1.2rem; --radius:9999px; --objf:cover; --fs:0"
 										/>
 									</div>
 								</Tooltip>
 							</div>
 						</td>
 
-						<td style="--d:table;--py:0.25rem; --pl:0.6rem; --d:flex; --fd:column">
+						<td style="--d:table;--py:0.2rem; --pl:0.6rem; --d:flex; --fd:column">
 							<div style="--d:flex; --fd:column; --ai:flex-start; --g:0.125rem; --h:100%">
 								<div style="--d:flex; --fd:column; --h:100%">
 									{#if feedback.data?.sibling_model_ids}
@@ -347,7 +347,7 @@
 										</Tooltip>
 									{:else}
 										<div
-											style="--size:0.875rem; --weight:500; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); --fx:1 1 0%; --py:0.375rem"
+											style="--size:0.8rem; --weight:500; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); --fx:1 1 0%; --py:0.4rem"
 										>
 											{feedback.data?.model_id}
 										</div>
@@ -355,7 +355,7 @@
 								</div>
 							</div>
 						</td>
-						<td style="--d:table;--px:0.6rem; --py:0.25rem; --ta:right; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --w:max-content">
+						<td style="--d:table;--px:0.6rem; --py:0.2rem; --ta:right; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --w:max-content">
 							<div style="--d:flex; --jc:flex-end">
 								{#if feedback.data.rating.toString() === '1'}
 									<Badge type="info" content={$i18n.t('Won')} />
@@ -367,18 +367,18 @@
 							</div>
 						</td>
 
-						<td style="--d:table;--px:0.6rem; --py:0.25rem; --ta:right; --weight:500">
+						<td style="--d:table;--px:0.6rem; --py:0.2rem; --ta:right; --weight:500">
 							{dayjs(feedback.updated_at * 1000).fromNow()}
 						</td>
 
-						<td style="--d:table;--px:0.6rem; --py:0.25rem; --ta:right; --weight:600" on:click={(e) => e.stopPropagation()}>
+						<td style="--d:table;--px:0.6rem; --py:0.2rem; --ta:right; --weight:600" on:click={(e) => e.stopPropagation()}>
 							<FeedbackMenu
 								on:delete={(e) => {
 									deleteFeedbackHandler(feedback.id);
 								}}
 							>
 								<button
-									style="--as:center; --w:fit-content; --size:0.875rem; --p:0.375rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
+									style="--as:center; --w:fit-content; --size:0.8rem; --p:0.4rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 								>
 									<EllipsisHorizontal />
 								</button>
@@ -392,19 +392,19 @@
 </div>
 
 {#if feedbacks.length > 0}
-	<div style="--d:flex; --fd:column; --jc:flex-end; --w:100%; --ta:right; --g:0.25rem">
+	<div style="--d:flex; --fd:column; --jc:flex-end; --w:100%; --ta:right; --g:0.2rem">
 		<div style="--line-clamp:1; --c:var(--color-gray-500); --size:0.6rem">
 			{$i18n.t('Help us create the best community leaderboard by sharing your feedback history!')}
 		</div>
 
-		<div style="--d:flex; --g:0.25rem; --ml:auto">
+		<div style="--d:flex; --g:0.2rem; --ml:auto">
 			<Tooltip
 				content={$i18n.t(
 					'To protect your privacy, only ratings, model IDs, tags, and metadata are shared from your feedback—your chat logs remain private and are not included.'
 				)}
 			>
 				<button
-					style="--d:flex; --size:0.6rem; --ai:center; --px:0.6rem; --py:0.375rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--d:flex; --size:0.6rem; --ai:center; --px:0.6rem; --py:0.4rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={async () => {
 						shareHandler();
 					}}

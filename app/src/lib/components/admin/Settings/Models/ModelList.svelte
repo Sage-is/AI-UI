@@ -43,14 +43,14 @@
 </script>
 
 {#if modelIds.length > 0}
-	<div style="--d:flex; --fd:column; --translatex:-0.25rem" bind:this={modelListElement}>
+	<div style="--d:flex; --fd:column; --translatex:-0.2rem" bind:this={modelListElement}>
 		{#each modelIds as modelId, modelIdx (modelId)}
 			<div style="--d:flex; --g:0.5rem; --w:100%; --jc:space-between; --ai:center" id="model-item-{modelId}">
 				<Tooltip content={modelId} placement="top-start">
-					<div style="--d:flex; --ai:center; --g:0.25rem">
+					<div style="--d:flex; --ai:center; --g:0.2rem">
 						<EllipsisVertical className="size-4 cursor-move item-handle" />
 
-						<div style="--size:0.875rem; --fx:1 1 0%; --py:0.25rem; --radius:0.5rem">
+						<div style="--size:0.8rem; --fx:1 1 0%; --py:0.2rem; --radius:0.5rem">
 							{#if $models.find((model) => model.id === modelId)}
 								{$models.find((model) => model.id === modelId).name}
 							{:else}

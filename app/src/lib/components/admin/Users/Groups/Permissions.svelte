@@ -67,7 +67,7 @@
 
 <div>
 	<!-- <div>
-		<div style="--mb:0.5rem; --size:0.875rem; --weight:500">{$i18n.t('Model Permissions')}</div>
+		<div style="--mb:0.5rem; --size:0.8rem; --weight:500">{$i18n.t('Model Permissions')}</div>
 
 		<div style="--mb:0.5rem">
 			<div style="--d:flex; --jc:space-between; --ai:center; --size:0.6rem; --pr:0.5rem">
@@ -79,9 +79,9 @@
 
 		{#if permissions.model.filter}
 			<div style="--mb:0.5rem">
-				<div style="--g:0.375rem">
+				<div style="--g:0.4rem">
 					<div style="--d:flex; --fd:column; --w:100%">
-						<div style="--mb:0.25rem; --d:flex; --jc:space-between">
+						<div style="--mb:0.2rem; --d:flex; --jc:space-between">
 							<div style="--size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Model IDs')}</div>
 						</div>
 
@@ -89,7 +89,7 @@
 							<div style="--d:flex; --fd:column">
 								{#each model_ids as modelId, modelIdx}
 									<div style="--d:flex; --g:0.5rem; --w:100%; --jc:space-between; --ai:center">
-										<div style="--size:0.875rem; --fx:1 1 0%; --radius:0.5rem">
+										<div style="--size:0.8rem; --fx:1 1 0%; --radius:0.5rem">
 											{modelId}
 										</div>
 										<div style="--fs:0">
@@ -112,11 +112,11 @@
 						{/if}
 					</div>
 				</div>
-				<hr style="--bc:var(--color-gray-100); --dark-bc:rgb(78 78 78 / 0.1); --mt:0.625rem; --mb:0.25rem; --w:100%" />
+				<hr style="--bc:var(--color-gray-100); --dark-bc:rgb(78 78 78 / 0.1); --mt:0.625rem; --mb:0.2rem; --w:100%" />
 
 				<div style="--d:flex; --ai:center">
 					<select
-						style="--w:100%; --py:0.25rem; --size:0.875rem; --radius:0.5rem; --bgc:transparent; --oe:none"
+						style="--w:100%; --py:0.2rem; --size:0.8rem; --radius:0.5rem; --bgc:transparent; --oe:none"
 	class="{selectedModelId
 							? ''
 							: 'text-gray-500'} placeholder:text-gray-300 dark:placeholder:text-gray-700"
@@ -145,7 +145,7 @@
 			</div>
 		{/if}
 
-		<div style="--g:0.25rem; --mb:0.6rem">
+		<div style="--g:0.2rem; --mb:0.6rem">
 			<div class="">
 				<div style="--d:flex; --jc:space-between; --ai:center; --size:0.6rem">
 					<div style="--size:0.6rem; --weight:500">{$i18n.t('Default Model')}</div>
@@ -154,7 +154,7 @@
 
 			<div style="--fx:1 1 0%; --mr:0.5rem">
 				<select
-					style="--w:100%; --bgc:transparent; --oe:none; --py:0.125rem; --size:0.875rem"
+					style="--w:100%; --bgc:transparent; --oe:none; --py:0.125rem; --size:0.8rem"
 					bind:value={permissions.model.default_id}
 					placeholder="Select a model"
 				>
@@ -170,7 +170,7 @@
 	<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" /> -->
 
 	<div>
-		<div style="--mb:0.5rem; --size:0.875rem; --weight:500">{$i18n.t('Workshop Permissions')}</div>
+		<div style="--mb:0.5rem; --size:0.8rem; --weight:500">{$i18n.t('Workshop Permissions')}</div>
 
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
 			<div style="--as:center; --size:0.6rem; --weight:500">
@@ -212,7 +212,7 @@
 	<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 	<div>
-		<div style="--mb:0.5rem; --size:0.875rem; --weight:500">{$i18n.t('Sharing Permissions')}</div>
+		<div style="--mb:0.5rem; --size:0.8rem; --weight:500">{$i18n.t('Sharing Permissions')}</div>
 
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
 			<div style="--as:center; --size:0.6rem; --weight:500">
@@ -246,7 +246,7 @@
 	<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 	<div>
-		<div style="--mb:0.5rem; --size:0.875rem; --weight:500">{$i18n.t('Chat Permissions')}</div>
+		<div style="--mb:0.5rem; --size:0.8rem; --weight:500">{$i18n.t('Chat Permissions')}</div>
 
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
 			<div style="--as:center; --size:0.6rem; --weight:500">
@@ -357,7 +357,7 @@
 	<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 	<div>
-		<div style="--mb:0.5rem; --size:0.875rem; --weight:500">{$i18n.t('Features Permissions')}</div>
+		<div style="--mb:0.5rem; --size:0.8rem; --weight:500">{$i18n.t('Features Permissions')}</div>
 
 		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
 			<div style="--as:center; --size:0.6rem; --weight:500">

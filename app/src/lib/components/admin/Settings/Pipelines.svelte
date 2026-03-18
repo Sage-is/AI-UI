@@ -216,7 +216,7 @@
 </script>
 
 <form
-	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.875rem"
+	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.8rem"
 	on:submit|preventDefault={async () => {
 		updateHandler();
 	}}
@@ -225,17 +225,17 @@
 	class="scrollbar-hidden">
 		{#if PIPELINES_LIST !== null}
 			<div style="--d:flex; --w:100%; --jc:space-between; --mb:0.5rem">
-				<div style="--as:center; --size:0.875rem; --weight:600">
+				<div style="--as:center; --size:0.8rem; --weight:600">
 					{$i18n.t('Manage Pipelines')}
 				</div>
 			</div>
 
 			{#if PIPELINES_LIST.length > 0}
-				<div style="--g:0.25rem">
+				<div style="--g:0.2rem">
 					<div style="--d:flex; --g:0.5rem">
 						<div style="--fx:1 1 0%">
 							<select
-								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 								bind:value={selectedPipelinesUrlIdx}
 								placeholder={$i18n.t('Select a pipeline url')}
 								on:change={async () => {
@@ -258,7 +258,7 @@
 				</div>
 
 				<div style="--my:0.5rem">
-					<div style="--mb:0.5rem; --size:0.875rem; --weight:500">
+					<div style="--mb:0.5rem; --size:0.8rem; --weight:500">
 						{$i18n.t('Upload Pipeline')}
 					</div>
 					<div style="--d:flex; --w:100%">
@@ -272,7 +272,7 @@
 							/>
 
 							<button
-								style="--w:100%; --size:0.875rem; --weight:500; --py:0.5rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100);  --bs:dashed; --dark-bc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-850); --ta:center; --radius:0.6rem"
+								style="--w:100%; --size:0.8rem; --weight:500; --py:0.5rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100);  --bs:dashed; --dark-bc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-850); --ta:center; --radius:0.6rem"
 								type="button"
 								on:click={() => {
 									document.getElementById('pipelines-upload-input')?.click();
@@ -343,13 +343,13 @@
 				</div>
 
 				<div style="--my:0.5rem">
-					<div style="--mb:0.5rem; --size:0.875rem; --weight:500">
+					<div style="--mb:0.5rem; --size:0.8rem; --weight:500">
 						{$i18n.t('Install from Github URL')}
 					</div>
 					<div style="--d:flex; --w:100%">
 						<div style="--fx:1 1 0%; --mr:0.5rem">
 							<input
-								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 								placeholder={$i18n.t('Enter Github Raw URL')}
 								bind:value={pipelineDownloadUrl}
 							/>
@@ -424,16 +424,16 @@
 				{#if pipelines !== null}
 					{#if pipelines.length > 0}
 						<div style="--d:flex; --w:100%; --jc:space-between; --mb:0.5rem">
-							<div style="--as:center; --size:0.875rem; --weight:600">
+							<div style="--as:center; --size:0.8rem; --weight:600">
 								{$i18n.t('Pipelines Valves')}
 							</div>
 						</div>
-						<div style="--g:0.25rem">
+						<div style="--g:0.2rem">
 							{#if pipelines.length > 0}
 								<div style="--d:flex; --g:0.5rem">
 									<div style="--fx:1 1 0%">
 										<select
-											style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+											style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 											bind:value={selectedPipelineIdx}
 											placeholder={$i18n.t('Select a pipeline')}
 											on:change={async () => {
@@ -472,7 +472,7 @@
 								</div>
 							{/if}
 
-							<div style="--g:0.25rem">
+							<div style="--g:0.2rem">
 								{#if pipelines[selectedPipelineIdx].valves}
 									{#if valves}
 										{#each Object.keys(valves_spec.properties) as property, idx}
@@ -483,7 +483,7 @@
 													</div>
 
 													<button
-														style="--p:0.25rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+														style="--p:0.2rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 														type="button"
 														on:click={() => {
 															valves[property] = (valves[property] ?? null) === null ? '' : null;
@@ -499,11 +499,11 @@
 
 												{#if (valves[property] ?? null) !== null}
 													<!-- {valves[property]} -->
-													<div style="--d:flex; --mt:0.125rem; --mb:0.375rem; --g:0.5rem">
+													<div style="--d:flex; --mt:0.125rem; --mb:0.4rem; --g:0.5rem">
 														<div style="--fx:1 1 0%">
 															{#if valves_spec.properties[property]?.enum ?? null}
 																<select
-																	style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+																	style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 																	bind:value={valves[property]}
 																>
 																	{#each valves_spec.properties[property].enum as option}
@@ -524,7 +524,7 @@
 																</div>
 															{:else}
 																<input
-																	style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+																	style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 																	type="text"
 																	placeholder={valves_spec.properties[property].title}
 																	bind:value={valves[property]}
@@ -568,9 +568,9 @@
 	</div>
 
 	{#if PIPELINES_LIST !== null && PIPELINES_LIST.length > 0}
-		<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.875rem; --weight:500">
+		<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.8rem; --weight:500">
 			<button
-				style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+				style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 				type="submit"
 			>
 				{$i18n.t('Save')}

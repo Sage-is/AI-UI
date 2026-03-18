@@ -254,7 +254,7 @@
 				{#if ($config?.features.auth_trusted_header ?? false) || $config?.features.auth === false}
 					<div style="--my:auto; --pb:2.5rem; --w:100%; --maxw-sm:28rem">
 						<div
-							style="--d:flex; --ai:center; --jc:center; --g:0.6rem; --size:1.25rem; --size-sm:1.5rem; --ta:center; --weight:600; --dark-c:var(--color-gray-200)"
+							style="--d:flex; --ai:center; --jc:center; --g:0.6rem; --size:1.2rem; --size-sm:1.5rem; --ta:center; --weight:600; --dark-c:var(--color-gray-200)"
 						>
 							<div>
 								{$i18n.t('Signing in to {{WEBUI_NAME}}', {
@@ -288,7 +288,7 @@
 									/>
 								</div>
 
-								<div style="--mb:0.25rem">
+								<div style="--mb:0.2rem">
 									<div style="--size:1.5rem; --weight:500">
 										{#if $config?.onboarding ?? false}
 											{$i18n.t(`Get started with {{WEBUI_NAME}}`, {
@@ -310,11 +310,11 @@
 									</div>
 
 									{#if branding?.subtitle}
-										<div style="--mt:0.25rem; --size:0.6rem; --weight:500; --c:var(--color-gray-600); --dark-c:var(--color-gray-500)">
+										<div style="--mt:0.2rem; --size:0.6rem; --weight:500; --c:var(--color-gray-600); --dark-c:var(--color-gray-500)">
 											{branding?.subtitle}
 										</div>
 									{:else if $config?.onboarding ?? false}
-										<div style="--mt:0.25rem; --size:0.6rem; --weight:500; --c:var(--color-gray-600); --dark-c:var(--color-gray-500)">
+										<div style="--mt:0.2rem; --size:0.6rem; --weight:500; --c:var(--color-gray-600); --dark-c:var(--color-gray-500)">
 											ⓘ {branding?.title || $WEBUI_NAME}
 											{$i18n.t(
 												'does not make any external connections, and your data stays securely on your locally hosted server.'
@@ -327,14 +327,14 @@
 									<div style="--d:flex; --fd:column; --mt:1rem">
 										{#if mode === 'signup'}
 											<div style="--mb:0.5rem">
-												<label for="name" style="--size:0.875rem; --weight:500; --ta:left; --mb:0.25rem; --d:block"
+												<label for="name" style="--size:0.8rem; --weight:500; --ta:left; --mb:0.2rem; --d:block"
 													>{$i18n.t('Name')}</label
 												>
 												<input
 													bind:value={name}
 													type="text"
 													id="name"
-													style="--my:0.125rem; --w:100%; --size:0.875rem; --oe:none; --bgc:transparent"
+													style="--my:0.125rem; --w:100%; --size:0.8rem; --oe:none; --bgc:transparent"
 													autocomplete="name"
 													placeholder={$i18n.t('Enter Full Name')}
 													required
@@ -344,13 +344,13 @@
 
 										{#if mode === 'ldap'}
 											<div style="--mb:0.5rem">
-												<label for="username" style="--size:0.875rem; --weight:500; --ta:left; --mb:0.25rem; --d:block"
+												<label for="username" style="--size:0.8rem; --weight:500; --ta:left; --mb:0.2rem; --d:block"
 													>{$i18n.t('Username')}</label
 												>
 												<input
 													bind:value={ldapUsername}
 													type="text"
-													style="--my:0.125rem; --w:100%; --size:0.875rem; --oe:none; --bgc:transparent"
+													style="--my:0.125rem; --w:100%; --size:0.8rem; --oe:none; --bgc:transparent"
 													autocomplete="username"
 													name="username"
 													id="username"
@@ -360,14 +360,14 @@
 											</div>
 										{:else}
 											<div style="--mb:0.5rem">
-												<label for="email" style="--size:0.875rem; --weight:500; --ta:left; --mb:0.25rem; --d:block"
+												<label for="email" style="--size:0.8rem; --weight:500; --ta:left; --mb:0.2rem; --d:block"
 													>{$i18n.t('Email')}</label
 												>
 												<input
 													bind:value={email}
 													type="email"
 													id="email"
-													style="--my:0.125rem; --w:100%; --size:0.875rem; --oe:none; --bgc:transparent"
+													style="--my:0.125rem; --w:100%; --size:0.8rem; --oe:none; --bgc:transparent"
 													autocomplete="email"
 													name="email"
 													placeholder={$i18n.t('Enter Email')}
@@ -377,14 +377,14 @@
 										{/if}
 
 										<div>
-											<label for="password" style="--size:0.875rem; --weight:500; --ta:left; --mb:0.25rem; --d:block"
+											<label for="password" style="--size:0.8rem; --weight:500; --ta:left; --mb:0.2rem; --d:block"
 												>{$i18n.t('Password')}</label
 											>
 											<input
 												bind:value={password}
 												type="password"
 												id="password"
-												style="--my:0.125rem; --w:100%; --size:0.875rem; --oe:none; --bgc:transparent"
+												style="--my:0.125rem; --w:100%; --size:0.8rem; --oe:none; --bgc:transparent"
 												placeholder={$i18n.t('Enter Password')}
 												autocomplete={mode === 'signup' ? 'new-password' : 'current-password'}
 												name="password"
@@ -393,11 +393,11 @@
 										</div>
 									</div>
 								{/if}
-								<div style="--mt:1.25rem">
+								<div style="--mt:1.2rem">
 									{#if $config?.features.enable_login_form || $config?.features.enable_ldap}
 										{#if mode === 'ldap'}
 											<button
-												style="--bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.875rem; --py:0.625rem"
+												style="--bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.8rem; --py:0.625rem"
 												type="submit"
 											>
 												{$i18n.t('Authenticate')}
@@ -411,7 +411,7 @@
 													--dark-c:var(--color-gray-300); 
 													--hvr-dark-c:#fff; 
 													--tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); 
-													--w:100%; --radius:9999px; --weight:500; --size:0.875rem; --py:0.625rem; --p:1em 1.5em;
+													--w:100%; --radius:9999px; --weight:500; --size:0.8rem; --py:0.625rem; --p:1em 1.5em;
 													--m:auto;
 													--d:flex; --jc:center; --ai:center;"
 												type="submit"
@@ -424,7 +424,7 @@
 											</button>
 
 											{#if $config?.features.enable_signup && !($config?.onboarding ?? false)}
-												<div style="--mt:1rem; --size:0.875rem; --ta:center">
+												<div style="--mt:1rem; --size:0.8rem; --ta:center">
 													{mode === 'signin'
 														? $i18n.t("Don't have an account?")
 														: $i18n.t('Already have an account?')}
@@ -464,7 +464,7 @@
 									<hr style="--w:8rem; --h:1px; --my:1rem; --bw:0; --dark-bgc:rgb(236 236 236 / 0.1); --bgc:rgb(78 78 78 / 0.1)" />
 									{#if $config?.features.enable_login_form || $config?.features.enable_ldap}
 										<span
-											style="--px:0.6rem; --size:0.875rem; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --bgc:transparent"
+											style="--px:0.6rem; --size:0.8rem; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --bgc:transparent"
 											>{$i18n.t('or')}</span
 										>
 									{/if}
@@ -474,7 +474,7 @@
 								<div style="--d:flex; --fd:column; --g:0.5rem">
 									{#if $config?.oauth?.providers?.google}
 										<button
-											style="--d:flex; --jc:center; --ai:center; --bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.875rem; --py:0.625rem"
+											style="--d:flex; --jc:center; --ai:center; --bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.8rem; --py:0.625rem"
 											on:click={() => {
 												window.location.href = `${WEBUI_BASE_URL}/oauth/google/login`;
 											}}
@@ -503,7 +503,7 @@
 									{/if}
 									{#if $config?.oauth?.providers?.microsoft}
 										<button
-											style="--d:flex; --jc:center; --ai:center; --bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.875rem; --py:0.625rem"
+											style="--d:flex; --jc:center; --ai:center; --bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.8rem; --py:0.625rem"
 											on:click={() => {
 												window.location.href = `${WEBUI_BASE_URL}/oauth/microsoft/login`;
 											}}
@@ -533,7 +533,7 @@
 									{/if}
 									{#if $config?.oauth?.providers?.github}
 										<button
-											style="--d:flex; --jc:center; --ai:center; --bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.875rem; --py:0.625rem"
+											style="--d:flex; --jc:center; --ai:center; --bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.8rem; --py:0.625rem"
 											on:click={() => {
 												window.location.href = `${WEBUI_BASE_URL}/oauth/github/login`;
 											}}
@@ -553,7 +553,7 @@
 									{/if}
 									{#if $config?.oauth?.providers?.oidc}
 										<button
-											style="--d:flex; --jc:center; --ai:center; --bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.875rem; --py:0.625rem"
+											style="--d:flex; --jc:center; --ai:center; --bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.8rem; --py:0.625rem"
 											on:click={() => {
 												window.location.href = `${WEBUI_BASE_URL}/oauth/oidc/login`;
 											}}

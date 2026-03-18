@@ -49,7 +49,7 @@
 	class="{className} dark:text-gary-100"
 			transition:fade={{ delay: 100, duration: 300 }}
 		>
-			<div style="--d:flex; --fd:column; --fd-md:row; --ai-md:center; --fx:1 1 0%; --size:0.875rem; --w:fit-content; --g:0.375rem">
+			<div style="--d:flex; --fd:column; --fd-md:row; --ai-md:center; --fx:1 1 0%; --size:0.8rem; --w:fit-content; --g:0.4rem">
 				<div style="--d:flex; --jc:space-between; --as:flex-start">
 					<div
 						style="--size:0.6rem; --weight:700; --w:fit-content; --px:0.5rem; --radius:0.125rem; --tt:uppercase; --line-clamp:1; --mr:0.125rem"
@@ -69,7 +69,7 @@
 							>
 
 							<div
-								style="--ml:0.25rem; --c:var(--color-gray-400)"
+								style="--ml:0.2rem; --c:var(--color-gray-400)"
 	class="group-hover:text-gray-600 dark:group-hover:text-white"
 							>
 								<!--  -->
@@ -103,7 +103,7 @@
 						target="_blank">Learn More</a
 					>
 
-					<div style="--ml:0.25rem; --c:var(--color-gray-400)"
+					<div style="--ml:0.2rem; --c:var(--color-gray-400)"
 	class="group-hover:text-gray-600 dark:group-hover:text-white">
 						<!--  -->
 						<svg
@@ -126,7 +126,7 @@
 					on:click={() => {
 						dismiss(banner.id);
 					}}
-					style="--mt:-0.25rem; --mb:-0.5rem; --translatey:-1px; --ml:0.375rem; --mr:0.25rem; --c:var(--color-gray-400); --hvr-dark-c:#fff"
+					style="--mt:-0.2rem; --mb:-0.5rem; --translatey:-1px; --ml:0.4rem; --mr:0.2rem; --c:var(--color-gray-400); --hvr-dark-c:#fff"
 					>&times;</button
 				>
 			</div>

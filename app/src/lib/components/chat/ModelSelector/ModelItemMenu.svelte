@@ -39,7 +39,7 @@
 
 	<DropdownMenu.Content
 		strategy="fixed"
-		style="--w:100%; --maxw:180px; --size:0.875rem; --radius:0.6rem; --px:0.25rem; --py:0.375rem; --z:9999999; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:4"
+		style="--w:100%; --maxw:180px; --size:0.8rem; --radius:0.6rem; --px:0.2rem; --py:0.4rem; --z:9999999; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:4"
 		sideOffset={-2}
 		side="bottom"
 		align="end"
@@ -47,7 +47,7 @@
 	>
 		<button
 			type="button"
-			style="--d:flex; --radius:0.375rem; --py:0.375rem; --px:0.6rem; --w:100%; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --ai:center; --g:0.5rem"
+			style="--d:flex; --radius:0.4rem; --py:0.4rem; --px:0.6rem; --w:100%; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --ai:center; --g:0.5rem"
 			on:click={(e) => {
 				e.stopPropagation();
 				e.preventDefault();
@@ -73,7 +73,7 @@
 
 		<button
 			type="button"
-			style="--d:flex; --radius:0.375rem; --py:0.375rem; --px:0.6rem; --w:100%; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --ai:center; --g:0.5rem"
+			style="--d:flex; --radius:0.4rem; --py:0.4rem; --px:0.6rem; --w:100%; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --ai:center; --g:0.5rem"
 			on:click={(e) => {
 				e.stopPropagation();
 				e.preventDefault();

@@ -907,7 +907,7 @@
 	border-radius: 0.125rem;
 }
 .swagger-ui .br2 {
-	border-radius: 0.25rem;
+	border-radius: 0.2rem;
 }
 .swagger-ui .br3 {
 	border-radius: 0.5rem;
@@ -945,7 +945,7 @@
 		border-radius: 0.125rem;
 	}
 	.swagger-ui .br2-ns {
-		border-radius: 0.25rem;
+		border-radius: 0.2rem;
 	}
 	.swagger-ui .br3-ns {
 		border-radius: 0.5rem;
@@ -984,7 +984,7 @@
 		border-radius: 0.125rem;
 	}
 	.swagger-ui .br2-m {
-		border-radius: 0.25rem;
+		border-radius: 0.2rem;
 	}
 	.swagger-ui .br3-m {
 		border-radius: 0.5rem;
@@ -1023,7 +1023,7 @@
 		border-radius: 0.125rem;
 	}
 	.swagger-ui .br2-l {
-		border-radius: 0.25rem;
+		border-radius: 0.2rem;
 	}
 	.swagger-ui .br3-l {
 		border-radius: 0.5rem;
@@ -1115,7 +1115,7 @@
 	border-width: 0.125rem;
 }
 .swagger-ui .bw2 {
-	border-width: 0.25rem;
+	border-width: 0.2rem;
 }
 .swagger-ui .bw3 {
 	border-width: 0.5rem;
@@ -1146,7 +1146,7 @@
 		border-width: 0.125rem;
 	}
 	.swagger-ui .bw2-ns {
-		border-width: 0.25rem;
+		border-width: 0.2rem;
 	}
 	.swagger-ui .bw3-ns {
 		border-width: 0.5rem;
@@ -1178,7 +1178,7 @@
 		border-width: 0.125rem;
 	}
 	.swagger-ui .bw2-m {
-		border-width: 0.25rem;
+		border-width: 0.2rem;
 	}
 	.swagger-ui .bw3-m {
 		border-width: 0.5rem;
@@ -1210,7 +1210,7 @@
 		border-width: 0.125rem;
 	}
 	.swagger-ui .bw2-l {
-		border-width: 0.25rem;
+		border-width: 0.2rem;
 	}
 	.swagger-ui .bw3-l {
 		border-width: 0.5rem;
@@ -4498,7 +4498,7 @@
 	padding: 0;
 }
 .swagger-ui .pa1 {
-	padding: 0.25rem;
+	padding: 0.2rem;
 }
 .swagger-ui .pa2 {
 	padding: 0.5rem;
@@ -4522,7 +4522,7 @@
 	padding-left: 0;
 }
 .swagger-ui .pl1 {
-	padding-left: 0.25rem;
+	padding-left: 0.2rem;
 }
 .swagger-ui .pl2 {
 	padding-left: 0.5rem;
@@ -4546,7 +4546,7 @@
 	padding-right: 0;
 }
 .swagger-ui .pr1 {
-	padding-right: 0.25rem;
+	padding-right: 0.2rem;
 }
 .swagger-ui .pr2 {
 	padding-right: 0.5rem;
@@ -4570,7 +4570,7 @@
 	padding-bottom: 0;
 }
 .swagger-ui .pb1 {
-	padding-bottom: 0.25rem;
+	padding-bottom: 0.2rem;
 }
 .swagger-ui .pb2 {
 	padding-bottom: 0.5rem;
@@ -4594,7 +4594,7 @@
 	padding-top: 0;
 }
 .swagger-ui .pt1 {
-	padding-top: 0.25rem;
+	padding-top: 0.2rem;
 }
 .swagger-ui .pt2 {
 	padding-top: 0.5rem;
@@ -4619,8 +4619,8 @@
 	padding-top: 0;
 }
 .swagger-ui .pv1 {
-	padding-bottom: 0.25rem;
-	padding-top: 0.25rem;
+	padding-bottom: 0.2rem;
+	padding-top: 0.2rem;
 }
 .swagger-ui .pv2 {
 	padding-bottom: 0.5rem;
@@ -4651,8 +4651,8 @@
 	padding-right: 0;
 }
 .swagger-ui .ph1 {
-	padding-left: 0.25rem;
-	padding-right: 0.25rem;
+	padding-left: 0.2rem;
+	padding-right: 0.2rem;
 }
 .swagger-ui .ph2 {
 	padding-left: 0.5rem;
@@ -4682,7 +4682,7 @@
 	margin: 0;
 }
 .swagger-ui .ma1 {
-	margin: 0.25rem;
+	margin: 0.2rem;
 }
 .swagger-ui .ma2 {
 	margin: 0.5rem;
@@ -4706,7 +4706,7 @@
 	margin-left: 0;
 }
 .swagger-ui .ml1 {
-	margin-left: 0.25rem;
+	margin-left: 0.2rem;
 }
 .swagger-ui .ml2 {
 	margin-left: 0.5rem;
@@ -4730,7 +4730,7 @@
 	margin-right: 0;
 }
 .swagger-ui .mr1 {
-	margin-right: 0.25rem;
+	margin-right: 0.2rem;
 }
 .swagger-ui .mr2 {
 	margin-right: 0.5rem;
@@ -4754,7 +4754,7 @@
 	margin-bottom: 0;
 }
 .swagger-ui .mb1 {
-	margin-bottom: 0.25rem;
+	margin-bottom: 0.2rem;
 }
 .swagger-ui .mb2 {
 	margin-bottom: 0.5rem;
@@ -4778,7 +4778,7 @@
 	margin-top: 0;
 }
 .swagger-ui .mt1 {
-	margin-top: 0.25rem;
+	margin-top: 0.2rem;
 }
 .swagger-ui .mt2 {
 	margin-top: 0.5rem;
@@ -4803,8 +4803,8 @@
 	margin-top: 0;
 }
 .swagger-ui .mv1 {
-	margin-bottom: 0.25rem;
-	margin-top: 0.25rem;
+	margin-bottom: 0.2rem;
+	margin-top: 0.2rem;
 }
 .swagger-ui .mv2 {
 	margin-bottom: 0.5rem;
@@ -4835,8 +4835,8 @@
 	margin-right: 0;
 }
 .swagger-ui .mh1 {
-	margin-left: 0.25rem;
-	margin-right: 0.25rem;
+	margin-left: 0.2rem;
+	margin-right: 0.2rem;
 }
 .swagger-ui .mh2 {
 	margin-left: 0.5rem;
@@ -4867,7 +4867,7 @@
 		padding: 0;
 	}
 	.swagger-ui .pa1-ns {
-		padding: 0.25rem;
+		padding: 0.2rem;
 	}
 	.swagger-ui .pa2-ns {
 		padding: 0.5rem;
@@ -4891,7 +4891,7 @@
 		padding-left: 0;
 	}
 	.swagger-ui .pl1-ns {
-		padding-left: 0.25rem;
+		padding-left: 0.2rem;
 	}
 	.swagger-ui .pl2-ns {
 		padding-left: 0.5rem;
@@ -4915,7 +4915,7 @@
 		padding-right: 0;
 	}
 	.swagger-ui .pr1-ns {
-		padding-right: 0.25rem;
+		padding-right: 0.2rem;
 	}
 	.swagger-ui .pr2-ns {
 		padding-right: 0.5rem;
@@ -4939,7 +4939,7 @@
 		padding-bottom: 0;
 	}
 	.swagger-ui .pb1-ns {
-		padding-bottom: 0.25rem;
+		padding-bottom: 0.2rem;
 	}
 	.swagger-ui .pb2-ns {
 		padding-bottom: 0.5rem;
@@ -4963,7 +4963,7 @@
 		padding-top: 0;
 	}
 	.swagger-ui .pt1-ns {
-		padding-top: 0.25rem;
+		padding-top: 0.2rem;
 	}
 	.swagger-ui .pt2-ns {
 		padding-top: 0.5rem;
@@ -4988,8 +4988,8 @@
 		padding-top: 0;
 	}
 	.swagger-ui .pv1-ns {
-		padding-bottom: 0.25rem;
-		padding-top: 0.25rem;
+		padding-bottom: 0.2rem;
+		padding-top: 0.2rem;
 	}
 	.swagger-ui .pv2-ns {
 		padding-bottom: 0.5rem;
@@ -5020,8 +5020,8 @@
 		padding-right: 0;
 	}
 	.swagger-ui .ph1-ns {
-		padding-left: 0.25rem;
-		padding-right: 0.25rem;
+		padding-left: 0.2rem;
+		padding-right: 0.2rem;
 	}
 	.swagger-ui .ph2-ns {
 		padding-left: 0.5rem;
@@ -5051,7 +5051,7 @@
 		margin: 0;
 	}
 	.swagger-ui .ma1-ns {
-		margin: 0.25rem;
+		margin: 0.2rem;
 	}
 	.swagger-ui .ma2-ns {
 		margin: 0.5rem;
@@ -5075,7 +5075,7 @@
 		margin-left: 0;
 	}
 	.swagger-ui .ml1-ns {
-		margin-left: 0.25rem;
+		margin-left: 0.2rem;
 	}
 	.swagger-ui .ml2-ns {
 		margin-left: 0.5rem;
@@ -5099,7 +5099,7 @@
 		margin-right: 0;
 	}
 	.swagger-ui .mr1-ns {
-		margin-right: 0.25rem;
+		margin-right: 0.2rem;
 	}
 	.swagger-ui .mr2-ns {
 		margin-right: 0.5rem;
@@ -5123,7 +5123,7 @@
 		margin-bottom: 0;
 	}
 	.swagger-ui .mb1-ns {
-		margin-bottom: 0.25rem;
+		margin-bottom: 0.2rem;
 	}
 	.swagger-ui .mb2-ns {
 		margin-bottom: 0.5rem;
@@ -5147,7 +5147,7 @@
 		margin-top: 0;
 	}
 	.swagger-ui .mt1-ns {
-		margin-top: 0.25rem;
+		margin-top: 0.2rem;
 	}
 	.swagger-ui .mt2-ns {
 		margin-top: 0.5rem;
@@ -5172,8 +5172,8 @@
 		margin-top: 0;
 	}
 	.swagger-ui .mv1-ns {
-		margin-bottom: 0.25rem;
-		margin-top: 0.25rem;
+		margin-bottom: 0.2rem;
+		margin-top: 0.2rem;
 	}
 	.swagger-ui .mv2-ns {
 		margin-bottom: 0.5rem;
@@ -5204,8 +5204,8 @@
 		margin-right: 0;
 	}
 	.swagger-ui .mh1-ns {
-		margin-left: 0.25rem;
-		margin-right: 0.25rem;
+		margin-left: 0.2rem;
+		margin-right: 0.2rem;
 	}
 	.swagger-ui .mh2-ns {
 		margin-left: 0.5rem;
@@ -5237,7 +5237,7 @@
 		padding: 0;
 	}
 	.swagger-ui .pa1-m {
-		padding: 0.25rem;
+		padding: 0.2rem;
 	}
 	.swagger-ui .pa2-m {
 		padding: 0.5rem;
@@ -5261,7 +5261,7 @@
 		padding-left: 0;
 	}
 	.swagger-ui .pl1-m {
-		padding-left: 0.25rem;
+		padding-left: 0.2rem;
 	}
 	.swagger-ui .pl2-m {
 		padding-left: 0.5rem;
@@ -5285,7 +5285,7 @@
 		padding-right: 0;
 	}
 	.swagger-ui .pr1-m {
-		padding-right: 0.25rem;
+		padding-right: 0.2rem;
 	}
 	.swagger-ui .pr2-m {
 		padding-right: 0.5rem;
@@ -5309,7 +5309,7 @@
 		padding-bottom: 0;
 	}
 	.swagger-ui .pb1-m {
-		padding-bottom: 0.25rem;
+		padding-bottom: 0.2rem;
 	}
 	.swagger-ui .pb2-m {
 		padding-bottom: 0.5rem;
@@ -5333,7 +5333,7 @@
 		padding-top: 0;
 	}
 	.swagger-ui .pt1-m {
-		padding-top: 0.25rem;
+		padding-top: 0.2rem;
 	}
 	.swagger-ui .pt2-m {
 		padding-top: 0.5rem;
@@ -5358,8 +5358,8 @@
 		padding-top: 0;
 	}
 	.swagger-ui .pv1-m {
-		padding-bottom: 0.25rem;
-		padding-top: 0.25rem;
+		padding-bottom: 0.2rem;
+		padding-top: 0.2rem;
 	}
 	.swagger-ui .pv2-m {
 		padding-bottom: 0.5rem;
@@ -5390,8 +5390,8 @@
 		padding-right: 0;
 	}
 	.swagger-ui .ph1-m {
-		padding-left: 0.25rem;
-		padding-right: 0.25rem;
+		padding-left: 0.2rem;
+		padding-right: 0.2rem;
 	}
 	.swagger-ui .ph2-m {
 		padding-left: 0.5rem;
@@ -5421,7 +5421,7 @@
 		margin: 0;
 	}
 	.swagger-ui .ma1-m {
-		margin: 0.25rem;
+		margin: 0.2rem;
 	}
 	.swagger-ui .ma2-m {
 		margin: 0.5rem;
@@ -5445,7 +5445,7 @@
 		margin-left: 0;
 	}
 	.swagger-ui .ml1-m {
-		margin-left: 0.25rem;
+		margin-left: 0.2rem;
 	}
 	.swagger-ui .ml2-m {
 		margin-left: 0.5rem;
@@ -5469,7 +5469,7 @@
 		margin-right: 0;
 	}
 	.swagger-ui .mr1-m {
-		margin-right: 0.25rem;
+		margin-right: 0.2rem;
 	}
 	.swagger-ui .mr2-m {
 		margin-right: 0.5rem;
@@ -5493,7 +5493,7 @@
 		margin-bottom: 0;
 	}
 	.swagger-ui .mb1-m {
-		margin-bottom: 0.25rem;
+		margin-bottom: 0.2rem;
 	}
 	.swagger-ui .mb2-m {
 		margin-bottom: 0.5rem;
@@ -5517,7 +5517,7 @@
 		margin-top: 0;
 	}
 	.swagger-ui .mt1-m {
-		margin-top: 0.25rem;
+		margin-top: 0.2rem;
 	}
 	.swagger-ui .mt2-m {
 		margin-top: 0.5rem;
@@ -5542,8 +5542,8 @@
 		margin-top: 0;
 	}
 	.swagger-ui .mv1-m {
-		margin-bottom: 0.25rem;
-		margin-top: 0.25rem;
+		margin-bottom: 0.2rem;
+		margin-top: 0.2rem;
 	}
 	.swagger-ui .mv2-m {
 		margin-bottom: 0.5rem;
@@ -5574,8 +5574,8 @@
 		margin-right: 0;
 	}
 	.swagger-ui .mh1-m {
-		margin-left: 0.25rem;
-		margin-right: 0.25rem;
+		margin-left: 0.2rem;
+		margin-right: 0.2rem;
 	}
 	.swagger-ui .mh2-m {
 		margin-left: 0.5rem;
@@ -5607,7 +5607,7 @@
 		padding: 0;
 	}
 	.swagger-ui .pa1-l {
-		padding: 0.25rem;
+		padding: 0.2rem;
 	}
 	.swagger-ui .pa2-l {
 		padding: 0.5rem;
@@ -5631,7 +5631,7 @@
 		padding-left: 0;
 	}
 	.swagger-ui .pl1-l {
-		padding-left: 0.25rem;
+		padding-left: 0.2rem;
 	}
 	.swagger-ui .pl2-l {
 		padding-left: 0.5rem;
@@ -5655,7 +5655,7 @@
 		padding-right: 0;
 	}
 	.swagger-ui .pr1-l {
-		padding-right: 0.25rem;
+		padding-right: 0.2rem;
 	}
 	.swagger-ui .pr2-l {
 		padding-right: 0.5rem;
@@ -5679,7 +5679,7 @@
 		padding-bottom: 0;
 	}
 	.swagger-ui .pb1-l {
-		padding-bottom: 0.25rem;
+		padding-bottom: 0.2rem;
 	}
 	.swagger-ui .pb2-l {
 		padding-bottom: 0.5rem;
@@ -5703,7 +5703,7 @@
 		padding-top: 0;
 	}
 	.swagger-ui .pt1-l {
-		padding-top: 0.25rem;
+		padding-top: 0.2rem;
 	}
 	.swagger-ui .pt2-l {
 		padding-top: 0.5rem;
@@ -5728,8 +5728,8 @@
 		padding-top: 0;
 	}
 	.swagger-ui .pv1-l {
-		padding-bottom: 0.25rem;
-		padding-top: 0.25rem;
+		padding-bottom: 0.2rem;
+		padding-top: 0.2rem;
 	}
 	.swagger-ui .pv2-l {
 		padding-bottom: 0.5rem;
@@ -5760,8 +5760,8 @@
 		padding-right: 0;
 	}
 	.swagger-ui .ph1-l {
-		padding-left: 0.25rem;
-		padding-right: 0.25rem;
+		padding-left: 0.2rem;
+		padding-right: 0.2rem;
 	}
 	.swagger-ui .ph2-l {
 		padding-left: 0.5rem;
@@ -5791,7 +5791,7 @@
 		margin: 0;
 	}
 	.swagger-ui .ma1-l {
-		margin: 0.25rem;
+		margin: 0.2rem;
 	}
 	.swagger-ui .ma2-l {
 		margin: 0.5rem;
@@ -5815,7 +5815,7 @@
 		margin-left: 0;
 	}
 	.swagger-ui .ml1-l {
-		margin-left: 0.25rem;
+		margin-left: 0.2rem;
 	}
 	.swagger-ui .ml2-l {
 		margin-left: 0.5rem;
@@ -5839,7 +5839,7 @@
 		margin-right: 0;
 	}
 	.swagger-ui .mr1-l {
-		margin-right: 0.25rem;
+		margin-right: 0.2rem;
 	}
 	.swagger-ui .mr2-l {
 		margin-right: 0.5rem;
@@ -5863,7 +5863,7 @@
 		margin-bottom: 0;
 	}
 	.swagger-ui .mb1-l {
-		margin-bottom: 0.25rem;
+		margin-bottom: 0.2rem;
 	}
 	.swagger-ui .mb2-l {
 		margin-bottom: 0.5rem;
@@ -5887,7 +5887,7 @@
 		margin-top: 0;
 	}
 	.swagger-ui .mt1-l {
-		margin-top: 0.25rem;
+		margin-top: 0.2rem;
 	}
 	.swagger-ui .mt2-l {
 		margin-top: 0.5rem;
@@ -5912,8 +5912,8 @@
 		margin-top: 0;
 	}
 	.swagger-ui .mv1-l {
-		margin-bottom: 0.25rem;
-		margin-top: 0.25rem;
+		margin-bottom: 0.2rem;
+		margin-top: 0.2rem;
 	}
 	.swagger-ui .mv2-l {
 		margin-bottom: 0.5rem;
@@ -5944,8 +5944,8 @@
 		margin-right: 0;
 	}
 	.swagger-ui .mh1-l {
-		margin-left: 0.25rem;
-		margin-right: 0.25rem;
+		margin-left: 0.2rem;
+		margin-right: 0.2rem;
 	}
 	.swagger-ui .mh2-l {
 		margin-left: 0.5rem;
@@ -5973,7 +5973,7 @@
 	}
 }
 .swagger-ui .na1 {
-	margin: -0.25rem;
+	margin: -0.2rem;
 }
 .swagger-ui .na2 {
 	margin: -0.5rem;
@@ -5994,7 +5994,7 @@
 	margin: -16rem;
 }
 .swagger-ui .nl1 {
-	margin-left: -0.25rem;
+	margin-left: -0.2rem;
 }
 .swagger-ui .nl2 {
 	margin-left: -0.5rem;
@@ -6015,7 +6015,7 @@
 	margin-left: -16rem;
 }
 .swagger-ui .nr1 {
-	margin-right: -0.25rem;
+	margin-right: -0.2rem;
 }
 .swagger-ui .nr2 {
 	margin-right: -0.5rem;
@@ -6036,7 +6036,7 @@
 	margin-right: -16rem;
 }
 .swagger-ui .nb1 {
-	margin-bottom: -0.25rem;
+	margin-bottom: -0.2rem;
 }
 .swagger-ui .nb2 {
 	margin-bottom: -0.5rem;
@@ -6057,7 +6057,7 @@
 	margin-bottom: -16rem;
 }
 .swagger-ui .nt1 {
-	margin-top: -0.25rem;
+	margin-top: -0.2rem;
 }
 .swagger-ui .nt2 {
 	margin-top: -0.5rem;
@@ -6079,7 +6079,7 @@
 }
 @media screen and (min-width: 30em) {
 	.swagger-ui .na1-ns {
-		margin: -0.25rem;
+		margin: -0.2rem;
 	}
 	.swagger-ui .na2-ns {
 		margin: -0.5rem;
@@ -6100,7 +6100,7 @@
 		margin: -16rem;
 	}
 	.swagger-ui .nl1-ns {
-		margin-left: -0.25rem;
+		margin-left: -0.2rem;
 	}
 	.swagger-ui .nl2-ns {
 		margin-left: -0.5rem;
@@ -6121,7 +6121,7 @@
 		margin-left: -16rem;
 	}
 	.swagger-ui .nr1-ns {
-		margin-right: -0.25rem;
+		margin-right: -0.2rem;
 	}
 	.swagger-ui .nr2-ns {
 		margin-right: -0.5rem;
@@ -6142,7 +6142,7 @@
 		margin-right: -16rem;
 	}
 	.swagger-ui .nb1-ns {
-		margin-bottom: -0.25rem;
+		margin-bottom: -0.2rem;
 	}
 	.swagger-ui .nb2-ns {
 		margin-bottom: -0.5rem;
@@ -6163,7 +6163,7 @@
 		margin-bottom: -16rem;
 	}
 	.swagger-ui .nt1-ns {
-		margin-top: -0.25rem;
+		margin-top: -0.2rem;
 	}
 	.swagger-ui .nt2-ns {
 		margin-top: -0.5rem;
@@ -6186,7 +6186,7 @@
 }
 @media screen and (min-width: 30em) and (max-width: 60em) {
 	.swagger-ui .na1-m {
-		margin: -0.25rem;
+		margin: -0.2rem;
 	}
 	.swagger-ui .na2-m {
 		margin: -0.5rem;
@@ -6207,7 +6207,7 @@
 		margin: -16rem;
 	}
 	.swagger-ui .nl1-m {
-		margin-left: -0.25rem;
+		margin-left: -0.2rem;
 	}
 	.swagger-ui .nl2-m {
 		margin-left: -0.5rem;
@@ -6228,7 +6228,7 @@
 		margin-left: -16rem;
 	}
 	.swagger-ui .nr1-m {
-		margin-right: -0.25rem;
+		margin-right: -0.2rem;
 	}
 	.swagger-ui .nr2-m {
 		margin-right: -0.5rem;
@@ -6249,7 +6249,7 @@
 		margin-right: -16rem;
 	}
 	.swagger-ui .nb1-m {
-		margin-bottom: -0.25rem;
+		margin-bottom: -0.2rem;
 	}
 	.swagger-ui .nb2-m {
 		margin-bottom: -0.5rem;
@@ -6270,7 +6270,7 @@
 		margin-bottom: -16rem;
 	}
 	.swagger-ui .nt1-m {
-		margin-top: -0.25rem;
+		margin-top: -0.2rem;
 	}
 	.swagger-ui .nt2-m {
 		margin-top: -0.5rem;
@@ -6293,7 +6293,7 @@
 }
 @media screen and (min-width: 60em) {
 	.swagger-ui .na1-l {
-		margin: -0.25rem;
+		margin: -0.2rem;
 	}
 	.swagger-ui .na2-l {
 		margin: -0.5rem;
@@ -6314,7 +6314,7 @@
 		margin: -16rem;
 	}
 	.swagger-ui .nl1-l {
-		margin-left: -0.25rem;
+		margin-left: -0.2rem;
 	}
 	.swagger-ui .nl2-l {
 		margin-left: -0.5rem;
@@ -6335,7 +6335,7 @@
 		margin-left: -16rem;
 	}
 	.swagger-ui .nr1-l {
-		margin-right: -0.25rem;
+		margin-right: -0.2rem;
 	}
 	.swagger-ui .nr2-l {
 		margin-right: -0.5rem;
@@ -6356,7 +6356,7 @@
 		margin-right: -16rem;
 	}
 	.swagger-ui .nb1-l {
-		margin-bottom: -0.25rem;
+		margin-bottom: -0.2rem;
 	}
 	.swagger-ui .nb2-l {
 		margin-bottom: -0.5rem;
@@ -6377,7 +6377,7 @@
 		margin-bottom: -16rem;
 	}
 	.swagger-ui .nt1-l {
-		margin-top: -0.25rem;
+		margin-top: -0.2rem;
 	}
 	.swagger-ui .nt2-l {
 		margin-top: -0.5rem;
@@ -6600,13 +6600,13 @@
 	font-size: 1.5rem;
 }
 .swagger-ui .f4 {
-	font-size: 1.25rem;
+	font-size: 1.2rem;
 }
 .swagger-ui .f5 {
 	font-size: 1rem;
 }
 .swagger-ui .f6 {
-	font-size: 0.875rem;
+	font-size: 0.8rem;
 }
 .swagger-ui .f7 {
 	font-size: 0.6rem;
@@ -6630,13 +6630,13 @@
 		font-size: 1.5rem;
 	}
 	.swagger-ui .f4-ns {
-		font-size: 1.25rem;
+		font-size: 1.2rem;
 	}
 	.swagger-ui .f5-ns {
 		font-size: 1rem;
 	}
 	.swagger-ui .f6-ns {
-		font-size: 0.875rem;
+		font-size: 0.8rem;
 	}
 	.swagger-ui .f7-ns {
 		font-size: 0.6rem;
@@ -6661,13 +6661,13 @@
 		font-size: 1.5rem;
 	}
 	.swagger-ui .f4-m {
-		font-size: 1.25rem;
+		font-size: 1.2rem;
 	}
 	.swagger-ui .f5-m {
 		font-size: 1rem;
 	}
 	.swagger-ui .f6-m {
-		font-size: 0.875rem;
+		font-size: 0.8rem;
 	}
 	.swagger-ui .f7-m {
 		font-size: 0.6rem;
@@ -6692,13 +6692,13 @@
 		font-size: 1.5rem;
 	}
 	.swagger-ui .f4-l {
-		font-size: 1.25rem;
+		font-size: 1.2rem;
 	}
 	.swagger-ui .f5-l {
 		font-size: 1rem;
 	}
 	.swagger-ui .f6-l {
-		font-size: 0.875rem;
+		font-size: 0.8rem;
 	}
 	.swagger-ui .f7-l {
 		font-size: 0.6rem;
@@ -7161,7 +7161,7 @@
 	padding: 0;
 }
 .swagger-ui .try-out__btn {
-	margin-left: 1.25rem;
+	margin-left: 1.2rem;
 }
 .swagger-ui .opblock-tag {
 	align-items: center;

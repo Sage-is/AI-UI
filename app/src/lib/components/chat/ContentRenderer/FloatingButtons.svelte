@@ -67,15 +67,15 @@
 
 <div
 	id={`floating-buttons-${id}`}
-	style="--pos:absolute; --radius:0.5rem; --mt:0.25rem; --size:0.6rem; --z:9999; display: none"
+	style="--pos:absolute; --radius:0.5rem; --mt:0.2rem; --size:0.6rem; --z:9999; display: none"
 >
 	{#if !floatingInput}
 		<div
-			style="--d:flex; --fd:row; --g:0.125rem; --fs:0; --p:0.25rem; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-100); --radius:0.5rem; --shadow:5"
+			style="--d:flex; --fd:row; --g:0.125rem; --fs:0; --p:0.2rem; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-100); --radius:0.5rem; --shadow:5"
 	class="text-medium"
 		>
 			<button
-				style="--px:0.25rem; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.125rem; --d:flex; --ai:center; --g:0.25rem; --minw:fit-content"
+				style="--px:0.2rem; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.125rem; --d:flex; --ai:center; --g:0.2rem; --minw:fit-content"
 				on:click={async () => {
 					selectedText = window.getSelection().toString();
 					floatingInput = true;
@@ -93,7 +93,7 @@
 				<div style="--fs:0">{$i18n.t('Ask')}</div>
 			</button>
 			<button
-				style="--px:0.25rem; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.125rem; --d:flex; --ai:center; --g:0.25rem; --minw:fit-content"
+				style="--px:0.2rem; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.125rem; --d:flex; --ai:center; --g:0.2rem; --minw:fit-content"
 				on:click={() => {
 					selectedText = window.getSelection().toString();
 					explainHandler();
@@ -105,12 +105,12 @@
 		</div>
 	{:else}
 		<div
-			style="--py:0.25rem; --d:flex; --dark-c:var(--color-gray-100); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800);  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --w:18rem; --radius:9999px; --shadow:5"
+			style="--py:0.2rem; --d:flex; --dark-c:var(--color-gray-100); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800);  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --w:18rem; --radius:9999px; --shadow:5"
 		>
 			<input
 				type="text"
 				id="floating-message-input"
-				style="--ml:1.25rem; --bgc:transparent; --oe:none; --w:100%; --fx:1 1 0%; --size:0.875rem"
+				style="--ml:1.2rem; --bgc:transparent; --oe:none; --w:100%; --fx:1 1 0%; --size:0.8rem"
 				placeholder={$i18n.t('Ask a question')}
 				bind:value={floatingInputValue}
 				on:keydown={(e) => {
@@ -120,9 +120,9 @@
 				}}
 			/>
 
-			<div style="--ml:0.25rem; --mr:0.5rem">
+			<div style="--ml:0.2rem; --mr:0.5rem">
 				<button
-					style="--tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.375rem; --m:0.125rem; --as:center"
+					style="--tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.4rem; --m:0.125rem; --as:center"
 	class="{floatingInputValue !== ''
 						? 'bg-black text-white hover:bg-gray-900 dark:bg-white dark:text-black dark:hover:bg-gray-100 '
 						: 'text-white bg-gray-200 dark:text-gray-900 dark:bg-gray-700 disabled'}"

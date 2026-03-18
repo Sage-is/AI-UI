@@ -251,9 +251,9 @@
 		}}
 	/>
 
-	<div style="--d:flex; --fd:column; --g:0.25rem; --mt:0.375rem">
+	<div style="--d:flex; --fd:column; --g:0.2rem; --mt:0.4rem">
 		<div style="--d:flex; --jc:space-between; --ai:center">
-			<div style="--d:flex; --ai:center; --as-md:center; --size:1.25rem; --weight:500; --px:0.125rem">
+			<div style="--d:flex; --ai:center; --as-md:center; --size:1.2rem; --weight:500; --px:0.125rem">
 				{$i18n.t('Agents')}
 				<div style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)" />
 				<span style="--size:1.125rem; --weight:500; --c:var(--color-gray-500); --dark-c:var(--color-gray-300)"
@@ -264,17 +264,17 @@
 
 		<div style="--d:flex; --fx:1 1 0%; --ai:center; --w:100%; --g:0.5rem">
 			<div style="--d:flex; --fx:1 1 0%; --ai:center">
-				<div style="--as:center; --ml:0.25rem; --mr:0.6rem">
+				<div style="--as:center; --ml:0.2rem; --mr:0.6rem">
 					<Search className="size-3.5" />
 				</div>
 				<input
-					style="--w:100%; --size:0.875rem; --py:0.25rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
+					style="--w:100%; --size:0.8rem; --py:0.2rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 					bind:value={query}
 					placeholder={$i18n.t('Search Models')}
 				/>
 
 				{#if query}
-					<div style="--as:center; --pl:0.375rem; --translatey:0.5px; --btlr:0.6rem; --bblr:0.6rem; --bgc:transparent">
+					<div style="--as:center; --pl:0.4rem; --translatey:0.5px; --btlr:0.6rem; --bblr:0.6rem; --bgc:transparent">
 						<button
 							style="--p:0.125rem; --radius:9999px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							on:click={() => {
@@ -289,7 +289,7 @@
 
 			<div>
 				<a
-					style="--px:0.5rem; --py:0.5rem; --radius:0.6rem; --hvr-bgc:rgb(78 78 78 / 0.1); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
+					style="--px:0.5rem; --py:0.5rem; --radius:0.6rem; --hvr-bgc:rgb(78 78 78 / 0.1); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.8rem; --d:flex; --ai:center; --g:0.2rem"
 					href="/workshop/models/create"
 				>
 					<Plus className="size-3.5" />
@@ -310,11 +310,11 @@
 			}}
 		>
 			<div
-				style="--d:flex; --g:0.25rem; --w:fit-content; --ta:center; --size:0.875rem; --weight:500; --radius:9999px"
+				style="--d:flex; --g:0.2rem; --w:fit-content; --ta:center; --size:0.8rem; --weight:500; --radius:9999px"
 				bind:this={tagsContainerElement}
 			>
 				<button
-					style="--minw:fit-content; --oe:2px solid transparent; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize"
+					style="--minw:fit-content; --oe:2px solid transparent; --p:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize"
 	class="{selectedTag === ''
 						? ''
 						: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
@@ -327,7 +327,7 @@
 
 				{#each tags as tag}
 					<button
-						style="--minw:fit-content; --oe:2px solid transparent; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize"
+						style="--minw:fit-content; --oe:2px solid transparent; --p:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize"
 	class="{selectedTag === tag
 							? ''
 							: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
@@ -341,13 +341,13 @@
 			</div>
 		</div>
 	{/if}
-	<div style="--my:0.5rem; --mb:1.25rem; --g:0.5rem; --d:grid; --gtc-lg:repeat(2, minmax(0, 1fr)); --gtc-xl:repeat(3, minmax(0, 1fr))" id="model-list">
+	<div style="--my:0.5rem; --mb:1.2rem; --g:0.5rem; --d:grid; --gtc-lg:repeat(2, minmax(0, 1fr)); --gtc-xl:repeat(3, minmax(0, 1fr))" id="model-list">
 		{#each filteredModels as model (model.id)}
 			<div
 				style="--d:flex; --fd:column; --cur:pointer; --w:100%; --px:0.6rem; --py:0.5rem; --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-bgc:rgb(0 0 0 / 0.05); --radius:0.6rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				id="model-item-{model.id}"
 			>
-				<div style="--d:flex; --g:1rem; --mt:0.25rem; --mb:0.125rem">
+				<div style="--d:flex; --g:1rem; --mt:0.2rem; --mb:0.125rem">
 					<div style="--w:44px">
 						<div
 							style="--radius:9999px; --objf:cover"
@@ -377,7 +377,7 @@
 								<div style="--weight:600; --line-clamp:1">{model.name}</div>
 							</Tooltip>
 
-							<div style="--d:flex; --g:0.25rem; --size:0.6rem; --of:hidden">
+							<div style="--d:flex; --g:0.2rem; --size:0.6rem; --of:hidden">
 								<div style="--line-clamp:1">
 									{#if (model?.meta?.description ?? '').trim()}
 										{model?.meta?.description}
@@ -390,7 +390,7 @@
 					</a>
 				</div>
 
-				<div style="--d:flex; --jc:space-between; --ai:center; --mb:-0.125rem; --px:0.125rem; --mt:0.375rem">
+				<div style="--d:flex; --jc:space-between; --ai:center; --mb:-0.125rem; --px:0.125rem; --mt:0.4rem">
 					<div style="--size:0.6rem; --mt:0.125rem">
 						<Tooltip
 							content={model?.user?.email ?? $i18n.t('Deleted User')}
@@ -411,7 +411,7 @@
 						{#if shiftKey}
 							<Tooltip content={model?.meta?.hidden ? $i18n.t('Show') : $i18n.t('Hide')}>
 								<button
-									style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
+									style="--as:center; --w:fit-content; --size:0.8rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 									type="button"
 									on:click={() => {
 										hideModelHandler(model);
@@ -427,7 +427,7 @@
 
 							<Tooltip content={$i18n.t('Delete')}>
 								<button
-									style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
+									style="--as:center; --w:fit-content; --size:0.8rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 									type="button"
 									on:click={() => {
 										deleteModelHandler(model);
@@ -439,7 +439,7 @@
 						{:else}
 							{#if $user?.role === 'admin' || model.user_id === $user?.id || model.access_control.write.group_ids.some( (wg) => group_ids.includes(wg) )}
 								<a
-									style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
+									style="--as:center; --w:fit-content; --size:0.8rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 									type="button"
 									href={`/workshop/models/edit?id=${encodeURIComponent(model.id)}`}
 								>
@@ -485,14 +485,14 @@
 								onClose={() => {}}
 							>
 								<button
-									style="--as:center; --w:fit-content; --size:0.875rem; --p:0.375rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
+									style="--as:center; --w:fit-content; --size:0.8rem; --p:0.4rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 									type="button"
 								>
 									<EllipsisHorizontal className="size-5" />
 								</button>
 							</ModelMenu>
 
-							<div style="--ml:0.25rem">
+							<div style="--ml:0.2rem">
 								<Tooltip content={model.is_active ? $i18n.t('Enabled') : $i18n.t('Disabled')}>
 									<Switch
 										bind:state={model.is_active}
@@ -518,7 +518,7 @@
 
 	{#if $user?.role === 'admin'}
 		<div style="--d:flex; --jc:flex-end; --w:100%; --mb:0.6rem">
-			<div style="--d:flex; --g:0.25rem">
+			<div style="--d:flex; --g:0.2rem">
 				<input
 					id="models-import-input"
 					bind:this={modelsImportInputElement}
@@ -571,7 +571,7 @@
 				/>
 
 				<button
-					style="--d:flex; --size:0.6rem; --ai:center; --g:0.25rem; --px:0.6rem; --py:0.375rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--d:flex; --size:0.6rem; --ai:center; --g:0.2rem; --px:0.6rem; --py:0.4rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						modelsImportInputElement.click();
 					}}
@@ -583,7 +583,7 @@
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 16 16"
 							fill="currentColor"
-							style="--w:0.875rem; --h:0.875rem"
+							style="--w:0.8rem; --h:0.8rem"
 						>
 							<path
 								fill-rule="evenodd"
@@ -596,7 +596,7 @@
 
 				{#if models.length}
 					<button
-						style="--d:flex; --size:0.6rem; --ai:center; --g:0.25rem; --px:0.6rem; --py:0.375rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+						style="--d:flex; --size:0.6rem; --ai:center; --g:0.2rem; --px:0.6rem; --py:0.4rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={async () => {
 							downloadModels(models);
 						}}
@@ -610,7 +610,7 @@
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 16 16"
 								fill="currentColor"
-								style="--w:0.875rem; --h:0.875rem"
+								style="--w:0.8rem; --h:0.8rem"
 							>
 								<path
 									fill-rule="evenodd"
@@ -627,18 +627,18 @@
 
 	{#if $config?.features.enable_community_sharing}
 		<div style="--my:4rem">
-			<div style="--size:1.25rem; --weight:500; --mb:0.25rem; --line-clamp:1">
+			<div style="--size:1.2rem; --weight:500; --mb:0.2rem; --line-clamp:1">
 				{$i18n.t('Sage.is AI Community')}
 			</div>
 
 			<a
-				style="--d:flex; --cur:pointer; --ai:center; --jc:space-between; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --w:100%; --mb:0.5rem; --px:0.875rem; --py:0.375rem; --radius:0.6rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--d:flex; --cur:pointer; --ai:center; --jc:space-between; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --w:100%; --mb:0.5rem; --px:0.8rem; --py:0.4rem; --radius:0.6rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				href="https://sage.is/community"
 				target="_blank"
 			>
 				<div style="--as:center">
 					<div style="--weight:600; --line-clamp:1">{$i18n.t('Discover your next agent')}</div>
-					<div style="--size:0.875rem; --line-clamp:1">
+					<div style="--size:0.8rem; --line-clamp:1">
 						{$i18n.t('Discover, download, and explore agents')}
 					</div>
 				</div>

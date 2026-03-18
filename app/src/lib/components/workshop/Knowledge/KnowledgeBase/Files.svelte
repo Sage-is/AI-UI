@@ -12,7 +12,7 @@
 
 <div style="--maxh:100%; --d:flex; --fd:column; --w:100%">
 	{#each files as file}
-		<div style="--mt:0.25rem; --px:0.5rem">
+		<div style="--mt:0.2rem; --px:0.5rem">
 			<FileItem
 				className="w-full"
 				colorClassName="{selectedFileId === file.id

@@ -77,14 +77,14 @@
 		<div style="--d:flex; --w:100%; --radius:0.6rem;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)">
 			<div style="--d:flex; --fd:column; --w:100%; --radius:0.6rem; --bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-c:var(--color-gray-100)">
 				<div
-					style="--m:0.25rem; --ofy:auto; --p:0.25rem; --g:0.125rem; --maxh:15rem"
+					style="--m:0.2rem; --ofy:auto; --p:0.2rem; --g:0.125rem; --maxh:15rem"
 	class="scrollbar-hidden"
 					id="command-options-container"
 					bind:this={container}
 				>
 					{#each filteredPrompts as promptItem, promptIdx}
 						<button
-							style="--px:0.6rem; --py:0.375rem; --radius:0.6rem; --w:100%; --ta:left"
+							style="--px:0.6rem; --py:0.4rem; --radius:0.6rem; --w:100%; --ta:left"
 	class="{promptIdx === selectedPromptIdx
 								? '  bg-gray-50 dark:bg-gray-850 selected-command-option-button'
 								: ''}"
@@ -109,7 +109,7 @@
 				</div>
 
 				<div
-					style="--px:0.5rem; --pt:0.125rem; --pb:0.25rem; --size:0.6rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-100); --bgc:#fff; --dark-bgc:var(--color-gray-900); --bblr:0.6rem; --bbrr:0.6rem; --d:flex; --ai:center; --g:0.25rem"
+					style="--px:0.5rem; --pt:0.125rem; --pb:0.2rem; --size:0.6rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-100); --bgc:#fff; --dark-bgc:var(--color-gray-900); --bblr:0.6rem; --bbrr:0.6rem; --d:flex; --ai:center; --g:0.2rem"
 				>
 					<div>
 						<svg

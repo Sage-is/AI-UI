@@ -193,9 +193,9 @@
 />
 
 {#if loaded}
-	<div style="--d:flex; --fd:column; --g:0.25rem; --my:0.375rem">
+	<div style="--d:flex; --fd:column; --g:0.2rem; --my:0.4rem">
 		<div style="--d:flex; --jc:space-between; --ai:center">
-			<div style="--d:flex; --as-md:center; --size:1.25rem; --weight:500; --px:0.125rem; --ai:center">
+			<div style="--d:flex; --as-md:center; --size:1.2rem; --weight:500; --px:0.125rem; --ai:center">
 				{$i18n.t('Tools')}
 				<div style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)" />
 				<span style="--size:1.125rem; --weight:500; --c:var(--color-gray-500); --dark-c:var(--color-gray-300)"
@@ -206,16 +206,16 @@
 
 		<div style="--d:flex; --w:100%; --g:0.5rem">
 			<div style="--d:flex; --fx:1 1 0%">
-				<div style="--as:center; --ml:0.25rem; --mr:0.6rem">
+				<div style="--as:center; --ml:0.2rem; --mr:0.6rem">
 					<Search className="size-3.5" />
 				</div>
 				<input
-					style="--w:100%; --size:0.875rem; --pr:1rem; --py:0.25rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
+					style="--w:100%; --size:0.8rem; --pr:1rem; --py:0.2rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 					bind:value={query}
 					placeholder={$i18n.t('Search Tools')}
 				/>
 				{#if query}
-					<div style="--as:center; --pl:0.375rem; --translatey:0.5px; --btlr:0.6rem; --bblr:0.6rem; --bgc:transparent">
+					<div style="--as:center; --pl:0.4rem; --translatey:0.5px; --btlr:0.6rem; --bblr:0.6rem; --bgc:transparent">
 						<button
 							style="--p:0.125rem; --radius:9999px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							on:click={() => {
@@ -239,14 +239,14 @@
 						}}
 					>
 						<div
-							style="--px:0.5rem; --py:0.5rem; --radius:0.6rem; --hvr-bgc:rgb(78 78 78 / 0.1); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
+							style="--px:0.5rem; --py:0.5rem; --radius:0.6rem; --hvr-bgc:rgb(78 78 78 / 0.1); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.8rem; --d:flex; --ai:center; --g:0.2rem"
 						>
 							<Plus className="size-3.5" />
 						</div>
 					</AddToolMenu>
 				{:else}
 					<a
-						style="--px:0.5rem; --py:0.5rem; --radius:0.6rem; --hvr-bgc:rgb(78 78 78 / 0.1); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
+						style="--px:0.5rem; --py:0.5rem; --radius:0.6rem; --hvr-bgc:rgb(78 78 78 / 0.1); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.8rem; --d:flex; --ai:center; --g:0.2rem"
 						href="/workshop/tools/create"
 					>
 						<Plus className="size-3.5" />
@@ -256,28 +256,28 @@
 		</div>
 	</div>
 
-	<div style="--mb:1.25rem; --g:0.5rem; --d:grid; --gtc-lg:repeat(2, minmax(0, 1fr)); --gtc-xl:repeat(3, minmax(0, 1fr))">
+	<div style="--mb:1.2rem; --g:0.5rem; --d:grid; --gtc-lg:repeat(2, minmax(0, 1fr)); --gtc-xl:repeat(3, minmax(0, 1fr))">
 		{#each filteredItems as tool}
 			<div
 				style="--d:flex; --g:1rem; --cur:pointer; --w:100%; --px:0.6rem; --py:0.5rem; --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-bgc:rgb(0 0 0 / 0.05); --radius:0.6rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			>
 				<a
-					style="--d:flex; --fx:1 1 0%; --g:0.875rem; --cur:pointer; --w:100%"
+					style="--d:flex; --fx:1 1 0%; --g:0.8rem; --cur:pointer; --w:100%"
 					href={`/workshop/tools/edit?id=${encodeURIComponent(tool.id)}`}
 				>
 					<div style="--d:flex; --ai:center; --ta:left">
 						<div style="--fx:1 1 0%; --as:center">
 							<Tooltip content={tool?.meta?.description ?? ''} placement="top-start">
-								<div style="--weight:600; --d:flex; --ai:center; --g:0.375rem">
+								<div style="--weight:600; --d:flex; --ai:center; --g:0.4rem">
 									<div
-										style="--size:0.6rem; --weight:700; --px:0.25rem; --radius:0.125rem; --tt:uppercase; --line-clamp:1; --bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200)"
+										style="--size:0.6rem; --weight:700; --px:0.2rem; --radius:0.125rem; --tt:uppercase; --line-clamp:1; --bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200)"
 									>
 										TOOL
 									</div>
 
 									{#if tool?.meta?.manifest?.version}
 										<div
-											style="--size:0.6rem; --weight:700; --px:0.25rem; --radius:0.125rem; --line-clamp:1; --bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200)"
+											style="--size:0.6rem; --weight:700; --px:0.2rem; --radius:0.125rem; --line-clamp:1; --bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200)"
 										>
 											v{tool?.meta?.manifest?.version ?? ''}
 										</div>
@@ -292,7 +292,7 @@
 							</Tooltip>
 
 							<div style="--px:0.125rem">
-								<div style="--d:flex; --g:0.375rem; --mt:0.125rem; --mb:0.125rem">
+								<div style="--d:flex; --g:0.4rem; --mt:0.125rem; --mb:0.125rem">
 									<div style="--size:0.6rem; --of:hidden; text-overflow:ellipsis; --line-clamp:1">
 										{tool.meta.description}
 									</div>
@@ -319,7 +319,7 @@
 					{#if shiftKey}
 						<Tooltip content={$i18n.t('Delete')}>
 							<button
-								style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
+								style="--as:center; --w:fit-content; --size:0.8rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 								type="button"
 								on:click={() => {
 									deleteHandler(tool);
@@ -332,7 +332,7 @@
 						{#if tool?.meta?.manifest?.funding_url ?? false}
 							<Tooltip content="Support">
 								<button
-									style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
+									style="--as:center; --w:fit-content; --size:0.8rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 									type="button"
 									on:click={() => {
 										selectedTool = tool;
@@ -346,7 +346,7 @@
 
 						<Tooltip content={$i18n.t('Valves')}>
 							<button
-								style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
+								style="--as:center; --w:fit-content; --size:0.8rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 								type="button"
 								on:click={() => {
 									selectedTool = tool;
@@ -395,7 +395,7 @@
 							onClose={() => {}}
 						>
 							<button
-								style="--as:center; --w:fit-content; --size:0.875rem; --p:0.375rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
+								style="--as:center; --w:fit-content; --size:0.8rem; --p:0.4rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 								type="button"
 							>
 								<EllipsisHorizontal className="size-5" />
@@ -424,7 +424,7 @@
 				/>
 
 				<button
-					style="--d:flex; --size:0.6rem; --ai:center; --g:0.25rem; --px:0.6rem; --py:0.375rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--d:flex; --size:0.6rem; --ai:center; --g:0.2rem; --px:0.6rem; --py:0.4rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						toolsImportInputElement.click();
 					}}
@@ -449,7 +449,7 @@
 
 				{#if tools.length}
 					<button
-						style="--d:flex; --size:0.6rem; --ai:center; --g:0.25rem; --px:0.6rem; --py:0.375rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+						style="--d:flex; --size:0.6rem; --ai:center; --g:0.2rem; --px:0.6rem; --py:0.4rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={async () => {
 							const _tools = await exportTools(localStorage.token).catch((error) => {
 								toast.error(`${error}`);
@@ -490,18 +490,18 @@
 
 	{#if $config?.features.enable_community_sharing}
 		<div style="--my:4rem">
-			<div style="--size:1.25rem; --weight:500; --mb:0.25rem; --line-clamp:1">
+			<div style="--size:1.2rem; --weight:500; --mb:0.2rem; --line-clamp:1">
 				{$i18n.t('Sage.is AI Community')}
 			</div>
 
 			<a
-				style="--d:flex; --cur:pointer; --ai:center; --jc:space-between; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --w:100%; --mb:0.5rem; --px:0.875rem; --py:0.375rem; --radius:0.6rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--d:flex; --cur:pointer; --ai:center; --jc:space-between; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --w:100%; --mb:0.5rem; --px:0.8rem; --py:0.4rem; --radius:0.6rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				href="https://sage.is/community"
 				target="_blank"
 			>
 				<div style="--as:center">
 					<div style="--weight:600; --line-clamp:1">{$i18n.t('Discover your next tool')}</div>
-					<div style="--size:0.875rem; --line-clamp:1">
+					<div style="--size:0.8rem; --line-clamp:1">
 						{$i18n.t('Discover, download, and explore custom tools')}
 					</div>
 				</div>
@@ -522,7 +522,7 @@
 			deleteHandler(selectedTool);
 		}}
 	>
-		<div style="--size:0.875rem; --c:var(--color-gray-500)">
+		<div style="--size:0.8rem; --c:var(--color-gray-500)">
 			{$i18n.t('This will delete')} <span style="--weight:600">{selectedTool.name}</span>.
 		</div>
 	</DeleteConfirmDialog>
@@ -552,11 +552,11 @@
 			reader.readAsText(importFiles[0]);
 		}}
 	>
-		<div style="--size:0.875rem; --c:var(--color-gray-500)">
+		<div style="--size:0.8rem; --c:var(--color-gray-500)">
 			<div style="--bgc:rgb(234 179 8 / 0.2); --c:#a16207; --dark-c:#fef08a; --radius:0.5rem; --px:1rem; --py:0.6rem">
 				<div>{$i18n.t('Please carefully review the following warnings:')}</div>
 
-				<ul style="--mt:0.25rem; list-style-type:disc; --pl:1rem; --size:0.6rem">
+				<ul style="--mt:0.2rem; list-style-type:disc; --pl:1rem; --size:0.6rem">
 					<li>
 						{$i18n.t('Tools have a function calling system that allows arbitrary code execution.')}.
 					</li>

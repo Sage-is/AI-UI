@@ -84,9 +84,9 @@
 
 <div style="--radius:0.5rem; --d:flex; --fd:column; --g:0.5rem">
 	<div class="">
-		<div style="--size:0.875rem; --weight:600; --mb:0.25rem">{$i18n.t('Visibility')}</div>
+		<div style="--size:0.8rem; --weight:600; --mb:0.2rem">{$i18n.t('Visibility')}</div>
 
-		<div style="--d:flex; --g:0.625rem; --ai:center; --mb:0.25rem">
+		<div style="--d:flex; --g:0.625rem; --ai:center; --mb:0.2rem">
 			<div>
 				<div style="--p:0.5rem; --bgc:rgb(0 0 0 / 0.05); --dark-bgc:rgb(255 255 255 / 0.05); --radius:9999px">
 					{#if accessControl !== null}
@@ -96,7 +96,7 @@
 							viewBox="0 0 24 24"
 							stroke-width="1.5"
 							stroke="currentColor"
-							style="--w:1.25rem; --h:1.25rem"
+							style="--w:1.2rem; --h:1.2rem"
 						>
 							<path
 								stroke-linecap="round"
@@ -111,7 +111,7 @@
 							viewBox="0 0 24 24"
 							stroke-width="1.5"
 							stroke="currentColor"
-							style="--w:1.25rem; --h:1.25rem"
+							style="--w:1.2rem; --h:1.2rem"
 						>
 							<path
 								stroke-linecap="round"
@@ -126,7 +126,7 @@
 			<div>
 				<select
 					id="models"
-					style="--oe:none; --bgc:transparent; --size:0.875rem; --weight:500; --radius:0.5rem; --d:block; --w:fit-content; --pr:2.5rem; --maxw:100%"
+					style="--oe:none; --bgc:transparent; --size:0.8rem; --weight:500; --radius:0.5rem; --d:block; --w:fit-content; --pr:2.5rem; --maxw:100%"
 	class="placeholder-gray-400"
 					value={accessControl !== null ? 'private' : 'public'}
 					on:change={(e) => {
@@ -168,18 +168,18 @@
 		)}
 		<div>
 			<div class="">
-				<div style="--d:flex; --jc:space-between; --mb:0.375rem">
-					<div style="--size:0.875rem; --weight:600">
+				<div style="--d:flex; --jc:space-between; --mb:0.4rem">
+					<div style="--size:0.8rem; --weight:600">
 						{$i18n.t('Groups')}
 					</div>
 				</div>
 
-				<div style="--mb:0.25rem">
+				<div style="--mb:0.2rem">
 					<div style="--d:flex; --w:100%">
 						<div style="--d:flex; --fx:1 1 0%; --ai:center">
 							<div style="--w:100%; --px:0.125rem">
 								<select
-									style="--oe:none; --bgc:transparent; --size:0.875rem; --radius:0.5rem; --d:block; --w:100%; --pr:2.5rem; --maxw:100%"
+									style="--oe:none; --bgc:transparent; --size:0.8rem; --radius:0.5rem; --d:block; --w:100%; --pr:2.5rem; --maxw:100%"
 	class="{selectedGroupId ? '' : 'text-gray-500'} dark:placeholder-gray-500"
 									bind:value={selectedGroupId}
 								>
@@ -194,7 +194,7 @@
 							<!-- <div>
 								<Tooltip content={$i18n.t('Add Group')}>
 									<button
-										style="--p:0.25rem; --radius:0.6rem; --bgc:transparent; --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-bgc:rgb(0 0 0 / 0.05); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
+										style="--p:0.2rem; --radius:0.6rem; --bgc:transparent; --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-bgc:rgb(0 0 0 / 0.05); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.8rem; --d:flex; --ai:center; --g:0.2rem"
 										type="button"
 										on:click={() => {}}
 									>
@@ -206,13 +206,13 @@
 					</div>
 				</div>
 
-				<hr style="--bc:var(--color-gray-100); --dark-bc:rgb(78 78 78 / 0.1); --mt:0.375rem; --mb:0.625rem; --w:100%" />
+				<hr style="--bc:var(--color-gray-100); --dark-bc:rgb(78 78 78 / 0.1); --mt:0.4rem; --mb:0.625rem; --w:100%" />
 
-				<div style="--d:flex; --fd:column; --g:0.5rem; --mb:0.25rem; --px:0.125rem">
+				<div style="--d:flex; --fd:column; --g:0.5rem; --mb:0.2rem; --px:0.125rem">
 					{#if accessGroups.length > 0}
 						{#each accessGroups as group}
 							<div style="--d:flex; --ai:center; --g:0.6rem; --jc:space-between; --size:0.6rem; --w:100%; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)">
-								<div style="--d:flex; --ai:center; --g:0.375rem; --w:100%; --weight:500">
+								<div style="--d:flex; --ai:center; --g:0.4rem; --w:100%; --weight:500">
 									<div>
 										<UserCircleSolid className="size-4" />
 									</div>
@@ -249,7 +249,7 @@
 									</button>
 
 									<button
-										style="--radius:9999px; --p:0.25rem; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+										style="--radius:9999px; --p:0.2rem; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 										type="button"
 										on:click={() => {
 											accessControl.read.group_ids = accessControl.read.group_ids.filter(

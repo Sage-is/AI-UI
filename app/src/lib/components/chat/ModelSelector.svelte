@@ -80,7 +80,7 @@
 			{#if $user?.role === 'admin' || ($user?.permissions?.chat?.multiple_models ?? true)}
 				{#if selectedModelIdx === 0}
 					<div
-						style="--as:center; --mx:0.25rem; --translatey:-0.5px"
+						style="--as:center; --mx:0.2rem; --translatey:-0.5px"
 	class="disabled:text-gray-600 disabled:hover:text-gray-600"
 					>
 						<Tooltip content={$i18n.t('Add Model')}>
@@ -98,7 +98,7 @@
 									viewBox="0 0 24 24"
 									stroke-width="2"
 									stroke="currentColor"
-									style="--w:0.875rem; --h:0.875rem"
+									style="--w:0.8rem; --h:0.8rem"
 								>
 									<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
 								</svg>
@@ -107,7 +107,7 @@
 					</div>
 				{:else}
 					<div
-						style="--as:center; --mx:0.25rem; --translatey:-0.5px"
+						style="--as:center; --mx:0.2rem; --translatey:-0.5px"
 	class="disabled:text-gray-600 disabled:hover:text-gray-600"
 					>
 						<Tooltip content={$i18n.t('Remove Model')}>
@@ -148,7 +148,7 @@
 {/if}
 
 {#if showTemporaryChatControl}
-	<div style="--mt:0.25rem; --ml:0.25rem">
+	<div style="--mt:0.2rem; --ml:0.2rem">
 		<button
 			style="--d:flex; --jc:space-between; --ai:center; --g:0.5rem; --size:0.7rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); --cur:pointer; --bgc:transparent; --oe:none"
 			class="font-primary"
@@ -166,7 +166,7 @@
 				}
 			}}
 		>
-			<div style="--d:flex; --g:0.375rem; --ai:center">
+			<div style="--d:flex; --g:0.4rem; --ai:center">
 				<ChatBubbleOval className="size-3" strokeWidth="2.5" />
 				{$i18n.t('Temporary Chat')}
 			</div>

@@ -180,7 +180,7 @@
 					<slot />
 
 					{#if chevron}
-						<div style="--d:flex; --as:flex-start; --translatey:0.25rem">
+						<div style="--d:flex; --as:flex-start; --translatey:0.2rem">
 							{#if open}
 								<ChevronUp strokeWidth="3.5" className="size-3.5" />
 							{:else}

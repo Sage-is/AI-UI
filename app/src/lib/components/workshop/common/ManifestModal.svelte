@@ -15,7 +15,7 @@
 
 <Modal size="sm" bind:show>
 	<div>
-		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.25rem; --pt:1rem; --pb:0.5rem">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.2rem; --pt:1rem; --pb:0.5rem">
 			<div style="--size:1.125rem; --weight:500; --as:center">{$i18n.t('Show your support!')}</div>
 			<button
 				style="--as:center"
@@ -27,7 +27,7 @@
 			</button>
 		</div>
 
-		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1.25rem; --pb:1rem; --p: 1rem 0;--bgc: var(--white); --br: 1rem">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1.2rem; --pb:1rem; --p: 1rem 0;--bgc: var(--white); --br: 1rem">
 			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				<form
 					style="--d:flex; --fd:column; --w:100%"
@@ -35,7 +35,7 @@
 						show = false;
 					}}
 				>
-					<div style="--px:0.25rem; --size:0.875rem">
+					<div style="--px:0.2rem; --size:0.8rem">
 						<div style="--my:0.5rem">
 							{$i18n.t(
 								'The developers behind this plugin are passionate volunteers from the community. If you find this plugin helpful, please consider contributing to its development.'
@@ -59,9 +59,9 @@
 						</div>
 					</div>
 
-					<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.875rem; --weight:500">
+					<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.8rem; --weight:500">
 						<button
-							style="--px:1rem; --py:0.5rem; --bgc:#047857; --hvr-bgc:#065f46; --c:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --d:flex; --fd:row; --g:0.25rem; --ai:center"
+							style="--px:1rem; --py:0.5rem; --bgc:#047857; --hvr-bgc:#065f46; --c:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --d:flex; --fd:row; --g:0.2rem; --ai:center"
 							type="submit"
 						>
 							{$i18n.t('Done')}

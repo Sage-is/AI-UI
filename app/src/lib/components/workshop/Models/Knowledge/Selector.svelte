@@ -143,7 +143,7 @@
 
 	<div slot="content">
 		<DropdownMenu.Content
-			style="--w:100%; --maxw:24rem; --radius:0.6rem; --px:0.25rem; --py:0.375rem;  --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.5); --z:99999999; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:4"
+			style="--w:100%; --maxw:24rem; --radius:0.6rem; --px:0.2rem; --py:0.4rem;  --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.5); --z:99999999; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:4"
 			sideOffset={8}
 			side="bottom"
 			align="start"
@@ -151,11 +151,11 @@
 		>
 			<div style="--d:flex; --w:100%; --g:0.5rem; --py:0.125rem; --px:0.5rem; --pb:0.5rem">
 				<div style="--d:flex; --fx:1 1 0%">
-					<div style="--as:center; --ml:0.25rem; --mr:0.6rem">
+					<div style="--as:center; --ml:0.2rem; --mr:0.6rem">
 						<Search />
 					</div>
 					<input
-						style="--w:100%; --size:0.875rem; --pr:1rem; --py:0.25rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
+						style="--w:100%; --size:0.8rem; --pr:1rem; --py:0.2rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 						bind:value={query}
 						placeholder={$i18n.t('Search Knowledge')}
 					/>
@@ -170,40 +170,40 @@
 				{:else}
 					{#each filteredItems as item}
 						<DropdownMenu.Item
-							style="--d:flex; --g:0.625rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.875rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.375rem"
+							style="--d:flex; --g:0.625rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem"
 							on:click={() => {
 								dispatch('select', item);
 							}}
 						>
 							<div>
-								<div style="--weight:500; --c:#000; --dark-c:var(--color-gray-100); --d:flex; --ai:center; --g:0.25rem">
+								<div style="--weight:500; --c:#000; --dark-c:var(--color-gray-100); --d:flex; --ai:center; --g:0.2rem">
 									{#if item.legacy}
 										<div
-											style="--bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200); --radius:0.125rem; --tt:uppercase; --size:0.6rem; --weight:700; --px:0.25rem; --fs:0"
+											style="--bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200); --radius:0.125rem; --tt:uppercase; --size:0.6rem; --weight:700; --px:0.2rem; --fs:0"
 										>
 											Legacy
 										</div>
 									{:else if item?.meta?.document}
 										<div
-											style="--bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200); --radius:0.125rem; --tt:uppercase; --size:0.6rem; --weight:700; --px:0.25rem; --fs:0"
+											style="--bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200); --radius:0.125rem; --tt:uppercase; --size:0.6rem; --weight:700; --px:0.2rem; --fs:0"
 										>
 											Document
 										</div>
 									{:else if item?.type === 'file'}
 										<div
-											style="--bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200); --radius:0.125rem; --tt:uppercase; --size:0.6rem; --weight:700; --px:0.25rem; --fs:0"
+											style="--bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200); --radius:0.125rem; --tt:uppercase; --size:0.6rem; --weight:700; --px:0.2rem; --fs:0"
 										>
 											File
 										</div>
 									{:else if item?.type === 'note'}
 										<div
-											style="--bgc:rgb(59 130 246 / 0.2); --c:#1d4ed8; --dark-c:#bfdbfe; --radius:0.125rem; --tt:uppercase; --size:0.6rem; --weight:700; --px:0.25rem; --fs:0"
+											style="--bgc:rgb(59 130 246 / 0.2); --c:#1d4ed8; --dark-c:#bfdbfe; --radius:0.125rem; --tt:uppercase; --size:0.6rem; --weight:700; --px:0.2rem; --fs:0"
 										>
 											Note
 										</div>
 									{:else}
 										<div
-											style="--bgc:rgb(34 197 94 / 0.2); --c:#15803d; --dark-c:#bbf7d0; --radius:0.125rem; --tt:uppercase; --size:0.6rem; --weight:700; --px:0.25rem; --fs:0"
+											style="--bgc:rgb(34 197 94 / 0.2); --c:#15803d; --dark-c:#bbf7d0; --radius:0.125rem; --tt:uppercase; --size:0.6rem; --weight:700; --px:0.2rem; --fs:0"
 										>
 											Collection
 										</div>

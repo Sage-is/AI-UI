@@ -228,7 +228,7 @@ Style elements using `--property:value` in the `style` attribute:
 <div style="--p:0.6rem; --br:0.5rem; --b:1px solid var(--color-gray-200)">
 
 <!-- Typography -->
-<span style="--size:0.875rem; --weight:500; --c:var(--color-gray-600)">
+<span style="--size:0.8rem; --weight:500; --c:var(--color-gray-600)">
 ```
 
 ### Common Shorthands
@@ -248,7 +248,7 @@ Style elements using `--property:value` in the `style` attribute:
 | `--fd` | flex-direction | `--fd:column` |
 | `--g` | gap | `--g:0.5rem` |
 | `--ta` | text-align | `--ta:center` |
-| `--size` | font-size | `--size:0.875rem` |
+| `--size` | font-size | `--size:0.8rem` |
 | `--weight` | font-weight | `--weight:600` |
 | `--pos` | position | `--pos:relative` |
 

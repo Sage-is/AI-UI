@@ -24,7 +24,7 @@
 				</div>
 
 				<button
-					style="--p:0.25rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--p:0.2rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					type="button"
 					on:click={() => {
 						valves[property] =
@@ -55,7 +55,7 @@
 					<div style="--fx:1 1 0%">
 						{#if valvesSpec.properties[property]?.enum ?? null}
 							<select
-								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 								bind:value={valves[property]}
 								on:change={() => {
 									dispatch('change');
@@ -84,7 +84,7 @@
 							</div>
 						{:else if (valvesSpec.properties[property]?.type ?? null) !== 'string'}
 							<input
-								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 								type="text"
 								placeholder={valvesSpec.properties[property].title}
 								bind:value={valves[property]}
@@ -100,7 +100,7 @@
 									<div style="--pos:relative; --w:1.5rem; --h:1.5rem">
 										<input
 											type="color"
-											style="--w:1.5rem; --h:1.5rem; --radius:0.25rem; --cur:pointer;  --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700)"
+											style="--w:1.5rem; --h:1.5rem; --radius:0.2rem; --cur:pointer;  --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700)"
 											value={valves[property] ?? '#000000'}
 											on:input={(e) => {
 												// Convert the color value to uppercase immediately
@@ -112,7 +112,7 @@
 
 									<input
 										type="text"
-										style="--fx:1 1 0%; --radius:0.5rem; --py:0.5rem; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
+										style="--fx:1 1 0%; --radius:0.5rem; --py:0.5rem; --size:0.8rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 										placeholder="Enter hex color (e.g. #FF0000)"
 										bind:value={valves[property]}
 										autocomplete="off"
@@ -124,7 +124,7 @@
 								</div>
 							{:else if valvesSpec.properties[property]?.input?.type === 'map'}
 								<!-- EXPERIMENTAL INPUT TYPE, DO NOT USE IN PRODUCTION -->
-								<div style="--d:flex; --fd:column; --ai:center; --g:0.25rem">
+								<div style="--d:flex; --fd:column; --ai:center; --g:0.2rem">
 									<MapSelector
 										setViewLocation={((valves[property] ?? '').includes(',') ?? false)
 											? valves[property].split(',')
@@ -138,7 +138,7 @@
 									{#if valves[property]}
 										<input
 											type="text"
-											style="--w:100%; --radius:0.5rem; --py:0.25rem; --ta:left; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
+											style="--w:100%; --radius:0.5rem; --py:0.2rem; --ta:left; --size:0.8rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 											placeholder="Enter coordinates (e.g. 51.505, -0.09)"
 											bind:value={valves[property]}
 											autocomplete="off"
@@ -151,7 +151,7 @@
 							{/if}
 						{:else}
 							<textarea
-								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 								placeholder={valvesSpec.properties[property].title}
 								bind:value={valves[property]}
 								autocomplete="off"

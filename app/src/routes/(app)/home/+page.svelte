@@ -53,13 +53,13 @@
 		'--d:flex; --fd:column; --radius:0.6rem; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --bw:1px; --bs:solid; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-900)';
 
 	const chatItemStyle =
-		'--d:flex; --ai:center; --jc:space-between; --px:0.6rem; --py:0.5rem; --radius:0.375rem; --tn:background-color 150ms ease; --cur:pointer; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-850)';
+		'--d:flex; --ai:center; --jc:space-between; --px:0.6rem; --py:0.5rem; --radius:0.4rem; --tn:background-color 150ms ease; --cur:pointer; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-850)';
 </script>
 
 <div style="--maxw:56rem; --mx:auto; --px:1.5rem; --py:2rem">
 	<!-- Greeting -->
 	<div style="--mb:2rem">
-		<h1 style="--size:1.75rem; --weight:700; --lh:1.2; --mb:0.25rem">
+		<h1 style="--size:1.75rem; --weight:700; --lh:1.2; --mb:0.2rem">
 			{$i18n.t(getGreeting())}, {$user?.name?.split(' ')[0] ?? ''}
 		</h1>
 		<p
@@ -150,7 +150,7 @@
 		<!-- Notes -->
 		<a
 			href="/notes"
-			style="{cardStyle}; --p:1.25rem; --tn:background-color 150ms ease, border-color 150ms ease; --cur:pointer; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-850)"
+			style="{cardStyle}; --p:1.2rem; --tn:background-color 150ms ease, border-color 150ms ease; --cur:pointer; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-850)"
 			class="no-underline"
 		>
 			<div style="--d:flex; --ai:center; --g:0.5rem; --mb:0.5rem">
@@ -166,14 +166,14 @@
 
 		<!-- Coming Soon Widgets -->
 		{#each soonWidgets as w}
-			<div style="{cardStyle}; --p:1.25rem; --op:0.55">
+			<div style="{cardStyle}; --p:1.2rem; --op:0.55">
 				<div style="--d:flex; --ai:center; --jc:space-between; --mb:0.5rem">
 					<div style="--d:flex; --ai:center; --g:0.5rem">
 						<span style="--size:1.5rem">{w.icon}</span>
 						<h3 style="--size:0.9375rem; --weight:600">{$i18n.t(w.title)}</h3>
 					</div>
 					<span
-						style="--size:0.625rem; --weight:500; --px:0.375rem; --py:0.125rem; --radius:9999px; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800); --c:var(--color-gray-500); --dark-c:var(--color-gray-400)"
+						style="--size:0.625rem; --weight:500; --px:0.4rem; --py:0.125rem; --radius:9999px; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800); --c:var(--color-gray-500); --dark-c:var(--color-gray-400)"
 					>
 						{$i18n.t('Coming Soon')}
 					</span>
@@ -193,7 +193,7 @@
 			{$i18n.t('Your AI, Your Way')}
 		</h2>
 		<div
-			style="--size:0.875rem; --lh:1.6; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
+			style="--size:0.8rem; --lh:1.6; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
 		>
 			<p style="--mb:0.6rem">
 				{$i18n.t(

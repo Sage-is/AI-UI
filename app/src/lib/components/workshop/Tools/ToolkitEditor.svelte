@@ -211,7 +211,7 @@ class Tools:
 						<div style="--fs:0; --mr:0.5rem">
 							<Tooltip content={$i18n.t('Back')}>
 								<button
-									style="--w:100%; --ta:left; --size:0.875rem; --py:0.375rem; --px:0.25rem; --radius:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:var(--color-gray-850)"
+									style="--w:100%; --ta:left; --size:0.8rem; --py:0.4rem; --px:0.2rem; --radius:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:var(--color-gray-850)"
 									on:click={() => {
 										goto('/workshop/tools');
 									}}
@@ -237,7 +237,7 @@ class Tools:
 
 						<div style="--as:center; --fs:0">
 							<button
-								style="--bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --c:#000; --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --px:0.5rem; --py:0.25rem; --radius:9999px; --d:flex; --g:0.25rem; --ai:center"
+								style="--bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --c:#000; --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --px:0.5rem; --py:0.2rem; --radius:9999px; --d:flex; --g:0.2rem; --ai:center"
 								type="button"
 								on:click={() => {
 									showAccessControlModal = true;
@@ -245,22 +245,22 @@ class Tools:
 							>
 								<LockClosed strokeWidth="2.5" className="size-3.5" />
 
-								<div style="--size:0.875rem; --weight:500; --fs:0">
+								<div style="--size:0.8rem; --weight:500; --fs:0">
 									{$i18n.t('Access')}
 								</div>
 							</button>
 						</div>
 					</div>
 
-					<div style="--d:flex; --g:0.5rem; --px:0.25rem; --ai:center">
+					<div style="--d:flex; --g:0.5rem; --px:0.2rem; --ai:center">
 						{#if edit}
-							<div style="--size:0.875rem; --c:var(--color-gray-500); --fs:0">
+							<div style="--size:0.8rem; --c:var(--color-gray-500); --fs:0">
 								{id}
 							</div>
 						{:else}
 							<Tooltip className="w-full" content={$i18n.t('e.g. my_tools')} placement="top-start">
 								<input
-									style="--w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+									style="--w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 	class="disabled:text-gray-500"
 									type="text"
 									placeholder={$i18n.t('Tool ID')}
@@ -277,7 +277,7 @@ class Tools:
 							placement="top-start"
 						>
 							<input
-								style="--w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+								style="--w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 								type="text"
 								placeholder={$i18n.t('Tool Description')}
 								bind:value={meta.description}
@@ -316,7 +316,7 @@ class Tools:
 					</div>
 
 					<button
-						style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+						style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 						type="submit"
 					>
 						{$i18n.t('Save')}
@@ -333,11 +333,11 @@ class Tools:
 		submitHandler();
 	}}
 >
-	<div style="--size:0.875rem; --c:var(--color-gray-500)">
+	<div style="--size:0.8rem; --c:var(--color-gray-500)">
 		<div style="--bgc:rgb(234 179 8 / 0.2); --c:#a16207; --dark-c:#fef08a; --radius:0.5rem; --px:1rem; --py:0.6rem">
 			<div>{$i18n.t('Please carefully review the following warnings:')}</div>
 
-			<ul style="--mt:0.25rem; list-style-type:disc; --pl:1rem; --size:0.6rem">
+			<ul style="--mt:0.2rem; list-style-type:disc; --pl:1rem; --size:0.6rem">
 				<li>
 					{$i18n.t('Tools have a function calling system that allows arbitrary code execution.')}
 				</li>

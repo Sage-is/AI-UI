@@ -138,7 +138,7 @@
 {/if}
 
 {#if ($config?.license_metadata?.seats ?? null) !== null && total && total > $config?.license_metadata?.seats}
-	<div style="--mt:0.25rem; --mb:0.5rem; --size:0.6rem; --c:#ef4444">
+	<div style="--mt:0.2rem; --mb:0.5rem; --size:0.6rem; --c:#ef4444">
 		<Banner
 			className="mx-0"
 			banner={{
@@ -157,7 +157,7 @@
 		<Spinner className="size-5" />
 	</div>
 {:else}
-	<div style="--mt:0.125rem; --mb:0.5rem; --g:0.25rem; --d:flex; --fd:column; --fd-md:row; --jc:space-between">
+	<div style="--mt:0.125rem; --mb:0.5rem; --g:0.2rem; --d:flex; --fd:column; --fd-md:row; --jc:space-between">
 		<div style="--d:flex; --as-md:center; --size:1.125rem; --weight:500; --px:0.125rem">
 			<div class="flex-shrink-0">
 				{$i18n.t('Users')}
@@ -168,12 +168,12 @@
 				{#if total > $config?.license_metadata?.seats}
 					<span style="--size:1.125rem; --weight:500; --c:#ef4444"
 						>{total} of {$config?.license_metadata?.seats}
-						<span style="--size:0.875rem; --weight:400">available users</span></span
+						<span style="--size:0.8rem; --weight:400">available users</span></span
 					>
 				{:else}
 					<span style="--size:1.125rem; --weight:500; --c:var(--color-gray-500); --dark-c:var(--color-gray-300)"
 						>{total} of {$config?.license_metadata?.seats}
-						<span style="--size:0.875rem; --weight:400">available users</span></span
+						<span style="--size:0.8rem; --weight:400">available users</span></span
 					>
 				{/if}
 			{:else}
@@ -181,10 +181,10 @@
 			{/if}
 		</div>
 
-		<div style="--d:flex; --g:0.25rem">
+		<div style="--d:flex; --g:0.2rem">
 			<div style="--d:flex; --w:100%; --g:0.5rem">
 				<div style="--d:flex; --fx:1 1 0%">
-					<div style="--as:center; --ml:0.25rem; --mr:0.6rem">
+					<div style="--as:center; --ml:0.2rem; --mr:0.6rem">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 20 20"
@@ -199,7 +199,7 @@
 						</svg>
 					</div>
 					<input
-						style="--w:100%; --size:0.875rem; --pr:1rem; --py:0.25rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
+						style="--w:100%; --size:0.8rem; --pr:1rem; --py:0.2rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 						bind:value={query}
 						placeholder={$i18n.t('Search')}
 					/>
@@ -208,7 +208,7 @@
 				<div>
 					<Tooltip content={$i18n.t('Add User')}>
 						<button
-							style="--p:0.5rem; --radius:0.6rem; --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
+							style="--p:0.5rem; --radius:0.6rem; --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.8rem; --d:flex; --ai:center; --g:0.2rem"
 							on:click={() => {
 								showAddUserModal = !showAddUserModal;
 							}}
@@ -226,7 +226,7 @@
 	class="scrollbar-hidden"
 	>
 		<table
-			style="--w:100%; --size:0.875rem; --ta:left; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); table-layout:auto; --maxw:100%; --radius:0.125rem"
+			style="--w:100%; --size:0.8rem; --ta:left; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); table-layout:auto; --maxw:100%; --radius:0.125rem"
 		>
 			<thead
 				style="--size:0.6rem; --c:var(--color-gray-700); --tt:uppercase; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-400); --translatey:-0.125rem"
@@ -234,10 +234,10 @@
 				<tr class="">
 					<th
 						scope="col"
-						style="--px:0.6rem; --py:0.375rem; --cur:pointer; --us:none"
+						style="--px:0.6rem; --py:0.4rem; --cur:pointer; --us:none"
 						on:click={() => setSortKey('role')}
 					>
-						<div style="--d:flex; --g:0.375rem; --ai:center">
+						<div style="--d:flex; --g:0.4rem; --ai:center">
 							{$i18n.t('Role')}
 
 							{#if orderBy === 'role'}
@@ -257,10 +257,10 @@
 					</th>
 					<th
 						scope="col"
-						style="--px:0.6rem; --py:0.375rem; --cur:pointer; --us:none"
+						style="--px:0.6rem; --py:0.4rem; --cur:pointer; --us:none"
 						on:click={() => setSortKey('name')}
 					>
-						<div style="--d:flex; --g:0.375rem; --ai:center">
+						<div style="--d:flex; --g:0.4rem; --ai:center">
 							{$i18n.t('Name')}
 
 							{#if orderBy === 'name'}
@@ -280,10 +280,10 @@
 					</th>
 					<th
 						scope="col"
-						style="--px:0.6rem; --py:0.375rem; --cur:pointer; --us:none"
+						style="--px:0.6rem; --py:0.4rem; --cur:pointer; --us:none"
 						on:click={() => setSortKey('email')}
 					>
-						<div style="--d:flex; --g:0.375rem; --ai:center">
+						<div style="--d:flex; --g:0.4rem; --ai:center">
 							{$i18n.t('Email')}
 
 							{#if orderBy === 'email'}
@@ -304,10 +304,10 @@
 
 					<th
 						scope="col"
-						style="--px:0.6rem; --py:0.375rem; --cur:pointer; --us:none"
+						style="--px:0.6rem; --py:0.4rem; --cur:pointer; --us:none"
 						on:click={() => setSortKey('last_active_at')}
 					>
-						<div style="--d:flex; --g:0.375rem; --ai:center">
+						<div style="--d:flex; --g:0.4rem; --ai:center">
 							{$i18n.t('Last Active')}
 
 							{#if orderBy === 'last_active_at'}
@@ -327,10 +327,10 @@
 					</th>
 					<th
 						scope="col"
-						style="--px:0.6rem; --py:0.375rem; --cur:pointer; --us:none"
+						style="--px:0.6rem; --py:0.4rem; --cur:pointer; --us:none"
 						on:click={() => setSortKey('created_at')}
 					>
-						<div style="--d:flex; --g:0.375rem; --ai:center">
+						<div style="--d:flex; --g:0.4rem; --ai:center">
 							{$i18n.t('Created at')}
 							{#if orderBy === 'created_at'}
 								<span style="--weight:400"
@@ -350,10 +350,10 @@
 
 					<th
 						scope="col"
-						style="--px:0.6rem; --py:0.375rem; --cur:pointer; --us:none"
+						style="--px:0.6rem; --py:0.4rem; --cur:pointer; --us:none"
 						on:click={() => setSortKey('oauth_sub')}
 					>
-						<div style="--d:flex; --g:0.375rem; --ai:center">
+						<div style="--d:flex; --g:0.4rem; --ai:center">
 							{$i18n.t('OAuth ID')}
 
 							{#if orderBy === 'oauth_sub'}
@@ -378,7 +378,7 @@
 			<tbody>
 				{#each users as user, userIdx}
 					<tr style="--bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-bc:var(--color-gray-850); --size:0.6rem">
-						<td style="--d:table;--px:0.6rem; --py:0.25rem; --minw:7rem; --w:7rem">
+						<td style="--d:table;--px:0.6rem; --py:0.2rem; --minw:7rem; --w:7rem">
 							<button
 								style="--translatey:0.125rem"
 								on:click={() => {
@@ -392,7 +392,7 @@
 								/>
 							</button>
 						</td>
-						<td style="--d:table;--px:0.6rem; --py:0.25rem; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --w:max-content">
+						<td style="--d:table;--px:0.6rem; --py:0.2rem; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --w:max-content">
 							<div style="--d:flex; --fd:row; --w:max-content">
 								<img
 									style="--radius:9999px; --w:1.5rem; --h:1.5rem; --objf:cover; --mr:0.625rem"
@@ -407,17 +407,17 @@
 								<div style="--weight:500; --as:center">{user.name}</div>
 							</div>
 						</td>
-						<td style="--d:table;--px:0.6rem; --py:0.25rem"> {user.email} </td>
+						<td style="--d:table;--px:0.6rem; --py:0.2rem"> {user.email} </td>
 
-						<td style="--d:table;--px:0.6rem; --py:0.25rem">
+						<td style="--d:table;--px:0.6rem; --py:0.2rem">
 							{dayjs(user.last_active_at * 1000).fromNow()}
 						</td>
 
-						<td style="--d:table;--px:0.6rem; --py:0.25rem">
+						<td style="--d:table;--px:0.6rem; --py:0.2rem">
 							{dayjs(user.created_at * 1000).format('LL')}
 						</td>
 
-						<td style="--d:table;--px:0.6rem; --py:0.25rem">
+						<td style="--d:table;--px:0.6rem; --py:0.2rem">
 							{#if user.role === 'temporary' && user.info?.temporary?.expires_at}
 								<span style="{dayjs(user.info.temporary.expires_at * 1000).isBefore(dayjs()) ? '--c:#ef4444' : '--c:var(--color-gray-500)'}">
 									{dayjs(user.info.temporary.expires_at * 1000).fromNow()}
@@ -427,12 +427,12 @@
 							{/if}
 						</td>
 
-						<td style="--d:table;--px:0.6rem; --py:0.25rem; --ta:right">
+						<td style="--d:table;--px:0.6rem; --py:0.2rem; --ta:right">
 							<div style="--d:flex; --jc:flex-end; --w:100%">
 								{#if $config.features.enable_admin_chat_access && user.role !== 'admin'}
 									<Tooltip content={$i18n.t('Chats')}>
 										<button
-											style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
+											style="--as:center; --w:fit-content; --size:0.8rem; --px:0.5rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 											on:click={async () => {
 												showUserChatsModal = !showUserChatsModal;
 												selectedUser = user;
@@ -445,7 +445,7 @@
 
 								<Tooltip content={$i18n.t('Edit User')}>
 									<button
-										style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
+										style="--as:center; --w:fit-content; --size:0.8rem; --px:0.5rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 										on:click={async () => {
 											showEditUserModal = !showEditUserModal;
 											selectedUser = user;
@@ -471,7 +471,7 @@
 								{#if isAdmin && user.role !== 'admin'}
 									<Tooltip content={$i18n.t('Delete User')}>
 										<button
-											style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
+											style="--as:center; --w:fit-content; --size:0.8rem; --px:0.5rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 											on:click={async () => {
 												showDeleteConfirmDialog = true;
 												selectedUser = user;
@@ -502,7 +502,7 @@
 		</table>
 	</div>
 
-	<div style="--c:var(--color-gray-500); --size:0.6rem; --mt:0.375rem; --ta:right">
+	<div style="--c:var(--color-gray-500); --size:0.6rem; --mt:0.4rem; --ta:right">
 		ⓘ {$i18n.t("Click on the user role button to change a user's role.")}
 	</div>
 
@@ -511,7 +511,7 @@
 
 {#if !$config?.license_metadata}
 	{#if total > 50}
-		<div style="--size:0.875rem">
+		<div style="--size:0.8rem">
 			<Markdown
 				content={`
 > [!NOTE]

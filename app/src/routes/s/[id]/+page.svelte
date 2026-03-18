@@ -157,7 +157,7 @@
 		<div style="--d:flex; --fd:column; --fx:1 1 auto; --jc:center; --pos:relative">
 			<div style="--d:flex; --fd:column; --w:100%; --fx:1 1 auto; --of:auto; --h:0" id="messages-container">
 				<div
-					style="--pt:1.25rem; --px:0.5rem; --w:100%; --mx:auto"
+					style="--pt:1.2rem; --px:0.5rem; --w:100%; --mx:auto"
 	class="{($settings?.widescreenMode ?? null)
 						? 'max-w-full'
 						: 'max-w-5xl'}"
@@ -167,7 +167,7 @@
 							{title}
 						</div>
 
-						<div style="--d:flex; --size:0.875rem; --jc:space-between; --ai:center; --mt:0.25rem">
+						<div style="--d:flex; --size:0.8rem; --jc:space-between; --ai:center; --mt:0.2rem">
 							<div style="--c:var(--color-gray-400)">
 								{dayjs(chat.chat.timestamp).format('LLL')}
 							</div>
@@ -199,9 +199,9 @@
 			<div
 				style="--pos:absolute; --bottom:0; --right:0; --left:0; --d:flex; --jc:center; --w:100%; --bgi:linear-gradient(180deg, var(--tw-gradient-stops)); --tw-gradient-from:transparent; --tw-gradient-to:#fff; --dark-tw-gradient-to:var(--color-gray-900)"
 			>
-				<div style="--pb:1.25rem">
+				<div style="--pb:1.2rem">
 					<button
-						style="--px:1rem; --py:0.5rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+						style="--px:1rem; --py:0.5rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 						on:click={cloneSharedChat}
 					>
 						{$i18n.t('Clone Chat')}

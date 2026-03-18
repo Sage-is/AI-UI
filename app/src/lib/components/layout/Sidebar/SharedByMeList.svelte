@@ -12,7 +12,7 @@
 	<div style="--d:flex; --fd:column">
 		{#each items as item (item.chat_id)}
 			<button
-				style="--d:flex; --ai:center; --g:0.5rem; --w:100%; --px:0.625rem; --py:0.375rem; --radius:0.375rem; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:background-color 150ms ease; --ta:left"
+				style="--d:flex; --ai:center; --g:0.5rem; --w:100%; --px:0.625rem; --py:0.4rem; --radius:0.4rem; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:background-color 150ms ease; --ta:left"
 				on:click={() => {
 					goto(`/c/${item.chat_id}`);
 					if ($mobile) {
@@ -22,17 +22,17 @@
 			>
 				<div style="--d:flex; --fd:column; --g:0.0625rem; --fx:1 1 0%; --miw:0">
 					<div style="--size:0.8125rem; --line-clamp:1; --weight:400">{item.chat_title}</div>
-					<div style="--d:flex; --ai:center; --g:0.375rem; --size:0.6875rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
+					<div style="--d:flex; --ai:center; --g:0.4rem; --size:0.6875rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 						{#if item.share_type === 'link'}
 							<span
-								style="--px:0.25rem; --py:0; --radius:0.25rem; --size:0.5625rem; --weight:500; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-700); --c:var(--color-gray-600); --dark-c:var(--color-gray-300)"
+								style="--px:0.2rem; --py:0; --radius:0.2rem; --size:0.5625rem; --weight:500; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-700); --c:var(--color-gray-600); --dark-c:var(--color-gray-300)"
 							>
 								{$i18n.t('link')}
 							</span>
 						{:else if item.share_type === 'both'}
 							<span>{item.share_count} {$i18n.t('recipients')}</span>
 							<span
-								style="--px:0.25rem; --py:0; --radius:0.25rem; --size:0.5625rem; --weight:500; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-700); --c:var(--color-gray-600); --dark-c:var(--color-gray-300)"
+								style="--px:0.2rem; --py:0; --radius:0.2rem; --size:0.5625rem; --weight:500; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-700); --c:var(--color-gray-600); --dark-c:var(--color-gray-300)"
 							>
 								+ {$i18n.t('link')}
 							</span>

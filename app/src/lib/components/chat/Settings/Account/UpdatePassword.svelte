@@ -36,13 +36,13 @@
 </script>
 
 <form
-	style="--d:flex; --fd:column; --size:0.875rem"
+	style="--d:flex; --fd:column; --size:0.8rem"
 	on:submit|preventDefault={() => {
 		updatePasswordHandler();
 	}}
 >
 	<details>
-		<summary style="--d:flex; --ai:center; --g:0.5rem; --cur:pointer; --us:none; --py:0.25rem;">
+		<summary style="--d:flex; --ai:center; --g:0.5rem; --cur:pointer; --us:none; --py:0.2rem;">
 			<span style="--weight:500">{$i18n.t('Password')}</span>
 			<details style="--d:inline; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --w: 80%; --b:0;
 					--m: auto;"
@@ -51,8 +51,8 @@
 				<summary style="--cur:pointer; --us:none;">
 					{$i18n.t('Why change my password?')} &#9662;
 				</summary>
-				<div style="--mt:0.375rem; --lh:1.5; --size:0.8rem">
-					<p style="--mb:0.375rem">
+				<div style="--mt:0.4rem; --lh:1.5; --size:0.8rem">
+					<p style="--mb:0.4rem">
 						{$i18n.t('Changing your password regularly helps keep your account secure — especially if you think someone else may have seen it, or if you used the same password on another site that was compromised.')}
 					</p>
 					<p>
@@ -63,9 +63,9 @@
 			<span style="--ml:auto; --size:0.6rem; --weight:500; --c:var(--color-gray-400)">&#9662;</span>
 		</summary>
 
-		<div style="--py:0.625rem; --g:0.375rem">
+		<div style="--py:0.625rem; --g:0.4rem">
 			<div style="--d:flex; --fd:column; --w:100%">
-				<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Current Password')}</div>
+				<div style="--mb:0.2rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Current Password')}</div>
 
 				<div style="--fx:1 1 0%">
 					<input
@@ -81,11 +81,11 @@
 			</div>
 
 			<div style="--d:flex; --fd:column; --w:100%">
-				<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('New Password')}</div>
+				<div style="--mb:0.2rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('New Password')}</div>
 
 				<div style="--fx:1 1 0%">
 					<input
-						style="--w:100%; --bgc:transparent; --size:0.875rem; --dark-c:var(--color-gray-300); --oe:none"
+						style="--w:100%; --bgc:transparent; --size:0.8rem; --dark-c:var(--color-gray-300); --oe:none"
 						class="placeholder:opacity-30"
 						type="password"
 						bind:value={newPassword}
@@ -97,11 +97,11 @@
 			</div>
 
 			<div style="--d:flex; --fd:column; --w:100%">
-				<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Confirm Password')}</div>
+				<div style="--mb:0.2rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Confirm Password')}</div>
 
 				<div style="--fx:1 1 0%">
 					<input
-						style="--w:100%; --bgc:transparent; --size:0.875rem; --dark-c:var(--color-gray-300); --oe:none"
+						style="--w:100%; --bgc:transparent; --size:0.8rem; --dark-c:var(--color-gray-300); --oe:none"
 						class="placeholder:opacity-30"
 						type="password"
 						bind:value={newPasswordConfirm}
@@ -115,7 +115,7 @@
 
 		<div style="--mt:0.6rem; --d:flex; --jc:flex-end">
 			<button
-				style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:background-color 150ms; --radius:9999px"
+				style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:background-color 150ms; --radius:9999px"
 			>
 				{$i18n.t('Update password')}
 			</button>

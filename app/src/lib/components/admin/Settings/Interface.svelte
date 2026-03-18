@@ -103,21 +103,21 @@
 
 {#if models !== null && taskConfig}
 	<form
-		style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.875rem"
+		style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.8rem"
 		on:submit|preventDefault={() => {
 			updateInterfaceHandler();
 			dispatch('save');
 		}}
 	>
-		<div style="--ofy:scroll; --h:100%; --pr:0.375rem"
+		<div style="--ofy:scroll; --h:100%; --pr:0.4rem"
 	class="scrollbar-hidden">
-			<div style="--mb:0.875rem">
+			<div style="--mb:0.8rem">
 				<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('Tasks')}</div>
 
 				<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 				<div style="--mb:0.5rem; --weight:500; --d:flex; --ai:center">
-					<div style="--size:0.6rem; --mr:0.25rem">{$i18n.t('Task Model')}</div>
+					<div style="--size:0.6rem; --mr:0.2rem">{$i18n.t('Task Model')}</div>
 					<Tooltip
 						content={$i18n.t(
 							'A task model is used when performing tasks such as generating titles for chats and web search queries'
@@ -129,7 +129,7 @@
 							viewBox="0 0 24 24"
 							stroke-width="1.5"
 							stroke="currentColor"
-							style="--w:0.875rem; --h:0.875rem"
+							style="--w:0.8rem; --h:0.8rem"
 						>
 							<path
 								stroke-linecap="round"
@@ -142,9 +142,9 @@
 
 				<div style="--mb:0.625rem; --d:flex; --w:100%; --g:0.5rem">
 					<div style="--fx:1 1 0%">
-						<div style="--size:0.6rem; --mb:0.25rem">{$i18n.t('Local Task Model')}</div>
+						<div style="--size:0.6rem; --mb:0.2rem">{$i18n.t('Local Task Model')}</div>
 						<select
-							style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+							style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 							bind:value={taskConfig.TASK_MODEL}
 							placeholder={$i18n.t('Select a model')}
 							on:change={() => {
@@ -177,9 +177,9 @@
 					</div>
 
 					<div style="--fx:1 1 0%">
-						<div style="--size:0.6rem; --mb:0.25rem">{$i18n.t('External Task Model')}</div>
+						<div style="--size:0.6rem; --mb:0.2rem">{$i18n.t('External Task Model')}</div>
 						<select
-							style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+							style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 							bind:value={taskConfig.TASK_MODEL_EXTERNAL}
 							placeholder={$i18n.t('Select a model')}
 							on:change={() => {
@@ -222,7 +222,7 @@
 
 				{#if taskConfig.ENABLE_TITLE_GENERATION}
 					<div style="--mb:0.625rem">
-						<div style="--mb:0.25rem; --size:0.6rem; --weight:500">{$i18n.t('Title Generation Prompt')}</div>
+						<div style="--mb:0.2rem; --size:0.6rem; --weight:500">{$i18n.t('Title Generation Prompt')}</div>
 
 						<Tooltip
 							content={$i18n.t('Leave empty to use the default prompt, or enter a custom prompt')}
@@ -248,7 +248,7 @@
 
 				{#if taskConfig.ENABLE_FOLLOW_UP_GENERATION}
 					<div style="--mb:0.625rem">
-						<div style="--mb:0.25rem; --size:0.6rem; --weight:500">{$i18n.t('Follow Up Generation Prompt')}</div>
+						<div style="--mb:0.2rem; --size:0.6rem; --weight:500">{$i18n.t('Follow Up Generation Prompt')}</div>
 
 						<Tooltip
 							content={$i18n.t('Leave empty to use the default prompt, or enter a custom prompt')}
@@ -274,7 +274,7 @@
 
 				{#if taskConfig.ENABLE_TAGS_GENERATION}
 					<div style="--mb:0.625rem">
-						<div style="--mb:0.25rem; --size:0.6rem; --weight:500">{$i18n.t('Tags Generation Prompt')}</div>
+						<div style="--mb:0.2rem; --size:0.6rem; --weight:500">{$i18n.t('Tags Generation Prompt')}</div>
 
 						<Tooltip
 							content={$i18n.t('Leave empty to use the default prompt, or enter a custom prompt')}
@@ -299,7 +299,7 @@
 				</div>
 
 				<div style="--mb:0.625rem">
-					<div style="--mb:0.25rem; --size:0.6rem; --weight:500">{$i18n.t('Query Generation Prompt')}</div>
+					<div style="--mb:0.2rem; --size:0.6rem; --weight:500">{$i18n.t('Query Generation Prompt')}</div>
 
 					<Tooltip
 						content={$i18n.t('Leave empty to use the default prompt, or enter a custom prompt')}
@@ -326,7 +326,7 @@
 
 				{#if taskConfig.ENABLE_AUTOCOMPLETE_GENERATION}
 					<div style="--mb:0.625rem">
-						<div style="--mb:0.25rem; --size:0.6rem; --weight:500">
+						<div style="--mb:0.2rem; --size:0.6rem; --weight:500">
 							{$i18n.t('Autocomplete Generation Input Max Length')}
 						</div>
 
@@ -344,7 +344,7 @@
 				{/if}
 
 				<div style="--mb:0.625rem">
-					<div style="--mb:0.25rem; --size:0.6rem; --weight:500">{$i18n.t('Image Prompt Generation Prompt')}</div>
+					<div style="--mb:0.2rem; --size:0.6rem; --weight:500">{$i18n.t('Image Prompt Generation Prompt')}</div>
 
 					<Tooltip
 						content={$i18n.t('Leave empty to use the default prompt, or enter a custom prompt')}
@@ -360,7 +360,7 @@
 				</div>
 
 				<div style="--mb:0.625rem">
-					<div style="--mb:0.25rem; --size:0.6rem; --weight:500">{$i18n.t('Tools Function Calling Prompt')}</div>
+					<div style="--mb:0.2rem; --size:0.6rem; --weight:500">{$i18n.t('Tools Function Calling Prompt')}</div>
 
 					<Tooltip
 						content={$i18n.t('Leave empty to use the default prompt, or enter a custom prompt')}
@@ -376,7 +376,7 @@
 				</div>
 			</div>
 
-			<div style="--mb:0.875rem">
+			<div style="--mb:0.8rem">
 				<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('UI')}</div>
 
 				<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
@@ -388,7 +388,7 @@
 						</div>
 
 						<button
-							style="--p:0.25rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+							style="--p:0.2rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							type="button"
 							on:click={() => {
 								if (banners.length === 0 || banners.at(-1).content !== '') {
@@ -430,7 +430,7 @@
 							</div>
 
 							<button
-								style="--p:0.25rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+								style="--p:0.2rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								type="button"
 								on:click={() => {
 									if (promptSuggestions.length === 0 || promptSuggestions.at(-1).content !== '') {
@@ -450,28 +450,28 @@
 								</svg>
 							</button>
 						</div>
-						<div style="--d:grid; --gtc-lg:repeat(2, minmax(0, 1fr)); --fd:column; --g:0.375rem">
+						<div style="--d:grid; --gtc-lg:repeat(2, minmax(0, 1fr)); --fd:column; --g:0.4rem">
 							{#each promptSuggestions as prompt, promptIdx}
 								<div
-									style="--d:flex;  --bc:var(--color-gray-100); --dark-bs:none; --dark-bgc:var(--color-gray-850); --radius:0.6rem; --py:0.375rem"
+									style="--d:flex;  --bc:var(--color-gray-100); --dark-bs:none; --dark-bgc:var(--color-gray-850); --radius:0.6rem; --py:0.4rem"
 								>
-									<div style="--d:flex; --fd:column; --fx:1 1 0%; --pl:0.25rem">
+									<div style="--d:flex; --fd:column; --fx:1 1 0%; --pl:0.2rem">
 										<div style="--d:flex;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --w:100%">
 											<input
-												style="--px:0.6rem; --py:0.375rem; --size:0.6rem; --w:100%; --bgc:transparent; --oe:none; --br:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
+												style="--px:0.6rem; --py:0.4rem; --size:0.6rem; --w:100%; --bgc:transparent; --oe:none; --br:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 												placeholder={$i18n.t('Title (e.g. Tell me a fun fact)')}
 												bind:value={prompt.title[0]}
 											/>
 
 											<input
-												style="--px:0.6rem; --py:0.375rem; --size:0.6rem; --w:100%; --bgc:transparent; --oe:none; --br:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
+												style="--px:0.6rem; --py:0.4rem; --size:0.6rem; --w:100%; --bgc:transparent; --oe:none; --br:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 												placeholder={$i18n.t('Subtitle (e.g. about the Roman Empire)')}
 												bind:value={prompt.title[1]}
 											/>
 										</div>
 
 										<textarea
-											style="--px:0.6rem; --py:0.375rem; --size:0.6rem; --w:100%; --bgc:transparent; --oe:none; --br:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); resize:none"
+											style="--px:0.6rem; --py:0.4rem; --size:0.6rem; --w:100%; --bgc:transparent; --oe:none; --br:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); resize:none"
 											placeholder={$i18n.t(
 												'Prompt (e.g. Tell me a fun fact about the Roman Empire)'
 											)}
@@ -543,7 +543,7 @@
 							/>
 
 							<button
-								style="--d:flex; --size:0.6rem; --ai:center; --g:0.25rem; --px:0.6rem; --py:0.375rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+								style="--d:flex; --size:0.6rem; --ai:center; --g:0.2rem; --px:0.6rem; --py:0.4rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								type="button"
 								on:click={() => {
 									const input = document.getElementById('prompt-suggestions-import-input');
@@ -561,7 +561,7 @@
 										xmlns="http://www.w3.org/2000/svg"
 										viewBox="0 0 16 16"
 										fill="currentColor"
-										style="--w:0.875rem; --h:0.875rem"
+										style="--w:0.8rem; --h:0.8rem"
 									>
 										<path
 											fill-rule="evenodd"
@@ -574,7 +574,7 @@
 
 							{#if promptSuggestions.length}
 								<button
-									style="--d:flex; --size:0.6rem; --ai:center; --g:0.25rem; --px:0.6rem; --py:0.375rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+									style="--d:flex; --size:0.6rem; --ai:center; --g:0.2rem; --px:0.6rem; --py:0.4rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 									type="button"
 									on:click={async () => {
 										let blob = new Blob([JSON.stringify(promptSuggestions)], {
@@ -592,7 +592,7 @@
 											xmlns="http://www.w3.org/2000/svg"
 											viewBox="0 0 16 16"
 											fill="currentColor"
-											style="--w:0.875rem; --h:0.875rem"
+											style="--w:0.8rem; --h:0.8rem"
 										>
 											<path
 												fill-rule="evenodd"
@@ -609,9 +609,9 @@
 			</div>
 		</div>
 
-		<div style="--d:flex; --jc:flex-end; --size:0.875rem; --weight:500">
+		<div style="--d:flex; --jc:flex-end; --size:0.8rem; --weight:500">
 			<button
-				style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+				style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 				type="submit"
 			>
 				{$i18n.t('Save')}

@@ -554,7 +554,7 @@
 							style="--pos:absolute; --top:-3rem; --left:0; --right:0; --d:flex; --jc:center; --z:30; --pe:none"
 						>
 							<button
-								style="--bgc:#fff;  --bc:var(--color-gray-100); --dark-bs:none; --dark-bgc:rgb(255 255 255 / 0.2); --p:0.375rem; --radius:9999px; --pe:auto"
+								style="--bgc:#fff;  --bc:var(--color-gray-100); --dark-bs:none; --dark-bgc:rgb(255 255 255 / 0.2); --p:0.4rem; --radius:9999px; --pe:auto"
 								on:click={() => {
 									scrollEnd = true;
 									scrollToBottom();
@@ -564,7 +564,7 @@
 									xmlns="http://www.w3.org/2000/svg"
 									viewBox="0 0 20 20"
 									fill="currentColor"
-									style="--w:1.25rem; --h:1.25rem"
+									style="--w:1.2rem; --h:1.2rem"
 								>
 									<path
 										fill-rule="evenodd"
@@ -578,9 +578,9 @@
 				</div>
 
 				<div style="--pos:relative">
-					<div style="--mt:-1.25rem">
+					<div style="--mt:-1.2rem">
 						{#if typingUsers.length > 0}
-							<div style="--size:0.6rem; --px:1rem; --mb:0.25rem">
+							<div style="--size:0.6rem; --px:1rem; --mb:0.2rem">
 								<span style="--weight:400; --c:#000; --dark-c:#fff">
 									{typingUsers.map((user) => user.name).join(', ')}
 								</span>
@@ -628,17 +628,17 @@
 				/>
 			{:else}
 				<form
-					style="--w:100%; --d:flex; --g:0.375rem"
+					style="--w:100%; --d:flex; --g:0.4rem"
 					on:submit|preventDefault={() => {
 						submitHandler();
 					}}
 				>
 					<div
-						style="--fx:1 1 0%; --d:flex; --fd:column; --pos:relative; --w:100%; --radius:1.5rem; --px:0.25rem; --bgc:rgb(103 103 103 / 0.05); --dark-bgc:rgb(180 180 180 / 0.05); --dark-c:var(--color-gray-100)"
+						style="--fx:1 1 0%; --d:flex; --fd:column; --pos:relative; --w:100%; --radius:1.5rem; --px:0.2rem; --bgc:rgb(103 103 103 / 0.05); --dark-bgc:rgb(180 180 180 / 0.05); --dark-c:var(--color-gray-100)"
 						dir={$settings?.chatDirection ?? 'auto'}
 					>
 						{#if files.length > 0}
-							<div style="--mx:0.5rem; --mt:0.625rem; --mb:-0.25rem; --d:flex; --fw:wrap; --g:0.5rem">
+							<div style="--mx:0.5rem; --mt:0.625rem; --mb:-0.2rem; --d:flex; --fw:wrap; --g:0.5rem">
 								{#each files as file, fileIdx}
 									{#if file.type === 'image'}
 										<div style="--pos:relative"
@@ -650,7 +650,7 @@
 													imageClassName=" h-16 w-16 rounded-xl object-cover"
 												/>
 											</div>
-											<div style="--pos:absolute; --top:-0.25rem; --right:-0.25rem">
+											<div style="--pos:absolute; --top:-0.2rem; --right:-0.2rem">
 												<button
 													style="--bgc:#fff; --c:#000;  --bc:#fff; --radius:9999px; --v:hidden; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="group-hover:visible"
@@ -697,7 +697,7 @@
 
 						<div style="--px:0.625rem">
 							<div
-								style="--ta:left; --bgc:transparent; --dark-c:var(--color-gray-100); --oe:none; --w:100%; --pt:0.6rem; --px:0.25rem; resize:none; --h:fit-content; --maxh:20rem; --of:auto"
+								style="--ta:left; --bgc:transparent; --dark-c:var(--color-gray-100); --oe:none; --w:100%; --pt:0.6rem; --px:0.2rem; resize:none; --h:fit-content; --maxh:20rem; --of:auto"
 	class="scrollbar-hidden font-primary"
 							>
 								<RichTextInput
@@ -803,8 +803,8 @@
 							</div>
 						</div>
 
-						<div style="--d:flex; --jc:space-between; --mb:0.625rem; --mt:0.375rem; --mx:0.125rem">
-							<div style="--ml:0.25rem; --as:flex-end; --d:flex; --g:0.25rem; --fx:1 1 0%">
+						<div style="--d:flex; --jc:space-between; --mb:0.625rem; --mt:0.4rem; --mx:0.125rem">
+							<div style="--ml:0.2rem; --as:flex-end; --d:flex; --g:0.2rem; --fx:1 1 0%">
 								<slot name="menu">
 									{#if acceptFiles}
 										<InputMenu
@@ -814,7 +814,7 @@
 											}}
 										>
 											<button
-												style="--bgc:transparent; --hvr-bgc:rgb(255 255 255 / 0.8); --c:var(--color-gray-800); --dark-c:#fff; --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.375rem; --oe:none"
+												style="--bgc:transparent; --hvr-bgc:rgb(255 255 255 / 0.8); --c:var(--color-gray-800); --dark-c:#fff; --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.4rem; --oe:none"
 	class="focus:outline-hidden"
 												type="button"
 												aria-label="More"
@@ -823,7 +823,7 @@
 													xmlns="http://www.w3.org/2000/svg"
 													viewBox="0 0 20 20"
 													fill="currentColor"
-													style="--w:1.25rem; --h:1.25rem"
+													style="--w:1.2rem; --h:1.2rem"
 												>
 													<path
 														d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"
@@ -835,12 +835,12 @@
 								</slot>
 							</div>
 
-							<div style="--as:flex-end; --d:flex; --g:0.25rem; --mr:0.25rem">
+							<div style="--as:flex-end; --d:flex; --g:0.2rem; --mr:0.2rem">
 								{#if content === ''}
 									<Tooltip content={$i18n.t('Record voice')}>
 										<button
 											id="voice-input-button"
-											style="--c:var(--color-gray-600); --dark-c:var(--color-gray-300); --hvr-c:var(--color-gray-700); --hvr-dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.375rem; --mr:0.125rem; --as:center"
+											style="--c:var(--color-gray-600); --dark-c:var(--color-gray-300); --hvr-c:var(--color-gray-700); --hvr-dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.4rem; --mr:0.125rem; --as:center"
 											type="button"
 											on:click={async () => {
 												try {
@@ -871,7 +871,7 @@
 												xmlns="http://www.w3.org/2000/svg"
 												viewBox="0 0 20 20"
 												fill="currentColor"
-												style="--w:1.25rem; --h:1.25rem; --translatey:0.5px"
+												style="--w:1.2rem; --h:1.2rem; --translatey:0.5px"
 											>
 												<path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z" />
 												<path
@@ -887,7 +887,7 @@
 										<div style="--d:flex; --ai:center">
 											<Tooltip content={$i18n.t('Stop')}>
 												<button
-													style="--bgc:#fff; --hvr-bgc:var(--color-gray-100); --c:var(--color-gray-800); --dark-bgc:var(--color-gray-700); --dark-c:#fff; --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.375rem"
+													style="--bgc:#fff; --hvr-bgc:var(--color-gray-100); --c:var(--color-gray-800); --dark-bgc:var(--color-gray-700); --dark-c:#fff; --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.4rem"
 													on:click={() => {
 														onStop();
 													}}
@@ -896,7 +896,7 @@
 														xmlns="http://www.w3.org/2000/svg"
 														viewBox="0 0 24 24"
 														fill="currentColor"
-														style="--w:1.25rem; --h:1.25rem"
+														style="--w:1.2rem; --h:1.2rem"
 													>
 														<path
 															fill-rule="evenodd"
@@ -912,7 +912,7 @@
 											<Tooltip content={$i18n.t('Send message')}>
 												<button
 													id="send-message-button"
-													style="--tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.375rem; --as:center"
+													style="--tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.4rem; --as:center"
 	class="{content !== '' || files.length !== 0
 														? 'bg-black text-white hover:bg-gray-900 dark:bg-white dark:text-black dark:hover:bg-gray-100 '
 														: 'text-white bg-gray-200 dark:text-gray-900 dark:bg-gray-700 disabled'}"
@@ -923,7 +923,7 @@
 														xmlns="http://www.w3.org/2000/svg"
 														viewBox="0 0 16 16"
 														fill="currentColor"
-														style="--w:1.25rem; --h:1.25rem"
+														style="--w:1.2rem; --h:1.2rem"
 													>
 														<path
 															fill-rule="evenodd"

@@ -25,20 +25,20 @@
 
 <form
 	id="tab-personalization"
-	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.875rem"
+	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.8rem"
 	on:submit|preventDefault={() => {
 		dispatch('save');
 	}}
 >
-	<div style="--py:0.25rem; --ofy:scroll; --maxh:28rem; --maxh-lg:100%">
+	<div style="--py:0.2rem; --ofy:scroll; --maxh:28rem; --maxh-lg:100%">
 		<div>
-			<div style="--d:flex; --ai:center; --jc:space-between; --mb:0.25rem">
+			<div style="--d:flex; --ai:center; --jc:space-between; --mb:0.2rem">
 				<Tooltip
 					content={$i18n.t(
 						'This is an experimental feature, it may not function as expected and is subject to change at any time.'
 					)}
 				>
-					<div style="--size:0.875rem; --weight:500">
+					<div style="--size:0.8rem; --weight:500">
 						{$i18n.t('Memory')}
 
 						<span style="--size:0.6rem; --c:var(--color-gray-500)">({$i18n.t('Experimental')})</span>
@@ -73,10 +73,10 @@
 			</div> -->
 		</div>
 
-		<div style="--mt:0.6rem; --mb:0.25rem; --ml:0.25rem">
+		<div style="--mt:0.6rem; --mb:0.2rem; --ml:0.2rem">
 			<button
 				type="button"
-				style="--px:0.875rem; --py:0.375rem; --weight:500; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:var(--color-gray-300); outline-color:var(--color-gray-800); --radius:1.5rem"
+				style="--px:0.8rem; --py:0.4rem; --weight:500; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:var(--color-gray-300); outline-color:var(--color-gray-800); --radius:1.5rem"
 				on:click={() => {
 					showManageModal = true;
 				}}
@@ -86,9 +86,9 @@
 		</div>
 	</div>
 
-	<div style="--d:flex; --jc:flex-end; --size:0.875rem; --weight:500">
+	<div style="--d:flex; --jc:flex-end; --size:0.8rem; --weight:500">
 		<button
-			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+			style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			type="submit"
 		>
 			{$i18n.t('Save')}

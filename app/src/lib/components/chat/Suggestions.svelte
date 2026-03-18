@@ -66,7 +66,7 @@
 </script>
 
 <div
-	style="--mb:0.25rem; --d:flex; --g:0.25rem; --size:0.6rem; --weight:500; --ai:center; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
+	style="--mb:0.2rem; --d:flex; --g:0.2rem; --size:0.6rem; --weight:500; --ai:center; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
 >
 	{#if filteredPrompts.length > 0}
 		<Bolt />

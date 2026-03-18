@@ -23,7 +23,7 @@
 
 <Modal bind:show size="md">
 	<div>
-		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.25rem; --pt:1rem; --pb:0.125rem">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.2rem; --pt:1rem; --pb:0.125rem">
 			<div style="--size:1.125rem; --weight:500; --as:center">{$i18n.t('Available Tools')}</div>
 			<button
 				style="--as:center"
@@ -37,17 +37,17 @@
 
 		{#if selectedTools.length > 0}
 			{#if $toolServers.length > 0}
-				<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.25rem; --pb:0.25rem">
+				<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.2rem; --pb:0.2rem">
 					<div style="--size:1rem; --weight:500; --as:center">{$i18n.t('Tools')}</div>
 				</div>
 			{/if}
 
-			<div style="--px:1.25rem; --pb:0.6rem; --w:100%; --d:flex; --fd:column; --jc:center">
-				<div style="--size:0.875rem; --dark-c:var(--color-gray-300); --mb:0.25rem">
+			<div style="--px:1.2rem; --pb:0.6rem; --w:100%; --d:flex; --fd:column; --jc:center">
+				<div style="--size:0.8rem; --dark-c:var(--color-gray-300); --mb:0.2rem">
 					{#each selectedTools as tool}
 						<Collapsible buttonClassName="w-full mb-0.5">
 							<div>
-								<div style="--size:0.875rem; --weight:500; --dark-c:var(--color-gray-100); --c:var(--color-gray-800)">
+								<div style="--size:0.8rem; --weight:500; --dark-c:var(--color-gray-100); --c:var(--color-gray-800)">
 									{tool?.name}
 								</div>
 
@@ -68,11 +68,11 @@
 		{/if}
 
 		{#if $toolServers.length > 0}
-			<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.25rem; --pb:0.125rem">
+			<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.2rem; --pb:0.125rem">
 				<div style="--size:1rem; --weight:500; --as:center">{$i18n.t('Tool Servers')}</div>
 			</div>
 
-			<div style="--px:1.25rem; --pb:1.25rem; --w:100%; --d:flex; --fd:column; --jc:center">
+			<div style="--px:1.2rem; --pb:1.2rem; --w:100%; --d:flex; --fd:column; --jc:center">
 				<div style="--size:0.6rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-300); --mb:0.5rem">
 					{$i18n.t('Sage.is AI can use tools provided by any OpenAPI server.')} <br /><a
 						style="--td:underline"
@@ -80,11 +80,11 @@
 						target="_blank">{$i18n.t('Learn more about OpenAPI tool servers.')}</a
 					>
 				</div>
-				<div style="--size:0.875rem; --dark-c:var(--color-gray-300); --mb:0.25rem">
+				<div style="--size:0.8rem; --dark-c:var(--color-gray-300); --mb:0.2rem">
 					{#each $toolServers as toolServer}
 						<Collapsible buttonClassName="w-full" chevron>
 							<div>
-								<div style="--size:0.875rem; --weight:500; --dark-c:var(--color-gray-100); --c:var(--color-gray-800)">
+								<div style="--size:0.8rem; --weight:500; --dark-c:var(--color-gray-100); --c:var(--color-gray-800)">
 									{toolServer?.openapi?.info?.title} - v{toolServer?.openapi?.info?.version}
 								</div>
 
@@ -99,7 +99,7 @@
 
 							<div slot="content">
 								{#each toolServer?.specs ?? [] as tool_spec}
-									<div style="--my:0.25rem">
+									<div style="--my:0.2rem">
 										<div style="--weight:500; --c:var(--color-gray-800); --dark-c:var(--color-gray-100)">
 											{tool_spec?.name}
 										</div>

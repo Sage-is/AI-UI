@@ -117,18 +117,18 @@
 		<!-- Header: title, copy button, close button -->
 		<div
 			id="citation-modal-header"
-			style="--d:flex; --jc:space-between; --ai:center; --dark-c:var(--color-gray-300); --px:1.25rem; --pt:1rem; --pb:0.5rem"
+			style="--d:flex; --jc:space-between; --ai:center; --dark-c:var(--color-gray-300); --px:1.2rem; --pt:1rem; --pb:0.5rem"
 		>
 			<div style="--size:1.125rem; --weight:500; --tt:capitalize">
 				{$i18n.t('Citation')}
 			</div>
 
-			<div style="--d:flex; --ai:center; --g:0.25rem">
+			<div style="--d:flex; --ai:center; --g:0.2rem">
 				<!-- Copy citation content + chat link -->
 				<Tooltip content={$i18n.t('Copy citation')} placement="bottom">
 					<button
 						id="citation-copy-btn"
-						style="--p:0.375rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --tn:all 150ms ease"
+						style="--p:0.4rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --tn:all 150ms ease"
 						on:click={handleCopy}
 					>
 						{#if copied}
@@ -166,7 +166,7 @@
 				<!-- Close modal -->
 				<button
 					id="citation-close-btn"
-					style="--p:0.375rem"
+					style="--p:0.4rem"
 					on:click={() => {
 						show = false;
 					}}
@@ -179,7 +179,7 @@
 		<!-- Citation documents list -->
 		<div
 			id="citation-modal-body"
-			style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1.5rem; --pb:1.25rem; --g-md:1rem"
+			style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1.5rem; --pb:1.2rem; --g-md:1rem"
 		>
 			<div
 				style="--d:flex; --fd:column; --w:100%; --dark-c:var(--color-gray-200); --ofy:scroll; --maxh:22rem"
@@ -187,7 +187,7 @@
 			>
 				{#each mergedDocuments as document, documentIdx}
 					<div id="citation-source-{documentIdx}" style="--d:flex; --fd:column; --w:100%">
-						<div style="--size:0.875rem; --weight:500; --dark-c:var(--color-gray-300)">
+						<div style="--size:0.8rem; --weight:500; --dark-c:var(--color-gray-300)">
 							{$i18n.t('Source')}
 						</div>
 
@@ -199,7 +199,7 @@
 								tippyOptions={{ duration: [500, 0] }}
 							>
 								<div
-									style="--size:0.875rem; --dark-c:var(--color-gray-400); --d:flex; --ai:center; --g:0.5rem; --w:fit-content"
+									style="--size:0.8rem; --dark-c:var(--color-gray-400); --d:flex; --ai:center; --g:0.5rem; --w:fit-content"
 								>
 									<a
 										style="--hvr-c:var(--color-gray-500); --hvr-dark-c:var(--color-gray-100); --td:underline; --fg:1"
@@ -225,7 +225,7 @@
 							{#if document.metadata?.parameters}
 								<details
 									id="citation-params-{documentIdx}"
-									style="--size:0.875rem; --mt:0.5rem"
+									style="--size:0.8rem; --mt:0.5rem"
 								>
 									<summary
 										class="cursor-pointer select-none"
@@ -234,7 +234,7 @@
 										{$i18n.t('Parameters')}
 									</summary>
 									<div
-										style="--dark-c:var(--color-gray-400); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800); --p:0.5rem; --radius:0.375rem; --mt:0.25rem; --of:auto; --maxh:10rem"
+										style="--dark-c:var(--color-gray-400); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800); --p:0.5rem; --radius:0.4rem; --mt:0.2rem; --of:auto; --maxh:10rem"
 									>
 										{#if typeof document.metadata.parameters === 'object' && !Array.isArray(document.metadata.parameters)}
 											{#each Object.entries(document.metadata.parameters) as [key, value]}
@@ -251,7 +251,7 @@
 							{/if}
 							{#if showRelevance}
 								<div
-									style="--size:0.875rem; --weight:500; --dark-c:var(--color-gray-300); --mt:0.5rem"
+									style="--size:0.8rem; --weight:500; --dark-c:var(--color-gray-300); --mt:0.5rem"
 								>
 									{$i18n.t('Relevance')}
 								</div>
@@ -263,7 +263,7 @@
 										tippyOptions={{ duration: [500, 0] }}
 									>
 										<div
-											style="--size:0.875rem; --my:0.25rem; --dark-c:var(--color-gray-400); --d:flex; --ai:center; --g:0.5rem; --w:fit-content"
+											style="--size:0.8rem; --my:0.2rem; --dark-c:var(--color-gray-400); --d:flex; --ai:center; --g:0.5rem; --w:fit-content"
 										>
 											{#if showPercentage}
 												{@const percentage = calculatePercentage(document.distance)}
@@ -293,20 +293,20 @@
 										</div>
 									</Tooltip>
 								{:else}
-									<div style="--size:0.875rem; --dark-c:var(--color-gray-400)">
+									<div style="--size:0.8rem; --dark-c:var(--color-gray-400)">
 										{$i18n.t('No distance available')}
 									</div>
 								{/if}
 							{/if}
 						{:else}
-							<div style="--size:0.875rem; --dark-c:var(--color-gray-400)">
+							<div style="--size:0.8rem; --dark-c:var(--color-gray-400)">
 								{$i18n.t('No source available')}
 							</div>
 						{/if}
 					</div>
 					<div id="citation-content-{documentIdx}" style="--d:flex; --fd:column; --w:100%">
 						<div
-							style="--size:0.875rem; --weight:500; --dark-c:var(--color-gray-300); --mt:0.5rem"
+							style="--size:0.8rem; --weight:500; --dark-c:var(--color-gray-300); --mt:0.5rem"
 						>
 							{$i18n.t('Content')}
 						</div>
@@ -320,13 +320,13 @@
 						{:else if containsMarkdown(document.document)}
 							<div
 								class="citation-markdown prose dark:prose-invert"
-								style="--size:0.875rem; --dark-c:var(--color-gray-400); --maxw:none"
+								style="--size:0.8rem; --dark-c:var(--color-gray-400); --maxw:none"
 							>
 								{@html DOMPurify.sanitize(marked.parse(document.document))}
 							</div>
 						{:else}
 							<pre
-								style="--size:0.875rem; --dark-c:var(--color-gray-400); --ws:pre-line">{document.document}</pre>
+								style="--size:0.8rem; --dark-c:var(--color-gray-400); --ws:pre-line">{document.document}</pre>
 						{/if}
 					</div>
 

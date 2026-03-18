@@ -113,7 +113,7 @@
 </script>
 
 <form
-	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.875rem"
+	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.8rem"
 	on:submit|preventDefault={async () => {
 		updateHandler();
 	}}
@@ -122,20 +122,20 @@
 	class="scrollbar-hidden">
 		{#if adminConfig !== null}
 			<div class="">
-				<div style="--mb:0.875rem">
+				<div style="--mb:0.8rem">
 					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('General')}</div>
 
 					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 					<div style="--mb:0.625rem">
-						<div style="--mb:0.25rem; --size:0.6rem; --weight:500; --d:flex; --g:0.5rem; --ai:center">
+						<div style="--mb:0.2rem; --size:0.6rem; --weight:500; --d:flex; --g:0.5rem; --ai:center">
 							<div>
 								{$i18n.t('Version')}
 							</div>
 						</div>
 						<div style="--d:flex; --w:100%; --jc:space-between; --ai:center">
 							<div style="--d:flex; --fd:column; --size:0.6rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-200)">
-								<div style="--d:flex; --g:0.25rem">
+								<div style="--d:flex; --g:0.2rem">
 									<Tooltip content={WEBUI_BUILD_HASH}>
 										v{WEBUI_VERSION}
 									</Tooltip>
@@ -155,7 +155,7 @@
 								</div>
 
 								<button
-									style="--td:underline; --d:flex; --ai:center; --g:0.25rem; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500)"
+									style="--td:underline; --d:flex; --ai:center; --g:0.2rem; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500)"
 									type="button"
 									on:click={() => {
 										showChangelog.set(true);
@@ -167,7 +167,7 @@
 
 							{#if $config?.features?.enable_version_update_check}
 								<button
-									style="--size:0.6rem; --px:0.6rem; --py:0.375rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --weight:500"
+									style="--size:0.6rem; --px:0.6rem; --py:0.4rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --weight:500"
 									type="button"
 									on:click={() => {
 										checkForVersionUpdates();
@@ -200,8 +200,8 @@
 							</a>
 						</div>
 
-						<div style="--mt:0.25rem">
-							<div style="--d:flex; --g:0.25rem">
+						<div style="--mt:0.2rem">
+							<div style="--d:flex; --g:0.2rem">
 								<a href="https://x.com/Sage_Is_AI" target="_blank">
 									<img
 										alt="X (formerly Twitter) Follow"
@@ -278,7 +278,7 @@
 							</div>
 
 							<!-- <button
-								style="--size:0.6rem; --px:0.6rem; --py:0.375rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --weight:500"
+								style="--size:0.6rem; --px:0.6rem; --py:0.4rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --weight:500"
 	class="flex-shrink-0"
 							>
 								{$i18n.t('Activate')}
@@ -369,7 +369,7 @@
 								</div>
 
 								<input
-									style="--w:100%; --mt:0.25rem; --radius:0.5rem; --size:0.875rem; --dark-c:var(--color-gray-300); --bgc:transparent; --oe:none"
+									style="--w:100%; --mt:0.2rem; --radius:0.5rem; --size:0.8rem; --dark-c:var(--color-gray-300); --bgc:transparent; --oe:none"
 									type="text"
 									placeholder={`e.g.) /api/v1/messages, /api/v1/channels`}
 									bind:value={adminConfig.API_KEY_ALLOWED_ENDPOINTS}
@@ -396,7 +396,7 @@
 
 						<div style="--d:flex; --mt:0.5rem; --g:0.5rem">
 							<input
-								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 								type="text"
 								placeholder={`e.g.) "30m","1h", "10d". `}
 								bind:value={adminConfig.JWT_EXPIRES_IN}
@@ -412,20 +412,20 @@
 					</div>
 
 					<div style="--g:0.6rem">
-						<div style="--mt:0.5rem; --g:0.5rem; --pr:0.375rem">
-							<div style="--d:flex; --jc:space-between; --ai:center; --size:0.875rem">
+						<div style="--mt:0.5rem; --g:0.5rem; --pr:0.4rem">
+							<div style="--d:flex; --jc:space-between; --ai:center; --size:0.8rem">
 								<div style="--weight:500">{$i18n.t('LDAP')}</div>
 
-								<div style="--mt:0.25rem">
+								<div style="--mt:0.2rem">
 									<Switch bind:state={ENABLE_LDAP} />
 								</div>
 							</div>
 
 							{#if ENABLE_LDAP}
-								<div style="--d:flex; --fd:column; --g:0.25rem">
+								<div style="--d:flex; --fd:column; --g:0.2rem">
 									<div style="--d:flex; --w:100%; --g:0.5rem">
 										<div style="--w:100%">
-											<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.25rem">
+											<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.2rem">
 												{$i18n.t('Label')}
 											</div>
 											<input
@@ -439,7 +439,7 @@
 									</div>
 									<div style="--d:flex; --w:100%; --g:0.5rem">
 										<div style="--w:100%">
-											<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.25rem">
+											<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.2rem">
 												{$i18n.t('Host')}
 											</div>
 											<input
@@ -450,7 +450,7 @@
 											/>
 										</div>
 										<div style="--w:100%">
-											<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.25rem">
+											<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.2rem">
 												{$i18n.t('Port')}
 											</div>
 											<Tooltip
@@ -469,7 +469,7 @@
 									</div>
 									<div style="--d:flex; --w:100%; --g:0.5rem">
 										<div style="--w:100%">
-											<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.25rem">
+											<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.2rem">
 												{$i18n.t('Application DN')}
 											</div>
 											<Tooltip
@@ -485,7 +485,7 @@
 											</Tooltip>
 										</div>
 										<div style="--w:100%">
-											<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.25rem">
+											<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.2rem">
 												{$i18n.t('Application DN Password')}
 											</div>
 											<SensitiveInput
@@ -496,7 +496,7 @@
 									</div>
 									<div style="--d:flex; --w:100%; --g:0.5rem">
 										<div style="--w:100%">
-											<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.25rem">
+											<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.2rem">
 												{$i18n.t('Attribute for Mail')}
 											</div>
 											<Tooltip
@@ -516,7 +516,7 @@
 									</div>
 									<div style="--d:flex; --w:100%; --g:0.5rem">
 										<div style="--w:100%">
-											<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.25rem">
+											<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.2rem">
 												{$i18n.t('Attribute for Username')}
 											</div>
 											<Tooltip
@@ -538,7 +538,7 @@
 									</div>
 									<div style="--d:flex; --w:100%; --g:0.5rem">
 										<div style="--w:100%">
-											<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.25rem">
+											<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.2rem">
 												{$i18n.t('Search Base')}
 											</div>
 											<Tooltip
@@ -556,7 +556,7 @@
 									</div>
 									<div style="--d:flex; --w:100%; --g:0.5rem">
 										<div style="--w:100%">
-											<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.25rem">
+											<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.2rem">
 												{$i18n.t('Search Filters')}
 											</div>
 											<input
@@ -576,17 +576,17 @@
 										</a>
 									</div>
 									<div>
-										<div style="--d:flex; --jc:space-between; --ai:center; --size:0.875rem">
+										<div style="--d:flex; --jc:space-between; --ai:center; --size:0.8rem">
 											<div style="--weight:500">{$i18n.t('TLS')}</div>
 
-											<div style="--mt:0.25rem">
+											<div style="--mt:0.2rem">
 												<Switch bind:state={LDAP_SERVER.use_tls} />
 											</div>
 										</div>
 										{#if LDAP_SERVER.use_tls}
 											<div style="--d:flex; --w:100%; --g:0.5rem">
 												<div style="--w:100%">
-													<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.25rem; --mt:0.25rem">
+													<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.2rem; --mt:0.2rem">
 														{$i18n.t('Certificate Path')}
 													</div>
 													<input
@@ -599,13 +599,13 @@
 											<div style="--d:flex; --jc:space-between; --ai:center; --size:0.6rem">
 												<div style="--weight:500">Validate certificate</div>
 
-												<div style="--mt:0.25rem">
+												<div style="--mt:0.2rem">
 													<Switch bind:state={LDAP_SERVER.validate_cert} />
 												</div>
 											</div>
 											<div style="--d:flex; --w:100%; --g:0.5rem">
 												<div style="--w:100%">
-													<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.25rem">
+													<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.2rem">
 														{$i18n.t('Ciphers')}
 													</div>
 													<Tooltip content={$i18n.t('Default to ALL')} placement="top-start">
@@ -686,7 +686,7 @@
 
 						<div style="--d:flex; --mt:0.5rem; --g:0.5rem">
 							<input
-								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 								type="text"
 								placeholder={`e.g.) "http://localhost:3000"`}
 								bind:value={adminConfig.WEBUI_URL}
@@ -707,7 +707,7 @@
 
 						<div style="--d:flex; --mt:0.5rem; --g:0.5rem">
 							<input
-								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 								type="text"
 								placeholder={`https://example.com/webhook`}
 								bind:value={webhookUrl}
@@ -719,9 +719,9 @@
 		{/if}
 	</div>
 
-	<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.875rem; --weight:500">
+	<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.8rem; --weight:500">
 		<button
-			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+			style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			type="submit"
 		>
 			{$i18n.t('Save')}

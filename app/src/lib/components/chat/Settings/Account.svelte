@@ -85,7 +85,7 @@
 	});
 </script>
 
-<div id="tab-account" style="--d:flex; --fd:column; --h:100%; --jc:space-between; --size:0.875rem">
+<div id="tab-account" style="--d:flex; --fd:column; --h:100%; --jc:space-between; --size:0.8rem">
 	<div style="--ofy:scroll; --maxh:28rem; --maxh-lg:100%">
 		<input
 			id="profile-image-input"
@@ -149,10 +149,10 @@
 			}}
 		/>
 
-		<div style="--g:0.25rem">
-			<!-- <div style="--size:0.875rem; --weight:500">{$i18n.t('Account')}</div> -->
+		<div style="--g:0.2rem">
+			<!-- <div style="--size:0.8rem; --weight:500">{$i18n.t('Account')}</div> -->
 
-			<div style="--d:flex; --g:1.25rem">
+			<div style="--d:flex; --g:1.2rem">
 				<div style="--d:flex; --fd:column">
 					<div style="--as:center; --mt:0.5rem">
 						<button
@@ -177,7 +177,7 @@
 										xmlns="http://www.w3.org/2000/svg"
 										viewBox="0 0 20 20"
 										fill="currentColor"
-										style="--w:1.25rem; --h:1.25rem"
+										style="--w:1.2rem; --h:1.2rem"
 									>
 										<path
 											d="m2.695 14.762-1.262 3.155a.5.5 0 0 0 .65.65l3.155-1.262a4 4 0 0 0 1.343-.886L17.5 5.501a2.121 2.121 0 0 0-3-3L3.58 13.419a4 4 0 0 0-.885 1.343Z"
@@ -190,9 +190,9 @@
 				</div>
 
 				<div style="--fx:1 1 0%; --d:flex; --fd:column; --as:center; --g:0.125rem">
-					<div style="--mb:0.125rem; --size:0.875rem; --weight:500">{$i18n.t('Profile Image')}</div>
+					<div style="--mb:0.125rem; --size:0.8rem; --weight:500">{$i18n.t('Profile Image')}</div>
 
-					<div style="--d:flex; --g:0.375rem">
+					<div style="--d:flex; --g:0.4rem">
 						<button
 							style="--size:0.6rem; --ta:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-400); --radius:9999px; --px:1rem; --py:0.125rem; --bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850)"
 							on:click={async () => {
@@ -221,7 +221,7 @@
 						>
 
 						<button
-							style="--size:0.6rem; --ta:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-400); --radius:0.5rem; --px:0.5rem; --py:0.25rem"
+							style="--size:0.6rem; --ta:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-400); --radius:0.5rem; --px:0.5rem; --py:0.2rem"
 							on:click={async () => {
 								profileImageUrl = `${WEBUI_BASE_URL}/static/user.png`;
 							}}>{$i18n.t('Remove')}</button
@@ -232,11 +232,11 @@
 
 			<div style="--pt:0.125rem">
 				<div style="--d:flex; --fd:column; --w:100%">
-					<div style="--mb:0.25rem; --size:0.6rem; --weight:500">{$i18n.t('Name')}</div>
+					<div style="--mb:0.2rem; --size:0.6rem; --weight:500">{$i18n.t('Name')}</div>
 
 					<div style="--fx:1 1 0%">
 						<input
-							style="--w:100%; --size:0.875rem; --dark-c:var(--color-gray-300); --bgc:transparent; --oe:none"
+							style="--w:100%; --size:0.8rem; --dark-c:var(--color-gray-300); --bgc:transparent; --oe:none"
 							type="text"
 							bind:value={name}
 							required
@@ -249,13 +249,13 @@
 			{#if $config?.features?.enable_user_webhooks}
 				<div style="--pt:0.5rem">
 					<div style="--d:flex; --fd:column; --w:100%">
-						<div style="--mb:0.25rem; --size:0.6rem; --weight:500">
+						<div style="--mb:0.2rem; --size:0.6rem; --weight:500">
 							{$i18n.t('Notification Webhook')}
 						</div>
 
 						<div style="--fx:1 1 0%">
 							<input
-								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 								type="url"
 								placeholder={$i18n.t('Enter your webhook URL')}
 								bind:value={webhookUrl}
@@ -282,9 +282,9 @@
 		{/if}
 
 		{#if ($config?.features?.enable_api_key ?? true) || $user?.role === 'admin'}
-			<details style="--size:0.875rem">
+			<details style="--size:0.8rem">
 				<summary
-					style="--d:flex; --ai:center; --g:0.5rem; --cur:pointer; --us:none; --py:0.25rem; --list-style:none"
+					style="--d:flex; --ai:center; --g:0.5rem; --cur:pointer; --us:none; --py:0.2rem; --list-style:none"
 				>
 					<span style="--weight:500">{$i18n.t('API keys')}</span>
 					<details
@@ -297,13 +297,13 @@
 						<summary style="--cur:pointer; --us:none; --list-style:none">
 							{$i18n.t('What is an API key?')} &#9662;
 						</summary>
-						<div style="--mt:0.375rem; --lh:1.5; --size:0.8rem">
-							<p style="--mb:0.375rem">
+						<div style="--mt:0.4rem; --lh:1.5; --size:0.8rem">
+							<p style="--mb:0.4rem">
 								{$i18n.t(
 									'An API (Application Programming Interface) lets other apps and scripts talk to your Sage AI account — for example, a chatbot on your website, a shortcut on your phone, or a custom workflow.'
 								)}
 							</p>
-							<p style="--mb:0.375rem">
+							<p style="--mb:0.4rem">
 								{$i18n.t(
 									'Your API key is like a password for those connections. Keep it secret — anyone who has it can act on your behalf.'
 								)}
@@ -328,12 +328,12 @@
 				<div style="--mt:0.5rem; --d:flex; --fd:column; --g:1rem">
 					{#if $user?.role === 'admin'}
 						<div style="--w:100%">
-							<div style="--size:0.6rem; --weight:500; --mb:0.25rem">{$i18n.t('JWT Token')}</div>
+							<div style="--size:0.6rem; --weight:500; --mb:0.2rem">{$i18n.t('JWT Token')}</div>
 							<div style="--d:flex">
 								<SensitiveInput value={localStorage.token} readOnly={true} />
 
 								<button
-									style="--ml:0.375rem; --px:0.375rem; --py:0.25rem; --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
+									style="--ml:0.4rem; --px:0.4rem; --py:0.2rem; --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
 									on:click={() => {
 										copyToClipboard(localStorage.token);
 										JWTTokenCopied = true;
@@ -381,13 +381,13 @@
 
 					{#if $config?.features?.enable_api_key ?? true}
 						<div style="--w:100%">
-							<div style="--size:0.6rem; --weight:500; --mb:0.25rem">{$i18n.t('API Key')}</div>
+							<div style="--size:0.6rem; --weight:500; --mb:0.2rem">{$i18n.t('API Key')}</div>
 							<div style="--d:flex">
 								{#if APIKey}
 									<SensitiveInput value={APIKey} readOnly={true} />
 
 									<button
-										style="--ml:0.375rem; --px:0.375rem; --py:0.25rem; --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
+										style="--ml:0.4rem; --px:0.4rem; --py:0.2rem; --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
 										on:click={() => {
 											copyToClipboard(APIKey);
 											APIKeyCopied = true;
@@ -432,7 +432,7 @@
 
 									<Tooltip content={$i18n.t('Create new key')}>
 										<button
-											style="--px:0.375rem; --py:0.25rem; --radius:0.5rem; --hvr-dark-bgc:var(--color-gray-850); --tn:background-color 150ms"
+											style="--px:0.4rem; --py:0.2rem; --radius:0.5rem; --hvr-dark-bgc:var(--color-gray-850); --tn:background-color 150ms"
 											on:click={() => {
 												createAPIKeyHandler();
 											}}
@@ -455,7 +455,7 @@
 									</Tooltip>
 								{:else}
 									<button
-										style="--d:flex; --g:0.375rem; --ai:center; --weight:500; --px:0.875rem; --py:0.375rem; --radius:0.5rem; --bgc:rgb(236 236 236 / 0.7); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-850); --tn:background-color 150ms"
+										style="--d:flex; --g:0.4rem; --ai:center; --weight:500; --px:0.8rem; --py:0.4rem; --radius:0.5rem; --bgc:rgb(236 236 236 / 0.7); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-850); --tn:background-color 150ms"
 										on:click={() => {
 											createAPIKeyHandler();
 										}}
@@ -473,9 +473,9 @@
 		{/if}
 	</div>
 
-	<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.875rem; --weight:500">
+	<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.8rem; --weight:500">
 		<button
-			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+			style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			on:click={async () => {
 				const res = await submitHandler();
 

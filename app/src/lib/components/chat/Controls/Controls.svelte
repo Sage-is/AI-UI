@@ -31,11 +31,11 @@
 		</button>
 	</div>
 
-	<div style="--dark-c:var(--color-gray-200); --size:0.875rem; --py:0.125rem; --px:0.125rem"
+	<div style="--dark-c:var(--color-gray-200); --size:0.8rem; --py:0.125rem; --px:0.125rem"
 	class="font-primary">
 		{#if chatFiles.length > 0}
 			<Collapsible title={$i18n.t('Files')} open={true} buttonClassName="w-full">
-				<div style="--d:flex; --fd:column; --g:0.25rem; --mt:0.375rem" slot="content">
+				<div style="--d:flex; --fd:column; --g:0.2rem; --mt:0.4rem" slot="content">
 					{#each chatFiles as file, fileIdx}
 						<FileItem
 							className="w-full"
@@ -64,7 +64,7 @@
 		{/if}
 
 		<Collapsible bind:open={showValves} title={$i18n.t('Valves')} buttonClassName="w-full">
-			<div style="--size:0.875rem" slot="content">
+			<div style="--size:0.8rem" slot="content">
 				<Valves show={showValves} />
 			</div>
 		</Collapsible>
@@ -91,7 +91,7 @@
 			<hr style="--my:0.5rem; --bc:var(--color-gray-50); --dark-bc:rgb(78 78 78 / 0.1)" />
 
 			<Collapsible title={$i18n.t('Advanced Params')} open={true} buttonClassName="w-full">
-				<div style="--size:0.875rem; --mt:0.375rem" slot="content">
+				<div style="--size:0.8rem; --mt:0.4rem" slot="content">
 					<div>
 						<AdvancedParams admin={$user?.role === 'admin'} custom={true} bind:params />
 					</div>

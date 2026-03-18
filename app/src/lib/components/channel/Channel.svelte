@@ -285,7 +285,7 @@
 				style="--pos:relative; --d:flex; --w:3px; --ai:center; --jc:center; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)"
 	class="bg-background group"
 			>
-				<div style="--z:10; --d:flex; --h:1.75rem; --w:1.25rem; --ai:center; --jc:center"
+				<div style="--z:10; --d:flex; --h:1.75rem; --w:1.2rem; --ai:center; --jc:center"
 	class="rounded-xs">
 					<EllipsisVertical className="size-4 invisible group-hover:visible" />
 				</div>

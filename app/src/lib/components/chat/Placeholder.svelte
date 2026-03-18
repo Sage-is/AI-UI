@@ -115,7 +115,7 @@
 					}}
 				/>
 			{:else}
-				<div style="--d:flex; --fd:row; --jc:center; --g:0.6rem; --w:fit-content; --px:1.25rem; --maxw:36rem"
+				<div style="--d:flex; --fd:row; --jc:center; --g:0.6rem; --w:fit-content; --px:1.2rem; --maxw:36rem"
 	class="@sm:gap-3.5">
 					<div style="--d:flex; --fs:0; --jc:center">
 						<div style="--d:flex; --g:-1rem; --mb:0.125rem" in:fade={{ duration: 100 }}>
@@ -170,7 +170,7 @@
 					</div>
 				</div>
 
-				<div style="--d:flex; --mt:0.25rem; --mb:0.5rem">
+				<div style="--d:flex; --mt:0.2rem; --mb:0.5rem">
 					<div in:fade={{ duration: 100, delay: 50 }}>
 						{#if models[selectedModelIdx]?.info?.meta?.description ?? null}
 							<Tooltip
@@ -183,7 +183,7 @@
 								placement="top"
 							>
 								<div
-									style="--mt:0.125rem; --px:0.5rem; --size:0.875rem; --weight:400; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --line-clamp:2; --maxw:36rem"
+									style="--mt:0.125rem; --px:0.5rem; --size:0.8rem; --weight:400; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --line-clamp:2; --maxw:36rem"
 	class="markdown"
 								>
 									{@html marked.parse(
@@ -195,7 +195,7 @@
 							</Tooltip>
 
 							{#if models[selectedModelIdx]?.info?.meta?.user}
-								<div style="--mt:0.125rem; --size:0.875rem; --weight:400; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
+								<div style="--mt:0.125rem; --size:0.8rem; --weight:400; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 									By
 									{#if models[selectedModelIdx]?.info?.meta?.user.community}
 										<a
@@ -267,7 +267,7 @@
 	{:else}
 		<div style="--mx:auto; --maxw:42rem; --mt:0.5rem"
 	class="font-primary" in:fade={{ duration: 200, delay: 200 }}>
-			<div style="--mx:1.25rem">
+			<div style="--mx:1.2rem">
 				<Suggestions
 					suggestionPrompts={atSelectedModel?.info?.meta?.suggestion_prompts ??
 						models[selectedModelIdx]?.info?.meta?.suggestion_prompts ??

@@ -627,7 +627,7 @@
 			<div style="--m:auto; --pt:16rem; --d:flex; --fd:column; --jc:center">
 				<div style="--maxw:28rem">
 					<AddFilesPlaceholder>
-						<div style="--mt:0.5rem; --ta:center; --size:0.875rem; --dark-c:var(--color-gray-200); --w:100%">
+						<div style="--mt:0.5rem; --ta:center; --size:0.8rem; --dark-c:var(--color-gray-200); --w:100%">
 							Drop any files here to add to my documents
 						</div>
 					</AddFilesPlaceholder>
@@ -679,7 +679,7 @@
 	}}
 />
 
-<div style="--d:flex; --fd:column; --w:100%; --translatey:0.25rem" id="collection-container">
+<div style="--d:flex; --fd:column; --w:100%; --translatey:0.2rem" id="collection-container">
 	{#if id && knowledge}
 		<AccessControlModal
 			bind:show={showAccessControlModal}
@@ -693,7 +693,7 @@
 		<div style="--w:100%; --mb:0.625rem">
 			<div style="--d:flex; --w:100%">
 				<div style="--fx:1 1 0%">
-					<div style="--d:flex; --ai:center; --jc:space-between; --w:100%; --px:0.125rem; --mb:0.25rem">
+					<div style="--d:flex; --ai:center; --jc:space-between; --w:100%; --px:0.125rem; --mb:0.2rem">
 						<div style="--w:100%">
 							<input
 								type="text"
@@ -709,7 +709,7 @@
 
 						<div style="--as:center; --fs:0">
 							<button
-								style="--bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --c:#000; --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --px:0.5rem; --py:0.25rem; --radius:9999px; --d:flex; --g:0.25rem; --ai:center"
+								style="--bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --c:#000; --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --px:0.5rem; --py:0.2rem; --radius:9999px; --d:flex; --g:0.2rem; --ai:center"
 								type="button"
 								on:click={() => {
 									showAccessControlModal = true;
@@ -717,14 +717,14 @@
 							>
 								<LockClosed strokeWidth="2.5" className="size-3.5" />
 
-								<div style="--size:0.875rem; --weight:500; --fs:0">
+								<div style="--size:0.8rem; --weight:500; --fs:0">
 									{$i18n.t('Access')}
 								</div>
 							</button>
 						</div>
 					</div>
 
-					<div style="--d:flex; --w:100%; --px:0.25rem">
+					<div style="--d:flex; --w:100%; --px:0.2rem">
 						<input
 							type="text"
 							style="--ta:left; --size:0.6rem; --w:100%; --c:var(--color-gray-500); --bgc:transparent; --oe:none"
@@ -748,7 +748,7 @@
 								{#if !showSidepanel}
 									<div style="--translatex:-0.5rem">
 										<button
-											style="--w:100%; --ta:left; --size:0.875rem; --p:0.375rem; --radius:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:var(--color-gray-850)"
+											style="--w:100%; --ta:left; --size:0.8rem; --p:0.4rem; --radius:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:var(--color-gray-850)"
 											on:click={() => {
 												pane.expand();
 											}}
@@ -758,7 +758,7 @@
 									</div>
 								{/if}
 
-								<div style="--fx:1 1 0%; --size:1.25rem; --weight:500">
+								<div style="--fx:1 1 0%; --size:1.2rem; --weight:500">
 									<a
 										style="--hvr-c:var(--color-gray-500); --hvr-dark-c:var(--color-gray-100); --hvr-td:underline; --fg:1; --line-clamp:1"
 										href={selectedFile.id ? `/api/v1/files/${selectedFile.id}/content` : '#'}
@@ -770,7 +770,7 @@
 
 								<div>
 									<button
-										style="--as:center; --w:fit-content; --size:0.875rem; --py:0.25rem; --px:0.625rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem"
+										style="--as:center; --w:fit-content; --size:0.8rem; --py:0.2rem; --px:0.625rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem"
 										on:click={() => {
 											updateFileContentHandler();
 										}}
@@ -781,7 +781,7 @@
 							</div>
 
 							<div
-								style="--fx:1 1 0%; --w:100%; --h:100%; --maxh:100%; --size:0.875rem; --bgc:transparent; --oe:none; --ofy:auto"
+								style="--fx:1 1 0%; --w:100%; --h:100%; --maxh:100%; --size:0.8rem; --bgc:transparent; --oe:none; --ofy:auto"
 	class="scrollbar-hidden"
 							>
 								{#key selectedFile.id}
@@ -812,10 +812,10 @@
 				>
 					<div style="--d:flex; --fd:column; --jc:flex-start; --h:100%; --maxh:100%; --p:0.5rem">
 						<div style="--d:flex; --fd:column; --w:100%; --h:100%; --maxh:100%">
-							<div style="--fs:0; --mt:0.25rem; --mb:0.5rem; --d:flex; --ai:center">
+							<div style="--fs:0; --mt:0.2rem; --mb:0.5rem; --d:flex; --ai:center">
 								<div style="--mr:0.5rem">
 									<button
-										style="--w:100%; --ta:left; --size:0.875rem; --p:0.375rem; --radius:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:var(--color-gray-850)"
+										style="--w:100%; --ta:left; --size:0.8rem; --p:0.4rem; --radius:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:var(--color-gray-850)"
 										on:click={() => {
 											selectedFileId = null;
 										}}
@@ -823,13 +823,13 @@
 										<ChevronLeft strokeWidth="2.5" />
 									</button>
 								</div>
-								<div style="--fx:1 1 0%; --size:1.25rem; --line-clamp:1">
+								<div style="--fx:1 1 0%; --size:1.2rem; --line-clamp:1">
 									{selectedFile?.meta?.name}
 								</div>
 
 								<div>
 									<button
-										style="--as:center; --w:fit-content; --size:0.875rem; --py:0.25rem; --px:0.625rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem"
+										style="--as:center; --w:fit-content; --size:0.8rem; --py:0.2rem; --px:0.625rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem"
 										on:click={() => {
 											updateFileContentHandler();
 										}}
@@ -840,7 +840,7 @@
 							</div>
 
 							<div
-								style="--fx:1 1 0%; --w:100%; --h:100%; --maxh:100%; --py:0.625rem; --px:0.875rem; --radius:0.5rem; --size:0.875rem; --bgc:transparent; --ofy:auto"
+								style="--fx:1 1 0%; --w:100%; --h:100%; --maxh:100%; --py:0.625rem; --px:0.8rem; --radius:0.5rem; --size:0.8rem; --bgc:transparent; --ofy:auto"
 	class="scrollbar-hidden"
 							>
 								{#key selectedFile.id}
@@ -865,11 +865,11 @@
 					<div style="--w:100%; --h:100%; --d:flex; --fd:column">
 						<div style="--px:0.6rem">
 							<div style="--d:flex; --mb:0.125rem">
-								<div style="--as:center; --ml:0.25rem; --mr:0.6rem">
+								<div style="--as:center; --ml:0.2rem; --mr:0.6rem">
 									<Search />
 								</div>
 								<input
-									style="--w:100%; --size:0.875rem; --pr:1rem; --py:0.25rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
+									style="--w:100%; --size:0.8rem; --pr:1rem; --py:0.2rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 									bind:value={query}
 									placeholder={$i18n.t('Search Collection')}
 									on:focus={() => {
@@ -895,13 +895,13 @@
 								</div>
 							</div>
 
-							<div style="--d:flex; --ai:center; --g:0.5rem; --mt:0.375rem; --size:0.6rem; --c:var(--color-gray-500)">
+							<div style="--d:flex; --ai:center; --g:0.5rem; --mt:0.4rem; --size:0.6rem; --c:var(--color-gray-500)">
 								<span style="--weight:500; --ws:nowrap">{$i18n.t('Ingestion')}:</span>
-								<label style="--d:flex; --ai:center; --g:0.25rem; --cursor:pointer">
+								<label style="--d:flex; --ai:center; --g:0.2rem; --cursor:pointer">
 									<input type="radio" bind:group={ingestionMode} value="plain" />
 									<span>{$i18n.t('Plain')}</span>
 								</label>
-								<label style="--d:flex; --ai:center; --g:0.25rem; --cursor:pointer">
+								<label style="--d:flex; --ai:center; --g:0.2rem; --cursor:pointer">
 									<input type="radio" bind:group={ingestionMode} value="ai_parsed" />
 									<span>{$i18n.t('AI Parse')}</span>
 								</label>

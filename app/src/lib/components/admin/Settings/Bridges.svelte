@@ -180,7 +180,7 @@
 		</div>
 		<button
 			class="btn btn-primary"
-			style="--d:flex; --ai:center; --g:0.25rem; --px:0.6rem; --py:0.375rem; --br:0.5rem; --bg:var(--color-gray-800); --c:white; --size:0.8rem; --dark-bg:var(--color-gray-200); --dark-c:var(--color-gray-900)"
+			style="--d:flex; --ai:center; --g:0.2rem; --px:0.6rem; --py:0.4rem; --br:0.5rem; --bg:var(--color-gray-800); --c:white; --size:0.8rem; --dark-bg:var(--color-gray-200); --dark-c:var(--color-gray-900)"
 			on:click={openAddModal}
 		>
 			<Plus className="size-3.5" />
@@ -194,7 +194,7 @@
 		</div>
 	{:else if bridges.length === 0}
 		<div
-			style="--d:flex; --fd:column; --ai:center; --jc:center; --py:3rem; --c:var(--color-gray-500); --size:0.875rem"
+			style="--d:flex; --fd:column; --ai:center; --jc:center; --py:3rem; --c:var(--color-gray-500); --size:0.8rem"
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -220,7 +220,7 @@
 							style="--w:0.5rem; --h:0.5rem; --br:9999px; --fx-sh:none"
 						></div>
 						<div>
-							<div style="--weight:500; --size:0.875rem">{bridge.name}</div>
+							<div style="--weight:500; --size:0.8rem">{bridge.name}</div>
 							<div style="--size:0.6rem; --c:var(--color-gray-500); --d:flex; --g:0.5rem">
 								<span>{getPlatformDisplayName(bridge.platform)}</span>
 								<span>-</span>
@@ -236,7 +236,7 @@
 						<Tooltip content={$i18n.t('Restart')}>
 							<button
 								class="btn"
-								style="--p:0.25rem; --br:0.375rem"
+								style="--p:0.2rem; --br:0.4rem"
 								on:click={() => handleRestart(bridge.id)}
 							>
 								<svg
@@ -259,7 +259,7 @@
 						<Tooltip content={$i18n.t('Edit')}>
 							<button
 								class="btn"
-								style="--p:0.25rem; --br:0.375rem"
+								style="--p:0.2rem; --br:0.4rem"
 								on:click={() => openEditModal(bridge)}
 							>
 								<svg
@@ -282,7 +282,7 @@
 						<Tooltip content={$i18n.t('Delete')}>
 							<button
 								class="btn"
-								style="--p:0.25rem; --br:0.375rem; --c:var(--color-red-500)"
+								style="--p:0.2rem; --br:0.4rem; --c:var(--color-red-500)"
 								on:click={() => handleDelete(bridge.id)}
 							>
 								<svg
@@ -334,7 +334,7 @@
 				{#if !editingBridge}
 					<div>
 						<label
-							style="--d:block; --size:0.8rem; --weight:500; --mb:0.25rem"
+							style="--d:block; --size:0.8rem; --weight:500; --mb:0.2rem"
 							for="bridge-platform"
 						>
 							{$i18n.t('Platform')}
@@ -342,7 +342,7 @@
 						<select
 							id="bridge-platform"
 							bind:value={formPlatform}
-							style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
+							style="--w:100%; --p:0.5rem; --br:0.4rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
 							on:change={() => {
 								formConfig = {};
 								for (const f of getConfigSchema(formPlatform)) {
@@ -359,7 +359,7 @@
 
 				<!-- Name -->
 				<div>
-					<label style="--d:block; --size:0.8rem; --weight:500; --mb:0.25rem" for="bridge-name">
+					<label style="--d:block; --size:0.8rem; --weight:500; --mb:0.2rem" for="bridge-name">
 						{$i18n.t('Name')}
 					</label>
 					<input
@@ -367,19 +367,19 @@
 						type="text"
 						bind:value={formName}
 						placeholder={$i18n.t('My WhatsApp Bridge')}
-						style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
+						style="--w:100%; --p:0.5rem; --br:0.4rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
 					/>
 				</div>
 
 				<!-- Mode -->
 				<div>
-					<label style="--d:block; --size:0.8rem; --weight:500; --mb:0.25rem" for="bridge-mode">
+					<label style="--d:block; --size:0.8rem; --weight:500; --mb:0.2rem" for="bridge-mode">
 						{$i18n.t('Mode')}
 					</label>
 					<select
 						id="bridge-mode"
 						bind:value={formMode}
-						style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
+						style="--w:100%; --p:0.5rem; --br:0.4rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
 					>
 						<option value="ai_chat">{$i18n.t('AI Chat - Direct AI conversations')}</option>
 						<option value="channel_bridge"
@@ -397,7 +397,7 @@
 						{#each getConfigSchema(formPlatform) as field}
 							<div>
 								<label
-									style="--d:block; --size:0.8rem; --weight:500; --mb:0.25rem"
+									style="--d:block; --size:0.8rem; --weight:500; --mb:0.2rem"
 									for="bridge-config-{field.name}"
 								>
 									{field.label}
@@ -407,7 +407,7 @@
 									<select
 										id="bridge-config-{field.name}"
 										bind:value={formConfig[field.name]}
-										style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
+										style="--w:100%; --p:0.5rem; --br:0.4rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
 									>
 										{#each field.options as opt}
 											<option value={opt.value}>{opt.label}</option>
@@ -419,7 +419,7 @@
 										type="password"
 										bind:value={formConfig[field.name]}
 										placeholder={field.placeholder || ''}
-										style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
+										style="--w:100%; --p:0.5rem; --br:0.4rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
 									/>
 								{:else if field.type === 'number'}
 									<input
@@ -427,7 +427,7 @@
 										type="number"
 										bind:value={formConfig[field.name]}
 										placeholder={field.placeholder || ''}
-										style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
+										style="--w:100%; --p:0.5rem; --br:0.4rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
 									/>
 								{:else}
 									<input
@@ -435,7 +435,7 @@
 										type="text"
 										bind:value={formConfig[field.name]}
 										placeholder={field.placeholder || ''}
-										style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
+										style="--w:100%; --p:0.5rem; --br:0.4rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
 									/>
 								{/if}
 							</div>
@@ -445,7 +445,7 @@
 						{#if formMode === 'ai_chat'}
 							<div>
 								<label
-									style="--d:block; --size:0.8rem; --weight:500; --mb:0.25rem"
+									style="--d:block; --size:0.8rem; --weight:500; --mb:0.2rem"
 									for="bridge-model"
 								>
 									{$i18n.t('AI Model ID')}
@@ -455,7 +455,7 @@
 									type="text"
 									bind:value={formModelId}
 									placeholder={$i18n.t('e.g. gpt-4o or leave blank for default')}
-									style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
+									style="--w:100%; --p:0.5rem; --br:0.4rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
 								/>
 							</div>
 						{/if}
@@ -464,7 +464,7 @@
 						{#if formMode === 'channel_bridge'}
 							<div>
 								<label
-									style="--d:block; --size:0.8rem; --weight:500; --mb:0.25rem"
+									style="--d:block; --size:0.8rem; --weight:500; --mb:0.2rem"
 									for="bridge-channel"
 								>
 									{$i18n.t('Sage Channel ID')}
@@ -474,7 +474,7 @@
 									type="text"
 									bind:value={formChannelId}
 									placeholder={$i18n.t('Channel ID to bridge messages to')}
-									style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
+									style="--w:100%; --p:0.5rem; --br:0.4rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
 								/>
 							</div>
 						{/if}
@@ -482,7 +482,7 @@
 						<!-- User Provisioning -->
 						<div>
 							<label
-								style="--d:block; --size:0.8rem; --weight:500; --mb:0.25rem"
+								style="--d:block; --size:0.8rem; --weight:500; --mb:0.2rem"
 								for="bridge-provisioning"
 							>
 								{$i18n.t('User Provisioning')}
@@ -490,7 +490,7 @@
 							<select
 								id="bridge-provisioning"
 								bind:value={formUserProvisioning}
-								style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
+								style="--w:100%; --p:0.5rem; --br:0.4rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
 							>
 								<option value="auto_create"
 									>{$i18n.t('Auto Create - Automatically create user accounts')}</option
@@ -505,7 +505,7 @@
 						<!-- Allowed IDs -->
 						<div>
 							<label
-								style="--d:block; --size:0.8rem; --weight:500; --mb:0.25rem"
+								style="--d:block; --size:0.8rem; --weight:500; --mb:0.2rem"
 								for="bridge-allowlist"
 							>
 								{$i18n.t('Allowed IDs (comma-separated, optional)')}
@@ -515,7 +515,7 @@
 								type="text"
 								bind:value={formAllowedIds}
 								placeholder={$i18n.t('e.g. 1234567890@c.us, 0987654321@c.us')}
-								style="--w:100%; --p:0.5rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
+								style="--w:100%; --p:0.5rem; --br:0.4rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
 							/>
 						</div>
 
@@ -531,17 +531,17 @@
 			</div>
 
 			<!-- Actions -->
-			<div style="--d:flex; --jc:flex-end; --g:0.5rem; --mt:1.25rem">
+			<div style="--d:flex; --jc:flex-end; --g:0.5rem; --mt:1.2rem">
 				<button
 					class="btn"
-					style="--px:1rem; --py:0.375rem; --br:0.375rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --size:0.8rem"
+					style="--px:1rem; --py:0.4rem; --br:0.4rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --size:0.8rem"
 					on:click={() => (showModal = false)}
 				>
 					{$i18n.t('Cancel')}
 				</button>
 				<button
 					class="btn btn-primary"
-					style="--px:1rem; --py:0.375rem; --br:0.375rem; --bg:var(--color-gray-800); --c:white; --size:0.8rem; --dark-bg:var(--color-gray-200); --dark-c:var(--color-gray-900)"
+					style="--px:1rem; --py:0.4rem; --br:0.4rem; --bg:var(--color-gray-800); --c:white; --size:0.8rem; --dark-bg:var(--color-gray-200); --dark-c:var(--color-gray-900)"
 					on:click={handleSave}
 					disabled={!formName || !formPlatform}
 				>

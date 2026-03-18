@@ -2,7 +2,7 @@
 	export let size = 'md';
 </script>
 
-<span style="--pos:relative; --d:flex; --mx:0.25rem"
+<span style="--pos:relative; --d:flex; --mx:0.2rem"
 	class="{size === 'md' ? 'size-3 my-2' : 'size-2 my-1'}">
 	<span
 		style="--pos:absolute; --d:inline-flex; --h:100%; --w:100%; animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; --radius:9999px; --bgc:var(--color-gray-700); --dark-bgc:var(--color-gray-200); --op:0.75"

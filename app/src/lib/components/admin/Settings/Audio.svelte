@@ -179,7 +179,7 @@
 </script>
 
 <form
-	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.875rem"
+	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.8rem"
 	on:submit|preventDefault={async () => {
 		await updateConfigHandler();
 		dispatch('save');
@@ -195,11 +195,11 @@
 
 				{#if STT_ENGINE !== 'web'}
 					<div style="--mb:0.5rem">
-						<div style="--mb:0.375rem; --size:0.6rem; --weight:500">{$i18n.t('Supported MIME Types')}</div>
+						<div style="--mb:0.4rem; --size:0.6rem; --weight:500">{$i18n.t('Supported MIME Types')}</div>
 						<div style="--d:flex; --w:100%">
 							<div style="--fx:1 1 0%">
 								<input
-									style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+									style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 									bind:value={STT_SUPPORTED_CONTENT_TYPES}
 									placeholder={$i18n.t(
 										'e.g., audio/wav,audio/mpeg,video/* (leave blank for defaults)'
@@ -214,7 +214,7 @@
 					<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Speech-to-Text Engine')}</div>
 					<div style="--d:flex; --ai:center; --pos:relative">
 						<select
-							style="--dark-bgc:var(--color-gray-900); --cur:pointer; --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.6rem; --bgc:transparent; --oe:none; --ta:right"
+							style="--dark-bgc:var(--color-gray-900); --cur:pointer; --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.2rem; --size:0.6rem; --bgc:transparent; --oe:none; --ta:right"
 							bind:value={STT_ENGINE}
 							placeholder="Select an engine"
 						>
@@ -229,7 +229,7 @@
 
 				{#if STT_ENGINE === 'openai'}
 					<div>
-						<div style="--mt:0.25rem; --d:flex; --g:0.5rem; --mb:0.25rem">
+						<div style="--mt:0.2rem; --d:flex; --g:0.5rem; --mb:0.2rem">
 							<input
 								style="--fx:1 1 0%; --w:100%; --bgc:transparent; --oe:none"
 								placeholder={$i18n.t('API Base URL')}
@@ -244,12 +244,12 @@
 					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 					<div>
-						<div style="--mb:0.375rem; --size:0.6rem; --weight:500">{$i18n.t('STT Model')}</div>
+						<div style="--mb:0.4rem; --size:0.6rem; --weight:500">{$i18n.t('STT Model')}</div>
 						<div style="--d:flex; --w:100%">
 							<div style="--fx:1 1 0%">
 								<input
 									list="model-list"
-									style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+									style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 									bind:value={STT_MODEL}
 									placeholder="Select a model"
 								/>
@@ -262,7 +262,7 @@
 					</div>
 				{:else if STT_ENGINE === 'deepgram'}
 					<div>
-						<div style="--mt:0.25rem; --d:flex; --g:0.5rem; --mb:0.25rem">
+						<div style="--mt:0.2rem; --d:flex; --g:0.5rem; --mb:0.2rem">
 							<SensitiveInput placeholder={$i18n.t('API Key')} bind:value={STT_DEEPGRAM_API_KEY} />
 						</div>
 					</div>
@@ -270,17 +270,17 @@
 					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 					<div>
-						<div style="--mb:0.375rem; --size:0.6rem; --weight:500">{$i18n.t('STT Model')}</div>
+						<div style="--mb:0.4rem; --size:0.6rem; --weight:500">{$i18n.t('STT Model')}</div>
 						<div style="--d:flex; --w:100%">
 							<div style="--fx:1 1 0%">
 								<input
-									style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+									style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 									bind:value={STT_MODEL}
 									placeholder="Select a model (optional)"
 								/>
 							</div>
 						</div>
-						<div style="--mt:0.5rem; --mb:0.25rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
+						<div style="--mt:0.5rem; --mb:0.2rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 							{$i18n.t('Leave model field empty to use the default model.')}
 							<a
 								style="--hvr-td:underline; --dark-c:var(--color-gray-200); --c:var(--color-gray-800)"
@@ -293,7 +293,7 @@
 					</div>
 				{:else if STT_ENGINE === 'azure'}
 					<div>
-						<div style="--mt:0.25rem; --d:flex; --g:0.5rem; --mb:0.25rem">
+						<div style="--mt:0.2rem; --d:flex; --g:0.5rem; --mb:0.2rem">
 							<SensitiveInput
 								placeholder={$i18n.t('API Key')}
 								bind:value={STT_AZURE_API_KEY}
@@ -304,11 +304,11 @@
 						<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 						<div>
-							<div style="--mb:0.375rem; --size:0.6rem; --weight:500">{$i18n.t('Azure Region')}</div>
+							<div style="--mb:0.4rem; --size:0.6rem; --weight:500">{$i18n.t('Azure Region')}</div>
 							<div style="--d:flex; --w:100%">
 								<div style="--fx:1 1 0%">
 									<input
-										style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+										style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 										bind:value={STT_AZURE_REGION}
 										placeholder={$i18n.t('e.g., westus (leave blank for eastus)')}
 									/>
@@ -317,11 +317,11 @@
 						</div>
 
 						<div>
-							<div style="--mb:0.375rem; --size:0.6rem; --weight:500">{$i18n.t('Language Locales')}</div>
+							<div style="--mb:0.4rem; --size:0.6rem; --weight:500">{$i18n.t('Language Locales')}</div>
 							<div style="--d:flex; --w:100%">
 								<div style="--fx:1 1 0%">
 									<input
-										style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+										style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 										bind:value={STT_AZURE_LOCALES}
 										placeholder={$i18n.t('e.g., en-US,ja-JP (leave blank for auto-detect)')}
 									/>
@@ -330,11 +330,11 @@
 						</div>
 
 						<div>
-							<div style="--mb:0.375rem; --size:0.6rem; --weight:500">{$i18n.t('Endpoint URL')}</div>
+							<div style="--mb:0.4rem; --size:0.6rem; --weight:500">{$i18n.t('Endpoint URL')}</div>
 							<div style="--d:flex; --w:100%">
 								<div style="--fx:1 1 0%">
 									<input
-										style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+										style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 										bind:value={STT_AZURE_BASE_URL}
 										placeholder={$i18n.t('(leave blank for to use commercial endpoint)')}
 									/>
@@ -343,11 +343,11 @@
 						</div>
 
 						<div>
-							<div style="--mb:0.375rem; --size:0.6rem; --weight:500">{$i18n.t('Max Speakers')}</div>
+							<div style="--mb:0.4rem; --size:0.6rem; --weight:500">{$i18n.t('Max Speakers')}</div>
 							<div style="--d:flex; --w:100%">
 								<div style="--fx:1 1 0%">
 									<input
-										style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+										style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 										bind:value={STT_AZURE_MAX_SPEAKERS}
 										placeholder={$i18n.t('e.g., 3, 4, 5 (leave blank for default)')}
 									/>
@@ -357,12 +357,12 @@
 					</div>
 				{:else if STT_ENGINE === ''}
 					<div>
-						<div style="--mb:0.375rem; --size:0.6rem; --weight:500">{$i18n.t('STT Model')}</div>
+						<div style="--mb:0.4rem; --size:0.6rem; --weight:500">{$i18n.t('STT Model')}</div>
 
 						<div style="--d:flex; --w:100%">
 							<div style="--fx:1 1 0%; --mr:0.5rem">
 								<input
-									style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+									style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 									placeholder={$i18n.t('Set whisper model')}
 									bind:value={STT_WHISPER_MODEL}
 								/>
@@ -397,7 +397,7 @@
 							</button>
 						</div>
 
-						<div style="--mt:0.5rem; --mb:0.25rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
+						<div style="--mt:0.5rem; --mb:0.2rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 							{$i18n.t(`Sage.is AI uses faster-whisper internally.`)}
 
 							<a
@@ -423,7 +423,7 @@
 					<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Text-to-Speech Engine')}</div>
 					<div style="--d:flex; --ai:center; --pos:relative">
 						<select
-							style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --cur:pointer; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.6rem; --bgc:transparent; --oe:none; --ta:right"
+							style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --cur:pointer; --radius:0.125rem; --px:0.5rem; --p:0.2rem; --size:0.6rem; --bgc:transparent; --oe:none; --ta:right"
 							bind:value={TTS_ENGINE}
 							placeholder="Select a mode"
 							on:change={async (e) => {
@@ -451,7 +451,7 @@
 
 				{#if TTS_ENGINE === 'openai'}
 					<div>
-						<div style="--mt:0.25rem; --d:flex; --g:0.5rem; --mb:0.25rem">
+						<div style="--mt:0.2rem; --d:flex; --g:0.5rem; --mb:0.2rem">
 							<input
 								style="--fx:1 1 0%; --w:100%; --bgc:transparent; --oe:none"
 								placeholder={$i18n.t('API Base URL')}
@@ -464,9 +464,9 @@
 					</div>
 				{:else if TTS_ENGINE === 'elevenlabs'}
 					<div>
-						<div style="--mt:0.25rem; --d:flex; --g:0.5rem; --mb:0.25rem">
+						<div style="--mt:0.2rem; --d:flex; --g:0.5rem; --mb:0.2rem">
 							<input
-								style="--fx:1 1 0%; --w:100%; --radius:0.5rem; --py:0.5rem; --pl:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+								style="--fx:1 1 0%; --w:100%; --radius:0.5rem; --py:0.5rem; --pl:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 								placeholder={$i18n.t('API Key')}
 								bind:value={TTS_API_KEY}
 								required
@@ -475,18 +475,18 @@
 					</div>
 				{:else if TTS_ENGINE === 'azure'}
 					<div>
-						<div style="--mt:0.25rem; --d:flex; --g:0.5rem; --mb:0.25rem">
+						<div style="--mt:0.2rem; --d:flex; --g:0.5rem; --mb:0.2rem">
 							<SensitiveInput placeholder={$i18n.t('API Key')} bind:value={TTS_API_KEY} required />
 						</div>
 
 						<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 						<div>
-							<div style="--mb:0.375rem; --size:0.6rem; --weight:500">{$i18n.t('Azure Region')}</div>
+							<div style="--mb:0.4rem; --size:0.6rem; --weight:500">{$i18n.t('Azure Region')}</div>
 							<div style="--d:flex; --w:100%">
 								<div style="--fx:1 1 0%">
 									<input
-										style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+										style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 										bind:value={TTS_AZURE_SPEECH_REGION}
 										placeholder={$i18n.t('e.g., westus (leave blank for eastus)')}
 									/>
@@ -495,11 +495,11 @@
 						</div>
 
 						<div>
-							<div style="--mb:0.375rem; --size:0.6rem; --weight:500">{$i18n.t('Endpoint URL')}</div>
+							<div style="--mb:0.4rem; --size:0.6rem; --weight:500">{$i18n.t('Endpoint URL')}</div>
 							<div style="--d:flex; --w:100%">
 								<div style="--fx:1 1 0%">
 									<input
-										style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+										style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 										bind:value={TTS_AZURE_SPEECH_BASE_URL}
 										placeholder={$i18n.t('(leave blank for to use commercial endpoint)')}
 									/>
@@ -512,11 +512,11 @@
 				<div style="--mb:0.5rem">
 					{#if TTS_ENGINE === ''}
 						<div>
-							<div style="--mb:0.375rem; --size:0.6rem; --weight:500">{$i18n.t('TTS Voice')}</div>
+							<div style="--mb:0.4rem; --size:0.6rem; --weight:500">{$i18n.t('TTS Voice')}</div>
 							<div style="--d:flex; --w:100%">
 								<div style="--fx:1 1 0%">
 									<select
-										style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+										style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 										bind:value={TTS_VOICE}
 									>
 										<option value="" selected={TTS_VOICE !== ''}>{$i18n.t('Default')}</option>
@@ -533,12 +533,12 @@
 						</div>
 					{:else if TTS_ENGINE === 'transformers'}
 						<div>
-							<div style="--mb:0.375rem; --size:0.6rem; --weight:500">{$i18n.t('TTS Model')}</div>
+							<div style="--mb:0.4rem; --size:0.6rem; --weight:500">{$i18n.t('TTS Model')}</div>
 							<div style="--d:flex; --w:100%">
 								<div style="--fx:1 1 0%">
 									<input
 										list="model-list"
-										style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+										style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 										bind:value={TTS_MODEL}
 										placeholder="CMU ARCTIC speaker embedding name"
 									/>
@@ -548,7 +548,7 @@
 									</datalist>
 								</div>
 							</div>
-							<div style="--mt:0.5rem; --mb:0.25rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
+							<div style="--mt:0.5rem; --mb:0.2rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 								{$i18n.t(`Sage.is AI uses SpeechT5 and CMU Arctic speaker embeddings.`)}
 
 								To learn more about SpeechT5,
@@ -575,12 +575,12 @@
 					{:else if TTS_ENGINE === 'openai'}
 						<div style="--d:flex; --g:0.5rem">
 							<div style="--w:100%">
-								<div style="--mb:0.375rem; --size:0.6rem; --weight:500">{$i18n.t('TTS Voice')}</div>
+								<div style="--mb:0.4rem; --size:0.6rem; --weight:500">{$i18n.t('TTS Voice')}</div>
 								<div style="--d:flex; --w:100%">
 									<div style="--fx:1 1 0%">
 										<input
 											list="voice-list"
-											style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+											style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 											bind:value={TTS_VOICE}
 											placeholder="Select a voice"
 										/>
@@ -594,12 +594,12 @@
 								</div>
 							</div>
 							<div style="--w:100%">
-								<div style="--mb:0.375rem; --size:0.6rem; --weight:500">{$i18n.t('TTS Model')}</div>
+								<div style="--mb:0.4rem; --size:0.6rem; --weight:500">{$i18n.t('TTS Model')}</div>
 								<div style="--d:flex; --w:100%">
 									<div style="--fx:1 1 0%">
 										<input
 											list="tts-model-list"
-											style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+											style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 											bind:value={TTS_MODEL}
 											placeholder="Select a model"
 										/>
@@ -616,12 +616,12 @@
 					{:else if TTS_ENGINE === 'elevenlabs'}
 						<div style="--d:flex; --g:0.5rem">
 							<div style="--w:100%">
-								<div style="--mb:0.375rem; --size:0.6rem; --weight:500">{$i18n.t('TTS Voice')}</div>
+								<div style="--mb:0.4rem; --size:0.6rem; --weight:500">{$i18n.t('TTS Voice')}</div>
 								<div style="--d:flex; --w:100%">
 									<div style="--fx:1 1 0%">
 										<input
 											list="voice-list"
-											style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+											style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 											bind:value={TTS_VOICE}
 											placeholder="Select a voice"
 										/>
@@ -635,12 +635,12 @@
 								</div>
 							</div>
 							<div style="--w:100%">
-								<div style="--mb:0.375rem; --size:0.6rem; --weight:500">{$i18n.t('TTS Model')}</div>
+								<div style="--mb:0.4rem; --size:0.6rem; --weight:500">{$i18n.t('TTS Model')}</div>
 								<div style="--d:flex; --w:100%">
 									<div style="--fx:1 1 0%">
 										<input
 											list="tts-model-list"
-											style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+											style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 											bind:value={TTS_MODEL}
 											placeholder="Select a model"
 										/>
@@ -657,12 +657,12 @@
 					{:else if TTS_ENGINE === 'azure'}
 						<div style="--d:flex; --g:0.5rem">
 							<div style="--w:100%">
-								<div style="--mb:0.375rem; --size:0.6rem; --weight:500">{$i18n.t('TTS Voice')}</div>
+								<div style="--mb:0.4rem; --size:0.6rem; --weight:500">{$i18n.t('TTS Voice')}</div>
 								<div style="--d:flex; --w:100%">
 									<div style="--fx:1 1 0%">
 										<input
 											list="voice-list"
-											style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+											style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 											bind:value={TTS_VOICE}
 											placeholder="Select a voice"
 										/>
@@ -676,7 +676,7 @@
 								</div>
 							</div>
 							<div style="--w:100%">
-								<div style="--mb:0.375rem; --size:0.6rem; --weight:500">
+								<div style="--mb:0.4rem; --size:0.6rem; --weight:500">
 									{$i18n.t('Output format')}
 									<a
 										href="https://learn.microsoft.com/en-us/azure/ai-services/speech-service/rest-text-to-speech?tabs=streaming#audio-outputs"
@@ -689,7 +689,7 @@
 									<div style="--fx:1 1 0%">
 										<input
 											list="tts-model-list"
-											style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+											style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 											bind:value={TTS_AZURE_SPEECH_OUTPUT_FORMAT}
 											placeholder="Select a output format"
 										/>
@@ -704,7 +704,7 @@
 					<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Response splitting')}</div>
 					<div style="--d:flex; --ai:center; --pos:relative">
 						<select
-							style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --cur:pointer; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.6rem; --bgc:transparent; --oe:none; --ta:right"
+							style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --cur:pointer; --radius:0.125rem; --px:0.5rem; --p:0.2rem; --size:0.6rem; --bgc:transparent; --oe:none; --ta:right"
 							aria-label="Select how to split message text for TTS requests"
 							bind:value={TTS_SPLIT_ON}
 						>
@@ -716,7 +716,7 @@
 						</select>
 					</div>
 				</div>
-				<div style="--mt:0.5rem; --mb:0.25rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
+				<div style="--mt:0.5rem; --mb:0.2rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 					{$i18n.t(
 						"Control how message text is split for TTS requests. 'Punctuation' splits into sentences, 'paragraphs' splits into paragraphs, and 'none' keeps the message as a single string."
 					)}
@@ -724,9 +724,9 @@
 			</div>
 		</div>
 	</div>
-	<div style="--d:flex; --jc:flex-end; --size:0.875rem; --weight:500">
+	<div style="--d:flex; --jc:flex-end; --size:0.8rem; --weight:500">
 		<button
-			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+			style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			type="submit"
 		>
 			{$i18n.t('Save')}

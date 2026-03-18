@@ -8,7 +8,7 @@
 
 <div style="--px:0.6rem">
 	<div style="--ta:center; --size:3.75rem; --mb:0.6rem">📄</div>
-	<div style="--ta:center; --dark-c:#fff; --size:1.25rem; --weight:600; --z:50">
+	<div style="--ta:center; --dark-c:#fff; --size:1.2rem; --weight:600; --z:50">
 		{#if title}
 			{title}
 		{:else}
@@ -17,7 +17,7 @@
 	</div>
 
 	<slot
-		><div style="--px:0.5rem; --mt:0.5rem; --ta:center; --size:0.875rem; --dark-c:var(--color-gray-200); --w:100%">
+		><div style="--px:0.5rem; --mt:0.5rem; --ta:center; --size:0.8rem; --dark-c:var(--color-gray-200); --w:100%">
 			{#if content}
 				{content}
 			{:else}

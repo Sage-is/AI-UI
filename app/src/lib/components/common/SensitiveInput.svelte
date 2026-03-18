@@ -33,7 +33,7 @@
 	<button
 		class={showButtonClassName}
 		type="button"
-		style="--d:flex; --ai:center; --p:0.25rem"
+		style="--d:flex; --ai:center; --p:0.2rem"
 		aria-pressed={show}
 		aria-label={$i18n.t('Make password visible in the user interface')}
 		on:click={toggleShow}

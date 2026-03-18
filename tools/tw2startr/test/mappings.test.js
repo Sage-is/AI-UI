@@ -62,7 +62,7 @@ describe('Layout mappings', () => {
 describe('Spacing mappings', () => {
   it('converts padding', () => {
     expect(convertClass('p-4')).toMatchObject({ converted: true, properties: [{ prop: '--p', value: '1rem' }] });
-    expect(convertClass('px-3.5')).toMatchObject({ converted: true, properties: [{ prop: '--px', value: '0.875rem' }] });
+    expect(convertClass('px-3.5')).toMatchObject({ converted: true, properties: [{ prop: '--px', value: '0.8rem' }] });
     expect(convertClass('py-2')).toMatchObject({ converted: true, properties: [{ prop: '--py', value: '0.5rem' }] });
     expect(convertClass('pt-0')).toMatchObject({ converted: true, properties: [{ prop: '--pt', value: '0' }] });
   });
@@ -121,7 +121,7 @@ describe('Sizing mappings', () => {
 
 describe('Typography mappings', () => {
   it('converts font size', () => {
-    expect(convertClass('text-sm')).toMatchObject({ converted: true, properties: [{ prop: '--size', value: '0.875rem' }] });
+    expect(convertClass('text-sm')).toMatchObject({ converted: true, properties: [{ prop: '--size', value: '0.8rem' }] });
     expect(convertClass('text-2xl')).toMatchObject({ converted: true, properties: [{ prop: '--size', value: '1.5rem' }] });
   });
 
@@ -189,7 +189,7 @@ describe('Border mappings', () => {
   it('converts border radius', () => {
     expect(convertClass('rounded-lg')).toMatchObject({ converted: true, properties: [{ prop: '--radius', value: '0.5rem' }] });
     expect(convertClass('rounded-full')).toMatchObject({ converted: true, properties: [{ prop: '--radius', value: '9999px' }] });
-    expect(convertClass('rounded')).toMatchObject({ converted: true, properties: [{ prop: '--radius', value: '0.25rem' }] });
+    expect(convertClass('rounded')).toMatchObject({ converted: true, properties: [{ prop: '--radius', value: '0.2rem' }] });
   });
 
   it('converts box shadow', () => {

@@ -57,18 +57,18 @@
 					}
 				}}
 			>
-				<div style="--w:100%; --d:flex; --jc:center; --py:0.25rem; --size:0.6rem; animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; --ai:center; --g:0.5rem">
+				<div style="--w:100%; --d:flex; --jc:center; --py:0.2rem; --size:0.6rem; animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; --ai:center; --g:0.5rem">
 					<Spinner className=" size-4" />
 					<div class=" ">Loading...</div>
 				</div>
 			</Loader>
 		{:else if !thread}
 			<div
-				style="--px:1.25rem; --mx:auto"
+				style="--px:1.2rem; --mx:auto"
 	class="{($settings?.widescreenMode ?? null) ? 'max-w-full' : 'max-w-5xl'}"
 			>
 				{#if channel}
-					<div style="--d:flex; --fd:column; --g:0.375rem; --pb:1.25rem; --pt:2.5rem">
+					<div style="--d:flex; --fd:column; --g:0.4rem; --pb:1.2rem; --pt:2.5rem">
 						<div style="--size:1.5rem; --weight:500; --tt:capitalize">{channel.name}</div>
 
 						<div style="--c:var(--color-gray-500)">
@@ -82,7 +82,7 @@
 						</div>
 					</div>
 				{:else}
-					<div style="--d:flex; --jc:center; --size:0.6rem; --ai:center; --g:0.5rem; --py:1.25rem">
+					<div style="--d:flex; --jc:center; --size:0.6rem; --ai:center; --g:0.5rem; --py:1.2rem">
 						<div class=" ">Start of the channel</div>
 					</div>
 				{/if}

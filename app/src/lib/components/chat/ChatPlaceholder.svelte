@@ -110,7 +110,7 @@
 							)}
 						</div>
 						{#if models[selectedModelIdx]?.info?.meta?.user}
-							<div style="--mt:0.125rem; --size:0.875rem; --weight:400; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
+							<div style="--mt:0.125rem; --size:0.8rem; --weight:400; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 								By
 								{#if models[selectedModelIdx]?.info?.meta?.user.community}
 									<a href="https://sage.is/m/{models[selectedModelIdx]?.info?.meta?.user.username}"

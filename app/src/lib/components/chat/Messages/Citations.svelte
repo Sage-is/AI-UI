@@ -108,13 +108,13 @@
 />
 
 {#if citations.length > 0}
-	<div style="--py:0.125rem; --mx:-0.125rem; --w:100%; --d:flex; --g:0.25rem; --ai:center; --fw:wrap">
+	<div style="--py:0.125rem; --mx:-0.125rem; --w:100%; --d:flex; --g:0.2rem; --ai:center; --fw:wrap">
 		{#if citations.length <= 3}
 			<div style="--d:flex; --size:0.6rem; --weight:500; --fw:wrap">
 				{#each citations as citation, idx}
 					<button
 						id={`source-${id}-${idx + 1}`}
-						style="--oe:none; --d:flex; --dark-c:var(--color-gray-300); --p:0.25rem; --bgc:#fff; --dark-bgc:var(--color-gray-900); --radius:0.6rem; --maxw:24rem"
+						style="--oe:none; --d:flex; --dark-c:var(--color-gray-300); --p:0.2rem; --bgc:#fff; --dark-bgc:var(--color-gray-900); --radius:0.6rem; --maxw:24rem"
 	class="no-toggle"
 						on:click={() => {
 							showCitationModal = true;
@@ -127,7 +127,7 @@
 							</div>
 						{/if}
 						<div
-							style="--fx:1 1 0%; --mx:0.25rem; overflow:hidden; text-overflow:ellipsis; --ws:nowrap; --c:rgb(0 0 0 / 0.6); --hvr-c:#000; --dark-c:rgb(255 255 255 / 0.6); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+							style="--fx:1 1 0%; --mx:0.2rem; overflow:hidden; text-overflow:ellipsis; --ws:nowrap; --c:rgb(0 0 0 / 0.6); --hvr-c:#000; --dark-c:rgb(255 255 255 / 0.6); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						>
 							{decodeString(citation.source.name)}
 						</div>
@@ -145,7 +145,7 @@
 					style="--d:flex; --w:100%; --of:auto; --ai:center; --g:0.5rem; --c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-400); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --cur:pointer"
 				>
 					<div
-						style="--fx:1 1 0%; --d:flex; --ai:center; --g:0.25rem; --of:auto; --w:100%; --maxw:100%"
+						style="--fx:1 1 0%; --d:flex; --ai:center; --g:0.2rem; --of:auto; --w:100%; --maxw:100%"
 	class="scrollbar-none"
 					>
 						<span style="--ws:nowrap; --d:none; --d-sm:inline; --fs:0"
@@ -156,7 +156,7 @@
 							<div style="--d:flex; --size:0.6rem; --weight:500; --ai:center">
 								{#each citations.slice(0, 2) as citation, idx}
 									<button
-										style="--oe:none; --d:flex; --dark-c:var(--color-gray-300); --p:0.25rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.6rem; --maxw:24rem"
+										style="--oe:none; --d:flex; --dark-c:var(--color-gray-300); --p:0.2rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.6rem; --maxw:24rem"
 	class="no-toggle"
 										on:click={() => {
 											showCitationModal = true;
@@ -171,14 +171,14 @@
 												{idx + 1}
 											</div>
 										{/if}
-										<div style="--fx:1 1 0%; --mx:0.25rem; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
+										<div style="--fx:1 1 0%; --mx:0.2rem; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
 											{decodeString(citation.source.name)}
 										</div>
 									</button>
 								{/each}
 							</div>
 						</div>
-						<div style="--d:flex; --ai:center; --g:0.25rem; --ws:nowrap; --fs:0">
+						<div style="--d:flex; --ai:center; --g:0.2rem; --ws:nowrap; --fs:0">
 							<span style="--d:none; --d-sm:inline">{$i18n.t('and')}</span>
 							{citations.length - 2}
 							<span>{$i18n.t('more')}</span>
@@ -196,7 +196,7 @@
 					<div style="--d:flex; --size:0.6rem; --weight:500; --fw:wrap">
 						{#each citations.slice(2) as citation, idx}
 							<button
-								style="--oe:none; --d:flex; --dark-c:var(--color-gray-300); --p:0.25rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.6rem; --maxw:24rem"
+								style="--oe:none; --d:flex; --dark-c:var(--color-gray-300); --p:0.2rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.6rem; --maxw:24rem"
 	class="no-toggle"
 								on:click={() => {
 									showCitationModal = true;
@@ -208,7 +208,7 @@
 										{idx + 3}
 									</div>
 								{/if}
-								<div style="--fx:1 1 0%; --mx:0.25rem; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
+								<div style="--fx:1 1 0%; --mx:0.2rem; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
 									{decodeString(citation.source.name)}
 								</div>
 							</button>

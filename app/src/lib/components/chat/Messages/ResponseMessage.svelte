@@ -619,7 +619,7 @@
 			/>
 		</div>
 
-		<div style="--fx:1 1 auto; --w:0; --pl:0.25rem; --pos:relative">
+		<div style="--fx:1 1 auto; --w:0; --pl:0.2rem; --pos:relative">
 			<Name>
 				<Tooltip content={model?.name ?? message.model} placement="top-start">
 					<span style="--line-clamp:1; --c:#000; --dark-c:#fff">
@@ -720,7 +720,7 @@
 						{/if}
 
 						{#if message?.files && message.files?.filter((f) => f.type === 'image').length > 0}
-							<div style="--my:0.25rem; --w:100%; --d:flex; --ofx:auto; --g:0.5rem; --fw:wrap">
+							<div style="--my:0.2rem; --w:100%; --d:flex; --ofx:auto; --g:0.5rem; --fw:wrap">
 								{#each message.files as file}
 									<div>
 										{#if file.type === 'image'}
@@ -741,7 +741,7 @@
 						{/if}
 
 						{#if edit === true}
-							<div style="--w:100%; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800); --radius:1.5rem; --px:1.25rem; --py:0.6rem; --my:0.5rem">
+							<div style="--w:100%; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800); --radius:1.5rem; --px:1.2rem; --py:0.6rem; --my:0.5rem">
 								<textarea
 									id="message-edit-{message.id}"
 									bind:this={editTextAreaElement}
@@ -765,7 +765,7 @@
 									}}
 								/>
 
-								<div style="--mt:0.5rem; --mb:0.25rem; --d:flex; --jc:space-between; --size:0.875rem; --weight:500">
+								<div style="--mt:0.5rem; --mb:0.2rem; --d:flex; --jc:space-between; --size:0.8rem; --weight:500">
 									<div>
 										<button
 											id="save-new-message-button"
@@ -778,7 +778,7 @@
 										</button>
 									</div>
 
-									<div style="--d:flex; --g:0.375rem">
+									<div style="--d:flex; --g:0.4rem">
 										<button
 											id="close-edit-message-button"
 											style="--px:1rem; --py:0.5rem; --bgc:#fff; --dark-bgc:var(--color-gray-900); --hvr-bgc:var(--color-gray-100); --c:var(--color-gray-800); --dark-c:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:1.5rem"
@@ -892,7 +892,7 @@
 								<div style="--d:flex; --as:center; --minw:fit-content" dir="ltr">
 									<button
 										aria-label={$i18n.t('Previous message')}
-										style="--as:center; --p:0.25rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-dark-c:#fff; --hvr-c:#000; --radius:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+										style="--as:center; --p:0.2rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-dark-c:#fff; --hvr-c:#000; --radius:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 										on:click={() => {
 											showPreviousMessage(message);
 										}}
@@ -904,7 +904,7 @@
 											viewBox="0 0 24 24"
 											stroke="currentColor"
 											stroke-width="2.5"
-											style="--w:0.875rem; --h:0.875rem"
+											style="--w:0.8rem; --h:0.8rem"
 										>
 											<path
 												stroke-linecap="round"
@@ -916,7 +916,7 @@
 
 									{#if messageIndexEdit}
 										<div
-											style="--size:0.875rem; --d:flex; --jc:center; --weight:600; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content"
+											style="--size:0.8rem; --d:flex; --jc:center; --weight:600; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content"
 										>
 											<input
 												id="message-index-input-{message.id}"
@@ -943,7 +943,7 @@
 									{:else}
 										<!-- svelte-ignore a11y-no-static-element-interactions -->
 										<div
-											style="--size:0.875rem; --ls:0.1em; --weight:600; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content"
+											style="--size:0.8rem; --ls:0.1em; --weight:600; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content"
 											on:dblclick={async () => {
 												messageIndexEdit = true;
 
@@ -960,7 +960,7 @@
 									{/if}
 
 									<button
-										style="--as:center; --p:0.25rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-dark-c:#fff; --hvr-c:#000; --radius:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+										style="--as:center; --p:0.2rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-dark-c:#fff; --hvr-c:#000; --radius:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 										on:click={() => {
 											showNextMessage(message);
 										}}
@@ -973,7 +973,7 @@
 											viewBox="0 0 24 24"
 											stroke="currentColor"
 											stroke-width="2.5"
-											style="--w:0.875rem; --h:0.875rem"
+											style="--w:0.8rem; --h:0.8rem"
 										>
 											<path
 												stroke-linecap="round"
@@ -991,7 +991,7 @@
 										<Tooltip content={$i18n.t('Edit')} placement="bottom">
 											<button
 												aria-label={$i18n.t('Edit')}
-												style="--p:0.375rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+												style="--p:0.4rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="{isLastMessage
 													? 'visible'
 													: 'invisible group-hover:visible'}"
@@ -1022,7 +1022,7 @@
 								<Tooltip content={$i18n.t('Copy')} placement="bottom">
 									<button
 										aria-label={$i18n.t('Copy')}
-										style="--p:0.375rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+										style="--p:0.4rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="{isLastMessage
 											? 'visible'
 											: 'invisible group-hover:visible'} copy-response-button"
@@ -1053,7 +1053,7 @@
 										<button
 											aria-label={$i18n.t('Read Aloud')}
 											id="speak-button-{message.id}"
-											style="--p:0.375rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+											style="--p:0.4rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="{isLastMessage
 												? 'visible'
 												: 'invisible group-hover:visible'}"
@@ -1137,7 +1137,7 @@
 									<Tooltip content={$i18n.t('Generate Image')} placement="bottom">
 										<button
 											aria-label={$i18n.t('Generate Image')}
-											style="--p:0.375rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+											style="--p:0.4rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="{isLastMessage
 												? 'visible'
 												: 'invisible group-hover:visible'}"
@@ -1218,7 +1218,7 @@
 									>
 										<button
 											aria-hidden="true"
-											style="--p:0.375rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --ws:pre-wrap"
+											style="--p:0.4rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --ws:pre-wrap"
 	class="{isLastMessage
 												? 'visible'
 												: 'invisible group-hover:visible'}"
@@ -1251,7 +1251,7 @@
 										<Tooltip content={$i18n.t('Good Response')} placement="bottom">
 											<button
 												aria-label={$i18n.t('Good Response')}
-												style="--p:0.375rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+												style="--p:0.4rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="{isLastMessage
 													? 'visible'
 													: 'invisible group-hover:visible'} {(
@@ -1290,7 +1290,7 @@
 										<Tooltip content={$i18n.t('Bad Response')} placement="bottom">
 											<button
 												aria-label={$i18n.t('Bad Response')}
-												style="--p:0.375rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+												style="--p:0.4rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="{isLastMessage
 													? 'visible'
 													: 'invisible group-hover:visible'} {(
@@ -1333,7 +1333,7 @@
 												aria-label={$i18n.t('Continue Response')}
 												type="button"
 												id="continue-response-button"
-												style="--p:0.375rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+												style="--p:0.4rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="{isLastMessage
 													? 'visible'
 													: 'invisible group-hover:visible'} regenerate-response-button"
@@ -1369,7 +1369,7 @@
 										<button
 											type="button"
 											aria-label={$i18n.t('Regenerate')}
-											style="--p:0.375rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+											style="--p:0.4rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="{isLastMessage
 												? 'visible'
 												: 'invisible group-hover:visible'} regenerate-response-button"
@@ -1414,7 +1414,7 @@
 												type="button"
 												aria-label={$i18n.t('Delete')}
 												id="delete-response-button"
-												style="--p:0.375rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+												style="--p:0.4rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="{isLastMessage
 													? 'visible'
 													: 'invisible group-hover:visible'} regenerate-response-button"
@@ -1447,7 +1447,7 @@
 												<button
 													type="button"
 													aria-label={action.name}
-													style="--p:0.375rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+													style="--p:0.4rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="{isLastMessage
 														? 'visible'
 														: 'invisible group-hover:visible'}"
@@ -1529,6 +1529,6 @@
 	}
 
 	button{
-		margin: 0 0.25rem 0 0;
+		margin: 0 0.2rem 0 0;
 	}
 </style>

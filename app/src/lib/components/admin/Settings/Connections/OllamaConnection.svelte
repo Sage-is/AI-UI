@@ -53,7 +53,7 @@
 
 <ManageOllamaModal bind:show={showManageModal} urlIdx={idx} />
 
-<div style="--d:flex; --g:0.375rem">
+<div style="--d:flex; --g:0.4rem">
 	<Tooltip
 		className="w-full relative"
 		content={$i18n.t(`WebUI will make requests to "{{url}}/api/chat"`, {
@@ -68,16 +68,16 @@
 		{/if}
 
 		<input
-			style="--w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+			style="--w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 			placeholder={$i18n.t('Enter URL (e.g. http://host.docker.internal:11434 )')}
 			bind:value={url}
 		/>
 	</Tooltip>
 
-	<div style="--d:flex; --g:0.25rem">
+	<div style="--d:flex; --g:0.2rem">
 		<Tooltip content={$i18n.t('Manage')} className="self-start">
 			<button
-				style="--as:center; --p:0.25rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--as:center; --p:0.2rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={() => {
 					showManageModal = true;
 				}}
@@ -89,7 +89,7 @@
 
 		<Tooltip content={$i18n.t('Configure')} className="self-start">
 			<button
-				style="--as:center; --p:0.25rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--as:center; --p:0.2rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={() => {
 					showConfigModal = true;
 				}}

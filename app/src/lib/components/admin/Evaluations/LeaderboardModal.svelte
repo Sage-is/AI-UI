@@ -33,7 +33,7 @@
 
 <Modal size="sm" bind:show>
 	{#if model}
-		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.25rem; --pt:1rem; --pb:0.5rem">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.2rem; --pt:1rem; --pb:0.5rem">
 			<div style="--size:1.125rem; --weight:500; --as:center">
 				{model.name}
 			</div>
@@ -41,10 +41,10 @@
 				<XMark className={'size-5'} />
 			</button>
 		</div>
-		<div style="--px:1.25rem; --pb:1rem; --dark-c:var(--color-gray-200)">
+		<div style="--px:1.2rem; --pb:1rem; --dark-c:var(--color-gray-200)">
 			<div style="--mb:0.5rem">
 				{#if topTags.length}
-					<div style="--d:flex; --fw:wrap; --g:0.25rem; --mt:0.25rem; --mx:-0.25rem">
+					<div style="--d:flex; --fw:wrap; --g:0.2rem; --mt:0.2rem; --mx:-0.2rem">
 						{#each topTags as tagInfo}
 							<span style="--px:0.5rem; --py:0.125rem; --radius:9999px; --bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --size:0.6rem">
 								{tagInfo.tag} <span style="--c:var(--color-gray-500); --weight:500">{tagInfo.count}</span>
@@ -57,7 +57,7 @@
 			</div>
 			<div style="--d:flex; --jc:flex-end; --pt:0.5rem">
 				<button
-					style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+					style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 					type="button"
 					on:click={close}
 				>

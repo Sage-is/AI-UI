@@ -114,7 +114,7 @@
 
 						<div style="--as:center; --fs:0">
 							<button
-								style="--bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --c:#000; --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --px:0.5rem; --py:0.25rem; --radius:9999px; --d:flex; --g:0.25rem; --ai:center"
+								style="--bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --c:#000; --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --px:0.5rem; --py:0.2rem; --radius:9999px; --d:flex; --g:0.2rem; --ai:center"
 								type="button"
 								on:click={() => {
 									showAccessControlModal = true;
@@ -122,7 +122,7 @@
 							>
 								<LockClosed strokeWidth="2.5" className="size-3.5" />
 
-								<div style="--size:0.875rem; --weight:500; --fs:0">
+								<div style="--size:0.8rem; --weight:500; --fs:0">
 									{$i18n.t('Access')}
 								</div>
 							</button>
@@ -146,7 +146,7 @@
 
 		<div style="--my:0.5rem">
 			<div style="--d:flex; --w:100%; --jc:space-between">
-				<div style="--as:center; --size:0.875rem; --weight:600">{$i18n.t('Prompt Content')}</div>
+				<div style="--as:center; --size:0.8rem; --weight:600">{$i18n.t('Prompt Content')}</div>
 			</div>
 
 			<div style="--mt:0.5rem">
@@ -181,7 +181,7 @@
 
 		<div style="--my:1rem; --d:flex; --jc:flex-end; --pb:5rem">
 			<button
-				style="--size:0.875rem; --w:100%; --w-lg:fit-content; --px:1rem; --py:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --d:flex; --w:100%; --jc:center"
+				style="--size:0.8rem; --w:100%; --w-lg:fit-content; --px:1rem; --py:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --d:flex; --w:100%; --jc:center"
 	class="{loading
 					? ' cursor-not-allowed bg-black hover:bg-gray-900 text-white dark:bg-white dark:hover:bg-gray-100 dark:text-black'
 					: 'bg-black hover:bg-gray-900 text-white dark:bg-white dark:hover:bg-gray-100 dark:text-black'}"
@@ -191,7 +191,7 @@
 				<div style="--as:center; --weight:500">{$i18n.t('Save & Create')}</div>
 
 				{#if loading}
-					<div style="--ml:0.375rem; --as:center">
+					<div style="--ml:0.4rem; --as:center">
 						<Spinner />
 					</div>
 				{/if}

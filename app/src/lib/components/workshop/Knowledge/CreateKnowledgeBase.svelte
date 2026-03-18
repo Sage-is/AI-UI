@@ -47,7 +47,7 @@
 
 <div style="--w:100%; --maxh:100%">
 	<button
-		style="--d:flex; --g:0.25rem"
+		style="--d:flex; --g:0.2rem"
 		on:click={() => {
 			goto('/workshop/knowledge');
 		}}
@@ -66,7 +66,7 @@
 				/>
 			</svg>
 		</div>
-		<div style="--as:center; --weight:500; --size:0.875rem">{$i18n.t('Back')}</div>
+		<div style="--as:center; --weight:500; --size:0.8rem">{$i18n.t('Back')}</div>
 	</button>
 
 	<form
@@ -83,11 +83,11 @@
 
 			<div style="--w:100%; --d:flex; --fd:column; --g:0.625rem">
 				<div style="--w:100%">
-					<div style="--size:0.875rem; --mb:0.5rem">{$i18n.t('What are you working on?')}</div>
+					<div style="--size:0.8rem; --mb:0.5rem">{$i18n.t('What are you working on?')}</div>
 
-					<div style="--w:100%; --mt:0.25rem">
+					<div style="--w:100%; --mt:0.2rem">
 						<input
-							style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+							style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 							type="text"
 							bind:value={name}
 							placeholder={$i18n.t('Name your knowledge base')}
@@ -97,11 +97,11 @@
 				</div>
 
 				<div>
-					<div style="--size:0.875rem; --mb:0.5rem">{$i18n.t('What are you trying to achieve?')}</div>
+					<div style="--size:0.8rem; --mb:0.5rem">{$i18n.t('What are you trying to achieve?')}</div>
 
-					<div style="--w:100%; --mt:0.25rem">
+					<div style="--w:100%; --mt:0.2rem">
 						<textarea
-							style="--w:100%; resize:none; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+							style="--w:100%; resize:none; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 							rows="4"
 							bind:value={description}
 							placeholder={$i18n.t('Describe your knowledge base and objectives')}
@@ -125,7 +125,7 @@
 		<div style="--d:flex; --jc:flex-end; --mt:0.5rem">
 			<div>
 				<button
-					style="--size:0.875rem; --px:1rem; --py:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --d:flex"
+					style="--size:0.8rem; --px:1rem; --py:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --d:flex"
 	class="{loading
 						? ' cursor-not-allowed bg-gray-100 dark:bg-gray-800'
 						: ' bg-gray-50 hover:bg-gray-100 dark:bg-gray-850 dark:hover:bg-gray-800'}"
@@ -135,7 +135,7 @@
 					<div style="--as:center; --weight:500">{$i18n.t('Create Knowledge')}</div>
 
 					{#if loading}
-						<div style="--ml:0.375rem; --as:center">
+						<div style="--ml:0.4rem; --as:center">
 							<Spinner />
 						</div>
 					{/if}

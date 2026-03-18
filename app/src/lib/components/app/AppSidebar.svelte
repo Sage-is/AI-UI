@@ -21,7 +21,7 @@
 	<div style="--d:flex; --jc:center; --pos:relative">
 		{#if selected === 'home'}
 			<div style="--pos:absolute; --top:0; --left:0; --d:flex; --h:100%">
-				<div style="--my:auto; --btrr:0.5rem; --bbrr:0.5rem; --w:0.25rem; --h:2rem; --bgc:#000; --dark-bgc:#fff"></div>
+				<div style="--my:auto; --btrr:0.5rem; --bbrr:0.5rem; --w:0.2rem; --h:2rem; --bgc:#000; --dark-bgc:#fff"></div>
 			</div>
 		{/if}
 
@@ -47,13 +47,13 @@
 		</Tooltip>
 	</div>
 
-	<div style="--mt:-0.25rem; --bc:1.5px; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-900); --mx:1rem"></div>
+	<div style="--mt:-0.2rem; --bc:1.5px; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-900); --mx:1rem"></div>
 
 	<div style="--d:flex; --jc:center; --pos:relative"
 	class="group">
 		{#if selected === ''}
 			<div style="--pos:absolute; --top:0; --left:0; --d:flex; --h:100%">
-				<div style="--my:auto; --btrr:0.5rem; --bbrr:0.5rem; --w:0.25rem; --h:2rem; --bgc:#000; --dark-bgc:#fff"></div>
+				<div style="--my:auto; --btrr:0.5rem; --bbrr:0.5rem; --w:0.2rem; --h:2rem; --bgc:#000; --dark-bgc:#fff"></div>
 			</div>
 		{/if}
 		<button

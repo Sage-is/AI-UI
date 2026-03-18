@@ -96,10 +96,10 @@
 	});
 </script>
 
-<div id="tab-about" style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.875rem; --mb:1.5rem">
+<div id="tab-about" style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.8rem; --mb:1.5rem">
 	<div style="--g:0.6rem; --ofy:scroll; --maxh:28rem; --maxh-lg:100%">
 		<div>
-			<div style="--mb:0.625rem; --size:0.875rem; --weight:500; --d:flex; --g:0.5rem; --ai:center">
+			<div style="--mb:0.625rem; --size:0.8rem; --weight:500; --d:flex; --g:0.5rem; --ai:center">
 				<div>
 					{$WEBUI_NAME}
 					{$i18n.t('Version')}
@@ -107,7 +107,7 @@
 			</div>
 			<div style="--d:flex; --w:100%; --jc:space-between; --ai:center">
 				<div style="--d:flex; --fd:column; --size:0.6rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-200)">
-					<div style="--d:flex; --g:0.25rem">
+					<div style="--d:flex; --g:0.2rem">
 						<Tooltip content={WEBUI_BUILD_HASH}>
 							v{WEBUI_VERSION}
 						</Tooltip>
@@ -127,7 +127,7 @@
 					</div>
 
 					<button
-						style="--td:underline; --d:flex; --ai:center; --g:0.25rem; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500)"
+						style="--td:underline; --d:flex; --ai:center; --g:0.2rem; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500)"
 						on:click={() => {
 							showChangelog.set(true);
 						}}
@@ -138,7 +138,7 @@
 
 				{#if $config?.features?.enable_version_update_check}
 					<button
-						style="--size:0.6rem; --px:0.6rem; --py:0.375rem; --bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --weight:500"
+						style="--size:0.6rem; --px:0.6rem; --py:0.4rem; --bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --weight:500"
 						on:click={() => {
 							checkForVersionUpdates();
 						}}
@@ -153,7 +153,7 @@
 			<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)" />
 
 			<div>
-				<div style="--mb:0.625rem; --size:0.875rem; --weight:500">{$i18n.t('Ollama Version')}</div>
+				<div style="--mb:0.625rem; --size:0.8rem; --weight:500">{$i18n.t('Ollama Version')}</div>
 				<div style="--d:flex; --w:100%">
 					<div style="--fx:1 1 0%; --size:0.6rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-200)">
 						{ollamaVersion ?? 'N/A'}
@@ -174,7 +174,7 @@
 				<span style="--tt:capitalize">{$config?.license_metadata?.organization_name}</span>
 			</div>
 		{:else}
-			<div style="--d:flex; --g:0.25rem">
+			<div style="--d:flex; --g:0.2rem">
 								<a href="https://x.com/Sage_Is_AI" target="_blank">
 									<img
 										alt="X (formerly Twitter) Follow"

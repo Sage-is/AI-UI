@@ -125,13 +125,13 @@
 			/>
 		</div>
 	{/if}
-	<div style="--fx:1 1 auto; --w:0; --maxw:100%; --pl:0.25rem">
+	<div style="--fx:1 1 auto; --w:0; --maxw:100%; --pl:0.2rem">
 		{#if !($settings?.chatBubble ?? true)}
 			<div>
 				<Name>
 					{#if message.user}
 						{$i18n.t('You')}
-						<span style="--c:var(--color-gray-500); --size:0.875rem; --weight:500">{message?.user ?? ''}</span>
+						<span style="--c:var(--color-gray-500); --size:0.8rem; --weight:500">{message?.user ?? ''}</span>
 					{:else if $settings.showUsername || $_user.name !== user.name}
 						{user.name}
 					{:else}
@@ -167,7 +167,7 @@
 	class="chat- {message.role} markdown-prose">
 			{#if edit !== true}
 				{#if message.files}
-					<div style="--mb:0.25rem; --w:100%; --d:flex; --fd:column; --jc:flex-end; --ofx:auto; --g:0.25rem; --fw:wrap">
+					<div style="--mb:0.2rem; --w:100%; --d:flex; --fd:column; --jc:flex-end; --ofx:auto; --g:0.2rem; --fw:wrap">
 						{#each message.files as file}
 							<div class={($settings?.chatBubble ?? true) ? 'self-end' : ''}>
 								{#if file.type === 'image'}
@@ -190,9 +190,9 @@
 
 			{#if message.content !== ''}
 				{#if edit === true}
-					<div style="--w:100%; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800); --radius:1.5rem; --px:1.25rem; --py:0.6rem; --mb:0.5rem">
+					<div style="--w:100%; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800); --radius:1.5rem; --px:1.2rem; --py:0.6rem; --mb:0.5rem">
 						{#if (editedFiles ?? []).length > 0}
-							<div style="--d:flex; --ai:center; --fw:wrap; --g:0.5rem; --mx:-0.5rem; --mb:0.25rem">
+							<div style="--d:flex; --ai:center; --fw:wrap; --g:0.5rem; --mx:-0.5rem; --mb:0.2rem">
 								{#each editedFiles as file, fileIdx}
 									{#if file.type === 'image'}
 										<div style="--pos:relative"
@@ -204,7 +204,7 @@
 													imageClassName=" size-14 rounded-xl object-cover"
 												/>
 											</div>
-											<div style="--pos:absolute; --top:-0.25rem; --right:-0.25rem">
+											<div style="--pos:absolute; --top:-0.2rem; --right:-0.2rem">
 												<button
 													style="--bgc:#fff; --c:#000;  --bc:#fff; --radius:9999px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="invisible group-hover:visible"
@@ -276,7 +276,7 @@
 							/>
 						</div>
 
-						<div style="--mt:0.5rem; --mb:0.25rem; --d:flex; --jc:space-between; --size:0.875rem; --weight:500">
+						<div style="--mt:0.5rem; --mb:0.2rem; --d:flex; --jc:space-between; --size:0.8rem; --weight:500">
 							<div>
 								<button
 									id="save-edit-message-button"
@@ -289,7 +289,7 @@
 								</button>
 							</div>
 
-							<div style="--d:flex; --g:0.375rem">
+							<div style="--d:flex; --g:0.4rem">
 								<button
 									id="close-edit-message-button"
 									style="--px:1rem; --py:0.5rem; --bgc:#fff; --dark-bgc:var(--color-gray-900); --hvr-bgc:var(--color-gray-100); --c:var(--color-gray-800); --dark-c:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:1.5rem"
@@ -340,7 +340,7 @@
 								{#if siblings.length > 1}
 									<div style="--d:flex; --as:center" dir="ltr">
 										<button
-											style="--as:center; --p:0.25rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-dark-c:#fff; --hvr-c:#000; --radius:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+											style="--as:center; --p:0.2rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-dark-c:#fff; --hvr-c:#000; --radius:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 											on:click={() => {
 												showPreviousMessage(message);
 											}}
@@ -351,7 +351,7 @@
 												viewBox="0 0 24 24"
 												stroke="currentColor"
 												stroke-width="2.5"
-												style="--w:0.875rem; --h:0.875rem"
+												style="--w:0.8rem; --h:0.8rem"
 											>
 												<path
 													stroke-linecap="round"
@@ -363,7 +363,7 @@
 
 										{#if messageIndexEdit}
 											<div
-												style="--size:0.875rem; --d:flex; --jc:center; --weight:600; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content"
+												style="--size:0.8rem; --d:flex; --jc:center; --weight:600; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content"
 											>
 												<input
 													id="message-index-input-{message.id}"
@@ -390,7 +390,7 @@
 										{:else}
 											<!-- svelte-ignore a11y-no-static-element-interactions -->
 											<div
-												style="--size:0.875rem; --ls:0.1em; --weight:600; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content"
+												style="--size:0.8rem; --ls:0.1em; --weight:600; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content"
 												on:dblclick={async () => {
 													messageIndexEdit = true;
 
@@ -409,7 +409,7 @@
 										{/if}
 
 										<button
-											style="--as:center; --p:0.25rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-dark-c:#fff; --hvr-c:#000; --radius:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+											style="--as:center; --p:0.2rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-dark-c:#fff; --hvr-c:#000; --radius:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 											on:click={() => {
 												showNextMessage(message);
 											}}
@@ -420,7 +420,7 @@
 												viewBox="0 0 24 24"
 												stroke="currentColor"
 												stroke-width="2.5"
-												style="--w:0.875rem; --h:0.875rem"
+												style="--w:0.8rem; --h:0.8rem"
 											>
 												<path
 													stroke-linecap="round"
@@ -435,7 +435,7 @@
 							{#if !readOnly}
 								<Tooltip content={$i18n.t('Edit')} placement="bottom">
 									<button
-										style="--p:0.375rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+										style="--p:0.4rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="invisible group-hover:visible edit-user-message-button"
 										on:click={() => {
 											editMessageHandler();
@@ -461,7 +461,7 @@
 
 							<Tooltip content={$i18n.t('Copy')} placement="bottom">
 								<button
-									style="--p:0.375rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+									style="--p:0.4rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="invisible group-hover:visible"
 									on:click={() => {
 										copyToClipboard(message.content);
@@ -487,7 +487,7 @@
 							{#if !readOnly && (!isFirstMessage || siblings.length > 1)}
 								<Tooltip content={$i18n.t('Delete')} placement="bottom">
 									<button
-										style="--p:0.25rem; --radius:0.125rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+										style="--p:0.2rem; --radius:0.125rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="invisible group-hover:visible"
 										on:click={() => {
 											showDeleteConfirm = true;
@@ -515,7 +515,7 @@
 								{#if siblings.length > 1}
 									<div style="--d:flex; --as:center" dir="ltr">
 										<button
-											style="--as:center; --p:0.25rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-dark-c:#fff; --hvr-c:#000; --radius:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+											style="--as:center; --p:0.2rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-dark-c:#fff; --hvr-c:#000; --radius:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 											on:click={() => {
 												showPreviousMessage(message);
 											}}
@@ -526,7 +526,7 @@
 												viewBox="0 0 24 24"
 												stroke="currentColor"
 												stroke-width="2.5"
-												style="--w:0.875rem; --h:0.875rem"
+												style="--w:0.8rem; --h:0.8rem"
 											>
 												<path
 													stroke-linecap="round"
@@ -538,7 +538,7 @@
 
 										{#if messageIndexEdit}
 											<div
-												style="--size:0.875rem; --d:flex; --jc:center; --weight:600; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content"
+												style="--size:0.8rem; --d:flex; --jc:center; --weight:600; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content"
 											>
 												<input
 													id="message-index-input-{message.id}"
@@ -565,7 +565,7 @@
 										{:else}
 											<!-- svelte-ignore a11y-no-static-element-interactions -->
 											<div
-												style="--size:0.875rem; --ls:0.1em; --weight:600; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content"
+												style="--size:0.8rem; --ls:0.1em; --weight:600; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content"
 												on:dblclick={async () => {
 													messageIndexEdit = true;
 
@@ -584,7 +584,7 @@
 										{/if}
 
 										<button
-											style="--as:center; --p:0.25rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-dark-c:#fff; --hvr-c:#000; --radius:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+											style="--as:center; --p:0.2rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-dark-c:#fff; --hvr-c:#000; --radius:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 											on:click={() => {
 												showNextMessage(message);
 											}}
@@ -595,7 +595,7 @@
 												viewBox="0 0 24 24"
 												stroke="currentColor"
 												stroke-width="2.5"
-												style="--w:0.875rem; --h:0.875rem"
+												style="--w:0.8rem; --h:0.8rem"
 											>
 												<path
 													stroke-linecap="round"
@@ -617,7 +617,7 @@
 
 <style>
 	button {
-		margin: 0 0 0 0.25rem;
+		margin: 0 0 0 0.2rem;
 	}
 
 </style>

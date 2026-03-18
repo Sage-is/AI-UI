@@ -23,8 +23,8 @@
 </script>
 
 <div>
-	<div style="--d:flex; --w:100%; --jc:space-between; --mb:0.25rem">
-		<div style="--as:center; --size:0.875rem; --weight:600">{$i18n.t('Filters')}</div>
+	<div style="--d:flex; --w:100%; --jc:space-between; --mb:0.2rem">
+		<div style="--as:center; --size:0.8rem; --weight:600">{$i18n.t('Filters')}</div>
 	</div>
 
 	<div style="--size:0.6rem; --dark-c:var(--color-gray-500)">
@@ -54,7 +54,7 @@
 							/>
 						</div>
 
-						<div style="--py:0.125rem; --size:0.875rem; --w:100%; --tt:capitalize; --weight:500">
+						<div style="--py:0.125rem; --size:0.8rem; --w:100%; --tt:capitalize; --weight:500">
 							<Tooltip content={_filters[filter].meta.description}>
 								{_filters[filter].name}
 							</Tooltip>

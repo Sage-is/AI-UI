@@ -52,7 +52,7 @@
 
 <Modal size="lg" bind:show>
 	<div>
-		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.25rem; --pt:1rem; --pb:0.25rem">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.2rem; --pt:1rem; --pb:0.2rem">
 			<div style="--size:1.125rem; --weight:500; --as:center">{$i18n.t('Memory')}</div>
 			<button
 				style="--as:center"
@@ -64,7 +64,7 @@
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 20 20"
 					fill="currentColor"
-					style="--w:1.25rem; --h:1.25rem"
+					style="--w:1.2rem; --h:1.2rem"
 				>
 					<path
 						d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"
@@ -73,14 +73,14 @@
 			</button>
 		</div>
 
-		<div style="--d:flex; --fd:column; --w:100%; --px:1.25rem; --pb:1.25rem; --dark-c:var(--color-gray-200)">
+		<div style="--d:flex; --fd:column; --w:100%; --px:1.2rem; --pb:1.2rem; --dark-c:var(--color-gray-200)">
 			<div
-				style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem; --h:28rem; --maxh:100vh; outline-style:solid; outline-width:1px; --radius:0.6rem; outline-color:var(--color-gray-100); outline-color:var(--color-gray-800); --mb:1rem; --mt:0.25rem"
+				style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem; --h:28rem; --maxh:100vh; outline-style:solid; outline-width:1px; --radius:0.6rem; outline-color:var(--color-gray-100); outline-color:var(--color-gray-800); --mb:1rem; --mt:0.2rem"
 			>
 				{#if memories.length > 0}
-					<div style="--ta:left; --size:0.875rem; --w:100%; --mb:1rem; --ofy:scroll">
+					<div style="--ta:left; --size:0.8rem; --w:100%; --mb:1rem; --ofy:scroll">
 						<div style="--pos:relative; --ofx:auto">
-							<table style="--w:100%; --size:0.875rem; --ta:left; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); table-layout:auto">
+							<table style="--w:100%; --size:0.8rem; --ta:left; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); table-layout:auto">
 								<thead
 									style="--size:0.6rem; --c:var(--color-gray-700); --tt:uppercase; --bgc:transparent; --dark-c:var(--color-gray-200); border-bottom-width:2px; --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850)"
 								>
@@ -95,21 +95,21 @@
 								<tbody style="--d:table">
 									{#each memories as memory}
 										<tr style=" --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --ai:center">
-											<td style="--d:table;--px:0.6rem; --py:0.25rem">
+											<td style="--d:table;--px:0.6rem; --py:0.2rem">
 												<div style="--line-clamp:1">
 													{memory.content}
 												</div>
 											</td>
-											<td style="--d:table;--px:0.6rem; --py:0.25rem; --d:none; --d-md:flex; --h:2.5rem">
+											<td style="--d:table;--px:0.6rem; --py:0.2rem; --d:none; --d-md:flex; --h:2.5rem">
 												<div style="--my:auto; --ws:nowrap">
 													{dayjs(memory.updated_at * 1000).format('LLL')}
 												</div>
 											</td>
-											<td style="--d:table;--px:0.6rem; --py:0.25rem">
+											<td style="--d:table;--px:0.6rem; --py:0.2rem">
 												<div style="--d:flex; --jc:flex-end; --w:100%">
 													<Tooltip content="Edit">
 														<button
-															style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
+															style="--as:center; --w:fit-content; --size:0.8rem; --px:0.5rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 															on:click={() => {
 																selectedMemory = memory;
 																showEditMemoryModal = true;
@@ -135,7 +135,7 @@
 
 													<Tooltip content="Delete">
 														<button
-															style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
+															style="--as:center; --w:fit-content; --size:0.8rem; --px:0.5rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 															on:click={async () => {
 																const res = await deleteMemoryById(
 																	localStorage.token,
@@ -176,22 +176,22 @@
 						</div>
 					</div>
 				{:else}
-					<div style="--ta:center; --d:flex; --h:100%; --size:0.875rem; --w:100%">
+					<div style="--ta:center; --d:flex; --h:100%; --size:0.8rem; --w:100%">
 						<div style="--my:auto; --pb:2.5rem; --px:1rem; --w:100%; --c:var(--color-gray-500)">
 							{$i18n.t('Memories accessible by LLMs will be shown here.')}
 						</div>
 					</div>
 				{/if}
 			</div>
-			<div style="--d:flex; --size:0.875rem; --weight:500; --g:0.375rem">
+			<div style="--d:flex; --size:0.8rem; --weight:500; --g:0.4rem">
 				<button
-					style="--px:0.875rem; --py:0.375rem; --weight:500; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:var(--color-gray-300); outline-color:var(--color-gray-800); --radius:1.5rem"
+					style="--px:0.8rem; --py:0.4rem; --weight:500; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:var(--color-gray-300); outline-color:var(--color-gray-800); --radius:1.5rem"
 					on:click={() => {
 						showAddMemoryModal = true;
 					}}>{$i18n.t('Add Memory')}</button
 				>
 				<button
-					style="--px:0.875rem; --py:0.375rem; --weight:500; --c:#ef4444; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:#fca5a5; outline-color:#991b1b; --radius:1.5rem"
+					style="--px:0.8rem; --py:0.4rem; --weight:500; --c:#ef4444; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:#fca5a5; outline-color:#991b1b; --radius:1.5rem"
 					on:click={() => {
 						if (memories.length > 0) {
 							showClearConfirmDialog = true;

@@ -202,16 +202,16 @@
 		<div
 			style="--p:1rem; --mb:1rem; --radius:0.6rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --d:flex; --fd:column; --g:0.6rem"
 		>
-			<div style="--weight:500; --size:0.875rem">{$i18n.t('Create New Magic Link')}</div>
+			<div style="--weight:500; --size:0.8rem">{$i18n.t('Create New Magic Link')}</div>
 
 			{#if groups.length > 0}
 				<div>
-					<label style="--d:block; --size:0.6rem; --weight:500; --mb:0.25rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
+					<label style="--d:block; --size:0.6rem; --weight:500; --mb:0.2rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
 						>{$i18n.t('Assign to Groups')}</label
 					>
-					<div style="--d:flex; --fd:column; --g:0.25rem; --maxh:8rem; --ofy:auto">
+					<div style="--d:flex; --fd:column; --g:0.2rem; --maxh:8rem; --ofy:auto">
 						{#each groups as group}
-							<label style="--d:flex; --ai:center; --g:0.5rem; --size:0.875rem; --cur:pointer">
+							<label style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem; --cur:pointer">
 								<input
 									type="checkbox"
 									bind:group={selectedGroupIds}
@@ -226,51 +226,51 @@
 
 			<div style="--d:flex; --g:0.6rem; --fw:wrap">
 				<div style="--fx:1 1 0%">
-					<label style="--d:block; --size:0.6rem; --weight:500; --mb:0.25rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
+					<label style="--d:block; --size:0.6rem; --weight:500; --mb:0.2rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
 						>{$i18n.t('Max Uses')}</label
 					>
 					<input
 						type="number"
 						bind:value={maxUses}
 						min="1"
-						style="--w:100%; --p:0.375rem; --radius:0.5rem; --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --bgc:#fff; --dark-bgc:var(--color-gray-800); --size:0.875rem"
+						style="--w:100%; --p:0.4rem; --radius:0.5rem; --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --bgc:#fff; --dark-bgc:var(--color-gray-800); --size:0.8rem"
 					/>
 				</div>
 
 				<div style="--fx:1 1 0%">
-					<label style="--d:block; --size:0.6rem; --weight:500; --mb:0.25rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
+					<label style="--d:block; --size:0.6rem; --weight:500; --mb:0.2rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
 						>{$i18n.t('Account Duration (hours)')}</label
 					>
 					<input
 						type="number"
 						bind:value={accountDurationHours}
 						min="1"
-						style="--w:100%; --p:0.375rem; --radius:0.5rem; --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --bgc:#fff; --dark-bgc:var(--color-gray-800); --size:0.875rem"
+						style="--w:100%; --p:0.4rem; --radius:0.5rem; --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --bgc:#fff; --dark-bgc:var(--color-gray-800); --size:0.8rem"
 					/>
 				</div>
 
 				<div style="--fx:1 1 0%">
-					<label style="--d:block; --size:0.6rem; --weight:500; --mb:0.25rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
+					<label style="--d:block; --size:0.6rem; --weight:500; --mb:0.2rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
 						>{$i18n.t('Link Expires (hours)')}</label
 					>
 					<input
 						type="number"
 						bind:value={linkExpiresHours}
 						min="1"
-						style="--w:100%; --p:0.375rem; --radius:0.5rem; --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --bgc:#fff; --dark-bgc:var(--color-gray-800); --size:0.875rem"
+						style="--w:100%; --p:0.4rem; --radius:0.5rem; --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --bgc:#fff; --dark-bgc:var(--color-gray-800); --size:0.8rem"
 					/>
 				</div>
 			</div>
 
 			<div>
-				<label style="--d:block; --size:0.6rem; --weight:500; --mb:0.25rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
+				<label style="--d:block; --size:0.6rem; --weight:500; --mb:0.2rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
 					>{$i18n.t('Webhook URL (optional)')}</label
 				>
 				<input
 					type="url"
 					bind:value={webhookUrl}
 					placeholder="https://..."
-					style="--w:100%; --p:0.375rem; --radius:0.5rem; --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --bgc:#fff; --dark-bgc:var(--color-gray-800); --size:0.875rem"
+					style="--w:100%; --p:0.4rem; --radius:0.5rem; --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --bgc:#fff; --dark-bgc:var(--color-gray-800); --size:0.8rem"
 				/>
 			</div>
 
@@ -281,12 +281,12 @@
 					>
 					<div style="--d:flex; --fd:column; --g:0.5rem; --mt:0.5rem">
 						<div>
-							<label style="--d:block; --size:0.6rem; --weight:500; --mb:0.25rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
+							<label style="--d:block; --size:0.6rem; --weight:500; --mb:0.2rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
 								>{$i18n.t('Bridge')}</label
 							>
 							<select
 								bind:value={createBridgeId}
-								style="--w:100%; --p:0.375rem; --radius:0.5rem; --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --bgc:#fff; --dark-bgc:var(--color-gray-800); --size:0.875rem"
+								style="--w:100%; --p:0.4rem; --radius:0.5rem; --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --bgc:#fff; --dark-bgc:var(--color-gray-800); --size:0.8rem"
 							>
 								<option value="">{$i18n.t('Select a bridge...')}</option>
 								{#each bridgeConnections as bc}
@@ -295,25 +295,25 @@
 							</select>
 						</div>
 						<div>
-							<label style="--d:block; --size:0.6rem; --weight:500; --mb:0.25rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
+							<label style="--d:block; --size:0.6rem; --weight:500; --mb:0.2rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
 								>{$i18n.t('Recipients (one per line or comma-separated)')}</label
 							>
 							<textarea
 								bind:value={createRecipients}
 								rows="3"
 								placeholder={$i18n.t('e.g. 1234567890@c.us')}
-								style="--w:100%; --p:0.375rem; --radius:0.5rem; --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --bgc:#fff; --dark-bgc:var(--color-gray-800); --size:0.875rem; resize:vertical"
+								style="--w:100%; --p:0.4rem; --radius:0.5rem; --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --bgc:#fff; --dark-bgc:var(--color-gray-800); --size:0.8rem; resize:vertical"
 							></textarea>
 						</div>
 						<div>
-							<label style="--d:block; --size:0.6rem; --weight:500; --mb:0.25rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
+							<label style="--d:block; --size:0.6rem; --weight:500; --mb:0.2rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
 								>{$i18n.t('Message (optional)')}</label
 							>
 							<textarea
 								bind:value={createMessage}
 								rows="2"
 								placeholder={$i18n.t('Custom message to include with the link')}
-								style="--w:100%; --p:0.375rem; --radius:0.5rem; --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --bgc:#fff; --dark-bgc:var(--color-gray-800); --size:0.875rem; resize:vertical"
+								style="--w:100%; --p:0.4rem; --radius:0.5rem; --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --bgc:#fff; --dark-bgc:var(--color-gray-800); --size:0.8rem; resize:vertical"
 							></textarea>
 						</div>
 					</div>
@@ -322,7 +322,7 @@
 
 			<div style="--d:flex; --g:0.5rem; --jc:flex-end">
 				<button
-					style="--px:0.6rem; --py:0.375rem; --radius:0.5rem; --size:0.875rem; --cur:pointer; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-700)"
+					style="--px:0.6rem; --py:0.4rem; --radius:0.5rem; --size:0.8rem; --cur:pointer; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-700)"
 					on:click={() => {
 						showCreateForm = false;
 					}}
@@ -330,7 +330,7 @@
 					{$i18n.t('Cancel')}
 				</button>
 				<button
-					style="--px:0.6rem; --py:0.375rem; --radius:0.5rem; --size:0.875rem; --cur:pointer; --bgc:var(--color-gray-900); --dark-bgc:#fff; --c:#fff; --dark-c:var(--color-gray-900); --weight:500"
+					style="--px:0.6rem; --py:0.4rem; --radius:0.5rem; --size:0.8rem; --cur:pointer; --bgc:var(--color-gray-900); --dark-bgc:#fff; --c:#fff; --dark-c:var(--color-gray-900); --weight:500"
 					on:click={handleCreate}
 				>
 					{$i18n.t('Create')}
@@ -344,7 +344,7 @@
 			<Spinner className="size-5" />
 		</div>
 	{:else if links.length === 0}
-		<div style="--ta:center; --py:2rem; --c:var(--color-gray-500); --size:0.875rem">
+		<div style="--ta:center; --py:2rem; --c:var(--color-gray-500); --size:0.8rem">
 			{$i18n.t('No magic links created yet')}
 		</div>
 	{:else}
@@ -364,11 +364,11 @@
 							</span>
 						</div>
 
-						<div style="--d:flex; --g:0.25rem">
+						<div style="--d:flex; --g:0.2rem">
 							{#if link.is_active}
 								<Tooltip content={$i18n.t('Copy Link')}>
 									<button
-										style="--px:0.5rem; --py:0.25rem; --radius:0.5rem; --size:0.6rem; --cur:pointer; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-700)"
+										style="--px:0.5rem; --py:0.2rem; --radius:0.5rem; --size:0.6rem; --cur:pointer; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-700)"
 										on:click={() => copyLink(link.token)}
 									>
 										{$i18n.t('Copy')}
@@ -377,7 +377,7 @@
 								{#if bridgeConnections.length > 0}
 									<Tooltip content={$i18n.t('Send via Bridge')}>
 										<button
-											style="--px:0.5rem; --py:0.25rem; --radius:0.5rem; --size:0.6rem; --cur:pointer; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-700); --c:#3b82f6"
+											style="--px:0.5rem; --py:0.2rem; --radius:0.5rem; --size:0.6rem; --cur:pointer; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-700); --c:#3b82f6"
 											on:click={() => openSendModal(link.id)}
 										>
 											{$i18n.t('Send')}
@@ -385,14 +385,14 @@
 									</Tooltip>
 								{/if}
 								<button
-									style="--px:0.5rem; --py:0.25rem; --radius:0.5rem; --size:0.6rem; --cur:pointer; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-700); --c:#f59e0b"
+									style="--px:0.5rem; --py:0.2rem; --radius:0.5rem; --size:0.6rem; --cur:pointer; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-700); --c:#f59e0b"
 									on:click={() => handleDeactivate(link.id)}
 								>
 									{$i18n.t('Deactivate')}
 								</button>
 							{/if}
 							<button
-								style="--px:0.5rem; --py:0.25rem; --radius:0.5rem; --size:0.6rem; --cur:pointer; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-700); --c:#ef4444"
+								style="--px:0.5rem; --py:0.2rem; --radius:0.5rem; --size:0.6rem; --cur:pointer; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-700); --c:#ef4444"
 								on:click={() => handleDelete(link.id)}
 							>
 								{$i18n.t('Delete')}
@@ -441,12 +441,12 @@
 
 			<div style="--d:flex; --fd:column; --g:0.6rem">
 				<div>
-					<label style="--d:block; --size:0.6rem; --weight:500; --mb:0.25rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
+					<label style="--d:block; --size:0.6rem; --weight:500; --mb:0.2rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
 						>{$i18n.t('Bridge')}</label
 					>
 					<select
 						bind:value={sendBridgeId}
-						style="--w:100%; --p:0.375rem; --radius:0.5rem; --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --bgc:#fff; --dark-bgc:var(--color-gray-800); --size:0.875rem"
+						style="--w:100%; --p:0.4rem; --radius:0.5rem; --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --bgc:#fff; --dark-bgc:var(--color-gray-800); --size:0.8rem"
 					>
 						{#each bridgeConnections as bc}
 							<option value={bc.id}>{bc.name} ({bc.platform})</option>
@@ -455,39 +455,39 @@
 				</div>
 
 				<div>
-					<label style="--d:block; --size:0.6rem; --weight:500; --mb:0.25rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
+					<label style="--d:block; --size:0.6rem; --weight:500; --mb:0.2rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
 						>{$i18n.t('Recipients (one per line or comma-separated)')}</label
 					>
 					<textarea
 						bind:value={sendRecipients}
 						rows="4"
 						placeholder={$i18n.t('e.g. 1234567890@c.us')}
-						style="--w:100%; --p:0.375rem; --radius:0.5rem; --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --bgc:#fff; --dark-bgc:var(--color-gray-800); --size:0.875rem; resize:vertical"
+						style="--w:100%; --p:0.4rem; --radius:0.5rem; --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --bgc:#fff; --dark-bgc:var(--color-gray-800); --size:0.8rem; resize:vertical"
 					></textarea>
 				</div>
 
 				<div>
-					<label style="--d:block; --size:0.6rem; --weight:500; --mb:0.25rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
+					<label style="--d:block; --size:0.6rem; --weight:500; --mb:0.2rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
 						>{$i18n.t('Message (optional)')}</label
 					>
 					<textarea
 						bind:value={sendMessage}
 						rows="3"
 						placeholder={$i18n.t('Custom message to include with the link')}
-						style="--w:100%; --p:0.375rem; --radius:0.5rem; --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --bgc:#fff; --dark-bgc:var(--color-gray-800); --size:0.875rem; resize:vertical"
+						style="--w:100%; --p:0.4rem; --radius:0.5rem; --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --bgc:#fff; --dark-bgc:var(--color-gray-800); --size:0.8rem; resize:vertical"
 					></textarea>
 				</div>
 			</div>
 
 			<div style="--d:flex; --g:0.5rem; --jc:flex-end; --mt:1rem">
 				<button
-					style="--px:0.6rem; --py:0.375rem; --radius:0.5rem; --size:0.875rem; --cur:pointer; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-700)"
+					style="--px:0.6rem; --py:0.4rem; --radius:0.5rem; --size:0.8rem; --cur:pointer; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-700)"
 					on:click={() => (showSendModal = false)}
 				>
 					{$i18n.t('Cancel')}
 				</button>
 				<button
-					style="--px:0.6rem; --py:0.375rem; --radius:0.5rem; --size:0.875rem; --cur:pointer; --bgc:var(--color-gray-900); --dark-bgc:#fff; --c:#fff; --dark-c:var(--color-gray-900); --weight:500"
+					style="--px:0.6rem; --py:0.4rem; --radius:0.5rem; --size:0.8rem; --cur:pointer; --bgc:var(--color-gray-900); --dark-bgc:#fff; --c:#fff; --dark-c:var(--color-gray-900); --weight:500"
 					disabled={sending}
 					on:click={() => handleSend(sendLinkId, sendBridgeId, sendRecipients, sendMessage)}
 				>

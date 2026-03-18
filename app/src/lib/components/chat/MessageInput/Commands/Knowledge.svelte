@@ -190,14 +190,14 @@
 		<div style="--d:flex; --w:100%; --radius:0.6rem;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)">
 			<div style="--d:flex; --fd:column; --w:100%; --radius:0.6rem; --bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-c:var(--color-gray-100)">
 				<div
-					style="--m:0.25rem; --ofy:auto; --p:0.25rem; --btrr:0.6rem; --bbrr:0.6rem; --g:0.125rem; --maxh:15rem"
+					style="--m:0.2rem; --ofy:auto; --p:0.2rem; --btrr:0.6rem; --bbrr:0.6rem; --g:0.125rem; --maxh:15rem"
 	class="scrollbar-hidden"
 					id="command-options-container"
 					bind:this={container}
 				>
 					{#each filteredItems as item, idx}
 						<button
-							style="--px:0.6rem; --py:0.375rem; --radius:0.6rem; --w:100%; --ta:left; --d:flex; --jc:space-between; --ai:center"
+							style="--px:0.6rem; --py:0.4rem; --radius:0.6rem; --w:100%; --ta:left; --d:flex; --jc:space-between; --ai:center"
 	class="{idx ===
 							selectedIdx
 								? ' bg-gray-50 dark:bg-gray-850 dark:text-gray-100 selected-command-option-button'
@@ -212,34 +212,34 @@
 							}}
 						>
 							<div>
-								<div style="--weight:500; --c:#000; --dark-c:var(--color-gray-100); --d:flex; --ai:center; --g:0.25rem">
+								<div style="--weight:500; --c:#000; --dark-c:var(--color-gray-100); --d:flex; --ai:center; --g:0.2rem">
 									{#if item.legacy}
 										<div
-											style="--bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200); --radius:0.125rem; --tt:uppercase; --size:0.6rem; --weight:700; --px:0.25rem; --fs:0"
+											style="--bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200); --radius:0.125rem; --tt:uppercase; --size:0.6rem; --weight:700; --px:0.2rem; --fs:0"
 										>
 											Legacy
 										</div>
 									{:else if item?.meta?.document}
 										<div
-											style="--bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200); --radius:0.125rem; --tt:uppercase; --size:0.6rem; --weight:700; --px:0.25rem; --fs:0"
+											style="--bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200); --radius:0.125rem; --tt:uppercase; --size:0.6rem; --weight:700; --px:0.2rem; --fs:0"
 										>
 											Document
 										</div>
 									{:else if item?.type === 'file'}
 										<div
-											style="--bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200); --radius:0.125rem; --tt:uppercase; --size:0.6rem; --weight:700; --px:0.25rem; --fs:0"
+											style="--bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200); --radius:0.125rem; --tt:uppercase; --size:0.6rem; --weight:700; --px:0.2rem; --fs:0"
 										>
 											File
 										</div>
 									{:else if item?.type === 'note'}
 										<div
-											style="--bgc:rgb(59 130 246 / 0.2); --c:#1d4ed8; --dark-c:#bfdbfe; --radius:0.125rem; --tt:uppercase; --size:0.6rem; --weight:700; --px:0.25rem; --fs:0"
+											style="--bgc:rgb(59 130 246 / 0.2); --c:#1d4ed8; --dark-c:#bfdbfe; --radius:0.125rem; --tt:uppercase; --size:0.6rem; --weight:700; --px:0.2rem; --fs:0"
 										>
 											Note
 										</div>
 									{:else}
 										<div
-											style="--bgc:rgb(34 197 94 / 0.2); --c:#15803d; --dark-c:#bbf7d0; --radius:0.125rem; --tt:uppercase; --size:0.6rem; --weight:700; --px:0.25rem; --fs:0"
+											style="--bgc:rgb(34 197 94 / 0.2); --c:#15803d; --dark-c:#bbf7d0; --radius:0.125rem; --tt:uppercase; --size:0.6rem; --weight:700; --px:0.2rem; --fs:0"
 										>
 											Collection
 										</div>
@@ -256,11 +256,11 @@
 							</div>
 						</button>
 
-						<!-- <div slot="content" style="--pl:0.5rem; --pt:0.25rem; --d:flex; --fd:column; --g:0.125rem">
+						<!-- <div slot="content" style="--pl:0.5rem; --pt:0.2rem; --d:flex; --fd:column; --g:0.125rem">
 								{#if !item.legacy && (item?.files ?? []).length > 0}
 									{#each item?.files ?? [] as file, fileIdx}
 										<button
-											style="--px:0.6rem; --py:0.375rem; --radius:0.6rem; --w:100%; --ta:left; --d:flex; --jc:space-between; --ai:center; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --hvr-dark-c:var(--color-gray-100)"
+											style="--px:0.6rem; --py:0.4rem; --radius:0.6rem; --w:100%; --ta:left; --d:flex; --jc:space-between; --ai:center; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --hvr-dark-c:var(--color-gray-100)"
 	class="selected-command-option-button"
 											type="button"
 											on:click={() => {
@@ -272,10 +272,10 @@
 										>
 											<div>
 												<div
-													style="--weight:500; --c:#000; --dark-c:var(--color-gray-100); --d:flex; --ai:center; --g:0.25rem"
+													style="--weight:500; --c:#000; --dark-c:var(--color-gray-100); --d:flex; --ai:center; --g:0.2rem"
 												>
 													<div
-														style="--bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200); --radius:0.125rem; --tt:uppercase; --size:0.6rem; --weight:700; --px:0.25rem; --fs:0"
+														style="--bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200); --radius:0.125rem; --tt:uppercase; --size:0.6rem; --weight:700; --px:0.2rem; --fs:0"
 													>
 														File
 													</div>
@@ -293,7 +293,7 @@
 										</button>
 									{/each}
 								{:else}
-									<div style="--c:var(--color-gray-500); --size:0.6rem; --mt:0.25rem; --mb:0.5rem">
+									<div style="--c:var(--color-gray-500); --size:0.6rem; --mt:0.2rem; --mb:0.5rem">
 										{$i18n.t('File not found.')}
 									</div>
 								{/if}
@@ -304,7 +304,7 @@
 							.substring(1)
 							.startsWith('https://youtu.be')}
 						<button
-							style="--px:0.6rem; --py:0.375rem; --radius:0.6rem; --w:100%; --ta:left; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-100)"
+							style="--px:0.6rem; --py:0.4rem; --radius:0.6rem; --w:100%; --ta:left; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-100)"
 	class="selected-command-option-button"
 							type="button"
 							on:click={() => {
@@ -327,7 +327,7 @@
 						</button>
 					{:else if command.substring(1).startsWith('http')}
 						<button
-							style="--px:0.6rem; --py:0.375rem; --radius:0.6rem; --w:100%; --ta:left; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-100)"
+							style="--px:0.6rem; --py:0.4rem; --radius:0.6rem; --w:100%; --ta:left; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-100)"
 	class="selected-command-option-button"
 							type="button"
 							on:click={() => {

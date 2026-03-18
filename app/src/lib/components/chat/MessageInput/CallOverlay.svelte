@@ -866,7 +866,7 @@
 					<div style="--pos:absolute; --top:1rem; --top-md:2rem; --left:1rem">
 						<button
 							type="button"
-							style="--p:0.375rem; --c:#fff; --cur:pointer; backdrop-filter:blur(24px); --bgc:rgb(0 0 0 / 0.1); --radius:9999px"
+							style="--p:0.4rem; --c:#fff; --cur:pointer; backdrop-filter:blur(24px); --bgc:rgb(0 0 0 / 0.1); --radius:9999px"
 							on:click={() => {
 								stopCamera();
 							}}
@@ -904,7 +904,7 @@
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 20 20"
 								fill="currentColor"
-								style="--w:1.25rem; --h:1.25rem"
+								style="--w:1.2rem; --h:1.2rem"
 							>
 								<path
 									fill-rule="evenodd"
@@ -930,7 +930,7 @@
 								viewBox="0 0 24 24"
 								stroke-width="1.5"
 								stroke="currentColor"
-								style="--w:1.25rem; --h:1.25rem"
+								style="--w:1.2rem; --h:1.2rem"
 							>
 								<path
 									stroke-linecap="round"
@@ -957,7 +957,7 @@
 						}
 					}}
 				>
-					<div style="--line-clamp:1; --size:0.875rem; --weight:500">
+					<div style="--line-clamp:1; --size:0.8rem; --weight:500">
 						{#if loading}
 							{$i18n.t('Thinking...')}
 						{:else if assistantSpeaking}
@@ -988,7 +988,7 @@
 						xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 20 20"
 						fill="currentColor"
-						style="--w:1.25rem; --h:1.25rem"
+						style="--w:1.2rem; --h:1.2rem"
 					>
 						<path
 							d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"

@@ -71,7 +71,7 @@
 
 {#if message}
 	<div
-		style="--d:flex; --fd:column; --jc:space-between; --px:1.25rem; --w:100%; --mx:auto; --hvr-bgc:rgb(205 205 205 / 0.05); --hvr-dark-bgc:rgb(78 78 78 / 0.05); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --pos:relative"
+		style="--d:flex; --fd:column; --jc:space-between; --px:1.2rem; --w:100%; --mx:auto; --hvr-bgc:rgb(205 205 205 / 0.05); --hvr-dark-bgc:rgb(78 78 78 / 0.05); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --pos:relative"
 	class="{showUserProfile
 			? 'pt-1.5 pb-0.5'
 			: ''} {($settings?.widescreenMode ?? null)
@@ -80,11 +80,11 @@
 	>
 		{#if !edit}
 			<div
-				style="--pos:absolute; --right:0.25rem; --top:-0.5rem; --z:10"
+				style="--pos:absolute; --right:0.2rem; --top:-0.5rem; --z:10"
 	class="{showButtons ? '' : 'invisible group-hover:visible'}"
 			>
 				<div
-					style="--d:flex; --g:0.25rem; --radius:0.5rem; --bgc:#fff; --dark-bgc:var(--color-gray-850); --shadow:3; --p:0.125rem;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
+					style="--d:flex; --g:0.2rem; --radius:0.5rem; --bgc:#fff; --dark-bgc:var(--color-gray-850); --shadow:3; --p:0.125rem;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 				>
 					<ReactionPicker
 						onClose={() => (showButtons = false)}
@@ -95,7 +95,7 @@
 					>
 						<Tooltip content={$i18n.t('Add Reaction')}>
 							<button
-								style="--hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --p:0.25rem"
+								style="--hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --p:0.2rem"
 								on:click={() => {
 									showButtons = true;
 								}}
@@ -108,7 +108,7 @@
 					{#if !thread}
 						<Tooltip content={$i18n.t('Reply in Thread')}>
 							<button
-								style="--hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --p:0.25rem"
+								style="--hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --p:0.2rem"
 								on:click={() => {
 									onThread(message.id);
 								}}
@@ -121,7 +121,7 @@
 					{#if message.user_id === $user?.id || $user?.role === 'admin'}
 						<Tooltip content={$i18n.t('Edit')}>
 							<button
-								style="--hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --p:0.25rem"
+								style="--hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --p:0.2rem"
 								on:click={() => {
 									edit = true;
 									editedContent = message.content;
@@ -133,7 +133,7 @@
 
 						<Tooltip content={$i18n.t('Delete')}>
 							<button
-								style="--hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --p:0.25rem"
+								style="--hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --p:0.2rem"
 								on:click={() => (showDeleteConfirmDialog = true)}
 							>
 								<GarbageBin />
@@ -165,7 +165,7 @@
 
 					{#if message.created_at}
 						<div
-							style="--mt:0.375rem; --d:flex; --fs:0; --ai:center; --size:0.6rem; --as:center; --v:hidden; --c:var(--color-gray-500); --weight:500"
+							style="--mt:0.4rem; --d:flex; --fs:0; --ai:center; --size:0.6rem; --as:center; --v:hidden; --c:var(--color-gray-500); --weight:500"
 	class="group-hover:visible first-letter:capitalize"
 						>
 							<Tooltip content={dayjs(message.created_at / 1000000).format('LLLL')}>
@@ -176,7 +176,7 @@
 				{/if}
 			</div>
 
-			<div style="--fx:1 1 auto; --w:0; --pl:0.25rem">
+			<div style="--fx:1 1 auto; --w:0; --pl:0.2rem">
 				{#if showUserProfile}
 					<Name>
 						<div style="--as:flex-end; --size:1rem; --fs:0; --weight:500; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
@@ -197,7 +197,7 @@
 				{/if}
 
 				{#if (message?.data?.files ?? []).length > 0}
-					<div style="--my:0.625rem; --w:100%; --d:flex; --ofx:auto; --g:0.5rem; --fw:wrap">
+					<div style="--my:0.6rem; --w:100%; --d:flex; --ofx:auto; --g:0.5rem; --fw:wrap">
 						{#each message?.data?.files as file}
 							<div>
 								{#if file.type === 'image'}
@@ -235,8 +235,8 @@
 								}
 							}}
 						/>
-						<div style="--mt:0.5rem; --mb:0.25rem; --d:flex; --jc:flex-end; --size:0.875rem; --weight:500">
-							<div style="--d:flex; --g:0.375rem">
+						<div style="--mt:0.5rem; --mb:0.2rem; --d:flex; --jc:flex-end; --size:0.8rem; --weight:500">
+							<div style="--d:flex; --g:0.4rem">
 								<button
 									id="close-edit-message-button"
 									style="--px:1rem; --py:0.5rem; --bgc:#fff; --dark-bgc:var(--color-gray-900); --hvr-bgc:var(--color-gray-100); --c:var(--color-gray-800); --dark-c:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:1.5rem"
@@ -275,11 +275,11 @@
 
 					{#if (message?.reactions ?? []).length > 0}
 						<div>
-							<div style="--d:flex; --ai:center; --fw:wrap; row-gap:0.375rem; --g:0.25rem; --mt:0.25rem; --mb:0.5rem">
+							<div style="--d:flex; --ai:center; --fw:wrap; row-gap:0.4rem; --g:0.2rem; --mt:0.2rem; --mb:0.5rem">
 								{#each message.reactions as reaction}
 									<Tooltip content={`:${reaction.name}:`}>
 										<button
-											style="--d:flex; --ai:center; --g:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.6rem; --px:0.5rem; --py:0.25rem; --cur:pointer"
+											style="--d:flex; --ai:center; --g:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.6rem; --px:0.5rem; --py:0.2rem; --cur:pointer"
 	class="{reaction.user_ids.includes(
 												$user?.id
 											)
@@ -320,7 +320,7 @@
 								>
 									<Tooltip content={$i18n.t('Add Reaction')}>
 										<div
-											style="--d:flex; --ai:center; --g:0.375rem; --bgc:rgb(155 155 155 / 0.1); outline-style:solid; outline-color:rgb(78 78 78 / 0.3); outline-color:rgb(205 205 205 / 0.3); outline-width:1px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.6rem; --px:0.25rem; --py:0.25rem; --cur:pointer; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)"
+											style="--d:flex; --ai:center; --g:0.4rem; --bgc:rgb(155 155 155 / 0.1); outline-style:solid; outline-color:rgb(78 78 78 / 0.3); outline-color:rgb(205 205 205 / 0.3); outline-width:1px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.6rem; --px:0.2rem; --py:0.2rem; --cur:pointer; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)"
 										>
 											<FaceSmile />
 										</div>
@@ -331,21 +331,21 @@
 					{/if}
 
 					{#if !thread && message.reply_count > 0}
-						<div style="--d:flex; --ai:center; --g:0.375rem; --mt:-0.125rem; --mb:0.375rem">
+						<div style="--d:flex; --ai:center; --g:0.4rem; --mt:-0.125rem; --mb:0.4rem">
 							<button
-								style="--d:flex; --ai:center; --size:0.6rem; --py:0.25rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --hvr-c:var(--color-gray-700); --hvr-dark-c:var(--color-gray-300); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+								style="--d:flex; --ai:center; --size:0.6rem; --py:0.2rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --hvr-c:var(--color-gray-700); --hvr-dark-c:var(--color-gray-300); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								on:click={() => {
 									onThread(message.id);
 								}}
 							>
-								<span style="--weight:500; --mr:0.25rem">
+								<span style="--weight:500; --mr:0.2rem">
 									{$i18n.t('{{COUNT}} Replies', { COUNT: message.reply_count })}</span
 								><span>
 									{' - '}{$i18n.t('Last reply')}
 									{dayjs.unix(message.latest_reply_at / 1000000000).fromNow()}</span
 								>
 
-								<span style="--ml:0.25rem">
+								<span style="--ml:0.2rem">
 									<ChevronRight className="size-2.5" strokeWidth="3" />
 								</span>
 								<!-- {$i18n.t('View Replies')} -->

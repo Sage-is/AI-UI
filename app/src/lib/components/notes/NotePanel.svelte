@@ -71,7 +71,7 @@
 				show = false;
 			}}
 		>
-			<div style="--px:0.875rem; --py:0.625rem; --h:100vh; --d:flex; --fd:column"
+			<div style="--px:0.8rem; --py:0.625rem; --h:100vh; --d:flex; --fd:column"
 	class="max-h-dvh">
 				<slot />
 			</div>
@@ -82,7 +82,7 @@
 		style="--pos:relative; --d:flex; --w:0.5rem; --ai:center; --jc:center; --bgc:#fff; --dark-shadow:4; --dark-bgc:var(--color-gray-850); --bl:1px solid; --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850)"
 	class="bg-background group"
 	>
-		<div style="--z:10; --d:flex; --h:1.75rem; --w:1.25rem; --ai:center; --jc:center"
+		<div style="--z:10; --d:flex; --h:1.75rem; --w:1.2rem; --ai:center; --jc:center"
 	class="rounded-xs">
 			<EllipsisVertical className="size-4 invisible group-hover:visible" />
 		</div>
@@ -101,7 +101,7 @@
 		{#if show}
 			<div style="--d:flex; --maxh:100%; --minh:100%">
 				<div
-					style="--w:100%; --pl:0.375rem; --pr:0.625rem; --pt:0.5rem; --bgc:#fff; --dark-shadow:4; --dark-bgc:var(--color-gray-850); --z:40; --pe:auto; --ofy:auto; --d:flex; --fd:column"
+					style="--w:100%; --pl:0.4rem; --pr:0.625rem; --pt:0.5rem; --bgc:#fff; --dark-shadow:4; --dark-bgc:var(--color-gray-850); --z:40; --pe:auto; --ofy:auto; --d:flex; --fd:column"
 	class="scrollbar-hidden"
 				>
 					<slot />

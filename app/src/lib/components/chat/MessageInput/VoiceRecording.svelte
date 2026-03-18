@@ -396,10 +396,10 @@
 		? ' bg-gray-100/50 dark:bg-gray-850/50'
 		: 'bg-indigo-300/10 dark:bg-indigo-500/10 '} {className}"
 >
-	<div style="--d:flex; --ai:center; --mr:0.25rem">
+	<div style="--d:flex; --ai:center; --mr:0.2rem">
 		<button
 			type="button"
-			style="--p:0.375rem; --radius:9999px"
+			style="--p:0.4rem; --radius:9999px"
 	class="{loading
 				? ' bg-gray-200 dark:bg-gray-700/50'
 				: 'bg-indigo-400/20 text-indigo-600 dark:text-indigo-300 '}"
@@ -413,7 +413,7 @@
 	</div>
 
 	<div
-		style="--d:flex; --fx:1 1 0%; --as:center; --ai:center; --jc:space-between; --ml:0.5rem; --mx:0.25rem; --of:hidden; --h:1.5rem"
+		style="--d:flex; --fx:1 1 0%; --as:center; --ai:center; --jc:space-between; --ml:0.5rem; --mx:0.2rem; --of:hidden; --h:1.5rem"
 		dir="rtl"
 	>
 		<div
@@ -433,9 +433,9 @@
 	</div>
 
 	<div style="--d:flex">
-		<div style="--mx:0.375rem; --pr:0.25rem; --d:flex; --jc:center; --ai:center">
+		<div style="--mx:0.4rem; --pr:0.2rem; --d:flex; --jc:center; --ai:center">
 			<div
-				style="--size:0.875rem; --weight:500; --fx:1 1 0%; --mx:auto; --ta:center"
+				style="--size:0.8rem; --weight:500; --fx:1 1 0%; --mx:auto; --ta:center"
 	class="{loading ? ' text-gray-500  dark:text-gray-400  ' : ' text-indigo-400 '}"
 			>
 				{formatSeconds(durationSeconds)}
@@ -537,7 +537,7 @@
 			{:else}
 				<button
 					type="button"
-					style="--p:0.375rem; --bgc:#6366f1; --c:#fff; --dark-bgc:#6366f1; --dark-c:#172554; --radius:9999px"
+					style="--p:0.4rem; --bgc:#6366f1; --c:#fff; --dark-bgc:#6366f1; --dark-c:#172554; --radius:9999px"
 					on:click={async () => {
 						await confirmRecording();
 					}}

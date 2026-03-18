@@ -104,7 +104,7 @@
 
 			{#if onBack}
 				<button
-					style="--d:flex; --g:0.25rem"
+					style="--d:flex; --g:0.2rem"
 					on:click={() => {
 						onBack();
 					}}
@@ -123,14 +123,14 @@
 							/>
 						</svg>
 					</div>
-					<div style="--as:center; --size:0.875rem; --weight:500">{$i18n.t('Back')}</div>
+					<div style="--as:center; --size:0.8rem; --weight:500">{$i18n.t('Back')}</div>
 				</button>
 			{/if}
 		</div>
 		
 		<div style="--d:flex; --ai:center; --g:0.5rem">
 			<button
-				style="--d:flex; --ai:center; --g:0.5rem; --px:0.6rem; --py:0.375rem; --size:0.875rem; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--d:flex; --ai:center; --g:0.5rem; --px:0.6rem; --py:0.4rem; --size:0.8rem; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="{showChat 
 						? 'bg-gray-900 text-white dark:bg-white dark:text-black' 
 						: 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700'}"
@@ -143,7 +143,7 @@
 			<!-- Add Back to Models button -->
 			<a 
 				href="/workshop/models"
-				style="--d:flex; --ai:center; --g:0.5rem; --px:0.6rem; --py:0.375rem; --size:0.875rem; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1); --bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700)"
+				style="--d:flex; --ai:center; --g:0.5rem; --px:0.6rem; --py:0.4rem; --size:0.8rem; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1); --bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700)"
 			>
 				<span>{$i18n.t('Back to Models')}</span>
 			</a>
@@ -170,7 +170,7 @@
 			<!-- Always show the chat pane (conditional removed) -->
 			<PaneResizer style="--d:none; --d-md:flex; --pos:relative; --w:0.5rem; --ai:center; --jc:center; --m:0"
 	class="bg-background group">
-				<div style="--z:10; --d:flex; --h:1.75rem; --w:1.25rem; --ai:center; --jc:center"
+				<div style="--z:10; --d:flex; --h:1.75rem; --w:1.2rem; --ai:center; --jc:center"
 	class="rounded-xs">
 					<EllipsisVertical className="size-4 invisible group-hover:visible" />
 				</div>
@@ -203,7 +203,7 @@
 							on:click={toggleChat}
 						>
 							<ChatBubbleOval className="size-6" />
-							<span style="--size:0.875rem">{$i18n.t('Show Test Chat')}</span>
+							<span style="--size:0.8rem">{$i18n.t('Show Test Chat')}</span>
 						</button>
 					</div>
 				{/if}

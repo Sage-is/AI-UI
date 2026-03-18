@@ -321,7 +321,7 @@
 {#if loaded}
 	{#if onBack}
 		<button
-			style="--d:flex; --g:0.25rem"
+			style="--d:flex; --g:0.2rem"
 			on:click={() => {
 				onBack();
 			}}
@@ -340,7 +340,7 @@
 					/>
 				</svg>
 			</div>
-			<div style="--as:center; --size:0.875rem; --weight:500">{'Back'}</div>
+			<div style="--as:center; --size:0.8rem; --weight:500">{'Back'}</div>
 		</button>
 	{/if}
 
@@ -438,14 +438,14 @@
 					</div>
 
 					{#if preset}
-						<div style="--my:0.25rem">
-							<div style="--size:0.875rem; --weight:600; --mb:0.25rem">
+						<div style="--my:0.2rem">
+							<div style="--size:0.8rem; --weight:600; --mb:0.2rem">
 								{$i18n.t('Base Model (From)')}
 							</div>
 
 							<div>
 								<select
-									style="--size:0.875rem; --w:100%; --bgc:transparent; --oe:none"
+									style="--size:0.8rem; --w:100%; --bgc:transparent; --oe:none"
 									placeholder="Select a base model (e.g. llama3, gpt-4o)"
 									bind:value={info.base_model_id}
 									on:change={(e) => {
@@ -464,9 +464,9 @@
 						</div>
 					{/if}
 
-					<div style="--my:0.25rem">
-						<div style="--mb:0.25rem; --d:flex; --w:100%; --jc:space-between; --ai:center">
-							<div style="--as:center; --size:0.875rem; --weight:600">{$i18n.t('Description')}</div>
+					<div style="--my:0.2rem">
+						<div style="--mb:0.2rem; --d:flex; --w:100%; --jc:space-between; --ai:center">
+							<div style="--as:center; --size:0.8rem; --weight:600">{$i18n.t('Description')}</div>
 
 							<ToggleChip
 								active={enableDescription}
@@ -484,7 +484,7 @@
 						{/if}
 					</div>
 
-					<div style="--mt:0.5rem; --my:0.25rem">
+					<div style="--mt:0.5rem; --my:0.2rem">
 						<div class="">
 							<Tags
 								tags={info?.meta?.tags ?? []}
@@ -516,17 +516,17 @@
 						</div>
 					</div>
 
-					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.375rem" />
+					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.4rem" />
 
 					<div style="--my:0.5rem">
 						<div style="--d:flex; --w:100%; --jc:space-between">
-							<div style="--as:center; --size:0.875rem; --weight:600">
+							<div style="--as:center; --size:0.8rem; --weight:600">
 								{$i18n.t('Model Params')}
 							</div>
 						</div>
 
 						<div style="--mt:0.5rem">
-							<div style="--my:0.25rem">
+							<div style="--my:0.2rem">
 								<div style="--size:0.6rem; --weight:600; --mb:0.5rem">
 									{$i18n.t('System Prompt')}
 								</div>
@@ -556,12 +556,12 @@
 						</div>
 					</div>
 
-					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.25rem" />
+					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.2rem" />
 
 					<div style="--my:0.5rem">
 						<div style="--d:flex; --w:100%; --jc:space-between; --ai:center">
 							<div style="--d:flex; --w:100%; --jc:space-between; --ai:center">
-								<div style="--as:center; --size:0.875rem; --weight:600">
+								<div style="--as:center; --size:0.8rem; --weight:600">
 									{$i18n.t('Prompt suggestions')}
 								</div>
 
@@ -580,7 +580,7 @@
 
 							{#if (info?.meta?.suggestion_prompts ?? null) !== null}
 								<button
-									style="--p:0.25rem; --px:0.5rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+									style="--p:0.2rem; --px:0.5rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 									type="button"
 									on:click={() => {
 										if (
@@ -609,12 +609,12 @@
 						</div>
 
 						{#if info?.meta?.suggestion_prompts}
-							<div style="--d:flex; --fd:column; --g:0.25rem; --mt:0.25rem; --mb:0.6rem">
+							<div style="--d:flex; --fd:column; --g:0.2rem; --mt:0.2rem; --mb:0.6rem">
 								{#if info.meta.suggestion_prompts.length > 0}
 									{#each info.meta.suggestion_prompts as prompt, promptIdx}
 										<div style="--d:flex; --radius:0.5rem">
 											<input
-												style="--size:0.875rem; --w:100%; --bgc:transparent; --oe:none; --br:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
+												style="--size:0.8rem; --w:100%; --bgc:transparent; --oe:none; --br:1px solid; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)"
 												placeholder={$i18n.t('Write a prompt suggestion (e.g. Who are you?)')}
 												bind:value={prompt.content}
 											/>
@@ -638,7 +638,7 @@
 						{/if}
 					</div>
 
-					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.375rem" />
+					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.4rem" />
 
 					<div style="--my:0.5rem">
 						<Knowledge bind:selectedItems={knowledge} />
@@ -678,7 +678,7 @@
 						{#if showPreview}
 							<div>
 								<textarea
-									style="--size:0.875rem; --w:100%; --bgc:transparent; --oe:none; resize:none"
+									style="--size:0.8rem; --w:100%; --bgc:transparent; --oe:none; resize:none"
 									rows="10"
 									value={JSON.stringify(info, null, 2)}
 									disabled
@@ -690,7 +690,7 @@
 
 					<div style="--my:0.5rem; --d:flex; --fd:column; --g:0.6rem; --pb:5rem">
 						<button
-							style="--size:0.875rem; --px:0.6rem; --py:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --d:flex; --w:100%; --jc:center"
+							style="--size:0.8rem; --px:0.6rem; --py:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --d:flex; --w:100%; --jc:center"
 							class={loading
 								? ' cursor-not-allowed bg-black hover:bg-gray-900 text-white dark:bg-white dark:hover:bg-gray-100 dark:text-black'
 								: 'bg-black hover:bg-gray-900 text-white dark:bg-white dark:hover:bg-gray-100 dark:text-black'}
@@ -706,7 +706,7 @@
 							</div>
 
 							{#if loading}
-								<div style="--ml:0.375rem; --as:center">
+								<div style="--ml:0.4rem; --as:center">
 									<Spinner />
 								</div>
 							{/if}
@@ -714,7 +714,7 @@
 
 						<!-- Save and chat that saves and brings users to a new chat session -->
 						<button
-							style="--size:0.875rem; --px:1rem; --py:0.6rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --bw:2px; --d:flex; --w:100%; --jc:center; --ai:center; --g:0.5rem"
+							style="--size:0.8rem; --px:1rem; --py:0.6rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --bw:2px; --d:flex; --w:100%; --jc:center; --ai:center; --g:0.5rem"
 							class={loading
 								? 'cursor-not-allowed bg-blue-100 border-blue-300 text-blue-600 dark:bg-blue-900/20 dark:border-blue-700 dark:text-blue-400'
 								: 'bg-blue-50 hover:bg-blue-100 border-blue-300 text-blue-700 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:border-blue-700 dark:text-blue-300'}

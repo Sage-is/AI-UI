@@ -137,18 +137,18 @@
 
 {#if show && !loading}
 	<form
-		style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.875rem"
+		style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.8rem"
 		on:submit|preventDefault={() => {
 			submitHandler();
 			dispatch('save');
 		}}
 	>
 		<div style="--d:flex; --fd:column">
-			<div style="--g:0.25rem">
+			<div style="--g:0.2rem">
 				<div style="--d:flex; --g:0.5rem">
 					<div style="--fx:1 1 0%">
 						<select
-							style="--w:100%; --radius:0.125rem; --size:0.6rem; --py:0.5rem; --px:0.25rem; --bgc:transparent; --oe:none"
+							style="--w:100%; --radius:0.125rem; --size:0.6rem; --py:0.5rem; --px:0.2rem; --bgc:transparent; --oe:none"
 							bind:value={tab}
 							placeholder="Select"
 						>
@@ -161,7 +161,7 @@
 
 					<div style="--fx:1 1 0%">
 						<select
-							style="--w:100%; --radius:0.125rem; --py:0.5rem; --px:0.25rem; --size:0.6rem; --bgc:transparent; --oe:none"
+							style="--w:100%; --radius:0.125rem; --py:0.5rem; --px:0.2rem; --size:0.6rem; --bgc:transparent; --oe:none"
 							bind:value={selectedId}
 							on:change={async () => {
 								await tick();
@@ -190,7 +190,7 @@
 			</div>
 
 			{#if selectedId}
-				<hr style="--bc:var(--color-gray-50); --dark-bc:var(--color-gray-800); --my:0.25rem; --w:100%" />
+				<hr style="--bc:var(--color-gray-50); --dark-bc:var(--color-gray-800); --my:0.2rem; --w:100%" />
 
 				<div style="--my:0.5rem; --size:0.6rem">
 					{#if !loading}

@@ -70,18 +70,18 @@
 	aria-label="New Chat"
 />
 
-<nav style="--pos:sticky; --top:0; --z:30; --w:100%; --py:0.25rem; --mb:-2rem; --d:flex; --fd:column; --ai:center"
+<nav style="--pos:sticky; --top:0; --z:30; --w:100%; --py:0.2rem; --mb:-2rem; --d:flex; --fd:column; --ai:center"
 	class="drag-region">
-	<div style="--d:flex; --ai:center; --w:100%; --pl:0.375rem; --pr:0.25rem">
+	<div style="--d:flex; --ai:center; --w:100%; --pl:0.4rem; --pr:0.2rem">
 		<div
 			style="--bgi:linear-gradient(180deg, var(--tw-gradient-stops)); --tw-gradient-from:#fff; --tw-gradient-via:#fff; --tw-gradient-to:transparent; --dark-tw-gradient-from:var(--color-gray-900); --dark-tw-gradient-via:var(--color-gray-900); --dark-tw-gradient-to:transparent; --pe:none; --pos:absolute; --inset:0; --bottom:-1.75rem; --z:-1"
 	class="via-50%"
 		></div>
 
-		<div style="--d:flex; --maxw:100%; --w:100%; --mx:auto; --p:0.25rem; --pt:0.125rem; --grad:0deg; --grad-color: hsl(273, 99%, 100%)">
+		<div style="--d:flex; --maxw:100%; --w:100%; --mx:auto; --p:0.2rem; --pt:0.125rem; --grad:0deg; --grad-color: hsl(273, 99%, 100%)">
 			<div style="--d:flex; --ai:center; --w:100%; --maxw:100%">
 				<div
-					style="--mr:0.25rem; 
+					style="--mr:0.2rem; 
 					--as:flex-start; 
 					--d:flex; --fx:none; 
 					--ai:center; 
@@ -137,7 +137,7 @@
 				</div>
 
 				<div style="--as:flex-start; --d:flex; --fx:none; --ai:center; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)">
-					<!-- <div style="--d-md:none; --d:flex; --as:center; --w:1px; --h:1.25rem; --mx:0.5rem; --bgc:var(--color-gray-300); --dark-bgc:#44403c" /> -->
+					<!-- <div style="--d-md:none; --d:flex; --as:center; --w:1px; --h:1.2rem; --mx:0.5rem; --bgc:var(--color-gray-300); --dark-bgc:#44403c" /> -->
 					{#if shareEnabled && chat && (chat.id || $temporaryChatEnabled)}
 						<Menu
 							{chat}
@@ -162,7 +162,7 @@
 											viewBox="0 0 24 24"
 											stroke-width="1.5"
 											stroke="currentColor"
-											style="--w:1.25rem; --h:1.25rem"
+											style="--w:1.2rem; --h:1.2rem"
 										>
 											<path
 												stroke-linecap="round"
@@ -174,7 +174,7 @@
 								</button>
 								{#if hasShareTargets}
 									<div
-										style="--pos:absolute; --top:0.25rem; --right:0.25rem; --w:0.5rem; --h:0.5rem; --radius:9999px; --bgc:var(--color-green-500); --dark-bgc:var(--color-green-400); --bs:solid; --bw:1.5px; --bc:#fff; --dark-bc:var(--color-gray-850)"
+										style="--pos:absolute; --top:0.2rem; --right:0.2rem; --w:0.5rem; --h:0.5rem; --radius:9999px; --bgc:var(--color-green-500); --dark-bgc:var(--color-green-400); --bs:solid; --bw:1.5px; --bc:#fff; --dark-bc:var(--color-gray-850)"
 										title={$i18n.t('Shared with people')}
 									/>
 								{/if}
@@ -227,7 +227,7 @@
 							}}
 						>
 							<div
-								style="--us:none; --d:flex; --radius:0.6rem; --p:0.375rem; --w:100%; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+								style="--us:none; --d:flex; --radius:0.6rem; --p:0.4rem; --w:100%; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							>
 								<div style="--as:center">
 									<span class="sr-only">{$i18n.t('User menu')}</span>
@@ -254,8 +254,8 @@
 
 	<div style="--pos:absolute; --top:100%; --left:0; --right:0; --h:fit-content">
 		{#if !history.currentId && !$chatId && ($banners.length > 0 || ($config?.license_metadata?.type ?? null) === 'trial' || (($config?.license_metadata?.seats ?? null) !== null && $config?.user_count > $config?.license_metadata?.seats))}
-			<div style="--w:100%; --z:30; --mt:1.25rem">
-				<div style="--d:flex; --fd:column; --g:0.25rem; --w:100%">
+			<div style="--w:100%; --z:30; --mt:1.2rem">
+				<div style="--d:flex; --fd:column; --g:0.2rem; --w:100%">
 					{#if ($config?.license_metadata?.type ?? null) === 'trial'}
 						<Banner
 							banner={{
