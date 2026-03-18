@@ -540,7 +540,7 @@
 <Modal size="lg" bind:show>
 	<div style="--c:var(--color-gray-700); --dark-c:var(--color-gray-100)">
 		<div
-			style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.25rem; --pt:1rem; --pb:0.25rem"
+			style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.2rem; --pt:1rem; --pb:0.2rem"
 		>
 			<div style="--size:1.125rem; --weight:500; --as:center">{$i18n.t('Settings')}</div>
 			<button
@@ -555,16 +555,16 @@
 		</div>
 
 		<div
-			style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1rem; --pt:0.25rem; --pb:1rem; --g-md:1rem"
+			style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1rem; --pt:0.2rem; --pb:1rem; --g-md:1rem"
 		>
 			<div
 				role="tablist"
 				id="settings-tabs-container"
-				style="--d:flex; --fd:row; --ofx:auto; --g:0.625rem; --g-md:0.25rem; --fd-md:column; --fx:1 1 0%; --fx-md:none; --w-md:10rem; --minh-md:32rem; --maxh-md:32rem; --dark-c:var(--color-gray-200); --size:0.875rem; --weight:500; --ta:left; --mb:0.25rem; --mb-md:0; --translatey:-0.25rem; --p:0.2rem"
+				style="--d:flex; --fd:row; --ofx:auto; --g:0.625rem; --g-md:0.2rem; --fd-md:column; --fx:1 1 0%; --fx-md:none; --w-md:10rem; --minh-md:32rem; --maxh-md:32rem; --dark-c:var(--color-gray-200); --size:0.8rem; --weight:500; --ta:left; --mb:0.2rem; --mb-md:0; --translatey:-0.2rem; --p:0.2rem"
 				class="tabs"
 			>
 				<div
-					style="--d:none; --d-md:flex; --w:100%; --radius:0.6rem; --mb:-0.25rem; --px:0.125rem; --g:0.5rem"
+					style="--d:none; --d-md:flex; --w:100%; --radius:0.6rem; --mb:-0.2rem; --px:0.125rem; --g:0.5rem"
 					id="settings-search"
 				>
 					<div style="--as:center; --btlr:0.6rem; --bblr:0.6rem; --bgc:transparent">
@@ -590,7 +590,7 @@
 								role="tab"
 								aria-controls="tab-general"
 								aria-selected={selectedTab === 'general'}
-								style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab ===
+								style="--p:0.2rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab ===
 								'general'
 									? ($settings?.highContrastMode ?? false)
 										? '--bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800)'
@@ -624,7 +624,7 @@
 								role="tab"
 								aria-controls="tab-interface"
 								aria-selected={selectedTab === 'interface'}
-								style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab ===
+								style="--p:0.2rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab ===
 								'interface'
 									? ($settings?.highContrastMode ?? false)
 										? '--bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800)'
@@ -659,7 +659,7 @@
 									role="tab"
 									aria-controls="tab-connections"
 									aria-selected={selectedTab === 'connections'}
-									style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab ===
+									style="--p:0.2rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab ===
 									'connections'
 										? ($settings?.highContrastMode ?? false)
 											? '--bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800)'
@@ -693,7 +693,7 @@
 									role="tab"
 									aria-controls="tab-tools"
 									aria-selected={selectedTab === 'tools'}
-									style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab ===
+									style="--p:0.2rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab ===
 									'tools'
 										? ($settings?.highContrastMode ?? false)
 											? '--bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800)'
@@ -728,7 +728,7 @@
 								role="tab"
 								aria-controls="tab-personalization"
 								aria-selected={selectedTab === 'personalization'}
-								style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab ===
+								style="--p:0.2rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab ===
 								'personalization'
 									? ($settings?.highContrastMode ?? false)
 										? '--bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800)'
@@ -750,7 +750,7 @@
 								role="tab"
 								aria-controls="tab-audio"
 								aria-selected={selectedTab === 'audio'}
-								style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab ===
+								style="--p:0.2rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab ===
 								'audio'
 									? ($settings?.highContrastMode ?? false)
 										? '--bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800)'
@@ -785,7 +785,7 @@
 								role="tab"
 								aria-controls="tab-chats"
 								aria-selected={selectedTab === 'chats'}
-								style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab ===
+								style="--p:0.2rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab ===
 								'chats'
 									? ($settings?.highContrastMode ?? false)
 										? '--bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800)'
@@ -819,7 +819,7 @@
 								role="tab"
 								aria-controls="tab-account"
 								aria-selected={selectedTab === 'account'}
-								style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab ===
+								style="--p:0.2rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab ===
 								'account'
 									? ($settings?.highContrastMode ?? false)
 										? '--bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800)'
@@ -853,7 +853,7 @@
 								role="tab"
 								aria-controls="tab-about"
 								aria-selected={selectedTab === 'about'}
-								style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab ===
+								style="--p:0.2rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --d:flex; --ta:left; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); {selectedTab ===
 								'about'
 									? ($settings?.highContrastMode ?? false)
 										? '--bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800)'
@@ -892,7 +892,7 @@
 				{#if $user?.role === 'admin'}
 					<a
 						href="/admin/settings"
-						style="--p:0.25rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --mt-md:auto; --d:flex; --ta:left; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+						style="--p:0.2rem; --minw:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-md:none; --mt-md:auto; --d:flex; --ta:left; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						class={$settings?.highContrastMode
 							? 'hover:bg-gray-200 dark:hover:bg-gray-800'
 							: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}

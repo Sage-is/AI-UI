@@ -5,20 +5,20 @@
 
 // --------------------------------------------------------------------------
 // SPACING SCALE
-// Tailwind spacing: key * 0.25rem (with special cases for 0, px, and 0.5)
+// Tailwind spacing: key * 0.2rem (with special cases for 0, px, and 0.5)
 // --------------------------------------------------------------------------
 export const SPACING_SCALE = {
 	'0': '0',
 	'px': '1px',
 	'0.5': '0.125rem',
-	'1': '0.25rem',
-	'1.5': '0.375rem',
+	'1': '0.2rem',
+	'1.5': '0.4rem',
 	'2': '0.5rem',
 	'2.5': '0.625rem',
 	'3': '0.6rem',
-	'3.5': '0.875rem',
+	'3.5': '0.8rem',
 	'4': '1rem',
-	'5': '1.25rem',
+	'5': '1.2rem',
 	'6': '1.5rem',
 	'7': '1.75rem',
 	'8': '2rem',
@@ -649,10 +649,10 @@ export const RAW_COLORS = {
 // --------------------------------------------------------------------------
 export const FONT_SIZES = {
 	'xs': '0.6rem',
-	'sm': '0.875rem',
+	'sm': '0.8rem',
 	'base': '1rem',
 	'lg': '1.125rem',
-	'xl': '1.25rem',
+	'xl': '1.2rem',
 	'2xl': '1.5rem',
 	'3xl': '1.875rem',
 	'4xl': '2.25rem',
@@ -684,8 +684,8 @@ export const FONT_WEIGHTS = {
 export const BORDER_RADIUS = {
 	'none': '0',
 	'sm': '0.125rem',
-	'DEFAULT': '0.25rem',
-	'md': '0.375rem',
+	'DEFAULT': '0.2rem',
+	'md': '0.4rem',
 	'lg': '0.5rem',
 	'xl': '0.6rem',
 	'2xl': '1rem',

@@ -100,7 +100,7 @@ Renders the following Markdown as alerts:
 
 -->
 <div class={`border-l-4 pl-2.5 ${alertStyles[alert.type].border} my-0.5`}>
-	<div style="--ai:center; --d:flex; --g:0.25rem; --py:0.375rem"
+	<div style="--ai:center; --d:flex; --g:0.2rem; --py:0.4rem"
 	class="{alertStyles[alert.type].text}">
 		<svelte:component this={alertStyles[alert.type].icon} className="inline-block size-4" />
 		<span style="--weight:500">{alert.type}</span>

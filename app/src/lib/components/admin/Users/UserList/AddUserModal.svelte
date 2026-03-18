@@ -126,7 +126,7 @@
 
 <Modal size="sm" bind:show>
 	<div>
-		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.25rem; --pt:1rem; --pb:0.5rem">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.2rem; --pt:1rem; --pb:0.5rem">
 			<div style="--size:1.125rem; --weight:500; --as:center">{$i18n.t('Add User')}</div>
 			<button
 				style="--as:center"
@@ -147,11 +147,11 @@
 					}}
 				>
 					<div
-						style="--d:flex; --mt:-0.5rem; --mb:0.375rem; --g:0.25rem; --ofx:auto; --w:fit-content; --ta:center; --size:0.875rem; --weight:500; --radius:9999px; --bgc:transparent; --dark-c:var(--color-gray-200)"
+						style="--d:flex; --mt:-0.5rem; --mb:0.4rem; --g:0.2rem; --ofx:auto; --w:fit-content; --ta:center; --size:0.8rem; --weight:500; --radius:9999px; --bgc:transparent; --dark-c:var(--color-gray-200)"
 	class="scrollbar-none"
 					>
 						<button
-							style="--minw:fit-content; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+							style="--minw:fit-content; --p:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="{tab === ''
 								? ''
 								: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
@@ -162,7 +162,7 @@
 						>
 
 						<button
-							style="--minw:fit-content; --p:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+							style="--minw:fit-content; --p:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="{tab === 'import'
 								? ''
 								: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
@@ -173,14 +173,14 @@
 						>
 					</div>
 
-					<div style="--px:0.25rem">
+					<div style="--px:0.2rem">
 						{#if tab === ''}
 							<div style="--d:flex; --fd:column; --w:100%; --mb:0.6rem">
-								<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Role')}</div>
+								<div style="--mb:0.2rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Role')}</div>
 
 								<div style="--fx:1 1 0%">
 									<select
-										style="--w:100%; --tt:capitalize; --radius:0.5rem; --size:0.875rem; --bgc:transparent; --oe:none"
+										style="--w:100%; --tt:capitalize; --radius:0.5rem; --size:0.8rem; --bgc:transparent; --oe:none"
 	class="dark:disabled:text-gray-500"
 										bind:value={_user.role}
 										placeholder={$i18n.t('Enter Role')}
@@ -195,12 +195,12 @@
 								</div>
 							</div>
 
-							<div style="--d:flex; --fd:column; --w:100%; --mt:0.25rem">
-								<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Name')}</div>
+							<div style="--d:flex; --fd:column; --w:100%; --mt:0.2rem">
+								<div style="--mb:0.2rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Name')}</div>
 
 								<div style="--fx:1 1 0%">
 									<input
-										style="--w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+										style="--w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 	class="disabled:text-gray-500 dark:disabled:text-gray-500"
 										type="text"
 										bind:value={_user.name}
@@ -211,14 +211,14 @@
 								</div>
 							</div>
 
-							<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.625rem; --w:100%" />
+							<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.6rem; --w:100%" />
 
 							<div style="--d:flex; --fd:column; --w:100%">
-								<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Email')}</div>
+								<div style="--mb:0.2rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Email')}</div>
 
 								<div style="--fx:1 1 0%">
 									<input
-										style="--w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+										style="--w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 	class="disabled:text-gray-500 dark:disabled:text-gray-500"
 										type="email"
 										bind:value={_user.email}
@@ -228,12 +228,12 @@
 								</div>
 							</div>
 
-							<div style="--d:flex; --fd:column; --w:100%; --mt:0.25rem">
-								<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Password')}</div>
+							<div style="--d:flex; --fd:column; --w:100%; --mt:0.2rem">
+								<div style="--mb:0.2rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Password')}</div>
 
 								<div style="--fx:1 1 0%">
 									<input
-										style="--w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+										style="--w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 	class="disabled:text-gray-500 dark:disabled:text-gray-500"
 										type="password"
 										bind:value={_user.password}
@@ -254,7 +254,7 @@
 									/>
 
 									<button
-										style="--w:100%; --size:0.875rem; --weight:500; --py:0.6rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100);  --bs:dashed; --dark-bc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-850); --ta:center; --radius:0.6rem"
+										style="--w:100%; --size:0.8rem; --weight:500; --py:0.6rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100);  --bs:dashed; --dark-bc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-850); --ta:center; --radius:0.6rem"
 										type="button"
 										on:click={() => {
 											document.getElementById('upload-user-csv-input')?.click();
@@ -283,9 +283,9 @@
 						{/if}
 					</div>
 
-					<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.875rem; --weight:500">
+					<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.8rem; --weight:500">
 						<button
-							style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
+							style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.2rem; --ai:center"
 	class="{loading
 								? ' cursor-not-allowed'
 								: ''}"

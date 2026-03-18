@@ -25,7 +25,7 @@
 						{$i18n.t('{{webUIName}} Backend Required', { webUIName: $WEBUI_NAME })}
 					</div>
 
-					<div style="--mt:1rem; --ta:center; --size:0.875rem; --w:100%">
+					<div style="--mt:1rem; --ta:center; --size:0.8rem; --w:100%">
 						{$i18n.t(
 							"Oops! You're using an unsupported method (frontend only). Please serve the WebUI from the backend."
 						)}
@@ -46,7 +46,7 @@
 					<div style="--mt:1.5rem; --mx:auto; --pos:relative; --w:fit-content"
 	class="group">
 						<button
-							style="--pos:relative; --z:20; --d:flex; --px:1.25rem; --py:0.5rem; --radius:9999px; --bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem"
+							style="--pos:relative; --z:20; --d:flex; --px:1.2rem; --py:0.5rem; --radius:9999px; --bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.8rem"
 							on:click={() => {
 								location.href = '/';
 							}}

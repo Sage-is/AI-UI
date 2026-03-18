@@ -215,14 +215,14 @@
 
 	<div slot="content">
 		<DropdownMenu.Content
-			style="--w:100%; --maxw:200px; --radius:0.6rem; --px:0.25rem; --py:0.375rem; --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:4"
+			style="--w:100%; --maxw:200px; --radius:0.6rem; --px:0.2rem; --py:0.4rem; --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:4"
 			sideOffset={8}
 			side="bottom"
 			align="end"
 			transition={flyAndScale}
 		>
 			<!-- <DropdownMenu.Item
-				style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.875rem; --cur:pointer; --hvr-dark-bgc:var(--color-gray-800); --radius:0.375rem"
+				style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --cur:pointer; --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem"
 				on:click={async () => {
 					await showSettings.set(!$showSettings);
 				}}
@@ -251,7 +251,7 @@
 
 			{#if $mobile}
 				<DropdownMenu.Item
-					style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.875rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.375rem; --us:none; --w:100%"
+					style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem; --us:none; --w:100%"
 					id="chat-controls-button"
 					on:click={async () => {
 						await showControls.set(true);
@@ -266,7 +266,7 @@
 
 			{#if !$temporaryChatEnabled && ($user?.role === 'admin' || ($user.permissions?.chat?.share ?? true))}
 				<DropdownMenu.Item
-					style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.875rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.375rem; --us:none; --w:100%"
+					style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem; --us:none; --w:100%"
 					id="chat-share-button"
 					on:click={() => {
 						shareHandler();
@@ -278,7 +278,7 @@
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 24 24"
 							fill="currentColor"
-							style="--w:1.25rem; --h:1.25rem; --c:var(--color-green-600); --dark-c:var(--color-green-400)"
+							style="--w:1.2rem; --h:1.2rem; --c:var(--color-green-600); --dark-c:var(--color-green-400)"
 						>
 							<circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="2.5" />
 							<g transform="translate(-2.5, 1)">
@@ -309,7 +309,7 @@
 			{/if}
 
 			<DropdownMenu.Item
-				style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.875rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.375rem; --us:none; --w:100%"
+				style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem; --us:none; --w:100%"
 				id="chat-overview-button"
 				on:click={async () => {
 					await showControls.set(true);
@@ -322,7 +322,7 @@
 			</DropdownMenu.Item>
 
 			<DropdownMenu.Item
-				style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.875rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.375rem; --us:none; --w:100%"
+				style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem; --us:none; --w:100%"
 				id="chat-overview-button"
 				on:click={async () => {
 					await showControls.set(true);
@@ -336,7 +336,7 @@
 
 			<DropdownMenu.Sub>
 				<DropdownMenu.SubTrigger
-					style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.875rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.375rem; --us:none; --w:100%"
+					style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem; --us:none; --w:100%"
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -356,13 +356,13 @@
 					<div style="--d:flex; --ai:center">{$i18n.t('Download')}</div>
 				</DropdownMenu.SubTrigger>
 				<DropdownMenu.SubContent
-					style="--w:100%; --radius:0.6rem; --px:0.25rem; --py:0.375rem; --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:4"
+					style="--w:100%; --radius:0.6rem; --px:0.2rem; --py:0.4rem; --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:4"
 					transition={flyAndScale}
 					sideOffset={8}
 				>
 					{#if $user?.role === 'admin' || ($user.permissions?.chat?.export ?? true)}
 						<DropdownMenu.Item
-							style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.875rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.375rem; --us:none; --w:100%"
+							style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem; --us:none; --w:100%"
 							on:click={() => {
 								downloadJSONExport();
 							}}
@@ -371,7 +371,7 @@
 						</DropdownMenu.Item>
 					{/if}
 					<DropdownMenu.Item
-						style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.875rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.375rem; --us:none; --w:100%"
+						style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem; --us:none; --w:100%"
 						on:click={() => {
 							downloadTxt();
 						}}
@@ -380,7 +380,7 @@
 					</DropdownMenu.Item>
 
 					<DropdownMenu.Item
-						style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.875rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.375rem; --us:none; --w:100%"
+						style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem; --us:none; --w:100%"
 						on:click={() => {
 							downloadPdf();
 						}}
@@ -391,7 +391,7 @@
 			</DropdownMenu.Sub>
 
 			<DropdownMenu.Item
-				style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.875rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.375rem; --us:none; --w:100%"
+				style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem; --us:none; --w:100%"
 				id="chat-copy-button"
 				on:click={async () => {
 					const res = await copyToClipboard(await getChatAsText()).catch((e) => {
@@ -410,7 +410,7 @@
 			{#if !$temporaryChatEnabled}
 				<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.125rem" />
 
-				<div style="--d:flex; --p:0.25rem">
+				<div style="--d:flex; --p:0.2rem">
 					<Tags chatId={chat.id} />
 				</div>
 			{/if}

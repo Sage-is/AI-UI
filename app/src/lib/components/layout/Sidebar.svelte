@@ -604,7 +604,7 @@
 <div
 	bind:this={navElement}
 	id="sidebar"
-	style="--h:100dvh; --us:none; --fs:0; --bgc:var(--color-gray-50); --c:var(--color-gray-900); --dark-bgc:var(--color-gray-950); --dark-c:var(--color-gray-200); --size:0.875rem; --pos:fixed; --z:50; --top:0; --left:0; --ofx:hidden;"
+	style="--h:100dvh; --us:none; --fs:0; --bgc:var(--color-gray-50); --c:var(--color-gray-900); --dark-bgc:var(--color-gray-950); --dark-c:var(--color-gray-200); --size:0.8rem; --pos:fixed; --z:50; --top:0; --left:0; --ofx:hidden;"
 	class="{$showSidebar
 		? 'md:relative w-[280px] max-w-[280px]'
 		: '-translate-x-[280px] w-[0px]'} {$isApp
@@ -617,7 +617,7 @@
 		class={$showSidebar ? '' : 'invisible'}
 	>
 		<div
-			style="--px:0.375rem; --d:flex; --jc:space-between; --g:0.25rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
+			style="--px:0.4rem; --d:flex; --jc:space-between; --g:0.2rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
 		>
 			<button
 				id="sidebar-toggle-button"
@@ -633,7 +633,7 @@
 						viewBox="0 0 24 24"
 						stroke-width="2"
 						stroke="currentColor"
-						style="--w:1.25rem; --h:1.25rem"
+						style="--w:1.2rem; --h:1.2rem"
 					>
 						<path
 							stroke-linecap="round"
@@ -646,7 +646,7 @@
 
 			<a
 				id="sidebar-new-chat-button"
-				style="--d:flex; --jc:space-between; --ai:center; --fx:1 1 0%; --radius:0.5rem; --px:0.5rem; --py:0.25rem; --h:100%; --ta:right; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--d:flex; --jc:space-between; --ai:center; --fx:1 1 0%; --radius:0.5rem; --px:0.5rem; --py:0.2rem; --h:100%; --ta:right; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				class="no-drag-region"
 				href="/"
 				draggable="false"
@@ -668,17 +668,17 @@
 				}}
 			>
 				<div style="--d:flex; --ai:center">
-					<div style="--as:center; --mx:0.375rem">
+					<div style="--as:center; --mx:0.4rem">
 						<img
 							crossorigin="anonymous"
 							src={branding?.logo_url || `${WEBUI_BASE_URL}/static/icons/favicon.png`}
-							style="--w:1.25rem; --h:1.25rem; --translatex:-0.375rem; --radius:9999px"
+							style="--w:1.2rem; --h:1.2rem; --translatex:-0.4rem; --radius:9999px"
 							class="sidebar-new-chat-icon"
 							alt="logo"
 						/>
 					</div>
 					<div
-						style="--as:center; --size:0.875rem; --c:var(--color-gray-850); --dark-c:#fff"
+						style="--as:center; --size:0.8rem; --c:var(--color-gray-850); --dark-c:#fff"
 						class="font-primary"
 					>
 						{$i18n.t('New Chat')}
@@ -692,7 +692,7 @@
 		</div>
 
 		<!-- {#if $user?.role === 'admin'}
-			<div style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-200)">
+			<div style="--px:0.4rem; --d:flex; --jc:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-200)">
 				<a
 					style="--fg:1; --d:flex; --ai:center; --g:0.6rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					href="/home"
@@ -711,7 +711,7 @@
 					</div>
 
 					<div style="--d:flex; --as:center; --translatey:0.5px">
-						<div style="--as:center; --weight:500; --size:0.875rem"
+						<div style="--as:center; --weight:500; --size:0.8rem"
 	class="font-primary">{$i18n.t('Home')}</div>
 					</div>
 				</a>
@@ -719,7 +719,7 @@
 		{/if} -->
 
 		<div
-			style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-200)"
+			style="--px:0.4rem; --d:flex; --jc:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-200)"
 		>
 			<button
 				style="--fg:1; --d:flex; --ai:center; --g:0.6rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --oe:2px solid transparent"
@@ -733,14 +733,14 @@
 				</div>
 
 				<div style="--d:flex; --as:center; --translatey:0.5px">
-					<div style="--as:center; --size:0.875rem" class="font-primary">{$i18n.t('Search')}</div>
+					<div style="--as:center; --size:0.8rem" class="font-primary">{$i18n.t('Search')}</div>
 				</div>
 			</button>
 		</div>
 
 		{#if ($config?.features?.enable_notes ?? false) && ($user?.role === 'admin' || ($user?.permissions?.features?.notes ?? true))}
 			<div
-				style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-200)"
+				style="--px:0.4rem; --d:flex; --jc:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-200)"
 			>
 				<a
 					style="--fg:1; --d:flex; --ai:center; --g:0.6rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
@@ -776,7 +776,7 @@
 					</div>
 
 					<div style="--d:flex; --as:center; --translatey:0.5px">
-						<div style="--as:center; --size:0.875rem" class="font-primary">{$i18n.t('Notes')}</div>
+						<div style="--as:center; --size:0.8rem" class="font-primary">{$i18n.t('Notes')}</div>
 					</div>
 				</a>
 			</div>
@@ -784,7 +784,7 @@
 
 		{#if $user?.role === 'admin' || $user?.permissions?.workshop?.models || $user?.permissions?.workshop?.knowledge || $user?.permissions?.workshop?.prompts || $user?.permissions?.workshop?.tools}
 			<div
-				style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-200)"
+				style="--px:0.4rem; --d:flex; --jc:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-200)"
 			>
 				<a
 					style="--fg:1; --d:flex; --ai:center; --g:0.6rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
@@ -817,7 +817,7 @@
 					</div>
 
 					<div style="--d:flex; --as:center; --translatey:0.5px">
-						<div style="--as:center; --size:0.875rem" class="font-primary">
+						<div style="--as:center; --size:0.8rem" class="font-primary">
 							{$i18n.t('Workshop')}
 						</div>
 					</div>
@@ -832,7 +832,7 @@
 						{@const model = $models.find((model) => model.id === modelId)}
 						{#if model}
 							<div
-								style="--px:0.375rem; --d:flex; --jc:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-200)"
+								style="--px:0.4rem; --d:flex; --jc:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-200)"
 							>
 								<a
 									style="--fg:1; --d:flex; --ai:center; --g:0.625rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
@@ -853,13 +853,13 @@
 											src={model?.info?.meta?.profile_image_url ??
 												branding?.logo_url ??
 												`${WEBUI_BASE_URL}/static/icons/favicon.png`}
-											style="--w:1.25rem; --h:1.25rem; --radius:9999px; --translatex:-0.5px"
+											style="--w:1.2rem; --h:1.2rem; --radius:9999px; --translatex:-0.5px"
 											alt="logo"
 										/>
 									</div>
 
 									<div style="--d:flex; --as:center; --translatey:0.5px">
-										<div style="--as:center; --size:0.875rem; --line-clamp:1" class="font-primary">
+										<div style="--as:center; --size:0.8rem; --line-clamp:1" class="font-primary">
 											{model?.name ?? modelId}
 										</div>
 									</div>
@@ -967,11 +967,11 @@
 			>
 				<!-- Toggle icon bar: folders, pinned, dates, shared -->
 				{#if Object.keys(folders).length > 0 || $pinnedChats.length > 0 || groupedChats.length > 0 || $sharedByMeChats.length > 0 || $sharedWithMeChats.length > 0}
-					<div style="--d:flex; --ai:center; --g:0.25rem; --px:0.4rem; --pt:0.25rem; --pb:0.125rem">
+					<div style="--d:flex; --ai:center; --g:0.2rem; --px:0.4rem; --pt:0.2rem; --pb:0.125rem">
 						{#if $pinnedChats.length > 0}
 							<Tooltip content={showPinnedChat ? $i18n.t('Hide Pinned') : $i18n.t('Show Pinned')}>
 								<button
-									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.25rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-300); --tn:color 150ms ease"
+									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.2rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-300); --tn:color 150ms ease"
 									on:click={() => {
 										showPinnedChat = !showPinnedChat;
 										localStorage.setItem('showPinnedChat', String(showPinnedChat));
@@ -983,7 +983,7 @@
 										viewBox="0 0 24 24"
 										stroke-width="2"
 										stroke="currentColor"
-										style="--w:0.875rem; --h:0.875rem"
+										style="--w:0.8rem; --h:0.8rem"
 									>
 										<path
 											stroke-linecap="round"
@@ -1005,7 +1005,7 @@
 								content={allFoldersCollapsed ? $i18n.t('Unfold Folders') : $i18n.t('Fold Folders')}
 							>
 								<button
-									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.25rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-300); --tn:color 150ms ease"
+									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.2rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-300); --tn:color 150ms ease"
 									on:click={() => {
 										if (allFoldersCollapsed) {
 											unfoldAllFolders();
@@ -1020,7 +1020,7 @@
 										viewBox="0 0 24 24"
 										stroke-width="2"
 										stroke="currentColor"
-										style="--w:0.875rem; --h:0.875rem"
+										style="--w:0.8rem; --h:0.8rem"
 									>
 										<path
 											stroke-linecap="round"
@@ -1042,7 +1042,7 @@
 								content={allDateGroupsCollapsed ? $i18n.t('Unfold Dates') : $i18n.t('Fold Dates')}
 							>
 								<button
-									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.25rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-300); --tn:color 150ms ease"
+									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.2rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-300); --tn:color 150ms ease"
 									on:click={() => {
 										if (allDateGroupsCollapsed) {
 											unfoldAllDateGroups();
@@ -1057,7 +1057,7 @@
 										viewBox="0 0 24 24"
 										stroke-width="2"
 										stroke="currentColor"
-										style="--w:0.875rem; --h:0.875rem"
+										style="--w:0.8rem; --h:0.8rem"
 									>
 										<path
 											stroke-linecap="round"
@@ -1081,7 +1081,7 @@
 									: $i18n.t('Show Shared by Me')}
 							>
 								<button
-									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.25rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-300); --tn:color 150ms ease"
+									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.2rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-300); --tn:color 150ms ease"
 									on:click={() => {
 										showSharedByMe = !showSharedByMe;
 										localStorage.setItem('showSharedByMe', String(showSharedByMe));
@@ -1094,7 +1094,7 @@
 										viewBox="0 0 24 24"
 										stroke-width="2"
 										stroke="currentColor"
-										style="--w:0.875rem; --h:0.875rem"
+										style="--w:0.8rem; --h:0.8rem"
 									>
 										<path
 											stroke-linecap="round"
@@ -1118,7 +1118,7 @@
 									: $i18n.t('Show Shared with Me')}
 							>
 								<button
-									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.25rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-300); --tn:color 150ms ease"
+									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.2rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-300); --tn:color 150ms ease"
 									on:click={() => {
 										showSharedWithMe = !showSharedWithMe;
 										localStorage.setItem('showSharedWithMe', String(showSharedWithMe));
@@ -1131,7 +1131,7 @@
 										viewBox="0 0 24 24"
 										stroke-width="2"
 										stroke="currentColor"
-										style="--w:0.875rem; --h:0.875rem"
+										style="--w:0.8rem; --h:0.8rem"
 									>
 										<path
 											stroke-linecap="round"
@@ -1155,7 +1155,7 @@
 					<!-- svelte-ignore a11y-no-static-element-interactions -->
 					<div
 						transition:slide={{ duration: 200, easing: quintOut }}
-						style="--d:flex; --fd:column; --g:0.25rem; --radius:0.6rem; --pos:relative"
+						style="--d:flex; --fd:column; --g:0.2rem; --radius:0.6rem; --pos:relative"
 						on:dragover|preventDefault|stopPropagation={() => {
 							pinnedDraggedOver = true;
 						}}
@@ -1230,7 +1230,7 @@
 							></div>
 						{/if}
 						<div
-							style="--ml:0.6rem; --pl:0.25rem; --mt:1px; --d:flex; --fd:column; --ofy:auto; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-900)"
+							style="--ml:0.6rem; --pl:0.2rem; --mt:1px; --d:flex; --fd:column; --ofy:auto; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-900)"
 							class="scrollbar-hidden border-s"
 						>
 							{#each $pinnedChats as chat, idx (`pinned-chat-${chat?.id ?? idx}`)}
@@ -1263,7 +1263,7 @@
 				{#if $sharedByMeChats.length > 0 && showSharedByMe}
 					<div transition:slide={{ duration: 200, easing: quintOut }} style="--d:flex; --fd:column">
 						<div
-							style="--ml:0.6rem; --pl:0.25rem; --mt:1px; --d:flex; --fd:column; --ofy:auto; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-900)"
+							style="--ml:0.6rem; --pl:0.2rem; --mt:1px; --d:flex; --fd:column; --ofy:auto; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-900)"
 							class="scrollbar-hidden border-s"
 						>
 							<SharedByMeList items={$sharedByMeChats} />
@@ -1275,7 +1275,7 @@
 				{#if $sharedWithMeChats.length > 0 && showSharedWithMe}
 					<div transition:slide={{ duration: 200, easing: quintOut }} style="--d:flex; --fd:column">
 						<div
-							style="--ml:0.6rem; --pl:0.25rem; --mt:1px; --d:flex; --fd:column; --ofy:auto; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-900)"
+							style="--ml:0.6rem; --pl:0.2rem; --mt:1px; --d:flex; --fd:column; --ofy:auto; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-900)"
 							class="scrollbar-hidden border-s"
 						>
 							<SharedWithMeList items={$sharedWithMeChats} />
@@ -1305,14 +1305,14 @@
 				{/if}
 
 				<div style="--fx:1 1 0%; --d:flex; --fd:column; --ofy:auto" class="scrollbar-hidden">
-					<div style="--pt:0.375rem; --radius:0.8rem; --m:0">
+					<div style="--pt:0.4rem; --radius:0.8rem; --m:0">
 						{#if $chats}
 							{#each groupedChats as group, groupIdx (`date-group-${group.timeRange}`)}
 								<!-- Date group header -->
 								<!-- svelte-ignore a11y-click-events-have-key-events -->
 								<!-- svelte-ignore a11y-no-static-element-interactions -->
 								<div
-									style="--w:100%; --pl:0.375rem; --pr:0.625rem; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --weight:500; --pb:0.375rem; --d:flex; --ai:center; --g:0.25rem; --cur:pointer; --radius:0.25rem; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:background-color 150ms ease"
+									style="--w:100%; --pl:0.4rem; --pr:0.625rem; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --weight:500; --pb:0.4rem; --d:flex; --ai:center; --g:0.2rem; --cur:pointer; --radius:0.2rem; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:background-color 150ms ease"
 									class={groupIdx === 0 ? '' : 'pt-5'}
 									on:click={() => toggleDateGroup(group.timeRange)}
 								>
@@ -1391,7 +1391,7 @@
 									}}
 								>
 									<div
-										style="--w:100%; --d:flex; --jc:center; --py:0.25rem; --size:0.6rem; animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; --ai:center; --g:0.5rem"
+										style="--w:100%; --d:flex; --jc:center; --py:0.2rem; --size:0.6rem; animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; --ai:center; --g:0.5rem"
 									>
 										<Spinner className=" size-4" />
 										<div class=" ">Loading...</div>
@@ -1401,7 +1401,7 @@
 						{:else}
 							<div
 								style="--w:100%; --d:flex; --jc:center; 
-									--py:0.25rem; --size:0.6rem; 
+									--py:0.2rem; --size:0.6rem; 
 									animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; 
 									--ai:center; --g:0.5rem"
 							>
@@ -1426,7 +1426,7 @@
 						}}
 					>
 						<button
-							style="--radius: 1em; --w:100%; --p:0.25rem; --d:flex; --ai:center; --g:0.5rem; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+							style="--radius: 1em; --w:100%; --p:0.2rem; --d:flex; --ai:center; --g:0.5rem; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						>
 							<div style="--as:center; --mr:0.6rem">
 								<img

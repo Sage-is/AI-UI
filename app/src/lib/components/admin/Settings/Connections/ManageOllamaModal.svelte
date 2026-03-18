@@ -13,7 +13,7 @@
 
 <Modal size="sm" bind:show>
 	<div>
-		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-100); --px:1.25rem; --pt:1rem; --pb:0.5rem">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-100); --px:1.2rem; --pt:1rem; --pb:0.5rem">
 			<div
 				style="--d:flex; --w:100%; --jc:space-between; --ai:center; --size:1.125rem; --weight:500; --as:center"
 	class="font-primary"
@@ -32,7 +32,7 @@
 			</button>
 		</div>
 
-		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1.25rem; --pb:1rem; --p: 1rem 0;--bgc: var(--white); --br: 1rem">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1.2rem; --pb:1rem; --p: 1rem 0;--bgc: var(--white); --br: 1rem">
 			<ManageOllama {urlIdx} />
 		</div>
 	</div>

@@ -2212,7 +2212,7 @@
 								/>
 
 								<div
-									style="--pos:absolute; --bottom:0.25rem; --size:0.6rem; --c:var(--color-gray-500); --ta:center; --line-clamp:1; --right:0; --left:0"
+									style="--pos:absolute; --bottom:0.2rem; --size:0.6rem; --c:var(--color-gray-500); --ta:center; --line-clamp:1; --right:0; --left:0"
 								>
 									<!-- {$i18n.t('LLMs can make mistakes. Verify important information.')} -->
 								</div>

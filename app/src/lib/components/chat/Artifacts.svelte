@@ -212,7 +212,7 @@
 	class="font-primar"
 			>
 				<button
-					style="--as:center; --pe:auto; --p:0.25rem; --radius:9999px; --bgc:#fff; --dark-bgc:var(--color-gray-850)"
+					style="--as:center; --pe:auto; --p:0.2rem; --radius:9999px; --bgc:#fff; --dark-bgc:var(--color-gray-850)"
 					on:click={() => {
 						showArtifacts.set(false);
 					}}
@@ -220,11 +220,11 @@
 					<ArrowLeft className="size-3.5  text-gray-900 dark:text-white" />
 				</button>
 
-				<div style="--fx:1 1 0%; --d:flex; --ai:center; --jc:space-between; --pr:0.25rem">
+				<div style="--fx:1 1 0%; --d:flex; --ai:center; --jc:space-between; --pr:0.2rem">
 					<div style="--d:flex; --ai:center; --g:0.5rem">
 						<div style="--d:flex; --ai:center; --g:0.125rem; --as:center; --minw:fit-content" dir="ltr">
 							<button
-								style="--as:center; --p:0.25rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-dark-c:#fff; --hvr-c:#000; --radius:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+								style="--as:center; --p:0.2rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-dark-c:#fff; --hvr-c:#000; --radius:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="disabled:cursor-not-allowed"
 								on:click={() => navigateContent('prev')}
 								disabled={contents.length <= 1}
@@ -235,7 +235,7 @@
 									viewBox="0 0 24 24"
 									stroke="currentColor"
 									stroke-width="2.5"
-									style="--w:0.875rem; --h:0.875rem"
+									style="--w:0.8rem; --h:0.8rem"
 								>
 									<path
 										stroke-linecap="round"
@@ -253,7 +253,7 @@
 							</div>
 
 							<button
-								style="--as:center; --p:0.25rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-dark-c:#fff; --hvr-c:#000; --radius:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+								style="--as:center; --p:0.2rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-dark-c:#fff; --hvr-c:#000; --radius:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="disabled:cursor-not-allowed"
 								on:click={() => navigateContent('next')}
 								disabled={contents.length <= 1}
@@ -264,7 +264,7 @@
 									viewBox="0 0 24 24"
 									stroke="currentColor"
 									stroke-width="2.5"
-									style="--w:0.875rem; --h:0.875rem"
+									style="--w:0.8rem; --h:0.8rem"
 								>
 									<path
 										stroke-linecap="round"
@@ -276,9 +276,9 @@
 						</div>
 					</div>
 
-					<div style="--d:flex; --ai:center; --g:0.375rem">
+					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<button
-							style="--bs:none; --size:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.375rem; --px:0.375rem; --py:0.125rem"
+							style="--bs:none; --size:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.4rem; --px:0.4rem; --py:0.125rem"
 	class="copy-code-button bg-none"
 							on:click={() => {
 								copyToClipboard(contents[selectedContentIdx].content);
@@ -292,7 +292,7 @@
 
 						<Tooltip content={$i18n.t('Download')}>
 							<button
-								style="--bs:none; --size:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.375rem; --p:0.125rem"
+								style="--bs:none; --size:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.4rem; --p:0.125rem"
 	class="bg-none"
 								on:click={downloadArtifact}
 							>
@@ -303,7 +303,7 @@
 						{#if contents[selectedContentIdx].type === 'iframe'}
 							<Tooltip content={$i18n.t('Open in full screen')}>
 								<button
-									style="--bs:none; --size:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.375rem; --p:0.125rem"
+									style="--bs:none; --size:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.4rem; --p:0.125rem"
 	class="bg-none"
 									on:click={showFullScreen}
 								>
@@ -315,7 +315,7 @@
 				</div>
 
 				<button
-					style="--as:center; --pe:auto; --p:0.25rem; --radius:9999px; --bgc:#fff; --dark-bgc:var(--color-gray-850)"
+					style="--as:center; --pe:auto; --p:0.2rem; --radius:9999px; --bgc:#fff; --dark-bgc:var(--color-gray-850)"
 					on:click={() => {
 						dispatch('close');
 						showControls.set(false);

@@ -148,7 +148,7 @@
 
 {#if loaded}
 	<AddGroupModal bind:show={showCreateGroupModal} onSubmit={addGroupHandler} />
-	<div style="--mt:0.125rem; --mb:0.5rem; --g:0.25rem; --d:flex; --fd:column; --fd-md:row; --jc:space-between">
+	<div style="--mt:0.125rem; --mb:0.5rem; --g:0.2rem; --d:flex; --fd:column; --fd-md:row; --jc:space-between">
 		<div style="--d:flex; --as-md:center; --size:1.125rem; --weight:500; --px:0.125rem">
 			{$i18n.t('Groups')}
 			<div style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)" />
@@ -156,14 +156,14 @@
 			<span style="--size:1.125rem; --weight:500; --c:var(--color-gray-500); --dark-c:var(--color-gray-300)">{groups.length}</span>
 		</div>
 
-		<div style="--d:flex; --g:0.25rem">
+		<div style="--d:flex; --g:0.2rem">
 			<div style="--d:flex; --w:100%; --g:0.5rem">
 				<div style="--d:flex; --fx:1 1 0%">
-					<div style="--as:center; --ml:0.25rem; --mr:0.6rem">
+					<div style="--as:center; --ml:0.2rem; --mr:0.6rem">
 						<Search />
 					</div>
 					<input
-						style="--w:100%; --size:0.875rem; --pr:1rem; --py:0.25rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
+						style="--w:100%; --size:0.8rem; --pr:1rem; --py:0.2rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 						bind:value={search}
 						placeholder={$i18n.t('Search')}
 					/>
@@ -172,7 +172,7 @@
 				<div>
 					<Tooltip content={$i18n.t('Create Group')}>
 						<button
-							style="--p:0.5rem; --radius:0.6rem; --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
+							style="--p:0.5rem; --radius:0.6rem; --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.8rem; --d:flex; --ai:center; --g:0.2rem"
 							on:click={() => {
 								showCreateGroupModal = !showCreateGroupModal;
 							}}
@@ -188,17 +188,17 @@
 	<div>
 		{#if filteredGroups.length === 0}
 			<div style="--d:flex; --fd:column; --ai:center; --jc:center; --h:10rem">
-				<div style="--size:1.25rem; --weight:500">
+				<div style="--size:1.2rem; --weight:500">
 					{$i18n.t('Organize your users')}
 				</div>
 
-				<div style="--mt:0.25rem; --size:0.875rem; --dark-c:var(--color-gray-300)">
+				<div style="--mt:0.2rem; --size:0.8rem; --dark-c:var(--color-gray-300)">
 					{$i18n.t('Use groups to group your users and assign permissions.')}
 				</div>
 
 				<div style="--mt:0.6rem">
 					<button
-						style="--px:1rem; --py:0.375rem; --size:0.875rem; --radius:9999px; --bgc:#000; --hvr-bgc:var(--color-gray-800); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --d:flex; --ai:center; --g:0.25rem"
+						style="--px:1rem; --py:0.4rem; --size:0.8rem; --radius:9999px; --bgc:#000; --hvr-bgc:var(--color-gray-800); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --d:flex; --ai:center; --g:0.2rem"
 						aria-label={$i18n.t('Create Group')}
 						on:click={() => {
 							showCreateGroupModal = true;
@@ -210,13 +210,13 @@
 			</div>
 		{:else}
 			<div>
-				<div style="--d:flex; --ai:center; --g:0.6rem; --jc:space-between; --size:0.6rem; --tt:uppercase; --px:0.25rem; --weight:700">
+				<div style="--d:flex; --ai:center; --g:0.6rem; --jc:space-between; --size:0.6rem; --tt:uppercase; --px:0.2rem; --weight:700">
 					<div style="--w:100%; --fb:60%">Group</div>
 
 					<div style="--w:100%; --fb:40%; --ta:right">Users</div>
 				</div>
 
-				<hr style="--mt:0.375rem; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)" />
+				<hr style="--mt:0.4rem; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)" />
 
 				{#each filteredGroups as group}
 					<div style="--my:0.5rem">
@@ -238,18 +238,18 @@
 			/>
 
 			<button
-				style="--d:flex; --ai:center; --jc:space-between; --radius:0.5rem; --w:100%; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --pt:0.25rem"
+				style="--d:flex; --ai:center; --jc:space-between; --radius:0.5rem; --w:100%; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --pt:0.2rem"
 				on:click={() => {
 					showDefaultPermissionsModal = true;
 				}}
 			>
 				<div style="--d:flex; --ai:center; --g:0.625rem">
-					<div style="--p:0.375rem; --bgc:rgb(0 0 0 / 0.05); --dark-bgc:rgb(255 255 255 / 0.1); --radius:9999px">
+					<div style="--p:0.4rem; --bgc:rgb(0 0 0 / 0.05); --dark-bgc:rgb(255 255 255 / 0.1); --radius:9999px">
 						<UsersSolid className="size-4" />
 					</div>
 
 					<div style="--ta:left">
-						<div style="--size:0.875rem; --weight:500">{$i18n.t('Default permissions')}</div>
+						<div style="--size:0.8rem; --weight:500">{$i18n.t('Default permissions')}</div>
 
 						<div style="--d:flex; --size:0.6rem; --mt:0.125rem">
 							{$i18n.t('applies to all users with the "user" role')}

@@ -119,7 +119,7 @@
 				</div>
 
 				<slot>
-					<div style="--size:0.875rem; --c:var(--color-gray-500); --fx:1 1 0%">
+					<div style="--size:0.8rem; --c:var(--color-gray-500); --fx:1 1 0%">
 						{#if message !== ''}
 							{@const html = DOMPurify.sanitize(marked.parse(message))}
 							{@html html}
@@ -131,7 +131,7 @@
 							<textarea
 								bind:value={inputValue}
 								placeholder={inputPlaceholder ? inputPlaceholder : $i18n.t('Enter your message')}
-								style="--w:100%; --mt:0.5rem; --radius:0.5rem; --px:1rem; --py:0.5rem; --size:0.875rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-900); --oe:none; resize:none"
+								style="--w:100%; --mt:0.5rem; --radius:0.5rem; --px:1rem; --py:0.5rem; --size:0.8rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-900); --oe:none; resize:none"
 								rows="3"
 								required
 							/>
@@ -139,7 +139,7 @@
 					</div>
 				</slot>
 
-				<div style="--mt:1.5rem; --d:flex; --jc:space-between; --g:0.375rem">
+				<div style="--mt:1.5rem; --d:flex; --jc:space-between; --g:0.4rem">
 					<button
 						style="--bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --c:var(--color-gray-800); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:#fff; --weight:500; --w:100%; --py:0.625rem; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={() => {

@@ -28,7 +28,7 @@
 </script>
 
 <Modal size="full" containerClassName="" className="h-full" bind:show>
-	<div style="--pos:absolute; --top:0; --right:0; --p:1.25rem">
+	<div style="--pos:absolute; --top:0; --right:0; --p:1.2rem">
 		<button
 			style="--as:center; --dark-c:#fff"
 			type="button"
@@ -59,7 +59,7 @@
 				content = '';
 			}}
 		>
-			<div style="--fx:1 1 0%; --w:100%; --h:100%; --d:flex; --jc:center; --of:auto; --px:1.25rem; --py:1rem">
+			<div style="--fx:1 1 0%; --w:100%; --h:100%; --d:flex; --jc:center; --of:auto; --px:1.2rem; --py:1rem">
 				<div style="--maxw:48rem; --py:0.5rem; --py-md:2.5rem; --w:100%; --d:flex; --fd:column; --g:0.5rem">
 					<div style="--fs:0; --w:100%; --d:flex; --jc:space-between; --ai:center">
 						<div style="--w:100%">
@@ -84,7 +84,7 @@
 			</div>
 
 			<div
-				style="--d:flex; --fd:row; --ai:center; --jc:flex-end; --size:0.875rem; --weight:500; --fs:0; --mt:0.25rem; --p:1rem; --g:0.375rem"
+				style="--d:flex; --fd:row; --ai:center; --jc:flex-end; --size:0.8rem; --weight:500; --fs:0; --mt:0.2rem; --p:1rem; --g:0.4rem"
 			>
 				<div class="">
 					{#if voiceInput}
@@ -141,7 +141,7 @@
 				<div style="--fs:0">
 					<Tooltip content={$i18n.t('Save')}>
 						<button
-							style="--px:0.875rem; --py:0.5rem; --bgc:#000; --c:#fff; --dark-bgc:#fff; --dark-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+							style="--px:0.8rem; --py:0.5rem; --bgc:#000; --c:#fff; --dark-bgc:#fff; --dark-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 	class="disabled:opacity-50 disabled:cursor-not-allowed"
 							type="submit"
 							disabled={voiceInput}

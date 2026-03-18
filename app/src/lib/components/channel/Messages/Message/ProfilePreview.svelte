@@ -66,14 +66,14 @@
 						<img
 							crossorigin="anonymous"
 							src={user?.profile_image_url ?? branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
-							style="--pos:absolute; --bottom:-1.25rem; --left:0.6rem; --w:3rem; --h:3rem; --ml:0.125rem; --objf:cover; --radius:9999px; --translatey:-1px"
+							style="--pos:absolute; --bottom:-1.2rem; --left:0.6rem; --w:3rem; --h:3rem; --ml:0.125rem; --objf:cover; --radius:9999px; --translatey:-1px"
 							alt="profile"
 						/>
 					</div>
 
 					<div style="--d:flex; --fd:column; --pt:1rem; --pb:0.625rem; --px:1rem">
-						<div style="--mb:-0.25rem">
-							<span style="--weight:500; --size:0.875rem; --line-clamp:1"> {user.name} </span>
+						<div style="--mb:-0.2rem">
+							<span style="--weight:500; --size:0.8rem; --line-clamp:1"> {user.name} </span>
 						</div>
 
 						<div style="--d:flex; --ai:center; --g:0.5rem">

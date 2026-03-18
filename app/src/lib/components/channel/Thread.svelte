@@ -157,7 +157,7 @@
 
 {#if channel}
 	<div style="--d:flex; --fd:column; --w:100%; --h:100%; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)">
-		<div style="--d:flex; --ai:center; --jc:space-between; --px:0.875rem; --pt:0.6rem">
+		<div style="--d:flex; --ai:center; --jc:space-between; --px:0.8rem; --pt:0.6rem">
 			<div style="--weight:500; --size:1.125rem">Thread</div>
 
 			<div>

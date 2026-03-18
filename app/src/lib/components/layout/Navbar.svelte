@@ -44,16 +44,16 @@
 
 <ShareChatModal bind:show={showShareChatModal} chatId={$chatId} />
 
-<div style="--pos:sticky; --top:0; --z:30; --w:100%; --px:0.375rem; --py:0.375rem; --mb:-2rem; --d:flex; --ai:center">
+<div style="--pos:sticky; --top:0; --z:30; --w:100%; --px:0.4rem; --py:0.4rem; --mb:-2rem; --d:flex; --ai:center">
 	<div
 		style="--bgi:linear-gradient(180deg, var(--tw-gradient-stops)); --tw-gradient-from:#fff; --tw-gradient-via:#fff; --tw-gradient-to:transparent; --dark-tw-gradient-from:var(--color-gray-900); --dark-tw-gradient-via:var(--color-gray-900); --dark-tw-gradient-to:transparent; --pe:none; --pos:absolute; --inset:0; --bottom:-1.75rem; --z:-1"
 	class="via-50%"
 	></div>
 
-	<div style="--d:flex; --maxw:100%; --w:100%; --mx:auto; --px:0.25rem; --pt:0.125rem; --grad:0deg; --grad-color: hsl(273, 100%, 100%)">
+	<div style="--d:flex; --maxw:100%; --w:100%; --mx:auto; --px:0.2rem; --pt:0.125rem; --grad:0deg; --grad-color: hsl(273, 100%, 100%)">
 		<div style="--d:flex; --ai:center; --w:100%; --maxw:100%">
 			<div
-				style="--mr:0.25rem; --as:flex-start; --d:flex; --fx:none; --ai:center; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); {$showSidebar ? '--d:none' : ''}"
+				style="--mr:0.2rem; --as:flex-start; --d:flex; --fx:none; --ai:center; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); {$showSidebar ? '--d:none' : ''}"
 	class="{$showSidebar
 					? 'md:hidden'
 					: ''}"
@@ -82,7 +82,7 @@
 			</div>
 
 			<div style="--as:flex-start; --d:flex; --fx:none; --ai:center; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)">
-				<!-- <div style="--d-md:none; --d:flex; --as:center; --w:1px; --h:1.25rem; --mx:0.5rem; --bgc:var(--color-gray-300); --dark-bgc:#44403c" /> -->
+				<!-- <div style="--d-md:none; --d:flex; --as:center; --w:1px; --h:1.2rem; --mx:0.5rem; --bgc:var(--color-gray-300); --dark-bgc:#44403c" /> -->
 				{#if shareEnabled && chat && (chat.id || $temporaryChatEnabled)}
 					<Menu
 						{chat}
@@ -105,7 +105,7 @@
 									viewBox="0 0 24 24"
 									stroke-width="1.5"
 									stroke="currentColor"
-									style="--w:1.25rem; --h:1.25rem"
+									style="--w:1.2rem; --h:1.2rem"
 								>
 									<path
 										stroke-linecap="round"
@@ -178,7 +178,7 @@
 						}}
 					>
 						<button
-							style="--us:none; --d:flex; --radius:0.6rem; --p:0.375rem; --w:100%; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+							style="--us:none; --d:flex; --radius:0.6rem; --p:0.4rem; --w:100%; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							aria-label="User Menu"
 						>
 							<div style="--as:center">

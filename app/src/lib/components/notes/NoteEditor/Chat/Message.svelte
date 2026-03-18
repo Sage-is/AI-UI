@@ -20,10 +20,10 @@
 	let textAreaElement: HTMLTextAreaElement;
 </script>
 
-<div style="--d:flex; --fd:column; --g:0.25rem"
+<div style="--d:flex; --fd:column; --g:0.2rem"
 	class="group">
-	<div style="--d:flex; --ai:center; --jc:space-between; --pt:0.25rem">
-		<div style="--py:0.25rem; --size:0.875rem; --weight:600; --tt:uppercase; --minw:6rem; --ta:left; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)">
+	<div style="--d:flex; --ai:center; --jc:space-between; --pt:0.2rem">
+		<div style="--py:0.2rem; --size:0.8rem; --weight:600; --tt:uppercase; --minw:6rem; --ta:left; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)">
 			{$i18n.t(message.role)}
 		</div>
 
@@ -99,7 +99,7 @@
 				}}
 			/>
 		{:else}
-			<div style="--size:0.875rem"
+			<div style="--size:0.8rem"
 	class="markdown-prose-sm">
 				<Markdown id={`note-message-${idx}`} content={message.content} />
 			</div>

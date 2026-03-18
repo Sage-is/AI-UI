@@ -102,7 +102,7 @@
 			deleteHandler();
 		}}
 	>
-		<div style="--size:0.875rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-300); --fx:1 1 0%; --line-clamp:3">
+		<div style="--size:0.8rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-300); --fx:1 1 0%; --line-clamp:3">
 			{@html DOMPurify.sanitize(
 				$i18n.t(
 					'This will delete <strong>{{NAME}}</strong> and <strong>all its contents</strong>.',
@@ -116,7 +116,7 @@
 
 	<div style="--mb:0.6rem; --px:1.5rem; --jc:space-between; --w:100%; --d:flex; --pos:relative; --ai:center"
 	class="@md:max-w-3xl group">
-		<div style="--ta:center; --d:flex; --g:0.875rem; --ai:center">
+		<div style="--ta:center; --d:flex; --g:0.8rem; --ai:center">
 			<div style="--radius:9999px; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800); --p:0.6rem; --w:fit-content">
 				<Folder className="size-4.5" strokeWidth="2" />
 			</div>
@@ -139,7 +139,7 @@
 					exportHandler();
 				}}
 			>
-				<button style="--p:0.375rem; --hvr-dark-bgc:var(--color-gray-850); --radius:9999px; touch-action:auto" on:click={(e) => {}}>
+				<button style="--p:0.4rem; --hvr-dark-bgc:var(--color-gray-850); --radius:9999px; touch-action:auto" on:click={(e) => {}}>
 					<EllipsisHorizontal className="size-4" strokeWidth="2.5" />
 				</button>
 			</FolderMenu>

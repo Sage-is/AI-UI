@@ -172,10 +172,10 @@
 	};
 </script>
 
-<div style="--d:flex; --fd:column; --h:100%; --jc:space-between; --size:0.875rem" id="tab-general">
+<div style="--d:flex; --fd:column; --h:100%; --jc:space-between; --size:0.8rem" id="tab-general">
 	<div style="--ofy:scroll; --maxh:28rem; --maxh-lg:100%">
 		<div class="">
-			<div style="--mb:0.25rem; --size:0.875rem; --weight:500">{$i18n.t('WebUI Settings')}</div>
+			<div style="--mb:0.2rem; --size:0.8rem; --weight:500">{$i18n.t('WebUI Settings')}</div>
 
 			<div style="--d:flex; --w:100%; --jc:space-between">
 				<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Theme')}</div>
@@ -235,7 +235,7 @@
 					<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Notifications')}</div>
 
 					<button
-						style="--p:0.25rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+						style="--p:0.2rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={() => {
 							toggleNotification();
 						}}
@@ -255,7 +255,7 @@
 			<hr style="--bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --my:0.6rem" />
 
 			<div>
-				<div style="--my:0.625rem; --size:0.875rem; --weight:500">{$i18n.t('System Prompt')}</div>
+				<div style="--my:0.6rem; --size:0.8rem; --weight:500">{$i18n.t('System Prompt')}</div>
 				<Textarea
 					bind:value={system}
 					className={'w-full text-sm outline-hidden resize-vertical' +
@@ -269,8 +269,8 @@
 		{/if}
 
 		{#if $user?.role === 'admin' || ($user?.permissions.chat?.controls ?? true)}
-			<div style="--mt:0.5rem; --g:0.6rem; --pr:0.375rem">
-				<div style="--d:flex; --jc:space-between; --ai:center; --size:0.875rem">
+			<div style="--mt:0.5rem; --g:0.6rem; --pr:0.4rem">
+				<div style="--d:flex; --jc:space-between; --ai:center; --size:0.8rem">
 					<div style="--weight:500">{$i18n.t('Advanced Parameters')}</div>
 					<button
 						style="--size:0.6rem; --weight:500; --c:var(--color-gray-500)"
@@ -288,9 +288,9 @@
 		{/if}
 	</div>
 
-	<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.875rem; --weight:500">
+	<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.8rem; --weight:500">
 		<button
-			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+			style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			on:click={() => {
 				saveHandler();
 			}}

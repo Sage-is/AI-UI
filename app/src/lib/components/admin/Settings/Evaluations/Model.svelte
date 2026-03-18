@@ -23,7 +23,7 @@
 />
 
 <div style="--py:0.125rem">
-	<div style="--d:flex; --jc:space-between; --ai:center; --mb:0.25rem">
+	<div style="--d:flex; --jc:space-between; --ai:center; --mb:0.2rem">
 		<div style="--d:flex; --fd:column; --fx:1 1 0%">
 			<div style="--d:flex; --g:0.625rem; --ai:center">
 				<img
@@ -33,13 +33,13 @@
 				/>
 
 				<div style="--w:100%; --d:flex; --fd:column">
-					<div style="--d:flex; --ai:center; --g:0.25rem">
+					<div style="--d:flex; --ai:center; --g:0.2rem">
 						<div style="--fs:0; --line-clamp:1">
 							{model.name}
 						</div>
 					</div>
 
-					<div style="--d:flex; --ai:center; --g:0.25rem">
+					<div style="--d:flex; --ai:center; --g:0.2rem">
 						<div style="--size:0.6rem; --w:100%; --c:var(--color-gray-500); --bgc:transparent; --line-clamp:1">
 							{model?.meta?.description ?? model.id}
 						</div>
@@ -50,7 +50,7 @@
 
 		<div style="--d:flex; --ai:center">
 			<button
-				style="--as:center; --w:fit-content; --size:0.875rem; --p:0.375rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
+				style="--as:center; --w:fit-content; --size:0.8rem; --p:0.4rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 				type="button"
 				on:click={() => {
 					showModel = true;

@@ -42,7 +42,7 @@
 </script>
 
 <Modal bind:show size="lg">
-	<div style="--px:1.5rem; --py:1.25rem; --w:100%; --d:flex; --fd:column; --jc:center; --dark-c:var(--color-gray-400)"
+	<div style="--px:1.5rem; --py:1.2rem; --w:100%; --d:flex; --fd:column; --jc:center; --dark-c:var(--color-gray-400)"
 	class="font-primary">
 		<div style="--pb:0.5rem">
 			<div style="--d:flex; --ai:flex-start; --jc:space-between">
@@ -77,8 +77,8 @@
 			</div>
 
 			<div>
-				<div style="--d:flex; --fd:column; --ai:center; --fd-md:row; --g:0.25rem; --jc:space-between; --w:100%">
-					<div style="--d:flex; --fw:wrap; --size:0.875rem; --g:0.25rem; --c:var(--color-gray-500)">
+				<div style="--d:flex; --fd:column; --ai:center; --fd-md:row; --g:0.2rem; --jc:space-between; --w:100%">
+					<div style="--d:flex; --fw:wrap; --size:0.8rem; --g:0.2rem; --c:var(--color-gray-500)">
 						{#if item?.type === 'collection'}
 							{#if item?.type}
 								<div style="--tt:capitalize; --fs:0">{item.type}</div>
@@ -107,7 +107,7 @@
 								{getLineCount(item?.file?.data?.content ?? '')} extracted lines
 							</div>
 
-							<div style="--d:flex; --ai:center; --g:0.25rem; --fs:0">
+							<div style="--d:flex; --ai:center; --g:0.2rem; --fs:0">
 								<Info />
 
 								Formatting may be inconsistent from source.
@@ -132,7 +132,7 @@
 											'Default to segmented retrieval for focused and relevant content extraction, this is recommended for most cases.'
 										)}
 							>
-								<div style="--d:flex; --ai:center; --g:0.375rem; --size:0.6rem">
+								<div style="--d:flex; --ai:center; --g:0.4rem; --size:0.6rem">
 									{#if enableFullContent}
 										{$i18n.t('Using Entire Document')}
 									{:else}

@@ -124,7 +124,7 @@
 			<div style="--pos:relative; --ofx:auto; --maxw:100%; --radius:0.5rem"
 	class="scrollbar-hidden">
 				<table
-					style="--w:100%; --size:0.875rem; --ta:left; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --maxw:100%; --radius:0.6rem"
+					style="--w:100%; --size:0.8rem; --ta:left; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --maxw:100%; --radius:0.6rem"
 				>
 					<thead
 						style="--size:0.6rem; --c:var(--color-gray-700); --tt:uppercase; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-400); --bs:none"
@@ -133,9 +133,9 @@
 							{#each token.header as header, headerIdx}
 								<th
 									scope="col"
-									style="--px:0.6rem; --py:0.375rem; --cur:pointer;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); {token.align[headerIdx] ? '' : `text-align: ${token.align[headerIdx]}`}"
+									style="--px:0.6rem; --py:0.4rem; --cur:pointer;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); {token.align[headerIdx] ? '' : `text-align: ${token.align[headerIdx]}`}"
 								>
-									<div style="--g:0.375rem; --ta:left">
+									<div style="--g:0.4rem; --ta:left">
 										<div style="--fs:0; --wb:normal; overflow-wrap:normal">
 											<MarkdownInlineTokens
 												id={`${id}-${tokenIdx}-header-${headerIdx}`}
@@ -154,7 +154,7 @@
 							<tr style="--bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-bc:var(--color-gray-850); --size:0.6rem">
 								{#each row ?? [] as cell, cellIdx}
 									<td
-										style="--px:0.6rem; --py:0.375rem; --c:var(--color-gray-900); --dark-c:#fff; --w:max-content;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); {token.align[cellIdx] ? `text-align: ${token.align[cellIdx]}` : ''}"
+										style="--px:0.6rem; --py:0.4rem; --c:var(--color-gray-900); --dark-c:#fff; --w:max-content;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); {token.align[cellIdx] ? `text-align: ${token.align[cellIdx]}` : ''}"
 									>
 										<div style="--wb:normal; overflow-wrap:normal">
 											<MarkdownInlineTokens
@@ -172,11 +172,11 @@
 				</table>
 			</div>
 
-			<div style="--pos:absolute; --top:0.25rem; --right:0.375rem; --z:20; --v:hidden"
+			<div style="--pos:absolute; --top:0.2rem; --right:0.4rem; --z:20; --v:hidden"
 	class="group-hover:visible">
 				<Tooltip content={$i18n.t('Export to CSV')}>
 					<button
-						style="--p:0.25rem; --radius:0.5rem; --bgc:transparent; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+						style="--p:0.2rem; --radius:0.5rem; --bgc:transparent; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={(e) => {
 							e.stopPropagation();
 							exportTableToCSVHandler(token, tokenIdx);
@@ -209,7 +209,7 @@
 					<li style="--ta:start">
 						{#if item?.task}
 							<input
-								style="--translatey:1px; --translatex:-0.25rem"
+								style="--translatey:1px; --translatex:-0.2rem"
 								type="checkbox"
 								checked={item.checked}
 								on:change={(e) => {
@@ -290,7 +290,7 @@
 			className="w-full space-y-1"
 			dir="auto"
 		>
-			<div style="--mb:0.375rem" slot="content">
+			<div style="--mb:0.4rem" slot="content">
 				<svelte:self
 					id={`${id}-${tokenIdx}-d`}
 					tokens={marked.lexer(token.text)}

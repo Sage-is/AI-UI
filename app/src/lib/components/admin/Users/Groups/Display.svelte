@@ -16,7 +16,7 @@
 
 		<div style="--fx:1 1 0%">
 			<input
-				style="--w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+				style="--w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 	class="placeholder:text-gray-300 dark:placeholder:text-gray-700"
 				type="text"
 				bind:value={name}
@@ -29,7 +29,7 @@
 </div>
 
 <!-- <div style="--d:flex; --fd:column; --w:100%; --mt:0.5rem">
-	<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Color')}</div>
+	<div style="--mb:0.2rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Color')}</div>
 
 	<div style="--fx:1 1 0%">
 		<Tooltip content={$i18n.t('Hex Color - Leave empty for default color')} placement="top-start">
@@ -37,7 +37,7 @@
 				<div style="--c:var(--color-gray-500)">#</div>
 
 				<input
-					style="--w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+					style="--w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 	class="placeholder:text-gray-300 dark:placeholder:text-gray-700"
 					type="text"
 					bind:value={color}
@@ -50,7 +50,7 @@
 </div> -->
 
 <div style="--d:flex; --fd:column; --w:100%; --mt:0.5rem">
-	<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Description')}</div>
+	<div style="--mb:0.2rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Description')}</div>
 
 	<div style="--fx:1 1 0%">
 		<Textarea

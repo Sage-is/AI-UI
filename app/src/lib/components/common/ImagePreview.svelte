@@ -75,7 +75,7 @@
 		<div style="--pos:absolute; --left:0; --w:100%; --d:flex; --jc:space-between; --us:none; --z:20">
 			<div>
 				<button
-					style="--p:1.25rem"
+					style="--p:1.2rem"
 					on:pointerdown={(e) => {
 						e.stopImmediatePropagation();
 						e.preventDefault();
@@ -91,7 +91,7 @@
 
 			<div>
 				<button
-					style="--p:1.25rem; --z:999"
+					style="--p:1.2rem; --z:999"
 					on:click={() => {
 						if (src.startsWith('data:image/')) {
 							const base64Data = src.split(',')[1];

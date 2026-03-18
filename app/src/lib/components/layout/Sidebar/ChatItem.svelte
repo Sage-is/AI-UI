@@ -275,7 +275,7 @@
 		deleteChatHandler(id);
 	}}
 >
-	<div style="--size:0.875rem; --c:var(--color-gray-500); --fx:1 1 0%; --line-clamp:3">
+	<div style="--size:0.8rem; --c:var(--color-gray-500); --fx:1 1 0%; --line-clamp:3">
 		{$i18n.t('This will delete')} <span style="--weight:600">{title}</span>.
 	</div>
 </DeleteConfirmDialog>
@@ -283,9 +283,9 @@
 {#if dragged && x && y}
 	<DragGhost {x} {y}>
 		<div
-			style="--bgc:rgb(0 0 0 / 0.8); backdrop-filter:blur(40px); --px:0.5rem; --py:0.25rem; --radius:0.5rem; --w:fit-content; --maxw:10rem"
+			style="--bgc:rgb(0 0 0 / 0.8); backdrop-filter:blur(40px); --px:0.5rem; --py:0.2rem; --radius:0.5rem; --w:fit-content; --maxw:10rem"
 		>
-			<div style="--d:flex; --ai:center; --g:0.25rem">
+			<div style="--d:flex; --ai:center; --g:0.2rem">
 				<Document className=" size-[18px]" strokeWidth="2" />
 				<div style="--size:0.6rem; --c:#fff; --line-clamp:1">
 					{title}
@@ -394,8 +394,8 @@
 
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<div
-		style="--pos:absolute; --top:4px; --py:0.25rem; --pr:0.125rem; 
-			--mr:0.375rem; --pl:1.25rem; 
+		style="--pos:absolute; --top:4px; --py:0.2rem; --pr:0.125rem; 
+			--mr:0.4rem; --pl:1.2rem; 
 			--bgi:linear-gradient(270deg, var(--tw-gradient-stops)); 
 			--tw-gradient-to:transparent;"
 		class="{id === $chatId || confirmEdit
@@ -414,7 +414,7 @@
 		>
 		{#if confirmEdit}
 			<div
-				style="--d:flex; --as:center; --ai:center; --g:0.375rem; --z:10; --translatey:0.5px; --translatex:-0.5px"
+				style="--d:flex; --as:center; --ai:center; --g:0.4rem; --z:10; --translatey:0.5px; --translatex:-0.5px"
 			>
 				<Tooltip content={$i18n.t('Generate')}>
 					<button
@@ -433,7 +433,7 @@
 				</Tooltip>
 			</div>
 		{:else if shiftKey && mouseOver}
-			<div style="--d:flex; --ai:center; --as:center; --g:0.375rem">
+			<div style="--d:flex; --ai:center; --as:center; --g:0.4rem">
 				<Tooltip content={$i18n.t('Archive')} className="flex items-center">
 					<button
 						style="--as:center; --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"

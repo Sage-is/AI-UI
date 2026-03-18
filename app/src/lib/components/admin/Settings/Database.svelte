@@ -26,7 +26,7 @@
 </script>
 
 <form
-	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.875rem"
+	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.8rem"
 	on:submit|preventDefault={async () => {
 		saveHandler();
 	}}
@@ -34,7 +34,7 @@
 	<div style="--g:0.6rem; --ofy:scroll; --h:100%"
 	class="scrollbar-hidden">
 		<div>
-			<div style="--mb:0.5rem; --size:0.875rem; --weight:500">{$i18n.t('Database')}</div>
+			<div style="--mb:0.5rem; --size:0.8rem; --weight:500">{$i18n.t('Database')}</div>
 
 			<input
 				id="config-json-input"
@@ -64,7 +64,7 @@
 
 			<button
 				type="button"
-				style="--d:flex; --radius:0.375rem; --py:0.5rem; --px:0.6rem; --w:100%; --hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--d:flex; --radius:0.4rem; --py:0.5rem; --px:0.6rem; --w:100%; --hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={async () => {
 					document.getElementById('config-json-input').click();
 				}}
@@ -84,14 +84,14 @@
 						/>
 					</svg>
 				</div>
-				<div style="--as:center; --size:0.875rem; --weight:500">
+				<div style="--as:center; --size:0.8rem; --weight:500">
 					{$i18n.t('Import Config from JSON File')}
 				</div>
 			</button>
 
 			<button
 				type="button"
-				style="--d:flex; --radius:0.375rem; --py:0.5rem; --px:0.6rem; --w:100%; --hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--d:flex; --radius:0.4rem; --py:0.5rem; --px:0.6rem; --w:100%; --hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={async () => {
 					const config = await exportConfig(localStorage.token);
 					const blob = new Blob([JSON.stringify(config)], {
@@ -115,19 +115,19 @@
 						/>
 					</svg>
 				</div>
-				<div style="--as:center; --size:0.875rem; --weight:500">
+				<div style="--as:center; --size:0.8rem; --weight:500">
 					{$i18n.t('Export Config to JSON File')}
 				</div>
 			</button>
 
-			<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.25rem" />
+			<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.2rem" />
 
 			{#if $config?.features.enable_admin_export ?? true}
 				<div style="--d:flex; --w:100%; --jc:space-between">
 					<!-- <div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Allow Chat Deletion')}</div> -->
 
 					<button
-						style="--d:flex; --radius:0.375rem; --py:0.375rem; --px:0.6rem; --w:100%; --hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+						style="--d:flex; --radius:0.4rem; --py:0.4rem; --px:0.6rem; --w:100%; --hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						type="button"
 						on:click={() => {
 							// exportAllUserChats();
@@ -152,12 +152,12 @@
 								/>
 							</svg>
 						</div>
-						<div style="--as:center; --size:0.875rem; --weight:500">{$i18n.t('Download Database')}</div>
+						<div style="--as:center; --size:0.8rem; --weight:500">{$i18n.t('Download Database')}</div>
 					</button>
 				</div>
 
 				<button
-					style="--d:flex; --radius:0.375rem; --py:0.5rem; --px:0.6rem; --w:100%; --hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--d:flex; --radius:0.4rem; --py:0.5rem; --px:0.6rem; --w:100%; --hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						exportAllUserChats();
 					}}
@@ -177,7 +177,7 @@
 							/>
 						</svg>
 					</div>
-					<div style="--as:center; --size:0.875rem; --weight:500">
+					<div style="--as:center; --size:0.8rem; --weight:500">
 						{$i18n.t('Export All Chats (All Users)')}
 					</div>
 				</button>
@@ -185,7 +185,7 @@
 		</div>
 	</div>
 
-	<!-- <div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.875rem; --weight:500">
+	<!-- <div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.8rem; --weight:500">
 		<button
 			style="--px:1rem; --py:0.5rem; --bgc:#047857; --hvr-bgc:#065f46; --c:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
 			type="submit"

@@ -291,13 +291,13 @@
 />
 
 <form
-	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.875rem"
+	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.8rem"
 	on:submit|preventDefault={() => {
 		submitHandler();
 	}}
 >
 	{#if RAGConfig}
-		<div style="--g:0.625rem; --ofy:scroll; --h:100%; --pr:0.375rem"
+		<div style="--g:0.625rem; --ofy:scroll; --h:100%; --pr:0.4rem"
 	class="scrollbar-hidden">
 			<div class="">
 				<div style="--mb:0.6rem">
@@ -306,7 +306,7 @@
 					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem"/>
 
 					<div style="--mb:0.625rem; --d:flex; --fd:column; --w:100%; --jc:space-between">
-						<div style="--d:flex; --w:100%; --jc:space-between; --mb:0.25rem">
+						<div style="--d:flex; --w:100%; --jc:space-between; --mb:0.2rem">
 							<div style="--as:center; --size:0.6rem; --weight:500">
 								{$i18n.t('Content Extraction Engine')}
 							</div>
@@ -327,7 +327,7 @@
 						</div>
 
 						{#if RAGConfig.CONTENT_EXTRACTION_ENGINE === ''}
-							<div style="--d:flex; --w:100%; --mt:0.25rem">
+							<div style="--d:flex; --w:100%; --mt:0.2rem">
 								<div style="--fx:1 1 0%; --d:flex; --jc:space-between">
 									<div style="--as:center; --size:0.6rem; --weight:500">
 										{$i18n.t('PDF Extract Images (OCR)')}
@@ -352,7 +352,7 @@
 								</div>
 
 								<input
-									style="--size:0.875rem; --bgc:transparent; --oe:none"
+									style="--size:0.8rem; --bgc:transparent; --oe:none"
 									type="text"
 									bind:value={RAGConfig.DATALAB_MARKER_LANGS}
 									placeholder={$i18n.t('e.g.) en,fr,de')}
@@ -479,7 +479,7 @@
 						{:else if RAGConfig.CONTENT_EXTRACTION_ENGINE === 'external'}
 							<div style="--my:0.125rem; --d:flex; --g:0.5rem; --pr:0.5rem">
 								<input
-									style="--fx:1 1 0%; --w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+									style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 									placeholder={$i18n.t('Enter External Document Loader URL')}
 									bind:value={RAGConfig.EXTERNAL_DOCUMENT_LOADER_URL}
 								/>
@@ -490,19 +490,19 @@
 								/>
 							</div>
 						{:else if RAGConfig.CONTENT_EXTRACTION_ENGINE === 'tika'}
-							<div style="--d:flex; --w:100%; --mt:0.25rem">
+							<div style="--d:flex; --w:100%; --mt:0.2rem">
 								<div style="--fx:1 1 0%; --mr:0.5rem">
 									<input
-										style="--fx:1 1 0%; --w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+										style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 										placeholder={$i18n.t('Enter Tika Server URL')}
 										bind:value={RAGConfig.TIKA_SERVER_URL}
 									/>
 								</div>
 							</div>
 						{:else if RAGConfig.CONTENT_EXTRACTION_ENGINE === 'docling'}
-							<div style="--d:flex; --w:100%; --mt:0.25rem">
+							<div style="--d:flex; --w:100%; --mt:0.2rem">
 								<input
-									style="--fx:1 1 0%; --w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+									style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 									placeholder={$i18n.t('Enter Docling Server URL')}
 									bind:value={RAGConfig.DOCLING_SERVER_URL}
 								/>
@@ -514,12 +514,12 @@
 								<div style="--mt:0.5rem; --d:flex; --fd:column; --g:0.5rem">
 									<div style="--d:flex; --w:100%">
 										<input
-											style="--fx:1 1 0%; --w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+											style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 											placeholder={$i18n.t('Enter Docling OCR Engine')}
 											bind:value={RAGConfig.DOCLING_OCR_ENGINE}
 										/>
 										<input
-											style="--fx:1 1 0%; --w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+											style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 											placeholder={$i18n.t('Enter Docling OCR Language(s)')}
 											bind:value={RAGConfig.DOCLING_OCR_LANG}
 										/>
@@ -557,7 +557,7 @@
 										{#if RAGConfig.DOCLING_PICTURE_DESCRIPTION_MODE === 'local'}
 											<div style="--d:flex; --fd:column; --g:0.5rem">
 												<div style="--d:flex; --fd:column; --w:100%; --jc:space-between">
-													<div style="--mb:0.25rem; --size:0.6rem; --weight:500">
+													<div style="--mb:0.2rem; --size:0.6rem; --weight:500">
 														{$i18n.t('Picture Description Local Config')}
 													</div>
 													<div style="--d:flex; --w:100%; --ai:center; --pos:relative">
@@ -579,7 +579,7 @@
 										{:else if RAGConfig.DOCLING_PICTURE_DESCRIPTION_MODE === 'api'}
 											<div style="--d:flex; --fd:column; --g:0.5rem">
 												<div style="--d:flex; --fd:column; --w:100%; --jc:space-between">
-													<div style="--mb:0.25rem; --size:0.6rem; --weight:500">
+													<div style="--mb:0.2rem; --size:0.6rem; --weight:500">
 														{$i18n.t('Picture Description API Config')}
 													</div>
 													<div style="--d:flex; --w:100%; --ai:center; --pos:relative">
@@ -605,7 +605,7 @@
 						{:else if RAGConfig.CONTENT_EXTRACTION_ENGINE === 'document_intelligence'}
 							<div style="--my:0.125rem; --d:flex; --g:0.5rem; --pr:0.5rem">
 								<input
-									style="--fx:1 1 0%; --w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+									style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 									placeholder={$i18n.t('Enter Document Intelligence Endpoint')}
 									bind:value={RAGConfig.DOCUMENT_INTELLIGENCE_ENDPOINT}
 								/>
@@ -627,7 +627,7 @@
 					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem"/>
 
 					<div style="--mb:0.625rem; --d:flex; --fd:column; --w:100%; --jc:space-between">
-						<div style="--d:flex; --w:100%; --jc:space-between; --mb:0.25rem">
+						<div style="--d:flex; --w:100%; --jc:space-between; --mb:0.2rem">
 							<div style="--as:center; --size:0.6rem; --weight:500">
 								<Tooltip
 									content={$i18n.t('Post-process extracted text through an LLM for better markdown formatting before chunking.')}
@@ -642,13 +642,13 @@
 						</div>
 
 						{#if RAGConfig.AI_PARSE_ENABLED}
-							<div style="--d:flex; --w:100%; --jc:space-between; --mt:0.25rem">
+							<div style="--d:flex; --w:100%; --jc:space-between; --mt:0.2rem">
 								<div style="--as:center; --size:0.6rem; --weight:500">
 									{$i18n.t('Default Model')}
 								</div>
 								<div>
 									<input
-										style="--w:100%; --size:0.875rem; --bgc:transparent; --oe:none; --ta:right"
+										style="--w:100%; --size:0.8rem; --bgc:transparent; --oe:none; --ta:right"
 										type="text"
 										placeholder={$i18n.t('Enter model ID (e.g. llama3.2)')}
 										bind:value={RAGConfig.AI_PARSE_DEFAULT_MODEL}
@@ -662,7 +662,7 @@
 								</summary>
 								<div style="--mt:0.5rem; --d:flex; --fd:column; --g:0.5rem">
 									<div style="--d:flex; --fd:column; --w:100%">
-										<div style="--mb:0.25rem; --size:0.6rem; --weight:500">
+										<div style="--mb:0.2rem; --size:0.6rem; --weight:500">
 											{$i18n.t('Processing Prompt')}
 										</div>
 										<Textarea
@@ -742,14 +742,14 @@
 						</div>
 
 						<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
-							<div style="--d:flex; --g:0.375rem; --w:100%">
+							<div style="--d:flex; --g:0.4rem; --w:100%">
 								<div style="--w:100%; --jc:space-between">
-									<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.25rem">
+									<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.2rem">
 										{$i18n.t('Chunk Size')}
 									</div>
 									<div style="--as:center">
 										<input
-											style="--w:100%; --radius:0.5rem; --py:0.375rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+											style="--w:100%; --radius:0.5rem; --py:0.4rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 											type="number"
 											placeholder={$i18n.t('Enter Chunk Size')}
 											bind:value={RAGConfig.CHUNK_SIZE}
@@ -760,13 +760,13 @@
 								</div>
 
 								<div style="--w:100%">
-									<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.25rem">
+									<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.2rem">
 										{$i18n.t('Chunk Overlap')}
 									</div>
 
 									<div style="--as:center">
 										<input
-											style="--w:100%; --radius:0.5rem; --py:0.375rem; --px:1rem; --size:0.875rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+											style="--w:100%; --radius:0.5rem; --py:0.4rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 											type="number"
 											placeholder={$i18n.t('Enter Chunk Overlap')}
 											bind:value={RAGConfig.CHUNK_OVERLAP}
@@ -793,7 +793,7 @@
 								</div>
 								<div style="--d:flex; --ai:center; --pos:relative">
 									<select
-										style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.6rem; --bgc:transparent; --oe:none; --ta:right"
+										style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.2rem; --size:0.6rem; --bgc:transparent; --oe:none; --ta:right"
 										bind:value={embeddingEngine}
 										placeholder="Select an embedding model engine"
 										on:change={(e) => {
@@ -819,7 +819,7 @@
 							{#if embeddingEngine === 'openai'}
 								<div style="--my:0.125rem; --d:flex; --g:0.5rem; --pr:0.5rem">
 									<input
-										style="--fx:1 1 0%; --w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+										style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 										placeholder={$i18n.t('API Base URL')}
 										bind:value={OpenAIUrl}
 										required
@@ -834,7 +834,7 @@
 							{:else if embeddingEngine === 'ollama'}
 								<div style="--my:0.125rem; --d:flex; --g:0.5rem; --pr:0.5rem">
 									<input
-										style="--fx:1 1 0%; --w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+										style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 										placeholder={$i18n.t('API Base URL')}
 										bind:value={OllamaUrl}
 										required
@@ -850,7 +850,7 @@
 								<div style="--my:0.125rem; --d:flex; --fd:column; --g:0.5rem; --pr:0.5rem; --w:100%">
 									<div style="--d:flex; --g:0.5rem">
 										<input
-											style="--fx:1 1 0%; --w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+											style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 											placeholder={$i18n.t('API Base URL')}
 											bind:value={AzureOpenAIUrl}
 											required
@@ -859,7 +859,7 @@
 									</div>
 									<div style="--d:flex; --g:0.5rem">
 										<input
-											style="--fx:1 1 0%; --w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+											style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 											placeholder="Version"
 											bind:value={AzureOpenAIVersion}
 											required
@@ -870,14 +870,14 @@
 						</div>
 
 						<div style="--mb:0.625rem; --d:flex; --fd:column; --w:100%">
-							<div style="--mb:0.25rem; --size:0.6rem; --weight:500">{$i18n.t('Embedding Model')}</div>
+							<div style="--mb:0.2rem; --size:0.6rem; --weight:500">{$i18n.t('Embedding Model')}</div>
 
 							<div class="">
 								{#if embeddingEngine === 'ollama'}
 									<div style="--d:flex; --w:100%">
 										<div style="--fx:1 1 0%; --mr:0.5rem">
 											<input
-												style="--fx:1 1 0%; --w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+												style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 												bind:value={embeddingModel}
 												placeholder={$i18n.t('Set embedding model')}
 												required
@@ -888,7 +888,7 @@
 									<div style="--d:flex; --w:100%">
 										<div style="--fx:1 1 0%; --mr:0.5rem">
 											<input
-												style="--fx:1 1 0%; --w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+												style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 												placeholder={$i18n.t('Set embedding model (e.g. {{model}})', {
 													model: embeddingModel.slice(-40)
 												})}
@@ -929,7 +929,7 @@
 								{/if}
 							</div>
 
-							<div style="--mt:0.25rem; --mb:0.25rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
+							<div style="--mt:0.2rem; --mb:0.2rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 								{$i18n.t(
 									'Warning: If you update or change your embedding model, you will need to re-import all documents.'
 								)}
@@ -983,7 +983,7 @@
 								<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Top K')}</div>
 								<div style="--d:flex; --ai:center; --pos:relative">
 									<input
-										style="--fx:1 1 0%; --w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+										style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 										type="number"
 										placeholder={$i18n.t('Enter Top K')}
 										bind:value={RAGConfig.TOP_K}
@@ -1013,7 +1013,7 @@
 												</div>
 												<div style="--d:flex; --ai:center; --pos:relative">
 													<select
-														style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.6rem; --bgc:transparent; --oe:none; --ta:right"
+														style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.2rem; --size:0.6rem; --bgc:transparent; --oe:none; --ta:right"
 														bind:value={RAGConfig.RAG_RERANKING_ENGINE}
 														placeholder="Select a reranking model engine"
 														on:change={(e) => {
@@ -1033,7 +1033,7 @@
 											{#if RAGConfig.RAG_RERANKING_ENGINE === 'external'}
 												<div style="--my:0.125rem; --d:flex; --g:0.5rem; --pr:0.5rem">
 													<input
-														style="--fx:1 1 0%; --w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+														style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 														placeholder={$i18n.t('API Base URL')}
 														bind:value={RAGConfig.RAG_EXTERNAL_RERANKER_URL}
 														required
@@ -1049,13 +1049,13 @@
 										</div>
 
 										<div style="--d:flex; --fd:column; --w:100%">
-											<div style="--mb:0.25rem; --size:0.6rem; --weight:500">{$i18n.t('Reranking Model')}</div>
+											<div style="--mb:0.2rem; --size:0.6rem; --weight:500">{$i18n.t('Reranking Model')}</div>
 
 											<div class="">
 												<div style="--d:flex; --w:100%">
 													<div style="--fx:1 1 0%; --mr:0.5rem">
 														<input
-															style="--fx:1 1 0%; --w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+															style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 															placeholder={$i18n.t('Set reranking model (e.g. {{model}})', {
 																model: 'BAAI/bge-reranker-v2-m3'
 															})}
@@ -1070,7 +1070,7 @@
 											<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Top K Reranker')}</div>
 											<div style="--d:flex; --ai:center; --pos:relative">
 												<input
-													style="--fx:1 1 0%; --w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+													style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 													type="number"
 													placeholder={$i18n.t('Enter Top K Reranker')}
 													bind:value={RAGConfig.TOP_K_RERANKER}
@@ -1087,7 +1087,7 @@
 												</div>
 												<div style="--d:flex; --ai:center; --pos:relative">
 													<input
-														style="--fx:1 1 0%; --w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+														style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 														type="number"
 														step="0.01"
 														placeholder={$i18n.t('Enter Score')}
@@ -1100,7 +1100,7 @@
 													/>
 												</div>
 											</div>
-											<div style="--mt:0.25rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
+											<div style="--mt:0.2rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 												{$i18n.t(
 													'Note: If you set a minimum score, the search will only return documents with a score greater than or equal to the minimum score.'
 												)}
@@ -1113,7 +1113,7 @@
 											</div>
 											<div style="--d:flex; --ai:center; --pos:relative">
 												<input
-													style="--fx:1 1 0%; --w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+													style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 													type="number"
 													step="0.01"
 													placeholder={$i18n.t('Enter BM25 Weight')}
@@ -1130,7 +1130,7 @@
 						{/if}
 
 						<div style="--mb:0.625rem; --d:flex; --fd:column; --w:100%; --jc:space-between">
-							<div style="--mb:0.25rem; --size:0.6rem; --weight:500">{$i18n.t('RAG Template')}</div>
+							<div style="--mb:0.2rem; --size:0.6rem; --weight:500">{$i18n.t('RAG Template')}</div>
 							<div style="--d:flex; --w:100%; --ai:center; --pos:relative">
 								<Tooltip
 									content={$i18n.t(
@@ -1166,7 +1166,7 @@
 								placement="top-start"
 							>
 								<input
-									style="--fx:1 1 0%; --w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+									style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 									type="text"
 									placeholder={$i18n.t('e.g. pdf, docx, txt')}
 									bind:value={RAGConfig.ALLOWED_FILE_EXTENSIONS}
@@ -1186,7 +1186,7 @@
 								placement="top-start"
 							>
 								<input
-									style="--fx:1 1 0%; --w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+									style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 									type="number"
 									placeholder={$i18n.t('Leave empty for unlimited')}
 									bind:value={RAGConfig.FILE_MAX_SIZE}
@@ -1207,7 +1207,7 @@
 								placement="top-start"
 							>
 								<input
-									style="--fx:1 1 0%; --w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+									style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 									type="number"
 									placeholder={$i18n.t('Leave empty for unlimited')}
 									bind:value={RAGConfig.FILE_MAX_COUNT}
@@ -1228,7 +1228,7 @@
 								placement="top-start"
 							>
 								<input
-									style="--fx:1 1 0%; --w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+									style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 									type="number"
 									placeholder={$i18n.t('Leave empty for no compression')}
 									bind:value={RAGConfig.FILE_IMAGE_COMPRESSION_WIDTH}
@@ -1251,7 +1251,7 @@
 								placement="top-start"
 							>
 								<input
-									style="--fx:1 1 0%; --w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
+									style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 									type="number"
 									placeholder={$i18n.t('Leave empty for no compression')}
 									bind:value={RAGConfig.FILE_IMAGE_COMPRESSION_HEIGHT}
@@ -1335,9 +1335,9 @@
 				</div>
 			</div>
 		</div>
-		<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.875rem; --weight:500">
+		<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.8rem; --weight:500">
 			<button
-				style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+				style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 				type="submit"
 			>
 				{$i18n.t('Save')}

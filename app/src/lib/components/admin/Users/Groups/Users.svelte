@@ -50,7 +50,7 @@
 				<Search />
 			</div>
 			<input
-				style="--w:100%; --size:0.875rem; --pr:1rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
+				style="--w:100%; --size:0.8rem; --pr:1rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 				bind:value={query}
 				placeholder={$i18n.t('Search')}
 			/>
@@ -62,7 +62,7 @@
 		<div style="--d:flex; --fd:column; --g:0.625rem">
 			{#if filteredUsers.length > 0}
 				{#each filteredUsers as user, userIdx (user.id)}
-					<div style="--d:flex; --fd:row; --ai:center; --g:0.6rem; --w:100%; --size:0.875rem">
+					<div style="--d:flex; --fd:row; --ai:center; --g:0.6rem; --w:100%; --size:0.8rem">
 						<div style="--d:flex; --ai:center">
 							<Checkbox
 								state={userIds.includes(user.id) ? 'checked' : 'unchecked'}

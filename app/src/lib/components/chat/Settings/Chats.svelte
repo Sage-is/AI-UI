@@ -116,7 +116,7 @@
 
 <ArchivedChatsModal bind:show={showArchivedChatsModal} onUpdate={handleArchivedChatsChange} />
 
-<div id="tab-chats" style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.875rem">
+<div id="tab-chats" style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.8rem">
 	<div style="--g:0.5rem; --ofy:scroll; --maxh:28rem; --maxh-lg:100%">
 		<div style="--d:flex; --fd:column">
 			<input
@@ -128,7 +128,7 @@
 				hidden
 			/>
 			<button
-				style="--d:flex; --radius:0.375rem; --py:0.5rem; --px:0.875rem; --w:100%; --hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--d:flex; --radius:0.4rem; --py:0.5rem; --px:0.8rem; --w:100%; --hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={() => {
 					chatImportInputElement.click();
 				}}
@@ -147,12 +147,12 @@
 						/>
 					</svg>
 				</div>
-				<div style="--as:center; --size:0.875rem; --weight:500">{$i18n.t('Import Chats')}</div>
+				<div style="--as:center; --size:0.8rem; --weight:500">{$i18n.t('Import Chats')}</div>
 			</button>
 
 			{#if $user?.role === 'admin' || ($user.permissions?.chat?.export ?? true)}
 				<button
-					style="--d:flex; --radius:0.375rem; --py:0.5rem; --px:0.875rem; --w:100%; --hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--d:flex; --radius:0.4rem; --py:0.5rem; --px:0.8rem; --w:100%; --hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						exportChats();
 					}}
@@ -171,7 +171,7 @@
 							/>
 						</svg>
 					</div>
-					<div style="--as:center; --size:0.875rem; --weight:500">{$i18n.t('Export Chats')}</div>
+					<div style="--as:center; --size:0.8rem; --weight:500">{$i18n.t('Export Chats')}</div>
 				</button>
 			{/if}
 		</div>
@@ -180,7 +180,7 @@
 
 		<div style="--d:flex; --fd:column">
 			<button
-				style="--d:flex; --radius:0.375rem; --py:0.5rem; --px:0.875rem; --w:100%; --hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--d:flex; --radius:0.4rem; --py:0.5rem; --px:0.8rem; --w:100%; --hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={() => {
 					showArchivedChatsModal = true;
 				}}
@@ -202,11 +202,11 @@
 						/>
 					</svg>
 				</div>
-				<div style="--as:center; --size:0.875rem; --weight:500">{$i18n.t('Archived Chats')}</div>
+				<div style="--as:center; --size:0.8rem; --weight:500">{$i18n.t('Archived Chats')}</div>
 			</button>
 
 			{#if showArchiveConfirm}
-				<div style="--d:flex; --jc:space-between; --radius:0.375rem; --ai:center; --py:0.5rem; --px:0.875rem; --w:100%; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)">
+				<div style="--d:flex; --jc:space-between; --radius:0.4rem; --ai:center; --py:0.5rem; --px:0.8rem; --w:100%; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)">
 					<div style="--d:flex; --ai:center; --g:0.6rem">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -224,7 +224,7 @@
 						<span>{$i18n.t('Are you sure?')}</span>
 					</div>
 
-					<div style="--d:flex; --g:0.375rem; --ai:center">
+					<div style="--d:flex; --g:0.4rem; --ai:center">
 						<button
 							style="--hvr-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							on:click={() => {
@@ -266,7 +266,7 @@
 				</div>
 			{:else}
 				<button
-					style="--d:flex; --radius:0.375rem; --py:0.5rem; --px:0.875rem; --w:100%; --hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--d:flex; --radius:0.4rem; --py:0.5rem; --px:0.8rem; --w:100%; --hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						showArchiveConfirm = true;
 					}}
@@ -288,12 +288,12 @@
 							/>
 						</svg>
 					</div>
-					<div style="--as:center; --size:0.875rem; --weight:500">{$i18n.t('Archive All Chats')}</div>
+					<div style="--as:center; --size:0.8rem; --weight:500">{$i18n.t('Archive All Chats')}</div>
 				</button>
 			{/if}
 
 			{#if showDeleteConfirm}
-				<div style="--d:flex; --jc:space-between; --radius:0.375rem; --ai:center; --py:0.5rem; --px:0.875rem; --w:100%; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)">
+				<div style="--d:flex; --jc:space-between; --radius:0.4rem; --ai:center; --py:0.5rem; --px:0.8rem; --w:100%; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)">
 					<div style="--d:flex; --ai:center; --g:0.6rem">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -311,7 +311,7 @@
 						<span>{$i18n.t('Are you sure?')}</span>
 					</div>
 
-					<div style="--d:flex; --g:0.375rem; --ai:center">
+					<div style="--d:flex; --g:0.4rem; --ai:center">
 						<button
 							style="--hvr-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							on:click={() => {
@@ -353,7 +353,7 @@
 				</div>
 			{:else}
 				<button
-					style="--d:flex; --radius:0.375rem; --py:0.5rem; --px:0.875rem; --w:100%; --hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--d:flex; --radius:0.4rem; --py:0.5rem; --px:0.8rem; --w:100%; --hvr-bgc:var(--color-gray-200); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						showDeleteConfirm = true;
 					}}
@@ -372,7 +372,7 @@
 							/>
 						</svg>
 					</div>
-					<div style="--as:center; --size:0.875rem; --weight:500">{$i18n.t('Delete All Chats')}</div>
+					<div style="--as:center; --size:0.8rem; --weight:500">{$i18n.t('Delete All Chats')}</div>
 				</button>
 			{/if}
 		</div>

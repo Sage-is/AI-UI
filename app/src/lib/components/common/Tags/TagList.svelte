@@ -14,7 +14,7 @@
 {#each tags as tag}
 	<Tooltip content={tag.name}>
 		<li
-			style="--pos:relative; --px:0.375rem; --py:0.2px; --g:0.125rem; --d:flex; --jc:space-between; --h:fit-content; --w:fit-content; --ai:center; --radius:9999px; --bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --cur:pointer"
+			style="--pos:relative; --px:0.4rem; --py:0.2px; --g:0.125rem; --d:flex; --jc:space-between; --h:fit-content; --w:fit-content; --ai:center; --radius:9999px; --bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --cur:pointer"
 	class="group/tags max-h-fit"
 		>
 			<button

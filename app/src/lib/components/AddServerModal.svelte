@@ -155,7 +155,7 @@
 
 <Modal size="sm" bind:show>
 	<div>
-		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-100); --px:1.25rem; --pt:1rem; --pb:0.5rem">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-100); --px:1.2rem; --pt:1rem; --pb:0.5rem">
 			<h1 style="--size:1.125rem; --weight:500; --as:center"
 	class="font-primary">
 				{#if edit}
@@ -184,7 +184,7 @@
 						submitHandler();
 					}}
 				>
-					<div style="--px:0.25rem">
+					<div style="--px:0.2rem">
 						<div style="--d:flex; --g:0.5rem">
 							<div style="--d:flex; --fd:column; --w:100%">
 								<div style="--d:flex; --jc:space-between; --mb:0.125rem">
@@ -211,7 +211,7 @@
 										className="shrink-0 flex items-center mr-1"
 									>
 										<button
-											style="--as:center; --p:0.25rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+											style="--as:center; --p:0.2rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 											on:click={() => {
 												verifyHandler();
 											}}
@@ -305,7 +305,7 @@
 						</div>
 
 						{#if !direct}
-							<hr style="--bc:var(--color-gray-100); --dark-bc:rgb(78 78 78 / 0.1); --my:0.625rem; --w:100%" />
+							<hr style="--bc:var(--color-gray-100); --dark-bc:rgb(78 78 78 / 0.1); --my:0.6rem; --w:100%" />
 
 							<div style="--d:flex; --g:0.5rem">
 								<div style="--d:flex; --fd:column; --w:100%">
@@ -348,7 +348,7 @@
 								</div>
 							</div>
 
-							<hr style="--bc:var(--color-gray-100); --dark-bc:rgb(78 78 78 / 0.1); --my:0.625rem; --w:100%" />
+							<hr style="--bc:var(--color-gray-100); --dark-bc:rgb(78 78 78 / 0.1); --my:0.6rem; --w:100%" />
 
 							<div style="--my:0.5rem; --mx:-0.5rem">
 								<div style="--px:0.6rem; --py:0.5rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-950); --radius:0.5rem">
@@ -358,10 +358,10 @@
 						{/if}
 					</div>
 
-					<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.875rem; --weight:500; --g:0.375rem">
+					<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.8rem; --weight:500; --g:0.4rem">
 						{#if edit}
 							<button
-								style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --dark-bgc:#000; --hvr-dark-bgc:var(--color-gray-900); --dark-c:#fff; --bgc:#fff; --c:#000; --hvr-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
+								style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --dark-bgc:#000; --hvr-dark-bgc:var(--color-gray-900); --dark-c:#fff; --bgc:#fff; --c:#000; --hvr-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.2rem; --ai:center"
 								type="button"
 								on:click={() => {
 									onDelete();
@@ -373,7 +373,7 @@
 						{/if}
 
 						<button
-							style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
+							style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.2rem; --ai:center"
 	class="{loading
 								? ' cursor-not-allowed'
 								: ''}"

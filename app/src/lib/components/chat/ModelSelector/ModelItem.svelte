@@ -47,7 +47,7 @@
 <button
 	aria-roledescription="model-item"
 	aria-label={item.label}
-	style="--d:flex; --w:100%; --ta:left; --weight:500; --line-clamp:1; --us:none; --ai:center; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --pl:0.6rem; --pr:0.375rem; --size:0.875rem; --bg:var(--white); --br: 1rem; --shadow:6; --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-800); --radius:0.5rem; --cur:pointer; --m:0.2em 0"
+	style="--d:flex; --w:100%; --ta:left; --weight:500; --line-clamp:1; --us:none; --ai:center; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --pl:0.6rem; --pr:0.4rem; --size:0.8rem; --bg:var(--white); --br: 1rem; --shadow:6; --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-800); --radius:0.5rem; --cur:pointer; --m:0.2em 0"
 	class="group/item data-highlighted:bg-muted {index ===
 	selectedModelIdx
 		? 'bg-gray-100 dark:bg-gray-800 group-hover:bg-transparent'
@@ -58,7 +58,7 @@
 		onClick();
 	}}
 >
-	<div style="--d:flex; --fd:column; --fx:1 1 0%; --g:0.375rem">
+	<div style="--d:flex; --fd:column; --fx:1 1 0%; --g:0.4rem">
 		{#if (item?.model?.tags ?? []).length > 0}
 			<div
 				style="--d:flex; --g:0.125rem; --as:center; --ai:flex-start; --h:100%; --w:100%; --translatey:0.5px; --ofx:auto"
@@ -67,7 +67,7 @@
 				{#each item.model?.tags.sort((a, b) => a.name.localeCompare(b.name)) as tag}
 					<Tooltip content={tag.name} className="flex-shrink-0">
 						<div
-							style="--size:0.6rem; --weight:700; --px:0.25rem; --radius:0.125rem; --tt:uppercase; --bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200)"
+							style="--size:0.6rem; --weight:700; --px:0.2rem; --radius:0.125rem; --tt:uppercase; --bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200)"
 						>
 							{tag.name}
 						</div>
@@ -83,7 +83,7 @@
 						src={item.model?.info?.meta?.profile_image_url ??
 							branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
 						alt="Model"
-						style="--radius:9999px; --w:1.25rem; --h:1.25rem; --d:flex; --ai:center"
+						style="--radius:9999px; --w:1.2rem; --h:1.2rem; --d:flex; --ai:center"
 					/>
 				</Tooltip>
 			</div>
@@ -210,7 +210,7 @@
 		</div>
 	</div>
 
-	<div style="--ml:auto; --pl:0.5rem; --pr:0.25rem; --d:flex; --ai:center; --g:0.375rem; --fs:0">
+	<div style="--ml:auto; --pl:0.5rem; --pr:0.2rem; --d:flex; --ai:center; --g:0.4rem; --fs:0">
 		{#if $user?.role === 'admin' && item.model.owned_by === 'ollama' && item.model.ollama?.expires_at && new Date(item.model.ollama?.expires_at * 1000) > new Date()}
 			<Tooltip
 				content={`${$i18n.t('Eject')}`}

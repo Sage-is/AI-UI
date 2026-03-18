@@ -327,8 +327,8 @@ Based on the user's instruction, update and enhance the existing notes or select
 	});
 </script>
 
-<div style="--d:flex; --ai:center; --mb:0.375rem; --pt:0.375rem">
-	<div style="--translatex:-0.375rem; --d:flex; --ai:center">
+<div style="--d:flex; --ai:center; --mb:0.4rem; --pt:0.4rem">
+	<div style="--translatex:-0.4rem; --d:flex; --ai:center">
 		<button
 			style="--p:0.125rem; --bgc:transparent; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
 			on:click={() => {
@@ -339,7 +339,7 @@ Based on the user's instruction, update and enhance the existing notes or select
 		</button>
 	</div>
 
-	<div style="--weight:500; --size:1rem; --d:flex; --ai:center; --g:0.25rem">
+	<div style="--weight:500; --size:1rem; --d:flex; --ai:center; --g:0.2rem">
 		<div>
 			{$i18n.t('Chat')}
 		</div>
@@ -352,7 +352,7 @@ Based on the user's instruction, update and enhance the existing notes or select
 				position="top"
 				className="inline-block"
 			>
-				<span style="--c:var(--color-gray-500); --size:0.875rem">({$i18n.t('Experimental')})</span>
+				<span style="--c:var(--color-gray-500); --size:0.8rem">({$i18n.t('Experimental')})</span>
 			</Tooltip>
 		</div>
 	</div>
@@ -371,7 +371,7 @@ Based on the user's instruction, update and enhance the existing notes or select
 					on:scroll={onScroll}
 				>
 					<div style="--h:100%; --w:100%; --d:flex; --fd:column">
-						<div style="--fx:1 1 0%; --p:0.25rem">
+						<div style="--fx:1 1 0%; --p:0.2rem">
 							<Messages bind:messages {onInsert} />
 						</div>
 					</div>
@@ -379,7 +379,7 @@ Based on the user's instruction, update and enhance the existing notes or select
 
 				<div style="--pb:0.5rem">
 					{#if selectedContent}
-						<div style="--size:0.6rem; --radius:0.6rem; --px:0.875rem; --py:0.6rem; --w:100%"
+						<div style="--size:0.6rem; --radius:0.6rem; --px:0.8rem; --py:0.6rem; --w:100%"
 	class="markdown-prose-xs">
 							<blockquote>
 								<div style="--line-clamp:3">
@@ -397,7 +397,7 @@ Based on the user's instruction, update and enhance the existing notes or select
 						onSubmit={submitHandler}
 						{onStop}
 					>
-						<div slot="menu" style="--d:flex; --ai:center; --jc:space-between; --g:0.5rem; --w:100%; --pr:0.25rem">
+						<div slot="menu" style="--d:flex; --ai:center; --jc:space-between; --g:0.5rem; --w:100%; --pr:0.2rem">
 							<div>
 								<Tooltip content={$i18n.t('Edit')} placement="top">
 									<button
@@ -408,7 +408,7 @@ Based on the user's instruction, update and enhance the existing notes or select
 										}}
 										disabled={streaming || loading}
 										type="button"
-										style="--px:0.5rem; --py:0.5rem; --d:flex; --g:0.375rem; --ai:center; --size:0.875rem; --radius:9999px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:300ms; --maxw:100%; --of:hidden; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800)"
+										style="--px:0.5rem; --py:0.5rem; --d:flex; --g:0.4rem; --ai:center; --size:0.8rem; --radius:9999px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:300ms; --maxw:100%; --of:hidden; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800)"
 	class="@xl:px-2.5 focus:outline-hidden {editEnabled
 											? ' text-sky-500 dark:text-sky-300 bg-sky-50 dark:bg-sky-200/5'
 											: 'bg-transparent text-gray-600 dark:text-gray-300 '} disabled:opacity-50 disabled:pointer-events-none"
@@ -424,7 +424,7 @@ Based on the user's instruction, update and enhance the existing notes or select
 
 							<Tooltip content={selectedModelId}>
 								<select
-									style="--bgc:transparent; --radius:0.5rem; --py:0.25rem; --px:0.5rem; --mx:-0.125rem; --size:0.875rem; --oe:none; --w:100%; --ta:right; --pr:1.25rem"
+									style="--bgc:transparent; --radius:0.5rem; --py:0.2rem; --px:0.5rem; --mx:-0.125rem; --size:0.8rem; --oe:none; --w:100%; --ta:right; --pr:1.2rem"
 									bind:value={selectedModelId}
 								>
 									{#each $models as model}

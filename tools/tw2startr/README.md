@@ -107,7 +107,7 @@ npx tw2startr --dry-run --diff "**/*.html"
 | **Height** | `h-screen`, `h-16` | `--h` | `h-screen` -> `--h:100vh` |
 | **Min/Max Width** | `min-w-0`, `max-w-lg` | `--minw`, `--maxw` | `max-w-lg` -> `--maxw:32rem` |
 | **Min/Max Height** | `min-h-screen`, `max-h-full` | `--minh`, `--maxh` | `min-h-screen` -> `--minh:100vh` |
-| **Font Size** | `text-sm`, `text-xl`, `text-2xl` | `--size` | `text-sm` -> `--size:0.875rem` |
+| **Font Size** | `text-sm`, `text-xl`, `text-2xl` | `--size` | `text-sm` -> `--size:0.8rem` |
 | **Font Weight** | `font-bold`, `font-semibold` | `--weight` | `font-bold` -> `--weight:700` |
 | **Font Family** | `font-sans`, `font-mono` | `--ff` | `font-mono` -> `--ff:ui-monospace, ...` |
 | **Text Align** | `text-center`, `text-left` | `--ta` | `text-center` -> `--ta:center` |
@@ -147,7 +147,7 @@ Tailwind responsive prefixes are converted to startr.style suffixes on the custo
 | `sm:` | `-sm` | `sm:flex` -> `--d-sm:flex` |
 | `md:` | `-md` | `md:grid-cols-2` -> `--gtc-md:repeat(2, minmax(0, 1fr))` |
 | `lg:` | `-lg` | `lg:p-8` -> `--p-lg:2rem` |
-| `xl:` | `-xl` | `xl:text-xl` -> `--size-xl:1.25rem` |
+| `xl:` | `-xl` | `xl:text-xl` -> `--size-xl:1.2rem` |
 | `2xl:` | `-xl` | `2xl:hidden` -> `--d-xl:none` (mapped to -xl) |
 | `print:` | `-pt` | `print:hidden` -> `--d-pt:none` |
 

@@ -42,7 +42,7 @@
 <Modal size="sm" bind:show>
 	{#if selectedFeedback}
 		<div>
-			<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.25rem; --pt:1rem; --pb:0.5rem">
+			<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.2rem; --pt:1rem; --pb:0.5rem">
 				<div style="--size:1.125rem; --weight:500; --as:center">
 					{$i18n.t('Feedback Details')}
 				</div>
@@ -51,7 +51,7 @@
 				</button>
 			</div>
 
-			<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1.25rem; --pb:1rem; --p: 1rem 0;--bgc: var(--white); --br: 1rem">
+			<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1.2rem; --pb:1rem; --p: 1rem 0;--bgc: var(--white); --br: 1rem">
 				{#if loaded}
 					<div style="--d:flex; --fd:column; --w:100%">
 						{#if feedbackData}
@@ -60,7 +60,7 @@
 
 							{#if messages[messages[messageId]?.parentId]}
 								<div style="--d:flex; --fd:column; --w:100%; --mb:0.5rem">
-									<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Prompt')}</div>
+									<div style="--mb:0.2rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Prompt')}</div>
 
 									<div style="--fx:1 1 0%; --size:0.6rem; --ws:pre-line; --wb:break-word; overflow-wrap:break-word">
 										<span>{messages[messages[messageId]?.parentId]?.content || '-'}</span>
@@ -70,7 +70,7 @@
 
 							{#if messages[messageId]}
 								<div style="--d:flex; --fd:column; --w:100%; --mb:0.5rem">
-									<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Response')}</div>
+									<div style="--mb:0.2rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Response')}</div>
 									<div
 										style="--fx:1 1 0%; --size:0.6rem; --ws:pre-line; --wb:break-word; overflow-wrap:break-word; --maxh:8rem; --ofy:auto"
 									>
@@ -81,14 +81,14 @@
 						{/if}
 
 						<div style="--d:flex; --fd:column; --w:100%; --mb:0.5rem">
-							<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Rating')}</div>
+							<div style="--mb:0.2rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Rating')}</div>
 
 							<div style="--fx:1 1 0%; --size:0.6rem">
 								<span>{selectedFeedback?.data?.details?.rating ?? '-'}</span>
 							</div>
 						</div>
 						<div style="--d:flex; --fd:column; --w:100%; --mb:0.5rem">
-							<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Reason')}</div>
+							<div style="--mb:0.2rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Reason')}</div>
 
 							<div style="--fx:1 1 0%; --size:0.6rem">
 								<span>{selectedFeedback?.data?.reason || '-'}</span>
@@ -96,7 +96,7 @@
 						</div>
 
 						<div style="--d:flex; --fd:column; --w:100%; --mb:0.5rem">
-							<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Comment')}</div>
+							<div style="--mb:0.2rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Comment')}</div>
 
 							<div style="--fx:1 1 0%; --size:0.6rem">
 								<span>{selectedFeedback?.data?.comment || '-'}</span>
@@ -104,8 +104,8 @@
 						</div>
 
 						{#if selectedFeedback?.data?.tags && selectedFeedback?.data?.tags.length}
-							<div style="--mb:0.5rem; --mx:-0.25rem">
-								<div style="--d:flex; --fw:wrap; --g:0.25rem; --mt:0.25rem">
+							<div style="--mb:0.5rem; --mx:-0.2rem">
+								<div style="--d:flex; --fw:wrap; --g:0.2rem; --mt:0.2rem">
 									{#each selectedFeedback?.data?.tags as tag}
 										<span style="--px:0.5rem; --py:0.125rem; --radius:9999px; --bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --size:9px"
 											>{tag}</span
@@ -117,7 +117,7 @@
 
 						<div style="--d:flex; --jc:flex-end; --pt:0.5rem">
 							<button
-								style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+								style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 								type="button"
 								on:click={close}
 							>

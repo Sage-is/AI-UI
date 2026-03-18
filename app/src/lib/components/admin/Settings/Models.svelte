@@ -257,9 +257,9 @@
 
 {#if models !== null}
 	{#if selectedModelId === null}
-		<div style="--d:flex; --fd:column; --g:0.25rem; --mt:0.375rem; --mb:0.5rem">
+		<div style="--d:flex; --fd:column; --g:0.2rem; --mt:0.4rem; --mb:0.5rem">
 			<div style="--d:flex; --jc:space-between; --ai:center">
-				<div style="--d:flex; --ai:center; --as-md:center; --size:1.25rem; --weight:500; --px:0.125rem">
+				<div style="--d:flex; --ai:center; --as-md:center; --size:1.2rem; --weight:500; --px:0.125rem">
 					{$i18n.t('Models')}
 					<div style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)" />
 					<span style="--size:1.125rem; --weight:500; --c:var(--color-gray-500); --dark-c:var(--color-gray-300)"
@@ -267,10 +267,10 @@
 					>
 				</div>
 
-				<div style="--d:flex; --ai:center; --g:0.375rem">
+				<div style="--d:flex; --ai:center; --g:0.4rem">
 					<Tooltip content={$i18n.t('Manage Models')}>
 						<button
-							style="--p:0.25rem; --radius:9999px; --d:flex; --g:0.25rem; --ai:center"
+							style="--p:0.2rem; --radius:9999px; --d:flex; --g:0.2rem; --ai:center"
 							type="button"
 							on:click={() => {
 								showManageModal = true;
@@ -282,7 +282,7 @@
 
 					<Tooltip content={$i18n.t('Settings')}>
 						<button
-							style="--p:0.25rem; --radius:9999px; --d:flex; --g:0.25rem; --ai:center"
+							style="--p:0.2rem; --radius:9999px; --d:flex; --g:0.2rem; --ai:center"
 							type="button"
 							on:click={() => {
 								showConfigModal = true;
@@ -296,16 +296,16 @@
 
 			<div style="--d:flex; --fx:1 1 0%; --ai:center; --w:100%; --g:0.5rem">
 				<div style="--d:flex; --fx:1 1 0%; --ai:center">
-					<div style="--as:center; --ml:0.25rem; --mr:0.6rem">
+					<div style="--as:center; --ml:0.2rem; --mr:0.6rem">
 						<Search className="size-3.5" />
 					</div>
 					<input
-						style="--w:100%; --size:0.875rem; --py:0.25rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
+						style="--w:100%; --size:0.8rem; --py:0.2rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 						bind:value={searchValue}
 						placeholder={$i18n.t('Search Models')}
 					/>
 					{#if searchValue}
-						<div style="--as:center; --pl:0.375rem; --translatey:0.5px; --btlr:0.6rem; --bblr:0.6rem; --bgc:transparent">
+						<div style="--as:center; --pl:0.4rem; --translatey:0.5px; --btlr:0.6rem; --bblr:0.6rem; --bgc:transparent">
 							<button
 								style="--p:0.125rem; --radius:9999px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								on:click={() => {
@@ -320,7 +320,7 @@
 			</div>
 		</div>
 
-		<div style="--my:0.5rem; --mb:1.25rem" id="model-list">
+		<div style="--my:0.5rem; --mb:1.2rem" id="model-list">
 			{#if models.length > 0}
 				{#each filteredModels as model, modelIdx (model.id)}
 					<div
@@ -332,7 +332,7 @@
 						id="model-item-{model.id}"
 					>
 						<button
-							style="--d:flex; --fx:1 1 0%; --ta:left; --g:0.875rem; --cur:pointer; --w:100%"
+							style="--d:flex; --fx:1 1 0%; --ta:left; --g:0.8rem; --cur:pointer; --w:100%"
 							type="button"
 							on:click={() => {
 								selectedModelId = model.id;
@@ -383,7 +383,7 @@
 							{#if shiftKey}
 								<Tooltip content={model?.meta?.hidden ? $i18n.t('Show') : $i18n.t('Hide')}>
 									<button
-										style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
+										style="--as:center; --w:fit-content; --size:0.8rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 										type="button"
 										on:click={() => {
 											hideModelHandler(model);
@@ -398,7 +398,7 @@
 								</Tooltip>
 							{:else}
 								<button
-									style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
+									style="--as:center; --w:fit-content; --size:0.8rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 									type="button"
 									on:click={() => {
 										selectedModelId = model.id;
@@ -435,14 +435,14 @@
 									onClose={() => {}}
 								>
 									<button
-										style="--as:center; --w:fit-content; --size:0.875rem; --p:0.375rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
+										style="--as:center; --w:fit-content; --size:0.8rem; --p:0.4rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 										type="button"
 									>
 										<EllipsisHorizontal className="size-5" />
 									</button>
 								</ModelMenu>
 
-								<div style="--ml:0.25rem">
+								<div style="--ml:0.2rem">
 									<Tooltip
 										content={(model?.is_active ?? true) ? $i18n.t('Enabled') : $i18n.t('Disabled')}
 									>
@@ -469,7 +469,7 @@
 
 		{#if $user?.role === 'admin'}
 			<div style="--d:flex; --jc:flex-end; --w:100%; --mb:0.6rem">
-				<div style="--d:flex; --g:0.25rem">
+				<div style="--d:flex; --g:0.2rem">
 					<input
 						id="models-import-input"
 						bind:this={modelsImportInputElement}
@@ -514,7 +514,7 @@
 					/>
 
 					<button
-						style="--d:flex; --size:0.6rem; --ai:center; --g:0.25rem; --px:0.6rem; --py:0.375rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+						style="--d:flex; --size:0.6rem; --ai:center; --g:0.2rem; --px:0.6rem; --py:0.4rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={() => {
 							modelsImportInputElement.click();
 						}}
@@ -528,7 +528,7 @@
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 16 16"
 								fill="currentColor"
-								style="--w:0.875rem; --h:0.875rem"
+								style="--w:0.8rem; --h:0.8rem"
 							>
 								<path
 									fill-rule="evenodd"
@@ -540,7 +540,7 @@
 					</button>
 
 					<button
-						style="--d:flex; --size:0.6rem; --ai:center; --g:0.25rem; --px:0.6rem; --py:0.375rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+						style="--d:flex; --size:0.6rem; --ai:center; --g:0.2rem; --px:0.6rem; --py:0.4rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={async () => {
 							downloadModels(models);
 						}}
@@ -554,7 +554,7 @@
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 16 16"
 								fill="currentColor"
-								style="--w:0.875rem; --h:0.875rem"
+								style="--w:0.8rem; --h:0.8rem"
 							>
 								<path
 									fill-rule="evenodd"

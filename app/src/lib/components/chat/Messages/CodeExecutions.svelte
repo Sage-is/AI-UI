@@ -26,11 +26,11 @@
 <CodeExecutionModal bind:show={showCodeExecutionModal} codeExecution={selectedCodeExecution} />
 
 {#if codeExecutions.length > 0}
-	<div style="--mt:0.25rem; --mb:0.5rem; --w:100%; --d:flex; --g:0.25rem; --ai:center; --fw:wrap">
+	<div style="--mt:0.2rem; --mb:0.5rem; --w:100%; --d:flex; --g:0.2rem; --ai:center; --fw:wrap">
 		{#each codeExecutions as execution (execution.id)}
-			<div style="--d:flex; --g:0.25rem; --size:0.6rem; --weight:600">
+			<div style="--d:flex; --g:0.2rem; --size:0.6rem; --weight:600">
 				<button
-					style="--d:flex; --dark-c:var(--color-gray-300); --py:0.25rem; --px:0.25rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.6rem; --maxw:24rem"
+					style="--d:flex; --dark-c:var(--color-gray-300); --py:0.2rem; --px:0.2rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.6rem; --maxw:24rem"
 					on:click={() => {
 						selectedCodeExecution = execution;
 						showCodeExecutionModal = true;

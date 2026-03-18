@@ -97,7 +97,7 @@
 <div style="--d:flex; --fd:column; --fd-lg:row; --w:100%; --h:100%;  --g-lg:1rem">
 	<div
 		id="admin-settings-tabs-container"
-		style="--d:flex; --fd:row; --ofx:auto; --g:0.625rem; --maxw:100%; --g-lg:0.25rem; --fd-lg:column; --fx-lg:none; --w-lg:10rem; --dark-c:var(--color-gray-200); --size:0.875rem; --weight:500; --ta:left"
+		style="--d:flex; --fd:row; --ofx:auto; --g:0.625rem; --maxw:100%; --g-lg:0.2rem; --fd-lg:column; --fx-lg:none; --w-lg:10rem; --dark-c:var(--color-gray-200); --size:0.8rem; --weight:500; --ta:left"
 	class="tabs scrollbar-none"
 	>
 		<button
@@ -429,7 +429,7 @@
 		</button>
 	</div>
 
-	<div style="--fx:1 1 0%; --mt:0.6rem; --mt-lg:0; --ofy:scroll; --pr:0.25rem"
+	<div style="--fx:1 1 0%; --mt:0.6rem; --mt-lg:0; --ofy:scroll; --pr:0.2rem"
 	class="scrollbar-hidden">
 		{#if selectedTab === 'general'}
 			<General

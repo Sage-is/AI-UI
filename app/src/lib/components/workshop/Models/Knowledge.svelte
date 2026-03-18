@@ -168,8 +168,8 @@
 <div>
 	<slot name="label">
 		<div style="--mb:0.5rem">
-			<div style="--d:flex; --w:100%; --jc:space-between; --mb:0.25rem">
-				<div style="--as:center; --size:0.875rem; --weight:600">
+			<div style="--d:flex; --w:100%; --jc:space-between; --mb:0.2rem">
+				<div style="--as:center; --size:0.8rem; --weight:600">
 					{$i18n.t('Knowledge')}
 				</div>
 			</div>
@@ -203,7 +203,7 @@
 		{/if}
 
 		{#if loaded}
-			<div style="--d:flex; --fw:wrap; --fd:row; --size:0.875rem; --g:0.25rem">
+			<div style="--d:flex; --fw:wrap; --fd:row; --size:0.8rem; --g:0.2rem">
 				<Selector
 					knowledgeItems={$knowledge || []}
 					on:select={(e) => {
@@ -220,7 +220,7 @@
 					}}
 				>
 					<div
-						style="--px:0.875rem; --py:0.375rem; --weight:500; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:var(--color-gray-100); outline-color:var(--color-gray-850); --radius:1.5rem"
+						style="--px:0.8rem; --py:0.4rem; --weight:500; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:var(--color-gray-100); outline-color:var(--color-gray-850); --radius:1.5rem"
 					>
 						{$i18n.t('Select Knowledge')}
 					</div>
@@ -228,7 +228,7 @@
 
 				{#if $user?.role === 'admin' || $user?.permissions?.chat?.file_upload}
 					<button
-						style="--px:0.875rem; --py:0.375rem; --weight:500; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:var(--color-gray-100); outline-color:var(--color-gray-850); --radius:1.5rem"
+						style="--px:0.8rem; --py:0.4rem; --weight:500; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:var(--color-gray-100); outline-color:var(--color-gray-850); --radius:1.5rem"
 						type="button"
 						on:click={() => {
 							filesInputElement.click();

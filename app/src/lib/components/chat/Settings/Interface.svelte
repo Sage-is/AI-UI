@@ -404,7 +404,7 @@
 
 <form
 	id="tab-interface"
-	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.875rem"
+	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.8rem"
 	on:submit|preventDefault={() => {
 		updateInterfaceHandler();
 		dispatch('save');
@@ -442,7 +442,7 @@
 	<div style="--g:0.6rem; --ofy:scroll; --maxh:28rem; --maxh-lg:100%">
 		{#each settingsConfig as sectionConfig}
 			<div>
-				<h1 style="--mb:0.375rem; --size:0.875rem; --weight:500">{$i18n.t(sectionConfig.section)}</h1>
+				<h1 style="--mb:0.4rem; --size:0.8rem; --weight:500">{$i18n.t(sectionConfig.section)}</h1>
 
 				{#each sectionConfig.settings as setting}
 					{#if !setting.adminOnly || $user?.role === 'admin'}
@@ -461,7 +461,7 @@
 
 									<button
 										aria-labelledby="{setting.key}-label"
-										style="--p:0.25rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+										style="--p:0.2rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 										on:click={() => toggleSetting(setting)}
 										type="button"
 									>
@@ -492,7 +492,7 @@
 
 				<button
 					aria-labelledby="chat-background-label"
-					style="--p:0.25rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--p:0.2rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						if (backgroundImageUrl !== null) {
 							backgroundImageUrl = null;
@@ -547,9 +547,9 @@
 		{/if}
 	</div>
 
-	<div style="--d:flex; --jc:flex-end; --size:0.875rem; --weight:500">
+	<div style="--d:flex; --jc:flex-end; --size:0.8rem; --weight:500">
 		<button
-			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+			style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			type="submit"
 		>
 			{$i18n.t('Save')}

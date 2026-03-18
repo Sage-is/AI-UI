@@ -196,7 +196,7 @@
 		{#if $showControls}
 			<PaneResizer style="--pos:relative; --d:flex; --w:0.5rem; --ai:center; --jc:center"
 	class="bg-background group">
-				<div style="--z:10; --d:flex; --h:1.75rem; --w:1.25rem; --ai:center; --jc:center"
+				<div style="--z:10; --d:flex; --h:1.75rem; --w:1.2rem; --ai:center; --jc:center"
 	class="rounded-xs">
 					<EllipsisVertical className="size-4 invisible group-hover:visible" />
 				</div>

@@ -16,7 +16,7 @@
 
 <Modal size="sm" bind:show>
 	<div>
-		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-100); --px:1.25rem; --pt:0.6rem; --pb:0.25rem">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-100); --px:1.2rem; --pt:0.6rem; --pb:0.2rem">
 			<div style="--size:1.125rem; --weight:500; --as:center"
 	class="font-primary">
 				{$i18n.t('Access Control')}
@@ -31,7 +31,7 @@
 			</button>
 		</div>
 
-		<div style="--w:100%; --px:1.25rem; --pb:1rem; --dark-c:#fff">
+		<div style="--w:100%; --px:1.2rem; --pb:1rem; --dark-c:#fff">
 			<AccessControl bind:accessControl {onChange} {accessRoles} {allowPublic} />
 		</div>
 	</div>

@@ -9,14 +9,14 @@
 	import Notes from '$lib/components/notes/Notes.svelte';
 </script>
 
-<nav style="--px:0.5rem; --pt:0.25rem; backdrop-filter:blur(24px); --w:100%"
+<nav style="--px:0.5rem; --pt:0.2rem; backdrop-filter:blur(24px); --w:100%"
 	class="drag-region">
 	<div style="--d:flex; --ai:center">
 		<div style="--d:flex; --fx:none; --ai:center; {$showSidebar ? '--d:none' : ''}"
 	class="{$showSidebar ? 'md:hidden' : ''}">
 			<button
 				id="sidebar-toggle-button"
-				style="--cur:pointer; --p:0.375rem; --d:flex; --radius:0.6rem; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--cur:pointer; --p:0.4rem; --d:flex; --radius:0.6rem; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={() => {
 					showSidebar.set(!$showSidebar);
 				}}
@@ -31,7 +31,7 @@
 		<div style="--ml:0.5rem; --py:0.125rem; --as:center; --d:flex; --ai:center; --jc:space-between; --w:100%">
 			<div class="">
 				<div
-					style="--d:flex; --g:0.25rem; --ofx:auto; --w:fit-content; --ta:center; --size:0.875rem; --weight:500; --bgc:transparent; --py:0.25rem; touch-action:auto; --pe:auto"
+					style="--d:flex; --g:0.2rem; --ofx:auto; --w:fit-content; --ta:center; --size:0.8rem; --weight:500; --bgc:transparent; --py:0.2rem; touch-action:auto; --pe:auto"
 	class="scrollbar-none"
 				>
 					<a style="--minw:fit-content; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)" href="/notes">
@@ -40,7 +40,7 @@
 				</div>
 			</div>
 
-			<div style="--as:center; --d:flex; --ai:center; --g:0.25rem">
+			<div style="--as:center; --d:flex; --ai:center; --g:0.2rem">
 				{#if $user !== undefined && $user !== null}
 					<UserMenu
 						className="max-w-[240px]"
@@ -53,7 +53,7 @@
 						}}
 					>
 						<button
-							style="--us:none; --d:flex; --radius:0.6rem; --p:0.375rem; --w:100%; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+							style="--us:none; --d:flex; --radius:0.6rem; --p:0.4rem; --w:100%; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							aria-label="User Menu"
 						>
 							<div style="--as:center">
@@ -72,7 +72,7 @@
 	</div>
 </nav>
 
-<div style="--pb:0.25rem; --fx:1 1 0%; --maxh:100%; --ofy:auto"
+<div style="--pb:0.2rem; --fx:1 1 0%; --maxh:100%; --ofy:auto"
 	class="@container">
 	<Notes />
 </div>

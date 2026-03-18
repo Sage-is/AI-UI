@@ -108,7 +108,7 @@
 
 <Modal size="md" bind:show>
 	<div>
-		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-100); --px:1.25rem; --pt:1rem; --mb:0.375rem">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-100); --px:1.2rem; --pt:1rem; --mb:0.4rem">
 			<div style="--size:1.125rem; --weight:500; --as:center"
 	class="font-primary">
 				{#if custom}
@@ -143,12 +143,12 @@
 					<div style="--d:flex; --fd:column; --fd-lg:row; --w:100%; --h:100%;  --g-lg:1rem">
 						<div
 							id="admin-settings-tabs-container"
-							style="--d:flex; --fd:row; --ofx:auto; --g:0.625rem; --maxw:100%; --g-lg:0.25rem; --fd-lg:column; --fx-lg:none; --w-lg:10rem; --dark-c:var(--color-gray-200); --size:0.875rem; --weight:500; --ta:left"
+							style="--d:flex; --fd:row; --ofx:auto; --g:0.625rem; --maxw:100%; --g-lg:0.2rem; --fd-lg:column; --fx-lg:none; --w-lg:10rem; --dark-c:var(--color-gray-200); --size:0.8rem; --weight:500; --ta:left"
 	class="tabs scrollbar-none"
 						>
 							{#if tabs.includes('general')}
 								<button
-									style="--p:0.25rem; --w:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-lg:none; --d:flex; --ta:right; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+									style="--p:0.2rem; --w:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-lg:none; --d:flex; --ta:right; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="max-w-fit {selectedTab ===
 									'general'
 										? ''
@@ -178,7 +178,7 @@
 
 							{#if tabs.includes('permissions')}
 								<button
-									style="--p:0.25rem; --w:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-lg:none; --d:flex; --ta:right; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+									style="--p:0.2rem; --w:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-lg:none; --d:flex; --ta:right; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="max-w-fit {selectedTab ===
 									'permissions'
 										? ''
@@ -197,7 +197,7 @@
 
 							{#if tabs.includes('users')}
 								<button
-									style="--p:0.25rem; --w:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-lg:none; --d:flex; --ta:right; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+									style="--p:0.2rem; --w:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-lg:none; --d:flex; --ta:right; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="max-w-fit {selectedTab ===
 									'users'
 										? ''
@@ -216,7 +216,7 @@
 						</div>
 
 						<div
-							style="--fx:1 1 0%; --mt:0.25rem; --mt-lg:0.25rem; --h-lg:22rem; --maxh-lg:22rem; --ofy:auto"
+							style="--fx:1 1 0%; --mt:0.2rem; --mt-lg:0.2rem; --h-lg:22rem; --maxh-lg:22rem; --ofy:auto"
 	class="scrollbar-hidden"
 						>
 							{#if selectedTab == 'general'}
@@ -230,12 +230,12 @@
 					</div>
 
 					<!-- <div
-						style="--d:flex; --fd:row; --ofx:auto; --g:0.625rem; --size:0.875rem; --weight:500;  border-bottom-color:var(--color-gray-800)"
+						style="--d:flex; --fd:row; --ofx:auto; --g:0.625rem; --size:0.8rem; --weight:500;  border-bottom-color:var(--color-gray-800)"
 	class="tabs scrollbar-hidden"
 					>
 						{#if tabs.includes('display')}
 							<button
-								style="--px:0.125rem; --pb:0.375rem; --minw:fit-content; --d:flex; --ta:right; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); border-bottom-width:2px"
+								style="--px:0.125rem; --pb:0.4rem; --minw:fit-content; --d:flex; --ta:right; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); border-bottom-width:2px"
 	class="{selectedTab ===
 								'display'
 									? ' dark:border-white'
@@ -251,7 +251,7 @@
 
 						{#if tabs.includes('permissions')}
 							<button
-								style="--px:0.125rem; --pb:0.375rem; --minw:fit-content; --d:flex; --ta:right; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); border-bottom-width:2px"
+								style="--px:0.125rem; --pb:0.4rem; --minw:fit-content; --d:flex; --ta:right; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); border-bottom-width:2px"
 	class="{selectedTab ===
 								'permissions'
 									? '  dark:border-white'
@@ -267,7 +267,7 @@
 
 						{#if tabs.includes('users')}
 							<button
-								style="--px:0.125rem; --pb:0.375rem; --minw:fit-content; --d:flex; --ta:right; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); border-bottom-width:2px"
+								style="--px:0.125rem; --pb:0.4rem; --minw:fit-content; --d:flex; --ta:right; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); border-bottom-width:2px"
 	class="{selectedTab ===
 								'users'
 									? ' dark:border-white'
@@ -282,10 +282,10 @@
 						{/if}
 					</div> -->
 
-					<div style="--d:flex; --jc:space-between; --pt:0.6rem; --size:0.875rem; --weight:500; --g:0.375rem">
+					<div style="--d:flex; --jc:space-between; --pt:0.6rem; --size:0.8rem; --weight:500; --g:0.4rem">
 						{#if edit}
 							<button
-								style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --dark-bgc:#000; --hvr-dark-bgc:var(--color-gray-900); --dark-c:#fff; --bgc:#fff; --c:#000; --hvr-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
+								style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --dark-bgc:#000; --hvr-dark-bgc:var(--color-gray-900); --dark-c:#fff; --bgc:#fff; --c:#000; --hvr-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.2rem; --ai:center"
 								type="button"
 								on:click={() => {
 									showDeleteConfirmDialog = true;
@@ -298,7 +298,7 @@
 						{/if}
 
 						<button
-							style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.25rem; --ai:center"
+							style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.2rem; --ai:center"
 	class="{loading
 								? ' cursor-not-allowed'
 								: ''}"

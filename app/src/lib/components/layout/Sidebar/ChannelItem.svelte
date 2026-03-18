@@ -43,7 +43,7 @@
 
 <div
 	bind:this={itemElement}
-	style="--w:100%; --radius:0.5rem; --d:flex; --pos:relative; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --px:0.625rem; --py:0.25rem"
+	style="--w:100%; --radius:0.5rem; --d:flex; --pos:relative; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --px:0.625rem; --py:0.2rem"
 	class="{className} group {$page
 		.url.pathname === `/space/${channel.id}`
 		? 'bg-gray-100 dark:bg-gray-900'
@@ -59,12 +59,12 @@
 		}}
 		draggable="false"
 	>
-		<div style="--d:flex; --ai:center; --g:0.25rem">
+		<div style="--d:flex; --ai:center; --g:0.2rem">
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox="0 0 16 16"
 				fill="currentColor"
-				style="--w:1.25rem; --h:1.25rem"
+				style="--w:1.2rem; --h:1.2rem"
 			>
 				<path
 					fill-rule="evenodd"

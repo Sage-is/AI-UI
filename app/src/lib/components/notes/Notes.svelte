@@ -251,25 +251,25 @@
 				showDeleteConfirm = false;
 			}}
 		>
-			<div style="--size:0.875rem; --c:var(--color-gray-500)">
+			<div style="--size:0.8rem; --c:var(--color-gray-500)">
 				{$i18n.t('This will delete')} <span style="--weight:600">{selectedNote.title}</span>.
 			</div>
 		</DeleteConfirmDialog>
 
-		<div style="--d:flex; --fd:column; --g:0.25rem; --px:0.875rem">
+		<div style="--d:flex; --fd:column; --g:0.2rem; --px:0.8rem">
 			<div style="--d:flex; --fx:1 1 0%; --ai:center; --w:100%; --g:0.5rem">
 				<div style="--d:flex; --fx:1 1 0%; --ai:center">
-					<div style="--as:center; --ml:0.25rem; --mr:0.6rem">
+					<div style="--as:center; --ml:0.2rem; --mr:0.6rem">
 						<Search className="size-3.5" />
 					</div>
 					<input
-						style="--w:100%; --size:0.875rem; --py:0.25rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
+						style="--w:100%; --size:0.8rem; --py:0.2rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 						bind:value={query}
 						placeholder={$i18n.t('Search Notes')}
 					/>
 
 					{#if query}
-						<div style="--as:center; --pl:0.375rem; --translatey:0.5px; --btlr:0.6rem; --bblr:0.6rem; --bgc:transparent">
+						<div style="--as:center; --pl:0.4rem; --translatey:0.5px; --btlr:0.6rem; --bblr:0.6rem; --bgc:transparent">
 							<button
 								style="--p:0.125rem; --radius:9999px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								on:click={() => {
@@ -294,7 +294,7 @@
 						</div>
 
 						<div
-							style="--mb:1.25rem; --g:0.625rem; --d:grid; --gtc:repeat(1, minmax(0, 1fr)); --gtc-md:repeat(2, minmax(0, 1fr)); --gtc-lg:repeat(3, minmax(0, 1fr)); --gtc-xl:repeat(4, minmax(0, 1fr)); --gtc-xl:repeat(5, minmax(0, 1fr))"
+							style="--mb:1.2rem; --g:0.625rem; --d:grid; --gtc:repeat(1, minmax(0, 1fr)); --gtc-md:repeat(2, minmax(0, 1fr)); --gtc-lg:repeat(3, minmax(0, 1fr)); --gtc-xl:repeat(4, minmax(0, 1fr)); --gtc-xl:repeat(5, minmax(0, 1fr))"
 						>
 							{#each notes[timeRange] as note, idx (note.id)}
 								<div
@@ -306,7 +306,7 @@
 											style="--w:100%; --translatey:-0.125rem; --d:flex; --fd:column; --jc:space-between"
 										>
 											<div style="--fx:1 1 0%">
-												<div style="--d:flex; --ai:center; --g:0.5rem; --as:center; --mb:0.25rem; --jc:space-between">
+												<div style="--d:flex; --ai:center; --g:0.5rem; --as:center; --mb:0.2rem; --jc:space-between">
 													<div style="--weight:600; --line-clamp:1; --tt:capitalize">{note.title}</div>
 
 													<div>
@@ -332,7 +332,7 @@
 															}}
 														>
 															<button
-																style="--as:center; --w:fit-content; --size:0.875rem; --p:0.25rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
+																style="--as:center; --w:fit-content; --size:0.8rem; --p:0.2rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 																type="button"
 															>
 																<EllipsisHorizontal className="size-5" />
@@ -380,11 +380,11 @@
 			{:else}
 				<div style="--w:100%; --h:100%; --d:flex; --fd:column; --ai:center; --jc:center">
 					<div style="--pb:5rem; --ta:center">
-						<div style="--size:1.25rem; --weight:500; --c:var(--color-gray-400); --dark-c:var(--color-gray-600)">
+						<div style="--size:1.2rem; --weight:500; --c:var(--color-gray-400); --dark-c:var(--color-gray-600)">
 							{$i18n.t('No Notes')}
 						</div>
 
-						<div style="--mt:0.25rem; --size:0.875rem; --c:var(--color-gray-300); --dark-c:var(--color-gray-700)">
+						<div style="--mt:0.2rem; --size:0.8rem; --c:var(--color-gray-300); --dark-c:var(--color-gray-700)">
 							{$i18n.t('Create your first note by clicking on the plus button below.')}
 						</div>
 					</div>
@@ -392,7 +392,7 @@
 			{/if}
 		</div>
 
-		<div style="--pos:absolute; --bottom:0; --left:0; --right:0; --p:1.25rem; --maxw:100%; --d:flex; --jc:flex-end">
+		<div style="--pos:absolute; --bottom:0; --left:0; --right:0; --p:1.2rem; --maxw:100%; --d:flex; --jc:flex-end">
 			<div style="--d:flex; --g:0.125rem; --jc:flex-end; --w:100%">
 				<Tooltip content={$i18n.t('Create Note')}>
 					<button
@@ -436,7 +436,7 @@
 				/>
 
 				<button
-					style="--d:flex; --size:0.6rem; --ai:center; --g:0.25rem; --px:0.6rem; --py:0.375rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--d:flex; --size:0.6rem; --ai:center; --g:0.2rem; --px:0.6rem; --py:0.4rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						const notesImportInputElement = document.getElementById('notes-import-input');
 						if (notesImportInputElement) {

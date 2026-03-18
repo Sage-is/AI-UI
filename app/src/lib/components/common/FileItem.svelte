@@ -46,7 +46,7 @@
 {/if}
 
 <button
-	style="--pos:relative; --p:0.375rem; --d:flex; --ai:center; --g:0.25rem; --ta:left"
+	style="--pos:relative; --p:0.4rem; --d:flex; --ai:center; --g:0.2rem; --ta:left"
 	class="group {className} {colorClassName} {small
 		? 'rounded-xl'
 		: 'rounded-2xl'}"
@@ -75,7 +75,7 @@
 					viewBox="0 0 24 24"
 					fill="currentColor"
 					aria-hidden="true"
-					style="--w:1.25rem; --h:1.25rem"
+					style="--w:1.2rem; --h:1.2rem"
 				>
 					<path
 						fill-rule="evenodd"
@@ -94,7 +94,7 @@
 
 	{#if !small}
 		<div style="--d:flex; --fd:column; --jc:center; --g:-0.125rem; --px:0.625rem; --w:100%">
-			<div style="--dark-c:var(--color-gray-100); --size:0.875rem; --weight:500; --line-clamp:1; --mb:0.25rem">
+			<div style="--dark-c:var(--color-gray-100); --size:0.8rem; --weight:500; --line-clamp:1; --mb:0.2rem">
 				{decodeString(name)}
 			</div>
 
@@ -121,7 +121,7 @@
 	{:else}
 		<Tooltip content={decodeString(name)} className="flex flex-col w-full" placement="top-start">
 			<div style="--d:flex; --fd:column; --jc:center; --g:-0.125rem; --px:0.625rem; --w:100%">
-				<div style="--dark-c:var(--color-gray-100); --size:0.875rem; --d:flex; --jc:space-between; --ai:center">
+				<div style="--dark-c:var(--color-gray-100); --size:0.8rem; --d:flex; --jc:space-between; --ai:center">
 					{#if loading}
 						<div style="--fs:0; --mr:0.5rem">
 							<Spinner className="size-4" />
@@ -135,7 +135,7 @@
 	{/if}
 
 	{#if dismissible}
-		<div style="--pos:absolute; --top:-0.25rem; --right:-0.25rem">
+		<div style="--pos:absolute; --top:-0.2rem; --right:-0.2rem">
 			<button
 				aria-label={$i18n.t('Remove File')}
 				style="--bgc:#fff; --c:#000;  --bc:var(--color-gray-50); --radius:9999px"
@@ -152,7 +152,7 @@
 			</button>
 
 			<!-- <button
-				style="--p:0.25rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:9999px; --v:hidden; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--p:0.2rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:9999px; --v:hidden; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="group-hover:visible"
 				type="button"
 				on:click={() => {

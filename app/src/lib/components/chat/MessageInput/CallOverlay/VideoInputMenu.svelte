@@ -26,7 +26,7 @@
 
 	<div slot="content">
 		<DropdownMenu.Content
-			style="--w:100%; --maxw:180px; --radius:0.5rem; --px:0.25rem; --py:0.375rem;  --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.5); --z:9999; --bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-c:#fff"
+			style="--w:100%; --maxw:180px; --radius:0.5rem; --px:0.2rem; --py:0.4rem;  --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.5); --z:9999; --bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-c:#fff"
 	class="shadow-xs"
 			sideOffset={6}
 			side="top"
@@ -35,7 +35,7 @@
 		>
 			{#each devices as device}
 				<DropdownMenu.Item
-					style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.875rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.375rem"
+					style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem"
 					on:click={() => {
 						dispatch('change', device.deviceId);
 					}}

@@ -9,7 +9,7 @@
 		<Info className="size-5 text-red-700 dark:text-red-400" />
 	</div>
 
-	<div style="--as:center; --size:0.875rem">
+	<div style="--as:center; --size:0.8rem">
 		{typeof content === 'string' ? content : JSON.stringify(content)}
 	</div>
 </div>

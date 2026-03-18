@@ -426,18 +426,18 @@
 				<pre class="mermaid">{code}</pre>
 			{/if}
 		{:else}
-			<div style="--pos:absolute; --pl:1rem; --py:0.375rem; --size:0.6rem; --weight:500; --dark-c:#fff"
+			<div style="--pos:absolute; --pl:1rem; --py:0.4rem; --size:0.6rem; --weight:500; --dark-c:#fff"
 	class="text-text-300">
 				{lang}
 			</div>
 
 			<div
-				style="--pos:sticky; --mb:0.25rem; --py:0.25rem; --pr:0.625rem; --d:flex; --ai:center; --jc:flex-end; --z:10; --size:0.6rem; --c:#000; --dark-c:#fff"
+				style="--pos:sticky; --mb:0.2rem; --py:0.2rem; --pr:0.625rem; --d:flex; --ai:center; --jc:flex-end; --z:10; --size:0.6rem; --c:#000; --dark-c:#fff"
 	class="{stickyButtonsClassName}"
 			>
 				<div style="--d:flex; --ai:center; --g:0.125rem; --translatey:1px">
 					<button
-						style="--d:flex; --g:0.25rem; --ai:center; --bs:none; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.375rem; --px:0.375rem; --py:0.125rem"
+						style="--d:flex; --g:0.2rem; --ai:center; --bs:none; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.4rem; --px:0.4rem; --py:0.125rem"
 	class="bg-none"
 						on:click={collapseCodeBlock}
 					>
@@ -452,7 +452,7 @@
 
 					{#if preview && ['html', 'svg'].includes(lang)}
 						<button
-							style="--d:flex; --g:0.25rem; --ai:center; --bs:none; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.375rem; --px:0.375rem; --py:0.125rem"
+							style="--d:flex; --g:0.2rem; --ai:center; --bs:none; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.4rem; --px:0.4rem; --py:0.125rem"
 	class="run-code-button bg-none"
 							on:click={previewCode}
 						>
@@ -468,13 +468,13 @@
 
 					{#if ($config?.features?.enable_code_execution ?? true) && (lang.toLowerCase() === 'python' || lang.toLowerCase() === 'py' || (lang === '' && checkPythonCode(code)))}
 						{#if executing}
-							<div style="--bs:none; --p:0.25rem; --cur:not-allowed"
+							<div style="--bs:none; --p:0.2rem; --cur:not-allowed"
 	class="run-code-button bg-none">
 								{$i18n.t('Running')}
 							</div>
 						{:else if run}
 							<button
-								style="--d:flex; --g:0.25rem; --ai:center; --bs:none; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.375rem; --px:0.375rem; --py:0.125rem"
+								style="--d:flex; --g:0.2rem; --ai:center; --bs:none; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.4rem; --px:0.4rem; --py:0.125rem"
 	class="run-code-button bg-none"
 								on:click={async () => {
 									code = _code;
@@ -495,7 +495,7 @@
 
 					{#if save}
 						<button
-							style="--bs:none; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.375rem; --px:0.375rem; --py:0.125rem"
+							style="--bs:none; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.4rem; --px:0.4rem; --py:0.125rem"
 	class="save-code-button bg-none"
 							on:click={saveCode}
 						>
@@ -504,7 +504,7 @@
 					{/if}
 
 					<button
-						style="--bs:none; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.375rem; --px:0.375rem; --py:0.125rem"
+						style="--bs:none; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.4rem; --px:0.4rem; --py:0.125rem"
 	class="copy-code-button bg-none"
 						on:click={copyCode}>{copied ? $i18n.t('Copied') : $i18n.t('Copy')}</button
 					>
@@ -561,15 +561,15 @@
 					>
 						{#if executing}
 							<div class=" ">
-								<div style="--c:var(--color-gray-500); --size:0.6rem; --mb:0.25rem">STDOUT/STDERR</div>
-								<div style="--size:0.875rem">Running...</div>
+								<div style="--c:var(--color-gray-500); --size:0.6rem; --mb:0.2rem">STDOUT/STDERR</div>
+								<div style="--size:0.8rem">Running...</div>
 							</div>
 						{:else}
 							{#if stdout || stderr}
 								<div class=" ">
-									<div style="--c:var(--color-gray-500); --size:0.6rem; --mb:0.25rem">STDOUT/STDERR</div>
+									<div style="--c:var(--color-gray-500); --size:0.6rem; --mb:0.2rem">STDOUT/STDERR</div>
 									<div
-										style="--size:0.875rem; --ofy:auto"
+										style="--size:0.8rem; --ofy:auto"
 	class="{stdout?.split('\n')?.length > 100
 											? `max-h-96`
 											: ''}"
@@ -580,9 +580,9 @@
 							{/if}
 							{#if result || files}
 								<div class=" ">
-									<div style="--c:var(--color-gray-500); --size:0.6rem; --mb:0.25rem">RESULT</div>
+									<div style="--c:var(--color-gray-500); --size:0.6rem; --mb:0.2rem">RESULT</div>
 									{#if result}
-										<div style="--size:0.875rem">{`${JSON.stringify(result)}`}</div>
+										<div style="--size:0.8rem">{`${JSON.stringify(result)}`}</div>
 									{/if}
 									{#if files}
 										<div style="--d:flex; --fd:column; --g:0.5rem">

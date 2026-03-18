@@ -387,7 +387,7 @@
 
 <!-- The entire template is now one clean loop. -->
 <!-- All rendering logic is derived from the `config` object in each iteration. -->
-<div style="--g:0.25rem; --size:0.6rem"
+<div style="--g:0.2rem; --size:0.6rem"
 	class="pb-safe-bottom">
 	{#each allParameters as config (config.key)}
 		{#if !config.adminOnly || admin}
@@ -398,11 +398,11 @@
 						<div style="--as:center; --size:0.6rem; --weight:500">
 							{$i18n.t(config.label)}
 							{#if config.suffix}
-								<span style="--c:var(--color-gray-500); --pl:0.25rem">({$i18n.t(config.suffix)})</span>
+								<span style="--c:var(--color-gray-500); --pl:0.2rem">({$i18n.t(config.suffix)})</span>
 							{/if}
 						</div>
 						<button
-							style="--p:0.25rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --fs:0; --oe:none"
+							style="--p:0.2rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --fs:0; --oe:none"
 							type="button"
 							on:click={() => toggleParameter(config)}
 						>
@@ -413,11 +413,11 @@
 
 				<!-- Input Control Row (Dynamically Rendered) -->
 				{#if (params[config.key] ?? null) !== null}
-					<div style="--d:flex; --mt:0.375rem; --g:0.5rem; --ai:center">
+					<div style="--d:flex; --mt:0.4rem; --g:0.5rem; --ai:center">
 						<!-- This `if/else if` block is the dynamic rendering engine. -->
 						{#if config.type === 'text'}
 							<input
-								style="--size:0.875rem; --w:100%; --bgc:transparent; --oe:2px solid transparent; --oe:none"
+								style="--size:0.8rem; --w:100%; --bgc:transparent; --oe:2px solid transparent; --oe:none"
 								type="text"
 								placeholder={$i18n.t(config.placeholder ?? '')}
 								bind:value={params[config.key]}
@@ -425,7 +425,7 @@
 							/>
 						{:else if config.type === 'number'}
 							<input
-								style="--size:0.875rem; --w:100%; --bgc:transparent; --oe:2px solid transparent; --oe:none"
+								style="--size:0.8rem; --w:100%; --bgc:transparent; --oe:2px solid transparent; --oe:none"
 								type="number"
 								placeholder={$i18n.t(config.placeholder ?? '')}
 								bind:value={params[config.key]}
@@ -441,7 +441,7 @@
 								bind:value={params[config.key]}
 							/>
 						{:else if config.type === 'switch'}
-							<div style="--w:100%; --pr:0.25rem; --d:flex; --jc:space-between; --ai:center">
+							<div style="--w:100%; --pr:0.2rem; --d:flex; --jc:space-between; --ai:center">
 								<div style="--size:0.6rem; --c:var(--color-gray-500)">
 									{params[config.key] ? 'Enabled' : 'Disabled'}
 								</div>
@@ -463,7 +463,7 @@
 							<div>
 								<input
 									type="number"
-									style="--bgc:transparent; --ta:center; --w:3.5rem; --size:0.875rem"
+									style="--bgc:transparent; --ta:center; --w:3.5rem; --size:0.8rem"
 									bind:value={params[config.key]}
 									min={config.min}
 									max={config.max}
@@ -481,7 +481,7 @@
 	{#if custom && admin}
 		<div style="--d:flex; --fd:column; --jc:center">
 			{#each Object.keys(params?.custom_params ?? {}) as key}
-				<div style="--py:0.125rem; --w:100%; --jc:space-between; --mb:0.25rem">
+				<div style="--py:0.125rem; --w:100%; --jc:space-between; --mb:0.2rem">
 					<div style="--d:flex; --w:100%; --jc:space-between">
 						<div style="--as:center; --size:0.6rem; --weight:500">
 							<input
@@ -503,7 +503,7 @@
 							/>
 						</div>
 						<button
-							style="--p:0.25rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --fs:0; --oe:none"
+							style="--p:0.2rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --fs:0; --oe:none"
 							type="button"
 							on:click={() => {
 								delete params.custom_params[key];
@@ -521,7 +521,7 @@
 							<input
 								bind:value={params.custom_params[key]}
 								type="text"
-								style="--size:0.875rem; --w:100%; --bgc:transparent; --oe:none; --oe:2px solid transparent"
+								style="--size:0.8rem; --w:100%; --bgc:transparent; --oe:none; --oe:2px solid transparent"
 								placeholder={$i18n.t('Custom Parameter Value')}
 							/>
 						</div>
@@ -530,7 +530,7 @@
 			{/each}
 
 			<button
-				style="--d:flex; --g:0.5rem; --ai:center; --w:100%; --ta:center; --jc:center; --mt:0.25rem; --mb:1.25rem"
+				style="--d:flex; --g:0.5rem; --ai:center; --w:100%; --ta:center; --jc:center; --mt:0.2rem; --mb:1.2rem"
 				type="button"
 				on:click={() => {
 					params.custom_params = (params?.custom_params ?? {}) || {};

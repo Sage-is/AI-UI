@@ -313,4 +313,4 @@ print(black.format_str("""${code.replace(/\\/g, '\\\\').replace(/`/g, '\\`').rep
 	});
 </script>
 
-<div id="code-textarea-{id}" style="--h:100%; --w:100%; --size:0.875rem" />
+<div id="code-textarea-{id}" style="--h:100%; --w:100%; --size:0.8rem" />

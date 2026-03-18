@@ -94,8 +94,8 @@
 			show = false;
 		}}
 	>
-		<div
-			style="--p: 1rem 2rem; 
+		<modal-content
+			style="--p: 1rem; 
 				--m:auto; 
 				--maxw:100%; 
 				--minh:fit-content; 
@@ -109,7 +109,7 @@
 			}}
 		>
 			<slot />
-		</div>
+		</modal-content>
 	</div>
 {/if}
 
