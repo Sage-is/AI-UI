@@ -55,7 +55,7 @@
 	>
 		<slot>
 			{#if searchEnabled}
-				<div style="--d:flex; --ai:center; --g:0.625rem; --px:1.25rem; --mt:0.875rem; --mb:0.75rem">
+				<div style="--d:flex; --ai:center; --g:0.625rem; --px:1.25rem; --mt:0.875rem; --mb:0.6rem">
 					<Search className="size-4" strokeWidth="2.5" />
 
 					<input
@@ -68,10 +68,10 @@
 				<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)" />
 			{/if}
 
-			<div style="--px:0.75rem; --my:0.5rem; --maxh:20rem; --ofy:auto">
+			<div style="--px:0.6rem; --my:0.5rem; --maxh:20rem; --ofy:auto">
 				{#each filteredItems as item}
 					<Select.Item
-						style="--d:flex; --w:100%; --weight:500; --line-clamp:1; --us:none; --ai:center; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --pl:0.75rem; --pr:0.375rem; --size:0.875rem; --bg:var(--white); --br: 1rem; --shadow:6; --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-850); --radius:0.5rem; --cur:pointer"
+						style="--d:flex; --w:100%; --weight:500; --line-clamp:1; --us:none; --ai:center; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --pl:0.6rem; --pr:0.375rem; --size:0.875rem; --bg:var(--white); --br: 1rem; --shadow:6; --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-850); --radius:0.5rem; --cur:pointer"
 	class="data-highlighted:bg-muted"
 						value={item.value}
 						label={item.label}

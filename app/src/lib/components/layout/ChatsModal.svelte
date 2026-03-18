@@ -101,7 +101,7 @@
 		<div style="--d:flex; --fd:column; --w:100%; --px:1.25rem; --pb:1rem; --dark-c:var(--color-gray-200)">
 			<div style="--d:flex; --w:100%; --g:0.5rem; --mb:0.125rem">
 				<div style="--d:flex; --fx:1 1 0%">
-					<div style="--as:center; --ml:0.25rem; --mr:0.75rem">
+					<div style="--as:center; --ml:0.25rem; --mr:0.6rem">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 20 20"
@@ -116,13 +116,13 @@
 						</svg>
 					</div>
 					<input
-						style="--w:100%; --size:0.875rem; --pr:1rem; --py:0.25rem; --btrr:0.75rem; --bbrr:0.75rem; --oe:none; --bgc:transparent"
+						style="--w:100%; --size:0.875rem; --pr:1rem; --py:0.25rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 						bind:value={query}
 						placeholder={$i18n.t('Search Chats')}
 					/>
 
 					{#if query}
-						<div style="--as:center; --pl:0.375rem; --pr:0.25rem; --translatey:0.5px; --btlr:0.75rem; --bblr:0.75rem; --bgc:transparent">
+						<div style="--as:center; --pl:0.375rem; --pr:0.25rem; --translatey:0.5px; --btlr:0.6rem; --bblr:0.6rem; --bgc:transparent">
 							<button
 								style="--p:0.125rem; --radius:9999px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								on:click={() => {
@@ -141,7 +141,7 @@
 				{#if chatList}
 					<div style="--w:100%">
 						{#if chatList.length > 0}
-							<div style="--d:flex; --size:0.75rem; --weight:500; --mb:0.375rem">
+							<div style="--d:flex; --size:0.6rem; --weight:500; --mb:0.375rem">
 								<button
 									style="--px:0.375rem; --py:0.25rem; --cur:pointer; --us:none; --fb:60%"
 									on:click={() => setSortKey('title')}
@@ -188,10 +188,10 @@
 								</button>
 							</div>
 						{/if}
-						<div style="--ta:left; --size:0.875rem; --w:100%; --mb:0.75rem; --maxh:22rem; --ofy:scroll">
+						<div style="--ta:left; --size:0.875rem; --w:100%; --mb:0.6rem; --maxh:22rem; --ofy:scroll">
 							{#if chatList.length === 0}
 								<div
-									style="--size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --ta:center; --px:1.25rem; --minh:5rem; --w:100%; --h:100%; --d:flex; --jc:center; --ai:center"
+									style="--size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --ta:center; --px:1.25rem; --minh:5rem; --w:100%; --h:100%; --d:flex; --jc:center; --ai:center"
 								>
 									{$i18n.t('No results found')}
 								</div>
@@ -200,7 +200,7 @@
 							{#each chatList as chat, idx (chat.id)}
 								{#if (idx === 0 || (idx > 0 && chat.time_range !== chatList[idx - 1].time_range)) && chat?.time_range}
 									<div
-										style="--w:100%; --size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --weight:500;  --px:0.5rem"
+										style="--w:100%; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --weight:500;  --px:0.5rem"
 	class="{idx === 0
 											? ''
 											: 'pt-5'}"
@@ -228,7 +228,7 @@
 								{/if}
 
 								<div
-									style="--w:100%; --d:flex; --jc:space-between; --ai:center; --radius:0.5rem; --size:0.875rem; --py:0.5rem; --px:0.75rem; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850)"
+									style="--w:100%; --d:flex; --jc:space-between; --ai:center; --radius:0.5rem; --size:0.875rem; --py:0.5rem; --px:0.6rem; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850)"
 									draggable="false"
 								>
 									<a
@@ -242,7 +242,7 @@
 									</a>
 
 									<div style="--fb:40%; --d:flex; --ai:center; --jc:flex-end">
-										<div style="--d:none; --d-sm:flex; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --size:0.75rem">
+										<div style="--d:none; --d-sm:flex; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --size:0.6rem">
 											{dayjs(chat?.updated_at * 1000).calendar()}
 										</div>
 
@@ -250,7 +250,7 @@
 											{#if unarchiveHandler}
 												<Tooltip content={$i18n.t('Unarchive Chat')}>
 													<button
-														style="--as:center; --w:fit-content; --px:0.25rem; --size:0.875rem; --radius:0.75rem"
+														style="--as:center; --w:fit-content; --px:0.25rem; --size:0.875rem; --radius:0.6rem"
 														on:click={async (e) => {
 															e.stopImmediatePropagation();
 															e.stopPropagation();
@@ -277,7 +277,7 @@
 
 											<Tooltip content={$i18n.t('Delete Chat')}>
 												<button
-													style="--as:center; --w:fit-content; --px:0.25rem; --size:0.875rem; --radius:0.75rem"
+													style="--as:center; --w:fit-content; --px:0.25rem; --size:0.875rem; --radius:0.6rem"
 													on:click={async (e) => {
 														e.stopImmediatePropagation();
 														e.stopPropagation();
@@ -315,7 +315,7 @@
 									}}
 								>
 									<div
-										style="--w:100%; --d:flex; --jc:center; --py:0.25rem; --size:0.75rem; animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; --ai:center; --g:0.5rem"
+										style="--w:100%; --d:flex; --jc:center; --py:0.25rem; --size:0.6rem; animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; --ai:center; --g:0.5rem"
 									>
 										<Spinner className=" size-4" />
 										<div class=" ">Loading...</div>
@@ -337,31 +337,31 @@
 				<!-- {#if chats !== null}
 					{#if chats.length > 0}
 						<div style="--w:100%">
-							<div style="--ta:left; --size:0.875rem; --w:100%; --mb:0.75rem; --maxh:22rem; --ofy:scroll">
+							<div style="--ta:left; --size:0.875rem; --w:100%; --mb:0.6rem; --maxh:22rem; --ofy:scroll">
 								<div style="--pos:relative; --ofx:auto">
 									<table
 										style="--w:100%; --size:0.875rem; --ta:left; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); table-layout:auto"
 									>
 										<thead
-											style="--size:0.75rem; --c:var(--color-gray-700); --tt:uppercase; --bgc:transparent; --dark-c:var(--color-gray-200); --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850)"
+											style="--size:0.6rem; --c:var(--color-gray-700); --tt:uppercase; --bgc:transparent; --dark-c:var(--color-gray-200); --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850)"
 	class="border-b-1"
 										>
 											<tr>
-												<th scope="col" style="--px:0.75rem; --py:0.5rem"> {$i18n.t('Name')} </th>
-												<th scope="col" style="--px:0.75rem; --py:0.5rem; --d:none; --d-md:flex">
+												<th scope="col" style="--px:0.6rem; --py:0.5rem"> {$i18n.t('Name')} </th>
+												<th scope="col" style="--px:0.6rem; --py:0.5rem; --d:none; --d-md:flex">
 													{$i18n.t('Created At')}
 												</th>
-												<th scope="col" style="--px:0.75rem; --py:0.5rem; --ta:right" />
+												<th scope="col" style="--px:0.6rem; --py:0.5rem; --ta:right" />
 											</tr>
 										</thead>
 										<tbody style="--d:table">
 											{#each chats as chat, idx}
 												<tr
-													style="--bgc:transparent; --dark-bgc:var(--color-gray-900); --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --size:0.75rem"
+													style="--bgc:transparent; --dark-bgc:var(--color-gray-900); --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --size:0.6rem"
 	class="{idx !== chats.length - 1 &&
 														'border-b'}"
 												>
-													<td style="--d:table;--px:0.75rem; --py:0.25rem; --w:66.666667%">
+													<td style="--d:table;--px:0.6rem; --py:0.25rem; --w:66.666667%">
 														<a href="/c/{chat.id}" target="_blank">
 															<div style="--hvr-td:underline; --line-clamp:1">
 																{chat.title}
@@ -369,18 +369,18 @@
 														</a>
 													</td>
 
-													<td style="--d:table;--px:0.75rem; --py:0.25rem; --d:none; --d-md:flex; --h:2.5rem">
+													<td style="--d:table;--px:0.6rem; --py:0.25rem; --d:none; --d-md:flex; --h:2.5rem">
 														<div style="--my:auto">
 															{dayjs(chat.created_at * 1000).format('LLL')}
 														</div>
 													</td>
 
-													<td style="--d:table;--px:0.75rem; --py:0.25rem; --ta:right">
+													<td style="--d:table;--px:0.6rem; --py:0.25rem; --ta:right">
 														<div style="--d:flex; --jc:flex-end; --w:100%">
 															{#if unarchiveHandler}
 																<Tooltip content={$i18n.t('Unarchive Chat')}>
 																	<button
-																		style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.75rem"
+																		style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 																		on:click={async () => {
 																			unarchiveHandler(chat.id);
 																		}}
@@ -405,7 +405,7 @@
 
 															<Tooltip content={$i18n.t('Delete Chat')}>
 																<button
-																	style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.75rem"
+																	style="--as:center; --w:fit-content; --size:0.875rem; --px:0.5rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 																	on:click={async () => {
 																		deleteHandler(chat.id);
 																	}}

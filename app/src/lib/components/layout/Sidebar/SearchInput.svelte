@@ -93,16 +93,16 @@
 	style="--px:0.25rem; --mb:0.25rem; --d:flex; --jc:center; --g:0.5rem; --pos:relative; --z:10"
 	id="search-container"
 >
-	<div style="--d:flex; --w:100%; --radius:0.75rem" id="chat-search">
+	<div style="--d:flex; --w:100%; --radius:0.6rem" id="chat-search">
 		<div
-			style="--as:center; --py:0.5rem; --btlr:0.75rem; --bblr:0.75rem; --bgc:transparent; --dark-c:var(--color-gray-300)"
+			style="--as:center; --py:0.5rem; --btlr:0.6rem; --bblr:0.6rem; --bgc:transparent; --dark-c:var(--color-gray-300)"
 		>
 			<Search />
 		</div>
 
 		<input
 			id="search-input"
-			style="--w:100%; --btrr:0.75rem; --bbrr:0.75rem; --p:0.625rem; --m:1rem; --size:0.875rem; --bgc:transparent; --dark-c:var(--color-gray-300); --oe:none"
+			style="--w:100%; --btrr:0.6rem; --bbrr:0.6rem; --p:0.625rem; --m:1rem; --size:0.875rem; --bgc:transparent; --dark-c:var(--color-gray-300); --oe:none"
 			placeholder={placeholder ? placeholder : $i18n.t('Search')}
 			bind:value
 			on:input={() => {
@@ -154,7 +154,7 @@
 
 		{#if showClearButton && value}
 			<div
-				style="--as:center; --pl:0.375rem; --translatey:0.5px; --btlr:0.75rem; --bblr:0.75rem; --bgc:transparent"
+				style="--as:center; --pl:0.375rem; --translatey:0.5px; --btlr:0.6rem; --bblr:0.6rem; --bgc:transparent"
 			>
 				<button
 					style="--p:0.125rem; --radius:9999px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
@@ -180,7 +180,7 @@
 				selectedIdx = 0;
 			}}
 		>
-			<div style="--px:0.5rem; --py:0.5rem; --size:0.75rem" class="group">
+			<div style="--px:0.5rem; --py:0.5rem; --size:0.6rem" class="group">
 				{#if filteredTags.length > 0}
 					<div
 						style="--px:0.25rem; --weight:500; --dark-c:var(--color-gray-300); --c:var(--color-gray-700); --mb:0.25rem"

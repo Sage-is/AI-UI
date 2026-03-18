@@ -415,7 +415,7 @@
 
 		{#if !edit || (edit && model)}
 			<form
-				style="--d:flex; --fd:column; --fd-md:row; --w:100%; --g:0.75rem; --g-md:1.5rem"
+				style="--d:flex; --fd:column; --fd-md:row; --w:100%; --g:0.6rem; --g-md:1.5rem"
 				on:submit|preventDefault={() => {
 					submitHandler();
 				}}
@@ -429,7 +429,7 @@
 							required
 						/>
 						<input
-							style="--size:0.75rem; --w:100%; --bgc:transparent; --c:var(--color-gray-500); --oe:none"
+							style="--size:0.6rem; --w:100%; --bgc:transparent; --c:var(--color-gray-500); --oe:none"
 							placeholder={$i18n.t('Model ID')}
 							bind:value={id}
 							disabled={edit}
@@ -506,7 +506,7 @@
 
 					<div style="--my:0.5rem">
 						<div
-							style="--px:0.75rem; --py:0.5rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-950); --radius:0.5rem"
+							style="--px:0.6rem; --py:0.5rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-950); --radius:0.5rem"
 						>
 							<AccessControl
 								bind:accessControl
@@ -527,7 +527,7 @@
 
 						<div style="--mt:0.5rem">
 							<div style="--my:0.25rem">
-								<div style="--size:0.75rem; --weight:600; --mb:0.5rem">
+								<div style="--size:0.6rem; --weight:600; --mb:0.5rem">
 									{$i18n.t('System Prompt')}
 								</div>
 								<div>
@@ -580,7 +580,7 @@
 
 							{#if (info?.meta?.suggestion_prompts ?? null) !== null}
 								<button
-									style="--p:0.25rem; --px:0.5rem; --size:0.75rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+									style="--p:0.25rem; --px:0.5rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 									type="button"
 									on:click={() => {
 										if (
@@ -609,7 +609,7 @@
 						</div>
 
 						{#if info?.meta?.suggestion_prompts}
-							<div style="--d:flex; --fd:column; --g:0.25rem; --mt:0.25rem; --mb:0.75rem">
+							<div style="--d:flex; --fd:column; --g:0.25rem; --mt:0.25rem; --mb:0.6rem">
 								{#if info.meta.suggestion_prompts.length > 0}
 									{#each info.meta.suggestion_prompts as prompt, promptIdx}
 										<div style="--d:flex; --radius:0.5rem">
@@ -632,7 +632,7 @@
 										</div>
 									{/each}
 								{:else}
-									<div style="--size:0.75rem; --ta:center">No suggestion prompts</div>
+									<div style="--size:0.6rem; --ta:center">No suggestion prompts</div>
 								{/if}
 							</div>
 						{/if}
@@ -688,9 +688,9 @@
 						{/if}
 					</div>
 
-					<div style="--my:0.5rem; --d:flex; --fd:column; --g:0.75rem; --pb:5rem">
+					<div style="--my:0.5rem; --d:flex; --fd:column; --g:0.6rem; --pb:5rem">
 						<button
-							style="--size:0.875rem; --px:0.75rem; --py:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --d:flex; --w:100%; --jc:center"
+							style="--size:0.875rem; --px:0.6rem; --py:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --d:flex; --w:100%; --jc:center"
 							class={loading
 								? ' cursor-not-allowed bg-black hover:bg-gray-900 text-white dark:bg-white dark:hover:bg-gray-100 dark:text-black'
 								: 'bg-black hover:bg-gray-900 text-white dark:bg-white dark:hover:bg-gray-100 dark:text-black'}
@@ -714,7 +714,7 @@
 
 						<!-- Save and chat that saves and brings users to a new chat session -->
 						<button
-							style="--size:0.875rem; --px:1rem; --py:0.75rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --bw:2px; --d:flex; --w:100%; --jc:center; --ai:center; --g:0.5rem"
+							style="--size:0.875rem; --px:1rem; --py:0.6rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --bw:2px; --d:flex; --w:100%; --jc:center; --ai:center; --g:0.5rem"
 							class={loading
 								? 'cursor-not-allowed bg-blue-100 border-blue-300 text-blue-600 dark:bg-blue-900/20 dark:border-blue-700 dark:text-blue-400'
 								: 'bg-blue-50 hover:bg-blue-100 border-blue-300 text-blue-700 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:border-blue-700 dark:text-blue-300'}

@@ -660,7 +660,7 @@
 						</button>
 					</div>
 
-					<div style="--mt:0.5rem; --mb:0.25rem; --size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
+					<div style="--mt:0.5rem; --mb:0.25rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 						{$i18n.t('To access the available model names for downloading,')}
 						<a
 							style="--c:var(--color-gray-500); --dark-c:var(--color-gray-300); --weight:500; --td:underline"
@@ -670,7 +670,7 @@
 					</div>
 
 					{#if updateModelId}
-						<div style="--size:0.75rem">
+						<div style="--size:0.6rem">
 							Updating "{updateModelId}" {updateProgress ? `(${updateProgress}%)` : ''}
 						</div>
 					{/if}
@@ -684,7 +684,7 @@
 										<div style="--d:flex; --fd:row; --jc:space-between; --g:1rem; --pr:0.5rem">
 											<div style="--fx:1 1 0%">
 												<div
-													style="--dark-bgc:var(--color-gray-600); --bgc:var(--color-gray-500); --size:0.75rem; --weight:500; --c:var(--color-gray-100); --ta:center; --p:0.125rem; --lh:1; --radius:9999px; width: {Math.max(
+													style="--dark-bgc:var(--color-gray-600); --bgc:var(--color-gray-500); --size:0.6rem; --weight:500; --c:var(--color-gray-100); --ta:center; --p:0.125rem; --lh:1; --radius:9999px; width: {Math.max(
 														15,
 														$MODEL_DOWNLOAD_POOL[model].pullProgress ?? 0
 													)}%"
@@ -721,7 +721,7 @@
 											</Tooltip>
 										</div>
 										{#if 'digest' in $MODEL_DOWNLOAD_POOL[model]}
-											<div style="--mt:0.25rem; --size:0.75rem; --dark-c:var(--color-gray-500); font-size: 0.5rem;">
+											<div style="--mt:0.25rem; --size:0.6rem; --dark-c:var(--color-gray-500); font-size: 0.5rem;">
 												{$MODEL_DOWNLOAD_POOL[model].digest}
 											</div>
 										{/if}
@@ -831,14 +831,14 @@
 								<div style="--d:flex; --fd:row; --jc:space-between; --g:1rem; --pr:0.5rem">
 									<div style="--fx:1 1 0%">
 										<div
-											style="--dark-bgc:var(--color-gray-600); --bgc:var(--color-gray-500); --size:0.75rem; --weight:500; --c:var(--color-gray-100); --ta:center; --p:0.125rem; --lh:1; --radius:9999px; width: {Math.max(15, createModelPullProgress ?? 0)}%"
+											style="--dark-bgc:var(--color-gray-600); --bgc:var(--color-gray-500); --size:0.6rem; --weight:500; --c:var(--color-gray-100); --ta:center; --p:0.125rem; --lh:1; --radius:9999px; width: {Math.max(15, createModelPullProgress ?? 0)}%"
 										>
 											{createModelPullProgress ?? 0}%
 										</div>
 									</div>
 								</div>
 								{#if createModelDigest}
-									<div style="--mt:0.25rem; --size:0.75rem; --dark-c:var(--color-gray-500); font-size: 0.5rem;">
+									<div style="--mt:0.25rem; --size:0.6rem; --dark-c:var(--color-gray-500); font-size: 0.5rem;">
 										{createModelDigest}
 									</div>
 								{/if}
@@ -848,10 +848,10 @@
 				</div>
 
 				<div style="--pt:0.25rem">
-					<div style="--d:flex; --jc:space-between; --ai:center; --size:0.75rem">
+					<div style="--d:flex; --jc:space-between; --ai:center; --size:0.6rem">
 						<div style="--size:0.875rem; --weight:500">{$i18n.t('Experimental')}</div>
 						<button
-							style="--size:0.75rem; --weight:500; --c:var(--color-gray-500)"
+							style="--size:0.6rem; --weight:500; --c:var(--color-gray-500)"
 							type="button"
 							on:click={() => {
 								showExperimentalOllama = !showExperimentalOllama;
@@ -870,7 +870,7 @@
 							<div style="--size:0.875rem; --weight:500">{$i18n.t('Upload a GGUF model')}</div>
 
 							<button
-								style="--p:0.25rem; --px:0.75rem; --size:0.75rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+								style="--p:0.25rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								on:click={() => {
 									if (modelUploadMode === 'file') {
 										modelUploadMode = 'url';
@@ -1008,7 +1008,7 @@
 								</div>
 							</div>
 						{/if}
-						<div style="--mt:0.25rem; --size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
+						<div style="--mt:0.25rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 							{$i18n.t('To access the GGUF models available for downloading,')}
 							<a
 								style="--c:var(--color-gray-500); --dark-c:var(--color-gray-300); --weight:500; --td:underline"
@@ -1019,31 +1019,31 @@
 
 						{#if uploadMessage}
 							<div style="--mt:0.5rem">
-								<div style="--mb:0.5rem; --size:0.75rem">{$i18n.t('Upload Progress')}</div>
+								<div style="--mb:0.5rem; --size:0.6rem">{$i18n.t('Upload Progress')}</div>
 
 								<div style="--w:100%; --radius:9999px; --dark-bgc:var(--color-gray-800)">
 									<div
-										style="--dark-bgc:var(--color-gray-600); --bgc:var(--color-gray-500); --size:0.75rem; --weight:500; --c:var(--color-gray-100); --ta:center; --p:0.125rem; --lh:1; --radius:9999px; width: 100%"
+										style="--dark-bgc:var(--color-gray-600); --bgc:var(--color-gray-500); --size:0.6rem; --weight:500; --c:var(--color-gray-100); --ta:center; --p:0.125rem; --lh:1; --radius:9999px; width: 100%"
 									>
 										{uploadMessage}
 									</div>
 								</div>
-								<div style="--mt:0.25rem; --size:0.75rem; --dark-c:var(--color-gray-500); font-size: 0.5rem;">
+								<div style="--mt:0.25rem; --size:0.6rem; --dark-c:var(--color-gray-500); font-size: 0.5rem;">
 									{modelFileDigest}
 								</div>
 							</div>
 						{:else if uploadProgress !== null}
 							<div style="--mt:0.5rem">
-								<div style="--mb:0.5rem; --size:0.75rem">{$i18n.t('Upload Progress')}</div>
+								<div style="--mb:0.5rem; --size:0.6rem">{$i18n.t('Upload Progress')}</div>
 
 								<div style="--w:100%; --radius:9999px; --dark-bgc:var(--color-gray-800)">
 									<div
-										style="--dark-bgc:var(--color-gray-600); --bgc:var(--color-gray-500); --size:0.75rem; --weight:500; --c:var(--color-gray-100); --ta:center; --p:0.125rem; --lh:1; --radius:9999px; width: {Math.max(15, uploadProgress ?? 0)}%"
+										style="--dark-bgc:var(--color-gray-600); --bgc:var(--color-gray-500); --size:0.6rem; --weight:500; --c:var(--color-gray-100); --ta:center; --p:0.125rem; --lh:1; --radius:9999px; width: {Math.max(15, uploadProgress ?? 0)}%"
 									>
 										{uploadProgress ?? 0}%
 									</div>
 								</div>
-								<div style="--mt:0.25rem; --size:0.75rem; --dark-c:var(--color-gray-500); font-size: 0.5rem;">
+								<div style="--mt:0.25rem; --size:0.6rem; --dark-c:var(--color-gray-500); font-size: 0.5rem;">
 									{modelFileDigest}
 								</div>
 							</div>
@@ -1054,11 +1054,11 @@
 		</div>
 	</div>
 {:else if ollamaModels === null}
-	<div style="--d:flex; --jc:center; --ai:center; --w:100%; --h:100%; --size:0.75rem; --py:0.75rem">
+	<div style="--d:flex; --jc:center; --ai:center; --w:100%; --h:100%; --size:0.6rem; --py:0.6rem">
 		{$i18n.t('Failed to fetch models')}
 	</div>
 {:else}
-	<div style="--d:flex; --jc:center; --ai:center; --w:100%; --h:100%; --py:0.75rem">
+	<div style="--d:flex; --jc:center; --ai:center; --w:100%; --h:100%; --py:0.6rem">
 		<Spinner className="size-5" />
 	</div>
 {/if}

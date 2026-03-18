@@ -214,7 +214,7 @@
 									</a>
 									{#if Number.isInteger(document?.metadata?.page)}
 										<span
-											style="--size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)"
+											style="--size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)"
 										>
 											({$i18n.t('page')}
 											{document.metadata.page + 1})
@@ -332,7 +332,7 @@
 
 					{#if documentIdx !== mergedDocuments.length - 1}
 						<hr
-							style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.75rem"
+							style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.6rem"
 						/>
 					{/if}
 				{/each}

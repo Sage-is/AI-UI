@@ -130,7 +130,7 @@
 		
 		<div style="--d:flex; --ai:center; --g:0.5rem">
 			<button
-				style="--d:flex; --ai:center; --g:0.5rem; --px:0.75rem; --py:0.375rem; --size:0.875rem; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--d:flex; --ai:center; --g:0.5rem; --px:0.6rem; --py:0.375rem; --size:0.875rem; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="{showChat 
 						? 'bg-gray-900 text-white dark:bg-white dark:text-black' 
 						: 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700'}"
@@ -143,7 +143,7 @@
 			<!-- Add Back to Models button -->
 			<a 
 				href="/workshop/models"
-				style="--d:flex; --ai:center; --g:0.5rem; --px:0.75rem; --py:0.375rem; --size:0.875rem; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1); --bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700)"
+				style="--d:flex; --ai:center; --g:0.5rem; --px:0.6rem; --py:0.375rem; --size:0.875rem; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1); --bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700)"
 			>
 				<span>{$i18n.t('Back to Models')}</span>
 			</a>

@@ -8,7 +8,7 @@
 </script>
 
 <div class="{marginClass} {containerClass}">
-	<div style="--as:center; --size:0.75rem; --weight:500">
+	<div style="--as:center; --size:0.6rem; --weight:500">
 		<slot name="label" />
 	</div>
 	<div style="--d:flex; --ai:center; --pos:relative">

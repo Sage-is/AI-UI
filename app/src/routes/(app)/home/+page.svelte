@@ -50,10 +50,10 @@
 	];
 
 	const cardStyle =
-		'--d:flex; --fd:column; --radius:0.75rem; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --bw:1px; --bs:solid; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-900)';
+		'--d:flex; --fd:column; --radius:0.6rem; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --bw:1px; --bs:solid; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-900)';
 
 	const chatItemStyle =
-		'--d:flex; --ai:center; --jc:space-between; --px:0.75rem; --py:0.5rem; --radius:0.375rem; --tn:background-color 150ms ease; --cur:pointer; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-850)';
+		'--d:flex; --ai:center; --jc:space-between; --px:0.6rem; --py:0.5rem; --radius:0.375rem; --tn:background-color 150ms ease; --cur:pointer; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-850)';
 </script>
 
 <div style="--maxw:56rem; --mx:auto; --px:1.5rem; --py:2rem">
@@ -70,17 +70,17 @@
 	</div>
 
 	<!-- Live Sections -->
-	<div style="--d:grid; --g:0.75rem; --mb:1.5rem" class="grid-cols-1 lg:grid-cols-2">
+	<div style="--d:grid; --g:0.6rem; --mb:1.5rem" class="grid-cols-1 lg:grid-cols-2">
 		<!-- Recent Chats -->
 		<div style="{cardStyle}; --p:1rem">
-			<div style="--d:flex; --ai:center; --jc:space-between; --mb:0.75rem">
+			<div style="--d:flex; --ai:center; --jc:space-between; --mb:0.6rem">
 				<h2 style="--size:0.9375rem; --weight:600; --d:flex; --ai:center; --g:0.5rem">
 					<span>💬</span> {$i18n.t('Recent Chats')}
 				</h2>
 				{#if recentChats.length > 0}
 					<a
 						href="/c/{recentChats[0]?.id}"
-						style="--size:0.75rem; --c:var(--color-gray-400); --hvr-c:var(--color-gray-600); --dark-hvr-c:var(--color-gray-200); --tn:color 150ms ease"
+						style="--size:0.6rem; --c:var(--color-gray-400); --hvr-c:var(--color-gray-600); --dark-hvr-c:var(--color-gray-200); --tn:color 150ms ease"
 					>
 						{$i18n.t('View all')} &rarr;
 					</a>
@@ -92,7 +92,7 @@
 					{#each recentChats as chat}
 						<a href="/c/{chat.id}" style={chatItemStyle} class="no-underline">
 							<span
-								style="--size:0.8125rem; overflow:hidden; text-overflow:ellipsis; --ws:nowrap; --fx:1; --mr:0.75rem"
+								style="--size:0.8125rem; overflow:hidden; text-overflow:ellipsis; --ws:nowrap; --fx:1; --mr:0.6rem"
 							>
 								{chat.title}
 							</span>
@@ -115,7 +115,7 @@
 
 		<!-- Pinned Chats -->
 		<div style="{cardStyle}; --p:1rem">
-			<div style="--d:flex; --ai:center; --jc:space-between; --mb:0.75rem">
+			<div style="--d:flex; --ai:center; --jc:space-between; --mb:0.6rem">
 				<h2 style="--size:0.9375rem; --weight:600; --d:flex; --ai:center; --g:0.5rem">
 					<span>🔖</span> {$i18n.t('Pinned')}
 				</h2>
@@ -126,7 +126,7 @@
 					{#each pinned as chat}
 						<a href="/c/{chat.id}" style={chatItemStyle} class="no-underline">
 							<span
-								style="--size:0.8125rem; overflow:hidden; text-overflow:ellipsis; --ws:nowrap; --fx:1; --mr:0.75rem"
+								style="--size:0.8125rem; overflow:hidden; text-overflow:ellipsis; --ws:nowrap; --fx:1; --mr:0.6rem"
 							>
 								{chat.title}
 							</span>
@@ -189,18 +189,18 @@
 
 	<!-- Vision -->
 	<div style="{cardStyle}; --p:1.5rem">
-		<h2 style="--size:1.125rem; --weight:600; --mb:0.75rem">
+		<h2 style="--size:1.125rem; --weight:600; --mb:0.6rem">
 			{$i18n.t('Your AI, Your Way')}
 		</h2>
 		<div
 			style="--size:0.875rem; --lh:1.6; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
 		>
-			<p style="--mb:0.75rem">
+			<p style="--mb:0.6rem">
 				{$i18n.t(
 					"This is your dashboard — a personal space that adapts to how you work. Instead of jumping between pages to find what matters, everything lives here."
 				)}
 			</p>
-			<p style="--mb:0.75rem">
+			<p style="--mb:0.6rem">
 				{$i18n.t(
 					"We're building toward a widget-based home where you choose what to see: recent conversations, pinned notes, calendar events, usage stats, quick-launch prompts — arranged your way."
 				)}

@@ -53,7 +53,7 @@
 	};
 </script>
 
-<div style="--d:flex; --fd:column; --g:0.75rem"
+<div style="--d:flex; --fd:column; --g:0.6rem"
 	class="{banners?.length > 0 ? 'mt-2' : ''}" bind:this={bannerListElement}>
 	{#each banners as banner, bannerIdx (banner.id)}
 		<div style="--d:flex; --jc:space-between; --ai:flex-start; --ml:-0.25rem" id="banner-item-{banner.id}">
@@ -61,7 +61,7 @@
 
 			<div style="--d:flex; --fd:row; --fx:1 1 0%; --g:0.5rem; --ai:flex-start">
 				<select
-					style="--w:fit-content; --tt:capitalize; --radius:0.75rem; --size:0.75rem; --bgc:transparent; --oe:none; --pl:0.25rem; --pr:1.25rem"
+					style="--w:fit-content; --tt:capitalize; --radius:0.6rem; --size:0.6rem; --bgc:transparent; --oe:none; --pl:0.25rem; --pr:1.25rem"
 					bind:value={banner.type}
 					required
 				>
@@ -89,7 +89,7 @@
 			</div>
 
 			<button
-				style="--pr:0.75rem"
+				style="--pr:0.6rem"
 				type="button"
 				on:click={() => {
 					banners.splice(bannerIdx, 1);

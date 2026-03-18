@@ -6,8 +6,8 @@
 	const i18n = getContext('i18n');
 </script>
 
-<div style="--px:0.75rem">
-	<div style="--ta:center; --size:3.75rem; --mb:0.75rem">📄</div>
+<div style="--px:0.6rem">
+	<div style="--ta:center; --size:3.75rem; --mb:0.6rem">📄</div>
 	<div style="--ta:center; --dark-c:#fff; --size:1.25rem; --weight:600; --z:50">
 		{#if title}
 			{title}

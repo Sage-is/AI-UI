@@ -110,11 +110,11 @@
 {#if citations.length > 0}
 	<div style="--py:0.125rem; --mx:-0.125rem; --w:100%; --d:flex; --g:0.25rem; --ai:center; --fw:wrap">
 		{#if citations.length <= 3}
-			<div style="--d:flex; --size:0.75rem; --weight:500; --fw:wrap">
+			<div style="--d:flex; --size:0.6rem; --weight:500; --fw:wrap">
 				{#each citations as citation, idx}
 					<button
 						id={`source-${id}-${idx + 1}`}
-						style="--oe:none; --d:flex; --dark-c:var(--color-gray-300); --p:0.25rem; --bgc:#fff; --dark-bgc:var(--color-gray-900); --radius:0.75rem; --maxw:24rem"
+						style="--oe:none; --d:flex; --dark-c:var(--color-gray-300); --p:0.25rem; --bgc:#fff; --dark-bgc:var(--color-gray-900); --radius:0.6rem; --maxw:24rem"
 	class="no-toggle"
 						on:click={() => {
 							showCitationModal = true;
@@ -153,10 +153,10 @@
 						>
 						<div style="--d:flex; --ai:center; --of:auto; --w:100%; --maxw:100%; --fx:1 1 0%"
 	class="scrollbar-none">
-							<div style="--d:flex; --size:0.75rem; --weight:500; --ai:center">
+							<div style="--d:flex; --size:0.6rem; --weight:500; --ai:center">
 								{#each citations.slice(0, 2) as citation, idx}
 									<button
-										style="--oe:none; --d:flex; --dark-c:var(--color-gray-300); --p:0.25rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.75rem; --maxw:24rem"
+										style="--oe:none; --d:flex; --dark-c:var(--color-gray-300); --p:0.25rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.6rem; --maxw:24rem"
 	class="no-toggle"
 										on:click={() => {
 											showCitationModal = true;
@@ -193,10 +193,10 @@
 					</div>
 				</div>
 				<div slot="content">
-					<div style="--d:flex; --size:0.75rem; --weight:500; --fw:wrap">
+					<div style="--d:flex; --size:0.6rem; --weight:500; --fw:wrap">
 						{#each citations.slice(2) as citation, idx}
 							<button
-								style="--oe:none; --d:flex; --dark-c:var(--color-gray-300); --p:0.25rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.75rem; --maxw:24rem"
+								style="--oe:none; --d:flex; --dark-c:var(--color-gray-300); --p:0.25rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.6rem; --maxw:24rem"
 	class="no-toggle"
 								on:click={() => {
 									showCitationModal = true;

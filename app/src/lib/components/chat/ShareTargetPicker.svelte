@@ -80,7 +80,7 @@
 	}
 </script>
 
-<div style="--d:flex; --fd:column; --g:0.75rem">
+<div style="--d:flex; --fd:column; --g:0.6rem">
 	<!-- Search -->
 	<div style="--d:flex; --ai:center; --g:0.5rem; --px:0.5rem; --py:0.375rem; --radius:0.5rem; --bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800)">
 		<Search className="size-4 text-gray-400" />
@@ -96,14 +96,14 @@
 		<span style="--c:var(--color-gray-500); --dark-c:var(--color-gray-400)">{$i18n.t('Share mode')}</span>
 		<div style="--d:flex; --g:0.25rem">
 			<button
-				style="--px:0.5rem; --py:0.125rem; --radius:0.25rem; --size:0.75rem; --weight:500; --tn:all 150ms ease; {globalMode === 'live' ? '--bgc:#000; --c:#fff; --dark-bgc:#fff; --dark-c:#000' : '--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --c:var(--color-gray-600); --dark-c:var(--color-gray-400)'}"
+				style="--px:0.5rem; --py:0.125rem; --radius:0.25rem; --size:0.6rem; --weight:500; --tn:all 150ms ease; {globalMode === 'live' ? '--bgc:#000; --c:#fff; --dark-bgc:#fff; --dark-c:#000' : '--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --c:var(--color-gray-600); --dark-c:var(--color-gray-400)'}"
 				on:click={() => { globalMode = 'live'; }}
 				type="button"
 			>
 				{$i18n.t('Live')}
 			</button>
 			<button
-				style="--px:0.5rem; --py:0.125rem; --radius:0.25rem; --size:0.75rem; --weight:500; --tn:all 150ms ease; {globalMode === 'snapshot' ? '--bgc:#000; --c:#fff; --dark-bgc:#fff; --dark-c:#000' : '--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --c:var(--color-gray-600); --dark-c:var(--color-gray-400)'}"
+				style="--px:0.5rem; --py:0.125rem; --radius:0.25rem; --size:0.6rem; --weight:500; --tn:all 150ms ease; {globalMode === 'snapshot' ? '--bgc:#000; --c:#fff; --dark-bgc:#fff; --dark-c:#000' : '--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --c:var(--color-gray-600); --dark-c:var(--color-gray-400)'}"
 				on:click={() => { globalMode = 'snapshot'; }}
 				type="button"
 			>

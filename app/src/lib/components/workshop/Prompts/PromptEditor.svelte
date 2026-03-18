@@ -129,7 +129,7 @@
 						</div>
 					</div>
 
-					<div style="--d:flex; --g:0.125rem; --ai:center; --size:0.75rem; --c:var(--color-gray-500)">
+					<div style="--d:flex; --g:0.125rem; --ai:center; --size:0.6rem; --c:var(--color-gray-500)">
 						<div class="">/</div>
 						<input
 							style="--w:100%; --bgc:transparent; --oe:none"
@@ -160,7 +160,7 @@
 					/>
 				</div>
 
-				<div style="--size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
+				<div style="--size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 					ⓘ {$i18n.t('Format your variables using brackets like this:')}&nbsp;<span
 						style="--c:var(--color-gray-600); --dark-c:var(--color-gray-300); --weight:500"
 						>{'{{'}{$i18n.t('variable')}{'}}'}</span
@@ -171,7 +171,7 @@
 					<span style="--c:var(--color-gray-600); --dark-c:var(--color-gray-300); --weight:500">{'}}'}</span>.
 				</div>
 
-				<div style="--size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --td:underline">
+				<div style="--size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --td:underline">
 					<a href="https://docs.sage.is/features/workshop/prompts" target="_blank">
 						{$i18n.t('To learn more about powerful prompt variables, click here')}
 					</a>

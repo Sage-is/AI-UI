@@ -225,7 +225,7 @@ Style elements using `--property:value` in the `style` attribute:
 <div style="--d:flex; --ai:center; --jc:space-between; --g:1rem">
 
 <!-- Spacing & borders -->
-<div style="--p:0.75rem; --br:0.5rem; --b:1px solid var(--color-gray-200)">
+<div style="--p:0.6rem; --br:0.5rem; --b:1px solid var(--color-gray-200)">
 
 <!-- Typography -->
 <span style="--size:0.875rem; --weight:500; --c:var(--color-gray-600)">

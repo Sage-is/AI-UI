@@ -97,10 +97,10 @@
 	}
 
 	const itemStyle =
-		'--d:flex; --radius:0.375rem; --py:0.375rem; --px:0.75rem; --w:100%; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)';
+		'--d:flex; --radius:0.375rem; --py:0.375rem; --px:0.6rem; --w:100%; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)';
 
 	const helpItemStyle =
-		'--d:flex; --g:0.5rem; --ai:center; --py:0.375rem; --px:0.75rem; --size:0.875rem; --us:none; --w:100%; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)';
+		'--d:flex; --g:0.5rem; --ai:center; --py:0.375rem; --px:0.6rem; --size:0.875rem; --us:none; --w:100%; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)';
 </script>
 
 <svelte:window on:pointerdown={handleWindowPointerdown} on:keydown={handleKeydown} />
@@ -117,7 +117,7 @@
 	<div
 		bind:this={menuEl}
 		transition:fade={{ duration: 100 }}
-		style="{menuStyle} --w:100%; --size:0.875rem; --radius:0.75rem; --px:0.25rem; --py:0.375rem; --z:999; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:4"
+		style="{menuStyle} --w:100%; --size:0.875rem; --radius:0.6rem; --px:0.25rem; --py:0.375rem; --z:999; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:4"
 		class="{className} font-primary"
 		on:click|stopPropagation
 	>
@@ -129,7 +129,7 @@
 				if ($mobile) showSidebar.set(false);
 			}}
 		>
-			<div style="--as:center; --mr:0.75rem">
+			<div style="--as:center; --mr:0.6rem">
 				<Settings className="w-5 h-5" strokeWidth="1.5" />
 			</div>
 			<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
@@ -145,7 +145,7 @@
 				if ($mobile) showSidebar.set(false);
 			}}
 		>
-			<div style="--as:center; --mr:0.75rem">
+			<div style="--as:center; --mr:0.6rem">
 				<ArchiveBox className="size-5" strokeWidth="1.5" />
 			</div>
 			<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
@@ -162,7 +162,7 @@
 					goto(role === 'admin' ? '/admin/settings' : '/admin');
 				}}
 			>
-				<div style="--as:center; --mr:0.75rem">
+				<div style="--as:center; --mr:0.6rem">
 					<UserGroup className="w-5 h-5" strokeWidth="1.5" />
 				</div>
 				<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
@@ -224,7 +224,7 @@
 				close();
 			}}
 		>
-			<div style="--as:center; --mr:0.75rem">
+			<div style="--as:center; --mr:0.6rem">
 				<SignOut className="w-5 h-5" strokeWidth="1.5" />
 			</div>
 			<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
@@ -244,7 +244,7 @@
 						: ''}
 				>
 					<div
-						style="--d:flex; --radius:0.375rem; --py:0.25rem; --px:0.75rem; --size:0.75rem; --g:0.625rem; --ai:center"
+						style="--d:flex; --radius:0.375rem; --py:0.25rem; --px:0.6rem; --size:0.6rem; --g:0.625rem; --ai:center"
 						on:mouseenter={() => {
 							getUsageInfo();
 						}}

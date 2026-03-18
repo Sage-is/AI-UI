@@ -15,12 +15,12 @@
 			/>
 
 			<div style="--d:flex; --w:100%; --fd:column; --jc:center">
-				<div style="--py:0.75rem">
+				<div style="--py:0.6rem">
 					<Spinner className="ml-2" />
 				</div>
 
 				{#if content !== ''}
-					<div style="--ta:center; --c:var(--color-gray-100); --size:0.75rem; --weight:500; --z:50">
+					<div style="--ta:center; --c:var(--color-gray-100); --size:0.6rem; --weight:500; --z:50">
 						{content}
 					</div>
 				{/if}

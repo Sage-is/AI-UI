@@ -429,7 +429,7 @@
 		</button>
 	</div>
 
-	<div style="--fx:1 1 0%; --mt:0.75rem; --mt-lg:0; --ofy:scroll; --pr:0.25rem"
+	<div style="--fx:1 1 0%; --mt:0.6rem; --mt-lg:0; --ofy:scroll; --pr:0.25rem"
 	class="scrollbar-hidden">
 		{#if selectedTab === 'general'}
 			<General

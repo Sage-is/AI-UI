@@ -54,10 +54,10 @@
 			</button>
 		</div>
 
-		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:0.75rem; --pb:1rem; --p: 1rem 0;--bgc: var(--white); --br: 1rem">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:0.6rem; --pb:1rem; --p: 1rem 0;--bgc: var(--white); --br: 1rem">
 			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				{#if selected === ''}
-					<div style="--py:1.25rem; --c:var(--color-gray-400); --size:0.75rem">
+					<div style="--py:1.25rem; --c:var(--color-gray-400); --size:0.6rem">
 						<div>
 							{$i18n.t('No inference engine with management support found')}
 						</div>

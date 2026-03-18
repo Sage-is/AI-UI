@@ -154,7 +154,7 @@
 				class="group"
 			>
 				<button
-					style="--w:100%; --py:0.375rem; --pl:0.5rem; --d:flex; --ai:center; --g:0.375rem; --size:0.75rem; --weight:500"
+					style="--w:100%; --py:0.375rem; --pl:0.5rem; --d:flex; --ai:center; --g:0.375rem; --size:0.6rem; --weight:500"
 				>
 					<div style="--c:var(--color-gray-300); --dark-c:var(--color-gray-600)">
 						{#if open}

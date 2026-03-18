@@ -27,7 +27,7 @@
 		<div style="--as:center; --size:0.875rem; --weight:600">{$i18n.t('Filters')}</div>
 	</div>
 
-	<div style="--size:0.75rem; --dark-c:var(--color-gray-500)">
+	<div style="--size:0.6rem; --dark-c:var(--color-gray-500)">
 		{$i18n.t('To select filters here, add them to the "Functions" workshop first.')}
 	</div>
 
@@ -36,7 +36,7 @@
 		{#if filters.length > 0}
 			<div style="--d:flex; --ai:center; --mt:0.5rem; --fw:wrap">
 				{#each Object.keys(_filters) as filter, filterIdx}
-					<div style="--d:flex; --ai:center; --g:0.5rem; --mr:0.75rem">
+					<div style="--d:flex; --ai:center; --g:0.5rem; --mr:0.6rem">
 						<div style="--as:center; --d:flex; --ai:center">
 							<Checkbox
 								state={_filters[filter].is_global

@@ -132,7 +132,7 @@
 											'Default to segmented retrieval for focused and relevant content extraction, this is recommended for most cases.'
 										)}
 							>
-								<div style="--d:flex; --ai:center; --g:0.375rem; --size:0.75rem">
+								<div style="--d:flex; --ai:center; --g:0.375rem; --size:0.6rem">
 									{#if enableFullContent}
 										{$i18n.t('Using Entire Document')}
 									{:else}
@@ -157,7 +157,7 @@
 				<div>
 					{#each item?.files as file}
 						<div style="--d:flex; --ai:center; --g:0.5rem; --mb:0.5rem">
-							<div style="--size:0.75rem"
+							<div style="--size:0.6rem"
 	class="flex-shrink-0">
 								{file?.meta?.name}
 							</div>
@@ -181,7 +181,7 @@
 				{/if}
 
 				{#if item?.file?.data}
-					<div style="--maxh:24rem; --of:scroll; --size:0.75rem; --ws:pre-wrap"
+					<div style="--maxh:24rem; --of:scroll; --size:0.6rem; --ws:pre-wrap"
 	class="scrollbar-hidden">
 						{item?.file?.data?.content ?? 'No content'}
 					</div>

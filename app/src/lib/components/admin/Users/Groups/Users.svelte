@@ -46,23 +46,23 @@
 <div>
 	<div style="--d:flex; --w:100%">
 		<div style="--d:flex; --fx:1 1 0%">
-			<div style="--as:center; --mr:0.75rem">
+			<div style="--as:center; --mr:0.6rem">
 				<Search />
 			</div>
 			<input
-				style="--w:100%; --size:0.875rem; --pr:1rem; --btrr:0.75rem; --bbrr:0.75rem; --oe:none; --bgc:transparent"
+				style="--w:100%; --size:0.875rem; --pr:1rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 				bind:value={query}
 				placeholder={$i18n.t('Search')}
 			/>
 		</div>
 	</div>
 
-	<div style="--mt:0.75rem"
+	<div style="--mt:0.6rem"
 	class="scrollbar-hidden">
 		<div style="--d:flex; --fd:column; --g:0.625rem">
 			{#if filteredUsers.length > 0}
 				{#each filteredUsers as user, userIdx (user.id)}
-					<div style="--d:flex; --fd:row; --ai:center; --g:0.75rem; --w:100%; --size:0.875rem">
+					<div style="--d:flex; --fd:row; --ai:center; --g:0.6rem; --w:100%; --size:0.875rem">
 						<div style="--d:flex; --ai:center">
 							<Checkbox
 								state={userIds.includes(user.id) ? 'checked' : 'unchecked'}
@@ -90,7 +90,7 @@
 					</div>
 				{/each}
 			{:else}
-				<div style="--c:var(--color-gray-500); --size:0.75rem; --ta:center; --py:0.5rem; --px:2.5rem">
+				<div style="--c:var(--color-gray-500); --size:0.6rem; --ta:center; --py:0.5rem; --px:2.5rem">
 					{$i18n.t('No users were found.')}
 				</div>
 			{/if}

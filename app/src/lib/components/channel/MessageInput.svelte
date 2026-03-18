@@ -547,7 +547,7 @@
 			: 'max-w-6xl'}"
 	>
 		<div style="--pos:absolute; --top:0; --left:0; --right:0; --mx:auto; --left:0; --right:0; --bgc:transparent; --d:flex; --jc:center">
-			<div style="--d:flex; --fd:column; --px:0.75rem; --w:100%">
+			<div style="--d:flex; --fd:column; --px:0.6rem; --w:100%">
 				<div style="--pos:relative">
 					{#if scrollEnd === false}
 						<div
@@ -580,7 +580,7 @@
 				<div style="--pos:relative">
 					<div style="--mt:-1.25rem">
 						{#if typingUsers.length > 0}
-							<div style="--size:0.75rem; --px:1rem; --mb:0.25rem">
+							<div style="--size:0.6rem; --px:1rem; --mb:0.25rem">
 								<span style="--weight:400; --c:#000; --dark-c:#fff">
 									{typingUsers.map((user) => user.name).join(', ')}
 								</span>
@@ -697,7 +697,7 @@
 
 						<div style="--px:0.625rem">
 							<div
-								style="--ta:left; --bgc:transparent; --dark-c:var(--color-gray-100); --oe:none; --w:100%; --pt:0.75rem; --px:0.25rem; resize:none; --h:fit-content; --maxh:20rem; --of:auto"
+								style="--ta:left; --bgc:transparent; --dark-c:var(--color-gray-100); --oe:none; --w:100%; --pt:0.6rem; --px:0.25rem; resize:none; --h:fit-content; --maxh:20rem; --of:auto"
 	class="scrollbar-hidden font-primary"
 							>
 								<RichTextInput

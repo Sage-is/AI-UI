@@ -245,7 +245,7 @@
 								</svg>
 							</button>
 
-							<div style="--size:0.75rem; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content">
+							<div style="--size:0.6rem; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content">
 								{$i18n.t('Version {{selectedVersion}} of {{totalVersions}}', {
 									selectedVersion: selectedContentIdx + 1,
 									totalVersions: contents.length
@@ -278,7 +278,7 @@
 
 					<div style="--d:flex; --ai:center; --g:0.375rem">
 						<button
-							style="--bs:none; --size:0.75rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.375rem; --px:0.375rem; --py:0.125rem"
+							style="--bs:none; --size:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.375rem; --px:0.375rem; --py:0.125rem"
 	class="copy-code-button bg-none"
 							on:click={() => {
 								copyToClipboard(contents[selectedContentIdx].content);
@@ -292,7 +292,7 @@
 
 						<Tooltip content={$i18n.t('Download')}>
 							<button
-								style="--bs:none; --size:0.75rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.375rem; --p:0.125rem"
+								style="--bs:none; --size:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.375rem; --p:0.125rem"
 	class="bg-none"
 								on:click={downloadArtifact}
 							>
@@ -303,7 +303,7 @@
 						{#if contents[selectedContentIdx].type === 'iframe'}
 							<Tooltip content={$i18n.t('Open in full screen')}>
 								<button
-									style="--bs:none; --size:0.75rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.375rem; --p:0.125rem"
+									style="--bs:none; --size:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.375rem; --p:0.125rem"
 	class="bg-none"
 									on:click={showFullScreen}
 								>
@@ -356,7 +356,7 @@
 						{/if}
 					</div>
 				{:else}
-					<div style="--m:auto; --weight:500; --size:0.75rem; --c:var(--color-gray-900); --dark-c:#fff">
+					<div style="--m:auto; --weight:500; --size:0.6rem; --c:var(--color-gray-900); --dark-c:#fff">
 						{$i18n.t('No HTML, CSS, or JavaScript content found.')}
 					</div>
 				{/if}

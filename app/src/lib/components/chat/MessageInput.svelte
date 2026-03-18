@@ -855,7 +855,7 @@
 	<div style="--w:100%" class="font-primary">
 		<div style="--mx:auto; --left:0; --right:0; --bgc:transparent; --d:flex; --jc:center">
 			<div
-				style="--d:flex; --fd:column; --px:0.75rem; --w:100%"
+				style="--d:flex; --fd:column; --px:0.6rem; --w:100%"
 				class={($settings?.widescreenMode ?? null) ? 'max-w-full' : 'max-w-6xl'}
 			>
 				<div style="--pos:relative">
@@ -890,7 +890,7 @@
 				<div style="--w:100%; --pos:relative">
 					{#if atSelectedModel !== undefined}
 						<div
-							style="--px:0.75rem; --pb:0.125rem; --pt:0.375rem; --ta:left; --w:100%; --d:flex; --fd:column; --pos:absolute; --bottom:0; --left:0; --right:0; --bgi:linear-gradient(0deg, var(--tw-gradient-stops)); --tw-gradient-from:#fff; --dark-tw-gradient-from:var(--color-gray-900); --z:10"
+							style="--px:0.6rem; --pb:0.125rem; --pt:0.375rem; --ta:left; --w:100%; --d:flex; --fd:column; --pos:absolute; --bottom:0; --left:0; --right:0; --bgi:linear-gradient(0deg, var(--tw-gradient-stops)); --tw-gradient-from:#fff; --dark-tw-gradient-from:var(--color-gray-900); --z:10"
 						>
 							<div style="--d:flex; --ai:center; --jc:space-between; --w:100%">
 								<div
@@ -1353,7 +1353,7 @@
 											id="chat-input"
 											dir={$settings?.chatDirection ?? 'auto'}
 											bind:this={chatInputElement}
-											style="--bgc:transparent; --dark-c:var(--color-gray-200); --oe:none; --w:100%; --pt:0.75rem; --px:0.25rem; resize:none"
+											style="--bgc:transparent; --dark-c:var(--color-gray-200); --oe:none; --w:100%; --pt:0.6rem; --px:0.25rem; resize:none"
 											class="scrollbar-hidden"
 											placeholder={placeholder ? placeholder : $i18n.t('Send a Message')}
 											bind:value={prompt}
@@ -1994,7 +1994,7 @@
 
 							{#if $config?.license_metadata?.input_footer}
 								<div
-									style="--size:0.75rem; --c:var(--color-gray-500); --ta:center; --line-clamp:1"
+									style="--size:0.6rem; --c:var(--color-gray-500); --ta:center; --line-clamp:1"
 									class="marked"
 								>
 									{@html DOMPurify.sanitize(marked($config?.license_metadata?.input_footer))}

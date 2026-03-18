@@ -46,7 +46,7 @@
 				{#if topTags.length}
 					<div style="--d:flex; --fw:wrap; --g:0.25rem; --mt:0.25rem; --mx:-0.25rem">
 						{#each topTags as tagInfo}
-							<span style="--px:0.5rem; --py:0.125rem; --radius:9999px; --bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --size:0.75rem">
+							<span style="--px:0.5rem; --py:0.125rem; --radius:9999px; --bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --size:0.6rem">
 								{tagInfo.tag} <span style="--c:var(--color-gray-500); --weight:500">{tagInfo.count}</span>
 							</span>
 						{/each}

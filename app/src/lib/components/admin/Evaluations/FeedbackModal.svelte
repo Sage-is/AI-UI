@@ -60,9 +60,9 @@
 
 							{#if messages[messages[messageId]?.parentId]}
 								<div style="--d:flex; --fd:column; --w:100%; --mb:0.5rem">
-									<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Prompt')}</div>
+									<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Prompt')}</div>
 
-									<div style="--fx:1 1 0%; --size:0.75rem; --ws:pre-line; --wb:break-word; overflow-wrap:break-word">
+									<div style="--fx:1 1 0%; --size:0.6rem; --ws:pre-line; --wb:break-word; overflow-wrap:break-word">
 										<span>{messages[messages[messageId]?.parentId]?.content || '-'}</span>
 									</div>
 								</div>
@@ -70,9 +70,9 @@
 
 							{#if messages[messageId]}
 								<div style="--d:flex; --fd:column; --w:100%; --mb:0.5rem">
-									<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Response')}</div>
+									<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Response')}</div>
 									<div
-										style="--fx:1 1 0%; --size:0.75rem; --ws:pre-line; --wb:break-word; overflow-wrap:break-word; --maxh:8rem; --ofy:auto"
+										style="--fx:1 1 0%; --size:0.6rem; --ws:pre-line; --wb:break-word; overflow-wrap:break-word; --maxh:8rem; --ofy:auto"
 									>
 										<span>{messages[messageId]?.content || '-'}</span>
 									</div>
@@ -81,24 +81,24 @@
 						{/if}
 
 						<div style="--d:flex; --fd:column; --w:100%; --mb:0.5rem">
-							<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Rating')}</div>
+							<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Rating')}</div>
 
-							<div style="--fx:1 1 0%; --size:0.75rem">
+							<div style="--fx:1 1 0%; --size:0.6rem">
 								<span>{selectedFeedback?.data?.details?.rating ?? '-'}</span>
 							</div>
 						</div>
 						<div style="--d:flex; --fd:column; --w:100%; --mb:0.5rem">
-							<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Reason')}</div>
+							<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Reason')}</div>
 
-							<div style="--fx:1 1 0%; --size:0.75rem">
+							<div style="--fx:1 1 0%; --size:0.6rem">
 								<span>{selectedFeedback?.data?.reason || '-'}</span>
 							</div>
 						</div>
 
 						<div style="--d:flex; --fd:column; --w:100%; --mb:0.5rem">
-							<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Comment')}</div>
+							<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Comment')}</div>
 
-							<div style="--fx:1 1 0%; --size:0.75rem">
+							<div style="--fx:1 1 0%; --size:0.6rem">
 								<span>{selectedFeedback?.data?.comment || '-'}</span>
 							</div>
 						</div>

@@ -152,7 +152,7 @@
 					{/if}
 				</select>
 
-				<div style="--size:0.75rem; --c:var(--color-gray-400); --weight:500">
+				<div style="--size:0.6rem; --c:var(--color-gray-400); --weight:500">
 					{#if accessControl !== null}
 						{$i18n.t('Only select users and groups with permission can access')}
 					{:else}
@@ -194,7 +194,7 @@
 							<!-- <div>
 								<Tooltip content={$i18n.t('Add Group')}>
 									<button
-										style="--p:0.25rem; --radius:0.75rem; --bgc:transparent; --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-bgc:rgb(0 0 0 / 0.05); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
+										style="--p:0.25rem; --radius:0.6rem; --bgc:transparent; --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-bgc:rgb(0 0 0 / 0.05); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
 										type="button"
 										on:click={() => {}}
 									>
@@ -211,7 +211,7 @@
 				<div style="--d:flex; --fd:column; --g:0.5rem; --mb:0.25rem; --px:0.125rem">
 					{#if accessGroups.length > 0}
 						{#each accessGroups as group}
-							<div style="--d:flex; --ai:center; --g:0.75rem; --jc:space-between; --size:0.75rem; --w:100%; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)">
+							<div style="--d:flex; --ai:center; --g:0.6rem; --jc:space-between; --size:0.6rem; --w:100%; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)">
 								<div style="--d:flex; --ai:center; --g:0.375rem; --w:100%; --weight:500">
 									<div>
 										<UserCircleSolid className="size-4" />
@@ -264,7 +264,7 @@
 						{/each}
 					{:else}
 						<div style="--d:flex; --ai:center; --jc:center">
-							<div style="--c:var(--color-gray-500); --size:0.75rem; --ta:center; --py:0.5rem; --px:2.5rem">
+							<div style="--c:var(--color-gray-500); --size:0.6rem; --ta:center; --py:0.5rem; --px:2.5rem">
 								{$i18n.t('No groups with access, add a group to grant access')}
 							</div>
 						</div>

@@ -68,7 +68,7 @@
 	}}
 >
 	{#if !small}
-		<div style="--p:0.75rem; --bgc:rgb(0 0 0 / 0.2); --dark-bgc:rgb(255 255 255 / 0.1); --c:#fff; --radius:0.75rem">
+		<div style="--p:0.6rem; --bgc:rgb(0 0 0 / 0.2); --dark-bgc:rgb(255 255 255 / 0.1); --c:#fff; --radius:0.6rem">
 			{#if !loading}
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -99,7 +99,7 @@
 			</div>
 
 			<div
-				style="--d:flex; --jc:space-between; --size:0.75rem; --line-clamp:1"
+				style="--d:flex; --jc:space-between; --size:0.6rem; --line-clamp:1"
 	class="{($settings?.highContrastMode ?? false)
 					? 'text-gray-800 dark:text-gray-100'
 					: 'text-gray-500'}"
@@ -128,7 +128,7 @@
 						</div>
 					{/if}
 					<div style="--weight:500; --line-clamp:1; --fx:1 1 0%">{decodeString(name)}</div>
-					<div style="--c:var(--color-gray-500); --size:0.75rem; --tt:capitalize; --fs:0">{formatFileSize(size)}</div>
+					<div style="--c:var(--color-gray-500); --size:0.6rem; --tt:capitalize; --fs:0">{formatFileSize(size)}</div>
 				</div>
 			</div>
 		</Tooltip>

@@ -6609,7 +6609,7 @@
 	font-size: 0.875rem;
 }
 .swagger-ui .f7 {
-	font-size: 0.75rem;
+	font-size: 0.6rem;
 }
 @media screen and (min-width: 30em) {
 	.swagger-ui .f-6-ns,
@@ -6639,7 +6639,7 @@
 		font-size: 0.875rem;
 	}
 	.swagger-ui .f7-ns {
-		font-size: 0.75rem;
+		font-size: 0.6rem;
 	}
 }
 @media screen and (min-width: 30em) and (max-width: 60em) {
@@ -6670,7 +6670,7 @@
 		font-size: 0.875rem;
 	}
 	.swagger-ui .f7-m {
-		font-size: 0.75rem;
+		font-size: 0.6rem;
 	}
 }
 @media screen and (min-width: 60em) {
@@ -6701,7 +6701,7 @@
 		font-size: 0.875rem;
 	}
 	.swagger-ui .f7-l {
-		font-size: 0.75rem;
+		font-size: 0.6rem;
 	}
 }
 .swagger-ui .measure {

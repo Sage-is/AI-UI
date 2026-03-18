@@ -165,7 +165,7 @@
 
 					{#if message.created_at}
 						<div
-							style="--mt:0.375rem; --d:flex; --fs:0; --ai:center; --size:0.75rem; --as:center; --v:hidden; --c:var(--color-gray-500); --weight:500"
+							style="--mt:0.375rem; --d:flex; --fs:0; --ai:center; --size:0.6rem; --as:center; --v:hidden; --c:var(--color-gray-500); --weight:500"
 	class="group-hover:visible first-letter:capitalize"
 						>
 							<Tooltip content={dayjs(message.created_at / 1000000).format('LLLL')}>
@@ -185,7 +185,7 @@
 
 						{#if message.created_at}
 							<div
-								style="--as:center; --size:0.75rem; --v:hidden; --c:var(--color-gray-400); --weight:500; --ml:0.125rem; --translatey:1px"
+								style="--as:center; --size:0.6rem; --v:hidden; --c:var(--color-gray-400); --weight:500; --ml:0.125rem; --translatey:1px"
 	class="group-hover:visible first-letter:capitalize"
 							>
 								<Tooltip content={dayjs(message.created_at / 1000000).format('LLLL')}>
@@ -279,7 +279,7 @@
 								{#each message.reactions as reaction}
 									<Tooltip content={`:${reaction.name}:`}>
 										<button
-											style="--d:flex; --ai:center; --g:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.75rem; --px:0.5rem; --py:0.25rem; --cur:pointer"
+											style="--d:flex; --ai:center; --g:0.375rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.6rem; --px:0.5rem; --py:0.25rem; --cur:pointer"
 	class="{reaction.user_ids.includes(
 												$user?.id
 											)
@@ -305,7 +305,7 @@
 											{/if}
 
 											{#if reaction.user_ids.length > 0}
-												<div style="--size:0.75rem; --weight:500; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
+												<div style="--size:0.6rem; --weight:500; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
 													{reaction.user_ids?.length}
 												</div>
 											{/if}
@@ -320,7 +320,7 @@
 								>
 									<Tooltip content={$i18n.t('Add Reaction')}>
 										<div
-											style="--d:flex; --ai:center; --g:0.375rem; --bgc:rgb(155 155 155 / 0.1); outline-style:solid; outline-color:rgb(78 78 78 / 0.3); outline-color:rgb(205 205 205 / 0.3); outline-width:1px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.75rem; --px:0.25rem; --py:0.25rem; --cur:pointer; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)"
+											style="--d:flex; --ai:center; --g:0.375rem; --bgc:rgb(155 155 155 / 0.1); outline-style:solid; outline-color:rgb(78 78 78 / 0.3); outline-color:rgb(205 205 205 / 0.3); outline-width:1px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.6rem; --px:0.25rem; --py:0.25rem; --cur:pointer; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)"
 										>
 											<FaceSmile />
 										</div>
@@ -333,7 +333,7 @@
 					{#if !thread && message.reply_count > 0}
 						<div style="--d:flex; --ai:center; --g:0.375rem; --mt:-0.125rem; --mb:0.375rem">
 							<button
-								style="--d:flex; --ai:center; --size:0.75rem; --py:0.25rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --hvr-c:var(--color-gray-700); --hvr-dark-c:var(--color-gray-300); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+								style="--d:flex; --ai:center; --size:0.6rem; --py:0.25rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --hvr-c:var(--color-gray-700); --hvr-dark-c:var(--color-gray-300); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								on:click={() => {
 									onThread(message.id);
 								}}

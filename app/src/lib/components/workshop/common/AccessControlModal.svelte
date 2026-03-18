@@ -16,7 +16,7 @@
 
 <Modal size="sm" bind:show>
 	<div>
-		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-100); --px:1.25rem; --pt:0.75rem; --pb:0.25rem">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-100); --px:1.25rem; --pt:0.6rem; --pb:0.25rem">
 			<div style="--size:1.125rem; --weight:500; --as:center"
 	class="font-primary">
 				{$i18n.t('Access Control')}

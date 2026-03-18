@@ -254,7 +254,7 @@
 				{#if ($config?.features.auth_trusted_header ?? false) || $config?.features.auth === false}
 					<div style="--my:auto; --pb:2.5rem; --w:100%; --maxw-sm:28rem">
 						<div
-							style="--d:flex; --ai:center; --jc:center; --g:0.75rem; --size:1.25rem; --size-sm:1.5rem; --ta:center; --weight:600; --dark-c:var(--color-gray-200)"
+							style="--d:flex; --ai:center; --jc:center; --g:0.6rem; --size:1.25rem; --size-sm:1.5rem; --ta:center; --weight:600; --dark-c:var(--color-gray-200)"
 						>
 							<div>
 								{$i18n.t('Signing in to {{WEBUI_NAME}}', {
@@ -310,11 +310,11 @@
 									</div>
 
 									{#if branding?.subtitle}
-										<div style="--mt:0.25rem; --size:0.75rem; --weight:500; --c:var(--color-gray-600); --dark-c:var(--color-gray-500)">
+										<div style="--mt:0.25rem; --size:0.6rem; --weight:500; --c:var(--color-gray-600); --dark-c:var(--color-gray-500)">
 											{branding?.subtitle}
 										</div>
 									{:else if $config?.onboarding ?? false}
-										<div style="--mt:0.25rem; --size:0.75rem; --weight:500; --c:var(--color-gray-600); --dark-c:var(--color-gray-500)">
+										<div style="--mt:0.25rem; --size:0.6rem; --weight:500; --c:var(--color-gray-600); --dark-c:var(--color-gray-500)">
 											ⓘ {branding?.title || $WEBUI_NAME}
 											{$i18n.t(
 												'does not make any external connections, and your data stays securely on your locally hosted server.'
@@ -448,14 +448,14 @@
 									{/if}
 								</div>
 
-								<div style="--mt:1rem; --size:0.75rem; --ta:center; --c:var(--color-gray-500)">
+								<div style="--mt:1rem; --size:0.6rem; --ta:center; --c:var(--color-gray-500)">
 									{$i18n.t(
 										'Usage of this service requires strictly necessary cookies for authentication.'
 									)}
 								</div>
 							</form>
 
-							<div style="--mt:1rem; --size:0.75rem; --ta:center; --c:var(--color-gray-500)">
+							<div style="--mt:1rem; --size:0.6rem; --ta:center; --c:var(--color-gray-500)">
 								<a href="https://sage.is">Read about Age of Sage</a>
 							</div>
 
@@ -464,7 +464,7 @@
 									<hr style="--w:8rem; --h:1px; --my:1rem; --bw:0; --dark-bgc:rgb(236 236 236 / 0.1); --bgc:rgb(78 78 78 / 0.1)" />
 									{#if $config?.features.enable_login_form || $config?.features.enable_ldap}
 										<span
-											style="--px:0.75rem; --size:0.875rem; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --bgc:transparent"
+											style="--px:0.6rem; --size:0.875rem; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --bgc:transparent"
 											>{$i18n.t('or')}</span
 										>
 									{/if}
@@ -482,7 +482,7 @@
 											<svg
 												xmlns="http://www.w3.org/2000/svg"
 												viewBox="0 0 48 48"
-												style="--w:1.5rem; --h:1.5rem; --mr:0.75rem"
+												style="--w:1.5rem; --h:1.5rem; --mr:0.6rem"
 											>
 												<path
 													fill="#EA4335"
@@ -511,7 +511,7 @@
 											<svg
 												xmlns="http://www.w3.org/2000/svg"
 												viewBox="0 0 21 21"
-												style="--w:1.5rem; --h:1.5rem; --mr:0.75rem"
+												style="--w:1.5rem; --h:1.5rem; --mr:0.6rem"
 											>
 												<rect x="1" y="1" width="9" height="9" fill="#f25022" /><rect
 													x="1"
@@ -541,7 +541,7 @@
 											<svg
 												xmlns="http://www.w3.org/2000/svg"
 												viewBox="0 0 24 24"
-												style="--w:1.5rem; --h:1.5rem; --mr:0.75rem"
+												style="--w:1.5rem; --h:1.5rem; --mr:0.6rem"
 											>
 												<path
 													fill="currentColor"
@@ -564,7 +564,7 @@
 												viewBox="0 0 24 24"
 												stroke-width="1.5"
 												stroke="currentColor"
-												style="--w:1.5rem; --h:1.5rem; --mr:0.75rem"
+												style="--w:1.5rem; --h:1.5rem; --mr:0.6rem"
 											>
 												<path
 													stroke-linecap="round"
@@ -586,7 +586,7 @@
 							{#if $config?.features.enable_ldap && $config?.features.enable_login_form}
 								<div style="--mt:0.5rem">
 									<button
-										style="--d:flex; --jc:center; --ai:center; --size:0.75rem; --w:100%; --ta:center; --td:underline"
+										style="--d:flex; --jc:center; --ai:center; --size:0.6rem; --w:100%; --ta:center; --td:underline"
 										type="button"
 										on:click={() => {
 											if (mode === 'ldap')

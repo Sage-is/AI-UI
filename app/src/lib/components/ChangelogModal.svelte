@@ -46,53 +46,56 @@
 		</div>
 		<div style="--d:flex; --ai:center; --mt:0.25rem">
 			<div style="--size:0.875rem; --dark-c:var(--color-gray-200)">{$i18n.t('Release Notes')}</div>
-			<div style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-700)" />
+			<div
+				style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-700)"
+			/>
 			<div style="--size:0.875rem; --dark-c:var(--color-gray-200)">
 				v{WEBUI_VERSION}
 			</div>
 		</div>
 	</div>
 
-	<div style="--w:100%; --p:1rem; --px:1.25rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-100)">
-		<div style="--ofy:scroll; --maxh:24rem"
-	class="scrollbar-hidden">
-			<div style="--mb:0.75rem">
+	<div
+		style="--w:100%; --p:1rem; --px:1.25rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-100)"
+	>
+		<div style="--ofy:scroll; --maxh:24rem" class="scrollbar-hidden">
+			<div style="--mb:0.6rem">
 				{#if changelog}
 					{#each Object.keys(changelog) as version}
-						<div style="--mb:0.75rem; --pr:0.5rem">
+						<div style="--mb:0.6rem; --pr:0.5rem">
 							<div style="--weight:600; --size:1.25rem; --mb:0.25rem; --dark-c:#fff">
 								v{version} - {changelog[version].date}
 							</div>
 
-							<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
+							<hr />
 
 							{#each Object.keys(changelog[version]).filter((section) => section !== 'date') as section}
-								<div class="">
-									<div
-										style="--weight:600; --tt:uppercase; --size:0.75rem; --w:fit-content; --px:0.75rem; --radius:9999px; --my:0.625rem"
-	class="{section === 'added'
-											? 'text-white bg-blue-600'
-											: section === 'fixed'
-												? 'text-white bg-green-600'
-												: section === 'changed'
-													? 'text-white bg-yellow-600'
-													: section === 'removed'
-														? 'text-white bg-red-600'
-														: ''}"
-									>
-										{section}
-									</div>
+								<div
+									style="--weight:600; --tt:uppercase; --size:0.6rem; --w:fit-content; --px:0.6rem; --radius:9999px; --my:0.625rem"
+									class={section === 'added'
+										? 'text-white bg-blue-600'
+										: section === 'fixed'
+											? 'text-white bg-green-600'
+											: section === 'changed'
+												? 'text-white bg-yellow-600'
+												: section === 'removed'
+													? 'text-white bg-red-600'
+													: ''}
+								>
+									{section}
+								</div>
 
-									<div style="--my:0.625rem; --px:0.375rem">
-										{#each Object.keys(changelog[version][section]) as item}
-											<div style="--size:0.875rem; --mb:0.5rem">
-												<div style="--weight:600; --tt:uppercase">
-													{changelog[version][section][item].title}
-												</div>
-												<div style="--mb:0.5rem; --mt:0.25rem">{changelog[version][section][item].content}</div>
+								<div style="--my:0.625rem; --px:0.375rem">
+									{#each Object.keys(changelog[version][section]) as item}
+										<div style="--size:0.875rem; --mb:0.5rem">
+											<div style="--weight:600; --tt:uppercase">
+												{changelog[version][section][item].title}
 											</div>
-										{/each}
-									</div>
+											<div style="--mb:0.5rem; --mt:0.25rem">
+												{changelog[version][section][item].content}
+											</div>
+										</div>
+									{/each}
 								</div>
 							{/each}
 						</div>
@@ -100,18 +103,17 @@
 				{/if}
 			</div>
 		</div>
-		<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
-			<button
-				on:click={async () => {
-					localStorage.version = $config.version;
-					await settings.set({ ...$settings, ...{ version: $config.version } });
-					await updateUserSettings(localStorage.token, { ui: $settings });
-					show = false;
-				}}
-				style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
-			>
-				<span style="--pos:relative">{$i18n.t("Okay, Let's Go!")}</span>
-			</button>
-		</div>
+
+		<button
+			on:click={async () => {
+				localStorage.version = $config.version;
+				await settings.set({ ...$settings, ...{ version: $config.version } });
+				await updateUserSettings(localStorage.token, { ui: $settings });
+				show = false;
+			}}
+			style="--ml:auto; --px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
+		>
+			{$i18n.t("Okay, Let's Go!")}
+		</button>
 	</div>
 </Modal>

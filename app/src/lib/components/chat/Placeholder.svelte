@@ -115,7 +115,7 @@
 					}}
 				/>
 			{:else}
-				<div style="--d:flex; --fd:row; --jc:center; --g:0.75rem; --w:fit-content; --px:1.25rem; --maxw:36rem"
+				<div style="--d:flex; --fd:row; --jc:center; --g:0.6rem; --w:fit-content; --px:1.25rem; --maxw:36rem"
 	class="@sm:gap-3.5">
 					<div style="--d:flex; --fs:0; --jc:center">
 						<div style="--d:flex; --g:-1rem; --mb:0.125rem" in:fade={{ duration: 100 }}>
@@ -215,7 +215,7 @@
 				</div>
 			{/if}
 
-			<div style="--size:1rem; --weight:400; --w:100%; --py:0.75rem"
+			<div style="--size:1rem; --weight:400; --w:100%; --py:0.6rem"
 	class="@md:max-w-3xl {atSelectedModel ? 'mt-2' : ''}">
 				<MessageInput
 					bind:this={messageInput}

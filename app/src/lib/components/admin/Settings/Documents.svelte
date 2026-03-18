@@ -291,7 +291,7 @@
 />
 
 <form
-	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.75rem; --size:0.875rem"
+	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.875rem"
 	on:submit|preventDefault={() => {
 		submitHandler();
 	}}
@@ -300,19 +300,19 @@
 		<div style="--g:0.625rem; --ofy:scroll; --h:100%; --pr:0.375rem"
 	class="scrollbar-hidden">
 			<div class="">
-				<div style="--mb:0.75rem">
+				<div style="--mb:0.6rem">
 					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('General')}</div>
 
 					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem"/>
 
 					<div style="--mb:0.625rem; --d:flex; --fd:column; --w:100%; --jc:space-between">
 						<div style="--d:flex; --w:100%; --jc:space-between; --mb:0.25rem">
-							<div style="--as:center; --size:0.75rem; --weight:500">
+							<div style="--as:center; --size:0.6rem; --weight:500">
 								{$i18n.t('Content Extraction Engine')}
 							</div>
 							<div class="">
 								<select
-									style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
+									style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --size:0.6rem; --bgc:transparent; --oe:none; --ta:right"
 									bind:value={RAGConfig.CONTENT_EXTRACTION_ENGINE}
 								>
 									<option value="">{$i18n.t('Default')}</option>
@@ -329,7 +329,7 @@
 						{#if RAGConfig.CONTENT_EXTRACTION_ENGINE === ''}
 							<div style="--d:flex; --w:100%; --mt:0.25rem">
 								<div style="--fx:1 1 0%; --d:flex; --jc:space-between">
-									<div style="--as:center; --size:0.75rem; --weight:500">
+									<div style="--as:center; --size:0.6rem; --weight:500">
 										{$i18n.t('PDF Extract Images (OCR)')}
 									</div>
 									<div style="--d:flex; --ai:center; --pos:relative">
@@ -347,7 +347,7 @@
 							</div>
 
 							<div style="--d:flex; --jc:space-between; --w:100%; --mt:0.5rem">
-								<div style="--size:0.75rem; --weight:500">
+								<div style="--size:0.6rem; --weight:500">
 									{$i18n.t('Languages')}
 								</div>
 
@@ -360,12 +360,12 @@
 							</div>
 
 							<details style="--mt:0.5rem">
-								<summary style="--size:0.75rem; --weight:500; --c:var(--color-gray-500); --cursor:pointer">
+								<summary style="--size:0.6rem; --weight:500; --c:var(--color-gray-500); --cursor:pointer">
 									{$i18n.t('Advanced Options')}
 								</summary>
 								<div style="--mt:0.5rem; --d:flex; --fd:column; --g:0.5rem">
 									<div style="--d:flex; --jc:space-between; --w:100%">
-										<div style="--as:center; --size:0.75rem; --weight:500">
+										<div style="--as:center; --size:0.6rem; --weight:500">
 											<Tooltip
 												content={$i18n.t(
 													'Significantly improves accuracy by using an LLM to enhance tables, forms, inline math, and layout detection. Will increase latency. Defaults to True.'
@@ -380,7 +380,7 @@
 										</div>
 									</div>
 									<div style="--d:flex; --jc:space-between; --w:100%">
-										<div style="--as:center; --size:0.75rem; --weight:500">
+										<div style="--as:center; --size:0.6rem; --weight:500">
 											<Tooltip
 												content={$i18n.t('Skip the cache and re-run the inference. Defaults to False.')}
 												placement="top-start"
@@ -393,7 +393,7 @@
 										</div>
 									</div>
 									<div style="--d:flex; --jc:space-between; --w:100%">
-										<div style="--as:center; --size:0.75rem; --weight:500">
+										<div style="--as:center; --size:0.6rem; --weight:500">
 											<Tooltip
 												content={$i18n.t(
 													'Force OCR on all pages of the PDF. This can lead to worse results if you have good text in your PDFs. Defaults to False.'
@@ -408,7 +408,7 @@
 										</div>
 									</div>
 									<div style="--d:flex; --jc:space-between; --w:100%">
-										<div style="--as:center; --size:0.75rem; --weight:500">
+										<div style="--as:center; --size:0.6rem; --weight:500">
 											<Tooltip
 												content={$i18n.t(
 													'Whether to paginate the output. Each page will be separated by a horizontal rule and page number. Defaults to False.'
@@ -423,7 +423,7 @@
 										</div>
 									</div>
 									<div style="--d:flex; --jc:space-between; --w:100%">
-										<div style="--as:center; --size:0.75rem; --weight:500">
+										<div style="--as:center; --size:0.6rem; --weight:500">
 											<Tooltip
 												content={$i18n.t(
 													'Strip existing OCR text from the PDF and re-run OCR. Ignored if Force OCR is enabled. Defaults to False.'
@@ -438,7 +438,7 @@
 										</div>
 									</div>
 									<div style="--d:flex; --jc:space-between; --w:100%">
-										<div style="--as:center; --size:0.75rem; --weight:500">
+										<div style="--as:center; --size:0.6rem; --weight:500">
 											<Tooltip
 												content={$i18n.t(
 													'Disable image extraction from the PDF. If Use LLM is enabled, images will be automatically captioned. Defaults to False.'
@@ -453,7 +453,7 @@
 										</div>
 									</div>
 									<div style="--d:flex; --jc:space-between; --w:100%">
-										<div style="--as:center; --size:0.75rem; --weight:500">
+										<div style="--as:center; --size:0.6rem; --weight:500">
 											<Tooltip
 												content={$i18n.t(
 													"The output format for the text. Can be 'json', 'markdown', or 'html'. Defaults to 'markdown'."
@@ -465,7 +465,7 @@
 										</div>
 										<div class="">
 											<select
-												style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
+												style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --size:0.6rem; --bgc:transparent; --oe:none; --ta:right"
 												bind:value={RAGConfig.DATALAB_MARKER_OUTPUT_FORMAT}
 											>
 												<option value="markdown">{$i18n.t('Markdown')}</option>
@@ -508,7 +508,7 @@
 								/>
 							</div>
 							<details style="--mt:0.5rem">
-								<summary style="--size:0.75rem; --weight:500; --c:var(--color-gray-500); --cursor:pointer">
+								<summary style="--size:0.6rem; --weight:500; --c:var(--color-gray-500); --cursor:pointer">
 									{$i18n.t('Advanced Options')}
 								</summary>
 								<div style="--mt:0.5rem; --d:flex; --fd:column; --g:0.5rem">
@@ -527,7 +527,7 @@
 
 									<div style="--d:flex; --w:100%">
 										<div style="--fx:1 1 0%; --d:flex; --jc:space-between">
-											<div style="--as:center; --size:0.75rem; --weight:500">
+											<div style="--as:center; --size:0.6rem; --weight:500">
 												{$i18n.t('Describe Pictures in Documents')}
 											</div>
 											<div style="--d:flex; --ai:center; --pos:relative">
@@ -537,14 +537,14 @@
 									</div>
 									{#if RAGConfig.DOCLING_DO_PICTURE_DESCRIPTION}
 										<div style="--d:flex; --jc:space-between; --w:100%">
-											<div style="--as:center; --size:0.75rem; --weight:500">
+											<div style="--as:center; --size:0.6rem; --weight:500">
 												<Tooltip content={''} placement="top-start">
 													{$i18n.t('Picture Description Mode')}
 												</Tooltip>
 											</div>
 											<div class="">
 												<select
-													style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
+													style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --size:0.6rem; --bgc:transparent; --oe:none; --ta:right"
 													bind:value={RAGConfig.DOCLING_PICTURE_DESCRIPTION_MODE}
 												>
 													<option value="">{$i18n.t('Default')}</option>
@@ -557,7 +557,7 @@
 										{#if RAGConfig.DOCLING_PICTURE_DESCRIPTION_MODE === 'local'}
 											<div style="--d:flex; --fd:column; --g:0.5rem">
 												<div style="--d:flex; --fd:column; --w:100%; --jc:space-between">
-													<div style="--mb:0.25rem; --size:0.75rem; --weight:500">
+													<div style="--mb:0.25rem; --size:0.6rem; --weight:500">
 														{$i18n.t('Picture Description Local Config')}
 													</div>
 													<div style="--d:flex; --w:100%; --ai:center; --pos:relative">
@@ -579,7 +579,7 @@
 										{:else if RAGConfig.DOCLING_PICTURE_DESCRIPTION_MODE === 'api'}
 											<div style="--d:flex; --fd:column; --g:0.5rem">
 												<div style="--d:flex; --fd:column; --w:100%; --jc:space-between">
-													<div style="--mb:0.25rem; --size:0.75rem; --weight:500">
+													<div style="--mb:0.25rem; --size:0.6rem; --weight:500">
 														{$i18n.t('Picture Description API Config')}
 													</div>
 													<div style="--d:flex; --w:100%; --ai:center; --pos:relative">
@@ -628,7 +628,7 @@
 
 					<div style="--mb:0.625rem; --d:flex; --fd:column; --w:100%; --jc:space-between">
 						<div style="--d:flex; --w:100%; --jc:space-between; --mb:0.25rem">
-							<div style="--as:center; --size:0.75rem; --weight:500">
+							<div style="--as:center; --size:0.6rem; --weight:500">
 								<Tooltip
 									content={$i18n.t('Post-process extracted text through an LLM for better markdown formatting before chunking.')}
 									placement="top-start"
@@ -643,7 +643,7 @@
 
 						{#if RAGConfig.AI_PARSE_ENABLED}
 							<div style="--d:flex; --w:100%; --jc:space-between; --mt:0.25rem">
-								<div style="--as:center; --size:0.75rem; --weight:500">
+								<div style="--as:center; --size:0.6rem; --weight:500">
 									{$i18n.t('Default Model')}
 								</div>
 								<div>
@@ -657,12 +657,12 @@
 							</div>
 
 							<details style="--mt:0.5rem">
-								<summary style="--size:0.75rem; --weight:500; --c:var(--color-gray-500); --cursor:pointer">
+								<summary style="--size:0.6rem; --weight:500; --c:var(--color-gray-500); --cursor:pointer">
 									{$i18n.t('Advanced Options')}
 								</summary>
 								<div style="--mt:0.5rem; --d:flex; --fd:column; --g:0.5rem">
 									<div style="--d:flex; --fd:column; --w:100%">
-										<div style="--mb:0.25rem; --size:0.75rem; --weight:500">
+										<div style="--mb:0.25rem; --size:0.6rem; --weight:500">
 											{$i18n.t('Processing Prompt')}
 										</div>
 										<Textarea
@@ -671,7 +671,7 @@
 										/>
 									</div>
 									<div style="--d:flex; --w:100%; --jc:space-between">
-										<div style="--as:center; --size:0.75rem; --weight:500">
+										<div style="--as:center; --size:0.6rem; --weight:500">
 											<Tooltip
 												content={$i18n.t('Split large documents into chunks before sending to LLM to handle token limits.')}
 												placement="top-start"
@@ -685,7 +685,7 @@
 									</div>
 									{#if RAGConfig.AI_PARSE_CHUNK_BEFORE_LLM}
 										<div style="--d:flex; --w:100%; --jc:space-between">
-											<div style="--as:center; --size:0.75rem; --weight:500">
+											<div style="--as:center; --size:0.6rem; --weight:500">
 												{$i18n.t('Max Chunk Size')}
 											</div>
 											<input
@@ -706,7 +706,7 @@
 					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem"/>
 
 					<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
-						<div style="--as:center; --size:0.75rem; --weight:500">
+						<div style="--as:center; --size:0.6rem; --weight:500">
 							<Tooltip content={$i18n.t('Full Context Mode')} placement="top-start">
 								{$i18n.t('Bypass Embedding and Retrieval')}
 							</Tooltip>
@@ -728,10 +728,10 @@
 
 					{#if !RAGConfig.BYPASS_EMBEDDING_AND_RETRIEVAL}
 						<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
-							<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Text Splitter')}</div>
+							<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Text Splitter')}</div>
 							<div style="--d:flex; --ai:center; --pos:relative">
 								<select
-									style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
+									style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --size:0.6rem; --bgc:transparent; --oe:none; --ta:right"
 									bind:value={RAGConfig.TEXT_SPLITTER}
 								>
 									<option value="">{$i18n.t('Default')} ({$i18n.t('Character')})</option>
@@ -744,7 +744,7 @@
 						<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
 							<div style="--d:flex; --g:0.375rem; --w:100%">
 								<div style="--w:100%; --jc:space-between">
-									<div style="--as:center; --size:0.75rem; --weight:500; --minw:fit-content; --mb:0.25rem">
+									<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.25rem">
 										{$i18n.t('Chunk Size')}
 									</div>
 									<div style="--as:center">
@@ -760,7 +760,7 @@
 								</div>
 
 								<div style="--w:100%">
-									<div style="--as:center; --size:0.75rem; --weight:500; --minw:fit-content; --mb:0.25rem">
+									<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.25rem">
 										{$i18n.t('Chunk Overlap')}
 									</div>
 
@@ -781,19 +781,19 @@
 				</div>
 
 				{#if !RAGConfig.BYPASS_EMBEDDING_AND_RETRIEVAL}
-					<div style="--mb:0.75rem">
+					<div style="--mb:0.6rem">
 						<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('Embedding')}</div>
 
 						<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem"/>
 
 						<div style="--mb:0.625rem; --d:flex; --fd:column; --w:100%; --jc:space-between">
 							<div style="--d:flex; --w:100%; --jc:space-between">
-								<div style="--as:center; --size:0.75rem; --weight:500">
+								<div style="--as:center; --size:0.6rem; --weight:500">
 									{$i18n.t('Embedding Model Engine')}
 								</div>
 								<div style="--d:flex; --ai:center; --pos:relative">
 									<select
-										style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
+										style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.6rem; --bgc:transparent; --oe:none; --ta:right"
 										bind:value={embeddingEngine}
 										placeholder="Select an embedding model engine"
 										on:change={(e) => {
@@ -870,7 +870,7 @@
 						</div>
 
 						<div style="--mb:0.625rem; --d:flex; --fd:column; --w:100%">
-							<div style="--mb:0.25rem; --size:0.75rem; --weight:500">{$i18n.t('Embedding Model')}</div>
+							<div style="--mb:0.25rem; --size:0.6rem; --weight:500">{$i18n.t('Embedding Model')}</div>
 
 							<div class="">
 								{#if embeddingEngine === 'ollama'}
@@ -929,7 +929,7 @@
 								{/if}
 							</div>
 
-							<div style="--mt:0.25rem; --mb:0.25rem; --size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
+							<div style="--mt:0.25rem; --mb:0.25rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 								{$i18n.t(
 									'Warning: If you update or change your embedding model, you will need to re-import all documents.'
 								)}
@@ -938,7 +938,7 @@
 
 						{#if embeddingEngine === 'ollama' || embeddingEngine === 'openai' || embeddingEngine === 'azure_openai'}
 							<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
-								<div style="--as:center; --size:0.75rem; --weight:500">
+								<div style="--as:center; --size:0.6rem; --weight:500">
 									{$i18n.t('Embedding Batch Size')}
 								</div>
 
@@ -956,13 +956,13 @@
 						{/if}
 					</div>
 
-					<div style="--mb:0.75rem">
+					<div style="--mb:0.6rem">
 						<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('Retrieval')}</div>
 
 						<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem"/>
 
 						<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
-							<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Full Context Mode')}</div>
+							<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Full Context Mode')}</div>
 							<div style="--d:flex; --ai:center; --pos:relative">
 								<Tooltip
 									content={RAGConfig.RAG_FULL_CONTEXT
@@ -980,7 +980,7 @@
 
 						{#if !RAGConfig.RAG_FULL_CONTEXT}
 							<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
-								<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Top K')}</div>
+								<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Top K')}</div>
 								<div style="--d:flex; --ai:center; --pos:relative">
 									<input
 										style="--fx:1 1 0%; --w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
@@ -994,12 +994,12 @@
 							</div>
 
 							<details style="--mb:0.625rem">
-								<summary style="--size:0.75rem; --weight:500; --c:var(--color-gray-500); --cursor:pointer">
+								<summary style="--size:0.6rem; --weight:500; --c:var(--color-gray-500); --cursor:pointer">
 									{$i18n.t('Hybrid Search & Reranking')}
 								</summary>
 								<div style="--mt:0.5rem; --d:flex; --fd:column; --g:0.5rem">
 									<div style="--d:flex; --w:100%; --jc:space-between">
-										<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Hybrid Search')}</div>
+										<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Hybrid Search')}</div>
 										<div style="--d:flex; --ai:center; --pos:relative">
 											<Switch bind:state={RAGConfig.ENABLE_RAG_HYBRID_SEARCH} />
 										</div>
@@ -1008,12 +1008,12 @@
 									{#if RAGConfig.ENABLE_RAG_HYBRID_SEARCH === true}
 										<div style="--d:flex; --fd:column; --w:100%; --jc:space-between">
 											<div style="--d:flex; --w:100%; --jc:space-between">
-												<div style="--as:center; --size:0.75rem; --weight:500">
+												<div style="--as:center; --size:0.6rem; --weight:500">
 													{$i18n.t('Reranking Engine')}
 												</div>
 												<div style="--d:flex; --ai:center; --pos:relative">
 													<select
-														style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
+														style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.25rem; --size:0.6rem; --bgc:transparent; --oe:none; --ta:right"
 														bind:value={RAGConfig.RAG_RERANKING_ENGINE}
 														placeholder="Select a reranking model engine"
 														on:change={(e) => {
@@ -1049,7 +1049,7 @@
 										</div>
 
 										<div style="--d:flex; --fd:column; --w:100%">
-											<div style="--mb:0.25rem; --size:0.75rem; --weight:500">{$i18n.t('Reranking Model')}</div>
+											<div style="--mb:0.25rem; --size:0.6rem; --weight:500">{$i18n.t('Reranking Model')}</div>
 
 											<div class="">
 												<div style="--d:flex; --w:100%">
@@ -1067,7 +1067,7 @@
 										</div>
 
 										<div style="--d:flex; --w:100%; --jc:space-between">
-											<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Top K Reranker')}</div>
+											<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Top K Reranker')}</div>
 											<div style="--d:flex; --ai:center; --pos:relative">
 												<input
 													style="--fx:1 1 0%; --w:100%; --size:0.875rem; --bgc:transparent; --oe:none"
@@ -1082,7 +1082,7 @@
 
 										<div style="--d:flex; --fd:column; --w:100%; --jc:space-between">
 											<div style="--d:flex; --w:100%; --jc:space-between">
-												<div style="--as:center; --size:0.75rem; --weight:500">
+												<div style="--as:center; --size:0.6rem; --weight:500">
 													{$i18n.t('Relevance Threshold')}
 												</div>
 												<div style="--d:flex; --ai:center; --pos:relative">
@@ -1100,7 +1100,7 @@
 													/>
 												</div>
 											</div>
-											<div style="--mt:0.25rem; --size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
+											<div style="--mt:0.25rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 												{$i18n.t(
 													'Note: If you set a minimum score, the search will only return documents with a score greater than or equal to the minimum score.'
 												)}
@@ -1108,7 +1108,7 @@
 										</div>
 
 										<div style="--d:flex; --w:100%; --jc:space-between">
-											<div style="--as:center; --size:0.75rem; --weight:500">
+											<div style="--as:center; --size:0.6rem; --weight:500">
 												{$i18n.t('Weight of BM25 Retrieval')}
 											</div>
 											<div style="--d:flex; --ai:center; --pos:relative">
@@ -1130,7 +1130,7 @@
 						{/if}
 
 						<div style="--mb:0.625rem; --d:flex; --fd:column; --w:100%; --jc:space-between">
-							<div style="--mb:0.25rem; --size:0.75rem; --weight:500">{$i18n.t('RAG Template')}</div>
+							<div style="--mb:0.25rem; --size:0.6rem; --weight:500">{$i18n.t('RAG Template')}</div>
 							<div style="--d:flex; --w:100%; --ai:center; --pos:relative">
 								<Tooltip
 									content={$i18n.t(
@@ -1151,7 +1151,7 @@
 					</div>
 				{/if}
 
-				<div style="--mb:0.75rem">
+				<div style="--mb:0.6rem">
 					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('Files')}</div>
 
 					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem"/>
@@ -1177,7 +1177,7 @@
 					</FormFieldRow>
 
 					<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
-						<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Max Upload Size')}</div>
+						<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Max Upload Size')}</div>
 						<div style="--d:flex; --ai:center; --pos:relative">
 							<Tooltip
 								content={$i18n.t(
@@ -1198,7 +1198,7 @@
 					</div>
 
 					<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
-						<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Max Upload Count')}</div>
+						<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Max Upload Count')}</div>
 						<div style="--d:flex; --ai:center; --pos:relative">
 							<Tooltip
 								content={$i18n.t(
@@ -1219,7 +1219,7 @@
 					</div>
 
 					<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
-						<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Image Compression Width')}</div>
+						<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Image Compression Width')}</div>
 						<div style="--d:flex; --ai:center; --pos:relative">
 							<Tooltip
 								content={$i18n.t(
@@ -1240,7 +1240,7 @@
 					</div>
 
 					<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
-						<div style="--as:center; --size:0.75rem; --weight:500">
+						<div style="--as:center; --size:0.6rem; --weight:500">
 							{$i18n.t('Image Compression Height')}
 						</div>
 						<div style="--d:flex; --ai:center; --pos:relative">
@@ -1263,7 +1263,7 @@
 					</div>
 				</div>
 
-				<div style="--mb:0.75rem">
+				<div style="--mb:0.6rem">
 					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('Integration')}</div>
 
 					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem"/>
@@ -1283,7 +1283,7 @@
 					</FormFieldRow>
 				</div>
 
-				<div style="--mb:0.75rem">
+				<div style="--mb:0.6rem">
 					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('Danger Zone')}</div>
 
 					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem"/>
@@ -1292,7 +1292,7 @@
 						<svelte:fragment slot="label">{$i18n.t('Reset Upload Directory')}</svelte:fragment>
 						<svelte:fragment slot="content">
 							<button
-								style="--size:0.75rem"
+								style="--size:0.6rem"
 								on:click={() => {
 									showResetUploadDirConfirm = true;
 								}}
@@ -1308,7 +1308,7 @@
 						</svelte:fragment>
 						<svelte:fragment slot="content">
 							<button
-								style="--size:0.75rem"
+								style="--size:0.6rem"
 								on:click={() => {
 									showResetConfirm = true;
 								}}
@@ -1323,7 +1323,7 @@
 						</svelte:fragment>
 						<svelte:fragment slot="content">
 							<button
-								style="--size:0.75rem"
+								style="--size:0.6rem"
 								on:click={() => {
 									showReindexConfirm = true;
 								}}
@@ -1335,7 +1335,7 @@
 				</div>
 			</div>
 		</div>
-		<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
+		<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.875rem; --weight:500">
 			<button
 				style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 				type="submit"

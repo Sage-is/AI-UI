@@ -39,7 +39,7 @@
 <div style="--mt:0.25rem">
 	<div style="--pb:2.5rem">
 		{#if files.length > 0}
-			<div style="--size:0.75rem; --weight:500; --pb:0.25rem">Files</div>
+			<div style="--size:0.6rem; --weight:500; --pb:0.25rem">Files</div>
 
 			<div style="--d:flex; --fd:column; --g:0.25rem">
 				{#each files.filter((file) => file.type !== 'image') as file, fileIdx}
@@ -87,7 +87,7 @@
 			<hr style="--my:0.5rem; --bc:var(--color-gray-50); --dark-bc:rgb(78 78 78 / 0.1)" />
 		{/if}
 
-		<div style="--size:0.75rem; --weight:500; --mb:0.25rem">Model</div>
+		<div style="--size:0.6rem; --weight:500; --mb:0.25rem">Model</div>
 
 		<div style="--w:100%">
 			<select style="--w:100%; --bgc:transparent; --size:0.875rem; --oe:none" bind:value={selectedModelId}>

@@ -174,7 +174,7 @@
 				</div>
 			</div>
 
-			<div style="--size:0.75rem; --dark-c:var(--color-gray-500)">
+			<div style="--size:0.6rem; --dark-c:var(--color-gray-500)">
 				{$i18n.t('To attach knowledge base here, add them to the "Knowledge" workshop first.')}
 			</div>
 		</div>

@@ -108,16 +108,16 @@
 
 		<div style="--d:flex; --w:100%; --g:0.5rem">
 			<div style="--d:flex; --fx:1 1 0%">
-				<div style="--as:center; --ml:0.25rem; --mr:0.75rem">
+				<div style="--as:center; --ml:0.25rem; --mr:0.6rem">
 					<Search className="size-3.5" />
 				</div>
 				<input
-					style="--w:100%; --size:0.875rem; --py:0.25rem; --btrr:0.75rem; --bbrr:0.75rem; --oe:none; --bgc:transparent"
+					style="--w:100%; --size:0.875rem; --py:0.25rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 					bind:value={query}
 					placeholder={$i18n.t('Search Knowledge')}
 				/>
 				{#if query}
-					<div style="--as:center; --pl:0.375rem; --translatey:0.5px; --btlr:0.75rem; --bblr:0.75rem; --bgc:transparent">
+					<div style="--as:center; --pl:0.375rem; --translatey:0.5px; --btlr:0.6rem; --bblr:0.6rem; --bgc:transparent">
 						<button
 							style="--p:0.125rem; --radius:9999px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							on:click={() => {
@@ -132,7 +132,7 @@
 
 			<div>
 				<button
-					style="--px:0.5rem; --py:0.5rem; --radius:0.75rem; --hvr-bgc:rgb(78 78 78 / 0.1); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
+					style="--px:0.5rem; --py:0.5rem; --radius:0.6rem; --hvr-bgc:rgb(78 78 78 / 0.1); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
 					aria-label={$i18n.t('Create Knowledge')}
 					on:click={() => {
 						goto('/workshop/knowledge/create');
@@ -147,7 +147,7 @@
 	<div style="--mb:1.25rem; --d:grid; --gtc:repeat(1, minmax(0, 1fr)); --gtc-lg:repeat(2, minmax(0, 1fr)); --gtc-xl:repeat(3, minmax(0, 1fr)); --g:0.5rem">
 		{#each filteredItems as item}
 			<button
-				style="--d:flex; --g:1rem; --cur:pointer; --ta:left; --w:100%; --px:0.75rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.75rem"
+				style="--d:flex; --g:1rem; --cur:pointer; --ta:left; --w:100%; --px:0.6rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.6rem"
 				on:click={() => {
 					if (item?.meta?.document) {
 						toast.error(
@@ -181,12 +181,12 @@
 					<div style="--as:center; --fx:1 1 0%; --px:0.25rem; --mb:0.25rem">
 						<div style="--weight:600; --line-clamp:1; --h:fit-content">{item.name}</div>
 
-						<div style="--size:0.75rem; --of:hidden; text-overflow:ellipsis; --line-clamp:1">
+						<div style="--size:0.6rem; --of:hidden; text-overflow:ellipsis; --line-clamp:1">
 							{item.description}
 						</div>
 
-						<div style="--mt:0.75rem; --d:flex; --jc:space-between">
-							<div style="--size:0.75rem; --c:var(--color-gray-500)">
+						<div style="--mt:0.6rem; --d:flex; --jc:space-between">
+							<div style="--size:0.6rem; --c:var(--color-gray-500)">
 								<Tooltip
 									content={item?.user?.email ?? $i18n.t('Deleted User')}
 									className="flex shrink-0"
@@ -199,7 +199,7 @@
 									})}
 								</Tooltip>
 							</div>
-							<div style="--size:0.75rem; --c:var(--color-gray-500); --line-clamp:1">
+							<div style="--size:0.6rem; --c:var(--color-gray-500); --line-clamp:1">
 								{$i18n.t('Updated')}
 								{dayjs(item.updated_at * 1000).fromNow()}
 							</div>
@@ -210,7 +210,7 @@
 		{/each}
 	</div>
 
-	<div style="--c:var(--color-gray-500); --size:0.75rem; --mt:0.25rem; --mb:0.5rem">
+	<div style="--c:var(--color-gray-500); --size:0.6rem; --mt:0.25rem; --mb:0.5rem">
 		ⓘ {$i18n.t("Use '#' in the prompt input to load and include your knowledge.")}
 	</div>
 {:else}

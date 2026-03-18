@@ -53,7 +53,7 @@
 	</div>
 	<div style="--d:flex; --ai:center; --mt:0.5rem; --fw:wrap">
 		{#each Object.keys(capabilityLabels) as capability}
-			<div style="--d:flex; --ai:center; --g:0.5rem; --mr:0.75rem">
+			<div style="--d:flex; --ai:center; --g:0.5rem; --mr:0.6rem">
 				<Checkbox
 					state={capabilities[capability] ? 'checked' : 'unchecked'}
 					on:change={(e) => {

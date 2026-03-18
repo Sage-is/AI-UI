@@ -15,7 +15,7 @@
 	{#each Object.keys(valvesSpec.properties) as property, idx}
 		<div style="--py:0.125rem; --w:100%; --jc:space-between">
 			<div style="--d:flex; --w:100%; --jc:space-between">
-				<div style="--as:center; --size:0.75rem; --weight:500">
+				<div style="--as:center; --size:0.6rem; --weight:500">
 					{valvesSpec.properties[property].title}
 
 					{#if (valvesSpec?.required ?? []).includes(property)}
@@ -24,7 +24,7 @@
 				</div>
 
 				<button
-					style="--p:0.25rem; --px:0.75rem; --size:0.75rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--p:0.25rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					type="button"
 					on:click={() => {
 						valves[property] =
@@ -69,7 +69,7 @@
 							</select>
 						{:else if (valvesSpec.properties[property]?.type ?? null) === 'boolean'}
 							<div style="--d:flex; --jc:space-between; --ai:center">
-								<div style="--size:0.75rem; --c:var(--color-gray-500)">
+								<div style="--size:0.6rem; --c:var(--color-gray-500)">
 									{valves[property] ? 'Enabled' : 'Disabled'}
 								</div>
 
@@ -166,12 +166,12 @@
 			{/if}
 
 			{#if (valvesSpec.properties[property]?.description ?? null) !== null}
-				<div style="--size:0.75rem; --c:var(--color-gray-500)">
+				<div style="--size:0.6rem; --c:var(--color-gray-500)">
 					{valvesSpec.properties[property].description}
 				</div>
 			{/if}
 		</div>
 	{/each}
 {:else}
-	<div style="--size:0.75rem">No valves</div>
+	<div style="--size:0.6rem">No valves</div>
 {/if}

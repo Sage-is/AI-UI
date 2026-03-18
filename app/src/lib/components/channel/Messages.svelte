@@ -57,7 +57,7 @@
 					}
 				}}
 			>
-				<div style="--w:100%; --d:flex; --jc:center; --py:0.25rem; --size:0.75rem; animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; --ai:center; --g:0.5rem">
+				<div style="--w:100%; --d:flex; --jc:center; --py:0.25rem; --size:0.6rem; animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; --ai:center; --g:0.5rem">
 					<Spinner className=" size-4" />
 					<div class=" ">Loading...</div>
 				</div>
@@ -82,7 +82,7 @@
 						</div>
 					</div>
 				{:else}
-					<div style="--d:flex; --jc:center; --size:0.75rem; --ai:center; --g:0.5rem; --py:1.25rem">
+					<div style="--d:flex; --jc:center; --size:0.6rem; --ai:center; --g:0.5rem; --py:1.25rem">
 						<div class=" ">Start of the channel</div>
 					</div>
 				{/if}

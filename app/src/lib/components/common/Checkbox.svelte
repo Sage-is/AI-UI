@@ -38,7 +38,7 @@
 	<div style="--top:0; --left:0; --pos:absolute; --w:100%; --h:100%; --d:flex; --jc:center; --ai:center">
 		{#if _state === 'checked'}
 			<svg
-				style="--w:0.75rem; --h:0.75rem"
+				style="--w:0.6rem; --h:0.6rem"
 				aria-hidden="true"
 				xmlns="http://www.w3.org/2000/svg"
 				fill="none"
@@ -54,7 +54,7 @@
 			</svg>
 		{:else if indeterminate}
 			<svg
-				style="--w:0.75rem; --h:0.875rem; --c:var(--color-gray-800); --dark-c:#fff"
+				style="--w:0.6rem; --h:0.875rem; --c:var(--color-gray-800); --dark-c:#fff"
 				aria-hidden="true"
 				xmlns="http://www.w3.org/2000/svg"
 				fill="none"

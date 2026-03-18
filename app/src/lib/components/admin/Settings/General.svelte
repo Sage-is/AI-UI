@@ -113,12 +113,12 @@
 </script>
 
 <form
-	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.75rem; --size:0.875rem"
+	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.875rem"
 	on:submit|preventDefault={async () => {
 		updateHandler();
 	}}
 >
-	<div style="--mt:0.125rem; --g:0.75rem; --ofy:scroll; --h:100%"
+	<div style="--mt:0.125rem; --g:0.6rem; --ofy:scroll; --h:100%"
 	class="scrollbar-hidden">
 		{#if adminConfig !== null}
 			<div class="">
@@ -128,13 +128,13 @@
 					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 					<div style="--mb:0.625rem">
-						<div style="--mb:0.25rem; --size:0.75rem; --weight:500; --d:flex; --g:0.5rem; --ai:center">
+						<div style="--mb:0.25rem; --size:0.6rem; --weight:500; --d:flex; --g:0.5rem; --ai:center">
 							<div>
 								{$i18n.t('Version')}
 							</div>
 						</div>
 						<div style="--d:flex; --w:100%; --jc:space-between; --ai:center">
-							<div style="--d:flex; --fd:column; --size:0.75rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-200)">
+							<div style="--d:flex; --fd:column; --size:0.6rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-200)">
 								<div style="--d:flex; --g:0.25rem">
 									<Tooltip content={WEBUI_BUILD_HASH}>
 										v{WEBUI_VERSION}
@@ -155,7 +155,7 @@
 								</div>
 
 								<button
-									style="--td:underline; --d:flex; --ai:center; --g:0.25rem; --size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500)"
+									style="--td:underline; --d:flex; --ai:center; --g:0.25rem; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500)"
 									type="button"
 									on:click={() => {
 										showChangelog.set(true);
@@ -167,7 +167,7 @@
 
 							{#if $config?.features?.enable_version_update_check}
 								<button
-									style="--size:0.75rem; --px:0.75rem; --py:0.375rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --weight:500"
+									style="--size:0.6rem; --px:0.6rem; --py:0.375rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --weight:500"
 									type="button"
 									on:click={() => {
 										checkForVersionUpdates();
@@ -181,17 +181,17 @@
 
 					<div style="--mb:0.625rem">
 						<div style="--d:flex; --w:100%; --jc:space-between; --ai:center">
-							<div style="--size:0.75rem; --pr:0.5rem">
+							<div style="--size:0.6rem; --pr:0.5rem">
 								<div class="">
 									{$i18n.t('Help')}
 								</div>
-								<div style="--size:0.75rem; --c:var(--color-gray-500)">
+								<div style="--size:0.6rem; --c:var(--color-gray-500)">
 									{$i18n.t('Discover how to use Sage.is AI and seek support from the community.')}
 								</div>
 							</div>
 
 							<a
-								style="--size:0.75rem; --weight:500; --td:underline"
+								style="--size:0.6rem; --weight:500; --td:underline"
 	class="flex-shrink-0"
 								href="https://docs.sage.is/"
 								target="_blank"
@@ -237,7 +237,7 @@
 
 					<div style="--mb:0.625rem">
 						<div style="--d:flex; --w:100%; --jc:space-between; --ai:center">
-							<div style="--size:0.75rem; --pr:0.5rem">
+							<div style="--size:0.6rem; --pr:0.5rem">
 								<div class="">
 									{$i18n.t('License')}
 								</div>
@@ -264,7 +264,7 @@
 									{/if}
 								{:else}
 									<a
-										style="--size:0.75rem; --hvr-td:underline"
+										style="--size:0.6rem; --hvr-td:underline"
 										href="https://docs.sage.is/license"
 										target="_blank"
 									>
@@ -278,7 +278,7 @@
 							</div>
 
 							<!-- <button
-								style="--size:0.75rem; --px:0.75rem; --py:0.375rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --weight:500"
+								style="--size:0.6rem; --px:0.6rem; --py:0.375rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --weight:500"
 	class="flex-shrink-0"
 							>
 								{$i18n.t('Activate')}
@@ -287,16 +287,16 @@
 					</div>
 				</div>
 
-				<div style="--mb:0.75rem">
+				<div style="--mb:0.6rem">
 					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('Authentication')}</div>
 
 					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 					<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
-						<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Default User Role')}</div>
+						<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Default User Role')}</div>
 						<div style="--d:flex; --ai:center; --pos:relative">
 							<select
-								style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --size:0.75rem; --bgc:transparent; --oe:none; --ta:right"
+								style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --size:0.6rem; --bgc:transparent; --oe:none; --ta:right"
 								bind:value={adminConfig.DEFAULT_USER_ROLE}
 								placeholder="Select a role"
 							>
@@ -310,13 +310,13 @@
 					</div>
 
 					<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between; --pr:0.5rem">
-						<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Enable New Sign Ups')}</div>
+						<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Enable New Sign Ups')}</div>
 
 						<Switch bind:state={adminConfig.ENABLE_SIGNUP} />
 					</div>
 
 					<div style="--mb:0.625rem; --d:flex; --w:100%; --ai:center; --jc:space-between; --pr:0.5rem">
-						<div style="--as:center; --size:0.75rem; --weight:500">
+						<div style="--as:center; --size:0.6rem; --weight:500">
 							{$i18n.t('Show Admin Details in Account Pending Overlay')}
 						</div>
 
@@ -324,7 +324,7 @@
 					</div>
 
 					<div style="--mb:0.625rem">
-						<div style="--as:center; --size:0.75rem; --weight:500; --mb:0.5rem">
+						<div style="--as:center; --size:0.6rem; --weight:500; --mb:0.5rem">
 							{$i18n.t('Pending User Overlay Title')}
 						</div>
 						<Textarea
@@ -336,7 +336,7 @@
 					</div>
 
 					<div style="--mb:0.625rem">
-						<div style="--as:center; --size:0.75rem; --weight:500; --mb:0.5rem">
+						<div style="--as:center; --size:0.6rem; --weight:500; --mb:0.5rem">
 							{$i18n.t('Pending User Overlay Content')}
 						</div>
 						<Textarea
@@ -348,14 +348,14 @@
 					</div>
 
 					<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between; --pr:0.5rem">
-						<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Enable API Key')}</div>
+						<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Enable API Key')}</div>
 
 						<Switch bind:state={adminConfig.ENABLE_API_KEY} />
 					</div>
 
 					{#if adminConfig?.ENABLE_API_KEY}
 						<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between; --pr:0.5rem">
-							<div style="--as:center; --size:0.75rem; --weight:500">
+							<div style="--as:center; --size:0.6rem; --weight:500">
 								{$i18n.t('API Key Endpoint Restrictions')}
 							</div>
 
@@ -364,7 +364,7 @@
 
 						{#if adminConfig?.ENABLE_API_KEY_ENDPOINT_RESTRICTIONS}
 							<div style="--d:flex; --w:100%; --fd:column; --pr:0.5rem">
-								<div style="--size:0.75rem; --weight:500">
+								<div style="--size:0.6rem; --weight:500">
 									{$i18n.t('Allowed Endpoints')}
 								</div>
 
@@ -375,7 +375,7 @@
 									bind:value={adminConfig.API_KEY_ALLOWED_ENDPOINTS}
 								/>
 
-								<div style="--mt:0.5rem; --size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
+								<div style="--mt:0.5rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 									<!-- https://docs.sage.is/getting-started/advanced-topics/api-endpoints -->
 									<a
 										href="https://docs.sage.is/getting-started/api-endpoints"
@@ -391,7 +391,7 @@
 
 					<div style="--mb:0.625rem; --w:100%; --jc:space-between">
 						<div style="--d:flex; --w:100%; --jc:space-between">
-							<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('JWT Expiration')}</div>
+							<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('JWT Expiration')}</div>
 						</div>
 
 						<div style="--d:flex; --mt:0.5rem; --g:0.5rem">
@@ -403,7 +403,7 @@
 							/>
 						</div>
 
-						<div style="--mt:0.5rem; --size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
+						<div style="--mt:0.5rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 							{$i18n.t('Valid time units:')}
 							<span style="--c:var(--color-gray-300); --weight:500"
 								>{$i18n.t("'s', 'm', 'h', 'd', 'w' or '-1' for no expiration.")}</span
@@ -411,7 +411,7 @@
 						</div>
 					</div>
 
-					<div style="--g:0.75rem">
+					<div style="--g:0.6rem">
 						<div style="--mt:0.5rem; --g:0.5rem; --pr:0.375rem">
 							<div style="--d:flex; --jc:space-between; --ai:center; --size:0.875rem">
 								<div style="--weight:500">{$i18n.t('LDAP')}</div>
@@ -425,7 +425,7 @@
 								<div style="--d:flex; --fd:column; --g:0.25rem">
 									<div style="--d:flex; --w:100%; --g:0.5rem">
 										<div style="--w:100%">
-											<div style="--as:center; --size:0.75rem; --weight:500; --minw:fit-content; --mb:0.25rem">
+											<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.25rem">
 												{$i18n.t('Label')}
 											</div>
 											<input
@@ -439,7 +439,7 @@
 									</div>
 									<div style="--d:flex; --w:100%; --g:0.5rem">
 										<div style="--w:100%">
-											<div style="--as:center; --size:0.75rem; --weight:500; --minw:fit-content; --mb:0.25rem">
+											<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.25rem">
 												{$i18n.t('Host')}
 											</div>
 											<input
@@ -450,7 +450,7 @@
 											/>
 										</div>
 										<div style="--w:100%">
-											<div style="--as:center; --size:0.75rem; --weight:500; --minw:fit-content; --mb:0.25rem">
+											<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.25rem">
 												{$i18n.t('Port')}
 											</div>
 											<Tooltip
@@ -469,7 +469,7 @@
 									</div>
 									<div style="--d:flex; --w:100%; --g:0.5rem">
 										<div style="--w:100%">
-											<div style="--as:center; --size:0.75rem; --weight:500; --minw:fit-content; --mb:0.25rem">
+											<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.25rem">
 												{$i18n.t('Application DN')}
 											</div>
 											<Tooltip
@@ -485,7 +485,7 @@
 											</Tooltip>
 										</div>
 										<div style="--w:100%">
-											<div style="--as:center; --size:0.75rem; --weight:500; --minw:fit-content; --mb:0.25rem">
+											<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.25rem">
 												{$i18n.t('Application DN Password')}
 											</div>
 											<SensitiveInput
@@ -496,7 +496,7 @@
 									</div>
 									<div style="--d:flex; --w:100%; --g:0.5rem">
 										<div style="--w:100%">
-											<div style="--as:center; --size:0.75rem; --weight:500; --minw:fit-content; --mb:0.25rem">
+											<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.25rem">
 												{$i18n.t('Attribute for Mail')}
 											</div>
 											<Tooltip
@@ -516,7 +516,7 @@
 									</div>
 									<div style="--d:flex; --w:100%; --g:0.5rem">
 										<div style="--w:100%">
-											<div style="--as:center; --size:0.75rem; --weight:500; --minw:fit-content; --mb:0.25rem">
+											<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.25rem">
 												{$i18n.t('Attribute for Username')}
 											</div>
 											<Tooltip
@@ -538,7 +538,7 @@
 									</div>
 									<div style="--d:flex; --w:100%; --g:0.5rem">
 										<div style="--w:100%">
-											<div style="--as:center; --size:0.75rem; --weight:500; --minw:fit-content; --mb:0.25rem">
+											<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.25rem">
 												{$i18n.t('Search Base')}
 											</div>
 											<Tooltip
@@ -556,7 +556,7 @@
 									</div>
 									<div style="--d:flex; --w:100%; --g:0.5rem">
 										<div style="--w:100%">
-											<div style="--as:center; --size:0.75rem; --weight:500; --minw:fit-content; --mb:0.25rem">
+											<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.25rem">
 												{$i18n.t('Search Filters')}
 											</div>
 											<input
@@ -566,7 +566,7 @@
 											/>
 										</div>
 									</div>
-									<div style="--size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
+									<div style="--size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 										<a
 											style="--c:var(--color-gray-300); --weight:500; --td:underline"
 											href="https://ldap.com/ldap-filters/"
@@ -586,7 +586,7 @@
 										{#if LDAP_SERVER.use_tls}
 											<div style="--d:flex; --w:100%; --g:0.5rem">
 												<div style="--w:100%">
-													<div style="--as:center; --size:0.75rem; --weight:500; --minw:fit-content; --mb:0.25rem; --mt:0.25rem">
+													<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.25rem; --mt:0.25rem">
 														{$i18n.t('Certificate Path')}
 													</div>
 													<input
@@ -596,7 +596,7 @@
 													/>
 												</div>
 											</div>
-											<div style="--d:flex; --jc:space-between; --ai:center; --size:0.75rem">
+											<div style="--d:flex; --jc:space-between; --ai:center; --size:0.6rem">
 												<div style="--weight:500">Validate certificate</div>
 
 												<div style="--mt:0.25rem">
@@ -605,7 +605,7 @@
 											</div>
 											<div style="--d:flex; --w:100%; --g:0.5rem">
 												<div style="--w:100%">
-													<div style="--as:center; --size:0.75rem; --weight:500; --minw:fit-content; --mb:0.25rem">
+													<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.25rem">
 														{$i18n.t('Ciphers')}
 													</div>
 													<Tooltip content={$i18n.t('Default to ALL')} placement="top-start">
@@ -626,13 +626,13 @@
 					</div>
 				</div>
 
-				<div style="--mb:0.75rem">
+				<div style="--mb:0.6rem">
 					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('Features')}</div>
 
 					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 					<div style="--mb:0.625rem; --d:flex; --w:100%; --ai:center; --jc:space-between; --pr:0.5rem">
-						<div style="--as:center; --size:0.75rem; --weight:500">
+						<div style="--as:center; --size:0.6rem; --weight:500">
 							{$i18n.t('Enable Community Sharing')}
 						</div>
 
@@ -640,13 +640,13 @@
 					</div>
 
 					<div style="--mb:0.625rem; --d:flex; --w:100%; --ai:center; --jc:space-between; --pr:0.5rem">
-						<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Enable Message Rating')}</div>
+						<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Enable Message Rating')}</div>
 
 						<Switch bind:state={adminConfig.ENABLE_MESSAGE_RATING} />
 					</div>
 
 					<div style="--mb:0.625rem; --d:flex; --w:100%; --ai:center; --jc:space-between; --pr:0.5rem">
-						<div style="--as:center; --size:0.75rem; --weight:500">
+						<div style="--as:center; --size:0.6rem; --weight:500">
 							{$i18n.t('Notes')} ({$i18n.t('Beta')})
 						</div>
 
@@ -654,7 +654,7 @@
 					</div>
 
 					<div style="--mb:0.625rem; --d:flex; --w:100%; --ai:center; --jc:space-between; --pr:0.5rem">
-						<div style="--as:center; --size:0.75rem; --weight:500">
+						<div style="--as:center; --size:0.6rem; --weight:500">
 							{$i18n.t('Spaces')} ({$i18n.t('Beta')})
 						</div>
 
@@ -662,7 +662,7 @@
 					</div>
 
 					<div style="--mb:0.625rem; --d:flex; --w:100%; --ai:center; --jc:space-between; --pr:0.5rem">
-						<div style="--as:center; --size:0.75rem; --weight:500">
+						<div style="--as:center; --size:0.6rem; --weight:500">
 							{$i18n.t('User Webhooks')}
 						</div>
 
@@ -670,7 +670,7 @@
 					</div>
 
 					<div style="--mb:0.625rem">
-						<div style="--as:center; --size:0.75rem; --weight:500; --mb:0.5rem">
+						<div style="--as:center; --size:0.6rem; --weight:500; --mb:0.5rem">
 							{$i18n.t('Response Watermark')}
 						</div>
 						<Textarea
@@ -681,7 +681,7 @@
 
 					<div style="--mb:0.625rem; --w:100%; --jc:space-between">
 						<div style="--d:flex; --w:100%; --jc:space-between">
-							<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('WebUI URL')}</div>
+							<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('WebUI URL')}</div>
 						</div>
 
 						<div style="--d:flex; --mt:0.5rem; --g:0.5rem">
@@ -693,7 +693,7 @@
 							/>
 						</div>
 
-						<div style="--mt:0.5rem; --size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
+						<div style="--mt:0.5rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 							{$i18n.t(
 								'Enter the public URL of your WebUI. This URL will be used to generate links in the notifications.'
 							)}
@@ -702,7 +702,7 @@
 
 					<div style="--w:100%; --jc:space-between">
 						<div style="--d:flex; --w:100%; --jc:space-between">
-							<div style="--as:center; --size:0.75rem; --weight:500">{$i18n.t('Webhook URL')}</div>
+							<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Webhook URL')}</div>
 						</div>
 
 						<div style="--d:flex; --mt:0.5rem; --g:0.5rem">
@@ -719,7 +719,7 @@
 		{/if}
 	</div>
 
-	<div style="--d:flex; --jc:flex-end; --pt:0.75rem; --size:0.875rem; --weight:500">
+	<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.875rem; --weight:500">
 		<button
 			style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			type="submit"

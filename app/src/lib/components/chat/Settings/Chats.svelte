@@ -116,7 +116,7 @@
 
 <ArchivedChatsModal bind:show={showArchivedChatsModal} onUpdate={handleArchivedChatsChange} />
 
-<div id="tab-chats" style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.75rem; --size:0.875rem">
+<div id="tab-chats" style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.875rem">
 	<div style="--g:0.5rem; --ofy:scroll; --maxh:28rem; --maxh-lg:100%">
 		<div style="--d:flex; --fd:column">
 			<input
@@ -133,7 +133,7 @@
 					chatImportInputElement.click();
 				}}
 			>
-				<div style="--as:center; --mr:0.75rem">
+				<div style="--as:center; --mr:0.6rem">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 16 16"
@@ -157,7 +157,7 @@
 						exportChats();
 					}}
 				>
-					<div style="--as:center; --mr:0.75rem">
+					<div style="--as:center; --mr:0.6rem">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 16 16"
@@ -185,7 +185,7 @@
 					showArchivedChatsModal = true;
 				}}
 			>
-				<div style="--as:center; --mr:0.75rem">
+				<div style="--as:center; --mr:0.6rem">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 24 24"
@@ -207,7 +207,7 @@
 
 			{#if showArchiveConfirm}
 				<div style="--d:flex; --jc:space-between; --radius:0.375rem; --ai:center; --py:0.5rem; --px:0.875rem; --w:100%; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)">
-					<div style="--d:flex; --ai:center; --g:0.75rem">
+					<div style="--d:flex; --ai:center; --g:0.6rem">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 16 16"
@@ -271,7 +271,7 @@
 						showArchiveConfirm = true;
 					}}
 				>
-					<div style="--as:center; --mr:0.75rem">
+					<div style="--as:center; --mr:0.6rem">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 24 24"
@@ -294,7 +294,7 @@
 
 			{#if showDeleteConfirm}
 				<div style="--d:flex; --jc:space-between; --radius:0.375rem; --ai:center; --py:0.5rem; --px:0.875rem; --w:100%; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)">
-					<div style="--d:flex; --ai:center; --g:0.75rem">
+					<div style="--d:flex; --ai:center; --g:0.6rem">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 16 16"
@@ -358,7 +358,7 @@
 						showDeleteConfirm = true;
 					}}
 				>
-					<div style="--as:center; --mr:0.75rem">
+					<div style="--as:center; --mr:0.6rem">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 16 16"

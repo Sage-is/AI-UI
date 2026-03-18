@@ -399,7 +399,7 @@
 		>
 			<div style="--d:flex; --ai:center; --g:0.25rem">
 				<FolderOpen className="size-3.5" strokeWidth="2" />
-				<div style="--size:0.75rem; --c:#fff; --line-clamp:1">
+				<div style="--size:0.6rem; --c:#fff; --line-clamp:1">
 					{folders[folderId].name}
 				</div>
 			</div>
@@ -429,7 +429,7 @@
 		<div style="--w:100%; --m:0" class="group">
 			<button
 				id="folder-{folderId}-button"
-				style="--pos:relative; --w:100%; --py:0.375rem; --px:0.5rem; --radius:0.375rem; --d:flex; --ai:center; --g:0.375rem; --size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --weight:500; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--pos:relative; --w:100%; --py:0.375rem; --px:0.5rem; --radius:0.375rem; --d:flex; --ai:center; --g:0.375rem; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --weight:500; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				class={$selectedFolder?.id === folderId ? 'bg-gray-100 dark:bg-gray-900' : ''}
 				on:mouseenter={() => {
 					isFolderHovered = true;
@@ -533,7 +533,7 @@
 		<div slot="content" style="--w:100%">
 			{#if (folders[folderId]?.childrenIds ?? []).length > 0 || (folders[folderId].items?.chats ?? []).length > 0}
 				<div
-					style="--ml:0.75rem; --pl:0.25rem; --mt:1px; --d:flex; --fd:column; --ofy:auto; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-900)"
+					style="--ml:0.6rem; --pl:0.25rem; --mt:1px; --d:flex; --fd:column; --ofy:auto; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-900)"
 					class="scrollbar-hidden border-s"
 				>
 					{#if folders[folderId]?.childrenIds}

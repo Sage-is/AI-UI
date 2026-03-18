@@ -629,7 +629,7 @@
 
 				{#if message.timestamp}
 					<div
-						style="--as:center; --size:0.75rem; --v:hidden; --c:var(--color-gray-400); --weight:500; --ml:0.125rem; --translatey:1px"
+						style="--as:center; --size:0.6rem; --v:hidden; --c:var(--color-gray-400); --weight:500; --ml:0.125rem; --translatey:1px"
 	class="group-hover:visible first-letter:capitalize"
 					>
 						<Tooltip content={dayjs(message.timestamp * 1000).format('LLLL')}>
@@ -741,7 +741,7 @@
 						{/if}
 
 						{#if edit === true}
-							<div style="--w:100%; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800); --radius:1.5rem; --px:1.25rem; --py:0.75rem; --my:0.5rem">
+							<div style="--w:100%; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800); --radius:1.5rem; --px:1.25rem; --py:0.6rem; --my:0.5rem">
 								<textarea
 									id="message-edit-{message.id}"
 									bind:this={editTextAreaElement}

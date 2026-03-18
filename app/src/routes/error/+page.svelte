@@ -18,7 +18,7 @@
 
 {#if loaded}
 	<div style="--pos:absolute; --w:100%; --h:100%; --d:flex; --z:50">
-		<div style="--pos:absolute; --radius:0.75rem; --w:100%; --h:100%; backdrop-filter:blur(4px); --d:flex; --jc:center">
+		<div style="--pos:absolute; --radius:0.6rem; --w:100%; --h:100%; backdrop-filter:blur(4px); --d:flex; --jc:center">
 			<div style="--m:auto; --pb:11rem; --d:flex; --fd:column; --jc:center">
 				<div style="--maxw:28rem">
 					<div style="--ta:center; --size:1.5rem; --weight:500; --z:50">

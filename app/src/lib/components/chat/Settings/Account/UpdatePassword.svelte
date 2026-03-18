@@ -44,7 +44,7 @@
 	<details>
 		<summary style="--d:flex; --ai:center; --g:0.5rem; --cur:pointer; --us:none; --py:0.25rem;">
 			<span style="--weight:500">{$i18n.t('Password')}</span>
-			<details style="--d:inline; --size:0.75rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --w: 80%; --b:0;
+			<details style="--d:inline; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --w: 80%; --b:0;
 					--m: auto;"
 				on:click|stopPropagation
 			>
@@ -60,12 +60,12 @@
 					</p>
 				</div>
 			</details>
-			<span style="--ml:auto; --size:0.75rem; --weight:500; --c:var(--color-gray-400)">&#9662;</span>
+			<span style="--ml:auto; --size:0.6rem; --weight:500; --c:var(--color-gray-400)">&#9662;</span>
 		</summary>
 
 		<div style="--py:0.625rem; --g:0.375rem">
 			<div style="--d:flex; --fd:column; --w:100%">
-				<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Current Password')}</div>
+				<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Current Password')}</div>
 
 				<div style="--fx:1 1 0%">
 					<input
@@ -81,7 +81,7 @@
 			</div>
 
 			<div style="--d:flex; --fd:column; --w:100%">
-				<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('New Password')}</div>
+				<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('New Password')}</div>
 
 				<div style="--fx:1 1 0%">
 					<input
@@ -97,7 +97,7 @@
 			</div>
 
 			<div style="--d:flex; --fd:column; --w:100%">
-				<div style="--mb:0.25rem; --size:0.75rem; --c:var(--color-gray-500)">{$i18n.t('Confirm Password')}</div>
+				<div style="--mb:0.25rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Confirm Password')}</div>
 
 				<div style="--fx:1 1 0%">
 					<input
@@ -113,7 +113,7 @@
 			</div>
 		</div>
 
-		<div style="--mt:0.75rem; --d:flex; --jc:flex-end">
+		<div style="--mt:0.6rem; --d:flex; --jc:flex-end">
 			<button
 				style="--px:0.875rem; --py:0.375rem; --size:0.875rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:background-color 150ms; --radius:9999px"
 			>

@@ -159,11 +159,11 @@
 		<div style="--d:flex; --g:0.25rem">
 			<div style="--d:flex; --w:100%; --g:0.5rem">
 				<div style="--d:flex; --fx:1 1 0%">
-					<div style="--as:center; --ml:0.25rem; --mr:0.75rem">
+					<div style="--as:center; --ml:0.25rem; --mr:0.6rem">
 						<Search />
 					</div>
 					<input
-						style="--w:100%; --size:0.875rem; --pr:1rem; --py:0.25rem; --btrr:0.75rem; --bbrr:0.75rem; --oe:none; --bgc:transparent"
+						style="--w:100%; --size:0.875rem; --pr:1rem; --py:0.25rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 						bind:value={search}
 						placeholder={$i18n.t('Search')}
 					/>
@@ -172,7 +172,7 @@
 				<div>
 					<Tooltip content={$i18n.t('Create Group')}>
 						<button
-							style="--p:0.5rem; --radius:0.75rem; --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
+							style="--p:0.5rem; --radius:0.6rem; --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.875rem; --d:flex; --ai:center; --g:0.25rem"
 							on:click={() => {
 								showCreateGroupModal = !showCreateGroupModal;
 							}}
@@ -196,7 +196,7 @@
 					{$i18n.t('Use groups to group your users and assign permissions.')}
 				</div>
 
-				<div style="--mt:0.75rem">
+				<div style="--mt:0.6rem">
 					<button
 						style="--px:1rem; --py:0.375rem; --size:0.875rem; --radius:9999px; --bgc:#000; --hvr-bgc:var(--color-gray-800); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --d:flex; --ai:center; --g:0.25rem"
 						aria-label={$i18n.t('Create Group')}
@@ -210,7 +210,7 @@
 			</div>
 		{:else}
 			<div>
-				<div style="--d:flex; --ai:center; --g:0.75rem; --jc:space-between; --size:0.75rem; --tt:uppercase; --px:0.25rem; --weight:700">
+				<div style="--d:flex; --ai:center; --g:0.6rem; --jc:space-between; --size:0.6rem; --tt:uppercase; --px:0.25rem; --weight:700">
 					<div style="--w:100%; --fb:60%">Group</div>
 
 					<div style="--w:100%; --fb:40%; --ta:right">Users</div>
@@ -251,7 +251,7 @@
 					<div style="--ta:left">
 						<div style="--size:0.875rem; --weight:500">{$i18n.t('Default permissions')}</div>
 
-						<div style="--d:flex; --size:0.75rem; --mt:0.125rem">
+						<div style="--d:flex; --size:0.6rem; --mt:0.125rem">
 							{$i18n.t('applies to all users with the "user" role')}
 						</div>
 					</div>

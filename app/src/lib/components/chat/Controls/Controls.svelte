@@ -76,7 +76,7 @@
 				<div class="" slot="content">
 					<textarea
 						bind:value={params.system}
-						style="--w:100%; --size:0.75rem; --oe:none"
+						style="--w:100%; --size:0.6rem; --oe:none"
 	class="resize-vertical {$settings.highContrastMode
 							? 'border-2 border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 p-2.5'
 							: 'py-1.5 bg-transparent'}"

@@ -350,11 +350,11 @@
 	<div style="--d:flex; --g:0.5rem">
 		<Tooltip content={$i18n.t('Re-rank models by topic similarity')}>
 			<div style="--d:flex; --fx:1 1 0%">
-				<div style="--as:center; --ml:0.25rem; --mr:0.75rem">
+				<div style="--as:center; --ml:0.25rem; --mr:0.6rem">
 					<Search className="size-3" />
 				</div>
 				<input
-					style="--w:100%; --size:0.875rem; --pr:1rem; --py:0.25rem; --btrr:0.75rem; --bbrr:0.75rem; --oe:none; --bgc:transparent"
+					style="--w:100%; --size:0.875rem; --pr:1rem; --py:0.25rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 					bind:value={query}
 					placeholder={$i18n.t('Search')}
 					on:focus={() => {
@@ -378,7 +378,7 @@
 		</div>
 	{/if}
 	{#if (rankedModels ?? []).length === 0}
-		<div style="--ta:center; --size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --py:0.25rem">
+		<div style="--ta:center; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --py:0.25rem">
 			{$i18n.t('No models found')}
 		</div>
 	{:else}
@@ -389,12 +389,12 @@
 				: ''}"
 		>
 			<thead
-				style="--size:0.75rem; --c:var(--color-gray-700); --tt:uppercase; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-400); --translatey:-0.125rem"
+				style="--size:0.6rem; --c:var(--color-gray-700); --tt:uppercase; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-400); --translatey:-0.125rem"
 			>
 				<tr class="">
 					<th
 						scope="col"
-						style="--px:0.75rem; --py:0.375rem; --cur:pointer; --us:none; --w:0.75rem"
+						style="--px:0.6rem; --py:0.375rem; --cur:pointer; --us:none; --w:0.6rem"
 						on:click={() => setSortKey('rating')}
 					>
 						<div style="--d:flex; --g:0.375rem; --ai:center">
@@ -416,7 +416,7 @@
 					</th>
 					<th
 						scope="col"
-						style="--px:0.75rem; --py:0.375rem; --cur:pointer; --us:none"
+						style="--px:0.6rem; --py:0.375rem; --cur:pointer; --us:none"
 						on:click={() => setSortKey('name')}
 					>
 						<div style="--d:flex; --g:0.375rem; --ai:center">
@@ -438,7 +438,7 @@
 					</th>
 					<th
 						scope="col"
-						style="--px:0.75rem; --py:0.375rem; --ta:right; --cur:pointer; --us:none; --w:fit-content"
+						style="--px:0.6rem; --py:0.375rem; --ta:right; --cur:pointer; --us:none; --w:fit-content"
 						on:click={() => setSortKey('rating')}
 					>
 						<div style="--d:flex; --g:0.375rem; --ai:center; --jc:flex-end">
@@ -460,7 +460,7 @@
 					</th>
 					<th
 						scope="col"
-						style="--px:0.75rem; --py:0.375rem; --ta:right; --cur:pointer; --us:none; --w:1.25rem"
+						style="--px:0.6rem; --py:0.375rem; --ta:right; --cur:pointer; --us:none; --w:1.25rem"
 						on:click={() => setSortKey('won')}
 					>
 						<div style="--d:flex; --g:0.375rem; --ai:center; --jc:flex-end">
@@ -482,7 +482,7 @@
 					</th>
 					<th
 						scope="col"
-						style="--px:0.75rem; --py:0.375rem; --ta:right; --cur:pointer; --us:none; --w:1.25rem"
+						style="--px:0.6rem; --py:0.375rem; --ta:right; --cur:pointer; --us:none; --w:1.25rem"
 						on:click={() => setSortKey('lost')}
 					>
 						<div style="--d:flex; --g:0.375rem; --ai:center; --jc:flex-end">
@@ -507,16 +507,16 @@
 			<tbody>
 				{#each sortedModels as model, modelIdx (model.id)}
 					<tr
-						style="--d:table-row; --bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-bc:var(--color-gray-850); --size:0.75rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:rgb(38 38 38 / 0.5); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+						style="--d:table-row; --bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-bc:var(--color-gray-850); --size:0.6rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:rgb(38 38 38 / 0.5); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 	class="group"
 						on:click={() => openLeaderboardModelModal(model)}
 					>
-						<td style="--d:table;--px:0.75rem; --py:0.375rem; --ta:left; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --w:fit-content">
+						<td style="--d:table;--px:0.6rem; --py:0.375rem; --ta:left; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --w:fit-content">
 							<div style="--line-clamp:1">
 								{model?.rating !== '-' ? modelIdx + 1 : '-'}
 							</div>
 						</td>
-						<td style="--d:table;--px:0.75rem; --py:0.375rem; --va:middle">
+						<td style="--d:table;--px:0.6rem; --py:0.375rem; --va:middle">
 							<div style="--d:flex; --ai:center; --g:0.5rem">
 								<div style="--fs:0">
 									<img
@@ -531,11 +531,11 @@
 								</div>
 							</div>
 						</td>
-						<td style="--d:table;--px:0.75rem; --py:0.375rem; --ta:right; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --w:max-content">
+						<td style="--d:table;--px:0.6rem; --py:0.375rem; --ta:right; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --w:max-content">
 							{model.rating}
 						</td>
 
-						<td style="--d:table;--px:0.75rem; --py:0.375rem; --ta:right; --weight:600; --c:#22c55e">
+						<td style="--d:table;--px:0.6rem; --py:0.375rem; --ta:right; --weight:600; --c:#22c55e">
 							<div style="--w:2.5rem">
 								{#if model.stats.won === '-'}
 									-
@@ -549,7 +549,7 @@
 							</div>
 						</td>
 
-						<td style="--d:table;--px:0.75rem; --py:0.375rem; --ta:right; --weight:600; --c:#ef4444">
+						<td style="--d:table;--px:0.6rem; --py:0.375rem; --ta:right; --weight:600; --c:#ef4444">
 							<div style="--w:2.5rem">
 								{#if model.stats.lost === '-'}
 									-
@@ -569,7 +569,7 @@
 	{/if}
 </div>
 
-<div style="--c:var(--color-gray-500); --size:0.75rem; --mt:0.375rem; --w:100%; --d:flex; --jc:flex-end">
+<div style="--c:var(--color-gray-500); --size:0.6rem; --mt:0.375rem; --w:100%; --d:flex; --jc:flex-end">
 	<div style="--ta:right">
 		<div style="--line-clamp:1">
 			ⓘ {$i18n.t(

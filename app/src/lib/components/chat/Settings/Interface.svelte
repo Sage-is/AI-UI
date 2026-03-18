@@ -404,7 +404,7 @@
 
 <form
 	id="tab-interface"
-	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.75rem; --size:0.875rem"
+	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.875rem"
 	on:submit|preventDefault={() => {
 		updateInterfaceHandler();
 		dispatch('save');
@@ -439,7 +439,7 @@
 		}}
 	/>
 
-	<div style="--g:0.75rem; --ofy:scroll; --maxh:28rem; --maxh-lg:100%">
+	<div style="--g:0.6rem; --ofy:scroll; --maxh:28rem; --maxh-lg:100%">
 		{#each settingsConfig as sectionConfig}
 			<div>
 				<h1 style="--mb:0.375rem; --size:0.875rem; --weight:500">{$i18n.t(sectionConfig.section)}</h1>
@@ -449,7 +449,7 @@
 						{#if !setting.conditionalDisplay || setting.conditionalDisplay()}
 							<div>
 								<div style="--py:0.125rem; --d:flex; --w:100%; --jc:space-between">
-									<div id="{setting.key}-label" style="--as:center; --size:0.75rem">
+									<div id="{setting.key}-label" style="--as:center; --size:0.6rem">
 										{$i18n.t(setting.labelKey)}
 										{#if setting.betaLabel}
 											({$i18n.t('Beta')})
@@ -461,7 +461,7 @@
 
 									<button
 										aria-labelledby="{setting.key}-label"
-										style="--p:0.25rem; --px:0.75rem; --size:0.75rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+										style="--p:0.25rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 										on:click={() => toggleSetting(setting)}
 										type="button"
 									>
@@ -486,13 +486,13 @@
 		<!-- Special case: Chat Background Image -->
 		<div>
 			<div style="--py:0.125rem; --d:flex; --w:100%; --jc:space-between">
-				<div id="chat-background-label" style="--as:center; --size:0.75rem">
+				<div id="chat-background-label" style="--as:center; --size:0.6rem">
 					{$i18n.t('Chat Background Image')}
 				</div>
 
 				<button
 					aria-labelledby="chat-background-label"
-					style="--p:0.25rem; --px:0.75rem; --size:0.75rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					style="--p:0.25rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						if (backgroundImageUrl !== null) {
 							backgroundImageUrl = null;
@@ -515,8 +515,8 @@
 		<!-- Special case: Image Compression Size -->
 		{#if settingsValues.imageCompression}
 			<div>
-				<div style="--py:0.125rem; --d:flex; --w:100%; --jc:space-between; --size:0.75rem">
-					<div id="image-compression-size-label" style="--as:center; --size:0.75rem">
+				<div style="--py:0.125rem; --d:flex; --w:100%; --jc:space-between; --size:0.6rem">
+					<div id="image-compression-size-label" style="--as:center; --size:0.6rem">
 						{$i18n.t('Image Max Compression Size')}
 					</div>
 

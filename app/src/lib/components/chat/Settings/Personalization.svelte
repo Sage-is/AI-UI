@@ -25,7 +25,7 @@
 
 <form
 	id="tab-personalization"
-	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.75rem; --size:0.875rem"
+	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.875rem"
 	on:submit|preventDefault={() => {
 		dispatch('save');
 	}}
@@ -41,7 +41,7 @@
 					<div style="--size:0.875rem; --weight:500">
 						{$i18n.t('Memory')}
 
-						<span style="--size:0.75rem; --c:var(--color-gray-500)">({$i18n.t('Experimental')})</span>
+						<span style="--size:0.6rem; --c:var(--color-gray-500)">({$i18n.t('Experimental')})</span>
 					</div>
 				</Tooltip>
 
@@ -56,14 +56,14 @@
 			</div>
 		</div>
 
-		<div style="--size:0.75rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)">
+		<div style="--size:0.6rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)">
 			<div>
 				{$i18n.t(
 					"You can personalize your interactions with LLMs by adding memories through the 'Manage' button below, making them more helpful and tailored to you."
 				)}
 			</div>
 
-			<!-- <div style="--mt:0.75rem">
+			<!-- <div style="--mt:0.6rem">
 				To understand what LLM remembers or teach it something new, just chat with it:
 
 				<div>- “Remember that I like concise responses.”</div>
@@ -73,7 +73,7 @@
 			</div> -->
 		</div>
 
-		<div style="--mt:0.75rem; --mb:0.25rem; --ml:0.25rem">
+		<div style="--mt:0.6rem; --mb:0.25rem; --ml:0.25rem">
 			<button
 				type="button"
 				style="--px:0.875rem; --py:0.375rem; --weight:500; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:var(--color-gray-300); outline-color:var(--color-gray-800); --radius:1.5rem"

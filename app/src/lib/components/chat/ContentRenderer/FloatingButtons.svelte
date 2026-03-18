@@ -67,7 +67,7 @@
 
 <div
 	id={`floating-buttons-${id}`}
-	style="--pos:absolute; --radius:0.5rem; --mt:0.25rem; --size:0.75rem; --z:9999; display: none"
+	style="--pos:absolute; --radius:0.5rem; --mt:0.25rem; --size:0.6rem; --z:9999; display: none"
 >
 	{#if !floatingInput}
 		<div
