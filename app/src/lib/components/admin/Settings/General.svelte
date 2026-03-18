@@ -14,7 +14,8 @@
 	import Switch from '$lib/components/common/Switch.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import { WEBUI_BUILD_HASH, WEBUI_VERSION } from '$lib/constants';
-	import { config, showChangesAndSetup, setupTriggerReason } from '$lib/stores';
+	import { config, settings, showChangesAndSetup, setupTriggerReason } from '$lib/stores';
+	import { updateUserSettings } from '$lib/apis/users';
 	import { compareVersion } from '$lib/utils';
 	import { onMount, getContext } from 'svelte';
 	import { toast } from 'svelte-sonner';
@@ -32,6 +33,9 @@
 
 	let adminConfig = null;
 	let webhookUrl = '';
+
+	// Setup wizard
+	let workingAlone = false;
 
 	// LDAP
 	let ENABLE_LDAP = false;
@@ -82,6 +86,10 @@
 		await updateLdapConfig(ENABLE_LDAP);
 		await updateLdapServerHandler();
 
+		// Save working alone to user settings
+		await settings.set({ ...$settings, workingAlone });
+		await updateUserSettings(localStorage.token, { ui: $settings });
+
 		if (res) {
 			saveHandler();
 		} else {
@@ -109,6 +117,8 @@
 
 		const ldapConfig = await getLdapConfig();
 		ENABLE_LDAP = ldapConfig.ENABLE_LDAP;
+
+		workingAlone = $settings?.workingAlone ?? false;
 	});
 </script>
 
@@ -188,6 +198,52 @@
 									{$i18n.t('Check for updates')}
 								</button>
 							{/if}
+						</div>
+					</div>
+
+					<div style="--mb:0.625rem">
+						<div style="--d:flex; --w:100%; --jc:space-between; --ai:center; --pr:0.5rem">
+							<div style="--size:0.6rem; --pr:0.5rem">
+								<div style="--weight:500">
+									{$i18n.t('Working Alone')}
+								</div>
+								<div style="--size:0.6rem; --c:var(--color-gray-500)">
+									{$i18n.t('Skip user setup in the wizard. Toggle off to re-enable the users step.')}
+								</div>
+							</div>
+
+							<Switch bind:state={workingAlone} />
+						</div>
+					</div>
+
+					<div style="--mb:0.625rem">
+						<div style="--d:flex; --w:100%; --jc:space-between; --ai:center; --pr:0.5rem">
+							<div style="--size:0.6rem; --pr:0.5rem">
+								<div style="--weight:500">
+									{$i18n.t('Setup Wizard')}
+								</div>
+								<div style="--size:0.6rem; --c:var(--color-gray-500)">
+									{#if $settings?.setupCompleted}
+										{$i18n.t('Setup completed. Reset to trigger the wizard again on next login.')}
+									{:else}
+										{$i18n.t('Setup has not been completed yet.')}
+									{/if}
+								</div>
+							</div>
+
+							<button
+								style="--size:0.6rem; --px:0.6rem; --py:0.4rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --weight:500"
+								class="flex-shrink-0"
+								type="button"
+								on:click={async () => {
+									workingAlone = false;
+									await settings.set({ ...$settings, setupCompleted: false, workingAlone: false });
+									await updateUserSettings(localStorage.token, { ui: $settings });
+									toast.success($i18n.t('Setup wizard will trigger on next login'));
+								}}
+							>
+								{$i18n.t('Reset')}
+							</button>
 						</div>
 					</div>
 
