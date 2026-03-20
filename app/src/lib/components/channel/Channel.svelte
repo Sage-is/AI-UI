@@ -2,18 +2,20 @@
 	import { toast } from 'svelte-sonner';
 	import { Pane, PaneGroup, PaneResizer } from 'paneforge';
 
-	import { onDestroy, onMount, tick } from 'svelte';
+	import { onDestroy, onMount, tick, getContext } from 'svelte';
 	import { goto } from '$app/navigation';
 
-	import { chatId, showSidebar, socket, user } from '$lib/stores';
-	import { getChannelById, getChannelMessages, sendMessage } from '$lib/apis/spaces';
+	import { chatId, showSidebar, socket, user, settings } from '$lib/stores';
+	import { getChannelById, getChannelMessages, getChannelParticipants, sendMessage } from '$lib/apis/spaces';
 
 	import Messages from './Messages.svelte';
-	import MessageInput from './MessageInput.svelte';
+	import MessageInput from '../chat/MessageInput.svelte';
 	import Navbar from './Navbar.svelte';
 	import Drawer from '../common/Drawer.svelte';
 	import EllipsisVertical from '../icons/EllipsisVertical.svelte';
 	import Thread from './Thread.svelte';
+
+	const i18n = getContext('i18n');
 
 	export let id = '';
 
@@ -27,8 +29,16 @@
 
 	let threadId = null;
 
+	let prompt = '';
+	let files = [];
+
 	let typingUsers = [];
 	let typingUsersTimeout = {};
+
+	let thinkingAgents = [];
+	let thinkingAgentsTimeout = {};
+
+	let participants = { users: [], agents: [] };
 
 	$: if (id) {
 		initHandler();
@@ -46,8 +56,13 @@
 		channel = null;
 		threadId = null;
 
+		prompt = '';
+		files = [];
+
 		typingUsers = [];
 		typingUsersTimeout = {};
+		thinkingAgents = [];
+		thinkingAgentsTimeout = {};
 
 		channel = await getChannelById(localStorage.token, id).catch((error) => {
 			return null;
@@ -55,6 +70,12 @@
 
 		if (channel) {
 			messages = await getChannelMessages(localStorage.token, id, 0);
+
+			// Load participants for @mention autocomplete
+			participants = await getChannelParticipants(localStorage.token, id).catch(() => ({
+				users: [],
+				agents: []
+			}));
 
 			if (messages) {
 				scrollToBottom();
@@ -75,7 +96,10 @@
 
 			if (type === 'message') {
 				if ((data?.parent_id ?? null) === null) {
-					messages = [data, ...messages];
+					// Skip if already added optimistically
+					if (!messages.find((m) => m.id === data.id)) {
+						messages = [data, ...messages];
+					}
 
 					if (typingUsers.find((user) => user.id === event.user.id)) {
 						typingUsers = typingUsers.filter((user) => user.id !== event.user.id);
@@ -104,6 +128,29 @@
 				const idx = messages.findIndex((message) => message.id === data.id);
 				if (idx !== -1) {
 					messages[idx] = data;
+				}
+			} else if (type === 'thinking') {
+				const agentKey = data?.agent?.model_id || data?.agent?.name;
+				if (data?.thinking) {
+					if (!thinkingAgents.find((a) => (a.model_id || a.name) === agentKey)) {
+						thinkingAgents = [...thinkingAgents, data.agent];
+					}
+					// Auto-clear after 30s safety net
+					if (thinkingAgentsTimeout[agentKey]) {
+						clearTimeout(thinkingAgentsTimeout[agentKey]);
+					}
+					thinkingAgentsTimeout[agentKey] = setTimeout(() => {
+						thinkingAgents = thinkingAgents.filter(
+							(a) => (a.model_id || a.name) !== agentKey
+						);
+					}, 30000);
+				} else {
+					thinkingAgents = thinkingAgents.filter(
+						(a) => (a.model_id || a.name) !== agentKey
+					);
+					if (thinkingAgentsTimeout[agentKey]) {
+						clearTimeout(thinkingAgentsTimeout[agentKey]);
+					}
 				}
 			} else if (type === 'typing' && event.message_id === null) {
 				if (event.user.id === $user?.id) {
@@ -135,20 +182,43 @@
 		}
 	};
 
-	const submitHandler = async ({ content, data }) => {
-		if (!content && (data?.files ?? []).length === 0) {
+	const submitHandler = async (content) => {
+		if (!content && files.length === 0) {
 			return;
 		}
 
-		const res = await sendMessage(localStorage.token, id, { content: content, data: data }).catch(
-			(error) => {
-				toast.error(`${error}`);
-				return null;
-			}
-		);
+		const messageContent = ($settings?.richTextInput ?? true)
+			? content.replaceAll('\n\n', '\n')
+			: content;
+
+		const res = await sendMessage(localStorage.token, id, {
+			content: messageContent,
+			data: { files: files.length > 0 ? files : undefined }
+		}).catch((error) => {
+			toast.error(`${error}`);
+			return null;
+		});
 
 		if (res) {
-			messagesContainerElement.scrollTop = messagesContainerElement.scrollHeight;
+			// Optimistic add — message appears instantly
+			messages = [
+				{
+					...res,
+					user: {
+						id: $user.id,
+						name: $user.name,
+						role: $user.role,
+						profile_image_url: $user.profile_image_url
+					},
+					reply_count: 0,
+					latest_reply_at: null,
+					reactions: []
+				},
+				...messages
+			];
+			prompt = '';
+			files = [];
+			scrollToBottom();
 		}
 	};
 
@@ -199,15 +269,15 @@
 </svelte:head>
 
 <div
-	style="--h:100vh; --maxh:100dvh; --tdn:200ms; 
-		--ttf:cubic-bezier(0.4, 0, 0.2, 1); --w:100%; 
-		--maxw:100%; --d:flex; --fd:column; 
+	style="--h:100vh; --maxh:100dvh; --tdn:200ms;
+		--ttf:cubic-bezier(0.4, 0, 0.2, 1); --w:100%;
+		--maxw:100%; --d:flex; --fd:column;
 		{$showSidebar ? '--maxw:calc(100% - 280px)' : ''}"
 	id="channel-container"
 >
 	<PaneGroup direction="horizontal" style="--w:100%; --h:100%">
 		<Pane defaultSize={50} minSize={50} style="--h:100%; --d:flex; --fd:column; --w:100%; --pos:relative">
-			<Navbar {channel} />
+			<Navbar {channel} onRefresh={initHandler} />
 
 			<div style="--fx:1 1 0%; --ofy:auto">
 				{#if channel}
@@ -248,14 +318,40 @@
 				{/if}
 			</div>
 
-			<div style="--pb:1rem; --px:0.625rem">
+			<div style="--pb:0.5rem; --px:0.625rem">
+				{#if thinkingAgents.length > 0 || typingUsers.length > 0}
+					<div style="--size:0.65rem; --px:1rem; --mb:0.25rem">
+						{#if thinkingAgents.length > 0}
+							<div>
+								<span style="--weight:500; --c:var(--color-blue-600); --dark-c:var(--color-blue-400)">
+									{thinkingAgents.map((a) => a.name).join(', ')}
+								</span>
+								{$i18n.t('is thinking...')}
+							</div>
+						{/if}
+						{#if typingUsers.length > 0}
+							<div>
+								<span style="--weight:500; --c:#000; --dark-c:#fff">
+									{typingUsers.map((user) => user.name).join(', ')}
+								</span>
+								{$i18n.t('is typing...')}
+							</div>
+						{/if}
+					</div>
+				{/if}
+
 				<MessageInput
-					id="root"
-					{typingUsers}
+					bind:prompt
+					bind:files
+					placeholder={$i18n.t('Send a Message')}
+					selectedModels={['']}
+					history={{}}
+					stopResponse={() => {}}
+					createMessagePair={() => {}}
 					{onChange}
-					onSubmit={submitHandler}
-					{scrollToBottom}
-					{scrollEnd}
+					on:submit={async (e) => {
+						await submitHandler(e.detail);
+					}}
 				/>
 			</div>
 		</Pane>

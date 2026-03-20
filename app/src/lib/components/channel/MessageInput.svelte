@@ -30,6 +30,7 @@
 	import Image from '../common/Image.svelte';
 	import FilesOverlay from '../chat/MessageInput/FilesOverlay.svelte';
 	import Commands from '../chat/MessageInput/Commands.svelte';
+	import Mentions from './MessageInput/Mentions.svelte';
 	import InputVariablesModal from '../chat/MessageInput/InputVariablesModal.svelte';
 
 	export let placeholder = $i18n.t('Send a Message');
@@ -61,6 +62,8 @@
 
 	export let acceptFiles = true;
 	export let showFormattingButtons = true;
+	export let participants: { users: any[]; agents: any[] } = { users: [], agents: [] };
+	export let thinkingAgents: any[] = [];
 
 	let showInputVariablesModal = false;
 	let inputVariables: Record<string, any> = {};
@@ -221,6 +224,20 @@
 
 	export let showCommands = false;
 	$: showCommands = ['/'].includes(command?.charAt(0));
+
+	let mentionsElement;
+	let mentionQuery = '';
+	let showMentions = false;
+
+	$: {
+		if (command?.startsWith('@')) {
+			showMentions = true;
+			mentionQuery = command.slice(1);
+		} else {
+			showMentions = false;
+			mentionQuery = '';
+		}
+	}
 
 	const screenCaptureHandler = async () => {
 		try {
@@ -542,11 +559,11 @@
 <div style="--bgc:transparent">
 	<div
 		style="--mx:auto; --left:0; --right:0; --pos:relative"
-	class="{($settings?.widescreenMode ?? null)
-			? 'max-w-full'
-			: 'max-w-6xl'}"
+		class={($settings?.widescreenMode ?? null) ? 'max-w-full' : 'max-w-6xl'}
 	>
-		<div style="--pos:absolute; --top:0; --left:0; --right:0; --mx:auto; --left:0; --right:0; --bgc:transparent; --d:flex; --jc:center">
+		<div
+			style="--pos:absolute; --top:0; --left:0; --right:0; --mx:auto; --left:0; --right:0; --bgc:transparent; --d:flex; --jc:center"
+		>
 			<div style="--d:flex; --fd:column; --px:0.6rem; --w:100%">
 				<div style="--pos:relative">
 					{#if scrollEnd === false}
@@ -579,6 +596,16 @@
 
 				<div style="--pos:relative">
 					<div style="--mt:-1.2rem">
+						{#if thinkingAgents.length > 0}
+							<div style="--size:0.6rem; --px:1rem; --mb:0.2rem">
+								<span
+									style="--weight:400; --c:var(--color-blue-600); --dark-c:var(--color-blue-400)"
+								>
+									{thinkingAgents.map((a) => a.name).join(', ')}
+								</span>
+								{$i18n.t('is thinking...')}
+							</div>
+						{/if}
 						{#if typingUsers.length > 0}
 							<div style="--size:0.6rem; --px:1rem; --mb:0.2rem">
 								<span style="--weight:400; --c:#000; --dark-c:#fff">
@@ -594,6 +621,20 @@
 						show={showCommands}
 						{command}
 						insertTextHandler={insertTextAtCursor}
+					/>
+
+					<Mentions
+						bind:this={mentionsElement}
+						show={showMentions}
+						query={mentionQuery}
+						{participants}
+						onSelect={(participant) => {
+							const name = participant.data.name.includes(' ')
+								? participant.data.name.replace(/\s+/g, '-')
+								: participant.data.name;
+							replaceCommandWithText(`@${name} `);
+							showMentions = false;
+						}}
 					/>
 				</div>
 			</div>
@@ -634,15 +675,23 @@
 					}}
 				>
 					<div
-						style="--fx:1 1 0%; --d:flex; --fd:column; --pos:relative; --w:100%; --radius:1.5rem; --px:0.2rem; --bgc:rgb(103 103 103 / 0.05); --dark-bgc:rgb(180 180 180 / 0.05); --dark-c:var(--color-gray-100)"
+						style="--fx:1 1 0%; 
+							--d:flex; 
+							--fd:column; 
+							--pos:relative; 
+							--w:100%; 
+							--radius:1.5rem; 
+							--px:0.2rem; 
+							--bgc:rgb(103 103 103 / 0.05); --dark-bgc:rgb(180 180 180 / 0.05); --dark-c:var(--color-gray-100)"
 						dir={$settings?.chatDirection ?? 'auto'}
 					>
 						{#if files.length > 0}
-							<div style="--mx:0.5rem; --mt:0.625rem; --mb:-0.2rem; --d:flex; --fw:wrap; --g:0.5rem">
+							<div
+								style="--mx:0.5rem; --mt:0.625rem; --mb:-0.2rem; --d:flex; --fw:wrap; --g:0.5rem"
+							>
 								{#each files as file, fileIdx}
 									{#if file.type === 'image'}
-										<div style="--pos:relative"
-	class="group">
+										<div style="--pos:relative" class="group">
 											<div style="--pos:relative">
 												<Image
 													src={file.url}
@@ -653,7 +702,7 @@
 											<div style="--pos:absolute; --top:-0.2rem; --right:-0.2rem">
 												<button
 													style="--bgc:#fff; --c:#000;  --bc:#fff; --radius:9999px; --v:hidden; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
-	class="group-hover:visible"
+													class="group-hover:visible"
 													type="button"
 													on:click={() => {
 														files.splice(fileIdx, 1);
@@ -698,7 +747,7 @@
 						<div style="--px:0.625rem">
 							<div
 								style="--ta:left; --bgc:transparent; --dark-c:var(--color-gray-100); --oe:none; --w:100%; --pt:0.6rem; --px:0.2rem; resize:none; --h:fit-content; --maxh:20rem; --of:auto"
-	class="scrollbar-hidden font-primary"
+								class="scrollbar-hidden font-primary"
 							>
 								<RichTextInput
 									bind:this={chatInputElement}
@@ -722,6 +771,38 @@
 									on:keydown={async (e) => {
 										e = e.detail.event;
 										const isCtrlPressed = e.ctrlKey || e.metaKey; // metaKey is for Cmd key on Mac
+
+										const mentionsContainerElement = document.getElementById('mentions-container');
+
+										if (mentionsContainerElement) {
+											if (e.key === 'ArrowUp') {
+												e.preventDefault();
+												mentionsElement.selectUp();
+												const btn = [
+													...document.getElementsByClassName('selected-mention-option-button')
+												]?.at(-1);
+												btn?.scrollIntoView({ block: 'center' });
+											}
+											if (e.key === 'ArrowDown') {
+												e.preventDefault();
+												mentionsElement.selectDown();
+												const btn = [
+													...document.getElementsByClassName('selected-mention-option-button')
+												]?.at(-1);
+												btn?.scrollIntoView({ block: 'center' });
+											}
+											if (e.key === 'Tab' || e.key === 'Enter') {
+												e.preventDefault();
+												const btn = [
+													...document.getElementsByClassName('selected-mention-option-button')
+												]?.at(-1);
+												btn?.click();
+											}
+											if (e.key === 'Escape') {
+												showMentions = false;
+											}
+											return;
+										}
 
 										const commandsContainerElement = document.getElementById('commands-container');
 
@@ -815,7 +896,7 @@
 										>
 											<button
 												style="--bgc:transparent; --hvr-bgc:rgb(255 255 255 / 0.8); --c:var(--color-gray-800); --dark-c:#fff; --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.4rem; --oe:none"
-	class="focus:outline-hidden"
+												class="focus:outline-hidden"
 												type="button"
 												aria-label="More"
 											>
@@ -913,9 +994,9 @@
 												<button
 													id="send-message-button"
 													style="--tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.4rem; --as:center"
-	class="{content !== '' || files.length !== 0
+													class={content !== '' || files.length !== 0
 														? 'bg-black text-white hover:bg-gray-900 dark:bg-white dark:text-black dark:hover:bg-gray-100 '
-														: 'text-white bg-gray-200 dark:text-gray-900 dark:bg-gray-700 disabled'}"
+														: 'text-white bg-gray-200 dark:text-gray-900 dark:bg-gray-700 disabled'}
 													type="submit"
 													disabled={content === '' && files.length === 0}
 												>

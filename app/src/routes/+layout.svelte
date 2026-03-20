@@ -96,7 +96,7 @@
 			randomizationFactor: 0.5,
 			path: '/ws/socket.io',
 			transports: enableWebsocket ? ['websocket'] : ['polling', 'websocket'],
-			auth: {}
+			auth: { token: localStorage.token }
 		});
 
 		await socket.set(_socket);
@@ -107,7 +107,7 @@
 
 		_socket.on('connect', () => {
 			console.log('connected', _socket.id);
-			_socket.emit('user-join', { auth: {} });
+			_socket.emit('user-join', { auth: { token: localStorage.token } });
 		});
 
 		_socket.on('reconnect_attempt', (attempt) => {
@@ -470,6 +470,37 @@
 		}
 	};
 
+	const channelMentionHandler = async (event: any) => {
+		// @mention notification — always show, even if viewing the channel
+		if ($isLastActiveTab) {
+			if ($settings?.notificationEnabled ?? false) {
+				new Notification(
+					`@${event?.user?.name} mentioned you in #${event?.channel_name}`,
+					{
+						body: event?.message,
+						icon:
+							event?.user?.profile_image_url ??
+							branding?.favicon_url ??
+							branding?.logo_url ??
+							`${WEBUI_BASE_URL}/static/icons/favicon.png`
+					}
+				);
+			}
+		}
+
+		toast.custom(NotificationToast, {
+			componentProps: {
+				onClick: () => {
+					goto(`/channels/${event.channel_id}`);
+				},
+				content: event?.message,
+				title: `@mentioned in #${event?.channel_name}`
+			},
+			duration: 15000,
+			unstyled: true
+		});
+	};
+
 	const TOKEN_EXPIRY_BUFFER = 60; // seconds
 	const checkTokenExpiry = async () => {
 		const exp = $user?.expires_at; // token expiry time in unix timestamp
@@ -597,12 +628,15 @@
 			if (value) {
 				$socket?.off('chat-events', chatEventHandler);
 				$socket?.off('channel-events', channelEventHandler);
+				$socket?.off('channel-mention', channelMentionHandler);
 
 				$socket?.on('chat-events', chatEventHandler);
 				$socket?.on('channel-events', channelEventHandler);
+				$socket?.on('channel-mention', channelMentionHandler);
 			} else {
 				$socket?.off('chat-events', chatEventHandler);
 				$socket?.off('channel-events', channelEventHandler);
+				$socket?.off('channel-mention', channelMentionHandler);
 			}
 		});
 
