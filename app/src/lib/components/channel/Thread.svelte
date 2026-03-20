@@ -1,15 +1,18 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { getContext } from 'svelte';
 
-	import { socket, user } from '$lib/stores';
+	import { settings, socket, user } from '$lib/stores';
 
 	import { getChannelThreadMessages, sendMessage } from '$lib/apis/spaces';
 
 	import XMark from '$lib/components/icons/XMark.svelte';
-	import MessageInput from './MessageInput.svelte';
+	import MessageInput from '../chat/MessageInput.svelte';
 	import Messages from './Messages.svelte';
 	import { onDestroy, onMount, tick } from 'svelte';
 	import { toast } from 'svelte-sonner';
+
+	const i18n = getContext('i18n');
 
 	export let threadId = null;
 	export let channel = null;
@@ -18,6 +21,9 @@
 
 	let messages = null;
 	let top = false;
+
+	let prompt = '';
+	let files = [];
 
 	let typingUsers = [];
 	let typingUsersTimeout = {};
@@ -35,6 +41,9 @@
 	const initHandler = async () => {
 		messages = null;
 		top = false;
+
+		prompt = '';
+		files = [];
 
 		typingUsers = [];
 		typingUsersTimeout = {};
@@ -62,6 +71,8 @@
 			if (type === 'message') {
 				if ((data?.parent_id ?? null) === threadId) {
 					if (messages) {
+						// Skip if already added optimistically
+						if (messages.find((m) => m.id === data.id)) return;
 						messages = [data, ...messages];
 
 						if (typingUsers.find((user) => user.id === event.user.id)) {
@@ -118,19 +129,28 @@
 		}
 	};
 
-	const submitHandler = async ({ content, data }) => {
-		if (!content && (data?.files ?? []).length === 0) {
+	const submitHandler = async (content) => {
+		if (!content && files.length === 0) {
 			return;
 		}
 
+		const messageContent = ($settings?.richTextInput ?? true)
+			? content.replaceAll('\n\n', '\n')
+			: content;
+
 		const res = await sendMessage(localStorage.token, channel.id, {
 			parent_id: threadId,
-			content: content,
-			data: data
+			content: messageContent,
+			data: { files: files.length > 0 ? files : undefined }
 		}).catch((error) => {
 			toast.error(`${error}`);
 			return null;
 		});
+
+		if (res) {
+			prompt = '';
+			files = [];
+		}
 	};
 
 	const onChange = async () => {
@@ -197,7 +217,28 @@
 			/>
 
 			<div style="--pb:1rem; --px:0.625rem">
-				<MessageInput id={threadId} {typingUsers} {onChange} onSubmit={submitHandler} />
+				{#if typingUsers.length > 0}
+					<div style="--size:0.65rem; --px:1rem; --mb:0.25rem">
+						<span style="--weight:500; --c:#000; --dark-c:#fff">
+							{typingUsers.map((user) => user.name).join(', ')}
+						</span>
+						{$i18n.t('is typing...')}
+					</div>
+				{/if}
+
+				<MessageInput
+					bind:prompt
+					bind:files
+					placeholder={$i18n.t('Reply in thread')}
+					selectedModels={['']}
+					history={{}}
+					stopResponse={() => {}}
+					createMessagePair={() => {}}
+					{onChange}
+					on:submit={async (e) => {
+						await submitHandler(e.detail);
+					}}
+				/>
 			</div>
 		</div>
 	</div>

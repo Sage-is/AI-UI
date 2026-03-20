@@ -133,4 +133,11 @@ class ChannelTable:
             return True
 
 
+    def get_channel_agents(self, channel: ChannelModel) -> list[dict]:
+        """Return the list of agent configs from a channel's data field."""
+        if channel.data and isinstance(channel.data, dict):
+            return channel.data.get("agents", [])
+        return []
+
+
 Channels = ChannelTable()

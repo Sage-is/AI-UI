@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 from typing import Optional
 
 
@@ -7,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status, Backgrou
 from pydantic import BaseModel
 
 
-from sage_is_ai.socket.main import sio, get_user_ids_from_room
+from sage_is_ai.socket.main import sio, get_user_ids_from_room, USER_POOL
 from sage_is_ai.models.users import Users, UserNameResponse
 
 from sage_is_ai.models.channels import Channels, ChannelModel, ChannelForm
@@ -33,6 +34,24 @@ log = logging.getLogger(__name__)
 log.setLevel(SRC_LOG_LEVELS["MODELS"])
 
 router = APIRouter()
+
+AGENT_USER_ID = "__agent__"
+
+
+def _get_user_for_message(message) -> UserNameResponse:
+    """Get the UserNameResponse for a message, handling agent messages."""
+    if message.user_id == AGENT_USER_ID:
+        agent_info = (message.data or {}).get("agent", {})
+        return UserNameResponse(
+            id=AGENT_USER_ID,
+            name=agent_info.get("name", "Agent"),
+            role="agent",
+            profile_image_url=agent_info.get(
+                "profile_image_url", "/static/icons/favicon.png"
+            ),
+        )
+    user = Users.get_user_by_id(message.user_id)
+    return UserNameResponse(**user.model_dump())
 
 
 def _check_channel_access(user, channel):
@@ -150,6 +169,34 @@ async def delete_channel_by_id(id: str, user=Depends(get_admin_or_facilitator_us
 
 
 ############################
+# GetChannelParticipants
+############################
+
+
+@router.get("/{id}/participants")
+async def get_channel_participants(id: str, user=Depends(get_verified_user)):
+    channel = Channels.get_channel_by_id(id)
+    if not channel:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
+        )
+
+    _check_channel_access(user, channel)
+
+    # Get users with read access
+    channel_users = get_users_with_access("read", channel.access_control)
+    users_list = [
+        UserNameResponse(**u.model_dump()).model_dump()
+        for u in channel_users
+    ]
+
+    # Get agents from channel data
+    agents = Channels.get_channel_agents(channel)
+
+    return {"users": users_list, "agents": agents}
+
+
+############################
 # GetChannelMessages
 ############################
 
@@ -171,13 +218,16 @@ async def get_channel_messages(
     _check_channel_access(user, channel)
 
     message_list = Messages.get_messages_by_channel_id(id, skip, limit)
-    users = {}
+    user_cache = {}
 
     messages = []
     for message in message_list:
-        if message.user_id not in users:
-            user = Users.get_user_by_id(message.user_id)
-            users[message.user_id] = user
+        if message.user_id == AGENT_USER_ID:
+            msg_user = _get_user_for_message(message)
+        else:
+            if message.user_id not in user_cache:
+                user_cache[message.user_id] = _get_user_for_message(message)
+            msg_user = user_cache[message.user_id]
 
         replies = Messages.get_replies_by_message_id(message.id)
         latest_reply_at = replies[0].created_at if replies else None
@@ -189,7 +239,7 @@ async def get_channel_messages(
                     "reply_count": len(replies),
                     "latest_reply_at": latest_reply_at,
                     "reactions": Messages.get_reactions_by_message_id(message.id),
-                    "user": UserNameResponse(**users[message.user_id].model_dump()),
+                    "user": msg_user,
                 }
             )
         )
@@ -226,6 +276,213 @@ async def send_notification(name, webui_url, channel, message, active_user_ids):
                             "url": f"{webui_url}/channels/{channel.id}",
                         },
                     )
+
+
+async def generate_agent_response(app, channel, trigger_message, agent_config, trigger_user):
+    """Generate an AI agent response when @mentioned in a channel."""
+    try:
+        model_id = agent_config.get("model_id")
+        if not model_id or model_id not in app.state.MODELS:
+            log.warning(f"Agent model '{model_id}' not found in MODELS")
+            return
+
+        model = app.state.MODELS[model_id]
+        agent_name = agent_config.get("name", model.get("name", "Agent"))
+        agent_profile_image = agent_config.get(
+            "profile_image_url",
+            model.get("info", {}).get("meta", {}).get(
+                "profile_image_url", "/static/icons/favicon.png"
+            ),
+        )
+        agent_info = {
+            "model_id": model_id,
+            "name": agent_name,
+            "profile_image_url": agent_profile_image,
+        }
+
+        # Emit "thinking" indicator
+        await sio.emit(
+            "channel-events",
+            {
+                "channel_id": channel.id,
+                "data": {
+                    "type": "thinking",
+                    "data": {"agent": agent_info, "thinking": True},
+                },
+            },
+            to=f"channel:{channel.id}",
+        )
+
+        # Build messages for the model
+        system_prompt = model.get("info", {}).get("params", {}).get("system", "")
+        llm_messages = []
+        if system_prompt:
+            llm_messages.append({"role": "system", "content": system_prompt})
+        llm_messages.append({"role": "user", "content": trigger_message.content})
+
+        form_data = {
+            "model": model_id,
+            "messages": llm_messages,
+            "stream": False,
+        }
+
+        # Call the chat completion
+        from sage_is_ai.utils.chat import generate_chat_completion
+        from starlette.requests import Request as StarletteRequest
+        from starlette.datastructures import State
+
+        # Build a minimal request-like object for generate_chat_completion
+        scope = {
+            "type": "http",
+            "app": app,
+            "headers": [],
+        }
+        request = StarletteRequest(scope)
+        request._state = State()
+
+        response = await generate_chat_completion(
+            request, form_data, user=trigger_user, bypass_filter=True
+        )
+
+        # Extract response content
+        if isinstance(response, dict):
+            content = (
+                response.get("choices", [{}])[0]
+                .get("message", {})
+                .get("content", "")
+            )
+        else:
+            # Handle StreamingResponse — shouldn't happen with stream=False
+            log.warning("Unexpected streaming response from agent completion")
+            content = "I'm sorry, I couldn't generate a response."
+
+        # Emit "thinking done"
+        await sio.emit(
+            "channel-events",
+            {
+                "channel_id": channel.id,
+                "data": {
+                    "type": "thinking",
+                    "data": {"agent": agent_info, "thinking": False},
+                },
+            },
+            to=f"channel:{channel.id}",
+        )
+
+        if not content:
+            return
+
+        # Save agent message
+        agent_message_form = MessageForm(
+            content=content,
+            parent_id=trigger_message.parent_id,
+            data={"agent": agent_info},
+        )
+        agent_message = Messages.insert_new_message(
+            agent_message_form, channel.id, AGENT_USER_ID
+        )
+
+        if agent_message:
+            agent_user = UserNameResponse(
+                id=AGENT_USER_ID,
+                name=agent_name,
+                role="agent",
+                profile_image_url=agent_profile_image,
+            )
+
+            await sio.emit(
+                "channel-events",
+                {
+                    "channel_id": channel.id,
+                    "message_id": agent_message.id,
+                    "data": {
+                        "type": "message",
+                        "data": MessageUserResponse(
+                            **{
+                                **agent_message.model_dump(),
+                                "reply_count": 0,
+                                "latest_reply_at": None,
+                                "reactions": [],
+                                "user": agent_user,
+                            }
+                        ).model_dump(),
+                    },
+                    "user": agent_user.model_dump(),
+                    "channel": channel.model_dump(),
+                },
+                to=f"channel:{channel.id}",
+            )
+
+    except Exception as e:
+        log.exception(f"Error generating agent response: {e}")
+        # Clear thinking indicator on error
+        try:
+            await sio.emit(
+                "channel-events",
+                {
+                    "channel_id": channel.id,
+                    "data": {
+                        "type": "thinking",
+                        "data": {"agent": agent_config, "thinking": False},
+                    },
+                },
+                to=f"channel:{channel.id}",
+            )
+        except Exception:
+            pass
+
+
+async def send_mention_notifications(app, channel, message, mentions, sender_user):
+    """Send targeted notifications to @mentioned users."""
+    try:
+        for mention_name in mentions:
+            mentioned_user = Users.get_user_by_name(mention_name)
+            if not mentioned_user:
+                continue
+
+            # Check if user has channel access
+            if mentioned_user.role != "admin" and not has_access(
+                mentioned_user.id, type="read", access_control=channel.access_control
+            ):
+                continue
+
+            # Emit targeted socket notification
+            for sid in USER_POOL.get(mentioned_user.id, []):
+                await sio.emit(
+                    "channel-mention",
+                    {
+                        "channel_id": channel.id,
+                        "channel_name": channel.name,
+                        "message": message.content,
+                        "user": UserNameResponse(
+                            **sender_user.model_dump()
+                        ).model_dump(),
+                    },
+                    to=sid,
+                )
+
+            # Send webhook notification if configured
+            if mentioned_user.settings:
+                webhook_url = (
+                    mentioned_user.settings.ui.get("notifications", {}).get(
+                        "webhook_url", None
+                    )
+                )
+                if webhook_url:
+                    webui_url = app.state.config.WEBUI_URL
+                    post_webhook(
+                        app.state.WEBUI_NAME,
+                        webhook_url,
+                        f"@{sender_user.name} mentioned you in #{channel.name}\n\n{message.content}",
+                        {
+                            "action": "mention",
+                            "message": message.content,
+                            "title": f"#{channel.name}",
+                            "url": f"{webui_url}/channels/{channel.id}",
+                        },
+                    )
+    except Exception as e:
+        log.exception(f"Error sending mention notifications: {e}")
 
 
 @router.post("/{id}/messages/post", response_model=Optional[MessageModel])
@@ -290,11 +547,7 @@ async def post_new_message(
                                 "data": MessageUserResponse(
                                     **{
                                         **parent_message.model_dump(),
-                                        "user": UserNameResponse(
-                                            **Users.get_user_by_id(
-                                                parent_message.user_id
-                                            ).model_dump()
-                                        ),
+                                        "user": _get_user_for_message(parent_message),
                                     }
                                 ).model_dump(),
                             },
@@ -326,6 +579,37 @@ async def post_new_message(
                     message.content,
                     user.id,
                     message.id,
+                )
+
+            # Parse @mentions from message content
+            mentions = set(re.findall(r"@([\w][\w-]*)", message.content or ""))
+
+            if mentions:
+                # Trigger agent responses for @mentioned agents
+                channel_agents = Channels.get_channel_agents(channel)
+                for agent_config in channel_agents:
+                    if agent_config.get("name", "").lower().replace(" ", "-") in {
+                        m.lower() for m in mentions
+                    } or agent_config.get("name", "").lower() in {
+                        m.lower() for m in mentions
+                    }:
+                        background_tasks.add_task(
+                            generate_agent_response,
+                            request.app,
+                            channel,
+                            message,
+                            agent_config,
+                            user,
+                        )
+
+                # Send @user mention notifications
+                background_tasks.add_task(
+                    send_mention_notifications,
+                    request.app,
+                    channel,
+                    message,
+                    mentions,
+                    user,
                 )
 
         return MessageModel(**message.model_dump())
@@ -367,9 +651,7 @@ async def get_channel_message(
     return MessageUserResponse(
         **{
             **message.model_dump(),
-            "user": UserNameResponse(
-                **Users.get_user_by_id(message.user_id).model_dump()
-            ),
+            "user": _get_user_for_message(message),
         }
     )
 
@@ -398,13 +680,16 @@ async def get_channel_thread_messages(
     _check_channel_access(user, channel)
 
     message_list = Messages.get_messages_by_parent_id(id, message_id, skip, limit)
-    users = {}
+    user_cache = {}
 
     messages = []
     for message in message_list:
-        if message.user_id not in users:
-            user = Users.get_user_by_id(message.user_id)
-            users[message.user_id] = user
+        if message.user_id == AGENT_USER_ID:
+            msg_user = _get_user_for_message(message)
+        else:
+            if message.user_id not in user_cache:
+                user_cache[message.user_id] = _get_user_for_message(message)
+            msg_user = user_cache[message.user_id]
 
         messages.append(
             MessageUserResponse(
@@ -413,7 +698,7 @@ async def get_channel_thread_messages(
                     "reply_count": 0,
                     "latest_reply_at": None,
                     "reactions": Messages.get_reactions_by_message_id(message.id),
-                    "user": UserNameResponse(**users[message.user_id].model_dump()),
+                    "user": msg_user,
                 }
             )
         )
@@ -531,9 +816,7 @@ async def add_reaction_to_message(
                     "type": "message:reaction:add",
                     "data": {
                         **message.model_dump(),
-                        "user": UserNameResponse(
-                            **Users.get_user_by_id(message.user_id).model_dump()
-                        ).model_dump(),
+                        "user": _get_user_for_message(message).model_dump(),
                         "name": form_data.name,
                     },
                 },
@@ -595,9 +878,7 @@ async def remove_reaction_by_id_and_user_id_and_name(
                     "type": "message:reaction:remove",
                     "data": {
                         **message.model_dump(),
-                        "user": UserNameResponse(
-                            **Users.get_user_by_id(message.user_id).model_dump()
-                        ).model_dump(),
+                        "user": _get_user_for_message(message).model_dump(),
                         "name": form_data.name,
                     },
                 },

@@ -70,3 +70,6 @@ export const removeReaction = async (token: string = '', channel_id: string, mes
 
 export const deleteMessage = async (token: string = '', channel_id: string, message_id: string) =>
 	api(`${WEBUI_API_BASE_URL}/channels/${channel_id}/messages/${message_id}/delete`, token, 'DELETE', null, `deleteMessage(${channel_id}, ${message_id})`);
+
+export const getChannelParticipants = async (token: string = '', channel_id: string) =>
+	api(`${WEBUI_API_BASE_URL}/channels/${channel_id}/participants`, token, 'GET', null, `getChannelParticipants(${channel_id})`);

@@ -179,8 +179,15 @@
 			<div style="--fx:1 1 auto; --w:0; --pl:0.2rem">
 				{#if showUserProfile}
 					<Name>
-						<div style="--as:flex-end; --size:1rem; --fs:0; --weight:500; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
+						<div style="--as:flex-end; --size:1rem; --fs:0; --weight:500; overflow:hidden; text-overflow:ellipsis; --ws:nowrap; --d:flex; --ai:center; --g:0.35rem">
 							{message?.user?.name}
+							{#if message?.data?.agent}
+								<span
+									style="--size:0.55rem; --px:0.3rem; --py:0.05rem; --radius:0.2rem; --bgc:var(--color-blue-100); --dark-bgc:var(--color-blue-900); --c:var(--color-blue-700); --dark-c:var(--color-blue-300); --weight:600; --translatey:-1px"
+								>
+									BOT
+								</span>
+							{/if}
 						</div>
 
 						{#if message.created_at}
