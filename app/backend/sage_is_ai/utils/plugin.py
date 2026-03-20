@@ -9,7 +9,6 @@ import logging
 
 from sage_is_ai.env import SRC_LOG_LEVELS, PIP_OPTIONS, PIP_PACKAGE_INDEX_OPTIONS
 from sage_is_ai.models.functions import Functions
-from sage_is_ai.models.tools import Tools
 
 log = logging.getLogger(__name__)
 log.setLevel(SRC_LOG_LEVELS["MAIN"])
@@ -70,53 +69,6 @@ def replace_imports(content):
         content = content.replace(old, new)
 
     return content
-
-
-def load_tool_module_by_id(tool_id, content=None):
-
-    if content is None:
-        tool = Tools.get_tool_by_id(tool_id)
-        if not tool:
-            raise Exception(f"Toolkit not found: {tool_id}")
-
-        content = tool.content
-
-        content = replace_imports(content)
-        Tools.update_tool_by_id(tool_id, {"content": content})
-    else:
-        frontmatter = extract_frontmatter(content)
-        # Install required packages found within the frontmatter
-        install_frontmatter_requirements(frontmatter.get("requirements", ""))
-
-    module_name = f"tool_{tool_id}"
-    module = types.ModuleType(module_name)
-    sys.modules[module_name] = module
-
-    # Create a temporary file and use it to define `__file__` so
-    # that it works as expected from the module's perspective.
-    temp_file = tempfile.NamedTemporaryFile(delete=False)
-    temp_file.close()
-    try:
-        with open(temp_file.name, "w", encoding="utf-8") as f:
-            f.write(content)
-        module.__dict__["__file__"] = temp_file.name
-
-        # Executing the modified content in the created module's namespace
-        exec(content, module.__dict__)
-        frontmatter = extract_frontmatter(content)
-        log.info(f"Loaded module: {module.__name__}")
-
-        # Create and return the object if the class 'Tools' is found in the module
-        if hasattr(module, "Tools"):
-            return module.Tools(), frontmatter
-        else:
-            raise Exception("No Tools class found in the module")
-    except Exception as e:
-        log.error(f"Error loading module: {tool_id}: {e}")
-        del sys.modules[module_name]  # Clean up
-        raise e
-    finally:
-        os.unlink(temp_file.name)
 
 
 def load_function_module_by_id(function_id: str, content: str | None = None):
@@ -247,14 +199,13 @@ def install_frontmatter_requirements(requirements: str):
 
 def install_tool_and_function_dependencies():
     """
-    Install all dependencies for all admin tools and active functions.
+    Install all dependencies for active functions.
 
-    By first collecting all dependencies from the frontmatter of each tool and function,
+    By first collecting all dependencies from the frontmatter of each function,
     and then installing them using pip. Duplicates or similar version specifications are
     handled by pip as much as possible.
     """
     function_list = Functions.get_functions(active_only=True)
-    tool_list = Tools.get_tools()
 
     all_dependencies = ""
     try:
@@ -262,12 +213,6 @@ def install_tool_and_function_dependencies():
             frontmatter = extract_frontmatter(replace_imports(function.content))
             if dependencies := frontmatter.get("requirements"):
                 all_dependencies += f"{dependencies}, "
-        for tool in tool_list:
-            # Only install requirements for admin tools
-            if tool.user.role == "admin":
-                frontmatter = extract_frontmatter(replace_imports(tool.content))
-                if dependencies := frontmatter.get("requirements"):
-                    all_dependencies += f"{dependencies}, "
 
         install_frontmatter_requirements(all_dependencies.strip(", "))
     except Exception as e:

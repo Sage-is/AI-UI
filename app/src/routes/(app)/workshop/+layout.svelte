@@ -8,8 +8,7 @@
 		mobile,
 		models,
 		prompts,
-		knowledge,
-		tools
+		knowledge
 	} from '$lib/stores';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
@@ -33,8 +32,6 @@
 				$page.url.pathname.includes('/prompts') &&
 				!$user?.permissions?.workshop?.prompts
 			) {
-				goto('/');
-			} else if ($page.url.pathname.includes('/tools') && !$user?.permissions?.workshop?.tools) {
 				goto('/');
 			}
 		}
@@ -112,17 +109,6 @@
 							>
 						{/if}
 
-						{#if $user?.role === 'admin' || $user?.permissions?.workshop?.tools}
-							<a
-								style="--minw:fit-content; --p:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
-								class={$page.url.pathname.includes('/workshop/tools')
-									? ''
-									: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}
-								href="/workshop/tools"
-							>
-								{$i18n.t('Tools')}
-							</a>
-						{/if}
 					</div>
 				</div>
 

@@ -413,14 +413,15 @@
 		on:mouseleave={(e) => {
 			mouseOver = false;
 		}}
-		>
+	>
 		{#if confirmEdit}
-			<div
-				style="--d:flex; --as:center; --ai:center; --g:0.4rem; --z:10; --translatex:-0.5px"
-			>
+			<div style="--d:flex; --as:center; --ai:center; --g:0.4rem; --z:10; --translatex:-0.5px">
 				<Tooltip content={$i18n.t('Generate')}>
+				<!-- TODO: add shortcut support using "generate-title-button" id -->
 					<button
-						style="--as:center; --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+						style="--d:none;
+							--as:center; 
+							--hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						id="generate-title-button"
 						on:click={(e) => {
 							e.preventDefault();

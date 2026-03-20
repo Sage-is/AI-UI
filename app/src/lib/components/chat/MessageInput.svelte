@@ -840,7 +840,7 @@
 </script>
 
 <FilesOverlay show={dragged} />
-<ToolServersModal bind:show={showTools} {selectedToolIds} />
+<ToolServersModal bind:show={showTools} />
 <InputVariablesModal
 	bind:show={showInputVariablesModal}
 	variables={inputVariables}

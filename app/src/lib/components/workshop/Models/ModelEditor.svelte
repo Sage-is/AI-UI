@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount, getContext, tick, createEventDispatcher } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { models, tools, functions, knowledge as knowledgeCollections, user } from '$lib/stores';
+	import { models, functions, knowledge as knowledgeCollections, user } from '$lib/stores';
 	import { WEBUI_BASE_URL } from '$lib/constants';
 	import { getBranding, type Branding } from '$lib/apis/configs';
 
@@ -10,12 +10,10 @@
 	import AdvancedParams from '$lib/components/chat/Settings/Advanced/AdvancedParams.svelte';
 	import Tags from '$lib/components/common/Tags.svelte';
 	import Knowledge from '$lib/components/workshop/Models/Knowledge.svelte';
-	import ToolsSelector from '$lib/components/workshop/Models/ToolsSelector.svelte';
 	import FiltersSelector from '$lib/components/workshop/Models/FiltersSelector.svelte';
 	import ActionsSelector from '$lib/components/workshop/Models/ActionsSelector.svelte';
 	import Capabilities from '$lib/components/workshop/Models/Capabilities.svelte';
 	import Textarea from '$lib/components/common/Textarea.svelte';
-	import { getTools } from '$lib/apis/tools';
 	import { getFunctions } from '$lib/apis/functions';
 	import { getKnowledgeBases } from '$lib/apis/knowledge';
 	import AccessControl from '../common/AccessControl.svelte';
@@ -101,7 +99,6 @@
 	};
 
 	let knowledge = [];
-	let toolIds = [];
 	let filterIds = [];
 	let actionIds = [];
 
@@ -119,7 +116,6 @@
 				tags: info.meta.tags || [],
 				capabilities: capabilities,
 				knowledge: knowledge.length > 0 ? knowledge : undefined,
-				toolIds: toolIds.length > 0 ? toolIds : undefined,
 				filterIds: filterIds.length > 0 ? filterIds : undefined,
 				actionIds: actionIds.length > 0 ? actionIds : undefined
 			},
@@ -178,14 +174,6 @@
 			}
 		}
 
-		if (toolIds.length > 0) {
-			info.meta.toolIds = toolIds;
-		} else {
-			if (info.meta.toolIds) {
-				delete info.meta.toolIds;
-			}
-		}
-
 		if (filterIds.length > 0) {
 			info.meta.filterIds = filterIds;
 		} else {
@@ -217,7 +205,6 @@
 	};
 
 	onMount(async () => {
-		await tools.set(await getTools(localStorage.token));
 		await functions.set(await getFunctions(localStorage.token));
 		await knowledgeCollections.set([...(await getKnowledgeBases(localStorage.token))]);
 
@@ -265,7 +252,6 @@
 					)
 				: null;
 
-			toolIds = model?.meta?.toolIds ?? [];
 			filterIds = model?.meta?.filterIds ?? [];
 			actionIds = model?.meta?.actionIds ?? [];
 			knowledge = (model?.meta?.knowledge ?? []).map((item) => {
@@ -642,10 +628,6 @@
 
 					<div style="--my:0.5rem">
 						<Knowledge bind:selectedItems={knowledge} />
-					</div>
-
-					<div style="--my:0.5rem">
-						<ToolsSelector bind:selectedToolIds={toolIds} tools={$tools} />
 					</div>
 
 					<div style="--my:0.5rem">
