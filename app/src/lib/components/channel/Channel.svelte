@@ -346,6 +346,7 @@
 					placeholder={$i18n.t('Send a Message')}
 					selectedModels={['']}
 					history={{}}
+					voiceModeEnabled={false}
 					stopResponse={() => {}}
 					createMessagePair={() => {}}
 					{onChange}

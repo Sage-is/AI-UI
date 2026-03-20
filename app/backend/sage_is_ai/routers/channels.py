@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 import re
@@ -278,9 +279,10 @@ async def send_notification(name, webui_url, channel, message, active_user_ids):
                     )
 
 
-async def generate_agent_response(app, channel, trigger_message, agent_config, trigger_user):
+async def generate_agent_response(request, channel, trigger_message, agent_config, trigger_user):
     """Generate an AI agent response when @mentioned in a channel."""
     try:
+        app = request.app
         model_id = agent_config.get("model_id")
         if not model_id or model_id not in app.state.MODELS:
             log.warning(f"Agent model '{model_id}' not found in MODELS")
@@ -328,17 +330,6 @@ async def generate_agent_response(app, channel, trigger_message, agent_config, t
 
         # Call the chat completion
         from sage_is_ai.utils.chat import generate_chat_completion
-        from starlette.requests import Request as StarletteRequest
-        from starlette.datastructures import State
-
-        # Build a minimal request-like object for generate_chat_completion
-        scope = {
-            "type": "http",
-            "app": app,
-            "headers": [],
-        }
-        request = StarletteRequest(scope)
-        request._state = State()
 
         response = await generate_chat_completion(
             request, form_data, user=trigger_user, bypass_filter=True
@@ -587,19 +578,21 @@ async def post_new_message(
             if mentions:
                 # Trigger agent responses for @mentioned agents
                 channel_agents = Channels.get_channel_agents(channel)
+                lower_mentions = {m.lower() for m in mentions}
                 for agent_config in channel_agents:
-                    if agent_config.get("name", "").lower().replace(" ", "-") in {
-                        m.lower() for m in mentions
-                    } or agent_config.get("name", "").lower() in {
-                        m.lower() for m in mentions
-                    }:
-                        background_tasks.add_task(
-                            generate_agent_response,
-                            request.app,
-                            channel,
-                            message,
-                            agent_config,
-                            user,
+                    agent_name_lower = agent_config.get("name", "").lower()
+                    if (
+                        agent_name_lower in lower_mentions
+                        or agent_name_lower.replace(" ", "-") in lower_mentions
+                    ):
+                        asyncio.create_task(
+                            generate_agent_response(
+                                request,
+                                channel,
+                                message,
+                                agent_config,
+                                user,
+                            )
                         )
 
                 # Send @user mention notifications
