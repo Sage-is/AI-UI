@@ -772,9 +772,6 @@ app.state.EXTERNAL_PWA_MANIFEST_URL = EXTERNAL_PWA_MANIFEST_URL
 
 app.state.USER_COUNT = None
 
-app.state.TOOLS = {}
-app.state.TOOL_CONTENTS = {}
-
 app.state.FUNCTIONS = {}
 app.state.FUNCTION_CONTENTS = {}
 

@@ -786,7 +786,7 @@
 			</div>
 		{/if}
 
-		{#if $user?.role === 'admin' || $user?.permissions?.workshop?.models || $user?.permissions?.workshop?.knowledge || $user?.permissions?.workshop?.prompts || $user?.permissions?.workshop?.tools}
+		{#if $user?.role === 'admin' || $user?.permissions?.workshop?.models || $user?.permissions?.workshop?.knowledge || $user?.permissions?.workshop?.prompts}
 			<div
 				style="--px:0.4rem; --d:flex; --jc:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-200)"
 			>

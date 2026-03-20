@@ -3,21 +3,18 @@
 	const i18n = getContext('i18n');
 
 	import Switch from '$lib/components/common/Switch.svelte';
-	import Tooltip from '$lib/components/common/Tooltip.svelte';
 
 	// Default values for permissions
 	const defaultPermissions = {
 		workshop: {
 			models: false,
 			knowledge: false,
-			prompts: false,
-			tools: false
+			prompts: false
 		},
 		sharing: {
 			public_models: false,
 			public_knowledge: false,
-			public_prompts: false,
-			public_tools: false
+			public_prompts: false
 		},
 		chat: {
 			controls: true,
@@ -193,21 +190,7 @@
 			<Switch bind:state={permissions.workshop.prompts} />
 		</div>
 
-		<div class=" ">
-			<Tooltip
-				className=" flex w-full justify-between my-2 pr-2"
-				content={$i18n.t(
-					'Warning: Enabling this will allow users to upload arbitrary code on the server.'
-				)}
-				placement="top-start"
-			>
-				<div style="--as:center; --size:0.6rem; --weight:500">
-					{$i18n.t('Tools Access')}
-				</div>
-				<Switch bind:state={permissions.workshop.tools} />
-			</Tooltip>
 		</div>
-	</div>
 
 	<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
@@ -235,12 +218,6 @@
 			<Switch bind:state={permissions.sharing.public_prompts} />
 		</div>
 
-		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
-			<div style="--as:center; --size:0.6rem; --weight:500">
-				{$i18n.t('Tools Public Sharing')}
-			</div>
-			<Switch bind:state={permissions.sharing.public_tools} />
-		</div>
 	</div>
 
 	<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />

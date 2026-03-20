@@ -272,7 +272,7 @@
 							/>
 
 							<button
-								style="--w:100%; --size:0.8rem; --weight:500; --py:0.5rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100);  --bs:dashed; --dark-bc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-850); --ta:center; --radius:0.6rem"
+								style="--w:100%; --size:0.8rem; --weight:500; --py:0.5rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100);  ; --dark-bc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-850); --ta:center; --radius:0.6rem"
 								type="button"
 								on:click={() => {
 									document.getElementById('pipelines-upload-input')?.click();

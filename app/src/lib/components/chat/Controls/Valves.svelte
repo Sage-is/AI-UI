@@ -1,15 +1,9 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
 
-	import { config, functions, models, settings, tools, user } from '$lib/stores';
+	import { config, functions, models, settings, user } from '$lib/stores';
 	import { createEventDispatcher, onMount, getContext, tick } from 'svelte';
 
-	import {
-		getUserValvesSpecById as getToolUserValvesSpecById,
-		getUserValvesById as getToolUserValvesById,
-		updateUserValvesById as updateToolUserValvesById,
-		getTools
-	} from '$lib/apis/tools';
 	import {
 		getUserValvesSpecById as getFunctionUserValvesSpecById,
 		getUserValvesById as getFunctionUserValvesById,
@@ -27,7 +21,6 @@
 
 	export let show = false;
 
-	let tab = 'tools';
 	let selectedId = '';
 
 	let loading = false;
@@ -50,13 +43,8 @@
 
 	const getUserValves = async () => {
 		loading = true;
-		if (tab === 'tools') {
-			valves = await getToolUserValvesById(localStorage.token, selectedId);
-			valvesSpec = await getToolUserValvesSpecById(localStorage.token, selectedId);
-		} else if (tab === 'functions') {
-			valves = await getFunctionUserValvesById(localStorage.token, selectedId);
-			valvesSpec = await getFunctionUserValvesSpecById(localStorage.token, selectedId);
-		}
+		valves = await getFunctionUserValvesById(localStorage.token, selectedId);
+		valvesSpec = await getFunctionUserValvesSpecById(localStorage.token, selectedId);
 
 		if (valvesSpec) {
 			// Convert array to string
@@ -79,39 +67,21 @@
 				}
 			}
 
-			if (tab === 'tools') {
-				const res = await updateToolUserValvesById(localStorage.token, selectedId, valves).catch(
-					(error) => {
-						toast.error(`${error}`);
-						return null;
-					}
-				);
+			const res = await updateFunctionUserValvesById(
+				localStorage.token,
+				selectedId,
+				valves
+			).catch((error) => {
+				toast.error(`${error}`);
+				return null;
+			});
 
-				if (res) {
-					toast.success($i18n.t('Valves updated'));
-					valves = res;
-				}
-			} else if (tab === 'functions') {
-				const res = await updateFunctionUserValvesById(
-					localStorage.token,
-					selectedId,
-					valves
-				).catch((error) => {
-					toast.error(`${error}`);
-					return null;
-				});
-
-				if (res) {
-					toast.success($i18n.t('Valves updated'));
-					valves = res;
-				}
+			if (res) {
+				toast.success($i18n.t('Valves updated'));
+				valves = res;
 			}
 		}
 	};
-
-	$: if (tab) {
-		selectedId = '';
-	}
 
 	$: if (selectedId) {
 		getUserValves();
@@ -126,9 +96,6 @@
 
 		if ($functions === null) {
 			functions.set(await getFunctions(localStorage.token));
-		}
-		if ($tools === null) {
-			tools.set(await getTools(localStorage.token));
 		}
 
 		loading = false;
@@ -148,42 +115,19 @@
 				<div style="--d:flex; --g:0.5rem">
 					<div style="--fx:1 1 0%">
 						<select
-							style="--w:100%; --radius:0.125rem; --size:0.6rem; --py:0.5rem; --px:0.2rem; --bgc:transparent; --oe:none"
-							bind:value={tab}
-							placeholder="Select"
-						>
-							<option value="tools" style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800)">{$i18n.t('Tools')}</option>
-							<option value="functions" style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800)"
-								>{$i18n.t('Functions')}</option
-							>
-						</select>
-					</div>
-
-					<div style="--fx:1 1 0%">
-						<select
 							style="--w:100%; --radius:0.125rem; --py:0.5rem; --px:0.2rem; --size:0.6rem; --bgc:transparent; --oe:none"
 							bind:value={selectedId}
 							on:change={async () => {
 								await tick();
 							}}
 						>
-							{#if tab === 'tools'}
-								<option value="" selected disabled style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800)"
-									>{$i18n.t('Select a tool')}</option
-								>
+							<option value="" selected disabled style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800)"
+								>{$i18n.t('Select a function')}</option
+							>
 
-								{#each $tools as tool, toolIdx}
-									<option value={tool.id} style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800)">{tool.name}</option>
-								{/each}
-							{:else if tab === 'functions'}
-								<option value="" selected disabled style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800)"
-									>{$i18n.t('Select a function')}</option
-								>
-
-								{#each $functions as func, funcIdx}
-									<option value={func.id} style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800)">{func.name}</option>
-								{/each}
-							{/if}
+							{#each $functions as func, funcIdx}
+								<option value={func.id} style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800)">{func.name}</option>
+							{/each}
 						</select>
 					</div>
 				</div>
