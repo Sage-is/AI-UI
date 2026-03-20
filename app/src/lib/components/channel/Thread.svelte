@@ -232,6 +232,7 @@
 					placeholder={$i18n.t('Reply in thread')}
 					selectedModels={['']}
 					history={{}}
+					voiceModeEnabled={false}
 					stopResponse={() => {}}
 					createMessagePair={() => {}}
 					{onChange}
