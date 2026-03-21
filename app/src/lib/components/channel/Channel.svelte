@@ -238,12 +238,16 @@
 	let mediaQuery;
 	let largeScreen = false;
 
+	// Reactive socket registration — re-registers when socket becomes available
+	$: if ($socket) {
+		$socket.off('channel-events', channelEventHandler);
+		$socket.on('channel-events', channelEventHandler);
+	}
+
 	onMount(() => {
 		if ($chatId) {
 			chatId.set('');
 		}
-
-		$socket?.on('channel-events', channelEventHandler);
 
 		mediaQuery = window.matchMedia('(min-width: 1024px)');
 
@@ -347,6 +351,7 @@
 					selectedModels={['']}
 					history={{}}
 					voiceModeEnabled={false}
+					channelParticipants={participants}
 					stopResponse={() => {}}
 					createMessagePair={() => {}}
 					{onChange}
@@ -370,6 +375,7 @@
 						<Thread
 							{threadId}
 							{channel}
+							{participants}
 							onClose={() => {
 								threadId = null;
 							}}
@@ -393,6 +399,7 @@
 					<Thread
 						{threadId}
 						{channel}
+						{participants}
 						onClose={() => {
 							threadId = null;
 						}}

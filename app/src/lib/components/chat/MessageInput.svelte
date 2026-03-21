@@ -105,6 +105,8 @@
 	export let codeInterpreterEnabled = false;
 	export let voiceModeEnabled = true;
 
+	export let channelParticipants: { users: any[]; agents: any[] } | null = null;
+
 	let showInputVariablesModal = false;
 	let inputVariables = {};
 	let inputVariableValues = {};
@@ -929,6 +931,7 @@
 						bind:files
 						show={showCommands}
 						{command}
+						{channelParticipants}
 						insertTextHandler={insertTextAtCursor}
 						onUpload={(e) => {
 							const { type, data } = e;

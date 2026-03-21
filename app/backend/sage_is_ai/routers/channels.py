@@ -185,7 +185,12 @@ async def get_channel_participants(id: str, user=Depends(get_verified_user)):
     _check_channel_access(user, channel)
 
     # Get users with read access
-    channel_users = get_users_with_access("read", channel.access_control)
+    if channel.access_control:
+        channel_users = get_users_with_access("read", channel.access_control)
+    else:
+        # No access control — all users have access
+        result = Users.get_users()
+        channel_users = result.users if hasattr(result, "users") else result
     users_list = [
         UserNameResponse(**u.model_dump()).model_dump()
         for u in channel_users
@@ -254,7 +259,11 @@ async def get_channel_messages(
 
 
 async def send_notification(name, webui_url, channel, message, active_user_ids):
-    users = get_users_with_access("read", channel.access_control)
+    if channel.access_control:
+        users = get_users_with_access("read", channel.access_control)
+    else:
+        result = Users.get_users()
+        users = result.users if hasattr(result, "users") else result
 
     for user in users:
         if user.id in active_user_ids:
@@ -284,6 +293,12 @@ async def generate_agent_response(request, channel, trigger_message, agent_confi
     try:
         app = request.app
         model_id = agent_config.get("model_id")
+
+        # Ensure models are loaded (may be empty on cold start)
+        if not app.state.MODELS:
+            from sage_is_ai.utils.models import get_all_models
+            await get_all_models(request, user=trigger_user)
+
         if not model_id or model_id not in app.state.MODELS:
             log.warning(f"Agent model '{model_id}' not found in MODELS")
             return
