@@ -4,7 +4,7 @@
 
 	import { settings, socket, user } from '$lib/stores';
 
-	import { getChannelThreadMessages, sendMessage } from '$lib/apis/spaces';
+	import { getSpaceThreadMessages, sendMessage } from '$lib/apis/spaces';
 
 	import XMark from '$lib/components/icons/XMark.svelte';
 	import MessageInput from '../chat/MessageInput.svelte';
@@ -15,7 +15,7 @@
 	const i18n = getContext('i18n');
 
 	export let threadId = null;
-	export let channel = null;
+	export let space = null;
 	export let participants: { users: any[]; agents: any[] } = { users: [], agents: [] };
 
 	export let onClose = () => {};
@@ -49,8 +49,8 @@
 		typingUsers = [];
 		typingUsersTimeout = {};
 
-		if (channel) {
-			messages = await getChannelThreadMessages(localStorage.token, channel.id, threadId);
+		if (space) {
+			messages = await getSpaceThreadMessages(localStorage.token, space.id, threadId);
 
 			if (messages.length < 50) {
 				top = true;
@@ -63,9 +63,9 @@
 		}
 	};
 
-	const channelEventHandler = async (event) => {
+	const spaceEventHandler = async (event) => {
 		console.debug(event);
-		if (event.channel_id === channel.id) {
+		if (event.space_id === space.id) {
 			const type = event?.data?.type ?? null;
 			const data = event?.data?.data ?? null;
 
@@ -139,7 +139,7 @@
 			? content.replaceAll('\n\n', '\n')
 			: content;
 
-		const res = await sendMessage(localStorage.token, channel.id, {
+		const res = await sendMessage(localStorage.token, space.id, {
 			parent_id: threadId,
 			content: messageContent,
 			data: { files: files.length > 0 ? files : undefined }
@@ -155,8 +155,8 @@
 	};
 
 	const onChange = async () => {
-		$socket?.emit('channel-events', {
-			channel_id: channel.id,
+		$socket?.emit('space-events', {
+			space_id: space.id,
 			message_id: threadId,
 			data: {
 				type: 'typing',
@@ -169,16 +169,16 @@
 
 	// Reactive socket registration — re-registers when socket becomes available
 	$: if ($socket) {
-		$socket.off('channel-events', channelEventHandler);
-		$socket.on('channel-events', channelEventHandler);
+		$socket.off('space-events', spaceEventHandler);
+		$socket.on('space-events', spaceEventHandler);
 	}
 
 	onDestroy(() => {
-		$socket?.off('channel-events', channelEventHandler);
+		$socket?.off('space-events', spaceEventHandler);
 	});
 </script>
 
-{#if channel}
+{#if space}
 	<div style="--d:flex; --fd:column; --w:100%; --h:100%; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)">
 		<div style="--d:flex; --ai:center; --jc:space-between; --px:0.8rem; --pt:0.6rem">
 			<div style="--weight:500; --size:1.125rem">Thread</div>
@@ -198,14 +198,14 @@
 		<div style="--maxh:100%; --w:100%; --ofy:auto; --pt:0.6rem" bind:this={messagesContainerElement}>
 			<Messages
 				id={threadId}
-				{channel}
+				{space}
 				{messages}
 				{top}
 				thread={true}
 				onLoad={async () => {
-					const newMessages = await getChannelThreadMessages(
+					const newMessages = await getSpaceThreadMessages(
 						localStorage.token,
-						channel.id,
+						space.id,
 						threadId,
 						messages.length
 					);
@@ -236,7 +236,7 @@
 					selectedModels={['']}
 					history={{}}
 					voiceModeEnabled={false}
-					channelParticipants={participants}
+					spaceParticipants={participants}
 					stopResponse={() => {}}
 					createMessagePair={() => {}}
 					{onChange}

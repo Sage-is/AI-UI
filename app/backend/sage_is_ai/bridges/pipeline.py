@@ -17,7 +17,7 @@ from sage_is_ai.models.bridges import (
 from sage_is_ai.models.auths import Auths
 from sage_is_ai.models.users import Users, UserModel
 from sage_is_ai.models.chats import Chats, ChatForm
-from sage_is_ai.models.channels import Channels
+from sage_is_ai.models.spaces import Spaces
 from sage_is_ai.models.messages import Messages, MessageForm
 from sage_is_ai.utils.auth import get_password_hash
 
@@ -63,7 +63,7 @@ class MessagePipeline:
         if connection.mode == BridgeMode.AI_CHAT:
             await self._process_ai_chat(connection, message, user)
         elif connection.mode == BridgeMode.CHANNEL_BRIDGE:
-            await self._process_channel_bridge(connection, message, user)
+            await self._process_space_bridge(connection, message, user)
 
     async def _process_ai_chat(
         self,
@@ -211,39 +211,41 @@ class MessagePipeline:
         except Exception as e:
             log.error(f"AI completion failed for bridge message: {e}")
 
-    async def _process_channel_bridge(
+    async def _process_space_bridge(
         self,
         connection: BridgeConnectionModel,
         message: IncomingMessage,
         user: UserModel,
     ) -> None:
-        """Process a message in channel bridge mode — post to Sage channel."""
+        """Process a message in space bridge mode -- post to Sage space."""
         from sage_is_ai.socket.main import sio
         from sage_is_ai.models.users import UserNameResponse
 
+        # NOTE: connection.channel_id is a DB column name -- kept for backwards compatibility
         if not connection.channel_id:
             log.error(f"No channel_id configured for bridge {connection.id}")
             return
 
-        channel = Channels.get_channel_by_id(connection.channel_id)
-        if not channel:
-            log.error(f"Channel not found: {connection.channel_id}")
+        # NOTE: connection.channel_id is a DB column name -- kept for backwards compatibility
+        space = Spaces.get_space_by_id(connection.channel_id)
+        if not space:
+            log.error(f"Space not found: {connection.channel_id}")
             return
 
-        # Create message in channel
+        # Create message in space
         msg = Messages.insert_new_message(
             form_data=MessageForm(
                 content=message.content,
                 data={"bridge": {"platform": connection.platform, "connection_id": connection.id}},
             ),
-            channel_id=channel.id,
+            channel_id=space.id,
             user_id=user.id,
         )
 
         if msg:
-            # Emit to Socket.IO channel room
+            # Emit to Socket.IO space room
             event_data = {
-                "channel_id": channel.id,
+                "space_id": space.id,
                 "message_id": msg.id,
                 "data": {
                     "type": "message",
@@ -253,23 +255,23 @@ class MessagePipeline:
                     },
                 },
                 "user": UserNameResponse(**user.model_dump()).model_dump(),
-                "channel": channel.model_dump(),
+                "space": space.model_dump(),
             }
 
             await sio.emit(
-                "channel-events",
+                "space-events",
                 event_data,
-                to=f"channel:{channel.id}",
+                to=f"space:{space.id}",
             )
 
         # If @sage mentioned, generate AI response
         if message.mentions_bot and message.content:
-            await self._generate_channel_ai_response(connection, channel, message, user, msg)
+            await self._generate_space_ai_response(connection, space, message, user, msg)
 
-    async def _generate_channel_ai_response(
-        self, connection, channel, message, user, channel_msg
+    async def _generate_space_ai_response(
+        self, connection, space, message, user, space_msg
     ) -> None:
-        """Generate an AI response in a channel when @sage is mentioned."""
+        """Generate an AI response in a space when @sage is mentioned."""
         from sage_is_ai.utils.chat import generate_chat_completion
         from sage_is_ai.socket.main import sio
         from sage_is_ai.models.users import UserNameResponse
@@ -323,22 +325,23 @@ class MessagePipeline:
                     )
 
             if assistant_content:
-                # Post AI response to channel
+                # Post AI response to space
                 ai_msg = Messages.insert_new_message(
                     form_data=MessageForm(
                         content=assistant_content,
-                        parent_id=channel_msg.id if channel_msg else None,
+                        parent_id=space_msg.id if space_msg else None,
                         data={"bridge": {"ai_response": True}},
                     ),
-                    channel_id=channel.id,
+                    # NOTE: channel_id param maps to DB column -- kept for backwards compatibility
+                    channel_id=space.id,
                     user_id=user.id,
                 )
 
                 if ai_msg:
                     await sio.emit(
-                        "channel-events",
+                        "space-events",
                         {
-                            "channel_id": channel.id,
+                            "space_id": space.id,
                             "message_id": ai_msg.id,
                             "data": {
                                 "type": "message",
@@ -350,9 +353,9 @@ class MessagePipeline:
                                 },
                             },
                             "user": UserNameResponse(**user.model_dump()).model_dump(),
-                            "channel": channel.model_dump(),
+                            "space": space.model_dump(),
                         },
-                        to=f"channel:{channel.id}",
+                        to=f"space:{space.id}",
                     )
 
                 # Send AI response back to external platform
@@ -367,7 +370,7 @@ class MessagePipeline:
                             )
                         )
         except Exception as e:
-            log.error(f"Channel AI response failed: {e}")
+            log.error(f"Space AI response failed: {e}")
 
     async def _resolve_user(
         self, connection: BridgeConnectionModel, message: IncomingMessage

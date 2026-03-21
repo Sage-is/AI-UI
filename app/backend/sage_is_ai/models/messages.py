@@ -41,6 +41,7 @@ class Message(Base):
     id = Column(Text, primary_key=True)
 
     user_id = Column(Text)
+    # TODO(low): Rename DB column from "channel_id" to "space_id" via Alembic migration.
     channel_id = Column(Text, nullable=True)
 
     parent_id = Column(Text, nullable=True)
@@ -58,7 +59,7 @@ class MessageModel(BaseModel):
 
     id: str
     user_id: str
-    channel_id: Optional[str] = None
+    channel_id: Optional[str] = None  # TODO(low): Rename to space_id after DB migration
 
     parent_id: Optional[str] = None
 
@@ -157,7 +158,8 @@ class MessageTable:
                 for message in db.query(Message).filter_by(parent_id=id).all()
             ]
 
-    def get_messages_by_channel_id(
+    def get_messages_by_space_id(
+        # NOTE: channel_id parameter maps to DB column name -- kept for backwards compatibility
         self, channel_id: str, skip: int = 0, limit: int = 50
     ) -> list[MessageModel]:
         with get_db() as db:

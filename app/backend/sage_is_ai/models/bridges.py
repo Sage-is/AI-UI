@@ -21,10 +21,12 @@ class BridgeConnection(Base):
     user_id = Column(Text, nullable=False)  # admin who created it
     platform = Column(Text, nullable=False)  # "whatsapp", "telegram", etc.
     name = Column(Text, nullable=False)  # human label
+    # TODO(low): Rename "channel_bridge" mode to "space_bridge" via migration.
     mode = Column(Text, nullable=False)  # "ai_chat" | "channel_bridge"
 
     config = Column(JSON, nullable=False)  # platform-specific config
-    channel_id = Column(Text, nullable=True)  # linked Sage channel (channel_bridge mode)
+    # TODO(low): Rename DB column from "channel_id" to "space_id" via Alembic migration.
+    channel_id = Column(Text, nullable=True)  # linked Sage space (channel_bridge mode)
     model_id = Column(Text, nullable=True)  # default AI model (ai_chat mode)
 
     user_provisioning = Column(Text, default="auto_create")  # auto_create | pre_approved | disabled
@@ -57,7 +59,8 @@ class BridgeThread(Base):
 
     sage_user_id = Column(Text, nullable=True)  # mapped Sage User.id
     sage_chat_id = Column(Text, nullable=True)  # Chat.id (ai_chat mode)
-    sage_channel_id = Column(Text, nullable=True)  # Channel.id (channel_bridge mode)
+    # TODO(low): Rename DB column from "sage_channel_id" to "sage_space_id" via Alembic migration.
+    sage_channel_id = Column(Text, nullable=True)  # Space.id (channel_bridge mode)
 
     data = Column(JSON, nullable=True)
     meta = Column(JSON, nullable=True)
@@ -81,7 +84,7 @@ class BridgeConnectionModel(BaseModel):
     mode: str
 
     config: dict
-    channel_id: Optional[str] = None
+    channel_id: Optional[str] = None  # TODO(low): Rename to space_id after DB migration
     model_id: Optional[str] = None
 
     user_provisioning: str = "auto_create"
@@ -108,7 +111,7 @@ class BridgeThreadModel(BaseModel):
 
     sage_user_id: Optional[str] = None
     sage_chat_id: Optional[str] = None
-    sage_channel_id: Optional[str] = None
+    sage_channel_id: Optional[str] = None  # TODO(low): Rename to sage_space_id after DB migration
 
     data: Optional[dict] = None
     meta: Optional[dict] = None
@@ -127,7 +130,7 @@ class BridgeConnectionForm(BaseModel):
     name: str
     mode: str
     config: dict
-    channel_id: Optional[str] = None
+    channel_id: Optional[str] = None  # TODO(low): Rename to space_id after DB migration
     model_id: Optional[str] = None
     user_provisioning: str = "auto_create"
     allowed_ids: Optional[list] = None
@@ -140,7 +143,7 @@ class BridgeConnectionUpdateForm(BaseModel):
     name: Optional[str] = None
     mode: Optional[str] = None
     config: Optional[dict] = None
-    channel_id: Optional[str] = None
+    channel_id: Optional[str] = None  # TODO(low): Rename to space_id after DB migration
     model_id: Optional[str] = None
     user_provisioning: Optional[str] = None
     allowed_ids: Optional[list] = None

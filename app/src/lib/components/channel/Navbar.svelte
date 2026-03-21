@@ -5,11 +5,11 @@
 	import { goto } from '$app/navigation';
 
 	import { showArchivedChats, showSidebar, user } from '$lib/stores';
-	import { deleteChannelById } from '$lib/apis/spaces';
+	import { deleteSpaceById } from '$lib/apis/spaces';
 	import { flyAndScale } from '$lib/utils/transitions';
 
 	import UserMenu from '$lib/components/layout/Sidebar/UserMenu.svelte';
-	import ChannelAgentsModal from './ChannelAgentsModal.svelte';
+	import SpaceAgentsModal from './SpaceAgentsModal.svelte';
 	import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
 	import MenuLines from '../icons/MenuLines.svelte';
 	import EllipsisVertical from '../icons/EllipsisVertical.svelte';
@@ -17,25 +17,25 @@
 
 	const i18n = getContext('i18n');
 
-	export let channel;
+	export let space;
 	export let onRefresh: () => void = () => {};
 
 	let showMenu = false;
 	let showAgentsModal = false;
 	let showDeleteConfirm = false;
 
-	$: channelAgents = channel?.data?.agents ?? [];
+	$: spaceAgents = space?.data?.agents ?? [];
 </script>
 
-<ChannelAgentsModal bind:show={showAgentsModal} {channel} onSave={onRefresh} />
+<SpaceAgentsModal bind:show={showAgentsModal} {space} onSave={onRefresh} />
 
 <ConfirmDialog
 	bind:show={showDeleteConfirm}
-	title={$i18n.t('Delete Channel')}
-	message={$i18n.t('Are you sure you want to delete this channel? This action cannot be undone.')}
+	title={$i18n.t('Delete Space')}
+	message={$i18n.t('Are you sure you want to delete this space? This action cannot be undone.')}
 	onConfirm={async () => {
-		if (channel) {
-			await deleteChannelById(localStorage.token, channel.id).catch((e) => {
+		if (space) {
+			await deleteSpaceById(localStorage.token, space.id).catch((e) => {
 				toast.error(`${e}`);
 			});
 			goto('/');
@@ -84,15 +84,15 @@
 				style="--fx:1 1 0%; --of:hidden; --maxw:100%; --py:0.125rem; --d:flex; --ai:center; --g:0.5rem"
 	class="{$showSidebar ? 'ml-1' : ''}"
 			>
-				{#if channel}
+				{#if space}
 					<div style="--line-clamp:1; --tt:capitalize; --weight:500; --size:1.125rem"
 	class="font-primary">
-						{channel.name}
+						{space.name}
 					</div>
 
-					{#if channelAgents.length > 0}
+					{#if spaceAgents.length > 0}
 						<div style="--d:flex; --ai:center; --g:-0.25rem">
-							{#each channelAgents as agent}
+							{#each spaceAgents as agent}
 								<Tooltip content={agent.name}>
 									<button
 										style="--d:flex; --ai:center"
@@ -112,12 +112,12 @@
 			</div>
 
 			<div style="--as:flex-start; --d:flex; --fx:none; --ai:center; --g:0.125rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)">
-				{#if channel && ($user?.role === 'admin' || $user?.role === 'facilitator')}
+				{#if space && ($user?.role === 'admin' || $user?.role === 'facilitator')}
 					<DropdownMenu.Root bind:open={showMenu} closeFocus={false} typeahead={false}>
 						<DropdownMenu.Trigger>
 							<button
 								style="--d:flex; --radius:0.6rem; --p:0.4rem; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
-								aria-label="Channel Menu"
+								aria-label="Space Menu"
 							>
 								<EllipsisVertical className="size-4" />
 							</button>
@@ -155,7 +155,7 @@
 									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="--w:1rem; --h:1rem">
 										<path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clip-rule="evenodd" />
 									</svg>
-									{$i18n.t('Delete Channel')}
+									{$i18n.t('Delete Space')}
 								</DropdownMenu.Item>
 							{/if}
 						</DropdownMenu.Content>

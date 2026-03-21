@@ -70,7 +70,7 @@ from sage_is_ai.routers import (
     pipelines,
     tasks,
     auths,
-    channels,
+    spaces,
     chat_shares,
     chats,
     notes,
@@ -287,7 +287,7 @@ from sage_is_ai.config import (
     ENABLE_API_KEY,
     ENABLE_API_KEY_ENDPOINT_RESTRICTIONS,
     API_KEY_ALLOWED_ENDPOINTS,
-    ENABLE_CHANNELS,
+    ENABLE_SPACES,
     ENABLE_NOTES,
     ENABLE_COMMUNITY_SHARING,
     ENABLE_MESSAGE_RATING,
@@ -719,7 +719,7 @@ app.state.config.MODEL_ORDER_LIST = MODEL_ORDER_LIST
 app.state.config.DEFAULT_MODEL_SELECTOR_FILTER = DEFAULT_MODEL_SELECTOR_FILTER
 
 
-app.state.config.ENABLE_CHANNELS = ENABLE_CHANNELS
+app.state.config.ENABLE_SPACES = ENABLE_SPACES
 app.state.config.ENABLE_NOTES = ENABLE_NOTES
 
 # Bridges
@@ -1184,7 +1184,7 @@ app.include_router(auths.router, prefix="/api/v1/auths", tags=["auths"])
 app.include_router(users.router, prefix="/api/v1/users", tags=["users"])
 
 
-app.include_router(channels.router, prefix="/api/v1/channels", tags=["channels"])
+app.include_router(spaces.router, prefix="/api/v1/spaces", tags=["spaces"])
 app.include_router(bridges.router, prefix="/api/v1/bridges", tags=["bridges"])
 app.include_router(
     chat_shares.router, prefix="/api/v1/chats", tags=["chat-shares"]
@@ -1572,7 +1572,7 @@ async def get_app_config(request: Request):
             **(
                 {
                     "enable_direct_connections": app.state.config.ENABLE_DIRECT_CONNECTIONS,
-                    "enable_channels": app.state.config.ENABLE_CHANNELS,
+                    "enable_spaces": app.state.config.ENABLE_SPACES,
                     "enable_notes": app.state.config.ENABLE_NOTES,
                     "enable_code_execution": app.state.config.ENABLE_CODE_EXECUTION,
                     "enable_code_interpreter": app.state.config.ENABLE_CODE_INTERPRETER,

@@ -5,28 +5,29 @@
 
 	import { page } from '$app/stores';
 	import { mobile, showSidebar, user } from '$lib/stores';
-	import { updateChannelById } from '$lib/apis/spaces';
+	import { updateSpaceById } from '$lib/apis/spaces';
 
 	import Cog6 from '$lib/components/icons/Cog6.svelte';
-	import ChannelModal from './ChannelModal.svelte';
+	import SpaceModal from './SpaceModal.svelte';
 
 	export let onUpdate: Function = () => {};
 
 	export let className = '';
-	export let channel;
+	/** Space data object for this sidebar item. */
+	export let space;
 
-	let showEditChannelModal = false;
+	let showEditSpaceModal = false;
 
 	let itemElement;
 </script>
 
-<ChannelModal
-	bind:show={showEditChannelModal}
-	{channel}
+<SpaceModal
+	bind:show={showEditSpaceModal}
+	{space}
 	edit={true}
 	{onUpdate}
 	onSubmit={async ({ name, access_control }) => {
-		const res = await updateChannelById(localStorage.token, channel.id, {
+		const res = await updateSpaceById(localStorage.token, space.id, {
 			name,
 			access_control
 		}).catch((error) => {
@@ -34,7 +35,7 @@
 		});
 
 		if (res) {
-			toast.success('Channel updated successfully');
+			toast.success('Space updated successfully');
 		}
 
 		onUpdate();
@@ -45,13 +46,13 @@
 	bind:this={itemElement}
 	style="--w:100%; --radius:0.5rem; --d:flex; --pos:relative; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --px:0.625rem; --py:0.2rem"
 	class="{className} group {$page
-		.url.pathname === `/space/${channel.id}`
+		.url.pathname === `/space/${space.id}`
 		? 'bg-gray-100 dark:bg-gray-900'
 		: ''}"
 >
 	<a
 		style="--w:100%; --d:flex; --jc:space-between"
-		href="/space/{channel.id}"
+		href="/space/{space.id}"
 		on:click={() => {
 			if ($mobile) {
 				showSidebar.set(false);
@@ -74,7 +75,7 @@
 			</svg>
 
 			<div style="--ta:left; --as:center; --of:hidden; --w:100%; --line-clamp:1">
-				{channel.name}
+				{space.name}
 			</div>
 		</div>
 	</a>
@@ -85,7 +86,7 @@
 	class="group-hover:visible"
 			on:click={(e) => {
 				e.stopPropagation();
-				showEditChannelModal = true;
+				showEditSpaceModal = true;
 			}}
 		>
 			<button style="--p:0.125rem; --hvr-dark-bgc:var(--color-gray-850); --radius:0.5rem; touch-action:auto" on:click={(e) => {}}>

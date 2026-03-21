@@ -6,7 +6,7 @@
 	import { goto } from '$app/navigation';
 
 	import { chatId, showSidebar, socket, user, settings } from '$lib/stores';
-	import { getChannelById, getChannelMessages, getChannelParticipants, sendMessage } from '$lib/apis/spaces';
+	import { getSpaceById, getSpaceMessages, getSpaceParticipants, sendMessage } from '$lib/apis/spaces';
 
 	import Messages from './Messages.svelte';
 	import MessageInput from '../chat/MessageInput.svelte';
@@ -17,6 +17,7 @@
 
 	const i18n = getContext('i18n');
 
+	/** The space ID from the route parameter. */
 	export let id = '';
 
 	let scrollEnd = true;
@@ -24,7 +25,8 @@
 
 	let top = false;
 
-	let channel = null;
+	/** Current space data (loaded from API). */
+	let space = null;
 	let messages = null;
 
 	let threadId = null;
@@ -38,23 +40,25 @@
 	let thinkingAgents = [];
 	let thinkingAgentsTimeout = {};
 
+	/** Participants (users + agents) for @mention autocomplete. */
 	let participants = { users: [], agents: [] };
 
 	$: if (id) {
 		initHandler();
 	}
 
+	/** Scroll to the newest messages. In column-reverse layout, scrollTop = 0 is the visual bottom. */
 	const scrollToBottom = () => {
 		if (messagesContainerElement) {
-			// column-reverse layout: scrollTop = 0 is the visual bottom (newest messages)
 			messagesContainerElement.scrollTop = 0;
 		}
 	};
 
+	/** Load space data, messages, and participants from the API. */
 	const initHandler = async () => {
 		top = false;
 		messages = null;
-		channel = null;
+		space = null;
 		threadId = null;
 
 		prompt = '';
@@ -65,15 +69,15 @@
 		thinkingAgents = [];
 		thinkingAgentsTimeout = {};
 
-		channel = await getChannelById(localStorage.token, id).catch((error) => {
+		space = await getSpaceById(localStorage.token, id).catch((error) => {
 			return null;
 		});
 
-		if (channel) {
-			messages = await getChannelMessages(localStorage.token, id, 0);
+		if (space) {
+			messages = await getSpaceMessages(localStorage.token, id, 0);
 
 			// Load participants for @mention autocomplete
-			participants = await getChannelParticipants(localStorage.token, id).catch(() => ({
+			participants = await getSpaceParticipants(localStorage.token, id).catch(() => ({
 				users: [],
 				agents: []
 			}));
@@ -90,14 +94,17 @@
 		}
 	};
 
-	const channelEventHandler = async (event) => {
-		if (event.channel_id === id) {
+	/**
+	 * Handle real-time events for this space (new messages, edits, reactions, typing, etc.).
+	 */
+	const spaceEventHandler = async (event) => {
+		if (event.space_id === id) {
 			const type = event?.data?.type ?? null;
 			const data = event?.data?.data ?? null;
 
 			if (type === 'message') {
 				if ((data?.parent_id ?? null) === null) {
-					// Skip if already added optimistically
+					// Deduplicate — skip if already in the list
 					if (!messages.find((m) => m.id === data.id)) {
 						messages = [data, ...messages];
 					}
@@ -183,6 +190,7 @@
 		}
 	};
 
+	/** Post a message to the space. Input is cleared immediately; the socket event adds the message to the list. */
 	const submitHandler = async (content) => {
 		if (!content && files.length === 0) {
 			return;
@@ -204,14 +212,15 @@
 			toast.error(`${error}`);
 		});
 
-		// Socket event (channelEventHandler) adds the message and scrolls.
+		// Socket event (spaceEventHandler) adds the message and scrolls.
 		// No optimistic add needed — the socket event arrives nearly instantly
 		// (backend emits it before returning the HTTP response).
 	};
 
+	/** Emit a typing indicator to the space. */
 	const onChange = async () => {
-		$socket?.emit('channel-events', {
-			channel_id: id,
+		$socket?.emit('space-events', {
+			space_id: id,
 			message_id: null,
 			data: {
 				type: 'typing',
@@ -225,10 +234,10 @@
 	let mediaQuery;
 	let largeScreen = false;
 
-	// Reactive socket registration — re-registers when socket becomes available
+	// Reactive socket registration — re-registers when socket becomes available.
 	$: if ($socket) {
-		$socket.off('channel-events', channelEventHandler);
-		$socket.on('channel-events', channelEventHandler);
+		$socket.off('space-events', spaceEventHandler);
+		$socket.on('space-events', spaceEventHandler);
 	}
 
 	onMount(() => {
@@ -251,12 +260,12 @@
 	});
 
 	onDestroy(() => {
-		$socket?.off('channel-events', channelEventHandler);
+		$socket?.off('space-events', spaceEventHandler);
 	});
 </script>
 
 <svelte:head>
-	<title>#{channel?.name ?? 'Channel'} • Sage.is AI</title>
+	<title>#{space?.name ?? 'Space'} • Sage.is AI</title>
 </svelte:head>
 
 <div
@@ -264,14 +273,14 @@
 		--ttf:cubic-bezier(0.4, 0, 0.2, 1); --w:100%;
 		--maxw:100%; --d:flex; --fd:column;
 		{$showSidebar ? '--maxw:calc(100% - 280px)' : ''}"
-	id="channel-container"
+	id="space-container"
 >
 	<PaneGroup direction="horizontal" style="--w:100%; --h:100%">
 		<Pane defaultSize={50} minSize={50} style="--h:100%; --d:flex; --fd:column; --w:100%; --pos:relative">
-			<Navbar {channel} onRefresh={initHandler} />
+				<Navbar {space} onRefresh={initHandler} />
 
 			<div style="--fx:1 1 0%; --ofy:auto">
-				{#if channel}
+				{#if space}
 					<div
 						style="--pb:0.625rem; --maxw:100%; --z:10; --w:100%; --h:100%; --pt:1.5rem; --fx:1 1 0%; --d:flex; --fd:column-reverse; --of:auto"
 	class="scrollbar-hidden"
@@ -283,14 +292,14 @@
 					>
 						{#key id}
 							<Messages
-								{channel}
+								{space}
 								{messages}
 								{top}
 								onThread={(id) => {
 									threadId = id;
 								}}
 								onLoad={async () => {
-									const newMessages = await getChannelMessages(
+									const newMessages = await getSpaceMessages(
 										localStorage.token,
 										id,
 										messages.length
@@ -338,7 +347,7 @@
 					selectedModels={['']}
 					history={{}}
 					voiceModeEnabled={false}
-					channelParticipants={participants}
+					spaceParticipants={participants}
 					stopResponse={() => {}}
 					createMessagePair={() => {}}
 					{onChange}
@@ -361,7 +370,7 @@
 	class="{threadId !== null ? ' h-screen  w-full' : 'px-6 py-4'}">
 						<Thread
 							{threadId}
-							{channel}
+							{space}
 							{participants}
 							onClose={() => {
 								threadId = null;
@@ -385,7 +394,7 @@
 				<div style="--h:100%; --w:100%; --shadow:5">
 					<Thread
 						{threadId}
-						{channel}
+						{space}
 						{participants}
 						onClose={() => {
 							threadId = null;

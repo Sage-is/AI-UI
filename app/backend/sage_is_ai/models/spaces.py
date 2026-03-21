@@ -12,11 +12,13 @@ from sqlalchemy import or_, func, select, and_, text
 from sqlalchemy.sql import exists
 
 ####################
-# Channel DB Schema
+# Space DB Schema
 ####################
 
 
 class Channel(Base):
+    # TODO(low): Rename DB table from "channel" to "space" via Alembic migration,
+    # then rename this ORM class to Space and update __tablename__.
     __tablename__ = "channel"
 
     id = Column(Text, primary_key=True)
@@ -34,7 +36,7 @@ class Channel(Base):
     updated_at = Column(BigInteger)
 
 
-class ChannelModel(BaseModel):
+class SpaceModel(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: str
@@ -57,7 +59,7 @@ class ChannelModel(BaseModel):
 ####################
 
 
-class ChannelForm(BaseModel):
+class SpaceForm(BaseModel):
     name: str
     description: Optional[str] = None
     data: Optional[dict] = None
@@ -65,12 +67,12 @@ class ChannelForm(BaseModel):
     access_control: Optional[dict] = None
 
 
-class ChannelTable:
-    def insert_new_channel(
-        self, type: Optional[str], form_data: ChannelForm, user_id: str
-    ) -> Optional[ChannelModel]:
+class SpaceTable:
+    def insert_new_space(
+        self, type: Optional[str], form_data: SpaceForm, user_id: str
+    ) -> Optional[SpaceModel]:
         with get_db() as db:
-            channel = ChannelModel(
+            space = SpaceModel(
                 **{
                     **form_data.model_dump(),
                     "type": type,
@@ -82,62 +84,62 @@ class ChannelTable:
                 }
             )
 
-            new_channel = Channel(**channel.model_dump())
+            new_space = Channel(**space.model_dump())
 
-            db.add(new_channel)
+            db.add(new_space)
             db.commit()
-            return channel
+            return space
 
-    def get_channels(self) -> list[ChannelModel]:
+    def get_spaces(self) -> list[SpaceModel]:
         with get_db() as db:
-            channels = db.query(Channel).all()
-            return [ChannelModel.model_validate(channel) for channel in channels]
+            spaces = db.query(Channel).all()
+            return [SpaceModel.model_validate(space) for space in spaces]
 
-    def get_channels_by_user_id(
+    def get_spaces_by_user_id(
         self, user_id: str, permission: str = "read"
-    ) -> list[ChannelModel]:
-        channels = self.get_channels()
+    ) -> list[SpaceModel]:
+        spaces = self.get_spaces()
         return [
-            channel
-            for channel in channels
-            if channel.user_id == user_id
-            or has_access(user_id, permission, channel.access_control)
+            space
+            for space in spaces
+            if space.user_id == user_id
+            or has_access(user_id, permission, space.access_control)
         ]
 
-    def get_channel_by_id(self, id: str) -> Optional[ChannelModel]:
+    def get_space_by_id(self, id: str) -> Optional[SpaceModel]:
         with get_db() as db:
-            channel = db.query(Channel).filter(Channel.id == id).first()
-            return ChannelModel.model_validate(channel) if channel else None
+            space = db.query(Channel).filter(Channel.id == id).first()
+            return SpaceModel.model_validate(space) if space else None
 
-    def update_channel_by_id(
-        self, id: str, form_data: ChannelForm
-    ) -> Optional[ChannelModel]:
+    def update_space_by_id(
+        self, id: str, form_data: SpaceForm
+    ) -> Optional[SpaceModel]:
         with get_db() as db:
-            channel = db.query(Channel).filter(Channel.id == id).first()
-            if not channel:
+            space = db.query(Channel).filter(Channel.id == id).first()
+            if not space:
                 return None
 
-            channel.name = form_data.name
-            channel.data = form_data.data
-            channel.meta = form_data.meta
-            channel.access_control = form_data.access_control
-            channel.updated_at = int(time.time_ns())
+            space.name = form_data.name
+            space.data = form_data.data
+            space.meta = form_data.meta
+            space.access_control = form_data.access_control
+            space.updated_at = int(time.time_ns())
 
             db.commit()
-            return ChannelModel.model_validate(channel) if channel else None
+            return SpaceModel.model_validate(space) if space else None
 
-    def delete_channel_by_id(self, id: str):
+    def delete_space_by_id(self, id: str):
         with get_db() as db:
             db.query(Channel).filter(Channel.id == id).delete()
             db.commit()
             return True
 
 
-    def get_channel_agents(self, channel: ChannelModel) -> list[dict]:
-        """Return the list of agent configs from a channel's data field."""
-        if channel.data and isinstance(channel.data, dict):
-            return channel.data.get("agents", [])
+    def get_space_agents(self, space: SpaceModel) -> list[dict]:
+        """Return the list of agent configs from a space's data field."""
+        if space.data and isinstance(space.data, dict):
+            return space.data.get("agents", [])
         return []
 
 
-Channels = ChannelTable()
+Spaces = SpaceTable()

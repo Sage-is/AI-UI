@@ -18,6 +18,7 @@ class Platform(str, Enum):
 
 class BridgeMode(str, Enum):
     AI_CHAT = "ai_chat"
+    # TODO(low): Rename to "space_bridge" after DB migration updates the mode column values.
     CHANNEL_BRIDGE = "channel_bridge"
 
 

@@ -10,7 +10,7 @@ from redis import asyncio as aioredis
 import pycrdt as Y
 
 from sage_is_ai.models.users import Users, UserNameResponse
-from sage_is_ai.models.channels import Channels
+from sage_is_ai.models.spaces import Spaces
 from sage_is_ai.models.chats import Chats
 from sage_is_ai.models.notes import Notes, NoteUpdateForm
 from sage_is_ai.utils.redis import (
@@ -301,16 +301,16 @@ async def user_join(sid, data):
     else:
         USER_POOL[user.id] = [sid]
 
-    # Join all the channels
-    channels = Channels.get_channels_by_user_id(user.id)
-    log.debug(f"{channels=}")
-    for channel in channels:
-        await sio.enter_room(sid, f"channel:{channel.id}")
+    # Join all the spaces
+    spaces = Spaces.get_spaces_by_user_id(user.id)
+    log.debug(f"{spaces=}")
+    for space in spaces:
+        await sio.enter_room(sid, f"space:{space.id}")
     return {"id": user.id, "name": user.name}
 
 
-@sio.on("join-channels")
-async def join_channel(sid, data):
+@sio.on("join-spaces")
+async def join_spaces(sid, data):
     auth = data["auth"] if "auth" in data else None
     if not auth or "token" not in auth:
         return
@@ -323,11 +323,11 @@ async def join_channel(sid, data):
     if not user:
         return
 
-    # Join all the channels
-    channels = Channels.get_channels_by_user_id(user.id)
-    log.debug(f"{channels=}")
-    for channel in channels:
-        await sio.enter_room(sid, f"channel:{channel.id}")
+    # Join all the spaces
+    spaces = Spaces.get_spaces_by_user_id(user.id)
+    log.debug(f"{spaces=}")
+    for space in spaces:
+        await sio.enter_room(sid, f"space:{space.id}")
 
 
 @sio.on("join-note")
@@ -361,9 +361,9 @@ async def join_note(sid, data):
     await sio.enter_room(sid, f"note:{note.id}")
 
 
-@sio.on("channel-events")
-async def channel_events(sid, data):
-    room = f"channel:{data['channel_id']}"
+@sio.on("space-events")
+async def space_events(sid, data):
+    room = f"space:{data['space_id']}"
     participants = sio.manager.get_participants(
         namespace="/",
         room=room,
@@ -378,9 +378,9 @@ async def channel_events(sid, data):
 
     if event_type == "typing":
         await sio.emit(
-            "channel-events",
+            "space-events",
             {
-                "channel_id": data["channel_id"],
+                "space_id": data["space_id"],
                 "message_id": data.get("message_id", None),
                 "data": event_data,
                 "user": UserNameResponse(**SESSION_POOL[sid]).model_dump(),

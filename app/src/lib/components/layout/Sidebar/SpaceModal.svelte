@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getContext, createEventDispatcher, onMount } from 'svelte';
-	import { createNewChannel, deleteChannelById } from '$lib/apis/spaces';
+	import { createNewSpace, deleteSpaceById } from '$lib/apis/spaces';
 
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import Modal from '$lib/components/common/Modal.svelte';
@@ -17,7 +17,8 @@
 	export let onSubmit: Function = () => {};
 	export let onUpdate: Function = () => {};
 
-	export let channel = null;
+	/** Space data passed in for editing; null when creating a new space. */
+	export let space = null;
 	export let edit = false;
 
 	let name = '';
@@ -29,6 +30,7 @@
 		name = name.replace(/\s/g, '-').toLocaleLowerCase();
 	}
 
+	/** Submit handler for creating or updating a space. */
 	const submitHandler = async () => {
 		loading = true;
 		await onSubmit({
@@ -39,29 +41,31 @@
 		loading = false;
 	};
 
+	/** Initialize form fields from the existing space data. */
 	const init = () => {
-		name = channel.name;
-		accessControl = channel.access_control;
+		name = space.name;
+		accessControl = space.access_control;
 	};
 
-	$: if (channel) {
+	$: if (space) {
 		init();
 	}
 
 	let showDeleteConfirmDialog = false;
 
+	/** Delete this space and navigate away if currently viewing it. */
 	const deleteHandler = async () => {
 		showDeleteConfirmDialog = false;
 
-		const res = await deleteChannelById(localStorage.token, channel.id).catch((error) => {
+		const res = await deleteSpaceById(localStorage.token, space.id).catch((error) => {
 			toast.error(error.message);
 		});
 
 		if (res) {
-			toast.success('Channel deleted successfully');
+			toast.success('Space deleted successfully');
 			onUpdate();
 
-			if ($page.url.pathname === `/space/${channel.id}`) {
+			if ($page.url.pathname === `/space/${space.id}`) {
 				goto('/');
 			}
 		}
@@ -75,9 +79,9 @@
 		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.2rem; --pt:1rem; --pb:0.2rem">
 			<div style="--size:1.125rem; --weight:500; --as:center">
 				{#if edit}
-					{$i18n.t('Edit Channel')}
+					{$i18n.t('Edit Space')}
 				{:else}
-					{$i18n.t('Create Channel')}
+					{$i18n.t('Create Space')}
 				{/if}
 			</div>
 			<button
@@ -99,7 +103,7 @@
 					}}
 				>
 					<div style="--d:flex; --fd:column; --w:100%; --mt:0.5rem">
-						<div style="--mb:0.2rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Channel Name')}</div>
+						<div style="--mb:0.2rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Space Name')}</div>
 
 						<div style="--fx:1 1 0%">
 							<input
@@ -107,7 +111,7 @@
 	class="placeholder:text-gray-300 dark:placeholder:text-gray-700"
 								type="text"
 								bind:value={name}
-								placeholder={$i18n.t('new-channel')}
+								placeholder={$i18n.t('new-space')}
 								autocomplete="off"
 							/>
 						</div>
@@ -163,7 +167,7 @@
 
 <DeleteConfirmDialog
 	bind:show={showDeleteConfirmDialog}
-	message={$i18n.t('Are you sure you want to delete this channel?')}
+	message={$i18n.t('Are you sure you want to delete this space?')}
 	confirmLabel={$i18n.t('Delete')}
 	on:confirm={() => {
 		deleteHandler();

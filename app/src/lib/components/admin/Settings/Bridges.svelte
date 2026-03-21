@@ -97,7 +97,7 @@
 		formName = bridge.name;
 		formMode = bridge.mode;
 		formConfig = { ...(bridge.config || {}) };
-		formChannelId = bridge.channel_id || '';
+		formChannelId = bridge.channel_id || ''; // TODO(low): Rename to formSpaceId + bridge.space_id after DB migration
 		formModelId = bridge.model_id || '';
 		formUserProvisioning = bridge.user_provisioning || 'auto_create';
 		formAllowedIds = bridge.allowed_ids ? bridge.allowed_ids.join(', ') : '';
@@ -112,7 +112,7 @@
 				name: formName,
 				mode: formMode,
 				config: formConfig,
-				channel_id: formChannelId || null,
+				channel_id: formChannelId || null, // TODO(low): Rename to space_id after DB migration
 				model_id: formModelId || null,
 				user_provisioning: formUserProvisioning,
 				allowed_ids: formAllowedIds
@@ -224,7 +224,8 @@
 							<div style="--size:0.6rem; --c:var(--color-gray-500); --d:flex; --g:0.5rem">
 								<span>{getPlatformDisplayName(bridge.platform)}</span>
 								<span>-</span>
-								<span>{bridge.mode === 'ai_chat' ? 'AI Chat' : 'Channel Bridge'}</span>
+								<!-- TODO(low): Rename 'Channel Bridge' to 'Space Bridge' after DB migration renames the mode value -->
+							<span>{bridge.mode === 'ai_chat' ? 'AI Chat' : 'Channel Bridge'}</span>
 								{#if bridge.status_message}
 									<span>- {bridge.status_message}</span>
 								{/if}
@@ -382,6 +383,7 @@
 						style="--w:100%; --p:0.5rem; --br:0.4rem; --b:1px solid var(--color-gray-300); --dark-b:1px solid var(--color-gray-600); --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800)"
 					>
 						<option value="ai_chat">{$i18n.t('AI Chat - Direct AI conversations')}</option>
+tttttt<!-- TODO(low): Rename mode value and label to "Space Bridge" after DB migration -->
 						<option value="channel_bridge"
 							>{$i18n.t('Channel Bridge - Mirror to Sage channel')}</option
 						>
@@ -460,7 +462,7 @@
 							</div>
 						{/if}
 
-						<!-- Channel ID (for channel_bridge mode) -->
+						<!-- TODO(low): Rename "Channel ID" labels/ids to "Space ID" after DB migration -->
 						{#if formMode === 'channel_bridge'}
 							<div>
 								<label

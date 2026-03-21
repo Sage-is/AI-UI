@@ -422,13 +422,13 @@
 		}
 	};
 
-	const channelEventHandler = async (event: any) => {
+	const spaceEventHandler = async (event: any) => {
 		if (event.data?.type === 'typing') {
 			return;
 		}
 
 		// check url path
-		const channel = $page.url.pathname.includes(`/space/${event.channel_id}`);
+		const isViewingSpace = $page.url.pathname.includes(`/space/${event.space_id}`);
 
 		let isFocused = document.visibilityState !== 'visible';
 		if (window.electronAPI) {
@@ -440,7 +440,7 @@
 			}
 		}
 
-		if ((!channel || isFocused) && event?.user?.id !== $user?.id) {
+		if ((!isViewingSpace || isFocused) && event?.user?.id !== $user?.id) {
 			await tick();
 			const type = event?.data?.type ?? null;
 			const data = event?.data?.data ?? null;
@@ -448,7 +448,7 @@
 			if (type === 'message') {
 				if ($isLastActiveTab) {
 					if ($settings?.notificationEnabled ?? false) {
-						new Notification(`${data?.user?.name} (#${event?.channel?.name}) • ${branding?.title || 'Sage.is AI'}`, {
+						new Notification(`${data?.user?.name} (#${event?.space?.name}) • ${branding?.title || 'Sage.is AI'}`, {
 							body: data?.content,
 							icon: data?.user?.profile_image_url ?? branding?.favicon_url ?? branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`
 						});
@@ -458,10 +458,10 @@
 				toast.custom(NotificationToast, {
 					componentProps: {
 						onClick: () => {
-							goto(`/space/${event.channel_id}`);
+							goto(`/space/${event.space_id}`);
 						},
 						content: data?.content,
-						title: event?.channel?.name
+						title: event?.space?.name
 					},
 					duration: 15000,
 					unstyled: true
@@ -470,12 +470,12 @@
 		}
 	};
 
-	const channelMentionHandler = async (event: any) => {
-		// @mention notification — always show, even if viewing the channel
+	const spaceMentionHandler = async (event: any) => {
+		// @mention notification — always show, even if viewing the space
 		if ($isLastActiveTab) {
 			if ($settings?.notificationEnabled ?? false) {
 				new Notification(
-					`@${event?.user?.name} mentioned you in #${event?.channel_name}`,
+					`@${event?.user?.name} mentioned you in #${event?.space_name}`,
 					{
 						body: event?.message,
 						icon:
@@ -491,10 +491,10 @@
 		toast.custom(NotificationToast, {
 			componentProps: {
 				onClick: () => {
-					goto(`/space/${event.channel_id}`);
+					goto(`/space/${event.space_id}`);
 				},
 				content: event?.message,
-				title: `@mentioned in #${event?.channel_name}`
+				title: `@mentioned in #${event?.space_name}`
 			},
 			duration: 15000,
 			unstyled: true
@@ -627,16 +627,16 @@
 		user.subscribe((value) => {
 			if (value) {
 				$socket?.off('chat-events', chatEventHandler);
-				$socket?.off('channel-events', channelEventHandler);
-				$socket?.off('channel-mention', channelMentionHandler);
+				$socket?.off('space-events', spaceEventHandler);
+				$socket?.off('space-mention', spaceMentionHandler);
 
 				$socket?.on('chat-events', chatEventHandler);
-				$socket?.on('channel-events', channelEventHandler);
-				$socket?.on('channel-mention', channelMentionHandler);
+				$socket?.on('space-events', spaceEventHandler);
+				$socket?.on('space-mention', spaceMentionHandler);
 			} else {
 				$socket?.off('chat-events', chatEventHandler);
-				$socket?.off('channel-events', channelEventHandler);
-				$socket?.off('channel-mention', channelMentionHandler);
+				$socket?.off('space-events', spaceEventHandler);
+				$socket?.off('space-mention', spaceMentionHandler);
 			}
 		});
 
