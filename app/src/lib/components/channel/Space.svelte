@@ -77,10 +77,10 @@
 			messages = await getSpaceMessages(localStorage.token, id, 0);
 
 			// Load participants for @mention autocomplete
-			participants = await getSpaceParticipants(localStorage.token, id).catch(() => ({
-				users: [],
-				agents: []
-			}));
+			participants = await getSpaceParticipants(localStorage.token, id).catch((err) => {
+				console.error('[Space] Failed to load participants:', err);
+				return { users: [], agents: [] };
+			});
 
 			if (messages) {
 				scrollToBottom();

@@ -15,6 +15,7 @@
 
 	export let files = [];
 	export let command = '';
+	/** Space participants for @mention autocomplete; null in regular chat (falls back to model selector). */
 	export let spaceParticipants = null;
 
 	export let onSelect = (e) => {};
@@ -33,26 +34,64 @@
 		commandElement?.selectDown();
 	};
 
-	$: if (show) {
+	// Only load prompts/knowledge for / and # commands — @mentions don't need them.
+	$: if (show && command?.charAt(0) !== '@') {
 		init();
 	}
 
+	/** Load prompts and knowledge bases for / and # command dropdowns. */
 	const init = async () => {
 		loading = true;
-		await Promise.all([
-			(async () => {
-				prompts.set(await getPrompts(localStorage.token));
-			})(),
-			(async () => {
-				knowledge.set(await getKnowledgeBases(localStorage.token));
-			})()
-		]);
+		try {
+			await Promise.all([
+				(async () => {
+					prompts.set(await getPrompts(localStorage.token));
+				})(),
+				(async () => {
+					knowledge.set(await getKnowledgeBases(localStorage.token));
+				})()
+			]);
+		} catch (e) {
+			console.error('[Commands] Failed to load prompts/knowledge:', e);
+		}
 		loading = false;
 	};
 </script>
 
 {#if show}
-	{#if !loading}
+	<!-- @mentions render immediately — no loading needed, participants are already loaded -->
+	{#if command?.charAt(0) === '@'}
+		{#if spaceParticipants?.users?.length > 0 || spaceParticipants?.agents?.length > 0}
+			<Mentions
+				bind:this={commandElement}
+				participants={spaceParticipants}
+				query={command.slice(1)}
+				show={true}
+				onSelect={(participant) => {
+					insertTextHandler(`@${participant.data.name} `);
+				}}
+			/>
+		{:else}
+			<Models
+				bind:this={commandElement}
+				{command}
+				onSelect={(e) => {
+					const { type, data } = e;
+
+					if (type === 'model') {
+						insertTextHandler('');
+
+						onSelect({
+							type: 'model',
+							data: data
+						});
+					}
+				}}
+			/>
+		{/if}
+
+	<!-- / and # commands wait for prompts/knowledge to load -->
+	{:else if !loading}
 		{#if command?.charAt(0) === '/'}
 			<Prompts
 				bind:this={commandElement}
@@ -96,36 +135,9 @@
 					}
 				}}
 			/>
-		{:else if command?.charAt(0) === '@'}
-			{#if spaceParticipants}
-				<Mentions
-					bind:this={commandElement}
-					participants={spaceParticipants}
-					query={command.slice(1)}
-					show={true}
-					onSelect={(participant) => {
-						insertTextHandler(`@${participant.data.name} `);
-					}}
-				/>
-			{:else}
-				<Models
-					bind:this={commandElement}
-					{command}
-					onSelect={(e) => {
-						const { type, data } = e;
-
-						if (type === 'model') {
-							insertTextHandler('');
-
-							onSelect({
-								type: 'model',
-								data: data
-							});
-						}
-					}}
-				/>
-			{/if}
 		{/if}
+
+	<!-- Loading spinner (only for / and # commands) -->
 	{:else}
 		<div
 			id="commands-container"

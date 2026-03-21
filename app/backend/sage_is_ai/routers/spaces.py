@@ -190,7 +190,7 @@ async def get_space_participants(id: str, user=Depends(get_verified_user)):
     else:
         # No access control -- all users have access
         result = Users.get_users()
-        space_users = result.users if hasattr(result, "users") else result
+        space_users = result.get("users", []) if isinstance(result, dict) else result
     users_list = [
         UserNameResponse(**u.model_dump()).model_dump()
         for u in space_users
@@ -263,7 +263,7 @@ async def send_notification(name, webui_url, space, message, active_user_ids):
         users = get_users_with_access("read", space.access_control)
     else:
         result = Users.get_users()
-        users = result.users if hasattr(result, "users") else result
+        users = result.get("users", []) if isinstance(result, dict) else result
 
     for user in users:
         if user.id in active_user_ids:
