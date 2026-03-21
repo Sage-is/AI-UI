@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
 	import { models } from '$lib/stores';
-	import { updateChannelById } from '$lib/apis/spaces';
+	import { updateSpaceById } from '$lib/apis/spaces';
 	import Modal from '$lib/components/common/Modal.svelte';
 	import GarbageBin from '$lib/components/icons/GarbageBin.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
@@ -9,14 +9,14 @@
 	const i18n = getContext('i18n');
 
 	export let show = false;
-	export let channel;
+	export let space;
 	export let onSave: () => void = () => {};
 
 	let agents: { model_id: string; name: string; profile_image_url: string }[] = [];
 	let selectedModelId = '';
 
-	$: if (show && channel) {
-		agents = [...(channel?.data?.agents ?? [])];
+	$: if (show && space) {
+		agents = [...(space?.data?.agents ?? [])];
 	}
 
 	$: availableModels = ($models ?? []).filter(
@@ -45,12 +45,12 @@
 	};
 
 	const saveHandler = async () => {
-		const updatedData = { ...(channel.data || {}), agents };
-		await updateChannelById(localStorage.token, channel.id, {
-			name: channel.name,
+		const updatedData = { ...(space.data || {}), agents };
+		await updateSpaceById(localStorage.token, space.id, {
+			name: space.name,
 			data: updatedData,
-			meta: channel.meta,
-			access_control: channel.access_control
+			meta: space.meta,
+			access_control: space.access_control
 		});
 		show = false;
 		onSave();

@@ -12,7 +12,7 @@ from pydantic import BaseModel
 from sage_is_ai.socket.main import sio, get_user_ids_from_room, USER_POOL
 from sage_is_ai.models.users import Users, UserNameResponse
 
-from sage_is_ai.models.channels import Channels, ChannelModel, ChannelForm
+from sage_is_ai.models.spaces import Spaces, SpaceModel, SpaceForm
 from sage_is_ai.models.messages import (
     Messages,
     MessageModel,
@@ -55,14 +55,14 @@ def _get_user_for_message(message) -> UserNameResponse:
     return UserNameResponse(**user.model_dump())
 
 
-def _check_channel_access(user, channel):
-    """Check if a user has read access to a channel. Raises 403 if not."""
+def _check_space_access(user,space):
+    """Check if a user has read access to a space. Raises 403 if not."""
     if user.role == "admin":
         return
-    if has_access(user.id, type="read", access_control=channel.access_control):
+    if has_access(user.id, type="read", access_control=space.access_control):
         return
     if user.role == "facilitator" and has_facilitator_access(
-        user.id, type="read", access_control=channel.access_control
+        user.id, type="read", access_control=space.access_control
     ):
         return
     raise HTTPException(
@@ -70,32 +70,32 @@ def _check_channel_access(user, channel):
     )
 
 ############################
-# GetChatList
+# GetSpaces
 ############################
 
 
-@router.get("/", response_model=list[ChannelModel])
-async def get_channels(user=Depends(get_verified_user)):
-    return Channels.get_channels_by_user_id(user.id)
+@router.get("/", response_model=list[SpaceModel])
+async def get_spaces(user=Depends(get_verified_user)):
+    return Spaces.get_spaces_by_user_id(user.id)
 
 
-@router.get("/list", response_model=list[ChannelModel])
-async def get_all_channels(user=Depends(get_verified_user)):
+@router.get("/list", response_model=list[SpaceModel])
+async def get_all_spaces(user=Depends(get_verified_user)):
     if user.role == "admin":
-        return Channels.get_channels()
-    return Channels.get_channels_by_user_id(user.id)
+        return Spaces.get_spaces()
+    return Spaces.get_spaces_by_user_id(user.id)
 
 
 ############################
-# CreateNewChannel
+# CreateNewSpace
 ############################
 
 
-@router.post("/create", response_model=Optional[ChannelModel])
-async def create_new_channel(form_data: ChannelForm, user=Depends(get_admin_or_facilitator_user)):
+@router.post("/create", response_model=Optional[SpaceModel])
+async def create_new_space(form_data: SpaceForm, user=Depends(get_admin_or_facilitator_user)):
     try:
-        channel = Channels.insert_new_channel(None, form_data, user.id)
-        return ChannelModel(**channel.model_dump())
+        space = Spaces.insert_new_space(None, form_data, user.id)
+        return SpaceModel(**space.model_dump())
     except Exception as e:
         log.exception(e)
         raise HTTPException(
@@ -104,41 +104,41 @@ async def create_new_channel(form_data: ChannelForm, user=Depends(get_admin_or_f
 
 
 ############################
-# GetChannelById
+# GetSpaceById
 ############################
 
 
-@router.get("/{id}", response_model=Optional[ChannelModel])
-async def get_channel_by_id(id: str, user=Depends(get_verified_user)):
-    channel = Channels.get_channel_by_id(id)
-    if not channel:
+@router.get("/{id}", response_model=Optional[SpaceModel])
+async def get_space_by_id(id: str, user=Depends(get_verified_user)):
+    space = Spaces.get_space_by_id(id)
+    if not space:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_channel_access(user, channel)
+    _check_space_access(user,space)
 
-    return ChannelModel(**channel.model_dump())
+    return SpaceModel(**space.model_dump())
 
 
 ############################
-# UpdateChannelById
+# UpdateSpaceById
 ############################
 
 
-@router.post("/{id}/update", response_model=Optional[ChannelModel])
-async def update_channel_by_id(
-    id: str, form_data: ChannelForm, user=Depends(get_admin_or_facilitator_user)
+@router.post("/{id}/update", response_model=Optional[SpaceModel])
+async def update_space_by_id(
+    id: str, form_data: SpaceForm, user=Depends(get_admin_or_facilitator_user)
 ):
-    channel = Channels.get_channel_by_id(id)
-    if not channel:
+    space = Spaces.get_space_by_id(id)
+    if not space:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
     try:
-        channel = Channels.update_channel_by_id(id, form_data)
-        return ChannelModel(**channel.model_dump())
+        space = Spaces.update_space_by_id(id, form_data)
+        return SpaceModel(**space.model_dump())
     except Exception as e:
         log.exception(e)
         raise HTTPException(
@@ -147,20 +147,20 @@ async def update_channel_by_id(
 
 
 ############################
-# DeleteChannelById
+# DeleteSpaceById
 ############################
 
 
 @router.delete("/{id}/delete", response_model=bool)
-async def delete_channel_by_id(id: str, user=Depends(get_admin_or_facilitator_user)):
-    channel = Channels.get_channel_by_id(id)
-    if not channel:
+async def delete_space_by_id(id: str, user=Depends(get_admin_or_facilitator_user)):
+    space = Spaces.get_space_by_id(id)
+    if not space:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
     try:
-        Channels.delete_channel_by_id(id)
+        Spaces.delete_space_by_id(id)
         return True
     except Exception as e:
         log.exception(e)
@@ -170,40 +170,40 @@ async def delete_channel_by_id(id: str, user=Depends(get_admin_or_facilitator_us
 
 
 ############################
-# GetChannelParticipants
+# GetSpaceParticipants
 ############################
 
 
 @router.get("/{id}/participants")
-async def get_channel_participants(id: str, user=Depends(get_verified_user)):
-    channel = Channels.get_channel_by_id(id)
-    if not channel:
+async def get_space_participants(id: str, user=Depends(get_verified_user)):
+    space = Spaces.get_space_by_id(id)
+    if not space:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_channel_access(user, channel)
+    _check_space_access(user,space)
 
     # Get users with read access
-    if channel.access_control:
-        channel_users = get_users_with_access("read", channel.access_control)
+    if space.access_control:
+        space_users = get_users_with_access("read", space.access_control)
     else:
-        # No access control — all users have access
+        # No access control -- all users have access
         result = Users.get_users()
-        channel_users = result.users if hasattr(result, "users") else result
+        space_users = result.users if hasattr(result, "users") else result
     users_list = [
         UserNameResponse(**u.model_dump()).model_dump()
-        for u in channel_users
+        for u in space_users
     ]
 
-    # Get agents from channel data
-    agents = Channels.get_channel_agents(channel)
+    # Get agents from space data
+    agents = Spaces.get_space_agents(space)
 
     return {"users": users_list, "agents": agents}
 
 
 ############################
-# GetChannelMessages
+# GetSpaceMessages
 ############################
 
 
@@ -212,18 +212,18 @@ class MessageUserResponse(MessageResponse):
 
 
 @router.get("/{id}/messages", response_model=list[MessageUserResponse])
-async def get_channel_messages(
+async def get_space_messages(
     id: str, skip: int = 0, limit: int = 50, user=Depends(get_verified_user)
 ):
-    channel = Channels.get_channel_by_id(id)
-    if not channel:
+    space = Spaces.get_space_by_id(id)
+    if not space:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_channel_access(user, channel)
+    _check_space_access(user,space)
 
-    message_list = Messages.get_messages_by_channel_id(id, skip, limit)
+    message_list = Messages.get_messages_by_space_id(id, skip, limit)
     user_cache = {}
 
     messages = []
@@ -258,9 +258,9 @@ async def get_channel_messages(
 ############################
 
 
-async def send_notification(name, webui_url, channel, message, active_user_ids):
-    if channel.access_control:
-        users = get_users_with_access("read", channel.access_control)
+async def send_notification(name, webui_url, space, message, active_user_ids):
+    if space.access_control:
+        users = get_users_with_access("read", space.access_control)
     else:
         result = Users.get_users()
         users = result.users if hasattr(result, "users") else result
@@ -278,18 +278,18 @@ async def send_notification(name, webui_url, channel, message, active_user_ids):
                     post_webhook(
                         name,
                         webhook_url,
-                        f"#{channel.name} - {webui_url}/space/{channel.id}\n\n{message.content}",
+                        f"#{space.name} - {webui_url}/space/{space.id}\n\n{message.content}",
                         {
-                            "action": "channel",
+                            "action": "space",
                             "message": message.content,
-                            "title": channel.name,
-                            "url": f"{webui_url}/space/{channel.id}",
+                            "title": space.name,
+                            "url": f"{webui_url}/space/{space.id}",
                         },
                     )
 
 
-async def generate_agent_response(request, channel, trigger_message, agent_config, trigger_user):
-    """Generate an AI agent response when @mentioned in a channel."""
+async def generate_agent_response(request, space, trigger_message, agent_config, trigger_user):
+    """Generate an AI agent response when @mentioned in a space."""
     try:
         app = request.app
         model_id = agent_config.get("model_id")
@@ -319,15 +319,15 @@ async def generate_agent_response(request, channel, trigger_message, agent_confi
 
         # Emit "thinking" indicator
         await sio.emit(
-            "channel-events",
+            "space-events",
             {
-                "channel_id": channel.id,
+                "space_id": space.id,
                 "data": {
                     "type": "thinking",
                     "data": {"agent": agent_info, "thinking": True},
                 },
             },
-            to=f"channel:{channel.id}",
+            to=f"space:{space.id}",
         )
 
         # Build messages for the model
@@ -358,21 +358,21 @@ async def generate_agent_response(request, channel, trigger_message, agent_confi
                 .get("content", "")
             )
         else:
-            # Handle StreamingResponse — shouldn't happen with stream=False
+            # Handle StreamingResponse -- shouldn't happen with stream=False
             log.warning("Unexpected streaming response from agent completion")
             content = "I'm sorry, I couldn't generate a response."
 
         # Emit "thinking done"
         await sio.emit(
-            "channel-events",
+            "space-events",
             {
-                "channel_id": channel.id,
+                "space_id": space.id,
                 "data": {
                     "type": "thinking",
                     "data": {"agent": agent_info, "thinking": False},
                 },
             },
-            to=f"channel:{channel.id}",
+            to=f"space:{space.id}",
         )
 
         if not content:
@@ -385,7 +385,7 @@ async def generate_agent_response(request, channel, trigger_message, agent_confi
             data={"agent": agent_info},
         )
         agent_message = Messages.insert_new_message(
-            agent_message_form, channel.id, AGENT_USER_ID
+            agent_message_form, space.id, AGENT_USER_ID
         )
 
         if agent_message:
@@ -397,9 +397,9 @@ async def generate_agent_response(request, channel, trigger_message, agent_confi
             )
 
             await sio.emit(
-                "channel-events",
+                "space-events",
                 {
-                    "channel_id": channel.id,
+                    "space_id": space.id,
                     "message_id": agent_message.id,
                     "data": {
                         "type": "message",
@@ -414,9 +414,9 @@ async def generate_agent_response(request, channel, trigger_message, agent_confi
                         ).model_dump(),
                     },
                     "user": agent_user.model_dump(),
-                    "channel": channel.model_dump(),
+                    "space": space.model_dump(),
                 },
-                to=f"channel:{channel.id}",
+                to=f"space:{space.id}",
             )
 
     except Exception as e:
@@ -424,21 +424,21 @@ async def generate_agent_response(request, channel, trigger_message, agent_confi
         # Clear thinking indicator on error
         try:
             await sio.emit(
-                "channel-events",
+                "space-events",
                 {
-                    "channel_id": channel.id,
+                    "space_id": space.id,
                     "data": {
                         "type": "thinking",
                         "data": {"agent": agent_config, "thinking": False},
                     },
                 },
-                to=f"channel:{channel.id}",
+                to=f"space:{space.id}",
             )
         except Exception:
             pass
 
 
-async def send_mention_notifications(app, channel, message, mentions, sender_user):
+async def send_mention_notifications(app, space, message, mentions, sender_user):
     """Send targeted notifications to @mentioned users."""
     try:
         for mention_name in mentions:
@@ -446,19 +446,19 @@ async def send_mention_notifications(app, channel, message, mentions, sender_use
             if not mentioned_user:
                 continue
 
-            # Check if user has channel access
+            # Check if user has space access
             if mentioned_user.role != "admin" and not has_access(
-                mentioned_user.id, type="read", access_control=channel.access_control
+                mentioned_user.id, type="read", access_control=space.access_control
             ):
                 continue
 
             # Emit targeted socket notification
             for sid in USER_POOL.get(mentioned_user.id, []):
                 await sio.emit(
-                    "channel-mention",
+                    "space-mention",
                     {
-                        "channel_id": channel.id,
-                        "channel_name": channel.name,
+                        "space_id": space.id,
+                        "space_name": space.name,
                         "message": message.content,
                         "user": UserNameResponse(
                             **sender_user.model_dump()
@@ -479,12 +479,12 @@ async def send_mention_notifications(app, channel, message, mentions, sender_use
                     post_webhook(
                         app.state.WEBUI_NAME,
                         webhook_url,
-                        f"@{sender_user.name} mentioned you in #{channel.name}\n\n{message.content}",
+                        f"@{sender_user.name} mentioned you in #{space.name}\n\n{message.content}",
                         {
                             "action": "mention",
                             "message": message.content,
-                            "title": f"#{channel.name}",
-                            "url": f"{webui_url}/space/{channel.id}",
+                            "title": f"#{space.name}",
+                            "url": f"{webui_url}/space/{space.id}",
                         },
                     )
     except Exception as e:
@@ -499,20 +499,20 @@ async def post_new_message(
     background_tasks: BackgroundTasks,
     user=Depends(get_verified_user),
 ):
-    channel = Channels.get_channel_by_id(id)
-    if not channel:
+    space = Spaces.get_space_by_id(id)
+    if not space:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_channel_access(user, channel)
+    _check_space_access(user,space)
 
     try:
-        message = Messages.insert_new_message(form_data, channel.id, user.id)
+        message = Messages.insert_new_message(form_data, space.id, user.id)
 
         if message:
             event_data = {
-                "channel_id": channel.id,
+                "space_id": space.id,
                 "message_id": message.id,
                 "data": {
                     "type": "message",
@@ -529,13 +529,13 @@ async def post_new_message(
                     ).model_dump(),
                 },
                 "user": UserNameResponse(**user.model_dump()).model_dump(),
-                "channel": channel.model_dump(),
+                "space": space.model_dump(),
             }
 
             await sio.emit(
-                "channel-events",
+                "space-events",
                 event_data,
-                to=f"channel:{channel.id}",
+                to=f"space:{space.id}",
             )
 
             if message.parent_id:
@@ -544,9 +544,9 @@ async def post_new_message(
 
                 if parent_message:
                     await sio.emit(
-                        "channel-events",
+                        "space-events",
                         {
-                            "channel_id": channel.id,
+                            "space_id": space.id,
                             "message_id": parent_message.id,
                             "data": {
                                 "type": "message:reply",
@@ -558,30 +558,30 @@ async def post_new_message(
                                 ).model_dump(),
                             },
                             "user": UserNameResponse(**user.model_dump()).model_dump(),
-                            "channel": channel.model_dump(),
+                            "space": space.model_dump(),
                         },
-                        to=f"channel:{channel.id}",
+                        to=f"space:{space.id}",
                     )
 
-            active_user_ids = get_user_ids_from_room(f"channel:{channel.id}")
+            active_user_ids = get_user_ids_from_room(f"space:{space.id}")
 
             background_tasks.add_task(
                 send_notification,
                 request.app.state.WEBUI_NAME,
                 request.app.state.config.WEBUI_URL,
-                channel,
+                space,
                 message,
                 active_user_ids,
             )
 
             # Forward to external bridges (skip if message originated from a bridge)
             if not (form_data.data and form_data.data.get("bridge")):
-                from sage_is_ai.bridges.outgoing import forward_channel_message_to_bridges
+                from sage_is_ai.bridges.outgoing import forward_space_message_to_bridges
 
                 background_tasks.add_task(
-                    forward_channel_message_to_bridges,
+                    forward_space_message_to_bridges,
                     request.app,
-                    channel.id,
+                    space.id,
                     message.content,
                     user.id,
                     message.id,
@@ -592,9 +592,9 @@ async def post_new_message(
 
             if mentions:
                 # Trigger agent responses for @mentioned agents
-                channel_agents = Channels.get_channel_agents(channel)
+                space_agents = Spaces.get_space_agents(space)
                 lower_mentions = {m.lower() for m in mentions}
-                for agent_config in channel_agents:
+                for agent_config in space_agents:
                     agent_name_lower = agent_config.get("name", "").lower()
                     if (
                         agent_name_lower in lower_mentions
@@ -603,7 +603,7 @@ async def post_new_message(
                         asyncio.create_task(
                             generate_agent_response(
                                 request,
-                                channel,
+                                space,
                                 message,
                                 agent_config,
                                 user,
@@ -614,7 +614,7 @@ async def post_new_message(
                 background_tasks.add_task(
                     send_mention_notifications,
                     request.app,
-                    channel,
+                    space,
                     message,
                     mentions,
                     user,
@@ -629,21 +629,21 @@ async def post_new_message(
 
 
 ############################
-# GetChannelMessage
+# GetSpaceMessage
 ############################
 
 
 @router.get("/{id}/messages/{message_id}", response_model=Optional[MessageUserResponse])
-async def get_channel_message(
+async def get_space_message(
     id: str, message_id: str, user=Depends(get_verified_user)
 ):
-    channel = Channels.get_channel_by_id(id)
-    if not channel:
+    space = Spaces.get_space_by_id(id)
+    if not space:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_channel_access(user, channel)
+    _check_space_access(user,space)
 
     message = Messages.get_message_by_id(message_id)
     if not message:
@@ -651,6 +651,7 @@ async def get_channel_message(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
+    # NOTE: message.channel_id is a DB column name -- kept for backwards compatibility
     if message.channel_id != id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=ERROR_MESSAGES.DEFAULT()
@@ -665,27 +666,27 @@ async def get_channel_message(
 
 
 ############################
-# GetChannelThreadMessages
+# GetSpaceThreadMessages
 ############################
 
 
 @router.get(
     "/{id}/messages/{message_id}/thread", response_model=list[MessageUserResponse]
 )
-async def get_channel_thread_messages(
+async def get_space_thread_messages(
     id: str,
     message_id: str,
     skip: int = 0,
     limit: int = 50,
     user=Depends(get_verified_user),
 ):
-    channel = Channels.get_channel_by_id(id)
-    if not channel:
+    space = Spaces.get_space_by_id(id)
+    if not space:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_channel_access(user, channel)
+    _check_space_access(user,space)
 
     message_list = Messages.get_messages_by_parent_id(id, message_id, skip, limit)
     user_cache = {}
@@ -725,13 +726,13 @@ async def get_channel_thread_messages(
 async def update_message_by_id(
     id: str, message_id: str, form_data: MessageForm, user=Depends(get_verified_user)
 ):
-    channel = Channels.get_channel_by_id(id)
-    if not channel:
+    space = Spaces.get_space_by_id(id)
+    if not space:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_channel_access(user, channel)
+    _check_space_access(user,space)
 
     message = Messages.get_message_by_id(message_id)
     if not message:
@@ -739,6 +740,7 @@ async def update_message_by_id(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
+    # NOTE: message.channel_id is a DB column name -- kept for backwards compatibility
     if message.channel_id != id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=ERROR_MESSAGES.DEFAULT()
@@ -750,9 +752,9 @@ async def update_message_by_id(
 
         if message:
             await sio.emit(
-                "channel-events",
+                "space-events",
                 {
-                    "channel_id": channel.id,
+                    "space_id": space.id,
                     "message_id": message.id,
                     "data": {
                         "type": "message:update",
@@ -766,9 +768,9 @@ async def update_message_by_id(
                         ).model_dump(),
                     },
                     "user": UserNameResponse(**user.model_dump()).model_dump(),
-                    "channel": channel.model_dump(),
+                    "space": space.model_dump(),
                 },
-                to=f"channel:{channel.id}",
+                to=f"space:{space.id}",
             )
 
         return MessageModel(**message.model_dump())
@@ -792,13 +794,13 @@ class ReactionForm(BaseModel):
 async def add_reaction_to_message(
     id: str, message_id: str, form_data: ReactionForm, user=Depends(get_verified_user)
 ):
-    channel = Channels.get_channel_by_id(id)
-    if not channel:
+    space = Spaces.get_space_by_id(id)
+    if not space:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_channel_access(user, channel)
+    _check_space_access(user,space)
 
     message = Messages.get_message_by_id(message_id)
     if not message:
@@ -806,6 +808,7 @@ async def add_reaction_to_message(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
+    # NOTE: message.channel_id is a DB column name -- kept for backwards compatibility
     if message.channel_id != id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=ERROR_MESSAGES.DEFAULT()
@@ -816,9 +819,9 @@ async def add_reaction_to_message(
         message = Messages.get_message_by_id(message_id)
 
         await sio.emit(
-            "channel-events",
+            "space-events",
             {
-                "channel_id": channel.id,
+                "space_id": space.id,
                 "message_id": message.id,
                 "data": {
                     "type": "message:reaction:add",
@@ -829,9 +832,9 @@ async def add_reaction_to_message(
                     },
                 },
                 "user": UserNameResponse(**user.model_dump()).model_dump(),
-                "channel": channel.model_dump(),
+                "space": space.model_dump(),
             },
-            to=f"channel:{channel.id}",
+            to=f"space:{space.id}",
         )
 
         return True
@@ -851,13 +854,13 @@ async def add_reaction_to_message(
 async def remove_reaction_by_id_and_user_id_and_name(
     id: str, message_id: str, form_data: ReactionForm, user=Depends(get_verified_user)
 ):
-    channel = Channels.get_channel_by_id(id)
-    if not channel:
+    space = Spaces.get_space_by_id(id)
+    if not space:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_channel_access(user, channel)
+    _check_space_access(user,space)
 
     message = Messages.get_message_by_id(message_id)
     if not message:
@@ -865,6 +868,7 @@ async def remove_reaction_by_id_and_user_id_and_name(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
+    # NOTE: message.channel_id is a DB column name -- kept for backwards compatibility
     if message.channel_id != id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=ERROR_MESSAGES.DEFAULT()
@@ -878,9 +882,9 @@ async def remove_reaction_by_id_and_user_id_and_name(
         message = Messages.get_message_by_id(message_id)
 
         await sio.emit(
-            "channel-events",
+            "space-events",
             {
-                "channel_id": channel.id,
+                "space_id": space.id,
                 "message_id": message.id,
                 "data": {
                     "type": "message:reaction:remove",
@@ -891,9 +895,9 @@ async def remove_reaction_by_id_and_user_id_and_name(
                     },
                 },
                 "user": UserNameResponse(**user.model_dump()).model_dump(),
-                "channel": channel.model_dump(),
+                "space": space.model_dump(),
             },
-            to=f"channel:{channel.id}",
+            to=f"space:{space.id}",
         )
 
         return True
@@ -913,13 +917,13 @@ async def remove_reaction_by_id_and_user_id_and_name(
 async def delete_message_by_id(
     id: str, message_id: str, user=Depends(get_verified_user)
 ):
-    channel = Channels.get_channel_by_id(id)
-    if not channel:
+    space = Spaces.get_space_by_id(id)
+    if not space:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_channel_access(user, channel)
+    _check_space_access(user,space)
 
     message = Messages.get_message_by_id(message_id)
     if not message:
@@ -927,6 +931,7 @@ async def delete_message_by_id(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
+    # NOTE: message.channel_id is a DB column name -- kept for backwards compatibility
     if message.channel_id != id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=ERROR_MESSAGES.DEFAULT()
@@ -935,9 +940,9 @@ async def delete_message_by_id(
     try:
         Messages.delete_message_by_id(message_id)
         await sio.emit(
-            "channel-events",
+            "space-events",
             {
-                "channel_id": channel.id,
+                "space_id": space.id,
                 "message_id": message.id,
                 "data": {
                     "type": "message:delete",
@@ -947,9 +952,9 @@ async def delete_message_by_id(
                     },
                 },
                 "user": UserNameResponse(**user.model_dump()).model_dump(),
-                "channel": channel.model_dump(),
+                "space": space.model_dump(),
             },
-            to=f"channel:{channel.id}",
+            to=f"space:{space.id}",
         )
 
         if message.parent_id:
@@ -958,9 +963,9 @@ async def delete_message_by_id(
 
             if parent_message:
                 await sio.emit(
-                    "channel-events",
+                    "space-events",
                     {
-                        "channel_id": channel.id,
+                        "space_id": space.id,
                         "message_id": parent_message.id,
                         "data": {
                             "type": "message:reply",
@@ -976,9 +981,9 @@ async def delete_message_by_id(
                             ).model_dump(),
                         },
                         "user": UserNameResponse(**user.model_dump()).model_dump(),
-                        "channel": channel.model_dump(),
+                        "space": space.model_dump(),
                     },
-                    to=f"channel:{channel.id}",
+                    to=f"space:{space.id}",
                 )
 
         return True

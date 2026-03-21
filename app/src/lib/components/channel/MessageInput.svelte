@@ -506,7 +506,7 @@
 		window.addEventListener('keydown', handleKeyDown);
 		await tick();
 
-		const dropzoneElement = document.getElementById('channel-container');
+		const dropzoneElement = document.getElementById('space-container');
 
 		dropzoneElement?.addEventListener('dragover', onDragOver);
 		dropzoneElement?.addEventListener('drop', onDrop);
@@ -516,7 +516,7 @@
 	onDestroy(() => {
 		window.removeEventListener('keydown', handleKeyDown);
 
-		const dropzoneElement = document.getElementById('channel-container');
+		const dropzoneElement = document.getElementById('space-container');
 
 		if (dropzoneElement) {
 			dropzoneElement?.removeEventListener('dragover', onDragOver);

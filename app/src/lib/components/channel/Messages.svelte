@@ -20,8 +20,10 @@
 
 	const i18n = getContext('i18n');
 
+	// TODO(low): Rename components/channel/ directory to components/space/ and update all imports.
 	export let id = null;
-	export let channel = null;
+	// TODO(low): message.channel_id references below are DB field names — rename after DB migration.
+	export let space = null;
 	export let messages = [];
 	export let top = false;
 	export let thread = false;
@@ -67,23 +69,23 @@
 				style="--px:1.2rem; --mx:auto"
 	class="{($settings?.widescreenMode ?? null) ? 'max-w-full' : 'max-w-5xl'}"
 			>
-				{#if channel}
+				{#if space}
 					<div style="--d:flex; --fd:column; --g:0.4rem; --pb:1.2rem; --pt:2.5rem">
-						<div style="--size:1.5rem; --weight:500; --tt:capitalize">{channel.name}</div>
+						<div style="--size:1.5rem; --weight:500; --tt:capitalize">{space.name}</div>
 
 						<div style="--c:var(--color-gray-500)">
 							{$i18n.t(
-								'This channel was created on {{createdAt}}. This is the very beginning of the {{channelName}} channel.',
+								'This space was created on {{createdAt}}. This is the very beginning of the {{spaceName}} space.',
 								{
-									createdAt: dayjs(channel.created_at / 1000000).format('MMMM D, YYYY'),
-									channelName: channel.name
+									createdAt: dayjs(space.created_at / 1000000).format('MMMM D, YYYY'),
+									spaceName: space.name
 								}
 							)}
 						</div>
 					</div>
 				{:else}
 					<div style="--d:flex; --jc:center; --size:0.6rem; --ai:center; --g:0.5rem; --py:1.2rem">
-						<div class=" ">Start of the channel</div>
+						<div class=" ">Start of the space</div>
 					</div>
 				{/if}
 

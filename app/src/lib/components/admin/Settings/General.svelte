@@ -726,7 +726,7 @@
 							{$i18n.t('Spaces')} ({$i18n.t('Beta')})
 						</div>
 
-						<Switch bind:state={adminConfig.ENABLE_CHANNELS} />
+						<Switch bind:state={adminConfig.ENABLE_SPACES} />
 					</div>
 
 					<div style="--mb:0.625rem; --d:flex; --w:100%; --ai:center; --jc:space-between; --pr:0.5rem">

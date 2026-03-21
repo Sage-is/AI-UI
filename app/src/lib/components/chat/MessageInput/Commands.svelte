@@ -15,7 +15,7 @@
 
 	export let files = [];
 	export let command = '';
-	export let channelParticipants = null;
+	export let spaceParticipants = null;
 
 	export let onSelect = (e) => {};
 	export let onUpload = (e) => {};
@@ -97,10 +97,10 @@
 				}}
 			/>
 		{:else if command?.charAt(0) === '@'}
-			{#if channelParticipants}
+			{#if spaceParticipants}
 				<Mentions
 					bind:this={commandElement}
-					participants={channelParticipants}
+					participants={spaceParticipants}
 					query={command.slice(1)}
 					show={true}
 					onSelect={(participant) => {

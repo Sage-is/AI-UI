@@ -93,7 +93,7 @@
 {#if show}
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<div
+	<confirm-dialog
 		bind:this={modalElement}
 		style="--pos:fixed; --top:0; --right:0; --left:0; --bottom:0; --bgc:rgb(0 0 0 / 0.6); --w:100%; --h:100vh; --maxh:100dvh; --d:flex; --jc:center; --z:99999999; --of:hidden; overscroll-behavior:contain"
 		in:fade={{ duration: 10 }}
@@ -162,7 +162,7 @@
 				</div>
 			</div>
 		</div>
-	</div>
+	</confirm-dialog>
 {/if}
 
 <style>

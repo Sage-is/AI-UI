@@ -31,6 +31,19 @@
   - [ ] Further build time optimizations (currently 5m52s vs 10m+)
   - [ ] Document fast development rebuild workflow
 
+### 🟢 Channel → Space DB Migration - LOW PRIORITY
+- [ ] **Complete the "channel" → "space" rename at the database level**
+  - The code-level rename is done (models, routers, socket events, frontend all use "space"). DB schema still uses the old "channel" naming. Grep for `TODO(low)` to find all affected locations.
+  - [ ] Alembic migration: rename table `channel` → `space`
+  - [ ] Alembic migration: rename column `message.channel_id` → `message.space_id`
+  - [ ] Alembic migration: rename bridge columns `channel_id` → `space_id`, `sage_channel_id` → `sage_space_id`
+  - [ ] Alembic migration: rename bridge mode value `"channel_bridge"` → `"space_bridge"` in existing rows
+  - [ ] Update ORM class `Channel` → `Space` in `models/spaces.py` and `__tablename__`
+  - [ ] Update all Pydantic field names from `channel_id` to `space_id`
+  - [ ] Update frontend `message.channel_id` references to `message.space_id`
+  - [ ] Rename `components/channel/` directory to `components/space/` and update all import paths
+  - [ ] Update i18n translation keys (old "Channel Name" → "Space Name" etc.)
+
 ### 🔶 HTML Cleanup Initiative - NOT STARTED
 - [ ] **Replace redundant wrapper divs with unregistered custom elements** to improve semantic clarity
   - [ ] Audit components for unnecessary wrapper `<div>` elements

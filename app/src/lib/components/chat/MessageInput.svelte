@@ -105,7 +105,7 @@
 	export let codeInterpreterEnabled = false;
 	export let voiceModeEnabled = true;
 
-	export let channelParticipants: { users: any[]; agents: any[] } | null = null;
+	export let spaceParticipants: { users: any[]; agents: any[] } | null = null;
 
 	let showInputVariablesModal = false;
 	let inputVariables = {};
@@ -401,7 +401,7 @@
 	$: showCommands = ['/', '#', '@'].includes(command?.charAt(0)) || '\\#' === command?.slice(0, 2);
 
 	// Clear the rich text editor when prompt is externally set to ''
-	// (e.g., after channel/thread submit clears the bound prompt)
+	// (e.g., after space/thread submit clears the bound prompt)
 	$: if (prompt === '' && chatInputElement) {
 		chatInputElement.setText('');
 	}
@@ -937,7 +937,7 @@
 						bind:files
 						show={showCommands}
 						{command}
-						{channelParticipants}
+						{spaceParticipants}
 						insertTextHandler={insertTextAtCursor}
 						onUpload={(e) => {
 							const { type, data } = e;

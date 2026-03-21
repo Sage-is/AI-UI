@@ -7,30 +7,31 @@ from sage_is_ai.models.bridges import BridgeConnections, BridgeThreads
 log = logging.getLogger(__name__)
 
 
-async def forward_channel_message_to_bridges(
+async def forward_space_message_to_bridges(
     app,
-    channel_id: str,
+    space_id: str,
     content: str,
     user_id: str,
     message_id: str,
 ) -> None:
-    """Forward a Sage channel message to all connected external bridges.
+    """Forward a Sage space message to all connected external bridges.
 
-    Called as a background task when a message is posted in a channel.
+    Called as a background task when a message is posted in a space.
     Skips messages that originated from bridges (loop prevention).
     """
     bridge_manager = getattr(app.state, "bridge_manager", None)
     if not bridge_manager:
         return
 
-    # Find all enabled bridge connections linked to this channel
+    # Find all enabled bridge connections linked to this space
+    # NOTE: connection.channel_id is a DB column name -- kept for backwards compatibility
     connections = BridgeConnections.get_enabled_connections()
-    channel_bridges = [
+    space_bridges = [
         c for c in connections
-        if c.mode == "channel_bridge" and c.channel_id == channel_id
+        if c.mode == "channel_bridge" and c.channel_id == space_id
     ]
 
-    if not channel_bridges:
+    if not space_bridges:
         return
 
     from sage_is_ai.models.users import Users
@@ -38,7 +39,7 @@ async def forward_channel_message_to_bridges(
     user = Users.get_user_by_id(user_id)
     sender_name = user.name if user else "Unknown"
 
-    for connection in channel_bridges:
+    for connection in space_bridges:
         adapter = bridge_manager.get_adapter(connection.id)
         if not adapter or not adapter.connected:
             continue
