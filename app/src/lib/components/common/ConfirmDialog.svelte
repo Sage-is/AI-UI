@@ -141,7 +141,7 @@
 
 				<div style="--mt:1.5rem; --d:flex; --jc:space-between; --g:0.4rem">
 					<button
-						style="--bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --c:var(--color-gray-800); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:#fff; --weight:500; --w:100%; --py:0.625rem; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+						style="--d;--bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --c:var(--color-gray-800); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:#fff; --weight:500; --w:100%; --py:0.625rem; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={() => {
 							show = false;
 							dispatch('cancel');
@@ -151,7 +151,7 @@
 						{cancelLabel}
 					</button>
 					<button
-						style="--bgc:var(--color-gray-900); --hvr-bgc:var(--color-gray-850); --c:var(--color-gray-100); --dark-bgc:var(--color-gray-100); --hvr-dark-bgc:#fff; --dark-c:var(--color-gray-800); --weight:500; --w:100%; --py:0.625rem; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+						style="--d;--bgc:var(--color-gray-900); --hvr-bgc:var(--color-gray-850); --c:var(--color-gray-100); --dark-bgc:var(--color-gray-100); --hvr-dark-bgc:#fff; --dark-c:var(--color-gray-800); --weight:500; --w:100%; --py:0.625rem; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={() => {
 							confirmHandler();
 						}}

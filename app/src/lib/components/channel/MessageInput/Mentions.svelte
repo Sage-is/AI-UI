@@ -54,14 +54,14 @@
 
 {#if show && filteredParticipants.length > 0}
 	<div
-		id="mentions-container"
+		id="commands-container"
 		style="--pos:absolute; --bottom:100%; --left:0; --right:0; --mb:0.5rem; --maxh:12rem; --ofy:auto; --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850); --radius:0.75rem; --shadow:5;  --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --py:0.25rem"
 		class="scrollbar-hidden"
 	>
 		{#each filteredParticipants as participant, idx}
 			<button
 				class="w-full {idx === selectedIdx
-					? 'bg-gray-100 dark:bg-gray-800 selected-mention-option-button'
+					? 'bg-gray-100 dark:bg-gray-800 selected-command-option-button'
 					: 'hover:bg-gray-50 dark:hover:bg-gray-800/50'}"
 				style="--d:flex; --ai:center; --g:0.5rem; --px:0.75rem; --py:0.4rem; --size:0.85rem; --w:100%; --ta:left"
 				on:click={() => onSelect(participant)}

@@ -8,12 +8,14 @@
 	import Prompts from './Commands/Prompts.svelte';
 	import Knowledge from './Commands/Knowledge.svelte';
 	import Models from './Commands/Models.svelte';
+	import Mentions from '$lib/components/channel/MessageInput/Mentions.svelte';
 	import Spinner from '$lib/components/common/Spinner.svelte';
 
 	export let show = false;
 
 	export let files = [];
 	export let command = '';
+	export let channelParticipants = null;
 
 	export let onSelect = (e) => {};
 	export let onUpload = (e) => {};
@@ -95,22 +97,34 @@
 				}}
 			/>
 		{:else if command?.charAt(0) === '@'}
-			<Models
-				bind:this={commandElement}
-				{command}
-				onSelect={(e) => {
-					const { type, data } = e;
+			{#if channelParticipants}
+				<Mentions
+					bind:this={commandElement}
+					participants={channelParticipants}
+					query={command.slice(1)}
+					show={true}
+					onSelect={(participant) => {
+						insertTextHandler(`@${participant.data.name} `);
+					}}
+				/>
+			{:else}
+				<Models
+					bind:this={commandElement}
+					{command}
+					onSelect={(e) => {
+						const { type, data } = e;
 
-					if (type === 'model') {
-						insertTextHandler('');
+						if (type === 'model') {
+							insertTextHandler('');
 
-						onSelect({
-							type: 'model',
-							data: data
-						});
-					}
-				}}
-			/>
+							onSelect({
+								type: 'model',
+								data: data
+							});
+						}
+					}}
+				/>
+			{/if}
 		{/if}
 	{:else}
 		<div

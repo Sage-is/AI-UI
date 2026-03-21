@@ -9,13 +9,14 @@
 	import XMark from '$lib/components/icons/XMark.svelte';
 	import MessageInput from '../chat/MessageInput.svelte';
 	import Messages from './Messages.svelte';
-	import { onDestroy, onMount, tick } from 'svelte';
+	import { onDestroy, tick } from 'svelte';
 	import { toast } from 'svelte-sonner';
 
 	const i18n = getContext('i18n');
 
 	export let threadId = null;
 	export let channel = null;
+	export let participants: { users: any[]; agents: any[] } = { users: [], agents: [] };
 
 	export let onClose = () => {};
 
@@ -166,9 +167,11 @@
 		});
 	};
 
-	onMount(() => {
-		$socket?.on('channel-events', channelEventHandler);
-	});
+	// Reactive socket registration — re-registers when socket becomes available
+	$: if ($socket) {
+		$socket.off('channel-events', channelEventHandler);
+		$socket.on('channel-events', channelEventHandler);
+	}
 
 	onDestroy(() => {
 		$socket?.off('channel-events', channelEventHandler);
@@ -233,6 +236,7 @@
 					selectedModels={['']}
 					history={{}}
 					voiceModeEnabled={false}
+					channelParticipants={participants}
 					stopResponse={() => {}}
 					createMessagePair={() => {}}
 					{onChange}
