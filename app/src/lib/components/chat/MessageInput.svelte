@@ -400,6 +400,12 @@
 	export let showCommands = false;
 	$: showCommands = ['/', '#', '@'].includes(command?.charAt(0)) || '\\#' === command?.slice(0, 2);
 
+	// Clear the rich text editor when prompt is externally set to ''
+	// (e.g., after channel/thread submit clears the bound prompt)
+	$: if (prompt === '' && chatInputElement) {
+		chatInputElement.setText('');
+	}
+
 	let showTools = false;
 
 	let loaded = false;
