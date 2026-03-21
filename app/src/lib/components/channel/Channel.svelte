@@ -46,7 +46,8 @@
 
 	const scrollToBottom = () => {
 		if (messagesContainerElement) {
-			messagesContainerElement.scrollTop = messagesContainerElement.scrollHeight;
+			// column-reverse layout: scrollTop = 0 is the visual bottom (newest messages)
+			messagesContainerElement.scrollTop = 0;
 		}
 	};
 
@@ -191,35 +192,21 @@
 			? content.replaceAll('\n\n', '\n')
 			: content;
 
-		const res = await sendMessage(localStorage.token, id, {
+		// Capture files before clearing input for responsive UX
+		const messageFiles = files.length > 0 ? files : undefined;
+		prompt = '';
+		files = [];
+
+		await sendMessage(localStorage.token, id, {
 			content: messageContent,
-			data: { files: files.length > 0 ? files : undefined }
+			data: { files: messageFiles }
 		}).catch((error) => {
 			toast.error(`${error}`);
-			return null;
 		});
 
-		if (res) {
-			// Optimistic add — message appears instantly
-			messages = [
-				{
-					...res,
-					user: {
-						id: $user.id,
-						name: $user.name,
-						role: $user.role,
-						profile_image_url: $user.profile_image_url
-					},
-					reply_count: 0,
-					latest_reply_at: null,
-					reactions: []
-				},
-				...messages
-			];
-			prompt = '';
-			files = [];
-			scrollToBottom();
-		}
+		// Socket event (channelEventHandler) adds the message and scrolls.
+		// No optimistic add needed — the socket event arrives nearly instantly
+		// (backend emits it before returning the HTTP response).
 	};
 
 	const onChange = async () => {

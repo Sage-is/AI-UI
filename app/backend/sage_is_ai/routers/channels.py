@@ -278,12 +278,12 @@ async def send_notification(name, webui_url, channel, message, active_user_ids):
                     post_webhook(
                         name,
                         webhook_url,
-                        f"#{channel.name} - {webui_url}/channels/{channel.id}\n\n{message.content}",
+                        f"#{channel.name} - {webui_url}/space/{channel.id}\n\n{message.content}",
                         {
                             "action": "channel",
                             "message": message.content,
                             "title": channel.name,
-                            "url": f"{webui_url}/channels/{channel.id}",
+                            "url": f"{webui_url}/space/{channel.id}",
                         },
                     )
 
@@ -484,7 +484,7 @@ async def send_mention_notifications(app, channel, message, mentions, sender_use
                             "action": "mention",
                             "message": message.content,
                             "title": f"#{channel.name}",
-                            "url": f"{webui_url}/channels/{channel.id}",
+                            "url": f"{webui_url}/space/{channel.id}",
                         },
                     )
     except Exception as e:

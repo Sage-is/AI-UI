@@ -428,7 +428,7 @@
 		}
 
 		// check url path
-		const channel = $page.url.pathname.includes(`/channels/${event.channel_id}`);
+		const channel = $page.url.pathname.includes(`/space/${event.channel_id}`);
 
 		let isFocused = document.visibilityState !== 'visible';
 		if (window.electronAPI) {
@@ -458,7 +458,7 @@
 				toast.custom(NotificationToast, {
 					componentProps: {
 						onClick: () => {
-							goto(`/channels/${event.channel_id}`);
+							goto(`/space/${event.channel_id}`);
 						},
 						content: data?.content,
 						title: event?.channel?.name
@@ -491,7 +491,7 @@
 		toast.custom(NotificationToast, {
 			componentProps: {
 				onClick: () => {
-					goto(`/channels/${event.channel_id}`);
+					goto(`/space/${event.channel_id}`);
 				},
 				content: event?.message,
 				title: `@mentioned in #${event?.channel_name}`
