@@ -103,12 +103,12 @@
 	>
 		<shadow-xl
 			style="--m:auto;
-			 --radius:1rem; 
-			 --maxw:100%; 
-			 --w:32rem; 
-			 --mx:0.5rem; 
-			 --bgc:var(--color-gray-50); 
-			 --dark-bgc:var(--color-gray-950); 
+			 --radius:1rem;
+			 --maxw:100%;
+			 --w:32rem;
+			 --mx:0.5rem;
+			 --bgc:var(--color-gray-50);
+			 --dark-bgc:var(--color-gray-950);
 			 --maxh:100dvh"
 			class="shadow-3xl"
 			in:flyAndScale
@@ -117,9 +117,9 @@
 			}}
 		>
 			<confirm-dialog
-				style="--px:1.75rem; 
-				--py:1.5rem; 
-				--d:flex; 
+				style="--px:1.75rem;
+				--py:1.5rem;
+				--d:flex;
 				--fd:column"
 			>
 				<div style="--size:1.125rem; --weight:600; --dark-c:var(--color-gray-200); --mb:0.625rem">
