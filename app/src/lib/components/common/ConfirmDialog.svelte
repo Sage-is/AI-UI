@@ -93,7 +93,7 @@
 {#if show}
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<confirm-dialog
+	<confirm-dialog-holder
 		bind:this={modalElement}
 		style="--pos:fixed; --top:0; --right:0; --left:0; --bottom:0; --bgc:rgb(0 0 0 / 0.6); --w:100%; --h:100vh; --maxh:100dvh; --d:flex; --jc:center; --z:99999999; --of:hidden; overscroll-behavior:contain"
 		in:fade={{ duration: 10 }}
@@ -101,15 +101,27 @@
 			show = false;
 		}}
 	>
-		<div
-			style="--m:auto; --radius:1rem; --maxw:100%; --w:32rem; --mx:0.5rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-950); --maxh:100dvh"
-	class="shadow-3xl"
+		<shadow-xl
+			style="--m:auto;
+			 --radius:1rem; 
+			 --maxw:100%; 
+			 --w:32rem; 
+			 --mx:0.5rem; 
+			 --bgc:var(--color-gray-50); 
+			 --dark-bgc:var(--color-gray-950); 
+			 --maxh:100dvh"
+			class="shadow-3xl"
 			in:flyAndScale
 			on:mousedown={(e) => {
 				e.stopPropagation();
 			}}
 		>
-			<div style="--px:1.75rem; --py:1.5rem; --d:flex; --fd:column">
+			<confirm-dialog
+				style="--px:1.75rem; 
+				--py:1.5rem; 
+				--d:flex; 
+				--fd:column"
+			>
 				<div style="--size:1.125rem; --weight:600; --dark-c:var(--color-gray-200); --mb:0.625rem">
 					{#if title !== ''}
 						{title}
@@ -141,7 +153,7 @@
 
 				<div style="--mt:1.5rem; --d:flex; --jc:space-between; --g:0.4rem">
 					<button
-						style="--d;--bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --c:var(--color-gray-800); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:#fff; --weight:500; --w:100%; --py:0.625rem; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+						style="--bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --c:var(--color-gray-800); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:#fff; --weight:500; --w:100%; --py:0.625rem; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1);--d:0;"
 						on:click={() => {
 							show = false;
 							dispatch('cancel');
@@ -151,7 +163,7 @@
 						{cancelLabel}
 					</button>
 					<button
-						style="--d;--bgc:var(--color-gray-900); --hvr-bgc:var(--color-gray-850); --c:var(--color-gray-100); --dark-bgc:var(--color-gray-100); --hvr-dark-bgc:#fff; --dark-c:var(--color-gray-800); --weight:500; --w:100%; --py:0.625rem; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+						style="--bgc:var(--color-gray-900); --hvr-bgc:var(--color-gray-850); --c:var(--color-gray-100); --dark-bgc:var(--color-gray-100); --hvr-dark-bgc:#fff; --dark-c:var(--color-gray-800); --weight:500; --w:100%; --py:0.625rem; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1);--d:0;"
 						on:click={() => {
 							confirmHandler();
 						}}
@@ -160,9 +172,9 @@
 						{confirmLabel}
 					</button>
 				</div>
-			</div>
-		</div>
-	</confirm-dialog>
+			</confirm-dialog>
+		</shadow-xl>
+	</confirm-dialog-holder>
 {/if}
 
 <style>
