@@ -1,14 +1,16 @@
 fastapi==0.115.7
 uvicorn[standard]==0.35.0
 pydantic==2.11.7
-python-multipart==0.0.20
+# CVE-2026-24486 (HIGH): arbitrary file write — fixed in 0.0.22
+python-multipart==0.0.22
 
 python-socketio==5.13.0
 passlib[bcrypt]==1.7.4
 cryptography
 
 requests==2.32.4
-aiohttp==3.11.11
+# CVE-2025-69223 (HIGH): zip bomb via auto_decompress + 8 more CVEs (smuggling, DoS)
+aiohttp==3.13.3
 async-timeout
 aiocache
 aiofiles
@@ -34,7 +36,8 @@ asgiref==3.8.1
 tiktoken
 
 langchain==0.3.26
-langchain-community==0.3.26
+# CVE-2025-6984 (HIGH): insecure XML parsing (XXE) in document loaders
+langchain-community==0.3.27
 
 chromadb==0.6.3
 pymilvus==2.5.0
@@ -52,8 +55,10 @@ colbert-ai==0.2.21
 pypdf==4.3.1
 docx2txt==0.8
 python-pptx==1.0.2
-unstructured==0.16.17
-nltk==3.9.1
+# CVE-2025-64712 (CRITICAL): path traversal via MSG attachments — fixed in 0.18.18
+unstructured==0.18.18
+# CVE-2025-14009 (CRITICAL): zip slip leading to code execution — fixed in 3.9.3
+nltk==3.9.3
 pandas==2.2.3
 openpyxl==3.1.5
 pyxlsb==1.0.10
@@ -68,17 +73,25 @@ psutil
 soundfile==0.13.1
 azure-ai-documentintelligence==1.0.2
 
-pillow==11.2.1
+# CVE-2025-48379 (HIGH): DDS heap buffer overflow — fixed in 11.3.0
+# CVE-2026-25990 (HIGH): out-of-bounds write via crafted PSD — fixed in 12.1.1
+# Note: major version bump (11→12). No direct imports in our code — transitive dep
+# used by unstructured, sentence-transformers, fpdf2. Test: document/image uploads.
+pillow==12.1.1
 opencv-python-headless==4.11.0.86
 
 onnxruntime==1.20.1
 
 faster-whisper==1.1.1
 
-PyJWT[crypto]==2.10.1
-authlib==1.4.1
+# CVE-2026-32597 (HIGH): accepts unknown crit header extensions — fixed in 2.12.0
+PyJWT[crypto]==2.12.0
+# CVE-2026-27962 (CRITICAL): auth bypass via JWK header — fixed in 1.6.9
+# CVE-2025-59420 (HIGH): RFC violation — fixed in 1.6.4
+authlib==1.6.9
 
-black==25.1.0
+# CVE-2026-32274 (HIGH): arbitrary file writes from unsanitized input — fixed in 26.3.1
+black==26.3.1
 youtube-transcript-api==1.1.0
 
 pydub

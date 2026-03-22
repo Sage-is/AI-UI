@@ -1,0 +1,40 @@
+# =============================================================================
+# Gitleaks Configuration — Secrets Detection
+# =============================================================================
+# Gitleaks scans git history and the working tree for accidentally committed
+# secrets (API keys, passwords, tokens, private keys).
+#
+# This config defines project-specific allowlists to suppress false positives.
+# The built-in rules handle detection — we only need to tune what to ignore.
+#
+# Usage:
+#   make scan_secrets              — full git history scan
+#   gitleaks detect --no-git .     — working tree only (faster)
+#
+# Docs: https://github.com/gitleaks/gitleaks#configuration
+# =============================================================================
+
+title = "Sage-is-AI gitleaks config"
+
+[allowlist]
+  description = "Project-specific paths that trigger false positives"
+  paths = [
+    # .env.example contains placeholder values, not real secrets
+    '''\.env\.example$''',
+
+    # Vendored dependencies — not our code, not our secrets
+    '''node_modules/''',
+
+    # Pyodide WASM assets contain base64 blobs that look like keys
+    '''app/static/pyodide/''',
+
+    # Lockfiles sometimes contain base64 hashes that trigger detectors
+    '''\.lock$''',
+    '''package-lock\.json$''',
+
+    # Translation files contain long strings that can trigger entropy checks
+    '''app/src/lib/i18n/''',
+  ]
+
+  # To allowlist specific known false-positive commits, add their SHAs here:
+  # commits = ["abc1234"]

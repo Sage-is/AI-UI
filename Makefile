@@ -1,3 +1,23 @@
+# =============================================================================
+# Sage-is-AI CI/CD Framework
+# =============================================================================
+# This Makefile is the project's Continuous Integration and Continuous
+# Deployment (CI/CD) system. It is provider-agnostic — no GitHub Actions,
+# no GitLab CI, no vendor lock-in.
+#
+# Runs on: Linux, macOS, Windows (WSL)
+# Requires: make, bash, git, container runtime (podman or docker)
+#
+# Quick start:
+#   make install_dev    — install dev/security tools
+#   make scan           — run all security scans
+#   make lint           — run all linters
+#   make it_build       — build container image
+#   make scan_container — scan built image for vulnerabilities
+#   make it_run         — run the container
+#   make help           — list all targets
+# =============================================================================
+
 # Load environment variables from .env if it exists
 ifneq (,$(wildcard ./.env))
     include .env
@@ -42,11 +62,33 @@ endif
 # Architectures to build for
 ARCHITECTURES ?= amd64 arm64 # Not used at the moment
 
-help: 
+# ---------------------------------------------------------------------------
+# Security & Dev Tool Paths
+# ---------------------------------------------------------------------------
+# Auto-detected from PATH. Override via .env or CLI:
+#   make scan_sast SEMGREP=/opt/opengrep/bin/opengrep
+#
+# SEMGREP tries semgrep first, falls back to opengrep (the LGPL community fork).
+# Both accept identical CLI flags and rule syntax.
+GITLEAKS   ?= $(shell command -v gitleaks 2>/dev/null)
+SEMGREP    ?= $(shell command -v semgrep 2>/dev/null || command -v opengrep 2>/dev/null)
+BANDIT     ?= $(shell command -v bandit 2>/dev/null)
+TRIVY      ?= $(shell command -v trivy 2>/dev/null)
+
+# Guard macro: prints a helpful error if a required tool is missing.
+# Usage: $(call require_tool,VAR_NAME,tool-name)
+define require_tool
+	@if [ -z "$($(1))" ]; then \
+		echo "Error: $(2) not found in PATH. Run: make install_dev"; \
+		exit 1; \
+	fi
+endef
+
+help:
 	@echo "======================================================="
 	@echo "  $(IMAGE_NAME) by Startr.Cloud and Startr LLC "
 	@echo ""
-	@echo 'This is the default make command.' 
+	@echo 'This is the default make command.'
 	@echo "This command lists available make commands."
 	@echo ""
 	@echo "Usage examples:"
@@ -58,7 +100,7 @@ help:
 	@echo ""
 	@LC_ALL=C $(MAKE) -pRrq -f $(firstword $(MAKEFILE_LIST)) : 2>/dev/null \
 		| awk -v RS= -F: '/(^|\n)# Files(\n|$$)/,/(^|\n)# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | grep -E -v -e '^[^[:alnum:]]' -e '^$$@$$'
-	@echo ""	
+	@echo ""
 
 # Environment setup helpers
 setup_env:
@@ -163,7 +205,7 @@ ensure_builder:
 # Multi-architecture build helpers
 define build_arch
 	@make it_clean
-	@make ensure_builder	
+	@make ensure_builder
 	docker buildx build --platform linux/$(1) \
 		-t $(2):$(1)-$(IMAGE_TAG) \
 		-t $(2):$(1)-latest \
@@ -363,6 +405,136 @@ signal_logs:
 signal_status:
 	@$(CONTAINER_RUNTIME) inspect --format='{{.State.Status}}' $(SIGNAL_CONTAINER_NAME) 2>/dev/null || echo "signal-cli-rest-api container is not running"
 
+# ===========================================================================
+# Developer Setup & Security Scanning (CI)
+# ===========================================================================
+# All scanning tools run 100% locally with no cloud endpoints.
+# Tools: gitleaks (secrets), semgrep/opengrep (SAST), bandit (Python SAST),
+#        trivy (dependency & container vulnerabilities).
+#
+# Workflow:
+#   make install_dev     — one-time setup: install tools + git hooks
+#   make scan            — run all security scans (safe anytime, no build needed)
+#   make scan_container  — scan a built container image (run after make it_build)
+#   make lint            — run all linters (eslint, prettier, black)
+# ===========================================================================
+
+# install_dev: Install all security/dev tools and wire up pre-commit git hooks.
+# Homebrew is the universal package manager — works on macOS, Linux, and WSL.
+# If brew isn't installed, we install it first, then use it for everything.
+install_dev:
+	@echo "=== Installing security & dev tools ==="
+	@echo ""
+	@# --- Ensure Homebrew is available (macOS, Linux, WSL) ---
+	@if ! command -v brew >/dev/null 2>&1; then \
+		echo "Homebrew not found — installing (https://brew.sh)..."; \
+		echo ""; \
+		/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; \
+		echo ""; \
+		echo "NOTE: You may need to restart your shell or run the commands"; \
+		echo "      printed above to add brew to your PATH, then re-run:"; \
+		echo "      make install_dev"; \
+		echo ""; \
+	fi
+	@# --- All tools via brew (single package manager, DRY) ---
+	@echo "Installing tools via Homebrew..."
+	brew install gitleaks trivy semgrep pre-commit
+	@# bandit is Python-only, not in brew — install via pip
+	@echo ""
+	@echo "Installing bandit (Python SAST)..."
+	pip install --user bandit
+	@echo ""
+	@# --- Wire up pre-commit git hooks ---
+	@echo "Installing pre-commit git hooks (.pre-commit-config.yaml)..."
+	pre-commit install
+	@echo ""
+	@echo "Done. Verify with: make scan"
+
+# ---------------------------------------------------------------------------
+# Security Scanning Targets
+# ---------------------------------------------------------------------------
+
+# scan: Run all security scans (secrets + SAST + dependency).
+# Does NOT include scan_container (requires a built image) or scan_dast (future).
+scan: scan_secrets scan_sast scan_deps
+	@echo ""
+	@echo "=== All scans complete ==="
+
+# scan_secrets: Detect accidentally committed secrets, API keys, tokens.
+# Uses gitleaks against the full git history. Config: .gitleaks.toml
+scan_secrets:
+	$(call require_tool,GITLEAKS,gitleaks)
+	@echo "=== Secrets scan (gitleaks) ==="
+	$(GITLEAKS) detect --source . --config .gitleaks.toml --verbose
+
+# scan_sast: Static Application Security Testing.
+# - semgrep/opengrep: JS/TS/Svelte frontend + Python backend (offline rules in .semgrep/)
+# - bandit: Python-specific security checks (config: .bandit.yaml)
+scan_sast:
+	$(call require_tool,SEMGREP,semgrep/opengrep)
+	$(call require_tool,BANDIT,bandit)
+	@echo "=== SAST: JS/TS/Svelte (semgrep) ==="
+	$(SEMGREP) scan --config .semgrep/ --include="*.js" --include="*.ts" --include="*.svelte" app/src/
+	@echo ""
+	@echo "=== SAST: Python (bandit) ==="
+	$(BANDIT) -r app/backend/sage_is_ai/ -c .bandit.yaml -ll
+	@echo ""
+	@echo "=== SAST: Python (semgrep) ==="
+	$(SEMGREP) scan --config .semgrep/ --include="*.py" app/backend/sage_is_ai/
+
+# scan_deps: Scan lockfiles/requirements for known vulnerabilities (CVEs).
+# Targets specific manifest files — does NOT crawl node_modules.
+scan_deps:
+	$(call require_tool,TRIVY,trivy)
+	@echo "=== Dependency scan: Python (trivy) ==="
+	$(TRIVY) fs --scanners vuln app/backend/requirements.txt
+	@echo ""
+	@echo "=== Dependency scan: Node (trivy) ==="
+	$(TRIVY) fs --scanners vuln app/package-lock.json
+
+# scan_container: Scan a built container image for OS-level & library vulnerabilities.
+# Run after 'make it_build'. Uses the same IMAGE_NAME/IMAGE_TAG as build targets.
+scan_container:
+	$(call require_tool,TRIVY,trivy)
+	@echo "=== Container image scan (trivy) ==="
+	$(TRIVY) image --severity HIGH,CRITICAL $(IMAGE_NAME):$(IMAGE_TAG)
+
+# scan_dast: Dynamic Application Security Testing (STUB — future TODO).
+# Requires a running staging environment. See TODO.md for the full plan:
+# staging CapRover + Selenium/SikuliX regression + OWASP ZAP proxy.
+scan_dast:
+	@echo "=== DAST scan ==="
+	@echo "[STUB] DAST scanning requires a running staging environment."
+	@echo "TODO: staging CapRover + Selenium/SikuliX + OWASP ZAP proxy."
+	@echo "See TODO.md for the full plan."
+
+# trivy_db_update: Pre-cache the Trivy vulnerability database for offline use.
+# After running this, scans work offline with: TRIVY_SKIP_DB_UPDATE=true make scan_deps
+trivy_db_update:
+	$(call require_tool,TRIVY,trivy)
+	@echo "Downloading/updating Trivy vulnerability database..."
+	$(TRIVY) image --download-db-only
+	@echo "DB cached at: ~/.cache/trivy/db/"
+	@echo "For offline scans: TRIVY_SKIP_DB_UPDATE=true make scan_deps"
+
+# ---------------------------------------------------------------------------
+# Linting (CI)
+# ---------------------------------------------------------------------------
+# Rollup target that calls existing lint scripts from package.json + black.
+# Complements (does not replace) the per-tool npm scripts.
+
+# lint: Run all linters — eslint, svelte-check, prettier, black.
+lint:
+	@echo "=== Frontend lint (eslint + svelte-check) ==="
+	cd app && npm run lint:frontend
+	cd app && npm run lint:types
+	@echo ""
+	@echo "=== Format check (prettier + black) ==="
+	cd app && npx prettier --check "**/*.{js,ts,svelte,css,md,html,json}" || true
+	cd app && black --check --exclude ".venv/|/venv/" backend/ || true
+
+# ===========================================================================
+
 .PHONY: it_build it_build_no_cache dev_run it_run it_build_n_run it_build_n_run_no_cache \
 	clean-manifests-dockerhub clean-manifests-ghcr \
 	build-amd64-dockerhub build-arm64-dockerhub \
@@ -372,7 +544,9 @@ signal_status:
 	it_build_multi_arch_all show-version setup_env setup_env_auto setup_env_template \
 	bump_release_version release_and_push_GHCR hotfix_and_push_GHCR \
 	waha_start waha_stop waha_logs waha_status \
-	signal_start signal_stop signal_logs signal_status
+	signal_start signal_stop signal_logs signal_status \
+	install_dev scan scan_secrets scan_sast scan_deps scan_container scan_dast \
+	trivy_db_update lint
 
 
 # Version Management with Git Flow

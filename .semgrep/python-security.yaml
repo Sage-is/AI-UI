@@ -1,0 +1,81 @@
+# =============================================================================
+# Semgrep Rules — Python Security
+# =============================================================================
+# Offline SAST rules for the FastAPI/Python backend. These run locally with
+# no registry calls — works with both semgrep CE and opengrep.
+#
+# Coverage: SQL injection, hardcoded secrets, unsafe YAML, JWT bypass.
+# These complement Bandit — they catch patterns Bandit does not.
+#
+# Usage:
+#   make scan_sast   (runs these as part of the full scan)
+#   semgrep scan --config .semgrep/ --include="*.py" app/backend/
+# =============================================================================
+
+rules:
+  # -------------------------------------------------------------------------
+  # SQL Injection via f-strings
+  # -------------------------------------------------------------------------
+  # f-strings in SQL queries bypass parameterized query protection.
+  # Use cursor.execute("SELECT ... WHERE id = %s", (id,)) instead.
+  - id: sql-injection-format-string
+    patterns:
+      - pattern: $CURSOR.execute(f"...", ...)
+    message: >
+      Potential SQL injection via f-string in execute().
+      Use parameterized queries: cursor.execute("... WHERE id = %s", (id,))
+    languages: [python]
+    severity: ERROR
+
+  # -------------------------------------------------------------------------
+  # Hardcoded Secrets in Variable Assignments
+  # -------------------------------------------------------------------------
+  # Catches password = "...", api_key = "...", etc.
+  # Real secrets should come from environment variables or a secrets manager.
+  #
+  # Excludes:
+  #   - UPPER_CASE_CONSTANTS (error messages like API_KEY_NOT_FOUND = "Oops...")
+  #   - Type labels (token_type = "Bearer")
+  #   - Variables with NOT/ERROR/ALLOWED/INVALID/TOO in the name (error messages)
+  - id: hardcoded-secret-assignment
+    patterns:
+      - pattern: $VAR = "..."
+      - metavariable-regex:
+          metavariable: $VAR
+          regex: (?i)(password|secret|token|api_key|apikey|private_key)
+      # Exclude UPPER_CASE error-message constants and common non-secret patterns
+      - metavariable-regex:
+          metavariable: $VAR
+          regex: (?!.*(_NOT_|_TOO_|_ERROR|_INVALID|_ALLOWED|_CREATION_|_MISSING|_TYPE|_type)).*
+    message: >
+      Possible hardcoded secret in variable '$VAR'.
+      Use environment variables or a secrets manager instead.
+    languages: [python]
+    severity: WARNING
+
+  # -------------------------------------------------------------------------
+  # Unsafe YAML Loading
+  # -------------------------------------------------------------------------
+  # yaml.load() with the default Loader can execute arbitrary Python code.
+  # Always use yaml.safe_load() for untrusted input.
+  - id: unsafe-yaml-load
+    pattern: yaml.load(...)
+    fix: yaml.safe_load(...)
+    message: >
+      yaml.load() can execute arbitrary code. Use yaml.safe_load() instead.
+    languages: [python]
+    severity: WARNING
+
+  # -------------------------------------------------------------------------
+  # JWT Decoded Without Signature Verification
+  # -------------------------------------------------------------------------
+  # Disabling signature verification means anyone can forge tokens.
+  # This is almost never intentional in production code.
+  - id: jwt-no-verify
+    patterns:
+      - pattern: 'jwt.decode(..., options={"verify_signature": False}, ...)'
+    message: >
+      JWT decoded without signature verification. This allows token forgery.
+      Remove verify_signature=False unless this is intentional.
+    languages: [python]
+    severity: ERROR

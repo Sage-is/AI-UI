@@ -25,6 +25,24 @@
   - [ ] Frontend — Upload flow mode selector (Plain / AI Parse) in KnowledgeBase.svelte
   - [ ] Testing all modes end-to-end
 
+### 🔴 CI/CD Security Scanning (Makefile-driven) - IN PROGRESS
+- [ ] **Local security scanning via Makefile targets** (no vendor lock-in, runs on Linux/macOS/WSL)
+  - [ ] `make install_dev` — install gitleaks, semgrep/opengrep, bandit, trivy, pre-commit
+  - [x] `make scan` — umbrella target running all scans below
+  - [x] `make scan_secrets` — gitleaks secrets detection
+  - [x] `make scan_sast` — semgrep (JS/TS/Svelte) + bandit (Python) static analysis
+  - [x] `make scan_deps` — trivy dependency vulnerability scanning
+  - [ ] `make scan_container` — trivy container image scanning (post-build)
+  - [ ] `make lint` — rollup for eslint + prettier + black
+  - [ ] `.pre-commit-config.yaml` — git hooks via pre-commit framework (gitleaks, bandit, codespell)
+  - [ ] `.semgrep/` local offline rules (Python, JS/TS, Svelte security patterns)
+- [ ] **Staging CapRover + DAST (future TODO)**
+  - [ ] Set up second CapRover instance for staging
+  - [ ] Selenium-driven browser regression tests against staging
+  - [ ] SikuliX visual/UI regression testing
+  - [ ] OWASP ZAP as proxy during Selenium runs for DAST coverage
+  - [ ] `make scan_dast` — gate production promotion on staging pass
+
 ### 🔶 Docker Build Enhancements - NOT STARTED
 - [ ] **Docker multi-stage build**: Still single FROM stage, build tools ship in production image
   - [ ] Implement multi-stage build with separate builder and runtime stages
