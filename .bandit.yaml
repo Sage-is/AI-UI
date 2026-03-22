@@ -1,0 +1,36 @@
+# =============================================================================
+# Bandit Configuration — Python Static Security Analysis
+# =============================================================================
+# Bandit checks Python code for common security issues (SQL injection,
+# hardcoded passwords, unsafe deserialization, etc.).
+#
+# We skip rules that produce false positives in this project's context:
+#   B101: assert statements — used extensively in FastAPI/Pydantic validation
+#   B104: binding to 0.0.0.0 — expected behavior inside containers
+#
+# Usage:
+#   make scan_sast                — runs bandit as part of full SAST
+#   bandit -r app/backend/ -ll   — standalone, medium+ severity
+#
+# Docs: https://bandit.readthedocs.io/
+# =============================================================================
+
+skips:
+  # B101: "assert used" — common in test code and FastAPI dependency validation.
+  # These are not security issues in a server-side context.
+  - B101
+
+  # B104: "hardcoded bind all interfaces" — our Dockerfile and uvicorn config
+  # intentionally bind to 0.0.0.0 inside the container. This is expected.
+  - B104
+
+exclude_dirs:
+  # Test code — test fixtures may intentionally contain "bad" patterns
+  - app/backend/sage_is_ai/test
+
+  # Alembic migrations — auto-generated SQL, not hand-written
+  - app/backend/sage_is_ai/migrations
+
+  # Virtual environments
+  - .venv
+  - venv
