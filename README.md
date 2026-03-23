@@ -1,6 +1,6 @@
 # Sage WebUI
 
-## v1.1.1 *our first public release*
+## v2.0.0
 
 **Sage.is an AI interface that puts you in control.**
 
@@ -70,7 +70,7 @@ Sage WebUI works out of the box, but you can customize it:
 
 **Environment Variables:**
 - `OPENAI_API_KEY` — Connect to OpenAI models
-- `ANTHROPIC_API_KEY` — Enable Claude models  
+- `ANTHROPIC_API_KEY` — Enable Claude models
 - `OLLAMA_BASE_URL` — Point to your Ollama instance
 - `ENABLE_RAG` — Enable document processing (default: true)
 
