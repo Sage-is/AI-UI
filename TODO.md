@@ -11,8 +11,19 @@
 - [ ] **Update `sha256` in `Formula/ai-ui.rb`** after tagging v0.1.0 of homebrew-apps
 - [ ] CapRover one-click template (lower priority, `captain-definition` already works)
 
-### 🔴 Knowledge Base Ingestion Modes + Admin Cleanup - HIGH PRIORITY
+### 🔴 Auth, OAuth & Email Notifications - HIGH PRIORITY
 - [ ] Simpler lost password/single sign on is needed as people forget passwords as they think their minds know how to hold them...
+- [ ] **Expose OAuth setup in the setup wizard**
+  - [ ] Create `OAuthStep.svelte` — optional step in `ChangesAndSetupModal` for configuring Google/Microsoft/GitHub/OIDC
+  - [ ] Reuse bridge `ConfigField` pattern for dynamic provider forms
+  - [ ] No email verification needed for admin-created accounts (admin is the authority)
+- [ ] **Outgoing email notifications**
+  - [ ] Add email/SMTP config to setup wizard (reuse existing bridge email adapter SMTP fields)
+  - [ ] Explore reusing bridge email SMTP config for system notifications (password reset, mentions, etc.)
+  - [ ] Move LDAP config from General settings into a consolidated Auth/Integrations tab
+- [ ] **Sage.is hosted email notification service** — for deployments that don't want to self-host SMTP ($$$)
+
+### 🔴 Knowledge Base Ingestion Modes + Admin Cleanup - HIGH PRIORITY
 
 - [ ] **Add AI-Parsed ingestion mode and clean up admin Documents page** (see `docs/knowledge-ingestion-modes-plan.md`)
 
@@ -48,6 +59,16 @@
   - [ ] Implement multi-stage build with separate builder and runtime stages
   - [ ] Further build time optimizations (currently 5m52s vs 10m+)
   - [ ] Document fast development rebuild workflow
+
+### 🔶 Spaces Agent Context Mode (BETA) - NOT STARTED
+- [ ] **Per-agent/model setting for what message history is sent to the LLM in Spaces**
+  - Currently only `single` mode is implemented (agent sees only the trigger message)
+  - Some agents manage their own context window and memory — `single` is safest for those
+  - [ ] `conversation` mode — last ~5 messages from the agent+user dialogue pair (better for stateless models)
+  - [ ] `full` mode — all recent space messages from all participants (maximum context, noisier)
+  - [ ] Setting field in model `info.params` in workshop/model config
+  - [ ] Wire up `conversation` and `full` modes in `generate_agent_response()` in `spaces.py`
+- [ ] **Optional per-agent TTL for agent auto-reply** — some deployments may want agent questions to expire
 
 ### 🟢 Channel → Space DB Migration - LOW PRIORITY
 - [ ] **Complete the "channel" → "space" rename at the database level**
