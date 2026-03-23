@@ -226,7 +226,7 @@
 	class="scrollbar-hidden"
 	>
 		<table
-			style="--w:100%; --size:0.8rem; --ta:left; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); table-layout:auto; --maxw:100%; --radius:0.125rem"
+			style="--w:100%; --size:0.8rem; --ta:left; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); table-layout:auto; --maxw:100%; --radius:0.125rem; --d:table; --border-collapse:separate; --border-spacing:0; --bgc:transparent"
 		>
 			<thead
 				style="--size:0.6rem; --c:var(--color-gray-700); --tt:uppercase; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-400); --translatey:-0.125rem"
@@ -237,7 +237,7 @@
 						style="--px:0.6rem; --py:0.4rem; --cur:pointer; --us:none"
 						on:click={() => setSortKey('role')}
 					>
-						<div style="--d:flex; --g:0.4rem; --ai:center">
+						<div style="--g:0.4rem; --ai:center">
 							{$i18n.t('Role')}
 
 							{#if orderBy === 'role'}
@@ -260,7 +260,7 @@
 						style="--px:0.6rem; --py:0.4rem; --cur:pointer; --us:none"
 						on:click={() => setSortKey('name')}
 					>
-						<div style="--d:flex; --g:0.4rem; --ai:center">
+						<div style="--g:0.4rem; --ai:center">
 							{$i18n.t('Name')}
 
 							{#if orderBy === 'name'}
@@ -283,7 +283,7 @@
 						style="--px:0.6rem; --py:0.4rem; --cur:pointer; --us:none"
 						on:click={() => setSortKey('email')}
 					>
-						<div style="--d:flex; --g:0.4rem; --ai:center">
+						<div style="--g:0.4rem; --ai:center">
 							{$i18n.t('Email')}
 
 							{#if orderBy === 'email'}
@@ -307,7 +307,7 @@
 						style="--px:0.6rem; --py:0.4rem; --cur:pointer; --us:none"
 						on:click={() => setSortKey('last_active_at')}
 					>
-						<div style="--d:flex; --g:0.4rem; --ai:center">
+						<div style="--g:0.4rem; --ai:center">
 							{$i18n.t('Last Active')}
 
 							{#if orderBy === 'last_active_at'}
@@ -330,7 +330,7 @@
 						style="--px:0.6rem; --py:0.4rem; --cur:pointer; --us:none"
 						on:click={() => setSortKey('created_at')}
 					>
-						<div style="--d:flex; --g:0.4rem; --ai:center">
+						<div style="--g:0.4rem; --ai:center">
 							{$i18n.t('Created at')}
 							{#if orderBy === 'created_at'}
 								<span style="--weight:400"
@@ -353,7 +353,7 @@
 						style="--px:0.6rem; --py:0.4rem; --cur:pointer; --us:none"
 						on:click={() => setSortKey('oauth_sub')}
 					>
-						<div style="--d:flex; --g:0.4rem; --ai:center">
+						<div style="--g:0.4rem; --ai:center">
 							{$i18n.t('OAuth ID')}
 
 							{#if orderBy === 'oauth_sub'}
@@ -378,7 +378,7 @@
 			<tbody>
 				{#each users as user, userIdx}
 					<tr style="--bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-bc:var(--color-gray-850); --size:0.6rem">
-						<td style="--d:table;--px:0.6rem; --py:0.2rem; --minw:7rem; --w:7rem">
+						<td style="--px:0.6rem; --py:0.2rem; --minw:7rem; --w:7rem">
 							<button
 								style="--translatey:0.125rem"
 								on:click={() => {
@@ -392,7 +392,7 @@
 								/>
 							</button>
 						</td>
-						<td style="--d:table;--px:0.6rem; --py:0.2rem; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --w:max-content">
+						<td style="--px:0.6rem; --py:0.2rem; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --w:max-content">
 							<div style="--d:flex; --fd:row; --w:max-content">
 								<img
 									style="--radius:9999px; --w:1.5rem; --h:1.5rem; --objf:cover; --mr:0.625rem"
@@ -407,17 +407,17 @@
 								<div style="--weight:500; --as:center">{user.name}</div>
 							</div>
 						</td>
-						<td style="--d:table;--px:0.6rem; --py:0.2rem"> {user.email} </td>
+						<td style="--px:0.6rem; --py:0.2rem"> {user.email} </td>
 
-						<td style="--d:table;--px:0.6rem; --py:0.2rem">
+						<td style="--px:0.6rem; --py:0.2rem">
 							{dayjs(user.last_active_at * 1000).fromNow()}
 						</td>
 
-						<td style="--d:table;--px:0.6rem; --py:0.2rem">
+						<td style="--px:0.6rem; --py:0.2rem">
 							{dayjs(user.created_at * 1000).format('LL')}
 						</td>
 
-						<td style="--d:table;--px:0.6rem; --py:0.2rem">
+						<td style="--px:0.6rem; --py:0.2rem">
 							{#if user.role === 'temporary' && user.info?.temporary?.expires_at}
 								<span style="{dayjs(user.info.temporary.expires_at * 1000).isBefore(dayjs()) ? '--c:#ef4444' : '--c:var(--color-gray-500)'}">
 									{dayjs(user.info.temporary.expires_at * 1000).fromNow()}
@@ -518,13 +518,13 @@
 > # **Hey there! 👋**
 >
 > It looks like you have over 50 users — that usually falls under organizational usage.
-> 
-> Sage.is AI is proudly open source and completely free, with no hidden limits — and we'd love to keep it that way. 🌱  
 >
-> By supporting the project through sponsorship or an enterprise license, you’re not only helping us stay independent, you’re also helping us ship new features faster, improve stability, and grow the project for the long haul. With an *enterprise license*, you also get additional perks like dedicated support, customization options, and more — all at a fraction of what it would cost to build and maintain internally.  
-> 
+> Sage.is AI is proudly open source and completely free, with no hidden limits — and we'd love to keep it that way. 🌱
+>
+> By supporting the project through sponsorship or an enterprise license, you’re not only helping us stay independent, you’re also helping us ship new features faster, improve stability, and grow the project for the long haul. With an *enterprise license*, you also get additional perks like dedicated support, customization options, and more — all at a fraction of what it would cost to build and maintain internally.
+>
 > Your support helps us stay independent and continue building great tools for everyone. 💛
-> 
+>
 > - 👉 **[Click here to learn more about enterprise licensing](https://docs.sage.is/license)**
 > - 👉 *[Click here to sponsor the project on GitHub](https://github.com/sponsors/Sage-is/)*
 `}
