@@ -198,6 +198,45 @@ it_build_n_run: it_build
 it_build_n_run_no_cache: it_build_no_cache
 	@make it_run
 
+# ---------------------------------------------------------------------------
+# DB Upgrade Smoke Test
+# ---------------------------------------------------------------------------
+# Verifies that migrations (Peewee + Alembic) apply cleanly against a prior-
+# version database snapshot.  Archives live in tools/db_snapshots/ (gitignored,
+# synced via SyncThing / Backblaze B2).
+#
+# Usage:
+#   make it_build            # build current image first
+#   make test_db_upgrade     # run migration against archived DB
+#
+# The test copies the snapshot to a temp directory so the original is never
+# mutated, boots the app inside Docker, and exits after migrations complete.
+DB_SNAPSHOT_DIR := tools/db_snapshots
+DB_TEST_CONTAINER := sage-db-upgrade-test
+
+test_db_upgrade:
+	@if [ ! -d "$(DB_SNAPSHOT_DIR)" ] || [ -z "$$(ls $(DB_SNAPSHOT_DIR)/*.sqlite 2>/dev/null)" ]; then \
+		echo "Error: No .sqlite files found in $(DB_SNAPSHOT_DIR)/"; \
+		echo "Place a DB snapshot (e.g. webui.1.1.1.db.sqlite) there first."; \
+		echo "See $(DB_SNAPSHOT_DIR)/README.md for details."; \
+		exit 1; \
+	fi
+	@echo "=== DB Upgrade Smoke Test ==="
+	@# Copy snapshot to temp dir so container writes don't mutate the original
+	@TMPDIR=$$(mktemp -d) && \
+	SNAPSHOT=$$(ls -1 $(DB_SNAPSHOT_DIR)/*.sqlite | head -1) && \
+	cp "$$SNAPSHOT" "$$TMPDIR/webui.db" && \
+	echo "Source: $$SNAPSHOT ($$(du -h "$$SNAPSHOT" | cut -f1))" && \
+	echo "Testing migrations against $(IMAGE_NAME):$(IMAGE_TAG)..." && \
+	$(CONTAINER_RUNTIME) run --rm \
+		-v "$$TMPDIR:/app/backend/data" \
+		--name $(DB_TEST_CONTAINER) \
+		$(IMAGE_NAME):$(IMAGE_TAG) \
+		timeout 60 python -c "from sage_is_ai.main import app; print('Migrations OK')" \
+	&& echo "DB upgrade test PASSED ✓" \
+	|| { echo "DB upgrade test FAILED ✗"; rm -rf "$$TMPDIR"; exit 1; }; \
+	rm -rf "$$TMPDIR"
+
 # Ensure builder target
 ensure_builder:
 	@docker buildx inspect multi-arch-builder >/dev/null 2>&1 || docker buildx create --name multi-arch-builder --use
@@ -546,7 +585,7 @@ lint:
 	waha_start waha_stop waha_logs waha_status \
 	signal_start signal_stop signal_logs signal_status \
 	install_dev scan scan_secrets scan_sast scan_deps scan_container scan_dast \
-	trivy_db_update lint
+	trivy_db_update lint test_db_upgrade
 
 
 # Version Management with Git Flow

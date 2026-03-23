@@ -1,14 +1,22 @@
 # Changelog
 
-This file records what changed in Sage.is AI-UI. Not what we did — what you can now do. Each entry names a capability that moved, a control that shifted, or a constraint that was removed. Implementation details belong in commit messages. This is a record of the software's relationship with the people running it.
-
-All notable changes to Sage.is AI-UI are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Sage.is AI-UI is released under the GNU Affero General Public License v3. Every change listed here belongs to anyone running the code.
+This file records what changed in Sage.is AI-UI. All notable changes to Sage.is AI-UI are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Sage.is AI-UI is released under the GNU Affero General Public License v3. Every change listed here belongs to anyone running the code.
 
 ---
 
 ## [Unreleased]
 
+---
+
+## [2.0.0] — 2026-03-23
+
 ### Added
+
+**Spaces — Collaborative AI Rooms**
+Multi-user rooms where people and AI agents interact in real time. @mention an agent to pull it into the conversation. Agents respond to follow-up questions without requiring another @mention when their last message ended with a question. Threads, reactions, and typing indicators work the way you'd expect from a team chat — except some of the participants are models. Thinking indicators rotate through playful status messages while agents work, because staring at static dots during a 90-second reasoning chain is no fun.
+
+**Spaces: Member Management**
+Admins and facilitators can add or remove users from a Space via the three-dot menu. Access control is per-space, stored in `access_control.read.user_ids`. No backend changes needed — the existing `updateSpaceById` API already accepts access control payloads.
 
 **Messaging Bridges — WhatsApp, Telegram, Signal, Email**
 Users can now send messages to the AI from whichever platform their conversations already happen on: WhatsApp via WAHA, Telegram via Bot API, Signal via signal-cli-rest-api, Email via IMAP/SMTP. No new account. No new app. No new login. The same model, reachable from wherever the person already is. Admins configure each bridge from the admin panel; credentials stay on the server, not in user configuration. New adapters require no frontend changes — the bridge architecture is extensible without touching the UI.
@@ -19,6 +27,9 @@ Three configurable modes for how PDF documents enter the knowledge base: fast te
 **AI Document Parsing**
 AI-powered document parsing is now configurable with structured output options. Documents that resist clean extraction (mixed-layout PDFs, scanned images embedded in pages) can be passed through a model for structured interpretation before indexing.
 
+**Knowledge Base**
+Multi-collection document storage with per-collection embedding configuration. Documents can be assigned to specific knowledge bases and linked to chat skills, so models draw on the right context for the right task.
+
 **Home Dashboard**
 Recent and pinned conversations appear at first load. The interface surfaces what the user was working on without requiring them to navigate to find it. Pinned conversations persist across sessions.
 
@@ -28,10 +39,45 @@ Global conversation search is accessible from the sidebar. The cursor enters the
 **Collapsible Sidebar Folders and Date Groups**
 Folder and date group expansion state is user-controlled. Large conversation histories stay organized without hiding content by default. Fold and unfold controls are visible without hovering.
 
+**Setup Wizard**
+First-run configuration walks through connection setup (Ollama, OpenAI-compatible endpoints) with live verification. Admins see whether their API key or local model server is reachable before finishing setup, not after.
+
+**Chat Sharing**
+Users can share conversations with other users or groups. Shared chats appear in "Shared with me" and "Shared by me" sidebar categories.
+
+**Magic Links**
+Passwordless authentication via one-time links. Admins can configure allowed email domains. Useful for deployments where managing passwords is more friction than it's worth.
+
+**Note Editor**
+Persistent notes with title management and save functionality. Notes live alongside chats in the sidebar.
+
+**Security Scanning Framework**
+Provider-agnostic CI/CD scanning via Makefile targets. `make scan` runs gitleaks (secrets), semgrep (JS/TS/Svelte SAST), bandit (Python SAST), and trivy (dependency vulnerabilities). `make install_dev` installs all tools via Homebrew. Pre-commit git hooks catch issues before they reach the repo. No GitHub Actions, no vendor lock-in — runs on Linux, macOS, and Windows (WSL).
+
+**DB Upgrade Smoke Test**
+`make test_db_upgrade` boots the app against an archived database snapshot to verify that Peewee and Alembic migrations apply cleanly. The original snapshot is never mutated.
+
 ### Changed
 
 **Package Identity: `open_webui` → `sage_is_ai`**
-The backend Python package is being renamed from `open_webui` to `sage_is_ai`. Every import path, log line, environment variable prefix, and deployment artifact will carry the software's own name. A fork that has diverged this far in architecture and purpose should say so in its namespace. We're Sage.is AI-UI, the AGPL tool that's forever open under the strongest of Copy Left policies.
+The backend Python package is renamed from `open_webui` to `sage_is_ai`. Every import path, log line, environment variable prefix, and deployment artifact carries the software's own name. A fork that has diverged this far in architecture and purpose should say so in its namespace. We're Sage.is AI-UI, the AGPL tool that's forever open under the strongest of Copy Left policies.
+
+**"Channel" → "Space"**
+The UI, API routes, and socket events now use "Space" instead of "Channel". The database schema still uses the old names (migration planned for v2.1.0) — this is a cosmetic rename that doesn't touch stored data.
+
+**Dependency Security Upgrades**
+Updated authlib, unstructured, nltk, python-multipart, PyJWT, pillow, black, aiohttp, langchain-community, and jspdf to patch known CVEs (CRITICAL and HIGH severity).
+
+**Agent Thinking Timeout**
+Thinking indicator timeout extended from 30 seconds to 2 minutes. Slower models no longer have their "thinking" status silently cleared before they finish responding.
+
+### Fixed
+
+**Rich Text Editor State**
+The rich text editor now clears correctly when the prompt is externally set to an empty string. Previously, switching Spaces could leave stale content in the input.
+
+**Space Participant Loading**
+Participant loading for @mention autocomplete now fails gracefully with a console warning instead of breaking the Space. A TODO marks this for user-facing error reporting in a future release.
 
 ---
 
