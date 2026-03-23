@@ -138,22 +138,64 @@ VERSION = PACKAGE_DATA["version"]
 INSTANCE_ID = os.environ.get("INSTANCE_ID", str(uuid4()))
 
 
-# Function to parse each section
-def parse_section(section):
+# ---------------------------------------------------------------------------
+# Changelog parser
+# ---------------------------------------------------------------------------
+# Reads CHANGELOG.md and produces a JSON dict consumed by /api/changelog.
+# Supports two formats:
+#   - Bullet list:  `- **Title:** description`  (classic Keep-a-Changelog)
+#   - Prose:        `**Title**\ndescription`     (paragraph-based, our style)
+# Date separators: ` - ` (hyphen) or ` — ` (em dash).
+# Versions without a date (e.g. [Unreleased]) are skipped.
+
+
+def parse_section(h3_tag):
+    """Parse items under a ### heading. Handles both <ul><li> and <p><strong> formats."""
     items = []
-    for li in section.find_all("li"):
-        # Extract raw HTML string
-        raw_html = str(li)
+    current = h3_tag.find_next_sibling()
 
-        # Extract text without HTML tags
-        text = li.get_text(separator=" ", strip=True)
+    while current and current.name not in ("h2", "h3"):
+        # Format 1: bullet list (<ul> with <li> items)
+        if current.name == "ul":
+            for li in current.find_all("li"):
+                raw_html = str(li)
+                text = li.get_text(separator=" ", strip=True)
+                parts = text.split(": ", 1)
+                title = parts[0].strip() if len(parts) > 1 else ""
+                content = parts[1].strip() if len(parts) > 1 else text
+                items.append({"title": title, "content": content, "raw": raw_html})
 
-        # Split into title and content
-        parts = text.split(": ", 1)
-        title = parts[0].strip() if len(parts) > 1 else ""
-        content = parts[1].strip() if len(parts) > 1 else text
+        # Format 2: prose paragraphs (<p> with <strong> title)
+        elif current.name == "p":
+            strong = current.find("strong")
+            if strong:
+                title = strong.get_text(strip=True)
+                # Content is the rest of this <p> plus any following <p> before next <strong>
+                # Remove the strong tag text from the paragraph
+                content_parts = []
+                for child in current.children:
+                    if child.name == "strong":
+                        continue
+                    text = child.get_text(strip=True) if hasattr(child, "get_text") else str(child).strip()
+                    if text:
+                        content_parts.append(text)
+                content_text = " ".join(content_parts).strip()
 
-        items.append({"title": title, "content": content, "raw": raw_html})
+                # Check if next sibling is a plain <p> (continuation of this entry)
+                nxt = current.find_next_sibling()
+                if nxt and nxt.name == "p" and not nxt.find("strong"):
+                    content_text = (content_text + " " + nxt.get_text(strip=True)).strip()
+                    # Skip that sibling in the outer loop
+                    current = nxt
+
+                items.append({
+                    "title": title,
+                    "content": content_text,
+                    "raw": str(current),
+                })
+
+        current = current.find_next_sibling()
+
     return items
 
 
@@ -174,23 +216,28 @@ soup = BeautifulSoup(html_content, "html.parser")
 # Initialize JSON structure
 changelog_json = {}
 
-# Iterate over each version
+# Iterate over each version heading
 for version in soup.find_all("h2"):
-    version_number = version.get_text().strip().split(" - ")[0][1:-1]  # Remove brackets
-    date = version.get_text().strip().split(" - ")[1]
+    heading = version.get_text().strip()
+
+    # Split on " — " (em dash) or " - " (hyphen)
+    for sep in (" — ", " - "):
+        if sep in heading:
+            version_number = heading.split(sep)[0].strip().strip("[]")
+            date = heading.split(sep, 1)[1].strip()
+            break
+    else:
+        # No date separator (e.g. [Unreleased]) — skip
+        continue
 
     version_data = {"date": date}
 
-    # Find the next sibling that is a h3 tag (section title)
+    # Walk siblings collecting h3 sections
     current = version.find_next_sibling()
-
     while current and current.name != "h2":
         if current.name == "h3":
             section_title = current.get_text().lower()  # e.g., "added", "fixed"
-            section_items = parse_section(current.find_next_sibling("ul"))
-            version_data[section_title] = section_items
-
-        # Move to the next element
+            version_data[section_title] = parse_section(current)
         current = current.find_next_sibling()
 
     changelog_json[version_number] = version_data
