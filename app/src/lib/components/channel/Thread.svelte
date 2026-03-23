@@ -11,6 +11,7 @@
 	import Messages from './Messages.svelte';
 	import { onDestroy, tick } from 'svelte';
 	import { toast } from 'svelte-sonner';
+	import IndicatorStack from './IndicatorStack.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -220,14 +221,7 @@
 			/>
 
 			<div style="--pb:1rem; --px:0.625rem">
-				{#if typingUsers.length > 0}
-					<div style="--size:0.65rem; --px:1rem; --mb:0.25rem">
-						<span style="--weight:500; --c:#000; --dark-c:#fff">
-							{typingUsers.map((user) => user.name).join(', ')}
-						</span>
-						{$i18n.t('is typing...')}
-					</div>
-				{/if}
+				<IndicatorStack typingUsers={typingUsers} />
 
 				<MessageInput
 					bind:prompt

@@ -14,6 +14,7 @@
 	import Drawer from '../common/Drawer.svelte';
 	import EllipsisVertical from '../icons/EllipsisVertical.svelte';
 	import Thread from './Thread.svelte';
+	import IndicatorStack from './IndicatorStack.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -77,6 +78,9 @@
 			messages = await getSpaceMessages(localStorage.token, id, 0);
 
 			// Load participants for @mention autocomplete
+			// TODO: Show a user-facing error (toast or inline alert) when participant
+			// loading fails, instead of silently falling back to empty lists.
+			// The fallback keeps the space functional but hides the failure from the user.
 			participants = await getSpaceParticipants(localStorage.token, id).catch((err) => {
 				console.error('[Space] Failed to load participants:', err);
 				return { users: [], agents: [] };
@@ -143,7 +147,8 @@
 					if (!thinkingAgents.find((a) => (a.model_id || a.name) === agentKey)) {
 						thinkingAgents = [...thinkingAgents, data.agent];
 					}
-					// Auto-clear after 30s safety net
+					// Safety net: auto-clear if backend never sends thinking:false.
+					// 60s allows for slower models (was 30s, too aggressive).
 					if (thinkingAgentsTimeout[agentKey]) {
 						clearTimeout(thinkingAgentsTimeout[agentKey]);
 					}
@@ -151,7 +156,7 @@
 						thinkingAgents = thinkingAgents.filter(
 							(a) => (a.model_id || a.name) !== agentKey
 						);
-					}, 30000);
+					}, 120000);
 				} else {
 					thinkingAgents = thinkingAgents.filter(
 						(a) => (a.model_id || a.name) !== agentKey
@@ -319,26 +324,7 @@
 			</div>
 
 			<div style="--pb:0.5rem; --px:0.625rem">
-				{#if thinkingAgents.length > 0 || typingUsers.length > 0}
-					<div style="--size:0.65rem; --px:1rem; --mb:0.25rem">
-						{#if thinkingAgents.length > 0}
-							<div>
-								<span style="--weight:500; --c:var(--color-blue-600); --dark-c:var(--color-blue-400)">
-									{thinkingAgents.map((a) => a.name).join(', ')}
-								</span>
-								{$i18n.t('is thinking...')}
-							</div>
-						{/if}
-						{#if typingUsers.length > 0}
-							<div>
-								<span style="--weight:500; --c:#000; --dark-c:#fff">
-									{typingUsers.map((user) => user.name).join(', ')}
-								</span>
-								{$i18n.t('is typing...')}
-							</div>
-						{/if}
-					</div>
-				{/if}
+				<IndicatorStack {thinkingAgents} {typingUsers} />
 
 				<MessageInput
 					bind:prompt

@@ -32,6 +32,7 @@
 	import Commands from '../chat/MessageInput/Commands.svelte';
 	import Mentions from './MessageInput/Mentions.svelte';
 	import InputVariablesModal from '../chat/MessageInput/InputVariablesModal.svelte';
+	import IndicatorStack from './IndicatorStack.svelte';
 
 	export let placeholder = $i18n.t('Send a Message');
 	export let transparentBackground = false;
@@ -596,24 +597,7 @@
 
 				<div style="--pos:relative">
 					<div style="--mt:-1.2rem">
-						{#if thinkingAgents.length > 0}
-							<div style="--size:0.6rem; --px:1rem; --mb:0.2rem">
-								<span
-									style="--weight:400; --c:var(--color-blue-600); --dark-c:var(--color-blue-400)"
-								>
-									{thinkingAgents.map((a) => a.name).join(', ')}
-								</span>
-								{$i18n.t('is thinking...')}
-							</div>
-						{/if}
-						{#if typingUsers.length > 0}
-							<div style="--size:0.6rem; --px:1rem; --mb:0.2rem">
-								<span style="--weight:400; --c:#000; --dark-c:#fff">
-									{typingUsers.map((user) => user.name).join(', ')}
-								</span>
-								{$i18n.t('is typing...')}
-							</div>
-						{/if}
+						<IndicatorStack {thinkingAgents} {typingUsers} />
 					</div>
 
 					<Commands
@@ -675,13 +659,13 @@
 					}}
 				>
 					<div
-						style="--fx:1 1 0%; 
-							--d:flex; 
-							--fd:column; 
-							--pos:relative; 
-							--w:100%; 
-							--radius:1.5rem; 
-							--px:0.2rem; 
+						style="--fx:1 1 0%;
+							--d:flex;
+							--fd:column;
+							--pos:relative;
+							--w:100%;
+							--radius:1.5rem;
+							--px:0.2rem;
 							--bgc:rgb(103 103 103 / 0.05); --dark-bgc:rgb(180 180 180 / 0.05); --dark-c:var(--color-gray-100)"
 						dir={$settings?.chatDirection ?? 'auto'}
 					>

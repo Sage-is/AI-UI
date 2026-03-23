@@ -378,11 +378,19 @@ async def generate_agent_response(request, space, trigger_message, agent_config,
         if not content:
             return
 
+        # Build agent message data. If the response ends with '?', mark it as
+        # awaiting a reply from the triggering user — so they can respond without
+        # having to @mention the agent again. Other users must still @mention.
+        # TODO: Add optional per-agent TTL setting for deployments that want expiration.
+        agent_data = {"agent": {**agent_info}}
+        if content.strip().endswith("?"):
+            agent_data["agent"]["awaiting_reply_from"] = trigger_user.id
+
         # Save agent message
         agent_message_form = MessageForm(
             content=content,
             parent_id=trigger_message.parent_id,
-            data={"agent": agent_info},
+            data=agent_data,
         )
         agent_message = Messages.insert_new_message(
             agent_message_form, space.id, AGENT_USER_ID
@@ -587,8 +595,34 @@ async def post_new_message(
                     message.id,
                 )
 
-            # Parse @mentions from message content
+            # --- Agent auto-reply: if an agent's last response ended with '?',
+            # the triggering user can reply without @mentioning the agent.
+            # We only check the last 2 messages (not a deep scan) — if the agent's
+            # question isn't recent, the user isn't directly responding to it.
+            # Explicit @mentions always take priority over auto-reply.
             mentions = set(re.findall(r"@([\w][\w-]*)", message.content or ""))
+
+            if not mentions:
+                recent_msgs = Messages.get_messages_by_space_id(id, skip=0, limit=2)
+                for recent_msg in recent_msgs:
+                    # Only look at agent messages
+                    if recent_msg.user_id != AGENT_USER_ID:
+                        continue
+                    agent_data = (recent_msg.data or {}).get("agent", {})
+                    awaiting_user = agent_data.get("awaiting_reply_from")
+                    if awaiting_user and awaiting_user == user.id:
+                        # This user is responding to the agent's question — auto-trigger
+                        agent_model_id = agent_data.get("model_id")
+                        space_agents = Spaces.get_space_agents(space)
+                        for agent_config in space_agents:
+                            if agent_config.get("model_id") == agent_model_id:
+                                asyncio.create_task(
+                                    generate_agent_response(
+                                        request, space, message, agent_config, user
+                                    )
+                                )
+                                break
+                        break  # Only trigger one auto-reply agent
 
             if mentions:
                 # Trigger agent responses for @mentioned agents
