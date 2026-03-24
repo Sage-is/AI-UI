@@ -3,6 +3,8 @@
 	import { toast } from 'svelte-sonner';
 
 	import { getAdminConfig, updateAdminConfig } from '$lib/apis/auths';
+	import Tooltip from '$lib/components/common/Tooltip.svelte';
+	import QuestionMarkCircle from '$lib/components/icons/QuestionMarkCircle.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -74,91 +76,99 @@
 		</div>
 	{:else}
 		<div style="--d:flex; --fd:column; --g:0.6rem; --mb:1.5rem">
-			<label
-				style="--d:flex; --ai:center; --jc:space-between; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
-			>
-				<div>
-					<div style="--size:0.85rem; --weight:500">{$i18n.t('Community Sharing')}</div>
-					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
-						{$i18n.t('Allow users to share conversations with the community')}
-					</div>
-				</div>
-				<input
-					type="checkbox"
-					bind:checked={enableCommunitySharing}
-					style="--w:1rem; --h:1rem; --shrink:0"
-				/>
-			</label>
 
-			<label
-				style="--d:flex; --ai:center; --jc:space-between; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
-			>
-				<div>
-					<div style="--size:0.85rem; --weight:500">{$i18n.t('Message Rating')}</div>
-					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
-						{$i18n.t('Allow users to rate AI responses')}
-					</div>
-				</div>
-				<input
-					type="checkbox"
-					bind:checked={enableMessageRating}
-					style="--w:1rem; --h:1rem; --shrink:0"
-				/>
-			</label>
-
+			<!-- Community Sharing -->
 			<label
 				style="--d:flex; --ai:center; --jc:space-between; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			>
 				<div>
 					<div style="--d:flex; --ai:center; --g:0.4rem">
+						<span style="--size:0.85rem; --weight:500">{$i18n.t('Community Sharing')}</span>
+						<Tooltip content={$i18n.t('Let users publish conversations to a shared community feed visible to all platform members.')} placement="right" className="flex items-center">
+							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><QuestionMarkCircle className="size-3.5" /></span>
+						</Tooltip>
+					</div>
+					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
+						{$i18n.t('Allow users to share conversations with the community')}
+					</div>
+				</div>
+				<input type="checkbox" bind:checked={enableCommunitySharing} style="--w:1rem; --h:1rem; --shrink:0" />
+			</label>
+
+			<!-- Message Rating -->
+			<label
+				style="--d:flex; --ai:center; --jc:space-between; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+			>
+				<div>
+					<div style="--d:flex; --ai:center; --g:0.4rem">
+						<span style="--size:0.85rem; --weight:500">{$i18n.t('Message Rating')}</span>
+						<Tooltip content={$i18n.t('Show thumbs up/down buttons on AI responses so users can provide feedback on response quality.')} placement="right" className="flex items-center">
+							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><QuestionMarkCircle className="size-3.5" /></span>
+						</Tooltip>
+					</div>
+					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
+						{$i18n.t('Allow users to rate AI responses')}
+					</div>
+				</div>
+				<input type="checkbox" bind:checked={enableMessageRating} style="--w:1rem; --h:1rem; --shrink:0" />
+			</label>
+
+			<!-- Notes (Beta) -->
+			<label
+				style="--d:flex; --ai:center; --jc:space-between; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-amber-100); --dark-bc:var(--color-amber-900); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-amber-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+			>
+				<div>
+					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('Notes')}</span>
-						<span style="--size:0.6rem; --c:var(--color-amber-600); --weight:500">{$i18n.t('Beta')}</span>
+						<span style="--size:0.55rem; --c:var(--color-amber-600); --weight:600; --px:0.3rem; --py:0.1rem; --radius:0.25rem; --bgc:var(--color-amber-100); --dark-bgc:var(--color-amber-900); --dark-c:var(--color-amber-400)">{$i18n.t('Beta')}</span>
+						<Tooltip content={$i18n.t('Adds a personal note-taking area where users can save and organize text notes. This feature is still in beta and may change.')} placement="right" className="flex items-center">
+							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><QuestionMarkCircle className="size-3.5" /></span>
+						</Tooltip>
 					</div>
 					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
 						{$i18n.t('Enable note-taking features')}
 					</div>
 				</div>
-				<input
-					type="checkbox"
-					bind:checked={enableNotes}
-					style="--w:1rem; --h:1rem; --shrink:0"
-				/>
+				<input type="checkbox" bind:checked={enableNotes} style="--w:1rem; --h:1rem; --shrink:0" />
 			</label>
 
+			<!-- Spaces (Beta) -->
 			<label
-				style="--d:flex; --ai:center; --jc:space-between; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--d:flex; --ai:center; --jc:space-between; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-amber-100); --dark-bc:var(--color-amber-900); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-amber-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			>
 				<div>
 					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('Spaces')}</span>
-						<span style="--size:0.6rem; --c:var(--color-amber-600); --weight:500">{$i18n.t('Beta')}</span>
+						<span style="--size:0.55rem; --c:var(--color-amber-600); --weight:600; --px:0.3rem; --py:0.1rem; --radius:0.25rem; --bgc:var(--color-amber-100); --dark-bgc:var(--color-amber-900); --dark-c:var(--color-amber-400)">{$i18n.t('Beta')}</span>
+						<Tooltip content={$i18n.t('Create shared workspaces where teams can collaborate with dedicated models, knowledge bases, and conversation history. This feature is still in beta and may change.')} placement="right" className="flex items-center">
+							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><QuestionMarkCircle className="size-3.5" /></span>
+						</Tooltip>
 					</div>
 					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
 						{$i18n.t('Enable workspace and collaboration spaces')}
 					</div>
 				</div>
-				<input
-					type="checkbox"
-					bind:checked={enableSpaces}
-					style="--w:1rem; --h:1rem; --shrink:0"
-				/>
+				<input type="checkbox" bind:checked={enableSpaces} style="--w:1rem; --h:1rem; --shrink:0" />
 			</label>
 
+			<!-- User Webhooks -->
 			<label
 				style="--d:flex; --ai:center; --jc:space-between; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			>
 				<div>
-					<div style="--size:0.85rem; --weight:500">{$i18n.t('User Webhooks')}</div>
+					<div style="--d:flex; --ai:center; --g:0.4rem">
+						<span style="--size:0.85rem; --weight:500">{$i18n.t('User Webhooks')}</span>
+						<Tooltip content={$i18n.t('Allow users to set up webhook URLs that receive notifications when events occur, such as new messages or completed responses.')} placement="right" className="flex items-center">
+							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><QuestionMarkCircle className="size-3.5" /></span>
+						</Tooltip>
+					</div>
 					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
 						{$i18n.t('Allow users to configure webhook integrations')}
 					</div>
 				</div>
-				<input
-					type="checkbox"
-					bind:checked={enableUserWebhooks}
-					style="--w:1rem; --h:1rem; --shrink:0"
-				/>
+				<input type="checkbox" bind:checked={enableUserWebhooks} style="--w:1rem; --h:1rem; --shrink:0" />
 			</label>
+
 		</div>
 	{/if}
 

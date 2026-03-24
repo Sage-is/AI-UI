@@ -2,6 +2,7 @@
 	import { onMount, getContext } from 'svelte';
 	import { WEBUI_NAME, models } from '$lib/stores';
 	import { getAllUsers } from '$lib/apis/users';
+	import { getAdminConfig } from '$lib/apis/auths';
 
 	const i18n = getContext('i18n');
 
@@ -10,7 +11,17 @@
 
 	let connectionAdded = false;
 	let usersCount = 0;
+	let featuresEnabled = 0;
 	let loading = true;
+
+	// Feature flags to count from admin config
+	const featureKeys = [
+		'ENABLE_COMMUNITY_SHARING',
+		'ENABLE_MESSAGE_RATING',
+		'ENABLE_NOTES',
+		'ENABLE_SPACES',
+		'ENABLE_USER_WEBHOOKS'
+	];
 
 	onMount(async () => {
 		connectionAdded = $models.length > 0;
@@ -22,6 +33,15 @@
 			usersCount = users.filter((u: any) => u.role !== 'admin').length;
 		} catch {
 			usersCount = 0;
+		}
+
+		try {
+			const config = await getAdminConfig();
+			if (config) {
+				featuresEnabled = featureKeys.filter((k) => config[k]).length;
+			}
+		} catch {
+			featuresEnabled = 0;
 		}
 
 		loading = false;
@@ -52,6 +72,7 @@
 				</div>
 			{/if}
 
+
 			{#if usersCount > 0}
 				<div style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
 					<span style="--c:var(--color-green-600)">&#10003;</span>
@@ -70,11 +91,21 @@
 				</div>
 			{/if}
 
-			{#if !connectionAdded && usersCount === 0 && !workingAlone}
+			{#if !connectionAdded && featuresEnabled === 0 && usersCount === 0 && !workingAlone}
 				<div style="--size:0.75rem; --c:var(--color-gray-400)">
 					{$i18n.t('You can configure connections and users anytime from Settings.')}
 				</div>
 			{/if}
+
+
+			<div style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
+				<span style="--c:var(--color-green-600)">&#10003;</span>
+				<span>
+					{featuresEnabled === 1
+						? $i18n.t('1 feature enabled')
+						: $i18n.t('{{count}} features enabled', { count: featuresEnabled })}
+				</span>
+			</div>
 		</div>
 	{/if}
 
