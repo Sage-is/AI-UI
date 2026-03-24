@@ -18,13 +18,14 @@
 	import Models from './Settings/Models.svelte';
 	import Connections from './Settings/Connections.svelte';
 	import Documents from './Settings/Documents.svelte';
-	
+
 	import ChartBar from '../icons/ChartBar.svelte';
 	import DocumentChartBar from '../icons/DocumentChartBar.svelte';
 	import Evaluations from './Settings/Evaluations.svelte';
 	import CodeExecution from './Settings/CodeExecution.svelte';
 	import Tools from './Settings/Tools.svelte';
 	import Bridges from './Settings/Bridges.svelte';
+	import OAuthSettings from './Settings/OAuthSettings.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -40,6 +41,7 @@
 
 		selectedTab = [
 			'general',
+			'auth',
 			'theme',
 			'connections',
 			'models',
@@ -122,6 +124,27 @@
 				</svg>
 			</div>
 			<div style="--as:center">{$i18n.t('General')}</div>
+		</button>
+
+		<button
+			id="auth"
+			style="{selectedTab === 'auth' ? 'font-weight: 600;' : ''}"
+			on:click={() => {
+				goto('/admin/settings/auth');
+			}}
+		>
+			<div style="--as:center; --mr:0.5rem">
+				<!-- Shield/lock icon -->
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 16 16"
+					fill="currentColor"
+					style="--w:1rem; --h:1rem"
+				>
+					<path fill-rule="evenodd" d="M8 1a3.5 3.5 0 0 0-3.5 3.5V7A1.5 1.5 0 0 0 3 8.5v5A1.5 1.5 0 0 0 4.5 15h7a1.5 1.5 0 0 0 1.5-1.5v-5A1.5 1.5 0 0 0 11.5 7V4.5A3.5 3.5 0 0 0 8 1Zm2 6V4.5a2 2 0 1 0-4 0V7h4Z" clip-rule="evenodd" />
+				</svg>
+			</div>
+			<div style="--as:center">{$i18n.t('Auth')} (Beta)</div>
 		</button>
 
 		<button
@@ -440,6 +463,8 @@
 					await config.set(await getBackendConfig());
 				}}
 			/>
+		{:else if selectedTab === 'auth'}
+			<OAuthSettings />
 		{:else if selectedTab === 'theme'}
 			<Theme
 				on:save={async () => {

@@ -18,6 +18,8 @@
 	import { generateInitialsImage, canvasPixelTest } from '$lib/utils';
 
 	import Spinner from '$lib/components/common/Spinner.svelte';
+	import Tooltip from '$lib/components/common/Tooltip.svelte';
+	import QuestionMarkCircle from '$lib/components/icons/QuestionMarkCircle.svelte';
 	import OnBoarding from '$lib/components/OnBoarding.svelte';
 
 	const i18n = getContext('i18n');
@@ -392,6 +394,15 @@
 											/>
 										</div>
 									</div>
+
+									{#if mode === 'signin' && Object.keys($config?.oauth?.providers ?? {}).length === 0}
+										<div style="--d:flex; --ai:center; --g:0.3rem; --mt:0.5rem; --size:0.7rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
+											{$i18n.t('Forgot your password? Contact your admin for help.')}
+											<Tooltip content={$i18n.t('Your admin can reset your password, or enable Google, GitHub, or LDAP sign-in so you can log in without one.')} placement="top" className="flex items-center">
+												<span style="cursor:help"><QuestionMarkCircle className="size-3.5" /></span>
+											</Tooltip>
+										</div>
+									{/if}
 								{/if}
 								<div style="--mt:1.2rem">
 									{#if $config?.features.enable_login_form || $config?.features.enable_ldap}
@@ -404,13 +415,13 @@
 											</button>
 										{:else}
 											<button
-												style="--bgc:rgb(78 78 78 / 0.05); 
-													--hvr-bgc:rgb(78 78 78 / 0.1); 
-													--dark-bgc:rgb(236 236 236 / 0.05); 
-													--hvr-dark-bgc:rgb(236 236 236 / 0.1); 
-													--dark-c:var(--color-gray-300); 
-													--hvr-dark-c:#fff; 
-													--tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); 
+												style="--bgc:rgb(78 78 78 / 0.05);
+													--hvr-bgc:rgb(78 78 78 / 0.1);
+													--dark-bgc:rgb(236 236 236 / 0.05);
+													--hvr-dark-bgc:rgb(236 236 236 / 0.1);
+													--dark-c:var(--color-gray-300);
+													--hvr-dark-c:#fff;
+													--tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1);
 													--w:100%; --radius:9999px; --weight:500; --size:0.8rem; --py:0.625rem; --p:1em 1.5em;
 													--m:auto;
 													--d:flex; --jc:center; --ai:center;"

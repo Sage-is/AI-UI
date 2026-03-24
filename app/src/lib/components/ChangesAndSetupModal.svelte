@@ -12,13 +12,14 @@
 	import ConnectionStep from './setup/ConnectionStep.svelte';
 	import FeaturesStep from './setup/FeaturesStep.svelte';
 	import UsersStep from './setup/UsersStep.svelte';
+	import AuthStep from './setup/AuthStep.svelte';
 	import CompleteStep from './setup/CompleteStep.svelte';
 
 	const i18n = getContext('i18n');
 
 	export let show = false;
 
-	type PanelId = 'changelog' | 'welcome' | 'connection' | 'features' | 'users' | 'complete';
+	type PanelId = 'changelog' | 'welcome' | 'auth' | 'connection' | 'features' | 'users' | 'complete';
 
 	let currentIndex = 0;
 	let workingAloneSelected = false;
@@ -116,8 +117,8 @@
 	// Track which steps the admin selected on WelcomeStep
 	let selectedSteps: string[] = [];
 
-	// All wizard steps always present (order: connection → users → features)
-	const allSteps: PanelId[] = ['connection', 'users', 'features'];
+	// All wizard steps always present (order: auth → connection → users → features)
+	const allSteps: PanelId[] = ['auth', 'connection', 'users', 'features'];
 
 	// Called by WelcomeStep when admin clicks "Get Started"
 	function handleWelcomeStart(steps: string[]) {
@@ -214,6 +215,11 @@
 		<WelcomeStep
 			onStart={handleWelcomeStart}
 			{isFirstRun}
+		/>
+	{:else if currentPanel === 'auth'}
+		<AuthStep
+			onNext={next}
+			onBack={back}
 		/>
 	{:else if currentPanel === 'connection'}
 		<ConnectionStep

@@ -15,6 +15,7 @@
 	let hasNonAdminUsers = false;
 	let loading = true;
 
+	let includeAuth = true;
 	let includeConnection = true;
 	let includeUsers = true;
 	let includeFeatures = true;
@@ -41,11 +42,12 @@
 		loading = false;
 	});
 
-	$: canStart = includeConnection || includeUsers || includeFeatures;
+	$: canStart = includeAuth || includeConnection || includeUsers || includeFeatures;
 
 	const handleStart = () => {
 		const steps: string[] = [];
-		// Order: connection → users → features
+		// Order: auth → connection → users → features
+		if (includeAuth) steps.push('auth');
 		if (includeConnection) steps.push('connection');
 		if (includeUsers) steps.push('users');
 		if (includeFeatures) steps.push('features');
@@ -76,6 +78,25 @@
 		</div>
 	{:else}
 		<div style="--d:flex; --fd:column; --g:0.6rem; --mb:1.5rem">
+
+			<!-- Authentication (Beta) -->
+			<label
+				style="--d:flex; --ai:center; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-amber-100); --dark-bc:var(--color-amber-900); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-amber-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+			>
+				<input type="checkbox" bind:checked={includeAuth} style="--w:1rem; --h:1rem; --shrink:0" />
+				<div>
+					<div style="--d:flex; --ai:center; --g:0.4rem">
+						<span style="--size:0.85rem; --weight:500">{$i18n.t('Authentication')}</span>
+						<span style="--size:0.55rem; --c:var(--color-amber-600); --weight:600; --px:0.3rem; --py:0.1rem; --radius:0.25rem; --bgc:var(--color-amber-100); --dark-bgc:var(--color-amber-900); --dark-c:var(--color-amber-400)">{$i18n.t('Beta')}</span>
+						<Tooltip content={$i18n.t('Set up Google or GitHub OAuth so users can sign in with their existing accounts instead of a password.')} placement="right" className="flex items-center">
+							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><QuestionMarkCircle className="size-3.5" /></span>
+						</Tooltip>
+					</div>
+					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
+						{$i18n.t('Configure Google or GitHub sign-in for your users')}
+					</div>
+				</div>
+			</label>
 
 			<!-- Model Connections -->
 			<label
