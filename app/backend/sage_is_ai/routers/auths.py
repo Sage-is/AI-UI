@@ -3,6 +3,10 @@ import uuid
 import time
 import datetime
 import logging
+import secrets
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from aiohttp import ClientSession
 
 from sage_is_ai.models.auths import (
@@ -44,6 +48,12 @@ from sage_is_ai.config import (
     GITHUB_CLIENT_ID,
     GITHUB_CLIENT_SECRET,
     load_oauth_providers,
+    ENABLE_MAGIC_LINK_LOGIN,
+    MAGIC_LINK_SMTP_HOST,
+    MAGIC_LINK_SMTP_PORT,
+    MAGIC_LINK_SMTP_USER,
+    MAGIC_LINK_SMTP_PASSWORD,
+    MAGIC_LINK_SMTP_FROM,
 )
 from pydantic import BaseModel
 
@@ -1051,10 +1061,17 @@ class OAuthConfig(BaseModel):
     GOOGLE_CLIENT_SECRET: str = ""
     GITHUB_CLIENT_ID: str = ""
     GITHUB_CLIENT_SECRET: str = ""
+    # Magic link email login
+    ENABLE_MAGIC_LINK_LOGIN: bool = False
+    MAGIC_LINK_SMTP_HOST: str = ""
+    MAGIC_LINK_SMTP_PORT: int = 587
+    MAGIC_LINK_SMTP_USER: str = ""
+    MAGIC_LINK_SMTP_PASSWORD: str = ""
+    MAGIC_LINK_SMTP_FROM: str = ""
 
 
-@router.get("/admin/config/oauth")
-async def get_oauth_config(request: Request, user=Depends(get_admin_user)):
+# Shared dict builder for OAuth + magic link config responses
+def _auth_config_dict():
     return {
         "ENABLE_OAUTH_SIGNUP": ENABLE_OAUTH_SIGNUP.value,
         "OAUTH_MERGE_ACCOUNTS_BY_EMAIL": OAUTH_MERGE_ACCOUNTS_BY_EMAIL.value,
@@ -1062,7 +1079,18 @@ async def get_oauth_config(request: Request, user=Depends(get_admin_user)):
         "GOOGLE_CLIENT_SECRET": GOOGLE_CLIENT_SECRET.value,
         "GITHUB_CLIENT_ID": GITHUB_CLIENT_ID.value,
         "GITHUB_CLIENT_SECRET": GITHUB_CLIENT_SECRET.value,
+        "ENABLE_MAGIC_LINK_LOGIN": ENABLE_MAGIC_LINK_LOGIN.value,
+        "MAGIC_LINK_SMTP_HOST": MAGIC_LINK_SMTP_HOST.value,
+        "MAGIC_LINK_SMTP_PORT": MAGIC_LINK_SMTP_PORT.value,
+        "MAGIC_LINK_SMTP_USER": MAGIC_LINK_SMTP_USER.value,
+        "MAGIC_LINK_SMTP_PASSWORD": MAGIC_LINK_SMTP_PASSWORD.value,
+        "MAGIC_LINK_SMTP_FROM": MAGIC_LINK_SMTP_FROM.value,
     }
+
+
+@router.get("/admin/config/oauth")
+async def get_oauth_config(request: Request, user=Depends(get_admin_user)):
+    return _auth_config_dict()
 
 
 @router.post("/admin/config/oauth")
@@ -1085,16 +1113,124 @@ async def update_oauth_config(
     GITHUB_CLIENT_SECRET.value = form_data.GITHUB_CLIENT_SECRET
     GITHUB_CLIENT_SECRET.save()
 
-    # Re-register providers so changes take effect immediately
+    ENABLE_MAGIC_LINK_LOGIN.value = form_data.ENABLE_MAGIC_LINK_LOGIN
+    ENABLE_MAGIC_LINK_LOGIN.save()
+    MAGIC_LINK_SMTP_HOST.value = form_data.MAGIC_LINK_SMTP_HOST
+    MAGIC_LINK_SMTP_HOST.save()
+    MAGIC_LINK_SMTP_PORT.value = form_data.MAGIC_LINK_SMTP_PORT
+    MAGIC_LINK_SMTP_PORT.save()
+    MAGIC_LINK_SMTP_USER.value = form_data.MAGIC_LINK_SMTP_USER
+    MAGIC_LINK_SMTP_USER.save()
+    MAGIC_LINK_SMTP_PASSWORD.value = form_data.MAGIC_LINK_SMTP_PASSWORD
+    MAGIC_LINK_SMTP_PASSWORD.save()
+    MAGIC_LINK_SMTP_FROM.value = form_data.MAGIC_LINK_SMTP_FROM
+    MAGIC_LINK_SMTP_FROM.save()
+
+    # Re-register OAuth providers so changes take effect immediately
     load_oauth_providers()
 
+    return _auth_config_dict()
+
+
+############################
+# Magic Link Email Login (Beta)
+# Public endpoints for passwordless login via emailed link.
+# Only works for existing user accounts.
+############################
+
+
+class MagicLinkSendForm(BaseModel):
+    email: str
+
+
+class MagicLinkVerifyForm(BaseModel):
+    token: str
+
+
+@router.post("/magic-link/send")
+async def send_magic_link_login(request: Request, form_data: MagicLinkSendForm):
+    """Send a login link to an existing user's email.
+    Returns a generic message regardless of whether the email exists
+    to prevent email enumeration."""
+    if not ENABLE_MAGIC_LINK_LOGIN.value:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Magic link login is disabled")
+
+    # Always return success to prevent email enumeration
+    generic_response = {"message": "If an account with that email exists, a login link has been sent."}
+
+    user = Users.get_user_by_email(form_data.email.lower().strip())
+    if not user:
+        return generic_response
+
+    # Generate a short-lived signed token (15 minutes)
+    token = create_token(
+        data={"sub": user.email, "type": "magic_link", "jti": secrets.token_hex(8)},
+        expires_delta=datetime.timedelta(minutes=15),
+    )
+
+    webui_url = request.app.state.config.WEBUI_URL.rstrip("/")
+    login_url = f"{webui_url}/auth#magic_token={token}"
+
+    # Send via SMTP
+    try:
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = "Your login link"
+        msg["From"] = MAGIC_LINK_SMTP_FROM.value
+        msg["To"] = user.email
+
+        text = f"Click to sign in:\n{login_url}\n\nThis link expires in 15 minutes."
+        html = (
+            f"<p>Click the link below to sign in:</p>"
+            f'<p><a href="{login_url}">Sign in</a></p>'
+            f"<p style='color:#888;font-size:12px'>This link expires in 15 minutes. "
+            f"If you did not request this, ignore this email.</p>"
+        )
+        msg.attach(MIMEText(text, "plain"))
+        msg.attach(MIMEText(html, "html"))
+
+        port = int(MAGIC_LINK_SMTP_PORT.value)
+        if port == 465:
+            server = smtplib.SMTP_SSL(MAGIC_LINK_SMTP_HOST.value, port)
+        else:
+            server = smtplib.SMTP(MAGIC_LINK_SMTP_HOST.value, port)
+            server.starttls()
+
+        if MAGIC_LINK_SMTP_USER.value:
+            server.login(MAGIC_LINK_SMTP_USER.value, MAGIC_LINK_SMTP_PASSWORD.value)
+        server.sendmail(MAGIC_LINK_SMTP_FROM.value, user.email, msg.as_string())
+        server.quit()
+    except Exception as e:
+        log.error(f"Failed to send magic link email: {e}")
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to send email")
+
+    return generic_response
+
+
+@router.post("/magic-link/verify")
+async def verify_magic_link_login(request: Request, form_data: MagicLinkVerifyForm):
+    """Verify a magic link token and return a session JWT for the user."""
+    payload = decode_token(form_data.token)
+    if not payload or payload.get("type") != "magic_link":
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or expired link")
+
+    user = Users.get_user_by_email(payload.get("sub", ""))
+    if not user:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or expired link")
+
+    # Issue a session token (same as password login)
+    session_token = create_token(
+        data={"id": user.id},
+        expires_delta=parse_duration(request.app.state.config.JWT_EXPIRES_IN),
+    )
+
     return {
-        "ENABLE_OAUTH_SIGNUP": ENABLE_OAUTH_SIGNUP.value,
-        "OAUTH_MERGE_ACCOUNTS_BY_EMAIL": OAUTH_MERGE_ACCOUNTS_BY_EMAIL.value,
-        "GOOGLE_CLIENT_ID": GOOGLE_CLIENT_ID.value,
-        "GOOGLE_CLIENT_SECRET": GOOGLE_CLIENT_SECRET.value,
-        "GITHUB_CLIENT_ID": GITHUB_CLIENT_ID.value,
-        "GITHUB_CLIENT_SECRET": GITHUB_CLIENT_SECRET.value,
+        "token": session_token,
+        "token_type": "Bearer",
+        "id": user.id,
+        "email": user.email,
+        "name": user.name,
+        "role": user.role,
+        "profile_image_url": user.profile_image_url,
     }
 
 

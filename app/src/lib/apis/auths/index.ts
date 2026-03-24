@@ -35,6 +35,12 @@ export const getOAuthConfig = async () =>
 export const updateOAuthConfig = async (body: object) =>
 	api(`${WEBUI_API_BASE_URL}/auths/admin/config/oauth`, 'POST', body, 'updateOAuthConfig');
 
+export const sendMagicLink = async (email: string) =>
+	api(`${WEBUI_API_BASE_URL}/auths/magic-link/send`, 'POST', { email }, 'sendMagicLink');
+
+export const verifyMagicLink = async (token: string) =>
+	api(`${WEBUI_API_BASE_URL}/auths/magic-link/verify`, 'POST', { token }, 'verifyMagicLink');
+
 export const getSessionUser = async (customFetch = fetch) =>
 	api(`${WEBUI_API_BASE_URL}/auths/`, 'GET', null, 'getSessionUser', customFetch);
 
