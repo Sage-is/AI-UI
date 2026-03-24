@@ -31,9 +31,12 @@
 			hasNonAdminUsers = false;
 		}
 
-		// Pre-check only if not already configured
-		includeConnection = !hasModels;
-		includeUsers = !hasNonAdminUsers;
+		// First run / reset: check all so admin reviews everything
+		// Manual re-run: only check items not yet configured
+		if (!isFirstRun) {
+			includeConnection = !hasModels;
+			includeUsers = !hasNonAdminUsers;
+		}
 
 		loading = false;
 	});
