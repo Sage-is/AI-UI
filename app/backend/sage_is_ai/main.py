@@ -345,6 +345,7 @@ from sage_is_ai.config import (
     CORS_ALLOW_ORIGIN,
     DEFAULT_LOCALE,
     OAUTH_PROVIDERS,
+    ENABLE_MAGIC_LINK_LOGIN,
     WEBUI_URL,
     RESPONSE_WATERMARK,
     # Admin
@@ -464,15 +465,15 @@ class SPAStaticFiles(StaticFiles):
 
 print(
     rf"""
-    
-MP"'"'"'`MM                               oo               d8' MMP'"'"'"'MM M""M 
-M  mmmmm..M                                               d8'  M' .mmmm  MM M  M 
-M.      `YM .d8888b. .d8888b. .d8888b.    dP .d8888b.    d8'   M         `M M  M 
-MMMMMMM.  M 88'  `88 88'  `88 88ooood8    88 Y8ooooo.   d8'    M  MMMMM  MM M  M 
-M. .MMM'  M 88.  .88 88.  .88 88.  ... dP 88       88  d8'     M  MMMMM  MM M  M 
-Mb.     .dM `88888P8 `8888P88 `88888P' 88 dP `88888P' 88       M  MMMMM  MM M  M 
-MMMMMMMMMMM               .88                                  MMMMMMMMMMMM MMMM 
-                      d8888P                                                     
+
+MP"'"'"'`MM                               oo               d8' MMP'"'"'"'MM M""M
+M  mmmmm..M                                               d8'  M' .mmmm  MM M  M
+M.      `YM .d8888b. .d8888b. .d8888b.    dP .d8888b.    d8'   M         `M M  M
+MMMMMMM.  M 88'  `88 88'  `88 88ooood8    88 Y8ooooo.   d8'    M  MMMMM  MM M  M
+M. .MMM'  M 88.  .88 88.  .88 88.  ... dP 88       88  d8'     M  MMMMM  MM M  M
+Mb.     .dM `88888P8 `8888P88 `88888P' 88 dP `88888P' 88       M  MMMMM  MM M  M
+MMMMMMMMMMM               .88                                  MMMMMMMMMMMM MMMM
+                      d8888P
 
 
 v{VERSION} - building the Open Source AI user interface.
@@ -1567,6 +1568,7 @@ async def get_app_config(request: Request):
             "enable_api_key": app.state.config.ENABLE_API_KEY,
             "enable_signup": app.state.config.ENABLE_SIGNUP,
             "enable_login_form": app.state.config.ENABLE_LOGIN_FORM,
+            "enable_magic_link_login": ENABLE_MAGIC_LINK_LOGIN.value,
             "enable_websocket": ENABLE_WEBSOCKET_SUPPORT,
             "enable_version_update_check": ENABLE_VERSION_UPDATE_CHECK,
             **(
@@ -1760,7 +1762,7 @@ async def oauth_callback(provider: str, request: Request, response: Response):
 @app.get("/manifest.json")
 async def get_manifest_json():
     if app.state.EXTERNAL_PWA_MANIFEST_URL:
-        return requests.get(app.state.EXTERNAL_PWA_MANIFEST_URL).json()
+        return requests.get(app.state.EXTERNAL_PWA_MANIFEST_URL, timeout=10).json()
     else:
         return {
             "name": app.state.WEBUI_NAME,

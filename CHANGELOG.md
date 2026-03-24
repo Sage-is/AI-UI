@@ -6,6 +6,22 @@ All notable changes to [Sage.is AI-UI](https://github.com/Sage-is/AI-UI) are doc
 
 ## [Unreleased]
 
+### Added
+
+**OAuth Admin UI (Beta)**
+Admins configure Google and GitHub OAuth from the setup wizard or Admin > Settings > Auth. Each provider section expands to show setup instructions, a direct link to the provider's developer console, and the correct callback URL for the deployment. Credentials save to the database and activate immediately — no restart required.
+
+**Email Magic Link Login (Beta)**
+Existing users sign in by clicking a link sent to their email. No password needed. Admin enables it and configures SMTP in Admin > Settings > Auth. A "Sign in with Email Link" button appears on the login page alongside any OAuth buttons.
+
+**"Forgetting your password(s)?" hint**
+The login page shows a help message below the password field when no OAuth providers are configured. A tooltip suggests the admin enable Google, GitHub, or LDAP sign-in.
+
+### Changed
+
+**Setup Wizard**
+Authentication is now the first optional step. The welcome screen offers four checkboxes: Authentication (Beta), Model Connections, Users, and Features. Admins choose what to configure; unchecked steps are skipped.
+
 ---
 
 ## [2.0.0] — 2026-03-23

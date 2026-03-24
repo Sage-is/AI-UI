@@ -35,6 +35,14 @@
 	let githubClientId = '';
 	let githubClientSecret = '';
 
+	// Magic link email login
+	let enableMagicLinkLogin = false;
+	let magicLinkSmtpHost = '';
+	let magicLinkSmtpPort = 587;
+	let magicLinkSmtpUser = '';
+	let magicLinkSmtpPassword = '';
+	let magicLinkSmtpFrom = '';
+
 	// Base URL for callback instructions — loaded from admin config
 	let webuiUrl = '';
 
@@ -50,6 +58,12 @@
 			googleClientSecret = oauthCfg.GOOGLE_CLIENT_SECRET ?? '';
 			githubClientId = oauthCfg.GITHUB_CLIENT_ID ?? '';
 			githubClientSecret = oauthCfg.GITHUB_CLIENT_SECRET ?? '';
+			enableMagicLinkLogin = oauthCfg.ENABLE_MAGIC_LINK_LOGIN ?? false;
+			magicLinkSmtpHost = oauthCfg.MAGIC_LINK_SMTP_HOST ?? '';
+			magicLinkSmtpPort = oauthCfg.MAGIC_LINK_SMTP_PORT ?? 587;
+			magicLinkSmtpUser = oauthCfg.MAGIC_LINK_SMTP_USER ?? '';
+			magicLinkSmtpPassword = oauthCfg.MAGIC_LINK_SMTP_PASSWORD ?? '';
+			magicLinkSmtpFrom = oauthCfg.MAGIC_LINK_SMTP_FROM ?? '';
 			webuiUrl = (adminCfg.WEBUI_URL ?? '').replace(/\/$/, '');
 		} catch {
 			toast.error($i18n.t('Failed to load OAuth settings'));
@@ -67,6 +81,12 @@
 				GOOGLE_CLIENT_ID: googleClientId,
 				GOOGLE_CLIENT_SECRET: googleClientSecret,
 				GITHUB_CLIENT_ID: githubClientId,
+				ENABLE_MAGIC_LINK_LOGIN: enableMagicLinkLogin,
+				MAGIC_LINK_SMTP_HOST: magicLinkSmtpHost,
+				MAGIC_LINK_SMTP_PORT: magicLinkSmtpPort,
+				MAGIC_LINK_SMTP_USER: magicLinkSmtpUser,
+				MAGIC_LINK_SMTP_PASSWORD: magicLinkSmtpPassword,
+				MAGIC_LINK_SMTP_FROM: magicLinkSmtpFrom,
 				GITHUB_CLIENT_SECRET: githubClientSecret
 			});
 			// Refresh global config so login page picks up new providers
@@ -213,6 +233,83 @@
 				</div>
 			</div>
 		</details>
+
+		<!-- Email Magic Link Login (Beta) -->
+		<details style="--radius:0.75rem; --bc:var(--color-amber-100); --dark-bc:var(--color-amber-900); --bw:1px; --bs:solid; --p:0">
+			<summary style="--d:flex; --ai:center; --jc:space-between; --p:0.8rem; cursor:pointer; --size:0.85rem; --weight:500; list-style:none">
+				<div style="--d:flex; --ai:center; --g:0.5rem">
+					<!-- Email icon -->
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" style="--w:1rem; --h:1rem" aria-hidden="true">
+						<path d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z"/>
+						<path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z"/>
+					</svg>
+					<span>{$i18n.t('Email Magic Link')}</span>
+					<span style="--size:0.55rem; --c:var(--color-amber-600); --weight:600; --px:0.3rem; --py:0.1rem; --radius:0.25rem; --bgc:var(--color-amber-100); --dark-bgc:var(--color-amber-900); --dark-c:var(--color-amber-400)">{$i18n.t('Beta')}</span>
+					{#if enableMagicLinkLogin && magicLinkSmtpHost}
+						<span style="--size:0.6rem; --c:var(--color-green-600); --weight:500">{$i18n.t('configured')}</span>
+					{/if}
+				</div>
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" style="--w:0.8rem; --h:0.8rem; --c:var(--color-gray-400); --tn:transform 150ms ease" aria-hidden="true">
+					<path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/>
+				</svg>
+			</summary>
+			<div style="--px:0.8rem; --pb:0.8rem; --d:flex; --fd:column; --g:0.6rem">
+				<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --lh:1.5">
+					{$i18n.t('Users with existing accounts can sign in by clicking a link sent to their email. No password needed. Requires SMTP.')}
+				</div>
+				<!-- Enable toggle -->
+				<label style="--d:flex; --ai:center; --g:0.6rem; cursor:pointer">
+					<input type="checkbox" bind:checked={enableMagicLinkLogin} style="--w:1rem; --h:1rem; --shrink:0" />
+					<span style="--size:0.8rem; --weight:500">{$i18n.t('Enable Email Magic Link Login')}</span>
+				</label>
+				<!-- SMTP fields (shown when enabled) -->
+				{#if enableMagicLinkLogin}
+					<div style="--d:flex; --fd:column; --g:0.5rem; --mt:0.2rem">
+						<div style="--d:flex; --g:0.5rem">
+							<div style="--d:flex; --fd:column; --g:0.3rem; --fx:1 1 0%">
+								<label style="--size:0.75rem; --weight:500">{$i18n.t('SMTP Host')}</label>
+								<input type="text" bind:value={magicLinkSmtpHost} placeholder="smtp.gmail.com" style="--w:100%; --size:0.8rem; --p:0.5rem; --radius:0.5rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-600); --bw:1px; --bs:solid; --bgc:transparent" />
+							</div>
+							<div style="--d:flex; --fd:column; --g:0.3rem; --w:5rem">
+								<label style="--size:0.75rem; --weight:500">{$i18n.t('Port')}</label>
+								<input type="number" bind:value={magicLinkSmtpPort} placeholder="587" style="--w:100%; --size:0.8rem; --p:0.5rem; --radius:0.5rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-600); --bw:1px; --bs:solid; --bgc:transparent" />
+							</div>
+						</div>
+						<div style="--d:flex; --fd:column; --g:0.3rem">
+							<label style="--size:0.75rem; --weight:500">{$i18n.t('Username')}</label>
+							<input type="text" bind:value={magicLinkSmtpUser} placeholder="you@gmail.com" style="--w:100%; --size:0.8rem; --p:0.5rem; --radius:0.5rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-600); --bw:1px; --bs:solid; --bgc:transparent" />
+						</div>
+						<div style="--d:flex; --fd:column; --g:0.3rem">
+							<label style="--size:0.75rem; --weight:500">{$i18n.t('Password')}</label>
+							<div style="--d:flex; --ai:center; --radius:0.5rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-600); --bw:1px; --bs:solid; --px:0.5rem">
+								<SensitiveInput bind:value={magicLinkSmtpPassword} placeholder={$i18n.t('App password or SMTP password')} required={false} />
+							</div>
+						</div>
+						<div style="--d:flex; --fd:column; --g:0.3rem">
+							<label style="--size:0.75rem; --weight:500">{$i18n.t('From Address')}</label>
+							<input type="email" bind:value={magicLinkSmtpFrom} placeholder="noreply@yourdomain.com" style="--w:100%; --size:0.8rem; --p:0.5rem; --radius:0.5rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-600); --bw:1px; --bs:solid; --bgc:transparent" />
+						</div>
+					</div>
+				{/if}
+			</div>
+		</details>
+
+		<!-- Sage.is Login — coming soon, greyed out and non-interactive -->
+		<div style="--radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; --p:0; --opacity:0.5; pointer-events:none">
+			<div style="--d:flex; --ai:center; --jc:space-between; --p:0.8rem; --size:0.85rem; --weight:500">
+				<div style="--d:flex; --ai:center; --g:0.5rem">
+					<!-- Sage icon -->
+					<svg viewBox="0 0 16 16" fill="currentColor" style="--w:1rem; --h:1rem" aria-hidden="true">
+						<path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1Zm0 2.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5ZM6.5 7.5h3v4.5h-1V8.5h-2v-1Z"/>
+					</svg>
+					<span>{$i18n.t('Sage.is Login')}</span>
+					<span style="--size:0.55rem; --c:var(--color-gray-500); --weight:600; --px:0.3rem; --py:0.1rem; --radius:0.25rem; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-400)">{$i18n.t('Coming Soon')}</span>
+				</div>
+			</div>
+			<div style="--px:0.8rem; --pb:0.8rem; --size:0.7rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --lh:1.5">
+				{$i18n.t('Sign in with Google or GitHub through auth.sage.is. No OAuth app setup required.')}
+			</div>
+		</div>
 	</div>
 
 	<!-- Standalone save button for admin settings (hidden in wizard) -->
