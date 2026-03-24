@@ -59,7 +59,7 @@
 			{$i18n.t('Welcome to {{name}}!', { name: $WEBUI_NAME })}
 		</div>
 		<div style="--size:0.8rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --mb:1.2rem">
-			{$i18n.t("Let's get you set up. Choose what you'd like to configure — you can always change these later in Settings.")}
+			{$i18n.t("Let's get you set up. Choose what you'd like to configure — you can always change these later in Admin > Settings.")}
 		</div>
 	{:else}
 		<div style="--size:1.2rem; --weight:600; --dark-c:#fff; --mb:0.2rem">
@@ -120,7 +120,7 @@
 						<a
 							href="/admin/users"
 							target="_blank"
-							on:click|stopPropagation
+
 							style="--size:0.65rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --td:underline; --mt:0.2rem; --d:inline-block"
 						>
 							{$i18n.t('Manage users')}
@@ -151,8 +151,8 @@
 
 		<div style="--d:flex; --jc:space-between; --ai:center">
 			{#if isFirstRun}
-				<div style="--size:0.65rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --italic:italic; --maxw:20rem">
-					{$i18n.t('Complete the setup and this wizard will not appear again.')}
+				<div style="--size:0.65rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --italic:italic; --maxw:22rem">
+					{$i18n.t('Complete the setup and this wizard will not appear again unless you go to Admin > Settings > Wizard')}
 				</div>
 			{:else}
 				<div />

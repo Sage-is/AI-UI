@@ -126,7 +126,9 @@
 	<div style="--size:1.2rem; --weight:600; --dark-c:#fff; --mb:0.2rem">
 		{$i18n.t('Add Users')}
 	</div>
-	<div style="--size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --mb:1.2rem">
+	<div
+		style="--size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --mb:1.2rem"
+	>
 		{$i18n.t('Add team members or choose to work alone.')}
 	</div>
 
@@ -140,24 +142,30 @@
 			on:click={onWorkingAlone}
 			style="--w:100%; --p:0.8rem; --mb:1rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; --bgc:transparent; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --ta:left; --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 		>
-			<div style="--size:0.85rem; --weight:600; --mb:0.2rem">{$i18n.t("I'm working alone")}</div>
-			<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
+			<div style="--size:0.8rem; --weight:600; --m:0.2rem">{$i18n.t("I'm working alone")}</div>
+			<div style="--size:0.6rem; --m:0.2rem; --lh:1.2rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
 				{$i18n.t('Skip user setup — you can always add users later from Settings')}
 			</div>
 		</button>
 
 		<!-- Divider -->
 		<div style="--d:flex; --ai:center; --g:0.5rem; --mb:1rem">
-			<div style="--fx:1 1 0%; --h:1px; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-700)" />
+			<div
+				style="--fx:1 1 0%; --h:1px; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-700)"
+			/>
 			<div style="--size:0.65rem; --c:var(--color-gray-400)">{$i18n.t('or')}</div>
-			<div style="--fx:1 1 0%; --h:1px; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-700)" />
+			<div
+				style="--fx:1 1 0%; --h:1px; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-700)"
+			/>
 		</div>
 
 		<!-- Add User Form -->
 		<div style="--d:flex; --fd:column; --g:0.5rem; --mb:1rem">
 			<div style="--d:flex; --g:0.5rem">
 				<div style="--fx:1 1 0%">
-					<div style="--size:0.65rem; --weight:500; --mb:0.2rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-300)">
+					<div
+						style="--size:0.65rem; --weight:500; --mb:0.2rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-300)"
+					>
 						{$i18n.t('Name')}
 					</div>
 					<input
@@ -168,7 +176,9 @@
 					/>
 				</div>
 				<div style="--fx:1 1 0%">
-					<div style="--size:0.65rem; --weight:500; --mb:0.2rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-300)">
+					<div
+						style="--size:0.65rem; --weight:500; --mb:0.2rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-300)"
+					>
 						{$i18n.t('Email')}
 					</div>
 					<input
@@ -181,7 +191,9 @@
 			</div>
 			<div style="--d:flex; --g:0.5rem">
 				<div style="--fx:1 1 0%">
-					<div style="--size:0.65rem; --weight:500; --mb:0.2rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-300)">
+					<div
+						style="--size:0.65rem; --weight:500; --mb:0.2rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-300)"
+					>
 						{$i18n.t('Password')}
 					</div>
 					<input
@@ -192,7 +204,9 @@
 					/>
 				</div>
 				<div style="--w:6rem">
-					<div style="--size:0.65rem; --weight:500; --mb:0.2rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-300)">
+					<div
+						style="--size:0.65rem; --weight:500; --mb:0.2rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-300)"
+					>
 						{$i18n.t('Role')}
 					</div>
 					<select
@@ -215,19 +229,17 @@
 
 		<!-- CSV Import -->
 		<div style="--d:flex; --ai:center; --g:0.5rem; --mb:1rem">
-			<div style="--fx:1 1 0%; --h:1px; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-700)" />
+			<div
+				style="--fx:1 1 0%; --h:1px; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-700)"
+			/>
 			<div style="--size:0.65rem; --c:var(--color-gray-400)">{$i18n.t('or import CSV')}</div>
-			<div style="--fx:1 1 0%; --h:1px; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-700)" />
+			<div
+				style="--fx:1 1 0%; --h:1px; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-700)"
+			/>
 		</div>
 
 		<div style="--mb:1rem">
-			<input
-				id="wizard-upload-user-csv"
-				hidden
-				bind:files={inputFiles}
-				type="file"
-				accept=".csv"
-			/>
+			<input id="wizard-upload-user-csv" hidden bind:files={inputFiles} type="file" accept=".csv" />
 
 			<div style="--d:flex; --g:0.5rem; --ai:center">
 				<button
@@ -255,7 +267,9 @@
 				{/if}
 			</div>
 
-			<div style="--mt:0.4rem; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
+			<div
+				style="--mt:0.4rem; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)"
+			>
 				{$i18n.t('CSV format: Name, Email, Password, Role.')}
 				<a
 					href="{WEBUI_BASE_URL}/static/user-import.csv"
@@ -273,15 +287,29 @@
 			<div style="--mb:1rem">
 				<div style="--size:0.7rem; --weight:500; --mb:0.4rem; --c:var(--color-gray-500)">
 					{$i18n.t('Users')} ({addedUsers.length})
+					<a
+						href="/admin/users"
+						target="_blank"
+						style="--size:0.65rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --td:underline; --mt:0.2rem; --d:inline-block"
+					>
+						{$i18n.t('Manage users')}
+					</a>
 				</div>
-				<div style="--d:flex; --fd:column; --g:0.3rem; --maxh:8rem; --ofy:auto" class="scrollbar-hidden">
+				<div
+					style="--d:flex; --fd:column; --g:0.3rem; --maxh:8rem; --ofy:auto"
+					class="scrollbar-hidden"
+				>
 					{#each addedUsers as user}
-						<div style="--d:flex; --jc:space-between; --ai:center; --py:0.3rem; --px:0.5rem; --radius:0.375rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --size:0.7rem">
+						<div
+							style="--d:flex; --jc:space-between; --ai:center; --py:0.3rem; --px:0.5rem; --radius:0.375rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --size:0.7rem"
+						>
 							<div style="--d:flex; --g:0.4rem; --ai:center">
 								<span style="--weight:500">{user.name}</span>
 								<span style="--c:var(--color-gray-400)">{user.email}</span>
 							</div>
-							<span style="--size:0.6rem; --c:var(--color-gray-400); --tt:capitalize">{user.role}</span>
+							<span style="--size:0.6rem; --c:var(--color-gray-400); --tt:capitalize"
+								>{user.role}</span
+							>
 						</div>
 					{/each}
 				</div>
