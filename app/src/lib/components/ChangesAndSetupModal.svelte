@@ -2,7 +2,7 @@
 	import { getContext } from 'svelte';
 	import type { SetupTriggerReason } from '$lib/stores';
 
-	import { config, settings, models, setupTriggerReason } from '$lib/stores';
+	import { config, settings, setupTriggerReason } from '$lib/stores';
 	import { updateUserSettings } from '$lib/apis/users';
 
 	import Modal from './common/Modal.svelte';
@@ -10,6 +10,7 @@
 	import ChangelogPanel from './setup/ChangelogPanel.svelte';
 	import WelcomeStep from './setup/WelcomeStep.svelte';
 	import ConnectionStep from './setup/ConnectionStep.svelte';
+	import FeaturesStep from './setup/FeaturesStep.svelte';
 	import UsersStep from './setup/UsersStep.svelte';
 	import CompleteStep from './setup/CompleteStep.svelte';
 
@@ -17,11 +18,9 @@
 
 	export let show = false;
 
-	type PanelId = 'changelog' | 'welcome' | 'connection' | 'users' | 'complete';
+	type PanelId = 'changelog' | 'welcome' | 'connection' | 'features' | 'users' | 'complete';
 
 	let currentIndex = 0;
-	let connectionAdded = false;
-	let usersAdded = false;
 	let workingAloneSelected = false;
 
 	// Dynamic panels set by WelcomeStep's onStart callback — null means use auto-computed
@@ -66,8 +65,7 @@
 	$: if (show) {
 		currentIndex = 0;
 		dynamicPanels = null;
-		connectionAdded = false;
-		usersAdded = false;
+		selectedSteps = [];
 		workingAloneSelected = false;
 	}
 
@@ -84,6 +82,7 @@
 	function next() {
 		if (currentIndex < panels.length - 1) {
 			currentIndex++;
+			skipIfNeeded();
 		} else {
 			finish();
 		}
@@ -92,6 +91,14 @@
 	function back() {
 		if (currentIndex > 0) {
 			currentIndex--;
+			// Skip backward past unchecked steps
+			while (
+				currentIndex > 0 &&
+				allSteps.includes(panels[currentIndex]) &&
+				!selectedSteps.includes(panels[currentIndex])
+			) {
+				currentIndex--;
+			}
 		}
 	}
 
@@ -106,17 +113,34 @@
 		show = false;
 	}
 
-	// Called by WelcomeStep when admin clicks "Get Started" with selected steps
+	// Track which steps the admin selected on WelcomeStep
+	let selectedSteps: string[] = [];
+
+	// All wizard steps always present (order: connection → users → features)
+	const allSteps: PanelId[] = ['connection', 'users', 'features'];
+
+	// Called by WelcomeStep when admin clicks "Get Started"
 	function handleWelcomeStart(steps: string[]) {
-		// Build full panel sequence: everything before welcome + welcome + selected steps + complete
+		selectedSteps = steps;
+		// Always include all steps + complete in the panel sequence
 		const beforeWelcome = panels.slice(0, panels.indexOf('welcome'));
-		const p: PanelId[] = [...beforeWelcome, 'welcome'];
-		if (steps.includes('connection')) p.push('connection');
-		if (steps.includes('users')) p.push('users');
-		p.push('complete');
+		const p: PanelId[] = [...beforeWelcome, 'welcome', ...allSteps, 'complete'];
 		dynamicPanels = p;
-		// Advance past welcome to the first real step
-		currentIndex = beforeWelcome.length + 1;
+		// Advance past welcome, skipping to first selected step
+		const welcomeIdx = beforeWelcome.length;
+		currentIndex = welcomeIdx + 1;
+		skipIfNeeded();
+	}
+
+	/** Skip current panel if it wasn't selected, advancing forward */
+	function skipIfNeeded() {
+		while (
+			currentIndex < panels.length - 1 &&
+			allSteps.includes(panels[currentIndex]) &&
+			!selectedSteps.includes(panels[currentIndex])
+		) {
+			currentIndex++;
+		}
 	}
 
 	function handleChangelogNext() {
@@ -167,10 +191,14 @@
 	{#if isWizardMode && wizardPanels.length > 1 && currentPanel !== 'changelog' && currentPanel !== 'welcome'}
 		<div style="--d:flex; --jc:center; --g:0.4rem; --px:1.2rem; --pb:0.5rem">
 			{#each wizardPanels as panel, i}
+				{@const isSkipped = allSteps.includes(panel) && !selectedSteps.includes(panel)}
+				{@const isPastOrCurrent = i <= wizardIndex}
 				<button
-					on:click={() => goToWizardPanel(i)}
+					on:click={() => {
+						if (!isSkipped) goToWizardPanel(i);
+					}}
 					aria-label={panel}
-					style="--w:0.6rem; --h:0.6rem; --radius:9999px; --p:0; --tn:background-color 200ms ease, transform 150ms ease; --bgc:{i <= wizardIndex ? '#000' : 'var(--color-gray-300)'}; --dark-bgc:{i <= wizardIndex ? '#fff' : 'var(--color-gray-600)'}; cursor:pointer; --hvr-transform:scale(1.3)"
+					style="--w:{isSkipped ? '0.35rem' : '0.6rem'}; --h:{isSkipped ? '0.35rem' : '0.6rem'}; --radius:9999px; --p:0; --tn:background-color 200ms ease, transform 150ms ease; --bgc:{isSkipped ? 'var(--color-gray-200)' : isPastOrCurrent ? '#000' : 'var(--color-gray-300)'}; --dark-bgc:{isSkipped ? 'var(--color-gray-750)' : isPastOrCurrent ? '#fff' : 'var(--color-gray-600)'}; cursor:{isSkipped ? 'default' : 'pointer'}; --hvr-transform:{isSkipped ? 'none' : 'scale(1.3)'}"
 				/>
 			{/each}
 		</div>
@@ -189,18 +217,17 @@
 		/>
 	{:else if currentPanel === 'connection'}
 		<ConnectionStep
-			onNext={() => {
-				connectionAdded = $models.length > 0;
-				next();
-			}}
+			onNext={next}
+			onBack={back}
+		/>
+	{:else if currentPanel === 'features'}
+		<FeaturesStep
+			onNext={next}
 			onBack={back}
 		/>
 	{:else if currentPanel === 'users'}
 		<UsersStep
-			onNext={() => {
-				usersAdded = true;
-				next();
-			}}
+			onNext={next}
 			onBack={back}
 			onWorkingAlone={() => {
 				handleWorkingAlone();
@@ -209,8 +236,6 @@
 	{:else if currentPanel === 'complete'}
 		<CompleteStep
 			onFinish={finish}
-			{connectionAdded}
-			{usersAdded}
 			workingAlone={workingAloneSelected}
 		/>
 	{/if}
