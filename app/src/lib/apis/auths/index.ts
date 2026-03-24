@@ -29,6 +29,12 @@ export const getAdminConfig = async () =>
 export const updateAdminConfig = async (body: object) =>
 	api(`${WEBUI_API_BASE_URL}/auths/admin/config`, 'POST', body, 'updateAdminConfig');
 
+export const getOAuthConfig = async () =>
+	api(`${WEBUI_API_BASE_URL}/auths/admin/config/oauth`, 'GET', null, 'getOAuthConfig');
+
+export const updateOAuthConfig = async (body: object) =>
+	api(`${WEBUI_API_BASE_URL}/auths/admin/config/oauth`, 'POST', body, 'updateOAuthConfig');
+
 export const getSessionUser = async (customFetch = fetch) =>
 	api(`${WEBUI_API_BASE_URL}/auths/`, 'GET', null, 'getSessionUser', customFetch);
 

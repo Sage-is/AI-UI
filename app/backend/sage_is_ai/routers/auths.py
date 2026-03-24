@@ -34,7 +34,17 @@ from sage_is_ai.env import (
 )
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import RedirectResponse, Response, JSONResponse
-from sage_is_ai.config import OPENID_PROVIDER_URL, ENABLE_OAUTH_SIGNUP, ENABLE_LDAP
+from sage_is_ai.config import (
+    OPENID_PROVIDER_URL,
+    ENABLE_OAUTH_SIGNUP,
+    ENABLE_LDAP,
+    OAUTH_MERGE_ACCOUNTS_BY_EMAIL,
+    GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET,
+    GITHUB_CLIENT_ID,
+    GITHUB_CLIENT_SECRET,
+    load_oauth_providers,
+)
 from pydantic import BaseModel
 
 from sage_is_ai.utils.misc import parse_duration, validate_email_format
@@ -1024,6 +1034,67 @@ async def update_admin_config(
         "PENDING_USER_OVERLAY_TITLE": request.app.state.config.PENDING_USER_OVERLAY_TITLE,
         "PENDING_USER_OVERLAY_CONTENT": request.app.state.config.PENDING_USER_OVERLAY_CONTENT,
         "RESPONSE_WATERMARK": request.app.state.config.RESPONSE_WATERMARK,
+    }
+
+
+############################
+# OAuth Config (Beta)
+# GET/POST endpoints for admin UI to read/write OAuth provider credentials.
+# After update, load_oauth_providers() re-registers active providers.
+############################
+
+
+class OAuthConfig(BaseModel):
+    ENABLE_OAUTH_SIGNUP: bool
+    OAUTH_MERGE_ACCOUNTS_BY_EMAIL: bool
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
+    GITHUB_CLIENT_ID: str = ""
+    GITHUB_CLIENT_SECRET: str = ""
+
+
+@router.get("/admin/config/oauth")
+async def get_oauth_config(request: Request, user=Depends(get_admin_user)):
+    return {
+        "ENABLE_OAUTH_SIGNUP": ENABLE_OAUTH_SIGNUP.value,
+        "OAUTH_MERGE_ACCOUNTS_BY_EMAIL": OAUTH_MERGE_ACCOUNTS_BY_EMAIL.value,
+        "GOOGLE_CLIENT_ID": GOOGLE_CLIENT_ID.value,
+        "GOOGLE_CLIENT_SECRET": GOOGLE_CLIENT_SECRET.value,
+        "GITHUB_CLIENT_ID": GITHUB_CLIENT_ID.value,
+        "GITHUB_CLIENT_SECRET": GITHUB_CLIENT_SECRET.value,
+    }
+
+
+@router.post("/admin/config/oauth")
+async def update_oauth_config(
+    request: Request, form_data: OAuthConfig, user=Depends(get_admin_user)
+):
+    ENABLE_OAUTH_SIGNUP.value = form_data.ENABLE_OAUTH_SIGNUP
+    ENABLE_OAUTH_SIGNUP.save()
+
+    OAUTH_MERGE_ACCOUNTS_BY_EMAIL.value = form_data.OAUTH_MERGE_ACCOUNTS_BY_EMAIL
+    OAUTH_MERGE_ACCOUNTS_BY_EMAIL.save()
+
+    GOOGLE_CLIENT_ID.value = form_data.GOOGLE_CLIENT_ID
+    GOOGLE_CLIENT_ID.save()
+    GOOGLE_CLIENT_SECRET.value = form_data.GOOGLE_CLIENT_SECRET
+    GOOGLE_CLIENT_SECRET.save()
+
+    GITHUB_CLIENT_ID.value = form_data.GITHUB_CLIENT_ID
+    GITHUB_CLIENT_ID.save()
+    GITHUB_CLIENT_SECRET.value = form_data.GITHUB_CLIENT_SECRET
+    GITHUB_CLIENT_SECRET.save()
+
+    # Re-register providers so changes take effect immediately
+    load_oauth_providers()
+
+    return {
+        "ENABLE_OAUTH_SIGNUP": ENABLE_OAUTH_SIGNUP.value,
+        "OAUTH_MERGE_ACCOUNTS_BY_EMAIL": OAUTH_MERGE_ACCOUNTS_BY_EMAIL.value,
+        "GOOGLE_CLIENT_ID": GOOGLE_CLIENT_ID.value,
+        "GOOGLE_CLIENT_SECRET": GOOGLE_CLIENT_SECRET.value,
+        "GITHUB_CLIENT_ID": GITHUB_CLIENT_ID.value,
+        "GITHUB_CLIENT_SECRET": GITHUB_CLIENT_SECRET.value,
     }
 
 
