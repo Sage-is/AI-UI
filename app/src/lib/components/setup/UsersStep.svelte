@@ -4,6 +4,8 @@
 
 	import { addUser } from '$lib/apis/auths';
 	import { getAllUsers } from '$lib/apis/users';
+	import { generateInitialsImage } from '$lib/utils';
+	import { WEBUI_BASE_URL } from '$lib/constants';
 
 	const i18n = getContext('i18n');
 
@@ -19,19 +21,25 @@
 	let addedUsers: Array<{ name: string; email: string; role: string }> = [];
 	let existingUsersCount = 0;
 	let loading = true;
+	let csvImporting = false;
+	let inputFiles: FileList | null = null;
 
-	onMount(async () => {
+	/** Fetch non-admin users and update local state */
+	const loadUsers = async () => {
 		try {
-			const users = await getAllUsers(localStorage.token);
-			if (users) {
-				existingUsersCount = users.filter((u: any) => u.role !== 'admin').length;
-				addedUsers = users
-					.filter((u: any) => u.role !== 'admin')
-					.map((u: any) => ({ name: u.name, email: u.email, role: u.role }));
-			}
+			const res = await getAllUsers(localStorage.token);
+			// API returns { users: [...], total: N }
+			const users = Array.isArray(res) ? res : (res?.users ?? []);
+			const nonAdmin = users.filter((u: any) => u.role !== 'admin');
+			existingUsersCount = nonAdmin.length;
+			addedUsers = nonAdmin.map((u: any) => ({ name: u.name, email: u.email, role: u.role }));
 		} catch (e) {
 			console.error('Failed to load users', e);
 		}
+	};
+
+	onMount(async () => {
+		await loadUsers();
 		loading = false;
 	});
 
@@ -54,6 +62,63 @@
 		} catch (e) {
 			toast.error($i18n.t('Failed to add user: {{error}}', { error: e }));
 		}
+	};
+
+	const handleCsvImport = async () => {
+		if (!inputFiles || inputFiles.length === 0) {
+			toast.error($i18n.t('Please select a CSV file'));
+			return;
+		}
+
+		csvImporting = true;
+		const file = inputFiles[0];
+		const reader = new FileReader();
+
+		reader.onload = async (e) => {
+			const csv = e.target?.result as string;
+			const rows = csv.split('\n');
+			let importCount = 0;
+
+			for (const [idx, row] of rows.entries()) {
+				const columns = row.split(',').map((col) => col.trim());
+
+				if (idx > 0 && columns.length === 4 && columns[0]) {
+					if (['admin', 'user', 'pending'].includes(columns[3].toLowerCase())) {
+						const res = await addUser(
+							localStorage.token,
+							columns[0],
+							columns[1],
+							columns[2],
+							columns[3].toLowerCase(),
+							generateInitialsImage(columns[0])
+						).catch((error) => {
+							toast.error($i18n.t('Row {{row}}: {{error}}', { row: idx + 1, error }));
+							return null;
+						});
+
+						if (res) {
+							importCount++;
+						}
+					} else if (columns[0]) {
+						toast.error($i18n.t('Row {{row}}: invalid format.', { row: idx + 1 }));
+					}
+				}
+			}
+
+			if (importCount > 0) {
+				toast.success($i18n.t('Successfully imported {{count}} users.', { count: importCount }));
+				await loadUsers();
+			}
+
+			inputFiles = null;
+			const uploadInput = document.getElementById('wizard-upload-user-csv');
+			if (uploadInput) {
+				(uploadInput as HTMLInputElement).value = '';
+			}
+			csvImporting = false;
+		};
+
+		reader.readAsText(file, 'utf-8');
 	};
 </script>
 
@@ -145,6 +210,61 @@
 				>
 					{$i18n.t('Add')}
 				</button>
+			</div>
+		</div>
+
+		<!-- CSV Import -->
+		<div style="--d:flex; --ai:center; --g:0.5rem; --mb:1rem">
+			<div style="--fx:1 1 0%; --h:1px; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-700)" />
+			<div style="--size:0.65rem; --c:var(--color-gray-400)">{$i18n.t('or import CSV')}</div>
+			<div style="--fx:1 1 0%; --h:1px; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-700)" />
+		</div>
+
+		<div style="--mb:1rem">
+			<input
+				id="wizard-upload-user-csv"
+				hidden
+				bind:files={inputFiles}
+				type="file"
+				accept=".csv"
+			/>
+
+			<div style="--d:flex; --g:0.5rem; --ai:center">
+				<button
+					style="--fx:1 1 0%; --size:0.75rem; --weight:500; --p:0.5rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100); --dark-hvr-bgc:var(--color-gray-850); --ta:center; --radius:0.5rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:dashed; --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					type="button"
+					on:click={() => {
+						document.getElementById('wizard-upload-user-csv')?.click();
+					}}
+				>
+					{#if inputFiles && inputFiles.length > 0}
+						{inputFiles[0].name}
+					{:else}
+						{$i18n.t('Click to select a CSV file')}
+					{/if}
+				</button>
+
+				{#if inputFiles && inputFiles.length > 0}
+					<button
+						on:click={handleCsvImport}
+						disabled={csvImporting}
+						style="--px:0.6rem; --py:0.4rem; --size:0.7rem; --weight:500; --bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --radius:0.5rem; --shrink:0; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					>
+						{csvImporting ? $i18n.t('Importing...') : $i18n.t('Import')}
+					</button>
+				{/if}
+			</div>
+
+			<div style="--mt:0.4rem; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
+				{$i18n.t('CSV format: Name, Email, Password, Role.')}
+				<a
+					href="{WEBUI_BASE_URL}/static/user-import.csv"
+					target="_blank"
+					style="--td:underline; --dark-c:var(--color-gray-300)"
+					on:click|stopPropagation
+				>
+					{$i18n.t('Download template')}
+				</a>
 			</div>
 		</div>
 

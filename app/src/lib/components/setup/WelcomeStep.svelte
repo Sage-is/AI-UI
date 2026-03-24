@@ -3,6 +3,8 @@
 
 	import { WEBUI_NAME, models } from '$lib/stores';
 	import { getAllUsers } from '$lib/apis/users';
+	import Tooltip from '$lib/components/common/Tooltip.svelte';
+	import QuestionMarkCircle from '$lib/components/icons/QuestionMarkCircle.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -10,36 +12,40 @@
 	export let isFirstRun = false;
 
 	let hasModels = false;
-	let hasUsers = false;
+	let hasNonAdminUsers = false;
 	let loading = true;
 
 	let includeConnection = true;
 	let includeUsers = true;
+	let includeFeatures = true;
 
 	onMount(async () => {
 		hasModels = $models.length > 0;
 
 		try {
-			const users = await getAllUsers(localStorage.token);
-			hasUsers = users ? users.filter((u: any) => u.role !== 'admin').length > 0 : false;
+			const res = await getAllUsers(localStorage.token);
+			// API returns { users: [...], total: N }
+			const users = Array.isArray(res) ? res : (res?.users ?? []);
+			hasNonAdminUsers = users.some((u: any) => u.role !== 'admin');
 		} catch {
-			hasUsers = false;
+			hasNonAdminUsers = false;
 		}
 
-		// Always pre-check connections (admin should review even if configured)
-		includeConnection = true;
-		// Pre-check users only if none exist
-		includeUsers = !hasUsers;
+		// Pre-check only if not already configured
+		includeConnection = !hasModels;
+		includeUsers = !hasNonAdminUsers;
 
 		loading = false;
 	});
 
-	$: canStart = includeConnection || includeUsers;
+	$: canStart = includeConnection || includeUsers || includeFeatures;
 
 	const handleStart = () => {
 		const steps: string[] = [];
+		// Order: connection → users → features
 		if (includeConnection) steps.push('connection');
 		if (includeUsers) steps.push('users');
+		if (includeFeatures) steps.push('features');
 		onStart(steps);
 	};
 </script>
@@ -67,20 +73,21 @@
 		</div>
 	{:else}
 		<div style="--d:flex; --fd:column; --g:0.6rem; --mb:1.5rem">
+
+			<!-- Model Connections -->
 			<label
 				style="--d:flex; --ai:center; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			>
-				<input
-					type="checkbox"
-					bind:checked={includeConnection}
-					style="--w:1rem; --h:1rem; --shrink:0"
-				/>
+				<input type="checkbox" bind:checked={includeConnection} style="--w:1rem; --h:1rem; --shrink:0" />
 				<div>
 					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('Model Connections')}</span>
 						{#if hasModels}
 							<span style="--size:0.6rem; --c:var(--color-green-600); --weight:500">{$i18n.t('configured')}</span>
 						{/if}
+						<Tooltip content={$i18n.t('Configure API endpoints for AI model providers like OpenAI or Ollama. Required for the platform to generate responses.')} placement="right" className="flex items-center">
+							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><QuestionMarkCircle className="size-3.5" /></span>
+						</Tooltip>
 					</div>
 					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
 						{$i18n.t('Add or update API connections to model providers')}
@@ -88,26 +95,55 @@
 				</div>
 			</label>
 
+			<!-- Users -->
 			<label
 				style="--d:flex; --ai:center; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			>
-				<input
-					type="checkbox"
-					bind:checked={includeUsers}
-					style="--w:1rem; --h:1rem; --shrink:0"
-				/>
+				<input type="checkbox" bind:checked={includeUsers} style="--w:1rem; --h:1rem; --shrink:0" />
 				<div>
 					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('Users')}</span>
-						{#if hasUsers}
+						{#if hasNonAdminUsers}
 							<span style="--size:0.6rem; --c:var(--color-green-600); --weight:500">{$i18n.t('configured')}</span>
 						{/if}
+						<Tooltip content={$i18n.t('Add team members, assign roles, or choose to work alone. You can manage users anytime from Admin > Users.')} placement="right" className="flex items-center">
+							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><QuestionMarkCircle className="size-3.5" /></span>
+						</Tooltip>
 					</div>
 					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
 						{$i18n.t('Invite your team or choose to work alone')}
 					</div>
+					{#if hasNonAdminUsers}
+						<a
+							href="/admin/users"
+							target="_blank"
+							on:click|stopPropagation
+							style="--size:0.65rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --td:underline; --mt:0.2rem; --d:inline-block"
+						>
+							{$i18n.t('Manage users')}
+						</a>
+					{/if}
 				</div>
 			</label>
+
+			<!-- Features (last) -->
+			<label
+				style="--d:flex; --ai:center; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+			>
+				<input type="checkbox" bind:checked={includeFeatures} style="--w:1rem; --h:1rem; --shrink:0" />
+				<div>
+					<div style="--d:flex; --ai:center; --g:0.4rem">
+						<span style="--size:0.85rem; --weight:500">{$i18n.t('Features')}</span>
+						<Tooltip content={$i18n.t('Toggle platform capabilities such as community sharing, notes, spaces, and message rating.')} placement="right" className="flex items-center">
+							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><QuestionMarkCircle className="size-3.5" /></span>
+						</Tooltip>
+					</div>
+					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
+						{$i18n.t('Enable or disable platform features like sharing, notes, and spaces')}
+					</div>
+				</div>
+			</label>
+
 		</div>
 
 		<div style="--d:flex; --jc:space-between; --ai:center">

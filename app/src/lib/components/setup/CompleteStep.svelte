@@ -1,13 +1,31 @@
 <script lang="ts">
-	import { getContext } from 'svelte';
-	import { WEBUI_NAME } from '$lib/stores';
+	import { onMount, getContext } from 'svelte';
+	import { WEBUI_NAME, models } from '$lib/stores';
+	import { getAllUsers } from '$lib/apis/users';
 
 	const i18n = getContext('i18n');
 
 	export let onFinish: () => void = () => {};
-	export let connectionAdded = false;
-	export let usersAdded = false;
 	export let workingAlone = false;
+
+	let connectionAdded = false;
+	let usersCount = 0;
+	let loading = true;
+
+	onMount(async () => {
+		connectionAdded = $models.length > 0;
+
+		try {
+			const res = await getAllUsers(localStorage.token);
+			// API returns { users: [...], total: N }
+			const users = Array.isArray(res) ? res : (res?.users ?? []);
+			usersCount = users.filter((u: any) => u.role !== 'admin').length;
+		} catch {
+			usersCount = 0;
+		}
+
+		loading = false;
+	});
 </script>
 
 <div style="--px:1.2rem; --pt:1.5rem; --pb:1.5rem; --ta:center">
@@ -21,34 +39,44 @@
 		{$i18n.t('{{name}} is ready to use.', { name: $WEBUI_NAME })}
 	</div>
 
-	<div style="--d:flex; --fd:column; --g:0.5rem; --mb:1.5rem; --ta:left; --mx:auto; --w:fit-content">
-		{#if connectionAdded}
-			<div style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
-				<span style="--c:var(--color-green-600)">&#10003;</span>
-				<span>{$i18n.t('Model connection configured')}</span>
-			</div>
-		{/if}
+	{#if loading}
+		<div style="--d:flex; --jc:center; --py:1rem; --size:0.8rem; --c:var(--color-gray-400)">
+			{$i18n.t('Loading...')}
+		</div>
+	{:else}
+		<div style="--d:flex; --fd:column; --g:0.5rem; --mb:1.5rem; --ta:left; --mx:auto; --w:fit-content">
+			{#if connectionAdded}
+				<div style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
+					<span style="--c:var(--color-green-600)">&#10003;</span>
+					<span>{$i18n.t('Model connection configured')}</span>
+				</div>
+			{/if}
 
-		{#if usersAdded}
-			<div style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
-				<span style="--c:var(--color-green-600)">&#10003;</span>
-				<span>{$i18n.t('Users added')}</span>
-			</div>
-		{/if}
+			{#if usersCount > 0}
+				<div style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
+					<span style="--c:var(--color-green-600)">&#10003;</span>
+					<span>
+						{usersCount === 1
+							? $i18n.t('1 user configured')
+							: $i18n.t('{{count}} users configured', { count: usersCount })}
+					</span>
+				</div>
+			{/if}
 
-		{#if workingAlone}
-			<div style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
-				<span style="--c:var(--color-green-600)">&#10003;</span>
-				<span>{$i18n.t('Working alone mode enabled')}</span>
-			</div>
-		{/if}
+			{#if workingAlone}
+				<div style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
+					<span style="--c:var(--color-green-600)">&#10003;</span>
+					<span>{$i18n.t('Working alone mode enabled')}</span>
+				</div>
+			{/if}
 
-		{#if !connectionAdded && !usersAdded && !workingAlone}
-			<div style="--size:0.75rem; --c:var(--color-gray-400)">
-				{$i18n.t('You can configure connections and users anytime from Settings.')}
-			</div>
-		{/if}
-	</div>
+			{#if !connectionAdded && usersCount === 0 && !workingAlone}
+				<div style="--size:0.75rem; --c:var(--color-gray-400)">
+					{$i18n.t('You can configure connections and users anytime from Settings.')}
+				</div>
+			{/if}
+		</div>
+	{/if}
 
 	<button
 		on:click={onFinish}
