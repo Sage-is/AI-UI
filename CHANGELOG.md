@@ -24,7 +24,7 @@ Authentication is now the first optional step. The welcome screen offers four ch
 
 ---
 
-## [2.0.0] — 2026-03-23
+## [2.0.0] — 2026-03
 
 ### Added
 
@@ -125,7 +125,7 @@ The auth page no longer triggers 403 errors during session validation. The error
 
 ---
 
-## [1.0.0] — 2025-04-28
+## [1.0.0] — 2025-04
 
 ### Added
 
