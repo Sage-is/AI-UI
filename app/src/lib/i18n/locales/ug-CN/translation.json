@@ -1448,7 +1448,7 @@
 	"What are you working on?": "نېمە ئىش قىلىۋاتىسىز؟",
 	"What's New in": "يېڭىلىق",
 	"When enabled, the model will respond to each chat message in real-time, generating a response as soon as the user sends a message. This mode is useful for live chat applications, but may impact performance on slower hardware.": "قوزغىتىلسا، مودېل ھەر بىر سۆھبەت ئۇچۇرىغا ۋاقىتدا ئىنكاس قايتۇرىدۇ. بۇ ھالىتى تۇرۇشلۇق سۆھبەت ئۈچۈن پايدىلىق، بىراق ئاستا ئۈسكۈنىدە ئۈنۈمگە تەسىر قىلىدۇ.",
-	"wherever you are": "قايسى يەردە بولسىڭىزمۇ",
+	"with Sage.is AI-UI": "قايسى يەردە بولسىڭىزمۇ",
 	"Whether to paginate the output. Each page will be separated by a horizontal rule and page number. Defaults to False.": "چىقىرىشنى بەتلەندۈرۈش ئۈچۈن ئىشلىتىلدۇ. ھەربىر بەت گىزىكچىلەر بىلەن ئايرىلىدۇ. كۆڭۈلدىكىچە چەكلەنگەن.",
 	"Whisper (Local)": "Whisper (يەرلىك)",
 	"Why?": "نېمىشقا؟",

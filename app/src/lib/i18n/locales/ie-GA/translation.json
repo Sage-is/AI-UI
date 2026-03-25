@@ -1448,7 +1448,7 @@
 	"What are you working on?": "Cad air a bhfuil tú ag obair?",
 	"What's New in": "Cad atá Nua i",
 	"When enabled, the model will respond to each chat message in real-time, generating a response as soon as the user sends a message. This mode is useful for live chat applications, but may impact performance on slower hardware.": "Nuair a bheidh sé cumasaithe, freagróidh an múnla gach teachtaireacht comhrá i bhfíor-am, ag giniúint freagra a luaithe a sheolann an t-úsáideoir teachtaireacht. Tá an mód seo úsáideach le haghaidh feidhmchláir chomhrá beo, ach d'fhéadfadh tionchar a bheith aige ar fheidhmíocht ar chrua-earraí níos moille.",
-	"wherever you are": "aon áit a bhfuil tú",
+	"with Sage.is AI-UI": "aon áit a bhfuil tú",
 	"Whether to paginate the output. Each page will be separated by a horizontal rule and page number. Defaults to False.": "Cibé acu an ndéanfar an t-aschur a roinnt le leathanaigh nó nach ndéanfar. Beidh riail chothrománach agus uimhir leathanaigh ag scartha ó gach leathanach. Is é Bréag an rogha réamhshocraithe.",
 	"Whisper (Local)": "Whisper (Áitiúil)",
 	"Why?": "Cén fáth?",

@@ -1448,7 +1448,7 @@
 	"What are you working on?": "Millega te tegelete?",
 	"What's New in": "Mis on uut",
 	"When enabled, the model will respond to each chat message in real-time, generating a response as soon as the user sends a message. This mode is useful for live chat applications, but may impact performance on slower hardware.": "Kui see on lubatud, vastab mudel igale vestlussõnumile reaalajas, genereerides vastuse niipea, kui kasutaja sõnumi saadab. See režiim on kasulik reaalajas vestlusrakendustes, kuid võib mõjutada jõudlust aeglasema riistvara puhul.",
-	"wherever you are": "kus iganes te olete",
+	"with Sage.is AI-UI": "kus iganes te olete",
 	"Whether to paginate the output. Each page will be separated by a horizontal rule and page number. Defaults to False.": "",
 	"Whisper (Local)": "Whisper (lokaalne)",
 	"Why?": "Miks?",
