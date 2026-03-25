@@ -73,7 +73,7 @@ h4 {
 }
 
 h5 {
-	font-size: 1.25rem;
+	font-size: 1.2rem;
 }
 
 h6 {
@@ -213,7 +213,7 @@ table {
 th,
 td {
 	margin: 0;
-	padding: 0.75rem;
+	padding: 0.6rem;
 	vertical-align: top;
 	border-top: 1px solid #dee2e6;
 }

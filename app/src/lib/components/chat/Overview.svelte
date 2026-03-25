@@ -159,21 +159,22 @@
 	});
 </script>
 
-<div class="w-full h-full relative">
-	<div class=" absolute z-50 w-full flex justify-between dark:text-gray-100 px-4 py-3.5">
-		<div class="flex items-center gap-2.5">
+<div style="--w:100%; --h:100%; --pos:relative">
+	<div style="--pos:absolute; --z:50; --w:100%; --d:flex; --jc:space-between; --dark-c:var(--color-gray-100); --px:1rem; --py:0.8rem">
+		<div style="--d:flex; --ai:center; --g:0.625rem">
 			<button
-				class="self-center p-0.5"
+				style="--as:center; --p:0.125rem"
 				on:click={() => {
 					showOverview.set(false);
 				}}
 			>
 				<ArrowLeft className="size-3.5" />
 			</button>
-			<div class=" text-lg font-medium self-center font-primary">{$i18n.t('Chat Overview')}</div>
+			<div style="--size:1.125rem; --weight:500; --as:center"
+	class="font-primary">{$i18n.t('Chat Overview')}</div>
 		</div>
 		<button
-			class="self-center p-0.5"
+			style="--as:center; --p:0.125rem"
 			on:click={() => {
 				dispatch('close');
 				showOverview.set(false);

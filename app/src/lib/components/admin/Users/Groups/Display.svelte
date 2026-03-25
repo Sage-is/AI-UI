@@ -10,13 +10,14 @@
 	export let description = '';
 </script>
 
-<div class="flex gap-2">
-	<div class="flex flex-col w-full">
-		<div class=" mb-0.5 text-xs text-gray-500">{$i18n.t('Name')}</div>
+<div style="--d:flex; --g:0.5rem">
+	<div style="--d:flex; --fd:column; --w:100%">
+		<div style="--mb:0.125rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Name')}</div>
 
-		<div class="flex-1">
+		<div style="--fx:1 1 0%">
 			<input
-				class="w-full text-sm bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-700 outline-hidden"
+				style="--w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
+	class="placeholder:text-gray-300 dark:placeholder:text-gray-700"
 				type="text"
 				bind:value={name}
 				placeholder={$i18n.t('Group Name')}
@@ -27,16 +28,17 @@
 	</div>
 </div>
 
-<!-- <div class="flex flex-col w-full mt-2">
-	<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Color')}</div>
+<!-- <div style="--d:flex; --fd:column; --w:100%; --mt:0.5rem">
+	<div style="--mb:0.2rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Color')}</div>
 
-	<div class="flex-1">
+	<div style="--fx:1 1 0%">
 		<Tooltip content={$i18n.t('Hex Color - Leave empty for default color')} placement="top-start">
-			<div class="flex gap-0.5">
-				<div class="text-gray-500">#</div>
+			<div style="--d:flex; --g:0.125rem">
+				<div style="--c:var(--color-gray-500)">#</div>
 
 				<input
-					class="w-full text-sm bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-700 outline-hidden"
+					style="--w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
+	class="placeholder:text-gray-300 dark:placeholder:text-gray-700"
 					type="text"
 					bind:value={color}
 					placeholder={$i18n.t('Hex Color')}
@@ -47,10 +49,10 @@
 	</div>
 </div> -->
 
-<div class="flex flex-col w-full mt-2">
-	<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Description')}</div>
+<div style="--d:flex; --fd:column; --w:100%; --mt:0.5rem">
+	<div style="--mb:0.2rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Description')}</div>
 
-	<div class="flex-1">
+	<div style="--fx:1 1 0%">
 		<Textarea
 			className="w-full text-sm bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-700 outline-hidden resize-none"
 			rows={4}

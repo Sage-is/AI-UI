@@ -37,12 +37,13 @@
 
 <Modal size="sm" bind:show>
 	<div>
-		<div class=" flex justify-between dark:text-gray-100 px-5 pt-4 mb-1.5">
-			<div class=" text-lg font-medium self-center font-primary">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-100); --px:1.2rem; --pt:1rem; --mb:0.4rem">
+			<div style="--size:1.125rem; --weight:500; --as:center"
+	class="font-primary">
 				{$i18n.t('Add User Group')}
 			</div>
 			<button
-				class="self-center"
+				style="--as:center"
 				on:click={() => {
 					show = false;
 				}}
@@ -51,23 +52,24 @@
 			</button>
 		</div>
 
-		<div class="flex flex-col md:flex-row w-full px-4 pb-4 md:space-x-4 dark:text-gray-200">
-			<div class=" flex flex-col w-full sm:flex-row sm:justify-center sm:space-x-6">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1rem; --pb:1rem; --p: 1rem 0;--bgc: var(--white); --br: 1rem">
+			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				<form
-					class="flex flex-col w-full"
+					style="--d:flex; --fd:column; --w:100%"
 					on:submit={(e) => {
 						e.preventDefault();
 						submitHandler();
 					}}
 				>
-					<div class="px-1 flex flex-col w-full">
-						<div class="flex gap-2">
-							<div class="flex flex-col w-full">
-								<div class=" mb-0.5 text-xs text-gray-500">{$i18n.t('Name')}</div>
+					<div style="--px:0.2rem; --d:flex; --fd:column; --w:100%">
+						<div style="--d:flex; --g:0.5rem">
+							<div style="--d:flex; --fd:column; --w:100%">
+								<div style="--mb:0.125rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Name')}</div>
 
-								<div class="flex-1">
+								<div style="--fx:1 1 0%">
 									<input
-										class="w-full text-sm bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-700 outline-hidden"
+										style="--w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
+	class="placeholder:text-gray-300 dark:placeholder:text-gray-700"
 										type="text"
 										bind:value={name}
 										placeholder={$i18n.t('Group Name')}
@@ -78,10 +80,10 @@
 							</div>
 						</div>
 
-						<div class="flex flex-col w-full mt-2">
-							<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Description')}</div>
+						<div style="--d:flex; --fd:column; --w:100%; --mt:0.5rem">
+							<div style="--mb:0.2rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Description')}</div>
 
-							<div class="flex-1">
+							<div style="--fx:1 1 0%">
 								<Textarea
 									className="w-full text-sm bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-700 outline-hidden resize-none"
 									rows={2}
@@ -92,9 +94,10 @@
 						</div>
 					</div>
 
-					<div class="flex justify-end pt-3 text-sm font-medium gap-1.5">
+					<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.8rem; --weight:500; --g:0.4rem">
 						<button
-							class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full flex flex-row space-x-1 items-center {loading
+							style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.2rem; --ai:center"
+	class="{loading
 								? ' cursor-not-allowed'
 								: ''}"
 							type="submit"
@@ -103,7 +106,7 @@
 							{$i18n.t('Create')}
 
 							{#if loading}
-								<div class="ml-2 self-center">
+								<div style="--ml:0.5rem; --as:center">
 									<Spinner />
 								</div>
 							{/if}

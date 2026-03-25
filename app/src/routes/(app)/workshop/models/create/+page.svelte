@@ -1,9 +1,10 @@
-<script>
+<script lang="ts">
 	import { v4 as uuidv4 } from 'uuid';
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
 	import { config, models, settings } from '$lib/stores';
 	import { WEBUI_BASE_URL } from '$lib/constants';
+	import { getBranding, type Branding } from '$lib/apis/configs';
 
 	import { onMount, tick, getContext } from 'svelte';
 	import { createNewModel, getModelById } from '$lib/apis/models';
@@ -12,6 +13,8 @@
 	import ModelEditorWithChat from '$lib/components/workshop/Models/ModelEditorWithChat.svelte';
 
 	const i18n = getContext('i18n');
+
+	let branding: Branding | null = null;
 
 	const onSubmit = async (modelInfo) => {
 		if ($models.find((m) => m.id === modelInfo.id)) {
@@ -32,7 +35,7 @@
 				meta: {
 					...modelInfo.meta,
 					profile_image_url:
-						modelInfo.meta.profile_image_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`,
+						modelInfo.meta.profile_image_url ?? branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`,
 					suggestion_prompts: modelInfo.meta.suggestion_prompts
 						? modelInfo.meta.suggestion_prompts.filter((prompt) => prompt.content !== '')
 						: null
@@ -62,6 +65,8 @@
 	let model = null;
 
 	onMount(async () => {
+		branding = await getBranding();
+		
 		window.addEventListener('message', async (event) => {
 			if (
 				!['https://sage.is', 'https://www.sage.is', 'http://localhost:5173'].includes(

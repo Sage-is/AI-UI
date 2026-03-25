@@ -95,11 +95,11 @@
 </script>
 
 <Modal bind:show>
-	<div class="text-gray-700 dark:text-gray-100">
-		<div class=" flex justify-between dark:text-gray-300 px-5 pt-4">
-			<div class=" text-lg font-medium self-center">{$i18n.t('Keyboard shortcuts')}</div>
+	<div style="--c:var(--color-gray-700); --dark-c:var(--color-gray-100)">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.2rem; --pt:1rem">
+			<div style="--size:1.125rem; --weight:500; --as:center">{$i18n.t('Keyboard shortcuts')}</div>
 			<button
-				class="self-center"
+				style="--as:center"
 				on:click={() => {
 					show = false;
 				}}
@@ -108,26 +108,26 @@
 			</button>
 		</div>
 
-		<div class="flex flex-col md:flex-row w-full p-5 md:space-x-4 dark:text-gray-200">
-			<div class=" flex flex-col w-full sm:flex-row sm:justify-center sm:space-x-6">
-				<div class="flex flex-col space-y-3 w-full self-start">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --p:1.2rem; --p: 1rem 0;--bgc: var(--white); --br: 1rem">
+			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
+				<div style="--d:flex; --fd:column; --g:0.6rem; --w:100%; --as:flex-start">
 					<!-- DRY: Use data structure to eliminate repetitive HTML -->
 					{#each shortcuts as shortcut}
-						<div class="w-full flex justify-between items-center">
-							<div class="text-sm">
+						<div style="--w:100%; --d:flex; --jc:space-between; --ai:center">
+							<div style="--size:0.8rem">
 								{#if shortcut.tooltip}
 									<Tooltip content={$i18n.t(shortcut.tooltip)}>
-										{$i18n.t(shortcut.label)}<span class="text-xs"> *</span>
+										{$i18n.t(shortcut.label)}<span style="--size:0.6rem"> *</span>
 									</Tooltip>
 								{:else}
 									{$i18n.t(shortcut.label)}
 								{/if}
 							</div>
 
-							<div class="flex space-x-1 text-xs">
+							<div style="--d:flex; --g:0.2rem; --size:0.6rem">
 								{#each shortcut.keys as key}
 									<div
-										class="h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+										style="--h:fit-content; --py:0.2rem; --px:0.5rem; --d:flex; --ai:center; --jc:center; --radius:0.125rem;  --bc:rgb(0 0 0 / 0.1); --tt:capitalize; --c:var(--color-gray-600); --dark-bc:rgb(255 255 255 / 0.1); --dark-c:var(--color-gray-300)"
 									>
 										{key}
 									</div>
@@ -138,23 +138,23 @@
 				</div>
 
 				<!-- DRY: Second column using same pattern -->
-				<div class="flex flex-col space-y-3 w-full self-start">
+				<div style="--d:flex; --fd:column; --g:0.6rem; --w:100%; --as:flex-start">
 					{#each shortcutsColumn2 as shortcut}
-						<div class="w-full flex justify-between items-center">
-							<div class="text-sm">
+						<div style="--w:100%; --d:flex; --jc:space-between; --ai:center">
+							<div style="--size:0.8rem">
 								{#if shortcut.tooltip}
 									<Tooltip content={$i18n.t(shortcut.tooltip)}>
-										{$i18n.t(shortcut.label)}<span class="text-xs"> *</span>
+										{$i18n.t(shortcut.label)}<span style="--size:0.6rem"> *</span>
 									</Tooltip>
 								{:else}
 									{$i18n.t(shortcut.label)}
 								{/if}
 							</div>
 
-							<div class="flex space-x-1 text-xs">
+							<div style="--d:flex; --g:0.2rem; --size:0.6rem">
 								{#each shortcut.keys as key}
 									<div
-										class="h-fit py-1 px-2 flex items-center justify-center rounded-sm border border-black/10 capitalize text-gray-600 dark:border-white/10 dark:text-gray-300"
+										style="--h:fit-content; --py:0.2rem; --px:0.5rem; --d:flex; --ai:center; --jc:center; --radius:0.125rem;  --bc:rgb(0 0 0 / 0.1); --tt:capitalize; --c:var(--color-gray-600); --dark-bc:rgb(255 255 255 / 0.1); --dark-c:var(--color-gray-300)"
 									>
 										{key}
 									</div>
@@ -166,26 +166,26 @@
 			</div>
 		</div>
 
-		<hr class=" border-gray-700/10 dark:border-gray-300/30" />
+		<hr style="--bc:rgb(78 78 78 / 0.1); --dark-bc:rgb(205 205 205 / 0.3)" />
 
-		<div class="p-5">
+		<div style="--p:1.2rem">
 			{$i18n.t(
 				'Shortcuts are disabled while an input field is focused. Examples: chat input, search, etc.'
 			)}
 		</div>
 
-		<hr class="border-gray-700/10 dark:border-gray-300/30" />
+		<hr style="--bc:rgb(78 78 78 / 0.1); --dark-bc:rgb(205 205 205 / 0.3)" />
 
-		<div class="p-5">
-			<div class=" text-lg font-medium self-center">{$i18n.t('Input commands')}</div>
-			<div class=" mt-3 flex flex-col space-y-3">
+		<div style="--p:1.2rem">
+			<div style="--size:1.125rem; --weight:500; --as:center">{$i18n.t('Input commands')}</div>
+			<div style="--mt:0.6rem; --d:flex; --fd:column; --g:0.6rem">
 				<!-- DRY: Use data structure for input commands -->
 				{#each inputCommands as command}
-					<div class="flex justify-between items-center">
-						<div class=" text-sm text-gray-500">
+					<div style="--d:flex; --jc:space-between; --ai:center">
+						<div style="--size:0.8rem; --c:var(--color-gray-500)">
 							{$i18n.t(command.label)}
 						</div>
-						<div class="text-gray-600 dark:text-gray-300 text-sm font-semibold">
+						<div style="--c:var(--color-gray-600); --dark-c:var(--color-gray-300); --size:0.8rem; --weight:600">
 							{command.command}
 						</div>
 					</div>

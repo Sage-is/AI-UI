@@ -12,7 +12,7 @@
 	import calendar from 'dayjs/plugin/calendar';
 	import Loader from '../common/Loader.svelte';
 	import { createMessagesList } from '$lib/utils';
-	import { user } from '$lib/stores';
+	import { user, searchQuery } from '$lib/stores';
 	import Messages from '../chat/Messages.svelte';
 	dayjs.extend(calendar);
 
@@ -134,8 +134,21 @@
 		chatListLoading = false;
 	};
 
-	const init = () => {
+	const init = async () => {
+		if ($searchQuery) {
+			query = $searchQuery;
+			searchQuery.set('');
+		}
 		searchHandler();
+
+		await tick();
+		setTimeout(() => {
+			const searchInput = document.getElementById('search-input');
+			if (searchInput) {
+				const len = query.length;
+				searchInput.setSelectionRange(len, len);
+			}
+		}, 0);
 	};
 
 	const onKeyDown = (e) => {
@@ -184,9 +197,11 @@
 		item?.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
 	};
 
-	onMount(() => {
+	$: if (show) {
 		init();
+	}
 
+	onMount(() => {
 		document.addEventListener('keydown', onKeyDown);
 	});
 
@@ -199,8 +214,8 @@
 </script>
 
 <Modal size="xl" bind:show>
-	<div class="py-2.5 dark:text-gray-300 text-gray-700">
-		<div class="px-3.5 pb-1.5">
+	<div style="--py:0.625rem; --dark-c:var(--color-gray-300); --c:var(--color-gray-700)">
+		<div style="--px:0.8rem; --pb:0.4rem">
 			<SearchInput
 				bind:value={query}
 				on:input={searchHandler}
@@ -231,15 +246,16 @@
 			/>
 		</div>
 
-		<!-- <hr class="border-gray-100 dark:border-gray-850 my-1" /> -->
+		<!-- <hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.2rem" /> -->
 
-		<div class="flex px-3 pb-1">
+		<div style="--d:flex; --px:0.6rem; --pb:0.2rem">
 			<div
-				class="flex flex-col overflow-y-auto h-96 md:h-[40rem] max-h-full scrollbar-hidden w-full flex-1"
+				style="--d:flex; --fd:column; --ofy:auto; --h:24rem; --h-md:40rem; --maxh:100%; --w:100%; --fx:1 1 0%"
+	class="scrollbar-hidden"
 			>
 				{#if chatList}
 					{#if chatList.length === 0}
-						<div class="text-xs text-gray-500 dark:text-gray-400 text-center px-5">
+						<div style="--size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --ta:center; --px:1.2rem">
 							{$i18n.t('No results found')}
 						</div>
 					{/if}
@@ -247,9 +263,10 @@
 					{#each chatList as chat, idx (chat.id)}
 						{#if idx === 0 || (idx > 0 && chat.time_range !== chatList[idx - 1].time_range)}
 							<div
-								class="w-full text-xs text-gray-500 dark:text-gray-500 font-medium {idx === 0
+								style="--w:100%; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --weight:500;  --px:0.5rem"
+	class="{idx === 0
 									? ''
-									: 'pt-5'} pb-2 px-2"
+									: 'pt-5'}"
 							>
 								{$i18n.t(chat.time_range)}
 								<!-- localisation keys for time_range to be recognized from the i18next parser (so they don't get automatically removed):
@@ -274,7 +291,8 @@
 						{/if}
 
 						<a
-							class=" w-full flex justify-between items-center rounded-lg text-sm py-2 px-3 hover:bg-gray-50 dark:hover:bg-gray-850 {selectedIdx ===
+							style="--w:100%; --d:flex; --jc:space-between; --ai:center; --radius:0.5rem; --size:0.8rem; --py:0.5rem; --px:0.6rem; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850)"
+	class="{selectedIdx ===
 							idx
 								? 'bg-gray-50 dark:bg-gray-850'
 								: ''}"
@@ -289,13 +307,13 @@
 								onClose();
 							}}
 						>
-							<div class=" flex-1">
-								<div class="text-ellipsis line-clamp-1 w-full">
+							<div style="--fx:1 1 0%">
+								<div style="text-overflow:ellipsis; --line-clamp:1; --w:100%">
 									{chat?.title}
 								</div>
 							</div>
 
-							<div class=" pl-3 shrink-0 text-gray-500 dark:text-gray-400 text-xs">
+							<div style="--pl:0.6rem; --fs:0; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --size:0.6rem">
 								{dayjs(chat?.updated_at * 1000).calendar()}
 							</div>
 						</a>
@@ -309,30 +327,31 @@
 								}
 							}}
 						>
-							<div class="w-full flex justify-center py-1 text-xs animate-pulse items-center gap-2">
+							<div style="--w:100%; --d:flex; --jc:center; --py:0.2rem; --size:0.6rem; animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; --ai:center; --g:0.5rem">
 								<Spinner className=" size-4" />
 								<div class=" ">Loading...</div>
 							</div>
 						</Loader>
 					{/if}
 				{:else}
-					<div class="w-full h-full flex justify-center items-center">
+					<div style="--w:100%; --h:100%; --d:flex; --jc:center; --ai:center">
 						<Spinner className="size-5" />
 					</div>
 				{/if}
 			</div>
 			<div
 				id="chat-preview"
-				class="hidden md:flex md:flex-1 w-full overflow-y-auto h-96 md:h-[40rem] scrollbar-hidden"
+				style="--d:none; --d-md:flex; --fx-md:2 1 0%; --w:100%; --ofy:auto; --h:24rem; --h-md:40rem"
+	class="scrollbar-hidden"
 			>
 				{#if messages === null}
 					<div
-						class="w-full h-full flex justify-center items-center text-gray-500 dark:text-gray-400 text-sm"
+						style="--w:100%; --h:100%; --d:flex; --jc:center; --ai:center; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --size:0.8rem"
 					>
 						{$i18n.t('Select a conversation to preview')}
 					</div>
 				{:else}
-					<div class="w-full h-full flex flex-col">
+					<div style="--w:100%; --h:100%; --d:flex; --fd:column">
 						<Messages
 							className="h-full flex pt-4 pb-8 w-full"
 							user={$user}

@@ -91,6 +91,13 @@
 					defaultValue: true,
 					settingsPath: 'showChangelog',
 					adminOnly: true
+				},
+				{
+					key: 'workingAlone',
+					labelKey: 'Working alone (skip user setup)',
+					defaultValue: false,
+					settingsPath: 'workingAlone',
+					adminOnly: true
 				}
 			]
 		},
@@ -404,7 +411,7 @@
 
 <form
 	id="tab-interface"
-	class="flex flex-col h-full justify-between space-y-3 text-sm"
+	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.8rem"
 	on:submit|preventDefault={() => {
 		updateInterfaceHandler();
 		dispatch('save');
@@ -439,17 +446,17 @@
 		}}
 	/>
 
-	<div class=" space-y-3 overflow-y-scroll max-h-[28rem] lg:max-h-full">
+	<div style="--g:0.6rem; --ofy:scroll; --maxh:28rem; --maxh-lg:100%">
 		{#each settingsConfig as sectionConfig}
 			<div>
-				<h1 class=" mb-1.5 text-sm font-medium">{$i18n.t(sectionConfig.section)}</h1>
+				<h1 style="--mb:0.4rem; --size:0.8rem; --weight:500">{$i18n.t(sectionConfig.section)}</h1>
 
 				{#each sectionConfig.settings as setting}
 					{#if !setting.adminOnly || $user?.role === 'admin'}
 						{#if !setting.conditionalDisplay || setting.conditionalDisplay()}
 							<div>
-								<div class=" py-0.5 flex w-full justify-between">
-									<div id="{setting.key}-label" class=" self-center text-xs">
+								<div style="--py:0.125rem; --d:flex; --w:100%; --jc:space-between">
+									<div id="{setting.key}-label" style="--as:center; --size:0.6rem">
 										{$i18n.t(setting.labelKey)}
 										{#if setting.betaLabel}
 											({$i18n.t('Beta')})
@@ -461,17 +468,17 @@
 
 									<button
 										aria-labelledby="{setting.key}-label"
-										class="p-1 px-3 text-xs flex rounded-sm transition"
+										style="--p:0.2rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 										on:click={() => toggleSetting(setting)}
 										type="button"
 									>
 										{#if setting.getDisplayValue}
-											<span class="ml-2 self-center">{$i18n.t(setting.getDisplayValue(settingsValues[setting.key]))}</span>
+											<span style="--ml:0.5rem; --as:center">{$i18n.t(setting.getDisplayValue(settingsValues[setting.key]))}</span>
 										{:else}
 											{#if settingsValues[setting.key] === true}
-												<span class="ml-2 self-center">{$i18n.t('On')}</span>
+												<span style="--ml:0.5rem; --as:center">{$i18n.t('On')}</span>
 											{:else}
-												<span class="ml-2 self-center">{$i18n.t('Off')}</span>
+												<span style="--ml:0.5rem; --as:center">{$i18n.t('Off')}</span>
 											{/if}
 										{/if}
 									</button>
@@ -485,14 +492,14 @@
 
 		<!-- Special case: Chat Background Image -->
 		<div>
-			<div class=" py-0.5 flex w-full justify-between">
-				<div id="chat-background-label" class=" self-center text-xs">
+			<div style="--py:0.125rem; --d:flex; --w:100%; --jc:space-between">
+				<div id="chat-background-label" style="--as:center; --size:0.6rem">
 					{$i18n.t('Chat Background Image')}
 				</div>
 
 				<button
 					aria-labelledby="chat-background-label"
-					class="p-1 px-3 text-xs flex rounded-sm transition"
+					style="--p:0.2rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						if (backgroundImageUrl !== null) {
 							backgroundImageUrl = null;
@@ -504,9 +511,9 @@
 					type="button"
 				>
 					{#if backgroundImageUrl !== null}
-						<span class="ml-2 self-center">{$i18n.t('Reset')}</span>
+						<span style="--ml:0.5rem; --as:center">{$i18n.t('Reset')}</span>
 					{:else}
-						<span class="ml-2 self-center">{$i18n.t('Upload')}</span>
+						<span style="--ml:0.5rem; --as:center">{$i18n.t('Upload')}</span>
 					{/if}
 				</button>
 			</div>
@@ -515,8 +522,8 @@
 		<!-- Special case: Image Compression Size -->
 		{#if settingsValues.imageCompression}
 			<div>
-				<div class=" py-0.5 flex w-full justify-between text-xs">
-					<div id="image-compression-size-label" class=" self-center text-xs">
+				<div style="--py:0.125rem; --d:flex; --w:100%; --jc:space-between; --size:0.6rem">
+					<div id="image-compression-size-label" style="--as:center; --size:0.6rem">
 						{$i18n.t('Image Max Compression Size')}
 					</div>
 
@@ -527,7 +534,7 @@
 						<input
 							bind:value={imageCompressionSize.width}
 							type="number"
-							class="w-20 bg-transparent outline-hidden text-center"
+							style="--w:5rem; --bgc:transparent; --oe:none; --ta:center"
 							min="0"
 							placeholder="Width"
 						/>x
@@ -537,7 +544,7 @@
 						<input
 							bind:value={imageCompressionSize.height}
 							type="number"
-							class="w-20 bg-transparent outline-hidden text-center"
+							style="--w:5rem; --bgc:transparent; --oe:none; --ta:center"
 							min="0"
 							placeholder="Height"
 						/>
@@ -547,9 +554,9 @@
 		{/if}
 	</div>
 
-	<div class="flex justify-end text-sm font-medium">
+	<div style="--d:flex; --jc:flex-end; --size:0.8rem; --weight:500">
 		<button
-			class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+			style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			type="submit"
 		>
 			{$i18n.t('Save')}

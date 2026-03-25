@@ -30,7 +30,9 @@
 	import Image from '../common/Image.svelte';
 	import FilesOverlay from '../chat/MessageInput/FilesOverlay.svelte';
 	import Commands from '../chat/MessageInput/Commands.svelte';
+	import Mentions from './MessageInput/Mentions.svelte';
 	import InputVariablesModal from '../chat/MessageInput/InputVariablesModal.svelte';
+	import IndicatorStack from './IndicatorStack.svelte';
 
 	export let placeholder = $i18n.t('Send a Message');
 	export let transparentBackground = false;
@@ -61,6 +63,8 @@
 
 	export let acceptFiles = true;
 	export let showFormattingButtons = true;
+	export let participants: { users: any[]; agents: any[] } = { users: [], agents: [] };
+	export let thinkingAgents: any[] = [];
 
 	let showInputVariablesModal = false;
 	let inputVariables: Record<string, any> = {};
@@ -221,6 +225,20 @@
 
 	export let showCommands = false;
 	$: showCommands = ['/'].includes(command?.charAt(0));
+
+	let mentionsElement;
+	let mentionQuery = '';
+	let showMentions = false;
+
+	$: {
+		if (command?.startsWith('@')) {
+			showMentions = true;
+			mentionQuery = command.slice(1);
+		} else {
+			showMentions = false;
+			mentionQuery = '';
+		}
+	}
 
 	const screenCaptureHandler = async () => {
 		try {
@@ -489,7 +507,7 @@
 		window.addEventListener('keydown', handleKeyDown);
 		await tick();
 
-		const dropzoneElement = document.getElementById('channel-container');
+		const dropzoneElement = document.getElementById('space-container');
 
 		dropzoneElement?.addEventListener('dragover', onDragOver);
 		dropzoneElement?.addEventListener('drop', onDrop);
@@ -499,7 +517,7 @@
 	onDestroy(() => {
 		window.removeEventListener('keydown', handleKeyDown);
 
-		const dropzoneElement = document.getElementById('channel-container');
+		const dropzoneElement = document.getElementById('space-container');
 
 		if (dropzoneElement) {
 			dropzoneElement?.removeEventListener('dragover', onDragOver);
@@ -539,21 +557,22 @@
 	}}
 />
 
-<div class="bg-transparent">
+<div style="--bgc:transparent">
 	<div
-		class="{($settings?.widescreenMode ?? null)
-			? 'max-w-full'
-			: 'max-w-6xl'}  mx-auto inset-x-0 relative"
+		style="--mx:auto; --left:0; --right:0; --pos:relative"
+		class={($settings?.widescreenMode ?? null) ? 'max-w-full' : 'max-w-6xl'}
 	>
-		<div class="absolute top-0 left-0 right-0 mx-auto inset-x-0 bg-transparent flex justify-center">
-			<div class="flex flex-col px-3 w-full">
-				<div class="relative">
+		<div
+			style="--pos:absolute; --top:0; --left:0; --right:0; --mx:auto; --left:0; --right:0; --bgc:transparent; --d:flex; --jc:center"
+		>
+			<div style="--d:flex; --fd:column; --px:0.6rem; --w:100%">
+				<div style="--pos:relative">
 					{#if scrollEnd === false}
 						<div
-							class=" absolute -top-12 left-0 right-0 flex justify-center z-30 pointer-events-none"
+							style="--pos:absolute; --top:-3rem; --left:0; --right:0; --d:flex; --jc:center; --z:30; --pe:none"
 						>
 							<button
-								class=" bg-white border border-gray-100 dark:border-none dark:bg-white/20 p-1.5 rounded-full pointer-events-auto"
+								style="--bgc:#fff;  --bc:var(--color-gray-100); --dark-bs:none; --dark-bgc:rgb(255 255 255 / 0.2); --p:0.4rem; --radius:9999px; --pe:auto"
 								on:click={() => {
 									scrollEnd = true;
 									scrollToBottom();
@@ -563,7 +582,7 @@
 									xmlns="http://www.w3.org/2000/svg"
 									viewBox="0 0 20 20"
 									fill="currentColor"
-									class="w-5 h-5"
+									style="--w:1.2rem; --h:1.2rem"
 								>
 									<path
 										fill-rule="evenodd"
@@ -576,16 +595,9 @@
 					{/if}
 				</div>
 
-				<div class="relative">
-					<div class=" -mt-5">
-						{#if typingUsers.length > 0}
-							<div class=" text-xs px-4 mb-1">
-								<span class=" font-normal text-black dark:text-white">
-									{typingUsers.map((user) => user.name).join(', ')}
-								</span>
-								{$i18n.t('is typing...')}
-							</div>
-						{/if}
+				<div style="--pos:relative">
+					<div style="--mt:-1.2rem">
+						<IndicatorStack {thinkingAgents} {typingUsers} />
 					</div>
 
 					<Commands
@@ -593,6 +605,20 @@
 						show={showCommands}
 						{command}
 						insertTextHandler={insertTextAtCursor}
+					/>
+
+					<Mentions
+						bind:this={mentionsElement}
+						show={showMentions}
+						query={mentionQuery}
+						{participants}
+						onSelect={(participant) => {
+							const name = participant.data.name.includes(' ')
+								? participant.data.name.replace(/\s+/g, '-')
+								: participant.data.name;
+							replaceCommandWithText(`@${name} `);
+							showMentions = false;
+						}}
 					/>
 				</div>
 			</div>
@@ -627,30 +653,40 @@
 				/>
 			{:else}
 				<form
-					class="w-full flex gap-1.5"
+					style="--w:100%; --d:flex; --g:0.4rem"
 					on:submit|preventDefault={() => {
 						submitHandler();
 					}}
 				>
 					<div
-						class="flex-1 flex flex-col relative w-full rounded-3xl px-1 bg-gray-600/5 dark:bg-gray-400/5 dark:text-gray-100"
+						style="--fx:1 1 0%;
+							--d:flex;
+							--fd:column;
+							--pos:relative;
+							--w:100%;
+							--radius:1.5rem;
+							--px:0.2rem;
+							--bgc:rgb(103 103 103 / 0.05); --dark-bgc:rgb(180 180 180 / 0.05); --dark-c:var(--color-gray-100)"
 						dir={$settings?.chatDirection ?? 'auto'}
 					>
 						{#if files.length > 0}
-							<div class="mx-2 mt-2.5 -mb-1 flex flex-wrap gap-2">
+							<div
+								style="--mx:0.5rem; --mt:0.625rem; --mb:-0.2rem; --d:flex; --fw:wrap; --g:0.5rem"
+							>
 								{#each files as file, fileIdx}
 									{#if file.type === 'image'}
-										<div class=" relative group">
-											<div class="relative">
+										<div style="--pos:relative" class="group">
+											<div style="--pos:relative">
 												<Image
 													src={file.url}
 													alt="input"
 													imageClassName=" h-16 w-16 rounded-xl object-cover"
 												/>
 											</div>
-											<div class=" absolute -top-1 -right-1">
+											<div style="--pos:absolute; --top:-0.2rem; --right:-0.2rem">
 												<button
-													class=" bg-white text-black border border-white rounded-full group-hover:visible invisible transition"
+													style="--bgc:#fff; --c:#000;  --bc:#fff; --radius:9999px; --v:hidden; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+													class="group-hover:visible"
 													type="button"
 													on:click={() => {
 														files.splice(fileIdx, 1);
@@ -661,7 +697,7 @@
 														xmlns="http://www.w3.org/2000/svg"
 														viewBox="0 0 20 20"
 														fill="currentColor"
-														class="w-4 h-4"
+														style="--w:1rem; --h:1rem"
 													>
 														<path
 															d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"
@@ -692,9 +728,10 @@
 							</div>
 						{/if}
 
-						<div class="px-2.5">
+						<div style="--px:0.625rem">
 							<div
-								class="scrollbar-hidden font-primary text-left bg-transparent dark:text-gray-100 outline-hidden w-full pt-3 px-1 resize-none h-fit max-h-80 overflow-auto"
+								style="--ta:left; --bgc:transparent; --dark-c:var(--color-gray-100); --oe:none; --w:100%; --pt:0.6rem; --px:0.2rem; resize:none; --h:fit-content; --maxh:20rem; --of:auto"
+								class="scrollbar-hidden font-primary"
 							>
 								<RichTextInput
 									bind:this={chatInputElement}
@@ -718,6 +755,38 @@
 									on:keydown={async (e) => {
 										e = e.detail.event;
 										const isCtrlPressed = e.ctrlKey || e.metaKey; // metaKey is for Cmd key on Mac
+
+										const mentionsContainerElement = document.getElementById('mentions-container');
+
+										if (mentionsContainerElement) {
+											if (e.key === 'ArrowUp') {
+												e.preventDefault();
+												mentionsElement.selectUp();
+												const btn = [
+													...document.getElementsByClassName('selected-mention-option-button')
+												]?.at(-1);
+												btn?.scrollIntoView({ block: 'center' });
+											}
+											if (e.key === 'ArrowDown') {
+												e.preventDefault();
+												mentionsElement.selectDown();
+												const btn = [
+													...document.getElementsByClassName('selected-mention-option-button')
+												]?.at(-1);
+												btn?.scrollIntoView({ block: 'center' });
+											}
+											if (e.key === 'Tab' || e.key === 'Enter') {
+												e.preventDefault();
+												const btn = [
+													...document.getElementsByClassName('selected-mention-option-button')
+												]?.at(-1);
+												btn?.click();
+											}
+											if (e.key === 'Escape') {
+												showMentions = false;
+											}
+											return;
+										}
 
 										const commandsContainerElement = document.getElementById('commands-container');
 
@@ -799,8 +868,8 @@
 							</div>
 						</div>
 
-						<div class=" flex justify-between mb-2.5 mt-1.5 mx-0.5">
-							<div class="ml-1 self-end flex space-x-1 flex-1">
+						<div style="--d:flex; --jc:space-between; --mb:0.625rem; --mt:0.4rem; --mx:0.125rem">
+							<div style="--ml:0.2rem; --as:flex-end; --d:flex; --g:0.2rem; --fx:1 1 0%">
 								<slot name="menu">
 									{#if acceptFiles}
 										<InputMenu
@@ -810,7 +879,8 @@
 											}}
 										>
 											<button
-												class="bg-transparent hover:bg-white/80 text-gray-800 dark:text-white dark:hover:bg-gray-800 transition rounded-full p-1.5 outline-hidden focus:outline-hidden"
+												style="--bgc:transparent; --hvr-bgc:rgb(255 255 255 / 0.8); --c:var(--color-gray-800); --dark-c:#fff; --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.4rem; --oe:none"
+												class="focus:outline-hidden"
 												type="button"
 												aria-label="More"
 											>
@@ -818,7 +888,7 @@
 													xmlns="http://www.w3.org/2000/svg"
 													viewBox="0 0 20 20"
 													fill="currentColor"
-													class="size-5"
+													style="--w:1.2rem; --h:1.2rem"
 												>
 													<path
 														d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"
@@ -830,12 +900,12 @@
 								</slot>
 							</div>
 
-							<div class="self-end flex space-x-1 mr-1">
+							<div style="--as:flex-end; --d:flex; --g:0.2rem; --mr:0.2rem">
 								{#if content === ''}
 									<Tooltip content={$i18n.t('Record voice')}>
 										<button
 											id="voice-input-button"
-											class=" text-gray-600 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200 transition rounded-full p-1.5 mr-0.5 self-center"
+											style="--c:var(--color-gray-600); --dark-c:var(--color-gray-300); --hvr-c:var(--color-gray-700); --hvr-dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.4rem; --mr:0.125rem; --as:center"
 											type="button"
 											on:click={async () => {
 												try {
@@ -866,7 +936,7 @@
 												xmlns="http://www.w3.org/2000/svg"
 												viewBox="0 0 20 20"
 												fill="currentColor"
-												class="w-5 h-5 translate-y-[0.5px]"
+												style="--w:1.2rem; --h:1.2rem; --translatey:0.5px"
 											>
 												<path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z" />
 												<path
@@ -877,12 +947,12 @@
 									</Tooltip>
 								{/if}
 
-								<div class=" flex items-center">
+								<div style="--d:flex; --ai:center">
 									{#if inputLoading && onStop}
-										<div class=" flex items-center">
+										<div style="--d:flex; --ai:center">
 											<Tooltip content={$i18n.t('Stop')}>
 												<button
-													class="bg-white hover:bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-800 transition rounded-full p-1.5"
+													style="--bgc:#fff; --hvr-bgc:var(--color-gray-100); --c:var(--color-gray-800); --dark-bgc:var(--color-gray-700); --dark-c:#fff; --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.4rem"
 													on:click={() => {
 														onStop();
 													}}
@@ -891,7 +961,7 @@
 														xmlns="http://www.w3.org/2000/svg"
 														viewBox="0 0 24 24"
 														fill="currentColor"
-														class="size-5"
+														style="--w:1.2rem; --h:1.2rem"
 													>
 														<path
 															fill-rule="evenodd"
@@ -903,13 +973,14 @@
 											</Tooltip>
 										</div>
 									{:else}
-										<div class=" flex items-center">
+										<div style="--d:flex; --ai:center">
 											<Tooltip content={$i18n.t('Send message')}>
 												<button
 													id="send-message-button"
-													class="{content !== '' || files.length !== 0
+													style="--tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --p:0.4rem; --as:center"
+													class={content !== '' || files.length !== 0
 														? 'bg-black text-white hover:bg-gray-900 dark:bg-white dark:text-black dark:hover:bg-gray-100 '
-														: 'text-white bg-gray-200 dark:text-gray-900 dark:bg-gray-700 disabled'} transition rounded-full p-1.5 self-center"
+														: 'text-white bg-gray-200 dark:text-gray-900 dark:bg-gray-700 disabled'}
 													type="submit"
 													disabled={content === '' && files.length === 0}
 												>
@@ -917,7 +988,7 @@
 														xmlns="http://www.w3.org/2000/svg"
 														viewBox="0 0 16 16"
 														fill="currentColor"
-														class="size-5"
+														style="--w:1.2rem; --h:1.2rem"
 													>
 														<path
 															fill-rule="evenodd"

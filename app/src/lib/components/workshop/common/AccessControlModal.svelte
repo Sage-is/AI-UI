@@ -16,12 +16,13 @@
 
 <Modal size="sm" bind:show>
 	<div>
-		<div class=" flex justify-between dark:text-gray-100 px-5 pt-3 pb-1">
-			<div class=" text-lg font-medium self-center font-primary">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-100); --px:1.2rem; --pt:0.6rem; --pb:0.2rem">
+			<div style="--size:1.125rem; --weight:500; --as:center"
+	class="font-primary">
 				{$i18n.t('Access Control')}
 			</div>
 			<button
-				class="self-center"
+				style="--as:center"
 				on:click={() => {
 					show = false;
 				}}
@@ -30,7 +31,7 @@
 			</button>
 		</div>
 
-		<div class="w-full px-5 pb-4 dark:text-white">
+		<div style="--w:100%; --px:1.2rem; --pb:1rem; --dark-c:#fff">
 			<AccessControl bind:accessControl {onChange} {accessRoles} {allowPublic} />
 		</div>
 	</div>

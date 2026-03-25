@@ -10,7 +10,7 @@
 
 	import { toast } from 'svelte-sonner';
 
-	import { chatId, selectedFolder } from '$lib/stores';
+	import { chatId, selectedFolder, folderCollapseAllTrigger } from '$lib/stores';
 
 	import {
 		deleteFolderById,
@@ -60,6 +60,7 @@
 	let dragged = false;
 
 	let name = '';
+	let isFolderHovered = false;
 
 	const onDragOver = (e) => {
 		e.preventDefault();
@@ -330,6 +331,10 @@
 
 	$: isExpandedUpdateDebounceHandler(open);
 
+	$: if ($folderCollapseAllTrigger) {
+		open = folders[folderId]?.is_expanded ?? false;
+	}
+
 	const renameHandler = async () => {
 		console.log('Edit');
 		await tick();
@@ -369,7 +374,9 @@
 		deleteHandler();
 	}}
 >
-	<div class=" text-sm text-gray-700 dark:text-gray-300 flex-1 line-clamp-3">
+	<div
+		style="--size:0.8rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-300); --fx:1 1 0%; --line-clamp:3"
+	>
 		{@html DOMPurify.sanitize(
 			$i18n.t('This will delete <strong>{{NAME}}</strong> and <strong>all its contents</strong>.', {
 				NAME: folders[folderId].name
@@ -387,10 +394,12 @@
 
 {#if dragged && x && y}
 	<DragGhost {x} {y}>
-		<div class=" bg-black/80 backdrop-blur-2xl px-2 py-1 rounded-lg w-fit max-w-40">
-			<div class="flex items-center gap-1">
+		<div
+			style="--bgc:rgb(0 0 0 / 0.8); backdrop-filter:blur(40px); --px:0.5rem; --py:0.2rem; --radius:0.5rem; --w:fit-content; --maxw:10rem"
+		>
+			<div style="--d:flex; --ai:center; --g:0.2rem">
 				<FolderOpen className="size-3.5" strokeWidth="2" />
-				<div class=" text-xs text-white line-clamp-1">
+				<div style="--size:0.6rem; --c:#fff; --line-clamp:1">
 					{folders[folderId].name}
 				</div>
 			</div>
@@ -398,10 +407,12 @@
 	</DragGhost>
 {/if}
 
-<div bind:this={folderElement} class="relative {className}" draggable="true">
+<div bind:this={folderElement} style="--pos:relative" class={className} draggable="true">
 	{#if draggedOver}
 		<div
-			class="absolute top-0 left-0 w-full h-full rounded-xs bg-gray-100/50 dark:bg-gray-700/20 bg-opacity-50 dark:bg-opacity-10 z-50 pointer-events-none touch-none"
+			style="--pos:absolute; --top:0; --left:0; --w:100%; --h:100%; --bgc:rgb(0 0 0 / 0.08); --dark-bgc:rgb(255 255 255 / 0.08); --z:50; --p
+          -e:none; touch-action:none; box-shadow:inset 0 0 0 1px rgba(0,0,0,0.15); --radius:0.4rem"
+			class="rounded-xs"
 		></div>
 	{/if}
 
@@ -416,13 +427,19 @@
 		}}
 	>
 		<!-- svelte-ignore a11y-no-static-element-interactions -->
-		<div class="w-full group">
+		<div style="--w:100%; --m:0" class="group">
 			<button
 				id="folder-{folderId}-button"
-				class="relative w-full py-1.5 px-2 rounded-md flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-500 font-medium hover:bg-gray-100 dark:hover:bg-gray-900 transition {$selectedFolder?.id ===
-				folderId
-					? 'bg-gray-100 dark:bg-gray-900'
+				style="--pos:relative; --w:100%; --py:0.4rem; --px:0.5rem; --radius:0.4rem; --d:flex; --ai:center; --g:0.4rem; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --weight:500; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				class="{$selectedFolder?.id === folderId ? 'bg-gray-100 dark:bg-gray-900' : ''} {draggedOver
+					? 'bg-gray-200 dark:bg-gray-800'
 					: ''}"
+				on:mouseenter={() => {
+					isFolderHovered = true;
+				}}
+				on:mouseleave={() => {
+					isFolderHovered = false;
+				}}
 				on:dblclick={() => {
 					renameHandler();
 				}}
@@ -432,7 +449,7 @@
 					selectedFolder.set(folders[folderId]);
 				}}
 			>
-				<div class="text-gray-300 dark:text-gray-600">
+				<div style="--c:var(--color-gray-300); --dark-c:var(--color-gray-600)">
 					{#if open}
 						<ChevronDown className=" size-3" strokeWidth="2.5" />
 					{:else}
@@ -440,7 +457,7 @@
 					{/if}
 				</div>
 
-				<div class="translate-y-[0.5px] flex-1 justify-start text-start line-clamp-1">
+				<div style="--translatey:0.5px; --fx:1 1 0%; --jc:flex-start; --ta:start; --line-clamp:1">
 					{#if edit}
 						<input
 							id="folder-{folderId}-input"
@@ -467,15 +484,31 @@
 									edit = false;
 								}
 							}}
-							class="w-full h-full bg-transparent text-gray-500 dark:text-gray-500 outline-hidden"
+							style="--w:100%; --h:100%; --bgc:transparent; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --oe:none"
 						/>
 					{:else}
 						{folders[folderId].name}
 					{/if}
 				</div>
 
+				{#if !open && (folders[folderId]?.childrenIds ?? []).length + (folders[folderId]?.items?.chats ?? []).length > 0}
+					<div
+						style="--size:0.625rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-600); --fs:0"
+					>
+						({(folders[folderId]?.childrenIds ?? []).length +
+							(folders[folderId]?.items?.chats ?? []).length})
+					</div>
+				{/if}
+
 				<button
-					class="absolute z-10 right-2 invisible group-hover:visible self-center flex items-center dark:text-gray-300"
+					style="--pos:absolute; 
+						--z:10; 
+						--right:0.5rem; 
+						--v:{isFolderHovered ? 'visible' : 'hidden'}; 
+						--as:center; 
+						--d:flex; 
+						--ai:center; 
+						--dark-c:var(--color-gray-300)"
 					on:pointerup={(e) => {
 						e.stopPropagation();
 					}}
@@ -492,7 +525,10 @@
 							exportHandler();
 						}}
 					>
-						<button class="p-0.5 dark:hover:bg-gray-850 rounded-lg touch-auto" on:click={(e) => {}}>
+						<button
+							style="--p:0.125rem; --hvr-dark-bgc:var(--color-gray-850); --radius:0.5rem; touch-action:auto"
+							on:click={(e) => {}}
+						>
 							<EllipsisHorizontal className="size-4" strokeWidth="2.5" />
 						</button>
 					</FolderMenu>
@@ -500,10 +536,11 @@
 			</button>
 		</div>
 
-		<div slot="content" class="w-full">
+		<div slot="content" style="--w:100%">
 			{#if (folders[folderId]?.childrenIds ?? []).length > 0 || (folders[folderId].items?.chats ?? []).length > 0}
 				<div
-					class="ml-3 pl-1 mt-[1px] flex flex-col overflow-y-auto scrollbar-hidden border-s border-gray-100 dark:border-gray-900"
+					style="--ml:0.6rem; --pl:0.2rem; --mt:1px; --d:flex; --fd:column; --ofy:auto; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-900)"
+					class="scrollbar-hidden border-s"
 				>
 					{#if folders[folderId]?.childrenIds}
 						{@const children = folders[folderId]?.childrenIds

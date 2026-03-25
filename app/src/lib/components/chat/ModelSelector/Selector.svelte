@@ -10,8 +10,6 @@
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import { flyAndScale } from '$lib/utils/transitions';
 	import { createEventDispatcher, onMount, getContext, tick } from 'svelte';
-	import { goto } from '$app/navigation';
-
 	import { deleteModel, getOllamaVersion, pullModel, unloadModel } from '$lib/apis/ollama';
 
 	import {
@@ -19,20 +17,18 @@
 		MODEL_DOWNLOAD_POOL,
 		models,
 		mobile,
-		temporaryChatEnabled,
 		settings,
 		config
 	} from '$lib/stores';
 	import { toast } from 'svelte-sonner';
 	import { capitalizeFirstLetter, sanitizeResponseContent, splitStream } from '$lib/utils';
 	import { getModels } from '$lib/apis';
+	import { getBranding, type Branding } from '$lib/apis/configs';
 
 	import ChevronDown from '$lib/components/icons/ChevronDown.svelte';
 	import Check from '$lib/components/icons/Check.svelte';
 	import Search from '$lib/components/icons/Search.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import Switch from '$lib/components/common/Switch.svelte';
-	import ChatBubbleOval from '$lib/components/icons/ChatBubbleOval.svelte';
 
 	import ModelItem from './ModelItem.svelte';
 
@@ -43,9 +39,7 @@
 	export let value = '';
 	export let placeholder = 'Select a model';
 	export let searchEnabled = true;
-	export let searchPlaceholder = $i18n.t('Search a model');
-
-	export let showTemporaryChatControl = false;
+	export let searchPlaceholder = $i18n.t('Search for an agent or model');
 
 	export let items: {
 		label: string;
@@ -60,6 +54,8 @@
 
 	export let pinModelHandler: (modelId: string) => void = () => {};
 
+	let branding: Branding | null = null;
+
 	let tagsContainerElement;
 
 	let show = false;
@@ -71,7 +67,12 @@
 	let searchValue = '';
 
 	let selectedTag = '';
-	let selectedConnectionType = '';
+	let selectedConnectionType = $config?.default_model_selector_filter ?? 'agents';
+
+	// If 'agents' is selected but no agents exist, fall back to 'All'
+	$: if (selectedConnectionType === 'agents' && !items.find((item) => item.model?.preset)) {
+		selectedConnectionType = '';
+	}
 
 	let ollamaVersion = null;
 	let selectedModelIdx = 0;
@@ -108,6 +109,8 @@
 					.filter((item) => {
 						if (selectedConnectionType === '') {
 							return true;
+						} else if (selectedConnectionType === 'agents') {
+							return item.model?.preset === true;
 						} else if (selectedConnectionType === 'local') {
 							return item.model?.connection_type === 'local';
 						} else if (selectedConnectionType === 'external') {
@@ -126,6 +129,8 @@
 					.filter((item) => {
 						if (selectedConnectionType === '') {
 							return true;
+						} else if (selectedConnectionType === 'agents') {
+							return item.model?.preset === true;
 						} else if (selectedConnectionType === 'local') {
 							return item.model?.connection_type === 'local';
 						} else if (selectedConnectionType === 'external') {
@@ -291,6 +296,13 @@
 	onMount(async () => {
 		ollamaVersion = await getOllamaVersion(localStorage.token).catch((error) => false);
 
+		// Fetch branding for fallback logo
+		try {
+			branding = await getBranding();
+		} catch (e) {
+			console.error('Failed to load branding:', e);
+		}
+
 		if (items) {
 			tags = items
 				.filter((item) => !(item.model?.info?.meta?.hidden ?? false))
@@ -346,15 +358,16 @@
 	closeFocus={false}
 >
 	<DropdownMenu.Trigger
-		class="relative w-full font-primary {($settings?.highContrastMode ?? false)
+		style="--pos:relative; --w:100%"
+		class="font-primary {($settings?.highContrastMode ?? false)
 			? ''
 			: 'outline-hidden focus:outline-hidden'}"
 		aria-label={placeholder}
 		id="model-selector-{id}-button"
 	>
 		<div
-			class="flex w-full text-left px-0.5 bg-transparent truncate {triggerClassName} justify-between {($settings?.highContrastMode ??
-			false)
+			style="--d:flex; --w:100%; --ta:left; --px:0.125rem; --bgc:transparent; overflow:hidden; text-overflow:ellipsis; --ws:nowrap; --jc:space-between"
+			class="{triggerClassName} {($settings?.highContrastMode ?? false)
 				? 'dark:placeholder-gray-100 placeholder-gray-800'
 				: 'placeholder-gray-400'}"
 			on:mouseenter={async () => {
@@ -376,22 +389,23 @@
 	</DropdownMenu.Trigger>
 
 	<DropdownMenu.Content
-		class=" z-40 {$mobile
-			? `w-full`
-			: `${className}`} max-w-[calc(100vw-1rem)] justify-start rounded-xl  bg-white dark:bg-gray-850 dark:text-white shadow-lg  outline-hidden"
+		style="--z:40; --maxw:calc(100vw-1rem); --jc:flex-start; --radius:0.6rem; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:4; --oe:none"
+		class={$mobile ? `w-full` : `${className}`}
 		transition={flyAndScale}
 		side={$mobile ? 'bottom' : 'bottom-start'}
 		sideOffset={3}
 	>
 		<slot>
 			{#if searchEnabled}
-				<div class="flex items-center gap-2.5 px-5 mt-3.5 mb-1.5">
+				<div
+					style="--d:flex; --ai:center; --g:0.625rem; --px:1.2rem; --mt:0.8rem; --mb:0.4rem"
+				>
 					<Search className="size-4" strokeWidth="2.5" />
 
 					<input
 						id="model-search-input"
 						bind:value={searchValue}
-						class="w-full text-sm bg-transparent outline-hidden"
+						style="--w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 						placeholder={searchPlaceholder}
 						autocomplete="off"
 						on:keydown={(e) => {
@@ -415,10 +429,11 @@
 				</div>
 			{/if}
 
-			<div class="px-3">
+			<div style="--px:0.6rem">
 				{#if tags && items.filter((item) => !(item.model?.info?.meta?.hidden ?? false)).length > 0}
 					<div
-						class=" flex w-full bg-white dark:bg-gray-850 overflow-x-auto scrollbar-none"
+						style="--d:flex; --w:100%; --bgc:#fff; --dark-bgc:var(--color-gray-850); --ofx:auto"
+						class="scrollbar-none"
 						on:wheel={(e) => {
 							if (e.deltaY !== 0) {
 								e.preventDefault();
@@ -427,15 +442,15 @@
 						}}
 					>
 						<div
-							class="flex gap-1 w-fit text-center text-sm font-medium rounded-full bg-transparent px-1.5 pb-0.5"
+							style="--d:flex; --g:0.2rem; --w:fit-content; --ta:center; --size:0.8rem; --weight:500; --radius:9999px; --bgc:transparent; --p:0.2rem;"
 							bind:this={tagsContainerElement}
 						>
 							{#if items.find((item) => item.model?.connection_type === 'local') || items.find((item) => item.model?.connection_type === 'external') || items.find((item) => item.model?.direct) || tags.length > 0}
 								<button
-									class="min-w-fit outline-none p-1.5 {selectedTag === '' &&
-									selectedConnectionType === ''
+									style="--minw:fit-content; --oe:2px solid transparent; --p:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize; {selectedTag === '' && selectedConnectionType === '' ? '--weight:bold;' : ''}"
+									class={selectedTag === '' && selectedConnectionType === ''
 										? ''
-										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition capitalize"
+										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}
 									on:click={() => {
 										selectedConnectionType = '';
 										selectedTag = '';
@@ -445,11 +460,27 @@
 								</button>
 							{/if}
 
+							{#if items.find((item) => item.model?.preset)}
+								<button
+									style="--minw:fit-content; --oe:2px solid transparent; --p:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize; {selectedConnectionType === 'agents' ? '--weight:bold;' : ''}"
+									class={selectedConnectionType === 'agents'
+										? ''
+										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}
+									on:click={() => {
+										selectedTag = '';
+										selectedConnectionType = 'agents';
+									}}
+								>
+									{$i18n.t('Agents')}
+								</button>
+							{/if}
+
 							{#if items.find((item) => item.model?.connection_type === 'local')}
 								<button
-									class="min-w-fit outline-none p-1.5 {selectedConnectionType === 'local'
+									style="--minw:fit-content; --oe:2px solid transparent; --p:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize; {selectedConnectionType === 'local' ? '--weight:bold;' : ''}"
+									class={selectedConnectionType === 'local'
 										? ''
-										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition capitalize"
+										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}
 									on:click={() => {
 										selectedTag = '';
 										selectedConnectionType = 'local';
@@ -461,9 +492,10 @@
 
 							{#if items.find((item) => item.model?.connection_type === 'external')}
 								<button
-									class="min-w-fit outline-none p-1.5 {selectedConnectionType === 'external'
+									style="--minw:fit-content; --oe:2px solid transparent; --p:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize; {selectedConnectionType === 'external' ? '--weight:bold;' : ''}"
+									class={selectedConnectionType === 'external'
 										? ''
-										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition capitalize"
+										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}
 									on:click={() => {
 										selectedTag = '';
 										selectedConnectionType = 'external';
@@ -475,9 +507,10 @@
 
 							{#if items.find((item) => item.model?.direct)}
 								<button
-									class="min-w-fit outline-none p-1.5 {selectedConnectionType === 'direct'
+									style="--minw:fit-content; --oe:2px solid transparent; --p:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize; {selectedConnectionType === 'direct' ? '--weight:bold;' : ''}"
+									class={selectedConnectionType === 'direct'
 										? ''
-										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition capitalize"
+										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}
 									on:click={() => {
 										selectedTag = '';
 										selectedConnectionType = 'direct';
@@ -489,9 +522,10 @@
 
 							{#each tags as tag}
 								<button
-									class="min-w-fit outline-none p-1.5 {selectedTag === tag
+									style="--minw:fit-content; --oe:2px solid transparent; --p:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tt:capitalize; {selectedTag === tag ? '--weight:bold;' : ''}"
+									class={selectedTag === tag
 										? ''
-										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition capitalize"
+										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}
 									on:click={() => {
 										selectedConnectionType = '';
 										selectedTag = tag;
@@ -505,7 +539,7 @@
 				{/if}
 			</div>
 
-			<div class="px-3 max-h-64 overflow-y-auto group relative">
+			<div style="--pos:relative; --ofy:auto; --maxh:16rem; --p:0 1em">
 				{#each filteredItems as item, index}
 					<ModelItem
 						{selectedModelIdx}
@@ -514,6 +548,7 @@
 						{value}
 						{pinModelHandler}
 						{unloadModelHandler}
+						{branding}
 						onClick={() => {
 							value = item.value;
 							selectedModelIdx = index;
@@ -523,7 +558,9 @@
 					/>
 				{:else}
 					<div class="">
-						<div class="block px-3 py-2 text-sm text-gray-700 dark:text-gray-100">
+						<div
+							style="--d:block; --px:0.6rem; --py:0.5rem; --size:0.8rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-100)"
+						>
 							{$i18n.t('No results found')}
 						</div>
 					</div>
@@ -537,12 +574,13 @@
 						placement="top-start"
 					>
 						<button
-							class="flex w-full font-medium line-clamp-1 select-none items-center rounded-button py-2 pl-3 pr-1.5 text-sm text-gray-700 dark:text-gray-100 outline-hidden transition-all duration-75 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg cursor-pointer data-highlighted:bg-muted"
+							style="--d:flex; --w:100%; --weight:500; --line-clamp:1; --us:none; --ai:center; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --pl:0.6rem; --pr:0.4rem; --size:0.8rem; --bg:var(--white); --br: 1rem; --shadow:6; --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-800); --radius:0.5rem; --cur:pointer"
+							class="data-highlighted:bg-muted"
 							on:click={() => {
 								pullModelHandler();
 							}}
 						>
-							<div class=" truncate">
+							<div style="overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
 								{$i18n.t(`Pull "{{searchValue}}" from Ollama.com`, { searchValue: searchValue })}
 							</div>
 						</button>
@@ -551,20 +589,21 @@
 
 				{#each Object.keys($MODEL_DOWNLOAD_POOL) as model}
 					<div
-						class="flex w-full justify-between font-medium select-none rounded-button py-2 pl-3 pr-1.5 text-sm text-gray-700 dark:text-gray-100 outline-hidden transition-all duration-75 rounded-lg cursor-pointer data-highlighted:bg-muted"
+						style="--d:flex; --w:100%; --jc:space-between; --weight:500; --us:none; --radius:var(--button-border-radius, 0.5rem); --py:0.5rem; --pl:0.6rem; --pr:0.4rem; --size:0.8rem; --bg:var(--white); --br: 1rem; --shadow:6; --oe:none; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:75ms; --radius:0.5rem; --cur:pointer"
+						class="data-highlighted:bg-muted"
 					>
-						<div class="flex">
-							<div class="-ml-2 mr-2.5 translate-y-0.5">
+						<div style="--d:flex">
+							<div style="--ml:-0.5rem; --mr:0.625rem; --translatey:0.125rem">
 								<Spinner />
 							</div>
 
-							<div class="flex flex-col self-start">
-								<div class="flex gap-1">
-									<div class="line-clamp-1">
+							<div style="--d:flex; --fd:column; --as:flex-start">
+								<div style="--d:flex; --g:0.2rem">
+									<div style="--line-clamp:1">
 										Downloading "{model}"
 									</div>
 
-									<div class="shrink-0">
+									<div style="--fs:0">
 										{'pullProgress' in $MODEL_DOWNLOAD_POOL[model]
 											? `(${$MODEL_DOWNLOAD_POOL[model].pullProgress}%)`
 											: ''}
@@ -572,23 +611,25 @@
 								</div>
 
 								{#if 'digest' in $MODEL_DOWNLOAD_POOL[model] && $MODEL_DOWNLOAD_POOL[model].digest}
-									<div class="-mt-1 h-fit text-[0.7rem] dark:text-gray-500 line-clamp-1">
+									<div
+										style="--mt:-0.2rem; --h:fit-content; --size:0.7rem; --dark-c:var(--color-gray-500); --line-clamp:1"
+									>
 										{$MODEL_DOWNLOAD_POOL[model].digest}
 									</div>
 								{/if}
 							</div>
 						</div>
 
-						<div class="mr-2 ml-1 translate-y-0.5">
+						<div style="--mr:0.5rem; --ml:0.2rem; --translatey:0.125rem">
 							<Tooltip content={$i18n.t('Cancel')}>
 								<button
-									class="text-gray-800 dark:text-gray-100"
+									style="--c:var(--color-gray-800); --dark-c:var(--color-gray-100)"
 									on:click={() => {
 										cancelModelPullHandler(model);
 									}}
 								>
 									<svg
-										class="w-4 h-4 text-gray-800 dark:text-white"
+										style="--w:1rem; --h:1rem; --c:var(--color-gray-800); --dark-c:#fff"
 										aria-hidden="true"
 										xmlns="http://www.w3.org/2000/svg"
 										width="24"
@@ -611,45 +652,10 @@
 				{/each}
 			</div>
 
-			{#if showTemporaryChatControl}
-				<div class="flex items-center mx-2 mt-1 mb-2">
-					<button
-						class="flex justify-between w-full font-medium line-clamp-1 select-none items-center rounded-button py-2 px-3 text-sm text-gray-700 dark:text-gray-100 outline-hidden transition-all duration-75 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg cursor-pointer data-highlighted:bg-muted"
-						on:click={async () => {
-							temporaryChatEnabled.set(!$temporaryChatEnabled);
-							await goto('/');
-							const newChatButton = document.getElementById('new-chat-button');
-							setTimeout(() => {
-								newChatButton?.click();
-							}, 0);
+			<div style="--mb:0.6rem"></div>
 
-							// add 'temporary-chat=true' to the URL
-							if ($temporaryChatEnabled) {
-								history.replaceState(null, '', '?temporary-chat=true');
-							} else {
-								history.replaceState(null, '', location.pathname);
-							}
-
-							show = false;
-						}}
-					>
-						<div class="flex gap-2.5 items-center">
-							<ChatBubbleOval className="size-4" strokeWidth="2.5" />
-
-							{$i18n.t(`Temporary Chat`)}
-						</div>
-
-						<div>
-							<Switch state={$temporaryChatEnabled} />
-						</div>
-					</button>
-				</div>
-			{:else}
-				<div class="mb-3"></div>
-			{/if}
-
-			<div class="hidden w-[42rem]" />
-			<div class="hidden w-[32rem]" />
+			<div style="--d:none; --w:42rem" />
+			<div style="--d:none; --w:32rem" />
 		</slot>
 	</DropdownMenu.Content>
 </DropdownMenu.Root>

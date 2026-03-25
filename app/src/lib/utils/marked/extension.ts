@@ -77,7 +77,7 @@ function detailsRenderer(token: any) {
 }
 
 // Extension wrapper function
-function detailsExtension() {
+function detailsExtension(options = {}) {
 	return {
 		name: 'details',
 		level: 'block',

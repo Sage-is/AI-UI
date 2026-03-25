@@ -104,3 +104,46 @@ export const setBanners = async (token: string, banners: Banner[]) =>
 	api(`${WEBUI_API_BASE_URL}/configs/banners`, token, 'POST', {
 		banners: banners
 	}, 'setBanners');
+
+export interface Branding {
+	logo_url?: string;
+	logo_dark_url?: string;
+	favicon_url?: string;
+	title?: string;
+	subtitle?: string;
+	primary_color?: string;
+	accent_color?: string;
+}
+
+export const getBranding = async (): Promise<Branding> => {
+	// Public endpoint - no auth required
+	try {
+		const res = await fetch(`${WEBUI_API_BASE_URL}/configs/branding`, {
+			method: 'GET',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
+		
+		if (!res.ok) {
+			throw new Error(`Failed to get branding: ${res.status}`);
+		}
+		
+		return await res.json();
+	} catch (err: any) {
+		console.error('Error getting branding:', err);
+		throw err;
+	}
+};
+
+export const setBranding = async (token: string, branding: Branding) =>
+	api(`${WEBUI_API_BASE_URL}/configs/branding`, token, 'POST', branding, 'setBranding');
+
+export const getUIConfig = async (token: string) =>
+	api(`${WEBUI_API_BASE_URL}/configs/ui`, token, 'GET', null, 'getUIConfig');
+
+export const setUIConfig = async (token: string, config: object) =>
+	api(`${WEBUI_API_BASE_URL}/configs/ui`, token, 'POST', {
+		...config
+	}, 'setUIConfig');

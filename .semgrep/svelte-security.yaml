@@ -1,0 +1,38 @@
+# =============================================================================
+# Semgrep Rules — Svelte Security
+# =============================================================================
+# Offline SAST rules for Svelte template files.
+# Uses "generic" language mode since semgrep has no native Svelte parser —
+# it pattern-matches the template syntax directly.
+#
+# Coverage: {@html} injection (Svelte's equivalent of innerHTML/dangerouslySetInnerHTML).
+#
+# Usage:
+#   make scan_sast   (runs these as part of the full scan)
+#   semgrep scan --config .semgrep/ --include="*.svelte" app/src/
+# =============================================================================
+
+rules:
+  # -------------------------------------------------------------------------
+  # Unescaped HTML Rendering ({@html})
+  # -------------------------------------------------------------------------
+  # Svelte's {@html} directive renders raw HTML without escaping.
+  # This is Svelte's equivalent of React's dangerouslySetInnerHTML.
+  # If the value comes from user input, it's an XSS vector.
+  #
+  # Safe: {@html sanitizedHtml}  (after DOMPurify.sanitize())
+  # Unsafe: {@html userInput}    (direct from user/API)
+  #
+  # Note: This project uses DOMPurify (in package.json). Verify that every
+  # {@html} usage passes through DOMPurify.sanitize() first.
+  - id: svelte-html-injection
+    pattern: "{@html $VALUE}"
+    message: >
+      Unescaped HTML rendering via {@html}. Ensure $VALUE is sanitized
+      with DOMPurify.sanitize() before rendering. See:
+      https://svelte.dev/docs#template-syntax-html
+    languages: [generic]
+    severity: WARNING
+    paths:
+      include:
+        - "*.svelte"

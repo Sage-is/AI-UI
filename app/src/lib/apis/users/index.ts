@@ -53,6 +53,22 @@ export const getUsers = async (
 export const getAllUsers = async (token: string) =>
 	api(`${WEBUI_API_BASE_URL}/users/all`, token, 'GET', null, 'getAllUsers');
 
+export const getManagedUsers = async (
+	token: string,
+	query?: string,
+	orderBy?: string,
+	direction?: string,
+	page = 1
+) => {
+	const searchParams = new URLSearchParams();
+	searchParams.set('page', `${page}`);
+	if (query) searchParams.set('query', query);
+	if (orderBy) searchParams.set('order_by', orderBy);
+	if (direction) searchParams.set('direction', direction);
+
+	return api(`${WEBUI_API_BASE_URL}/users/managed?${searchParams.toString()}`, token, 'GET', null, 'getManagedUsers');
+};
+
 export const getUserSettings = async (token: string) =>
 	api(`${WEBUI_API_BASE_URL}/users/user/settings`, token, 'GET', null, 'getUserSettings');
 

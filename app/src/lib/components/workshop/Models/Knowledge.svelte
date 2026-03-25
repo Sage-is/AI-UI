@@ -167,22 +167,22 @@
 
 <div>
 	<slot name="label">
-		<div class="mb-2">
-			<div class="flex w-full justify-between mb-1">
-				<div class=" self-center text-sm font-semibold">
+		<div style="--mb:0.5rem">
+			<div style="--d:flex; --w:100%; --jc:space-between; --mb:0.2rem">
+				<div style="--as:center; --size:0.8rem; --weight:600">
 					{$i18n.t('Knowledge')}
 				</div>
 			</div>
 
-			<div class=" text-xs dark:text-gray-500">
+			<div style="--size:0.6rem; --dark-c:var(--color-gray-500)">
 				{$i18n.t('To attach knowledge base here, add them to the "Knowledge" workshop first.')}
 			</div>
 		</div>
 	</slot>
 
-	<div class="flex flex-col">
+	<div style="--d:flex; --fd:column">
 		{#if selectedItems?.length > 0}
-			<div class=" flex flex-wrap items-center gap-2 mb-2.5">
+			<div style="--d:flex; --fw:wrap; --ai:center; --g:0.5rem; --mb:0.625rem">
 				{#each selectedItems as file, fileIdx}
 					<FileItem
 						{file}
@@ -203,7 +203,7 @@
 		{/if}
 
 		{#if loaded}
-			<div class="flex flex-wrap flex-row text-sm gap-1">
+			<div style="--d:flex; --fw:wrap; --fd:row; --size:0.8rem; --g:0.2rem">
 				<Selector
 					knowledgeItems={$knowledge || []}
 					on:select={(e) => {
@@ -220,7 +220,7 @@
 					}}
 				>
 					<div
-						class=" px-3.5 py-1.5 font-medium hover:bg-black/5 dark:hover:bg-white/5 outline outline-1 outline-gray-100 dark:outline-gray-850 rounded-3xl"
+						style="--px:0.8rem; --py:0.4rem; --weight:500; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:var(--color-gray-100); outline-color:var(--color-gray-850); --radius:1.5rem"
 					>
 						{$i18n.t('Select Knowledge')}
 					</div>
@@ -228,7 +228,7 @@
 
 				{#if $user?.role === 'admin' || $user?.permissions?.chat?.file_upload}
 					<button
-						class=" px-3.5 py-1.5 font-medium hover:bg-black/5 dark:hover:bg-white/5 outline outline-1 outline-gray-100 dark:outline-gray-850 rounded-3xl"
+						style="--px:0.8rem; --py:0.4rem; --weight:500; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:var(--color-gray-100); outline-color:var(--color-gray-850); --radius:1.5rem"
 						type="button"
 						on:click={() => {
 							filesInputElement.click();

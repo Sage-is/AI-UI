@@ -18,3 +18,12 @@ export const updateGroupById = async (token: string, id: string, group: object) 
 
 export const deleteGroupById = async (token: string, id: string) =>
 	api(`/groups/id/${id}/delete`, 'DELETE', undefined, token, `deleteGroupById(${id})`);
+
+export const addFacilitatorToGroup = async (token: string, id: string, userIds: string[]) =>
+	api(`/groups/id/${id}/facilitators/add`, 'POST', { user_ids: userIds }, token, `addFacilitatorToGroup(${id})`);
+
+export const removeFacilitatorFromGroup = async (token: string, id: string, userIds: string[]) =>
+	api(`/groups/id/${id}/facilitators/remove`, 'POST', { user_ids: userIds }, token, `removeFacilitatorFromGroup(${id})`);
+
+export const getGroupFacilitators = async (token: string, id: string) =>
+	api(`/groups/id/${id}/facilitators`, 'GET', undefined, token, `getGroupFacilitators(${id})`);

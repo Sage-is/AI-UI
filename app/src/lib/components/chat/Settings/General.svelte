@@ -13,7 +13,7 @@
 	export let saveSettings: Function;
 	export let getModels: Function;
 
-	// General
+	// Theme options: system (auto), dark, light, oled-dark (true black for AMOLED)
 	let themes = ['dark', 'light', 'oled-dark'];
 	let selectedTheme = 'system';
 
@@ -116,68 +116,53 @@
 		params.stop = $settings?.params?.stop ? ($settings?.params?.stop ?? []).join(',') : null;
 	});
 
+	/**
+	 * Apply theme to the document.
+	 * Sets both .dark/.light class (Tailwind) and data-theme attribute (Startr.Style).
+	 * Startr.Style's [data-theme="dark"] flips semantic colors (--primary, --background,
+	 * --text-main, etc.) automatically via color-mix() — no manual overrides needed.
+	 */
 	const applyTheme = (_theme: string) => {
-		let themeToApply = _theme === 'oled-dark' ? 'dark' : _theme;
+		const root = document.documentElement;
 
+		// Resolve the effective mode: always 'dark' or 'light'
+		let mode: 'dark' | 'light' = 'dark';
 		if (_theme === 'system') {
-			themeToApply = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+			mode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+		} else if (_theme === 'light') {
+			mode = 'light';
 		}
 
-		if (themeToApply === 'dark' && !_theme.includes('oled')) {
-			document.documentElement.style.setProperty('--color-gray-800', '#333');
-			document.documentElement.style.setProperty('--color-gray-850', '#262626');
-			document.documentElement.style.setProperty('--color-gray-900', '#171717');
-			document.documentElement.style.setProperty('--color-gray-950', '#0d0d0d');
+		// Clear previous theme classes, then apply current
+		themes.forEach((t) => root.classList.remove(t));
+		root.classList.remove('dark', 'light');
+		root.classList.add(mode);
+
+		// Startr.Style uses [data-theme="dark"] to flip semantic color variables
+		root.setAttribute('data-theme', mode);
+
+		// Reset any OLED gray overrides when switching away from OLED
+		if (_theme !== 'oled-dark') {
+			root.style.removeProperty('--color-gray-800');
+			root.style.removeProperty('--color-gray-850');
+			root.style.removeProperty('--color-gray-900');
+			root.style.removeProperty('--color-gray-950');
 		}
 
-		themes
-			.filter((e) => e !== themeToApply)
-			.forEach((e) => {
-				e.split(' ').forEach((e) => {
-					document.documentElement.classList.remove(e);
-				});
-			});
+		// OLED dark: push grays to true black for AMOLED screens
+		if (_theme === 'oled-dark') {
+			root.style.setProperty('--color-gray-800', '#101010');
+			root.style.setProperty('--color-gray-850', '#050505');
+			root.style.setProperty('--color-gray-900', '#000000');
+			root.style.setProperty('--color-gray-950', '#000000');
+		}
 
-		themeToApply.split(' ').forEach((e) => {
-			document.documentElement.classList.add(e);
-		});
-
+		// Update browser chrome color
 		const metaThemeColor = document.querySelector('meta[name="theme-color"]');
 		if (metaThemeColor) {
-			if (_theme.includes('system')) {
-				const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
-					? 'dark'
-					: 'light';
-				console.log('Setting system meta theme color: ' + systemTheme);
-				metaThemeColor.setAttribute('content', systemTheme === 'light' ? '#ffffff' : '#171717');
-			} else {
-				console.log('Setting meta theme color: ' + _theme);
-				metaThemeColor.setAttribute(
-					'content',
-					_theme === 'dark'
-						? '#171717'
-						: _theme === 'oled-dark'
-							? '#000000'
-							: _theme === 'her'
-								? '#ffffff'
-								: '#ffffff'
-				);
-			}
+			const colors = { dark: '#171717', light: '#ffffff', 'oled-dark': '#000000' };
+			metaThemeColor.setAttribute('content', colors[_theme] ?? colors[mode]);
 		}
-
-		if (typeof window !== 'undefined' && window.applyTheme) {
-			window.applyTheme();
-		}
-
-		if (_theme.includes('oled')) {
-			document.documentElement.style.setProperty('--color-gray-800', '#101010');
-			document.documentElement.style.setProperty('--color-gray-850', '#050505');
-			document.documentElement.style.setProperty('--color-gray-900', '#000000');
-			document.documentElement.style.setProperty('--color-gray-950', '#000000');
-			document.documentElement.classList.add('dark');
-		}
-
-		console.log(_theme);
 	};
 
 	const themeChangeHandler = (_theme: string) => {
@@ -187,16 +172,17 @@
 	};
 </script>
 
-<div class="flex flex-col h-full justify-between text-sm" id="tab-general">
-	<div class="  overflow-y-scroll max-h-[28rem] lg:max-h-full">
+<div style="--d:flex; --fd:column; --h:100%; --jc:space-between; --size:0.8rem" id="tab-general">
+	<div style="--ofy:scroll; --maxh:28rem; --maxh-lg:100%">
 		<div class="">
-			<div class=" mb-1 text-sm font-medium">{$i18n.t('WebUI Settings')}</div>
+			<div style="--mb:0.2rem; --size:0.8rem; --weight:500">{$i18n.t('WebUI Settings')}</div>
 
-			<div class="flex w-full justify-between">
-				<div class=" self-center text-xs font-medium">{$i18n.t('Theme')}</div>
-				<div class="flex items-center relative">
+			<div style="--d:flex; --w:100%; --jc:space-between">
+				<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Theme')}</div>
+				<div style="--d:flex; --ai:center; --pos:relative">
 					<select
-						class="dark:bg-gray-900 w-fit pr-8 rounded-sm py-2 px-2 text-xs bg-transparent text-right {$settings.highContrastMode
+						style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --py:0.5rem; --px:0.5rem; --size:0.6rem; --bgc:transparent; --ta:right"
+	class="{$settings.highContrastMode
 							? ''
 							: 'outline-hidden'}"
 						bind:value={selectedTheme}
@@ -207,17 +193,16 @@
 						<option value="dark">🌑 {$i18n.t('Dark')}</option>
 						<option value="oled-dark">🌃 {$i18n.t('OLED Dark')}</option>
 						<option value="light">☀️ {$i18n.t('Light')}</option>
-						<!-- <option value="rose-pine dark">🪻 {$i18n.t('Rosé Pine')}</option>
-						<option value="rose-pine-dawn light">🌷 {$i18n.t('Rosé Pine Dawn')}</option> -->
 					</select>
 				</div>
 			</div>
 
-			<div class=" flex w-full justify-between">
-				<div class=" self-center text-xs font-medium">{$i18n.t('Language')}</div>
-				<div class="flex items-center relative">
+			<div style="--d:flex; --w:100%; --jc:space-between">
+				<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Language')}</div>
+				<div style="--d:flex; --ai:center; --pos:relative">
 					<select
-						class="dark:bg-gray-900 w-fit pr-8 rounded-sm py-2 px-2 text-xs bg-transparent text-right {$settings.highContrastMode
+						style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --py:0.5rem; --px:0.5rem; --size:0.6rem; --bgc:transparent; --ta:right"
+	class="{$settings.highContrastMode
 							? ''
 							: 'outline-hidden'}"
 						bind:value={lang}
@@ -233,10 +218,10 @@
 				</div>
 			</div>
 			{#if $i18n.language === 'en-US'}
-				<div class="mb-2 text-xs text-gray-400 dark:text-gray-500">
+				<div style="--mb:0.5rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 					Couldn't find your language?
 					<a
-						class=" text-gray-300 font-medium underline"
+						style="--c:var(--color-gray-300); --weight:500; --td:underline"
 						href="https://github.com/Sage-is/AI-UI/blob/main/docs/CONTRIBUTING.md#-translations-and-internationalization"
 						target="_blank"
 					>
@@ -246,20 +231,20 @@
 			{/if}
 
 			<div>
-				<div class=" py-0.5 flex w-full justify-between">
-					<div class=" self-center text-xs font-medium">{$i18n.t('Notifications')}</div>
+				<div style="--py:0.125rem; --d:flex; --w:100%; --jc:space-between">
+					<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Notifications')}</div>
 
 					<button
-						class="p-1 px-3 text-xs flex rounded-sm transition"
+						style="--p:0.2rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={() => {
 							toggleNotification();
 						}}
 						type="button"
 					>
 						{#if notificationEnabled === true}
-							<span class="ml-2 self-center">{$i18n.t('On')}</span>
+							<span style="--ml:0.5rem; --as:center">{$i18n.t('On')}</span>
 						{:else}
-							<span class="ml-2 self-center">{$i18n.t('Off')}</span>
+							<span style="--ml:0.5rem; --as:center">{$i18n.t('Off')}</span>
 						{/if}
 					</button>
 				</div>
@@ -267,10 +252,10 @@
 		</div>
 
 		{#if $user?.role === 'admin' || ($user?.permissions.chat?.system_prompt ?? true)}
-			<hr class="border-gray-50 dark:border-gray-850 my-3" />
+			<hr style="--bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --my:0.6rem" />
 
 			<div>
-				<div class=" my-2.5 text-sm font-medium">{$i18n.t('System Prompt')}</div>
+				<div style="--my:0.6rem; --size:0.8rem; --weight:500">{$i18n.t('System Prompt')}</div>
 				<Textarea
 					bind:value={system}
 					className={'w-full text-sm outline-hidden resize-vertical' +
@@ -284,11 +269,11 @@
 		{/if}
 
 		{#if $user?.role === 'admin' || ($user?.permissions.chat?.controls ?? true)}
-			<div class="mt-2 space-y-3 pr-1.5">
-				<div class="flex justify-between items-center text-sm">
-					<div class="  font-medium">{$i18n.t('Advanced Parameters')}</div>
+			<div style="--mt:0.5rem; --g:0.6rem; --pr:0.4rem">
+				<div style="--d:flex; --jc:space-between; --ai:center; --size:0.8rem">
+					<div style="--weight:500">{$i18n.t('Advanced Parameters')}</div>
 					<button
-						class=" text-xs font-medium text-gray-500"
+						style="--size:0.6rem; --weight:500; --c:var(--color-gray-500)"
 						type="button"
 						on:click={() => {
 							showAdvanced = !showAdvanced;
@@ -303,9 +288,9 @@
 		{/if}
 	</div>
 
-	<div class="flex justify-end pt-3 text-sm font-medium">
+	<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.8rem; --weight:500">
 		<button
-			class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+			style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			on:click={() => {
 				saveHandler();
 			}}

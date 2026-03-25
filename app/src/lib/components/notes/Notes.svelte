@@ -241,7 +241,7 @@
 
 <FilesOverlay show={dragged} />
 
-<div id="notes-container" class="w-full min-h-full h-full">
+<div id="notes-container" style="--w:100%; --minh:100%; --h:100%">
 	{#if loaded}
 		<DeleteConfirmDialog
 			bind:show={showDeleteConfirm}
@@ -251,27 +251,37 @@
 				showDeleteConfirm = false;
 			}}
 		>
-			<div class=" text-sm text-gray-500">
-				{$i18n.t('This will delete')} <span class="  font-semibold">{selectedNote.title}</span>.
+			<div style="--size:0.8rem; --c:var(--color-gray-500)">
+				{$i18n.t('This will delete')} <span style="--weight:600">{selectedNote.title}</span>.
 			</div>
 		</DeleteConfirmDialog>
 
-		<div class="flex flex-col gap-1 px-3.5">
-			<div class=" flex flex-1 items-center w-full space-x-2">
-				<div class="flex flex-1 items-center">
-					<div class=" self-center ml-1 mr-3">
+		<div style="--d:flex; --fd:column; --g:0.2rem; --px:0.8rem">
+			<div style="--d:flex; --ai:center; --w:100%; --g:0.5rem">
+				<div>
+					<a
+						style="--px:0.5rem; --py:0.5rem; --radius:0.6rem; --hvr-bgc:rgb(78 78 78 / 0.1); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.8rem; --d:flex; --ai:center; --g:0.2rem"
+						aria-label={$i18n.t('Create Note')}
+						href={'#'}
+						on:click|preventDefault={createNoteHandler}
+					>
+						<Plus className="size-3.5" />
+					</a>
+				</div>
+				<div style="--d:flex; --fx:1 1 0%; --ai:center">
+					<div style="--as:center; --ml:0.2rem; --mr:0.6rem">
 						<Search className="size-3.5" />
 					</div>
 					<input
-						class=" w-full text-sm py-1 rounded-r-xl outline-hidden bg-transparent"
+						style="--w:100%; --size:0.8rem; --py:0.2rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 						bind:value={query}
 						placeholder={$i18n.t('Search Notes')}
 					/>
 
 					{#if query}
-						<div class="self-center pl-1.5 translate-y-[0.5px] rounded-l-xl bg-transparent">
+						<div style="--as:center; --pl:0.4rem; --translatey:0.5px; --btlr:0.6rem; --bblr:0.6rem; --bgc:transparent">
 							<button
-								class="p-0.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-900 transition"
+								style="--p:0.125rem; --radius:9999px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								on:click={() => {
 									query = '';
 								}}
@@ -284,29 +294,30 @@
 			</div>
 		</div>
 
-		<div class="px-4.5 @container h-full pt-2">
+		<div style="--px:1.125rem; --h:100%; --pt:0.5rem"
+	class="@container">
 			{#if Object.keys(notes).length > 0}
-				<div class="pb-10">
+				<div style="--pb:2.5rem">
 					{#each Object.keys(notes) as timeRange}
-						<div class="w-full text-xs text-gray-500 dark:text-gray-500 font-medium pb-2.5">
+						<div style="--w:100%; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --weight:500; --pb:0.625rem">
 							{$i18n.t(timeRange)}
 						</div>
 
 						<div
-							class="mb-5 gap-2.5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"
+							style="--mb:1.2rem; --g:0.625rem; --d:grid; --gtc:repeat(1, minmax(0, 1fr)); --gtc-md:repeat(2, minmax(0, 1fr)); --gtc-lg:repeat(3, minmax(0, 1fr)); --gtc-xl:repeat(4, minmax(0, 1fr)); --gtc-xl:repeat(5, minmax(0, 1fr))"
 						>
 							{#each notes[timeRange] as note, idx (note.id)}
 								<div
-									class=" flex space-x-4 cursor-pointer w-full px-4.5 py-4 bg-gray-50 dark:bg-gray-850 dark:hover:bg-white/5 hover:bg-black/5 rounded-xl transition"
+									style="--d:flex; --g:1rem; --cur:pointer; --w:100%; --px:1.125rem; --py:1rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-bgc:rgb(0 0 0 / 0.05); --radius:0.6rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								>
-									<div class=" flex flex-1 space-x-4 cursor-pointer w-full">
+									<div style="--d:flex; --fx:1 1 0%; --g:1rem; --cur:pointer; --w:100%">
 										<a
 											href={`/notes/${note.id}`}
-											class="w-full -translate-y-0.5 flex flex-col justify-between"
+											style="--w:100%; --translatey:-0.125rem; --d:flex; --fd:column; --jc:space-between"
 										>
-											<div class="flex-1">
-												<div class="  flex items-center gap-2 self-center mb-1 justify-between">
-													<div class=" font-semibold line-clamp-1 capitalize">{note.title}</div>
+											<div style="--fx:1 1 0%">
+												<div style="--d:flex; --ai:center; --g:0.5rem; --as:center; --mb:0.2rem; --jc:space-between">
+													<div style="--weight:600; --line-clamp:1; --tt:capitalize">{note.title}</div>
 
 													<div>
 														<NoteMenu
@@ -331,7 +342,7 @@
 															}}
 														>
 															<button
-																class="self-center w-fit text-sm p-1 dark:text-gray-300 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
+																style="--as:center; --w:fit-content; --size:0.8rem; --p:0.2rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 																type="button"
 															>
 																<EllipsisHorizontal className="size-5" />
@@ -341,7 +352,7 @@
 												</div>
 
 												<div
-													class=" text-xs text-gray-500 dark:text-gray-500 mb-3 line-clamp-3 min-h-10"
+													style="--size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --mb:0.6rem; --line-clamp:3; --minh:2.5rem"
 												>
 													{#if note.data?.content?.md}
 														{note.data?.content?.md}
@@ -351,7 +362,7 @@
 												</div>
 											</div>
 
-											<div class=" text-xs px-0.5 w-full flex justify-between items-center">
+											<div style="--size:0.6rem; --px:0.125rem; --w:100%; --d:flex; --jc:space-between; --ai:center">
 												<div>
 													{dayjs(note.updated_at / 1000000).fromNow()}
 												</div>
@@ -360,7 +371,7 @@
 													className="flex shrink-0"
 													placement="top-start"
 												>
-													<div class="shrink-0 text-gray-500">
+													<div style="--fs:0; --c:var(--color-gray-500)">
 														{$i18n.t('By {{name}}', {
 															name: capitalizeFirstLetter(
 																note?.user?.name ?? note?.user?.email ?? $i18n.t('Deleted User')
@@ -377,13 +388,13 @@
 					{/each}
 				</div>
 			{:else}
-				<div class="w-full h-full flex flex-col items-center justify-center">
-					<div class="pb-20 text-center">
-						<div class=" text-xl font-medium text-gray-400 dark:text-gray-600">
+				<div style="--w:100%; --h:100%; --d:flex; --fd:column; --ai:center; --jc:center">
+					<div style="--pb:5rem; --ta:center">
+						<div style="--size:1.2rem; --weight:500; --c:var(--color-gray-400); --dark-c:var(--color-gray-600)">
 							{$i18n.t('No Notes')}
 						</div>
 
-						<div class="mt-1 text-sm text-gray-300 dark:text-gray-700">
+						<div style="--mt:0.2rem; --size:0.8rem; --c:var(--color-gray-300); --dark-c:var(--color-gray-700)">
 							{$i18n.t('Create your first note by clicking on the plus button below.')}
 						</div>
 					</div>
@@ -391,31 +402,10 @@
 			{/if}
 		</div>
 
-		<div class="absolute bottom-0 left-0 right-0 p-5 max-w-full flex justify-end">
-			<div class="flex gap-0.5 justify-end w-full">
-				<Tooltip content={$i18n.t('Create Note')}>
-					<button
-						class="cursor-pointer p-2.5 flex rounded-full border border-gray-50 bg-white dark:border-none dark:bg-gray-850 hover:bg-gray-50 dark:hover:bg-gray-800 transition shadow-xl"
-						type="button"
-						on:click={async () => {
-							createNoteHandler();
-						}}
-					>
-						<Plus className="size-4.5" strokeWidth="2.5" />
-					</button>
-				</Tooltip>
-
-				<!-- <button
-				class="cursor-pointer p-2.5 flex rounded-full hover:bg-gray-100 dark:hover:bg-gray-850 transition shadow-xl"
-			>
-				<SparklesSolid className="size-4" />
-			</button> -->
-			</div>
-		</div>
 
 		<!-- {#if $user?.role === 'admin'}
-		<div class=" flex justify-end w-full mb-3">
-			<div class="flex space-x-2">
+		<div style="--d:flex; --jc:flex-end; --w:100%; --mb:0.6rem">
+			<div style="--d:flex; --g:0.5rem">
 				<input
 					id="notes-import-input"
 					bind:files={importFiles}
@@ -435,7 +425,7 @@
 				/>
 
 				<button
-					class="flex text-xs items-center space-x-1 px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200 transition"
+					style="--d:flex; --size:0.6rem; --ai:center; --g:0.2rem; --px:0.6rem; --py:0.4rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						const notesImportInputElement = document.getElementById('notes-import-input');
 						if (notesImportInputElement) {
@@ -443,14 +433,14 @@
 						}
 					}}
 				>
-					<div class=" self-center mr-2 font-medium line-clamp-1">{$i18n.t('Import Notes')}</div>
+					<div style="--as:center; --mr:0.5rem; --weight:500; --line-clamp:1">{$i18n.t('Import Notes')}</div>
 
-					<div class=" self-center">
+					<div style="--as:center">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 16 16"
 							fill="currentColor"
-							class="w-4 h-4"
+							style="--w:1rem; --h:1rem"
 						>
 							<path
 								fill-rule="evenodd"
@@ -464,7 +454,7 @@
 		</div>
 	{/if} -->
 	{:else}
-		<div class="w-full h-full flex justify-center items-center">
+		<div style="--w:100%; --h:100%; --d:flex; --jc:center; --ai:center">
 			<Spinner className="size-5" />
 		</div>
 	{/if}

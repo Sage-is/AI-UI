@@ -130,8 +130,9 @@
 
 <Modal size="sm" bind:show>
 	<div>
-		<div class=" flex justify-between dark:text-gray-100 px-5 pt-4 pb-2">
-			<div class=" text-lg font-medium self-center font-primary">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-100); --px:1.2rem; --pt:1rem; --pb:0.5rem">
+			<div style="--size:1.125rem; --weight:500; --as:center"
+	class="font-primary">
 				{#if edit}
 					{$i18n.t('Edit Arena Model')}
 				{:else}
@@ -139,7 +140,7 @@
 				{/if}
 			</div>
 			<button
-				class="self-center"
+				style="--as:center"
 				on:click={() => {
 					show = false;
 				}}
@@ -148,16 +149,16 @@
 			</button>
 		</div>
 
-		<div class="flex flex-col md:flex-row w-full px-4 pb-4 md:space-x-4 dark:text-gray-200">
-			<div class=" flex flex-col w-full sm:flex-row sm:justify-center sm:space-x-6">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1rem; --pb:1rem; --p: 1rem 0;--bgc: var(--white); --br: 1rem">
+			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				<form
-					class="flex flex-col w-full"
+					style="--d:flex; --fd:column; --w:100%"
 					on:submit|preventDefault={() => {
 						submitHandler();
 					}}
 				>
-					<div class="px-1">
-						<div class="flex justify-center pb-3">
+					<div style="--px:0.2rem">
+						<div style="--d:flex; --jc:center; --pb:0.6rem">
 							<input
 								bind:this={imageInputElement}
 								type="file"
@@ -222,7 +223,7 @@
 							/>
 
 							<button
-								class="relative rounded-full w-fit h-fit shrink-0"
+								style="--pos:relative; --radius:9999px; --w:fit-content; --h:fit-content; --fs:0"
 								type="button"
 								on:click={() => {
 									imageInputElement.click();
@@ -230,26 +231,28 @@
 							>
 								<img
 									src={profileImageUrl}
-									class="size-16 rounded-full object-cover shrink-0"
+									style="--w:4rem; --h:4rem; --radius:9999px; --objf:cover; --fs:0"
 									alt="Profile"
 								/>
 
 								<div
-									class="absolute flex justify-center rounded-full bottom-0 left-0 right-0 top-0 h-full w-full overflow-hidden bg-gray-700 bg-fixed opacity-0 transition duration-300 ease-in-out hover:opacity-50"
+									style="--pos:absolute; --d:flex; --jc:center; --radius:9999px; --bottom:0; --left:0; --right:0; --top:0; --h:100%; --w:100%; --of:hidden; --bgc:var(--color-gray-700); --op:0; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:300ms; --ttf:cubic-bezier(0.4, 0, 0.2, 1); --hvr-op:0.5"
+	class="bg-fixed"
 								>
-									<div class="my-auto text-white">
+									<div style="--my:auto; --c:#fff">
 										<PencilSolid className="size-4" />
 									</div>
 								</div>
 							</button>
 						</div>
-						<div class="flex gap-2">
-							<div class="flex flex-col w-full">
-								<div class=" mb-0.5 text-xs text-gray-500">{$i18n.t('Name')}</div>
+						<div style="--d:flex; --g:0.5rem">
+							<div style="--d:flex; --fd:column; --w:100%">
+								<div style="--mb:0.125rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Name')}</div>
 
-								<div class="flex-1">
+								<div style="--fx:1 1 0%">
 									<input
-										class="w-full text-sm bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-700 outline-hidden"
+										style="--w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
+	class="placeholder:text-gray-300 dark:placeholder:text-gray-700"
 										type="text"
 										bind:value={name}
 										placeholder={$i18n.t('Model Name')}
@@ -259,12 +262,13 @@
 								</div>
 							</div>
 
-							<div class="flex flex-col w-full">
-								<div class=" mb-0.5 text-xs text-gray-500">{$i18n.t('ID')}</div>
+							<div style="--d:flex; --fd:column; --w:100%">
+								<div style="--mb:0.125rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('ID')}</div>
 
-								<div class="flex-1">
+								<div style="--fx:1 1 0%">
 									<input
-										class="w-full text-sm bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-700 outline-hidden"
+										style="--w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
+	class="placeholder:text-gray-300 dark:placeholder:text-gray-700"
 										type="text"
 										bind:value={id}
 										placeholder={$i18n.t('Model ID')}
@@ -276,12 +280,13 @@
 							</div>
 						</div>
 
-						<div class="flex flex-col w-full mt-2">
-							<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Description')}</div>
+						<div style="--d:flex; --fd:column; --w:100%; --mt:0.5rem">
+							<div style="--mb:0.2rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Description')}</div>
 
-							<div class="flex-1">
+							<div style="--fx:1 1 0%">
 								<input
-									class="w-full text-sm bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-700 outline-hidden"
+									style="--w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
+	class="placeholder:text-gray-300 dark:placeholder:text-gray-700"
 									type="text"
 									bind:value={description}
 									placeholder={$i18n.t('Enter description')}
@@ -290,23 +295,23 @@
 							</div>
 						</div>
 
-						<hr class=" border-gray-100 dark:border-gray-700/10 my-2.5 w-full" />
+						<hr style="--bc:var(--color-gray-100); --dark-bc:rgb(78 78 78 / 0.1); --my:0.6rem; --w:100%" />
 
-						<div class="my-2 -mx-2">
-							<div class="px-3 py-2 bg-gray-50 dark:bg-gray-950 rounded-lg">
+						<div style="--my:0.5rem; --mx:-0.5rem">
+							<div style="--px:0.6rem; --py:0.5rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-950); --radius:0.5rem">
 								<AccessControl bind:accessControl />
 							</div>
 						</div>
 
-						<hr class=" border-gray-100 dark:border-gray-700/10 my-2.5 w-full" />
+						<hr style="--bc:var(--color-gray-100); --dark-bc:rgb(78 78 78 / 0.1); --my:0.6rem; --w:100%" />
 
-						<div class="flex flex-col w-full">
-							<div class="mb-1 flex justify-between">
-								<div class="text-xs text-gray-500">{$i18n.t('Models')}</div>
+						<div style="--d:flex; --fd:column; --w:100%">
+							<div style="--mb:0.2rem; --d:flex; --jc:space-between">
+								<div style="--size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Models')}</div>
 
 								<div>
 									<button
-										class=" text-xs text-gray-500"
+										style="--size:0.6rem; --c:var(--color-gray-500)"
 										type="button"
 										on:click={() => {
 											filterMode = filterMode === 'include' ? 'exclude' : 'include';
@@ -322,13 +327,13 @@
 							</div>
 
 							{#if modelIds.length > 0}
-								<div class="flex flex-col">
+								<div style="--d:flex; --fd:column">
 									{#each modelIds as modelId, modelIdx}
-										<div class=" flex gap-2 w-full justify-between items-center">
-											<div class=" text-sm flex-1 py-1 rounded-lg">
+										<div style="--d:flex; --g:0.5rem; --w:100%; --jc:space-between; --ai:center">
+											<div style="--size:0.8rem; --fx:1 1 0%; --py:0.2rem; --radius:0.5rem">
 												{$models.find((model) => model.id === modelId)?.name}
 											</div>
-											<div class="shrink-0">
+											<div style="--fs:0">
 												<button
 													type="button"
 													on:click={() => {
@@ -342,24 +347,25 @@
 									{/each}
 								</div>
 							{:else}
-								<div class="text-gray-500 text-xs text-center py-2">
+								<div style="--c:var(--color-gray-500); --size:0.6rem; --ta:center; --py:0.5rem">
 									{$i18n.t('Leave empty to include all models or select specific models')}
 								</div>
 							{/if}
 						</div>
 
-						<hr class=" border-gray-100 dark:border-gray-700/10 my-2.5 w-full" />
+						<hr style="--bc:var(--color-gray-100); --dark-bc:rgb(78 78 78 / 0.1); --my:0.6rem; --w:100%" />
 
-						<div class="flex items-center">
+						<div style="--d:flex; --ai:center">
 							<select
-								class="w-full py-1 text-sm rounded-lg bg-transparent {selectedModelId
+								style="--w:100%; --py:0.2rem; --size:0.8rem; --radius:0.5rem; --bgc:transparent; --oe:none"
+	class="{selectedModelId
 									? ''
-									: 'text-gray-500'} placeholder:text-gray-300 dark:placeholder:text-gray-700 outline-hidden"
+									: 'text-gray-500'} placeholder:text-gray-300 dark:placeholder:text-gray-700"
 								bind:value={selectedModelId}
 							>
 								<option value="">{$i18n.t('Select a model')}</option>
 								{#each $models.filter((m) => m?.owned_by !== 'arena') as model}
-									<option value={model.id} class="bg-gray-50 dark:bg-gray-700">{model.name}</option>
+									<option value={model.id} style="--bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-700)">{model.name}</option>
 								{/each}
 							</select>
 
@@ -376,10 +382,10 @@
 						</div>
 					</div>
 
-					<div class="flex justify-end pt-3 text-sm font-medium gap-1.5">
+					<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.8rem; --weight:500; --g:0.4rem">
 						{#if edit}
 							<button
-								class="px-3.5 py-1.5 text-sm font-medium dark:bg-black dark:hover:bg-gray-950 dark:text-white bg-white text-black hover:bg-gray-100 transition rounded-full flex flex-row space-x-1 items-center"
+								style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --dark-bgc:#000; --hvr-dark-bgc:var(--color-gray-950); --dark-c:#fff; --bgc:#fff; --c:#000; --hvr-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.2rem; --ai:center"
 								type="button"
 								on:click={() => {
 									showDeleteConfirmDialog = true;
@@ -390,7 +396,8 @@
 						{/if}
 
 						<button
-							class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-950 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full flex flex-row space-x-1 items-center {loading
+							style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-950); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.2rem; --ai:center"
+	class="{loading
 								? ' cursor-not-allowed'
 								: ''}"
 							type="submit"
@@ -399,7 +406,7 @@
 							{$i18n.t('Save')}
 
 							{#if loading}
-								<div class="ml-2 self-center">
+								<div style="--ml:0.5rem; --as:center">
 									<Spinner />
 								</div>
 							{/if}

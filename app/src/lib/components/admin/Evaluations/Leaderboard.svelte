@@ -334,27 +334,27 @@
 	onClose={closeLeaderboardModal}
 />
 
-<div class="mt-0.5 mb-2 gap-1 flex flex-col md:flex-row justify-between">
-	<div class="flex md:self-center text-lg font-medium px-0.5 shrink-0 items-center">
-		<div class=" gap-1">
+<div style="--mt:0.125rem; --mb:0.5rem; --g:0.2rem; --d:flex; --fd:column; --fd-md:row; --jc:space-between">
+	<div style="--d:flex; --as-md:center; --size:1.125rem; --weight:500; --px:0.125rem; --fs:0; --ai:center">
+		<div style="--g:0.2rem">
 			{$i18n.t('Leaderboard')}
 		</div>
 
-		<div class="flex self-center w-[1px] h-6 mx-2.5 bg-gray-50 dark:bg-gray-850" />
+		<div style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)" />
 
-		<span class="text-lg font-medium text-gray-500 dark:text-gray-300 mr-1.5"
+		<span style="--size:1.125rem; --weight:500; --c:var(--color-gray-500); --dark-c:var(--color-gray-300); --mr:0.4rem"
 			>{rankedModels.length}</span
 		>
 	</div>
 
-	<div class=" flex space-x-2">
+	<div style="--d:flex; --g:0.5rem">
 		<Tooltip content={$i18n.t('Re-rank models by topic similarity')}>
-			<div class="flex flex-1">
-				<div class=" self-center ml-1 mr-3">
+			<div style="--d:flex; --fx:1 1 0%">
+				<div style="--as:center; --ml:0.2rem; --mr:0.6rem">
 					<Search className="size-3" />
 				</div>
 				<input
-					class=" w-full text-sm pr-4 py-1 rounded-r-xl outline-hidden bg-transparent"
+					style="--w:100%; --size:0.8rem; --pr:1rem; --py:0.2rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 					bind:value={query}
 					placeholder={$i18n.t('Search')}
 					on:focus={() => {
@@ -367,38 +367,40 @@
 </div>
 
 <div
-	class="scrollbar-hidden relative whitespace-nowrap overflow-x-auto max-w-full rounded-sm pt-0.5"
+	style="--pos:relative; --ws:nowrap; --ofx:auto; --maxw:100%; --radius:0.125rem; --pt:0.125rem"
+	class="scrollbar-hidden"
 >
 	{#if loadingLeaderboard}
-		<div class=" absolute top-0 bottom-0 left-0 right-0 flex">
-			<div class="m-auto">
+		<div style="--pos:absolute; --top:0; --bottom:0; --left:0; --right:0; --d:flex">
+			<div style="--m:auto">
 				<Spinner className="size-5" />
 			</div>
 		</div>
 	{/if}
 	{#if (rankedModels ?? []).length === 0}
-		<div class="text-center text-xs text-gray-500 dark:text-gray-400 py-1">
+		<div style="--ta:center; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --py:0.2rem">
 			{$i18n.t('No models found')}
 		</div>
 	{:else}
 		<table
-			class="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-auto max-w-full rounded {loadingLeaderboard
+			style="--w:100%; --size:0.8rem; --ta:left; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); table-layout:auto; --maxw:100%; --radius:0.2rem"
+	class="{loadingLeaderboard
 				? 'opacity-20'
 				: ''}"
 		>
 			<thead
-				class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-850 dark:text-gray-400 -translate-y-0.5"
+				style="--size:0.6rem; --c:var(--color-gray-700); --tt:uppercase; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-400); --translatey:-0.125rem"
 			>
 				<tr class="">
 					<th
 						scope="col"
-						class="px-3 py-1.5 cursor-pointer select-none w-3"
+						style="--px:0.6rem; --py:0.4rem; --cur:pointer; --us:none; --w:0.6rem"
 						on:click={() => setSortKey('rating')}
 					>
-						<div class="flex gap-1.5 items-center">
+						<div style="--d:flex; --g:0.4rem; --ai:center">
 							{$i18n.t('RK')}
 							{#if orderBy === 'rating'}
-								<span class="font-normal">
+								<span style="--weight:400">
 									{#if direction === 'asc'}
 										<ChevronUp className="size-2" />
 									{:else}
@@ -406,7 +408,7 @@
 									{/if}
 								</span>
 							{:else}
-								<span class="invisible">
+								<span style="--v:hidden">
 									<ChevronUp className="size-2" />
 								</span>
 							{/if}
@@ -414,13 +416,13 @@
 					</th>
 					<th
 						scope="col"
-						class="px-3 py-1.5 cursor-pointer select-none"
+						style="--px:0.6rem; --py:0.4rem; --cur:pointer; --us:none"
 						on:click={() => setSortKey('name')}
 					>
-						<div class="flex gap-1.5 items-center">
+						<div style="--d:flex; --g:0.4rem; --ai:center">
 							{$i18n.t('Model')}
 							{#if orderBy === 'name'}
-								<span class="font-normal">
+								<span style="--weight:400">
 									{#if direction === 'asc'}
 										<ChevronUp className="size-2" />
 									{:else}
@@ -428,7 +430,7 @@
 									{/if}
 								</span>
 							{:else}
-								<span class="invisible">
+								<span style="--v:hidden">
 									<ChevronUp className="size-2" />
 								</span>
 							{/if}
@@ -436,13 +438,13 @@
 					</th>
 					<th
 						scope="col"
-						class="px-3 py-1.5 text-right cursor-pointer select-none w-fit"
+						style="--px:0.6rem; --py:0.4rem; --ta:right; --cur:pointer; --us:none; --w:fit-content"
 						on:click={() => setSortKey('rating')}
 					>
-						<div class="flex gap-1.5 items-center justify-end">
+						<div style="--d:flex; --g:0.4rem; --ai:center; --jc:flex-end">
 							{$i18n.t('Rating')}
 							{#if orderBy === 'rating'}
-								<span class="font-normal">
+								<span style="--weight:400">
 									{#if direction === 'asc'}
 										<ChevronUp className="size-2" />
 									{:else}
@@ -450,7 +452,7 @@
 									{/if}
 								</span>
 							{:else}
-								<span class="invisible">
+								<span style="--v:hidden">
 									<ChevronUp className="size-2" />
 								</span>
 							{/if}
@@ -458,13 +460,13 @@
 					</th>
 					<th
 						scope="col"
-						class="px-3 py-1.5 text-right cursor-pointer select-none w-5"
+						style="--px:0.6rem; --py:0.4rem; --ta:right; --cur:pointer; --us:none; --w:1.2rem"
 						on:click={() => setSortKey('won')}
 					>
-						<div class="flex gap-1.5 items-center justify-end">
+						<div style="--d:flex; --g:0.4rem; --ai:center; --jc:flex-end">
 							{$i18n.t('Won')}
 							{#if orderBy === 'won'}
-								<span class="font-normal">
+								<span style="--weight:400">
 									{#if direction === 'asc'}
 										<ChevronUp className="size-2" />
 									{:else}
@@ -472,7 +474,7 @@
 									{/if}
 								</span>
 							{:else}
-								<span class="invisible">
+								<span style="--v:hidden">
 									<ChevronUp className="size-2" />
 								</span>
 							{/if}
@@ -480,13 +482,13 @@
 					</th>
 					<th
 						scope="col"
-						class="px-3 py-1.5 text-right cursor-pointer select-none w-5"
+						style="--px:0.6rem; --py:0.4rem; --ta:right; --cur:pointer; --us:none; --w:1.2rem"
 						on:click={() => setSortKey('lost')}
 					>
-						<div class="flex gap-1.5 items-center justify-end">
+						<div style="--d:flex; --g:0.4rem; --ai:center; --jc:flex-end">
 							{$i18n.t('Lost')}
 							{#if orderBy === 'lost'}
-								<span class="font-normal">
+								<span style="--weight:400">
 									{#if direction === 'asc'}
 										<ChevronUp className="size-2" />
 									{:else}
@@ -494,7 +496,7 @@
 									{/if}
 								</span>
 							{:else}
-								<span class="invisible">
+								<span style="--v:hidden">
 									<ChevronUp className="size-2" />
 								</span>
 							{/if}
@@ -502,42 +504,44 @@
 					</th>
 				</tr>
 			</thead>
-			<tbody class="">
+			<tbody>
 				{#each sortedModels as model, modelIdx (model.id)}
 					<tr
-						class="bg-white dark:bg-gray-900 dark:border-gray-850 text-xs group cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-850/50 transition"
+						style="--d:table-row; --bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-bc:var(--color-gray-850); --size:0.6rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:rgb(38 38 38 / 0.5); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="group"
 						on:click={() => openLeaderboardModelModal(model)}
 					>
-						<td class="px-3 py-1.5 text-left font-medium text-gray-900 dark:text-white w-fit">
-							<div class=" line-clamp-1">
+						<td style="--d:table;--px:0.6rem; --py:0.4rem; --ta:left; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --w:fit-content">
+							<div style="--line-clamp:1">
 								{model?.rating !== '-' ? modelIdx + 1 : '-'}
 							</div>
 						</td>
-						<td class="px-3 py-1.5 flex flex-col justify-center">
-							<div class="flex items-center gap-2">
-								<div class="shrink-0">
+						<td style="--d:table;--px:0.6rem; --py:0.4rem; --va:middle">
+							<div style="--d:flex; --ai:center; --g:0.5rem">
+								<div style="--fs:0">
 									<img
 										src={model?.info?.meta?.profile_image_url ?? `${WEBUI_BASE_URL}/favicon.png`}
 										alt={model.name}
-										class="size-5 rounded-full object-cover shrink-0"
+										style="--w:1.2rem; --h:1.2rem; --radius:9999px; --objf:cover; --fs:0"
 									/>
 								</div>
 
-								<div class="font-medium text-gray-800 dark:text-gray-200 pr-4">
+								<div style="--weight:500; --c:var(--color-gray-800); --dark-c:var(--color-gray-200); --pr:1rem">
 									{model.name}
 								</div>
 							</div>
 						</td>
-						<td class="px-3 py-1.5 text-right font-medium text-gray-900 dark:text-white w-max">
+						<td style="--d:table;--px:0.6rem; --py:0.4rem; --ta:right; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --w:max-content">
 							{model.rating}
 						</td>
 
-						<td class=" px-3 py-1.5 text-right font-semibold text-green-500">
-							<div class=" w-10">
+						<td style="--d:table;--px:0.6rem; --py:0.4rem; --ta:right; --weight:600; --c:#22c55e">
+							<div style="--w:2.5rem">
 								{#if model.stats.won === '-'}
 									-
 								{:else}
-									<span class="hidden group-hover:inline"
+									<span style="--d:none"
+	class="group-hover:inline"
 										>{((model.stats.won / model.stats.count) * 100).toFixed(1)}%</span
 									>
 									<span class=" group-hover:hidden">{model.stats.won}</span>
@@ -545,12 +549,13 @@
 							</div>
 						</td>
 
-						<td class="px-3 py-1.5 text-right font-semibold text-red-500">
-							<div class=" w-10">
+						<td style="--d:table;--px:0.6rem; --py:0.4rem; --ta:right; --weight:600; --c:#ef4444">
+							<div style="--w:2.5rem">
 								{#if model.stats.lost === '-'}
 									-
 								{:else}
-									<span class="hidden group-hover:inline"
+									<span style="--d:none"
+	class="group-hover:inline"
 										>{((model.stats.lost / model.stats.count) * 100).toFixed(1)}%</span
 									>
 									<span class=" group-hover:hidden">{model.stats.lost}</span>
@@ -564,9 +569,9 @@
 	{/if}
 </div>
 
-<div class=" text-gray-500 text-xs mt-1.5 w-full flex justify-end">
-	<div class=" text-right">
-		<div class="line-clamp-1">
+<div style="--c:var(--color-gray-500); --size:0.6rem; --mt:0.4rem; --w:100%; --d:flex; --jc:flex-end">
+	<div style="--ta:right">
+		<div style="--line-clamp:1">
 			ⓘ {$i18n.t(
 				'The evaluation leaderboard is based on the Elo rating system and is updated in real-time.'
 			)}

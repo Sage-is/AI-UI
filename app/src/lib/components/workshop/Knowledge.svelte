@@ -95,31 +95,41 @@
 		}}
 	/>
 
-	<div class="flex flex-col gap-1 my-1.5">
-		<div class="flex justify-between items-center">
-			<div class="flex md:self-center text-xl font-medium px-0.5 items-center">
+	<div style="--d:flex; --fd:column; --g:0.2rem; --my:0.4rem">
+		<div style="--d:flex; --jc:space-between; --ai:center">
+			<div style="--d:flex; --as-md:center; --size:1.2rem; --weight:500; --px:0.125rem; --ai:center">
 				{$i18n.t('Knowledge')}
-				<div class="flex self-center w-[1px] h-6 mx-2.5 bg-gray-50 dark:bg-gray-850" />
-				<span class="text-lg font-medium text-gray-500 dark:text-gray-300"
+				<div style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)" />
+				<span style="--size:1.125rem; --weight:500; --c:var(--color-gray-500); --dark-c:var(--color-gray-300)"
 					>{filteredItems.length}</span
 				>
 			</div>
 		</div>
 
-		<div class=" flex w-full space-x-2">
-			<div class="flex flex-1">
-				<div class=" self-center ml-1 mr-3">
+		<div style="--d:flex; --ai:center; --w:100%; --g:0.5rem">
+			<div>
+				<a
+					style="--px:0.5rem; --py:0.5rem; --radius:0.6rem; --hvr-bgc:rgb(78 78 78 / 0.1); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.8rem; --d:flex; --ai:center; --g:0.2rem"
+					aria-label={$i18n.t('Create Knowledge')}
+					href="/workshop/knowledge/create"
+				>
+					<Plus className="size-3.5" />
+				</a>
+			</div>
+
+			<div style="--d:flex; --fx:1 1 0%">
+				<div style="--as:center; --ml:0.2rem; --mr:0.6rem">
 					<Search className="size-3.5" />
 				</div>
 				<input
-					class=" w-full text-sm py-1 rounded-r-xl outline-hidden bg-transparent"
+					style="--w:100%; --size:0.8rem; --py:0.2rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 					bind:value={query}
 					placeholder={$i18n.t('Search Knowledge')}
 				/>
 				{#if query}
-					<div class="self-center pl-1.5 translate-y-[0.5px] rounded-l-xl bg-transparent">
+					<div style="--as:center; --pl:0.4rem; --translatey:0.5px; --btlr:0.6rem; --bblr:0.6rem; --bgc:transparent">
 						<button
-							class="p-0.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-900 transition"
+							style="--p:0.125rem; --radius:9999px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							on:click={() => {
 								query = '';
 							}}
@@ -129,25 +139,13 @@
 					</div>
 				{/if}
 			</div>
-
-			<div>
-				<button
-					class=" px-2 py-2 rounded-xl hover:bg-gray-700/10 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition font-medium text-sm flex items-center space-x-1"
-					aria-label={$i18n.t('Create Knowledge')}
-					on:click={() => {
-						goto('/workshop/knowledge/create');
-					}}
-				>
-					<Plus className="size-3.5" />
-				</button>
-			</div>
 		</div>
 	</div>
 
-	<div class="mb-5 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2">
+	<div style="--mb:1.2rem; --d:grid; --gtc:repeat(1, minmax(0, 1fr)); --gtc-lg:repeat(2, minmax(0, 1fr)); --gtc-xl:repeat(3, minmax(0, 1fr)); --g:0.5rem">
 		{#each filteredItems as item}
 			<button
-				class=" flex space-x-4 cursor-pointer text-left w-full px-3 py-2 hover:bg-black/5 dark:hover:bg-white/5 transition rounded-xl"
+				style="--d:flex; --g:1rem; --cur:pointer; --ta:left; --w:100%; --px:0.6rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.6rem"
 				on:click={() => {
 					if (item?.meta?.document) {
 						toast.error(
@@ -160,15 +158,15 @@
 					}
 				}}
 			>
-				<div class=" w-full">
-					<div class="flex items-center justify-between -mt-1">
+				<div style="--w:100%">
+					<div style="--d:flex; --ai:center; --jc:space-between; --mt:-0.2rem">
 						{#if item?.meta?.document}
 							<Badge type="muted" content={$i18n.t('Document')} />
 						{:else}
 							<Badge type="success" content={$i18n.t('Collection')} />
 						{/if}
 
-						<div class=" flex self-center -mr-1 translate-y-1">
+						<div style="--d:flex; --as:center; --mr:-0.2rem; --translatey:0.2rem">
 							<ItemMenu
 								on:delete={() => {
 									selectedItem = item;
@@ -178,15 +176,15 @@
 						</div>
 					</div>
 
-					<div class=" self-center flex-1 px-1 mb-1">
-						<div class=" font-semibold line-clamp-1 h-fit">{item.name}</div>
+					<div style="--as:center; --fx:1 1 0%; --px:0.2rem; --mb:0.2rem">
+						<div style="--weight:600; --line-clamp:1; --h:fit-content">{item.name}</div>
 
-						<div class=" text-xs overflow-hidden text-ellipsis line-clamp-1">
+						<div style="--size:0.6rem; --of:hidden; text-overflow:ellipsis; --line-clamp:1">
 							{item.description}
 						</div>
 
-						<div class="mt-3 flex justify-between">
-							<div class="text-xs text-gray-500">
+						<div style="--mt:0.6rem; --d:flex; --jc:space-between">
+							<div style="--size:0.6rem; --c:var(--color-gray-500)">
 								<Tooltip
 									content={item?.user?.email ?? $i18n.t('Deleted User')}
 									className="flex shrink-0"
@@ -199,7 +197,7 @@
 									})}
 								</Tooltip>
 							</div>
-							<div class=" text-xs text-gray-500 line-clamp-1">
+							<div style="--size:0.6rem; --c:var(--color-gray-500); --line-clamp:1">
 								{$i18n.t('Updated')}
 								{dayjs(item.updated_at * 1000).fromNow()}
 							</div>
@@ -210,11 +208,11 @@
 		{/each}
 	</div>
 
-	<div class=" text-gray-500 text-xs mt-1 mb-2">
+	<div style="--c:var(--color-gray-500); --size:0.6rem; --mt:0.2rem; --mb:0.5rem">
 		ⓘ {$i18n.t("Use '#' in the prompt input to load and include your knowledge.")}
 	</div>
 {:else}
-	<div class="w-full h-full flex justify-center items-center">
+	<div style="--w:100%; --h:100%; --d:flex; --jc:center; --ai:center">
 		<Spinner className="size-5" />
 	</div>
 {/if}

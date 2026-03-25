@@ -9,6 +9,7 @@
 
 	export let suggestionPrompts = [];
 	export let className = '';
+	export let listStyle = '';
 	export let inputValue = '';
 	export let onSelect = (e) => {};
 
@@ -64,7 +65,9 @@
 	}
 </script>
 
-<div class="mb-1 flex gap-1 text-xs font-medium items-center text-gray-600 dark:text-gray-400">
+<div
+	style="--mb:0.2rem; --d:flex; --g:0.2rem; --size:0.6rem; --weight:500; --ai:center; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
+>
 	{#if filteredPrompts.length > 0}
 		<Bolt />
 		{$i18n.t('Suggested')}
@@ -72,45 +75,57 @@
 		<!-- Keine Vorschläge -->
 
 		<div
-			class="flex w-full {$settings?.landingPageMode === 'chat'
+			style="--d:flex; --w:100%; --as:flex-start; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
+			class={$settings?.landingPageMode === 'chat'
 				? ' -mt-1'
-				: 'text-center items-center justify-center'}  self-start text-gray-600 dark:text-gray-400"
+				: 'text-center items-center justify-center'}
 		>
 			{$WEBUI_NAME} ‧ v{WEBUI_VERSION}
 		</div>
 	{/if}
 </div>
 
-<div class="h-40 w-full">
+<div style="--h:10rem; --w:100%; --p: 0 0.2rem;">
 	{#if filteredPrompts.length > 0}
-		<div role="list" class="max-h-40 overflow-auto scrollbar-none items-start {className}">
+		<div
+			role="list"
+			style="--maxh:10rem; --of:auto; --ai:flex-start; {listStyle}; gap:0.2rem; --p:0.2rem}"
+			class="scrollbar-none {className}"
+		>
 			{#each filteredPrompts as prompt, idx (prompt.id || prompt.content)}
 				<!-- svelte-ignore a11y-no-interactive-element-to-noninteractive-role -->
 				<button
 					role="listitem"
-					class="waterfall flex flex-col flex-1 shrink-0 w-full justify-between
-				       px-3 py-2 rounded-xl bg-transparent hover:bg-black/5
-				       dark:hover:bg-white/5 transition group"
-					style="animation-delay: {idx * 60}ms"
+					class="waterfall group"
+					style="--m:0.2rem auto; --p:0.6rem; --shadow:6; --d:flex; --fd:column; --fx:1 1 0%; 
+					--fs:0; --w:90%; --radius:0.6rem; --bgc:transparent; 
+					--hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); 
+					animation-delay: {idx *	60}ms"
 					on:click={() => onSelect({ type: 'prompt', data: prompt.content })}
 				>
-					<div class="flex flex-col text-left">
+					<div style="--d:flex; --fd:column; --ta:left">
 						{#if prompt.title && prompt.title[0] !== ''}
 							<div
-								class="font-medium dark:text-gray-300 dark:group-hover:text-gray-200 transition line-clamp-1"
+								style="--weight:500; --dark-c:var(--color-gray-300); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --line-clamp:1"
+								class="dark:group-hover:text-gray-200"
 							>
 								{prompt.title[0]}
 							</div>
-							<div class="text-xs text-gray-600 dark:text-gray-400 font-normal line-clamp-1">
+							<div
+								style="--size:0.6rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); --weight:400; --line-clamp:1"
+							>
 								{prompt.title[1]}
 							</div>
 						{:else}
 							<div
-								class="font-medium dark:text-gray-300 dark:group-hover:text-gray-200 transition line-clamp-1"
+								style="--weight:500; --dark-c:var(--color-gray-300); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --line-clamp:1"
+								class="dark:group-hover:text-gray-200"
 							>
 								{prompt.content}
 							</div>
-							<div class="text-xs text-gray-600 dark:text-gray-400 font-normal line-clamp-1">
+							<div
+								style="--size:0.6rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); --weight:400; --line-clamp:1"
+							>
 								{$i18n.t('Prompt')}
 							</div>
 						{/if}

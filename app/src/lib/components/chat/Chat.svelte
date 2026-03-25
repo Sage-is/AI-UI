@@ -2070,29 +2070,30 @@
 />
 
 <div
-	class="h-screen max-h-[100dvh] transition-width duration-200 ease-in-out {$showSidebar
-		? '  md:max-w-[calc(100%-260px)]'
-		: ' '} w-full max-w-full flex flex-col"
+	style="--h:100vh; --maxh:100dvh; 
+		--tdn:200ms; --ttf:cubic-bezier(0.4, 0, 0.2, 1);
+		--w:100%; --maxw:100%; --d:flex; --fd:column; 
+		--transition:width var(--tdn) var(--ttf); {$showSidebar ? '--maxw:calc(100% - 280px)' : ''}"
 	id="chat-container"
 >
 	{#if !loading}
-		<div in:fade={{ duration: 50 }} class="w-full h-full flex flex-col">
+		<div in:fade={{ duration: 50 }} style="--w:100%; --h:100%; --d:flex; --fd:column">
 			{#if $settings?.backgroundImageUrl ?? $config?.license_metadata?.background_image_url ?? null}
 				<div
-					class="absolute {$showSidebar
+					class="{$showSidebar
 						? 'md:max-w-[calc(100%-260px)] md:translate-x-[260px]'
-						: ''} top-0 left-0 w-full h-full bg-cover bg-center bg-no-repeat"
-					style="background-image: url({$settings?.backgroundImageUrl ??
+						: ''} bg-cover bg-center bg-no-repeat"
+					style="--pos:absolute; --top:0; --left:0; --w:100%; --h:100%; background-image: url({$settings?.backgroundImageUrl ??
 						$config?.license_metadata?.background_image_url})  "
 				/>
 
 				<div
-					class="absolute top-0 left-0 w-full h-full bg-linear-to-t from-white to-white/85 dark:from-gray-900 dark:to-gray-900/90 z-0"
+					style="--pos:absolute; --top:0; --left:0; --w:100%; --h:100%; --bgi:linear-gradient(0deg, var(--tw-gradient-stops)); --tw-gradient-from:#fff; --tw-gradient-to:rgb(255 255 255 / 0.85); --dark-tw-gradient-from:var(--color-gray-900); --dark-tw-gradient-to:rgb(23 23 23 / 0.9); --z:0"
 				/>
 			{/if}
 
-			<PaneGroup direction="horizontal" class="w-full h-full">
-				<Pane defaultSize={50} class="h-full flex relative max-w-full flex-col">
+			<PaneGroup direction="horizontal" style="--w:100%; --h:100%">
+				<Pane defaultSize={50} style="--h:100%; --d:flex; --pos:relative; --maxw:100%; --fd:column">
 					<Navbar
 						bind:this={navbarElement}
 						chat={{
@@ -2114,10 +2115,12 @@
 						showBanners={!showCommands}
 					/>
 
-					<div class="flex flex-col flex-auto z-10 w-full @container overflow-auto">
+					<div style="--d:flex; --fd:column; --fx:1 1 auto; --z:10; --w:100%; --of:auto; --mt:1.6em"
+	class="@container">
 						{#if ($settings?.landingPageMode === 'chat' && !$selectedFolder) || createMessagesList(history, history.currentId).length > 0}
 							<div
-								class=" pb-2.5 flex flex-col justify-between w-full flex-auto overflow-auto h-0 max-w-full z-10 scrollbar-hidden"
+								style="--pb:0.625rem; --d:flex; --fd:column; --jc:space-between; --w:100%; --fx:1 1 auto; --of:auto; --h:0; --maxw:100%; --z:10"
+	class="scrollbar-hidden"
 								id="messages-container"
 								bind:this={messagesContainerElement}
 								on:scroll={(e) => {
@@ -2126,7 +2129,7 @@
 										messagesContainerElement.clientHeight + 5;
 								}}
 							>
-								<div class=" h-full w-full flex flex-col">
+								<div style="--h:100%; --w:100%; --d:flex; --fd:column">
 									<Messages
 										chatId={$chatId}
 										bind:history
@@ -2151,7 +2154,7 @@
 								</div>
 							</div>
 
-							<div class=" pb-2">
+							<div style="--pb:0.5rem">
 								<MessageInput
 									bind:this={messageInput}
 									{history}
@@ -2209,13 +2212,13 @@
 								/>
 
 								<div
-									class="absolute bottom-1 text-xs text-gray-500 text-center line-clamp-1 right-0 left-0"
+									style="--pos:absolute; --bottom:0.2rem; --size:0.6rem; --c:var(--color-gray-500); --ta:center; --line-clamp:1; --right:0; --left:0"
 								>
 									<!-- {$i18n.t('LLMs can make mistakes. Verify important information.')} -->
 								</div>
 							</div>
 						{:else}
-							<div class="flex items-center h-full">
+							<div style="--d:flex; --ai:center; --h:100%">
 								<Placeholder
 									{history}
 									{selectedModels}
@@ -2286,8 +2289,8 @@
 			</PaneGroup>
 		</div>
 	{:else if loading}
-		<div class=" flex items-center justify-center h-full w-full">
-			<div class="m-auto">
+		<div style="--d:flex; --ai:center; --jc:center; --h:100%; --w:100%">
+			<div style="--m:auto">
 				<Spinner className="size-5" />
 			</div>
 		</div>

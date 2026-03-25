@@ -1,7 +1,17 @@
 ---
+title: "Convention Instructions"
+description: "Development conventions and coding standards applied to all files in the project."
+date: 2025-11-28
+tags:
+  - conventions
+  - standards
+  - meta
+---
+
+---
 applyTo: "*"
 ---
-# Startr Development Workflow
+# Sage.is AI-UI Development Workflow
 
 ## Core Principles
 
@@ -13,6 +23,10 @@ Every development task follows the **Plan-Document-Execute-Verify** cycle:
 3. **Document** - Update docs and README as needed
 4. **Execute** - Implement changes following standards
 5. **Verify** - Test, commit, and check off completed items
+
+## Styling
+
+Use [Startr.Style](https://startr.style) for all component styling. Inline CSS custom properties (`style="--d:flex; --ai:center"`) — never Tailwind utility classes or standalone CSS classes. See the [Development Workflow](DEVELOPMENT_WORKFLOW.md#styling-with-startrstyle) for the full reference.
 
 ## Standard Operating Procedure
 

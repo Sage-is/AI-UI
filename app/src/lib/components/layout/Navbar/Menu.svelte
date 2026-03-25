@@ -37,6 +37,7 @@
 	export let shareEnabled: boolean = false;
 	export let shareHandler: Function;
 	export let downloadHandler: Function;
+	export let hasShareTargets: boolean = false;
 
 	// export let tagHandler: Function;
 
@@ -214,14 +215,14 @@
 
 	<div slot="content">
 		<DropdownMenu.Content
-			class="w-full max-w-[200px] rounded-xl px-1 py-1.5  z-50 bg-white dark:bg-gray-850 dark:text-white shadow-lg"
+			style="--w:100%; --maxw:200px; --radius:0.6rem; --px:0.2rem; --py:0.4rem; --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:4"
 			sideOffset={8}
 			side="bottom"
 			align="end"
 			transition={flyAndScale}
 		>
 			<!-- <DropdownMenu.Item
-				class="flex gap-2 items-center px-3 py-2 text-sm  cursor-pointer dark:hover:bg-gray-800 rounded-md"
+				style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --cur:pointer; --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem"
 				on:click={async () => {
 					await showSettings.set(!$showSettings);
 				}}
@@ -232,7 +233,7 @@
 					viewBox="0 0 24 24"
 					stroke-width="1.5"
 					stroke="currentColor"
-					class="size-4"
+					style="--w:1rem; --h:1rem"
 				>
 					<path
 						stroke-linecap="round"
@@ -245,12 +246,12 @@
 						d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
 					/>
 				</svg>
-				<div class="flex items-center">{$i18n.t('Settings')}</div>
+				<div style="--d:flex; --ai:center">{$i18n.t('Settings')}</div>
 			</DropdownMenu.Item> -->
 
 			{#if $mobile}
 				<DropdownMenu.Item
-					class="flex gap-2 items-center px-3 py-2 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md select-none w-full"
+					style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem; --us:none; --w:100%"
 					id="chat-controls-button"
 					on:click={async () => {
 						await showControls.set(true);
@@ -259,36 +260,56 @@
 					}}
 				>
 					<AdjustmentsHorizontal className=" size-4" strokeWidth="0.5" />
-					<div class="flex items-center">{$i18n.t('Controls')}</div>
+					<div style="--d:flex; --ai:center">{$i18n.t('Controls')}</div>
 				</DropdownMenu.Item>
 			{/if}
 
 			{#if !$temporaryChatEnabled && ($user?.role === 'admin' || ($user.permissions?.chat?.share ?? true))}
 				<DropdownMenu.Item
-					class="flex gap-2 items-center px-3 py-2 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md select-none w-full"
+					style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem; --us:none; --w:100%"
 					id="chat-share-button"
 					on:click={() => {
 						shareHandler();
 					}}
 				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						viewBox="0 0 24 24"
-						fill="currentColor"
-						class="size-4"
-					>
-						<path
-							fill-rule="evenodd"
-							d="M15.75 4.5a3 3 0 1 1 .825 2.066l-8.421 4.679a3.002 3.002 0 0 1 0 1.51l8.421 4.679a3 3 0 1 1-.729 1.31l-8.421-4.678a3 3 0 1 1 0-4.132l8.421-4.679a3 3 0 0 1-.096-.755Z"
-							clip-rule="evenodd"
-						/>
-					</svg>
-					<div class="flex items-center">{$i18n.t('Share')}</div>
+					{#if hasShareTargets}
+						<!-- Circled share icon when already shared -->
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							style="--w:1.2rem; --h:1.2rem; --c:var(--color-green-600); --dark-c:var(--color-green-400)"
+						>
+							<circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="2.5" />
+							<g transform="translate(-2.5, 1)">
+								<path
+									fill-rule="evenodd"
+									d="M15.75 7.5a1.5 1.5 0 1 1 .412 1.033l-4.21 2.34a1.501 1.501 0 0 1 0 .754l4.21 2.34a1.5 1.5 0 1 1-.364.655l-4.21-2.34a1.5 1.5 0 1 1 0-2.064l4.21-2.34A1.5 1.5 0 0 1 15.75 7.5Z"
+									clip-rule="evenodd"
+								/>
+							</g>
+						</svg>
+						<div style="--d:flex; --ai:center; --c:var(--color-green-600); --dark-c:var(--color-green-400)">{$i18n.t('Shared')}</div>
+					{:else}
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							style="--w:1rem; --h:1rem"
+						>
+							<path
+								fill-rule="evenodd"
+								d="M15.75 4.5a3 3 0 1 1 .825 2.066l-8.421 4.679a3.002 3.002 0 0 1 0 1.51l8.421 4.679a3 3 0 1 1-.729 1.31l-8.421-4.678a3 3 0 1 1 0-4.132l8.421-4.679a3 3 0 0 1-.096-.755Z"
+								clip-rule="evenodd"
+							/>
+						</svg>
+						<div style="--d:flex; --ai:center">{$i18n.t('Share')}</div>
+					{/if}
 				</DropdownMenu.Item>
 			{/if}
 
 			<DropdownMenu.Item
-				class="flex gap-2 items-center px-3 py-2 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md select-none w-full"
+				style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem; --us:none; --w:100%"
 				id="chat-overview-button"
 				on:click={async () => {
 					await showControls.set(true);
@@ -297,11 +318,11 @@
 				}}
 			>
 				<Map className=" size-4" strokeWidth="1.5" />
-				<div class="flex items-center">{$i18n.t('Overview')}</div>
+				<div style="--d:flex; --ai:center">{$i18n.t('Overview')}</div>
 			</DropdownMenu.Item>
 
 			<DropdownMenu.Item
-				class="flex gap-2 items-center px-3 py-2 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md select-none w-full"
+				style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem; --us:none; --w:100%"
 				id="chat-overview-button"
 				on:click={async () => {
 					await showControls.set(true);
@@ -310,12 +331,12 @@
 				}}
 			>
 				<Cube className=" size-4" strokeWidth="1.5" />
-				<div class="flex items-center">{$i18n.t('Artifacts')}</div>
+				<div style="--d:flex; --ai:center">{$i18n.t('Artifacts')}</div>
 			</DropdownMenu.Item>
 
 			<DropdownMenu.Sub>
 				<DropdownMenu.SubTrigger
-					class="flex gap-2 items-center px-3 py-2 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md select-none w-full"
+					style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem; --us:none; --w:100%"
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -323,7 +344,7 @@
 						viewBox="0 0 24 24"
 						stroke-width="1.5"
 						stroke="currentColor"
-						class="size-4"
+						style="--w:1rem; --h:1rem"
 					>
 						<path
 							stroke-linecap="round"
@@ -332,45 +353,45 @@
 						/>
 					</svg>
 
-					<div class="flex items-center">{$i18n.t('Download')}</div>
+					<div style="--d:flex; --ai:center">{$i18n.t('Download')}</div>
 				</DropdownMenu.SubTrigger>
 				<DropdownMenu.SubContent
-					class="w-full rounded-xl px-1 py-1.5 z-50 bg-white dark:bg-gray-850 dark:text-white shadow-lg"
+					style="--w:100%; --radius:0.6rem; --px:0.2rem; --py:0.4rem; --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:4"
 					transition={flyAndScale}
 					sideOffset={8}
 				>
 					{#if $user?.role === 'admin' || ($user.permissions?.chat?.export ?? true)}
 						<DropdownMenu.Item
-							class="flex gap-2 items-center px-3 py-2 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md select-none w-full"
+							style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem; --us:none; --w:100%"
 							on:click={() => {
 								downloadJSONExport();
 							}}
 						>
-							<div class="flex items-center line-clamp-1">{$i18n.t('Export chat (.json)')}</div>
+							<div style="--d:flex; --ai:center; --line-clamp:1">{$i18n.t('Export chat (.json)')}</div>
 						</DropdownMenu.Item>
 					{/if}
 					<DropdownMenu.Item
-						class="flex gap-2 items-center px-3 py-2 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md select-none w-full"
+						style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem; --us:none; --w:100%"
 						on:click={() => {
 							downloadTxt();
 						}}
 					>
-						<div class="flex items-center line-clamp-1">{$i18n.t('Plain text (.txt)')}</div>
+						<div style="--d:flex; --ai:center; --line-clamp:1">{$i18n.t('Plain text (.txt)')}</div>
 					</DropdownMenu.Item>
 
 					<DropdownMenu.Item
-						class="flex gap-2 items-center px-3 py-2 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md select-none w-full"
+						style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem; --us:none; --w:100%"
 						on:click={() => {
 							downloadPdf();
 						}}
 					>
-						<div class="flex items-center line-clamp-1">{$i18n.t('PDF document (.pdf)')}</div>
+						<div style="--d:flex; --ai:center; --line-clamp:1">{$i18n.t('PDF document (.pdf)')}</div>
 					</DropdownMenu.Item>
 				</DropdownMenu.SubContent>
 			</DropdownMenu.Sub>
 
 			<DropdownMenu.Item
-				class="flex gap-2 items-center px-3 py-2 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md select-none w-full"
+				style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem; --us:none; --w:100%"
 				id="chat-copy-button"
 				on:click={async () => {
 					const res = await copyToClipboard(await getChatAsText()).catch((e) => {
@@ -383,13 +404,13 @@
 				}}
 			>
 				<Clipboard className=" size-4" strokeWidth="1.5" />
-				<div class="flex items-center">{$i18n.t('Copy')}</div>
+				<div style="--d:flex; --ai:center">{$i18n.t('Copy')}</div>
 			</DropdownMenu.Item>
 
 			{#if !$temporaryChatEnabled}
-				<hr class="border-gray-100 dark:border-gray-850 my-0.5" />
+				<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.125rem" />
 
-				<div class="flex p-1">
+				<div style="--d:flex; --p:0.2rem">
 					<Tags chatId={chat.id} />
 				</div>
 			{/if}

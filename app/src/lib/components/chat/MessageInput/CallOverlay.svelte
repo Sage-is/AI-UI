@@ -690,11 +690,11 @@
 </script>
 
 {#if $showCallOverlay}
-	<div class="max-w-lg w-full h-full max-h-[100dvh] flex flex-col justify-between p-3 md:p-6">
+	<div style="--maxw:32rem; --w:100%; --h:100%; --maxh:100dvh; --d:flex; --fd:column; --jc:space-between; --p:0.6rem; --p-md:1.5rem">
 		{#if camera}
 			<button
 				type="button"
-				class="flex justify-center items-center w-full h-20 min-h-20"
+				style="--d:flex; --jc:center; --ai:center; --w:100%; --h:5rem; --minh:5rem"
 				on:click={() => {
 					if (assistantSpeaking) {
 						stopAllAudio();
@@ -703,8 +703,7 @@
 			>
 				{#if emoji}
 					<div
-						class="  transition-all rounded-full"
-						style="font-size:{rmsLevel * 100 > 4
+						style="--tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; font-size:{rmsLevel * 100 > 4
 							? '4.5'
 							: rmsLevel * 100 > 2
 								? '4.25'
@@ -716,7 +715,7 @@
 					</div>
 				{:else if loading || assistantSpeaking}
 					<svg
-						class="size-12 text-gray-900 dark:text-gray-400"
+						style="--w:3rem; --h:3rem; --c:var(--color-gray-900); --dark-c:var(--color-gray-400)"
 						viewBox="0 0 24 24"
 						fill="currentColor"
 						xmlns="http://www.w3.org/2000/svg"
@@ -753,27 +752,27 @@
 					>
 				{:else}
 					<div
-						class=" {rmsLevel * 100 > 4
+						class="{rmsLevel * 100 > 4
 							? ' size-[4.5rem]'
 							: rmsLevel * 100 > 2
 								? ' size-16'
 								: rmsLevel * 100 > 1
 									? 'size-14'
-									: 'size-12'}  transition-all rounded-full {(model?.info?.meta
+									: 'size-12'} {(model?.info?.meta
 							?.profile_image_url ?? '/static/icons/favicon.png') !== '/static/icons/favicon.png'
 							? ' bg-cover bg-center bg-no-repeat'
-							: 'bg-black dark:bg-white'}  bg-black dark:bg-white"
-						style={(model?.info?.meta?.profile_image_url ?? '/static/icons/favicon.png') !==
+							: 'bg-black dark:bg-white'}"
+						style="--tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --bgc:#000; --dark-bgc:#fff; {(model?.info?.meta?.profile_image_url ?? '/static/icons/favicon.png') !==
 						'/static/icons/favicon.png'
 							? `background-image: url('${model?.info?.meta?.profile_image_url}');`
-							: ''}
+							: ''}"
 					/>
 				{/if}
 				<!-- navbar -->
 			</button>
 		{/if}
 
-		<div class="flex justify-center items-center flex-1 h-full w-full max-h-full">
+		<div style="--d:flex; --jc:center; --ai:center; --fx:1 1 0%; --h:100%; --w:100%; --maxh:100%">
 			{#if !camera}
 				<button
 					type="button"
@@ -785,8 +784,7 @@
 				>
 					{#if emoji}
 						<div
-							class="  transition-all rounded-full"
-							style="font-size:{rmsLevel * 100 > 4
+							style="--tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; font-size:{rmsLevel * 100 > 4
 								? '13'
 								: rmsLevel * 100 > 2
 									? '12'
@@ -798,7 +796,7 @@
 						</div>
 					{:else if loading || assistantSpeaking}
 						<svg
-							class="size-44 text-gray-900 dark:text-gray-400"
+							style="--w:11rem; --h:11rem; --c:var(--color-gray-900); --dark-c:var(--color-gray-400)"
 							viewBox="0 0 24 24"
 							fill="currentColor"
 							xmlns="http://www.w3.org/2000/svg"
@@ -835,39 +833,40 @@
 						>
 					{:else}
 						<div
-							class=" {rmsLevel * 100 > 4
+							class="{rmsLevel * 100 > 4
 								? ' size-52'
 								: rmsLevel * 100 > 2
 									? 'size-48'
 									: rmsLevel * 100 > 1
 										? 'size-44'
-										: 'size-40'}  transition-all rounded-full {(model?.info?.meta
+										: 'size-40'} {(model?.info?.meta
 								?.profile_image_url ?? '/static/icons/favicon.png') !== '/static/icons/favicon.png'
 								? ' bg-cover bg-center bg-no-repeat'
-								: 'bg-black dark:bg-white'} "
-							style={(model?.info?.meta?.profile_image_url ?? '/static/icons/favicon.png') !==
+								: 'bg-black dark:bg-white'}"
+							style="--tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; {(model?.info?.meta?.profile_image_url ?? '/static/icons/favicon.png') !==
 							'/static/icons/favicon.png'
 								? `background-image: url('${model?.info?.meta?.profile_image_url}');`
-								: ''}
+								: ''}"
 						/>
 					{/if}
 				</button>
 			{:else}
-				<div class="relative flex video-container w-full max-h-full pt-2 pb-4 md:py-6 px-2 h-full">
+				<div style="--pos:relative; --d:flex; --w:100%; --maxh:100%; --pt:0.5rem; --pb:1rem; --py-md:1.5rem; --px:0.5rem; --h:100%"
+	class="video-container">
 					<!-- svelte-ignore a11y-media-has-caption -->
 					<video
 						id="camera-feed"
 						autoplay
-						class="rounded-2xl h-full min-w-full object-cover object-center"
+						style="--radius:1rem; --h:100%; --minw:100%; --objf:cover; --objp:center"
 						playsinline
 					/>
 
 					<canvas id="camera-canvas" style="display:none;" />
 
-					<div class=" absolute top-4 md:top-8 left-4">
+					<div style="--pos:absolute; --top:1rem; --top-md:2rem; --left:1rem">
 						<button
 							type="button"
-							class="p-1.5 text-white cursor-pointer backdrop-blur-xl bg-black/10 rounded-full"
+							style="--p:0.4rem; --c:#fff; --cur:pointer; backdrop-filter:blur(24px); --bgc:rgb(0 0 0 / 0.1); --radius:9999px"
 							on:click={() => {
 								stopCamera();
 							}}
@@ -876,7 +875,7 @@
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 16 16"
 								fill="currentColor"
-								class="size-6"
+								style="--w:1.5rem; --h:1.5rem"
 							>
 								<path
 									d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z"
@@ -888,7 +887,7 @@
 			{/if}
 		</div>
 
-		<div class="flex justify-between items-center pb-2 w-full">
+		<div style="--d:flex; --jc:space-between; --ai:center;  --w:100%">
 			<div>
 				{#if camera}
 					<VideoInputMenu
@@ -900,12 +899,12 @@
 							await startVideoStream();
 						}}
 					>
-						<button class=" p-3 rounded-full bg-gray-50 dark:bg-gray-900" type="button">
+						<button style="--p:0.6rem; --radius:9999px; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-900)" type="button">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 20 20"
 								fill="currentColor"
-								class="size-5"
+								style="--w:1.2rem; --h:1.2rem"
 							>
 								<path
 									fill-rule="evenodd"
@@ -918,7 +917,7 @@
 				{:else}
 					<Tooltip content={$i18n.t('Camera')}>
 						<button
-							class=" p-3 rounded-full bg-gray-50 dark:bg-gray-900"
+							style="--p:0.6rem; --radius:9999px; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-900)"
 							type="button"
 							on:click={async () => {
 								await navigator.mediaDevices.getUserMedia({ video: true });
@@ -931,7 +930,7 @@
 								viewBox="0 0 24 24"
 								stroke-width="1.5"
 								stroke="currentColor"
-								class="size-5"
+								style="--w:1.2rem; --h:1.2rem"
 							>
 								<path
 									stroke-linecap="round"
@@ -958,7 +957,7 @@
 						}
 					}}
 				>
-					<div class=" line-clamp-1 text-sm font-medium">
+					<div style="--line-clamp:1; --size:0.8rem; --weight:500">
 						{#if loading}
 							{$i18n.t('Thinking...')}
 						{:else if assistantSpeaking}
@@ -972,7 +971,7 @@
 
 			<div>
 				<button
-					class=" p-3 rounded-full bg-gray-50 dark:bg-gray-900"
+					style="--p:0.6rem; --radius:9999px; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-900)"
 					on:click={async () => {
 						await stopAudioStream();
 						await stopVideoStream();
@@ -989,7 +988,7 @@
 						xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 20 20"
 						fill="currentColor"
-						class="size-5"
+						style="--w:1.2rem; --h:1.2rem"
 					>
 						<path
 							d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"

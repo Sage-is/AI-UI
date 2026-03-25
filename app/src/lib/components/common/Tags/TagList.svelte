@@ -5,6 +5,7 @@
 	import Tooltip from '../Tooltip.svelte';
 	import XMark from '$lib/components/icons/XMark.svelte';
 	import Badge from '../Badge.svelte';
+	import { showSearch, searchQuery } from '$lib/stores';
 	const dispatch = createEventDispatcher();
 
 	export let tags = [];
@@ -13,14 +14,41 @@
 {#each tags as tag}
 	<Tooltip content={tag.name}>
 		<li
-			class="relative group/tags px-1.5 py-[0.2px] gap-0.5 flex justify-between h-fit max-h-fit w-fit items-center rounded-full bg-gray-500/20 text-gray-700 dark:text-gray-200 transition cursor-pointer"
+			style="--pos:relative; 
+				--px:0.4rem; 
+				--py:0.2px; 
+				--g:0.125rem; 
+				--d:flex; 
+				--jc:space-between; 
+				--h:fit-content; 
+				--w:fit-content; 
+				--ai:center; 
+				--radius:9999px; 
+				--bgc:rgb(155 155 155 / 0.2); 
+				--c:var(--color-gray-700); 
+				--dark-c:var(--color-gray-200); 
+				--tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); 
+				--cur:pointer"
+			class="group/tags max-h-fit"
 		>
-			<div class=" text-[0.7rem] font-medium self-center line-clamp-1 w-fit">
+			<button
+				style="--size:0.7rem; --weight:500; --as:center; --line-clamp:1; --w:fit-content; --cur:pointer; --bg:none; --b:none; --p:0; --c:inherit"
+				type="button"
+				on:click|stopPropagation={() => {
+					searchQuery.set(`tag:${tag.name}`);
+					showSearch.set(true);
+				}}
+			>
 				{tag.name}
-			</div>
-			<div class="absolute invisible right-0.5 group-hover/tags:visible transition">
+			</button>
+			<div
+				style="--pos:absolute; 
+				--right:0.125rem; 
+				--tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+			>
 				<button
-					class="rounded-full border bg-white dark:bg-gray-700 h-full flex self-center cursor-pointer"
+					class="tag-delete"
+					style="--radius:9999px; --bgc:#fff; --dark-bgc:var(--color-gray-700); --h:100%; --d:flex; --op:0%; --as:center; --cur:pointer"
 					on:click={() => {
 						dispatch('delete', tag.name);
 					}}
@@ -33,3 +61,9 @@
 		</li>
 	</Tooltip>
 {/each}
+
+<style>
+	li:hover .tag-delete {
+		opacity: 100% !important;
+	}
+</style>

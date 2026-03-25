@@ -1,3 +1,14 @@
+---
+title: "Apache Reverse Proxy Configuration"
+description: "Guide for hosting Sage AI WebUI behind Apache with SSL, including Ollama server configuration."
+date: 2025-11-28
+tags:
+  - apache
+  - deployment
+  - ssl
+  - reverse-proxy
+---
+
 # Hosting UI and Models separately
 
 Sometimes, its beneficial to host Ollama, separate from the UI, but retain the RAG and RBAC support features shared across users:

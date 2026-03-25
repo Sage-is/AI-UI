@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 
-	import Channel from '$lib/components/channel/Channel.svelte';
+	import Space from '$lib/components/channel/Space.svelte';
 </script>
 
-<Channel id={$page.params.id} />
+<Space id={$page.params.id} />

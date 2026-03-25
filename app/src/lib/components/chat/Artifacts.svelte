@@ -204,14 +204,15 @@
 	});
 </script>
 
-<div class=" w-full h-full relative flex flex-col bg-gray-50 dark:bg-gray-850">
-	<div class="w-full h-full flex flex-col flex-1 relative">
+<div style="--w:100%; --h:100%; --pos:relative; --d:flex; --fd:column; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)">
+	<div style="--w:100%; --h:100%; --d:flex; --fd:column; --fx:1 1 0%; --pos:relative">
 		{#if contents.length > 0}
 			<div
-				class="pointer-events-auto z-20 flex justify-between items-center p-2.5 font-primar text-gray-900 dark:text-white"
+				style="--pe:auto; --z:20; --d:flex; --jc:space-between; --ai:center; --p:0.625rem; --c:var(--color-gray-900); --dark-c:#fff"
+	class="font-primar"
 			>
 				<button
-					class="self-center pointer-events-auto p-1 rounded-full bg-white dark:bg-gray-850"
+					style="--as:center; --pe:auto; --p:0.2rem; --radius:9999px; --bgc:#fff; --dark-bgc:var(--color-gray-850)"
 					on:click={() => {
 						showArtifacts.set(false);
 					}}
@@ -219,11 +220,12 @@
 					<ArrowLeft className="size-3.5  text-gray-900 dark:text-white" />
 				</button>
 
-				<div class="flex-1 flex items-center justify-between pr-1">
-					<div class="flex items-center space-x-2">
-						<div class="flex items-center gap-0.5 self-center min-w-fit" dir="ltr">
+				<div style="--fx:1 1 0%; --d:flex; --ai:center; --jc:space-between; --pr:0.2rem">
+					<div style="--d:flex; --ai:center; --g:0.5rem">
+						<div style="--d:flex; --ai:center; --g:0.125rem; --as:center; --minw:fit-content" dir="ltr">
 							<button
-								class="self-center p-1 hover:bg-black/5 dark:hover:bg-white/5 dark:hover:text-white hover:text-black rounded-md transition disabled:cursor-not-allowed"
+								style="--as:center; --p:0.2rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-dark-c:#fff; --hvr-c:#000; --radius:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="disabled:cursor-not-allowed"
 								on:click={() => navigateContent('prev')}
 								disabled={contents.length <= 1}
 							>
@@ -233,7 +235,7 @@
 									viewBox="0 0 24 24"
 									stroke="currentColor"
 									stroke-width="2.5"
-									class="size-3.5"
+									style="--w:0.8rem; --h:0.8rem"
 								>
 									<path
 										stroke-linecap="round"
@@ -243,7 +245,7 @@
 								</svg>
 							</button>
 
-							<div class="text-xs self-center dark:text-gray-100 min-w-fit">
+							<div style="--size:0.6rem; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content">
 								{$i18n.t('Version {{selectedVersion}} of {{totalVersions}}', {
 									selectedVersion: selectedContentIdx + 1,
 									totalVersions: contents.length
@@ -251,7 +253,8 @@
 							</div>
 
 							<button
-								class="self-center p-1 hover:bg-black/5 dark:hover:bg-white/5 dark:hover:text-white hover:text-black rounded-md transition disabled:cursor-not-allowed"
+								style="--as:center; --p:0.2rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-dark-c:#fff; --hvr-c:#000; --radius:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="disabled:cursor-not-allowed"
 								on:click={() => navigateContent('next')}
 								disabled={contents.length <= 1}
 							>
@@ -261,7 +264,7 @@
 									viewBox="0 0 24 24"
 									stroke="currentColor"
 									stroke-width="2.5"
-									class="size-3.5"
+									style="--w:0.8rem; --h:0.8rem"
 								>
 									<path
 										stroke-linecap="round"
@@ -273,9 +276,10 @@
 						</div>
 					</div>
 
-					<div class="flex items-center gap-1.5">
+					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<button
-							class="copy-code-button bg-none border-none text-xs bg-gray-50 hover:bg-gray-100 dark:bg-gray-850 dark:hover:bg-gray-800 transition rounded-md px-1.5 py-0.5"
+							style="--bs:none; --size:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.4rem; --px:0.4rem; --py:0.125rem"
+	class="copy-code-button bg-none"
 							on:click={() => {
 								copyToClipboard(contents[selectedContentIdx].content);
 								copied = true;
@@ -288,7 +292,8 @@
 
 						<Tooltip content={$i18n.t('Download')}>
 							<button
-								class=" bg-none border-none text-xs bg-gray-50 hover:bg-gray-100 dark:bg-gray-850 dark:hover:bg-gray-800 transition rounded-md p-0.5"
+								style="--bs:none; --size:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.4rem; --p:0.125rem"
+	class="bg-none"
 								on:click={downloadArtifact}
 							>
 								<ArrowDownTray className="size-3.5" />
@@ -298,7 +303,8 @@
 						{#if contents[selectedContentIdx].type === 'iframe'}
 							<Tooltip content={$i18n.t('Open in full screen')}>
 								<button
-									class=" bg-none border-none text-xs bg-gray-50 hover:bg-gray-100 dark:bg-gray-850 dark:hover:bg-gray-800 transition rounded-md p-0.5"
+									style="--bs:none; --size:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.4rem; --p:0.125rem"
+	class="bg-none"
 									on:click={showFullScreen}
 								>
 									<ArrowsPointingOut className="size-3.5" />
@@ -309,7 +315,7 @@
 				</div>
 
 				<button
-					class="self-center pointer-events-auto p-1 rounded-full bg-white dark:bg-gray-850"
+					style="--as:center; --pe:auto; --p:0.2rem; --radius:9999px; --bgc:#fff; --dark-bgc:var(--color-gray-850)"
 					on:click={() => {
 						dispatch('close');
 						showControls.set(false);
@@ -322,19 +328,19 @@
 		{/if}
 
 		{#if overlay}
-			<div class=" absolute top-0 left-0 right-0 bottom-0 z-10"></div>
+			<div style="--pos:absolute; --top:0; --left:0; --right:0; --bottom:0; --z:10"></div>
 		{/if}
 
-		<div class="flex-1 w-full h-full">
-			<div class=" h-full flex flex-col">
+		<div style="--fx:1 1 0%; --w:100%; --h:100%">
+			<div style="--h:100%; --d:flex; --fd:column">
 				{#if contents.length > 0}
-					<div class="max-w-full w-full h-full">
+					<div style="--maxw:100%; --w:100%; --h:100%">
 						{#if contents[selectedContentIdx].type === 'iframe'}
 							<iframe
 								bind:this={iframeElement}
 								title="Content"
 								srcdoc={contents[selectedContentIdx].content}
-								class="w-full border-0 h-full rounded-none"
+								style="--w:100%; --bw:0; --h:100%; --radius:0"
 								sandbox="allow-scripts allow-downloads{($settings?.iframeSandboxAllowForms ?? false)
 									? ' allow-forms'
 									: ''}{($settings?.iframeSandboxAllowSameOrigin ?? false)
@@ -350,7 +356,7 @@
 						{/if}
 					</div>
 				{:else}
-					<div class="m-auto font-medium text-xs text-gray-900 dark:text-white">
+					<div style="--m:auto; --weight:500; --size:0.6rem; --c:var(--color-gray-900); --dark-c:#fff">
 						{$i18n.t('No HTML, CSS, or JavaScript content found.')}
 					</div>
 				{/if}

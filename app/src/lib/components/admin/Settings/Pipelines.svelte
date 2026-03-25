@@ -216,25 +216,26 @@
 </script>
 
 <form
-	class="flex flex-col h-full justify-between space-y-3 text-sm"
+	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.8rem"
 	on:submit|preventDefault={async () => {
 		updateHandler();
 	}}
 >
-	<div class="overflow-y-scroll scrollbar-hidden h-full">
+	<div style="--ofy:scroll; --h:100%"
+	class="scrollbar-hidden">
 		{#if PIPELINES_LIST !== null}
-			<div class="flex w-full justify-between mb-2">
-				<div class=" self-center text-sm font-semibold">
+			<div style="--d:flex; --w:100%; --jc:space-between; --mb:0.5rem">
+				<div style="--as:center; --size:0.8rem; --weight:600">
 					{$i18n.t('Manage Pipelines')}
 				</div>
 			</div>
 
 			{#if PIPELINES_LIST.length > 0}
-				<div class="space-y-1">
-					<div class="flex gap-2">
-						<div class="flex-1">
+				<div style="--g:0.2rem">
+					<div style="--d:flex; --g:0.5rem">
+						<div style="--fx:1 1 0%">
 							<select
-								class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 								bind:value={selectedPipelinesUrlIdx}
 								placeholder={$i18n.t('Select a pipeline url')}
 								on:change={async () => {
@@ -242,12 +243,12 @@
 									await setPipelines();
 								}}
 							>
-								<option value="" selected disabled class="bg-gray-100 dark:bg-gray-700"
+								<option value="" selected disabled style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-700)"
 									>{$i18n.t('Select a pipeline url')}</option
 								>
 
 								{#each PIPELINES_LIST as pipelines, idx}
-									<option value={pipelines.idx.toString()} class="bg-gray-100 dark:bg-gray-700"
+									<option value={pipelines.idx.toString()} style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-700)"
 										>{pipelines.url}</option
 									>
 								{/each}
@@ -256,12 +257,12 @@
 					</div>
 				</div>
 
-				<div class=" my-2">
-					<div class=" mb-2 text-sm font-medium">
+				<div style="--my:0.5rem">
+					<div style="--mb:0.5rem; --size:0.8rem; --weight:500">
 						{$i18n.t('Upload Pipeline')}
 					</div>
-					<div class="flex w-full">
-						<div class="flex-1 mr-2">
+					<div style="--d:flex; --w:100%">
+						<div style="--fx:1 1 0%; --mr:0.5rem">
 							<input
 								id="pipelines-upload-input"
 								bind:files={pipelineFiles}
@@ -271,7 +272,7 @@
 							/>
 
 							<button
-								class="w-full text-sm font-medium py-2 bg-transparent hover:bg-gray-100 border border-dashed dark:border-gray-850 dark:hover:bg-gray-850 text-center rounded-xl"
+								style="--w:100%; --size:0.8rem; --weight:500; --py:0.5rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100);  ; --dark-bc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-850); --ta:center; --radius:0.6rem"
 								type="button"
 								on:click={() => {
 									document.getElementById('pipelines-upload-input')?.click();
@@ -285,7 +286,7 @@
 							</button>
 						</div>
 						<button
-							class="px-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 dark:bg-gray-850 dark:hover:bg-gray-800 dark:text-gray-100 rounded-lg transition"
+							style="--px:0.625rem; --bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --c:var(--color-gray-800); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:var(--color-gray-100); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							on:click={() => {
 								uploadPipelineHandler();
 							}}
@@ -293,9 +294,9 @@
 							type="button"
 						>
 							{#if uploading}
-								<div class="self-center">
+								<div style="--as:center">
 									<svg
-										class=" w-4 h-4"
+										style="--w:1rem; --h:1rem"
 										viewBox="0 0 24 24"
 										fill="currentColor"
 										xmlns="http://www.w3.org/2000/svg"
@@ -327,7 +328,7 @@
 									xmlns="http://www.w3.org/2000/svg"
 									viewBox="0 0 16 16"
 									fill="currentColor"
-									class="size-4"
+									style="--w:1rem; --h:1rem"
 								>
 									<path
 										d="M7.25 10.25a.75.75 0 0 0 1.5 0V4.56l2.22 2.22a.75.75 0 1 0 1.06-1.06l-3.5-3.5a.75.75 0 0 0-1.06 0l-3.5 3.5a.75.75 0 0 0 1.06 1.06l2.22-2.22v5.69Z"
@@ -341,20 +342,20 @@
 					</div>
 				</div>
 
-				<div class=" my-2">
-					<div class=" mb-2 text-sm font-medium">
+				<div style="--my:0.5rem">
+					<div style="--mb:0.5rem; --size:0.8rem; --weight:500">
 						{$i18n.t('Install from Github URL')}
 					</div>
-					<div class="flex w-full">
-						<div class="flex-1 mr-2">
+					<div style="--d:flex; --w:100%">
+						<div style="--fx:1 1 0%; --mr:0.5rem">
 							<input
-								class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 								placeholder={$i18n.t('Enter Github Raw URL')}
 								bind:value={pipelineDownloadUrl}
 							/>
 						</div>
 						<button
-							class="px-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 dark:bg-gray-850 dark:hover:bg-gray-800 dark:text-gray-100 rounded-lg transition"
+							style="--px:0.625rem; --bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --c:var(--color-gray-800); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:var(--color-gray-100); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							on:click={() => {
 								addPipelineHandler();
 							}}
@@ -362,9 +363,9 @@
 							type="button"
 						>
 							{#if downloading}
-								<div class="self-center">
+								<div style="--as:center">
 									<svg
-										class=" w-4 h-4"
+										style="--w:1rem; --h:1rem"
 										viewBox="0 0 24 24"
 										fill="currentColor"
 										xmlns="http://www.w3.org/2000/svg"
@@ -396,7 +397,7 @@
 									xmlns="http://www.w3.org/2000/svg"
 									viewBox="0 0 16 16"
 									fill="currentColor"
-									class="w-4 h-4"
+									style="--w:1rem; --h:1rem"
 								>
 									<path
 										d="M8.75 2.75a.75.75 0 0 0-1.5 0v5.69L5.03 6.22a.75.75 0 0 0-1.06 1.06l3.5 3.5a.75.75 0 0 0 1.06 0l3.5-3.5a.75.75 0 0 0-1.06-1.06L8.75 8.44V2.75Z"
@@ -409,30 +410,30 @@
 						</button>
 					</div>
 
-					<div class="mt-2 text-xs text-gray-500">
-						<span class=" font-semibold dark:text-gray-200">Warning:</span> Pipelines are a plugin
+					<div style="--mt:0.5rem; --size:0.6rem; --c:var(--color-gray-500)">
+						<span style="--weight:600; --dark-c:var(--color-gray-200)">Warning:</span> Pipelines are a plugin
 						system with arbitrary code execution —
-						<span class=" font-medium dark:text-gray-400"
+						<span style="--weight:500; --dark-c:var(--color-gray-400)"
 							>don't fetch random pipelines from sources you don't trust.</span
 						>
 					</div>
 				</div>
 
-				<hr class="border-gray-100 dark:border-gray-850 my-3 w-full" />
+				<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.6rem; --w:100%" />
 
 				{#if pipelines !== null}
 					{#if pipelines.length > 0}
-						<div class="flex w-full justify-between mb-2">
-							<div class=" self-center text-sm font-semibold">
+						<div style="--d:flex; --w:100%; --jc:space-between; --mb:0.5rem">
+							<div style="--as:center; --size:0.8rem; --weight:600">
 								{$i18n.t('Pipelines Valves')}
 							</div>
 						</div>
-						<div class="space-y-1">
+						<div style="--g:0.2rem">
 							{#if pipelines.length > 0}
-								<div class="flex gap-2">
-									<div class="flex-1">
+								<div style="--d:flex; --g:0.5rem">
+									<div style="--fx:1 1 0%">
 										<select
-											class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+											style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 											bind:value={selectedPipelineIdx}
 											placeholder={$i18n.t('Select a pipeline')}
 											on:change={async () => {
@@ -441,7 +442,7 @@
 											}}
 										>
 											{#each pipelines as pipeline, idx}
-												<option value={idx} class="bg-gray-100 dark:bg-gray-700"
+												<option value={idx} style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-700)"
 													>{pipeline.name} ({pipeline.type ?? 'pipe'})</option
 												>
 											{/each}
@@ -449,7 +450,7 @@
 									</div>
 
 									<button
-										class="px-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 dark:bg-gray-850 dark:hover:bg-gray-800 dark:text-gray-100 rounded-lg transition"
+										style="--px:0.625rem; --bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --c:var(--color-gray-800); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:var(--color-gray-100); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 										on:click={() => {
 											deletePipelineHandler();
 										}}
@@ -459,7 +460,7 @@
 											xmlns="http://www.w3.org/2000/svg"
 											viewBox="0 0 16 16"
 											fill="currentColor"
-											class="w-4 h-4"
+											style="--w:1rem; --h:1rem"
 										>
 											<path
 												fill-rule="evenodd"
@@ -471,38 +472,38 @@
 								</div>
 							{/if}
 
-							<div class="space-y-1">
+							<div style="--g:0.2rem">
 								{#if pipelines[selectedPipelineIdx].valves}
 									{#if valves}
 										{#each Object.keys(valves_spec.properties) as property, idx}
-											<div class=" py-0.5 w-full justify-between">
-												<div class="flex w-full justify-between">
-													<div class=" self-center text-xs font-medium">
+											<div style="--py:0.125rem; --w:100%; --jc:space-between">
+												<div style="--d:flex; --w:100%; --jc:space-between">
+													<div style="--as:center; --size:0.6rem; --weight:500">
 														{valves_spec.properties[property].title}
 													</div>
 
 													<button
-														class="p-1 px-3 text-xs flex rounded-sm transition"
+														style="--p:0.2rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 														type="button"
 														on:click={() => {
 															valves[property] = (valves[property] ?? null) === null ? '' : null;
 														}}
 													>
 														{#if (valves[property] ?? null) === null}
-															<span class="ml-2 self-center"> {$i18n.t('None')} </span>
+															<span style="--ml:0.5rem; --as:center"> {$i18n.t('None')} </span>
 														{:else}
-															<span class="ml-2 self-center"> {$i18n.t('Custom')} </span>
+															<span style="--ml:0.5rem; --as:center"> {$i18n.t('Custom')} </span>
 														{/if}
 													</button>
 												</div>
 
 												{#if (valves[property] ?? null) !== null}
 													<!-- {valves[property]} -->
-													<div class="flex mt-0.5 mb-1.5 space-x-2">
-														<div class=" flex-1">
+													<div style="--d:flex; --mt:0.125rem; --mb:0.4rem; --g:0.5rem">
+														<div style="--fx:1 1 0%">
 															{#if valves_spec.properties[property]?.enum ?? null}
 																<select
-																	class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+																	style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 																	bind:value={valves[property]}
 																>
 																	{#each valves_spec.properties[property].enum as option}
@@ -512,18 +513,18 @@
 																	{/each}
 																</select>
 															{:else if (valves_spec.properties[property]?.type ?? null) === 'boolean'}
-																<div class="flex justify-between items-center">
-																	<div class="text-xs text-gray-500">
+																<div style="--d:flex; --jc:space-between; --ai:center">
+																	<div style="--size:0.6rem; --c:var(--color-gray-500)">
 																		{valves[property] ? 'Enabled' : 'Disabled'}
 																	</div>
 
-																	<div class=" pr-2">
+																	<div style="--pr:0.5rem">
 																		<Switch bind:state={valves[property]} />
 																	</div>
 																</div>
 															{:else}
 																<input
-																	class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+																	style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 																	type="text"
 																	placeholder={valves_spec.properties[property].title}
 																	bind:value={valves[property]}
@@ -548,8 +549,8 @@
 						<div>Pipelines Not Detected</div>
 					{/if}
 				{:else}
-					<div class="flex justify-center">
-						<div class="my-auto">
+					<div style="--d:flex; --jc:center">
+						<div style="--my:auto">
 							<Spinner className="size-4" />
 						</div>
 					</div>
@@ -558,8 +559,8 @@
 				<div>{$i18n.t('Pipelines Not Detected')}</div>
 			{/if}
 		{:else}
-			<div class="flex justify-center h-full">
-				<div class="my-auto">
+			<div style="--d:flex; --jc:center; --h:100%">
+				<div style="--my:auto">
 					<Spinner className="size-6" />
 				</div>
 			</div>
@@ -567,9 +568,9 @@
 	</div>
 
 	{#if PIPELINES_LIST !== null && PIPELINES_LIST.length > 0}
-		<div class="flex justify-end pt-3 text-sm font-medium">
+		<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.8rem; --weight:500">
 			<button
-				class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+				style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 				type="submit"
 			>
 				{$i18n.t('Save')}

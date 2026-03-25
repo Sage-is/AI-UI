@@ -3,6 +3,7 @@
 	const i18n = getContext('i18n');
 
 	import { WEBUI_BASE_URL } from '$lib/constants';
+	import { getBranding } from '$lib/apis/configs';
 
 	import Marquee from './common/Marquee.svelte';
 	import SlideShow from './common/SlideShow.svelte';
@@ -11,10 +12,33 @@
 	export let show = true;
 	export let getStartedHandler = () => {};
 
+	let branding = {};
+
+	async function loadBranding() {
+		try {
+			branding = await getBranding();
+		} catch (err) {
+			console.error('Failed to load branding:', err);
+		}
+	}
+
 	function setLogoImage() {
 		const logo = document.getElementById('logo');
 
 		if (logo) {
+			// If custom branding logo is set, use it
+			if (branding?.logo_url || branding?.logo_dark_url) {
+				const isDarkMode = document.documentElement.classList.contains('dark');
+				if (isDarkMode && branding?.logo_dark_url) {
+					logo.src = branding.logo_dark_url;
+				} else if (branding?.logo_url) {
+					logo.src = branding.logo_url;
+				}
+				logo.style.filter = '';
+				return;
+			}
+
+			// Fallback to default logo behavior
 			const isDarkMode = document.documentElement.classList.contains('dark');
 
 			if (isDarkMode) {
@@ -33,38 +57,42 @@
 		}
 	}
 
-	$: if (show) {
+	onMount(() => {
+		loadBranding();
+	});
+
+	$: if (show && branding) {
 		setLogoImage();
 	}
 </script>
 
 {#if show}
-	<div class="w-full h-screen max-h-[100dvh] text-white relative">
-		<div class="fixed m-10 z-50">
-			<div class="flex space-x-2">
-				<div class=" self-center">
-					<img
-						id="logo"
-						crossorigin="anonymous"
-						src="{WEBUI_BASE_URL}/static/icons/favicon.png"
-						class=" w-6 rounded-full"
-						alt="logo"
-					/>
-				</div>
-			</div>
-		</div>
-
+	<div style="--w:100%; --h:100vh; --maxh:100dvh; --c:#fff; --pos:relative">
 		<SlideShow duration={5000} />
 
 		<div
-			class="w-full h-full absolute top-0 left-0 bg-linear-to-t from-20% from-black to-transparent"
+			style="--w:100%; --h:100%; --pos:absolute; --top:0; --left:0; --bgi:linear-gradient(0deg, var(--tw-gradient-stops)); --tw-gradient-from:#000; --tw-gradient-to:transparent"
+	class="from-20%"
 		></div>
 
-		<div class="w-full h-full absolute top-0 left-0 backdrop-blur-xs bg-black/50"></div>
+		<div style="--w:100%; --h:100%; --pos:absolute; --top:0; --left:0; --bgc:rgb(0 0 0 / 0.5)"
+	class="backdrop-blur-xs"></div>
 
-		<div class="relative bg-transparent w-full min-h-screen flex z-10">
-			<div class="flex flex-col justify-end w-full items-center pb-10 text-center">
-				<div class="text-5xl lg:text-7xl font-secondary">
+		<div style="--pos:relative; --bgc:transparent; --w:100%; --minh:100vh; --d:flex; --z:10">
+			<div style="--d:flex; --fd:column; --jc:flex-end; --w:100%; --ai:center; --pb:2.5rem; --ta:center">
+				<!-- Centered logo above rotating text -->
+				<div style="--d:flex; --jc:center; --mb:1.5rem">
+					<img
+						id="logo"
+						crossorigin="anonymous"
+						src={branding?.logo_url || `${WEBUI_BASE_URL}/static/icons/favicon.png`}
+						style="--w:5rem; --h:5rem; --radius:9999px"
+						alt="logo"
+					/>
+				</div>
+
+				<div style="--size:3rem; --size-lg:4.5rem"
+	class="font-secondary">
 					<Marquee
 						duration={5000}
 						words={[
@@ -81,21 +109,22 @@
 						]}
 					/>
 
-					<div class="mt-0.5">{$i18n.t(`wherever you are`)}</div>
+					<div style="--mt:0.125rem">{$i18n.t(`with Sage.is AI-UI`)}</div>
 				</div>
 
-				<div class="flex justify-center mt-8">
-					<div class="flex flex-col justify-center items-center">
+				<div style="--d:flex; --jc:center; --mt:2rem">
+					<div style="--d:flex; --fd:column; --jc:center; --ai:center">
 						<button
 							aria-labelledby="get-started"
-							class="relative z-20 flex p-1 rounded-full bg-white/5 hover:bg-white/10 transition font-medium text-sm"
+							style="--pos:relative; --z:20; --d:flex; --p:0.2rem; --radius:9999px; --bgc:rgb(255 255 255 / 0.05); --hvr-bgc:rgb(255 255 255 / 0.1); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.8rem"
 							on:click={() => {
 								getStartedHandler();
 							}}
 						>
 							<ArrowRightCircle className="size-6" />
 						</button>
-						<div id="get-started" class="mt-1.5 font-primary text-base font-medium">
+						<div id="get-started" style="--mt:0.4rem; --size:1rem; --weight:500"
+	class="font-primary">
 							{$i18n.t(`Get started`)}
 						</div>
 					</div>

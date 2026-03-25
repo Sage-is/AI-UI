@@ -13,14 +13,15 @@
 <Switch.Root
 	bind:checked={state}
 	{id}
-	class="flex h-5 min-h-5 w-9 shrink-0 cursor-pointer items-center rounded-full px-[3px] mx-[1px] transition  {($settings?.highContrastMode ??
-	false)
-		? 'focus:outline focus:outline-2 focus:outline-gray-800 focus:dark:outline-gray-200'
-		: 'outline outline-1 outline-gray-100 dark:outline-gray-800'} {state
-		? ' bg-emerald-600'
-		: 'bg-gray-200 dark:bg-transparent'}"
+	style="--d:flex; --w: 1.8rem; --h:calc(var(--w) / 1.8); --cur: pointer; --shadow-inset:6;
+		{($settings?.highContrastMode ?? false)
+		? '--bg: #047857; --bg: #000; --b: 0.2em solid #666666;'
+		: ''} {state ? '--bg: #10b981; --b: #10b981;' : '--bg: #e5e7eb;'}"
 >
 	<Switch.Thumb
-		class="pointer-events-none block size-4 shrink-0 rounded-full bg-white transition-transform data-[state=checked]:translate-x-3.5 data-[state=unchecked]:translate-x-0 data-[state=unchecked]:shadow-mini "
+		style="--pe:none; --d:block; --w:1rem; --h:1rem; --fs:0; --radius:9999px; --bgc:#fff; 
+			--tn:transform 150ms cubic-bezier(0.4, 0, 0.2, 1); --shadow: 4; --translatex:-3px; --translatey:0px;
+			{($settings?.highContrastMode ?? false) ? '--b: 0.2em solid #000;' : ''};"
+		class="data-[state=checked]:translate-x-4 data-[state=checked]:translate-y-0 data-[state=unchecked]:shadow-mini"
 	/>
 </Switch.Root>

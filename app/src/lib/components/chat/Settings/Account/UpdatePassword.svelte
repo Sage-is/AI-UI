@@ -5,14 +5,13 @@
 
 	const i18n = getContext('i18n');
 
-	let show = false;
 	let currentPassword = '';
 	let newPassword = '';
 	let newPasswordConfirm = '';
 
 	const updatePasswordHandler = async () => {
 		if (newPassword === newPasswordConfirm) {
-			const res = await updateUserPassword(localStorage.token, currentPassword, newPassword).catch(
+			const res = await updateUserPassword(currentPassword, newPassword).catch(
 				(error) => {
 					toast.error(`${error}`);
 					return null;
@@ -28,7 +27,7 @@
 			newPasswordConfirm = '';
 		} else {
 			toast.error(
-				`The passwords you entered don't quite match. Please double-check and try again.`
+				$i18n.t(`The passwords you entered don't quite match. Please double-check and try again.`)
 			);
 			newPassword = '';
 			newPasswordConfirm = '';
@@ -37,30 +36,41 @@
 </script>
 
 <form
-	class="flex flex-col text-sm"
+	style="--d:flex; --fd:column; --size:0.8rem"
 	on:submit|preventDefault={() => {
 		updatePasswordHandler();
 	}}
 >
-	<div class="flex justify-between items-center text-sm">
-		<div class="  font-medium">{$i18n.t('Change Password')}</div>
-		<button
-			class=" text-xs font-medium text-gray-500"
-			type="button"
-			on:click={() => {
-				show = !show;
-			}}>{show ? $i18n.t('Hide') : $i18n.t('Show')}</button
-		>
-	</div>
+	<details>
+		<summary style="--d:flex; --ai:center; --g:0.5rem; --cur:pointer; --us:none; --py:0.2rem;">
+			<span style="--weight:500">{$i18n.t('Password')}</span>
+			<details style="--d:inline; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --w: 80%; --b:0;
+					--m: auto;"
+				on:click|stopPropagation
+			>
+				<summary style="--cur:pointer; --us:none;">
+					{$i18n.t('Why change my password?')} &#9662;
+				</summary>
+				<div style="--mt:0.4rem; --lh:1.5; --size:0.8rem">
+					<p style="--mb:0.4rem">
+						{$i18n.t('Changing your password regularly helps keep your account secure — especially if you think someone else may have seen it, or if you used the same password on another site that was compromised.')}
+					</p>
+					<p>
+						{$i18n.t("Pick something you haven't used before, and make sure it's hard to guess. A mix of words, numbers, and symbols works well — or try a passphrase like a short sentence only you would know.")}
+					</p>
+				</div>
+			</details>
+			<span style="--ml:auto; --size:0.6rem; --weight:500; --c:var(--color-gray-400)">&#9662;</span>
+		</summary>
 
-	{#if show}
-		<div class=" py-2.5 space-y-1.5">
-			<div class="flex flex-col w-full">
-				<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Current Password')}</div>
+		<div style="--py:0.625rem; --g:0.4rem">
+			<div style="--d:flex; --fd:column; --w:100%">
+				<div style="--mb:0.2rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Current Password')}</div>
 
-				<div class="flex-1">
+				<div style="--fx:1 1 0%">
 					<input
-						class="w-full bg-transparent dark:text-gray-300 outline-hidden placeholder:opacity-30"
+						style="--w:100%; --bgc:transparent; --dark-c:var(--color-gray-300); --oe:none"
+						class="placeholder:opacity-30"
 						type="password"
 						bind:value={currentPassword}
 						placeholder={$i18n.t('Enter your current password')}
@@ -70,12 +80,13 @@
 				</div>
 			</div>
 
-			<div class="flex flex-col w-full">
-				<div class=" mb-1 text-xs text-gray-500">{$i18n.t('New Password')}</div>
+			<div style="--d:flex; --fd:column; --w:100%">
+				<div style="--mb:0.2rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('New Password')}</div>
 
-				<div class="flex-1">
+				<div style="--fx:1 1 0%">
 					<input
-						class="w-full bg-transparent text-sm dark:text-gray-300 outline-hidden placeholder:opacity-30"
+						style="--w:100%; --bgc:transparent; --size:0.8rem; --dark-c:var(--color-gray-300); --oe:none"
+						class="placeholder:opacity-30"
 						type="password"
 						bind:value={newPassword}
 						placeholder={$i18n.t('Enter your new password')}
@@ -85,12 +96,13 @@
 				</div>
 			</div>
 
-			<div class="flex flex-col w-full">
-				<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Confirm Password')}</div>
+			<div style="--d:flex; --fd:column; --w:100%">
+				<div style="--mb:0.2rem; --size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Confirm Password')}</div>
 
-				<div class="flex-1">
+				<div style="--fx:1 1 0%">
 					<input
-						class="w-full bg-transparent text-sm dark:text-gray-300 outline-hidden placeholder:opacity-30"
+						style="--w:100%; --bgc:transparent; --size:0.8rem; --dark-c:var(--color-gray-300); --oe:none"
+						class="placeholder:opacity-30"
 						type="password"
 						bind:value={newPasswordConfirm}
 						placeholder={$i18n.t('Confirm your new password')}
@@ -101,12 +113,12 @@
 			</div>
 		</div>
 
-		<div class="mt-3 flex justify-end">
+		<div style="--mt:0.6rem; --d:flex; --jc:flex-end">
 			<button
-				class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+				style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:background-color 150ms; --radius:9999px"
 			>
 				{$i18n.t('Update password')}
 			</button>
 		</div>
-	{/if}
+	</details>
 </form>

@@ -29,6 +29,18 @@ export const getAdminConfig = async () =>
 export const updateAdminConfig = async (body: object) =>
 	api(`${WEBUI_API_BASE_URL}/auths/admin/config`, 'POST', body, 'updateAdminConfig');
 
+export const getOAuthConfig = async () =>
+	api(`${WEBUI_API_BASE_URL}/auths/admin/config/oauth`, 'GET', null, 'getOAuthConfig');
+
+export const updateOAuthConfig = async (body: object) =>
+	api(`${WEBUI_API_BASE_URL}/auths/admin/config/oauth`, 'POST', body, 'updateOAuthConfig');
+
+export const sendMagicLink = async (email: string) =>
+	api(`${WEBUI_API_BASE_URL}/auths/magic-link/send`, 'POST', { email }, 'sendMagicLink');
+
+export const verifyMagicLink = async (token: string) =>
+	api(`${WEBUI_API_BASE_URL}/auths/magic-link/verify`, 'POST', { token }, 'verifyMagicLink');
+
 export const getSessionUser = async (customFetch = fetch) =>
 	api(`${WEBUI_API_BASE_URL}/auths/`, 'GET', null, 'getSessionUser', customFetch);
 
@@ -66,6 +78,7 @@ export const userSignOut = async () => {
 };
 
 export const addUser = async (
+	token: string,
 	name: string,
 	email: string,
 	password: string,
@@ -91,6 +104,9 @@ export const updateUserPassword = async (password: string, newPassword: string) 
 		password,
 		new_password: newPassword
 	}, 'updateUserPassword');
+
+export const claimAccount = async (email: string, password: string) =>
+	api(`${WEBUI_API_BASE_URL}/auths/claim`, 'POST', { email, password }, 'claimAccount');
 
 export const getSignUpEnabledStatus = async () =>
 	api(`${WEBUI_API_BASE_URL}/auths/signup/enabled`, 'GET', null, 'getSignUpEnabledStatus');

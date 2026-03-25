@@ -1,4 +1,5 @@
 .DS_Store
+.stfolder/
 node_modules
 /app/build
 /app/.svelte-kit
@@ -20,7 +21,7 @@ __pycache__/
 app/static/pyodide/*
 !app/static/pyodide/pyodide-lock.json
 
-# Distribution / Timothy Jaeryang 
+# Distribution / Timothy Jaeryang
 .Python
 build/
 develop-eggs/
@@ -307,5 +308,9 @@ dist
 cypress/videos
 cypress/screenshots
 .vscode/settings.json
+# DB snapshots for upgrade testing (large binary files, synced via SyncThing/B2)
+tools/db_snapshots/*.sqlite
+tools/db_snapshots/*.db
+
 # Docker app structure
 # Symlinks for development convenience

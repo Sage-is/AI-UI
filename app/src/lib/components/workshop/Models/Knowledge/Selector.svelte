@@ -143,78 +143,78 @@
 
 	<div slot="content">
 		<DropdownMenu.Content
-			class="w-full max-w-96 rounded-xl px-1 py-1.5 border border-gray-300/30 dark:border-gray-700/50 z-[99999999] bg-white dark:bg-gray-850 dark:text-white shadow-lg"
+			style="--w:100%; --maxw:24rem; --radius:0.6rem; --px:0.2rem; --py:0.4rem;  --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.5); --z:99999999; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:4"
 			sideOffset={8}
 			side="bottom"
 			align="start"
 			transition={flyAndScale}
 		>
-			<div class=" flex w-full space-x-2 py-0.5 px-2 pb-2">
-				<div class="flex flex-1">
-					<div class=" self-center ml-1 mr-3">
+			<div style="--d:flex; --w:100%; --g:0.5rem; --py:0.125rem; --px:0.5rem; --pb:0.5rem">
+				<div style="--d:flex; --fx:1 1 0%">
+					<div style="--as:center; --ml:0.2rem; --mr:0.6rem">
 						<Search />
 					</div>
 					<input
-						class=" w-full text-sm pr-4 py-1 rounded-r-xl outline-hidden bg-transparent"
+						style="--w:100%; --size:0.8rem; --pr:1rem; --py:0.2rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 						bind:value={query}
 						placeholder={$i18n.t('Search Knowledge')}
 					/>
 				</div>
 			</div>
 
-			<div class="max-h-56 overflow-y-scroll">
+			<div style="--maxh:14rem; --ofy:scroll">
 				{#if filteredItems.length === 0}
-					<div class="text-center text-xs text-gray-500 dark:text-gray-400 py-4">
+					<div style="--ta:center; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --py:1rem">
 						{$i18n.t('No knowledge found')}
 					</div>
 				{:else}
 					{#each filteredItems as item}
 						<DropdownMenu.Item
-							class="flex gap-2.5 items-center px-3 py-2 text-sm  cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md"
+							style="--d:flex; --g:0.625rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem"
 							on:click={() => {
 								dispatch('select', item);
 							}}
 						>
 							<div>
-								<div class=" font-medium text-black dark:text-gray-100 flex items-center gap-1">
+								<div style="--weight:500; --c:#000; --dark-c:var(--color-gray-100); --d:flex; --ai:center; --g:0.2rem">
 									{#if item.legacy}
 										<div
-											class="bg-gray-500/20 text-gray-700 dark:text-gray-200 rounded-sm uppercase text-xs font-bold px-1 shrink-0"
+											style="--bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200); --radius:0.125rem; --tt:uppercase; --size:0.6rem; --weight:700; --px:0.2rem; --fs:0"
 										>
 											Legacy
 										</div>
 									{:else if item?.meta?.document}
 										<div
-											class="bg-gray-500/20 text-gray-700 dark:text-gray-200 rounded-sm uppercase text-xs font-bold px-1 shrink-0"
+											style="--bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200); --radius:0.125rem; --tt:uppercase; --size:0.6rem; --weight:700; --px:0.2rem; --fs:0"
 										>
 											Document
 										</div>
 									{:else if item?.type === 'file'}
 										<div
-											class="bg-gray-500/20 text-gray-700 dark:text-gray-200 rounded-sm uppercase text-xs font-bold px-1 shrink-0"
+											style="--bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200); --radius:0.125rem; --tt:uppercase; --size:0.6rem; --weight:700; --px:0.2rem; --fs:0"
 										>
 											File
 										</div>
 									{:else if item?.type === 'note'}
 										<div
-											class="bg-blue-500/20 text-blue-700 dark:text-blue-200 rounded-sm uppercase text-xs font-bold px-1 shrink-0"
+											style="--bgc:rgb(59 130 246 / 0.2); --c:#1d4ed8; --dark-c:#bfdbfe; --radius:0.125rem; --tt:uppercase; --size:0.6rem; --weight:700; --px:0.2rem; --fs:0"
 										>
 											Note
 										</div>
 									{:else}
 										<div
-											class="bg-green-500/20 text-green-700 dark:text-green-200 rounded-sm uppercase text-xs font-bold px-1 shrink-0"
+											style="--bgc:rgb(34 197 94 / 0.2); --c:#15803d; --dark-c:#bbf7d0; --radius:0.125rem; --tt:uppercase; --size:0.6rem; --weight:700; --px:0.2rem; --fs:0"
 										>
 											Collection
 										</div>
 									{/if}
 
-									<div class="line-clamp-1">
+									<div style="--line-clamp:1">
 										{decodeString(item?.name)}
 									</div>
 								</div>
 
-								<div class=" text-xs text-gray-600 dark:text-gray-100 line-clamp-1">
+								<div style="--size:0.6rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-100); --line-clamp:1">
 									{item?.description}
 								</div>
 							</div>

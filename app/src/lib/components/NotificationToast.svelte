@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { WEBUI_BASE_URL } from '$lib/constants';
 	import { settings, playingNotificationSound, isLastActiveTab } from '$lib/stores';
+	import { getBranding } from '$lib/apis/configs';
 	import DOMPurify from 'dompurify';
 
 	import { marked } from 'marked';
@@ -12,7 +13,15 @@
 	export let title: string = 'HI';
 	export let content: string;
 
-	onMount(() => {
+	let branding: { logo_url?: string; favicon_url?: string } = {};
+
+	onMount(async () => {
+		try {
+			branding = await getBranding();
+		} catch (err) {
+			console.error('Failed to load branding:', err);
+		}
+
 		if (!navigator.userActivation.hasBeenActive) {
 			return;
 		}
@@ -32,22 +41,23 @@
 </script>
 
 <button
-	class="flex gap-2.5 text-left min-w-[var(--width)] w-full dark:bg-gray-850 dark:text-white bg-white text-black border border-gray-100 dark:border-gray-850 rounded-xl px-3.5 py-3.5"
+	style="--d:flex; --g:0.625rem; --ta:left; --minw:var(--width); --w:100%; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --bgc:#fff; --c:#000;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --radius:0.6rem; --px:0.8rem; --py:0.8rem"
 	on:click={() => {
 		onClick();
 		dispatch('closeToast');
 	}}
 >
-	<div class="shrink-0 self-top -translate-y-0.5">
-		<img src="{WEBUI_BASE_URL}/static/icons/favicon.png" alt="favicon" class="size-7 rounded-full" />
+	<div style="--fs:0; --translatey:-0.125rem"
+	class="self-top">
+		<img src={branding?.favicon_url || branding?.logo_url || `${WEBUI_BASE_URL}/static/icons/favicon.png`} alt="favicon" style="--w:1.75rem; --h:1.75rem; --radius:9999px" />
 	</div>
 
 	<div>
 		{#if title}
-			<div class=" text-[13px] font-medium mb-0.5 line-clamp-1 capitalize">{title}</div>
+			<div style="--size:13px; --weight:500; --mb:0.125rem; --line-clamp:1; --tt:capitalize">{title}</div>
 		{/if}
 
-		<div class=" line-clamp-2 text-xs self-center dark:text-gray-300 font-normal">
+		<div style="--line-clamp:2; --size:0.6rem; --as:center; --dark-c:var(--color-gray-300); --weight:400">
 			{@html DOMPurify.sanitize(marked(content))}
 		</div>
 	</div>

@@ -2,14 +2,16 @@
 	export let size = 'md';
 </script>
 
-<span class="relative flex {size === 'md' ? 'size-3 my-2' : 'size-2 my-1'} mx-1">
+<span style="--pos:relative; --d:flex; --mx:0.2rem"
+	class="{size === 'md' ? 'size-3 my-2' : 'size-2 my-1'}">
 	<span
-		class="absolute inline-flex h-full w-full animate-pulse rounded-full bg-gray-700 dark:bg-gray-200 opacity-75"
+		style="--pos:absolute; --d:inline-flex; --h:100%; --w:100%; animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; --radius:9999px; --bgc:var(--color-gray-700); --dark-bgc:var(--color-gray-200); --op:0.75"
 	></span>
 	<span
-		class="relative inline-flex {size === 'md'
+		style="--pos:relative; --d:inline-flex; --radius:9999px; --bgc:#000; --dark-bgc:#fff"
+	class="{size === 'md'
 			? 'size-3'
-			: 'size-2'} rounded-full bg-black dark:bg-white animate-size"
+			: 'size-2'} animate-size"
 	></span>
 </span>
 

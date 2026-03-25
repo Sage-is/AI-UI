@@ -1,23 +1,31 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { getContext } from 'svelte';
 
-	import { socket, user } from '$lib/stores';
+	import { settings, socket, user } from '$lib/stores';
 
-	import { getChannelThreadMessages, sendMessage } from '$lib/apis/spaces';
+	import { getSpaceThreadMessages, sendMessage } from '$lib/apis/spaces';
 
 	import XMark from '$lib/components/icons/XMark.svelte';
-	import MessageInput from './MessageInput.svelte';
+	import MessageInput from '../chat/MessageInput.svelte';
 	import Messages from './Messages.svelte';
-	import { onDestroy, onMount, tick } from 'svelte';
+	import { onDestroy, tick } from 'svelte';
 	import { toast } from 'svelte-sonner';
+	import IndicatorStack from './IndicatorStack.svelte';
+
+	const i18n = getContext('i18n');
 
 	export let threadId = null;
-	export let channel = null;
+	export let space = null;
+	export let participants: { users: any[]; agents: any[] } = { users: [], agents: [] };
 
 	export let onClose = () => {};
 
 	let messages = null;
 	let top = false;
+
+	let prompt = '';
+	let files = [];
 
 	let typingUsers = [];
 	let typingUsersTimeout = {};
@@ -36,11 +44,14 @@
 		messages = null;
 		top = false;
 
+		prompt = '';
+		files = [];
+
 		typingUsers = [];
 		typingUsersTimeout = {};
 
-		if (channel) {
-			messages = await getChannelThreadMessages(localStorage.token, channel.id, threadId);
+		if (space) {
+			messages = await getSpaceThreadMessages(localStorage.token, space.id, threadId);
 
 			if (messages.length < 50) {
 				top = true;
@@ -53,15 +64,17 @@
 		}
 	};
 
-	const channelEventHandler = async (event) => {
+	const spaceEventHandler = async (event) => {
 		console.debug(event);
-		if (event.channel_id === channel.id) {
+		if (event.space_id === space.id) {
 			const type = event?.data?.type ?? null;
 			const data = event?.data?.data ?? null;
 
 			if (type === 'message') {
 				if ((data?.parent_id ?? null) === threadId) {
 					if (messages) {
+						// Skip if already added optimistically
+						if (messages.find((m) => m.id === data.id)) return;
 						messages = [data, ...messages];
 
 						if (typingUsers.find((user) => user.id === event.user.id)) {
@@ -118,24 +131,33 @@
 		}
 	};
 
-	const submitHandler = async ({ content, data }) => {
-		if (!content && (data?.files ?? []).length === 0) {
+	const submitHandler = async (content) => {
+		if (!content && files.length === 0) {
 			return;
 		}
 
-		const res = await sendMessage(localStorage.token, channel.id, {
+		const messageContent = ($settings?.richTextInput ?? true)
+			? content.replaceAll('\n\n', '\n')
+			: content;
+
+		const res = await sendMessage(localStorage.token, space.id, {
 			parent_id: threadId,
-			content: content,
-			data: data
+			content: messageContent,
+			data: { files: files.length > 0 ? files : undefined }
 		}).catch((error) => {
 			toast.error(`${error}`);
 			return null;
 		});
+
+		if (res) {
+			prompt = '';
+			files = [];
+		}
 	};
 
 	const onChange = async () => {
-		$socket?.emit('channel-events', {
-			channel_id: channel.id,
+		$socket?.emit('space-events', {
+			space_id: space.id,
 			message_id: threadId,
 			data: {
 				type: 'typing',
@@ -146,23 +168,25 @@
 		});
 	};
 
-	onMount(() => {
-		$socket?.on('channel-events', channelEventHandler);
-	});
+	// Reactive socket registration — re-registers when socket becomes available
+	$: if ($socket) {
+		$socket.off('space-events', spaceEventHandler);
+		$socket.on('space-events', spaceEventHandler);
+	}
 
 	onDestroy(() => {
-		$socket?.off('channel-events', channelEventHandler);
+		$socket?.off('space-events', spaceEventHandler);
 	});
 </script>
 
-{#if channel}
-	<div class="flex flex-col w-full h-full bg-gray-50 dark:bg-gray-850">
-		<div class="flex items-center justify-between px-3.5 pt-3">
-			<div class=" font-medium text-lg">Thread</div>
+{#if space}
+	<div style="--d:flex; --fd:column; --w:100%; --h:100%; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)">
+		<div style="--d:flex; --ai:center; --jc:space-between; --px:0.8rem; --pt:0.6rem">
+			<div style="--weight:500; --size:1.125rem">Thread</div>
 
 			<div>
 				<button
-					class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 p-2"
+					style="--c:var(--color-gray-500); --hvr-c:var(--color-gray-700); --dark-c:var(--color-gray-400); --hvr-dark-c:var(--color-gray-300); --p:0.5rem"
 					on:click={() => {
 						onClose();
 					}}
@@ -172,17 +196,17 @@
 			</div>
 		</div>
 
-		<div class=" max-h-full w-full overflow-y-auto pt-3" bind:this={messagesContainerElement}>
+		<div style="--maxh:100%; --w:100%; --ofy:auto; --pt:0.6rem" bind:this={messagesContainerElement}>
 			<Messages
 				id={threadId}
-				{channel}
+				{space}
 				{messages}
 				{top}
 				thread={true}
 				onLoad={async () => {
-					const newMessages = await getChannelThreadMessages(
+					const newMessages = await getSpaceThreadMessages(
 						localStorage.token,
-						channel.id,
+						space.id,
 						threadId,
 						messages.length
 					);
@@ -196,8 +220,24 @@
 				}}
 			/>
 
-			<div class=" pb-[1rem] px-2.5">
-				<MessageInput id={threadId} {typingUsers} {onChange} onSubmit={submitHandler} />
+			<div style="--pb:1rem; --px:0.625rem">
+				<IndicatorStack typingUsers={typingUsers} />
+
+				<MessageInput
+					bind:prompt
+					bind:files
+					placeholder={$i18n.t('Reply in thread')}
+					selectedModels={['']}
+					history={{}}
+					voiceModeEnabled={false}
+					spaceParticipants={participants}
+					stopResponse={() => {}}
+					createMessagePair={() => {}}
+					{onChange}
+					on:submit={async (e) => {
+						await submitHandler(e.detail);
+					}}
+				/>
 			</div>
 		</div>
 	</div>

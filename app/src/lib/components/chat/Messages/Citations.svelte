@@ -8,6 +8,7 @@
 	const i18n = getContext('i18n');
 
 	export let id = '';
+	export let chatId = '';
 	export let sources = [];
 
 	let citations = [];
@@ -100,30 +101,33 @@
 <CitationsModal
 	bind:show={showCitationModal}
 	citation={selectedCitation}
+	{chatId}
+	messageId={id}
 	{showPercentage}
 	{showRelevance}
 />
 
 {#if citations.length > 0}
-	<div class=" py-0.5 -mx-0.5 w-full flex gap-1 items-center flex-wrap">
+	<div style="--py:0.125rem; --mx:-0.125rem; --w:100%; --d:flex; --g:0.2rem; --ai:center; --fw:wrap">
 		{#if citations.length <= 3}
-			<div class="flex text-xs font-medium flex-wrap">
+			<div style="--d:flex; --size:0.6rem; --weight:500; --fw:wrap">
 				{#each citations as citation, idx}
 					<button
 						id={`source-${id}-${idx + 1}`}
-						class="no-toggle outline-hidden flex dark:text-gray-300 p-1 bg-white dark:bg-gray-900 rounded-xl max-w-96"
+						style="--oe:none; --d:flex; --dark-c:var(--color-gray-300); --p:0.2rem; --bgc:#fff; --dark-bgc:var(--color-gray-900); --radius:0.6rem; --maxw:24rem"
+	class="no-toggle"
 						on:click={() => {
 							showCitationModal = true;
 							selectedCitation = citation;
 						}}
 					>
 						{#if citations.every((c) => c.distances !== undefined)}
-							<div class="bg-gray-50 dark:bg-gray-800 rounded-full size-4">
+							<div style="--bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800); --radius:9999px; --w:1rem; --h:1rem">
 								{idx + 1}
 							</div>
 						{/if}
 						<div
-							class="flex-1 mx-1 truncate text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white transition"
+							style="--fx:1 1 0%; --mx:0.2rem; overflow:hidden; text-overflow:ellipsis; --ws:nowrap; --c:rgb(0 0 0 / 0.6); --hvr-c:#000; --dark-c:rgb(255 255 255 / 0.6); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						>
 							{decodeString(citation.source.name)}
 						</div>
@@ -138,19 +142,22 @@
 				buttonClassName="w-fit max-w-full"
 			>
 				<div
-					class="flex w-full overflow-auto items-center gap-2 text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition cursor-pointer"
+					style="--d:flex; --w:100%; --of:auto; --ai:center; --g:0.5rem; --c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-400); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --cur:pointer"
 				>
 					<div
-						class="flex-1 flex items-center gap-1 overflow-auto scrollbar-none w-full max-w-full"
+						style="--fx:1 1 0%; --d:flex; --ai:center; --g:0.2rem; --of:auto; --w:100%; --maxw:100%"
+	class="scrollbar-none"
 					>
-						<span class="whitespace-nowrap hidden sm:inline shrink-0"
+						<span style="--ws:nowrap; --d:none; --d-sm:inline; --fs:0"
 							>{$i18n.t('References from')}</span
 						>
-						<div class="flex items-center overflow-auto scrollbar-none w-full max-w-full flex-1">
-							<div class="flex text-xs font-medium items-center">
+						<div style="--d:flex; --ai:center; --of:auto; --w:100%; --maxw:100%; --fx:1 1 0%"
+	class="scrollbar-none">
+							<div style="--d:flex; --size:0.6rem; --weight:500; --ai:center">
 								{#each citations.slice(0, 2) as citation, idx}
 									<button
-										class="no-toggle outline-hidden flex dark:text-gray-300 p-1 bg-gray-50 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-850 transition rounded-xl max-w-96"
+										style="--oe:none; --d:flex; --dark-c:var(--color-gray-300); --p:0.2rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.6rem; --maxw:24rem"
+	class="no-toggle"
 										on:click={() => {
 											showCitationModal = true;
 											selectedCitation = citation;
@@ -160,24 +167,24 @@
 										}}
 									>
 										{#if citations.every((c) => c.distances !== undefined)}
-											<div class="bg-gray-50 dark:bg-gray-800 rounded-full size-4">
+											<div style="--bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800); --radius:9999px; --w:1rem; --h:1rem">
 												{idx + 1}
 											</div>
 										{/if}
-										<div class="flex-1 mx-1 truncate">
+										<div style="--fx:1 1 0%; --mx:0.2rem; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
 											{decodeString(citation.source.name)}
 										</div>
 									</button>
 								{/each}
 							</div>
 						</div>
-						<div class="flex items-center gap-1 whitespace-nowrap shrink-0">
-							<span class="hidden sm:inline">{$i18n.t('and')}</span>
+						<div style="--d:flex; --ai:center; --g:0.2rem; --ws:nowrap; --fs:0">
+							<span style="--d:none; --d-sm:inline">{$i18n.t('and')}</span>
 							{citations.length - 2}
 							<span>{$i18n.t('more')}</span>
 						</div>
 					</div>
-					<div class="shrink-0">
+					<div style="--fs:0">
 						{#if isCollapsibleOpen}
 							<ChevronUp strokeWidth="3.5" className="size-3.5" />
 						{:else}
@@ -186,21 +193,22 @@
 					</div>
 				</div>
 				<div slot="content">
-					<div class="flex text-xs font-medium flex-wrap">
+					<div style="--d:flex; --size:0.6rem; --weight:500; --fw:wrap">
 						{#each citations.slice(2) as citation, idx}
 							<button
-								class="no-toggle outline-hidden flex dark:text-gray-300 p-1 bg-gray-50 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-850 transition rounded-xl max-w-96"
+								style="--oe:none; --d:flex; --dark-c:var(--color-gray-300); --p:0.2rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.6rem; --maxw:24rem"
+	class="no-toggle"
 								on:click={() => {
 									showCitationModal = true;
 									selectedCitation = citation;
 								}}
 							>
 								{#if citations.every((c) => c.distances !== undefined)}
-									<div class="bg-gray-50 dark:bg-gray-800 rounded-full size-4">
+									<div style="--bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800); --radius:9999px; --w:1rem; --h:1rem">
 										{idx + 3}
 									</div>
 								{/if}
-								<div class="flex-1 mx-1 truncate">
+								<div style="--fx:1 1 0%; --mx:0.2rem; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
 									{decodeString(citation.source.name)}
 								</div>
 							</button>

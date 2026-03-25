@@ -10,9 +10,9 @@
 	export let small = false;
 </script>
 
-<div class=" max-h-full flex flex-col w-full">
+<div style="--maxh:100%; --d:flex; --fd:column; --w:100%">
 	{#each files as file}
-		<div class="mt-1 px-2">
+		<div style="--mt:0.2rem; --px:0.5rem">
 			<FileItem
 				className="w-full"
 				colorClassName="{selectedFileId === file.id

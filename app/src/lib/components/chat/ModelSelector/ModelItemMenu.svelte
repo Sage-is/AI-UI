@@ -39,7 +39,7 @@
 
 	<DropdownMenu.Content
 		strategy="fixed"
-		class="w-full max-w-[180px] text-sm rounded-xl px-1 py-1.5 z-[9999999] bg-white dark:bg-gray-850 dark:text-white shadow-lg"
+		style="--w:100%; --maxw:180px; --size:0.8rem; --radius:0.6rem; --px:0.2rem; --py:0.4rem; --z:9999999; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:4"
 		sideOffset={-2}
 		side="bottom"
 		align="end"
@@ -47,7 +47,7 @@
 	>
 		<button
 			type="button"
-			class="flex rounded-md py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition items-center gap-2"
+			style="--d:flex; --radius:0.4rem; --py:0.4rem; --px:0.6rem; --w:100%; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --ai:center; --g:0.5rem"
 			on:click={(e) => {
 				e.stopPropagation();
 				e.preventDefault();
@@ -62,7 +62,7 @@
 				<Eye />
 			{/if}
 
-			<div class="flex items-center">
+			<div style="--d:flex; --ai:center">
 				{#if ($settings?.pinnedModels ?? []).includes(model?.id)}
 					{$i18n.t('Hide from Sidebar')}
 				{:else}
@@ -73,7 +73,7 @@
 
 		<button
 			type="button"
-			class="flex rounded-md py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition items-center gap-2"
+			style="--d:flex; --radius:0.4rem; --py:0.4rem; --px:0.6rem; --w:100%; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --ai:center; --g:0.5rem"
 			on:click={(e) => {
 				e.stopPropagation();
 				e.preventDefault();
@@ -84,7 +84,7 @@
 		>
 			<Link />
 
-			<div class="flex items-center">{$i18n.t('Copy Link')}</div>
+			<div style="--d:flex; --ai:center">{$i18n.t('Copy Link')}</div>
 		</button>
 	</DropdownMenu.Content>
 </DropdownMenu.Root>

@@ -48,12 +48,12 @@
 </script>
 
 <div>
-	<div class="flex w-full justify-between mb-1">
-		<div class=" self-center text-sm font-semibold">{$i18n.t('Capabilities')}</div>
+	<div style="--d:flex; --w:100%; --jc:space-between; --mb:0.2rem">
+		<div style="--as:center; --size:0.8rem; --weight:600">{$i18n.t('Capabilities')}</div>
 	</div>
-	<div class="flex items-center mt-2 flex-wrap">
+	<div style="--d:flex; --ai:center; --mt:0.5rem; --fw:wrap">
 		{#each Object.keys(capabilityLabels) as capability}
-			<div class=" flex items-center gap-2 mr-3">
+			<div style="--d:flex; --ai:center; --g:0.5rem; --mr:0.6rem">
 				<Checkbox
 					state={capabilities[capability] ? 'checked' : 'unchecked'}
 					on:change={(e) => {
@@ -61,7 +61,7 @@
 					}}
 				/>
 
-				<div class=" py-0.5 text-sm capitalize">
+				<div style="--py:0.125rem; --size:0.8rem; --tt:capitalize">
 					<Tooltip content={marked.parse(capabilityLabels[capability].description)}>
 						{$i18n.t(capabilityLabels[capability].label)}
 					</Tooltip>

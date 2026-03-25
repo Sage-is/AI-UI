@@ -11,8 +11,6 @@
 				goto('/workshop/knowledge');
 			} else if ($user?.permissions?.workshop?.prompts) {
 				goto('/workshop/prompts');
-			} else if ($user?.permissions?.workshop?.tools) {
-				goto('/workshop/tools');
 			} else {
 				goto('/');
 			}

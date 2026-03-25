@@ -102,7 +102,7 @@
 			deleteHandler();
 		}}
 	>
-		<div class=" text-sm text-gray-700 dark:text-gray-300 flex-1 line-clamp-3">
+		<div style="--size:0.8rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-300); --fx:1 1 0%; --line-clamp:3">
 			{@html DOMPurify.sanitize(
 				$i18n.t(
 					'This will delete <strong>{{NAME}}</strong> and <strong>all its contents</strong>.',
@@ -114,18 +114,19 @@
 		</div>
 	</DeleteConfirmDialog>
 
-	<div class="mb-3 px-6 @md:max-w-3xl justify-between w-full flex relative group items-center">
-		<div class="text-center flex gap-3.5 items-center">
-			<div class=" rounded-full bg-gray-50 dark:bg-gray-800 p-3 w-fit">
+	<div style="--mb:0.6rem; --px:1.5rem; --jc:space-between; --w:100%; --d:flex; --pos:relative; --ai:center"
+	class="@md:max-w-3xl group">
+		<div style="--ta:center; --d:flex; --g:0.8rem; --ai:center">
+			<div style="--radius:9999px; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800); --p:0.6rem; --w:fit-content">
 				<Folder className="size-4.5" strokeWidth="2" />
 			</div>
 
-			<div class="text-3xl">
+			<div style="--size:1.875rem">
 				{folder.name}
 			</div>
 		</div>
 
-		<div class="flex items-center translate-x-2.5">
+		<div style="--d:flex; --ai:center; --translatex:0.625rem">
 			<FolderMenu
 				align="end"
 				onEdit={() => {
@@ -138,7 +139,7 @@
 					exportHandler();
 				}}
 			>
-				<button class="p-1.5 dark:hover:bg-gray-850 rounded-full touch-auto" on:click={(e) => {}}>
+				<button style="--p:0.4rem; --hvr-dark-bgc:var(--color-gray-850); --radius:9999px; touch-action:auto" on:click={(e) => {}}>
 					<EllipsisHorizontal className="size-4" strokeWidth="2.5" />
 				</button>
 			</FolderMenu>

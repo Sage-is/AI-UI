@@ -401,9 +401,11 @@
 	{#if Object.keys(history?.messages ?? {}).length == 0}
 		<ChatPlaceholder modelIds={selectedModels} {atSelectedModel} {onSelect} />
 	{:else}
-		<div class="w-full pt-2">
+		<div
+			style="--w:100%; --pt:0.5rem; --d:flex; --fd:column">
 			{#key chatId}
-				<div class="w-full">
+				<div 
+					style="--w:100%; --d:flex; --fd:column">
 					{#if messages.at(0)?.parentId !== null}
 						<Loader
 							on:visible={(e) => {
@@ -413,7 +415,7 @@
 								}
 							}}
 						>
-							<div class="w-full flex justify-center py-1 text-xs animate-pulse items-center gap-2">
+							<div style="--w:100%; --d:flex; --jc:center; --py:0.2rem; --size:0.6rem; animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; --ai:center; --g:0.5rem">
 								<Spinner className=" size-4" />
 								<div class=" ">Loading...</div>
 							</div>
@@ -448,9 +450,9 @@
 						/>
 					{/each}
 				</div>
-				<div class="pb-12" />
+
 				{#if bottomPadding}
-					<div class="  pb-6" />
+					<div style="--pb:1.5rem" />
 				{/if}
 			{/key}
 		</div>

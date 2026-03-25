@@ -2,7 +2,7 @@
 	import { getVersionUpdates } from '$lib/apis';
 	import { getOllamaVersion } from '$lib/apis/ollama';
 	import { WEBUI_BUILD_HASH, WEBUI_VERSION } from '$lib/constants';
-	import { WEBUI_NAME, config, showChangelog } from '$lib/stores';
+	import { WEBUI_NAME, config, showChangesAndSetup, setupTriggerReason } from '$lib/stores';
 	import { compareVersion } from '$lib/utils';
 	import { onMount, getContext } from 'svelte';
 	import { licenseMarkdown } from '$lib/data/licenseData';
@@ -96,18 +96,18 @@
 	});
 </script>
 
-<div id="tab-about" class="flex flex-col h-full justify-between space-y-3 text-sm mb-6">
-	<div class=" space-y-3 overflow-y-scroll max-h-[28rem] lg:max-h-full">
+<div id="tab-about" style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.8rem; --mb:1.5rem">
+	<div style="--g:0.6rem; --ofy:scroll; --maxh:28rem; --maxh-lg:100%">
 		<div>
-			<div class=" mb-2.5 text-sm font-medium flex space-x-2 items-center">
+			<div style="--mb:0.625rem; --size:0.8rem; --weight:500; --d:flex; --g:0.5rem; --ai:center">
 				<div>
 					{$WEBUI_NAME}
 					{$i18n.t('Version')}
 				</div>
 			</div>
-			<div class="flex w-full justify-between items-center">
-				<div class="flex flex-col text-xs text-gray-700 dark:text-gray-200">
-					<div class="flex gap-1">
+			<div style="--d:flex; --w:100%; --jc:space-between; --ai:center">
+				<div style="--d:flex; --fd:column; --size:0.6rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-200)">
+					<div style="--d:flex; --g:0.2rem">
 						<Tooltip content={WEBUI_BUILD_HASH}>
 							v{WEBUI_VERSION}
 						</Tooltip>
@@ -127,9 +127,10 @@
 					</div>
 
 					<button
-						class=" underline flex items-center space-x-1 text-xs text-gray-500 dark:text-gray-500"
+						style="--td:underline; --d:flex; --ai:center; --g:0.2rem; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500)"
 						on:click={() => {
-							showChangelog.set(true);
+							setupTriggerReason.set({ hasChangelog: true, needsModels: false, needsUsers: false, manualTrigger: false });
+							showChangesAndSetup.set(true);
 						}}
 					>
 						<div>{$i18n.t("See what's new")}</div>
@@ -138,7 +139,7 @@
 
 				{#if $config?.features?.enable_version_update_check}
 					<button
-						class=" text-xs px-3 py-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-850 dark:hover:bg-gray-800 transition rounded-lg font-medium"
+						style="--size:0.6rem; --px:0.6rem; --py:0.4rem; --bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --weight:500"
 						on:click={() => {
 							checkForVersionUpdates();
 						}}
@@ -150,31 +151,31 @@
 		</div>
 
 		{#if ollamaVersion}
-			<hr class=" border-gray-100 dark:border-gray-850" />
+			<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)" />
 
 			<div>
-				<div class=" mb-2.5 text-sm font-medium">{$i18n.t('Ollama Version')}</div>
-				<div class="flex w-full">
-					<div class="flex-1 text-xs text-gray-700 dark:text-gray-200">
+				<div style="--mb:0.625rem; --size:0.8rem; --weight:500">{$i18n.t('Ollama Version')}</div>
+				<div style="--d:flex; --w:100%">
+					<div style="--fx:1 1 0%; --size:0.6rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-200)">
 						{ollamaVersion ?? 'N/A'}
 					</div>
 				</div>
 			</div>
 		{/if}
 
-		<hr class=" border-gray-100 dark:border-gray-850" />
+		<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)" />
 
 		{#if $config?.license_metadata}
-			<div class="mb-2 text-xs">
+			<div style="--mb:0.5rem; --size:0.6rem">
 				{#if !$WEBUI_NAME.includes('Sage.is AI')}
-					<span class=" text-gray-500 dark:text-gray-300 font-medium">{$WEBUI_NAME}</span> -
+					<span style="--c:var(--color-gray-500); --dark-c:var(--color-gray-300); --weight:500">{$WEBUI_NAME}</span> -
 				{/if}
 
-				<span class=" capitalize">{$config?.license_metadata?.type}</span> license purchased by
-				<span class=" capitalize">{$config?.license_metadata?.organization_name}</span>
+				<span style="--tt:capitalize">{$config?.license_metadata?.type}</span> license purchased by
+				<span style="--tt:capitalize">{$config?.license_metadata?.organization_name}</span>
 			</div>
 		{:else}
-			<div class="flex space-x-1">
+			<div style="--d:flex; --g:0.2rem">
 								<a href="https://x.com/Sage_Is_AI" target="_blank">
 									<img
 										alt="X (formerly Twitter) Follow"
@@ -209,12 +210,13 @@
 
 		<div>
 			<pre
-				style="margin: 3rem auto;
+				style="--size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); margin: 3rem auto;
 					width: fit-content;
 					font-family: monospace;
-					margin:auto"
-				class="text-xs text-gray-400 dark:text-gray-500">
-			Copyright (c) 2023-2025 <a href="https://sage.is" target="_blank" class="underline"
+					--radius: 0.5rem;
+					--m:1rem auto;
+					--p: 2rem;">
+			Copyright (c) 2023-2025 <a href="https://sage.is" target="_blank" style="--td:underline"
 								>The Sage.is</a> Team 
 					and Open Source Contributors. 
 			All rights reserved and published under the 
@@ -882,24 +884,24 @@ For more information on this, and how to apply and follow the GNU AGPL, see &lt;
 			</pre>
 		</div>
 
-		<div class="mt-2 text-xs text-gray-400 dark:text-gray-500">
+		<div style="--mt:0.5rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 			Sage AI is {$i18n.t('Created by')}
 			<a
-				class=" text-gray-500 dark:text-gray-300 font-medium"
+				style="--c:var(--color-gray-500); --dark-c:var(--color-gray-300); --weight:500"
 				href="https://sage.is"
 				target="_blank">The Sage.Is team</a
 			>
 			part of
 			<a
-				class=" text-gray-500 dark:text-gray-300 font-medium"
+				style="--c:var(--color-gray-500); --dark-c:var(--color-gray-300); --weight:500"
 				href="https://startr.cloud"
 				target="_blank">Startr LLC</a
 			> with the help of:
 		</div>
 
-		<div class="mt-2 text-xs text-gray-400 dark:text-gray-500">
+		<div style="--mt:0.5rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 			<!-- License details - Simple clean table display -->
-			<div class="overflow-x-auto" style="width: 40rem;">
+			<div style="--ofx:auto; width: 40rem;">
 				{@html licenseTableHtml}
 			</div>
 		</div>

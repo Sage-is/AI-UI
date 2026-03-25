@@ -108,8 +108,9 @@
 
 <Modal size="md" bind:show>
 	<div>
-		<div class=" flex justify-between dark:text-gray-100 px-5 pt-4 mb-1.5">
-			<div class=" text-lg font-medium self-center font-primary">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-100); --px:1.2rem; --pt:1rem; --mb:0.4rem">
+			<div style="--size:1.125rem; --weight:500; --as:center"
+	class="font-primary">
 				{#if custom}
 					{#if edit}
 						{$i18n.t('Edit User Group')}
@@ -121,7 +122,7 @@
 				{/if}
 			</div>
 			<button
-				class="self-center"
+				style="--as:center"
 				on:click={() => {
 					show = false;
 				}}
@@ -130,23 +131,25 @@
 			</button>
 		</div>
 
-		<div class="flex flex-col md:flex-row w-full px-4 pb-4 md:space-x-4 dark:text-gray-200">
-			<div class=" flex flex-col w-full sm:flex-row sm:justify-center sm:space-x-6">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1rem; --pb:1rem; --p: 1rem 0;--bgc: var(--white); --br: 1rem">
+			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				<form
-					class="flex flex-col w-full"
+					style="--d:flex; --fd:column; --w:100%"
 					on:submit={(e) => {
 						e.preventDefault();
 						submitHandler();
 					}}
 				>
-					<div class="flex flex-col lg:flex-row w-full h-full pb-2 lg:space-x-4">
+					<div style="--d:flex; --fd:column; --fd-lg:row; --w:100%; --h:100%;  --g-lg:1rem">
 						<div
 							id="admin-settings-tabs-container"
-							class="tabs flex flex-row overflow-x-auto gap-2.5 max-w-full lg:gap-1 lg:flex-col lg:flex-none lg:w-40 dark:text-gray-200 text-sm font-medium text-left scrollbar-none"
+							style="--d:flex; --fd:row; --ofx:auto; --g:0.625rem; --maxw:100%; --g-lg:0.2rem; --fd-lg:column; --fx-lg:none; --w-lg:10rem; --dark-c:var(--color-gray-200); --size:0.8rem; --weight:500; --ta:left"
+	class="tabs scrollbar-none"
 						>
 							{#if tabs.includes('general')}
 								<button
-									class="px-0.5 py-1 max-w-fit w-fit rounded-lg flex-1 lg:flex-none flex text-right transition {selectedTab ===
+									style="--p:0.2rem; --w:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-lg:none; --d:flex; --ta:right; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="max-w-fit {selectedTab ===
 									'general'
 										? ''
 										: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
@@ -155,12 +158,12 @@
 									}}
 									type="button"
 								>
-									<div class=" self-center mr-2">
+									<div style="--as:center; --mr:0.5rem">
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
 											viewBox="0 0 16 16"
 											fill="currentColor"
-											class="w-4 h-4"
+											style="--w:1rem; --h:1rem"
 										>
 											<path
 												fill-rule="evenodd"
@@ -169,13 +172,14 @@
 											/>
 										</svg>
 									</div>
-									<div class=" self-center">{$i18n.t('General')}</div>
+									<div style="--as:center">{$i18n.t('General')}</div>
 								</button>
 							{/if}
 
 							{#if tabs.includes('permissions')}
 								<button
-									class="px-0.5 py-1 max-w-fit w-fit rounded-lg flex-1 lg:flex-none flex text-right transition {selectedTab ===
+									style="--p:0.2rem; --w:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-lg:none; --d:flex; --ta:right; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="max-w-fit {selectedTab ===
 									'permissions'
 										? ''
 										: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
@@ -184,16 +188,17 @@
 									}}
 									type="button"
 								>
-									<div class=" self-center mr-2">
+									<div style="--as:center; --mr:0.5rem">
 										<WrenchSolid />
 									</div>
-									<div class=" self-center">{$i18n.t('Permissions')}</div>
+									<div style="--as:center">{$i18n.t('Permissions')}</div>
 								</button>
 							{/if}
 
 							{#if tabs.includes('users')}
 								<button
-									class="px-0.5 py-1 max-w-fit w-fit rounded-lg flex-1 lg:flex-none flex text-right transition {selectedTab ===
+									style="--p:0.2rem; --w:fit-content; --radius:0.5rem; --fx:1 1 0%; --fx-lg:none; --d:flex; --ta:right; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="max-w-fit {selectedTab ===
 									'users'
 										? ''
 										: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
@@ -202,16 +207,17 @@
 									}}
 									type="button"
 								>
-									<div class=" self-center mr-2">
+									<div style="--as:center; --mr:0.5rem">
 										<UserPlusSolid />
 									</div>
-									<div class=" self-center">{$i18n.t('Users')} ({userIds.length})</div>
+									<div style="--as:center">{$i18n.t('Users')} ({userIds.length})</div>
 								</button>
 							{/if}
 						</div>
 
 						<div
-							class="flex-1 mt-1 lg:mt-1 lg:h-[22rem] lg:max-h-[22rem] overflow-y-auto scrollbar-hidden"
+							style="--fx:1 1 0%; --mt:0.2rem; --mt-lg:0.2rem; --h-lg:22rem; --maxh-lg:22rem; --ofy:auto"
+	class="scrollbar-hidden"
 						>
 							{#if selectedTab == 'general'}
 								<Display bind:name bind:description />
@@ -224,11 +230,13 @@
 					</div>
 
 					<!-- <div
-						class=" tabs flex flex-row overflow-x-auto gap-2.5 text-sm font-medium border-b border-b-gray-800 scrollbar-hidden"
+						style="--d:flex; --fd:row; --ofx:auto; --g:0.625rem; --size:0.8rem; --weight:500;  border-bottom-color:var(--color-gray-800)"
+	class="tabs scrollbar-hidden"
 					>
 						{#if tabs.includes('display')}
 							<button
-								class="px-0.5 pb-1.5 min-w-fit flex text-right transition border-b-2 {selectedTab ===
+								style="--px:0.125rem; --pb:0.4rem; --minw:fit-content; --d:flex; --ta:right; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); border-bottom-width:2px"
+	class="{selectedTab ===
 								'display'
 									? ' dark:border-white'
 									: 'border-transparent text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
@@ -243,7 +251,8 @@
 
 						{#if tabs.includes('permissions')}
 							<button
-								class="px-0.5 pb-1.5 min-w-fit flex text-right transition border-b-2 {selectedTab ===
+								style="--px:0.125rem; --pb:0.4rem; --minw:fit-content; --d:flex; --ta:right; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); border-bottom-width:2px"
+	class="{selectedTab ===
 								'permissions'
 									? '  dark:border-white'
 									: 'border-transparent text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
@@ -258,7 +267,8 @@
 
 						{#if tabs.includes('users')}
 							<button
-								class="px-0.5 pb-1.5 min-w-fit flex text-right transition border-b-2 {selectedTab ===
+								style="--px:0.125rem; --pb:0.4rem; --minw:fit-content; --d:flex; --ta:right; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); border-bottom-width:2px"
+	class="{selectedTab ===
 								'users'
 									? ' dark:border-white'
 									: ' border-transparent text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
@@ -272,10 +282,10 @@
 						{/if}
 					</div> -->
 
-					<div class="flex justify-between pt-3 text-sm font-medium gap-1.5">
+					<div style="--d:flex; --jc:space-between; --pt:0.6rem; --size:0.8rem; --weight:500; --g:0.4rem">
 						{#if edit}
 							<button
-								class="px-3.5 py-1.5 text-sm font-medium dark:bg-black dark:hover:bg-gray-900 dark:text-white bg-white text-black hover:bg-gray-100 transition rounded-full flex flex-row space-x-1 items-center"
+								style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --dark-bgc:#000; --hvr-dark-bgc:var(--color-gray-900); --dark-c:#fff; --bgc:#fff; --c:#000; --hvr-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.2rem; --ai:center"
 								type="button"
 								on:click={() => {
 									showDeleteConfirmDialog = true;
@@ -288,7 +298,8 @@
 						{/if}
 
 						<button
-							class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full flex flex-row space-x-1 items-center {loading
+							style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.2rem; --ai:center"
+	class="{loading
 								? ' cursor-not-allowed'
 								: ''}"
 							type="submit"
@@ -297,7 +308,7 @@
 							{$i18n.t('Save')}
 
 							{#if loading}
-								<div class="ml-2 self-center">
+								<div style="--ml:0.5rem; --as:center">
 									<Spinner />
 								</div>
 							{/if}

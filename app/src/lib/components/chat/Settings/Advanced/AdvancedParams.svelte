@@ -387,36 +387,37 @@
 
 <!-- The entire template is now one clean loop. -->
 <!-- All rendering logic is derived from the `config` object in each iteration. -->
-<div class="space-y-1 text-xs pb-safe-bottom">
+<div style="--g:0.2rem; --size:0.6rem"
+	class="pb-safe-bottom">
 	{#each allParameters as config (config.key)}
 		{#if !config.adminOnly || admin}
-			<div class="py-0.5 w-full justify-between">
+			<div style="--py:0.125rem; --w:100%; --jc:space-between">
 				<!-- Header Row (Label, Tooltip, and Toggle Button) -->
 				<Tooltip content={$i18n.t(config.tooltip)} placement="top-start" className="inline-tooltip">
-					<div class="flex w-full justify-between items-center">
-						<div class="self-center text-xs font-medium">
+					<div style="--d:flex; --w:100%; --jc:space-between; --ai:center">
+						<div style="--as:center; --size:0.6rem; --weight:500">
 							{$i18n.t(config.label)}
 							{#if config.suffix}
-								<span class="text-gray-500 pl-1">({$i18n.t(config.suffix)})</span>
+								<span style="--c:var(--color-gray-500); --pl:0.2rem">({$i18n.t(config.suffix)})</span>
 							{/if}
 						</div>
 						<button
-							class="p-1 px-3 text-xs flex rounded-sm transition shrink-0 outline-hidden"
+							style="--p:0.2rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --fs:0; --oe:none"
 							type="button"
 							on:click={() => toggleParameter(config)}
 						>
-							<span class="ml-2 self-center">{$i18n.t(getButtonLabel(config))}</span>
+							<span style="--ml:0.5rem; --as:center">{$i18n.t(getButtonLabel(config))}</span>
 						</button>
 					</div>
 				</Tooltip>
 
 				<!-- Input Control Row (Dynamically Rendered) -->
 				{#if (params[config.key] ?? null) !== null}
-					<div class="flex mt-1.5 space-x-2 items-center">
+					<div style="--d:flex; --mt:0.4rem; --g:0.5rem; --ai:center">
 						<!-- This `if/else if` block is the dynamic rendering engine. -->
 						{#if config.type === 'text'}
 							<input
-								class="text-sm w-full bg-transparent outline-none outline-hidden"
+								style="--size:0.8rem; --w:100%; --bgc:transparent; --oe:2px solid transparent; --oe:none"
 								type="text"
 								placeholder={$i18n.t(config.placeholder ?? '')}
 								bind:value={params[config.key]}
@@ -424,7 +425,7 @@
 							/>
 						{:else if config.type === 'number'}
 							<input
-								class="text-sm w-full bg-transparent outline-none outline-hidden"
+								style="--size:0.8rem; --w:100%; --bgc:transparent; --oe:2px solid transparent; --oe:none"
 								type="number"
 								placeholder={$i18n.t(config.placeholder ?? '')}
 								bind:value={params[config.key]}
@@ -440,19 +441,19 @@
 								bind:value={params[config.key]}
 							/>
 						{:else if config.type === 'switch'}
-							<div class="w-full pr-1 flex justify-between items-center">
-								<div class="text-xs text-gray-500">
+							<div style="--w:100%; --pr:0.2rem; --d:flex; --jc:space-between; --ai:center">
+								<div style="--size:0.6rem; --c:var(--color-gray-500)">
 									{params[config.key] ? 'Enabled' : 'Disabled'}
 								</div>
-								<div class="pr-2">
+								<div style="--pr:0.5rem">
 									<Switch bind:state={params[config.key]} />
 								</div>
 							</div>
 						{:else if config.type === 'range'}
-							<div class="flex-1">
+							<div style="--fx:1 1 0%">
 								<input
 									type="range"
-									class="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-200 dark:bg-gray-700"
+									style="--w:100%; --h:0.5rem; --radius:0.5rem; appearance:none; --cur:pointer; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-700)"
 									bind:value={params[config.key]}
 									min={config.min}
 									max={config.max}
@@ -462,7 +463,7 @@
 							<div>
 								<input
 									type="number"
-									class="bg-transparent text-center w-14 text-sm"
+									style="--bgc:transparent; --ta:center; --w:3.5rem; --size:0.8rem"
 									bind:value={params[config.key]}
 									min={config.min}
 									max={config.max}
@@ -478,14 +479,14 @@
 
 	<!-- Custom Parameters Section -->
 	{#if custom && admin}
-		<div class="flex flex-col justify-center">
+		<div style="--d:flex; --fd:column; --jc:center">
 			{#each Object.keys(params?.custom_params ?? {}) as key}
-				<div class="py-0.5 w-full justify-between mb-1">
-					<div class="flex w-full justify-between">
-						<div class="self-center text-xs font-medium">
+				<div style="--py:0.125rem; --w:100%; --jc:space-between; --mb:0.2rem">
+					<div style="--d:flex; --w:100%; --jc:space-between">
+						<div style="--as:center; --size:0.6rem; --weight:500">
 							<input
 								type="text"
-								class="text-xs w-full bg-transparent outline-none"
+								style="--size:0.6rem; --w:100%; --bgc:transparent; --oe:2px solid transparent"
 								placeholder={$i18n.t('Custom Parameter Name')}
 								value={key}
 								on:change={(e) => {
@@ -502,7 +503,7 @@
 							/>
 						</div>
 						<button
-							class="p-1 px-3 text-xs flex rounded-sm transition shrink-0 outline-hidden"
+							style="--p:0.2rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --fs:0; --oe:none"
 							type="button"
 							on:click={() => {
 								delete params.custom_params[key];
@@ -515,12 +516,12 @@
 							{$i18n.t('Remove')}
 						</button>
 					</div>
-					<div class="flex mt-0.5 space-x-2">
-						<div class="flex-1">
+					<div style="--d:flex; --mt:0.125rem; --g:0.5rem">
+						<div style="--fx:1 1 0%">
 							<input
 								bind:value={params.custom_params[key]}
 								type="text"
-								class="text-sm w-full bg-transparent outline-hidden outline-none"
+								style="--size:0.8rem; --w:100%; --bgc:transparent; --oe:none; --oe:2px solid transparent"
 								placeholder={$i18n.t('Custom Parameter Value')}
 							/>
 						</div>
@@ -529,7 +530,7 @@
 			{/each}
 
 			<button
-				class="flex gap-2 items-center w-full text-center justify-center mt-1 mb-5"
+				style="--d:flex; --g:0.5rem; --ai:center; --w:100%; --ta:center; --jc:center; --mt:0.2rem; --mb:1.2rem"
 				type="button"
 				on:click={() => {
 					params.custom_params = (params?.custom_params ?? {}) || {};

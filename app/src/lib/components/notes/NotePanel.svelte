@@ -71,16 +71,19 @@
 				show = false;
 			}}
 		>
-			<div class=" px-3.5 py-2.5 h-screen max-h-dvh flex flex-col">
+			<div style="--px:0.8rem; --py:0.625rem; --h:100vh; --d:flex; --fd:column"
+	class="max-h-dvh">
 				<slot />
 			</div>
 		</Drawer>
 	{/if}
 {:else if show}
 	<PaneResizer
-		class="relative flex w-2 items-center justify-center bg-background group bg-white dark:shadow-lg dark:bg-gray-850 border-l border-gray-50 dark:border-gray-850"
+		style="--pos:relative; --d:flex; --w:0.5rem; --ai:center; --jc:center; --bgc:#fff; --dark-shadow:4; --dark-bgc:var(--color-gray-850); --bl:1px solid; --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850)"
+	class="bg-background group"
 	>
-		<div class="z-10 flex h-7 w-5 items-center justify-center rounded-xs">
+		<div style="--z:10; --d:flex; --h:1.75rem; --w:1.2rem; --ai:center; --jc:center"
+	class="rounded-xs">
 			<EllipsisVertical className="size-4 invisible group-hover:visible" />
 		</div>
 	</PaneResizer>
@@ -93,12 +96,13 @@
 			show = false;
 		}}
 		collapsible={true}
-		class=" z-10 "
+		style="--z:10"
 	>
 		{#if show}
-			<div class="flex max-h-full min-h-full">
+			<div style="--d:flex; --maxh:100%; --minh:100%">
 				<div
-					class="w-full pl-1.5 pr-2.5 pt-2 bg-white dark:shadow-lg dark:bg-gray-850 z-40 pointer-events-auto overflow-y-auto scrollbar-hidden flex flex-col"
+					style="--w:100%; --pl:0.4rem; --pr:0.625rem; --pt:0.5rem; --bgc:#fff; --dark-shadow:4; --dark-bgc:var(--color-gray-850); --z:40; --pe:auto; --ofy:auto; --d:flex; --fd:column"
+	class="scrollbar-hidden"
 				>
 					<slot />
 				</div>

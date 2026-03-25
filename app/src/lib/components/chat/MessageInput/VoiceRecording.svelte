@@ -391,21 +391,18 @@
 
 <div
 	bind:clientWidth={containerWidth}
+	style="--radius:9999px; --d:flex; --jc:space-between"
 	class="{loading
 		? ' bg-gray-100/50 dark:bg-gray-850/50'
-		: 'bg-indigo-300/10 dark:bg-indigo-500/10 '} rounded-full flex justify-between {className}"
+		: 'bg-indigo-300/10 dark:bg-indigo-500/10 '} {className}"
 >
-	<div class="flex items-center mr-1">
+	<div style="--d:flex; --ai:center; --mr:0.2rem">
 		<button
 			type="button"
-			class="p-1.5
-
-            {loading
+			style="--p:0.4rem; --radius:9999px"
+	class="{loading
 				? ' bg-gray-200 dark:bg-gray-700/50'
-				: 'bg-indigo-400/20 text-indigo-600 dark:text-indigo-300 '} 
-
-
-             rounded-full"
+				: 'bg-indigo-400/20 text-indigo-600 dark:text-indigo-300 '}"
 			on:click={async () => {
 				stopRecording();
 				onCancel();
@@ -416,45 +413,38 @@
 	</div>
 
 	<div
-		class="flex flex-1 self-center items-center justify-between ml-2 mx-1 overflow-hidden h-6"
+		style="--d:flex; --fx:1 1 0%; --as:center; --ai:center; --jc:space-between; --ml:0.5rem; --mx:0.2rem; --of:hidden; --h:1.5rem"
 		dir="rtl"
 	>
 		<div
-			class="flex items-center gap-0.5 h-6 w-full max-w-full overflow-hidden overflow-x-hidden flex-wrap"
+			style="--d:flex; --ai:center; --g:0.125rem; --h:1.5rem; --w:100%; --maxw:100%; --of:hidden; --ofx:hidden; --fw:wrap"
 		>
 			{#each visualizerData.slice().reverse() as rms}
-				<div class="flex items-center h-full">
+				<div style="--d:flex; --ai:center; --h:100%">
 					<div
-						class="w-[2px] shrink-0
-                    
-                    {loading
+						class="{loading
 							? ' bg-gray-500 dark:bg-gray-400   '
-							: 'bg-indigo-500 dark:bg-indigo-400  '} 
-                    
-                    inline-block h-full"
-						style="height: {Math.min(100, Math.max(14, rms * 100))}%;"
+							: 'bg-indigo-500 dark:bg-indigo-400  '}"
+						style="--w:2px; --fs:0; --d:inline-block; --h:100%; height: {Math.min(100, Math.max(14, rms * 100))}%;"
 					/>
 				</div>
 			{/each}
 		</div>
 	</div>
 
-	<div class="flex">
-		<div class="  mx-1.5 pr-1 flex justify-center items-center">
+	<div style="--d:flex">
+		<div style="--mx:0.4rem; --pr:0.2rem; --d:flex; --jc:center; --ai:center">
 			<div
-				class="text-sm
-        
-        
-        {loading ? ' text-gray-500  dark:text-gray-400  ' : ' text-indigo-400 '} 
-       font-medium flex-1 mx-auto text-center"
+				style="--size:0.8rem; --weight:500; --fx:1 1 0%; --mx:auto; --ta:center"
+	class="{loading ? ' text-gray-500  dark:text-gray-400  ' : ' text-indigo-400 '}"
 			>
 				{formatSeconds(durationSeconds)}
 			</div>
 		</div>
 
-		<div class="flex items-center">
+		<div style="--d:flex; --ai:center">
 			{#if loading}
-				<div class=" text-gray-500 rounded-full cursor-not-allowed">
+				<div style="--c:var(--color-gray-500); --radius:9999px; --cur:not-allowed">
 					<svg
 						width="24"
 						height="24"
@@ -547,7 +537,7 @@
 			{:else}
 				<button
 					type="button"
-					class="p-1.5 bg-indigo-500 text-white dark:bg-indigo-500 dark:text-blue-950 rounded-full"
+					style="--p:0.4rem; --bgc:#6366f1; --c:#fff; --dark-bgc:#6366f1; --dark-c:#172554; --radius:9999px"
 					on:click={async () => {
 						await confirmRecording();
 					}}
@@ -558,7 +548,7 @@
 						viewBox="0 0 24 24"
 						stroke-width="2.5"
 						stroke="currentColor"
-						class="size-4"
+						style="--w:1rem; --h:1rem"
 					>
 						<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
 					</svg>

@@ -93,23 +93,36 @@
 {#if show}
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<div
+	<confirm-dialog-holder
 		bind:this={modalElement}
-		class=" fixed top-0 right-0 left-0 bottom-0 bg-black/60 w-full h-screen max-h-[100dvh] flex justify-center z-99999999 overflow-hidden overscroll-contain"
+		style="--pos:fixed; --top:0; --right:0; --left:0; --bottom:0; --bgc:rgb(0 0 0 / 0.6); --w:100%; --h:100vh; --maxh:100dvh; --d:flex; --jc:center; --z:99999999; --of:hidden; overscroll-behavior:contain"
 		in:fade={{ duration: 10 }}
 		on:mousedown={() => {
 			show = false;
 		}}
 	>
-		<div
-			class=" m-auto rounded-2xl max-w-full w-[32rem] mx-2 bg-gray-50 dark:bg-gray-950 max-h-[100dvh] shadow-3xl"
+		<shadow-xl
+			style="--m:auto;
+			 --radius:1rem;
+			 --maxw:100%;
+			 --w:32rem;
+			 --mx:0.5rem;
+			 --bgc:var(--color-gray-50);
+			 --dark-bgc:var(--color-gray-950);
+			 --maxh:100dvh"
+			class="shadow-3xl"
 			in:flyAndScale
 			on:mousedown={(e) => {
 				e.stopPropagation();
 			}}
 		>
-			<div class="px-[1.75rem] py-6 flex flex-col">
-				<div class=" text-lg font-semibold dark:text-gray-200 mb-2.5">
+			<confirm-dialog
+				style="--px:1.75rem;
+				--py:1.5rem;
+				--d:flex;
+				--fd:column"
+			>
+				<div style="--size:1.125rem; --weight:600; --dark-c:var(--color-gray-200); --mb:0.625rem">
 					{#if title !== ''}
 						{title}
 					{:else}
@@ -118,7 +131,7 @@
 				</div>
 
 				<slot>
-					<div class=" text-sm text-gray-500 flex-1">
+					<div style="--size:0.8rem; --c:var(--color-gray-500); --fx:1 1 0%">
 						{#if message !== ''}
 							{@const html = DOMPurify.sanitize(marked.parse(message))}
 							{@html html}
@@ -130,7 +143,7 @@
 							<textarea
 								bind:value={inputValue}
 								placeholder={inputPlaceholder ? inputPlaceholder : $i18n.t('Enter your message')}
-								class="w-full mt-2 rounded-lg px-4 py-2 text-sm dark:text-gray-300 dark:bg-gray-900 outline-hidden resize-none"
+								style="--w:100%; --mt:0.5rem; --radius:0.5rem; --px:1rem; --py:0.5rem; --size:0.8rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-900); --oe:none; resize:none"
 								rows="3"
 								required
 							/>
@@ -138,9 +151,9 @@
 					</div>
 				</slot>
 
-				<div class="mt-6 flex justify-between gap-1.5">
+				<div style="--mt:1.5rem; --d:flex; --jc:space-between; --g:0.4rem">
 					<button
-						class="bg-gray-100 hover:bg-gray-200 text-gray-800 dark:bg-gray-850 dark:hover:bg-gray-800 dark:text-white font-medium w-full py-2.5 rounded-lg transition"
+						style="--bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --c:var(--color-gray-800); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:#fff; --weight:500; --w:100%; --py:0.625rem; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1);--d:0;"
 						on:click={() => {
 							show = false;
 							dispatch('cancel');
@@ -150,7 +163,7 @@
 						{cancelLabel}
 					</button>
 					<button
-						class="bg-gray-900 hover:bg-gray-850 text-gray-100 dark:bg-gray-100 dark:hover:bg-white dark:text-gray-800 font-medium w-full py-2.5 rounded-lg transition"
+						style="--bgc:var(--color-gray-900); --hvr-bgc:var(--color-gray-850); --c:var(--color-gray-100); --dark-bgc:var(--color-gray-100); --hvr-dark-bgc:#fff; --dark-c:var(--color-gray-800); --weight:500; --w:100%; --py:0.625rem; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1);--d:0;"
 						on:click={() => {
 							confirmHandler();
 						}}
@@ -159,9 +172,9 @@
 						{confirmLabel}
 					</button>
 				</div>
-			</div>
-		</div>
-	</div>
+			</confirm-dialog>
+		</shadow-xl>
+	</confirm-dialog-holder>
 {/if}
 
 <style>

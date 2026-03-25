@@ -27,36 +27,37 @@
 
 	<slot name="content">
 		<DropdownMenu.Content
-			class="w-full {className} text-sm rounded-xl px-1 py-1.5 z-50 bg-white dark:bg-gray-850 dark:text-white shadow-lg font-primary"
+			style="--w:100%; --size:0.8rem; --radius:0.6rem; --px:0.2rem; --py:0.4rem; --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:4"
+	class="{className} font-primary"
 			sideOffset={8}
 			side="bottom"
 			align="end"
 			transition={(e) => fade(e, { duration: 100 })}
 		>
 			<button
-				class="flex rounded-md py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+				style="--d:flex; --radius:0.4rem; --py:0.4rem; --px:0.6rem; --w:100%; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={async () => {
 					onEdit();
 					show = false;
 				}}
 			>
-				<div class=" self-center mr-2">
+				<div style="--as:center; --mr:0.5rem">
 					<Sparkles className="size-4" strokeWidth="2" />
 				</div>
-				<div class=" self-center truncate">{$i18n.t('Enhance')}</div>
+				<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">{$i18n.t('Enhance')}</div>
 			</button>
 
 			<button
-				class="flex rounded-md py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+				style="--d:flex; --radius:0.4rem; --py:0.4rem; --px:0.6rem; --w:100%; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={() => {
 					onChat();
 					show = false;
 				}}
 			>
-				<div class=" self-center mr-2">
+				<div style="--as:center; --mr:0.5rem">
 					<ChatBubbleOval className="size-4" strokeWidth="2" />
 				</div>
-				<div class=" self-center truncate">{$i18n.t('Chat')}</div>
+				<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">{$i18n.t('Chat')}</div>
 			</button>
 		</DropdownMenu.Content>
 	</slot>

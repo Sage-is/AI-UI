@@ -38,12 +38,12 @@
 
 <Modal bind:show size="sm">
 	<div>
-		<div class=" flex justify-between dark:text-gray-300 px-5 pt-4 pb-2">
-			<div class=" text-lg font-medium self-center">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.2rem; --pt:1rem; --pb:0.5rem">
+			<div style="--size:1.125rem; --weight:500; --as:center">
 				{$i18n.t('Add Memory')}
 			</div>
 			<button
-				class="self-center"
+				style="--as:center"
 				on:click={() => {
 					show = false;
 				}}
@@ -52,10 +52,10 @@
 			</button>
 		</div>
 
-		<div class="flex flex-col md:flex-row w-full px-5 pb-4 md:space-x-4 dark:text-gray-200">
-			<div class=" flex flex-col w-full sm:flex-row sm:justify-center sm:space-x-6">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1.2rem; --pb:1rem; --p: 1rem 0;--bgc: var(--white); --br: 1rem">
+			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				<form
-					class="flex flex-col w-full"
+					style="--d:flex; --fd:column; --w:100%"
 					on:submit|preventDefault={() => {
 						submitHandler();
 					}}
@@ -63,20 +63,20 @@
 					<div class="">
 						<textarea
 							bind:value={content}
-							class=" bg-transparent w-full text-sm rounded-xl p-3 outline outline-1 outline-gray-100 dark:outline-gray-800"
 							rows="6"
-							style="resize: vertical;"
+							style="--bgc:transparent; --w:100%; --size:0.8rem; --radius:0.6rem; --p:0.6rem; outline-style:solid; outline-width:1px; outline-color:var(--color-gray-100); outline-color:var(--color-gray-800); resize: vertical;"
 							placeholder={$i18n.t('Enter a detail about yourself for your LLMs to recall')}
 						/>
 
-						<div class="text-xs text-gray-500">
+						<div style="--size:0.6rem; --c:var(--color-gray-500)">
 							ⓘ {$i18n.t('Refer to yourself as "User" (e.g., "User is learning Spanish")')}
 						</div>
 					</div>
 
-					<div class="flex justify-end pt-1 text-sm font-medium">
+					<div style="--d:flex; --jc:flex-end; --pt:0.2rem; --size:0.8rem; --weight:500">
 						<button
-							class=" px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-gray-100 transition rounded-3xl flex flex-row space-x-1 items-center {loading
+							style="--px:1rem; --py:0.5rem; --bgc:#047857; --hvr-bgc:#065f46; --c:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:1.5rem; --d:flex; --fd:row; --g:0.2rem; --ai:center"
+	class="{loading
 								? ' cursor-not-allowed'
 								: ''}"
 							type="submit"
@@ -85,7 +85,7 @@
 							{$i18n.t('Add')}
 
 							{#if loading}
-								<div class="ml-2 self-center">
+								<div style="--ml:0.5rem; --as:center">
 									<Spinner />
 								</div>
 							{/if}

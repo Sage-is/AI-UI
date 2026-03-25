@@ -33,21 +33,21 @@
 
 <Modal size="sm" bind:show>
 	{#if model}
-		<div class="flex justify-between dark:text-gray-300 px-5 pt-4 pb-2">
-			<div class="text-lg font-medium self-center">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.2rem; --pt:1rem; --pb:0.5rem">
+			<div style="--size:1.125rem; --weight:500; --as:center">
 				{model.name}
 			</div>
-			<button class="self-center" on:click={close} aria-label="Close">
+			<button style="--as:center" on:click={close} aria-label="Close">
 				<XMark className={'size-5'} />
 			</button>
 		</div>
-		<div class="px-5 pb-4 dark:text-gray-200">
-			<div class="mb-2">
+		<div style="--px:1.2rem; --pb:1rem; --dark-c:var(--color-gray-200)">
+			<div style="--mb:0.5rem">
 				{#if topTags.length}
-					<div class="flex flex-wrap gap-1 mt-1 -mx-1">
+					<div style="--d:flex; --fw:wrap; --g:0.2rem; --mt:0.2rem; --mx:-0.2rem">
 						{#each topTags as tagInfo}
-							<span class="px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-850 text-xs">
-								{tagInfo.tag} <span class="text-gray-500 font-medium">{tagInfo.count}</span>
+							<span style="--px:0.5rem; --py:0.125rem; --radius:9999px; --bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --size:0.6rem">
+								{tagInfo.tag} <span style="--c:var(--color-gray-500); --weight:500">{tagInfo.count}</span>
 							</span>
 						{/each}
 					</div>
@@ -55,9 +55,9 @@
 					<span>-</span>
 				{/if}
 			</div>
-			<div class="flex justify-end pt-2">
+			<div style="--d:flex; --jc:flex-end; --pt:0.5rem">
 				<button
-					class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+					style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 					type="button"
 					on:click={close}
 				>

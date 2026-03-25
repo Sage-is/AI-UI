@@ -53,24 +53,25 @@
 	};
 </script>
 
-<div class=" flex flex-col gap-3 {banners?.length > 0 ? 'mt-2' : ''}" bind:this={bannerListElement}>
+<div style="--d:flex; --fd:column; --g:0.6rem"
+	class="{banners?.length > 0 ? 'mt-2' : ''}" bind:this={bannerListElement}>
 	{#each banners as banner, bannerIdx (banner.id)}
-		<div class=" flex justify-between items-start -ml-1" id="banner-item-{banner.id}">
+		<div style="--d:flex; --jc:space-between; --ai:flex-start; --ml:-0.2rem" id="banner-item-{banner.id}">
 			<EllipsisVertical className="size-4 cursor-move item-handle" />
 
-			<div class="flex flex-row flex-1 gap-2 items-start">
+			<div style="--d:flex; --fd:row; --fx:1 1 0%; --g:0.5rem; --ai:flex-start">
 				<select
-					class="w-fit capitalize rounded-xl text-xs bg-transparent outline-hidden pl-1 pr-5"
+					style="--w:fit-content; --tt:capitalize; --radius:0.6rem; --size:0.6rem; --bgc:transparent; --oe:none; --pl:0.2rem; --pr:1.2rem"
 					bind:value={banner.type}
 					required
 				>
 					{#if banner.type == ''}
-						<option value="" selected disabled class="text-gray-900">{$i18n.t('Type')}</option>
+						<option value="" selected disabled style="--c:var(--color-gray-900)">{$i18n.t('Type')}</option>
 					{/if}
-					<option value="info" class="text-gray-900">{$i18n.t('Info')}</option>
-					<option value="warning" class="text-gray-900">{$i18n.t('Warning')}</option>
-					<option value="error" class="text-gray-900">{$i18n.t('Error')}</option>
-					<option value="success" class="text-gray-900">{$i18n.t('Success')}</option>
+					<option value="info" style="--c:var(--color-gray-900)">{$i18n.t('Info')}</option>
+					<option value="warning" style="--c:var(--color-gray-900)">{$i18n.t('Warning')}</option>
+					<option value="error" style="--c:var(--color-gray-900)">{$i18n.t('Error')}</option>
+					<option value="success" style="--c:var(--color-gray-900)">{$i18n.t('Success')}</option>
 				</select>
 
 				<Textarea
@@ -80,7 +81,7 @@
 					maxSize={100}
 				/>
 
-				<div class="relative -left-2">
+				<div style="--pos:relative; --left:-0.5rem">
 					<Tooltip content={$i18n.t('Remember Dismissal')} className="flex h-fit items-center">
 						<Switch bind:state={banner.dismissible} />
 					</Tooltip>
@@ -88,7 +89,7 @@
 			</div>
 
 			<button
-				class="pr-3"
+				style="--pr:0.6rem"
 				type="button"
 				on:click={() => {
 					banners.splice(bannerIdx, 1);
