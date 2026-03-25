@@ -89,6 +89,32 @@ Sage WebUI uses [Startr.Style](https://startr.style) — a utility-complete CSS 
 
 See [Startr.Style docs](https://startr.style) for the full property reference, responsive suffixes (`-sm`, `-md`, `-lg`, `-xl`), dark mode (`--dark-*`), and hover states (`--hvr-*`).
 
+## CI/CD & Release Workflow
+
+The Makefile is the CI/CD framework. No GitHub Actions, no vendor lock-in. Same targets run on a developer laptop or a build server — Linux, macOS, or Windows (WSL).
+
+**Security scanning:**
+```bash
+make install_dev          # Install gitleaks, semgrep, bandit, trivy via Homebrew
+make scan                 # Run all scans (secrets, SAST, dependency vulnerabilities)
+```
+
+**Release process:**
+```bash
+make major_release        # (or minor_release / patch_release) — creates release branch
+make bump_release_version # Updates package.json + README.md
+# Edit CHANGELOG.md, commit, then:
+make it_build             # Build Docker image
+make test_db_upgrade      # Verify migrations against prior-version DB
+make test_db_fresh        # Verify clean schema creation
+make it_run               # Smoke test
+make release_and_push_GHCR # Finish release, tag, push to GHCR
+```
+
+Each release target prints the full checklist. Steps are guidance today — gated enforcement (require tests to pass before `release_finish`) is planned for a future release, runnable locally or on a CI server.
+
+DB snapshots for upgrade testing live in `tools/db_snapshots/` (gitignored, synced via SyncThing). See `tools/db_snapshots/README.md` for details.
+
 ## Documentation
 
 
