@@ -15,7 +15,8 @@
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 {#if done}
 	<code
-		class="codespan cursor-pointer"
+		style="--cur:pointer"
+	class="codespan"
 		on:click={() => {
 			copyToClipboard(unescapeHtml(token.text));
 			toast.success($i18n.t('Copied to clipboard'));
@@ -24,7 +25,8 @@
 {:else}
 	<code
 		transition:fade={{ duration: 100 }}
-		class="codespan cursor-pointer"
+		style="--cur:pointer"
+	class="codespan"
 		on:click={() => {
 			copyToClipboard(unescapeHtml(token.text));
 			toast.success($i18n.t('Copied to clipboard'));

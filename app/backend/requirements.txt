@@ -1,15 +1,16 @@
 fastapi==0.115.7
 uvicorn[standard]==0.35.0
 pydantic==2.11.7
-python-multipart==0.0.20
+# CVE-2026-24486 (HIGH): arbitrary file write — fixed in 0.0.22
+python-multipart==0.0.22
 
 python-socketio==5.13.0
-python-jose==3.4.0
 passlib[bcrypt]==1.7.4
 cryptography
 
 requests==2.32.4
-aiohttp==3.11.11
+# CVE-2025-69223 (HIGH): zip bomb via auto_decompress + 8 more CVEs (smuggling, DoS)
+aiohttp==3.13.3
 async-timeout
 aiocache
 aiofiles
@@ -22,36 +23,23 @@ peewee==3.18.1
 peewee-migrate==1.12.2
 psycopg2-binary==2.9.9
 pgvector==0.4.0
-PyMySQL==1.1.1
 bcrypt==4.3.0
 
-pymongo
 redis
 boto3==1.35.53
 
-argon2-cffi==23.1.0
-APScheduler==3.10.4
-
 pycrdt==0.12.25
-
-RestrictedPython==8.0
 
 loguru==0.7.3
 asgiref==3.8.1
 
-# AI libraries
-openai
-anthropic
-google-genai==1.15.0
-google-generativeai==0.8.5
 tiktoken
 
 langchain==0.3.26
-langchain-community==0.3.26
+# CVE-2025-6984 (HIGH): insecure XML parsing (XXE) in document loaders
+langchain-community==0.3.27
 
-fake-useragent==2.1.0
 chromadb==0.6.3
-posthog==5.4.0
 pymilvus==2.5.0
 qdrant-client==1.14.3
 opensearch-py==2.8.0
@@ -61,50 +49,52 @@ pinecone==6.0.2
 
 transformers
 sentence-transformers==4.1.0
-accelerate
 colbert-ai==0.2.21
-einops==0.8.1
 
-
-ftfy==6.2.3
+# Document processing (required by langchain_community.document_loaders)
 pypdf==4.3.1
-fpdf2==2.8.2
-pymdown-extensions==10.14.2
 docx2txt==0.8
 python-pptx==1.0.2
-unstructured==0.16.17
-nltk==3.9.1
-Markdown==3.7
-pypandoc==1.15
+# CVE-2025-64712 (CRITICAL): path traversal via MSG attachments — fixed in 0.18.18
+unstructured==0.18.18
+# CVE-2025-14009 (CRITICAL): zip slip leading to code execution — fixed in 3.9.3
+nltk==3.9.3
 pandas==2.2.3
 openpyxl==3.1.5
 pyxlsb==1.0.10
 xlrd==2.0.1
+pytube==15.0.0
+
+ftfy==6.2.3
+fpdf2==2.8.2
+Markdown==3.7
 validators==0.35.0
 psutil
-sentencepiece
 soundfile==0.13.1
 azure-ai-documentintelligence==1.0.2
 
-pillow==11.2.1
+# CVE-2025-48379 (HIGH): DDS heap buffer overflow — fixed in 11.3.0
+# CVE-2026-25990 (HIGH): out-of-bounds write via crafted PSD — fixed in 12.1.1
+# Note: major version bump (11→12). No direct imports in our code — transitive dep
+# used by unstructured, sentence-transformers, fpdf2. Test: document/image uploads.
+pillow==12.1.1
 opencv-python-headless==4.11.0.86
-rapidocr-onnxruntime==1.4.4
-rank-bm25==0.2.2
 
 onnxruntime==1.20.1
 
 faster-whisper==1.1.1
 
-PyJWT[crypto]==2.10.1
-authlib==1.4.1
+# CVE-2026-32597 (HIGH): accepts unknown crit header extensions — fixed in 2.12.0
+PyJWT[crypto]==2.12.0
+# CVE-2026-27962 (CRITICAL): auth bypass via JWK header — fixed in 1.6.9
+# CVE-2025-59420 (HIGH): RFC violation — fixed in 1.6.4
+authlib==1.6.9
 
-black==25.1.0
-langfuse==2.44.0
+# CVE-2026-32274 (HIGH): arbitrary file writes from unsanitized input — fixed in 26.3.1
+black==26.3.1
 youtube-transcript-api==1.1.0
-pytube==15.0.0
 
 pydub
-ddgs==9.0.0
 
 ## Google Drive
 google-api-python-client
@@ -126,11 +116,6 @@ azure-storage-blob==12.24.1
 ## LDAP
 ldap3==2.9.1
 
-## Firecrawl
-firecrawl-py==1.12.0
-
-# Sougou API SDK(Tencentcloud SDK)
-tencentcloud-sdk-python==3.0.1336
 
 ## Trace
 opentelemetry-api==1.32.1

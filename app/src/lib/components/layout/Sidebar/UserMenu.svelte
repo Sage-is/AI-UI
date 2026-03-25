@@ -1,10 +1,7 @@
 <script lang="ts">
-	import { DropdownMenu } from 'bits-ui';
-	import { createEventDispatcher, getContext, onMount } from 'svelte';
-
-	import { flyAndScale } from '$lib/utils/transitions';
+	import { createEventDispatcher, getContext, onMount, onDestroy } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { fade, slide } from 'svelte/transition';
+	import { fade } from 'svelte/transition';
 
 	import { getUsage } from '$lib/apis';
 	import { userSignOut } from '$lib/apis/auths';
@@ -18,7 +15,6 @@
 	import Keyboard from '$lib/components/icons/Keyboard.svelte';
 	import ShortcutsModal from '$lib/components/chat/ShortcutsModal.svelte';
 	import Settings from '$lib/components/icons/Settings.svelte';
-	import Code from '$lib/components/icons/Code.svelte';
 	import UserGroup from '$lib/components/icons/UserGroup.svelte';
 	import SignOut from '$lib/components/icons/SignOut.svelte';
 
@@ -30,6 +26,10 @@
 	export let className = 'max-w-[240px]';
 
 	const dispatch = createEventDispatcher();
+
+	let triggerEl: HTMLElement;
+	let menuEl: HTMLElement;
+	let menuStyle = '';
 
 	let usage = null;
 	const getUsageInfo = async () => {
@@ -44,201 +44,233 @@
 		}
 	};
 
-	$: if (show) {
-		getUsageInfo();
+	function toggle() {
+		show = !show;
+		if (show) {
+			updatePosition();
+			getUsageInfo();
+		}
+		dispatch('change', show);
 	}
+
+	function close() {
+		if (show) {
+			show = false;
+			dispatch('change', false);
+		}
+	}
+
+	function updatePosition() {
+		if (!triggerEl) return;
+		const rect = triggerEl.getBoundingClientRect();
+		const vH = window.innerHeight;
+		const vW = window.innerWidth;
+
+		let style = 'position:fixed;';
+
+		// Vertical: bottom half → open upward, top half → open downward
+		if (rect.top > vH / 2) {
+			style += ` bottom:${vH - rect.top + 4}px;`;
+		} else {
+			style += ` top:${rect.bottom + 4}px;`;
+		}
+
+		// Horizontal: right half → align right edge, left half → align left edge
+		if (rect.left > vW / 2) {
+			style += ` right:${vW - rect.right}px;`;
+		} else {
+			style += ` left:${rect.left}px;`;
+		}
+
+		menuStyle = style;
+	}
+
+	function handleWindowPointerdown(e: PointerEvent) {
+		if (!show) return;
+		const target = e.target as Node;
+		if (menuEl?.contains(target) || triggerEl?.contains(target)) return;
+		close();
+	}
+
+	function handleKeydown(e: KeyboardEvent) {
+		if (e.key === 'Escape') close();
+	}
+
+	const itemStyle =
+		'--d:flex; --radius:0.4rem; --py:0.4rem; --px:0.6rem; --w:100%; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)';
+
+	const helpItemStyle =
+		'--d:flex; --g:0.5rem; --ai:center; --py:0.4rem; --px:0.6rem; --size:0.8rem; --us:none; --w:100%; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)';
 </script>
+
+<svelte:window on:pointerdown={handleWindowPointerdown} on:keydown={handleKeydown} />
 
 <ShortcutsModal bind:show={$showShortcuts} />
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<DropdownMenu.Root
-	bind:open={show}
-	onOpenChange={(state) => {
-		dispatch('change', state);
-	}}
->
-	<DropdownMenu.Trigger>
-		<slot />
-	</DropdownMenu.Trigger>
+<div bind:this={triggerEl} on:click={toggle}>
+	<slot />
+</div>
 
-	<slot name="content">
-		<DropdownMenu.Content
-			class="w-full {className} text-sm rounded-xl px-1 py-1.5 z-50 bg-white dark:bg-gray-850 dark:text-white shadow-lg font-primary"
-			sideOffset={4}
-			side="bottom"
-			align="start"
-			transition={(e) => fade(e, { duration: 100 })}
+{#if show}
+	<!-- svelte-ignore a11y-no-static-element-interactions -->
+	<div
+		bind:this={menuEl}
+		transition:fade={{ duration: 100 }}
+		style="{menuStyle} --w:100%; --size:0.8rem; --radius:0.6rem; --px:0.2rem; --py:0.4rem; --z:999; --bgc:#fff; --dark-bgc:var(--color-gray-850); --dark-c:#fff; --shadow:4"
+		class="{className} font-primary"
+		on:click|stopPropagation
+	>
+		<button
+			style={itemStyle}
+			on:click={async () => {
+				await showSettings.set(true);
+				close();
+				if ($mobile) showSidebar.set(false);
+			}}
 		>
-			<DropdownMenu.Item
-				class="flex rounded-md py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition"
-				on:click={async () => {
-					await showSettings.set(true);
-					show = false;
+			<div style="--as:center; --mr:0.6rem">
+				<Settings className="w-5 h-5" strokeWidth="1.5" />
+			</div>
+			<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
+				{$i18n.t('Settings')}
+			</div>
+		</button>
 
-					if ($mobile) {
-						showSidebar.set(false);
-					}
-				}}
-			>
-				<div class=" self-center mr-3">
-					<Settings className="w-5 h-5" strokeWidth="1.5" />
-				</div>
-				<div class=" self-center truncate">{$i18n.t('Settings')}</div>
-			</DropdownMenu.Item>
+		<button
+			style={itemStyle}
+			on:click={() => {
+				dispatch('show', 'archived-chat');
+				close();
+				if ($mobile) showSidebar.set(false);
+			}}
+		>
+			<div style="--as:center; --mr:0.6rem">
+				<ArchiveBox className="size-5" strokeWidth="1.5" />
+			</div>
+			<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
+				{$i18n.t('Archived Chats')}
+			</div>
+		</button>
 
-			<DropdownMenu.Item
-				class="flex rounded-md py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+		{#if role === 'admin' || role === 'facilitator'}
+			<button
+				style="{itemStyle}; --us:none"
 				on:click={() => {
-					dispatch('show', 'archived-chat');
-					show = false;
-
-					if ($mobile) {
-						showSidebar.set(false);
-					}
+					close();
+					if ($mobile) showSidebar.set(false);
+					goto(role === 'admin' ? '/admin/settings' : '/admin');
 				}}
 			>
-				<div class=" self-center mr-3">
-					<ArchiveBox className="size-5" strokeWidth="1.5" />
+				<div style="--as:center; --mr:0.6rem">
+					<UserGroup className="w-5 h-5" strokeWidth="1.5" />
 				</div>
-				<div class=" self-center truncate">{$i18n.t('Archived Chats')}</div>
-			</DropdownMenu.Item>
+				<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
+					{$i18n.t('Admin Panel')}
+				</div>
+			</button>
+		{/if}
 
-			{#if role === 'admin'}
-				<DropdownMenu.Item
-					class="flex rounded-md py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition select-none"
-					on:click={() => {
-						show = false;
-						if ($mobile) {
-							showSidebar.set(false);
-						}
-						goto('/playground');
-					}}
-				>
-					<div class=" self-center mr-3">
-						<Code className="size-5" strokeWidth="1.5" />
-					</div>
-					<div class=" self-center truncate">{$i18n.t('Playground')}</div>
-				</DropdownMenu.Item>
+		{#if help}
+			<hr
+				style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-800); --my:0.2rem; --p:0"
+			/>
 
-				<DropdownMenu.Item
-					class="flex rounded-md py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition select-none"
-					on:click={() => {
-						show = false;
-						if ($mobile) {
-							showSidebar.set(false);
-						}
-						goto('/admin/settings');
-					}}
-				>
-					<div class=" self-center mr-3">
-						<UserGroup className="w-5 h-5" strokeWidth="1.5" />
-					</div>
-					<div class=" self-center truncate">{$i18n.t('Admin Panel')}</div>
-				</DropdownMenu.Item>
-			{/if}
-
-			{#if help}
-				<hr class=" border-gray-100 dark:border-gray-800 my-1 p-0" />
-
-				<!-- {$i18n.t('Help')} -->
-				<DropdownMenu.Item
-					class="flex gap-2 items-center py-1.5 px-3 text-sm select-none w-full cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition"
-					id="chat-share-button"
-					on:click={() => {
-						window.open('https://docs.sage.is', '_blank');
-						show = false;
-					}}
-				>
-					<QuestionMarkCircle className="size-5" />
-					<div class="flex items-center">{$i18n.t('Documentation')}</div>
-				</DropdownMenu.Item>
-
-				<!-- Releases -->
-				<DropdownMenu.Item
-					class="flex gap-2 items-center py-1.5 px-3 text-sm select-none w-full cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition"
-					id="menu-item-releases"
-					on:click={() => {
-						window.open('https://github.com/Sage-is/AI-UI/releases', '_blank');
-						show = false;
-					}}
-				>
-					<Map className="size-5" />
-					<div class="flex items-center">{$i18n.t('Releases')}</div>
-				</DropdownMenu.Item>
-
-				<DropdownMenu.Item
-					class="flex gap-2 items-center py-1.5 px-3 text-sm select-none w-full cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition"
-					id="chat-share-button"
-					on:click={() => {
-						showShortcuts.set(!$showShortcuts);
-						show = false;
-					}}
-				>
-					<Keyboard className="size-5" />
-					<div class="flex items-center">{$i18n.t('Keyboard shortcuts')}</div>
-				</DropdownMenu.Item>
-			{/if}
-
-			<hr class=" border-gray-100 dark:border-gray-800 my-1 p-0" />
-
-			<DropdownMenu.Item
-				class="flex rounded-md py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition"
-				on:click={async () => {
-					const res = await userSignOut();
-					user.set(null);
-					localStorage.removeItem('token');
-
-					location.href = res?.redirect_url ?? '/auth';
-					show = false;
+			<button
+				style={helpItemStyle}
+				on:click={() => {
+					window.open('https://docs.sage.is', '_blank');
+					close();
 				}}
 			>
-				<div class=" self-center mr-3">
-					<SignOut className="w-5 h-5" strokeWidth="1.5" />
-				</div>
-				<div class=" self-center truncate">{$i18n.t('Sign Out')}</div>
-			</DropdownMenu.Item>
+				<QuestionMarkCircle className="size-5" />
+				<div style="--d:flex; --ai:center">{$i18n.t('Documentation')}</div>
+			</button>
 
-			{#if usage}
-				{#if usage?.user_ids?.length > 0}
-					<hr class=" border-gray-100 dark:border-gray-800 my-1 p-0" />
+			<button
+				style={helpItemStyle}
+				on:click={() => {
+					window.open('https://github.com/Sage-is/AI-UI/releases', '_blank');
+					close();
+				}}
+			>
+				<Map className="size-5" />
+				<div style="--d:flex; --ai:center">{$i18n.t('Releases')}</div>
+			</button>
 
-					<Tooltip
-						content={usage?.model_ids && usage?.model_ids.length > 0
-							? `${$i18n.t('Running')}: ${usage.model_ids.join(', ')} ✨`
-							: ''}
+			<button
+				style={helpItemStyle}
+				on:click={() => {
+					showShortcuts.set(!$showShortcuts);
+					close();
+				}}
+			>
+				<Keyboard className="size-5" />
+				<div style="--d:flex; --ai:center">{$i18n.t('Keyboard shortcuts')}</div>
+			</button>
+		{/if}
+
+		<hr
+			style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-800); --my:0.2rem; --p:0"
+		/>
+
+		<button
+			style={itemStyle}
+			on:click={async () => {
+				const res = await userSignOut();
+				user.set(null);
+				localStorage.removeItem('token');
+				location.href = res?.redirect_url ?? '/auth';
+				close();
+			}}
+		>
+			<div style="--as:center; --mr:0.6rem">
+				<SignOut className="w-5 h-5" strokeWidth="1.5" />
+			</div>
+			<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
+				{$i18n.t('Sign Out')}
+			</div>
+		</button>
+
+		{#if usage}
+			{#if usage?.user_ids?.length > 0}
+				<hr
+					style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-800); --my:0.2rem; --p:0"
+				/>
+
+				<Tooltip
+					content={usage?.model_ids && usage?.model_ids.length > 0
+						? `${$i18n.t('Running')}: ${usage.model_ids.join(', ')} ✨`
+						: ''}
+				>
+					<div
+						style="--d:flex; --radius:0.4rem; --py:0.2rem; --px:0.6rem; --size:0.6rem; --g:0.625rem; --ai:center"
+						on:mouseenter={() => {
+							getUsageInfo();
+						}}
 					>
-						<div
-							class="flex rounded-md py-1 px-3 text-xs gap-2.5 items-center"
-							on:mouseenter={() => {
-								getUsageInfo();
-							}}
-						>
-							<div class=" flex items-center">
-								<span class="relative flex size-2">
-									<span
-										class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"
-									/>
-									<span class="relative inline-flex rounded-full size-2 bg-green-500" />
-								</span>
-							</div>
-
-							<div class=" ">
-								<span class="">
-									{$i18n.t('Active Users')}:
-								</span>
-								<span class=" font-semibold">
-									{usage?.user_ids?.length}
-								</span>
-							</div>
+						<div style="--d:flex; --ai:center">
+							<span style="--pos:relative; --d:flex; --w:0.5rem; --h:0.5rem">
+								<span
+									style="animation:ping 1s cubic-bezier(0, 0, 0.2, 1) infinite; --pos:absolute; --d:inline-flex; --h:100%; --w:100%; --radius:9999px; --bgc:#4ade80; --op:0.75"
+								/>
+								<span
+									style="--pos:relative; --d:inline-flex; --radius:9999px; --w:0.5rem; --h:0.5rem; --bgc:#22c55e"
+								/>
+							</span>
 						</div>
-					</Tooltip>
-				{/if}
-			{/if}
 
-			<!-- <DropdownMenu.Item class="flex items-center py-1.5 px-3 text-sm ">
-				<div class="flex items-center">Profile</div>
-			</DropdownMenu.Item> -->
-		</DropdownMenu.Content>
-	</slot>
-</DropdownMenu.Root>
+						<div class=" ">
+							<span class="">
+								{$i18n.t('Active Users')}:
+							</span>
+							<span style="--weight:600">
+								{usage?.user_ids?.length}
+							</span>
+						</div>
+					</div>
+				</Tooltip>
+			{/if}
+		{/if}
+	</div>
+{/if}

@@ -164,7 +164,8 @@
 		);
 
 		dragged = true;
-		itemElement.style.opacity = '0.5'; // Optional: Visual cue to show it's being dragged
+		itemElement.style.opacity = '0.4';
+		document.body.style.cursor = 'grabbing';
 	};
 
 	const onDrag = (event) => {
@@ -177,7 +178,8 @@
 	const onDragEnd = (event) => {
 		event.stopPropagation();
 
-		itemElement.style.opacity = '1'; // Reset visual cue after drag
+		itemElement.style.opacity = '';
+		document.body.style.cursor = '';
 		dragged = false;
 	};
 
@@ -275,17 +277,19 @@
 		deleteChatHandler(id);
 	}}
 >
-	<div class=" text-sm text-gray-500 flex-1 line-clamp-3">
-		{$i18n.t('This will delete')} <span class="  font-semibold">{title}</span>.
+	<div style="--size:0.8rem; --c:var(--color-gray-500); --fx:1 1 0%; --line-clamp:3">
+		{$i18n.t('This will delete')} <span style="--weight:600">{title}</span>.
 	</div>
 </DeleteConfirmDialog>
 
 {#if dragged && x && y}
 	<DragGhost {x} {y}>
-		<div class=" bg-black/80 backdrop-blur-2xl px-2 py-1 rounded-lg w-fit max-w-40">
-			<div class="flex items-center gap-1">
+		<div
+			style="--bgc:rgb(0 0 0 / 0.8); backdrop-filter:blur(40px); --px:0.5rem; --py:0.2rem; --radius:0.5rem; --w:fit-content; --maxw:10rem"
+		>
+			<div style="--d:flex; --ai:center; --g:0.2rem">
 				<Document className=" size-[18px]" strokeWidth="2" />
-				<div class=" text-xs text-white line-clamp-1">
+				<div style="--size:0.6rem; --c:#fff; --line-clamp:1">
 					{title}
 				</div>
 			</div>
@@ -295,24 +299,23 @@
 
 <div
 	bind:this={itemElement}
-	class=" w-full {className} relative group"
+	style="--w:100%; --pos:relative"
+	class="{className} group"
 	draggable={draggable && !confirmEdit}
 >
 	{#if confirmEdit}
 		<div
-			class=" w-full flex justify-between rounded-lg px-[11px] py-[6px] {id === $chatId ||
-			confirmEdit
-				? 'bg-gray-100 dark:bg-gray-900'
+			id="chat-title-input-container-{id}"
+			style="--radius:9999px; --w:100%; --m:0; {id === $chatId || confirmEdit
+				? '--bg: var(--color-gray-100); --dark-bg: var(--color-gray-900);'
 				: selected
-					? 'bg-gray-100 dark:bg-gray-950'
-					: 'group-hover:bg-gray-100 dark:group-hover:bg-gray-950'}  whitespace-nowrap text-ellipsis relative {generating
-				? 'cursor-not-allowed'
-				: ''}"
+					? '--bg: var(--color-gray-100); --dark-bg: var(--color-gray-950);'
+					: '--bg: transparent; --dark-bg: transparent;'}"
 		>
 			<input
 				id="chat-title-input-{id}"
 				bind:value={chatTitle}
-				class=" bg-transparent w-full outline-hidden mr-10"
+				style="--bgc:transparent; --w:100%; --oe:none; --mr:2.5rem"
 				placeholder={generating ? $i18n.t('Generating...') : ''}
 				on:keydown={chatTitleInputKeydownHandler}
 				on:blur={async (e) => {
@@ -346,12 +349,12 @@
 		</div>
 	{:else}
 		<a
-			class=" w-full flex justify-between rounded-lg px-[11px] py-[6px] {id === $chatId ||
-			confirmEdit
+			style="--w:100%; --d:flex; --jc:space-between; --radius:0.5rem; --px:11px; --py:6px; --ws:nowrap; text-overflow:ellipsis"
+			class={id === $chatId || confirmEdit
 				? 'bg-gray-100 dark:bg-gray-900'
 				: selected
 					? 'bg-gray-100 dark:bg-gray-950'
-					: ' group-hover:bg-gray-100 dark:group-hover:bg-gray-950'}  whitespace-nowrap text-ellipsis"
+					: ' group-hover:bg-gray-100 dark:group-hover:bg-gray-950'}
 			href="/c/{id}"
 			on:click={() => {
 				dispatch('select');
@@ -383,8 +386,8 @@
 			on:focus={(e) => {}}
 			draggable="false"
 		>
-			<div class=" flex self-center flex-1 w-full">
-				<div dir="auto" class="text-left self-center overflow-hidden w-full h-[20px]">
+			<div style="--d:flex; --as:center; --fx:1 1 0%; --w:100%">
+				<div dir="auto" style="--ta:left; --as:center; --of:hidden; --w:100%; --h:20px">
 					{title}
 				</div>
 			</div>
@@ -393,17 +396,17 @@
 
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<div
-		class="
-        {id === $chatId || confirmEdit
+		style="--pos:absolute; --top:50%; --translatey:-50%; --py:0.2rem; --pr:0.125rem;
+			--mr:0.4rem; --pl:1.2rem;
+			--bgi:linear-gradient(270deg, var(--tw-gradient-stops));
+			--tw-gradient-to:transparent;"
+		class="{id === $chatId || confirmEdit
 			? 'from-gray-100 dark:from-gray-900'
 			: selected
 				? 'from-gray-100 dark:from-gray-950'
-				: 'invisible group-hover:visible from-gray-100 dark:from-gray-950'}
-            absolute {className === 'pr-2'
+				: 'invisible group-hover:visible from-gray-100 dark:from-gray-950'} {className === 'pr-2'
 			? 'right-[8px]'
-			: 'right-1'} top-[4px] py-1 pr-0.5 mr-1.5 pl-5 bg-linear-to-l from-80%
-
-              to-transparent"
+			: 'right-1'} from-80%"
 		on:mouseenter={(e) => {
 			mouseOver = true;
 		}}
@@ -412,12 +415,13 @@
 		}}
 	>
 		{#if confirmEdit}
-			<div
-				class="flex self-center items-center space-x-1.5 z-10 translate-y-[0.5px] -translate-x-[0.5px]"
-			>
+			<div style="--d:flex; --as:center; --ai:center; --g:0.4rem; --z:10; --translatex:-0.5px">
 				<Tooltip content={$i18n.t('Generate')}>
+				<!-- TODO: add shortcut support using "generate-title-button" id -->
 					<button
-						class=" self-center dark:hover:text-white transition"
+						style="--d:none;
+							--as:center; 
+							--hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						id="generate-title-button"
 						on:click={(e) => {
 							e.preventDefault();
@@ -432,10 +436,10 @@
 				</Tooltip>
 			</div>
 		{:else if shiftKey && mouseOver}
-			<div class=" flex items-center self-center space-x-1.5">
+			<div style="--d:flex; --ai:center; --as:center; --g:0.4rem">
 				<Tooltip content={$i18n.t('Archive')} className="flex items-center">
 					<button
-						class=" self-center dark:hover:text-white transition"
+						style="--as:center; --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={() => {
 							archiveChatHandler(id);
 						}}
@@ -447,7 +451,7 @@
 
 				<Tooltip content={$i18n.t('Delete')}>
 					<button
-						class=" self-center dark:hover:text-white transition"
+						style="--as:center; --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={() => {
 							deleteChatHandler(id);
 						}}
@@ -458,7 +462,7 @@
 				</Tooltip>
 			</div>
 		{:else}
-			<div class="flex self-center z-10 items-end">
+			<div style="--d:flex; --as:center; --z:10; --ai:flex-end">
 				<ChatMenu
 					chatId={id}
 					cloneChatHandler={() => {
@@ -486,7 +490,7 @@
 				>
 					<button
 						aria-label="Chat Menu"
-						class=" self-center dark:hover:text-white transition m-0"
+						style="--as:center; --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --m:0"
 						on:click={() => {
 							dispatch('select');
 						}}
@@ -495,7 +499,7 @@
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 16 16"
 							fill="currentColor"
-							class="w-4 h-4"
+							style="--w:1rem; --h:1rem"
 						>
 							<path
 								d="M2 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM6.5 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM12.5 6.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z"
@@ -507,8 +511,8 @@
 				{#if id === $chatId}
 					<!-- Shortcut support using "delete-chat-button" id -->
 					<button
+						style="--d:none"
 						id="delete-chat-button"
-						class="hidden"
 						on:click={() => {
 							showDeleteConfirm = true;
 						}}
@@ -517,7 +521,7 @@
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 16 16"
 							fill="currentColor"
-							class="w-4 h-4"
+							style="--w:1rem; --h:1rem"
 						>
 							<path
 								d="M2 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM6.5 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM12.5 6.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z"

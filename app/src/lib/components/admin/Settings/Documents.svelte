@@ -291,27 +291,28 @@
 />
 
 <form
-	class="flex flex-col h-full justify-between space-y-3 text-sm"
+	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --g:0.6rem; --size:0.8rem"
 	on:submit|preventDefault={() => {
 		submitHandler();
 	}}
 >
 	{#if RAGConfig}
-		<div class="space-y-2.5 overflow-y-scroll scrollbar-hidden h-full pr-1.5">
+		<div style="--g:0.625rem; --ofy:scroll; --h:100%; --pr:0.4rem"
+	class="scrollbar-hidden">
 			<div class="">
-				<div class="mb-3">
-					<div class="mb-2.5 text-base font-medium">{$i18n.t('General')}</div>
+				<div style="--mb:0.6rem">
+					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('General')}</div>
 
-					<hr class="border-gray-100 dark:border-gray-850 my-2"/>
+					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem"/>
 
-					<div class="mb-2.5 flex flex-col w-full justify-between">
-						<div class="flex w-full justify-between mb-1">
-							<div class="self-center text-xs font-medium">
+					<div style="--mb:0.625rem; --d:flex; --fd:column; --w:100%; --jc:space-between">
+						<div style="--d:flex; --w:100%; --jc:space-between; --mb:0.2rem">
+							<div style="--as:center; --size:0.6rem; --weight:500">
 								{$i18n.t('Content Extraction Engine')}
 							</div>
 							<div class="">
 								<select
-									class="dark:bg-gray-900 w-fit pr-8 rounded-sm px-2 text-xs bg-transparent outline-hidden text-right"
+									style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --size:0.6rem; --bgc:transparent; --oe:none; --ta:right"
 									bind:value={RAGConfig.CONTENT_EXTRACTION_ENGINE}
 								>
 									<option value="">{$i18n.t('Default')}</option>
@@ -326,18 +327,18 @@
 						</div>
 
 						{#if RAGConfig.CONTENT_EXTRACTION_ENGINE === ''}
-							<div class="flex w-full mt-1">
-								<div class="flex-1 flex justify-between">
-									<div class="self-center text-xs font-medium">
+							<div style="--d:flex; --w:100%; --mt:0.2rem">
+								<div style="--fx:1 1 0%; --d:flex; --jc:space-between">
+									<div style="--as:center; --size:0.6rem; --weight:500">
 										{$i18n.t('PDF Extract Images (OCR)')}
 									</div>
-									<div class="flex items-center relative">
+									<div style="--d:flex; --ai:center; --pos:relative">
 										<Switch bind:state={RAGConfig.PDF_EXTRACT_IMAGES} />
 									</div>
 								</div>
 							</div>
 						{:else if RAGConfig.CONTENT_EXTRACTION_ENGINE === 'datalab_marker'}
-							<div class="my-0.5 flex gap-2 pr-2">
+							<div style="--my:0.125rem; --d:flex; --g:0.5rem; --pr:0.5rem">
 								<SensitiveInput
 									placeholder={$i18n.t('Enter Datalab Marker API Key')}
 									required={false}
@@ -345,133 +346,140 @@
 								/>
 							</div>
 
-							<div class="flex justify-between w-full mt-2">
-								<div class="text-xs font-medium">
+							<div style="--d:flex; --jc:space-between; --w:100%; --mt:0.5rem">
+								<div style="--size:0.6rem; --weight:500">
 									{$i18n.t('Languages')}
 								</div>
 
 								<input
-									class="text-sm bg-transparent outline-hidden"
+									style="--size:0.8rem; --bgc:transparent; --oe:none"
 									type="text"
 									bind:value={RAGConfig.DATALAB_MARKER_LANGS}
 									placeholder={$i18n.t('e.g.) en,fr,de')}
 								/>
 							</div>
 
-							<div class="flex justify-between w-full mt-2">
-								<div class="self-center text-xs font-medium">
-									<Tooltip
-										content={$i18n.t(
-											'Significantly improves accuracy by using an LLM to enhance tables, forms, inline math, and layout detection. Will increase latency. Defaults to True.'
-										)}
-										placement="top-start"
-									>
-										{$i18n.t('Use LLM')}
-									</Tooltip>
+							<details style="--mt:0.5rem">
+								<summary style="--size:0.6rem; --weight:500; --c:var(--color-gray-500); --cursor:pointer">
+									{$i18n.t('Advanced Options')}
+								</summary>
+								<div style="--mt:0.5rem; --d:flex; --fd:column; --g:0.5rem">
+									<div style="--d:flex; --jc:space-between; --w:100%">
+										<div style="--as:center; --size:0.6rem; --weight:500">
+											<Tooltip
+												content={$i18n.t(
+													'Significantly improves accuracy by using an LLM to enhance tables, forms, inline math, and layout detection. Will increase latency. Defaults to True.'
+												)}
+												placement="top-start"
+											>
+												{$i18n.t('Use LLM')}
+											</Tooltip>
+										</div>
+										<div style="--d:flex; --ai:center">
+											<Switch bind:state={RAGConfig.DATALAB_MARKER_USE_LLM} />
+										</div>
+									</div>
+									<div style="--d:flex; --jc:space-between; --w:100%">
+										<div style="--as:center; --size:0.6rem; --weight:500">
+											<Tooltip
+												content={$i18n.t('Skip the cache and re-run the inference. Defaults to False.')}
+												placement="top-start"
+											>
+												{$i18n.t('Skip Cache')}
+											</Tooltip>
+										</div>
+										<div style="--d:flex; --ai:center">
+											<Switch bind:state={RAGConfig.DATALAB_MARKER_SKIP_CACHE} />
+										</div>
+									</div>
+									<div style="--d:flex; --jc:space-between; --w:100%">
+										<div style="--as:center; --size:0.6rem; --weight:500">
+											<Tooltip
+												content={$i18n.t(
+													'Force OCR on all pages of the PDF. This can lead to worse results if you have good text in your PDFs. Defaults to False.'
+												)}
+												placement="top-start"
+											>
+												{$i18n.t('Force OCR')}
+											</Tooltip>
+										</div>
+										<div style="--d:flex; --ai:center">
+											<Switch bind:state={RAGConfig.DATALAB_MARKER_FORCE_OCR} />
+										</div>
+									</div>
+									<div style="--d:flex; --jc:space-between; --w:100%">
+										<div style="--as:center; --size:0.6rem; --weight:500">
+											<Tooltip
+												content={$i18n.t(
+													'Whether to paginate the output. Each page will be separated by a horizontal rule and page number. Defaults to False.'
+												)}
+												placement="top-start"
+											>
+												{$i18n.t('Paginate')}
+											</Tooltip>
+										</div>
+										<div style="--d:flex; --ai:center">
+											<Switch bind:state={RAGConfig.DATALAB_MARKER_PAGINATE} />
+										</div>
+									</div>
+									<div style="--d:flex; --jc:space-between; --w:100%">
+										<div style="--as:center; --size:0.6rem; --weight:500">
+											<Tooltip
+												content={$i18n.t(
+													'Strip existing OCR text from the PDF and re-run OCR. Ignored if Force OCR is enabled. Defaults to False.'
+												)}
+												placement="top-start"
+											>
+												{$i18n.t('Strip Existing OCR')}
+											</Tooltip>
+										</div>
+										<div style="--d:flex; --ai:center">
+											<Switch bind:state={RAGConfig.DATALAB_MARKER_STRIP_EXISTING_OCR} />
+										</div>
+									</div>
+									<div style="--d:flex; --jc:space-between; --w:100%">
+										<div style="--as:center; --size:0.6rem; --weight:500">
+											<Tooltip
+												content={$i18n.t(
+													'Disable image extraction from the PDF. If Use LLM is enabled, images will be automatically captioned. Defaults to False.'
+												)}
+												placement="top-start"
+											>
+												{$i18n.t('Disable Image Extraction')}
+											</Tooltip>
+										</div>
+										<div style="--d:flex; --ai:center">
+											<Switch bind:state={RAGConfig.DATALAB_MARKER_DISABLE_IMAGE_EXTRACTION} />
+										</div>
+									</div>
+									<div style="--d:flex; --jc:space-between; --w:100%">
+										<div style="--as:center; --size:0.6rem; --weight:500">
+											<Tooltip
+												content={$i18n.t(
+													"The output format for the text. Can be 'json', 'markdown', or 'html'. Defaults to 'markdown'."
+												)}
+												placement="top-start"
+											>
+												{$i18n.t('Output Format')}
+											</Tooltip>
+										</div>
+										<div class="">
+											<select
+												style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --size:0.6rem; --bgc:transparent; --oe:none; --ta:right"
+												bind:value={RAGConfig.DATALAB_MARKER_OUTPUT_FORMAT}
+											>
+												<option value="markdown">{$i18n.t('Markdown')}</option>
+												<option value="json">{$i18n.t('JSON')}</option>
+												<option value="html">{$i18n.t('HTML')}</option>
+											</select>
+										</div>
+									</div>
 								</div>
-								<div class="flex items-center">
-									<Switch bind:state={RAGConfig.DATALAB_MARKER_USE_LLM} />
-								</div>
-							</div>
-							<div class="flex justify-between w-full mt-2">
-								<div class="self-center text-xs font-medium">
-									<Tooltip
-										content={$i18n.t('Skip the cache and re-run the inference. Defaults to False.')}
-										placement="top-start"
-									>
-										{$i18n.t('Skip Cache')}
-									</Tooltip>
-								</div>
-								<div class="flex items-center">
-									<Switch bind:state={RAGConfig.DATALAB_MARKER_SKIP_CACHE} />
-								</div>
-							</div>
-							<div class="flex justify-between w-full mt-2">
-								<div class="self-center text-xs font-medium">
-									<Tooltip
-										content={$i18n.t(
-											'Force OCR on all pages of the PDF. This can lead to worse results if you have good text in your PDFs. Defaults to False.'
-										)}
-										placement="top-start"
-									>
-										{$i18n.t('Force OCR')}
-									</Tooltip>
-								</div>
-								<div class="flex items-center">
-									<Switch bind:state={RAGConfig.DATALAB_MARKER_FORCE_OCR} />
-								</div>
-							</div>
-							<div class="flex justify-between w-full mt-2">
-								<div class="self-center text-xs font-medium">
-									<Tooltip
-										content={$i18n.t(
-											'Whether to paginate the output. Each page will be separated by a horizontal rule and page number. Defaults to False.'
-										)}
-										placement="top-start"
-									>
-										{$i18n.t('Paginate')}
-									</Tooltip>
-								</div>
-								<div class="flex items-center">
-									<Switch bind:state={RAGConfig.DATALAB_MARKER_PAGINATE} />
-								</div>
-							</div>
-							<div class="flex justify-between w-full mt-2">
-								<div class="self-center text-xs font-medium">
-									<Tooltip
-										content={$i18n.t(
-											'Strip existing OCR text from the PDF and re-run OCR. Ignored if Force OCR is enabled. Defaults to False.'
-										)}
-										placement="top-start"
-									>
-										{$i18n.t('Strip Existing OCR')}
-									</Tooltip>
-								</div>
-								<div class="flex items-center">
-									<Switch bind:state={RAGConfig.DATALAB_MARKER_STRIP_EXISTING_OCR} />
-								</div>
-							</div>
-							<div class="flex justify-between w-full mt-2">
-								<div class="self-center text-xs font-medium">
-									<Tooltip
-										content={$i18n.t(
-											'Disable image extraction from the PDF. If Use LLM is enabled, images will be automatically captioned. Defaults to False.'
-										)}
-										placement="top-start"
-									>
-										{$i18n.t('Disable Image Extraction')}
-									</Tooltip>
-								</div>
-								<div class="flex items-center">
-									<Switch bind:state={RAGConfig.DATALAB_MARKER_DISABLE_IMAGE_EXTRACTION} />
-								</div>
-							</div>
-							<div class="flex justify-between w-full mt-2">
-								<div class="self-center text-xs font-medium">
-									<Tooltip
-										content={$i18n.t(
-											"The output format for the text. Can be 'json', 'markdown', or 'html'. Defaults to 'markdown'."
-										)}
-										placement="top-start"
-									>
-										{$i18n.t('Output Format')}
-									</Tooltip>
-								</div>
-								<div class="">
-									<select
-										class="dark:bg-gray-900 w-fit pr-8 rounded-sm px-2 text-xs bg-transparent outline-hidden text-right"
-										bind:value={RAGConfig.DATALAB_MARKER_OUTPUT_FORMAT}
-									>
-										<option value="markdown">{$i18n.t('Markdown')}</option>
-										<option value="json">{$i18n.t('JSON')}</option>
-										<option value="html">{$i18n.t('HTML')}</option>
-									</select>
-								</div>
-							</div>
+							</details>
 						{:else if RAGConfig.CONTENT_EXTRACTION_ENGINE === 'external'}
-							<div class="my-0.5 flex gap-2 pr-2">
+							<div style="--my:0.125rem; --d:flex; --g:0.5rem; --pr:0.5rem">
 								<input
-									class="flex-1 w-full text-sm bg-transparent outline-hidden"
+									style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 									placeholder={$i18n.t('Enter External Document Loader URL')}
 									bind:value={RAGConfig.EXTERNAL_DOCUMENT_LOADER_URL}
 								/>
@@ -482,115 +490,122 @@
 								/>
 							</div>
 						{:else if RAGConfig.CONTENT_EXTRACTION_ENGINE === 'tika'}
-							<div class="flex w-full mt-1">
-								<div class="flex-1 mr-2">
+							<div style="--d:flex; --w:100%; --mt:0.2rem">
+								<div style="--fx:1 1 0%; --mr:0.5rem">
 									<input
-										class="flex-1 w-full text-sm bg-transparent outline-hidden"
+										style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 										placeholder={$i18n.t('Enter Tika Server URL')}
 										bind:value={RAGConfig.TIKA_SERVER_URL}
 									/>
 								</div>
 							</div>
 						{:else if RAGConfig.CONTENT_EXTRACTION_ENGINE === 'docling'}
-							<div class="flex w-full mt-1">
+							<div style="--d:flex; --w:100%; --mt:0.2rem">
 								<input
-									class="flex-1 w-full text-sm bg-transparent outline-hidden"
+									style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 									placeholder={$i18n.t('Enter Docling Server URL')}
 									bind:value={RAGConfig.DOCLING_SERVER_URL}
 								/>
 							</div>
-							<div class="flex w-full mt-2">
-								<input
-									class="flex-1 w-full text-sm bg-transparent outline-hidden"
-									placeholder={$i18n.t('Enter Docling OCR Engine')}
-									bind:value={RAGConfig.DOCLING_OCR_ENGINE}
-								/>
-								<input
-									class="flex-1 w-full text-sm bg-transparent outline-hidden"
-									placeholder={$i18n.t('Enter Docling OCR Language(s)')}
-									bind:value={RAGConfig.DOCLING_OCR_LANG}
-								/>
-							</div>
+							<details style="--mt:0.5rem">
+								<summary style="--size:0.6rem; --weight:500; --c:var(--color-gray-500); --cursor:pointer">
+									{$i18n.t('Advanced Options')}
+								</summary>
+								<div style="--mt:0.5rem; --d:flex; --fd:column; --g:0.5rem">
+									<div style="--d:flex; --w:100%">
+										<input
+											style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
+											placeholder={$i18n.t('Enter Docling OCR Engine')}
+											bind:value={RAGConfig.DOCLING_OCR_ENGINE}
+										/>
+										<input
+											style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
+											placeholder={$i18n.t('Enter Docling OCR Language(s)')}
+											bind:value={RAGConfig.DOCLING_OCR_LANG}
+										/>
+									</div>
 
-							<div class="flex w-full mt-2">
-								<div class="flex-1 flex justify-between">
-									<div class="self-center text-xs font-medium">
-										{$i18n.t('Describe Pictures in Documents')}
-									</div>
-									<div class="flex items-center relative">
-										<Switch bind:state={RAGConfig.DOCLING_DO_PICTURE_DESCRIPTION} />
-									</div>
-								</div>
-							</div>
-							{#if RAGConfig.DOCLING_DO_PICTURE_DESCRIPTION}
-								<div class="flex justify-between w-full mt-2">
-									<div class="self-center text-xs font-medium">
-										<Tooltip content={''} placement="top-start">
-											{$i18n.t('Picture Description Mode')}
-										</Tooltip>
-									</div>
-									<div class="">
-										<select
-											class="dark:bg-gray-900 w-fit pr-8 rounded-sm px-2 text-xs bg-transparent outline-hidden text-right"
-											bind:value={RAGConfig.DOCLING_PICTURE_DESCRIPTION_MODE}
-										>
-											<option value="">{$i18n.t('Default')}</option>
-											<option value="local">{$i18n.t('Local')}</option>
-											<option value="api">{$i18n.t('API')}</option>
-										</select>
-									</div>
-								</div>
-
-								{#if RAGConfig.DOCLING_PICTURE_DESCRIPTION_MODE === 'local'}
-									<div class="flex flex-col gap-2 mt-2">
-										<div class="flex flex-col w-full justify-between">
-											<div class="mb-1 text-xs font-medium">
-												{$i18n.t('Picture Description Local Config')}
+									<div style="--d:flex; --w:100%">
+										<div style="--fx:1 1 0%; --d:flex; --jc:space-between">
+											<div style="--as:center; --size:0.6rem; --weight:500">
+												{$i18n.t('Describe Pictures in Documents')}
 											</div>
-											<div class="flex w-full items-center relative">
-												<Tooltip
-													content={$i18n.t(
-														'Options for running a local vision-language model in the picture description. The parameters refer to a model hosted on Hugging Face. This parameter is mutually exclusive with picture_description_api.'
-													)}
-													placement="top-start"
-													className="w-full"
-												>
-													<Textarea
-														bind:value={RAGConfig.DOCLING_PICTURE_DESCRIPTION_LOCAL}
-														placeholder={$i18n.t('Enter Config in JSON format')}
-													/>
-												</Tooltip>
+											<div style="--d:flex; --ai:center; --pos:relative">
+												<Switch bind:state={RAGConfig.DOCLING_DO_PICTURE_DESCRIPTION} />
 											</div>
 										</div>
 									</div>
-								{:else if RAGConfig.DOCLING_PICTURE_DESCRIPTION_MODE === 'api'}
-									<div class="flex flex-col gap-2 mt-2">
-										<div class="flex flex-col w-full justify-between">
-											<div class="mb-1 text-xs font-medium">
-												{$i18n.t('Picture Description API Config')}
-											</div>
-											<div class="flex w-full items-center relative">
-												<Tooltip
-													content={$i18n.t(
-														'API details for using a vision-language model in the picture description. This parameter is mutually exclusive with picture_description_local.'
-													)}
-													placement="top-start"
-													className="w-full"
-												>
-													<Textarea
-														bind:value={RAGConfig.DOCLING_PICTURE_DESCRIPTION_API}
-														placeholder={$i18n.t('Enter Config in JSON format')}
-													/>
+									{#if RAGConfig.DOCLING_DO_PICTURE_DESCRIPTION}
+										<div style="--d:flex; --jc:space-between; --w:100%">
+											<div style="--as:center; --size:0.6rem; --weight:500">
+												<Tooltip content={''} placement="top-start">
+													{$i18n.t('Picture Description Mode')}
 												</Tooltip>
 											</div>
+											<div class="">
+												<select
+													style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --size:0.6rem; --bgc:transparent; --oe:none; --ta:right"
+													bind:value={RAGConfig.DOCLING_PICTURE_DESCRIPTION_MODE}
+												>
+													<option value="">{$i18n.t('Default')}</option>
+													<option value="local">{$i18n.t('Local')}</option>
+													<option value="api">{$i18n.t('API')}</option>
+												</select>
+											</div>
 										</div>
-									</div>
-								{/if}
-							{/if}
+
+										{#if RAGConfig.DOCLING_PICTURE_DESCRIPTION_MODE === 'local'}
+											<div style="--d:flex; --fd:column; --g:0.5rem">
+												<div style="--d:flex; --fd:column; --w:100%; --jc:space-between">
+													<div style="--mb:0.2rem; --size:0.6rem; --weight:500">
+														{$i18n.t('Picture Description Local Config')}
+													</div>
+													<div style="--d:flex; --w:100%; --ai:center; --pos:relative">
+														<Tooltip
+															content={$i18n.t(
+																'Options for running a local vision-language model in the picture description. The parameters refer to a model hosted on Hugging Face. This parameter is mutually exclusive with picture_description_api.'
+															)}
+															placement="top-start"
+															className="w-full"
+														>
+															<Textarea
+																bind:value={RAGConfig.DOCLING_PICTURE_DESCRIPTION_LOCAL}
+																placeholder={$i18n.t('Enter Config in JSON format')}
+															/>
+														</Tooltip>
+													</div>
+												</div>
+											</div>
+										{:else if RAGConfig.DOCLING_PICTURE_DESCRIPTION_MODE === 'api'}
+											<div style="--d:flex; --fd:column; --g:0.5rem">
+												<div style="--d:flex; --fd:column; --w:100%; --jc:space-between">
+													<div style="--mb:0.2rem; --size:0.6rem; --weight:500">
+														{$i18n.t('Picture Description API Config')}
+													</div>
+													<div style="--d:flex; --w:100%; --ai:center; --pos:relative">
+														<Tooltip
+															content={$i18n.t(
+																'API details for using a vision-language model in the picture description. This parameter is mutually exclusive with picture_description_local.'
+															)}
+															placement="top-start"
+															className="w-full"
+														>
+															<Textarea
+																bind:value={RAGConfig.DOCLING_PICTURE_DESCRIPTION_API}
+																placeholder={$i18n.t('Enter Config in JSON format')}
+															/>
+														</Tooltip>
+													</div>
+												</div>
+											</div>
+										{/if}
+									{/if}
+								</div>
+							</details>
 						{:else if RAGConfig.CONTENT_EXTRACTION_ENGINE === 'document_intelligence'}
-							<div class="my-0.5 flex gap-2 pr-2">
+							<div style="--my:0.125rem; --d:flex; --g:0.5rem; --pr:0.5rem">
 								<input
-									class="flex-1 w-full text-sm bg-transparent outline-hidden"
+									style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 									placeholder={$i18n.t('Enter Document Intelligence Endpoint')}
 									bind:value={RAGConfig.DOCUMENT_INTELLIGENCE_ENDPOINT}
 								/>
@@ -600,7 +615,7 @@
 								/>
 							</div>
 						{:else if RAGConfig.CONTENT_EXTRACTION_ENGINE === 'mistral_ocr'}
-							<div class="my-0.5 flex gap-2 pr-2">
+							<div style="--my:0.125rem; --d:flex; --g:0.5rem; --pr:0.5rem">
 								<SensitiveInput
 									placeholder={$i18n.t('Enter Mistral API Key')}
 									bind:value={RAGConfig.MISTRAL_OCR_API_KEY}
@@ -609,13 +624,94 @@
 						{/if}
 					</div>
 
-					<div class="mb-2.5 flex w-full justify-between">
-						<div class="self-center text-xs font-medium">
+					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem"/>
+
+					<div style="--mb:0.625rem; --d:flex; --fd:column; --w:100%; --jc:space-between">
+						<div style="--d:flex; --w:100%; --jc:space-between; --mb:0.2rem">
+							<div style="--as:center; --size:0.6rem; --weight:500">
+								<Tooltip
+									content={$i18n.t('Post-process extracted text through an LLM for better markdown formatting before chunking.')}
+									placement="top-start"
+								>
+									{$i18n.t('AI Document Parsing')}
+								</Tooltip>
+							</div>
+							<div style="--d:flex; --ai:center; --pos:relative">
+								<Switch bind:state={RAGConfig.AI_PARSE_ENABLED} />
+							</div>
+						</div>
+
+						{#if RAGConfig.AI_PARSE_ENABLED}
+							<div style="--d:flex; --w:100%; --jc:space-between; --mt:0.2rem">
+								<div style="--as:center; --size:0.6rem; --weight:500">
+									{$i18n.t('Default Model')}
+								</div>
+								<div>
+									<input
+										style="--w:100%; --size:0.8rem; --bgc:transparent; --oe:none; --ta:right"
+										type="text"
+										placeholder={$i18n.t('Enter model ID (e.g. llama3.2)')}
+										bind:value={RAGConfig.AI_PARSE_DEFAULT_MODEL}
+									/>
+								</div>
+							</div>
+
+							<details style="--mt:0.5rem">
+								<summary style="--size:0.6rem; --weight:500; --c:var(--color-gray-500); --cursor:pointer">
+									{$i18n.t('Advanced Options')}
+								</summary>
+								<div style="--mt:0.5rem; --d:flex; --fd:column; --g:0.5rem">
+									<div style="--d:flex; --fd:column; --w:100%">
+										<div style="--mb:0.2rem; --size:0.6rem; --weight:500">
+											{$i18n.t('Processing Prompt')}
+										</div>
+										<Textarea
+											bind:value={RAGConfig.AI_PARSE_DEFAULT_PROMPT}
+											placeholder={$i18n.t('Leave empty to use the default reformatting prompt')}
+										/>
+									</div>
+									<div style="--d:flex; --w:100%; --jc:space-between">
+										<div style="--as:center; --size:0.6rem; --weight:500">
+											<Tooltip
+												content={$i18n.t('Split large documents into chunks before sending to LLM to handle token limits.')}
+												placement="top-start"
+											>
+												{$i18n.t('Chunk Before LLM')}
+											</Tooltip>
+										</div>
+										<div style="--d:flex; --ai:center">
+											<Switch bind:state={RAGConfig.AI_PARSE_CHUNK_BEFORE_LLM} />
+										</div>
+									</div>
+									{#if RAGConfig.AI_PARSE_CHUNK_BEFORE_LLM}
+										<div style="--d:flex; --w:100%; --jc:space-between">
+											<div style="--as:center; --size:0.6rem; --weight:500">
+												{$i18n.t('Max Chunk Size')}
+											</div>
+											<input
+												style="--bgc:transparent; --ta:center; --w:5rem; --oe:2px solid transparent"
+												type="number"
+												bind:value={RAGConfig.AI_PARSE_MAX_CHUNK_SIZE}
+												min="500"
+												max="32000"
+												step="500"
+											/>
+										</div>
+									{/if}
+								</div>
+							</details>
+						{/if}
+					</div>
+
+					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem"/>
+
+					<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
+						<div style="--as:center; --size:0.6rem; --weight:500">
 							<Tooltip content={$i18n.t('Full Context Mode')} placement="top-start">
 								{$i18n.t('Bypass Embedding and Retrieval')}
 							</Tooltip>
 						</div>
-						<div class="flex items-center relative">
+						<div style="--d:flex; --ai:center; --pos:relative">
 							<Tooltip
 								content={RAGConfig.BYPASS_EMBEDDING_AND_RETRIEVAL
 									? $i18n.t(
@@ -631,11 +727,11 @@
 					</div>
 
 					{#if !RAGConfig.BYPASS_EMBEDDING_AND_RETRIEVAL}
-						<div class="mb-2.5 flex w-full justify-between">
-							<div class="self-center text-xs font-medium">{$i18n.t('Text Splitter')}</div>
-							<div class="flex items-center relative">
+						<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
+							<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Text Splitter')}</div>
+							<div style="--d:flex; --ai:center; --pos:relative">
 								<select
-									class="dark:bg-gray-900 w-fit pr-8 rounded-sm px-2 text-xs bg-transparent outline-hidden text-right"
+									style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --size:0.6rem; --bgc:transparent; --oe:none; --ta:right"
 									bind:value={RAGConfig.TEXT_SPLITTER}
 								>
 									<option value="">{$i18n.t('Default')} ({$i18n.t('Character')})</option>
@@ -645,15 +741,15 @@
 							</div>
 						</div>
 
-						<div class="mb-2.5 flex w-full justify-between">
-							<div class="flex gap-1.5 w-full">
-								<div class="w-full justify-between">
-									<div class="self-center text-xs font-medium min-w-fit mb-1">
+						<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
+							<div style="--d:flex; --g:0.4rem; --w:100%">
+								<div style="--w:100%; --jc:space-between">
+									<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.2rem">
 										{$i18n.t('Chunk Size')}
 									</div>
-									<div class="self-center">
+									<div style="--as:center">
 										<input
-											class="w-full rounded-lg py-1.5 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+											style="--w:100%; --radius:0.5rem; --py:0.4rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 											type="number"
 											placeholder={$i18n.t('Enter Chunk Size')}
 											bind:value={RAGConfig.CHUNK_SIZE}
@@ -663,14 +759,14 @@
 									</div>
 								</div>
 
-								<div class="w-full">
-									<div class="self-center text-xs font-medium min-w-fit mb-1">
+								<div style="--w:100%">
+									<div style="--as:center; --size:0.6rem; --weight:500; --minw:fit-content; --mb:0.2rem">
 										{$i18n.t('Chunk Overlap')}
 									</div>
 
-									<div class="self-center">
+									<div style="--as:center">
 										<input
-											class="w-full rounded-lg py-1.5 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+											style="--w:100%; --radius:0.5rem; --py:0.4rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 											type="number"
 											placeholder={$i18n.t('Enter Chunk Overlap')}
 											bind:value={RAGConfig.CHUNK_OVERLAP}
@@ -685,19 +781,19 @@
 				</div>
 
 				{#if !RAGConfig.BYPASS_EMBEDDING_AND_RETRIEVAL}
-					<div class="mb-3">
-						<div class="mb-2.5 text-base font-medium">{$i18n.t('Embedding')}</div>
+					<div style="--mb:0.6rem">
+						<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('Embedding')}</div>
 
-						<hr class="border-gray-100 dark:border-gray-850 my-2"/>
+						<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem"/>
 
-						<div class="mb-2.5 flex flex-col w-full justify-between">
-							<div class="flex w-full justify-between">
-								<div class="self-center text-xs font-medium">
+						<div style="--mb:0.625rem; --d:flex; --fd:column; --w:100%; --jc:space-between">
+							<div style="--d:flex; --w:100%; --jc:space-between">
+								<div style="--as:center; --size:0.6rem; --weight:500">
 									{$i18n.t('Embedding Model Engine')}
 								</div>
-								<div class="flex items-center relative">
+								<div style="--d:flex; --ai:center; --pos:relative">
 									<select
-										class="dark:bg-gray-900 w-fit pr-8 rounded-sm px-2 p-1 text-xs bg-transparent outline-hidden text-right"
+										style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.2rem; --size:0.6rem; --bgc:transparent; --oe:none; --ta:right"
 										bind:value={embeddingEngine}
 										placeholder="Select an embedding model engine"
 										on:change={(e) => {
@@ -721,9 +817,9 @@
 							</div>
 
 							{#if embeddingEngine === 'openai'}
-								<div class="my-0.5 flex gap-2 pr-2">
+								<div style="--my:0.125rem; --d:flex; --g:0.5rem; --pr:0.5rem">
 									<input
-										class="flex-1 w-full text-sm bg-transparent outline-hidden"
+										style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 										placeholder={$i18n.t('API Base URL')}
 										bind:value={OpenAIUrl}
 										required
@@ -736,9 +832,9 @@
 									/>
 								</div>
 							{:else if embeddingEngine === 'ollama'}
-								<div class="my-0.5 flex gap-2 pr-2">
+								<div style="--my:0.125rem; --d:flex; --g:0.5rem; --pr:0.5rem">
 									<input
-										class="flex-1 w-full text-sm bg-transparent outline-hidden"
+										style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 										placeholder={$i18n.t('API Base URL')}
 										bind:value={OllamaUrl}
 										required
@@ -751,19 +847,19 @@
 									/>
 								</div>
 							{:else if embeddingEngine === 'azure_openai'}
-								<div class="my-0.5 flex flex-col gap-2 pr-2 w-full">
-									<div class="flex gap-2">
+								<div style="--my:0.125rem; --d:flex; --fd:column; --g:0.5rem; --pr:0.5rem; --w:100%">
+									<div style="--d:flex; --g:0.5rem">
 										<input
-											class="flex-1 w-full text-sm bg-transparent outline-hidden"
+											style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 											placeholder={$i18n.t('API Base URL')}
 											bind:value={AzureOpenAIUrl}
 											required
 										/>
 										<SensitiveInput placeholder={$i18n.t('API Key')} bind:value={AzureOpenAIKey} />
 									</div>
-									<div class="flex gap-2">
+									<div style="--d:flex; --g:0.5rem">
 										<input
-											class="flex-1 w-full text-sm bg-transparent outline-hidden"
+											style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 											placeholder="Version"
 											bind:value={AzureOpenAIVersion}
 											required
@@ -773,15 +869,15 @@
 							{/if}
 						</div>
 
-						<div class="mb-2.5 flex flex-col w-full">
-							<div class="mb-1 text-xs font-medium">{$i18n.t('Embedding Model')}</div>
+						<div style="--mb:0.625rem; --d:flex; --fd:column; --w:100%">
+							<div style="--mb:0.2rem; --size:0.6rem; --weight:500">{$i18n.t('Embedding Model')}</div>
 
 							<div class="">
 								{#if embeddingEngine === 'ollama'}
-									<div class="flex w-full">
-										<div class="flex-1 mr-2">
+									<div style="--d:flex; --w:100%">
+										<div style="--fx:1 1 0%; --mr:0.5rem">
 											<input
-												class="flex-1 w-full text-sm bg-transparent outline-hidden"
+												style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 												bind:value={embeddingModel}
 												placeholder={$i18n.t('Set embedding model')}
 												required
@@ -789,10 +885,10 @@
 										</div>
 									</div>
 								{:else}
-									<div class="flex w-full">
-										<div class="flex-1 mr-2">
+									<div style="--d:flex; --w:100%">
+										<div style="--fx:1 1 0%; --mr:0.5rem">
 											<input
-												class="flex-1 w-full text-sm bg-transparent outline-hidden"
+												style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 												placeholder={$i18n.t('Set embedding model (e.g. {{model}})', {
 													model: embeddingModel.slice(-40)
 												})}
@@ -802,14 +898,14 @@
 
 										{#if embeddingEngine === ''}
 											<button
-												class="px-2.5 bg-transparent text-gray-800 dark:bg-transparent dark:text-gray-100 rounded-lg transition"
+												style="--px:0.625rem; --bgc:transparent; --c:var(--color-gray-800); --dark-bgc:transparent; --dark-c:var(--color-gray-100); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 												on:click={() => {
 													embeddingModelUpdateHandler();
 												}}
 												disabled={updateEmbeddingModelLoading}
 											>
 												{#if updateEmbeddingModelLoading}
-													<div class="self-center">
+													<div style="--as:center">
 														<Spinner />
 													</div>
 												{:else}
@@ -817,7 +913,7 @@
 														xmlns="http://www.w3.org/2000/svg"
 														viewBox="0 0 16 16"
 														fill="currentColor"
-														class="w-4 h-4"
+														style="--w:1rem; --h:1rem"
 													>
 														<path
 															d="M8.75 2.75a.75.75 0 0 0-1.5 0v5.69L5.03 6.22a.75.75 0 0 0-1.06 1.06l3.5 3.5a.75.75 0 0 0 1.06 0l3.5-3.5a.75.75 0 0 0-1.06-1.06L8.75 8.44V2.75Z"
@@ -833,7 +929,7 @@
 								{/if}
 							</div>
 
-							<div class="mt-1 mb-1 text-xs text-gray-400 dark:text-gray-500">
+							<div style="--mt:0.2rem; --mb:0.2rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 								{$i18n.t(
 									'Warning: If you update or change your embedding model, you will need to re-import all documents.'
 								)}
@@ -841,8 +937,8 @@
 						</div>
 
 						{#if embeddingEngine === 'ollama' || embeddingEngine === 'openai' || embeddingEngine === 'azure_openai'}
-							<div class="mb-2.5 flex w-full justify-between">
-								<div class="self-center text-xs font-medium">
+							<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
+								<div style="--as:center; --size:0.6rem; --weight:500">
 									{$i18n.t('Embedding Batch Size')}
 								</div>
 
@@ -850,7 +946,7 @@
 									<input
 										bind:value={embeddingBatchSize}
 										type="number"
-										class="bg-transparent text-center w-14 outline-none"
+										style="--bgc:transparent; --ta:center; --w:3.5rem; --oe:2px solid transparent"
 										min="-2"
 										max="16000"
 										step="1"
@@ -860,14 +956,14 @@
 						{/if}
 					</div>
 
-					<div class="mb-3">
-						<div class="mb-2.5 text-base font-medium">{$i18n.t('Retrieval')}</div>
+					<div style="--mb:0.6rem">
+						<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('Retrieval')}</div>
 
-						<hr class="border-gray-100 dark:border-gray-850 my-2"/>
+						<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem"/>
 
-						<div class="mb-2.5 flex w-full justify-between">
-							<div class="self-center text-xs font-medium">{$i18n.t('Full Context Mode')}</div>
-							<div class="flex items-center relative">
+						<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
+							<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Full Context Mode')}</div>
+							<div style="--d:flex; --ai:center; --pos:relative">
 								<Tooltip
 									content={RAGConfig.RAG_FULL_CONTEXT
 										? $i18n.t(
@@ -883,80 +979,11 @@
 						</div>
 
 						{#if !RAGConfig.RAG_FULL_CONTEXT}
-							<div class="mb-2.5 flex w-full justify-between">
-								<div class="self-center text-xs font-medium">{$i18n.t('Hybrid Search')}</div>
-								<div class="flex items-center relative">
-									<Switch bind:state={RAGConfig.ENABLE_RAG_HYBRID_SEARCH} />
-								</div>
-							</div>
-
-							{#if RAGConfig.ENABLE_RAG_HYBRID_SEARCH === true}
-								<div class="mb-2.5 flex flex-col w-full justify-between">
-									<div class="flex w-full justify-between">
-										<div class="self-center text-xs font-medium">
-											{$i18n.t('Reranking Engine')}
-										</div>
-										<div class="flex items-center relative">
-											<select
-												class="dark:bg-gray-900 w-fit pr-8 rounded-sm px-2 p-1 text-xs bg-transparent outline-hidden text-right"
-												bind:value={RAGConfig.RAG_RERANKING_ENGINE}
-												placeholder="Select a reranking model engine"
-												on:change={(e) => {
-													if (e.target.value === 'external') {
-														RAGConfig.RAG_RERANKING_MODEL = '';
-													} else if (e.target.value === '') {
-														RAGConfig.RAG_RERANKING_MODEL = 'BAAI/bge-reranker-v2-m3';
-													}
-												}}
-											>
-												<option value="">{$i18n.t('Default (SentenceTransformers)')}</option>
-												<option value="external">{$i18n.t('External')}</option>
-											</select>
-										</div>
-									</div>
-
-									{#if RAGConfig.RAG_RERANKING_ENGINE === 'external'}
-										<div class="my-0.5 flex gap-2 pr-2">
-											<input
-												class="flex-1 w-full text-sm bg-transparent outline-hidden"
-												placeholder={$i18n.t('API Base URL')}
-												bind:value={RAGConfig.RAG_EXTERNAL_RERANKER_URL}
-												required
-											/>
-
-											<SensitiveInput
-												placeholder={$i18n.t('API Key')}
-												bind:value={RAGConfig.RAG_EXTERNAL_RERANKER_API_KEY}
-												required={false}
-											/>
-										</div>
-									{/if}
-								</div>
-
-								<div class="mb-2.5 flex flex-col w-full">
-									<div class="mb-1 text-xs font-medium">{$i18n.t('Reranking Model')}</div>
-
-									<div class="">
-										<div class="flex w-full">
-											<div class="flex-1 mr-2">
-												<input
-													class="flex-1 w-full text-sm bg-transparent outline-hidden"
-													placeholder={$i18n.t('Set reranking model (e.g. {{model}})', {
-														model: 'BAAI/bge-reranker-v2-m3'
-													})}
-													bind:value={RAGConfig.RAG_RERANKING_MODEL}
-												/>
-											</div>
-										</div>
-									</div>
-								</div>
-							{/if}
-
-							<div class="mb-2.5 flex w-full justify-between">
-								<div class="self-center text-xs font-medium">{$i18n.t('Top K')}</div>
-								<div class="flex items-center relative">
+							<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
+								<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Top K')}</div>
+								<div style="--d:flex; --ai:center; --pos:relative">
 									<input
-										class="flex-1 w-full text-sm bg-transparent outline-hidden"
+										style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 										type="number"
 										placeholder={$i18n.t('Enter Top K')}
 										bind:value={RAGConfig.TOP_K}
@@ -966,75 +993,145 @@
 								</div>
 							</div>
 
-							{#if RAGConfig.ENABLE_RAG_HYBRID_SEARCH === true}
-								<div class="mb-2.5 flex w-full justify-between">
-									<div class="self-center text-xs font-medium">{$i18n.t('Top K Reranker')}</div>
-									<div class="flex items-center relative">
-										<input
-											class="flex-1 w-full text-sm bg-transparent outline-hidden"
-											type="number"
-											placeholder={$i18n.t('Enter Top K Reranker')}
-											bind:value={RAGConfig.TOP_K_RERANKER}
-											autocomplete="off"
-											min="0"
-										/>
-									</div>
-								</div>
-							{/if}
-
-							{#if RAGConfig.ENABLE_RAG_HYBRID_SEARCH === true}
-								<div class="mb-2.5 flex flex-col w-full justify-between">
-									<div class="flex w-full justify-between">
-										<div class="self-center text-xs font-medium">
-											{$i18n.t('Relevance Threshold')}
+							<details style="--mb:0.625rem">
+								<summary style="--size:0.6rem; --weight:500; --c:var(--color-gray-500); --cursor:pointer">
+									{$i18n.t('Hybrid Search & Reranking')}
+								</summary>
+								<div style="--mt:0.5rem; --d:flex; --fd:column; --g:0.5rem">
+									<div style="--d:flex; --w:100%; --jc:space-between">
+										<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Hybrid Search')}</div>
+										<div style="--d:flex; --ai:center; --pos:relative">
+											<Switch bind:state={RAGConfig.ENABLE_RAG_HYBRID_SEARCH} />
 										</div>
-										<div class="flex items-center relative">
-											<input
-												class="flex-1 w-full text-sm bg-transparent outline-hidden"
-												type="number"
-												step="0.01"
-												placeholder={$i18n.t('Enter Score')}
-												bind:value={RAGConfig.RELEVANCE_THRESHOLD}
-												autocomplete="off"
-												min="0.0"
-												title={$i18n.t(
-													'The score should be a value between 0.0 (0%) and 1.0 (100%).'
+									</div>
+
+									{#if RAGConfig.ENABLE_RAG_HYBRID_SEARCH === true}
+										<div style="--d:flex; --fd:column; --w:100%; --jc:space-between">
+											<div style="--d:flex; --w:100%; --jc:space-between">
+												<div style="--as:center; --size:0.6rem; --weight:500">
+													{$i18n.t('Reranking Engine')}
+												</div>
+												<div style="--d:flex; --ai:center; --pos:relative">
+													<select
+														style="--dark-bgc:var(--color-gray-900); --w:fit-content; --pr:2rem; --radius:0.125rem; --px:0.5rem; --p:0.2rem; --size:0.6rem; --bgc:transparent; --oe:none; --ta:right"
+														bind:value={RAGConfig.RAG_RERANKING_ENGINE}
+														placeholder="Select a reranking model engine"
+														on:change={(e) => {
+															if (e.target.value === 'external') {
+																RAGConfig.RAG_RERANKING_MODEL = '';
+															} else if (e.target.value === '') {
+																RAGConfig.RAG_RERANKING_MODEL = 'BAAI/bge-reranker-v2-m3';
+															}
+														}}
+													>
+														<option value="">{$i18n.t('Default (SentenceTransformers)')}</option>
+														<option value="external">{$i18n.t('External')}</option>
+													</select>
+												</div>
+											</div>
+
+											{#if RAGConfig.RAG_RERANKING_ENGINE === 'external'}
+												<div style="--my:0.125rem; --d:flex; --g:0.5rem; --pr:0.5rem">
+													<input
+														style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
+														placeholder={$i18n.t('API Base URL')}
+														bind:value={RAGConfig.RAG_EXTERNAL_RERANKER_URL}
+														required
+													/>
+
+													<SensitiveInput
+														placeholder={$i18n.t('API Key')}
+														bind:value={RAGConfig.RAG_EXTERNAL_RERANKER_API_KEY}
+														required={false}
+													/>
+												</div>
+											{/if}
+										</div>
+
+										<div style="--d:flex; --fd:column; --w:100%">
+											<div style="--mb:0.2rem; --size:0.6rem; --weight:500">{$i18n.t('Reranking Model')}</div>
+
+											<div class="">
+												<div style="--d:flex; --w:100%">
+													<div style="--fx:1 1 0%; --mr:0.5rem">
+														<input
+															style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
+															placeholder={$i18n.t('Set reranking model (e.g. {{model}})', {
+																model: 'BAAI/bge-reranker-v2-m3'
+															})}
+															bind:value={RAGConfig.RAG_RERANKING_MODEL}
+														/>
+													</div>
+												</div>
+											</div>
+										</div>
+
+										<div style="--d:flex; --w:100%; --jc:space-between">
+											<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Top K Reranker')}</div>
+											<div style="--d:flex; --ai:center; --pos:relative">
+												<input
+													style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
+													type="number"
+													placeholder={$i18n.t('Enter Top K Reranker')}
+													bind:value={RAGConfig.TOP_K_RERANKER}
+													autocomplete="off"
+													min="0"
+												/>
+											</div>
+										</div>
+
+										<div style="--d:flex; --fd:column; --w:100%; --jc:space-between">
+											<div style="--d:flex; --w:100%; --jc:space-between">
+												<div style="--as:center; --size:0.6rem; --weight:500">
+													{$i18n.t('Relevance Threshold')}
+												</div>
+												<div style="--d:flex; --ai:center; --pos:relative">
+													<input
+														style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
+														type="number"
+														step="0.01"
+														placeholder={$i18n.t('Enter Score')}
+														bind:value={RAGConfig.RELEVANCE_THRESHOLD}
+														autocomplete="off"
+														min="0.0"
+														title={$i18n.t(
+															'The score should be a value between 0.0 (0%) and 1.0 (100%).'
+														)}
+													/>
+												</div>
+											</div>
+											<div style="--mt:0.2rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
+												{$i18n.t(
+													'Note: If you set a minimum score, the search will only return documents with a score greater than or equal to the minimum score.'
 												)}
-											/>
+											</div>
 										</div>
-									</div>
-									<div class="mt-1 text-xs text-gray-400 dark:text-gray-500">
-										{$i18n.t(
-											'Note: If you set a minimum score, the search will only return documents with a score greater than or equal to the minimum score.'
-										)}
-									</div>
-								</div>
-							{/if}
 
-							{#if RAGConfig.ENABLE_RAG_HYBRID_SEARCH === true}
-								<div class="mb-2.5 flex w-full justify-between">
-									<div class="self-center text-xs font-medium">
-										{$i18n.t('Weight of BM25 Retrieval')}
-									</div>
-									<div class="flex items-center relative">
-										<input
-											class="flex-1 w-full text-sm bg-transparent outline-hidden"
-											type="number"
-											step="0.01"
-											placeholder={$i18n.t('Enter BM25 Weight')}
-											bind:value={RAGConfig.HYBRID_BM25_WEIGHT}
-											autocomplete="off"
-											min="0.0"
-											max="1.0"
-										/>
-									</div>
+										<div style="--d:flex; --w:100%; --jc:space-between">
+											<div style="--as:center; --size:0.6rem; --weight:500">
+												{$i18n.t('Weight of BM25 Retrieval')}
+											</div>
+											<div style="--d:flex; --ai:center; --pos:relative">
+												<input
+													style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
+													type="number"
+													step="0.01"
+													placeholder={$i18n.t('Enter BM25 Weight')}
+													bind:value={RAGConfig.HYBRID_BM25_WEIGHT}
+													autocomplete="off"
+													min="0.0"
+													max="1.0"
+												/>
+											</div>
+										</div>
+									{/if}
 								</div>
-							{/if}
+							</details>
 						{/if}
 
-						<div class="mb-2.5 flex flex-col w-full justify-between">
-							<div class="mb-1 text-xs font-medium">{$i18n.t('RAG Template')}</div>
-							<div class="flex w-full items-center relative">
+						<div style="--mb:0.625rem; --d:flex; --fd:column; --w:100%; --jc:space-between">
+							<div style="--mb:0.2rem; --size:0.6rem; --weight:500">{$i18n.t('RAG Template')}</div>
+							<div style="--d:flex; --w:100%; --ai:center; --pos:relative">
 								<Tooltip
 									content={$i18n.t(
 										'Leave empty to use the default prompt, or enter a custom prompt'
@@ -1054,10 +1151,10 @@
 					</div>
 				{/if}
 
-				<div class="mb-3">
-					<div class="mb-2.5 text-base font-medium">{$i18n.t('Files')}</div>
+				<div style="--mb:0.6rem">
+					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('Files')}</div>
 
-					<hr class="border-gray-100 dark:border-gray-850 my-2"/>
+					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem"/>
 
 					<FormFieldRow>
 						<svelte:fragment slot="label">{$i18n.t('Allowed File Extensions')}</svelte:fragment>
@@ -1069,7 +1166,7 @@
 								placement="top-start"
 							>
 								<input
-									class="flex-1 w-full text-sm bg-transparent outline-hidden"
+									style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 									type="text"
 									placeholder={$i18n.t('e.g. pdf, docx, txt')}
 									bind:value={RAGConfig.ALLOWED_FILE_EXTENSIONS}
@@ -1079,9 +1176,9 @@
 						</svelte:fragment>
 					</FormFieldRow>
 
-					<div class="mb-2.5 flex w-full justify-between">
-						<div class="self-center text-xs font-medium">{$i18n.t('Max Upload Size')}</div>
-						<div class="flex items-center relative">
+					<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
+						<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Max Upload Size')}</div>
+						<div style="--d:flex; --ai:center; --pos:relative">
 							<Tooltip
 								content={$i18n.t(
 									'The maximum file size in MB. If the file size exceeds this limit, the file will not be uploaded.'
@@ -1089,7 +1186,7 @@
 								placement="top-start"
 							>
 								<input
-									class="flex-1 w-full text-sm bg-transparent outline-hidden"
+									style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 									type="number"
 									placeholder={$i18n.t('Leave empty for unlimited')}
 									bind:value={RAGConfig.FILE_MAX_SIZE}
@@ -1100,9 +1197,9 @@
 						</div>
 					</div>
 
-					<div class="mb-2.5 flex w-full justify-between">
-						<div class="self-center text-xs font-medium">{$i18n.t('Max Upload Count')}</div>
-						<div class="flex items-center relative">
+					<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
+						<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Max Upload Count')}</div>
+						<div style="--d:flex; --ai:center; --pos:relative">
 							<Tooltip
 								content={$i18n.t(
 									'The maximum number of files that can be used at once in chat. If the number of files exceeds this limit, the files will not be uploaded.'
@@ -1110,7 +1207,7 @@
 								placement="top-start"
 							>
 								<input
-									class="flex-1 w-full text-sm bg-transparent outline-hidden"
+									style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 									type="number"
 									placeholder={$i18n.t('Leave empty for unlimited')}
 									bind:value={RAGConfig.FILE_MAX_COUNT}
@@ -1121,9 +1218,9 @@
 						</div>
 					</div>
 
-					<div class="mb-2.5 flex w-full justify-between">
-						<div class="self-center text-xs font-medium">{$i18n.t('Image Compression Width')}</div>
-						<div class="flex items-center relative">
+					<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
+						<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Image Compression Width')}</div>
+						<div style="--d:flex; --ai:center; --pos:relative">
 							<Tooltip
 								content={$i18n.t(
 									'The width in pixels to compress images to. Leave empty for no compression.'
@@ -1131,7 +1228,7 @@
 								placement="top-start"
 							>
 								<input
-									class="flex-1 w-full text-sm bg-transparent outline-hidden"
+									style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 									type="number"
 									placeholder={$i18n.t('Leave empty for no compression')}
 									bind:value={RAGConfig.FILE_IMAGE_COMPRESSION_WIDTH}
@@ -1142,11 +1239,11 @@
 						</div>
 					</div>
 
-					<div class="mb-2.5 flex w-full justify-between">
-						<div class="self-center text-xs font-medium">
+					<div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
+						<div style="--as:center; --size:0.6rem; --weight:500">
 							{$i18n.t('Image Compression Height')}
 						</div>
-						<div class="flex items-center relative">
+						<div style="--d:flex; --ai:center; --pos:relative">
 							<Tooltip
 								content={$i18n.t(
 									'The height in pixels to compress images to. Leave empty for no compression.'
@@ -1154,7 +1251,7 @@
 								placement="top-start"
 							>
 								<input
-									class="flex-1 w-full text-sm bg-transparent outline-hidden"
+									style="--fx:1 1 0%; --w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 									type="number"
 									placeholder={$i18n.t('Leave empty for no compression')}
 									bind:value={RAGConfig.FILE_IMAGE_COMPRESSION_HEIGHT}
@@ -1166,10 +1263,10 @@
 					</div>
 				</div>
 
-				<div class="mb-3">
-					<div class="mb-2.5 text-base font-medium">{$i18n.t('Integration')}</div>
+				<div style="--mb:0.6rem">
+					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('Integration')}</div>
 
-					<hr class="border-gray-100 dark:border-gray-850 my-2"/>
+					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem"/>
 
 					<FormFieldRow>
 						<svelte:fragment slot="label">{$i18n.t('Google Drive')}</svelte:fragment>
@@ -1186,16 +1283,16 @@
 					</FormFieldRow>
 				</div>
 
-				<div class="mb-3">
-					<div class="mb-2.5 text-base font-medium">{$i18n.t('Danger Zone')}</div>
+				<div style="--mb:0.6rem">
+					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('Danger Zone')}</div>
 
-					<hr class="border-gray-100 dark:border-gray-850 my-2"/>
+					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem"/>
 
 					<FormFieldRow>
 						<svelte:fragment slot="label">{$i18n.t('Reset Upload Directory')}</svelte:fragment>
 						<svelte:fragment slot="content">
 							<button
-								class="text-xs"
+								style="--size:0.6rem"
 								on:click={() => {
 									showResetUploadDirConfirm = true;
 								}}
@@ -1211,7 +1308,7 @@
 						</svelte:fragment>
 						<svelte:fragment slot="content">
 							<button
-								class="text-xs"
+								style="--size:0.6rem"
 								on:click={() => {
 									showResetConfirm = true;
 								}}
@@ -1226,7 +1323,7 @@
 						</svelte:fragment>
 						<svelte:fragment slot="content">
 							<button
-								class="text-xs"
+								style="--size:0.6rem"
 								on:click={() => {
 									showReindexConfirm = true;
 								}}
@@ -1238,16 +1335,16 @@
 				</div>
 			</div>
 		</div>
-		<div class="flex justify-end pt-3 text-sm font-medium">
+		<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.8rem; --weight:500">
 			<button
-				class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+				style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 				type="submit"
 			>
 				{$i18n.t('Save')}
 			</button>
 		</div>
 	{:else}
-		<div class="flex items-center justify-center h-full">
+		<div style="--d:flex; --ai:center; --jc:center; --h:100%">
 			<Spinner className="size-5"/>
 		</div>
 	{/if}

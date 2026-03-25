@@ -1,0 +1,55 @@
+# =============================================================================
+# Semgrep Rules — JavaScript/TypeScript Security
+# =============================================================================
+# Offline SAST rules for the SvelteKit frontend JS/TS code.
+# Works with both semgrep CE and opengrep — no registry calls.
+#
+# Coverage: XSS via innerHTML, eval() usage, insecure HTTP fetches.
+#
+# Usage:
+#   make scan_sast   (runs these as part of the full scan)
+#   semgrep scan --config .semgrep/ --include="*.ts" app/src/
+# =============================================================================
+
+rules:
+  # -------------------------------------------------------------------------
+  # XSS via innerHTML
+  # -------------------------------------------------------------------------
+  # Direct innerHTML assignment bypasses the browser's built-in XSS
+  # protections. Use textContent for text, or sanitize with DOMPurify.
+  - id: innerhtml-xss
+    pattern: $EL.innerHTML = $VALUE
+    message: >
+      Direct innerHTML assignment may cause XSS.
+      Use textContent for text content, or sanitize with DOMPurify.
+    languages: [javascript, typescript]
+    severity: WARNING
+
+  # -------------------------------------------------------------------------
+  # eval() Usage
+  # -------------------------------------------------------------------------
+  # eval() executes arbitrary code — a critical injection vector.
+  # Use JSON.parse() for data, or structured alternatives for logic.
+  - id: eval-usage
+    pattern: eval(...)
+    message: >
+      eval() executes arbitrary code and is a security risk.
+      Use JSON.parse() for data or a structured alternative.
+    languages: [javascript, typescript]
+    severity: ERROR
+
+  # -------------------------------------------------------------------------
+  # Insecure HTTP Fetch
+  # -------------------------------------------------------------------------
+  # HTTP (not HTTPS) transmits data in cleartext. In production, all
+  # external fetches should use HTTPS. localhost/internal URLs are OK.
+  - id: insecure-fetch-http
+    patterns:
+      - pattern-either:
+          - pattern: fetch("http://...", ...)
+          - pattern: fetch(`http://...`, ...)
+    message: >
+      Insecure HTTP fetch detected. Use HTTPS for production endpoints.
+      localhost and internal URLs may be acceptable.
+    languages: [javascript, typescript]
+    severity: WARNING

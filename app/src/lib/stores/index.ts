@@ -46,12 +46,15 @@ export const TTSWorker = writable(null);
 export const chatId = writable('');
 export const chatTitle = writable('');
 
-export const channels = writable([]);
+export const spaces = writable([]);
 export const chats = writable(null);
 export const pinnedChats = writable([]);
 export const tags = writable([]);
 
 export const selectedFolder = writable(null);
+
+export const sharedWithMeChats = writable([]);
+export const sharedByMeChats = writable([]);
 
 export const models: Writable<Model[]> = writable([]);
 
@@ -60,18 +63,33 @@ export const knowledge: Writable<null | Document[]> = writable(null);
 export const tools = writable(null);
 export const functions = writable(null);
 
-export const toolServers = writable([]);
+export const toolServers: Writable<any[]> = writable([]);
 
 export const banners: Writable<Banner[]> = writable([]);
+
 
 export const settings: Writable<Settings> = writable({});
 
 export const showSidebar = writable(false);
 export const showSearch = writable(false);
+export const searchQuery = writable('');
 export const showSettings = writable(false);
 export const showShortcuts = writable(false);
 export const showArchivedChats = writable(false);
-export const showChangelog = writable(false);
+export const showChangesAndSetup = writable(false);
+
+export type SetupTriggerReason = {
+	hasChangelog: boolean;
+	needsModels: boolean;
+	needsUsers: boolean;
+	manualTrigger: boolean;
+};
+export const setupTriggerReason: Writable<SetupTriggerReason> = writable({
+	hasChangelog: false,
+	needsModels: false,
+	needsUsers: false,
+	manualTrigger: false
+});
 
 export const showControls = writable(false);
 export const showOverview = writable(false);
@@ -84,6 +102,8 @@ export const temporaryChatEnabled = writable(false);
 export const scrollPaginationEnabled = writable(false);
 export const currentChatPage = writable(1);
 
+export const folderCollapseAllTrigger = writable(0);
+
 export const isLastActiveTab = writable(true);
 export const playingNotificationSound = writable(false);
 
@@ -94,6 +114,7 @@ type BaseModel = {
 	name: string;
 	info?: ModelConfig;
 	owned_by: 'ollama' | 'openai' | 'arena';
+	preset?: boolean;
 };
 
 export interface OpenAIModel extends BaseModel {
@@ -138,8 +159,9 @@ type OllamaModelDetails = {
 };
 
 type Settings = {
-	pinnedModels?: never[];
-	toolServers?: never[];
+	version?: string;
+	pinnedModels?: any[];
+	toolServers?: any[];
 	detectArtifacts?: boolean;
 	showUpdateToast?: boolean;
 	showChangelog?: boolean;
@@ -151,6 +173,7 @@ type Settings = {
 	notificationSoundAlways?: boolean;
 	stylizedPdfExport?: boolean;
 	notifications?: any;
+
 	imageCompression?: boolean;
 	imageCompressionSize?: any;
 	widescreenMode?: null;
@@ -171,9 +194,12 @@ type Settings = {
 	iframeSandboxAllowForms?: boolean;
 	iframeSandboxAllowSameOrigin?: boolean;
 	scrollOnBranchChange?: boolean;
-	directConnections?: null;
+	directConnections?: any;
 	chatBubble?: boolean;
 	copyFormatted?: boolean;
+	workingAlone?: boolean;
+	setupCompleted?: boolean;
+
 	models?: string[];
 	conversationMode?: boolean;
 	speechAutoSend?: boolean;
@@ -190,6 +216,7 @@ type Settings = {
 	system?: string;
 	seed?: number;
 	temperature?: string;
+
 	repeat_penalty?: string;
 	top_k?: string;
 	top_p?: string;
@@ -243,6 +270,7 @@ type Config = {
 	default_locale: string;
 	default_models: string;
 	default_prompt_suggestions: PromptSuggestion[];
+	default_model_selector_filter?: string;
 	features: {
 		auth: boolean;
 		auth_trusted_header: boolean;
@@ -259,15 +287,20 @@ type Config = {
 		enable_autocomplete_generation: boolean;
 		enable_direct_connections: boolean;
 		enable_version_update_check: boolean;
+		enable_websocket?: boolean;
+		enable_notes?: boolean;
 	};
 	oauth: {
 		providers: {
+
 			[key: string]: string;
 		};
 	};
 	ui?: {
 		pending_user_overlay_title?: string;
 		pending_user_overlay_description?: string;
+		theme?: string;
+		custom_css?: string;
 	};
 };
 
@@ -283,4 +316,7 @@ type SessionUser = {
 	name: string;
 	role: string;
 	profile_image_url: string;
+	expires_at?: number;
+	info?: Record<string, any>;
 };
+

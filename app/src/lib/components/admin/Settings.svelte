@@ -8,6 +8,7 @@
 	import { config } from '$lib/stores';
 	import { getBackendConfig } from '$lib/apis';
 	import Database from './Settings/Database.svelte';
+	import Theme from './Settings/Theme.svelte';
 
 	import General from './Settings/General.svelte';
 	import Pipelines from './Settings/Pipelines.svelte';
@@ -17,12 +18,14 @@
 	import Models from './Settings/Models.svelte';
 	import Connections from './Settings/Connections.svelte';
 	import Documents from './Settings/Documents.svelte';
-	
+
 	import ChartBar from '../icons/ChartBar.svelte';
 	import DocumentChartBar from '../icons/DocumentChartBar.svelte';
 	import Evaluations from './Settings/Evaluations.svelte';
 	import CodeExecution from './Settings/CodeExecution.svelte';
 	import Tools from './Settings/Tools.svelte';
+	import Bridges from './Settings/Bridges.svelte';
+	import OAuthSettings from './Settings/OAuthSettings.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -38,6 +41,8 @@
 
 		selectedTab = [
 			'general',
+			'auth',
+			'theme',
 			'connections',
 			'models',
 			'evaluations',
@@ -49,6 +54,7 @@
 			'audio',
 			'images',
 			'pipelines',
+			'bridges',
 			'db'
 		].includes(tabFromPath)
 			? tabFromPath
@@ -90,27 +96,25 @@
 	});
 </script>
 
-<div class="flex flex-col lg:flex-row w-full h-full pb-2 lg:space-x-4">
+<div style="--d:flex; --fd:column; --fd-lg:row; --w:100%; --h:100%;  --g-lg:1rem">
 	<div
 		id="admin-settings-tabs-container"
-		class="tabs flex flex-row overflow-x-auto gap-2.5 max-w-full lg:gap-1 lg:flex-col lg:flex-none lg:w-40 dark:text-gray-200 text-sm font-medium text-left scrollbar-none"
+		style="--d:flex; --fd:row; --ofx:auto; --g:0.625rem; --maxw:100%; --g-lg:0.2rem; --fd-lg:column; --fx-lg:none; --w-lg:10rem; --dark-c:var(--color-gray-200); --size:0.8rem; --weight:500; --ta:left"
+	class="tabs scrollbar-none"
 	>
 		<button
 			id="general"
-			class="px-0.5 py-1 min-w-fit rounded-lg flex-1 lg:flex-none flex text-right transition {selectedTab ===
-			'general'
-				? ''
-				: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+			style="{selectedTab === 'general' ? 'font-weight: 600;' : ''}"
 			on:click={() => {
 				goto('/admin/settings/general');
 			}}
 		>
-			<div class=" self-center mr-2">
+			<div style="--as:center; --mr:0.5rem">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 16 16"
 					fill="currentColor"
-					class="w-4 h-4"
+					style="--w:1rem; --h:1rem"
 				>
 					<path
 						fill-rule="evenodd"
@@ -119,50 +123,87 @@
 					/>
 				</svg>
 			</div>
-			<div class=" self-center">{$i18n.t('General')}</div>
+			<div style="--as:center">{$i18n.t('General')}</div>
 		</button>
 
 		<button
-			id="connections"
-			class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
-			'connections'
-				? ''
-				: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+			id="auth"
+			style="{selectedTab === 'auth' ? 'font-weight: 600;' : ''}"
 			on:click={() => {
-				goto('/admin/settings/connections');
+				goto('/admin/settings/auth');
 			}}
 		>
-			<div class=" self-center mr-2">
+			<div style="--as:center; --mr:0.5rem">
+				<!-- Shield/lock icon -->
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 16 16"
 					fill="currentColor"
-					class="w-4 h-4"
+					style="--w:1rem; --h:1rem"
+				>
+					<path fill-rule="evenodd" d="M8 1a3.5 3.5 0 0 0-3.5 3.5V7A1.5 1.5 0 0 0 3 8.5v5A1.5 1.5 0 0 0 4.5 15h7a1.5 1.5 0 0 0 1.5-1.5v-5A1.5 1.5 0 0 0 11.5 7V4.5A3.5 3.5 0 0 0 8 1Zm2 6V4.5a2 2 0 1 0-4 0V7h4Z" clip-rule="evenodd" />
+				</svg>
+			</div>
+			<div style="--as:center">{$i18n.t('Auth')} (Beta)</div>
+		</button>
+
+		<button
+			id="theme"
+			style="{selectedTab === 'theme' ? 'font-weight: 600;' : ''}"
+			on:click={() => {
+				goto('/admin/settings/theme');
+			}}
+		>
+			<div style="--as:center; --mr:0.5rem">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 16 16"
+					fill="currentColor"
+					style="--w:1rem; --h:1rem"
+				>
+					<path
+						d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0ZM4.5 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3ZM7 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM9.5 5.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3ZM12 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
+					/>
+				</svg>
+			</div>
+			<div style="--as:center">{$i18n.t('Theme')}  (Beta)</div>
+		</button>
+
+		<button
+			id="connections"
+			style="{selectedTab === 'connections' ? 'font-weight: 600;' : ''}"
+			on:click={() => {
+				goto('/admin/settings/connections');
+			}}
+		>
+			<div style="--as:center; --mr:0.5rem">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 16 16"
+					fill="currentColor"
+					style="--w:1rem; --h:1rem"
 				>
 					<path
 						d="M1 9.5A3.5 3.5 0 0 0 4.5 13H12a3 3 0 0 0 .917-5.857 2.503 2.503 0 0 0-3.198-3.019 3.5 3.5 0 0 0-6.628 2.171A3.5 3.5 0 0 0 1 9.5Z"
 					/>
 				</svg>
 			</div>
-			<div class=" self-center">{$i18n.t('Connections')}</div>
+			<div style="--as:center">{$i18n.t('Connections')}</div>
 		</button>
 
 		<button
 			id="models"
-			class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
-			'models'
-				? ''
-				: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+			style="{selectedTab === 'models' ? 'font-weight: 600;' : ''}"
 			on:click={() => {
 				goto('/admin/settings/models');
 			}}
 		>
-			<div class=" self-center mr-2">
+			<div style="--as:center; --mr:0.5rem">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 20 20"
 					fill="currentColor"
-					class="w-4 h-4"
+					style="--w:1rem; --h:1rem"
 				>
 					<path
 						fill-rule="evenodd"
@@ -171,41 +212,35 @@
 					/>
 				</svg>
 			</div>
-			<div class=" self-center">{$i18n.t('Models')}</div>
+			<div style="--as:center">{$i18n.t('Models')}</div>
 		</button>
 
 		<button
 			id="evaluations"
-			class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
-			'evaluations'
-				? ''
-				: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+			style="{selectedTab === 'evaluations' ? 'font-weight: 600;' : ''}"
 			on:click={() => {
 				goto('/admin/settings/evaluations');
 			}}
 		>
-			<div class=" self-center mr-2">
+			<div style="--as:center; --mr:0.5rem">
 				<DocumentChartBar />
 			</div>
-			<div class=" self-center">{$i18n.t('Evaluations')}</div>
+			<div style="--as:center">{$i18n.t('Evaluations')}</div>
 		</button>
 
 		<button
 			id="tools"
-			class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
-			'tools'
-				? ''
-				: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+			style="{selectedTab === 'tools' ? 'font-weight: 600;' : ''}"
 			on:click={() => {
 				goto('/admin/settings/tools');
 			}}
 		>
-			<div class=" self-center mr-2">
+			<div style="--as:center; --mr:0.5rem">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 24 24"
 					fill="currentColor"
-					class="size-4"
+					style="--w:1rem; --h:1rem"
 				>
 					<path
 						fill-rule="evenodd"
@@ -214,25 +249,22 @@
 					/>
 				</svg>
 			</div>
-			<div class=" self-center">{$i18n.t('Tools')}</div>
+			<div style="--as:center">{$i18n.t('Tools')}</div>
 		</button>
 
 		<button
 			id="documents"
-			class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
-			'documents'
-				? ''
-				: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+			style="{selectedTab === 'documents' ? 'font-weight: 600;' : ''}"
 			on:click={() => {
 				goto('/admin/settings/documents');
 			}}
 		>
-			<div class=" self-center mr-2">
+			<div style="--as:center; --mr:0.5rem">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 24 24"
 					fill="currentColor"
-					class="w-4 h-4"
+					style="--w:1rem; --h:1rem"
 				>
 					<path d="M11.625 16.5a1.875 1.875 0 1 0 0-3.75 1.875 1.875 0 0 0 0 3.75Z" />
 					<path
@@ -245,25 +277,22 @@
 					/>
 				</svg>
 			</div>
-			<div class=" self-center">{$i18n.t('Documents')}</div>
+			<div style="--as:center">{$i18n.t('Documents')}</div>
 		</button>
 
 		<button
 			id="code-execution"
-			class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
-			'code-execution'
-				? ''
-				: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+			style="{selectedTab === 'code-execution' ? 'font-weight: 600;' : ''}"
 			on:click={() => {
 				goto('/admin/settings/code-execution');
 			}}
 		>
-			<div class=" self-center mr-2">
+			<div style="--as:center; --mr:0.5rem">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 16 16"
 					fill="currentColor"
-					class="size-4"
+					style="--w:1rem; --h:1rem"
 				>
 					<path
 						fill-rule="evenodd"
@@ -272,25 +301,22 @@
 					/>
 				</svg>
 			</div>
-			<div class=" self-center">{$i18n.t('Code Execution')}</div>
+			<div style="--as:center">{$i18n.t('Code Execution')}</div>
 		</button>
 
 		<button
 			id="interface"
-			class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
-			'interface'
-				? ''
-				: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+			style="{selectedTab === 'interface' ? 'font-weight: 600;' : ''}"
 			on:click={() => {
 				goto('/admin/settings/interface');
 			}}
 		>
-			<div class=" self-center mr-2">
+			<div style="--as:center; --mr:0.5rem">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 16 16"
 					fill="currentColor"
-					class="w-4 h-4"
+					style="--w:1rem; --h:1rem"
 				>
 					<path
 						fill-rule="evenodd"
@@ -299,25 +325,22 @@
 					/>
 				</svg>
 			</div>
-			<div class=" self-center">{$i18n.t('Interface')}</div>
+			<div style="--as:center">{$i18n.t('Interface')}</div>
 		</button>
 
 		<button
 			id="audio"
-			class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
-			'audio'
-				? ''
-				: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+			style="{selectedTab === 'audio' ? 'font-weight: 600;' : ''}"
 			on:click={() => {
 				goto('/admin/settings/audio');
 			}}
 		>
-			<div class=" self-center mr-2">
+			<div style="--as:center; --mr:0.5rem">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 16 16"
 					fill="currentColor"
-					class="w-4 h-4"
+					style="--w:1rem; --h:1rem"
 				>
 					<path
 						d="M7.557 2.066A.75.75 0 0 1 8 2.75v10.5a.75.75 0 0 1-1.248.56L3.59 11H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.59l3.162-2.81a.75.75 0 0 1 .805-.124ZM12.95 3.05a.75.75 0 1 0-1.06 1.06 5.5 5.5 0 0 1 0 7.78.75.75 0 1 0 1.06 1.06 7 7 0 0 0 0-9.9Z"
@@ -327,25 +350,22 @@
 					/>
 				</svg>
 			</div>
-			<div class=" self-center">{$i18n.t('Audio')}</div>
+			<div style="--as:center">{$i18n.t('Audio')}</div>
 		</button>
 
 		<button
 			id="images"
-			class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
-			'images'
-				? ''
-				: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+			style="{selectedTab === 'images' ? 'font-weight: 600;' : ''}"
 			on:click={() => {
 				goto('/admin/settings/images');
 			}}
 		>
-			<div class=" self-center mr-2">
+			<div style="--as:center; --mr:0.5rem">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 16 16"
 					fill="currentColor"
-					class="w-4 h-4"
+					style="--w:1rem; --h:1rem"
 				>
 					<path
 						fill-rule="evenodd"
@@ -354,25 +374,22 @@
 					/>
 				</svg>
 			</div>
-			<div class=" self-center">{$i18n.t('Images')}</div>
+			<div style="--as:center">{$i18n.t('Images')}</div>
 		</button>
 
 		<button
 			id="pipelines"
-			class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
-			'pipelines'
-				? ''
-				: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+			style="{selectedTab === 'pipelines' ? 'font-weight: 600;' : ''}"
 			on:click={() => {
 				goto('/admin/settings/pipelines');
 			}}
 		>
-			<div class=" self-center mr-2">
+			<div style="--as:center; --mr:0.5rem">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 24 24"
 					fill="currentColor"
-					class="size-4"
+					style="--w:1rem; --h:1rem"
 				>
 					<path
 						d="M11.644 1.59a.75.75 0 0 1 .712 0l9.75 5.25a.75.75 0 0 1 0 1.32l-9.75 5.25a.75.75 0 0 1-.712 0l-9.75-5.25a.75.75 0 0 1 0-1.32l9.75-5.25Z"
@@ -385,25 +402,42 @@
 					/>
 				</svg>
 			</div>
-			<div class=" self-center">{$i18n.t('Pipelines')}</div>
+			<div style="--as:center">{$i18n.t('Pipelines')}</div>
+		</button>
+
+		<button
+			id="bridges"
+			style="{selectedTab === 'bridges' ? 'font-weight: 600;' : ''}"
+			on:click={() => {
+				goto('/admin/settings/bridges');
+			}}
+		>
+			<div style="--as:center; --mr:0.5rem">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 495 390"
+					fill="currentColor"
+					style="--w:1rem; --h:1rem"
+				>
+					<path d="M495,237.199v-30H383.75v-86.075c24.992,31.105,63.335,51.048,106.25,51.048v-30c-58.586,0-106.25-47.664-106.25-106.25h-30c0,58.586-47.664,106.25-106.25,106.25S141.25,94.509,141.25,35.923h-30c0,58.586-47.664,106.25-106.25,106.25v30c42.915,0,81.258-19.943,106.25-51.048v86.075H0v30h111.25v100.101c-10.643,2.41-17.7,7.139-23.697,11.178c-6.839,4.607-11.356,7.651-21.931,7.651c-10.574,0-15.092-3.043-21.93-7.651C35.247,342.79,24.737,335.708,5,335.708v30c10.574,0,15.092,3.043,21.93,7.651c8.445,5.689,18.955,12.771,38.692,12.771s30.248-7.081,38.693-12.771c6.839-4.607,11.357-7.651,21.932-7.651s15.092,3.044,21.931,7.651c8.445,5.689,18.955,12.771,38.692,12.771s30.247-7.081,38.692-12.771c6.838-4.607,11.355-7.651,21.929-7.651c10.575,0,15.093,3.044,21.932,7.651c8.445,5.689,18.956,12.771,38.693,12.771c19.738,0,30.249-7.081,38.694-12.771c6.839-4.607,11.357-7.651,21.932-7.651c10.576,0,15.095,3.044,21.934,7.651c8.445,5.689,18.957,12.77,38.695,12.77s30.25-7.081,38.695-12.77c6.839-4.607,11.358-7.651,21.934-7.651v-30c-19.738,0-30.25,7.081-38.695,12.77c-6.839,4.607-11.358,7.651-21.934,7.651s-15.095-3.044-21.934-7.651c-5.995-4.039-13.049-8.765-23.687-11.176V237.199H495z M353.75,121.125v86.075H262.5v-35.852C299.285,167.3,331.71,148.555,353.75,121.125z M141.25,121.125c22.04,27.431,54.465,46.176,91.25,50.222v35.852h-91.25V121.125z M353.75,337.3c-10.646,2.409-17.704,7.139-23.702,11.179c-6.839,4.607-11.357,7.651-21.932,7.651c-10.575,0-15.092-3.043-21.931-7.651c-8.445-5.689-18.956-12.771-38.693-12.771c-19.737,0-30.247,7.081-38.692,12.771c-6.838,4.607-11.355,7.651-21.93,7.651s-15.092-3.043-21.93-7.651c-5.995-4.039-13.051-8.767-23.69-11.177V237.199h212.5V337.3z" />
+				</svg>
+			</div>
+			<div style="--as:center">{$i18n.t('Bridges')}</div>
 		</button>
 
 		<button
 			id="db"
-			class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
-			'db'
-				? ''
-				: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+			style="{selectedTab === 'db' ? 'font-weight: 600;' : ''}"
 			on:click={() => {
 				goto('/admin/settings/db');
 			}}
 		>
-			<div class=" self-center mr-2">
+			<div style="--as:center; --mr:0.5rem">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 16 16"
 					fill="currentColor"
-					class="w-4 h-4"
+					style="--w:1rem; --h:1rem"
 				>
 					<path d="M8 7c3.314 0 6-1.343 6-3s-2.686-3-6-3-6 1.343-6 3 2.686 3 6 3Z" />
 					<path
@@ -414,16 +448,26 @@
 					/>
 				</svg>
 			</div>
-			<div class=" self-center">{$i18n.t('Database')}</div>
+			<div style="--as:center">{$i18n.t('Database')}</div>
 		</button>
 	</div>
 
-	<div class="flex-1 mt-3 lg:mt-0 overflow-y-scroll pr-1 scrollbar-hidden">
+	<div style="--fx:1 1 0%; --mt:0.6rem; --mt-lg:0; --ofy:scroll; --pr:0.2rem"
+	class="scrollbar-hidden">
 		{#if selectedTab === 'general'}
 			<General
 				saveHandler={async () => {
 					toast.success($i18n.t('Settings saved successfully!'));
 
+					await tick();
+					await config.set(await getBackendConfig());
+				}}
+			/>
+		{:else if selectedTab === 'auth'}
+			<OAuthSettings />
+		{:else if selectedTab === 'theme'}
+			<Theme
+				on:save={async () => {
 					await tick();
 					await config.set(await getBackendConfig());
 				}}
@@ -476,6 +520,8 @@
 					toast.success($i18n.t('Settings saved successfully!'));
 				}}
 			/>
+		{:else if selectedTab === 'bridges'}
+			<Bridges />
 		{:else if selectedTab === 'db'}
 			<Database
 				saveHandler={() => {
@@ -491,3 +537,9 @@
 		{/if}
 	</div>
 </div>
+
+<style>
+	button {
+		padding: 0.6em 0.6em;
+	}
+</style>

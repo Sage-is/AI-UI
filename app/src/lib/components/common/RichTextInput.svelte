@@ -910,7 +910,12 @@
 			element: element,
 			extensions: [
 				StarterKit.configure({
-					link: link
+					link: link,
+					// Disable extensions provided by CodeBlockLowlight and ListKit
+					codeBlock: false,
+					bulletList: false,
+					orderedList: false,
+					listItem: false
 				}),
 				Placeholder.configure({ placeholder }),
 				SelectionDecoration,
@@ -1273,13 +1278,14 @@
 </script>
 
 {#if showFormattingButtons}
-	<div bind:this={bubbleMenuElement} id="bubble-menu" class="p-0">
+	<div bind:this={bubbleMenuElement} id="bubble-menu" style="--p:0">
 		<FormattingButtons {editor} />
 	</div>
 
-	<div bind:this={floatingMenuElement} id="floating-menu" class="p-0">
+	<div bind:this={floatingMenuElement} id="floating-menu" style="--p:0">
 		<FormattingButtons {editor} />
 	</div>
 {/if}
 
-<div bind:this={element} class="relative w-full min-w-full h-full min-h-fit {className}" />
+<div bind:this={element} style="--pos:relative; --w:100%; --minw:100%; --h:100%; --minh:fit-content"
+	class="{className}" />

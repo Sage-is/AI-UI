@@ -1,4 +1,15 @@
-# Startr Development Workflow
+---
+title: "Development Workflow"
+description: "Plan-Document-Execute-Verify development cycle and team standards for Sage.is AI-UI."
+date: 2025-11-28
+tags:
+  - workflow
+  - development
+  - process
+  - meta
+---
+
+# Sage.is AI-UI Development Workflow
 
 **Before Starting Any Work ALWAYS add to TODO.md first:**
 
@@ -136,7 +147,7 @@ For each task, define:
 
 **README.md sections:**
 - Quick Start
-- Initial Setup  
+- Initial Setup
 - Documentation (links to all docs/)
 - Environment System
 - Troubleshooting
@@ -153,14 +164,14 @@ For each task, define:
 
 **Structure:**
 1. **Current Week** - 🔥 Critical tasks for this week (always at top)
-2. **High Priority** - 🔶 Next milestone work  
+2. **High Priority** - 🔶 Next milestone work
 3. **Medium Priority** - 🔷 Soon
 4. **Low Priority** - 🔹 Nice to have
 5. **Completed Work** - ✅ Previous weeks in reverse chronological order
 
 **Categories (in order of priority):**
 1. **Documentation & Admin Management** - Category for meta-work
-2. **Critical Infrastructure & Security** 
+2. **Critical Infrastructure & Security**
 3. **High Priority** - User-facing fixes
 4. **Medium Priority** - Feature development
 5. **Low Priority** - Nice-to-have improvements
@@ -168,7 +179,7 @@ For each task, define:
 
 **Status tracking:**
 - [ ] Planned
-- 🔄 In Progress  
+- 🔄 In Progress
 - ✅ Completed
 - ❌ Cancelled/Won't Do
 
@@ -192,6 +203,89 @@ For each task, define:
 - Add to `make setup` target
 - Document in README and dedicated guide
 - Include in onboarding documentation
+
+## Styling with Startr.Style
+
+This project uses [Startr.Style](https://startr.style) as its primary CSS framework. Startr.Style is a utility-complete CSS framework (under 50KB / 8KB gzipped) that uses inline CSS custom properties instead of class-based utilities.
+
+### Why Startr.Style
+
+- **Zero compilation** — no build step, no purging, no config files
+- **Full CSS spec access** — developer-defined values, not restricted presets
+- **Fraction of the size** — utilities defined by property only, values are yours
+- **Automatic base styling** — semantic HTML looks good out of the box
+- **Responsive, dark mode, hover** — built-in with suffixes
+
+### How It Works
+
+Style elements using `--property:value` in the `style` attribute:
+
+```html
+<!-- Layout -->
+<div style="--d:flex; --ai:center; --jc:space-between; --g:1rem">
+
+<!-- Spacing & borders -->
+<div style="--p:0.6rem; --br:0.5rem; --b:1px solid var(--color-gray-200)">
+
+<!-- Typography -->
+<span style="--size:0.8rem; --weight:500; --c:var(--color-gray-600)">
+```
+
+### Common Shorthands
+
+| Shorthand | CSS Property | Example |
+|-----------|-------------|---------|
+| `--d` | display | `--d:flex` |
+| `--p` | padding | `--p:1rem` |
+| `--m` | margin | `--m:0.5rem` |
+| `--bg` / `--bgc` | background / background-color | `--bg:var(--color-sky-500)` |
+| `--c` | color | `--c:white` |
+| `--br` | border-radius | `--br:0.5rem` |
+| `--b` | border | `--b:1px solid var(--color-gray-300)` |
+| `--w` / `--h` | width / height | `--w:100%` |
+| `--ai` | align-items | `--ai:center` |
+| `--jc` | justify-content | `--jc:space-between` |
+| `--fd` | flex-direction | `--fd:column` |
+| `--g` | gap | `--g:0.5rem` |
+| `--ta` | text-align | `--ta:center` |
+| `--size` | font-size | `--size:0.8rem` |
+| `--weight` | font-weight | `--weight:600` |
+| `--pos` | position | `--pos:relative` |
+
+### Responsive Suffixes
+
+Append a breakpoint suffix to any property:
+
+| Suffix | Min Width |
+|--------|-----------|
+| `-sm` | 640px |
+| `-md` | 768px |
+| `-lg` | 1024px |
+| `-xl` | 1280px |
+| `-pt` | print only |
+
+```html
+<!-- Hidden on mobile, flex on medium+ -->
+<div style="--d:none; --d-md:flex">
+```
+
+### Dark Mode & Interactive States
+
+- **Dark mode:** prefix with `--dark-` (e.g., `--dark-bg:var(--color-gray-800)`)
+- **Hover:** prefix with `--hvr-` (e.g., `--hvr-bg:var(--color-sky-600)`)
+
+```html
+<button style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-bgc:var(--color-gray-200)">
+  Theme-aware button
+</button>
+```
+
+### Rules
+
+- **Always use Startr.Style** for component styling — do not replace with Tailwind utility classes or standalone CSS classes
+- **Use project color variables** (`var(--color-gray-200)`, `var(--color-sky-500)`, etc.) defined in `app/static/assets/custom.css`
+- **Keep it inline** — Startr.Style is designed for inline `style` attributes, not separate stylesheets
+- Refer to [startr.style](https://startr.style) for the full property reference
 
 ## Quality Assurance
 
@@ -236,7 +330,7 @@ Standard targets for common tasks:
 [Type]: [Summary]
 
 - [Change 1]
-- [Change 2] 
+- [Change 2]
 - Mark TODO item as complete/in progress
 ```
 
@@ -246,7 +340,7 @@ Standard targets for common tasks:
 
 - Markdown for all documentation
 - Consistent heading structure
-- Clear, concise language following Startr Writing Guidelines
+- Clear, concise language following Sage.is AI-UI Writing Guidelines
 - Regular link validation
 
 ### Testing Standards
@@ -257,7 +351,7 @@ Standard targets for common tasks:
 - All tests in `tests.py` files within app directories
 
 **Test Configuration:**
-- `pytest.ini` - Main pytest configuration 
+- `pytest.ini` - Main pytest configuration
 - `conftest.py` - Shared fixtures and Django setup
 - Tests run with `--nomigrations` and `--reuse-db` for speed
 
@@ -272,7 +366,7 @@ make test_quick          # Run excluding slow tests
 
 **Test Categories (using markers):**
 - `@pytest.mark.unit` - Unit tests (isolated, fast)
-- `@pytest.mark.integration` - Integration tests  
+- `@pytest.mark.integration` - Integration tests
 - `@pytest.mark.slow` - Slow tests (can be excluded)
 - `@pytest.mark.django_db` - Tests requiring database
 
@@ -312,7 +406,7 @@ make test_quick          # Run excluding slow tests
 
 **For new team members:**
 1. Read this workflow document
-2. Run `make setup` 
+2. Run `make setup`
 3. Review current TODO.md
 4. Practice the plan-document-execute-verify cycle on small tasks
 5. Ask questions before starting significant work

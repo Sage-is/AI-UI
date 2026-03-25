@@ -152,30 +152,31 @@
 
 {#if loaded}
 	<div
-		class="h-screen max-h-[100dvh] w-full flex flex-col text-gray-700 dark:text-gray-100 bg-white dark:bg-gray-900"
+		style="--h:100vh; --maxh:100dvh; --w:100%; --d:flex; --fd:column; --bg:var(--white); --br: 1rem; --shadow:6; --bgc:#fff; --dark-bgc:var(--color-gray-900)"
 	>
-		<div class="flex flex-col flex-auto justify-center relative">
-			<div class=" flex flex-col w-full flex-auto overflow-auto h-0" id="messages-container">
+		<div style="--d:flex; --fd:column; --fx:1 1 auto; --jc:center; --pos:relative">
+			<div style="--d:flex; --fd:column; --w:100%; --fx:1 1 auto; --of:auto; --h:0" id="messages-container">
 				<div
-					class="pt-5 px-2 w-full {($settings?.widescreenMode ?? null)
+					style="--pt:1.2rem; --px:0.5rem; --w:100%; --mx:auto"
+	class="{($settings?.widescreenMode ?? null)
 						? 'max-w-full'
-						: 'max-w-5xl'} mx-auto"
+						: 'max-w-5xl'}"
 				>
-					<div class="px-3">
-						<div class=" text-2xl font-semibold line-clamp-1">
+					<div style="--px:0.6rem">
+						<div style="--size:1.5rem; --weight:600; --line-clamp:1">
 							{title}
 						</div>
 
-						<div class="flex text-sm justify-between items-center mt-1">
-							<div class="text-gray-400">
+						<div style="--d:flex; --size:0.8rem; --jc:space-between; --ai:center; --mt:0.2rem">
+							<div style="--c:var(--color-gray-400)">
 								{dayjs(chat.chat.timestamp).format('LLL')}
 							</div>
 						</div>
 					</div>
 				</div>
 
-				<div class=" h-full w-full flex flex-col py-2">
-					<div class="w-full">
+				<div style="--h:100%; --w:100%; --d:flex; --fd:column; --py:0.5rem">
+					<div style="--w:100%">
 						<Messages
 							className="h-full flex pt-4 pb-8 "
 							{user}
@@ -196,11 +197,11 @@
 			</div>
 
 			<div
-				class="absolute bottom-0 right-0 left-0 flex justify-center w-full bg-linear-to-b from-transparent to-white dark:to-gray-900"
+				style="--pos:absolute; --bottom:0; --right:0; --left:0; --d:flex; --jc:center; --w:100%; --bgi:linear-gradient(180deg, var(--tw-gradient-stops)); --tw-gradient-from:transparent; --tw-gradient-to:#fff; --dark-tw-gradient-to:var(--color-gray-900)"
 			>
-				<div class="pb-5">
+				<div style="--pb:1.2rem">
 					<button
-						class="px-4 py-2 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+						style="--px:1rem; --py:0.5rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 						on:click={cloneSharedChat}
 					>
 						{$i18n.t('Clone Chat')}

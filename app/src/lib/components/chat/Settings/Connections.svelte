@@ -71,22 +71,23 @@
 
 <form
 	id="tab-connections"
-	class="flex flex-col h-full justify-between text-sm"
+	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --size:0.8rem"
 	on:submit|preventDefault={() => {
 		updateHandler();
 	}}
 >
-	<div class=" overflow-y-scroll scrollbar-hidden h-full">
+	<div style="--ofy:scroll; --h:100%"
+	class="scrollbar-hidden">
 		{#if config !== null}
 			<div class="">
-				<div class="pr-1.5">
+				<div style="--pr:0.4rem">
 					<div class="">
-						<div class="flex justify-between items-center mb-0.5">
-							<div class="font-medium">{$i18n.t('Manage Direct Connections')}</div>
+						<div style="--d:flex; --jc:space-between; --ai:center; --mb:0.125rem">
+							<div style="--weight:500">{$i18n.t('Manage Direct Connections')}</div>
 
 							<Tooltip content={$i18n.t(`Add Connection`)}>
 								<button
-									class="px-1"
+									style="--px:0.2rem"
 									on:click={() => {
 										showConnectionModal = true;
 									}}
@@ -97,7 +98,7 @@
 							</Tooltip>
 						</div>
 
-						<div class="flex flex-col gap-1.5">
+						<div style="--d:flex; --fd:column; --g:0.4rem">
 							{#each config?.OPENAI_API_BASE_URLS ?? [] as url, idx}
 								<Connection
 									bind:url
@@ -126,9 +127,10 @@
 						</div>
 					</div>
 
-					<div class="my-1.5">
+					<div style="--my:0.4rem">
 						<div
-							class="text-xs {($settings?.highContrastMode ?? false)
+							style="--size:0.6rem"
+	class="{($settings?.highContrastMode ?? false)
 								? 'text-gray-800 dark:text-gray-100'
 								: 'text-gray-500'}"
 						>
@@ -142,17 +144,17 @@
 				</div>
 			</div>
 		{:else}
-			<div class="flex h-full justify-center">
-				<div class="my-auto">
+			<div style="--d:flex; --h:100%; --jc:center">
+				<div style="--my:auto">
 					<Spinner className="size-6" />
 				</div>
 			</div>
 		{/if}
 	</div>
 
-	<div class="flex justify-end pt-3 text-sm font-medium">
+	<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.8rem; --weight:500">
 		<button
-			class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+			style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			type="submit"
 		>
 			{$i18n.t('Save')}

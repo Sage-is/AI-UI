@@ -52,10 +52,10 @@
 
 <Modal size="lg" bind:show>
 	<div>
-		<div class=" flex justify-between dark:text-gray-300 px-5 pt-4 pb-1">
-			<div class=" text-lg font-medium self-center">{$i18n.t('Memory')}</div>
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.2rem; --pt:1rem; --pb:0.2rem">
+			<div style="--size:1.125rem; --weight:500; --as:center">{$i18n.t('Memory')}</div>
 			<button
-				class="self-center"
+				style="--as:center"
 				on:click={() => {
 					show = false;
 				}}
@@ -64,7 +64,7 @@
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 20 20"
 					fill="currentColor"
-					class="w-5 h-5"
+					style="--w:1.2rem; --h:1.2rem"
 				>
 					<path
 						d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"
@@ -73,43 +73,43 @@
 			</button>
 		</div>
 
-		<div class="flex flex-col w-full px-5 pb-5 dark:text-gray-200">
+		<div style="--d:flex; --fd:column; --w:100%; --px:1.2rem; --pb:1.2rem; --dark-c:var(--color-gray-200)">
 			<div
-				class=" flex flex-col w-full sm:flex-row sm:justify-center sm:space-x-6 h-[28rem] max-h-screen outline outline-1 rounded-xl outline-gray-100 dark:outline-gray-800 mb-4 mt-1"
+				style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem; --h:28rem; --maxh:100vh; outline-style:solid; outline-width:1px; --radius:0.6rem; outline-color:var(--color-gray-100); outline-color:var(--color-gray-800); --mb:1rem; --mt:0.2rem"
 			>
 				{#if memories.length > 0}
-					<div class="text-left text-sm w-full mb-4 overflow-y-scroll">
-						<div class="relative overflow-x-auto">
-							<table class="w-full text-sm text-left text-gray-600 dark:text-gray-400 table-auto">
+					<div style="--ta:left; --size:0.8rem; --w:100%; --mb:1rem; --ofy:scroll">
+						<div style="--pos:relative; --ofx:auto">
+							<table style="--w:100%; --size:0.8rem; --ta:left; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); table-layout:auto">
 								<thead
-									class="text-xs text-gray-700 uppercase bg-transparent dark:text-gray-200 border-b-2 border-gray-50 dark:border-gray-850"
+									style="--size:0.6rem; --c:var(--color-gray-700); --tt:uppercase; --bgc:transparent; --dark-c:var(--color-gray-200); border-bottom-width:2px; --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850)"
 								>
 									<tr>
-										<th scope="col" class="px-3 py-2"> {$i18n.t('Name')} </th>
-										<th scope="col" class="px-3 py-2 hidden md:flex">
+										<th scope="col" style="--px:0.6rem; --py:0.5rem"> {$i18n.t('Name')} </th>
+										<th scope="col" style="--px:0.6rem; --py:0.5rem; --d:none; --d-md:flex">
 											{$i18n.t('Last Modified')}
 										</th>
-										<th scope="col" class="px-3 py-2 text-right" />
+										<th scope="col" style="--px:0.6rem; --py:0.5rem; --ta:right" />
 									</tr>
 								</thead>
-								<tbody>
+								<tbody style="--d:table">
 									{#each memories as memory}
-										<tr class="border-b border-gray-50 dark:border-gray-850 items-center">
-											<td class="px-3 py-1">
-												<div class="line-clamp-1">
+										<tr style=" --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --ai:center">
+											<td style="--d:table;--px:0.6rem; --py:0.2rem">
+												<div style="--line-clamp:1">
 													{memory.content}
 												</div>
 											</td>
-											<td class=" px-3 py-1 hidden md:flex h-[2.5rem]">
-												<div class="my-auto whitespace-nowrap">
+											<td style="--d:table;--px:0.6rem; --py:0.2rem; --d:none; --d-md:flex; --h:2.5rem">
+												<div style="--my:auto; --ws:nowrap">
 													{dayjs(memory.updated_at * 1000).format('LLL')}
 												</div>
 											</td>
-											<td class="px-3 py-1">
-												<div class="flex justify-end w-full">
+											<td style="--d:table;--px:0.6rem; --py:0.2rem">
+												<div style="--d:flex; --jc:flex-end; --w:100%">
 													<Tooltip content="Edit">
 														<button
-															class="self-center w-fit text-sm px-2 py-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
+															style="--as:center; --w:fit-content; --size:0.8rem; --px:0.5rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 															on:click={() => {
 																selectedMemory = memory;
 																showEditMemoryModal = true;
@@ -121,7 +121,8 @@
 																viewBox="0 0 24 24"
 																stroke-width="1.5"
 																stroke="currentColor"
-																class="w-4 h-4 s-FoVA_WMOgxUD"
+																style="--w:1rem; --h:1rem"
+	class="s-FoVA_WMOgxUD"
 																><path
 																	stroke-linecap="round"
 																	stroke-linejoin="round"
@@ -134,7 +135,7 @@
 
 													<Tooltip content="Delete">
 														<button
-															class="self-center w-fit text-sm px-2 py-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
+															style="--as:center; --w:fit-content; --size:0.8rem; --px:0.5rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 															on:click={async () => {
 																const res = await deleteMemoryById(
 																	localStorage.token,
@@ -156,7 +157,7 @@
 																viewBox="0 0 24 24"
 																stroke-width="1.5"
 																stroke="currentColor"
-																class="w-4 h-4"
+																style="--w:1rem; --h:1rem"
 															>
 																<path
 																	stroke-linecap="round"
@@ -175,22 +176,22 @@
 						</div>
 					</div>
 				{:else}
-					<div class="text-center flex h-full text-sm w-full">
-						<div class=" my-auto pb-10 px-4 w-full text-gray-500">
+					<div style="--ta:center; --d:flex; --h:100%; --size:0.8rem; --w:100%">
+						<div style="--my:auto; --pb:2.5rem; --px:1rem; --w:100%; --c:var(--color-gray-500)">
 							{$i18n.t('Memories accessible by LLMs will be shown here.')}
 						</div>
 					</div>
 				{/if}
 			</div>
-			<div class="flex text-sm font-medium gap-1.5">
+			<div style="--d:flex; --size:0.8rem; --weight:500; --g:0.4rem">
 				<button
-					class=" px-3.5 py-1.5 font-medium hover:bg-black/5 dark:hover:bg-white/5 outline outline-1 outline-gray-300 dark:outline-gray-800 rounded-3xl"
+					style="--px:0.8rem; --py:0.4rem; --weight:500; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:var(--color-gray-300); outline-color:var(--color-gray-800); --radius:1.5rem"
 					on:click={() => {
 						showAddMemoryModal = true;
 					}}>{$i18n.t('Add Memory')}</button
 				>
 				<button
-					class=" px-3.5 py-1.5 font-medium text-red-500 hover:bg-black/5 dark:hover:bg-white/5 outline outline-1 outline-red-300 dark:outline-red-800 rounded-3xl"
+					style="--px:0.8rem; --py:0.4rem; --weight:500; --c:#ef4444; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); outline-style:solid; outline-width:1px; outline-color:#fca5a5; outline-color:#991b1b; --radius:1.5rem"
 					on:click={() => {
 						if (memories.length > 0) {
 							showClearConfirmDialog = true;

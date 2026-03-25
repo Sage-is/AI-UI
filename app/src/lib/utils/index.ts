@@ -1,4 +1,6 @@
+// @ts-ignore
 import { v4 as uuidv4 } from 'uuid';
+// @ts-ignore
 import sha256 from 'js-sha256';
 import { WEBUI_BASE_URL } from '$lib/constants';
 
@@ -30,23 +32,23 @@ function escapeRegExp(string: string): string {
 	return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-export const replaceTokens = (content, sourceIds, char, user) => {
+export const replaceTokens = (content: string, sourceIds: string[], char: string, user: string) => {
 	const tokens = [
 		{ regex: /{{char}}/gi, replacement: char },
 		{ regex: /{{user}}/gi, replacement: user },
 		{
 			regex: /{{VIDEO_FILE_ID_([a-f0-9-]+)}}/gi,
-			replacement: (_, fileId) =>
+			replacement: (_: string, fileId: string) =>
 				`<video src="${WEBUI_BASE_URL}/api/v1/files/${fileId}/content" controls></video>`
 		},
 		{
 			regex: /{{HTML_FILE_ID_([a-f0-9-]+)}}/gi,
-			replacement: (_, fileId) => `<file type="html" id="${fileId}" />`
+			replacement: (_: string, fileId: string) => `<file type="html" id="${fileId}" />`
 		}
 	];
 
 	// Replace tokens outside code blocks only
-	const processOutsideCodeBlocks = (text, replacementFn) => {
+	const processOutsideCodeBlocks = (text: string, replacementFn: (s: string) => string) => {
 		return text
 			.split(/(```[\s\S]*?```|`[\s\S]*?`)/)
 			.map((segment) => {
@@ -61,7 +63,11 @@ export const replaceTokens = (content, sourceIds, char, user) => {
 	content = processOutsideCodeBlocks(content, (segment) => {
 		tokens.forEach(({ regex, replacement }) => {
 			if (replacement !== undefined && replacement !== null) {
-				segment = segment.replace(regex, replacement);
+				if (typeof replacement === 'function') {
+					segment = segment.replace(regex, replacement as any);
+				} else {
+					segment = segment.replace(regex, replacement);
+				}
 			}
 		});
 
@@ -169,11 +175,11 @@ export function unescapeHtml(html: string) {
 	return doc.documentElement.textContent;
 }
 
-export const capitalizeFirstLetter = (string) => {
+export const capitalizeFirstLetter = (string: string) => {
 	return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
-export const splitStream = (splitOn) => {
+export const splitStream = (splitOn: string) => {
 	let buffer = '';
 	return new TransformStream({
 		transform(chunk, controller) {
@@ -188,14 +194,14 @@ export const splitStream = (splitOn) => {
 	});
 };
 
-export const convertMessagesToHistory = (messages) => {
-	const history = {
+export const convertMessagesToHistory = (messages: any[]) => {
+	const history: any = {
 		messages: {},
 		currentId: null
 	};
 
-	let parentMessageId = null;
-	let messageId = null;
+	let parentMessageId: string | null = null;
+	let messageId: string | null = null;
 
 	for (const message of messages) {
 		messageId = uuidv4();
@@ -207,7 +213,7 @@ export const convertMessagesToHistory = (messages) => {
 			];
 		}
 
-		history.messages[messageId] = {
+		history.messages[messageId!] = {
 			...message,
 			id: messageId,
 			parentId: parentMessageId,
@@ -221,7 +227,7 @@ export const convertMessagesToHistory = (messages) => {
 	return history;
 };
 
-export const getGravatarURL = (email) => {
+export const getGravatarURL = (email: string) => {
 	// Trim leading and trailing whitespace from
 	// an email address and force all characters
 	// to lower case
@@ -239,6 +245,7 @@ export const canvasPixelTest = () => {
 	// Inspiration: https://github.com/kkapsner/CanvasBlocker/blob/master/test/detectionTest.js
 	const canvas = document.createElement('canvas');
 	const ctx = canvas.getContext('2d');
+	if (!ctx) return false;
 	canvas.height = 1;
 	canvas.width = 1;
 	const imageData = new ImageData(canvas.width, canvas.height);
@@ -275,7 +282,7 @@ export const canvasPixelTest = () => {
 	return true;
 };
 
-export const compressImage = async (imageUrl, maxWidth, maxHeight) => {
+export const compressImage = async (imageUrl: string, maxWidth: number, maxHeight: number) => {
 	return new Promise((resolve, reject) => {
 		const img = new Image();
 		img.onload = () => {
@@ -308,6 +315,11 @@ export const compressImage = async (imageUrl, maxWidth, maxHeight) => {
 					return;
 				}
 
+				if (width <= maxWidth) {
+					resolve(imageUrl);
+					return;
+				}
+
 				height = Math.round((maxWidth * height) / width);
 				width = maxWidth;
 			} else if (maxHeight) {
@@ -326,7 +338,7 @@ export const compressImage = async (imageUrl, maxWidth, maxHeight) => {
 			canvas.height = height;
 
 			const context = canvas.getContext('2d');
-			context.drawImage(img, 0, 0, width, height);
+			context?.drawImage(img, 0, 0, width, height);
 
 			// Get compressed image URL
 			const compressedUrl = canvas.toDataURL();
@@ -336,7 +348,7 @@ export const compressImage = async (imageUrl, maxWidth, maxHeight) => {
 		img.src = imageUrl;
 	});
 };
-export const generateInitialsImage = (name) => {
+export const generateInitialsImage = (name: string) => {
 	const canvas = document.createElement('canvas');
 	const ctx = canvas.getContext('2d');
 	canvas.width = 100;
@@ -349,29 +361,31 @@ export const generateInitialsImage = (name) => {
 		return `${WEBUI_BASE_URL}/static/user.png`;
 	}
 
-	ctx.fillStyle = '#F39C12';
-	ctx.fillRect(0, 0, canvas.width, canvas.height);
+	if (ctx) {
+		ctx.fillStyle = '#F39C12';
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-	ctx.fillStyle = '#FFFFFF';
-	ctx.font = '40px Helvetica';
-	ctx.textAlign = 'center';
-	ctx.textBaseline = 'middle';
+		ctx.fillStyle = '#FFFFFF';
+		ctx.font = '40px Helvetica';
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'middle';
 
-	const sanitizedName = name.trim();
-	const initials =
-		sanitizedName.length > 0
-			? sanitizedName[0] +
-				(sanitizedName.split(' ').length > 1
-					? sanitizedName[sanitizedName.lastIndexOf(' ') + 1]
-					: '')
-			: '';
+		const sanitizedName = name.trim();
+		const initials =
+			sanitizedName.length > 0
+				? sanitizedName[0] +
+					(sanitizedName.split(' ').length > 1
+						? sanitizedName[sanitizedName.lastIndexOf(' ') + 1]
+						: '')
+				: '';
 
-	ctx.fillText(initials.toUpperCase(), canvas.width / 2, canvas.height / 2);
+		ctx.fillText(initials.toUpperCase(), canvas.width / 2, canvas.height / 2);
+	}
 
 	return canvas.toDataURL();
 };
 
-export const formatDate = (inputDate) => {
+export const formatDate = (inputDate: number | string | Date) => {
 	const date = dayjs(inputDate);
 	const now = dayjs();
 
@@ -384,13 +398,13 @@ export const formatDate = (inputDate) => {
 	}
 };
 
-export const copyToClipboard = async (text, html = null, formatted = false) => {
+export const copyToClipboard = async (text: string, html: string | null = null, formatted = false) => {
 	if (formatted) {
 		let styledHtml = '';
 		if (!html) {
 			const options = {
 				throwOnError: false,
-				highlight: function (code, lang) {
+				highlight: function (code: string, lang: string) {
 					const language = hljs.getLanguage(lang) ? lang : 'plaintext';
 					return hljs.highlight(code, { language }).value;
 				}
@@ -516,7 +530,7 @@ export const copyToClipboard = async (text, html = null, formatted = false) => {
 	}
 };
 
-export const compareVersion = (latest, current) => {
+export const compareVersion = (latest: string, current: string) => {
 	return current === '0.0.0'
 		? false
 		: current.localeCompare(latest, undefined, {
@@ -526,9 +540,9 @@ export const compareVersion = (latest, current) => {
 			}) < 0;
 };
 
-export const extractCurlyBraceWords = (text) => {
+export const extractCurlyBraceWords = (text: string) => {
 	const regex = /\{\{([^}]+)\}\}/g;
-	const matches = [];
+	const matches: { word: string; startIndex: number; endIndex: number }[] = [];
 	let match;
 
 	while ((match = regex.exec(text)) !== null) {
@@ -542,7 +556,7 @@ export const extractCurlyBraceWords = (text) => {
 	return matches;
 };
 
-export const removeLastWordFromString = (inputString, wordString) => {
+export const removeLastWordFromString = (inputString: string, wordString: string) => {
 	console.log('inputString', inputString);
 	// Split the string by newline characters to handle lines separately
 	const lines = inputString.split('\n');
@@ -550,32 +564,36 @@ export const removeLastWordFromString = (inputString, wordString) => {
 	// Take the last line to operate only on it
 	const lastLine = lines.pop();
 
-	// Split the last line into an array of words
-	const words = lastLine.split(' ');
+	if (lastLine) {
+		// Split the last line into an array of words
+		const words = lastLine.split(' ');
 
-	// Conditional to check for the last word removal
-	if (words.at(-1) === wordString || (wordString === '' && words.at(-1) === '\\#')) {
-		words.pop(); // Remove last word if condition is satisfied
+		// Conditional to check for the last word removal
+		if (words.at(-1) === wordString || (wordString === '' && words.at(-1) === '\\#')) {
+			words.pop(); // Remove last word if condition is satisfied
+		}
+
+		// Join the remaining words back into a string and handle space correctly
+		let updatedLastLine = words.join(' ');
+
+		// Add a trailing space to the updated last line if there are still words
+		if (updatedLastLine !== '') {
+			updatedLastLine += ' ';
+		}
+
+		// Combine the lines together again, placing the updated last line back in
+		const resultString = [...lines, updatedLastLine].join('\n');
+
+		// Return the final string
+		console.log('resultString', resultString);
+
+		return resultString;
+	} else {
+		return inputString;
 	}
-
-	// Join the remaining words back into a string and handle space correctly
-	let updatedLastLine = words.join(' ');
-
-	// Add a trailing space to the updated last line if there are still words
-	if (updatedLastLine !== '') {
-		updatedLastLine += ' ';
-	}
-
-	// Combine the lines together again, placing the updated last line back in
-	const resultString = [...lines, updatedLastLine].join('\n');
-
-	// Return the final string
-	console.log('resultString', resultString);
-
-	return resultString;
 };
 
-export const removeFirstHashWord = (inputString) => {
+export const removeFirstHashWord = (inputString: string) => {
 	// Split the string into an array of words
 	const words = inputString.split(' ');
 
@@ -593,7 +611,7 @@ export const removeFirstHashWord = (inputString) => {
 	return resultString;
 };
 
-export const transformFileName = (fileName) => {
+export const transformFileName = (fileName: string) => {
 	// Convert to lowercase
 	const lowerCaseFileName = fileName.toLowerCase();
 
@@ -606,7 +624,7 @@ export const transformFileName = (fileName) => {
 	return finalFileName;
 };
 
-export const calculateSHA256 = async (file) => {
+export const calculateSHA256 = async (file: File | Blob) => {
 	// Create a FileReader to read the file asynchronously
 	const reader = new FileReader();
 
@@ -621,7 +639,7 @@ export const calculateSHA256 = async (file) => {
 
 	try {
 		// Wait for the FileReader to finish reading the file
-		const buffer = await readFile;
+		const buffer = (await readFile) as ArrayBuffer;
 
 		// Convert the ArrayBuffer to a Uint8Array
 		const uint8Array = new Uint8Array(buffer);
@@ -640,7 +658,7 @@ export const calculateSHA256 = async (file) => {
 	}
 };
 
-export const getImportOrigin = (_chats) => {
+export const getImportOrigin = (_chats: any[]) => {
 	// Check what external service chat imports are from
 	if ('mapping' in _chats[0]) {
 		return 'openai';
@@ -650,12 +668,12 @@ export const getImportOrigin = (_chats) => {
 
 export const getUserPosition = async (raw = false) => {
 	// Get the user's location using the Geolocation API
-	const position = await new Promise((resolve, reject) => {
+	const position = (await new Promise((resolve, reject) => {
 		navigator.geolocation.getCurrentPosition(resolve, reject);
 	}).catch((error) => {
 		console.error('Error getting user location:', error);
 		throw error;
-	});
+	})) as GeolocationPosition;
 
 	if (!position) {
 		return 'Location not available';
@@ -671,12 +689,12 @@ export const getUserPosition = async (raw = false) => {
 	}
 };
 
-const convertOpenAIMessages = (convo) => {
+const convertOpenAIMessages = (convo: any) => {
 	// Parse OpenAI chat messages and create chat dictionary for creating new chats
 	const mapping = convo['mapping'];
-	const messages = [];
+	const messages: any[] = [];
 	let currentId = '';
-	let lastId = null;
+	let lastId: string | null = null;
 
 	for (const message_id in mapping) {
 		const message = mapping[message_id];
@@ -729,7 +747,7 @@ const convertOpenAIMessages = (convo) => {
 	return chat;
 };
 
-const validateChat = (chat) => {
+const validateChat = (chat: any) => {
 	// Because ChatGPT sometimes has features we can't use like DALL-E or might have corrupted messages, need to validate
 	const messages = chat.messages;
 
@@ -760,9 +778,9 @@ const validateChat = (chat) => {
 	return true;
 };
 
-export const convertOpenAIChats = (_chats) => {
+export const convertOpenAIChats = (_chats: any[]) => {
 	// Create a list of dictionaries with each conversation from import
-	const chats = [];
+	const chats: any[] = [];
 	let failed = 0;
 	for (const convo of _chats) {
 		const chat = convertOpenAIMessages(convo);
@@ -836,7 +854,7 @@ export const cleanText = (content: string) => {
 	return removeFormattings(removeEmojis(content.trim()));
 };
 
-export const removeDetails = (content, types) => {
+export const removeDetails = (content: string, types: string[]) => {
 	for (const type of types) {
 		content = content.replace(
 			new RegExp(`<details\\s+type="${type}"[^>]*>.*?<\\/details>`, 'gis'),
@@ -847,12 +865,12 @@ export const removeDetails = (content, types) => {
 	return content;
 };
 
-export const removeAllDetails = (content) => {
+export const removeAllDetails = (content: string) => {
 	content = content.replace(/<details[^>]*>.*?<\/details>/gis, '');
 	return content;
 };
 
-export const processDetails = (content) => {
+export const processDetails = (content: string) => {
 	content = removeDetails(content, ['reasoning', 'code_interpreter']);
 
 	// This regex matches <details> tags with type="tool_calls" and captures their attributes to convert them to a string
@@ -861,7 +879,7 @@ export const processDetails = (content) => {
 	if (matches) {
 		for (const match of matches) {
 			const attributesRegex = /(\w+)="([^"]*)"/g;
-			const attributes = {};
+			const attributes: Record<string, string> = {};
 			let attributeMatch;
 			while ((attributeMatch = attributesRegex.exec(match)) !== null) {
 				attributes[attributeMatch[1]] = attributeMatch[2];
@@ -961,13 +979,13 @@ export const getMessageContentParts = (content: string, splitOn: string = 'punct
 	return messageContentParts;
 };
 
-export const blobToFile = (blob, fileName) => {
+export const blobToFile = (blob: Blob, fileName: string) => {
 	// Create a new File object from the Blob
 	const file = new File([blob], fileName, { type: blob.type });
 	return file;
 };
 
-export const getPromptVariables = (user_name, user_location) => {
+export const getPromptVariables = (user_name: string, user_location: string) => {
 	return {
 		'{{USER_NAME}}': user_name,
 		'{{USER_LOCATION}}': user_location || 'Unknown',
@@ -1112,7 +1130,7 @@ export const approximateToHumanReadable = (nanoseconds: number) => {
 	return results.reverse().join(' ');
 };
 
-export const getTimeRange = (timestamp) => {
+export const getTimeRange = (timestamp: number) => {
 	const now = new Date();
 	const date = new Date(timestamp * 1000); // Convert Unix timestamp to milliseconds
 
@@ -1148,8 +1166,8 @@ export const getTimeRange = (timestamp) => {
  * @param content {string} - The content string with potential frontmatter.
  * @returns {Object} - The extracted frontmatter as a dictionary.
  */
-export const extractFrontmatter = (content) => {
-	const frontmatter = {};
+export const extractFrontmatter = (content: string) => {
+	const frontmatter: Record<string, string> = {};
 	let frontmatterStarted = false;
 	let frontmatterEnded = false;
 	const frontmatterPattern = /^\s*([a-z_]+):\s*(.*)\s*$/i;
@@ -1187,7 +1205,11 @@ export const extractFrontmatter = (content) => {
 };
 
 // Function to determine the best matching language
-export const bestMatchingLanguage = (supportedLanguages, preferredLanguages, defaultLocale) => {
+export const bestMatchingLanguage = (
+	supportedLanguages: any[],
+	preferredLanguages: string[],
+	defaultLocale: string
+) => {
 	const languages = supportedLanguages.map((lang) => lang.code);
 
 	const match = preferredLanguages
@@ -1229,7 +1251,7 @@ export const getWeekday = () => {
 	return weekdays[date.getDay()];
 };
 
-export const createMessagesList = (history, messageId) => {
+export const createMessagesList = (history: any, messageId: string | null): any[] => {
 	if (messageId === null) {
 		return [];
 	}
@@ -1245,7 +1267,7 @@ export const createMessagesList = (history, messageId) => {
 	}
 };
 
-export const formatFileSize = (size) => {
+export const formatFileSize = (size: number) => {
 	if (size == null) return 'Unknown size';
 	if (typeof size !== 'number' || size < 0) return 'Invalid size';
 	if (size === 0) return '0 B';
@@ -1259,13 +1281,13 @@ export const formatFileSize = (size) => {
 	return `${size.toFixed(1)} ${units[unitIndex]}`;
 };
 
-export const getLineCount = (text) => {
+export const getLineCount = (text: string) => {
 	console.log(typeof text);
 	return text ? text.split('\n').length : 0;
 };
 
 // Helper function to recursively resolve OpenAPI schema into JSON schema format
-function resolveSchema(schemaRef, components, resolvedSchemas = new Set()) {
+function resolveSchema(schemaRef: any, components: any, resolvedSchemas = new Set()) {
 	if (!schemaRef) return {};
 
 	if (schemaRef['$ref']) {
@@ -1282,7 +1304,7 @@ function resolveSchema(schemaRef, components, resolvedSchemas = new Set()) {
 	}
 
 	if (schemaRef.type) {
-		const schemaObj = { type: schemaRef.type };
+		const schemaObj: any = { type: schemaRef.type };
 
 		if (schemaRef.description) {
 			schemaObj.description = schemaRef.description;
@@ -1313,16 +1335,17 @@ function resolveSchema(schemaRef, components, resolvedSchemas = new Set()) {
 }
 
 // Main conversion function
-export const convertOpenApiToToolPayload = (openApiSpec) => {
-	const toolPayload = [];
+export const convertOpenApiToToolPayload = (openApiSpec: any) => {
+	const toolPayload: any[] = [];
 
 	for (const [path, methods] of Object.entries(openApiSpec.paths)) {
-		for (const [method, operation] of Object.entries(methods)) {
-			if (operation?.operationId) {
-				const tool = {
+		for (const [method, operation] of Object.entries(methods as any)) {
+			if ((operation as any)?.operationId) {
+				const op = operation as any;
+				const tool: any = {
 					type: 'function',
-					name: operation.operationId,
-					description: operation.description || operation.summary || 'No description available.',
+					name: op.operationId,
+					description: op.description || op.summary || 'No description available.',
 					parameters: {
 						type: 'object',
 						properties: {},
@@ -1331,8 +1354,8 @@ export const convertOpenApiToToolPayload = (openApiSpec) => {
 				};
 
 				// Extract path and query parameters
-				if (operation.parameters) {
-					operation.parameters.forEach((param) => {
+				if (op.parameters) {
+					op.parameters.forEach((param: any) => {
 						let description = param.schema.description || param.description || '';
 						if (param.schema.enum && Array.isArray(param.schema.enum)) {
 							description += `. Possible values: ${param.schema.enum.join(', ')}`;
@@ -1349,8 +1372,8 @@ export const convertOpenApiToToolPayload = (openApiSpec) => {
 				}
 
 				// Extract and recursively resolve requestBody if available
-				if (operation.requestBody) {
-					const content = operation.requestBody.content;
+				if (op.requestBody) {
+					const content = op.requestBody.content;
 					if (content && content['application/json']) {
 						const requestSchema = content['application/json'].schema;
 						const resolvedRequestSchema = resolveSchema(requestSchema, openApiSpec.components);
@@ -1514,7 +1537,7 @@ export const parseJsonValue = (value: string): any => {
 	return value;
 };
 
-export const extractContentFromFile = async (file, pdfjsLib = null) => {
+export const extractContentFromFile = async (file: File, pdfjsLib: any = null) => {
 	// Known text file extensions for extra fallback
 	const textExtensions = [
 		'.txt',
@@ -1531,13 +1554,13 @@ export const extractContentFromFile = async (file, pdfjsLib = null) => {
 		'.rtf'
 	];
 
-	function getExtension(filename) {
+	function getExtension(filename: string) {
 		const dot = filename.lastIndexOf('.');
 		return dot === -1 ? '' : filename.substr(dot).toLowerCase();
 	}
 
 	// Uses pdfjs to extract text from PDF
-	async function extractPdfText(file) {
+	async function extractPdfText(file: File) {
 		if (!pdfjsLib) {
 			throw new Error('pdfjsLib is required for PDF extraction');
 		}
@@ -1548,14 +1571,14 @@ export const extractContentFromFile = async (file, pdfjsLib = null) => {
 		for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
 			const page = await pdf.getPage(pageNum);
 			const content = await page.getTextContent();
-			const strings = content.items.map((item) => item.str);
+			const strings = content.items.map((item: any) => item.str);
 			allText += strings.join(' ') + '\n';
 		}
 		return allText;
 	}
 
 	// Reads file as text using FileReader
-	function readAsText(file) {
+	function readAsText(file: File) {
 		return new Promise((resolve, reject) => {
 			const reader = new FileReader();
 			reader.onload = () => resolve(reader.result);

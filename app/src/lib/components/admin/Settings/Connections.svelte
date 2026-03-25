@@ -275,20 +275,21 @@
 	onSubmit={addOllamaConnectionHandler}
 />
 
-<form class="flex flex-col h-full justify-between text-sm" on:submit|preventDefault={submitHandler}>
-	<div class=" overflow-y-scroll scrollbar-hidden h-full">
+<form style="--d:flex; --fd:column; --h:100%; --jc:space-between; --size:0.8rem" on:submit|preventDefault={submitHandler}>
+	<div style="--ofy:scroll; --h:100%"
+	class="scrollbar-hidden">
 		{#if ENABLE_OPENAI_API !== null && ENABLE_OLLAMA_API !== null && connectionsConfig !== null}
-			<div class="mb-3.5">
-				<div class=" mb-2.5 text-base font-medium">{$i18n.t('Connections')}</div>
+			<div style="--mb:0.8rem">
+				<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('Connections')}</div>
 
-				<hr class=" border-gray-100 dark:border-gray-850 my-2" />
+				<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
-				<div class="my-2">
-					<div class="mt-2 space-y-2">
-						<div class="flex justify-between items-center text-sm">
-							<div class="  font-medium">{$i18n.t('OpenAI Compatible API')}</div>
+				<div style="--my:0.5rem">
+					<div style="--mt:0.5rem; --g:0.5rem">
+						<div style="--d:flex; --jc:space-between; --ai:center; --size:0.8rem">
+							<div style="--weight:500">{$i18n.t('OpenAI Compatible API')}</div>
 
-							<div class="flex items-center">
+							<div style="--d:flex; --ai:center">
 								<div class="">
 									<Switch
 										bind:state={ENABLE_OPENAI_API}
@@ -302,12 +303,12 @@
 
 						{#if ENABLE_OPENAI_API}
 							<div class="">
-								<div class="flex justify-between items-center">
-									<div class="font-medium text-xs">{$i18n.t('Manage OpenAI Compatible API Connections')}</div>
+								<div style="--d:flex; --jc:space-between; --ai:center">
+									<div style="--weight:500; --size:0.6rem">{$i18n.t('Manage OpenAI Compatible API Connections')}</div>
 
 									<Tooltip content={$i18n.t(`Add Connection`)}>
 										<button
-											class="px-1"
+											style="--px:0.2rem"
 											on:click={() => {
 												showAddOpenAIConnectionModal = true;
 											}}
@@ -318,7 +319,7 @@
 									</Tooltip>
 								</div>
 
-								<div class="flex flex-col gap-1.5 mt-1.5">
+								<div style="--d:flex; --fd:column; --g:0.4rem; --mt:0.4rem">
 									{#each OPENAI_API_BASE_URLS as url, idx}
 										<OpenAIConnection
 											pipeline={pipelineUrls[url] ? true : false}
@@ -350,11 +351,11 @@
 					</div>
 				</div>
 
-				<div class=" my-2">
-					<div class="flex justify-between items-center text-sm mb-2">
-						<div class="  font-medium">{$i18n.t('Ollama API')}</div>
+				<div style="--my:0.5rem">
+					<div style="--d:flex; --jc:space-between; --ai:center; --size:0.8rem; --mb:0.5rem">
+						<div style="--weight:500">{$i18n.t('Ollama API')}</div>
 
-						<div class="mt-1">
+						<div style="--mt:0.2rem">
 							<Switch
 								bind:state={ENABLE_OLLAMA_API}
 								on:change={async () => {
@@ -366,12 +367,12 @@
 
 					{#if ENABLE_OLLAMA_API}
 						<div class="">
-							<div class="flex justify-between items-center">
-								<div class="font-medium text-xs">{$i18n.t('Manage Ollama API Connections')}</div>
+							<div style="--d:flex; --jc:space-between; --ai:center">
+								<div style="--weight:500; --size:0.6rem">{$i18n.t('Manage Ollama API Connections')}</div>
 
 								<Tooltip content={$i18n.t(`Add Connection`)}>
 									<button
-										class="px-1"
+										style="--px:0.2rem"
 										on:click={() => {
 											showAddOllamaConnectionModal = true;
 										}}
@@ -382,8 +383,8 @@
 								</Tooltip>
 							</div>
 
-							<div class="flex w-full gap-1.5">
-								<div class="flex-1 flex flex-col gap-1.5 mt-1.5">
+							<div style="--d:flex; --w:100%; --g:0.4rem">
+								<div style="--fx:1 1 0%; --d:flex; --fd:column; --g:0.4rem; --mt:0.4rem">
 									{#each OLLAMA_BASE_URLS as url, idx}
 										<OllamaConnection
 											bind:url
@@ -407,10 +408,10 @@
 								</div>
 							</div>
 
-							<div class="mt-1 text-xs text-gray-400 dark:text-gray-500">
+							<div style="--mt:0.2rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 								{$i18n.t('Trouble accessing Ollama?')}
 								<a
-									class=" text-gray-300 font-medium underline"
+									style="--c:var(--color-gray-300); --weight:500; --td:underline"
 									href="https://github.com/Sage-is/AI-UI#troubleshooting"
 									target="_blank"
 								>
@@ -421,11 +422,11 @@
 					{/if}
 				</div>
 
-				<div class="my-2">
-					<div class="flex justify-between items-center text-sm">
-						<div class="  font-medium">{$i18n.t('Direct Connections')}</div>
+				<div style="--my:0.5rem">
+					<div style="--d:flex; --jc:space-between; --ai:center; --size:0.8rem">
+						<div style="--weight:500">{$i18n.t('Direct Connections')}</div>
 
-						<div class="flex items-center">
+						<div style="--d:flex; --ai:center">
 							<div class="">
 								<Switch
 									bind:state={connectionsConfig.ENABLE_DIRECT_CONNECTIONS}
@@ -437,20 +438,20 @@
 						</div>
 					</div>
 
-					<div class="mt-1 text-xs text-gray-400 dark:text-gray-500">
+					<div style="--mt:0.2rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 						{$i18n.t(
 							'Direct Connections allow users to connect to their own OpenAI compatible API endpoints.'
 						)}
 					</div>
 				</div>
 
-				<hr class=" border-gray-100 dark:border-gray-850 my-2" />
+				<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
-				<div class="my-2">
-					<div class="flex justify-between items-center text-sm">
-						<div class=" text-xs font-medium">{$i18n.t('Cache Base Model List')}</div>
+				<div style="--my:0.5rem">
+					<div style="--d:flex; --jc:space-between; --ai:center; --size:0.8rem">
+						<div style="--size:0.6rem; --weight:500">{$i18n.t('Cache Base Model List')}</div>
 
-						<div class="flex items-center">
+						<div style="--d:flex; --ai:center">
 							<div class="">
 								<Switch
 									bind:state={connectionsConfig.ENABLE_BASE_MODELS_CACHE}
@@ -462,7 +463,7 @@
 						</div>
 					</div>
 
-					<div class="mt-1 text-xs text-gray-400 dark:text-gray-500">
+					<div style="--mt:0.2rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 						{$i18n.t(
 							'Base Model List Cache speeds up access by fetching base models only at startup or on settings save—faster, but may not show recent base model changes.'
 						)}
@@ -470,17 +471,17 @@
 				</div>
 			</div>
 		{:else}
-			<div class="flex h-full justify-center">
-				<div class="my-auto">
+			<div style="--d:flex; --h:100%; --jc:center">
+				<div style="--my:auto">
 					<Spinner className="size-6" />
 				</div>
 			</div>
 		{/if}
 	</div>
 
-	<div class="flex justify-end pt-3 text-sm font-medium">
+	<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.8rem; --weight:500">
 		<button
-			class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+			style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			type="submit"
 		>
 			{$i18n.t('Save')}

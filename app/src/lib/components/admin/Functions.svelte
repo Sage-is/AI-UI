@@ -222,30 +222,31 @@
 	}}
 />
 
-<div class="flex flex-col mt-1.5 mb-0.5">
-	<div class="flex justify-between items-center mb-1">
-		<div class="flex md:self-center text-xl items-center font-medium px-0.5">
+<div style="--d:flex; --fd:column; --mt:0.4rem; --mb:0.125rem">
+	<div style="--d:flex; --jc:space-between; --ai:center; --mb:0.2rem">
+		<div style="--d:flex; --as-md:center; --size:1.2rem; --ai:center; --weight:500; --px:0.125rem">
 			{$i18n.t('Functions')}
-			<div class="flex self-center w-[1px] h-6 mx-2.5 bg-gray-50 dark:bg-gray-850" />
-			<span class="text-base font-lg text-gray-500 dark:text-gray-300">{filteredItems.length}</span>
+			<div style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)" />
+			<span style="--size:1rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-300)"
+	class="font-lg">{filteredItems.length}</span>
 		</div>
 	</div>
 
-	<div class=" flex w-full space-x-2">
-		<div class="flex flex-1">
-			<div class=" self-center ml-1 mr-3">
+	<div style="--d:flex; --w:100%; --g:0.5rem">
+		<div style="--d:flex; --fx:1 1 0%">
+			<div style="--as:center; --ml:0.2rem; --mr:0.6rem">
 				<Search className="size-3.5" />
 			</div>
 			<input
-				class=" w-full text-sm pr-4 py-1 rounded-r-xl outline-hidden bg-transparent"
+				style="--w:100%; --size:0.8rem; --pr:1rem; --py:0.2rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 				bind:value={query}
 				placeholder={$i18n.t('Search Functions')}
 			/>
 
 			{#if query}
-				<div class="self-center pl-1.5 translate-y-[0.5px] rounded-l-xl bg-transparent">
+				<div style="--as:center; --pl:0.4rem; --translatey:0.5px; --btlr:0.6rem; --bblr:0.6rem; --bgc:transparent">
 					<button
-						class="p-0.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-900 transition"
+						style="--p:0.125rem; --radius:9999px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={() => {
 							query = '';
 						}}
@@ -266,7 +267,7 @@
 				}}
 			>
 				<div
-					class=" px-2 py-2 rounded-xl hover:bg-gray-700/10 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition font-medium text-sm flex items-center space-x-1"
+					style="--px:0.5rem; --py:0.5rem; --radius:0.6rem; --hvr-bgc:rgb(78 78 78 / 0.1); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.8rem; --d:flex; --ai:center; --g:0.2rem"
 				>
 					<Plus className="size-3.5" />
 				</div>
@@ -274,41 +275,46 @@
 		</div>
 	</div>
 
-	<div class=" flex w-full">
+	<div style="--d:flex; --w:100%">
 		<div
-			class="flex gap-1 scrollbar-none overflow-x-auto w-fit text-center text-sm font-medium rounded-full bg-transparent"
+			style="--d:flex; --g:0.2rem; --ofx:auto; --w:fit-content; --ta:center; --size:0.8rem; --weight:500; --radius:9999px; --bgc:transparent"
+	class="scrollbar-none"
 		>
 			<button
-				class="min-w-fit p-1.5 {selectedType === 'all'
+				style="--minw:fit-content; --p:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{selectedType === 'all'
 					? ''
-					: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition"
+					: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
 				on:click={() => {
 					selectedType = 'all';
 				}}>{$i18n.t('All')}</button
 			>
 
 			<button
-				class="min-w-fit p-1.5 {selectedType === 'pipe'
+				style="--minw:fit-content; --p:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{selectedType === 'pipe'
 					? ''
-					: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition"
+					: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
 				on:click={() => {
 					selectedType = 'pipe';
 				}}>{$i18n.t('Pipe')}</button
 			>
 
 			<button
-				class="min-w-fit p-1.5 {selectedType === 'filter'
+				style="--minw:fit-content; --p:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{selectedType === 'filter'
 					? ''
-					: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition"
+					: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
 				on:click={() => {
 					selectedType = 'filter';
 				}}>{$i18n.t('Filter')}</button
 			>
 
 			<button
-				class="min-w-fit p-1.5 {selectedType === 'action'
+				style="--minw:fit-content; --p:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{selectedType === 'action'
 					? ''
-					: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition"
+					: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
 				on:click={() => {
 					selectedType = 'action';
 				}}>{$i18n.t('Action')}</button
@@ -317,52 +323,52 @@
 	</div>
 </div>
 
-<div class="mb-5">
+<div style="--mb:1.2rem">
 	{#each filteredItems as func (func.id)}
 		<div
-			class=" flex space-x-4 cursor-pointer w-full px-2 py-2 dark:hover:bg-white/5 hover:bg-black/5 rounded-xl"
+			style="--d:flex; --g:1rem; --cur:pointer; --w:100%; --px:0.5rem; --py:0.5rem; --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-bgc:rgb(0 0 0 / 0.05); --radius:0.6rem"
 		>
 			<a
-				class=" flex flex-1 space-x-3.5 cursor-pointer w-full"
+				style="--d:flex; --fx:1 1 0%; --g:0.8rem; --cur:pointer; --w:100%"
 				href={`/admin/functions/edit?id=${encodeURIComponent(func.id)}`}
 			>
-				<div class="flex items-center text-left">
-					<div class=" flex-1 self-center pl-1">
-						<div class=" font-semibold flex items-center gap-1.5">
+				<div style="--d:flex; --ai:center; --ta:left">
+					<div style="--fx:1 1 0%; --as:center; --pl:0.2rem">
+						<div style="--weight:600; --d:flex; --ai:center; --g:0.4rem">
 							<div
-								class=" text-xs font-bold px-1 rounded-sm uppercase line-clamp-1 bg-gray-500/20 text-gray-700 dark:text-gray-200"
+								style="--size:0.6rem; --weight:700; --px:0.2rem; --radius:0.125rem; --tt:uppercase; --line-clamp:1; --bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200)"
 							>
 								{func.type}
 							</div>
 
 							{#if func?.meta?.manifest?.version}
 								<div
-									class="text-xs font-bold px-1 rounded-sm line-clamp-1 bg-gray-500/20 text-gray-700 dark:text-gray-200"
+									style="--size:0.6rem; --weight:700; --px:0.2rem; --radius:0.125rem; --line-clamp:1; --bgc:rgb(155 155 155 / 0.2); --c:var(--color-gray-700); --dark-c:var(--color-gray-200)"
 								>
 									v{func?.meta?.manifest?.version ?? ''}
 								</div>
 							{/if}
 
-							<div class=" line-clamp-1">
+							<div style="--line-clamp:1">
 								{func.name}
 							</div>
 						</div>
 
-						<div class="flex gap-1.5 px-1">
-							<div class=" text-gray-500 text-xs font-medium shrink-0">{func.id}</div>
+						<div style="--d:flex; --g:0.4rem; --px:0.2rem">
+							<div style="--c:var(--color-gray-500); --size:0.6rem; --weight:500; --fs:0">{func.id}</div>
 
-							<div class=" text-xs overflow-hidden text-ellipsis line-clamp-1">
+							<div style="--size:0.6rem; --of:hidden; text-overflow:ellipsis; --line-clamp:1">
 								{func.meta.description}
 							</div>
 						</div>
 					</div>
 				</div>
 			</a>
-			<div class="flex flex-row gap-0.5 self-center">
+			<div style="--d:flex; --fd:row; --g:0.125rem; --as:center">
 				{#if shiftKey}
 					<Tooltip content={$i18n.t('Delete')}>
 						<button
-							class="self-center w-fit text-sm px-2 py-2 dark:text-gray-300 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
+							style="--as:center; --w:fit-content; --size:0.8rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 							type="button"
 							on:click={() => {
 								deleteHandler(func);
@@ -375,7 +381,7 @@
 					{#if func?.meta?.manifest?.funding_url ?? false}
 						<Tooltip content={$i18n.t('Support')}>
 							<button
-								class="self-center w-fit text-sm px-2 py-2 dark:text-gray-300 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
+								style="--as:center; --w:fit-content; --size:0.8rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 								type="button"
 								on:click={() => {
 									selectedFunction = func;
@@ -389,7 +395,7 @@
 
 					<Tooltip content={$i18n.t('Valves')}>
 						<button
-							class="self-center w-fit text-sm px-2 py-2 dark:text-gray-300 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
+							style="--as:center; --w:fit-content; --size:0.8rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 							type="button"
 							on:click={() => {
 								selectedFunction = func;
@@ -402,7 +408,7 @@
 								viewBox="0 0 24 24"
 								stroke-width="1.5"
 								stroke="currentColor"
-								class="size-4"
+								style="--w:1rem; --h:1rem"
 							>
 								<path
 									stroke-linecap="round"
@@ -444,7 +450,7 @@
 						onClose={() => {}}
 					>
 						<button
-							class="self-center w-fit text-sm p-1.5 dark:text-gray-300 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
+							style="--as:center; --w:fit-content; --size:0.8rem; --p:0.4rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 							type="button"
 						>
 							<EllipsisHorizontal className="size-5" />
@@ -452,7 +458,7 @@
 					</FunctionMenu>
 				{/if}
 
-				<div class=" self-center mx-1">
+				<div style="--as:center; --mx:0.2rem">
 					<Tooltip content={func.is_active ? $i18n.t('Enabled') : $i18n.t('Disabled')}>
 						<Switch
 							bind:state={func.is_active}
@@ -476,14 +482,14 @@
 	{/each}
 </div>
 
-<!-- <div class=" text-gray-500 text-xs mt-1 mb-2">
+<!-- <div style="--c:var(--color-gray-500); --size:0.6rem; --mt:0.2rem; --mb:0.5rem">
 	ⓘ {$i18n.t(
 		'Admins have access to all tools at all times; users need tools assigned per model in the workshop.'
 	)}
 </div> -->
 
-<div class=" flex justify-end w-full mb-2">
-	<div class="flex space-x-2">
+<div style="--d:flex; --jc:flex-end; --w:100%; --mb:0.5rem">
+	<div style="--d:flex; --g:0.5rem">
 		<input
 			id="documents-import-input"
 			bind:this={functionsImportInputElement}
@@ -498,19 +504,19 @@
 		/>
 
 		<button
-			class="flex text-xs items-center space-x-1 px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200 transition"
+			style="--d:flex; --size:0.6rem; --ai:center; --g:0.2rem; --px:0.6rem; --py:0.4rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			on:click={() => {
 				functionsImportInputElement.click();
 			}}
 		>
-			<div class=" self-center mr-2 font-medium line-clamp-1">{$i18n.t('Import Functions')}</div>
+			<div style="--as:center; --mr:0.5rem; --weight:500; --line-clamp:1">{$i18n.t('Import Functions')}</div>
 
-			<div class=" self-center">
+			<div style="--as:center">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 16 16"
 					fill="currentColor"
-					class="w-4 h-4"
+					style="--w:1rem; --h:1rem"
 				>
 					<path
 						fill-rule="evenodd"
@@ -523,7 +529,7 @@
 
 		{#if $functions.length}
 			<button
-				class="flex text-xs items-center space-x-1 px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200 transition"
+				style="--d:flex; --size:0.6rem; --ai:center; --g:0.2rem; --px:0.6rem; --py:0.4rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={async () => {
 					const _functions = await exportFunctions(localStorage.token).catch((error) => {
 						toast.error(`${error}`);
@@ -538,16 +544,16 @@
 					}
 				}}
 			>
-				<div class=" self-center mr-2 font-medium line-clamp-1">
+				<div style="--as:center; --mr:0.5rem; --weight:500; --line-clamp:1">
 					{$i18n.t('Export Functions')} ({$functions.length})
 				</div>
 
-				<div class=" self-center">
+				<div style="--as:center">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 16 16"
 						fill="currentColor"
-						class="w-4 h-4"
+						style="--w:1rem; --h:1rem"
 					>
 						<path
 							fill-rule="evenodd"
@@ -562,19 +568,19 @@
 </div>
 
 {#if $config?.features.enable_community_sharing}
-	<div class=" my-16">
-		<div class=" text-xl font-medium mb-1 line-clamp-1">
-			{$i18n.t('Made by Sage.is AI Community')}
+	<div style="--my:4rem">
+		<div style="--size:1.2rem; --weight:500; --mb:0.2rem; --line-clamp:1">
+			{$i18n.t('Sage.is AI Community')}
 		</div>
 
 		<a
-			class=" flex cursor-pointer items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-850 w-full mb-2 px-3.5 py-1.5 rounded-xl transition"
+			style="--d:flex; --cur:pointer; --ai:center; --jc:space-between; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --w:100%; --mb:0.5rem; --px:0.8rem; --py:0.4rem; --radius:0.6rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			href="https://sage.is/community"
 			target="_blank"
 		>
-			<div class=" self-center">
-				<div class=" font-semibold line-clamp-1">{$i18n.t('Discover a function')}</div>
-				<div class=" text-sm line-clamp-1">
+			<div style="--as:center">
+				<div style="--weight:600; --line-clamp:1">{$i18n.t('Discover your next function')}</div>
+				<div style="--size:0.8rem; --line-clamp:1">
 					{$i18n.t('Discover, download, and explore custom functions')}
 				</div>
 			</div>
@@ -595,8 +601,8 @@
 		deleteHandler(selectedFunction);
 	}}
 >
-	<div class=" text-sm text-gray-500">
-		{$i18n.t('This will delete')} <span class="  font-semibold">{selectedFunction.name}</span>.
+	<div style="--size:0.8rem; --c:var(--color-gray-500)">
+		{$i18n.t('This will delete')} <span style="--weight:600">{selectedFunction.name}</span>.
 	</div>
 </DeleteConfirmDialog>
 
@@ -648,17 +654,17 @@
 		reader.readAsText(importFiles[0]);
 	}}
 >
-	<div class="text-sm text-gray-500">
-		<div class=" bg-yellow-500/20 text-yellow-700 dark:text-yellow-200 rounded-lg px-4 py-3">
+	<div style="--size:0.8rem; --c:var(--color-gray-500)">
+		<div style="--bgc:rgb(234 179 8 / 0.2); --c:#a16207; --dark-c:#fef08a; --radius:0.5rem; --px:1rem; --py:0.6rem">
 			<div>Please carefully review the following warnings:</div>
 
-			<ul class=" mt-1 list-disc pl-4 text-xs">
+			<ul style="--mt:0.2rem; list-style-type:disc; --pl:1rem; --size:0.6rem">
 				<li>{$i18n.t('Functions allow arbitrary code execution.')}</li>
 				<li>{$i18n.t('Do not install functions from sources you do not fully trust.')}</li>
 			</ul>
 		</div>
 
-		<div class="my-3">
+		<div style="--my:0.6rem">
 			{$i18n.t(
 				'I acknowledge that I have read and I understand the implications of my action. I am aware of the risks associated with executing arbitrary code and I have verified the trustworthiness of the source.'
 			)}

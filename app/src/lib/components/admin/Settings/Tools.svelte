@@ -49,29 +49,30 @@
 <AddServerModal bind:show={showConnectionModal} onSubmit={addConnectionHandler} />
 
 <form
-	class="flex flex-col h-full justify-between text-sm"
+	style="--d:flex; --fd:column; --h:100%; --jc:space-between; --size:0.8rem"
 	on:submit|preventDefault={() => {
 		updateHandler();
 	}}
 >
-	<div class=" overflow-y-scroll scrollbar-hidden h-full">
+	<div style="--ofy:scroll; --h:100%"
+	class="scrollbar-hidden">
 		{#if servers !== null}
 			<div class="">
-				<div class="mb-3">
-					<div class=" mb-2.5 text-base font-medium">{$i18n.t('General')}</div>
+				<div style="--mb:0.6rem">
+					<div style="--mb:0.625rem; --size:1rem; --weight:500">{$i18n.t('General')}</div>
 
-					<hr class=" border-gray-100 dark:border-gray-850 my-2" />
+					<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
-					<div class="mb-2.5 flex flex-col w-full justify-between">
+					<div style="--mb:0.625rem; --d:flex; --fd:column; --w:100%; --jc:space-between">
 						<!-- {$i18n.t(`Failed to connect to {{URL}} OpenAPI tool server`, {
 							URL: 'server?.url'
 						})} -->
-						<div class="flex justify-between items-center mb-0.5">
-							<div class="font-medium">{$i18n.t('Manage Tool Servers')}</div>
+						<div style="--d:flex; --jc:space-between; --ai:center; --mb:0.125rem">
+							<div style="--weight:500">{$i18n.t('Manage Tool Servers')}</div>
 
 							<Tooltip content={$i18n.t(`Add Connection`)}>
 								<button
-									class="px-1"
+									style="--px:0.2rem"
 									on:click={() => {
 										showConnectionModal = true;
 									}}
@@ -82,7 +83,7 @@
 							</Tooltip>
 						</div>
 
-						<div class="flex flex-col gap-1.5">
+						<div style="--d:flex; --fd:column; --g:0.4rem">
 							{#each servers as server, idx}
 								<Connection
 									bind:connection={server}
@@ -97,15 +98,15 @@
 							{/each}
 						</div>
 
-						<div class="my-1.5">
-							<div class="text-xs text-gray-500">
+						<div style="--my:0.4rem">
+							<div style="--size:0.6rem; --c:var(--color-gray-500)">
 								{$i18n.t('Connect to your own OpenAPI compatible external tool servers.')}
 							</div>
 						</div>
 					</div>
 
-					<!-- <div class="mb-2.5 flex w-full justify-between">
-						<div class=" text-xs font-medium">{$i18n.t('Arena Models')}</div>
+					<!-- <div style="--mb:0.625rem; --d:flex; --w:100%; --jc:space-between">
+						<div style="--size:0.6rem; --weight:500">{$i18n.t('Arena Models')}</div>
 
 						<Tooltip content={$i18n.t(`Message rating should be enabled to use this feature`)}>
 							<Switch bind:state={evaluationConfig.ENABLE_EVALUATION_ARENA_MODELS} />
@@ -114,17 +115,17 @@
 				</div>
 			</div>
 		{:else}
-			<div class="flex h-full justify-center">
-				<div class="my-auto">
+			<div style="--d:flex; --h:100%; --jc:center">
+				<div style="--my:auto">
 					<Spinner className="size-6" />
 				</div>
 			</div>
 		{/if}
 	</div>
 
-	<div class="flex justify-end pt-3 text-sm font-medium">
+	<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.8rem; --weight:500">
 		<button
-			class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+			style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			type="submit"
 		>
 			{$i18n.t('Save')}

@@ -3,12 +3,9 @@
 	const i18n = getContext('i18n');
 
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import SensitiveInput from '$lib/components/common/SensitiveInput.svelte';
 	import Cog6 from '$lib/components/icons/Cog6.svelte';
 	import AddConnectionModal from '$lib/components/AddConnectionModal.svelte';
 	import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
-
-	import { connect } from 'socket.io-client';
 
 	export let onDelete = () => {};
 	export let onSubmit = () => {};
@@ -49,7 +46,7 @@
 	}}
 />
 
-<div class="flex w-full gap-2 items-center">
+<div style="--d:flex; --w:100%; --g:0.5rem; --ai:center">
 	<Tooltip
 		className="w-full relative"
 		content={$i18n.t(`WebUI will make requests to "{{url}}/chat/completions"`, {
@@ -59,26 +56,29 @@
 	>
 		{#if !(config?.enable ?? true)}
 			<div
-				class="absolute top-0 bottom-0 left-0 right-0 opacity-60 bg-white dark:bg-gray-900 z-10"
+				style="--pos:absolute; --top:0; --bottom:0; --left:0; --right:0; --op:0.6; --bgc:#fff; --dark-bgc:var(--color-gray-900); --z:10"
 			></div>
 		{/if}
-		<div class="flex w-full gap-2">
-			<div class="flex-1 relative">
-				<input
-					class=" outline-hidden w-full bg-transparent {pipeline ? 'pr-8' : ''}"
-					placeholder={$i18n.t('API Base URL')}
-					bind:value={url}
-					autocomplete="off"
-				/>
+		<button
+			type="button"
+			style="--d:flex; --w:100%; --g:0.5rem; --ai:center; --cur:pointer; --bgc:transparent; --p:0; --b:none"
+			on:click={() => { showConfigModal = true; }}
+		>
+			<div style="--fx:1 1 0%; --pos:relative; --ta:left">
+				<div
+					style="--w:100%; --bgc:transparent; --oe:none; --p:0.4rem 0.5rem; --size:0.8rem; --c:inherit; --of:hidden; --te:ellipsis; --ws:nowrap"
+				>
+					{url || $i18n.t('API Base URL')}
+				</div>
 
 				{#if pipeline}
-					<div class=" absolute top-0.5 right-2.5">
+					<div style="--pos:absolute; --top:0.125rem; --right:0.625rem">
 						<Tooltip content="Pipelines">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 24 24"
 								fill="currentColor"
-								class="size-4"
+								style="--w:1rem; --h:1rem"
 							>
 								<path
 									d="M11.644 1.59a.75.75 0 0 1 .712 0l9.75 5.25a.75.75 0 0 1 0 1.32l-9.75 5.25a.75.75 0 0 1-.712 0l-9.75-5.25a.75.75 0 0 1 0-1.32l9.75-5.25Z"
@@ -95,18 +95,20 @@
 				{/if}
 			</div>
 
-			<SensitiveInput
-				inputClassName=" outline-hidden bg-transparent w-full"
-				placeholder={$i18n.t('API Key')}
-				bind:value={key}
-			/>
-		</div>
+			<div style="--fx:1 1 0%; --ta:left">
+				<div
+					style="--w:100%; --bgc:transparent; --p:0.4rem 0.5rem; --size:0.8rem; --c:var(--color-gray-400)"
+				>
+					{key ? '••••••••' : $i18n.t('API Key')}
+				</div>
+			</div>
+		</button>
 	</Tooltip>
 
-	<div class="flex gap-1">
-		<Tooltip content={$i18n.t('Configure')} className="self-start">
+	<div style="--d:flex; --g:0.2rem; --ai:center">
+		<Tooltip content={$i18n.t('Configure')} className="self-center">
 			<button
-				class="self-center p-1 bg-transparent hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-850 rounded-lg transition"
+				style="--as:center; --p:0.2rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={() => {
 					showConfigModal = true;
 				}}

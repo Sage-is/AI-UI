@@ -13,14 +13,16 @@
 </script>
 
 <div>
-	<!-- <div class="mb-1">
+	<!-- <div style="--mb:0.2rem">
 		<div
-			class="flex gap-1 scrollbar-none overflow-x-auto w-fit text-center text-sm font-medium rounded-full bg-transparent py-1 touch-auto pointer-events-auto"
+			style="--d:flex; --g:0.2rem; --ofx:auto; --w:fit-content; --ta:center; --size:0.8rem; --weight:500; --radius:9999px; --bgc:transparent; --py:0.2rem; touch-action:auto; --pe:auto"
+	class="scrollbar-none"
 		>
 			<button
-				class="min-w-fit p-1.5 {selectedTab === 'knowledge'
+				style="--minw:fit-content; --p:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{selectedTab === 'knowledge'
 					? ''
-					: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition"
+					: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
 				type="button"
 				on:click={() => {
 					selectedTab = 'knowledge';
@@ -28,9 +30,10 @@
 			>
 
 			<button
-				class="min-w-fit p-1.5 {selectedTab === 'chats'
+				style="--minw:fit-content; --p:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{selectedTab === 'chats'
 					? ''
-					: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition"
+					: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
 				type="button"
 				on:click={() => {
 					selectedTab = 'chats';

@@ -195,8 +195,9 @@
 
 <Modal size="sm" bind:show>
 	<div>
-		<div class=" flex justify-between dark:text-gray-100 px-5 pt-4 pb-1.5">
-			<h1 class="text-lg font-medium self-center font-primary">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-100); --px:1.2rem; --pt:1rem; --pb:0.4rem">
+			<h1 style="--size:1.125rem; --weight:500; --as:center"
+	class="font-primary">
 				{#if edit}
 					{$i18n.t('Edit Connection')}
 				{:else}
@@ -204,7 +205,7 @@
 				{/if}
 			</h1>
 			<button
-				class="self-center"
+				style="--as:center"
 				aria-label={$i18n.t('Close modal')}
 				on:click={() => {
 					show = false;
@@ -214,20 +215,20 @@
 			</button>
 		</div>
 
-		<div class="flex flex-col md:flex-row w-full px-4 pb-4 md:space-x-4 dark:text-gray-200">
-			<div class=" flex flex-col w-full sm:flex-row sm:justify-center sm:space-x-6">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1rem; --pb:1rem; --p: 1rem 0;--bgc: var(--white); --br: 1rem">
+			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				<form
-					class="flex flex-col w-full"
+					style="--d:flex; --fd:column; --w:100%"
 					on:submit={(e) => {
 						e.preventDefault();
 						submitHandler();
 					}}
 				>
-					<div class="px-1">
+					<div style="--px:0.2rem">
 						{#if !direct}
-							<div class="flex gap-2">
-								<div class="flex w-full justify-between items-center">
-									<div class=" text-xs text-gray-500">{$i18n.t('Connection Type')}</div>
+							<div style="--d:flex; --g:0.5rem">
+								<div style="--d:flex; --w:100%; --jc:space-between; --ai:center">
+									<div style="--size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Connection Type')}</div>
 
 									<div class="">
 										<button
@@ -235,7 +236,7 @@
 												connectionType = connectionType === 'local' ? 'external' : 'local';
 											}}
 											type="button"
-											class=" text-xs text-gray-700 dark:text-gray-300"
+											style="--size:0.6rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-300)"
 										>
 											{#if connectionType === 'local'}
 												{$i18n.t('Local')}
@@ -248,8 +249,8 @@
 							</div>
 						{/if}
 
-						<div class="flex gap-2 mt-1.5">
-							<div class="flex flex-col w-full">
+						<div style="--d:flex; --g:0.5rem; --mt:0.4rem">
+							<div style="--d:flex; --fd:column; --w:100%">
 								<label
 									for="url-input"
 									class={`mb-0.5 text-xs text-gray-500
@@ -257,7 +258,7 @@
 									>{$i18n.t('URL')}</label
 								>
 
-								<div class="flex-1">
+								<div style="--fx:1 1 0%">
 									<input
 										id="url-input"
 										class={`w-full text-sm bg-transparent ${($settings?.highContrastMode ?? false) ? 'placeholder:text-gray-700 dark:placeholder:text-gray-100' : 'outline-hidden placeholder:text-gray-300 dark:placeholder:text-gray-700'}`}
@@ -272,7 +273,7 @@
 
 							<Tooltip content={$i18n.t('Verify Connection')} className="self-end -mb-1">
 								<button
-									class="self-center p-1 bg-transparent hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-850 rounded-lg transition"
+									style="--as:center; --p:0.2rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 									on:click={() => {
 										verifyHandler();
 									}}
@@ -284,7 +285,7 @@
 										viewBox="0 0 20 20"
 										fill="currentColor"
 										aria-hidden="true"
-										class="w-4 h-4"
+										style="--w:1rem; --h:1rem"
 									>
 										<path
 											fill-rule="evenodd"
@@ -295,7 +296,7 @@
 								</button>
 							</Tooltip>
 
-							<div class="flex flex-col shrink-0 self-end">
+							<div style="--d:flex; --fd:column; --fs:0; --as:flex-end">
 								<label class="sr-only" for="toggle-connection"
 									>{$i18n.t('Toggle whether current connection is active.')}</label
 								>
@@ -305,8 +306,8 @@
 							</div>
 						</div>
 
-						<div class="flex gap-2 mt-2">
-							<div class="flex flex-col w-full">
+						<div style="--d:flex; --g:0.5rem; --mt:0.5rem">
+							<div style="--d:flex; --fd:column; --w:100%">
 								<div
 									class={`mb-0.5 text-xs text-gray-500
 								${($settings?.highContrastMode ?? false) ? 'text-gray-800 dark:text-gray-100' : ''}`}
@@ -314,7 +315,7 @@
 									{$i18n.t('Key')}
 								</div>
 
-								<div class="flex-1">
+								<div style="--fx:1 1 0%">
 									<SensitiveInput
 										inputClassName={`w-full text-sm bg-transparent ${($settings?.highContrastMode ?? false) ? 'placeholder:text-gray-700 dark:placeholder:text-gray-100' : 'outline-hidden placeholder:text-gray-300 dark:placeholder:text-gray-700'}`}
 										bind:value={key}
@@ -324,7 +325,7 @@
 								</div>
 							</div>
 
-							<div class="flex flex-col w-full">
+							<div style="--d:flex; --fd:column; --w:100%">
 								<label
 									for="prefix-id-input"
 									class={`mb-0.5 text-xs text-gray-500
@@ -332,7 +333,7 @@
 									>{$i18n.t('Prefix ID')}</label
 								>
 
-								<div class="flex-1">
+								<div style="--fx:1 1 0%">
 									<Tooltip
 										content={$i18n.t(
 											'Prefix ID is used to avoid conflicts with other connections by adding a prefix to the model IDs - leave empty to disable'
@@ -352,8 +353,8 @@
 						</div>
 
 						{#if azure}
-							<div class="flex gap-2 mt-2">
-								<div class="flex flex-col w-full">
+							<div style="--d:flex; --g:0.5rem; --mt:0.5rem">
+								<div style="--d:flex; --fd:column; --w:100%">
 									<label
 										for="api-version-input"
 										class={`mb-0.5 text-xs text-gray-500
@@ -361,7 +362,7 @@
 										>{$i18n.t('API Version')}</label
 									>
 
-									<div class="flex-1">
+									<div style="--fx:1 1 0%">
 										<input
 											id="api-version-input"
 											class={`w-full text-sm bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-700 ${($settings?.highContrastMode ?? false) ? 'placeholder:text-gray-700 dark:placeholder:text-gray-100' : 'outline-hidden placeholder:text-gray-300 dark:placeholder:text-gray-700'}`}
@@ -376,8 +377,8 @@
 							</div>
 						{/if}
 
-						<div class="flex gap-2 mt-2">
-							<div class="flex flex-col w-full">
+						<div style="--d:flex; --g:0.5rem; --mt:0.5rem">
+							<div style="--d:flex; --fd:column; --w:100%">
 								<div
 									class={`mb-0.5 text-xs text-gray-500
 								${($settings?.highContrastMode ?? false) ? 'text-gray-800 dark:text-gray-100' : ''}`}
@@ -385,7 +386,7 @@
 									{$i18n.t('Tags')}
 								</div>
 
-								<div class="flex-1">
+								<div style="--fx:1 1 0%">
 									<Tags
 										bind:tags
 										on:add={(e) => {
@@ -404,10 +405,10 @@
 							</div>
 						</div>
 
-						<hr class=" border-gray-100 dark:border-gray-700/10 my-2.5 w-full" />
+						<hr style="--bc:var(--color-gray-100); --dark-bc:rgb(78 78 78 / 0.1); --my:0.6rem; --w:100%" />
 
-						<div class="flex flex-col w-full">
-							<div class="mb-1 flex justify-between">
+						<div style="--d:flex; --fd:column; --w:100%">
+							<div style="--mb:0.2rem; --d:flex; --jc:space-between">
 								<div
 									class={`mb-0.5 text-xs text-gray-500
 								${($settings?.highContrastMode ?? false) ? 'text-gray-800 dark:text-gray-100' : ''}`}
@@ -417,13 +418,13 @@
 							</div>
 
 							{#if modelIds.length > 0}
-								<ul class="flex flex-col">
+								<ul style="--d:flex; --fd:column">
 									{#each modelIds as modelId, modelIdx}
-										<li class=" flex gap-2 w-full justify-between items-center">
-											<div class=" text-sm flex-1 py-1 rounded-lg">
+										<li style="--d:flex; --g:0.5rem; --w:100%; --jc:space-between; --ai:center">
+											<div style="--size:0.8rem; --fx:1 1 0%; --py:0.2rem; --radius:0.5rem">
 												{modelId}
 											</div>
-											<div class="shrink-0">
+											<div style="--fs:0">
 												<button
 													aria-label={$i18n.t(`Remove {{MODELID}} from list.`, {
 														MODELID: modelId
@@ -462,12 +463,13 @@
 							{/if}
 						</div>
 
-						<hr class=" border-gray-100 dark:border-gray-700/10 my-1.5 w-full" />
+						<hr style="--bc:var(--color-gray-100); --dark-bc:rgb(78 78 78 / 0.1); --my:0.4rem; --w:100%" />
 
-						<div class="flex items-center">
+						<div style="--d:flex; --ai:center">
 							<label class="sr-only" for="add-model-id-input">{$i18n.t('Add a model ID')}</label>
 							<input
-								class="w-full py-1 text-sm rounded-lg bg-transparent {modelId
+								style="--w:100%; --py:0.2rem; --size:0.8rem; --radius:0.5rem; --bgc:transparent"
+	class="{modelId
 									? ''
 									: 'text-gray-500'} {($settings?.highContrastMode ?? false)
 									? 'dark:placeholder:text-gray-100 placeholder:text-gray-700'
@@ -491,10 +493,10 @@
 						</div>
 					</div>
 
-					<div class="flex justify-end pt-3 text-sm font-medium gap-1.5">
+					<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.8rem; --weight:500; --g:0.4rem">
 						{#if edit}
 							<button
-								class="px-3.5 py-1.5 text-sm font-medium dark:bg-black dark:hover:bg-gray-900 dark:text-white bg-white text-black hover:bg-gray-100 transition rounded-full flex flex-row space-x-1 items-center"
+								style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --dark-bgc:#000; --hvr-dark-bgc:var(--color-gray-900); --dark-c:#fff; --bgc:#fff; --c:#000; --hvr-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.2rem; --ai:center"
 								type="button"
 								on:click={() => {
 									onDelete();
@@ -506,7 +508,8 @@
 						{/if}
 
 						<button
-							class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full flex flex-row space-x-1 items-center {loading
+							style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px; --d:flex; --fd:row; --g:0.2rem; --ai:center"
+	class="{loading
 								? ' cursor-not-allowed'
 								: ''}"
 							type="submit"
@@ -515,7 +518,7 @@
 							{$i18n.t('Save')}
 
 							{#if loading}
-								<div class="ml-2 self-center">
+								<div style="--ml:0.5rem; --as:center">
 									<Spinner />
 								</div>
 							{/if}

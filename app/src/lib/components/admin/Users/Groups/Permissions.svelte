@@ -3,21 +3,18 @@
 	const i18n = getContext('i18n');
 
 	import Switch from '$lib/components/common/Switch.svelte';
-	import Tooltip from '$lib/components/common/Tooltip.svelte';
 
 	// Default values for permissions
 	const defaultPermissions = {
 		workshop: {
 			models: false,
 			knowledge: false,
-			prompts: false,
-			tools: false
+			prompts: false
 		},
 		sharing: {
 			public_models: false,
 			public_knowledge: false,
-			public_prompts: false,
-			public_tools: false
+			public_prompts: false
 		},
 		chat: {
 			controls: true,
@@ -67,32 +64,32 @@
 
 <div>
 	<!-- <div>
-		<div class=" mb-2 text-sm font-medium">{$i18n.t('Model Permissions')}</div>
+		<div style="--mb:0.5rem; --size:0.8rem; --weight:500">{$i18n.t('Model Permissions')}</div>
 
-		<div class="mb-2">
-			<div class="flex justify-between items-center text-xs pr-2">
-				<div class=" text-xs font-medium">{$i18n.t('Model Filtering')}</div>
+		<div style="--mb:0.5rem">
+			<div style="--d:flex; --jc:space-between; --ai:center; --size:0.6rem; --pr:0.5rem">
+				<div style="--size:0.6rem; --weight:500">{$i18n.t('Model Filtering')}</div>
 
 				<Switch bind:state={permissions.model.filter} />
 			</div>
 		</div>
 
 		{#if permissions.model.filter}
-			<div class="mb-2">
-				<div class=" space-y-1.5">
-					<div class="flex flex-col w-full">
-						<div class="mb-1 flex justify-between">
-							<div class="text-xs text-gray-500">{$i18n.t('Model IDs')}</div>
+			<div style="--mb:0.5rem">
+				<div style="--g:0.4rem">
+					<div style="--d:flex; --fd:column; --w:100%">
+						<div style="--mb:0.2rem; --d:flex; --jc:space-between">
+							<div style="--size:0.6rem; --c:var(--color-gray-500)">{$i18n.t('Model IDs')}</div>
 						</div>
 
 						{#if model_ids.length > 0}
-							<div class="flex flex-col">
+							<div style="--d:flex; --fd:column">
 								{#each model_ids as modelId, modelIdx}
-									<div class=" flex gap-2 w-full justify-between items-center">
-										<div class=" text-sm flex-1 rounded-lg">
+									<div style="--d:flex; --g:0.5rem; --w:100%; --jc:space-between; --ai:center">
+										<div style="--size:0.8rem; --fx:1 1 0%; --radius:0.5rem">
 											{modelId}
 										</div>
-										<div class="shrink-0">
+										<div style="--fs:0">
 											<button
 												type="button"
 												on:click={() => {
@@ -106,24 +103,25 @@
 								{/each}
 							</div>
 						{:else}
-							<div class="text-gray-500 text-xs text-center py-2 px-10">
+							<div style="--c:var(--color-gray-500); --size:0.6rem; --ta:center; --py:0.5rem; --px:2.5rem">
 								{$i18n.t('No model IDs')}
 							</div>
 						{/if}
 					</div>
 				</div>
-				<hr class=" border-gray-100 dark:border-gray-700/10 mt-2.5 mb-1 w-full" />
+				<hr style="--bc:var(--color-gray-100); --dark-bc:rgb(78 78 78 / 0.1); --mt:0.625rem; --mb:0.2rem; --w:100%" />
 
-				<div class="flex items-center">
+				<div style="--d:flex; --ai:center">
 					<select
-						class="w-full py-1 text-sm rounded-lg bg-transparent {selectedModelId
+						style="--w:100%; --py:0.2rem; --size:0.8rem; --radius:0.5rem; --bgc:transparent; --oe:none"
+	class="{selectedModelId
 							? ''
-							: 'text-gray-500'} placeholder:text-gray-300 dark:placeholder:text-gray-700 outline-hidden"
+							: 'text-gray-500'} placeholder:text-gray-300 dark:placeholder:text-gray-700"
 						bind:value={selectedModelId}
 					>
 						<option value="">{$i18n.t('Select a model')}</option>
 						{#each $models.filter((m) => m?.owned_by !== 'arena') as model}
-							<option value={model.id} class="bg-gray-50 dark:bg-gray-700">{model.name}</option>
+							<option value={model.id} style="--bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-700)">{model.name}</option>
 						{/each}
 					</select>
 
@@ -144,198 +142,178 @@
 			</div>
 		{/if}
 
-		<div class=" space-y-1 mb-3">
+		<div style="--g:0.2rem; --mb:0.6rem">
 			<div class="">
-				<div class="flex justify-between items-center text-xs">
-					<div class=" text-xs font-medium">{$i18n.t('Default Model')}</div>
+				<div style="--d:flex; --jc:space-between; --ai:center; --size:0.6rem">
+					<div style="--size:0.6rem; --weight:500">{$i18n.t('Default Model')}</div>
 				</div>
 			</div>
 
-			<div class="flex-1 mr-2">
+			<div style="--fx:1 1 0%; --mr:0.5rem">
 				<select
-					class="w-full bg-transparent outline-hidden py-0.5 text-sm"
+					style="--w:100%; --bgc:transparent; --oe:none; --py:0.125rem; --size:0.8rem"
 					bind:value={permissions.model.default_id}
 					placeholder="Select a model"
 				>
 					<option value="" disabled selected>{$i18n.t('Select a model')}</option>
 					{#each permissions.model.filter ? $models.filter( (model) => filterModelIds.includes(model.id) ) : $models.filter((model) => model.id) as model}
-						<option value={model.id} class="bg-gray-100 dark:bg-gray-700">{model.name}</option>
+						<option value={model.id} style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-700)">{model.name}</option>
 					{/each}
 				</select>
 			</div>
 		</div>
 	</div>
 
-	<hr class=" border-gray-100 dark:border-gray-850 my-2" /> -->
+	<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" /> -->
 
 	<div>
-		<div class=" mb-2 text-sm font-medium">{$i18n.t('Workshop Permissions')}</div>
+		<div style="--mb:0.5rem; --size:0.8rem; --weight:500">{$i18n.t('Workshop Permissions')}</div>
 
-		<div class="  flex w-full justify-between my-2 pr-2">
-			<div class=" self-center text-xs font-medium">
+		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Models Access')}
 			</div>
 			<Switch bind:state={permissions.workshop.models} />
 		</div>
 
-		<div class="  flex w-full justify-between my-2 pr-2">
-			<div class=" self-center text-xs font-medium">
+		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Knowledge Access')}
 			</div>
 			<Switch bind:state={permissions.workshop.knowledge} />
 		</div>
 
-		<div class="  flex w-full justify-between my-2 pr-2">
-			<div class=" self-center text-xs font-medium">
+		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Prompts Access')}
 			</div>
 			<Switch bind:state={permissions.workshop.prompts} />
 		</div>
 
-		<div class=" ">
-			<Tooltip
-				className=" flex w-full justify-between my-2 pr-2"
-				content={$i18n.t(
-					'Warning: Enabling this will allow users to upload arbitrary code on the server.'
-				)}
-				placement="top-start"
-			>
-				<div class=" self-center text-xs font-medium">
-					{$i18n.t('Tools Access')}
-				</div>
-				<Switch bind:state={permissions.workshop.tools} />
-			</Tooltip>
 		</div>
-	</div>
 
-	<hr class=" border-gray-100 dark:border-gray-850 my-2" />
+	<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 	<div>
-		<div class=" mb-2 text-sm font-medium">{$i18n.t('Sharing Permissions')}</div>
+		<div style="--mb:0.5rem; --size:0.8rem; --weight:500">{$i18n.t('Sharing Permissions')}</div>
 
-		<div class="  flex w-full justify-between my-2 pr-2">
-			<div class=" self-center text-xs font-medium">
+		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Models Public Sharing')}
 			</div>
 			<Switch bind:state={permissions.sharing.public_models} />
 		</div>
 
-		<div class="  flex w-full justify-between my-2 pr-2">
-			<div class=" self-center text-xs font-medium">
+		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Knowledge Public Sharing')}
 			</div>
 			<Switch bind:state={permissions.sharing.public_knowledge} />
 		</div>
 
-		<div class="  flex w-full justify-between my-2 pr-2">
-			<div class=" self-center text-xs font-medium">
+		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Prompts Public Sharing')}
 			</div>
 			<Switch bind:state={permissions.sharing.public_prompts} />
 		</div>
 
-		<div class="  flex w-full justify-between my-2 pr-2">
-			<div class=" self-center text-xs font-medium">
-				{$i18n.t('Tools Public Sharing')}
-			</div>
-			<Switch bind:state={permissions.sharing.public_tools} />
-		</div>
 	</div>
 
-	<hr class=" border-gray-100 dark:border-gray-850 my-2" />
+	<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 	<div>
-		<div class=" mb-2 text-sm font-medium">{$i18n.t('Chat Permissions')}</div>
+		<div style="--mb:0.5rem; --size:0.8rem; --weight:500">{$i18n.t('Chat Permissions')}</div>
 
-		<div class="  flex w-full justify-between my-2 pr-2">
-			<div class=" self-center text-xs font-medium">
+		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Allow File Upload')}
 			</div>
 
 			<Switch bind:state={permissions.chat.file_upload} />
 		</div>
 
-		<div class="  flex w-full justify-between my-2 pr-2">
-			<div class=" self-center text-xs font-medium">
+		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Allow Chat Controls')}
 			</div>
 
 			<Switch bind:state={permissions.chat.controls} />
 		</div>
 
-		<div class="  flex w-full justify-between my-2 pr-2">
-			<div class=" self-center text-xs font-medium">
+		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Allow Chat System Prompt')}
 			</div>
 
 			<Switch bind:state={permissions.chat.system_prompt} />
 		</div>
 
-		<div class="  flex w-full justify-between my-2 pr-2">
-			<div class=" self-center text-xs font-medium">
+		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Allow Chat Delete')}
 			</div>
 
 			<Switch bind:state={permissions.chat.delete} />
 		</div>
 
-		<div class="  flex w-full justify-between my-2 pr-2">
-			<div class=" self-center text-xs font-medium">
+		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Allow Chat Edit')}
 			</div>
 
 			<Switch bind:state={permissions.chat.edit} />
 		</div>
 
-		<div class="  flex w-full justify-between my-2 pr-2">
-			<div class=" self-center text-xs font-medium">
+		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Allow Chat Share')}
 			</div>
 
 			<Switch bind:state={permissions.chat.share} />
 		</div>
 
-		<div class="  flex w-full justify-between my-2 pr-2">
-			<div class=" self-center text-xs font-medium">
+		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Allow Chat Export')}
 			</div>
 
 			<Switch bind:state={permissions.chat.export} />
 		</div>
 
-		<div class="  flex w-full justify-between my-2 pr-2">
-			<div class=" self-center text-xs font-medium">
+		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Allow Speech to Text')}
 			</div>
 
 			<Switch bind:state={permissions.chat.stt} />
 		</div>
-		<div class="  flex w-full justify-between my-2 pr-2">
-			<div class=" self-center text-xs font-medium">
+		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Allow Text to Speech')}
 			</div>
 
 			<Switch bind:state={permissions.chat.tts} />
 		</div>
 
-		<div class="  flex w-full justify-between my-2 pr-2">
-			<div class=" self-center text-xs font-medium">
+		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Allow Call')}
 			</div>
 
 			<Switch bind:state={permissions.chat.call} />
 		</div>
 
-		<div class="  flex w-full justify-between my-2 pr-2">
-			<div class=" self-center text-xs font-medium">
+		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Allow Multiple Models in Chat')}
 			</div>
 
 			<Switch bind:state={permissions.chat.multiple_models} />
 		</div>
 
-		<div class="  flex w-full justify-between my-2 pr-2">
-			<div class=" self-center text-xs font-medium">
+		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Allow Temporary Chat')}
 			</div>
 
@@ -343,8 +321,8 @@
 		</div>
 
 		{#if permissions.chat.temporary}
-			<div class="  flex w-full justify-between my-2 pr-2">
-				<div class=" self-center text-xs font-medium">
+			<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
+				<div style="--as:center; --size:0.6rem; --weight:500">
 					{$i18n.t('Enforce Temporary Chat')}
 				</div>
 
@@ -353,45 +331,45 @@
 		{/if}
 	</div>
 
-	<hr class=" border-gray-100 dark:border-gray-850 my-2" />
+	<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
 	<div>
-		<div class=" mb-2 text-sm font-medium">{$i18n.t('Features Permissions')}</div>
+		<div style="--mb:0.5rem; --size:0.8rem; --weight:500">{$i18n.t('Features Permissions')}</div>
 
-		<div class="  flex w-full justify-between my-2 pr-2">
-			<div class=" self-center text-xs font-medium">
+		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Direct Tool Servers')}
 			</div>
 
 			<Switch bind:state={permissions.features.direct_tool_servers} />
 		</div>
 
-		<div class="  flex w-full justify-between my-2 pr-2">
-			<div class=" self-center text-xs font-medium">
+		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Web Search')}
 			</div>
 
 			<Switch bind:state={permissions.features.web_search} />
 		</div>
 
-		<div class="  flex w-full justify-between my-2 pr-2">
-			<div class=" self-center text-xs font-medium">
+		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Image Generation')}
 			</div>
 
 			<Switch bind:state={permissions.features.image_generation} />
 		</div>
 
-		<div class="  flex w-full justify-between my-2 pr-2">
-			<div class=" self-center text-xs font-medium">
+		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Code Interpreter')}
 			</div>
 
 			<Switch bind:state={permissions.features.code_interpreter} />
 		</div>
 
-		<div class="  flex w-full justify-between my-2 pr-2">
-			<div class=" self-center text-xs font-medium">
+		<div style="--d:flex; --w:100%; --jc:space-between; --my:0.5rem; --pr:0.5rem">
+			<div style="--as:center; --size:0.6rem; --weight:500">
 				{$i18n.t('Notes')}
 			</div>
 

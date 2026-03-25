@@ -3,6 +3,7 @@
 	import { PaneGroup, Pane, PaneResizer } from 'paneforge';
 	import { models, temporaryChatEnabled } from '$lib/stores';
 	
+	import { WEBUI_BASE_URL } from '$lib/constants';
 	import ModelEditor from './ModelEditor.svelte';
 	import ModelTestChat from './ModelTestChat.svelte';
 	import EllipsisVertical from '$lib/components/icons/EllipsisVertical.svelte';
@@ -74,23 +75,46 @@
 	});
 </script>
 
-<div class="w-full h-full flex flex-col">
+<div style="--w:100%; --h:100%; --d:flex; --fd:column">
 	<!-- Header with test chat toggle -->
-	<div class="flex justify-between items-center p-4 border-b border-gray-100 dark:border-gray-850">
-		<div class="flex items-center gap-2">
+	<div style="--d:none; --d-md:flex; --jc:space-between; --ai:center; --p:0.2rem;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)">
+		<div style="--d:flex; --ai:center; --g:0.5rem">
+			<button
+				style="--radius:0.5rem; --d:flex; --fs:0; --ai:center; --jc:center; --pos:relative; --w:2rem; --h:2rem; --minw:2rem; --m:0"
+				class="{liveModelData?.meta?.profile_image_url &&
+				liveModelData.meta.profile_image_url !== `${WEBUI_BASE_URL}/static/icons/favicon.png`
+					? 'bg-transparent'
+					: 'bg-white'} group"
+				type="button"
+				on:click={() => {
+					modelEditor?.triggerImageUpload();
+				}}
+				title="Change profile image"
+			>
+				<img
+					src={liveModelData?.meta?.profile_image_url || model?.meta?.profile_image_url || `${WEBUI_BASE_URL}/static/icons/favicon.png`}
+					alt="model profile"
+					style="--radius:0.5rem; --w:2rem; --h:2rem; --objf:cover; --fs:0"
+				/>
+				<div
+					style="--pos:absolute; --top:0; --bottom:0; --left:0; --right:0; --bgc:#fff; --dark-bgc:#000; --radius:0.5rem; --op:0; --tn:opacity 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+					class="group-hover:opacity-20"
+				></div>
+			</button>
+
 			{#if onBack}
 				<button
-					class="flex space-x-1"
+					style="--d:flex; --g:0.2rem"
 					on:click={() => {
 						onBack();
 					}}
 				>
-					<div class="self-center">
+					<div style="--as:center">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 20 20"
 							fill="currentColor"
-							class="h-4 w-4"
+							style="--h:1rem; --w:1rem"
 						>
 							<path
 								fill-rule="evenodd"
@@ -99,15 +123,15 @@
 							/>
 						</svg>
 					</div>
-					<div class="self-center text-sm font-medium">{$i18n.t('Back')}</div>
+					<div style="--as:center; --size:0.8rem; --weight:500">{$i18n.t('Back')}</div>
 				</button>
 			{/if}
 		</div>
 		
-		<div class="flex items-center gap-2">
+		<div style="--d:flex; --ai:center; --g:0.5rem">
 			<button
-				class="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg transition-colors
-					{showChat 
+				style="--d:flex; --ai:center; --g:0.5rem; --px:0.6rem; --py:0.4rem; --size:0.8rem; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{showChat 
 						? 'bg-gray-900 text-white dark:bg-white dark:text-black' 
 						: 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700'}"
 				on:click={toggleChat}
@@ -119,7 +143,7 @@
 			<!-- Add Back to Models button -->
 			<a 
 				href="/workshop/models"
-				class="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg transition-colors bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700"
+				style="--d:flex; --ai:center; --g:0.5rem; --px:0.6rem; --py:0.4rem; --size:0.8rem; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1); --bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700)"
 			>
 				<span>{$i18n.t('Back to Models')}</span>
 			</a>
@@ -127,10 +151,10 @@
 	</div>
 
 	<!-- Split view content -->
-	<div class="flex-1 min-h-0">
-		<PaneGroup direction="horizontal" class="w-full h-full">
-			<Pane bind:pane={editorPane} defaultSize={60} class="h-full flex relative max-w-full flex-col">
-				<div class="h-full overflow-auto">
+	<div style="--fx-lg:1 1 0%; --minh:0">
+		<PaneGroup direction="horizontal" style="--w:100%; --h:100%">
+			<Pane bind:pane={editorPane} style="--h:100%; --d:flex; --pos:relative; --maxw:100%; --fd:column">
+				<div class="fade-scrollbar" style="--h:100%; --of:auto; --p:0.2rem">
 					<ModelEditor
 						bind:this={modelEditor}
 						{model}
@@ -144,8 +168,10 @@
 			</Pane>
 
 			<!-- Always show the chat pane (conditional removed) -->
-			<PaneResizer class="relative flex w-2 items-center justify-center bg-background group">
-				<div class="z-10 flex h-7 w-5 items-center justify-center rounded-xs">
+			<PaneResizer style="--d:none; --d-md:flex; --pos:relative; --w:0.5rem; --ai:center; --jc:center; --m:0"
+	class="bg-background group">
+				<div style="--z:10; --d:flex; --h:1.75rem; --w:1.2rem; --ai:center; --jc:center"
+	class="rounded-xs">
 					<EllipsisVertical className="size-4 invisible group-hover:visible" />
 				</div>
 			</PaneResizer>
@@ -157,19 +183,27 @@
 				onCollapse={() => {
 					showChat = false;
 				}}
-				class="h-full flex relative max-w-full flex-col border-l border-gray-100 dark:border-gray-850"
+				style="
+					--h:100%; 
+					--d:none; --d-md:flex;
+					--pos:relative; 
+					--maxw:100%; 
+					--fd:column; 
+					--bl:1px solid; 
+					--bc:var(--color-gray-100); 
+					--dark-bc:var(--color-gray-850)"
 			>
 				{#if showChat}
 					<ModelTestChat {liveModelData} />
 				{:else}
 					<!-- Show a collapsed state when chat is hidden -->
-					<div class="flex items-center justify-center h-full bg-gray-50 dark:bg-gray-900">
+					<div style="--d:flex; --ai:center; --jc:center; --h:100%; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-900)">
 						<button
-							class="flex flex-col items-center gap-2 p-4 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+							style="--d:flex; --fd:column; --ai:center; --g:0.5rem; --p:1rem; --c:var(--color-gray-500); --hvr-c:var(--color-gray-700); --hvr-dark-c:var(--color-gray-300); --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							on:click={toggleChat}
 						>
 							<ChatBubbleOval className="size-6" />
-							<span class="text-sm">{$i18n.t('Show Test Chat')}</span>
+							<span style="--size:0.8rem">{$i18n.t('Show Test Chat')}</span>
 						</button>
 					</div>
 				{/if}
@@ -177,3 +211,31 @@
 		</PaneGroup>
 	</div>
 </div>
+
+<style>
+	.fade-scrollbar {
+		scrollbar-width: thin;
+		scrollbar-color: transparent transparent;
+		transition: scrollbar-color 0.3s ease;
+	}
+	.fade-scrollbar:hover,
+	.fade-scrollbar:active {
+		scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+	}
+	/* WebKit */
+	.fade-scrollbar::-webkit-scrollbar {
+		width: 6px;
+	}
+	.fade-scrollbar::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	.fade-scrollbar::-webkit-scrollbar-thumb {
+		background: transparent;
+		border-radius: 3px;
+		transition: background 0.3s ease;
+	}
+	.fade-scrollbar:hover::-webkit-scrollbar-thumb,
+	.fade-scrollbar:active::-webkit-scrollbar-thumb {
+		background: rgba(0, 0, 0, 0.3);
+	}
+</style>

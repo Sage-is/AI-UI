@@ -1,11 +1,11 @@
 # Sage WebUI
 
-## v1.1.1 *our first public release*
+## v2.0.0
 
 **Sage.is an AI interface that puts you in control.**
 
-[![GitHub stars](https://img.shields.io/github/stars/Startr/WEB-AI-Sage-WebUI?style=social)](https://github.com/Sage-is/AI-UI)
-[![License](https://img.shields.io/github/license/Startr/WEB-AI-Sage-WebUI)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/Sage-is/AI-UI?style=social)](https://github.com/Sage-is/AI-UI)
+[![License](https://img.shields.io/badge/License-AGPL_v3%2B-blue)](LICENSE)
 [![Discord](https://img.shields.io/badge/Discord-Community-blue?logo=discord&logoColor=white)](https://discord.gg/3BtwHkXS)
 
 Sage WebUI transforms how you interact with AI. Built for privacy and flexibility, it runs entirely on your infrastructure while supporting the latest AI models from Ollama, OpenAI, and beyond.
@@ -21,6 +21,8 @@ Sage WebUI transforms how you interact with AI. Built for privacy and flexibilit
 **Built for Teams** — Granular permissions, user groups, and role-based access control.
 
 **Extensible** — Plugin architecture, custom functions, and RAG integration out of the box.
+
+**Community Hub** — Browse, share, and deploy models, prompts, tools, and knowledge across your Sage instances via [community.sage.is](https://community.sage.is).
 
 ## Quick Start
 
@@ -44,12 +46,18 @@ If you want to do front end dev and see changes to svelte files live, go instead
 - `make it_stop` — Stop running containers
 - `make it_build` — Build Docker images
 - `make it_clean` — Clean up containers and images
+- `make waha_start` — Start WAHA (WhatsApp bridge) locally
+- `make waha_stop` — Stop WAHA container
+- `make signal_start` — Start signal-cli-rest-api (Signal bridge) locally
+- `make signal_stop` — Stop signal-cli-rest-api container
 - `make help` — Show all available commands
 
 ## Core Features
 
 - **Multi-Model Chat** — Switch between different AI models in the same chat or even talk to multiple AI models at the same time
 - **Knowledge Bases** — Create RAG-powered AIs by uploading PDFs, docs, and websites directly into your chats or into Workshop Knoweldge
+- **Community Hub** — Browse, share, and deploy community models, prompts, tools, and knowledge directly to your Sage instances ([docs](./docs/community-hub.md))
+- **Messaging Bridges** — Connect external platforms like WhatsApp, Telegram, Signal, and Email directly to Sage AI for chat or channel mirroring ([docs](./docs/bridges.md))
 - **Code Execution** — Built-in Python environment with custom function support
 - **Voice & Video** — Hands-free conversations with speech-to-text and text-to-speech
 - **Image Generation** — Integrate DALL-E, ComfyUI, or AUTOMATIC1111
@@ -62,25 +70,68 @@ Sage WebUI works out of the box, but you can customize it:
 
 **Environment Variables:**
 - `OPENAI_API_KEY` — Connect to OpenAI models
-- `ANTHROPIC_API_KEY` — Enable Claude models  
+- `ANTHROPIC_API_KEY` — Enable Claude models
 - `OLLAMA_BASE_URL` — Point to your Ollama instance
 - `ENABLE_RAG` — Enable document processing (default: true)
 
+
+## Styling
+
+Sage WebUI uses [Startr.Style](https://startr.style) — a utility-complete CSS framework under 50KB (8KB gzipped). Instead of class-based utilities, Startr.Style uses inline CSS custom properties for full access to the CSS spec with zero compilation:
+
+```html
+<div style="--d:flex; --ai:center; --g:1rem; --p:1rem; --br:0.5rem">
+  <button style="--bg:var(--color-sky-500); --c:white; --hvr-bg:var(--color-sky-600)">
+    Click me
+  </button>
+</div>
+```
+
+See [Startr.Style docs](https://startr.style) for the full property reference, responsive suffixes (`-sm`, `-md`, `-lg`, `-xl`), dark mode (`--dark-*`), and hover states (`--hvr-*`).
+
+## CI/CD & Release Workflow
+
+The Makefile is the CI/CD framework. No GitHub Actions, no vendor lock-in. Same targets run on a developer laptop or a build server — Linux, macOS, or Windows (WSL).
+
+**Security scanning:**
+```bash
+make install_dev          # Install gitleaks, semgrep, bandit, trivy via Homebrew
+make scan                 # Run all scans (secrets, SAST, dependency vulnerabilities)
+```
+
+**Release process:**
+```bash
+make major_release        # (or minor_release / patch_release) — creates release branch
+make bump_release_version # Updates package.json + README.md
+# Edit CHANGELOG.md, commit, then:
+make it_build             # Build Docker image
+make test_db_upgrade      # Verify migrations against prior-version DB
+make test_db_fresh        # Verify clean schema creation
+make it_run               # Smoke test
+make release_and_push_GHCR # Finish release, tag, push to GHCR
+```
+
+Each release target prints the full checklist. Steps are guidance today — gated enforcement (require tests to pass before `release_finish`) is planned for a future release, runnable locally or on a CI server.
+
+DB snapshots for upgrade testing live in `tools/db_snapshots/` (gitignored, synced via SyncThing). See `tools/db_snapshots/README.md` for details.
 
 ## Documentation
 
 
 - [Configuration Options](./docs/README.md)
+- [Messaging Bridges (WhatsApp, etc.)](./docs/bridges.md)
 - [API Reference](./API/examples.md)
 - [Development Workflow](./docs/DEVELOPMENT_WORKFLOW.md)
-- [API Refactoring Plan](./docs/API_REFACTORING_PLAN.md)
+- [API Refactoring Plan](./docs/api-refactoring-plan.md)
+- [Community Hub Integration](./docs/community-hub.md)
 - [Contributing](./docs/CONTRIBUTING.md)
 - [Bug Fixes & Improvements](./docs/) — Historical documentation of major fixes
-  - [Kokoro.js TTS Fix (July 28, 2025)](./docs/KOKORO_TTS_FIX_2025-07-28.md)
+  - [Kokoro.js TTS Fix (July 28, 2025)](./docs/kokoro-tts-fix-2025-07-28.md)
 
 ## Community
 
-- **Discord:** [Join our community](https://discord.gg/#TODO)
+- **Community Hub:** [Browse & share models, prompts, tools, and more](https://community.sage.is) — Deploy community items directly to your Sage instances
+- **Discord:** [Join our community](https://discord.gg/3BtwHkXS)
 - **Issues:** [Report bugs](https://github.com/Sage-is/AI-UI/issues)
 
 ## License
@@ -96,8 +147,8 @@ It protects developers by:
 - Promoting collaboration: It encourages contributions by guaranteeing that enhancements benefit everyone, reducing the risk of forks diverging into incompatible proprietary versions.
 - Legal clarity: It provides strong protections against patent claims and ensures freedom to run, study, share, and modify the code, with no warranties but clear liability limits.
 
-This aligns with the project's privacy-first ethos, as it keeps AI interfaces open and accountable. If you meant a different license or aspect, clarify.
+This aligns with the project's privacy-first ethos, as it keeps AI interfaces open and accountable.
 
 ---
 
-Built by [Sage.is](https://sage.is)(*part of [Startr](https://startr.cloud/)*) and contributors worldwide.
+Built with [Startr.Style](https://startr.style) by [Sage.is](https://sage.is) (*part of [Startr](https://startr.cloud/)*) and contributors worldwide.

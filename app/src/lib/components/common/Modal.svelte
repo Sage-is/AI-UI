@@ -7,7 +7,7 @@
 	export let show = true;
 	export let size = 'md';
 	export let containerClassName = 'p-3';
-	export let className = 'bg-white dark:bg-gray-900 rounded-2xl';
+	export let className = 'rounded-2xl';
 
 	let modalElement = null;
 	let mounted = false;
@@ -83,32 +83,39 @@
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-	<div
+	<modal-element
 		bind:this={modalElement}
 		aria-modal="true"
 		role="dialog"
-		class="modal fixed top-0 right-0 left-0 bottom-0 bg-black/60 w-full h-screen max-h-[100dvh] {containerClassName} flex justify-center z-9999 overflow-y-auto overscroll-contain"
+		style="--pos:fixed; --top:0; --right:0; --left:0; --bottom:0; --bgc:rgb(0 0 0 / 0.6); --w:100%; --h:100vh; --maxh:100dvh; --d:flex; --jc:center; --z:9999; --ofy:auto; overscroll-behavior:contain"
+		class="modal {containerClassName}"
 		in:fade={{ duration: 10 }}
 		on:mousedown={() => {
 			show = false;
 		}}
 	>
-		<div
-			class="m-auto max-w-full {sizeToWidth(size)} {size !== 'full'
-				? 'mx-2'
-				: ''} shadow-3xl min-h-fit scrollbar-hidden {className}"
+		<modal-content
+			style="--p: 1rem; 
+				--m:auto; 
+				--maxw:100%; 
+				--minh:fit-content; 
+				--br:1rem; 
+				--bg:var(--white); 
+				--dark-bg:var(--color-gray-900);"
+			class="{sizeToWidth(size)} {size !== 'full' ? 'mx-2' : ''} scrollbar-hidden {className}"
 			in:flyAndScale
 			on:mousedown={(e) => {
 				e.stopPropagation();
 			}}
 		>
 			<slot />
-		</div>
-	</div>
+		</modal-content>
+	</modal-element>
 {/if}
 
 <style>
 	.modal-content {
+		padding: 1rem;
 		animation: scaleUp 0.1s ease-out forwards;
 	}
 

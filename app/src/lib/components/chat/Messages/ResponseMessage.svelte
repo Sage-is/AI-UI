@@ -29,6 +29,9 @@
 		removeAllDetails
 	} from '$lib/utils';
 	import { WEBUI_BASE_URL } from '$lib/constants';
+	import { getBranding, type BrandingConfig } from '$lib/apis/configs';
+
+	let branding: BrandingConfig | null = null;
 
 	import Name from './Name.svelte';
 	import ProfileImage from './ProfileImage.svelte';
@@ -570,6 +573,7 @@
 
 	onMount(async () => {
 		// console.log('ResponseMessage mounted');
+		branding = await getBranding();
 
 		await tick();
 		if (buttonsContainerElement) {
@@ -602,52 +606,58 @@
 
 {#key message.id}
 	<div
-		class=" flex w-full message-{message.id}"
+		style="--d:flex; --w:100%"
+	class="message- {message.id}"
 		id="message-{message.id}"
 		dir={$settings.chatDirection}
 	>
 		<div class={`shrink-0 ltr:mr-3 rtl:ml-3 hidden @lg:flex mt-1 `}>
 			<ProfileImage
-				src={model?.info?.meta?.profile_image_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
+				src={model?.info?.meta?.profile_image_url ?? branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
 				className={'size-8 assistant-message-profile-image'}
+				{branding}
 			/>
 		</div>
 
-		<div class="flex-auto w-0 pl-1 relative">
+		<div style="--fx:1 1 auto; --w:0; --pl:0.2rem; --pos:relative">
 			<Name>
 				<Tooltip content={model?.name ?? message.model} placement="top-start">
-					<span class="line-clamp-1 text-black dark:text-white">
+					<span style="--line-clamp:1; --c:#000; --dark-c:#fff">
 						{model?.name ?? message.model}
 					</span>
 				</Tooltip>
 
 				{#if message.timestamp}
 					<div
-						class=" self-center text-xs invisible group-hover:visible text-gray-400 font-medium first-letter:capitalize ml-0.5 translate-y-[1px]"
+						style="--as:center; --size:0.6rem; --v:hidden; --c:var(--color-gray-400); --weight:500; --ml:0.125rem; --translatey:1px"
+	class="group-hover:visible first-letter:capitalize"
 					>
 						<Tooltip content={dayjs(message.timestamp * 1000).format('LLLL')}>
-							<span class="line-clamp-1">{formatDate(message.timestamp * 1000)}</span>
+							<span style="--line-clamp:1">{formatDate(message.timestamp * 1000)}</span>
 						</Tooltip>
 					</div>
 				{/if}
 			</Name>
 
 			<div>
-				<div class="chat-{message.role} w-full min-w-full markdown-prose">
+				<div style="--w:100%; --minw:100%"
+	class="chat- {message.role} markdown-prose">
 					<div>
 						{#if (message?.statusHistory ?? [...(message?.status ? [message?.status] : [])]).length > 0}
 							{@const status = (
 								message?.statusHistory ?? [...(message?.status ? [message?.status] : [])]
 							).at(-1)}
 							{#if !status?.hidden}
-								<div class="status-description flex items-center gap-2 py-0.5">
+								<div style="--d:flex; --ai:center; --g:0.5rem; --py:0.125rem"
+	class="status-description">
 									{#if status?.action === 'web_search' && status?.urls}
 										<WebSearchResults {status}>
-											<div class="flex flex-col justify-center -space-y-0.5">
+											<div style="--d:flex; --fd:column; --jc:center; --g:-0.125rem">
 												<div
-													class="{status?.done === false
+													style="--size:1rem; --line-clamp:1; text-wrap:wrap"
+	class="{status?.done === false
 														? 'shimmer'
-														: ''} text-base line-clamp-1 text-wrap"
+														: ''}"
 												>
 													<!-- $i18n.t("Generating search query") -->
 													<!-- $i18n.t("No search query generated") -->
@@ -668,11 +678,12 @@
 											</div>
 										</WebSearchResults>
 									{:else if status?.action === 'knowledge_search'}
-										<div class="flex flex-col justify-center -space-y-0.5">
+										<div style="--d:flex; --fd:column; --jc:center; --g:-0.125rem">
 											<div
-												class="{status?.done === false
+												style="--c:var(--color-gray-500); --dark-c:var(--color-gray-500); --size:1rem; --line-clamp:1; text-wrap:wrap"
+	class="{status?.done === false
 													? 'shimmer'
-													: ''} text-gray-500 dark:text-gray-500 text-base line-clamp-1 text-wrap"
+													: ''}"
 											>
 												{$i18n.t(`Searching Knowledge for "{{searchQuery}}"`, {
 													searchQuery: status.query
@@ -680,11 +691,12 @@
 											</div>
 										</div>
 									{:else}
-										<div class="flex flex-col justify-center -space-y-0.5">
+										<div style="--d:flex; --fd:column; --jc:center; --g:-0.125rem">
 											<div
-												class="{status?.done === false
+												style="--c:var(--color-gray-500); --dark-c:var(--color-gray-500); --size:1rem; --line-clamp:1; text-wrap:wrap"
+	class="{status?.done === false
 													? 'shimmer'
-													: ''} text-gray-500 dark:text-gray-500 text-base line-clamp-1 text-wrap"
+													: ''}"
 											>
 												<!-- $i18n.t(`Searching "{{searchQuery}}"`) -->
 												{#if status?.description.includes('{{searchQuery}}')}
@@ -708,7 +720,7 @@
 						{/if}
 
 						{#if message?.files && message.files?.filter((f) => f.type === 'image').length > 0}
-							<div class="my-1 w-full flex overflow-x-auto gap-2 flex-wrap">
+							<div style="--my:0.2rem; --w:100%; --d:flex; --ofx:auto; --g:0.5rem; --fw:wrap">
 								{#each message.files as file}
 									<div>
 										{#if file.type === 'image'}
@@ -729,11 +741,11 @@
 						{/if}
 
 						{#if edit === true}
-							<div class="w-full bg-gray-50 dark:bg-gray-800 rounded-3xl px-5 py-3 my-2">
+							<div style="--w:100%; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800); --radius:1.5rem; --px:1.2rem; --py:0.6rem; --my:0.5rem">
 								<textarea
 									id="message-edit-{message.id}"
 									bind:this={editTextAreaElement}
-									class=" bg-transparent outline-hidden w-full resize-none"
+									style="--bgc:transparent; --oe:none; --w:100%; resize:none"
 									bind:value={editedContent}
 									on:input={(e) => {
 										e.target.style.height = '';
@@ -753,11 +765,11 @@
 									}}
 								/>
 
-								<div class=" mt-2 mb-1 flex justify-between text-sm font-medium">
+								<div style="--mt:0.5rem; --mb:0.2rem; --d:flex; --jc:space-between; --size:0.8rem; --weight:500">
 									<div>
 										<button
 											id="save-new-message-button"
-											class=" px-4 py-2 bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 text-gray-700 dark:text-gray-200 transition rounded-3xl"
+											style="--px:1rem; --py:0.5rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700);  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-700); --c:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:1.5rem"
 											on:click={() => {
 												saveAsCopyHandler();
 											}}
@@ -766,10 +778,10 @@
 										</button>
 									</div>
 
-									<div class="flex space-x-1.5">
+									<div style="--d:flex; --g:0.4rem">
 										<button
 											id="close-edit-message-button"
-											class="px-4 py-2 bg-white dark:bg-gray-900 hover:bg-gray-100 text-gray-800 dark:text-gray-100 transition rounded-3xl"
+											style="--px:1rem; --py:0.5rem; --bgc:#fff; --dark-bgc:var(--color-gray-900); --hvr-bgc:var(--color-gray-100); --c:var(--color-gray-800); --dark-c:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:1.5rem"
 											on:click={() => {
 												cancelEditMessage();
 											}}
@@ -779,7 +791,7 @@
 
 										<button
 											id="confirm-edit-message-button"
-											class=" px-4 py-2 bg-gray-900 dark:bg-white hover:bg-gray-850 text-gray-100 dark:text-gray-800 transition rounded-3xl"
+											style="--px:1rem; --py:0.5rem; --bgc:var(--color-gray-900); --dark-bgc:#fff; --hvr-bgc:var(--color-gray-850); --c:var(--color-gray-100); --dark-c:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:1.5rem"
 											on:click={() => {
 												editMessageConfirmHandler();
 											}}
@@ -790,7 +802,7 @@
 								</div>
 							</div>
 						{:else}
-							<div class="w-full flex flex-col relative" id="response-content-container">
+							<div style="--w:100%; --d:flex; --fd:column; --pos:relative" id="response-content-container">
 								{#if message.content === '' && !message.error && (message?.statusHistory ?? [...(message?.status ? [message?.status] : [])]).length === 0}
 									<Skeleton />
 								{:else if message.content && message.error !== true}
@@ -858,7 +870,7 @@
 								{/if}
 
 								{#if (message?.sources || message?.citations) && (model?.info?.meta?.capabilities?.citations ?? true)}
-									<Citations id={message?.id} sources={message?.sources ?? message?.citations} />
+									<Citations id={message?.id} {chatId} sources={message?.sources ?? message?.citations} />
 								{/if}
 
 								{#if message.code_executions}
@@ -872,14 +884,15 @@
 				{#if !edit}
 					<div
 						bind:this={buttonsContainerElement}
-						class="flex justify-start overflow-x-auto buttons text-gray-600 dark:text-gray-500 mt-0.5"
+						style="--d:flex; --jc:flex-start; --ofx:auto; --c:var(--color-gray-600); --dark-c:var(--color-gray-500); --mt:0.125rem"
+	class="buttons"
 					>
 						{#if message.done || siblings.length > 1}
 							{#if siblings.length > 1}
-								<div class="flex self-center min-w-fit" dir="ltr">
+								<div style="--d:flex; --as:center; --minw:fit-content" dir="ltr">
 									<button
 										aria-label={$i18n.t('Previous message')}
-										class="self-center p-1 hover:bg-black/5 dark:hover:bg-white/5 dark:hover:text-white hover:text-black rounded-md transition"
+										style="--as:center; --p:0.2rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-dark-c:#fff; --hvr-c:#000; --radius:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 										on:click={() => {
 											showPreviousMessage(message);
 										}}
@@ -891,7 +904,7 @@
 											viewBox="0 0 24 24"
 											stroke="currentColor"
 											stroke-width="2.5"
-											class="size-3.5"
+											style="--w:0.8rem; --h:0.8rem"
 										>
 											<path
 												stroke-linecap="round"
@@ -903,7 +916,7 @@
 
 									{#if messageIndexEdit}
 										<div
-											class="text-sm flex justify-center font-semibold self-center dark:text-gray-100 min-w-fit"
+											style="--size:0.8rem; --d:flex; --jc:center; --weight:600; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content"
 										>
 											<input
 												id="message-index-input-{message.id}"
@@ -924,13 +937,13 @@
 														messageIndexEdit = false;
 													}
 												}}
-												class="bg-transparent font-semibold self-center dark:text-gray-100 min-w-fit outline-hidden"
+												style="--bgc:transparent; --weight:600; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content; --oe:none"
 											/>/{siblings.length}
 										</div>
 									{:else}
 										<!-- svelte-ignore a11y-no-static-element-interactions -->
 										<div
-											class="text-sm tracking-widest font-semibold self-center dark:text-gray-100 min-w-fit"
+											style="--size:0.8rem; --ls:0.1em; --weight:600; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content"
 											on:dblclick={async () => {
 												messageIndexEdit = true;
 
@@ -947,7 +960,7 @@
 									{/if}
 
 									<button
-										class="self-center p-1 hover:bg-black/5 dark:hover:bg-white/5 dark:hover:text-white hover:text-black rounded-md transition"
+										style="--as:center; --p:0.2rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-dark-c:#fff; --hvr-c:#000; --radius:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 										on:click={() => {
 											showNextMessage(message);
 										}}
@@ -960,7 +973,7 @@
 											viewBox="0 0 24 24"
 											stroke="currentColor"
 											stroke-width="2.5"
-											class="size-3.5"
+											style="--w:0.8rem; --h:0.8rem"
 										>
 											<path
 												stroke-linecap="round"
@@ -978,9 +991,10 @@
 										<Tooltip content={$i18n.t('Edit')} placement="bottom">
 											<button
 												aria-label={$i18n.t('Edit')}
-												class="{isLastMessage
+												style="--p:0.4rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{isLastMessage
 													? 'visible'
-													: 'invisible group-hover:visible'} p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg dark:hover:text-white hover:text-black transition"
+													: 'invisible group-hover:visible'}"
 												on:click={() => {
 													editMessageHandler();
 												}}
@@ -992,7 +1006,7 @@
 													stroke-width="2.3"
 													aria-hidden="true"
 													stroke="currentColor"
-													class="w-4 h-4"
+													style="--w:1rem; --h:1rem"
 												>
 													<path
 														stroke-linecap="round"
@@ -1008,9 +1022,10 @@
 								<Tooltip content={$i18n.t('Copy')} placement="bottom">
 									<button
 										aria-label={$i18n.t('Copy')}
-										class="{isLastMessage
+										style="--p:0.4rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{isLastMessage
 											? 'visible'
-											: 'invisible group-hover:visible'} p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg dark:hover:text-white hover:text-black transition copy-response-button"
+											: 'invisible group-hover:visible'} copy-response-button"
 										on:click={() => {
 											copyToClipboard(message.content);
 										}}
@@ -1022,7 +1037,7 @@
 											viewBox="0 0 24 24"
 											stroke-width="2.3"
 											stroke="currentColor"
-											class="w-4 h-4"
+											style="--w:1rem; --h:1rem"
 										>
 											<path
 												stroke-linecap="round"
@@ -1038,9 +1053,10 @@
 										<button
 											aria-label={$i18n.t('Read Aloud')}
 											id="speak-button-{message.id}"
-											class="{isLastMessage
+											style="--p:0.4rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{isLastMessage
 												? 'visible'
-												: 'invisible group-hover:visible'} p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg dark:hover:text-white hover:text-black transition"
+												: 'invisible group-hover:visible'}"
 											on:click={() => {
 												if (!loadingSpeech) {
 													toggleSpeakMessage();
@@ -1049,7 +1065,7 @@
 										>
 											{#if loadingSpeech}
 												<svg
-													class=" w-4 h-4"
+													style="--w:1rem; --h:1rem"
 													fill="currentColor"
 													viewBox="0 0 24 24"
 													aria-hidden="true"
@@ -1088,7 +1104,7 @@
 													aria-hidden="true"
 													stroke-width="2.3"
 													stroke="currentColor"
-													class="w-4 h-4"
+													style="--w:1rem; --h:1rem"
 												>
 													<path
 														stroke-linecap="round"
@@ -1104,7 +1120,7 @@
 													aria-hidden="true"
 													stroke-width="2.3"
 													stroke="currentColor"
-													class="w-4 h-4"
+													style="--w:1rem; --h:1rem"
 												>
 													<path
 														stroke-linecap="round"
@@ -1121,9 +1137,10 @@
 									<Tooltip content={$i18n.t('Generate Image')} placement="bottom">
 										<button
 											aria-label={$i18n.t('Generate Image')}
-											class="{isLastMessage
+											style="--p:0.4rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{isLastMessage
 												? 'visible'
-												: 'invisible group-hover:visible'}  p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg dark:hover:text-white hover:text-black transition"
+												: 'invisible group-hover:visible'}"
 											on:click={() => {
 												if (!generatingImage) {
 													generateImage(message);
@@ -1133,7 +1150,7 @@
 											{#if generatingImage}
 												<svg
 													aria-hidden="true"
-													class=" w-4 h-4"
+													style="--w:1rem; --h:1rem"
 													fill="currentColor"
 													viewBox="0 0 24 24"
 													xmlns="http://www.w3.org/2000/svg"
@@ -1171,7 +1188,7 @@
 													viewBox="0 0 24 24"
 													stroke-width="2.3"
 													stroke="currentColor"
-													class="w-4 h-4"
+													style="--w:1rem; --h:1rem"
 												>
 													<path
 														stroke-linecap="round"
@@ -1201,9 +1218,10 @@
 									>
 										<button
 											aria-hidden="true"
-											class=" {isLastMessage
+											style="--p:0.4rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --ws:pre-wrap"
+	class="{isLastMessage
 												? 'visible'
-												: 'invisible group-hover:visible'} p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg dark:hover:text-white hover:text-black transition whitespace-pre-wrap"
+												: 'invisible group-hover:visible'}"
 											on:click={() => {
 												console.log(message);
 											}}
@@ -1216,7 +1234,7 @@
 												viewBox="0 0 24 24"
 												stroke-width="2.3"
 												stroke="currentColor"
-												class="w-4 h-4"
+												style="--w:1rem; --h:1rem"
 											>
 												<path
 													stroke-linecap="round"
@@ -1233,13 +1251,14 @@
 										<Tooltip content={$i18n.t('Good Response')} placement="bottom">
 											<button
 												aria-label={$i18n.t('Good Response')}
-												class="{isLastMessage
+												style="--p:0.4rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{isLastMessage
 													? 'visible'
-													: 'invisible group-hover:visible'} p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg {(
+													: 'invisible group-hover:visible'} {(
 													message?.annotation?.rating ?? ''
 												).toString() === '1'
 													? 'bg-gray-100 dark:bg-gray-800'
-													: ''} dark:hover:text-white hover:text-black transition disabled:cursor-progress disabled:hover:bg-transparent"
+													: ''} disabled:cursor-progress disabled:hover:bg-transparent"
 												disabled={feedbackLoading}
 												on:click={async () => {
 													await feedbackHandler(1);
@@ -1258,7 +1277,7 @@
 													viewBox="0 0 24 24"
 													stroke-linecap="round"
 													stroke-linejoin="round"
-													class="w-4 h-4"
+													style="--w:1rem; --h:1rem"
 													xmlns="http://www.w3.org/2000/svg"
 												>
 													<path
@@ -1271,13 +1290,14 @@
 										<Tooltip content={$i18n.t('Bad Response')} placement="bottom">
 											<button
 												aria-label={$i18n.t('Bad Response')}
-												class="{isLastMessage
+												style="--p:0.4rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{isLastMessage
 													? 'visible'
-													: 'invisible group-hover:visible'} p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg {(
+													: 'invisible group-hover:visible'} {(
 													message?.annotation?.rating ?? ''
 												).toString() === '-1'
 													? 'bg-gray-100 dark:bg-gray-800'
-													: ''} dark:hover:text-white hover:text-black transition disabled:cursor-progress disabled:hover:bg-transparent"
+													: ''} disabled:cursor-progress disabled:hover:bg-transparent"
 												disabled={feedbackLoading}
 												on:click={async () => {
 													await feedbackHandler(-1);
@@ -1296,7 +1316,7 @@
 													viewBox="0 0 24 24"
 													stroke-linecap="round"
 													stroke-linejoin="round"
-													class="w-4 h-4"
+													style="--w:1rem; --h:1rem"
 													xmlns="http://www.w3.org/2000/svg"
 												>
 													<path
@@ -1313,9 +1333,10 @@
 												aria-label={$i18n.t('Continue Response')}
 												type="button"
 												id="continue-response-button"
-												class="{isLastMessage
+												style="--p:0.4rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{isLastMessage
 													? 'visible'
-													: 'invisible group-hover:visible'} p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg dark:hover:text-white hover:text-black transition regenerate-response-button"
+													: 'invisible group-hover:visible'} regenerate-response-button"
 												on:click={() => {
 													continueResponse();
 												}}
@@ -1327,7 +1348,7 @@
 													viewBox="0 0 24 24"
 													stroke-width="2.3"
 													stroke="currentColor"
-													class="w-4 h-4"
+													style="--w:1rem; --h:1rem"
 												>
 													<path
 														stroke-linecap="round"
@@ -1348,9 +1369,10 @@
 										<button
 											type="button"
 											aria-label={$i18n.t('Regenerate')}
-											class="{isLastMessage
+											style="--p:0.4rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{isLastMessage
 												? 'visible'
-												: 'invisible group-hover:visible'} p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg dark:hover:text-white hover:text-black transition regenerate-response-button"
+												: 'invisible group-hover:visible'} regenerate-response-button"
 											on:click={() => {
 												showRateComment = false;
 												regenerateResponse(message);
@@ -1375,7 +1397,7 @@
 												stroke-width="2.3"
 												aria-hidden="true"
 												stroke="currentColor"
-												class="w-4 h-4"
+												style="--w:1rem; --h:1rem"
 											>
 												<path
 													stroke-linecap="round"
@@ -1392,9 +1414,10 @@
 												type="button"
 												aria-label={$i18n.t('Delete')}
 												id="delete-response-button"
-												class="{isLastMessage
+												style="--p:0.4rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{isLastMessage
 													? 'visible'
-													: 'invisible group-hover:visible'} p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg dark:hover:text-white hover:text-black transition regenerate-response-button"
+													: 'invisible group-hover:visible'} regenerate-response-button"
 												on:click={() => {
 													showDeleteConfirm = true;
 												}}
@@ -1406,7 +1429,7 @@
 													stroke-width="2"
 													stroke="currentColor"
 													aria-hidden="true"
-													class="w-4 h-4"
+													style="--w:1rem; --h:1rem"
 												>
 													<path
 														stroke-linecap="round"
@@ -1424,21 +1447,22 @@
 												<button
 													type="button"
 													aria-label={action.name}
-													class="{isLastMessage
+													style="--p:0.4rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{isLastMessage
 														? 'visible'
-														: 'invisible group-hover:visible'} p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg dark:hover:text-white hover:text-black transition"
+														: 'invisible group-hover:visible'}"
 													on:click={() => {
 														actionMessage(action.id, message);
 													}}
 												>
 													{#if action?.icon}
-														<div class="size-4">
+														<div style="--w:1rem; --h:1rem">
 															<img
 																src={action.icon}
-																class="w-4 h-4 {action.icon.includes('svg')
+																class="{action.icon.includes('svg')
 																	? 'dark:invert-[80%]'
 																	: ''}"
-																style="fill: currentColor;"
+																style="--w:1rem; --h:1rem; fill: currentColor;"
 																alt={action.name}
 															/>
 														</div>
@@ -1467,7 +1491,7 @@
 					{/if}
 
 					{#if (isLastMessage || ($settings?.keepFollowUpPrompts ?? false)) && message.done && !readOnly && (message?.followUps ?? []).length > 0}
-						<div class="mt-2.5" in:fade={{ duration: 100 }}>
+						<div style="--mt:0.625rem" in:fade={{ duration: 100 }}>
 							<FollowUps
 								followUps={message?.followUps}
 								onClick={(prompt) => {
@@ -1502,5 +1526,9 @@
 	.buttons {
 		-ms-overflow-style: none; /* IE and Edge */
 		scrollbar-width: none; /* Firefox */
+	}
+
+	button{
+		margin: 0 0.2rem 0 0;
 	}
 </style>

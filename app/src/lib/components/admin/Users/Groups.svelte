@@ -124,7 +124,7 @@
 	};
 
 	onMount(async () => {
-		if ($user?.role !== 'admin') {
+		if ($user?.role !== 'admin' && $user?.role !== 'facilitator') {
 			await goto('/');
 			return;
 		}
@@ -148,22 +148,22 @@
 
 {#if loaded}
 	<AddGroupModal bind:show={showCreateGroupModal} onSubmit={addGroupHandler} />
-	<div class="mt-0.5 mb-2 gap-1 flex flex-col md:flex-row justify-between">
-		<div class="flex md:self-center text-lg font-medium px-0.5">
+	<div style="--mt:0.125rem; --mb:0.5rem; --g:0.2rem; --d:flex; --fd:column; --fd-md:row; --jc:space-between">
+		<div style="--d:flex; --as-md:center; --size:1.125rem; --weight:500; --px:0.125rem">
 			{$i18n.t('Groups')}
-			<div class="flex self-center w-[1px] h-6 mx-2.5 bg-gray-50 dark:bg-gray-850" />
+			<div style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)" />
 
-			<span class="text-lg font-medium text-gray-500 dark:text-gray-300">{groups.length}</span>
+			<span style="--size:1.125rem; --weight:500; --c:var(--color-gray-500); --dark-c:var(--color-gray-300)">{groups.length}</span>
 		</div>
 
-		<div class="flex gap-1">
-			<div class=" flex w-full space-x-2">
-				<div class="flex flex-1">
-					<div class=" self-center ml-1 mr-3">
+		<div style="--d:flex; --g:0.2rem">
+			<div style="--d:flex; --w:100%; --g:0.5rem">
+				<div style="--d:flex; --fx:1 1 0%">
+					<div style="--as:center; --ml:0.2rem; --mr:0.6rem">
 						<Search />
 					</div>
 					<input
-						class=" w-full text-sm pr-4 py-1 rounded-r-xl outline-hidden bg-transparent"
+						style="--w:100%; --size:0.8rem; --pr:1rem; --py:0.2rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 						bind:value={search}
 						placeholder={$i18n.t('Search')}
 					/>
@@ -172,7 +172,7 @@
 				<div>
 					<Tooltip content={$i18n.t('Create Group')}>
 						<button
-							class=" p-2 rounded-xl hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-850 transition font-medium text-sm flex items-center space-x-1"
+							style="--p:0.5rem; --radius:0.6rem; --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.8rem; --d:flex; --ai:center; --g:0.2rem"
 							on:click={() => {
 								showCreateGroupModal = !showCreateGroupModal;
 							}}
@@ -187,18 +187,18 @@
 
 	<div>
 		{#if filteredGroups.length === 0}
-			<div class="flex flex-col items-center justify-center h-40">
-				<div class=" text-xl font-medium">
+			<div style="--d:flex; --fd:column; --ai:center; --jc:center; --h:10rem">
+				<div style="--size:1.2rem; --weight:500">
 					{$i18n.t('Organize your users')}
 				</div>
 
-				<div class="mt-1 text-sm dark:text-gray-300">
+				<div style="--mt:0.2rem; --size:0.8rem; --dark-c:var(--color-gray-300)">
 					{$i18n.t('Use groups to group your users and assign permissions.')}
 				</div>
 
-				<div class="mt-3">
+				<div style="--mt:0.6rem">
 					<button
-						class=" px-4 py-1.5 text-sm rounded-full bg-black hover:bg-gray-800 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition font-medium flex items-center space-x-1"
+						style="--px:1rem; --py:0.4rem; --size:0.8rem; --radius:9999px; --bgc:#000; --hvr-bgc:var(--color-gray-800); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --d:flex; --ai:center; --g:0.2rem"
 						aria-label={$i18n.t('Create Group')}
 						on:click={() => {
 							showCreateGroupModal = true;
@@ -210,55 +210,57 @@
 			</div>
 		{:else}
 			<div>
-				<div class=" flex items-center gap-3 justify-between text-xs uppercase px-1 font-bold">
-					<div class="w-full basis-3/5">Group</div>
+				<div style="--d:flex; --ai:center; --g:0.6rem; --jc:space-between; --size:0.6rem; --tt:uppercase; --px:0.2rem; --weight:700">
+					<div style="--w:100%; --fb:60%">Group</div>
 
-					<div class="w-full basis-2/5 text-right">Users</div>
+					<div style="--w:100%; --fb:40%; --ta:right">Users</div>
 				</div>
 
-				<hr class="mt-1.5 border-gray-100 dark:border-gray-850" />
+				<hr style="--mt:0.4rem; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)" />
 
 				{#each filteredGroups as group}
-					<div class="my-2">
+					<div style="--my:0.5rem">
 						<GroupItem {group} {users} {setGroups} />
 					</div>
 				{/each}
 			</div>
 		{/if}
 
-		<hr class="mb-2 border-gray-100 dark:border-gray-850" />
+		<hr style="--mb:0.5rem; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)" />
 
-		<GroupModal
-			bind:show={showDefaultPermissionsModal}
-			tabs={['permissions']}
-			bind:permissions={defaultPermissions}
-			custom={false}
-			onSubmit={updateDefaultPermissionsHandler}
-		/>
+		{#if $user?.role === 'admin'}
+			<GroupModal
+				bind:show={showDefaultPermissionsModal}
+				tabs={['permissions']}
+				bind:permissions={defaultPermissions}
+				custom={false}
+				onSubmit={updateDefaultPermissionsHandler}
+			/>
 
-		<button
-			class="flex items-center justify-between rounded-lg w-full transition pt-1"
-			on:click={() => {
-				showDefaultPermissionsModal = true;
-			}}
-		>
-			<div class="flex items-center gap-2.5">
-				<div class="p-1.5 bg-black/5 dark:bg-white/10 rounded-full">
-					<UsersSolid className="size-4" />
-				</div>
+			<button
+				style="--d:flex; --ai:center; --jc:space-between; --radius:0.5rem; --w:100%; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --pt:0.2rem"
+				on:click={() => {
+					showDefaultPermissionsModal = true;
+				}}
+			>
+				<div style="--d:flex; --ai:center; --g:0.625rem">
+					<div style="--p:0.4rem; --bgc:rgb(0 0 0 / 0.05); --dark-bgc:rgb(255 255 255 / 0.1); --radius:9999px">
+						<UsersSolid className="size-4" />
+					</div>
 
-				<div class="text-left">
-					<div class=" text-sm font-medium">{$i18n.t('Default permissions')}</div>
+					<div style="--ta:left">
+						<div style="--size:0.8rem; --weight:500">{$i18n.t('Default permissions')}</div>
 
-					<div class="flex text-xs mt-0.5">
-						{$i18n.t('applies to all users with the "user" role')}
+						<div style="--d:flex; --size:0.6rem; --mt:0.125rem">
+							{$i18n.t('applies to all users with the "user" role')}
+						</div>
 					</div>
 				</div>
-			</div>
 
-			<div>
-				<ChevronRight strokeWidth="2.5" />
-			</div>
-		</button>
+				<div>
+					<ChevronRight strokeWidth="2.5" />
+				</div>
+			</button>
+		{/if}
 	</div>
 {/if}

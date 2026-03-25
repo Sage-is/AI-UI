@@ -13,8 +13,8 @@
 
 <Modal size="lg" bind:show>
 	<div>
-		<div class="flex justify-between dark:text-gray-300 px-5 pt-4 pb-2">
-			<div class="text-lg font-medium self-center flex flex-col gap-0.5 capitalize">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.2rem; --pt:1rem; --pb:0.5rem">
+			<div style="--size:1.125rem; --weight:500; --as:center; --d:flex; --fd:column; --g:0.125rem; --tt:capitalize">
 				{#if codeExecution?.result}
 					<div>
 						{#if codeExecution.result?.error}
@@ -27,7 +27,7 @@
 					</div>
 				{/if}
 
-				<div class="flex gap-2 items-center">
+				<div style="--d:flex; --g:0.5rem; --ai:center">
 					{#if !codeExecution?.result}
 						<div>
 							<Spinner className="size-4" />
@@ -44,7 +44,7 @@
 				</div>
 			</div>
 			<button
-				class="self-center"
+				style="--as:center"
 				on:click={() => {
 					show = false;
 					codeExecution = null;
@@ -54,11 +54,12 @@
 			</button>
 		</div>
 
-		<div class="flex flex-col md:flex-row w-full px-4 pb-5">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:1rem; --pb:1.2rem">
 			<div
-				class="flex flex-col w-full dark:text-gray-200 overflow-y-scroll max-h-[22rem] scrollbar-hidden"
+				style="--d:flex; --fd:column; --w:100%; --dark-c:var(--color-gray-200); --ofy:scroll; --maxh:22rem"
+	class="scrollbar-hidden"
 			>
-				<div class="flex flex-col w-full">
+				<div style="--d:flex; --fd:column; --w:100%">
 					<CodeBlock
 						id="code-exec-{codeExecution?.id}-code"
 						lang={codeExecution?.language ?? ''}
@@ -74,28 +75,28 @@
 				</div>
 
 				{#if codeExecution?.result && (codeExecution?.result?.error || codeExecution?.result?.output)}
-					<div class="dark:bg-[#202123] dark:text-white px-4 py-4 rounded-b-lg flex flex-col gap-3">
+					<div style="--dark-bgc:#202123; --dark-c:#fff; --px:1rem; --py:1rem; --bblr:0.5rem; --bbrr:0.5rem; --d:flex; --fd:column; --g:0.6rem">
 						{#if codeExecution?.result?.error}
 							<div>
-								<div class=" text-gray-500 text-xs mb-1">{$i18n.t('ERROR')}</div>
-								<div class="text-sm">{codeExecution?.result?.error}</div>
+								<div style="--c:var(--color-gray-500); --size:0.6rem; --mb:0.2rem">{$i18n.t('ERROR')}</div>
+								<div style="--size:0.8rem">{codeExecution?.result?.error}</div>
 							</div>
 						{/if}
 						{#if codeExecution?.result?.output}
 							<div>
-								<div class=" text-gray-500 text-xs mb-1">{$i18n.t('OUTPUT')}</div>
-								<div class="text-sm">{codeExecution?.result?.output}</div>
+								<div style="--c:var(--color-gray-500); --size:0.6rem; --mb:0.2rem">{$i18n.t('OUTPUT')}</div>
+								<div style="--size:0.8rem">{codeExecution?.result?.output}</div>
 							</div>
 						{/if}
 					</div>
 				{/if}
 				{#if codeExecution?.result?.files && codeExecution?.result?.files.length > 0}
-					<div class="flex flex-col w-full">
-						<hr class="border-gray-100 dark:border-gray-850 my-2" />
-						<div class=" text-sm font-medium dark:text-gray-300">
+					<div style="--d:flex; --fd:column; --w:100%">
+						<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.5rem" />
+						<div style="--size:0.8rem; --weight:500; --dark-c:var(--color-gray-300)">
 							{$i18n.t('Files')}
 						</div>
-						<ul class="mt-1 list-disc pl-4 text-xs">
+						<ul style="--mt:0.2rem; list-style-type:disc; --pl:1rem; --size:0.6rem">
 							{#each codeExecution?.result?.files as file}
 								<li>
 									<a href={file.url} target="_blank">{file.name}</a>

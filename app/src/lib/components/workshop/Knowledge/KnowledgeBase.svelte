@@ -114,6 +114,7 @@
 	let debounceTimeout = null;
 	let mediaQuery;
 	let dragged = false;
+	let ingestionMode = 'plain'; // 'plain' or 'ai_parsed'
 
 	const createFileFromText = (name, content) => {
 		const blob = new Blob([content], { type: 'text/plain' });
@@ -163,18 +164,23 @@
 		knowledge.files = [...(knowledge.files ?? []), fileItem];
 
 		try {
+			// Build upload metadata
+			let metadata: Record<string, any> = {};
+
 			// If the file is an audio file, provide the language for STT.
-			let metadata = null;
 			if (
 				(file.type.startsWith('audio/') || file.type.startsWith('video/')) &&
 				$settings?.audio?.stt?.language
 			) {
-				metadata = {
-					language: $settings?.audio?.stt?.language
-				};
+				metadata.language = $settings?.audio?.stt?.language;
 			}
 
-			const uploadedFile = await uploadFile(localStorage.token, file, metadata).catch((e) => {
+			// Pass ingestion mode for AI parsing
+			if (ingestionMode && ingestionMode !== 'plain') {
+				metadata.ingestion_mode = ingestionMode;
+			}
+
+			const uploadedFile = await uploadFile(localStorage.token, file, Object.keys(metadata).length > 0 ? metadata : null).catch((e) => {
 				toast.error(`${e}`);
 				return null;
 			});
@@ -609,18 +615,19 @@
 
 {#if dragged}
 	<div
-		class="fixed {$showSidebar
+		style="--pos:fixed; --w:100%; --h:100%; --d:flex; --z:50; touch-action:none; --pe:none"
+	class="{$showSidebar
 			? 'left-0 md:left-[260px] md:w-[calc(100%-260px)]'
-			: 'left-0'}  w-full h-full flex z-50 touch-none pointer-events-none"
+			: 'left-0'}"
 		id="dropzone"
 		role="region"
 		aria-label="Drag and Drop Container"
 	>
-		<div class="absolute w-full h-full backdrop-blur-sm bg-gray-800/40 flex justify-center">
-			<div class="m-auto pt-64 flex flex-col justify-center">
-				<div class="max-w-md">
+		<div style="--pos:absolute; --w:100%; --h:100%; backdrop-filter:blur(4px); --bgc:rgb(51 51 51 / 0.4); --d:flex; --jc:center">
+			<div style="--m:auto; --pt:16rem; --d:flex; --fd:column; --jc:center">
+				<div style="--maxw:28rem">
 					<AddFilesPlaceholder>
-						<div class=" mt-2 text-center text-sm dark:text-gray-200 w-full">
+						<div style="--mt:0.5rem; --ta:center; --size:0.8rem; --dark-c:var(--color-gray-200); --w:100%">
 							Drop any files here to add to my documents
 						</div>
 					</AddFilesPlaceholder>
@@ -672,7 +679,7 @@
 	}}
 />
 
-<div class="flex flex-col w-full translate-y-1" id="collection-container">
+<div style="--d:flex; --fd:column; --w:100%; --translatey:0.2rem" id="collection-container">
 	{#if id && knowledge}
 		<AccessControlModal
 			bind:show={showAccessControlModal}
@@ -683,14 +690,15 @@
 			}}
 			accessRoles={['read', 'write']}
 		/>
-		<div class="w-full mb-2.5">
-			<div class=" flex w-full">
-				<div class="flex-1">
-					<div class="flex items-center justify-between w-full px-0.5 mb-1">
-						<div class="w-full">
+		<div style="--w:100%; --mb:0.625rem">
+			<div style="--d:flex; --w:100%">
+				<div style="--fx:1 1 0%">
+					<div style="--d:flex; --ai:center; --jc:space-between; --w:100%; --px:0.125rem; --mb:0.2rem">
+						<div style="--w:100%">
 							<input
 								type="text"
-								class="text-left w-full font-semibold text-2xl font-primary bg-transparent outline-hidden"
+								style="--ta:left; --w:100%; --weight:600; --size:1.5rem; --bgc:transparent; --oe:none"
+	class="font-primary"
 								bind:value={knowledge.name}
 								placeholder="Knowledge Name"
 								on:input={() => {
@@ -699,9 +707,9 @@
 							/>
 						</div>
 
-						<div class="self-center shrink-0">
+						<div style="--as:center; --fs:0">
 							<button
-								class="bg-gray-50 hover:bg-gray-100 text-black dark:bg-gray-850 dark:hover:bg-gray-800 dark:text-white transition px-2 py-1 rounded-full flex gap-1 items-center"
+								style="--bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --c:#000; --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --px:0.5rem; --py:0.2rem; --radius:9999px; --d:flex; --g:0.2rem; --ai:center"
 								type="button"
 								on:click={() => {
 									showAccessControlModal = true;
@@ -709,17 +717,17 @@
 							>
 								<LockClosed strokeWidth="2.5" className="size-3.5" />
 
-								<div class="text-sm font-medium shrink-0">
+								<div style="--size:0.8rem; --weight:500; --fs:0">
 									{$i18n.t('Access')}
 								</div>
 							</button>
 						</div>
 					</div>
 
-					<div class="flex w-full px-1">
+					<div style="--d:flex; --w:100%; --px:0.2rem">
 						<input
 							type="text"
-							class="text-left text-xs w-full text-gray-500 bg-transparent outline-hidden"
+							style="--ta:left; --size:0.6rem; --w:100%; --c:var(--color-gray-500); --bgc:transparent; --oe:none"
 							bind:value={knowledge.description}
 							placeholder="Knowledge Description"
 							on:input={() => {
@@ -731,16 +739,16 @@
 			</div>
 		</div>
 
-		<div class="flex flex-row flex-1 h-full max-h-full pb-2.5 gap-3">
+		<div style="--d:flex; --fd:row; --fx:1 1 0%; --h:100%; --maxh:100%; --pb:0.625rem; --g:0.6rem">
 			{#if largeScreen}
-				<div class="flex-1 flex justify-start w-full h-full max-h-full">
+				<div style="--fx:1 1 0%; --d:flex; --jc:flex-start; --w:100%; --h:100%; --maxh:100%">
 					{#if selectedFile}
-						<div class=" flex flex-col w-full h-full max-h-full">
-							<div class="shrink-0 mb-2 flex items-center">
+						<div style="--d:flex; --fd:column; --w:100%; --h:100%; --maxh:100%">
+							<div style="--fs:0; --mb:0.5rem; --d:flex; --ai:center">
 								{#if !showSidepanel}
-									<div class="-translate-x-2">
+									<div style="--translatex:-0.5rem">
 										<button
-											class="w-full text-left text-sm p-1.5 rounded-lg dark:text-gray-300 dark:hover:text-white hover:bg-black/5 dark:hover:bg-gray-850"
+											style="--w:100%; --ta:left; --size:0.8rem; --p:0.4rem; --radius:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:var(--color-gray-850)"
 											on:click={() => {
 												pane.expand();
 											}}
@@ -750,9 +758,9 @@
 									</div>
 								{/if}
 
-								<div class=" flex-1 text-xl font-medium">
+								<div style="--fx:1 1 0%; --size:1.2rem; --weight:500">
 									<a
-										class="hover:text-gray-500 dark:hover:text-gray-100 hover:underline grow line-clamp-1"
+										style="--hvr-c:var(--color-gray-500); --hvr-dark-c:var(--color-gray-100); --hvr-td:underline; --fg:1; --line-clamp:1"
 										href={selectedFile.id ? `/api/v1/files/${selectedFile.id}/content` : '#'}
 										target="_blank"
 									>
@@ -762,7 +770,7 @@
 
 								<div>
 									<button
-										class="self-center w-fit text-sm py-1 px-2.5 dark:text-gray-300 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-lg"
+										style="--as:center; --w:fit-content; --size:0.8rem; --py:0.2rem; --px:0.625rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem"
 										on:click={() => {
 											updateFileContentHandler();
 										}}
@@ -773,7 +781,8 @@
 							</div>
 
 							<div
-								class=" flex-1 w-full h-full max-h-full text-sm bg-transparent outline-hidden overflow-y-auto scrollbar-hidden"
+								style="--fx:1 1 0%; --w:100%; --h:100%; --maxh:100%; --size:0.8rem; --bgc:transparent; --oe:none; --ofy:auto"
+	class="scrollbar-hidden"
 							>
 								{#key selectedFile.id}
 									<RichTextInput
@@ -786,8 +795,8 @@
 							</div>
 						</div>
 					{:else}
-						<div class="h-full flex w-full">
-							<div class="m-auto text-xs text-center text-gray-200 dark:text-gray-700">
+						<div style="--h:100%; --d:flex; --w:100%">
+							<div style="--m:auto; --size:0.6rem; --ta:center; --c:var(--color-gray-200); --dark-c:var(--color-gray-700)">
 								{$i18n.t('Drag and drop a file to upload or select a file to view')}
 							</div>
 						</div>
@@ -801,12 +810,12 @@
 						selectedFileId = null;
 					}}
 				>
-					<div class="flex flex-col justify-start h-full max-h-full p-2">
-						<div class=" flex flex-col w-full h-full max-h-full">
-							<div class="shrink-0 mt-1 mb-2 flex items-center">
-								<div class="mr-2">
+					<div style="--d:flex; --fd:column; --jc:flex-start; --h:100%; --maxh:100%; --p:0.5rem">
+						<div style="--d:flex; --fd:column; --w:100%; --h:100%; --maxh:100%">
+							<div style="--fs:0; --mt:0.2rem; --mb:0.5rem; --d:flex; --ai:center">
+								<div style="--mr:0.5rem">
 									<button
-										class="w-full text-left text-sm p-1.5 rounded-lg dark:text-gray-300 dark:hover:text-white hover:bg-black/5 dark:hover:bg-gray-850"
+										style="--w:100%; --ta:left; --size:0.8rem; --p:0.4rem; --radius:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:var(--color-gray-850)"
 										on:click={() => {
 											selectedFileId = null;
 										}}
@@ -814,13 +823,13 @@
 										<ChevronLeft strokeWidth="2.5" />
 									</button>
 								</div>
-								<div class=" flex-1 text-xl line-clamp-1">
+								<div style="--fx:1 1 0%; --size:1.2rem; --line-clamp:1">
 									{selectedFile?.meta?.name}
 								</div>
 
 								<div>
 									<button
-										class="self-center w-fit text-sm py-1 px-2.5 dark:text-gray-300 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-lg"
+										style="--as:center; --w:fit-content; --size:0.8rem; --py:0.2rem; --px:0.625rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem"
 										on:click={() => {
 											updateFileContentHandler();
 										}}
@@ -831,7 +840,8 @@
 							</div>
 
 							<div
-								class=" flex-1 w-full h-full max-h-full py-2.5 px-3.5 rounded-lg text-sm bg-transparent overflow-y-auto scrollbar-hidden"
+								style="--fx:1 1 0%; --w:100%; --h:100%; --maxh:100%; --py:0.625rem; --px:0.8rem; --radius:0.5rem; --size:0.8rem; --bgc:transparent; --ofy:auto"
+	class="scrollbar-hidden"
 							>
 								{#key selectedFile.id}
 									<RichTextInput
@@ -848,24 +858,18 @@
 			{/if}
 
 			<div
-				class="{largeScreen ? 'shrink-0 w-72 max-w-72' : 'flex-1'}
-			flex
-			py-2
-			rounded-2xl
-			border
-			border-gray-50
-			h-full
-			dark:border-gray-850"
+				style="--d:flex; --py:0.5rem; --radius:1rem;  --bc:var(--color-gray-50); --h:100%; --dark-bc:var(--color-gray-850)"
+	class="{largeScreen ? 'shrink-0 w-72 max-w-72' : 'flex-1'}"
 			>
-				<div class=" flex flex-col w-full space-x-2 rounded-lg h-full">
-					<div class="w-full h-full flex flex-col">
-						<div class=" px-3">
-							<div class="flex mb-0.5">
-								<div class=" self-center ml-1 mr-3">
+				<div style="--d:flex; --fd:column; --w:100%; --g:0.5rem; --radius:0.5rem; --h:100%">
+					<div style="--w:100%; --h:100%; --d:flex; --fd:column">
+						<div style="--px:0.6rem">
+							<div style="--d:flex; --mb:0.125rem">
+								<div style="--as:center; --ml:0.2rem; --mr:0.6rem">
 									<Search />
 								</div>
 								<input
-									class=" w-full text-sm pr-4 py-1 rounded-r-xl outline-hidden bg-transparent"
+									style="--w:100%; --size:0.8rem; --pr:1rem; --py:0.2rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 									bind:value={query}
 									placeholder={$i18n.t('Search Collection')}
 									on:focus={() => {
@@ -890,10 +894,23 @@
 									/>
 								</div>
 							</div>
+
+							<div style="--d:flex; --ai:center; --g:0.5rem; --mt:0.4rem; --size:0.6rem; --c:var(--color-gray-500)">
+								<span style="--weight:500; --ws:nowrap">{$i18n.t('Ingestion')}:</span>
+								<label style="--d:flex; --ai:center; --g:0.2rem; --cursor:pointer">
+									<input type="radio" bind:group={ingestionMode} value="plain" />
+									<span>{$i18n.t('Plain')}</span>
+								</label>
+								<label style="--d:flex; --ai:center; --g:0.2rem; --cursor:pointer">
+									<input type="radio" bind:group={ingestionMode} value="ai_parsed" />
+									<span>{$i18n.t('AI Parse')}</span>
+								</label>
+							</div>
 						</div>
 
 						{#if filteredItems.length > 0}
-							<div class=" flex overflow-y-auto h-full w-full scrollbar-hidden text-xs">
+							<div style="--d:flex; --ofy:auto; --h:100%; --w:100%; --size:0.6rem"
+	class="scrollbar-hidden">
 								<Files
 									small
 									files={filteredItems}
@@ -910,7 +927,7 @@
 								/>
 							</div>
 						{:else}
-							<div class="my-3 flex flex-col justify-center text-center text-gray-500 text-xs">
+							<div style="--my:0.6rem; --d:flex; --fd:column; --jc:center; --ta:center; --c:var(--color-gray-500); --size:0.6rem">
 								<div>
 									{$i18n.t('No content found')}
 								</div>

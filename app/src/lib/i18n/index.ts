@@ -2,9 +2,10 @@ import i18next from 'i18next';
 import resourcesToBackend from 'i18next-resources-to-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import type { i18n as i18nType } from 'i18next';
-import { writable } from 'svelte/store';
+import { type Writable, writable } from 'svelte/store';
+import type { I18nStore } from '$lib/types';
 
-const createI18nStore = (i18n: i18nType) => {
+const createI18nStore = (i18n: i18nType): Writable<any> => {
 	const i18nWritable = writable(i18n);
 
 	i18n.on('initialized', () => {
@@ -71,7 +72,7 @@ export const initI18n = (defaultLocale?: string | undefined) => {
 	document.documentElement.setAttribute('lang', lang);
 };
 
-const i18n = createI18nStore(i18next);
+const i18n: Writable<any> = createI18nStore(i18next);
 const isLoadingStore = createIsLoadingStore(i18next);
 
 export const getLanguages = async () => {

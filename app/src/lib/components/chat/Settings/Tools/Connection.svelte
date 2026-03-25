@@ -40,7 +40,7 @@
 	}}
 />
 
-<div class="flex w-full gap-2 items-center">
+<div style="--d:flex; --w:100%; --g:0.5rem; --ai:center">
 	<Tooltip
 		className="w-full relative"
 		content={$i18n.t(`WebUI will make requests to "{{url}}"`, {
@@ -50,13 +50,13 @@
 	>
 		{#if !(connection?.config?.enable ?? true)}
 			<div
-				class="absolute top-0 bottom-0 left-0 right-0 opacity-60 bg-white dark:bg-gray-900 z-10"
+				style="--pos:absolute; --top:0; --bottom:0; --left:0; --right:0; --op:0.6; --bgc:#fff; --dark-bgc:var(--color-gray-900); --z:10"
 			></div>
 		{/if}
-		<div class="flex w-full">
-			<div class="flex-1 relative">
+		<div style="--d:flex; --w:100%">
+			<div style="--fx:1 1 0%; --pos:relative">
 				<input
-					class=" outline-hidden w-full bg-transparent"
+					style="--oe:none; --w:100%; --bgc:transparent"
 					placeholder={$i18n.t('API Base URL')}
 					bind:value={connection.url}
 					autocomplete="off"
@@ -74,10 +74,10 @@
 		</div>
 	</Tooltip>
 
-	<div class="flex gap-1">
+	<div style="--d:flex; --g:0.2rem">
 		<Tooltip content={$i18n.t('Configure')} className="self-start">
 			<button
-				class="self-center p-1 bg-transparent hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-850 rounded-lg transition"
+				style="--as:center; --p:0.2rem; --bgc:transparent; --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={() => {
 					showConfigModal = true;
 				}}

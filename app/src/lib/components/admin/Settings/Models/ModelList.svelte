@@ -43,14 +43,14 @@
 </script>
 
 {#if modelIds.length > 0}
-	<div class="flex flex-col -translate-x-1" bind:this={modelListElement}>
+	<div style="--d:flex; --fd:column; --translatex:-0.2rem" bind:this={modelListElement}>
 		{#each modelIds as modelId, modelIdx (modelId)}
-			<div class=" flex gap-2 w-full justify-between items-center" id="model-item-{modelId}">
+			<div style="--d:flex; --g:0.5rem; --w:100%; --jc:space-between; --ai:center" id="model-item-{modelId}">
 				<Tooltip content={modelId} placement="top-start">
-					<div class="flex items-center gap-1">
+					<div style="--d:flex; --ai:center; --g:0.2rem">
 						<EllipsisVertical className="size-4 cursor-move item-handle" />
 
-						<div class=" text-sm flex-1 py-1 rounded-lg">
+						<div style="--size:0.8rem; --fx:1 1 0%; --py:0.2rem; --radius:0.5rem">
 							{#if $models.find((model) => model.id === modelId)}
 								{$models.find((model) => model.id === modelId).name}
 							{:else}
@@ -63,7 +63,7 @@
 		{/each}
 	</div>
 {:else}
-	<div class="text-gray-500 text-xs text-center py-2">
+	<div style="--c:var(--color-gray-500); --size:0.6rem; --ta:center; --py:0.5rem">
 		{$i18n.t('No models found')}
 	</div>
 {/if}

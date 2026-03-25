@@ -45,19 +45,19 @@
 	};
 </script>
 
-<div class="w-full max-h-full">
+<div style="--w:100%; --maxh:100%">
 	<button
-		class="flex space-x-1"
+		style="--d:flex; --g:0.2rem"
 		on:click={() => {
 			goto('/workshop/knowledge');
 		}}
 	>
-		<div class=" self-center">
+		<div style="--as:center">
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox="0 0 20 20"
 				fill="currentColor"
-				class="w-4 h-4"
+				style="--w:1rem; --h:1rem"
 			>
 				<path
 					fill-rule="evenodd"
@@ -66,27 +66,28 @@
 				/>
 			</svg>
 		</div>
-		<div class=" self-center font-medium text-sm">{$i18n.t('Back')}</div>
+		<div style="--as:center; --weight:500; --size:0.8rem">{$i18n.t('Back')}</div>
 	</button>
 
 	<form
-		class="flex flex-col max-w-lg mx-auto mt-10 mb-10"
+		style="--d:flex; --fd:column; --maxw:32rem; --mx:auto; --mt:2.5rem; --mb:2.5rem"
 		on:submit|preventDefault={() => {
 			submitHandler();
 		}}
 	>
-		<div class=" w-full flex flex-col justify-center">
-			<div class=" text-2xl font-medium font-primary mb-2.5">
+		<div style="--w:100%; --d:flex; --fd:column; --jc:center">
+			<div style="--size:1.5rem; --weight:500; --mb:0.625rem"
+	class="font-primary">
 				{$i18n.t('Create a knowledge base')}
 			</div>
 
-			<div class="w-full flex flex-col gap-2.5">
-				<div class="w-full">
-					<div class=" text-sm mb-2">{$i18n.t('What are you working on?')}</div>
+			<div style="--w:100%; --d:flex; --fd:column; --g:0.625rem">
+				<div style="--w:100%">
+					<div style="--size:0.8rem; --mb:0.5rem">{$i18n.t('What are you working on?')}</div>
 
-					<div class="w-full mt-1">
+					<div style="--w:100%; --mt:0.2rem">
 						<input
-							class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+							style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 							type="text"
 							bind:value={name}
 							placeholder={$i18n.t('Name your knowledge base')}
@@ -96,11 +97,11 @@
 				</div>
 
 				<div>
-					<div class="text-sm mb-2">{$i18n.t('What are you trying to achieve?')}</div>
+					<div style="--size:0.8rem; --mb:0.5rem">{$i18n.t('What are you trying to achieve?')}</div>
 
-					<div class=" w-full mt-1">
+					<div style="--w:100%; --mt:0.2rem">
 						<textarea
-							class="w-full resize-none rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+							style="--w:100%; resize:none; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 							rows="4"
 							bind:value={description}
 							placeholder={$i18n.t('Describe your knowledge base and objectives')}
@@ -111,8 +112,8 @@
 			</div>
 		</div>
 
-		<div class="mt-2">
-			<div class="px-3 py-2 bg-gray-50 dark:bg-gray-950 rounded-lg">
+		<div style="--mt:0.5rem">
+			<div style="--px:0.6rem; --py:0.5rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-950); --radius:0.5rem">
 				<AccessControl
 					bind:accessControl
 					accessRoles={['read', 'write']}
@@ -121,19 +122,20 @@
 			</div>
 		</div>
 
-		<div class="flex justify-end mt-2">
+		<div style="--d:flex; --jc:flex-end; --mt:0.5rem">
 			<div>
 				<button
-					class=" text-sm px-4 py-2 transition rounded-lg {loading
+					style="--size:0.8rem; --px:1rem; --py:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --d:flex"
+	class="{loading
 						? ' cursor-not-allowed bg-gray-100 dark:bg-gray-800'
-						: ' bg-gray-50 hover:bg-gray-100 dark:bg-gray-850 dark:hover:bg-gray-800'} flex"
+						: ' bg-gray-50 hover:bg-gray-100 dark:bg-gray-850 dark:hover:bg-gray-800'}"
 					type="submit"
 					disabled={loading}
 				>
-					<div class=" self-center font-medium">{$i18n.t('Create Knowledge')}</div>
+					<div style="--as:center; --weight:500">{$i18n.t('Create Knowledge')}</div>
 
 					{#if loading}
-						<div class="ml-1.5 self-center">
+						<div style="--ml:0.4rem; --as:center">
 							<Spinner />
 						</div>
 					{/if}

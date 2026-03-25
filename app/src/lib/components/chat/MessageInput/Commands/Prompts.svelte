@@ -72,18 +72,20 @@
 {#if filteredPrompts.length > 0}
 	<div
 		id="commands-container"
-		class="px-2 mb-2 text-left w-full absolute bottom-0 left-0 right-0 z-10"
+		style="--px:0.5rem; --mb:0.5rem; --ta:left; --w:100%; --pos:absolute; --bottom:0; --left:0; --right:0; --z:10"
 	>
-		<div class="flex w-full rounded-xl border border-gray-100 dark:border-gray-850">
-			<div class="flex flex-col w-full rounded-xl bg-white dark:bg-gray-900 dark:text-gray-100">
+		<div style="--d:flex; --w:100%; --radius:0.6rem;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)">
+			<div style="--d:flex; --fd:column; --w:100%; --radius:0.6rem; --bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-c:var(--color-gray-100)">
 				<div
-					class="m-1 overflow-y-auto p-1 space-y-0.5 scrollbar-hidden max-h-60"
+					style="--m:0.2rem; --ofy:auto; --p:0.2rem; --g:0.125rem; --maxh:15rem"
+	class="scrollbar-hidden"
 					id="command-options-container"
 					bind:this={container}
 				>
 					{#each filteredPrompts as promptItem, promptIdx}
 						<button
-							class=" px-3 py-1.5 rounded-xl w-full text-left {promptIdx === selectedPromptIdx
+							style="--px:0.6rem; --py:0.4rem; --radius:0.6rem; --w:100%; --ta:left"
+	class="{promptIdx === selectedPromptIdx
 								? '  bg-gray-50 dark:bg-gray-850 selected-command-option-button'
 								: ''}"
 							type="button"
@@ -95,11 +97,11 @@
 							}}
 							on:focus={() => {}}
 						>
-							<div class=" font-medium text-black dark:text-gray-100">
+							<div style="--weight:500; --c:#000; --dark-c:var(--color-gray-100)">
 								{promptItem.command}
 							</div>
 
-							<div class=" text-xs text-gray-600 dark:text-gray-100">
+							<div style="--size:0.6rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-100)">
 								{promptItem.title}
 							</div>
 						</button>
@@ -107,7 +109,7 @@
 				</div>
 
 				<div
-					class=" px-2 pt-0.5 pb-1 text-xs text-gray-600 dark:text-gray-100 bg-white dark:bg-gray-900 rounded-b-xl flex items-center space-x-1"
+					style="--px:0.5rem; --pt:0.125rem; --pb:0.2rem; --size:0.6rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-100); --bgc:#fff; --dark-bgc:var(--color-gray-900); --bblr:0.6rem; --bbrr:0.6rem; --d:flex; --ai:center; --g:0.2rem"
 				>
 					<div>
 						<svg
@@ -116,7 +118,7 @@
 							viewBox="0 0 24 24"
 							stroke-width="1.5"
 							stroke="currentColor"
-							class="w-3 h-3"
+							style="--w:0.6rem; --h:0.6rem"
 						>
 							<path
 								stroke-linecap="round"
@@ -126,7 +128,7 @@
 						</svg>
 					</div>
 
-					<div class="line-clamp-1">
+					<div style="--line-clamp:1">
 						{$i18n.t(
 							'Tip: Update multiple variable slots consecutively by pressing the tab key in the chat input after each replacement.'
 						)}

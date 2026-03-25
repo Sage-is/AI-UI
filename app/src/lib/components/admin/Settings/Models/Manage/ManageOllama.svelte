@@ -561,11 +561,11 @@
 />
 
 {#if !loading}
-	<div class=" flex flex-col w-full">
+	<div style="--d:flex; --fd:column; --w:100%">
 		<div>
-			<div class="space-y-2">
+			<div style="--g:0.5rem">
 				<div>
-					<div class=" mb-2 text-sm font-medium flex items-center gap-1.5">
+					<div style="--mb:0.5rem; --size:0.8rem; --weight:500; --d:flex; --ai:center; --g:0.4rem">
 						<div>
 							{$i18n.t('Pull a model from Ollama.com')}
 						</div>
@@ -573,7 +573,7 @@
 						<div>
 							<Tooltip content="Update All Models" placement="top">
 								<button
-									class="flex gap-2 items-center bg-transparent rounded-lg transition"
+									style="--d:flex; --g:0.5rem; --ai:center; --bgc:transparent; --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 									on:click={() => {
 										updateModelsHandler();
 									}}
@@ -582,7 +582,7 @@
 										xmlns="http://www.w3.org/2000/svg"
 										viewBox="0 0 16 16"
 										fill="currentColor"
-										class="w-4 h-4"
+										style="--w:1rem; --h:1rem"
 									>
 										<path
 											d="M7 1a.75.75 0 0 1 .75.75V6h-1.5V1.75A.75.75 0 0 1 7 1ZM6.25 6v2.94L5.03 7.72a.75.75 0 0 0-1.06 1.06l2.5 2.5a.75.75 0 0 0 1.06 0l2.5-2.5a.75.75 0 1 0-1.06-1.06L7.75 8.94V6H10a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h2.25Z"
@@ -595,10 +595,10 @@
 							</Tooltip>
 						</div>
 					</div>
-					<div class="flex w-full">
-						<div class="flex-1 mr-2">
+					<div style="--d:flex; --w:100%">
+						<div style="--fx:1 1 0%; --mr:0.5rem">
 							<input
-								class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 								placeholder={$i18n.t('Enter model tag (e.g. {{modelTag}})', {
 									modelTag: 'mistral:7b'
 								})}
@@ -606,16 +606,16 @@
 							/>
 						</div>
 						<button
-							class="px-2.5 bg-gray-50 hover:bg-gray-200 text-gray-800 dark:bg-gray-850 dark:hover:bg-gray-800 dark:text-gray-100 rounded-lg transition"
+							style="--px:0.625rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-200); --c:var(--color-gray-800); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:var(--color-gray-100); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							on:click={() => {
 								pullModelHandler();
 							}}
 							disabled={modelTransferring}
 						>
 							{#if modelTransferring}
-								<div class="self-center">
+								<div style="--as:center">
 									<svg
-										class=" w-4 h-4"
+										style="--w:1rem; --h:1rem"
 										viewBox="0 0 24 24"
 										fill="currentColor"
 										xmlns="http://www.w3.org/2000/svg"
@@ -647,7 +647,7 @@
 									xmlns="http://www.w3.org/2000/svg"
 									viewBox="0 0 16 16"
 									fill="currentColor"
-									class="w-4 h-4"
+									style="--w:1rem; --h:1rem"
 								>
 									<path
 										d="M8.75 2.75a.75.75 0 0 0-1.5 0v5.69L5.03 6.22a.75.75 0 0 0-1.06 1.06l3.5 3.5a.75.75 0 0 0 1.06 0l3.5-3.5a.75.75 0 0 0-1.06-1.06L8.75 8.44V2.75Z"
@@ -660,17 +660,17 @@
 						</button>
 					</div>
 
-					<div class="mt-2 mb-1 text-xs text-gray-400 dark:text-gray-500">
+					<div style="--mt:0.5rem; --mb:0.2rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 						{$i18n.t('To access the available model names for downloading,')}
 						<a
-							class=" text-gray-500 dark:text-gray-300 font-medium underline"
+							style="--c:var(--color-gray-500); --dark-c:var(--color-gray-300); --weight:500; --td:underline"
 							href="https://ollama.com/library"
 							target="_blank">{$i18n.t('click here.')}</a
 						>
 					</div>
 
 					{#if updateModelId}
-						<div class="text-xs">
+						<div style="--size:0.6rem">
 							Updating "{updateModelId}" {updateProgress ? `(${updateProgress}%)` : ''}
 						</div>
 					{/if}
@@ -678,14 +678,13 @@
 					{#if Object.keys($MODEL_DOWNLOAD_POOL).length > 0}
 						{#each Object.keys($MODEL_DOWNLOAD_POOL) as model}
 							{#if 'pullProgress' in $MODEL_DOWNLOAD_POOL[model]}
-								<div class="flex flex-col">
-									<div class="font-medium mb-1">{model}</div>
+								<div style="--d:flex; --fd:column">
+									<div style="--weight:500; --mb:0.2rem">{model}</div>
 									<div class="">
-										<div class="flex flex-row justify-between space-x-4 pr-2">
-											<div class=" flex-1">
+										<div style="--d:flex; --fd:row; --jc:space-between; --g:1rem; --pr:0.5rem">
+											<div style="--fx:1 1 0%">
 												<div
-													class="dark:bg-gray-600 bg-gray-500 text-xs font-medium text-gray-100 text-center p-0.5 leading-none rounded-full"
-													style="width: {Math.max(
+													style="--dark-bgc:var(--color-gray-600); --bgc:var(--color-gray-500); --size:0.6rem; --weight:500; --c:var(--color-gray-100); --ta:center; --p:0.125rem; --lh:1; --radius:9999px; width: {Math.max(
 														15,
 														$MODEL_DOWNLOAD_POOL[model].pullProgress ?? 0
 													)}%"
@@ -696,13 +695,13 @@
 
 											<Tooltip content={$i18n.t('Cancel')}>
 												<button
-													class="text-gray-800 dark:text-gray-100"
+													style="--c:var(--color-gray-800); --dark-c:var(--color-gray-100)"
 													on:click={() => {
 														cancelModelPullHandler(model);
 													}}
 												>
 													<svg
-														class="w-4 h-4 text-gray-800 dark:text-white"
+														style="--w:1rem; --h:1rem; --c:var(--color-gray-800); --dark-c:#fff"
 														aria-hidden="true"
 														xmlns="http://www.w3.org/2000/svg"
 														width="24"
@@ -722,7 +721,7 @@
 											</Tooltip>
 										</div>
 										{#if 'digest' in $MODEL_DOWNLOAD_POOL[model]}
-											<div class="mt-1 text-xs dark:text-gray-500" style="font-size: 0.5rem;">
+											<div style="--mt:0.2rem; --size:0.6rem; --dark-c:var(--color-gray-500); font-size: 0.5rem;">
 												{$MODEL_DOWNLOAD_POOL[model].digest}
 											</div>
 										{/if}
@@ -734,13 +733,13 @@
 				</div>
 
 				<div>
-					<div class=" mb-2 text-sm font-medium">{$i18n.t('Delete a model')}</div>
-					<div class="flex w-full">
+					<div style="--mb:0.5rem; --size:0.8rem; --weight:500">{$i18n.t('Delete a model')}</div>
+					<div style="--d:flex; --w:100%">
 						<div
-							class="flex-1 mr-2 pr-1.5 rounded-lg bg-gray-50 dark:text-gray-300 dark:bg-gray-850"
+							style="--fx:1 1 0%; --mr:0.5rem; --pr:0.4rem; --radius:0.5rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850)"
 						>
 							<select
-								class="w-full py-2 px-4 text-sm outline-hidden bg-transparent"
+								style="--w:100%; --py:0.5rem; --px:1rem; --size:0.8rem; --oe:none; --bgc:transparent"
 								bind:value={deleteModelTag}
 								placeholder={$i18n.t('Select a model')}
 							>
@@ -748,14 +747,14 @@
 									<option value="" disabled selected>{$i18n.t('Select a model')}</option>
 								{/if}
 								{#each ollamaModels as model}
-									<option value={model.id} class="bg-gray-50 dark:bg-gray-700"
+									<option value={model.id} style="--bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-700)"
 										>{model.name + ' (' + (model.size / 1024 ** 3).toFixed(1) + ' GB)'}</option
 									>
 								{/each}
 							</select>
 						</div>
 						<button
-							class="px-2.5 bg-gray-50 hover:bg-gray-200 text-gray-800 dark:bg-gray-850 dark:hover:bg-gray-800 dark:text-gray-100 rounded-lg transition"
+							style="--px:0.625rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-200); --c:var(--color-gray-800); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:var(--color-gray-100); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							on:click={() => {
 								showModelDeleteConfirm = true;
 							}}
@@ -764,7 +763,7 @@
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 16 16"
 								fill="currentColor"
-								class="w-4 h-4"
+								style="--w:1rem; --h:1rem"
 							>
 								<path
 									fill-rule="evenodd"
@@ -777,11 +776,11 @@
 				</div>
 
 				<div>
-					<div class=" mb-2 text-sm font-medium">{$i18n.t('Create a model')}</div>
-					<div class="flex w-full">
-						<div class="flex-1 mr-2 flex flex-col gap-2">
+					<div style="--mb:0.5rem; --size:0.8rem; --weight:500">{$i18n.t('Create a model')}</div>
+					<div style="--d:flex; --w:100%">
+						<div style="--fx:1 1 0%; --mr:0.5rem; --d:flex; --fd:column; --g:0.5rem">
 							<input
-								class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 								placeholder={$i18n.t('Enter model tag (e.g. {{modelTag}})', {
 									modelTag: 'my-modelfile'
 								})}
@@ -791,16 +790,18 @@
 
 							<textarea
 								bind:value={createModelObject}
-								class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-100 dark:bg-gray-850 outline-hidden resize-none scrollbar-hidden"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --oe:none; resize:none"
+	class="scrollbar-hidden"
 								rows="6"
 								placeholder={`e.g. {"model": "my-modelfile", "from": "ollama:7b"})`}
 								disabled={createModelLoading}
 							/>
 						</div>
 
-						<div class="flex self-start">
+						<div style="--d:flex; --as:flex-start">
 							<button
-								class="px-2.5 py-2.5 bg-gray-50 hover:bg-gray-200 text-gray-800 dark:bg-gray-850 dark:hover:bg-gray-800 dark:text-gray-100 rounded-lg transition disabled:cursor-not-allowed"
+								style="--px:0.625rem; --py:0.625rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-200); --c:var(--color-gray-800); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:var(--color-gray-100); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="disabled:cursor-not-allowed"
 								on:click={() => {
 									createModelHandler();
 								}}
@@ -810,7 +811,7 @@
 									xmlns="http://www.w3.org/2000/svg"
 									viewBox="0 0 16 16"
 									fill="currentColor"
-									class="size-4"
+									style="--w:1rem; --h:1rem"
 								>
 									<path
 										d="M7.25 10.25a.75.75 0 0 0 1.5 0V4.56l2.22 2.22a.75.75 0 1 0 1.06-1.06l-3.5-3.5a.75.75 0 0 0-1.06 0l-3.5 3.5a.75.75 0 0 0 1.06 1.06l2.22-2.22v5.69Z"
@@ -824,21 +825,20 @@
 					</div>
 
 					{#if createModelDigest !== ''}
-						<div class="flex flex-col mt-1">
-							<div class="font-medium mb-1">{createModelTag}</div>
+						<div style="--d:flex; --fd:column; --mt:0.2rem">
+							<div style="--weight:500; --mb:0.2rem">{createModelTag}</div>
 							<div class="">
-								<div class="flex flex-row justify-between space-x-4 pr-2">
-									<div class=" flex-1">
+								<div style="--d:flex; --fd:row; --jc:space-between; --g:1rem; --pr:0.5rem">
+									<div style="--fx:1 1 0%">
 										<div
-											class="dark:bg-gray-600 bg-gray-500 text-xs font-medium text-gray-100 text-center p-0.5 leading-none rounded-full"
-											style="width: {Math.max(15, createModelPullProgress ?? 0)}%"
+											style="--dark-bgc:var(--color-gray-600); --bgc:var(--color-gray-500); --size:0.6rem; --weight:500; --c:var(--color-gray-100); --ta:center; --p:0.125rem; --lh:1; --radius:9999px; width: {Math.max(15, createModelPullProgress ?? 0)}%"
 										>
 											{createModelPullProgress ?? 0}%
 										</div>
 									</div>
 								</div>
 								{#if createModelDigest}
-									<div class="mt-1 text-xs dark:text-gray-500" style="font-size: 0.5rem;">
+									<div style="--mt:0.2rem; --size:0.6rem; --dark-c:var(--color-gray-500); font-size: 0.5rem;">
 										{createModelDigest}
 									</div>
 								{/if}
@@ -847,11 +847,11 @@
 					{/if}
 				</div>
 
-				<div class="pt-1">
-					<div class="flex justify-between items-center text-xs">
-						<div class=" text-sm font-medium">{$i18n.t('Experimental')}</div>
+				<div style="--pt:0.2rem">
+					<div style="--d:flex; --jc:space-between; --ai:center; --size:0.6rem">
+						<div style="--size:0.8rem; --weight:500">{$i18n.t('Experimental')}</div>
 						<button
-							class=" text-xs font-medium text-gray-500"
+							style="--size:0.6rem; --weight:500; --c:var(--color-gray-500)"
 							type="button"
 							on:click={() => {
 								showExperimentalOllama = !showExperimentalOllama;
@@ -866,11 +866,11 @@
 							uploadModelHandler();
 						}}
 					>
-						<div class=" mb-2 flex w-full justify-between">
-							<div class="  text-sm font-medium">{$i18n.t('Upload a GGUF model')}</div>
+						<div style="--mb:0.5rem; --d:flex; --w:100%; --jc:space-between">
+							<div style="--size:0.8rem; --weight:500">{$i18n.t('Upload a GGUF model')}</div>
 
 							<button
-								class="p-1 px-3 text-xs flex rounded-sm transition"
+								style="--p:0.2rem; --px:0.6rem; --size:0.6rem; --d:flex; --radius:0.125rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								on:click={() => {
 									if (modelUploadMode === 'file') {
 										modelUploadMode = 'url';
@@ -881,17 +881,18 @@
 								type="button"
 							>
 								{#if modelUploadMode === 'file'}
-									<span class="ml-2 self-center">{$i18n.t('File Mode')}</span>
+									<span style="--ml:0.5rem; --as:center">{$i18n.t('File Mode')}</span>
 								{:else}
-									<span class="ml-2 self-center">{$i18n.t('URL Mode')}</span>
+									<span style="--ml:0.5rem; --as:center">{$i18n.t('URL Mode')}</span>
 								{/if}
 							</button>
 						</div>
 
-						<div class="flex w-full mb-1.5">
-							<div class="flex flex-col w-full">
+						<div style="--d:flex; --w:100%; --mb:0.4rem">
+							<div style="--d:flex; --fd:column; --w:100%">
 								{#if modelUploadMode === 'file'}
-									<div class="flex-1 {modelInputFile && modelInputFile.length > 0 ? 'mr-2' : ''}">
+									<div style="--fx:1 1 0%"
+	class="{modelInputFile && modelInputFile.length > 0 ? 'mr-2' : ''}">
 										<input
 											id="model-upload-input"
 											bind:this={modelUploadInputElement}
@@ -907,7 +908,7 @@
 
 										<button
 											type="button"
-											class="w-full rounded-lg text-left py-2 px-4 bg-gray-50 dark:text-gray-300 dark:bg-gray-850"
+											style="--w:100%; --radius:0.5rem; --ta:left; --py:0.5rem; --px:1rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850)"
 											on:click={() => {
 												modelUploadInputElement.click();
 											}}
@@ -920,9 +921,11 @@
 										</button>
 									</div>
 								{:else}
-									<div class="flex-1 {modelFileUrl !== '' ? 'mr-2' : ''}">
+									<div style="--fx:1 1 0%"
+	class="{modelFileUrl !== '' ? 'mr-2' : ''}">
 										<input
-											class="w-full rounded-lg text-left py-2 px-4 bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden {modelFileUrl !==
+											style="--w:100%; --radius:0.5rem; --ta:left; --py:0.5rem; --px:1rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
+	class="{modelFileUrl !==
 											''
 												? 'mr-2'
 												: ''}"
@@ -937,14 +940,15 @@
 
 							{#if (modelUploadMode === 'file' && modelInputFile && modelInputFile.length > 0) || (modelUploadMode === 'url' && modelFileUrl !== '')}
 								<button
-									class="px-2.5 bg-gray-50 hover:bg-gray-200 text-gray-800 dark:bg-gray-850 dark:hover:bg-gray-800 dark:text-gray-100 rounded-lg disabled:cursor-not-allowed transition"
+									style="--px:0.625rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-200); --c:var(--color-gray-800); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:var(--color-gray-100); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="disabled:cursor-not-allowed"
 									type="submit"
 									disabled={modelTransferring}
 								>
 									{#if modelTransferring}
-										<div class="self-center">
+										<div style="--as:center">
 											<svg
-												class=" w-4 h-4"
+												style="--w:1rem; --h:1rem"
 												viewBox="0 0 24 24"
 												fill="currentColor"
 												xmlns="http://www.w3.org/2000/svg"
@@ -976,7 +980,7 @@
 											xmlns="http://www.w3.org/2000/svg"
 											viewBox="0 0 16 16"
 											fill="currentColor"
-											class="w-4 h-4"
+											style="--w:1rem; --h:1rem"
 										>
 											<path
 												d="M7.25 10.25a.75.75 0 0 0 1.5 0V4.56l2.22 2.22a.75.75 0 1 0 1.06-1.06l-3.5-3.5a.75.75 0 0 0-1.06 0l-3.5 3.5a.75.75 0 0 0 1.06 1.06l2.22-2.22v5.69Z"
@@ -993,55 +997,53 @@
 						{#if (modelUploadMode === 'file' && modelInputFile && modelInputFile.length > 0) || (modelUploadMode === 'url' && modelFileUrl !== '')}
 							<div>
 								<div>
-									<div class=" my-2.5 text-sm font-medium">
+									<div style="--my:0.6rem; --size:0.8rem; --weight:500">
 										{$i18n.t('Modelfile Content')}
 									</div>
 									<textarea
 										bind:value={modelFileContent}
-										class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-100 dark:bg-gray-850 outline-hidden resize-none"
+										style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --bgc:var(--color-gray-50); --dark-c:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --oe:none; resize:none"
 										rows="6"
 									/>
 								</div>
 							</div>
 						{/if}
-						<div class=" mt-1 text-xs text-gray-400 dark:text-gray-500">
+						<div style="--mt:0.2rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 							{$i18n.t('To access the GGUF models available for downloading,')}
 							<a
-								class=" text-gray-500 dark:text-gray-300 font-medium underline"
+								style="--c:var(--color-gray-500); --dark-c:var(--color-gray-300); --weight:500; --td:underline"
 								href="https://huggingface.co/models?search=gguf"
 								target="_blank">{$i18n.t('click here.')}</a
 							>
 						</div>
 
 						{#if uploadMessage}
-							<div class="mt-2">
-								<div class=" mb-2 text-xs">{$i18n.t('Upload Progress')}</div>
+							<div style="--mt:0.5rem">
+								<div style="--mb:0.5rem; --size:0.6rem">{$i18n.t('Upload Progress')}</div>
 
-								<div class="w-full rounded-full dark:bg-gray-800">
+								<div style="--w:100%; --radius:9999px; --dark-bgc:var(--color-gray-800)">
 									<div
-										class="dark:bg-gray-600 bg-gray-500 text-xs font-medium text-gray-100 text-center p-0.5 leading-none rounded-full"
-										style="width: 100%"
+										style="--dark-bgc:var(--color-gray-600); --bgc:var(--color-gray-500); --size:0.6rem; --weight:500; --c:var(--color-gray-100); --ta:center; --p:0.125rem; --lh:1; --radius:9999px; width: 100%"
 									>
 										{uploadMessage}
 									</div>
 								</div>
-								<div class="mt-1 text-xs dark:text-gray-500" style="font-size: 0.5rem;">
+								<div style="--mt:0.2rem; --size:0.6rem; --dark-c:var(--color-gray-500); font-size: 0.5rem;">
 									{modelFileDigest}
 								</div>
 							</div>
 						{:else if uploadProgress !== null}
-							<div class="mt-2">
-								<div class=" mb-2 text-xs">{$i18n.t('Upload Progress')}</div>
+							<div style="--mt:0.5rem">
+								<div style="--mb:0.5rem; --size:0.6rem">{$i18n.t('Upload Progress')}</div>
 
-								<div class="w-full rounded-full dark:bg-gray-800">
+								<div style="--w:100%; --radius:9999px; --dark-bgc:var(--color-gray-800)">
 									<div
-										class="dark:bg-gray-600 bg-gray-500 text-xs font-medium text-gray-100 text-center p-0.5 leading-none rounded-full"
-										style="width: {Math.max(15, uploadProgress ?? 0)}%"
+										style="--dark-bgc:var(--color-gray-600); --bgc:var(--color-gray-500); --size:0.6rem; --weight:500; --c:var(--color-gray-100); --ta:center; --p:0.125rem; --lh:1; --radius:9999px; width: {Math.max(15, uploadProgress ?? 0)}%"
 									>
 										{uploadProgress ?? 0}%
 									</div>
 								</div>
-								<div class="mt-1 text-xs dark:text-gray-500" style="font-size: 0.5rem;">
+								<div style="--mt:0.2rem; --size:0.6rem; --dark-c:var(--color-gray-500); font-size: 0.5rem;">
 									{modelFileDigest}
 								</div>
 							</div>
@@ -1052,11 +1054,11 @@
 		</div>
 	</div>
 {:else if ollamaModels === null}
-	<div class="flex justify-center items-center w-full h-full text-xs py-3">
+	<div style="--d:flex; --jc:center; --ai:center; --w:100%; --h:100%; --size:0.6rem; --py:0.6rem">
 		{$i18n.t('Failed to fetch models')}
 	</div>
 {:else}
-	<div class="flex justify-center items-center w-full h-full py-3">
+	<div style="--d:flex; --jc:center; --ai:center; --w:100%; --h:100%; --py:0.6rem">
 		<Spinner className="size-5" />
 	</div>
 {/if}

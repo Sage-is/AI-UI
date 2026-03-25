@@ -1,12 +1,10 @@
 <script lang="ts">
-	import { onMount, getContext } from 'svelte';
-	import { WEBUI_NAME, showSidebar, functions } from '$lib/stores';
+	import { getContext } from 'svelte';
+	import { WEBUI_NAME, showSidebar } from '$lib/stores';
 	import MenuLines from '$lib/components/icons/MenuLines.svelte';
 	import { page } from '$app/stores';
 
 	const i18n = getContext('i18n');
-
-	onMount(async () => {});
 </script>
 
 <svelte:head>
@@ -16,50 +14,69 @@
 </svelte:head>
 
 <div
-	class=" flex flex-col w-full h-screen max-h-[100dvh] transition-width duration-200 ease-in-out {$showSidebar
-		? 'md:max-w-[calc(100%-260px)]'
-		: ''} max-w-full"
+	style="--d:flex; --fd:column; --w:100%; --h:100vh; --maxh:100dvh; --tdn:200ms; --ttf:cubic-bezier(0.4, 0, 0.2, 1); --maxw:100%; --transition:max-width var(--tdn) var(--ttf); {$showSidebar
+		? '--maxw:calc(100% - 280px)'
+		: ''}"
 >
-	<nav class="   px-2.5 pt-1 backdrop-blur-xl w-full drag-region">
-		<div class=" flex items-center">
-			<div class="{$showSidebar ? 'md:hidden' : ''} flex flex-none items-center self-end">
+	<nav
+		style="--px:0.625rem; --pt:0.2rem; backdrop-filter:blur(24px); --w:100%"
+		class="drag-region"
+	>
+		<div style="--d:flex; --ai:center">
+			<div
+				style="--d:flex; --fx:none; --ai:center; --as:flex-end; {$showSidebar ? '--d:none' : ''}"
+				class={$showSidebar ? 'md:hidden' : ''}
+			>
 				<button
 					id="sidebar-toggle-button"
-					class="cursor-pointer p-1.5 flex rounded-xl hover:bg-gray-100 dark:hover:bg-gray-850 transition"
+					style="--cur:pointer; --p:0.4rem; --d:flex; --radius:0.6rem; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						showSidebar.set(!$showSidebar);
 					}}
 					aria-label="Toggle Sidebar"
 				>
-					<div class=" m-auto self-center">
+					<div style="--m:auto; --as:center">
 						<MenuLines />
 					</div>
 				</button>
 			</div>
 
-			<div class=" flex w-full">
+			<div style="--d:flex; --w:100%">
 				<div
-					class="flex gap-1 scrollbar-none overflow-x-auto w-fit text-center text-sm font-medium rounded-full bg-transparent pt-1"
+					style="--d:flex; --g:0.2rem; --ofx:auto; --w:fit-content; --ta:center; --size:0.8rem; --weight:500; --radius:9999px; --bgc:transparent; --pt:0.2rem"
+					class="scrollbar-none"
 				>
 					<a
-						class="min-w-fit p-1.5 {$page.url.pathname.includes('/home/notes')
+						style="--minw:fit-content; --p:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+						class={['/home', '/home/'].includes($page.url.pathname)
 							? ''
-							: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition"
-						href="/playground/notes">{$i18n.t('Notes')}</a
+							: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}
+						href="/home">{$i18n.t('Dashboard')}</a
 					>
 
 					<a
-						class="min-w-fit p-1.5 {$page.url.pathname.includes('/playground/calendar')
+						style="--minw:fit-content; --p:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+						class={$page.url.pathname.includes('/notes')
 							? ''
-							: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition"
-						href="/playground/completions">{$i18n.t('Calendar')}</a
+							: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}
+						href="/notes">{$i18n.t('Notes')}</a
 					>
+
+					<a
+						style="--minw:fit-content; --p:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+						class="text-gray-300 dark:text-gray-600 cursor-default"
+						href="/home"
+						on:click|preventDefault
+					>
+						{$i18n.t('Calendar')}
+						<span style="--size:0.625rem; --op:0.6; --ml:0.125rem">{$i18n.t('Soon')}</span>
+					</a>
 				</div>
 			</div>
 		</div>
 	</nav>
 
-	<div class=" flex-1 max-h-full overflow-y-auto">
+	<div style="--fx:1 1 0%; --maxh:100%; --ofy:auto">
 		<slot />
 	</div>
 </div>

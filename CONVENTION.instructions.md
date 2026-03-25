@@ -1,7 +1,7 @@
 ---
 applyTo: "*"
 ---
-# Startr Development Workflow
+# Sage.is AI-UI Development Workflow
 
 ## Core Principles
 

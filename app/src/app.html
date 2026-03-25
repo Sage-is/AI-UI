@@ -14,10 +14,11 @@
 	<meta name="theme-color" content="#171717" />
 	<meta name="robots" content="index, follow" />
 	<meta name="description" content="Sage.is AI" />
-	<link rel="search" type="application/opensearchdescription+xml" title="Sage.is AI" href="/opensearch.xml" />
-	<script src="/static/assets/loader.js" defer></script>
-	<link rel="stylesheet" href="/static/assets/custom.css" />
+	<link rel="search" type="application/opensearchdescription+xml" title="Sage.is AI UI" href="/opensearch.xml" />
+	<link rel="stylesheet" href="https://startr.style/style.css" />
+	<link rel="stylesheet" href="/assets/custom.css" />
 
+	<script src="/assets/loader.js" defer></script>
 	<script>
 		function resizeIframe(obj) {
 			obj.style.height = obj.contentWindow.document.documentElement.scrollHeight + 'px';
@@ -25,7 +26,9 @@
 	</script>
 
 	<script>
-		// On page load or when changing themes, best to add inline in `head` to avoid FOUC
+		// Theme bootstrap — runs inline in <head> to prevent FOUC.
+		// Sets both .dark/.light class (for Tailwind) AND data-theme attribute
+		// (for Startr.Style semantic color system: --primary, --background, --text-main, etc.)
 		(() => {
 			const metaThemeColorTag = document.querySelector('meta[name="theme-color"]');
 			const prefersDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -34,43 +37,44 @@
 				localStorage.theme = 'system';
 			}
 
-			if (localStorage.theme === 'system') {
-				document.documentElement.classList.add(prefersDarkTheme ? 'dark' : 'light');
-				metaThemeColorTag.setAttribute('content', prefersDarkTheme ? '#171717' : '#ffffff');
-			} else if (localStorage.theme === 'oled-dark') {
+			// Helper: apply theme class + data-theme attribute in one place
+			const setTheme = (mode) => {
+				const isDark = mode === 'dark';
+				document.documentElement.classList.add(isDark ? 'dark' : 'light');
+				document.documentElement.classList.remove(isDark ? 'light' : 'dark');
+				// Startr.Style uses [data-theme="dark"] to flip semantic colors
+				document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+				metaThemeColorTag.setAttribute('content', isDark ? '#171717' : '#ffffff');
+			};
+
+			// Resolve theme preference
+			const theme = localStorage.theme;
+			if (theme === 'system') {
+				setTheme(prefersDarkTheme ? 'dark' : 'light');
+			} else if (theme === 'oled-dark') {
+				setTheme('dark');
+				// OLED: push grays to true black for AMOLED screens
 				document.documentElement.style.setProperty('--color-gray-800', '#101010');
 				document.documentElement.style.setProperty('--color-gray-850', '#050505');
 				document.documentElement.style.setProperty('--color-gray-900', '#000000');
 				document.documentElement.style.setProperty('--color-gray-950', '#000000');
-				document.documentElement.classList.add('dark');
 				metaThemeColorTag.setAttribute('content', '#000000');
-			} else if (localStorage.theme === 'light') {
-				document.documentElement.classList.add('light');
-				metaThemeColorTag.setAttribute('content', '#ffffff');
-			} else if (localStorage.theme === 'her') {
-				document.documentElement.classList.add('dark');
-				document.documentElement.classList.add('her');
-				metaThemeColorTag.setAttribute('content', '#983724');
+			} else if (theme === 'light') {
+				setTheme('light');
 			} else {
-				document.documentElement.classList.add('dark');
-				metaThemeColorTag.setAttribute('content', '#171717');
+				// Default fallback: dark
+				setTheme('dark');
 			}
 
-			window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
+			// Listen for OS theme changes when in "system" mode
+			window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
 				if (localStorage.theme === 'system') {
-					if (e.matches) {
-						document.documentElement.classList.add('dark');
-						document.documentElement.classList.remove('light');
-						metaThemeColorTag.setAttribute('content', '#171717');
-					} else {
-						document.documentElement.classList.add('light');
-						document.documentElement.classList.remove('dark');
-						metaThemeColorTag.setAttribute('content', '#ffffff');
-					}
+					setTheme(e.matches ? 'dark' : 'light');
 				}
 			});
-			const isDarkMode = document.documentElement.classList.contains('dark');
 
+			// Splash screen logo (light/dark variant)
+			const isDarkMode = document.documentElement.classList.contains('dark');
 			const logo = document.createElement('img');
 			logo.id = 'logo';
 			logo.style =
@@ -99,43 +103,7 @@
 			}
 		</style>
 
-		<div style="
-					position: absolute;
-					top: 33%;
-					left: 50%;
-
-					width: 24rem;
-					transform: translateX(-50%);
-
-					display: flex;
-					flex-direction: column;
-					align-items: center;
-				">
-			<img id="logo-her" style="width: auto; height: 13rem" src="/static/icons/splash.png" class="animate-pulse-fast" />
-
-			<div style="position: relative; width: 24rem; margin-top: 0.5rem">
-				<div id="progress-background" style="
-							position: absolute;
-							width: 100%;
-							height: 0.75rem;
-
-							border-radius: 9999px;
-							background-color: #fafafa9a;
-						"></div>
-
-				<div id="progress-bar" style="
-							position: absolute;
-							width: 0%;
-							height: 0.75rem;
-							border-radius: 9999px;
-							background-color: #fff;
-						" class="bg-white"></div>
-			</div>
-		</div>
-
-		<!-- <span style="position: absolute; bottom: 32px; left: 50%; margin: -36px 0 0 -36px">
-				Footer content
-			</span> -->
+		<!-- Splash logo is injected dynamically by the theme bootstrap script above -->
 	</div>
 </body>
 
@@ -146,64 +114,13 @@
 		overflow-y: hidden !important;
 	}
 
+	/* Splash screen backgrounds — uses Startr.Style semantic vars once loaded,
+	   but needs hardcoded fallbacks here since this runs before CSS loads */
 	#splash-screen {
 		background: #fff;
 	}
 
 	html.dark #splash-screen {
 		background: #000;
-	}
-
-	html.her #splash-screen {
-		background: #000000;
-	}
-
-	#logo-her {
-		display: none;
-	}
-
-	#progress-background {
-		display: none;
-	}
-
-	#progress-bar {
-		display: none;
-	}
-
-	html.her #logo {
-		display: none;
-	}
-
-	html.her #logo-her {
-		display: block;
-		filter: invert(1);
-	}
-
-	html.her #progress-background {
-		display: block;
-	}
-
-	html.her #progress-bar {
-		display: block;
-	}
-
-	@media (max-width: 24rem) {
-		html.her #progress-background {
-			display: none;
-		}
-
-		html.her #progress-bar {
-			display: none;
-		}
-	}
-
-	@keyframes pulse {
-		50% {
-			opacity: 0.65;
-		}
-	}
-
-	.animate-pulse-fast {
-		animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 	}
 </style>

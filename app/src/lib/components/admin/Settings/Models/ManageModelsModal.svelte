@@ -39,12 +39,13 @@
 
 <Modal size="sm" bind:show>
 	<div>
-		<div class=" flex justify-between dark:text-gray-100 px-5 pt-4">
-			<div class=" text-lg font-medium self-center font-primary">
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-100); --px:1.2rem; --pt:1rem">
+			<div style="--size:1.125rem; --weight:500; --as:center"
+	class="font-primary">
 				{$i18n.t('Manage Models')}
 			</div>
 			<button
-				class="self-center"
+				style="--as:center"
 				on:click={() => {
 					show = false;
 				}}
@@ -53,46 +54,49 @@
 			</button>
 		</div>
 
-		<div class="flex flex-col md:flex-row w-full px-3 pb-4 md:space-x-4 dark:text-gray-200">
-			<div class=" flex flex-col w-full sm:flex-row sm:justify-center sm:space-x-6">
+		<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --px:0.6rem; --pb:1rem; --p: 1rem 0;--bgc: var(--white); --br: 1rem">
+			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				{#if selected === ''}
-					<div class=" py-5 text-gray-400 text-xs">
+					<div style="--py:1.2rem; --c:var(--color-gray-400); --size:0.6rem">
 						<div>
 							{$i18n.t('No inference engine with management support found')}
 						</div>
 					</div>
 				{:else if selected !== null}
-					<div class=" flex w-full flex-col">
+					<div style="--d:flex; --w:100%; --fd:column">
 						<div
-							class="flex gap-1 scrollbar-none overflow-x-auto w-fit text-center text-sm font-medium rounded-full bg-transparent dark:text-gray-200"
+							style="--d:flex; --g:0.2rem; --ofx:auto; --w:fit-content; --ta:center; --size:0.8rem; --weight:500; --radius:9999px; --bgc:transparent; --dark-c:var(--color-gray-200)"
+	class="scrollbar-none"
 						>
 							<button
-								class="min-w-fit p-1.5 {selected === 'ollama'
+								style="--minw:fit-content; --p:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{selected === 'ollama'
 									? ''
-									: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition"
+									: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
 								on:click={() => {
 									selected = 'ollama';
 								}}>{$i18n.t('Ollama')}</button
 							>
 
 							<!-- <button
-								class="min-w-fit p-1.5 {selected === 'llamacpp'
+								style="--minw:fit-content; --p:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{selected === 'llamacpp'
 									? ''
-									: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition"
+									: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
 								on:click={() => {
 									selected = 'llamacpp';
 								}}>{$i18n.t('Llama.cpp')}</button
 							> -->
 						</div>
 
-						<div class=" px-1.5 py-1">
+						<div style="--px:0.4rem; --py:0.2rem">
 							{#if selected === 'ollama'}
 								<ManageMultipleOllama {ollamaConfig} />
 							{/if}
 						</div>
 					</div>
 				{:else}
-					<div class=" py-5">
+					<div style="--py:1.2rem">
 						<Spinner />
 					</div>
 				{/if}

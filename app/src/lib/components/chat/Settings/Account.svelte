@@ -7,6 +7,7 @@
 	import { WEBUI_BASE_URL } from '$lib/constants';
 
 	import UpdatePassword from './Account/UpdatePassword.svelte';
+	import ClaimAccount from './Account/ClaimAccount.svelte';
 	import { getGravatarUrl } from '$lib/apis/utils';
 	import { generateInitialsImage, canvasPixelTest } from '$lib/utils';
 	import { copyToClipboard } from '$lib/utils';
@@ -23,7 +24,6 @@
 	let name = '';
 
 	let webhookUrl = '';
-	let showAPIKeys = false;
 
 	let JWTTokenCopied = false;
 
@@ -47,15 +47,13 @@
 			});
 		}
 
-		const updatedUser = await updateUserProfile(localStorage.token, name, profileImageUrl).catch(
-			(error) => {
-				toast.error(`${error}`);
-			}
-		);
+		const updatedUser = await updateUserProfile(name, profileImageUrl).catch((error) => {
+			toast.error(`${error}`);
+		});
 
 		if (updatedUser) {
 			// Get Session User Info
-			const sessionUser = await getSessionUser(localStorage.token).catch((error) => {
+			const sessionUser = await getSessionUser().catch((error) => {
 				toast.error(`${error}`);
 				return null;
 			});
@@ -67,7 +65,7 @@
 	};
 
 	const createAPIKeyHandler = async () => {
-		APIKey = await createAPIKey(localStorage.token);
+		APIKey = await createAPIKey();
 		if (APIKey) {
 			toast.success($i18n.t('API Key created.'));
 		} else {
@@ -80,15 +78,15 @@
 		profileImageUrl = $user?.profile_image_url;
 		webhookUrl = $settings?.notifications?.webhook_url ?? '';
 
-		APIKey = await getAPIKey(localStorage.token).catch((error) => {
+		APIKey = await getAPIKey().catch((error) => {
 			console.log(error);
 			return '';
 		});
 	});
 </script>
 
-<div id="tab-account" class="flex flex-col h-full justify-between text-sm">
-	<div class=" overflow-y-scroll max-h-[28rem] lg:max-h-full">
+<div id="tab-account" style="--d:flex; --fd:column; --h:100%; --jc:space-between; --size:0.8rem">
+	<div style="--ofy:scroll; --maxh:28rem; --maxh-lg:100%">
 		<input
 			id="profile-image-input"
 			bind:this={profileImageInputElement}
@@ -151,14 +149,14 @@
 			}}
 		/>
 
-		<div class="space-y-1">
-			<!-- <div class=" text-sm font-medium">{$i18n.t('Account')}</div> -->
+		<div style="--g:0.2rem">
+			<!-- <div style="--size:0.8rem; --weight:500">{$i18n.t('Account')}</div> -->
 
-			<div class="flex space-x-5">
-				<div class="flex flex-col">
-					<div class="self-center mt-2">
+			<div style="--d:flex; --g:1.2rem">
+				<div style="--d:flex; --fd:column">
+					<div style="--as:center; --mt:0.5rem">
 						<button
-							class="relative rounded-full dark:bg-gray-700"
+							style="--pos:relative; --radius:9999px; --dark-bgc:var(--color-gray-700)"
 							type="button"
 							on:click={() => {
 								profileImageInputElement.click();
@@ -167,18 +165,19 @@
 							<img
 								src={profileImageUrl !== '' ? profileImageUrl : generateInitialsImage(name)}
 								alt="profile"
-								class=" rounded-full size-16 object-cover"
+								style="--radius:9999px; --w:4rem; --h:4rem; --objf:cover"
 							/>
 
 							<div
-								class="absolute flex justify-center rounded-full bottom-0 left-0 right-0 top-0 h-full w-full overflow-hidden bg-gray-700 bg-fixed opacity-0 transition duration-300 ease-in-out hover:opacity-50"
+								style="--pos:absolute; --d:flex; --jc:center; --radius:9999px; --bottom:0; --left:0; --right:0; --top:0; --h:100%; --w:100%; --of:hidden; --bgc:var(--color-gray-700); --op:0; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:300ms; --ttf:cubic-bezier(0.4, 0, 0.2, 1); --hvr-op:0.5"
+								class="bg-fixed"
 							>
-								<div class="my-auto text-gray-100">
+								<div style="--my:auto; --c:var(--color-gray-100)">
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										viewBox="0 0 20 20"
 										fill="currentColor"
-										class="w-5 h-5"
+										style="--w:1.2rem; --h:1.2rem"
 									>
 										<path
 											d="m2.695 14.762-1.262 3.155a.5.5 0 0 0 .65.65l3.155-1.262a4 4 0 0 0 1.343-.886L17.5 5.501a2.121 2.121 0 0 0-3-3L3.58 13.419a4 4 0 0 0-.885 1.343Z"
@@ -190,12 +189,12 @@
 					</div>
 				</div>
 
-				<div class="flex-1 flex flex-col self-center gap-0.5">
-					<div class=" mb-0.5 text-sm font-medium">{$i18n.t('Profile Image')}</div>
+				<div style="--fx:1 1 0%; --d:flex; --fd:column; --as:center; --g:0.125rem">
+					<div style="--mb:0.125rem; --size:0.8rem; --weight:500">{$i18n.t('Profile Image')}</div>
 
-					<div>
+					<div style="--d:flex; --g:0.4rem">
 						<button
-							class=" text-xs text-center text-gray-800 dark:text-gray-400 rounded-full px-4 py-0.5 bg-gray-100 dark:bg-gray-850"
+							style="--size:0.6rem; --ta:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-400); --radius:9999px; --px:1rem; --py:0.125rem; --bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850)"
 							on:click={async () => {
 								if (canvasPixelTest()) {
 									profileImageUrl = generateInitialsImage(name);
@@ -213,7 +212,7 @@
 						>
 
 						<button
-							class=" text-xs text-center text-gray-800 dark:text-gray-400 rounded-full px-4 py-0.5 bg-gray-100 dark:bg-gray-850"
+							style="--size:0.6rem; --ta:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-400); --radius:9999px; --px:1rem; --py:0.125rem; --bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850)"
 							on:click={async () => {
 								const url = await getGravatarUrl(localStorage.token, $user?.email);
 
@@ -222,7 +221,7 @@
 						>
 
 						<button
-							class=" text-xs text-center text-gray-800 dark:text-gray-400 rounded-lg px-2 py-1"
+							style="--size:0.6rem; --ta:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-400); --radius:0.5rem; --px:0.5rem; --py:0.2rem"
 							on:click={async () => {
 								profileImageUrl = `${WEBUI_BASE_URL}/static/user.png`;
 							}}>{$i18n.t('Remove')}</button
@@ -231,13 +230,13 @@
 				</div>
 			</div>
 
-			<div class="pt-0.5">
-				<div class="flex flex-col w-full">
-					<div class=" mb-1 text-xs font-medium">{$i18n.t('Name')}</div>
+			<div style="--pt:0.125rem">
+				<div style="--d:flex; --fd:column; --w:100%">
+					<div style="--mb:0.2rem; --size:0.6rem; --weight:500">{$i18n.t('Name')}</div>
 
-					<div class="flex-1">
+					<div style="--fx:1 1 0%">
 						<input
-							class="w-full text-sm dark:text-gray-300 bg-transparent outline-hidden"
+							style="--w:100%; --size:0.8rem; --dark-c:var(--color-gray-300); --bgc:transparent; --oe:none"
 							type="text"
 							bind:value={name}
 							required
@@ -248,13 +247,15 @@
 			</div>
 
 			{#if $config?.features?.enable_user_webhooks}
-				<div class="pt-2">
-					<div class="flex flex-col w-full">
-						<div class=" mb-1 text-xs font-medium">{$i18n.t('Notification Webhook')}</div>
+				<div style="--pt:0.5rem">
+					<div style="--d:flex; --fd:column; --w:100%">
+						<div style="--mb:0.2rem; --size:0.6rem; --weight:500">
+							{$i18n.t('Notification Webhook')}
+						</div>
 
-						<div class="flex-1">
+						<div style="--fx:1 1 0%">
 							<input
-								class="w-full rounded-lg py-2 px-4 text-sm dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+								style="--w:100%; --radius:0.5rem; --py:0.5rem; --px:1rem; --size:0.8rem; --dark-c:var(--color-gray-300); --dark-bgc:var(--color-gray-850); --oe:none"
 								type="url"
 								placeholder={$i18n.t('Enter your webhook URL')}
 								bind:value={webhookUrl}
@@ -266,37 +267,73 @@
 			{/if}
 		</div>
 
-		<hr class="border-gray-50 dark:border-gray-850 my-2" />
+		<hr style="--bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --my:0.5rem" />
 
-		<div class="my-2">
-			<UpdatePassword />
-		</div>
+		{#if $user?.role === 'temporary'}
+			<div
+				style="--my:0.5rem; --p:0.6rem; --radius:0.6rem; --bgc:#fefce8; --dark-bgc:rgb(66 32 6 / 0.3);  --bc:#fde047; --dark-bc:rgb(161 98 7 / 0.5)"
+			>
+				<ClaimAccount />
+			</div>
+		{:else}
+			<div style="--my:0.5rem">
+				<UpdatePassword />
+			</div>
+		{/if}
 
 		{#if ($config?.features?.enable_api_key ?? true) || $user?.role === 'admin'}
-			<div class="flex justify-between items-center text-sm mb-2">
-				<div class="  font-medium">{$i18n.t('API keys')}</div>
-				<button
-					class=" text-xs font-medium text-gray-500"
-					type="button"
-					on:click={() => {
-						showAPIKeys = !showAPIKeys;
-					}}>{showAPIKeys ? $i18n.t('Hide') : $i18n.t('Show')}</button
+			<details style="--size:0.8rem">
+				<summary
+					style="--d:flex; --ai:center; --g:0.5rem; --cur:pointer; --us:none; --py:0.2rem; --list-style:none"
 				>
-			</div>
+					<span style="--weight:500">{$i18n.t('API keys')}</span>
+					<details
+						style="--d:inline; --size:0.6rem; 
+					--c:var(--color-gray-400); 
+					--dark-c:var(--color-gray-500);--w: 80%;
+					--m: auto;--b:0"
+						on:click|stopPropagation
+					>
+						<summary style="--cur:pointer; --us:none; --list-style:none">
+							{$i18n.t('What is an API key?')} &#9662;
+						</summary>
+						<div style="--mt:0.4rem; --lh:1.5; --size:0.8rem">
+							<p style="--mb:0.4rem">
+								{$i18n.t(
+									'An API (Application Programming Interface) lets other apps and scripts talk to your Sage AI account — for example, a chatbot on your website, a shortcut on your phone, or a custom workflow.'
+								)}
+							</p>
+							<p style="--mb:0.4rem">
+								{$i18n.t(
+									'Your API key is like a password for those connections. Keep it secret — anyone who has it can act on your behalf.'
+								)}
+							</p>
+							<p>
+								{$i18n.t('To see every available endpoint and try them out, visit the')}
+								<a
+									href="/docs"
+									target="_blank"
+									rel="noopener"
+									style="--c:var(--color-blue-500); --tdn:underline; --weight:500"
+									>{$i18n.t('interactive API documentation')}</a
+								>.
+							</p>
+						</div>
+					</details>
+					<span style="--ml:auto; --size:0.6rem; --weight:500; --c:var(--color-gray-400)"
+						>&#9662;</span
+					>
+				</summary>
 
-			{#if showAPIKeys}
-				<div class="flex flex-col gap-4">
+				<div style="--mt:0.5rem; --d:flex; --fd:column; --g:1rem">
 					{#if $user?.role === 'admin'}
-						<div class="justify-between w-full">
-							<div class="flex justify-between w-full">
-								<div class="self-center text-xs font-medium mb-1">{$i18n.t('JWT Token')}</div>
-							</div>
-
-							<div class="flex">
+						<div style="--w:100%">
+							<div style="--size:0.6rem; --weight:500; --mb:0.2rem">{$i18n.t('JWT Token')}</div>
+							<div style="--d:flex">
 								<SensitiveInput value={localStorage.token} readOnly={true} />
 
 								<button
-									class="ml-1.5 px-1.5 py-1 dark:hover:bg-gray-850 transition rounded-lg"
+									style="--ml:0.4rem; --px:0.4rem; --py:0.2rem; --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
 									on:click={() => {
 										copyToClipboard(localStorage.token);
 										JWTTokenCopied = true;
@@ -310,7 +347,7 @@
 											xmlns="http://www.w3.org/2000/svg"
 											viewBox="0 0 20 20"
 											fill="currentColor"
-											class="w-4 h-4"
+											style="--w:1rem; --h:1rem"
 										>
 											<path
 												fill-rule="evenodd"
@@ -323,7 +360,7 @@
 											xmlns="http://www.w3.org/2000/svg"
 											viewBox="0 0 16 16"
 											fill="currentColor"
-											class="w-4 h-4"
+											style="--w:1rem; --h:1rem"
 										>
 											<path
 												fill-rule="evenodd"
@@ -343,18 +380,14 @@
 					{/if}
 
 					{#if $config?.features?.enable_api_key ?? true}
-						<div class="justify-between w-full">
-							{#if $user?.role === 'admin'}
-								<div class="flex justify-between w-full">
-									<div class="self-center text-xs font-medium mb-1">{$i18n.t('API Key')}</div>
-								</div>
-							{/if}
-							<div class="flex">
+						<div style="--w:100%">
+							<div style="--size:0.6rem; --weight:500; --mb:0.2rem">{$i18n.t('API Key')}</div>
+							<div style="--d:flex">
 								{#if APIKey}
 									<SensitiveInput value={APIKey} readOnly={true} />
 
 									<button
-										class="ml-1.5 px-1.5 py-1 dark:hover:bg-gray-850 transition rounded-lg"
+										style="--ml:0.4rem; --px:0.4rem; --py:0.2rem; --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
 										on:click={() => {
 											copyToClipboard(APIKey);
 											APIKeyCopied = true;
@@ -368,7 +401,7 @@
 												xmlns="http://www.w3.org/2000/svg"
 												viewBox="0 0 20 20"
 												fill="currentColor"
-												class="w-4 h-4"
+												style="--w:1rem; --h:1rem"
 											>
 												<path
 													fill-rule="evenodd"
@@ -381,7 +414,7 @@
 												xmlns="http://www.w3.org/2000/svg"
 												viewBox="0 0 16 16"
 												fill="currentColor"
-												class="w-4 h-4"
+												style="--w:1rem; --h:1rem"
 											>
 												<path
 													fill-rule="evenodd"
@@ -399,7 +432,7 @@
 
 									<Tooltip content={$i18n.t('Create new key')}>
 										<button
-											class=" px-1.5 py-1 dark:hover:bg-gray-850transition rounded-lg"
+											style="--px:0.4rem; --py:0.2rem; --radius:0.5rem; --hvr-dark-bgc:var(--color-gray-850); --tn:background-color 150ms"
 											on:click={() => {
 												createAPIKeyHandler();
 											}}
@@ -410,7 +443,7 @@
 												viewBox="0 0 24 24"
 												stroke-width="2"
 												stroke="currentColor"
-												class="size-4"
+												style="--w:1rem; --h:1rem"
 											>
 												<path
 													stroke-linecap="round"
@@ -422,7 +455,7 @@
 									</Tooltip>
 								{:else}
 									<button
-										class="flex gap-1.5 items-center font-medium px-3.5 py-1.5 rounded-lg bg-gray-100/70 hover:bg-gray-100 dark:bg-gray-850 dark:hover:bg-gray-850 transition"
+										style="--d:flex; --g:0.4rem; --ai:center; --weight:500; --px:0.8rem; --py:0.4rem; --radius:0.5rem; --bgc:rgb(236 236 236 / 0.7); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-850); --tn:background-color 150ms"
 										on:click={() => {
 											createAPIKeyHandler();
 										}}
@@ -436,13 +469,13 @@
 						</div>
 					{/if}
 				</div>
-			{/if}
+			</details>
 		{/if}
 	</div>
 
-	<div class="flex justify-end pt-3 text-sm font-medium">
+	<div style="--d:flex; --jc:flex-end; --pt:0.6rem; --size:0.8rem; --weight:500">
 		<button
-			class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+			style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 			on:click={async () => {
 				const res = await submitHandler();
 

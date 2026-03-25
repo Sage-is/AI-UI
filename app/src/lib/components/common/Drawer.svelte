@@ -57,16 +57,18 @@
 
 <div
 	bind:this={modalElement}
-	class="modal fixed right-0 {$isApp
+	style="--pos:fixed; --right:0; --left:0; --bottom:0; --bgc:rgb(0 0 0 / 0.6); --w:100%; --h:100vh; --maxh:100dvh; --d:flex; --jc:center; --z:999; --of:hidden; overscroll-behavior:contain"
+	class="modal {$isApp
 		? ' ml-[4.5rem] max-w-[calc(100%-4.5rem)]'
-		: ''} left-0 bottom-0 bg-black/60 w-full h-screen max-h-[100dvh] flex justify-center z-999 overflow-hidden overscroll-contain"
+		: ''}"
 	in:fly={{ y: 100, duration: 100 }}
 	on:mousedown={() => {
 		show = false;
 	}}
 >
 	<div
-		class=" mt-auto w-full bg-gray-50 dark:bg-gray-900 dark:text-gray-100 {className} max-h-[100dvh] overflow-y-auto scrollbar-hidden"
+		style="--mt:auto; --w:100%; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-900); --dark-c:var(--color-gray-100); --maxh:100dvh; --ofy:auto"
+	class="{className} scrollbar-hidden"
 		on:mousedown={(e) => {
 			e.stopPropagation();
 		}}

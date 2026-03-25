@@ -53,14 +53,16 @@
 </script>
 
 {#if loaded}
-	<div class="flex flex-col lg:flex-row w-full h-full pb-2 lg:space-x-4">
+	<div style="--d:flex; --fd:column; --fd-lg:row; --w:100%; --h:100%;  --g-lg:1rem">
 		<div
 			id="users-tabs-container"
-			class="tabs flex flex-row overflow-x-auto gap-2.5 max-w-full lg:gap-1 lg:flex-col lg:flex-none lg:w-40 dark:text-gray-200 text-sm font-medium text-left scrollbar-none"
+			style="--d:flex; --fd:row; --ofx:auto; --g:0.625rem; --maxw:100%; --g-lg:0.2rem; --fd-lg:column; --fx-lg:none; --w-lg:10rem; --dark-c:var(--color-gray-200); --size:0.8rem; --weight:500; --ta:left"
+	class="tabs scrollbar-none"
 		>
 			<button
 				id="leaderboard"
-				class="px-0.5 py-1 min-w-fit rounded-lg lg:flex-none flex text-right transition {selectedTab ===
+				style="--p:0.2rem; --minw:fit-content; --radius:0.5rem; --fx-lg:none; --d:flex; --ta:right; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{selectedTab ===
 				'leaderboard'
 					? ''
 					: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
@@ -68,12 +70,12 @@
 					goto('/admin/evaluations/leaderboard');
 				}}
 			>
-				<div class=" self-center mr-2">
+				<div style="--as:center; --mr:0.5rem">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 16 16"
 						fill="currentColor"
-						class="size-4"
+						style="--w:1rem; --h:1rem"
 					>
 						<path
 							fill-rule="evenodd"
@@ -82,12 +84,13 @@
 						/>
 					</svg>
 				</div>
-				<div class=" self-center">{$i18n.t('Leaderboard')}</div>
+				<div style="--as:center">{$i18n.t('Leaderboard')}</div>
 			</button>
 
 			<button
 				id="feedbacks"
-				class="px-0.5 py-1 min-w-fit rounded-lg lg:flex-none flex text-right transition {selectedTab ===
+				style="--p:0.2rem; --minw:fit-content; --radius:0.5rem; --fx-lg:none; --d:flex; --ta:right; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{selectedTab ===
 				'feedbacks'
 					? ''
 					: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
@@ -95,12 +98,12 @@
 					goto('/admin/evaluations/feedbacks');
 				}}
 			>
-				<div class=" self-center mr-2">
+				<div style="--as:center; --mr:0.5rem">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 16 16"
 						fill="currentColor"
-						class="size-4"
+						style="--w:1rem; --h:1rem"
 					>
 						<path
 							fill-rule="evenodd"
@@ -109,11 +112,11 @@
 						/>
 					</svg>
 				</div>
-				<div class=" self-center">{$i18n.t('Feedbacks')}</div>
+				<div style="--as:center">{$i18n.t('Feedbacks')}</div>
 			</button>
 		</div>
 
-		<div class="flex-1 mt-1 lg:mt-0 overflow-y-scroll">
+		<div style="--fx:1 1 0%; --mt:0.2rem; --mt-lg:0; --ofy:scroll">
 			{#if selectedTab === 'leaderboard'}
 				<Leaderboard {feedbacks} />
 			{:else if selectedTab === 'feedbacks'}

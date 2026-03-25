@@ -168,20 +168,20 @@
 
 <FeedbackModal bind:show={showFeedbackModal} {selectedFeedback} onClose={closeFeedbackModal} />
 
-<div class="mt-0.5 mb-2 gap-1 flex flex-row justify-between">
-	<div class="flex md:self-center text-lg font-medium px-0.5">
+<div style="--mt:0.125rem; --mb:0.5rem; --g:0.2rem; --d:flex; --fd:row; --jc:space-between">
+	<div style="--d:flex; --as-md:center; --size:1.125rem; --weight:500; --px:0.125rem">
 		{$i18n.t('Feedback History')}
 
-		<div class="flex self-center w-[1px] h-6 mx-2.5 bg-gray-50 dark:bg-gray-850" />
+		<div style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)" />
 
-		<span class="text-lg font-medium text-gray-500 dark:text-gray-300">{feedbacks.length}</span>
+		<span style="--size:1.125rem; --weight:500; --c:var(--color-gray-500); --dark-c:var(--color-gray-300)">{feedbacks.length}</span>
 	</div>
 
 	{#if feedbacks.length > 0}
 		<div>
 			<Tooltip content={$i18n.t('Export')}>
 				<button
-					class=" p-2 rounded-xl hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-850 transition font-medium text-sm flex items-center space-x-1"
+					style="--p:0.5rem; --radius:0.6rem; --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-900); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.8rem; --d:flex; --ai:center; --g:0.2rem"
 					on:click={() => {
 						exportHandler();
 					}}
@@ -194,29 +194,30 @@
 </div>
 
 <div
-	class="scrollbar-hidden relative whitespace-nowrap overflow-x-auto max-w-full rounded-sm pt-0.5"
+	style="--pos:relative; --ws:nowrap; --ofx:auto; --maxw:100%; --radius:0.125rem; --pt:0.125rem"
+	class="scrollbar-hidden"
 >
 	{#if (feedbacks ?? []).length === 0}
-		<div class="text-center text-xs text-gray-500 dark:text-gray-400 py-1">
+		<div style="--ta:center; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --py:0.2rem">
 			{$i18n.t('No feedbacks found')}
 		</div>
 	{:else}
 		<table
-			class="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-auto max-w-full rounded-sm"
+			style="--w:100%; --size:0.8rem; --ta:left; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); table-layout:auto; --maxw:100%; --radius:0.125rem"
 		>
 			<thead
-				class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-850 dark:text-gray-400 -translate-y-0.5"
+				style="--size:0.6rem; --c:var(--color-gray-700); --tt:uppercase; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-400); --translatey:-0.125rem"
 			>
 				<tr class="">
 					<th
 						scope="col"
-						class="px-3 py-1.5 cursor-pointer select-none w-3"
+						style="--px:0.6rem; --py:0.4rem; --cur:pointer; --us:none; --w:0.6rem"
 						on:click={() => setSortKey('user')}
 					>
-						<div class="flex gap-1.5 items-center justify-end">
+						<div style="--d:flex; --g:0.4rem; --ai:center; --jc:flex-end">
 							{$i18n.t('User')}
 							{#if orderBy === 'user'}
-								<span class="font-normal">
+								<span style="--weight:400">
 									{#if direction === 'asc'}
 										<ChevronUp className="size-2" />
 									{:else}
@@ -224,7 +225,7 @@
 									{/if}
 								</span>
 							{:else}
-								<span class="invisible">
+								<span style="--v:hidden">
 									<ChevronUp className="size-2" />
 								</span>
 							{/if}
@@ -233,13 +234,13 @@
 
 					<th
 						scope="col"
-						class="px-3 pr-1.5 cursor-pointer select-none"
+						style="--px:0.6rem; --pr:0.4rem; --cur:pointer; --us:none"
 						on:click={() => setSortKey('model_id')}
 					>
-						<div class="flex gap-1.5 items-center">
+						<div style="--d:flex; --g:0.4rem; --ai:center">
 							{$i18n.t('Models')}
 							{#if orderBy === 'model_id'}
-								<span class="font-normal">
+								<span style="--weight:400">
 									{#if direction === 'asc'}
 										<ChevronUp className="size-2" />
 									{:else}
@@ -247,7 +248,7 @@
 									{/if}
 								</span>
 							{:else}
-								<span class="invisible">
+								<span style="--v:hidden">
 									<ChevronUp className="size-2" />
 								</span>
 							{/if}
@@ -256,13 +257,13 @@
 
 					<th
 						scope="col"
-						class="px-3 py-1.5 text-right cursor-pointer select-none w-fit"
+						style="--px:0.6rem; --py:0.4rem; --ta:right; --cur:pointer; --us:none; --w:fit-content"
 						on:click={() => setSortKey('rating')}
 					>
-						<div class="flex gap-1.5 items-center justify-end">
+						<div style="--d:flex; --g:0.4rem; --ai:center; --jc:flex-end">
 							{$i18n.t('Result')}
 							{#if orderBy === 'rating'}
-								<span class="font-normal">
+								<span style="--weight:400">
 									{#if direction === 'asc'}
 										<ChevronUp className="size-2" />
 									{:else}
@@ -270,7 +271,7 @@
 									{/if}
 								</span>
 							{:else}
-								<span class="invisible">
+								<span style="--v:hidden">
 									<ChevronUp className="size-2" />
 								</span>
 							{/if}
@@ -279,13 +280,13 @@
 
 					<th
 						scope="col"
-						class="px-3 py-1.5 text-right cursor-pointer select-none w-0"
+						style="--px:0.6rem; --py:0.4rem; --ta:right; --cur:pointer; --us:none; --w:0"
 						on:click={() => setSortKey('updated_at')}
 					>
-						<div class="flex gap-1.5 items-center justify-end">
+						<div style="--d:flex; --g:0.4rem; --ai:center; --jc:flex-end">
 							{$i18n.t('Updated At')}
 							{#if orderBy === 'updated_at'}
-								<span class="font-normal">
+								<span style="--weight:400">
 									{#if direction === 'asc'}
 										<ChevronUp className="size-2" />
 									{:else}
@@ -293,46 +294,46 @@
 									{/if}
 								</span>
 							{:else}
-								<span class="invisible">
+								<span style="--v:hidden">
 									<ChevronUp className="size-2" />
 								</span>
 							{/if}
 						</div>
 					</th>
 
-					<th scope="col" class="px-3 py-1.5 text-right cursor-pointer select-none w-0"> </th>
+					<th scope="col" style="--px:0.6rem; --py:0.4rem; --ta:right; --cur:pointer; --us:none; --w:0"> </th>
 				</tr>
 			</thead>
-			<tbody class="">
+			<tbody style="--d:table">
 				{#each paginatedFeedbacks as feedback (feedback.id)}
 					<tr
-						class="bg-white dark:bg-gray-900 dark:border-gray-850 text-xs cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-850/50 transition"
+						style="--bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-bc:var(--color-gray-850); --size:0.6rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:rgb(38 38 38 / 0.5); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={() => openFeedbackModal(feedback)}
 					>
-						<td class=" py-0.5 text-right font-semibold">
-							<div class="flex justify-center">
+						<td style="--d:table;--py:0.125rem; --ta:right; --weight:600">
+							<div style="--d:flex; --jc:center">
 								<Tooltip content={feedback?.user?.name}>
-									<div class="shrink-0">
+									<div style="--fs:0">
 										<img
 											src={feedback?.user?.profile_image_url ?? `${WEBUI_BASE_URL}/static/user.png`}
 											alt={feedback?.user?.name}
-											class="size-5 rounded-full object-cover shrink-0"
+											style="--w:1.2rem; --h:1.2rem; --radius:9999px; --objf:cover; --fs:0"
 										/>
 									</div>
 								</Tooltip>
 							</div>
 						</td>
 
-						<td class=" py-1 pl-3 flex flex-col">
-							<div class="flex flex-col items-start gap-0.5 h-full">
-								<div class="flex flex-col h-full">
+						<td style="--d:table;--py:0.2rem; --pl:0.6rem; --d:flex; --fd:column">
+							<div style="--d:flex; --fd:column; --ai:flex-start; --g:0.125rem; --h:100%">
+								<div style="--d:flex; --fd:column; --h:100%">
 									{#if feedback.data?.sibling_model_ids}
-										<div class="font-semibold text-gray-600 dark:text-gray-400 flex-1">
+										<div style="--weight:600; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); --fx:1 1 0%">
 											{feedback.data?.model_id}
 										</div>
 
 										<Tooltip content={feedback.data.sibling_model_ids.join(', ')}>
-											<div class=" text-[0.65rem] text-gray-600 dark:text-gray-400 line-clamp-1">
+											<div style="--size:0.65rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); --line-clamp:1">
 												{#if feedback.data.sibling_model_ids.length > 2}
 													<!-- {$i18n.t('and {{COUNT}} more')} -->
 													{feedback.data.sibling_model_ids.slice(0, 2).join(', ')}, {$i18n.t(
@@ -346,7 +347,7 @@
 										</Tooltip>
 									{:else}
 										<div
-											class=" text-sm font-medium text-gray-600 dark:text-gray-400 flex-1 py-1.5"
+											style="--size:0.8rem; --weight:500; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); --fx:1 1 0%; --py:0.4rem"
 										>
 											{feedback.data?.model_id}
 										</div>
@@ -354,8 +355,8 @@
 								</div>
 							</div>
 						</td>
-						<td class="px-3 py-1 text-right font-medium text-gray-900 dark:text-white w-max">
-							<div class=" flex justify-end">
+						<td style="--d:table;--px:0.6rem; --py:0.2rem; --ta:right; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --w:max-content">
+							<div style="--d:flex; --jc:flex-end">
 								{#if feedback.data.rating.toString() === '1'}
 									<Badge type="info" content={$i18n.t('Won')} />
 								{:else if feedback.data.rating.toString() === '0'}
@@ -366,18 +367,18 @@
 							</div>
 						</td>
 
-						<td class=" px-3 py-1 text-right font-medium">
+						<td style="--d:table;--px:0.6rem; --py:0.2rem; --ta:right; --weight:500">
 							{dayjs(feedback.updated_at * 1000).fromNow()}
 						</td>
 
-						<td class=" px-3 py-1 text-right font-semibold" on:click={(e) => e.stopPropagation()}>
+						<td style="--d:table;--px:0.6rem; --py:0.2rem; --ta:right; --weight:600" on:click={(e) => e.stopPropagation()}>
 							<FeedbackMenu
 								on:delete={(e) => {
 									deleteFeedbackHandler(feedback.id);
 								}}
 							>
 								<button
-									class="self-center w-fit text-sm p-1.5 dark:text-gray-300 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
+									style="--as:center; --w:fit-content; --size:0.8rem; --p:0.4rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 								>
 									<EllipsisHorizontal />
 								</button>
@@ -391,28 +392,28 @@
 </div>
 
 {#if feedbacks.length > 0}
-	<div class=" flex flex-col justify-end w-full text-right gap-1">
-		<div class="line-clamp-1 text-gray-500 text-xs">
+	<div style="--d:flex; --fd:column; --jc:flex-end; --w:100%; --ta:right; --g:0.2rem">
+		<div style="--line-clamp:1; --c:var(--color-gray-500); --size:0.6rem">
 			{$i18n.t('Help us create the best community leaderboard by sharing your feedback history!')}
 		</div>
 
-		<div class="flex space-x-1 ml-auto">
+		<div style="--d:flex; --g:0.2rem; --ml:auto">
 			<Tooltip
 				content={$i18n.t(
 					'To protect your privacy, only ratings, model IDs, tags, and metadata are shared from your feedback—your chat logs remain private and are not included.'
 				)}
 			>
 				<button
-					class="flex text-xs items-center px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-850 dark:hover:bg-gray-800 dark:text-gray-200 transition"
+					style="--d:flex; --size:0.6rem; --ai:center; --px:0.6rem; --py:0.4rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={async () => {
 						shareHandler();
 					}}
 				>
-					<div class=" self-center mr-2 font-medium line-clamp-1">
+					<div style="--as:center; --mr:0.5rem; --weight:500; --line-clamp:1">
 						{$i18n.t('Share to Sage.is AI Community')}
 					</div>
 
-					<div class=" self-center">
+					<div style="--as:center">
 						<CloudArrowUp className="size-3" strokeWidth="3" />
 					</div>
 				</button>

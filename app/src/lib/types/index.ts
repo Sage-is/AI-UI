@@ -8,6 +8,11 @@ export type Banner = {
 	timestamp: number;
 };
 
+export type I18nStore = {
+	t: (key: string, options?: any) => string;
+	language: string;
+};
+
 export enum TTS_RESPONSE_SPLIT {
 	PUNCTUATION = 'punctuation',
 	PARAGRAPHS = 'paragraphs',

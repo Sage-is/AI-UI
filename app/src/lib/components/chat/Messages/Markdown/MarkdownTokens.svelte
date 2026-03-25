@@ -84,7 +84,7 @@
 <!-- {JSON.stringify(tokens)} -->
 {#each tokens as token, tokenIdx (tokenIdx)}
 	{#if token.type === 'hr'}
-		<hr class=" border-gray-100 dark:border-gray-850" />
+		<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850)" />
 	{:else if token.type === 'heading'}
 		<svelte:element this={headerComponent(token.depth)} dir="auto">
 			<MarkdownInlineTokens
@@ -119,23 +119,24 @@
 			{token.text}
 		{/if}
 	{:else if token.type === 'table'}
-		<div class="relative w-full group">
-			<div class="scrollbar-hidden relative overflow-x-auto max-w-full rounded-lg">
+		<div style="--pos:relative; --w:100%"
+	class="group">
+			<div style="--pos:relative; --ofx:auto; --maxw:100%; --radius:0.5rem"
+	class="scrollbar-hidden">
 				<table
-					class=" w-full text-sm text-left text-gray-500 dark:text-gray-400 max-w-full rounded-xl"
+					style="--w:100%; --size:0.8rem; --ta:left; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --maxw:100%; --radius:0.6rem"
 				>
 					<thead
-						class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-850 dark:text-gray-400 border-none"
+						style="--size:0.6rem; --c:var(--color-gray-700); --tt:uppercase; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-400); --bs:none"
 					>
 						<tr class="">
 							{#each token.header as header, headerIdx}
 								<th
 									scope="col"
-									class="px-3! py-1.5! cursor-pointer border border-gray-100 dark:border-gray-850"
-									style={token.align[headerIdx] ? '' : `text-align: ${token.align[headerIdx]}`}
+									style="--px:0.6rem; --py:0.4rem; --cur:pointer;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); {token.align[headerIdx] ? '' : `text-align: ${token.align[headerIdx]}`}"
 								>
-									<div class="gap-1.5 text-left">
-										<div class="shrink-0 break-normal">
+									<div style="--g:0.4rem; --ta:left">
+										<div style="--fs:0; --wb:normal; overflow-wrap:normal">
 											<MarkdownInlineTokens
 												id={`${id}-${tokenIdx}-header-${headerIdx}`}
 												tokens={header.tokens}
@@ -148,15 +149,14 @@
 							{/each}
 						</tr>
 					</thead>
-					<tbody>
+					<tbody style="--d:table">
 						{#each token.rows as row, rowIdx}
-							<tr class="bg-white dark:bg-gray-900 dark:border-gray-850 text-xs">
+							<tr style="--bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-bc:var(--color-gray-850); --size:0.6rem">
 								{#each row ?? [] as cell, cellIdx}
 									<td
-										class="px-3! py-1.5! text-gray-900 dark:text-white w-max border border-gray-100 dark:border-gray-850"
-										style={token.align[cellIdx] ? `text-align: ${token.align[cellIdx]}` : ''}
+										style="--px:0.6rem; --py:0.4rem; --c:var(--color-gray-900); --dark-c:#fff; --w:max-content;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); {token.align[cellIdx] ? `text-align: ${token.align[cellIdx]}` : ''}"
 									>
-										<div class="break-normal">
+										<div style="--wb:normal; overflow-wrap:normal">
 											<MarkdownInlineTokens
 												id={`${id}-${tokenIdx}-row-${rowIdx}-${cellIdx}`}
 												tokens={cell.tokens}
@@ -172,10 +172,11 @@
 				</table>
 			</div>
 
-			<div class=" absolute top-1 right-1.5 z-20 invisible group-hover:visible">
+			<div style="--pos:absolute; --top:0.2rem; --right:0.4rem; --z:20; --v:hidden"
+	class="group-hover:visible">
 				<Tooltip content={$i18n.t('Export to CSV')}>
 					<button
-						class="p-1 rounded-lg bg-transparent transition"
+						style="--p:0.2rem; --radius:0.5rem; --bgc:transparent; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={(e) => {
 							e.stopPropagation();
 							exportTableToCSVHandler(token, tokenIdx);
@@ -205,10 +206,10 @@
 		{#if token.ordered}
 			<ol start={token.start || 1} dir="auto">
 				{#each token.items as item, itemIdx}
-					<li class="text-start">
+					<li style="--ta:start">
 						{#if item?.task}
 							<input
-								class=" translate-y-[1px] -translate-x-1"
+								style="--translatey:1px; --translatex:-0.2rem"
 								type="checkbox"
 								checked={item.checked}
 								on:change={(e) => {
@@ -238,7 +239,8 @@
 		{:else}
 			<ul dir="auto" class="">
 				{#each token.items as item, itemIdx}
-					<li class="text-start {item?.task ? 'flex -translate-x-6.5 gap-3 ' : ''}">
+					<li style="--ta:start"
+	class="{item?.task ? 'flex -translate-x-6.5 gap-3 ' : ''}">
 						{#if item?.task}
 							<input
 								class=""
@@ -288,7 +290,7 @@
 			className="w-full space-y-1"
 			dir="auto"
 		>
-			<div class=" mb-1.5" slot="content">
+			<div style="--mb:0.4rem" slot="content">
 				<svelte:self
 					id={`${id}-${tokenIdx}-d`}
 					tokens={marked.lexer(token.text)}
@@ -351,7 +353,7 @@
 			<KatexRenderer content={token.text} displayMode={token?.displayMode ?? false} />
 		{/if}
 	{:else if token.type === 'space'}
-		<div class="my-2" />
+		<div style="--my:0.5rem" />
 	{:else}
 		{console.log('Unknown token', token)}
 	{/if}

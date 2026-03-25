@@ -22,25 +22,25 @@
 	}}
 />
 
-<div class="py-0.5">
-	<div class="flex justify-between items-center mb-1">
-		<div class="flex flex-col flex-1">
-			<div class="flex gap-2.5 items-center">
+<div style="--py:0.125rem">
+	<div style="--d:flex; --jc:space-between; --ai:center; --mb:0.2rem">
+		<div style="--d:flex; --fd:column; --fx:1 1 0%">
+			<div style="--d:flex; --g:0.625rem; --ai:center">
 				<img
 					src={model.meta.profile_image_url}
 					alt={model.name}
-					class="size-8 rounded-full object-cover shrink-0"
+					style="--w:2rem; --h:2rem; --radius:9999px; --objf:cover; --fs:0"
 				/>
 
-				<div class="w-full flex flex-col">
-					<div class="flex items-center gap-1">
-						<div class="shrink-0 line-clamp-1">
+				<div style="--w:100%; --d:flex; --fd:column">
+					<div style="--d:flex; --ai:center; --g:0.2rem">
+						<div style="--fs:0; --line-clamp:1">
 							{model.name}
 						</div>
 					</div>
 
-					<div class="flex items-center gap-1">
-						<div class=" text-xs w-full text-gray-500 bg-transparent line-clamp-1">
+					<div style="--d:flex; --ai:center; --g:0.2rem">
+						<div style="--size:0.6rem; --w:100%; --c:var(--color-gray-500); --bgc:transparent; --line-clamp:1">
 							{model?.meta?.description ?? model.id}
 						</div>
 					</div>
@@ -48,9 +48,9 @@
 			</div>
 		</div>
 
-		<div class="flex items-center">
+		<div style="--d:flex; --ai:center">
 			<button
-				class="self-center w-fit text-sm p-1.5 dark:text-gray-300 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
+				style="--as:center; --w:fit-content; --size:0.8rem; --p:0.4rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 				type="button"
 				on:click={() => {
 					showModel = true;

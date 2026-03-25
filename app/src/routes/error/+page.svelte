@@ -17,15 +17,15 @@
 </script>
 
 {#if loaded}
-	<div class="absolute w-full h-full flex z-50">
-		<div class="absolute rounded-xl w-full h-full backdrop-blur-sm flex justify-center">
-			<div class="m-auto pb-44 flex flex-col justify-center">
-				<div class="max-w-md">
-					<div class="text-center text-2xl font-medium z-50">
+	<div style="--pos:absolute; --w:100%; --h:100%; --d:flex; --z:50">
+		<div style="--pos:absolute; --radius:0.6rem; --w:100%; --h:100%; backdrop-filter:blur(4px); --d:flex; --jc:center">
+			<div style="--m:auto; --pb:11rem; --d:flex; --fd:column; --jc:center">
+				<div style="--maxw:28rem">
+					<div style="--ta:center; --size:1.5rem; --weight:500; --z:50">
 						{$i18n.t('{{webUIName}} Backend Required', { webUIName: $WEBUI_NAME })}
 					</div>
 
-					<div class=" mt-4 text-center text-sm w-full">
+					<div style="--mt:1rem; --ta:center; --size:0.8rem; --w:100%">
 						{$i18n.t(
 							"Oops! You're using an unsupported method (frontend only). Please serve the WebUI from the backend."
 						)}
@@ -33,19 +33,20 @@
 						<br class=" " />
 						<br class=" " />
 						<a
-							class=" font-semibold underline"
+							style="--weight:600; --td:underline"
 							href="https://github.com/Sage-is/AI-UI#how-to-install-"
 							target="_blank">{$i18n.t('See readme.md for instructions')}</a
 						>
 						{$i18n.t('or')}
-						<a class=" font-semibold underline" href="https://discord.gg/NkbYZJpX6D" target="_blank"
+						<a style="--weight:600; --td:underline" href="https://discord.gg/NkbYZJpX6D" target="_blank"
 							>{$i18n.t('join our Discord for help.')}</a
 						>
 					</div>
 
-					<div class=" mt-6 mx-auto relative group w-fit">
+					<div style="--mt:1.5rem; --mx:auto; --pos:relative; --w:fit-content"
+	class="group">
 						<button
-							class="relative z-20 flex px-5 py-2 rounded-full bg-gray-100 hover:bg-gray-200 transition font-medium text-sm"
+							style="--pos:relative; --z:20; --d:flex; --px:1.2rem; --py:0.5rem; --radius:9999px; --bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.8rem"
 							on:click={() => {
 								location.href = '/';
 							}}

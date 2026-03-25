@@ -86,14 +86,14 @@
 	allowPublic={$user?.permissions?.sharing?.public_prompts || $user?.role === 'admin'}
 />
 
-<div class="w-full max-h-full flex justify-center">
+<div style="--w:100%; --maxh:100%; --d:flex; --jc:center">
 	<form
-		class="flex flex-col w-full mb-10"
+		style="--d:flex; --fd:column; --w:100%; --mb:2.5rem"
 		on:submit|preventDefault={() => {
 			submitHandler();
 		}}
 	>
-		<div class="my-2">
+		<div style="--my:0.5rem">
 			<Tooltip
 				content={`${$i18n.t('Only alphanumeric characters and hyphens are allowed')} - ${$i18n.t(
 					'Activate this command by typing "/{{COMMAND}}" to chat input.',
@@ -103,18 +103,18 @@
 				)}`}
 				placement="bottom-start"
 			>
-				<div class="flex flex-col w-full">
-					<div class="flex items-center">
+				<div style="--d:flex; --fd:column; --w:100%">
+					<div style="--d:flex; --ai:center">
 						<input
-							class="text-2xl font-semibold w-full bg-transparent outline-hidden"
+							style="--size:1.5rem; --weight:600; --w:100%; --bgc:transparent; --oe:none"
 							placeholder={$i18n.t('Title')}
 							bind:value={title}
 							required
 						/>
 
-						<div class="self-center shrink-0">
+						<div style="--as:center; --fs:0">
 							<button
-								class="bg-gray-50 hover:bg-gray-100 text-black dark:bg-gray-850 dark:hover:bg-gray-800 dark:text-white transition px-2 py-1 rounded-full flex gap-1 items-center"
+								style="--bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --c:#000; --dark-bgc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-800); --dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --px:0.5rem; --py:0.2rem; --radius:9999px; --d:flex; --g:0.2rem; --ai:center"
 								type="button"
 								on:click={() => {
 									showAccessControlModal = true;
@@ -122,17 +122,17 @@
 							>
 								<LockClosed strokeWidth="2.5" className="size-3.5" />
 
-								<div class="text-sm font-medium shrink-0">
+								<div style="--size:0.8rem; --weight:500; --fs:0">
 									{$i18n.t('Access')}
 								</div>
 							</button>
 						</div>
 					</div>
 
-					<div class="flex gap-0.5 items-center text-xs text-gray-500">
+					<div style="--d:flex; --g:0.125rem; --ai:center; --size:0.6rem; --c:var(--color-gray-500)">
 						<div class="">/</div>
 						<input
-							class=" w-full bg-transparent outline-hidden"
+							style="--w:100%; --bgc:transparent; --oe:none"
 							placeholder={$i18n.t('Command')}
 							bind:value={command}
 							on:input={handleCommandInput}
@@ -144,12 +144,12 @@
 			</Tooltip>
 		</div>
 
-		<div class="my-2">
-			<div class="flex w-full justify-between">
-				<div class=" self-center text-sm font-semibold">{$i18n.t('Prompt Content')}</div>
+		<div style="--my:0.5rem">
+			<div style="--d:flex; --w:100%; --jc:space-between">
+				<div style="--as:center; --size:0.8rem; --weight:600">{$i18n.t('Prompt Content')}</div>
 			</div>
 
-			<div class="mt-2">
+			<div style="--mt:0.5rem">
 				<div>
 					<Textarea
 						className="text-sm w-full bg-transparent outline-hidden overflow-y-hidden resize-none"
@@ -160,18 +160,18 @@
 					/>
 				</div>
 
-				<div class="text-xs text-gray-400 dark:text-gray-500">
+				<div style="--size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)">
 					ⓘ {$i18n.t('Format your variables using brackets like this:')}&nbsp;<span
-						class=" text-gray-600 dark:text-gray-300 font-medium"
+						style="--c:var(--color-gray-600); --dark-c:var(--color-gray-300); --weight:500"
 						>{'{{'}{$i18n.t('variable')}{'}}'}</span
 					>.
 					{$i18n.t('Make sure to enclose them with')}
-					<span class=" text-gray-600 dark:text-gray-300 font-medium">{'{{'}</span>
+					<span style="--c:var(--color-gray-600); --dark-c:var(--color-gray-300); --weight:500">{'{{'}</span>
 					{$i18n.t('and')}
-					<span class=" text-gray-600 dark:text-gray-300 font-medium">{'}}'}</span>.
+					<span style="--c:var(--color-gray-600); --dark-c:var(--color-gray-300); --weight:500">{'}}'}</span>.
 				</div>
 
-				<div class="text-xs text-gray-400 dark:text-gray-500 underline">
+				<div style="--size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --td:underline">
 					<a href="https://docs.sage.is/features/workshop/prompts" target="_blank">
 						{$i18n.t('To learn more about powerful prompt variables, click here')}
 					</a>
@@ -179,18 +179,19 @@
 			</div>
 		</div>
 
-		<div class="my-4 flex justify-end pb-20">
+		<div style="--my:1rem; --d:flex; --jc:flex-end; --pb:5rem">
 			<button
-				class=" text-sm w-full lg:w-fit px-4 py-2 transition rounded-lg {loading
+				style="--size:0.8rem; --w:100%; --w-lg:fit-content; --px:1rem; --py:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --d:flex; --w:100%; --jc:center"
+	class="{loading
 					? ' cursor-not-allowed bg-black hover:bg-gray-900 text-white dark:bg-white dark:hover:bg-gray-100 dark:text-black'
-					: 'bg-black hover:bg-gray-900 text-white dark:bg-white dark:hover:bg-gray-100 dark:text-black'} flex w-full justify-center"
+					: 'bg-black hover:bg-gray-900 text-white dark:bg-white dark:hover:bg-gray-100 dark:text-black'}"
 				type="submit"
 				disabled={loading}
 			>
-				<div class=" self-center font-medium">{$i18n.t('Save & Create')}</div>
+				<div style="--as:center; --weight:500">{$i18n.t('Save & Create')}</div>
 
 				{#if loading}
-					<div class="ml-1.5 self-center">
+					<div style="--ml:0.4rem; --as:center">
 						<Spinner />
 					</div>
 				{/if}

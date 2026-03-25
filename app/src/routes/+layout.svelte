@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { io } from 'socket.io-client';
 	import { spring } from 'svelte/motion';
 	import PyodideWorker from '$lib/workers/pyodide.worker?worker';
@@ -42,6 +42,7 @@
 	import i18n, { initI18n, getLanguages, changeLanguage } from '$lib/i18n';
 	import { bestMatchingLanguage } from '$lib/utils';
 	import { getAllTags, getChatList } from '$lib/apis/chats';
+	import { getBranding } from '$lib/apis/configs';
 	import NotificationToast from '$lib/components/NotificationToast.svelte';
 	import AppSidebar from '$lib/components/app/AppSidebar.svelte';
 	import { chatCompletion } from '$lib/apis/openai';
@@ -60,19 +61,42 @@
 
 	const bc = new BroadcastChannel('active-tab-channel');
 
-	let tokenTimer = null;
+	let tokenTimer: ReturnType<typeof setInterval> | null = null;
+	let branding: { favicon_url?: string; logo_url?: string; logo_dark_url?: string; title?: string; subtitle?: string; primary_color?: string; accent_color?: string } = {};
+
+	/**
+	 * Apply admin branding colors as Startr.Style CSS variable overrides.
+	 * Startr.Style's semantic system cascades from --primary and --secondary:
+	 *   --links: var(--primary)
+	 *   --background-alt: color-mix(... var(--primary) ...)
+	 *   --focus: color-mix(... var(--primary) ...)
+	 * So setting --primary here recolors the entire UI automatically.
+	 */
+	const applyBrandingColors = (b: typeof branding) => {
+		const root = document.documentElement;
+		if (b?.primary_color) {
+			root.style.setProperty('--primary', b.primary_color);
+		} else {
+			root.style.removeProperty('--primary');
+		}
+		if (b?.accent_color) {
+			root.style.setProperty('--secondary', b.accent_color);
+		} else {
+			root.style.removeProperty('--secondary');
+		}
+	};
 
 	const BREAKPOINT = 768;
 
-	const setupSocket = async (enableWebsocket) => {
-		const _socket = io(`${WEBUI_BASE_URL}` || undefined, {
+	const setupSocket = async (enableWebsocket: boolean) => {
+		const _socket = io(`${WEBUI_BASE_URL}` || '', {
 			reconnection: true,
 			reconnectionDelay: 1000,
 			reconnectionDelayMax: 5000,
 			randomizationFactor: 0.5,
 			path: '/ws/socket.io',
 			transports: enableWebsocket ? ['websocket'] : ['polling', 'websocket'],
-			auth: {}
+			auth: { token: localStorage.token }
 		});
 
 		await socket.set(_socket);
@@ -83,7 +107,7 @@
 
 		_socket.on('connect', () => {
 			console.log('connected', _socket.id);
-			_socket.emit('user-join', { auth: {} });
+			_socket.emit('user-join', { auth: { token: localStorage.token } });
 		});
 
 		_socket.on('reconnect_attempt', (attempt) => {
@@ -102,10 +126,10 @@
 		});
 	};
 
-	const executePythonAsWorker = async (id, code, cb) => {
-		let result = null;
-		let stdout = null;
-		let stderr = null;
+	const executePythonAsWorker = async (id: string, code: string, cb: (data: any) => void) => {
+		let result: any = null;
+		let stdout: any = null;
+		let stderr: any = null;
 
 		let executing = true;
 		let packages = [
@@ -203,9 +227,9 @@
 		};
 	};
 
-	const executeTool = async (data, cb) => {
-		const toolServer = $settings?.toolServers?.find((server) => server.url === data.server?.url);
-		const toolServerData = $toolServers?.find((server) => server.url === data.server?.url);
+	const executeTool = async (data: any, cb: (data: any) => void) => {
+		const toolServer = $settings?.toolServers?.find((server: any) => server.url === data.server?.url);
+		const toolServerData = $toolServers?.find((server: any) => server.url === data.server?.url);
 
 		console.log('executeTool', data, toolServer);
 
@@ -236,7 +260,7 @@
 		}
 	};
 
-	const chatEventHandler = async (event, cb) => {
+	const chatEventHandler = async (event: any, cb: any) => {
 		const chat = $page.url.pathname.includes(`/c/${event.chat_id}`);
 
 		let isFocused = document.visibilityState !== 'visible';
@@ -275,9 +299,9 @@
 
 					if ($isLastActiveTab) {
 						if ($settings?.notificationEnabled ?? false) {
-							new Notification(`${title} • Sage.is AI`, {
+							new Notification(`${title} • ${branding?.title || 'Sage.is AI'}`, {
 								body: content,
-								icon: `${WEBUI_BASE_URL}/static/icons/favicon.png`
+								icon: branding?.favicon_url || branding?.logo_url || `${WEBUI_BASE_URL}/static/icons/favicon.png`
 							});
 						}
 					}
@@ -300,7 +324,7 @@
 			} else if (type === 'chat:tags') {
 				tags.set(await getAllTags(localStorage.token));
 			}
-		} else if (data?.session_id === $socket.id) {
+		} else if (data?.session_id === $socket?.id) {
 			if (type === 'execute:python') {
 				console.log('execute:python', data);
 				executePythonAsWorker(data.id, data.code, cb);
@@ -308,7 +332,7 @@
 				console.log('execute:tool', data);
 				executeTool(data, cb);
 			} else if (type === 'request:chat:completion') {
-				console.log(data, $socket.id);
+				console.log(data, $socket?.id);
 				const { session_id, channel, form_data, model } = data;
 
 				try {
@@ -388,7 +412,7 @@
 					console.error('chatCompletion', error);
 					cb(error);
 				} finally {
-					$socket.emit(channel, {
+					$socket?.emit(channel, {
 						done: true
 					});
 				}
@@ -398,13 +422,13 @@
 		}
 	};
 
-	const channelEventHandler = async (event) => {
+	const spaceEventHandler = async (event: any) => {
 		if (event.data?.type === 'typing') {
 			return;
 		}
 
 		// check url path
-		const channel = $page.url.pathname.includes(`/channels/${event.channel_id}`);
+		const isViewingSpace = $page.url.pathname.includes(`/space/${event.space_id}`);
 
 		let isFocused = document.visibilityState !== 'visible';
 		if (window.electronAPI) {
@@ -416,7 +440,7 @@
 			}
 		}
 
-		if ((!channel || isFocused) && event?.user?.id !== $user?.id) {
+		if ((!isViewingSpace || isFocused) && event?.user?.id !== $user?.id) {
 			await tick();
 			const type = event?.data?.type ?? null;
 			const data = event?.data?.data ?? null;
@@ -424,9 +448,9 @@
 			if (type === 'message') {
 				if ($isLastActiveTab) {
 					if ($settings?.notificationEnabled ?? false) {
-						new Notification(`${data?.user?.name} (#${event?.channel?.name}) • Sage.is AI`, {
+						new Notification(`${data?.user?.name} (#${event?.space?.name}) • ${branding?.title || 'Sage.is AI'}`, {
 							body: data?.content,
-							icon: data?.user?.profile_image_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`
+							icon: data?.user?.profile_image_url ?? branding?.favicon_url ?? branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`
 						});
 					}
 				}
@@ -434,16 +458,47 @@
 				toast.custom(NotificationToast, {
 					componentProps: {
 						onClick: () => {
-							goto(`/channels/${event.channel_id}`);
+							goto(`/space/${event.space_id}`);
 						},
 						content: data?.content,
-						title: event?.channel?.name
+						title: event?.space?.name
 					},
 					duration: 15000,
 					unstyled: true
 				});
 			}
 		}
+	};
+
+	const spaceMentionHandler = async (event: any) => {
+		// @mention notification — always show, even if viewing the space
+		if ($isLastActiveTab) {
+			if ($settings?.notificationEnabled ?? false) {
+				new Notification(
+					`@${event?.user?.name} mentioned you in #${event?.space_name}`,
+					{
+						body: event?.message,
+						icon:
+							event?.user?.profile_image_url ??
+							branding?.favicon_url ??
+							branding?.logo_url ??
+							`${WEBUI_BASE_URL}/static/icons/favicon.png`
+					}
+				);
+			}
+		}
+
+		toast.custom(NotificationToast, {
+			componentProps: {
+				onClick: () => {
+					goto(`/space/${event.space_id}`);
+				},
+				content: event?.message,
+				title: `@mentioned in #${event?.space_name}`
+			},
+			duration: 15000,
+			unstyled: true
+		});
 	};
 
 	const TOKEN_EXPIRY_BUFFER = 60; // seconds
@@ -495,8 +550,16 @@
 	}
 
 	onMount(async () => {
-		if (typeof window !== 'undefined' && window.applyTheme) {
-			window.applyTheme();
+		// Load branding early for favicon and other global settings
+		try {
+			branding = await getBranding();
+			// Apply admin-configured colors as Startr.Style overrides.
+			// Startr.Style defines --primary and --secondary on :root; setting them here
+			// lets admins customize the entire color cascade (--links, --background-alt,
+			// --focus, etc.) from a single panel — no component changes needed.
+			applyBrandingColors(branding);
+		} catch (err) {
+			console.error('Failed to load branding:', err);
 		}
 
 		if (window?.electronAPI) {
@@ -542,7 +605,13 @@
 		// Call visibility change handler initially to set state on load
 		handleVisibilityChange();
 
-		theme.set(localStorage.theme);
+		if (localStorage.theme) {
+			theme.set(localStorage.theme);
+		} else if ($config?.ui?.theme) {
+			theme.set($config.ui.theme);
+		} else {
+			theme.set('system');
+		}
 
 		mobile.set(window.innerWidth < BREAKPOINT);
 
@@ -558,36 +627,22 @@
 		user.subscribe((value) => {
 			if (value) {
 				$socket?.off('chat-events', chatEventHandler);
-				$socket?.off('channel-events', channelEventHandler);
+				$socket?.off('space-events', spaceEventHandler);
+				$socket?.off('space-mention', spaceMentionHandler);
 
 				$socket?.on('chat-events', chatEventHandler);
-				$socket?.on('channel-events', channelEventHandler);
+				$socket?.on('space-events', spaceEventHandler);
+				$socket?.on('space-mention', spaceMentionHandler);
 			} else {
 				$socket?.off('chat-events', chatEventHandler);
-				$socket?.off('channel-events', channelEventHandler);
+				$socket?.off('space-events', spaceEventHandler);
+				$socket?.off('space-mention', spaceMentionHandler);
 			}
 		});
 
 		await tick();
 
-		if (
-			document.documentElement.classList.contains('her') &&
-			document.getElementById('progress-bar')
-		) {
-			document.getElementById('splash-screen')?.remove();
-
-			const audio = new Audio(`/audio/greeting.mp3`);
-			const playAudio = () => {
-				audio.play().catch((error) => {
-					console.log('Greeting audio not available:', error.message);
-				});
-				document.removeEventListener('click', playAudio);
-			};
-
-			document.addEventListener('click', playAudio);
-		} else {
-			document.getElementById('splash-screen')?.remove();
-		}
+		document.getElementById('splash-screen')?.remove();
 
 		return () => {
 			window.removeEventListener('resize', onResize);
@@ -596,20 +651,21 @@
 </script>
 
 <svelte:head>
-	<title>{$WEBUI_NAME}</title>
-	<link crossorigin="anonymous" rel="icon" href="{WEBUI_BASE_URL}/static/icons/favicon.png" />
+	<title>{branding?.title || $WEBUI_NAME}</title>
+	<link crossorigin="anonymous" rel="icon" href={branding?.favicon_url || `${WEBUI_BASE_URL}/static/icons/favicon.png`} />
 
-	<!-- rosepine themes have been disabled as it's not up to date with our latest version. -->
-	<!-- feel free to make a PR to fix if anyone wants to see it return -->
-	<!-- <link rel="stylesheet" type="text/css" href="/themes/rosepine.css" />
-	<link rel="stylesheet" type="text/css" href="/themes/rosepine-dawn.css" /> -->
+	{#if $config?.ui?.custom_css}
+		<style>
+			{@html $config.ui.custom_css}
+		</style>
+	{/if}
 </svelte:head>
 
 {#if $isApp}
-	<div class="flex flex-row h-screen">
+	<div style="--d:flex; --fd:row; --h:100vh">
 		<AppSidebar />
 
-		<div class="w-full flex-1 max-w-[calc(100%-4.5rem)]">
+		<div style="--w:100%; --fx:1 1 0%; --maxw:calc(100%-4.5rem)">
 			<slot />
 		</div>
 	</div>

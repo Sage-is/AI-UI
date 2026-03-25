@@ -109,7 +109,8 @@
 />
 
 <div
-	class=" flex w-full user-message group"
+	style="--d:flex; --w:100%"
+	class="user-message group"
 	dir={$settings.chatDirection}
 	id="message-{message.id}"
 >
@@ -124,13 +125,13 @@
 			/>
 		</div>
 	{/if}
-	<div class="flex-auto w-0 max-w-full pl-1">
+	<div style="--fx:1 1 auto; --w:0; --maxw:100%; --pl:0.2rem">
 		{#if !($settings?.chatBubble ?? true)}
 			<div>
 				<Name>
 					{#if message.user}
 						{$i18n.t('You')}
-						<span class=" text-gray-500 text-sm font-medium">{message?.user ?? ''}</span>
+						<span style="--c:var(--color-gray-500); --size:0.8rem; --weight:500">{message?.user ?? ''}</span>
 					{:else if $settings.showUsername || $_user.name !== user.name}
 						{user.name}
 					{:else}
@@ -139,31 +140,34 @@
 
 					{#if message.timestamp}
 						<div
-							class=" self-center text-xs invisible group-hover:visible text-gray-400 font-medium first-letter:capitalize ml-0.5 translate-y-[1px]"
+							style="--as:center; --size:0.6rem; --c:var(--color-gray-400); --weight:500; --ml:0.125rem; --translatey:1px"
+	class="invisible group-hover:visible first-letter:capitalize"
 						>
 							<Tooltip content={dayjs(message.timestamp * 1000).format('LLLL')}>
-								<span class="line-clamp-1">{formatDate(message.timestamp * 1000)}</span>
+								<span style="--line-clamp:1">{formatDate(message.timestamp * 1000)}</span>
 							</Tooltip>
 						</div>
 					{/if}
 				</Name>
 			</div>
 		{:else if message.timestamp}
-			<div class="flex justify-end pr-2 text-xs">
+			<div style="--d:flex; --jc:flex-end; --pr:0.5rem; --size:0.6rem">
 				<div
-					class="text-[0.65rem] invisible group-hover:visible text-gray-400 font-medium first-letter:capitalize mb-0.5"
+					style="--size:0.65rem; --c:var(--color-gray-400); --weight:500; --mb:0.125rem"
+	class="invisible group-hover:visible first-letter:capitalize"
 				>
 					<Tooltip content={dayjs(message.timestamp * 1000).format('LLLL')}>
-						<span class="line-clamp-1">{formatDate(message.timestamp * 1000)}</span>
+						<span style="--line-clamp:1">{formatDate(message.timestamp * 1000)}</span>
 					</Tooltip>
 				</div>
 			</div>
 		{/if}
 
-		<div class="chat-{message.role} w-full min-w-full markdown-prose">
+		<div style="--w:100%; --minw:100%"
+	class="chat- {message.role} markdown-prose">
 			{#if edit !== true}
 				{#if message.files}
-					<div class="mb-1 w-full flex flex-col justify-end overflow-x-auto gap-1 flex-wrap">
+					<div style="--mb:0.2rem; --w:100%; --d:flex; --fd:column; --jc:flex-end; --ofx:auto; --g:0.2rem; --fw:wrap">
 						{#each message.files as file}
 							<div class={($settings?.chatBubble ?? true) ? 'self-end' : ''}>
 								{#if file.type === 'image'}
@@ -186,22 +190,24 @@
 
 			{#if message.content !== ''}
 				{#if edit === true}
-					<div class=" w-full bg-gray-50 dark:bg-gray-800 rounded-3xl px-5 py-3 mb-2">
+					<div style="--w:100%; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800); --radius:1.5rem; --px:1.2rem; --py:0.6rem; --mb:0.5rem">
 						{#if (editedFiles ?? []).length > 0}
-							<div class="flex items-center flex-wrap gap-2 -mx-2 mb-1">
+							<div style="--d:flex; --ai:center; --fw:wrap; --g:0.5rem; --mx:-0.5rem; --mb:0.2rem">
 								{#each editedFiles as file, fileIdx}
 									{#if file.type === 'image'}
-										<div class=" relative group">
-											<div class="relative flex items-center">
+										<div style="--pos:relative"
+	class="group">
+											<div style="--pos:relative; --d:flex; --ai:center">
 												<Image
 													src={file.url}
 													alt="input"
 													imageClassName=" size-14 rounded-xl object-cover"
 												/>
 											</div>
-											<div class=" absolute -top-1 -right-1">
+											<div style="--pos:absolute; --top:-0.2rem; --right:-0.2rem">
 												<button
-													class=" bg-white text-black border border-white rounded-full group-hover:visible invisible transition"
+													style="--bgc:#fff; --c:#000;  --bc:#fff; --radius:9999px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="invisible group-hover:visible"
 													type="button"
 													on:click={() => {
 														editedFiles.splice(fileIdx, 1);
@@ -213,7 +219,7 @@
 														xmlns="http://www.w3.org/2000/svg"
 														viewBox="0 0 20 20"
 														fill="currentColor"
-														class="size-4"
+														style="--w:1rem; --h:1rem"
 													>
 														<path
 															d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"
@@ -245,11 +251,11 @@
 							</div>
 						{/if}
 
-						<div class="max-h-96 overflow-auto">
+						<div style="--maxh:24rem; --of:auto">
 							<textarea
 								id="message-edit-{message.id}"
 								bind:this={messageEditTextAreaElement}
-								class=" bg-transparent outline-hidden w-full resize-none"
+								style="--bgc:transparent; --oe:none; --w:100%; resize:none"
 								bind:value={editedContent}
 								on:input={(e) => {
 									e.target.style.height = '';
@@ -270,11 +276,11 @@
 							/>
 						</div>
 
-						<div class=" mt-2 mb-1 flex justify-between text-sm font-medium">
+						<div style="--mt:0.5rem; --mb:0.2rem; --d:flex; --jc:space-between; --size:0.8rem; --weight:500">
 							<div>
 								<button
 									id="save-edit-message-button"
-									class=" px-4 py-2 bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 text-gray-700 dark:text-gray-200 transition rounded-3xl"
+									style="--px:1rem; --py:0.5rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700);  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-700); --c:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:1.5rem"
 									on:click={() => {
 										editMessageConfirmHandler(false);
 									}}
@@ -283,10 +289,10 @@
 								</button>
 							</div>
 
-							<div class="flex space-x-1.5">
+							<div style="--d:flex; --g:0.4rem">
 								<button
 									id="close-edit-message-button"
-									class="px-4 py-2 bg-white dark:bg-gray-900 hover:bg-gray-100 text-gray-800 dark:text-gray-100 transition rounded-3xl"
+									style="--px:1rem; --py:0.5rem; --bgc:#fff; --dark-bgc:var(--color-gray-900); --hvr-bgc:var(--color-gray-100); --c:var(--color-gray-800); --dark-c:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:1.5rem"
 									on:click={() => {
 										cancelEditMessage();
 									}}
@@ -296,7 +302,7 @@
 
 								<button
 									id="confirm-edit-message-button"
-									class=" px-4 py-2 bg-gray-900 dark:bg-white hover:bg-gray-850 text-gray-100 dark:text-gray-800 transition rounded-3xl"
+									style="--px:1rem; --py:0.5rem; --bgc:var(--color-gray-900); --dark-bgc:#fff; --hvr-bgc:var(--color-gray-850); --c:var(--color-gray-100); --dark-c:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:1.5rem"
 									on:click={() => {
 										editMessageConfirmHandler();
 									}}
@@ -307,10 +313,12 @@
 						</div>
 					</div>
 				{:else}
-					<div class="w-full">
-						<div class="flex {($settings?.chatBubble ?? true) ? 'justify-end pb-1' : 'w-full'}">
+					<div style="--w:100%">
+						<div style="--d:flex"
+	class="{($settings?.chatBubble ?? true) ? 'justify-end pb-1' : 'w-full'}">
 							<div
-								class="rounded-3xl {($settings?.chatBubble ?? true)
+								style="--radius:1.5rem"
+	class="{($settings?.chatBubble ?? true)
 									? `max-w-[90%] px-5 py-2  bg-gray-50 dark:bg-gray-850 ${
 											message.files ? 'rounded-tr-lg' : ''
 										}`
@@ -323,15 +331,16 @@
 						</div>
 
 						<div
-							class=" flex {($settings?.chatBubble ?? true)
+							style="--d:flex; --c:var(--color-gray-600); --dark-c:var(--color-gray-500)"
+	class="{($settings?.chatBubble ?? true)
 								? 'justify-end'
-								: ''}  text-gray-600 dark:text-gray-500"
+								: ''}"
 						>
 							{#if !($settings?.chatBubble ?? true)}
 								{#if siblings.length > 1}
-									<div class="flex self-center" dir="ltr">
+									<div style="--d:flex; --as:center" dir="ltr">
 										<button
-											class="self-center p-1 hover:bg-black/5 dark:hover:bg-white/5 dark:hover:text-white hover:text-black rounded-md transition"
+											style="--as:center; --p:0.2rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-dark-c:#fff; --hvr-c:#000; --radius:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 											on:click={() => {
 												showPreviousMessage(message);
 											}}
@@ -342,7 +351,7 @@
 												viewBox="0 0 24 24"
 												stroke="currentColor"
 												stroke-width="2.5"
-												class="size-3.5"
+												style="--w:0.8rem; --h:0.8rem"
 											>
 												<path
 													stroke-linecap="round"
@@ -354,7 +363,7 @@
 
 										{#if messageIndexEdit}
 											<div
-												class="text-sm flex justify-center font-semibold self-center dark:text-gray-100 min-w-fit"
+												style="--size:0.8rem; --d:flex; --jc:center; --weight:600; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content"
 											>
 												<input
 													id="message-index-input-{message.id}"
@@ -375,13 +384,13 @@
 															messageIndexEdit = false;
 														}
 													}}
-													class="bg-transparent font-semibold self-center dark:text-gray-100 min-w-fit outline-hidden"
+													style="--bgc:transparent; --weight:600; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content; --oe:none"
 												/>/{siblings.length}
 											</div>
 										{:else}
 											<!-- svelte-ignore a11y-no-static-element-interactions -->
 											<div
-												class="text-sm tracking-widest font-semibold self-center dark:text-gray-100 min-w-fit"
+												style="--size:0.8rem; --ls:0.1em; --weight:600; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content"
 												on:dblclick={async () => {
 													messageIndexEdit = true;
 
@@ -400,7 +409,7 @@
 										{/if}
 
 										<button
-											class="self-center p-1 hover:bg-black/5 dark:hover:bg-white/5 dark:hover:text-white hover:text-black rounded-md transition"
+											style="--as:center; --p:0.2rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-dark-c:#fff; --hvr-c:#000; --radius:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 											on:click={() => {
 												showNextMessage(message);
 											}}
@@ -411,7 +420,7 @@
 												viewBox="0 0 24 24"
 												stroke="currentColor"
 												stroke-width="2.5"
-												class="size-3.5"
+												style="--w:0.8rem; --h:0.8rem"
 											>
 												<path
 													stroke-linecap="round"
@@ -426,7 +435,8 @@
 							{#if !readOnly}
 								<Tooltip content={$i18n.t('Edit')} placement="bottom">
 									<button
-										class="invisible group-hover:visible p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg dark:hover:text-white hover:text-black transition edit-user-message-button"
+										style="--p:0.4rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="invisible group-hover:visible edit-user-message-button"
 										on:click={() => {
 											editMessageHandler();
 										}}
@@ -437,7 +447,7 @@
 											viewBox="0 0 24 24"
 											stroke-width="2.3"
 											stroke="currentColor"
-											class="w-4 h-4"
+											style="--w:1rem; --h:1rem"
 										>
 											<path
 												stroke-linecap="round"
@@ -451,7 +461,8 @@
 
 							<Tooltip content={$i18n.t('Copy')} placement="bottom">
 								<button
-									class="invisible group-hover:visible p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg dark:hover:text-white hover:text-black transition"
+									style="--p:0.4rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.5rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="invisible group-hover:visible"
 									on:click={() => {
 										copyToClipboard(message.content);
 									}}
@@ -462,7 +473,7 @@
 										viewBox="0 0 24 24"
 										stroke-width="2.3"
 										stroke="currentColor"
-										class="w-4 h-4"
+										style="--w:1rem; --h:1rem"
 									>
 										<path
 											stroke-linecap="round"
@@ -476,7 +487,8 @@
 							{#if !readOnly && (!isFirstMessage || siblings.length > 1)}
 								<Tooltip content={$i18n.t('Delete')} placement="bottom">
 									<button
-										class="invisible group-hover:visible p-1 rounded-sm dark:hover:text-white hover:text-black transition"
+										style="--p:0.2rem; --radius:0.125rem; --hvr-dark-c:#fff; --hvr-c:#000; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="invisible group-hover:visible"
 										on:click={() => {
 											showDeleteConfirm = true;
 										}}
@@ -487,7 +499,7 @@
 											viewBox="0 0 24 24"
 											stroke-width="2"
 											stroke="currentColor"
-											class="w-4 h-4"
+											style="--w:1rem; --h:1rem"
 										>
 											<path
 												stroke-linecap="round"
@@ -501,9 +513,9 @@
 
 							{#if $settings?.chatBubble ?? true}
 								{#if siblings.length > 1}
-									<div class="flex self-center" dir="ltr">
+									<div style="--d:flex; --as:center" dir="ltr">
 										<button
-											class="self-center p-1 hover:bg-black/5 dark:hover:bg-white/5 dark:hover:text-white hover:text-black rounded-md transition"
+											style="--as:center; --p:0.2rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-dark-c:#fff; --hvr-c:#000; --radius:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 											on:click={() => {
 												showPreviousMessage(message);
 											}}
@@ -514,7 +526,7 @@
 												viewBox="0 0 24 24"
 												stroke="currentColor"
 												stroke-width="2.5"
-												class="size-3.5"
+												style="--w:0.8rem; --h:0.8rem"
 											>
 												<path
 													stroke-linecap="round"
@@ -526,7 +538,7 @@
 
 										{#if messageIndexEdit}
 											<div
-												class="text-sm flex justify-center font-semibold self-center dark:text-gray-100 min-w-fit"
+												style="--size:0.8rem; --d:flex; --jc:center; --weight:600; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content"
 											>
 												<input
 													id="message-index-input-{message.id}"
@@ -547,13 +559,13 @@
 															messageIndexEdit = false;
 														}
 													}}
-													class="bg-transparent font-semibold self-center dark:text-gray-100 min-w-fit outline-hidden"
+													style="--bgc:transparent; --weight:600; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content; --oe:none"
 												/>/{siblings.length}
 											</div>
 										{:else}
 											<!-- svelte-ignore a11y-no-static-element-interactions -->
 											<div
-												class="text-sm tracking-widest font-semibold self-center dark:text-gray-100 min-w-fit"
+												style="--size:0.8rem; --ls:0.1em; --weight:600; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content"
 												on:dblclick={async () => {
 													messageIndexEdit = true;
 
@@ -572,7 +584,7 @@
 										{/if}
 
 										<button
-											class="self-center p-1 hover:bg-black/5 dark:hover:bg-white/5 dark:hover:text-white hover:text-black rounded-md transition"
+											style="--as:center; --p:0.2rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-dark-c:#fff; --hvr-c:#000; --radius:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 											on:click={() => {
 												showNextMessage(message);
 											}}
@@ -583,7 +595,7 @@
 												viewBox="0 0 24 24"
 												stroke="currentColor"
 												stroke-width="2.5"
-												class="size-3.5"
+												style="--w:0.8rem; --h:0.8rem"
 											>
 												<path
 													stroke-linecap="round"
@@ -602,3 +614,10 @@
 		</div>
 	</div>
 </div>
+
+<style>
+	button {
+		margin: 0 0 0 0.2rem;
+	}
+
+</style>

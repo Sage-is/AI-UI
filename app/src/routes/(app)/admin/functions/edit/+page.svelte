@@ -21,14 +21,14 @@
 		console.log(data);
 
 		const manifest = extractFrontmatter(data.content);
-		if (compareVersion(manifest?.required_open_webui_version ?? '0.0.0', WEBUI_VERSION)) {
+		if (compareVersion(manifest?.required_sage_is_ai_version ?? manifest?.required_open_webui_version ?? '0.0.0', WEBUI_VERSION)) {
 			console.log('Version is lower than required');
 			toast.error(
 				$i18n.t(
 					'Sage.is AI version (v{{OPEN_WEBUI_VERSION}}) is lower than required version (v{{REQUIRED_VERSION}})',
 					{
 						OPEN_WEBUI_VERSION: WEBUI_VERSION,
-						REQUIRED_VERSION: manifest?.required_open_webui_version ?? '0.0.0'
+						REQUIRED_VERSION: manifest?.required_sage_is_ai_version ?? manifest?.required_open_webui_version ?? '0.0.0'
 					}
 				)
 			);
@@ -87,8 +87,8 @@
 		}}
 	/>
 {:else}
-	<div class="flex items-center justify-center h-full">
-		<div class=" pb-16">
+	<div style="--d:flex; --ai:center; --jc:center; --h:100%">
+		<div style="--pb:4rem">
 			<Spinner className="size-5" />
 		</div>
 	</div>

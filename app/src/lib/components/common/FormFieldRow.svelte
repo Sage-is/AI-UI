@@ -8,10 +8,10 @@
 </script>
 
 <div class="{marginClass} {containerClass}">
-	<div class="self-center text-xs font-medium">
+	<div style="--as:center; --size:0.6rem; --weight:500">
 		<slot name="label" />
 	</div>
-	<div class="flex items-center relative">
+	<div style="--d:flex; --ai:center; --pos:relative">
 		<slot name="content" />
 	</div>
 </div>

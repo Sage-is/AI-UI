@@ -145,7 +145,7 @@ classifiers = [
 ]
 
 [project.scripts]
-WEB-AI-Sage-WebUI = "open_webui:app"
+WEB-AI-Sage-WebUI = "sage_is_ai:app"
 
 [build-system]
 requires = ["hatchling"]
@@ -177,7 +177,7 @@ exclude = [
     "webui.db",
     "chroma.sqlite3",
 ]
-force-include = { "CHANGELOG.md" = "open_webui/CHANGELOG.md", build = "open_webui/frontend" }
+force-include = { "CHANGELOG.md" = "sage_is_ai/CHANGELOG.md", build = "sage_is_ai/frontend" }
 
 [tool.codespell]
 # Ref: https://github.com/codespell-project/codespell#using-a-config-file

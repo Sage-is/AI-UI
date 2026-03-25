@@ -18,13 +18,18 @@
 		scrollPaginationEnabled,
 		currentChatPage,
 		temporaryChatEnabled,
-		channels,
+		spaces,
 		socket,
 		config,
 		isApp,
 		models,
-		selectedFolder
+		selectedFolder,
+		folderCollapseAllTrigger,
+		sharedWithMeChats,
+		sharedByMeChats
 	} from '$lib/stores';
+	import { slide } from 'svelte/transition';
+	import { quintOut } from 'svelte/easing';
 	import { onMount, getContext, tick, onDestroy } from 'svelte';
 
 	const i18n = getContext('i18n');
@@ -38,7 +43,13 @@
 		updateChatFolderIdById,
 		importChat
 	} from '$lib/apis/chats';
-	import { createNewFolder, getFolders, updateFolderParentIdById } from '$lib/apis/folders';
+	import {
+		createNewFolder,
+		getFolders,
+		updateFolderParentIdById,
+		updateFolderIsExpandedById
+	} from '$lib/apis/folders';
+	import { getBranding } from '$lib/apis/configs';
 	import { WEBUI_BASE_URL } from '$lib/constants';
 
 	import ArchivedChatsModal from './ArchivedChatsModal.svelte';
@@ -51,12 +62,17 @@
 	import Plus from '../icons/Plus.svelte';
 	import Tooltip from '../common/Tooltip.svelte';
 	import Folders from './Sidebar/Folders.svelte';
-	import { getChannels, createNewChannel } from '$lib/apis/spaces';
-	import ChannelModal from './Sidebar/ChannelModal.svelte';
-	import ChannelItem from './Sidebar/ChannelItem.svelte';
+	import { getSpaces, createNewSpace } from '$lib/apis/spaces';
+	import { getChatsSharedWithMe, getChatsSharedByMe } from '$lib/apis/chat-shares';
+	import SpaceModal from './Sidebar/SpaceModal.svelte';
+	import SharedWithMeList from './Sidebar/SharedWithMeList.svelte';
+	import SharedByMeList from './Sidebar/SharedByMeList.svelte';
+	import SpaceItem from './Sidebar/SpaceItem.svelte';
 	import PencilSquare from '../icons/PencilSquare.svelte';
 	import Home from '../icons/Home.svelte';
 	import Search from '../icons/Search.svelte';
+	import ChevronDown from '../icons/ChevronDown.svelte';
+	import ChevronRight from '../icons/ChevronRight.svelte';
 	import SearchModal from './SearchModal.svelte';
 	import FolderModal from './Sidebar/Folders/FolderModal.svelte';
 
@@ -65,11 +81,14 @@
 	let navElement;
 	let shiftKey = false;
 
+	let branding: { logo_url?: string; logo_dark_url?: string } = {};
 	let selectedChatId = null;
-	let showDropdown = false;
 	let showPinnedChat = true;
+	let pinnedDraggedOver = false;
 
-	let showCreateChannel = false;
+	let showCreateSpace = false;
+	let showSharedWithMe = false;
+	let showSharedByMe = false;
 
 	// Pagination variables
 	let chatListLoading = false;
@@ -164,8 +183,8 @@
 		}
 	};
 
-	const initChannels = async () => {
-		await channels.set(await getChannels(localStorage.token));
+	const initSpaces = async () => {
+		await spaces.set(await getSpaces(localStorage.token));
 	};
 
 	const initChatList = async () => {
@@ -173,6 +192,7 @@
 		tags.set(await getAllTags(localStorage.token));
 		pinnedChats.set(await getPinnedChatList(localStorage.token));
 		initFolders();
+		initSharedChats();
 
 		currentChatPage.set(1);
 		allChatsLoaded = false;
@@ -181,6 +201,19 @@
 
 		// Enable pagination
 		scrollPaginationEnabled.set(true);
+	};
+
+	const initSharedChats = async () => {
+		try {
+			sharedWithMeChats.set(await getChatsSharedWithMe(localStorage.token));
+		} catch {
+			sharedWithMeChats.set([]);
+		}
+		try {
+			sharedByMeChats.set(await getChatsSharedByMe(localStorage.token));
+		} catch {
+			sharedByMeChats.set([]);
+		}
 	};
 
 	const loadMoreChats = async () => {
@@ -246,6 +279,104 @@
 		} else if (type === 'add') {
 			initChatList();
 		}
+	};
+
+	// --- Date group collapse state ---
+	type ChatGroup = { timeRange: string; chats: any[] };
+
+	const groupChatsByTimeRange = (chatList: any[]): ChatGroup[] => {
+		const groups: ChatGroup[] = [];
+		for (const chat of chatList) {
+			const last = groups[groups.length - 1];
+			if (last && last.timeRange === chat.time_range) {
+				last.chats.push(chat);
+			} else {
+				groups.push({ timeRange: chat.time_range, chats: [chat] });
+			}
+		}
+		return groups;
+	};
+
+	$: groupedChats = $chats ? groupChatsByTimeRange($chats) : [];
+
+	let collapsedDateGroups: Record<string, boolean> = {};
+
+	const loadCollapsedDateGroups = () => {
+		try {
+			const stored = localStorage.getItem('collapsedDateGroups');
+			if (stored) {
+				collapsedDateGroups = JSON.parse(stored);
+			}
+		} catch {}
+	};
+
+	const persistCollapsedDateGroups = () => {
+		localStorage.setItem('collapsedDateGroups', JSON.stringify(collapsedDateGroups));
+	};
+
+	const toggleDateGroup = (timeRange: string) => {
+		if (collapsedDateGroups[timeRange]) {
+			delete collapsedDateGroups[timeRange];
+		} else {
+			collapsedDateGroups[timeRange] = true;
+		}
+		collapsedDateGroups = collapsedDateGroups; // trigger reactivity
+		persistCollapsedDateGroups();
+	};
+
+	// Auto-expand group containing active chat (only when chatId changes)
+	let prevAutoExpandChatId: string | null = null;
+	$: if ($chatId && $chatId !== prevAutoExpandChatId && groupedChats.length > 0) {
+		prevAutoExpandChatId = $chatId;
+		for (const group of groupedChats) {
+			if (group.chats.some((c) => c.id === $chatId) && collapsedDateGroups[group.timeRange]) {
+				delete collapsedDateGroups[group.timeRange];
+				collapsedDateGroups = collapsedDateGroups;
+				persistCollapsedDateGroups();
+				break;
+			}
+		}
+	} else if (!$chatId) {
+		prevAutoExpandChatId = null;
+	}
+
+	$: allDateGroupsCollapsed =
+		groupedChats.length > 0 && groupedChats.every((g) => collapsedDateGroups[g.timeRange]);
+
+	const foldAllDateGroups = () => {
+		for (const group of groupedChats) {
+			collapsedDateGroups[group.timeRange] = true;
+		}
+		collapsedDateGroups = collapsedDateGroups;
+		persistCollapsedDateGroups();
+	};
+
+	const unfoldAllDateGroups = () => {
+		collapsedDateGroups = {};
+		persistCollapsedDateGroups();
+	};
+
+	// --- Folder fold/unfold ---
+	$: allFoldersCollapsed =
+		Object.keys(folders).length > 0 &&
+		Object.values(folders).every((f: any) => f.is_expanded === false);
+
+	const foldAllFolders = async () => {
+		for (const id of Object.keys(folders)) {
+			folders[id].is_expanded = false;
+			await updateFolderIsExpandedById(localStorage.token, id, false).catch(() => {});
+		}
+		folders = folders;
+		folderCollapseAllTrigger.update((n) => n + 1);
+	};
+
+	const unfoldAllFolders = async () => {
+		for (const id of Object.keys(folders)) {
+			folders[id].is_expanded = true;
+			await updateFolderIsExpandedById(localStorage.token, id, true).catch(() => {});
+		}
+		folders = folders;
+		folderCollapseAllTrigger.update((n) => n + 1);
 	};
 
 	let draggedOver = false;
@@ -329,6 +460,18 @@
 
 	onMount(async () => {
 		showPinnedChat = localStorage?.showPinnedChat ? localStorage.showPinnedChat === 'true' : true;
+		showSharedWithMe = localStorage?.showSharedWithMe
+			? localStorage.showSharedWithMe === 'true'
+			: false;
+		showSharedByMe = localStorage?.showSharedByMe ? localStorage.showSharedByMe === 'true' : false;
+		loadCollapsedDateGroups();
+
+		// Load branding for sidebar logo
+		try {
+			branding = await getBranding();
+		} catch (err) {
+			console.error('Failed to load branding:', err);
+		}
 
 		mobile.subscribe((value) => {
 			if ($showSidebar && value) {
@@ -371,7 +514,7 @@
 			initFolders();
 		});
 
-		await initChannels();
+		await initSpaces();
 		await initChatList();
 
 		window.addEventListener('keydown', onKeyDown);
@@ -415,10 +558,10 @@
 	}}
 />
 
-<ChannelModal
-	bind:show={showCreateChannel}
+<SpaceModal
+	bind:show={showCreateSpace}
 	onSubmit={async ({ name, access_control }) => {
-		const res = await createNewChannel(localStorage.token, {
+		const res = await createNewSpace(localStorage.token, {
 			name: name,
 			access_control: access_control
 		}).catch((error) => {
@@ -427,9 +570,9 @@
 		});
 
 		if (res) {
-			$socket.emit('join-channels', { auth: { token: $user?.token } });
-			await initChannels();
-			showCreateChannel = false;
+			$socket.emit('join-spaces', { auth: { token: $user?.token } });
+			await initSpaces();
+			showCreateSpace = false;
 		}
 	}}
 />
@@ -446,9 +589,8 @@
 
 {#if $showSidebar}
 	<div
-		class=" {$isApp
-			? ' ml-[4.5rem] md:ml-0'
-			: ''} fixed md:hidden z-40 top-0 right-0 left-0 bottom-0 bg-black/60 w-full min-h-screen h-screen flex justify-center overflow-hidden overscroll-contain"
+		style="--pos:fixed; --d-md:none; --z:40; --top:0; --right:0; --left:0; --bottom:0; --bgc:rgb(0 0 0 / 0.6); --w:100%; --minh:100vh; --h:100vh; --d:flex; --jc:center; --of:hidden; overscroll-behavior:contain"
+		class={$isApp ? ' ml-[4.5rem] md:ml-0' : ''}
 		on:mousedown={() => {
 			showSidebar.set(!$showSidebar);
 		}}
@@ -463,38 +605,39 @@
 		}
 	}}
 />
-
 <div
 	bind:this={navElement}
 	id="sidebar"
-	class="h-screen max-h-[100dvh] min-h-screen select-none {$showSidebar
-		? 'md:relative w-[260px] max-w-[260px]'
-		: '-translate-x-[260px] w-[0px]'} {$isApp
+	style="--h:100dvh; --us:none; --fs:0; --bgc:var(--color-gray-50); --c:var(--color-gray-900); --dark-bgc:var(--color-gray-950); --dark-c:var(--color-gray-200); --size:0.8rem; --pos:fixed; --z:50; --top:0; --left:0; --ofx:hidden;"
+	class="{$showSidebar
+		? 'md:relative w-[280px] max-w-[280px]'
+		: '-translate-x-[280px] w-[0px]'} {$isApp
 		? `ml-[4.5rem] md:ml-0 `
-		: 'transition-width duration-200 ease-in-out'}  shrink-0 bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-200 text-sm fixed z-50 top-0 left-0 overflow-x-hidden
-        "
+		: 'transition-width duration-200 ease-in-out'}"
 	data-state={$showSidebar}
 >
 	<div
-		class="py-2 my-auto flex flex-col justify-between h-screen max-h-[100dvh] w-[260px] overflow-x-hidden z-50 {$showSidebar
-			? ''
-			: 'invisible'}"
+		style="--py:0.5rem; --my:auto; --d:flex; --fd:column; --jc:space-between; --h:100vh; --maxh:100dvh; --ofx:hidden; --z:50"
+		class={$showSidebar ? '' : 'invisible'}
 	>
-		<div class="px-1.5 flex justify-between space-x-1 text-gray-600 dark:text-gray-400">
+		<div
+			style="--px:0.4rem; --d:flex; --jc:space-between; --g:0.2rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
+		>
 			<button
-				class=" cursor-pointer p-[7px] flex rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition"
+				id="sidebar-toggle-button"
+				style="--cur:pointer; --p:7px; --d:flex; --radius:0.6rem; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				on:click={() => {
 					showSidebar.set(!$showSidebar);
 				}}
 			>
-				<div class=" m-auto self-center">
+				<div style="--m:auto; --as:center">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						fill="none"
 						viewBox="0 0 24 24"
 						stroke-width="2"
 						stroke="currentColor"
-						class="size-5"
+						style="--w:1.2rem; --h:1.2rem"
 					>
 						<path
 							stroke-linecap="round"
@@ -507,7 +650,8 @@
 
 			<a
 				id="sidebar-new-chat-button"
-				class="flex justify-between items-center flex-1 rounded-lg px-2 py-1 h-full text-right hover:bg-gray-100 dark:hover:bg-gray-900 transition no-drag-region"
+				style="--d:flex; --jc:space-between; --ai:center; --fx:1 1 0%; --radius:0.5rem; --px:0.5rem; --py:0.2rem; --h:100%; --ta:right; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				class="no-drag-region"
 				href="/"
 				draggable="false"
 				on:click={async () => {
@@ -527,16 +671,20 @@
 					}, 0);
 				}}
 			>
-				<div class="flex items-center">
-					<div class="self-center mx-1.5">
+				<div style="--d:flex; --ai:center">
+					<div style="--as:center; --mx:0.4rem">
 						<img
 							crossorigin="anonymous"
-							src="{WEBUI_BASE_URL}/static/icons/favicon.png"
-							class="sidebar-new-chat-icon size-5 -translate-x-1.5 rounded-full"
+							src={branding?.logo_url || `${WEBUI_BASE_URL}/static/icons/favicon.png`}
+							style="--w:1.2rem; --h:1.2rem; --translatex:-0.4rem; --radius:9999px"
+							class="sidebar-new-chat-icon"
 							alt="logo"
 						/>
 					</div>
-					<div class=" self-center text-sm text-gray-850 dark:text-white font-primary">
+					<div
+						style="--as:center; --size:0.8rem; --c:var(--color-gray-850); --dark-c:#fff"
+						class="font-primary"
+					>
 						{$i18n.t('New Chat')}
 					</div>
 				</div>
@@ -548,9 +696,9 @@
 		</div>
 
 		<!-- {#if $user?.role === 'admin'}
-			<div class="px-1.5 flex justify-center text-gray-800 dark:text-gray-200">
+			<div style="--px:0.4rem; --d:flex; --jc:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-200)">
 				<a
-					class="grow flex items-center space-x-3 rounded-lg px-2 py-[7px] hover:bg-gray-100 dark:hover:bg-gray-900 transition"
+					style="--fg:1; --d:flex; --ai:center; --g:0.6rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					href="/home"
 					on:click={() => {
 						selectedChatId = null;
@@ -562,39 +710,44 @@
 					}}
 					draggable="false"
 				>
-					<div class="self-center">
+					<div style="--as:center">
 						<Home strokeWidth="2" className="size-[1.1rem]" />
 					</div>
 
-					<div class="flex self-center translate-y-[0.5px]">
-						<div class=" self-center font-medium text-sm font-primary">{$i18n.t('Home')}</div>
+					<div style="--d:flex; --as:center; --translatey:0.5px">
+						<div style="--as:center; --weight:500; --size:0.8rem"
+	class="font-primary">{$i18n.t('Home')}</div>
 					</div>
 				</a>
 			</div>
 		{/if} -->
 
-		<div class="px-1.5 flex justify-center text-gray-800 dark:text-gray-200">
+		<div
+			style="--px:0.4rem; --d:flex; --jc:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-200)"
+		>
 			<button
-				class="grow flex items-center space-x-3 rounded-lg px-2 py-[7px] hover:bg-gray-100 dark:hover:bg-gray-900 transition outline-none"
+				style="--fg:1; --d:flex; --ai:center; --g:0.6rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --oe:2px solid transparent"
 				on:click={() => {
 					showSearch.set(true);
 				}}
 				draggable="false"
 			>
-				<div class="self-center">
+				<div style="--as:center">
 					<Search strokeWidth="2" className="size-[1.1rem]" />
 				</div>
 
-				<div class="flex self-center translate-y-[0.5px]">
-					<div class=" self-center text-sm font-primary">{$i18n.t('Search')}</div>
+				<div style="--d:flex; --as:center; --translatey:0.5px">
+					<div style="--as:center; --size:0.8rem" class="font-primary">{$i18n.t('Search')}</div>
 				</div>
 			</button>
 		</div>
 
 		{#if ($config?.features?.enable_notes ?? false) && ($user?.role === 'admin' || ($user?.permissions?.features?.notes ?? true))}
-			<div class="px-1.5 flex justify-center text-gray-800 dark:text-gray-200">
+			<div
+				style="--px:0.4rem; --d:flex; --jc:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-200)"
+			>
 				<a
-					class="grow flex items-center space-x-3 rounded-lg px-2 py-[7px] hover:bg-gray-100 dark:hover:bg-gray-900 transition"
+					style="--fg:1; --d:flex; --ai:center; --g:0.6rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					href="/notes"
 					on:click={() => {
 						selectedChatId = null;
@@ -606,9 +759,9 @@
 					}}
 					draggable="false"
 				>
-					<div class="self-center">
+					<div style="--as:center">
 						<svg
-							class="size-4"
+							style="--w:1rem; --h:1rem"
 							aria-hidden="true"
 							xmlns="http://www.w3.org/2000/svg"
 							width="24"
@@ -626,17 +779,19 @@
 						</svg>
 					</div>
 
-					<div class="flex self-center translate-y-[0.5px]">
-						<div class=" self-center text-sm font-primary">{$i18n.t('Notes')}</div>
+					<div style="--d:flex; --as:center; --translatey:0.5px">
+						<div style="--as:center; --size:0.8rem" class="font-primary">{$i18n.t('Notes')}</div>
 					</div>
 				</a>
 			</div>
 		{/if}
 
-		{#if $user?.role === 'admin' || $user?.permissions?.workshop?.models || $user?.permissions?.workshop?.knowledge || $user?.permissions?.workshop?.prompts || $user?.permissions?.workshop?.tools}
-			<div class="px-1.5 flex justify-center text-gray-800 dark:text-gray-200">
+		{#if $user?.role === 'admin' || $user?.permissions?.workshop?.models || $user?.permissions?.workshop?.knowledge || $user?.permissions?.workshop?.prompts}
+			<div
+				style="--px:0.4rem; --d:flex; --jc:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-200)"
+			>
 				<a
-					class="grow flex items-center space-x-3 rounded-lg px-2 py-[7px] hover:bg-gray-100 dark:hover:bg-gray-900 transition"
+					style="--fg:1; --d:flex; --ai:center; --g:0.6rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					href="/workshop"
 					on:click={() => {
 						selectedChatId = null;
@@ -648,14 +803,14 @@
 					}}
 					draggable="false"
 				>
-					<div class="self-center">
+					<div style="--as:center">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							fill="none"
 							viewBox="0 0 24 24"
 							stroke-width="2"
 							stroke="currentColor"
-							class="size-[1.1rem]"
+							style="--w:1.1rem; --h:1.1rem"
 						>
 							<path
 								stroke-linecap="round"
@@ -665,22 +820,26 @@
 						</svg>
 					</div>
 
-					<div class="flex self-center translate-y-[0.5px]">
-						<div class=" self-center text-sm font-primary">{$i18n.t('Workshop')}</div>
+					<div style="--d:flex; --as:center; --translatey:0.5px">
+						<div style="--as:center; --size:0.8rem" class="font-primary">
+							{$i18n.t('Workshop')}
+						</div>
 					</div>
 				</a>
 			</div>
 		{/if}
 
-		<div class="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+		<div style="--pos:relative; --d:flex; --fd:column; --fx:1 1 0%; --ofy:auto; --ofx:hidden">
 			{#if ($models ?? []).length > 0 && ($settings?.pinnedModels ?? []).length > 0}
-				<div class="mt-0.5">
+				<div style="--mt:0.125rem">
 					{#each $settings.pinnedModels as modelId (modelId)}
 						{@const model = $models.find((model) => model.id === modelId)}
 						{#if model}
-							<div class="px-1.5 flex justify-center text-gray-800 dark:text-gray-200">
+							<div
+								style="--px:0.4rem; --d:flex; --jc:center; --c:var(--color-gray-800); --dark-c:var(--color-gray-200)"
+							>
 								<a
-									class="grow flex items-center space-x-2.5 rounded-lg px-2 py-[7px] hover:bg-gray-100 dark:hover:bg-gray-900 transition"
+									style="--fg:1; --d:flex; --ai:center; --g:0.625rem; --radius:0.5rem; --px:0.5rem; --py:7px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 									href="/?model={modelId}"
 									on:click={() => {
 										selectedChatId = null;
@@ -692,18 +851,19 @@
 									}}
 									draggable="false"
 								>
-									<div class="self-center shrink-0">
+									<div style="--as:center; --fs:0">
 										<img
 											crossorigin="anonymous"
 											src={model?.info?.meta?.profile_image_url ??
+												branding?.logo_url ??
 												`${WEBUI_BASE_URL}/static/icons/favicon.png`}
-											class=" size-5 rounded-full -translate-x-[0.5px]"
+											style="--w:1.2rem; --h:1.2rem; --radius:9999px; --translatex:-0.5px"
 											alt="logo"
 										/>
 									</div>
 
-									<div class="flex self-center translate-y-[0.5px]">
-										<div class=" self-center text-sm font-primary line-clamp-1">
+									<div style="--d:flex; --as:center; --translatey:0.5px">
+										<div style="--as:center; --size:0.8rem; --line-clamp:1" class="font-primary">
 											{model?.name ?? modelId}
 										</div>
 									</div>
@@ -714,27 +874,27 @@
 				</div>
 			{/if}
 
-			{#if $config?.features?.enable_channels && ($user?.role === 'admin' || $channels.length > 0)}
+			{#if $config?.features?.enable_spaces && ($user?.role === 'admin' || $user?.role === 'facilitator' || $spaces.length > 0)}
 				<Folder
 					className="px-2 mt-0.5"
 					name={$i18n.t('Spaces')}
 					dragAndDrop={false}
 					onAdd={async () => {
-						if ($user?.role === 'admin') {
+						if ($user?.role === 'admin' || $user?.role === 'facilitator') {
 							await tick();
 
 							setTimeout(() => {
-								showCreateChannel = true;
+								showCreateSpace = true;
 							}, 0);
 						}
 					}}
-					onAddLabel={$i18n.t('Create Channel')}
+					onAddLabel={$i18n.t('Create Space')}
 				>
-					{#each $channels as channel}
-						<ChannelItem
-							{channel}
+					{#each $spaces as space}
+						<SpaceItem
+							{space}
 							onUpdate={async () => {
-								await initChannels();
+								await initSpaces();
 							}}
 						/>
 					{/each}
@@ -809,88 +969,336 @@
 					}
 				}}
 			>
-				{#if $pinnedChats.length > 0}
-					<div class="flex flex-col space-y-1 rounded-xl">
-						<Folder
-							className=""
-							bind:open={showPinnedChat}
-							on:change={(e) => {
-								localStorage.setItem('showPinnedChat', e.detail);
-								console.log(e.detail);
-							}}
-							on:import={(e) => {
-								importChatHandler(e.detail, true);
-							}}
-							on:drop={async (e) => {
-								const { type, id, item } = e.detail;
+				<!-- Toggle icon bar: folders, pinned, dates, shared -->
+				{#if Object.keys(folders).length > 0 || $pinnedChats.length > 0 || groupedChats.length > 0 || $sharedByMeChats.length > 0 || $sharedWithMeChats.length > 0}
+					<div style="--d:flex; --ai:center; --g:0.2rem; --px:0.4rem; --pt:0.2rem; --pb:0.125rem">
+						<!-- Section toggles: Pinned, Shared by Me, Shared with Me -->
+						{#if $pinnedChats.length > 0}
+							<Tooltip content={showPinnedChat ? $i18n.t('Hide Pinned') : $i18n.t('Show Pinned')}>
+								<button
+									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.2rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-300); --tn:color 150ms ease"
+									on:click={() => {
+										showPinnedChat = !showPinnedChat;
+										localStorage.setItem('showPinnedChat', String(showPinnedChat));
+									}}
+								>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke-width="2"
+										stroke="currentColor"
+										style="--w:0.8rem; --h:0.8rem"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
+										/>
+									</svg>
+									{#if showPinnedChat}
+										<ChevronDown className="size-2.5" strokeWidth="2.5" />
+									{:else}
+										<ChevronRight className="size-2.5" strokeWidth="2.5" />
+									{/if}
+								</button>
+							</Tooltip>
+						{/if}
 
-								if (type === 'chat') {
-									let chat = await getChatById(localStorage.token, id).catch((error) => {
-										return null;
-									});
-									if (!chat && item) {
-										chat = await importChat(
-											localStorage.token,
-											item.chat,
-											item?.meta ?? {},
-											false,
-											null,
-											item?.created_at ?? null,
-											item?.updated_at ?? null
-										);
-									}
+						{#if $sharedByMeChats.length > 0}
+							<Tooltip
+								content={showSharedByMe
+									? $i18n.t('Hide Shared by Me')
+									: $i18n.t('Show Shared by Me')}
+							>
+								<button
+									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.2rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-300); --tn:color 150ms ease"
+									on:click={() => {
+										showSharedByMe = !showSharedByMe;
+										localStorage.setItem('showSharedByMe', String(showSharedByMe));
+									}}
+								>
+									<!-- Share/outgoing arrow icon -->
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke-width="2"
+										stroke="currentColor"
+										style="--w:0.8rem; --h:0.8rem"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"
+										/>
+									</svg>
+									{#if showSharedByMe}
+										<ChevronDown className="size-2.5" strokeWidth="2.5" />
+									{:else}
+										<ChevronRight className="size-2.5" strokeWidth="2.5" />
+									{/if}
+								</button>
+							</Tooltip>
+						{/if}
 
-									if (chat) {
-										console.log(chat);
-										if (chat.folder_id) {
-											const res = await updateChatFolderIdById(
-												localStorage.token,
-												chat.id,
-												null
-											).catch((error) => {
-												toast.error(`${error}`);
-												return null;
-											});
+						{#if $sharedWithMeChats.length > 0}
+							<Tooltip
+								content={showSharedWithMe
+									? $i18n.t('Hide Shared with Me')
+									: $i18n.t('Show Shared with Me')}
+							>
+								<button
+									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.2rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-300); --tn:color 150ms ease"
+									on:click={() => {
+										showSharedWithMe = !showSharedWithMe;
+										localStorage.setItem('showSharedWithMe', String(showSharedWithMe));
+									}}
+								>
+									<!-- Envelope icon -->
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke-width="2"
+										stroke="currentColor"
+										style="--w:0.8rem; --h:0.8rem"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
+										/>
+									</svg>
+									{#if showSharedWithMe}
+										<ChevronDown className="size-2.5" strokeWidth="2.5" />
+									{:else}
+										<ChevronRight className="size-2.5" strokeWidth="2.5" />
+									{/if}
+								</button>
+							</Tooltip>
+						{/if}
+
+						<!-- Separator between section toggles and display toggles -->
+						{#if ($pinnedChats.length > 0 || $sharedByMeChats.length > 0 || $sharedWithMeChats.length > 0) && (Object.keys(folders).length > 0 || groupedChats.length > 0)}
+							<div style="--w:1px; --h:0.6rem; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-700); --mx:0.1rem"></div>
+						{/if}
+
+						<!-- Display toggles: Folders, Fold Dates -->
+						{#if Object.keys(folders).length > 0}
+							<Tooltip
+								content={allFoldersCollapsed ? $i18n.t('Unfold Folders') : $i18n.t('Fold Folders')}
+							>
+								<button
+									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.2rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-300); --tn:color 150ms ease"
+									on:click={() => {
+										if (allFoldersCollapsed) {
+											unfoldAllFolders();
+										} else {
+											foldAllFolders();
 										}
+									}}
+								>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke-width="2"
+										stroke="currentColor"
+										style="--w:0.8rem; --h:0.8rem"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z"
+										/>
+									</svg>
+									{#if allFoldersCollapsed}
+										<ChevronRight className="size-2.5" strokeWidth="2.5" />
+									{:else}
+										<ChevronDown className="size-2.5" strokeWidth="2.5" />
+									{/if}
+								</button>
+							</Tooltip>
+						{/if}
 
-										if (!chat.pinned) {
-											const res = await toggleChatPinnedStatusById(localStorage.token, chat.id);
+						{#if groupedChats.length > 0}
+							<Tooltip
+								content={allDateGroupsCollapsed ? $i18n.t('Unfold Dates') : $i18n.t('Fold Dates')}
+							>
+								<button
+									style="--d:flex; --ai:center; --g:0.125rem; --p:0.125rem; --radius:0.2rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --hvr-c:var(--color-gray-600); --hvr-dark-c:var(--color-gray-300); --tn:color 150ms ease"
+									on:click={() => {
+										if (allDateGroupsCollapsed) {
+											unfoldAllDateGroups();
+										} else {
+											foldAllDateGroups();
 										}
+									}}
+								>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke-width="2"
+										stroke="currentColor"
+										style="--w:0.8rem; --h:0.8rem"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+										/>
+									</svg>
+									{#if allDateGroupsCollapsed}
+										<ChevronRight className="size-2.5" strokeWidth="2.5" />
+									{:else}
+										<ChevronDown className="size-2.5" strokeWidth="2.5" />
+									{/if}
+								</button>
+							</Tooltip>
+						{/if}
+					</div>
+				{/if}
 
-										initChatList();
+				<!-- Pinned chats (toggled via icon bar) -->
+				{#if $pinnedChats.length > 0 && showPinnedChat}
+					<div style="--pl:0.6rem; --pt:0.4rem; --pb:0.2rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --weight:500; --tt:uppercase; --ls:0.03em">{$i18n.t('Pinned')}</div>
+					<!-- svelte-ignore a11y-no-static-element-interactions -->
+					<div
+						transition:slide={{ duration: 200, easing: quintOut }}
+						style="--d:flex; --fd:column; --g:0.2rem; --radius:0.6rem; --pos:relative"
+						on:dragover|preventDefault|stopPropagation={() => {
+							pinnedDraggedOver = true;
+						}}
+						on:dragleave|preventDefault|stopPropagation={() => {
+							pinnedDraggedOver = false;
+						}}
+						on:drop|preventDefault|stopPropagation={async (e) => {
+							if (e.dataTransfer?.items && e.dataTransfer.items.length > 0) {
+								for (const item of Array.from(e.dataTransfer.items)) {
+									if (item.kind === 'file') {
+										const file = item.getAsFile();
+										if (file && file.type === 'application/json') {
+											const reader = new FileReader();
+											reader.onload = async (event) => {
+												try {
+													const fileContent = JSON.parse(event.target.result);
+													importChatHandler(fileContent, true);
+												} catch (error) {
+													console.error('Error parsing JSON file:', error);
+												}
+											};
+											reader.readAsText(file);
+										}
+									} else {
+										try {
+											const dataTransfer = e.dataTransfer.getData('text/plain');
+											if (dataTransfer) {
+												const data = JSON.parse(dataTransfer);
+												if (data.type === 'chat') {
+													let chat = await getChatById(localStorage.token, data.id).catch(
+														() => null
+													);
+													if (!chat && data.item) {
+														chat = await importChat(
+															localStorage.token,
+															data.item.chat,
+															data.item?.meta ?? {},
+															false,
+															null,
+															data.item?.created_at ?? null,
+															data.item?.updated_at ?? null
+														);
+													}
+													if (chat) {
+														if (chat.folder_id) {
+															await updateChatFolderIdById(localStorage.token, chat.id, null).catch(
+																(error) => {
+																	toast.error(`${error}`);
+																}
+															);
+														}
+														if (!chat.pinned) {
+															await toggleChatPinnedStatusById(localStorage.token, chat.id);
+														}
+														initChatList();
+													}
+												}
+											}
+										} catch {
+											// Not valid JSON drop data
+										}
 									}
 								}
-							}}
-							name={$i18n.t('Pinned')}
-						>
+							}
+							pinnedDraggedOver = false;
+						}}
+					>
+						{#if pinnedDraggedOver}
 							<div
-								class="ml-3 pl-1 mt-[1px] flex flex-col overflow-y-auto scrollbar-hidden border-s border-gray-100 dark:border-gray-900"
-							>
-								{#each $pinnedChats as chat, idx (`pinned-chat-${chat?.id ?? idx}`)}
-									<ChatItem
-										className=""
-										id={chat.id}
-										title={chat.title}
-										{shiftKey}
-										selected={selectedChatId === chat.id}
-										on:select={() => {
-											selectedChatId = chat.id;
-										}}
-										on:unselect={() => {
-											selectedChatId = null;
-										}}
-										on:change={async () => {
-											initChatList();
-										}}
-										on:tag={(e) => {
-											const { type, name } = e.detail;
-											tagEventHandler(type, name, chat.id);
-										}}
-									/>
-								{/each}
-							</div>
-						</Folder>
+								style="--pos:absolute; --top:0; --left:0; --w:100%; --h:100%; --bgc:rgb(236 236 236 / 0.5); --dark-bgc:rgb(78 78 78 / 0.2); --z:50; --pe:none; touch-action:none"
+								class="rounded-xs"
+							></div>
+						{/if}
+						<div
+							style="--ml:0.6rem; --pl:0.2rem; --mt:1px; --d:flex; --fd:column; --ofy:auto; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-900)"
+							class="scrollbar-hidden border-s"
+						>
+							{#each $pinnedChats as chat, idx (`pinned-chat-${chat?.id ?? idx}`)}
+								<ChatItem
+									className=""
+									id={chat.id}
+									title={chat.title}
+									{shiftKey}
+									selected={selectedChatId === chat.id}
+									on:select={() => {
+										selectedChatId = chat.id;
+									}}
+									on:unselect={() => {
+										selectedChatId = null;
+									}}
+									on:change={async () => {
+										initChatList();
+									}}
+									on:tag={(e) => {
+										const { type, name } = e.detail;
+										tagEventHandler(type, name, chat.id);
+									}}
+								/>
+							{/each}
+						</div>
 					</div>
+				{/if}
+
+				<!-- Shared by me (toggled via icon bar) -->
+				{#if $sharedByMeChats.length > 0 && showSharedByMe}
+					<div style="--pl:0.6rem; --pt:0.4rem; --pb:0.2rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --weight:500; --tt:uppercase; --ls:0.03em">{$i18n.t('Shared by Me')}</div>
+					<div transition:slide={{ duration: 200, easing: quintOut }} style="--d:flex; --fd:column">
+						<div
+							style="--ml:0.6rem; --pl:0.2rem; --mt:1px; --d:flex; --fd:column; --ofy:auto; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-900)"
+							class="scrollbar-hidden border-s"
+						>
+							<SharedByMeList items={$sharedByMeChats} />
+						</div>
+					</div>
+				{/if}
+
+				<!-- Shared with me (toggled via icon bar) -->
+				{#if $sharedWithMeChats.length > 0 && showSharedWithMe}
+					<div style="--pl:0.6rem; --pt:0.4rem; --pb:0.2rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --weight:500; --tt:uppercase; --ls:0.03em">{$i18n.t('Shared with Me')}</div>
+					<div transition:slide={{ duration: 200, easing: quintOut }} style="--d:flex; --fd:column">
+						<div
+							style="--ml:0.6rem; --pl:0.2rem; --mt:1px; --d:flex; --fd:column; --ofy:auto; --bc:var(--color-gray-100); --dark-bc:var(--color-gray-900)"
+							class="scrollbar-hidden border-s"
+						>
+							<SharedWithMeList items={$sharedWithMeChats} />
+						</div>
+					</div>
+				{/if}
+
+				{#if folders && !allFoldersCollapsed}
+					<div style="--pl:0.6rem; --pt:0.4rem; --pb:0.2rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --weight:500; --tt:uppercase; --ls:0.03em">{$i18n.t('Folders')}</div>
 				{/if}
 
 				{#if folders}
@@ -914,59 +1322,87 @@
 					/>
 				{/if}
 
-				<div class=" flex-1 flex flex-col overflow-y-auto scrollbar-hidden">
-					<div class="pt-1.5">
+				{#if !allDateGroupsCollapsed}
+				{#if groupedChats.length > 0}
+					<div style="--pl:0.6rem; --pt:0.4rem; --pb:0.2rem; --size:0.6rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --weight:500; --tt:uppercase; --ls:0.03em">{$i18n.t('Recent')}</div>
+				{/if}
+
+				<div style="--fx:1 1 0%; --d:flex; --fd:column; --ofy:auto" class="scrollbar-hidden">
+					<div style="--pt:0.4rem; --radius:0.8rem; --m:0">
 						{#if $chats}
-							{#each $chats as chat, idx (`chat-${chat?.id ?? idx}`)}
-								{#if idx === 0 || (idx > 0 && chat.time_range !== $chats[idx - 1].time_range)}
-									<div
-										class="w-full pl-2.5 text-xs text-gray-500 dark:text-gray-500 font-medium {idx ===
-										0
-											? ''
-											: 'pt-5'} pb-1.5"
-									>
-										{$i18n.t(chat.time_range)}
-										<!-- localisation keys for time_range to be recognized from the i18next parser (so they don't get automatically removed):
-							{$i18n.t('Today')}
-							{$i18n.t('Yesterday')}
-							{$i18n.t('Previous 7 days')}
-							{$i18n.t('Previous 30 days')}
-							{$i18n.t('January')}
-							{$i18n.t('February')}
-							{$i18n.t('March')}
-							{$i18n.t('April')}
-							{$i18n.t('May')}
-							{$i18n.t('June')}
-							{$i18n.t('July')}
-							{$i18n.t('August')}
-							{$i18n.t('September')}
-							{$i18n.t('October')}
-							{$i18n.t('November')}
-							{$i18n.t('December')}
-							-->
+							{#each groupedChats as group, groupIdx (`date-group-${group.timeRange}`)}
+								<!-- Date group header -->
+								<!-- svelte-ignore a11y-click-events-have-key-events -->
+								<!-- svelte-ignore a11y-no-static-element-interactions -->
+								<div
+									style="--w:100%; --pl:0.4rem; --pr:0.625rem; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --weight:500; --pb:0.4rem; --d:flex; --ai:center; --g:0.2rem; --cur:pointer; --radius:0.2rem; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:background-color 150ms ease"
+									class={groupIdx === 0 ? '' : 'pt-5'}
+									on:click={() => toggleDateGroup(group.timeRange)}
+								>
+									<div style="--c:var(--color-gray-300); --dark-c:var(--color-gray-600); --fs:0">
+										{#if collapsedDateGroups[group.timeRange]}
+											<ChevronRight className="size-3" strokeWidth="2.5" />
+										{:else}
+											<ChevronDown className="size-3" strokeWidth="2.5" />
+										{/if}
+									</div>
+									<div style="--fx:1 1 0%">
+										{$i18n.t(group.timeRange)}
+									</div>
+									{#if collapsedDateGroups[group.timeRange]}
+										<div
+											style="--size:0.625rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-600)"
+										>
+											({group.chats.length})
+										</div>
+									{/if}
+								</div>
+								<!-- localisation keys for time_range to be recognized from the i18next parser (so they don't get automatically removed):
+								{$i18n.t('Today')}
+								{$i18n.t('Yesterday')}
+								{$i18n.t('Previous 7 days')}
+								{$i18n.t('Previous 30 days')}
+								{$i18n.t('January')}
+								{$i18n.t('February')}
+								{$i18n.t('March')}
+								{$i18n.t('April')}
+								{$i18n.t('May')}
+								{$i18n.t('June')}
+								{$i18n.t('July')}
+								{$i18n.t('August')}
+								{$i18n.t('September')}
+								{$i18n.t('October')}
+								{$i18n.t('November')}
+								{$i18n.t('December')}
+								-->
+
+								<!-- Chat items with slide transition -->
+								{#if !collapsedDateGroups[group.timeRange]}
+									<div transition:slide={{ duration: 200, easing: quintOut }}>
+										{#each group.chats as chat (`chat-${chat.id}`)}
+											<ChatItem
+												className=""
+												id={chat.id}
+												title={chat.title}
+												{shiftKey}
+												selected={selectedChatId === chat.id}
+												on:select={() => {
+													selectedChatId = chat.id;
+												}}
+												on:unselect={() => {
+													selectedChatId = null;
+												}}
+												on:change={async () => {
+													initChatList();
+												}}
+												on:tag={(e) => {
+													const { type, name } = e.detail;
+													tagEventHandler(type, name, chat.id);
+												}}
+											/>
+										{/each}
 									</div>
 								{/if}
-
-								<ChatItem
-									className=""
-									id={chat.id}
-									title={chat.title}
-									{shiftKey}
-									selected={selectedChatId === chat.id}
-									on:select={() => {
-										selectedChatId = chat.id;
-									}}
-									on:unselect={() => {
-										selectedChatId = null;
-									}}
-									on:change={async () => {
-										initChatList();
-									}}
-									on:tag={(e) => {
-										const { type, name } = e.detail;
-										tagEventHandler(type, name, chat.id);
-									}}
-								/>
 							{/each}
 
 							{#if $scrollPaginationEnabled && !allChatsLoaded}
@@ -978,7 +1414,7 @@
 									}}
 								>
 									<div
-										class="w-full flex justify-center py-1 text-xs animate-pulse items-center gap-2"
+										style="--w:100%; --d:flex; --jc:center; --py:0.2rem; --size:0.6rem; animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; --ai:center; --g:0.5rem"
 									>
 										<Spinner className=" size-4" />
 										<div class=" ">Loading...</div>
@@ -986,18 +1422,24 @@
 								</Loader>
 							{/if}
 						{:else}
-							<div class="w-full flex justify-center py-1 text-xs animate-pulse items-center gap-2">
+							<div
+								style="--w:100%; --d:flex; --jc:center; 
+									--py:0.2rem; --size:0.6rem; 
+									animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; 
+									--ai:center; --g:0.5rem"
+							>
 								<Spinner className=" size-4" />
 								<div class=" ">Loading...</div>
 							</div>
 						{/if}
 					</div>
 				</div>
+				{/if}
 			</Folder>
 		</div>
 
-		<div class="px-2">
-			<div class="flex flex-col font-primary">
+		<div style="--px:0.5rem">
+			<div style="--d:flex; --fd:column" class="font-primary">
 				{#if $user !== undefined && $user !== null}
 					<UserMenu
 						role={$user?.role}
@@ -1008,19 +1450,16 @@
 						}}
 					>
 						<button
-							class=" flex items-center rounded-xl py-2.5 px-2.5 w-full hover:bg-gray-100 dark:hover:bg-gray-900 transition"
-							on:click={() => {
-								showDropdown = !showDropdown;
-							}}
+							style="--radius: 1em; --w:100%; --p:0.2rem; --d:flex; --ai:center; --g:0.5rem; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						>
-							<div class=" self-center mr-3">
+							<div style="--as:center; --mr:0.6rem">
 								<img
 									src={$user?.profile_image_url}
-									class=" max-w-[30px] object-cover rounded-full"
+									style="--maxw:30px; --objf:cover; --radius:9999px"
 									alt="User profile"
 								/>
 							</div>
-							<div class=" self-center font-medium">{$user?.name}</div>
+							<div style="--as:center; --weight:500">{$user?.name}</div>
 						</button>
 					</UserMenu>
 				{/if}

@@ -1,0 +1,19 @@
+{
+  "name": "tw2startr",
+  "version": "0.1.0",
+  "description": "Convert Tailwind CSS utility classes to startr.style responsive inline CSS custom properties",
+  "type": "module",
+  "bin": {
+    "tw2startr": "./bin/tw2startr.js"
+  },
+  "main": "./src/index.js",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "vitest": "^3.0.0"
+  },
+  "keywords": ["tailwind", "css", "startr.style", "converter"],
+  "license": "MIT"
+}

@@ -17,10 +17,10 @@
 	};
 </script>
 
-<div class="flex items-center mb-1.5 pt-1.5">
-	<div class=" -translate-x-1.5 flex items-center">
+<div style="--d:flex; --ai:center; --mb:0.4rem; --pt:0.4rem">
+	<div style="--translatex:-0.4rem; --d:flex; --ai:center">
 		<button
-			class="p-0.5 bg-transparent transition rounded-lg"
+			style="--p:0.125rem; --bgc:transparent; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
 			on:click={() => {
 				show = !show;
 			}}
@@ -29,19 +29,19 @@
 		</button>
 	</div>
 
-	<div class=" font-medium text-base flex items-center gap-1">
+	<div style="--weight:500; --size:1rem; --d:flex; --ai:center; --g:0.2rem">
 		<div>
 			{$i18n.t('Controls')}
 		</div>
 	</div>
 </div>
 
-<div class="mt-1">
-	<div class="pb-10">
+<div style="--mt:0.2rem">
+	<div style="--pb:2.5rem">
 		{#if files.length > 0}
-			<div class=" text-xs font-medium pb-1">Files</div>
+			<div style="--size:0.6rem; --weight:500; --pb:0.2rem">Files</div>
 
-			<div class="flex flex-col gap-1">
+			<div style="--d:flex; --fd:column; --g:0.2rem">
 				{#each files.filter((file) => file.type !== 'image') as file, fileIdx}
 					<FileItem
 						className="w-full"
@@ -67,7 +67,7 @@
 					/>
 				{/each}
 
-				<div class="flex items-center flex-wrap gap-2 mt-1.5">
+				<div style="--d:flex; --ai:center; --fw:wrap; --g:0.5rem; --mt:0.4rem">
 					{#each files.filter((file) => file.type === 'image') as file, fileIdx}
 						<Image
 							src={file.url}
@@ -84,18 +84,18 @@
 				</div>
 			</div>
 
-			<hr class="my-2 border-gray-50 dark:border-gray-700/10" />
+			<hr style="--my:0.5rem; --bc:var(--color-gray-50); --dark-bc:rgb(78 78 78 / 0.1)" />
 		{/if}
 
-		<div class=" text-xs font-medium mb-1">Model</div>
+		<div style="--size:0.6rem; --weight:500; --mb:0.2rem">Model</div>
 
-		<div class="w-full">
-			<select class="w-full bg-transparent text-sm outline-hidden" bind:value={selectedModelId}>
-				<option value="" class="bg-gray-50 dark:bg-gray-700" disabled>
+		<div style="--w:100%">
+			<select style="--w:100%; --bgc:transparent; --size:0.8rem; --oe:none" bind:value={selectedModelId}>
+				<option value="" style="--bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-700)" disabled>
 					{$i18n.t('Select a model')}
 				</option>
 				{#each $models.filter((model) => !(model?.info?.meta?.hidden ?? false)) as model}
-					<option value={model.id} class="bg-gray-50 dark:bg-gray-700">{model.name}</option>
+					<option value={model.id} style="--bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-700)">{model.name}</option>
 				{/each}
 			</select>
 		</div>

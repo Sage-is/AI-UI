@@ -15,15 +15,14 @@
 	});
 </script>
 
-<div class="fixed w-full h-full flex z-999">
+<div style="--pos:fixed; --w:100%; --h:100%; --d:flex; --z:999">
 	<div
-		class="absolute w-full h-full backdrop-blur-lg bg-white/10 dark:bg-gray-900/50 flex justify-center"
+		style="--pos:absolute; --w:100%; --h:100%; backdrop-filter:blur(16px); --bgc:rgb(255 255 255 / 0.1); --dark-bgc:rgb(23 23 23 / 0.5); --d:flex; --jc:center"
 	>
-		<div class="m-auto pb-10 flex flex-col justify-center">
-			<div class="max-w-md">
+		<div style="--m:auto; --pb:2.5rem; --d:flex; --fd:column; --jc:center">
+			<div style="--maxw:28rem">
 				<div
-					class="text-center dark:text-white text-2xl font-medium z-50"
-					style="white-space: pre-wrap;"
+					style="--ta:center; --dark-c:#fff; --size:1.5rem; --weight:500; --z:50; white-space: pre-wrap;"
 				>
 					{#if ($config?.ui?.pending_user_overlay_title ?? '').trim() !== ''}
 						{$config.ui.pending_user_overlay_title}
@@ -34,8 +33,7 @@
 				</div>
 
 				<div
-					class=" mt-4 text-center text-sm dark:text-gray-200 w-full"
-					style="white-space: pre-wrap;"
+					style="--mt:1rem; --ta:center; --size:0.8rem; --dark-c:var(--color-gray-200); --w:100%; white-space: pre-wrap;"
 				>
 					{#if ($config?.ui?.pending_user_overlay_content ?? '').trim() !== ''}
 						{$config.ui.pending_user_overlay_content}
@@ -47,14 +45,15 @@
 				</div>
 
 				{#if adminDetails}
-					<div class="mt-4 text-sm font-medium text-center">
+					<div style="--mt:1rem; --size:0.8rem; --weight:500; --ta:center">
 						<div>{$i18n.t('Admin')}: {adminDetails.name} ({adminDetails.email})</div>
 					</div>
 				{/if}
 
-				<div class=" mt-6 mx-auto relative group w-fit">
+				<div style="--mt:1.5rem; --mx:auto; --pos:relative; --w:fit-content"
+	class="group">
 					<button
-						class="relative z-20 flex px-5 py-2 rounded-full bg-white border border-gray-100 dark:border-none hover:bg-gray-100 text-gray-700 transition font-medium text-sm"
+						style="--pos:relative; --z:20; --d:flex; --px:1.2rem; --py:0.5rem; --radius:9999px; --bgc:#fff;  --bc:var(--color-gray-100); --dark-bs:none; --hvr-bgc:var(--color-gray-100); --c:var(--color-gray-700); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.8rem"
 						on:click={async () => {
 							location.href = '/';
 						}}
@@ -63,7 +62,7 @@
 					</button>
 
 					<button
-						class="text-xs text-center w-full mt-2 text-gray-400 underline"
+						style="--size:0.6rem; --ta:center; --w:100%; --mt:0.5rem; --c:var(--color-gray-400); --td:underline"
 						on:click={async () => {
 							localStorage.removeItem('token');
 							location.href = '/auth';

@@ -37,6 +37,7 @@
 	import EyeSlash from '$lib/components/icons/EyeSlash.svelte';
 	import Eye from '$lib/components/icons/Eye.svelte';
 	import { WEBUI_BASE_URL } from '$lib/constants';
+	import { getBranding, type Branding } from '$lib/apis/configs';
 
 	let shiftKey = false;
 
@@ -47,6 +48,8 @@
 
 	let workshopModels = null;
 	let baseModels = null;
+
+	let branding: Branding | null = null;
 
 	let filteredModels = [];
 	let selectedModelId = null;
@@ -207,6 +210,14 @@
 
 	onMount(async () => {
 		await init();
+
+		// Fetch branding for fallback logo
+		try {
+			branding = await getBranding();
+		} catch (e) {
+			console.error('Failed to load branding:', e);
+		}
+
 		const id = $page.url.searchParams.get('id');
 
 		if (id) {
@@ -246,20 +257,20 @@
 
 {#if models !== null}
 	{#if selectedModelId === null}
-		<div class="flex flex-col gap-1 mt-1.5 mb-2">
-			<div class="flex justify-between items-center">
-				<div class="flex items-center md:self-center text-xl font-medium px-0.5">
+		<div style="--d:flex; --fd:column; --g:0.2rem; --mt:0.4rem; --mb:0.5rem">
+			<div style="--d:flex; --jc:space-between; --ai:center">
+				<div style="--d:flex; --ai:center; --as-md:center; --size:1.2rem; --weight:500; --px:0.125rem">
 					{$i18n.t('Models')}
-					<div class="flex self-center w-[1px] h-6 mx-2.5 bg-gray-50 dark:bg-gray-850" />
-					<span class="text-lg font-medium text-gray-500 dark:text-gray-300"
+					<div style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)" />
+					<span style="--size:1.125rem; --weight:500; --c:var(--color-gray-500); --dark-c:var(--color-gray-300)"
 						>{filteredModels.length}</span
 					>
 				</div>
 
-				<div class="flex items-center gap-1.5">
+				<div style="--d:flex; --ai:center; --g:0.4rem">
 					<Tooltip content={$i18n.t('Manage Models')}>
 						<button
-							class=" p-1 rounded-full flex gap-1 items-center"
+							style="--p:0.2rem; --radius:9999px; --d:flex; --g:0.2rem; --ai:center"
 							type="button"
 							on:click={() => {
 								showManageModal = true;
@@ -271,7 +282,7 @@
 
 					<Tooltip content={$i18n.t('Settings')}>
 						<button
-							class=" p-1 rounded-full flex gap-1 items-center"
+							style="--p:0.2rem; --radius:9999px; --d:flex; --g:0.2rem; --ai:center"
 							type="button"
 							on:click={() => {
 								showConfigModal = true;
@@ -283,20 +294,20 @@
 				</div>
 			</div>
 
-			<div class=" flex flex-1 items-center w-full space-x-2">
-				<div class="flex flex-1 items-center">
-					<div class=" self-center ml-1 mr-3">
+			<div style="--d:flex; --fx:1 1 0%; --ai:center; --w:100%; --g:0.5rem">
+				<div style="--d:flex; --fx:1 1 0%; --ai:center">
+					<div style="--as:center; --ml:0.2rem; --mr:0.6rem">
 						<Search className="size-3.5" />
 					</div>
 					<input
-						class=" w-full text-sm py-1 rounded-r-xl outline-hidden bg-transparent"
+						style="--w:100%; --size:0.8rem; --py:0.2rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 						bind:value={searchValue}
 						placeholder={$i18n.t('Search Models')}
 					/>
 					{#if searchValue}
-						<div class="self-center pl-1.5 translate-y-[0.5px] rounded-l-xl bg-transparent">
+						<div style="--as:center; --pl:0.4rem; --translatey:0.5px; --btlr:0.6rem; --bblr:0.6rem; --bgc:transparent">
 							<button
-								class="p-0.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-900 transition"
+								style="--p:0.125rem; --radius:9999px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								on:click={() => {
 									searchValue = '';
 								}}
@@ -309,38 +320,41 @@
 			</div>
 		</div>
 
-		<div class=" my-2 mb-5" id="model-list">
+		<div style="--my:0.5rem; --mb:1.2rem" id="model-list">
 			{#if models.length > 0}
 				{#each filteredModels as model, modelIdx (model.id)}
 					<div
-						class=" flex space-x-4 cursor-pointer w-full px-3 py-2 dark:hover:bg-white/5 hover:bg-black/5 rounded-lg transition {model
+						style="--d:flex; --g:1rem; --cur:pointer; --w:100%; --px:0.6rem; --py:0.5rem; --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-bgc:rgb(0 0 0 / 0.05); --radius:0.5rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="{model
 							?.meta?.hidden
 							? 'opacity-50 dark:opacity-50'
 							: ''}"
 						id="model-item-{model.id}"
 					>
 						<button
-							class=" flex flex-1 text-left space-x-3.5 cursor-pointer w-full"
+							style="--d:flex; --fx:1 1 0%; --ta:left; --g:0.8rem; --cur:pointer; --w:100%"
 							type="button"
 							on:click={() => {
 								selectedModelId = model.id;
 							}}
 						>
-							<div class=" self-center w-8">
+							<div style="--as:center; --w:2rem">
 								<div
-									class=" rounded-full object-cover {(model?.is_active ?? true)
+									style="--radius:9999px; --objf:cover"
+	class="{(model?.is_active ?? true)
 										? ''
-										: 'opacity-50 dark:opacity-50'} "
+										: 'opacity-50 dark:opacity-50'}"
 								>
 									<img
-										src={model?.meta?.profile_image_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
+										src={model?.meta?.profile_image_url ?? branding?.logo_url ?? `${WEBUI_BASE_URL}/static/icons/favicon.png`}
 										alt="modelfile profile"
-										class=" rounded-full w-full h-auto object-cover"
+										style="--radius:9999px; --w:100%; --h:auto; --objf:cover"
 									/>
 								</div>
 							</div>
 
-							<div class=" flex-1 self-center {(model?.is_active ?? true) ? '' : 'text-gray-500'}">
+							<div style="--fx:1 1 0%; --as:center"
+	class="{(model?.is_active ?? true) ? '' : 'text-gray-500'}">
 								<Tooltip
 									content={marked.parse(
 										!!model?.meta?.description
@@ -352,10 +366,10 @@
 									className=" w-fit"
 									placement="top-start"
 								>
-									<div class="  font-semibold line-clamp-1">{model.name}</div>
+									<div style="--weight:600; --line-clamp:1">{model.name}</div>
 								</Tooltip>
-								<div class=" text-xs overflow-hidden text-ellipsis line-clamp-1 text-gray-500">
-									<span class=" line-clamp-1">
+								<div style="--size:0.6rem; --of:hidden; text-overflow:ellipsis; --line-clamp:1; --c:var(--color-gray-500)">
+									<span style="--line-clamp:1">
 										{!!model?.meta?.description
 											? model?.meta?.description
 											: model?.ollama?.digest
@@ -365,11 +379,11 @@
 								</div>
 							</div>
 						</button>
-						<div class="flex flex-row gap-0.5 items-center self-center">
+						<div style="--d:flex; --fd:row; --g:0.125rem; --ai:center; --as:center">
 							{#if shiftKey}
 								<Tooltip content={model?.meta?.hidden ? $i18n.t('Show') : $i18n.t('Hide')}>
 									<button
-										class="self-center w-fit text-sm px-2 py-2 dark:text-gray-300 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
+										style="--as:center; --w:fit-content; --size:0.8rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 										type="button"
 										on:click={() => {
 											hideModelHandler(model);
@@ -384,7 +398,7 @@
 								</Tooltip>
 							{:else}
 								<button
-									class="self-center w-fit text-sm px-2 py-2 dark:text-gray-300 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
+									style="--as:center; --w:fit-content; --size:0.8rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 									type="button"
 									on:click={() => {
 										selectedModelId = model.id;
@@ -396,7 +410,7 @@
 										viewBox="0 0 24 24"
 										stroke-width="1.5"
 										stroke="currentColor"
-										class="w-4 h-4"
+										style="--w:1rem; --h:1rem"
 									>
 										<path
 											stroke-linecap="round"
@@ -421,14 +435,14 @@
 									onClose={() => {}}
 								>
 									<button
-										class="self-center w-fit text-sm p-1.5 dark:text-gray-300 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
+										style="--as:center; --w:fit-content; --size:0.8rem; --p:0.4rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 										type="button"
 									>
 										<EllipsisHorizontal className="size-5" />
 									</button>
 								</ModelMenu>
 
-								<div class="ml-1">
+								<div style="--ml:0.2rem">
 									<Tooltip
 										content={(model?.is_active ?? true) ? $i18n.t('Enabled') : $i18n.t('Disabled')}
 									>
@@ -445,8 +459,8 @@
 					</div>
 				{/each}
 			{:else}
-				<div class="flex flex-col items-center justify-center w-full h-20">
-					<div class="text-gray-500 dark:text-gray-400 text-xs">
+				<div style="--d:flex; --fd:column; --ai:center; --jc:center; --w:100%; --h:5rem">
+					<div style="--c:var(--color-gray-500); --dark-c:var(--color-gray-400); --size:0.6rem">
 						{$i18n.t('No models found')}
 					</div>
 				</div>
@@ -454,8 +468,8 @@
 		</div>
 
 		{#if $user?.role === 'admin'}
-			<div class=" flex justify-end w-full mb-3">
-				<div class="flex space-x-1">
+			<div style="--d:flex; --jc:flex-end; --w:100%; --mb:0.6rem">
+				<div style="--d:flex; --g:0.2rem">
 					<input
 						id="models-import-input"
 						bind:this={modelsImportInputElement}
@@ -500,21 +514,21 @@
 					/>
 
 					<button
-						class="flex text-xs items-center space-x-1 px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200 transition"
+						style="--d:flex; --size:0.6rem; --ai:center; --g:0.2rem; --px:0.6rem; --py:0.4rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={() => {
 							modelsImportInputElement.click();
 						}}
 					>
-						<div class=" self-center mr-2 font-medium line-clamp-1">
+						<div style="--as:center; --mr:0.5rem; --weight:500; --line-clamp:1">
 							{$i18n.t('Import Presets')}
 						</div>
 
-						<div class=" self-center">
+						<div style="--as:center">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 16 16"
 								fill="currentColor"
-								class="w-3.5 h-3.5"
+								style="--w:0.8rem; --h:0.8rem"
 							>
 								<path
 									fill-rule="evenodd"
@@ -526,21 +540,21 @@
 					</button>
 
 					<button
-						class="flex text-xs items-center space-x-1 px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200 transition"
+						style="--d:flex; --size:0.6rem; --ai:center; --g:0.2rem; --px:0.6rem; --py:0.4rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={async () => {
 							downloadModels(models);
 						}}
 					>
-						<div class=" self-center mr-2 font-medium line-clamp-1">
+						<div style="--as:center; --mr:0.5rem; --weight:500; --line-clamp:1">
 							{$i18n.t('Export Presets')} ({models.length})
 						</div>
 
-						<div class=" self-center">
+						<div style="--as:center">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 16 16"
 								fill="currentColor"
-								class="w-3.5 h-3.5"
+								style="--w:0.8rem; --h:0.8rem"
 							>
 								<path
 									fill-rule="evenodd"
@@ -569,7 +583,7 @@
 		/>
 	{/if}
 {:else}
-	<div class=" h-full w-full flex justify-center items-center">
+	<div style="--h:100%; --w:100%; --d:flex; --jc:center; --ai:center">
 		<Spinner className="size-5" />
 	</div>
 {/if}

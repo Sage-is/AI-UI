@@ -1,3 +1,3 @@
-<div class=" self-center font-semibold line-clamp-1 flex gap-1 items-center">
+<div style="--as:center; --weight:600; --line-clamp:1; --d:flex; --g:0.2rem; --ai:center">
 	<slot />
 </div>

@@ -24,22 +24,22 @@
 
 	<slot name="content">
 		<DropdownMenu.Content
-			class="w-full max-w-[130px] rounded-lg px-1 py-1.5 border border-gray-900 z-50 bg-gray-850 text-white"
+			style="--w:100%; --maxw:130px; --radius:0.5rem; --px:0.2rem; --py:0.4rem;  --bc:var(--color-gray-900); --z:50; --bgc:var(--color-gray-850); --c:#fff"
 			sideOffset={8}
 			{side}
 			{align}
 			transition={flyAndScale}
 		>
-			<DropdownMenu.Item class="flex items-center px-3 py-2 text-sm  font-medium">
-				<div class="flex items-center">Profile</div>
+			<DropdownMenu.Item style="--d:flex; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --weight:500">
+				<div style="--d:flex; --ai:center">Profile</div>
 			</DropdownMenu.Item>
 
-			<DropdownMenu.Item class="flex items-center px-3 py-2 text-sm  font-medium">
-				<div class="flex items-center">Profile</div>
+			<DropdownMenu.Item style="--d:flex; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --weight:500">
+				<div style="--d:flex; --ai:center">Profile</div>
 			</DropdownMenu.Item>
 
-			<DropdownMenu.Item class="flex items-center px-3 py-2 text-sm  font-medium">
-				<div class="flex items-center">Profile</div>
+			<DropdownMenu.Item style="--d:flex; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --weight:500">
+				<div style="--d:flex; --ai:center">Profile</div>
 			</DropdownMenu.Item>
 		</DropdownMenu.Content>
 	</slot>

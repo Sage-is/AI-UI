@@ -45,35 +45,39 @@
 {#if !dismissed}
 	{#if mounted}
 		<div
-			class="{className} top-0 left-0 right-0 p-2 px-3 flex justify-center items-center relative rounded-xl border border-gray-100 dark:border-gray-850 text-gray-800 dark:text-gary-100 bg-white dark:bg-gray-900 backdrop-blur-xl z-30"
+			style="--top:0; --left:0; --right:0; --p:0.5rem; --px:0.6rem; --d:flex; --jc:center; --ai:center; --pos:relative; --radius:0.6rem;  --bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --c:var(--color-gray-800); --bgc:#fff; --dark-bgc:var(--color-gray-900); backdrop-filter:blur(24px); --z:30"
+	class="{className} dark:text-gary-100"
 			transition:fade={{ delay: 100, duration: 300 }}
 		>
-			<div class=" flex flex-col md:flex-row md:items-center flex-1 text-sm w-fit gap-1.5">
-				<div class="flex justify-between self-start">
+			<div style="--d:flex; --fd:column; --fd-md:row; --ai-md:center; --fx:1 1 0%; --size:0.8rem; --w:fit-content; --g:0.4rem">
+				<div style="--d:flex; --jc:space-between; --as:flex-start">
 					<div
-						class=" text-xs font-bold {classNames[banner.type] ??
-							classNames['info']}  w-fit px-2 rounded-sm uppercase line-clamp-1 mr-0.5"
+						style="--size:0.6rem; --weight:700; --w:fit-content; --px:0.5rem; --radius:0.125rem; --tt:uppercase; --line-clamp:1; --mr:0.125rem"
+	class="{classNames[banner.type] ??
+							classNames['info']}"
 					>
 						{banner.type}
 					</div>
 
 					{#if banner.url}
-						<div class="flex md:hidden group w-fit md:items-center">
+						<div style="--d:flex; --d-md:none; --w:fit-content; --ai-md:center"
+	class="group">
 							<a
-								class="text-gray-700 dark:text-white text-xs font-semibold underline"
+								style="--c:var(--color-gray-700); --dark-c:#fff; --size:0.6rem; --weight:600; --td:underline"
 								href="{WEBUI_BASE_URL}/assets/files/whitepaper.pdf"
 								target="_blank">Learn More</a
 							>
 
 							<div
-								class=" ml-1 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-white"
+								style="--ml:0.2rem; --c:var(--color-gray-400)"
+	class="group-hover:text-gray-600 dark:group-hover:text-white"
 							>
 								<!--  -->
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									viewBox="0 0 16 16"
 									fill="currentColor"
-									class="w-4 h-4"
+									style="--w:1rem; --h:1rem"
 								>
 									<path
 										fill-rule="evenodd"
@@ -85,26 +89,28 @@
 						</div>
 					{/if}
 				</div>
-				<div class="flex-1 text-xs text-gray-700 dark:text-white max-h-60 overflow-y-auto">
+				<div style="--fx:1 1 0%; --size:0.6rem; --c:var(--color-gray-700); --dark-c:#fff; --maxh:15rem; --ofy:auto">
 					{@html marked.parse(DOMPurify.sanitize((banner?.content ?? '').replace(/\n/g, '<br>')))}
 				</div>
 			</div>
 
 			{#if banner.url}
-				<div class="hidden md:flex group w-fit md:items-center">
+				<div style="--d:none; --d-md:flex; --w:fit-content; --ai-md:center"
+	class="group">
 					<a
-						class="text-gray-700 dark:text-white text-xs font-semibold underline"
+						style="--c:var(--color-gray-700); --dark-c:#fff; --size:0.6rem; --weight:600; --td:underline"
 						href="/"
 						target="_blank">Learn More</a
 					>
 
-					<div class=" ml-1 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-white">
+					<div style="--ml:0.2rem; --c:var(--color-gray-400)"
+	class="group-hover:text-gray-600 dark:group-hover:text-white">
 						<!--  -->
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 16 16"
 							fill="currentColor"
-							class="size-4"
+							style="--w:1rem; --h:1rem"
 						>
 							<path
 								fill-rule="evenodd"
@@ -115,12 +121,12 @@
 					</div>
 				</div>
 			{/if}
-			<div class="flex self-start">
+			<div style="--d:flex; --as:flex-start">
 				<button
 					on:click={() => {
 						dismiss(banner.id);
 					}}
-					class="  -mt-1 -mb-2 -translate-y-[1px] ml-1.5 mr-1 text-gray-400 dark:hover:text-white"
+					style="--mt:-0.2rem; --mb:-0.5rem; --translatey:-1px; --ml:0.4rem; --mr:0.2rem; --c:var(--color-gray-400); --hvr-dark-c:#fff"
 					>&times;</button
 				>
 			</div>

@@ -75,10 +75,10 @@
 
 <Modal size="lg" bind:show>
 	<div>
-		<div class=" flex justify-between dark:text-gray-300 px-5 pt-4 pb-1">
-			<div class=" text-lg font-medium self-center">{title}</div>
+		<div style="--d:flex; --jc:space-between; --dark-c:var(--color-gray-300); --px:1.2rem; --pt:1rem; --pb:0.2rem">
+			<div style="--size:1.125rem; --weight:500; --as:center">{title}</div>
 			<button
-				class="self-center"
+				style="--as:center"
 				on:click={() => {
 					show = false;
 				}}
@@ -87,7 +87,7 @@
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 20 20"
 					fill="currentColor"
-					class="w-5 h-5"
+					style="--w:1.2rem; --h:1.2rem"
 				>
 					<path
 						fill-rule="evenodd"
@@ -98,15 +98,15 @@
 			</button>
 		</div>
 
-		<div class="flex flex-col w-full px-5 pb-4 dark:text-gray-200">
-			<div class=" flex w-full space-x-2 mb-0.5">
-				<div class="flex flex-1">
-					<div class=" self-center ml-1 mr-3">
+		<div style="--d:flex; --fd:column; --w:100%; --px:1.2rem; --pb:1rem; --dark-c:var(--color-gray-200)">
+			<div style="--d:flex; --w:100%; --g:0.5rem; --mb:0.125rem">
+				<div style="--d:flex; --fx:1 1 0%">
+					<div style="--as:center; --ml:0.2rem; --mr:0.6rem">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 20 20"
 							fill="currentColor"
-							class="w-4 h-4"
+							style="--w:1rem; --h:1rem"
 						>
 							<path
 								fill-rule="evenodd"
@@ -116,15 +116,15 @@
 						</svg>
 					</div>
 					<input
-						class=" w-full text-sm pr-4 py-1 rounded-r-xl outline-hidden bg-transparent"
+						style="--w:100%; --size:0.8rem; --pr:1rem; --py:0.2rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 						bind:value={query}
 						placeholder={$i18n.t('Search Chats')}
 					/>
 
 					{#if query}
-						<div class="self-center pl-1.5 pr-1 translate-y-[0.5px] rounded-l-xl bg-transparent">
+						<div style="--as:center; --pl:0.4rem; --pr:0.2rem; --translatey:0.5px; --btlr:0.6rem; --bblr:0.6rem; --bgc:transparent">
 							<button
-								class="p-0.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-900 transition"
+								style="--p:0.125rem; --radius:9999px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								on:click={() => {
 									query = '';
 									selectedIdx = 0;
@@ -137,20 +137,20 @@
 				</div>
 			</div>
 
-			<div class=" flex flex-col w-full sm:flex-row sm:justify-center sm:space-x-6">
+			<div style="--d:flex; --fd:column; --w:100%; --fd-sm:row; --jc-sm:center; --g-sm:1.5rem">
 				{#if chatList}
-					<div class="w-full">
+					<div style="--w:100%">
 						{#if chatList.length > 0}
-							<div class="flex text-xs font-medium mb-1.5">
+							<div style="--d:flex; --size:0.6rem; --weight:500; --mb:0.4rem">
 								<button
-									class="px-1.5 py-1 cursor-pointer select-none basis-3/5"
+									style="--px:0.4rem; --py:0.2rem; --cur:pointer; --us:none; --fb:60%"
 									on:click={() => setSortKey('title')}
 								>
-									<div class="flex gap-1.5 items-center">
+									<div style="--d:flex; --g:0.4rem; --ai:center">
 										{$i18n.t('Title')}
 
 										{#if orderBy === 'title'}
-											<span class="font-normal"
+											<span style="--weight:400"
 												>{#if direction === 'asc'}
 													<ChevronUp className="size-2" />
 												{:else}
@@ -158,21 +158,21 @@
 												{/if}
 											</span>
 										{:else}
-											<span class="invisible">
+											<span style="--v:hidden">
 												<ChevronUp className="size-2" />
 											</span>
 										{/if}
 									</div>
 								</button>
 								<button
-									class="px-1.5 py-1 cursor-pointer select-none hidden sm:flex sm:basis-2/5 justify-end"
+									style="--px:0.4rem; --py:0.2rem; --cur:pointer; --us:none; --d:none; --d-sm:flex; --fb-sm:40%; --jc:flex-end"
 									on:click={() => setSortKey('updated_at')}
 								>
-									<div class="flex gap-1.5 items-center">
+									<div style="--d:flex; --g:0.4rem; --ai:center">
 										{$i18n.t('Updated at')}
 
 										{#if orderBy === 'updated_at'}
-											<span class="font-normal"
+											<span style="--weight:400"
 												>{#if direction === 'asc'}
 													<ChevronUp className="size-2" />
 												{:else}
@@ -180,7 +180,7 @@
 												{/if}
 											</span>
 										{:else}
-											<span class="invisible">
+											<span style="--v:hidden">
 												<ChevronUp className="size-2" />
 											</span>
 										{/if}
@@ -188,10 +188,10 @@
 								</button>
 							</div>
 						{/if}
-						<div class="text-left text-sm w-full mb-3 max-h-[22rem] overflow-y-scroll">
+						<div style="--ta:left; --size:0.8rem; --w:100%; --mb:0.6rem; --maxh:22rem; --ofy:scroll">
 							{#if chatList.length === 0}
 								<div
-									class="text-xs text-gray-500 dark:text-gray-400 text-center px-5 min-h-20 w-full h-full flex justify-center items-center"
+									style="--size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --ta:center; --px:1.2rem; --minh:5rem; --w:100%; --h:100%; --d:flex; --jc:center; --ai:center"
 								>
 									{$i18n.t('No results found')}
 								</div>
@@ -200,9 +200,10 @@
 							{#each chatList as chat, idx (chat.id)}
 								{#if (idx === 0 || (idx > 0 && chat.time_range !== chatList[idx - 1].time_range)) && chat?.time_range}
 									<div
-										class="w-full text-xs text-gray-500 dark:text-gray-500 font-medium {idx === 0
+										style="--w:100%; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500); --weight:500;  --px:0.5rem"
+	class="{idx === 0
 											? ''
-											: 'pt-5'} pb-2 px-2"
+											: 'pt-5'}"
 									>
 										{$i18n.t(chat.time_range)}
 										<!-- localisation keys for time_range to be recognized from the i18next parser (so they don't get automatically removed):
@@ -227,29 +228,29 @@
 								{/if}
 
 								<div
-									class=" w-full flex justify-between items-center rounded-lg text-sm py-2 px-3 hover:bg-gray-50 dark:hover:bg-gray-850"
+									style="--w:100%; --d:flex; --jc:space-between; --ai:center; --radius:0.5rem; --size:0.8rem; --py:0.5rem; --px:0.6rem; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850)"
 									draggable="false"
 								>
 									<a
-										class=" basis-3/5"
+										style="--fb:60%"
 										href={shareUrl ? `/s/${chat.id}` : `/c/${chat.id}`}
 										on:click={() => (show = false)}
 									>
-										<div class="text-ellipsis line-clamp-1 w-full">
+										<div style="text-overflow:ellipsis; --line-clamp:1; --w:100%">
 											{chat?.title}
 										</div>
 									</a>
 
-									<div class="basis-2/5 flex items-center justify-end">
-										<div class="hidden sm:flex text-gray-500 dark:text-gray-400 text-xs">
+									<div style="--fb:40%; --d:flex; --ai:center; --jc:flex-end">
+										<div style="--d:none; --d-sm:flex; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --size:0.6rem">
 											{dayjs(chat?.updated_at * 1000).calendar()}
 										</div>
 
-										<div class="flex justify-end pl-2.5 text-gray-600 dark:text-gray-300">
+										<div style="--d:flex; --jc:flex-end; --pl:0.625rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-300)">
 											{#if unarchiveHandler}
 												<Tooltip content={$i18n.t('Unarchive Chat')}>
 													<button
-														class="self-center w-fit px-1 text-sm rounded-xl"
+														style="--as:center; --w:fit-content; --px:0.2rem; --size:0.8rem; --radius:0.6rem"
 														on:click={async (e) => {
 															e.stopImmediatePropagation();
 															e.stopPropagation();
@@ -262,7 +263,7 @@
 															viewBox="0 0 24 24"
 															stroke-width="1.5"
 															stroke="currentColor"
-															class="size-4"
+															style="--w:1rem; --h:1rem"
 														>
 															<path
 																stroke-linecap="round"
@@ -276,7 +277,7 @@
 
 											<Tooltip content={$i18n.t('Delete Chat')}>
 												<button
-													class="self-center w-fit px-1 text-sm rounded-xl"
+													style="--as:center; --w:fit-content; --px:0.2rem; --size:0.8rem; --radius:0.6rem"
 													on:click={async (e) => {
 														e.stopImmediatePropagation();
 														e.stopPropagation();
@@ -290,7 +291,7 @@
 														viewBox="0 0 24 24"
 														stroke-width="1.5"
 														stroke="currentColor"
-														class="w-4 h-4"
+														style="--w:1rem; --h:1rem"
 													>
 														<path
 															stroke-linecap="round"
@@ -314,7 +315,7 @@
 									}}
 								>
 									<div
-										class="w-full flex justify-center py-1 text-xs animate-pulse items-center gap-2"
+										style="--w:100%; --d:flex; --jc:center; --py:0.2rem; --size:0.6rem; animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; --ai:center; --g:0.5rem"
 									>
 										<Spinner className=" size-4" />
 										<div class=" ">Loading...</div>
@@ -328,56 +329,58 @@
 						{/if}
 					</div>
 				{:else}
-					<div class="w-full h-full flex justify-center items-center min-h-20">
+					<div style="--w:100%; --h:100%; --d:flex; --jc:center; --ai:center; --minh:5rem">
 						<Spinner className="size-5" />
 					</div>
 				{/if}
 
 				<!-- {#if chats !== null}
 					{#if chats.length > 0}
-						<div class="w-full">
-							<div class="text-left text-sm w-full mb-3 max-h-[22rem] overflow-y-scroll">
-								<div class="relative overflow-x-auto">
+						<div style="--w:100%">
+							<div style="--ta:left; --size:0.8rem; --w:100%; --mb:0.6rem; --maxh:22rem; --ofy:scroll">
+								<div style="--pos:relative; --ofx:auto">
 									<table
-										class="w-full text-sm text-left text-gray-600 dark:text-gray-400 table-auto"
+										style="--w:100%; --size:0.8rem; --ta:left; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); table-layout:auto"
 									>
 										<thead
-											class="text-xs text-gray-700 uppercase bg-transparent dark:text-gray-200 border-b-1 border-gray-50 dark:border-gray-850"
+											style="--size:0.6rem; --c:var(--color-gray-700); --tt:uppercase; --bgc:transparent; --dark-c:var(--color-gray-200); --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850)"
+	class="border-b-1"
 										>
 											<tr>
-												<th scope="col" class="px-3 py-2"> {$i18n.t('Name')} </th>
-												<th scope="col" class="px-3 py-2 hidden md:flex">
+												<th scope="col" style="--px:0.6rem; --py:0.5rem"> {$i18n.t('Name')} </th>
+												<th scope="col" style="--px:0.6rem; --py:0.5rem; --d:none; --d-md:flex">
 													{$i18n.t('Created At')}
 												</th>
-												<th scope="col" class="px-3 py-2 text-right" />
+												<th scope="col" style="--px:0.6rem; --py:0.5rem; --ta:right" />
 											</tr>
 										</thead>
-										<tbody>
+										<tbody style="--d:table">
 											{#each chats as chat, idx}
 												<tr
-													class="bg-transparent {idx !== chats.length - 1 &&
-														'border-b'} dark:bg-gray-900 border-gray-50 dark:border-gray-850 text-xs"
+													style="--bgc:transparent; --dark-bgc:var(--color-gray-900); --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --size:0.6rem"
+	class="{idx !== chats.length - 1 &&
+														'border-b'}"
 												>
-													<td class="px-3 py-1 w-2/3">
+													<td style="--d:table;--px:0.6rem; --py:0.2rem; --w:66.666667%">
 														<a href="/c/{chat.id}" target="_blank">
-															<div class=" hover:underline line-clamp-1">
+															<div style="--hvr-td:underline; --line-clamp:1">
 																{chat.title}
 															</div>
 														</a>
 													</td>
 
-													<td class=" px-3 py-1 hidden md:flex h-[2.5rem]">
-														<div class="my-auto">
+													<td style="--d:table;--px:0.6rem; --py:0.2rem; --d:none; --d-md:flex; --h:2.5rem">
+														<div style="--my:auto">
 															{dayjs(chat.created_at * 1000).format('LLL')}
 														</div>
 													</td>
 
-													<td class="px-3 py-1 text-right">
-														<div class="flex justify-end w-full">
+													<td style="--d:table;--px:0.6rem; --py:0.2rem; --ta:right">
+														<div style="--d:flex; --jc:flex-end; --w:100%">
 															{#if unarchiveHandler}
 																<Tooltip content={$i18n.t('Unarchive Chat')}>
 																	<button
-																		class="self-center w-fit text-sm px-2 py-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
+																		style="--as:center; --w:fit-content; --size:0.8rem; --px:0.5rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 																		on:click={async () => {
 																			unarchiveHandler(chat.id);
 																		}}
@@ -388,7 +391,7 @@
 																			viewBox="0 0 24 24"
 																			stroke-width="1.5"
 																			stroke="currentColor"
-																			class="size-4"
+																			style="--w:1rem; --h:1rem"
 																		>
 																			<path
 																				stroke-linecap="round"
@@ -402,7 +405,7 @@
 
 															<Tooltip content={$i18n.t('Delete Chat')}>
 																<button
-																	class="self-center w-fit text-sm px-2 py-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
+																	style="--as:center; --w:fit-content; --size:0.8rem; --px:0.5rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 																	on:click={async () => {
 																		deleteHandler(chat.id);
 																	}}
@@ -413,7 +416,7 @@
 																		viewBox="0 0 24 24"
 																		stroke-width="1.5"
 																		stroke="currentColor"
-																		class="w-4 h-4"
+																		style="--w:1rem; --h:1rem"
 																	>
 																		<path
 																			stroke-linecap="round"
@@ -435,12 +438,12 @@
 							<slot name="footer"></slot>
 						</div>
 					{:else}
-						<div class="text-left text-sm w-full mb-8">
+						<div style="--ta:left; --size:0.8rem; --w:100%; --mb:2rem">
 							{emptyPlaceholder || $i18n.t('No chats found.')}
 						</div>
 					{/if}
 				{:else}
-					<div class="w-full h-full">
+					<div style="--w:100%; --h:100%">
 						<Spinner />
 					</div>
 				{/if} -->

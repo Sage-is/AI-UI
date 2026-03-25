@@ -46,9 +46,10 @@
 {/if}
 
 <button
-	class="relative group p-1.5 {className} flex items-center gap-1 {colorClassName} {small
+	style="--pos:relative; --p:0.4rem; --d:flex; --ai:center; --g:0.2rem; --ta:left"
+	class="group {className} {colorClassName} {small
 		? 'rounded-xl'
-		: 'rounded-2xl'} text-left"
+		: 'rounded-2xl'}"
 	type="button"
 	on:click={async () => {
 		if (item?.file?.data?.content || modal) {
@@ -67,14 +68,14 @@
 	}}
 >
 	{#if !small}
-		<div class="p-3 bg-black/20 dark:bg-white/10 text-white rounded-xl">
+		<div style="--p:0.6rem; --bgc:rgb(0 0 0 / 0.2); --dark-bgc:rgb(255 255 255 / 0.1); --c:#fff; --radius:0.6rem">
 			{#if !loading}
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 24 24"
 					fill="currentColor"
 					aria-hidden="true"
-					class=" size-5"
+					style="--w:1.2rem; --h:1.2rem"
 				>
 					<path
 						fill-rule="evenodd"
@@ -92,13 +93,14 @@
 	{/if}
 
 	{#if !small}
-		<div class="flex flex-col justify-center -space-y-0.5 px-2.5 w-full">
-			<div class=" dark:text-gray-100 text-sm font-medium line-clamp-1 mb-1">
+		<div style="--d:flex; --fd:column; --jc:center; --g:-0.125rem; --px:0.625rem; --w:100%">
+			<div style="--dark-c:var(--color-gray-100); --size:0.8rem; --weight:500; --line-clamp:1; --mb:0.2rem">
 				{decodeString(name)}
 			</div>
 
 			<div
-				class=" flex justify-between text-xs line-clamp-1 {($settings?.highContrastMode ?? false)
+				style="--d:flex; --jc:space-between; --size:0.6rem; --line-clamp:1"
+	class="{($settings?.highContrastMode ?? false)
 					? 'text-gray-800 dark:text-gray-100'
 					: 'text-gray-500'}"
 			>
@@ -109,34 +111,35 @@
 				{:else if type === 'collection'}
 					{$i18n.t('Collection')}
 				{:else}
-					<span class=" capitalize line-clamp-1">{type}</span>
+					<span style="--tt:capitalize; --line-clamp:1">{type}</span>
 				{/if}
 				{#if size}
-					<span class="capitalize">{formatFileSize(size)}</span>
+					<span style="--tt:capitalize">{formatFileSize(size)}</span>
 				{/if}
 			</div>
 		</div>
 	{:else}
 		<Tooltip content={decodeString(name)} className="flex flex-col w-full" placement="top-start">
-			<div class="flex flex-col justify-center -space-y-0.5 px-2.5 w-full">
-				<div class=" dark:text-gray-100 text-sm flex justify-between items-center">
+			<div style="--d:flex; --fd:column; --jc:center; --g:-0.125rem; --px:0.625rem; --w:100%">
+				<div style="--dark-c:var(--color-gray-100); --size:0.8rem; --d:flex; --jc:space-between; --ai:center">
 					{#if loading}
-						<div class=" shrink-0 mr-2">
+						<div style="--fs:0; --mr:0.5rem">
 							<Spinner className="size-4" />
 						</div>
 					{/if}
-					<div class="font-medium line-clamp-1 flex-1">{decodeString(name)}</div>
-					<div class="text-gray-500 text-xs capitalize shrink-0">{formatFileSize(size)}</div>
+					<div style="--weight:500; --line-clamp:1; --fx:1 1 0%">{decodeString(name)}</div>
+					<div style="--c:var(--color-gray-500); --size:0.6rem; --tt:capitalize; --fs:0">{formatFileSize(size)}</div>
 				</div>
 			</div>
 		</Tooltip>
 	{/if}
 
 	{#if dismissible}
-		<div class=" absolute -top-1 -right-1">
+		<div style="--pos:absolute; --top:-0.2rem; --right:-0.2rem">
 			<button
 				aria-label={$i18n.t('Remove File')}
-				class=" bg-white text-black border border-gray-50 rounded-full {($settings?.highContrastMode ??
+				style="--bgc:#fff; --c:#000;  --bc:var(--color-gray-50); --radius:9999px"
+	class="{($settings?.highContrastMode ??
 				false)
 					? ''
 					: 'outline-hidden focus:outline-hidden group-hover:visible invisible transition'}"
@@ -149,7 +152,8 @@
 			</button>
 
 			<!-- <button
-				class=" p-1 dark:text-gray-300 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-full group-hover:visible invisible transition"
+				style="--p:0.2rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:9999px; --v:hidden; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+	class="group-hover:visible"
 				type="button"
 				on:click={() => {
 				}}
