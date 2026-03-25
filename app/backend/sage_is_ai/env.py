@@ -127,7 +127,7 @@ if FROM_INIT_PY:
     try:
         PACKAGE_DATA = {"version": importlib.metadata.version("WEB-AI-Sage-WebUI")}
     except importlib.metadata.PackageNotFoundError:
-        PACKAGE_DATA = {"version": importlib.metadata.version("open-webui")}
+        PACKAGE_DATA = {"version": "0.0.0"}
 else:
     try:
         PACKAGE_DATA = json.loads((BASE_DIR / "package.json").read_text())
