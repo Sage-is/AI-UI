@@ -1448,7 +1448,7 @@
 	"What are you working on?": "على ماذا تعمل؟",
 	"What's New in": "ما هو الجديد",
 	"When enabled, the model will respond to each chat message in real-time, generating a response as soon as the user sends a message. This mode is useful for live chat applications, but may impact performance on slower hardware.": "عند التفعيل، سيستجيب النموذج لكل رسالة في المحادثة بشكل فوري، مولدًا الرد بمجرد إرسال المستخدم لرسالته. هذا الوضع مفيد لتطبيقات الدردشة الحية، لكنه قد يؤثر على الأداء في الأجهزة الأبطأ.",
-	"wherever you are": "أينما كنت",
+	"with Sage.is AI-UI": "أينما كنت",
 	"Whether to paginate the output. Each page will be separated by a horizontal rule and page number. Defaults to False.": "",
 	"Whisper (Local)": "Whisper (محلي)",
 	"Why?": "لماذا؟",

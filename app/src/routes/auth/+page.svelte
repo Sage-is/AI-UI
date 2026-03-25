@@ -9,7 +9,14 @@
 	import { page } from '$app/stores';
 
 	import { getBackendConfig } from '$lib/apis';
-	import { ldapUserSignIn, getSessionUser, userSignIn, userSignUp } from '$lib/apis/auths';
+	import {
+		ldapUserSignIn,
+		getSessionUser,
+		userSignIn,
+		userSignUp,
+		sendMagicLink,
+		verifyMagicLink
+	} from '$lib/apis/auths';
 	import { getBranding } from '$lib/apis/configs';
 
 	import { WEBUI_API_BASE_URL, WEBUI_BASE_URL } from '$lib/constants';
@@ -18,6 +25,8 @@
 	import { generateInitialsImage, canvasPixelTest } from '$lib/utils';
 
 	import Spinner from '$lib/components/common/Spinner.svelte';
+	import Tooltip from '$lib/components/common/Tooltip.svelte';
+	import QuestionMarkCircle from '$lib/components/icons/QuestionMarkCircle.svelte';
 	import OnBoarding from '$lib/components/OnBoarding.svelte';
 
 	const i18n = getContext('i18n');
@@ -32,6 +41,12 @@
 	let password = '';
 
 	let ldapUsername = '';
+
+	// Magic link email login state
+	let magicLinkMode = false;
+	let magicLinkEmail = '';
+	let magicLinkSent = false;
+	let magicLinkSending = false;
 
 	const querystringValue = (key) => {
 		const querystring = window.location.search;
@@ -116,6 +131,19 @@
 		}
 	};
 
+	const handleMagicLinkSend = async () => {
+		magicLinkSending = true;
+		try {
+			await sendMagicLink(magicLinkEmail);
+			magicLinkSent = true;
+		} catch {
+			toast.error(
+				$i18n.t('Failed to send login link. Check with your admin that SMTP is configured.')
+			);
+		}
+		magicLinkSending = false;
+	};
+
 	const checkOauthCallback = async () => {
 		if (!$page.url.hash) {
 			return;
@@ -125,6 +153,22 @@
 			return;
 		}
 		const params = new URLSearchParams(hash);
+
+		// Magic link token (email login)
+		const magicToken = params.get('magic_token');
+		if (magicToken) {
+			try {
+				const sessionUser = await verifyMagicLink(magicToken);
+				if (sessionUser) {
+					await setSessionUser(sessionUser);
+				}
+			} catch (err) {
+				toast.error($i18n.t('Invalid or expired link. Please request a new one.'));
+			}
+			return;
+		}
+
+		// OAuth token
 		const token = params.get('token');
 		if (!token) {
 			return;
@@ -240,15 +284,19 @@
 />
 
 <div style="--w:100%; --h:100vh; --maxh:100dvh; --c:#fff; --pos:relative">
-	<div style="--w:100%; --h:100%; --pos:absolute; --top:0; --left:0; --bgc:#fff; --dark-bgc:#000"></div>
+	<div
+		style="--w:100%; --h:100%; --pos:absolute; --top:0; --left:0; --bgc:#fff; --dark-bgc:#000"
+	></div>
 
-	<div style="--w:100%; --pos:absolute; --top:0; --left:0; --right:0; --h:2rem"
-	class="drag-region" />
+	<div
+		style="--w:100%; --pos:absolute; --top:0; --left:0; --right:0; --h:2rem"
+		class="drag-region"
+	/>
 
 	{#if loaded}
 		<div
 			style="--pos:fixed; --bgc:transparent; --minh:100vh; --w:100%; --d:flex; --jc:center; --z:50; --c:#000; --dark-c:#fff"
-	class="font-primary"
+			class="font-primary"
 		>
 			<div style="--w:100%; --px:2.5rem; --minh:100vh; --d:flex; --fd:column; --ta:center">
 				{#if ($config?.features.auth_trusted_header ?? false) || $config?.features.auth === false}
@@ -269,7 +317,9 @@
 					</div>
 				{:else}
 					<div style="--my:auto; --d:flex; --fd:column; --jc:center; --ai:center">
-						<div style="--maxw-sm:28rem; --my:auto; --pb:2.5rem; --w:100%; --dark-c:var(--color-gray-100)">
+						<div
+							style="--maxw-sm:28rem; --my:auto; --pb:2.5rem; --w:100%; --dark-c:var(--color-gray-100)"
+						>
 							<form
 								style="--d:flex; --fd:column; --jc:center"
 								on:submit={(e) => {
@@ -310,11 +360,15 @@
 									</div>
 
 									{#if branding?.subtitle}
-										<div style="--mt:0.2rem; --size:0.6rem; --weight:500; --c:var(--color-gray-600); --dark-c:var(--color-gray-500)">
+										<div
+											style="--mt:0.2rem; --size:0.6rem; --weight:500; --c:var(--color-gray-600); --dark-c:var(--color-gray-500)"
+										>
 											{branding?.subtitle}
 										</div>
 									{:else if $config?.onboarding ?? false}
-										<div style="--mt:0.2rem; --size:0.6rem; --weight:500; --c:var(--color-gray-600); --dark-c:var(--color-gray-500)">
+										<div
+											style="--mt:0.2rem; --size:0.6rem; --weight:500; --c:var(--color-gray-600); --dark-c:var(--color-gray-500)"
+										>
 											ⓘ {branding?.title || $WEBUI_NAME}
 											{$i18n.t(
 												'does not make any external connections, and your data stays securely on your locally hosted server.'
@@ -327,7 +381,9 @@
 									<div style="--d:flex; --fd:column; --mt:1rem">
 										{#if mode === 'signup'}
 											<div style="--mb:0.5rem">
-												<label for="name" style="--size:0.8rem; --weight:500; --ta:left; --mb:0.2rem; --d:block"
+												<label
+													for="name"
+													style="--size:0.8rem; --weight:500; --ta:left; --mb:0.2rem; --d:block"
 													>{$i18n.t('Name')}</label
 												>
 												<input
@@ -344,7 +400,9 @@
 
 										{#if mode === 'ldap'}
 											<div style="--mb:0.5rem">
-												<label for="username" style="--size:0.8rem; --weight:500; --ta:left; --mb:0.2rem; --d:block"
+												<label
+													for="username"
+													style="--size:0.8rem; --weight:500; --ta:left; --mb:0.2rem; --d:block"
 													>{$i18n.t('Username')}</label
 												>
 												<input
@@ -360,7 +418,9 @@
 											</div>
 										{:else}
 											<div style="--mb:0.5rem">
-												<label for="email" style="--size:0.8rem; --weight:500; --ta:left; --mb:0.2rem; --d:block"
+												<label
+													for="email"
+													style="--size:0.8rem; --weight:500; --ta:left; --mb:0.2rem; --d:block"
 													>{$i18n.t('Email')}</label
 												>
 												<input
@@ -377,7 +437,9 @@
 										{/if}
 
 										<div>
-											<label for="password" style="--size:0.8rem; --weight:500; --ta:left; --mb:0.2rem; --d:block"
+											<label
+												for="password"
+												style="--size:0.8rem; --weight:500; --ta:left; --mb:0.2rem; --d:block"
 												>{$i18n.t('Password')}</label
 											>
 											<input
@@ -392,6 +454,23 @@
 											/>
 										</div>
 									</div>
+
+									{#if mode === 'signin' && Object.keys($config?.oauth?.providers ?? {}).length === 0}
+										<div
+											style="--d:flex; --ai:center; --g:0.3rem; --mt:0.5rem; --size:0.7rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500)"
+										>
+											{$i18n.t('Forgetting your password(s)? Contact your admin for help.')}
+											<Tooltip
+												content={$i18n.t(
+													'Ask your admin to enable Google, GitHub, or LDAP sign-in so you can log in without a password.'
+												)}
+												placement="top"
+												className="flex items-center"
+											>
+												<span style="cursor:help"><QuestionMarkCircle className="size-3.5" /></span>
+											</Tooltip>
+										</div>
+									{/if}
 								{/if}
 								<div style="--mt:1.2rem">
 									{#if $config?.features.enable_login_form || $config?.features.enable_ldap}
@@ -404,13 +483,13 @@
 											</button>
 										{:else}
 											<button
-												style="--bgc:rgb(78 78 78 / 0.05); 
-													--hvr-bgc:rgb(78 78 78 / 0.1); 
-													--dark-bgc:rgb(236 236 236 / 0.05); 
-													--hvr-dark-bgc:rgb(236 236 236 / 0.1); 
-													--dark-c:var(--color-gray-300); 
-													--hvr-dark-c:#fff; 
-													--tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); 
+												style="--bgc:rgb(78 78 78 / 0.05);
+													--hvr-bgc:rgb(78 78 78 / 0.1);
+													--dark-bgc:rgb(236 236 236 / 0.05);
+													--hvr-dark-bgc:rgb(236 236 236 / 0.1);
+													--dark-c:var(--color-gray-300);
+													--hvr-dark-c:#fff;
+													--tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1);
 													--w:100%; --radius:9999px; --weight:500; --size:0.8rem; --py:0.625rem; --p:1em 1.5em;
 													--m:auto;
 													--d:flex; --jc:center; --ai:center;"
@@ -422,46 +501,16 @@
 														? $i18n.t('Create Admin Account')
 														: $i18n.t('Create Account')}
 											</button>
-
-											{#if $config?.features.enable_signup && !($config?.onboarding ?? false)}
-												<div style="--mt:1rem; --size:0.8rem; --ta:center">
-													{mode === 'signin'
-														? $i18n.t("Don't have an account?")
-														: $i18n.t('Already have an account?')}
-
-													<button
-														style="--weight:500; --td:underline"
-														type="button"
-														on:click={() => {
-															if (mode === 'signin') {
-																mode = 'signup';
-															} else {
-																mode = 'signin';
-															}
-														}}
-													>
-														{mode === 'signin' ? $i18n.t('Sign up') : $i18n.t('Sign in')}
-													</button>
-												</div>
-											{/if}
 										{/if}
 									{/if}
 								</div>
-
-								<div style="--mt:1rem; --size:0.6rem; --ta:center; --c:var(--color-gray-500)">
-									{$i18n.t(
-										'Usage of this service requires strictly necessary cookies for authentication.'
-									)}
-								</div>
 							</form>
-
-							<div style="--mt:1rem; --size:0.6rem; --ta:center; --c:var(--color-gray-500)">
-								<a href="https://sage.is">Read about Age of Sage</a>
-							</div>
 
 							{#if Object.keys($config?.oauth?.providers ?? {}).length > 0}
 								<div style="--d:inline-flex; --ai:center; --jc:center; --w:100%">
-									<hr style="--w:8rem; --h:1px; --my:1rem; --bw:0; --dark-bgc:rgb(236 236 236 / 0.1); --bgc:rgb(78 78 78 / 0.1)" />
+									<hr
+										style="--w:8rem; --h:1px; --my:1rem; --bw:0; --dark-bgc:rgb(236 236 236 / 0.1); --bgc:rgb(78 78 78 / 0.1)"
+									/>
 									{#if $config?.features.enable_login_form || $config?.features.enable_ldap}
 										<span
 											style="--px:0.6rem; --size:0.8rem; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --bgc:transparent"
@@ -469,9 +518,11 @@
 										>
 									{/if}
 
-									<hr style="--w:8rem; --h:1px; --my:1rem; --bw:0; --dark-bgc:rgb(236 236 236 / 0.1); --bgc:rgb(78 78 78 / 0.1)" />
+									<hr
+										style="--w:8rem; --h:1px; --my:1rem; --bw:0; --dark-bgc:rgb(236 236 236 / 0.1); --bgc:rgb(78 78 78 / 0.1)"
+									/>
 								</div>
-								<div style="--d:flex; --fd:column; --g:0.5rem">
+								<div style="--d:flex;  --g:0.5rem">
 									{#if $config?.oauth?.providers?.google}
 										<button
 											style="--d:flex; --jc:center; --ai:center; --bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.8rem; --py:0.625rem"
@@ -583,6 +634,110 @@
 								</div>
 							{/if}
 
+							<!-- Magic Link Email Login -->
+							{#if $config?.features?.enable_magic_link_login}
+								{#if !magicLinkMode}
+									<!-- Show divider + button when not yet in magic link mode -->
+									{#if Object.keys($config?.oauth?.providers ?? {}).length === 0}
+										<div style="--d:inline-flex; --ai:center; --jc:center; --w:100%">
+											<hr
+												style="--w:8rem; --h:1px; --my:1rem; --bw:0; --dark-bgc:rgb(236 236 236 / 0.1); --bgc:rgb(78 78 78 / 0.1)"
+											/>
+											<span
+												style="--px:0.6rem; --size:0.8rem; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --bgc:transparent"
+												>{$i18n.t('or')}</span
+											>
+											<hr
+												style="--w:8rem; --h:1px; --my:1rem; --bw:0; --dark-bgc:rgb(236 236 236 / 0.1); --bgc:rgb(78 78 78 / 0.1)"
+											/>
+										</div>
+									{/if}
+									<button
+										style="--mt:0.8rem; --d:flex; --jc:center; --ai:center; --bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.8rem; --py:0.625rem"
+										type="button"
+										on:click={() => {
+											magicLinkMode = true;
+										}}
+									>
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											fill="none"
+											viewBox="0 0 24 24"
+											stroke-width="1.5"
+											stroke="currentColor"
+											style="--w:1.2rem; --h:1.2rem; --mr:0.6rem"
+											aria-hidden="true"
+										>
+											<path
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
+											/>
+										</svg>
+										<span>{$i18n.t('Sign in with Email Link')}</span>
+									</button>
+								{:else if magicLinkSent}
+									<!-- Confirmation after sending -->
+									<div style="--ta:center; --py:1rem">
+										<div style="--size:0.85rem; --weight:500; --mb:0.4rem">
+											{$i18n.t('Check your email')}
+										</div>
+										<div
+											style="--size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --mb:0.8rem"
+										>
+											{$i18n.t('If an account with that email exists, a login link has been sent.')}
+										</div>
+										<button
+											type="button"
+											style="--m:auto; --size:0.7rem; --c:var(--color-gray-400); --hvr-c:var(--color-gray-600); --td:underline"
+											on:click={() => {
+												magicLinkMode = false;
+												magicLinkSent = false;
+												magicLinkEmail = '';
+											}}
+										>
+											{$i18n.t('Back to sign i')}
+										</button>
+									</div>
+								{:else}
+									<!-- Email input form -->
+									<div style="--d:flex; --fd:column; --g:0.6rem; --py:0.5rem">
+										<div style="--size:0.85rem; --weight:500; --ta:center">
+											{$i18n.t('Sign in with Email Link')}
+										</div>
+										<input
+											type="email"
+											bind:value={magicLinkEmail}
+											placeholder={$i18n.t('Enter your email')}
+											style="--w:100%; --size:0.8rem; --p:0.6rem; --radius:9999px; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-600); --bw:1px; --bs:solid; --bgc:transparent; --ta:center"
+											on:keydown={(e) => {
+												if (e.key === 'Enter') {
+													e.preventDefault();
+													handleMagicLinkSend();
+												}
+											}}
+										/>
+										<button
+											type="button"
+											disabled={magicLinkSending || !magicLinkEmail}
+											style="--bgc:rgb(78 78 78 / 0.05);
+													--hvr-bgc:rgb(78 78 78 / 0.1);
+													--dark-bgc:rgb(236 236 236 / 0.05);
+													--hvr-dark-bgc:rgb(236 236 236 / 0.1);
+													--dark-c:var(--color-gray-300);
+													--hvr-dark-c:#fff;
+													--tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1);
+													--w:100%; --radius:9999px; --weight:500; --size:0.8rem; --py:0.625rem; --p:1em 1.5em;
+													--m:auto;
+													--d:flex; --jc:center; --ai:center;"
+											on:click={handleMagicLinkSend}
+										>
+											{magicLinkSending ? $i18n.t('Sending...') : $i18n.t('Send Login Link')}
+										</button>
+									</div>
+								{/if}
+							{/if}
+
 							{#if $config?.features.enable_ldap && $config?.features.enable_login_form}
 								<div style="--mt:0.5rem">
 									<button
@@ -602,11 +757,53 @@
 									</button>
 								</div>
 							{/if}
+
+							{#if $config?.features.enable_signup && !($config?.onboarding ?? false)}
+								<div style="--m:1rem; --size:0.8rem; --ta:center">
+									{mode === 'signin'
+										? $i18n.t("Don't have an account?")
+										: $i18n.t('Already have an account?')}
+
+									<button
+										style="--bgc:rgb(78 78 78 / 0.05);
+													--hvr-bgc:rgb(78 78 78 / 0.1);
+													--dark-bgc:rgb(236 236 236 / 0.05);
+													--hvr-dark-bgc:rgb(236 236 236 / 0.1);
+													--dark-c:var(--color-gray-300);
+													--hvr-dark-c:#fff;
+													--tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1);
+													--w:100%; --radius:9999px; --weight:500; --size:0.8rem; --py:0.625rem; --p:1em 1.5em;
+													--m:1rem auto;
+													--d:flex; --jc:center; --ai:center;"
+										type="button"
+										on:click={() => {
+											if (mode === 'signin') {
+												mode = 'signup';
+											} else {
+												mode = 'signin';
+											}
+										}}
+									>
+										{mode === 'signin' ? $i18n.t('Sign up') : $i18n.t('Sign in')}
+									</button>
+								</div>
+							{/if}
+
+							<div style="--mt:1rem; --size:0.6rem; --ta:center; --c:var(--color-gray-500)">
+								{$i18n.t(
+									'Usage of this service requires strictly necessary cookies for authentication.'
+								)}
+							</div>
+							<div style="--mt:1rem; --size:0.6rem; --ta:center; --c:var(--color-gray-500)">
+								<a href="https://sage.is">Read about Age of Sage</a>
+							</div>
 						</div>
 						{#if $config?.metadata?.login_footer}
 							<div style="--maxw:48rem; --mx:auto">
-								<div style="--mt:0.5rem; --size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)"
-	class="marked">
+								<div
+									style="--mt:0.5rem; --size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)"
+									class="marked"
+								>
 									{@html DOMPurify.sanitize(marked($config?.metadata?.login_footer))}
 								</div>
 							</div>

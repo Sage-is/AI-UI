@@ -1448,7 +1448,7 @@
 	"What are you working on?": "您現在的工作是什麼？",
 	"What's New in": "新功能",
 	"When enabled, the model will respond to each chat message in real-time, generating a response as soon as the user sends a message. This mode is useful for live chat applications, but may impact performance on slower hardware.": "啟用時，模型將即時回應每個對話訊息，在使用者傳送訊息後立即生成回應。此模式適用於即時對話應用程式，但在較慢的硬體上可能會影響效能。",
-	"wherever you are": "無論您在何處",
+	"with Sage.is AI-UI": "無論您在何處",
 	"Whether to paginate the output. Each page will be separated by a horizontal rule and page number. Defaults to False.": "是否啟用輸出分頁功能，每頁會以水平線與頁碼分隔。預設為 False。",
 	"Whisper (Local)": "Whisper（本機）",
 	"Why?": "為什麼？",

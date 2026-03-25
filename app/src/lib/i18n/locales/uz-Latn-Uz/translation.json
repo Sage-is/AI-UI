@@ -1448,7 +1448,7 @@
 	"What are you working on?": "Nima ustida ishlayapsiz?",
 	"What's New in": "",
 	"When enabled, the model will respond to each chat message in real-time, generating a response as soon as the user sends a message. This mode is useful for live chat applications, but may impact performance on slower hardware.": "Yoqilganda, model real vaqt rejimida har bir chat xabariga javob beradi va foydalanuvchi xabar yuborishi bilanoq javob hosil qiladi. Ushbu rejim jonli chat ilovalari uchun foydalidir, lekin sekinroq uskunaning ishlashiga ta'sir qilishi mumkin.",
-	"wherever you are": "qayerda bo'lsangiz ham",
+	"with Sage.is AI-UI": "qayerda bo'lsangiz ham",
 	"Whether to paginate the output. Each page will be separated by a horizontal rule and page number. Defaults to False.": "Chiqishni sahifalash kerakmi. Har bir sahifa gorizontal qoida va sahifa raqami bilan ajratiladi. Birlamchi parametrlar False.",
 	"Whisper (Local)": "Shivirlash (mahalliy)",
 	"Why?": "Nega?",

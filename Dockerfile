@@ -6,7 +6,7 @@ ARG USE_OLLAMA=false
 # Tested with cu117 for CUDA 11 and cu121 for CUDA 12 (default)
 ARG USE_CUDA_VER=cu121
 # any sentence transformer model; models to use can be found at https://huggingface.co/models?library=sentence-transformers
-# Leaderboard: https://huggingface.co/spaces/mteb/leaderboard 
+# Leaderboard: https://huggingface.co/spaces/mteb/leaderboard
 # for better performance and multilangauge support use "intfloat/multilingual-e5-large" (~2.5GB) or "intfloat/multilingual-e5-base" (~1.5GB)
 # IMPORTANT: If you change the embedding model (sentence-transformers/all-MiniLM-L6-v2) and vice versa, you aren't able to use RAG Chat with your previous documents loaded in the WebUI! You need to re-embed them.
 ARG USE_EMBEDDING_MODEL=intfloat/multilingual-e5-large
@@ -18,7 +18,7 @@ ARG USE_TIKTOKEN_ENCODING_NAME="cl100k_base"
 ARG BUILD_HASH=dev-build
 
 # The following args are used to set the user and group id for the app user
-# Override at your own risk 
+# Override at your own risk
 # non-root configurations are untested
 ARG UID=0
 ARG GID=0
@@ -85,25 +85,6 @@ COPY app/i18next-parser.config.ts /app/i18next-parser.config.ts
 
 
 
-########### WebUI backend #########
-########## DEV_MODE Toggle #########
-ARG DEV_MODE=false
-ENV DEV_MODE=$DEV_MODE
-
-# RUN echo "##### Set up dev server if DEV_MODE is true #####" && \
-#     if [ "$DEV_MODE" = "true" ]; then \
-#         echo "Setting up development mode..." && \
-#         apt-get update && \
-#         apt-get install -y --no-install-recommends unzip nodejs npm && \
-#         npm install -g npm@latest && \
-#         npm ci && \
-#         NODE_OPTIONS="--max-old-space-size=4096" npm run build && \
-#     else \
-#         echo "Skipping development mode setup." && \
-#         echo "Deleting unnecessary files..." && \
-#         rm -rf src package.json package-lock.json; \
-#     fi
-
 ######## Backup & Restore ########
 
 RUN apt-get update && \
@@ -114,9 +95,7 @@ RUN apt-get update && \
 # Set default values for environment variables
 
 ENV BACKUP_PATH=""
-ENV BACKUP_CRON="0 2 *"  
-# 2 AM EST (7 AM UTC)
-ENV NOTIFY_URL=https://your-webhook-url.com/notify
+ENV BACKUP_CRON="0 2 *"
 
 
 # Use args
@@ -146,7 +125,6 @@ ENV OLLAMA_BASE_URL="/ollama" \
 ## API Key and Security Config ##
 ENV OPENAI_API_KEY="" \
     WEBUI_SECRET_KEY="" \
-    SCARF_NO_ANALYTICS=true \
     DO_NOT_TRACK=true \
     ANONYMIZED_TELEMETRY=false
 
@@ -166,7 +144,7 @@ ENV USE_TIKTOKEN_ENCODING_NAME="o200k_base"
 ENV TIKTOKEN_ENCODING_NAME="$USE_TIKTOKEN_ENCODING_NAME" \
     TIKTOKEN_CACHE_DIR="/app/backend/data/cache/tiktoken"
 
-    
+
 ## Hugging Face download cache ##
 ENV HF_HOME="/app/backend/data/cache/embedding/models"
 
@@ -260,7 +238,7 @@ ARG BUILD_HASH
 ENV WEBUI_BUILD_VERSION=${BUILD_HASH}
 ENV DOCKER=true
 
-COPY app/CHANGELOG.md /app/CHANGELOG.md
+COPY CHANGELOG.md /app/CHANGELOG.md
 
 CMD [ "bash", "restore_backup_start.sh", "server" ] \
     # To enable dev mode: \

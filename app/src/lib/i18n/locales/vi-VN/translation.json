@@ -1448,7 +1448,7 @@
 	"What are you working on?": "Bạn đang làm gì vậy?",
 	"What's New in": "Thông tin mới về",
 	"When enabled, the model will respond to each chat message in real-time, generating a response as soon as the user sends a message. This mode is useful for live chat applications, but may impact performance on slower hardware.": "Khi được bật, mô hình sẽ phản hồi từng tin nhắn trò chuyện trong thời gian thực, tạo ra phản hồi ngay khi người dùng gửi tin nhắn. Chế độ này hữu ích cho các ứng dụng trò chuyện trực tiếp, nhưng có thể ảnh hưởng đến hiệu suất trên phần cứng chậm hơn.",
-	"wherever you are": "bất cứ nơi nào bạn đang ở",
+	"with Sage.is AI-UI": "bất cứ nơi nào bạn đang ở",
 	"Whether to paginate the output. Each page will be separated by a horizontal rule and page number. Defaults to False.": "",
 	"Whisper (Local)": "Whisper (Cục bộ)",
 	"Why?": "Tại sao?",

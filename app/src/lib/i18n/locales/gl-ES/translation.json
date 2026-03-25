@@ -1448,7 +1448,7 @@
 	"What are you working on?": "¿En qué estás trabajando?",
 	"What's New in": "Novedades en",
 	"When enabled, the model will respond to each chat message in real-time, generating a response as soon as the user sends a message. This mode is useful for live chat applications, but may impact performance on slower hardware.": "Cando está habilitado, o modelo responderá a cada mensaxe de chat en tempo real, generando unha resposta tan pronto como o usuario envíe un mensaxe. Este modo es útil para aplicacions de chat en vivo, pero puede afectar o rendimiento en hardware mais lento.",
-	"wherever you are": "Donde queira que estés",
+	"with Sage.is AI-UI": "Donde queira que estés",
 	"Whether to paginate the output. Each page will be separated by a horizontal rule and page number. Defaults to False.": "",
 	"Whisper (Local)": "Xextor de voz (Local)",
 	"Why?": "¿Por qué?",

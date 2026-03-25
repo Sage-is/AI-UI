@@ -68,20 +68,6 @@
 
 {#if show}
 	<div style="--w:100%; --h:100vh; --maxh:100dvh; --c:#fff; --pos:relative">
-		<div style="--pos:fixed; --m:2.5rem; --z:50">
-			<div style="--d:flex; --g:0.5rem">
-				<div style="--as:center">
-					<img
-						id="logo"
-						crossorigin="anonymous"
-						src={branding?.logo_url || `${WEBUI_BASE_URL}/static/icons/favicon.png`}
-						style="--w:1.5rem; --radius:9999px"
-						alt="logo"
-					/>
-				</div>
-			</div>
-		</div>
-
 		<SlideShow duration={5000} />
 
 		<div
@@ -94,6 +80,17 @@
 
 		<div style="--pos:relative; --bgc:transparent; --w:100%; --minh:100vh; --d:flex; --z:10">
 			<div style="--d:flex; --fd:column; --jc:flex-end; --w:100%; --ai:center; --pb:2.5rem; --ta:center">
+				<!-- Centered logo above rotating text -->
+				<div style="--d:flex; --jc:center; --mb:1.5rem">
+					<img
+						id="logo"
+						crossorigin="anonymous"
+						src={branding?.logo_url || `${WEBUI_BASE_URL}/static/icons/favicon.png`}
+						style="--w:5rem; --h:5rem; --radius:9999px"
+						alt="logo"
+					/>
+				</div>
+
 				<div style="--size:3rem; --size-lg:4.5rem"
 	class="font-secondary">
 					<Marquee
@@ -112,7 +109,7 @@
 						]}
 					/>
 
-					<div style="--mt:0.125rem">{$i18n.t(`wherever you are`)}</div>
+					<div style="--mt:0.125rem">{$i18n.t(`with Sage.is AI-UI`)}</div>
 				</div>
 
 				<div style="--d:flex; --jc:center; --mt:2rem">

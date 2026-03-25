@@ -1448,7 +1448,7 @@
 	"What are you working on?": "Sur quoi travaillez-vous ?",
 	"What's New in": "Quoi de neuf dans",
 	"When enabled, the model will respond to each chat message in real-time, generating a response as soon as the user sends a message. This mode is useful for live chat applications, but may impact performance on slower hardware.": "Lorsqu'il est activé, le modèle répondra à chaque message de la conversation en temps réel, générant une réponse dès que l'utilisateur envoie un message. Ce mode est utile pour les applications de conversation en direct, mais peut affecter les performances sur un matériel plus lent.",
-	"wherever you are": "où que vous soyez",
+	"with Sage.is AI-UI": "où que vous soyez",
 	"Whether to paginate the output. Each page will be separated by a horizontal rule and page number. Defaults to False.": "Indique si la sortie doit être paginée. Chaque page sera séparée par une règle horizontale et un numéro de page. La valeur par défaut est False.",
 	"Whisper (Local)": "Whisper (local)",
 	"Why?": "Pourquoi ?",
