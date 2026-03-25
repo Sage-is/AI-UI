@@ -85,25 +85,6 @@ COPY app/i18next-parser.config.ts /app/i18next-parser.config.ts
 
 
 
-########### WebUI backend #########
-########## DEV_MODE Toggle #########
-ARG DEV_MODE=false
-ENV DEV_MODE=$DEV_MODE
-
-# RUN echo "##### Set up dev server if DEV_MODE is true #####" && \
-#     if [ "$DEV_MODE" = "true" ]; then \
-#         echo "Setting up development mode..." && \
-#         apt-get update && \
-#         apt-get install -y --no-install-recommends unzip nodejs npm && \
-#         npm install -g npm@latest && \
-#         npm ci && \
-#         NODE_OPTIONS="--max-old-space-size=4096" npm run build && \
-#     else \
-#         echo "Skipping development mode setup." && \
-#         echo "Deleting unnecessary files..." && \
-#         rm -rf src package.json package-lock.json; \
-#     fi
-
 ######## Backup & Restore ########
 
 RUN apt-get update && \
@@ -115,8 +96,6 @@ RUN apt-get update && \
 
 ENV BACKUP_PATH=""
 ENV BACKUP_CRON="0 2 *"
-# 2 AM EST (7 AM UTC)
-ENV NOTIFY_URL=https://your-webhook-url.com/notify
 
 
 # Use args
@@ -146,7 +125,6 @@ ENV OLLAMA_BASE_URL="/ollama" \
 ## API Key and Security Config ##
 ENV OPENAI_API_KEY="" \
     WEBUI_SECRET_KEY="" \
-    SCARF_NO_ANALYTICS=true \
     DO_NOT_TRACK=true \
     ANONYMIZED_TELEMETRY=false
 
