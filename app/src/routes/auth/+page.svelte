@@ -653,7 +653,7 @@
 										</div>
 									{/if}
 									<button
-										style="--d:flex; --jc:center; --ai:center; --bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.8rem; --py:0.625rem"
+										style="--mt:0.8rem; --d:flex; --jc:center; --ai:center; --bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.8rem; --py:0.625rem"
 										type="button"
 										on:click={() => {
 											magicLinkMode = true;
@@ -689,14 +689,14 @@
 										</div>
 										<button
 											type="button"
-											style="--size:0.7rem; --c:var(--color-gray-400); --hvr-c:var(--color-gray-600); --td:underline"
+											style="--m:auto; --size:0.7rem; --c:var(--color-gray-400); --hvr-c:var(--color-gray-600); --td:underline"
 											on:click={() => {
 												magicLinkMode = false;
 												magicLinkSent = false;
 												magicLinkEmail = '';
 											}}
 										>
-											{$i18n.t('Back to sign in')}
+											{$i18n.t('Back to sign i')}
 										</button>
 									</div>
 								{:else}
@@ -720,19 +720,19 @@
 										<button
 											type="button"
 											disabled={magicLinkSending || !magicLinkEmail}
-											style="--bgc:rgb(78 78 78 / 0.05); --hvr-bgc:rgb(78 78 78 / 0.1); --dark-bgc:rgb(236 236 236 / 0.05); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); --w:100%; --radius:9999px; --weight:500; --size:0.8rem; --py:0.625rem"
+											style="--bgc:rgb(78 78 78 / 0.05);
+													--hvr-bgc:rgb(78 78 78 / 0.1);
+													--dark-bgc:rgb(236 236 236 / 0.05);
+													--hvr-dark-bgc:rgb(236 236 236 / 0.1);
+													--dark-c:var(--color-gray-300);
+													--hvr-dark-c:#fff;
+													--tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1);
+													--w:100%; --radius:9999px; --weight:500; --size:0.8rem; --py:0.625rem; --p:1em 1.5em;
+													--m:auto;
+													--d:flex; --jc:center; --ai:center;"
 											on:click={handleMagicLinkSend}
 										>
 											{magicLinkSending ? $i18n.t('Sending...') : $i18n.t('Send Login Link')}
-										</button>
-										<button
-											type="button"
-											style="--size:0.7rem; --c:var(--color-gray-400); --hvr-c:var(--color-gray-600); --td:underline; --ta:center"
-											on:click={() => {
-												magicLinkMode = false;
-											}}
-										>
-											{$i18n.t('Back to sign in')}
 										</button>
 									</div>
 								{/if}
