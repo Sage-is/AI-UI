@@ -30,7 +30,7 @@
 		<span style="--size:0.55rem; --c:var(--color-amber-600); --weight:600; --px:0.3rem; --py:0.1rem; --radius:0.25rem; --bgc:var(--color-amber-100); --dark-bgc:var(--color-amber-900); --dark-c:var(--color-amber-400)">{$i18n.t('Beta')}</span>
 	</div>
 	<div style="--size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --mb:1.2rem">
-		{$i18n.t('Let users sign in with their Google or GitHub accounts.')}
+		{$i18n.t('Let users sign in with Google, GitHub, or a magic email link.')}
 	</div>
 
 	<div style="--mb:1.5rem">

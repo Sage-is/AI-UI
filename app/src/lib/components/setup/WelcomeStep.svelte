@@ -88,12 +88,12 @@
 					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('Authentication')}</span>
 						<span style="--size:0.55rem; --c:var(--color-amber-600); --weight:600; --px:0.3rem; --py:0.1rem; --radius:0.25rem; --bgc:var(--color-amber-100); --dark-bgc:var(--color-amber-900); --dark-c:var(--color-amber-400)">{$i18n.t('Beta')}</span>
-						<Tooltip content={$i18n.t('Set up Google or GitHub OAuth so users can sign in with their existing accounts instead of a password.')} placement="right" className="flex items-center">
+						<Tooltip content={$i18n.t('Set up Google, GitHub, or email magic link sign-in so users can log in without a password.')} placement="right" className="flex items-center">
 							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><QuestionMarkCircle className="size-3.5" /></span>
 						</Tooltip>
 					</div>
 					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
-						{$i18n.t('Configure Google or GitHub sign-in for your users')}
+						{$i18n.t('Configure Google, GitHub, or email link sign-in for your users')}
 					</div>
 				</div>
 			</label>
