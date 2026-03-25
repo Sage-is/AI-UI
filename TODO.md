@@ -29,7 +29,7 @@
 - [x] Simplified root `docker-compose.yaml` (single-service, Docker)
 
 ### Remaining
-- [ ] Commit, build, smoke test (`make it_build`)
+- [x] Commit, build, smoke test (`make it_build`)
 - [ ] `make release_finish` → tag v2.0.0, merge to master, push
 - [ ] `make it_build_multi_arch_push_GHCR` → push amd64+arm64 to GHCR
 - [ ] Verify: `docker pull ghcr.io/sage-is/ai-ui:2.0.0`
@@ -52,6 +52,11 @@
 - [ ] Agent context mode: `conversation` (last ~5 messages) and `full` (all recent) — `single` ships in v2.0.0
 - [ ] Optional per-agent TTL for auto-reply expiration
 
+### Frontend Toolchain Upgrade
+- [ ] Svelte 4 → 5 (runes replace `$:` reactive declarations, faster compilation, smaller bundles)
+- [ ] Vite 5 → 6 (faster HMR, improved build performance)
+- [ ] SvelteKit 2.5 → latest (incremental improvements)
+
 ### Docker Image Slimming — Phase 1
 - [ ] Multi-stage Dockerfile: node builder → python:slim runtime
 - [ ] Split `requirements.txt` → `requirements-core.txt` + `requirements-ml.txt`
@@ -68,6 +73,8 @@
 - [ ] `make install_dev` — auto-install dev tools via Homebrew
 - [ ] `make scan_container` — trivy image scanning (post-build)
 - [ ] `make lint` — eslint + prettier + black rollup
+- [ ] Gate `release_finish` on passing DB tests (`test_db_upgrade`, `test_db_fresh`) and scans
+- [ ] Allow gated release to run locally or hand off to a CI/CD server (same Makefile targets)
 - [ ] Staging CapRover instance for pre-prod testing
 - [ ] Selenium-driven browser regression tests
 - [ ] OWASP ZAP DAST via `make scan_dast`
@@ -82,6 +89,16 @@
 - [ ] Replace wrapper `<div>` elements with semantic custom elements
 - [ ] Swagger UI: custom styling, branding, auth handling
 - [ ] CapRover one-click template
+- [ ] Scrub remaining upstream open-webui references in comments and defaults:
+  - `config.py:1972` — stale k8s comment
+  - `test/util/abstract_integration_test.py:76` — `POSTGRES_DB: "openwebui"` → `sage_is_ai`
+  - `pdf_generator.py:111` — comment references `open-webui serve`
+  - `storage/provider.py:202` — comment references open-webui
+  - `FunctionEditor.svelte:45-47` — default template author/urls → sage-is
+  - `SettingsModal.svelte:423-428` — add sage search keywords alongside open-webui ones
+- [ ] Migration idempotency guards on all `create_table` / `add_column` calls (10 migration files)
+- [ ] Fix or suppress ChromaDB telemetry error (`posthog capture() argument mismatch`) — likely a chromadb/posthog version incompatibility
+- [ ] Replace login slideshow images (`app/static/assets/images/`) with original or CC/public domain photos — sea life, Azores landscapes, night sky/star shots. Source from Wikimedia Commons or original photography. Update `SlideShow.svelte` defaults if filenames change.
 
 ---
 

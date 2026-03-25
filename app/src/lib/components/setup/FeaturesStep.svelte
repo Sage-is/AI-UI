@@ -79,8 +79,9 @@
 
 			<!-- Community Sharing -->
 			<label
-				style="--d:flex; --ai:center; --jc:space-between; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--d:flex; --ai:center; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			>
+				<input type="checkbox" bind:checked={enableCommunitySharing} style="--w:1rem; --h:1rem; --shrink:0" />
 				<div>
 					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('Community Sharing')}</span>
@@ -92,13 +93,13 @@
 						{$i18n.t('Allow users to share conversations with the community')}
 					</div>
 				</div>
-				<input type="checkbox" bind:checked={enableCommunitySharing} style="--w:1rem; --h:1rem; --shrink:0" />
 			</label>
 
 			<!-- Message Rating -->
 			<label
-				style="--d:flex; --ai:center; --jc:space-between; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--d:flex; --ai:center; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			>
+				<input type="checkbox" bind:checked={enableMessageRating} style="--w:1rem; --h:1rem; --shrink:0" />
 				<div>
 					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('Message Rating')}</span>
@@ -110,13 +111,13 @@
 						{$i18n.t('Allow users to rate AI responses')}
 					</div>
 				</div>
-				<input type="checkbox" bind:checked={enableMessageRating} style="--w:1rem; --h:1rem; --shrink:0" />
 			</label>
 
 			<!-- Notes (Beta) -->
 			<label
-				style="--d:flex; --ai:center; --jc:space-between; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-amber-100); --dark-bc:var(--color-amber-900); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-amber-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--d:flex; --ai:center; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-amber-100); --dark-bc:var(--color-amber-900); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-amber-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			>
+				<input type="checkbox" bind:checked={enableNotes} style="--w:1rem; --h:1rem; --shrink:0" />
 				<div>
 					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('Notes')}</span>
@@ -129,13 +130,13 @@
 						{$i18n.t('Enable note-taking features')}
 					</div>
 				</div>
-				<input type="checkbox" bind:checked={enableNotes} style="--w:1rem; --h:1rem; --shrink:0" />
 			</label>
 
 			<!-- Spaces (Beta) -->
 			<label
-				style="--d:flex; --ai:center; --jc:space-between; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-amber-100); --dark-bc:var(--color-amber-900); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-amber-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--d:flex; --ai:center; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-amber-100); --dark-bc:var(--color-amber-900); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-amber-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			>
+				<input type="checkbox" bind:checked={enableSpaces} style="--w:1rem; --h:1rem; --shrink:0" />
 				<div>
 					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('Spaces')}</span>
@@ -148,13 +149,13 @@
 						{$i18n.t('Enable workspace and collaboration spaces')}
 					</div>
 				</div>
-				<input type="checkbox" bind:checked={enableSpaces} style="--w:1rem; --h:1rem; --shrink:0" />
 			</label>
 
 			<!-- User Webhooks -->
 			<label
-				style="--d:flex; --ai:center; --jc:space-between; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+				style="--d:flex; --ai:center; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			>
+				<input type="checkbox" bind:checked={enableUserWebhooks} style="--w:1rem; --h:1rem; --shrink:0" />
 				<div>
 					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('User Webhooks')}</span>
@@ -166,7 +167,6 @@
 						{$i18n.t('Allow users to configure webhook integrations')}
 					</div>
 				</div>
-				<input type="checkbox" bind:checked={enableUserWebhooks} style="--w:1rem; --h:1rem; --shrink:0" />
 			</label>
 
 		</div>
