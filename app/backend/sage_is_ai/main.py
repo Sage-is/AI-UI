@@ -1697,14 +1697,15 @@ async def get_app_latest_release_version(user=Depends(get_verified_user)):
         timeout = aiohttp.ClientTimeout(total=1)
         async with aiohttp.ClientSession(timeout=timeout, trust_env=True) as session:
             async with session.get(
-                "https://api.github.com/repos/open-webui/open-webui/releases/latest",
+                "https://api.github.com/repos/Sage-is/AI-UI/tags?per_page=1",
                 ssl=AIOHTTP_CLIENT_SESSION_SSL,
             ) as response:
                 response.raise_for_status()
                 data = await response.json()
-                latest_version = data["tag_name"]
-
-                return {"current": VERSION, "latest": latest_version[1:]}
+                if data:
+                    latest_version = data[0]["name"]
+                    return {"current": VERSION, "latest": latest_version.lstrip("v")}
+                return {"current": VERSION, "latest": VERSION}
     except Exception as e:
         log.debug(e)
         return {"current": VERSION, "latest": VERSION}
