@@ -230,11 +230,29 @@ test_db_upgrade:
 	echo "Testing migrations against $(IMAGE_NAME):$(IMAGE_TAG)..." && \
 	$(CONTAINER_RUNTIME) run --rm \
 		-v "$$TMPDIR:/app/backend/data" \
+		-v $(ENV_FILE) \
+		--add-host=host.docker.internal:host-gateway \
 		--name $(DB_TEST_CONTAINER) \
 		$(IMAGE_NAME):$(IMAGE_TAG) \
-		timeout 60 python -c "from sage_is_ai.main import app; print('Migrations OK')" \
+		bash -c '. /app/.env 2>/dev/null; [ -z "$$WEBUI_SECRET_KEY" ] && export WEBUI_SECRET_KEY=db-upgrade-test; cd /app/backend && timeout 60 python -c "from sage_is_ai.config import run_migrations; print(\"Migrations OK\")"' \
 	&& echo "DB upgrade test PASSED ✓" \
 	|| { echo "DB upgrade test FAILED ✗"; rm -rf "$$TMPDIR"; exit 1; }; \
+	rm -rf "$$TMPDIR"
+
+# Fresh DB smoke test — verifies clean schema creation from scratch.
+test_db_fresh:
+	@echo "=== Fresh DB Smoke Test ==="
+	@TMPDIR=$$(mktemp -d) && \
+	echo "Testing fresh schema creation against $(IMAGE_NAME):$(IMAGE_TAG)..." && \
+	$(CONTAINER_RUNTIME) run --rm \
+		-v "$$TMPDIR:/app/backend/data" \
+		-v $(ENV_FILE) \
+		--add-host=host.docker.internal:host-gateway \
+		--name $(DB_TEST_CONTAINER)-fresh \
+		$(IMAGE_NAME):$(IMAGE_TAG) \
+		bash -c '. /app/.env 2>/dev/null; [ -z "$$WEBUI_SECRET_KEY" ] && export WEBUI_SECRET_KEY=db-upgrade-test; cd /app/backend && timeout 60 python -c "from sage_is_ai.config import run_migrations; print(\"Fresh DB OK\")"' \
+	&& echo "Fresh DB test PASSED ✓" \
+	|| { echo "Fresh DB test FAILED ✗"; rm -rf "$$TMPDIR"; exit 1; }; \
 	rm -rf "$$TMPDIR"
 
 # Ensure builder target
@@ -585,7 +603,7 @@ lint:
 	waha_start waha_stop waha_logs waha_status \
 	signal_start signal_stop signal_logs signal_status \
 	install_dev scan scan_secrets scan_sast scan_deps scan_container scan_dast \
-	trivy_db_update lint test_db_upgrade
+	trivy_db_update lint test_db_upgrade test_db_fresh
 
 
 # Version Management with Git Flow
@@ -600,36 +618,96 @@ lint:
 # The 'v' prefix is consistently preserved in all version tags and branches.
 
 minor_release:
-	# Start a minor release with incremented minor version
+	@# Start a minor release with incremented minor version
 	git flow release start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{print $$1"."$$2+1".0"}')
+	@echo ""
+	@echo "=== Release branch created ==="
+	@echo "Next steps:"
+	@echo "  1. make bump_release_version     # Update package.json + README.md"
+	@echo "  2. Update CHANGELOG.md with release notes"
+	@echo "  3. git add -A && git commit      # Commit version bump + changelog"
+	@echo "  4. make it_build                 # Build Docker image"
+	@echo "  5. make test_db_upgrade          # Verify DB migrations"
+	@echo "  6. make test_db_fresh            # Verify fresh DB creation"
+	@echo "  7. make it_run                   # Smoke test the app"
+	@echo "  8. make release_and_push_GHCR    # Finish release + push to GHCR"
 
 patch_release:
-	# Start a patch release with incremented patch version
+	@# Start a patch release with incremented patch version
 	git flow release start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{print $$1"."$$2"."$$3+1}')
+	@echo ""
+	@echo "=== Release branch created ==="
+	@echo "Next steps:"
+	@echo "  1. make bump_release_version     # Update package.json + README.md"
+	@echo "  2. Update CHANGELOG.md with release notes"
+	@echo "  3. git add -A && git commit      # Commit version bump + changelog"
+	@echo "  4. make it_build                 # Build Docker image"
+	@echo "  5. make test_db_upgrade          # Verify DB migrations"
+	@echo "  6. make test_db_fresh            # Verify fresh DB creation"
+	@echo "  7. make it_run                   # Smoke test the app"
+	@echo "  8. make release_and_push_GHCR    # Finish release + push to GHCR"
 
 major_release:
-	# Start a major release with incremented major version
+	@# Start a major release with incremented major version
 	git flow release start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{print $$1+1".0.0"}')
+	@echo ""
+	@echo "=== Release branch created ==="
+	@echo "Next steps:"
+	@echo "  1. make bump_release_version     # Update package.json + README.md"
+	@echo "  2. Update CHANGELOG.md with release notes"
+	@echo "  3. git add -A && git commit      # Commit version bump + changelog"
+	@echo "  4. make it_build                 # Build Docker image"
+	@echo "  5. make test_db_upgrade          # Verify DB migrations"
+	@echo "  6. make test_db_fresh            # Verify fresh DB creation"
+	@echo "  7. make it_run                   # Smoke test the app"
+	@echo "  8. make release_and_push_GHCR    # Finish release + push to GHCR"
 
 hotfix:
-	# Start a hotfix with incremented patch.patch version (fourth component)
+	@# Start a hotfix with incremented patch.patch version (fourth component)
 	git flow hotfix start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{if (NF < 4) print $$1"."$$2"."$$3".1"; else print $$1"."$$2"."$$3"."$$4+1}')
+	@echo ""
+	@echo "=== Hotfix branch created ==="
+	@echo "Next steps:"
+	@echo "  1. Fix the issue"
+	@echo "  2. make bump_release_version     # Update package.json + README.md"
+	@echo "  3. git add -A && git commit      # Commit fix + version bump"
+	@echo "  4. make it_build                 # Build Docker image"
+	@echo "  5. make test_db_upgrade          # Verify DB migrations"
+	@echo "  6. make it_run                   # Smoke test the app"
+	@echo "  7. make hotfix_and_push_GHCR     # Finish hotfix + push to GHCR"
 
 release_finish:
+	@echo "=== Finishing release ==="
+	@echo "Merging to master, tagging, pushing..."
 	git flow release finish "$$(git branch --show-current | sed 's/release\///')" && git push origin develop && git push origin master && git push --tags && git checkout develop
+	@echo ""
+	@echo "=== Release complete ==="
+	@echo "Tag: v$(IMAGE_TAG)"
+	@echo "Pushed: develop, master, tags"
 
 hotfix_finish:
+	@echo "=== Finishing hotfix ==="
+	@echo "Merging to master, tagging, pushing..."
 	git flow hotfix finish "$$(git branch --show-current | sed 's/hotfix\///')" && git push origin develop && git push origin master && git push --tags && git checkout develop
+	@echo ""
+	@echo "=== Hotfix complete ==="
 
 release_and_push_GHCR: release_finish
-	@echo "Building and pushing $(GHCR_IMAGE_NAME):$(IMAGE_TAG) to GHCR..."
+	@echo ""
+	@echo "=== Building and pushing to GHCR ==="
 	@make it_build_multi_arch_push_GHCR
-	@echo "Release $(IMAGE_TAG) pushed to GHCR"
+	@echo ""
+	@echo "=== Release $(IMAGE_TAG) published ==="
+	@echo "Verify: docker pull $(GHCR_IMAGE_NAME):$(IMAGE_TAG)"
+	@echo "Verify: docker pull $(GHCR_IMAGE_NAME):latest"
 
 hotfix_and_push_GHCR: hotfix_finish
-	@echo "Building and pushing $(GHCR_IMAGE_NAME):$(IMAGE_TAG) to GHCR..."
+	@echo ""
+	@echo "=== Building and pushing to GHCR ==="
 	@make it_build_multi_arch_push_GHCR
-	@echo "Hotfix $(IMAGE_TAG) pushed to GHCR"
+	@echo ""
+	@echo "=== Hotfix $(IMAGE_TAG) published ==="
+	@echo "Verify: docker pull $(GHCR_IMAGE_NAME):$(IMAGE_TAG)"
 
 things_clean:
 	git clean --exclude=!.env -Xdf

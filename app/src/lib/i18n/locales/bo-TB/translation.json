@@ -1448,7 +1448,7 @@
 	"What are you working on?": "ཁྱེད་ཀྱིས་ཅི་ཞིག་ལས་ཀ་བྱེད་བཞིན་ཡོད།",
 	"What's New in": "གསར་པ་ཅི་ཡོད།",
 	"When enabled, the model will respond to each chat message in real-time, generating a response as soon as the user sends a message. This mode is useful for live chat applications, but may impact performance on slower hardware.": "སྒུལ་བསྐྱོད་བྱས་ཚེ། དཔེ་དབྱིབས་ཀྱིས་ཁ་བརྡའི་འཕྲིན་རེ་རེར་དུས་ཐོག་ཏུ་ལན་འདེབས་བྱེད་ངེས། བེད་སྤྱོད་མཁན་གྱིས་འཕྲིན་བཏང་མ་ཐག་ལན་ཞིག་བཟོ་ངེས། མ་དཔེ་འདི་ཐད་གཏོང་ཁ་བརྡའི་བཀོལ་ཆས་ལ་ཕན་ཐོགས་ཡོད། འོན་ཀྱང་དེས་མཁྲེགས་ཆས་དལ་བའི་སྟེང་ལས་ཆོད་ལ་ཤུགས་རྐྱེན་ཐེབས་སྲིད།",
-	"wherever you are": "ཁྱེད་གང་དུ་ཡོད་ཀྱང་།",
+	"with Sage.is AI-UI": "ཁྱེད་གང་དུ་ཡོད་ཀྱང་།",
 	"Whether to paginate the output. Each page will be separated by a horizontal rule and page number. Defaults to False.": "",
 	"Whisper (Local)": "Whisper (ས་གནས།)",
 	"Why?": "ཅིའི་ཕྱིར།",

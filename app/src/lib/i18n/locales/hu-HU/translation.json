@@ -1448,7 +1448,7 @@
 	"What are you working on?": "Min dolgozol?",
 	"What's New in": "Mi újság a",
 	"When enabled, the model will respond to each chat message in real-time, generating a response as soon as the user sends a message. This mode is useful for live chat applications, but may impact performance on slower hardware.": "Ha engedélyezve van, a modell valós időben válaszol minden csevegőüzenetre, amint a felhasználó elküldi az üzenetet. Ez a mód hasznos élő csevegőalkalmazásokhoz, de lassabb hardveren befolyásolhatja a teljesítményt.",
-	"wherever you are": "bárhol is vagy",
+	"with Sage.is AI-UI": "bárhol is vagy",
 	"Whether to paginate the output. Each page will be separated by a horizontal rule and page number. Defaults to False.": "",
 	"Whisper (Local)": "Whisper (helyi)",
 	"Why?": "Miért?",

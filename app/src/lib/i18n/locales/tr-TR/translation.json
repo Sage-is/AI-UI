@@ -1448,7 +1448,7 @@
 	"What are you working on?": "Üzerinde çalıştığınız nedir?",
 	"What's New in": "Yenilikler:",
 	"When enabled, the model will respond to each chat message in real-time, generating a response as soon as the user sends a message. This mode is useful for live chat applications, but may impact performance on slower hardware.": "Etkinleştirildiğinde, model her sohbet mesajına gerçek zamanlı olarak yanıt verecek ve kullanıcı bir mesaj gönderdiği anda bir yanıt üretecektir. Bu mod canlı sohbet uygulamaları için yararlıdır, ancak daha yavaş donanımlarda performansı etkileyebilir.",
-	"wherever you are": "nerede olursanız olun",
+	"with Sage.is AI-UI": "nerede olursanız olun",
 	"Whether to paginate the output. Each page will be separated by a horizontal rule and page number. Defaults to False.": "",
 	"Whisper (Local)": "Whisper (Yerel)",
 	"Why?": "Neden?",
