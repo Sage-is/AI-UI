@@ -2,7 +2,7 @@
 	import { onMount, getContext } from 'svelte';
 	import { WEBUI_NAME, models } from '$lib/stores';
 	import { getAllUsers } from '$lib/apis/users';
-	import { getAdminConfig } from '$lib/apis/auths';
+	import { getAdminConfig, getOAuthConfig } from '$lib/apis/auths';
 
 	const i18n = getContext('i18n');
 
@@ -12,6 +12,7 @@
 	let connectionAdded = false;
 	let usersCount = 0;
 	let featuresEnabled = 0;
+	let authMethods: string[] = [];
 	let loading = true;
 
 	// Feature flags to count from admin config
@@ -44,6 +45,16 @@
 			featuresEnabled = 0;
 		}
 
+		// Check which auth methods are configured
+		try {
+			const oauthCfg = await getOAuthConfig();
+			if (oauthCfg?.GOOGLE_CLIENT_ID && oauthCfg?.GOOGLE_CLIENT_SECRET) authMethods.push('Google');
+			if (oauthCfg?.GITHUB_CLIENT_ID && oauthCfg?.GITHUB_CLIENT_SECRET) authMethods.push('GitHub');
+			if (oauthCfg?.ENABLE_MAGIC_LINK_LOGIN) authMethods.push('Email Link');
+		} catch {
+			// ignore — auth check is best-effort
+		}
+
 		loading = false;
 	});
 </script>
@@ -65,6 +76,13 @@
 		</div>
 	{:else}
 		<div style="--d:flex; --fd:column; --g:0.5rem; --mb:1.5rem; --ta:left; --mx:auto; --w:fit-content">
+			{#if authMethods.length > 0}
+				<div style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
+					<span style="--c:var(--color-green-600)">&#10003;</span>
+					<span>{$i18n.t('Auth configured: {{methods}}', { methods: authMethods.join(', ') })}</span>
+				</div>
+			{/if}
+
 			{#if connectionAdded}
 				<div style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
 					<span style="--c:var(--color-green-600)">&#10003;</span>
