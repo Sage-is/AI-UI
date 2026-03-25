@@ -21,7 +21,7 @@ export const formatPythonCode = async (token: string, code: string) => {
 	return res.json();
 };
 
-export const downloadChatAsPDF = async (token: string, title: string, messages: object[]) => 
+export const downloadChatAsPDF = async (token: string, title: string, messages: object[]) =>
 	apiBlob('/pdf', 'POST', { title, messages }, token, `downloadChatAsPDF("${title}")`);
 
 export const getHTMLFromMarkdown = async (token: string, md: string) => {
@@ -30,8 +30,6 @@ export const getHTMLFromMarkdown = async (token: string, md: string) => {
 	return json.html;
 };
 
-export const downloadDatabase = async (token: string) => 
+export const downloadDatabase = async (token: string) =>
 	downloadFile('/db/download', 'webui.db', token, 'downloadDatabase');
 
-export const downloadLiteLLMConfig = async (token: string) => 
-	downloadFile('/litellm/config', 'config.yaml', token, 'downloadLiteLLMConfig');
