@@ -30,7 +30,7 @@
 
 ### Remaining
 - [x] Commit, build, smoke test (`make it_build`)
-- [ ] `make release_finish` → tag v2.0.0, merge to master, push
+- [x] `make release_finish` → tag v2.0.0, merge to master, push
 - [ ] `make it_build_multi_arch_push_GHCR` → push amd64+arm64 to GHCR
 - [ ] Verify: `docker pull ghcr.io/sage-is/ai-ui:2.0.0`
 - [ ] Push `Sage-is/homebrew-apps` repo to GitHub
@@ -42,9 +42,10 @@
 ## v2.x — Near Term
 
 ### Auth & Onboarding
-- [ ] Simpler password recovery / single sign-on
-- [ ] OAuth setup in the setup wizard (Google/Microsoft/GitHub/OIDC)
-- [ ] No email verification for admin-created accounts
+- [x] Single sign-on
+- [x] OAuth setup in the setup wizard (Google/Microsoft/GitHub/OIDC)
+
+- [x] No email verification for admin-created accounts
 - [ ] Outgoing email notifications (reuse bridge SMTP config)
 - [ ] Consolidate LDAP config into Auth/Integrations tab
 
@@ -78,6 +79,9 @@
 - [ ] Staging CapRover instance for pre-prod testing
 - [ ] Selenium-driven browser regression tests
 - [ ] OWASP ZAP DAST via `make scan_dast`
+
+### Build System
+- [ ] Evaluate migrating Makefile to a cleaner build tool (Ruby Rake, Python Invoke, or Just) — Make works everywhere but sed/shell escaping hurts readability as complexity grows
 
 ### Knowledge Base
 - [ ] AI-Parsed ingestion mode + admin Documents page cleanup
