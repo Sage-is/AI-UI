@@ -28,7 +28,7 @@ endif
 CONTAINER_RUNTIME ?= $(shell command -v podman 2>/dev/null || echo docker)
 
 # Derive org/repo from git remote (e.g. git@github.com:Sage-is/AI-UI.git -> sage-is/ai-ui)
-GIT_REPO_SLUG := $(shell git remote get-url origin 2>/dev/null | sed -E 's|.*[:/]([^/]+/[^/]+)(\.git)?$$|\1|' | tr '[:upper:]' '[:lower:]')
+GIT_REPO_SLUG := $(shell git remote get-url origin 2>/dev/null | sed -E 's|\.git$$||; s|.*[:/]([^/]+/[^/]+)$$|\1|' | tr '[:upper:]' '[:lower:]')
 
 # Configuration variables with defaults (override with .env file)
 # Variables using ?= are only set if not already defined — so any value in
@@ -45,7 +45,7 @@ ifeq ($(GIT_BRANCH),HEAD)
 endif
 SAFE_GIT_BRANCH := $(subst /,-,$(GIT_BRANCH))
 SAFE_GIT_BRANCH := $(shell echo $(SAFE_GIT_BRANCH) | tr '[:upper:]' '[:lower:]')
-CONTAINER_NAME ?= app-container
+CONTAINER_NAME ?= $(shell echo $(GIT_REPO_SLUG) | tr '/' '-')
 PORT_MAPPING ?= 8080:8080
 VOLUME_DATA ?= sage-is-ai:/app/backend/data
 ENV_FILE := $$(pwd)/.env:/app/.env
@@ -255,77 +255,33 @@ test_db_fresh:
 	|| { echo "Fresh DB test FAILED ✗"; rm -rf "$$TMPDIR"; exit 1; }; \
 	rm -rf "$$TMPDIR"
 
+# GHCR login via gh CLI (requires write:packages scope)
+ghcr_login:
+	@echo "=== Logging into GHCR via gh CLI ==="
+	@gh auth status >/dev/null 2>&1 || { echo "Error: gh CLI not authenticated. Run: gh auth login"; exit 1; }
+	@gh auth token | docker login ghcr.io -u $$(gh api user -q .login) --password-stdin
+	@echo "Logged into ghcr.io as $$(gh api user -q .login)"
+	@echo ""
+	@echo "If push is denied, ensure your token has write:packages scope:"
+	@echo "  gh auth refresh -s write:packages"
+
 # Ensure builder target
 ensure_builder:
 	@docker buildx inspect multi-arch-builder >/dev/null 2>&1 || docker buildx create --name multi-arch-builder --use
 
-# Multi-architecture build helpers
-define build_arch
+# Multi-architecture build+push helper
+# Builds amd64 and arm64, creates manifest list, and pushes in one step.
+# Replaces the old per-arch build → docker manifest create → push pattern
+# which broke with buildx v0.10+ (provenance attestation wraps every push
+# in a manifest list, and docker manifest create rejects manifest-list sources).
+define build_multi_arch
 	@make it_clean
 	@make ensure_builder
-	docker buildx build --platform linux/$(1) \
-		-t $(2):$(1)-$(IMAGE_TAG) \
-		-t $(2):$(1)-latest \
-		--build-arg ARCH=$(1) \
-		--load . && \
-	docker push $(2):$(1)-$(IMAGE_TAG) && \
-	docker push $(2):$(1)-latest
+	docker buildx build --platform linux/amd64,linux/arm64 \
+		-t $(1):$(IMAGE_TAG) \
+		-t $(1):latest \
+		--push .
 endef
-
-# Clean old manifests
-clean-manifests-dockerhub:
-	docker manifest rm $(IMAGE_NAME):$(IMAGE_TAG) || true
-	docker manifest rm $(IMAGE_NAME):latest || true
-
-clean-manifests-ghcr:
-	docker manifest rm $(GHCR_IMAGE_NAME):$(IMAGE_TAG) || true
-	docker manifest rm $(GHCR_IMAGE_NAME):latest || true
-
-# Build individual architectures for Docker Hub
-build-amd64-dockerhub:
-	@echo "Building AMD64 for Docker Hub"
-	$(call build_arch,amd64,$(IMAGE_NAME))
-
-build-arm64-dockerhub:
-	@echo "Building ARM64 for Docker Hub"
-	$(call build_arch,arm64,$(IMAGE_NAME))
-
-# Build individual architectures for GHCR
-build-amd64-ghcr:
-	@echo "Building AMD64 for GHCR"
-	$(call build_arch,amd64,$(GHCR_IMAGE_NAME))
-
-build-arm64-ghcr:
-	@echo "Building ARM64 for GHCR"
-	$(call build_arch,arm64,$(GHCR_IMAGE_NAME))
-
-# Create and push manifests for Docker Hub
-create-manifest-dockerhub: build-amd64-dockerhub build-arm64-dockerhub
-	@echo "Creating Docker Hub manifests for version $(IMAGE_TAG)"
-	docker manifest create \
-		$(IMAGE_NAME):$(IMAGE_TAG) \
-		$(IMAGE_NAME):amd64-$(IMAGE_TAG) \
-		$(IMAGE_NAME):arm64-$(IMAGE_TAG)
-	docker manifest push $(IMAGE_NAME):$(IMAGE_TAG)
-	docker manifest create \
-		$(IMAGE_NAME):latest \
-		$(IMAGE_NAME):amd64-latest \
-		$(IMAGE_NAME):arm64-latest
-	docker manifest push $(IMAGE_NAME):latest
-
-# Create and push manifests for GHCR
-create-manifest-ghcr: build-amd64-ghcr build-arm64-ghcr
-	@echo "Creating GHCR manifests for version $(IMAGE_TAG)"
-	docker manifest create \
-		$(GHCR_IMAGE_NAME):$(IMAGE_TAG) \
-		$(GHCR_IMAGE_NAME):amd64-$(IMAGE_TAG) \
-		$(GHCR_IMAGE_NAME):arm64-$(IMAGE_TAG)
-	docker manifest push $(GHCR_IMAGE_NAME):$(IMAGE_TAG)
-	docker manifest create \
-		$(GHCR_IMAGE_NAME):latest \
-		$(GHCR_IMAGE_NAME):amd64-latest \
-		$(GHCR_IMAGE_NAME):arm64-latest
-	docker manifest push $(GHCR_IMAGE_NAME):latest
 
 # Bring down container instances on each SAGE_HOST
 it_down_sage_hosts:
@@ -357,12 +313,16 @@ it_check_sage_hosts:
 	fi
 
 # Main multi-arch build targets
-it_build_multi_arch_push_docker_hub: clean-manifests-dockerhub create-manifest-dockerhub
-	@echo "Completed Docker Hub multi-arch build and push for version $(IMAGE_TAG)"
+it_build_multi_arch_push_docker_hub:
+	@echo "Building multi-arch and pushing to Docker Hub"
+	$(call build_multi_arch,$(IMAGE_NAME))
+	@echo "Completed Docker Hub multi-arch push for version $(IMAGE_TAG)"
 
-# Builds and pushed to the GitHub Container Registry
-it_build_multi_arch_push_GHCR: clean-manifests-ghcr create-manifest-ghcr
-	@echo "Completed GHCR multi-arch build and push for version $(IMAGE_TAG)"
+# Builds and pushes to the GitHub Container Registry
+it_build_multi_arch_push_GHCR: ghcr_login
+	@echo "Building multi-arch and pushing to GHCR"
+	$(call build_multi_arch,$(GHCR_IMAGE_NAME))
+	@echo "Completed GHCR multi-arch push for version $(IMAGE_TAG)"
 
 # Build both registries
 it_build_multi_arch_all: it_build_multi_arch_push_docker_hub it_build_multi_arch_push_GHCR
@@ -593,10 +553,7 @@ lint:
 # ===========================================================================
 
 .PHONY: it_build it_build_no_cache dev_run it_run it_build_n_run it_build_n_run_no_cache \
-	clean-manifests-dockerhub clean-manifests-ghcr \
-	build-amd64-dockerhub build-arm64-dockerhub \
-	build-amd64-ghcr build-arm64-ghcr \
-	create-manifest-dockerhub create-manifest-ghcr \
+	ghcr_login \
 	it_build_multi_arch_push_docker_hub it_build_multi_arch_push_GHCR \
 	it_build_multi_arch_all show-version setup_env setup_env_auto setup_env_template \
 	bump_release_version release_and_push_GHCR hotfix_and_push_GHCR \
@@ -630,7 +587,8 @@ minor_release:
 	@echo "  5. make test_db_upgrade          # Verify DB migrations"
 	@echo "  6. make test_db_fresh            # Verify fresh DB creation"
 	@echo "  7. make it_run                   # Smoke test the app"
-	@echo "  8. make release_and_push_GHCR    # Finish release + push to GHCR"
+	@echo "  8. make ghcr_login               # Authenticate with GHCR"
+	@echo "  9. make release_and_push_GHCR    # Finish release + push to GHCR"
 
 patch_release:
 	@# Start a patch release with incremented patch version
@@ -645,7 +603,8 @@ patch_release:
 	@echo "  5. make test_db_upgrade          # Verify DB migrations"
 	@echo "  6. make test_db_fresh            # Verify fresh DB creation"
 	@echo "  7. make it_run                   # Smoke test the app"
-	@echo "  8. make release_and_push_GHCR    # Finish release + push to GHCR"
+	@echo "  8. make ghcr_login               # Authenticate with GHCR"
+	@echo "  9. make release_and_push_GHCR    # Finish release + push to GHCR"
 
 major_release:
 	@# Start a major release with incremented major version
@@ -660,7 +619,8 @@ major_release:
 	@echo "  5. make test_db_upgrade          # Verify DB migrations"
 	@echo "  6. make test_db_fresh            # Verify fresh DB creation"
 	@echo "  7. make it_run                   # Smoke test the app"
-	@echo "  8. make release_and_push_GHCR    # Finish release + push to GHCR"
+	@echo "  8. make ghcr_login               # Authenticate with GHCR"
+	@echo "  9. make release_and_push_GHCR    # Finish release + push to GHCR"
 
 hotfix:
 	@# Start a hotfix with incremented patch.patch version (fourth component)
@@ -674,7 +634,8 @@ hotfix:
 	@echo "  4. make it_build                 # Build Docker image"
 	@echo "  5. make test_db_upgrade          # Verify DB migrations"
 	@echo "  6. make it_run                   # Smoke test the app"
-	@echo "  7. make hotfix_and_push_GHCR     # Finish hotfix + push to GHCR"
+	@echo "  7. make ghcr_login               # Authenticate with GHCR"
+	@echo "  8. make hotfix_and_push_GHCR     # Finish hotfix + push to GHCR"
 
 release_finish:
 	@echo "=== Finishing release ==="
