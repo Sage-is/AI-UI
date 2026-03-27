@@ -1,0 +1,18 @@
+# ML packages — installed at runtime via the Search & Audio wizard step.
+# These are NOT baked into the base Docker image to keep it slim (~1.5GB).
+# The wizard caches wheels on the data volume for fast re-install on restart.
+#
+# torch is installed separately via init_models.sh with the correct index URL
+# (cpu vs cuda), so it is NOT listed here.
+
+sentence-transformers==4.1.0
+transformers
+colbert-ai==0.2.21
+
+faster-whisper==1.1.1
+ctranslate2
+onnxruntime==1.20.1
+
+# Transitive deps of sentence-transformers/sklearn — pin for reproducibility
+scipy
+scikit-learn

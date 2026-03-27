@@ -19,6 +19,9 @@ uploads
 **/*.db
 _test
 
+# Dev/design source files
+**/*.xcf
+
 README.md
 LICENSE
 Dockerfile

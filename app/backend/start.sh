@@ -3,23 +3,16 @@
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd "$SCRIPT_DIR" || exit
 
-# Initialize AI models at runtime (moved from Dockerfile for faster builds)
-echo "🤖 Initializing AI models..."
+# Initialize runtime dependencies
 if [ -f "./init_models.sh" ]; then
     ./init_models.sh
-else
-    echo "⚠️  init_models.sh not found, skipping model initialization"
 fi
 
-# Add conditional Playwright browser installation
-if [[ "${WEB_LOADER_ENGINE,,}" == "playwright" ]]; then
-    if [[ -z "${PLAYWRIGHT_WS_URL}" ]]; then
-        echo "Installing Playwright browsers..."
-        playwright install chromium
-        playwright install-deps chromium
-    fi
-
-    python -c "import nltk; nltk.download('punkt_tab')"
+# Add ML packages to PYTHONPATH if installed on data volume (persists across restarts)
+ML_PACKAGES="/app/backend/data/ml_packages"
+if [ -d "$ML_PACKAGES" ] && [ "$(ls -A "$ML_PACKAGES" 2>/dev/null)" ]; then
+    export PYTHONPATH="$ML_PACKAGES:${PYTHONPATH:-}"
+    echo "ML packages loaded from data volume"
 fi
 
 KEY_FILE=.webui_secret_key
@@ -27,15 +20,12 @@ KEY_FILE=.webui_secret_key
 PORT="${PORT:-8080}"
 HOST="${HOST:-0.0.0.0}"
 if test "$WEBUI_SECRET_KEY $WEBUI_JWT_SECRET_KEY" = " "; then
-  echo "Loading WEBUI_SECRET_KEY from file, not provided as an environment variable."
-
   if ! [ -e "$KEY_FILE" ]; then
-    echo "Generating WEBUI_SECRET_KEY"
-    # Generate a random value to use as a WEBUI_SECRET_KEY in case the user didn't provide one.
-    echo $(head -c 12 /dev/random | base64) > "$KEY_FILE"
+    echo "Generating secret key..."
+    echo $(head -c 32 /dev/random | base64) > "$KEY_FILE"
   fi
 
-  echo "Loading WEBUI_SECRET_KEY from $KEY_FILE"
+  echo "Secret key loaded"
   WEBUI_SECRET_KEY=$(cat "$KEY_FILE")
 fi
 
@@ -56,7 +46,7 @@ if [ -n "$SPACE_ID" ]; then
     echo "Admin user configured, creating"
     WEBUI_SECRET_KEY="$WEBUI_SECRET_KEY" uvicorn sage_is_ai.main:app --host "$HOST" --port "$PORT" --forwarded-allow-ips '*' &
     webui_pid=$!
-    echo "Waiting for webui to start..."
+    echo "Waiting for server to start..."
     while ! curl -s http://localhost:8080/health > /dev/null; do
       sleep 1
     done
@@ -66,15 +56,11 @@ if [ -n "$SPACE_ID" ]; then
       -H "accept: application/json" \
       -H "Content-Type: application/json" \
       -d "{ \"email\": \"${ADMIN_USER_EMAIL}\", \"password\": \"${ADMIN_USER_PASSWORD}\", \"name\": \"Admin\" }"
-    echo "Shutting down webui..."
+    echo "Shutting down server..."
     kill $webui_pid
   fi
 
   export WEBUI_URL=${SPACE_HOST}
 fi
-
-# Copy static files to the build directory
-# This is needed because the config.py process copies them back to the static directory at startup
-cp -r /app/backend/build/static /app/build
 
 WEBUI_SECRET_KEY="$WEBUI_SECRET_KEY" exec uvicorn sage_is_ai.main:app --host "$HOST" --port "$PORT" --forwarded-allow-ips '*' --workers "${UVICORN_WORKERS:-1}"

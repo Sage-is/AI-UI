@@ -54,11 +54,11 @@ def upgrade():
         sa.Column("updated_at", sa.BigInteger(), nullable=True),
     )
 
-    op.create_unique_constraint(
-        "uq_bridge_thread_conn_ext",
-        "bridge_thread",
-        ["connection_id", "external_thread_id", "external_user_id"],
-    )
+    with op.batch_alter_table("bridge_thread") as batch_op:
+        batch_op.create_unique_constraint(
+            "uq_bridge_thread_conn_ext",
+            ["connection_id", "external_thread_id", "external_user_id"],
+        )
 
 
 def downgrade():

@@ -1,6 +1,7 @@
 fastapi==0.115.7
 uvicorn[standard]==0.35.0
 pydantic==2.11.7
+itsdangerous
 # CVE-2026-24486 (HIGH): arbitrary file write — fixed in 0.0.22
 python-multipart==0.0.22
 
@@ -26,7 +27,6 @@ pgvector==0.4.0
 bcrypt==4.3.0
 
 redis
-boto3==1.35.53
 
 pycrdt==0.12.25
 
@@ -39,17 +39,14 @@ langchain==0.3.26
 # CVE-2025-6984 (HIGH): insecure XML parsing (XXE) in document loaders
 langchain-community==0.3.27
 
+## Vector DB — only chromadb in base image; others installed at runtime if selected
 chromadb==0.6.3
-pymilvus==2.5.0
-qdrant-client==1.14.3
-opensearch-py==2.8.0
-playwright==1.49.1 # Caution: version must match docker-compose.playwright.yaml
-elasticsearch==9.0.1
-pinecone==6.0.2
+posthog<7  # chromadb uses 3-arg capture() removed in posthog v7
+# pymilvus, qdrant-client, opensearch-py, elasticsearch, pinecone — runtime install via VECTOR_DB config
 
-transformers
-sentence-transformers==4.1.0
-colbert-ai==0.2.21
+# ML packages (torch, sentence-transformers, transformers, colbert-ai, faster-whisper,
+# onnxruntime) — installed at runtime via the AI Engine wizard step (requirements-ml.txt)
+
 
 # Document processing (required by langchain_community.document_loaders)
 pypdf==4.3.1
@@ -57,13 +54,7 @@ docx2txt==0.8
 python-pptx==1.0.2
 # CVE-2025-64712 (CRITICAL): path traversal via MSG attachments — fixed in 0.18.18
 unstructured==0.18.18
-# CVE-2025-14009 (CRITICAL): zip slip leading to code execution — fixed in 3.9.3
-nltk==3.9.3
 pandas==2.2.3
-openpyxl==3.1.5
-pyxlsb==1.0.10
-xlrd==2.0.1
-pytube==15.0.0
 
 ftfy==6.2.3
 fpdf2==2.8.2
@@ -71,51 +62,32 @@ Markdown==3.7
 validators==0.35.0
 psutil
 soundfile==0.13.1
-azure-ai-documentintelligence==1.0.2
 
 # CVE-2025-48379 (HIGH): DDS heap buffer overflow — fixed in 11.3.0
 # CVE-2026-25990 (HIGH): out-of-bounds write via crafted PSD — fixed in 12.1.1
-# Note: major version bump (11→12). No direct imports in our code — transitive dep
-# used by unstructured, sentence-transformers, fpdf2. Test: document/image uploads.
 pillow==12.1.1
-opencv-python-headless==4.11.0.86
-
-onnxruntime==1.20.1
-
-faster-whisper==1.1.1
 
 # CVE-2026-32597 (HIGH): accepts unknown crit header extensions — fixed in 2.12.0
 PyJWT[crypto]==2.12.0
 # CVE-2026-27962 (CRITICAL): auth bypass via JWK header — fixed in 1.6.9
-# CVE-2025-59420 (HIGH): RFC violation — fixed in 1.6.4
 authlib==1.6.9
 
 # CVE-2026-32274 (HIGH): arbitrary file writes from unsanitized input — fixed in 26.3.1
 black==26.3.1
-youtube-transcript-api==1.1.0
 
 pydub
 
-## Google Drive
-google-api-python-client
-google-auth-httplib2
-google-auth-oauthlib
+# Google Drive / Cloud — installed at runtime when integration is enabled
+# google-api-python-client, google-auth-httplib2, google-auth-oauthlib
+# googleapis-common-protos, google-cloud-storage
 
-## Tests
-docker~=7.1.0
-pytest~=8.3.5
-pytest-docker~=3.1.1
+# Azure — installed at runtime when integration is enabled
+# azure-identity, azure-storage-blob, azure-ai-documentintelligence
 
-googleapis-common-protos==1.63.2
-google-cloud-storage==2.19.0
-
-azure-identity==1.23.0
-azure-storage-blob==12.24.1
-
+# Test packages (pytest, docker) — install separately for testing, not in production image
 
 ## LDAP
 ldap3==2.9.1
-
 
 ## Trace
 opentelemetry-api==1.32.1

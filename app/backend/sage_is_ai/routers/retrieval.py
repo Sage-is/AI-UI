@@ -4,6 +4,7 @@ import mimetypes
 import os
 import shutil
 import asyncio
+import subprocess
 
 
 import uuid
@@ -359,6 +360,173 @@ async def update_embedding_config(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=ERROR_MESSAGES.DEFAULT(e),
         )
+
+
+##########################################
+#
+# Model download management
+#
+##########################################
+
+
+@router.get("/models/status")
+async def get_models_status(request: Request, user=Depends(get_admin_user)):
+    return {
+        "status": True,
+        "models": request.app.state.MODEL_DOWNLOAD_STATUS,
+        "embedding_model": request.app.state.config.RAG_EMBEDDING_MODEL,
+        "embedding_engine": request.app.state.config.RAG_EMBEDDING_ENGINE,
+        "embedding_ready": request.app.state.ef is not None
+        or request.app.state.config.RAG_EMBEDDING_ENGINE
+        in ["openai", "ollama", "azure_openai"],
+    }
+
+
+class ModelDownloadForm(BaseModel):
+    components: list[str] = ["embedding", "whisper"]
+
+
+@router.post("/models/download")
+async def trigger_model_download(
+    request: Request, form_data: ModelDownloadForm, user=Depends(get_admin_user)
+):
+    dl_status = request.app.state.MODEL_DOWNLOAD_STATUS
+    app_state = request.app.state
+
+    # Check if a download is already running
+    if any(dl_status.get(c) == "downloading" for c in form_data.components):
+        return {"status": True, "message": "Download already in progress"}
+
+    # Mark requested components as downloading
+    for component in form_data.components:
+        if dl_status.get(component) != "ready":
+            dl_status[component] = "downloading"
+    dl_status["error"] = None
+
+    async def _download():
+        try:
+            # Step 1: Install ML Python packages to data volume if not already available
+            ml_target = os.path.join(
+                os.environ.get("DATA_DIR", "/app/backend/data"), "ml_packages"
+            )
+            try:
+                import torch  # noqa: F401
+                import sentence_transformers  # noqa: F401
+            except ImportError:
+                print("[AI Engine] Installing ML packages...", flush=True)
+                # __file__ = sage_is_ai/routers/retrieval.py → 3 levels up to backend/
+                ml_req = os.path.join(
+                    os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                    "requirements-ml.txt",
+                )
+                os.makedirs(ml_target, exist_ok=True)
+
+                # Install torch first (CPU by default, CUDA if configured)
+                torch_url = "https://download.pytorch.org/whl/cpu"
+                if os.environ.get("USE_CUDA_DOCKER", "").lower() == "true":
+                    torch_url = f"https://download.pytorch.org/whl/{os.environ.get('USE_CUDA_DOCKER_VER', 'cu121')}"
+                print("[AI Engine] Downloading PyTorch...", flush=True)
+                await run_in_threadpool(
+                    subprocess.run,
+                    ["pip", "install", "torch",
+                     "--index-url", torch_url,
+                     "--target", ml_target,
+                     "--break-system-packages",
+                     "--root-user-action=ignore"],
+                    check=True,
+                )
+
+                # Install remaining ML packages
+                print("[AI Engine] Downloading sentence-transformers, whisper...", flush=True)
+                await run_in_threadpool(
+                    subprocess.run,
+                    ["pip", "install", "-r", ml_req,
+                     "--target", ml_target,
+                     "--break-system-packages",
+                     "--root-user-action=ignore"],
+                    check=True,
+                )
+
+                # Add to PYTHONPATH so imports work immediately
+                import sys
+                if ml_target not in sys.path:
+                    sys.path.insert(0, ml_target)
+                print("[AI Engine] ML packages installed", flush=True)
+
+            # Embedding model
+            if "embedding" in form_data.components and dl_status["embedding"] == "downloading":
+                print(f"[AI Engine] Downloading embedding model: {app_state.config.RAG_EMBEDDING_MODEL}", flush=True)
+                ef = await run_in_threadpool(
+                    get_ef,
+                    app_state.config.RAG_EMBEDDING_ENGINE,
+                    app_state.config.RAG_EMBEDDING_MODEL,
+                    True,  # auto_update=True — triggers download
+                )
+                if ef is not None:
+                    app_state.ef = ef
+                    app_state.EMBEDDING_FUNCTION = get_embedding_function(
+                        app_state.config.RAG_EMBEDDING_ENGINE,
+                        app_state.config.RAG_EMBEDDING_MODEL,
+                        embedding_function=ef,
+                        url=(
+                            app_state.config.RAG_OPENAI_API_BASE_URL
+                            if app_state.config.RAG_EMBEDDING_ENGINE == "openai"
+                            else (
+                                app_state.config.RAG_OLLAMA_BASE_URL
+                                if app_state.config.RAG_EMBEDDING_ENGINE == "ollama"
+                                else app_state.config.RAG_AZURE_OPENAI_BASE_URL
+                            )
+                        ),
+                        key=(
+                            app_state.config.RAG_OPENAI_API_KEY
+                            if app_state.config.RAG_EMBEDDING_ENGINE == "openai"
+                            else (
+                                app_state.config.RAG_OLLAMA_API_KEY
+                                if app_state.config.RAG_EMBEDDING_ENGINE == "ollama"
+                                else app_state.config.RAG_AZURE_OPENAI_API_KEY
+                            )
+                        ),
+                        embedding_batch_size=app_state.config.RAG_EMBEDDING_BATCH_SIZE,
+                        azure_api_version=(
+                            app_state.config.RAG_AZURE_OPENAI_API_VERSION
+                            if app_state.config.RAG_EMBEDDING_ENGINE == "azure_openai"
+                            else None
+                        ),
+                    )
+                    dl_status["embedding"] = "ready"
+                    print("[AI Engine] Embedding model ready", flush=True)
+                else:
+                    dl_status["embedding"] = "error"
+                    dl_status["error"] = "Failed to load embedding model"
+
+            # Whisper model
+            if "whisper" in form_data.components and dl_status["whisper"] == "downloading":
+                print("[AI Engine] Downloading Whisper model...", flush=True)
+                await run_in_threadpool(
+                    _download_whisper,
+                )
+                dl_status["whisper"] = "ready"
+                print("[AI Engine] Whisper model ready", flush=True)
+
+        except Exception as e:
+            log.exception(f"Model download failed: {e}")
+            for component in form_data.components:
+                if dl_status.get(component) == "downloading":
+                    dl_status[component] = "error"
+            dl_status["error"] = str(e)
+
+    asyncio.create_task(_download())
+
+    return {"status": True, "message": "Download started"}
+
+
+def _download_whisper():
+    """Download whisper model to cache."""
+    from faster_whisper import WhisperModel
+
+    whisper_model = os.environ.get("WHISPER_MODEL", "base")
+    whisper_dir = os.environ.get("WHISPER_MODEL_DIR", "/app/backend/data/cache/whisper/models")
+    WhisperModel(whisper_model, device="cpu", compute_type="int8", download_root=whisper_dir)
 
 
 @router.get("/config")

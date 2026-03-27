@@ -13,13 +13,14 @@
 	import FeaturesStep from './setup/FeaturesStep.svelte';
 	import UsersStep from './setup/UsersStep.svelte';
 	import AuthStep from './setup/AuthStep.svelte';
+	import SearchAudioStep from './setup/SearchAudioStep.svelte';
 	import CompleteStep from './setup/CompleteStep.svelte';
 
 	const i18n = getContext('i18n');
 
 	export let show = false;
 
-	type PanelId = 'changelog' | 'welcome' | 'auth' | 'connection' | 'features' | 'users' | 'complete';
+	type PanelId = 'changelog' | 'welcome' | 'auth' | 'connection' | 'features' | 'users' | 'search_audio' | 'complete';
 
 	let currentIndex = 0;
 	let workingAloneSelected = false;
@@ -118,7 +119,7 @@
 	let selectedSteps: string[] = [];
 
 	// All wizard steps always present (order: auth → connection → users → features)
-	const allSteps: PanelId[] = ['auth', 'connection', 'users', 'features'];
+	const allSteps: PanelId[] = ['auth', 'connection', 'users', 'features', 'search_audio'];
 
 	// Called by WelcomeStep when admin clicks "Get Started"
 	function handleWelcomeStart(steps: string[]) {
@@ -238,6 +239,11 @@
 			onWorkingAlone={() => {
 				handleWorkingAlone();
 			}}
+		/>
+	{:else if currentPanel === 'search_audio'}
+		<SearchAudioStep
+			onNext={next}
+			onBack={back}
 		/>
 	{:else if currentPanel === 'complete'}
 		<CompleteStep

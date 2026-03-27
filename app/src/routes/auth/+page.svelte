@@ -28,6 +28,8 @@
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import QuestionMarkCircle from '$lib/components/icons/QuestionMarkCircle.svelte';
 	import OnBoarding from '$lib/components/OnBoarding.svelte';
+	import Eye from '$lib/components/icons/Eye.svelte';
+	import EyeSlash from '$lib/components/icons/EyeSlash.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -39,6 +41,7 @@
 	let name = '';
 	let email = '';
 	let password = '';
+	let showPassword = false;
 
 	let ldapUsername = '';
 
@@ -442,16 +445,43 @@
 												style="--size:0.8rem; --weight:500; --ta:left; --mb:0.2rem; --d:block"
 												>{$i18n.t('Password')}</label
 											>
-											<input
-												bind:value={password}
-												type="password"
-												id="password"
-												style="--my:0.125rem; --w:100%; --size:0.8rem; --oe:none; --bgc:transparent"
-												placeholder={$i18n.t('Enter Password')}
-												autocomplete={mode === 'signup' ? 'new-password' : 'current-password'}
-												name="password"
-												required
-											/>
+											<div style="--pos:relative">
+												{#if showPassword}
+													<input
+														bind:value={password}
+														type="text"
+														id="password"
+														style="--my:0.125rem; --w:100%; --size:0.8rem; --oe:none; --bgc:transparent; --pr:2rem"
+														placeholder={$i18n.t('Enter Password')}
+														autocomplete={mode === 'signup' ? 'new-password' : 'current-password'}
+														name="password"
+														required
+													/>
+												{:else}
+													<input
+														bind:value={password}
+														type="password"
+														id="password"
+														style="--my:0.125rem; --w:100%; --size:0.8rem; --oe:none; --bgc:transparent; --pr:2rem"
+														placeholder={$i18n.t('Enter Password')}
+														autocomplete={mode === 'signup' ? 'new-password' : 'current-password'}
+														name="password"
+														required
+													/>
+												{/if}
+												<button
+													type="button"
+													on:click={() => (showPassword = !showPassword)}
+													style="--pos:absolute; --r:0.4rem; --top:50%; --transform:translateY(-50%); --bgc:transparent; --p:0; --c:var(--color-gray-400); --hvr-c:var(--color-gray-600); --dark-hvr-c:var(--color-gray-300)"
+													aria-label={showPassword ? $i18n.t('Hide password') : $i18n.t('Show password')}
+												>
+													{#if showPassword}
+														<EyeSlash className="size-4" />
+													{:else}
+														<Eye className="size-4" />
+													{/if}
+												</button>
+											</div>
 										</div>
 									</div>
 

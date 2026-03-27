@@ -5,7 +5,7 @@ if [ -f /app/.env ]; then
   echo "Sourcing /app/.env..."
   . /app/.env
 else
-  echo "No /app/.env found. Using environment and env.sh variables."
+  echo "No .env file found. Using default configuration."
 fi
 
 # function to setup rclone config
@@ -156,19 +156,19 @@ start_common() {
   # Cleanup function to handle graceful shutdown
   cleanup() {
     echo "Received termination signal. Shutting down gracefully..."
-    
+
     # Kill the backup scheduler if it's running
     if [ -n "$BACKUP_PID" ]; then
       echo "Stopping backup scheduler (PID: $BACKUP_PID)..."
       kill -TERM "$BACKUP_PID" 2>/dev/null || true
     fi
-    
+
     # Kill the main application if it's running
     if [ -n "$APP_PID" ]; then
       echo "Stopping application (PID: $APP_PID)..."
       kill -TERM "$APP_PID" 2>/dev/null || true
     fi
-    
+
     echo "Cleanup complete. Exiting."
     exit 0
   }

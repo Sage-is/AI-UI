@@ -16,15 +16,12 @@ KEY_FILE=.webui_secret_key
 PORT="${PORT:-8080}"
 
 if test "$WEBUI_SECRET_KEY $WEBUI_JWT_SECRET_KEY" = " "; then
-  echo "Loading WEBUI_SECRET_KEY from file, not provided as an environment variable."
-
   if ! [ -e "$KEY_FILE" ]; then
-    echo "Generating WEBUI_SECRET_KEY"
-    # Generate a random value to use as a WEBUI_SECRET_KEY in case the user didn't provide one.
-    echo $(head -c 12 /dev/random | base64) > "$KEY_FILE"
+    echo "Generating secret key..."
+    echo $(head -c 32 /dev/random | base64) > "$KEY_FILE"
   fi
 
-  echo "Loading WEBUI_SECRET_KEY from $KEY_FILE"
+  echo "Secret key loaded"
   WEBUI_SECRET_KEY=$(cat "$KEY_FILE")
 fi
 

@@ -4,7 +4,7 @@ import { createApiHelper } from '../base';
 // Create standardized API helper for retrieval with enhanced error reporting
 const api = createApiHelper('RETRIEVAL', RETRIEVAL_API_BASE_URL);
 
-export const getRAGConfig = async (token: string) => 
+export const getRAGConfig = async (token: string) =>
 	api('/config', 'GET', undefined, token, 'getRAGConfig');
 
 type ChunkConfigForm = {
@@ -39,10 +39,10 @@ type RAGConfigForm = {
 	youtube?: YoutubeConfigForm;
 };
 
-export const updateRAGConfig = async (token: string, payload: RAGConfigForm) => 
+export const updateRAGConfig = async (token: string, payload: RAGConfigForm) =>
 	api('/config/update', 'POST', payload, token, 'updateRAGConfig');
 
-export const getQuerySettings = async (token: string) => 
+export const getQuerySettings = async (token: string) =>
 	api('/query/settings', 'GET', undefined, token, 'getQuerySettings');
 
 type QuerySettings = {
@@ -51,10 +51,10 @@ type QuerySettings = {
 	template: string | null;
 };
 
-export const updateQuerySettings = async (token: string, settings: QuerySettings) => 
+export const updateQuerySettings = async (token: string, settings: QuerySettings) =>
 	api('/query/settings/update', 'POST', settings, token, 'updateQuerySettings');
 
-export const getEmbeddingConfig = async (token: string) => 
+export const getEmbeddingConfig = async (token: string) =>
 	api('/embedding', 'GET', undefined, token, 'getEmbeddingConfig');
 
 type OpenAIConfigForm = {
@@ -76,17 +76,27 @@ type EmbeddingModelUpdateForm = {
 	embedding_batch_size?: number;
 };
 
-export const updateEmbeddingConfig = async (token: string, payload: EmbeddingModelUpdateForm) => 
+export const updateEmbeddingConfig = async (token: string, payload: EmbeddingModelUpdateForm) =>
 	api('/embedding/update', 'POST', payload, token);
 
-export const getRerankingConfig = async (token: string) => 
+export const getModelsStatus = async (token: string) =>
+	api('/models/status', 'GET', undefined, token, 'getModelsStatus');
+
+type ModelDownloadForm = {
+	components: string[];
+};
+
+export const triggerModelDownload = async (token: string, payload: ModelDownloadForm) =>
+	api('/models/download', 'POST', payload, token, 'triggerModelDownload');
+
+export const getRerankingConfig = async (token: string) =>
 	api('/reranking', 'GET', undefined, token);
 
 type RerankingModelUpdateForm = {
 	reranking_model: string;
 };
 
-export const updateRerankingConfig = async (token: string, payload: RerankingModelUpdateForm) => 
+export const updateRerankingConfig = async (token: string, payload: RerankingModelUpdateForm) =>
 	api('/reranking/update', 'POST', payload, token);
 
 export interface SearchDocument {
@@ -104,17 +114,17 @@ export const processFile = async (
 	...(collection_name && { collection_name })
 }, token, `processFile(${file_id}${collection_name ? `, collection: ${collection_name}` : ''})`);
 
-export const processYoutubeVideo = async (token: string, url: string) => 
+export const processYoutubeVideo = async (token: string, url: string) =>
 	api('/process/youtube', 'POST', { url }, token, `processYoutubeVideo(${url})`);
 
-export const processWeb = async (token: string, collection_name: string, url: string) => 
+export const processWeb = async (token: string, collection_name: string, url: string) =>
 	api('/process/web', 'POST', { url, collection_name }, token, `processWeb(${url}, collection: ${collection_name})`);
 
 export const processWebSearch = async (
 	token: string,
 	query: string,
 	collection_name?: string
-): Promise<SearchDocument | null> => 
+): Promise<SearchDocument | null> =>
 	api('/process/web/search', 'POST', {
 		query,
 		collection_name: collection_name ?? ''
@@ -142,8 +152,8 @@ export const queryCollection = async (
 	...(k && { k })
 }, token, `queryCollection("${query}", collections: ${collection_names}${k ? `, k: ${k}` : ''})`);
 
-export const resetUploadDir = async (token: string) => 
+export const resetUploadDir = async (token: string) =>
 	api('/reset/uploads', 'POST', undefined, token, 'resetUploadDir');
 
-export const resetVectorDB = async (token: string) => 
+export const resetVectorDB = async (token: string) =>
 	api('/reset/db', 'POST', undefined, token, 'resetVectorDB');
