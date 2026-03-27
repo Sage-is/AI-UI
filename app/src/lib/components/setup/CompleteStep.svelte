@@ -3,6 +3,7 @@
 	import { WEBUI_NAME, models } from '$lib/stores';
 	import { getAllUsers } from '$lib/apis/users';
 	import { getAdminConfig, getOAuthConfig } from '$lib/apis/auths';
+	import { getModelsStatus } from '$lib/apis/retrieval';
 
 	const i18n = getContext('i18n');
 
@@ -13,7 +14,10 @@
 	let usersCount = 0;
 	let featuresEnabled = 0;
 	let authMethods: string[] = [];
+	let embeddingStatus = 'pending';
+	let whisperStatus = 'pending';
 	let loading = true;
+	let pollTimer: ReturnType<typeof setInterval> | null = null;
 
 	// Feature flags to count from admin config
 	const featureKeys = [
@@ -43,6 +47,23 @@
 			}
 		} catch {
 			featuresEnabled = 0;
+		}
+
+		// Check model download status
+		try {
+			const mStatus = await getModelsStatus(localStorage.token);
+			if (mStatus?.models) {
+				const { embedding, whisper } = mStatus.models;
+				if (embedding === 'ready' && whisper === 'ready') {
+					modelsStatus = 'ready';
+				} else if (embedding === 'downloading' || whisper === 'downloading') {
+					modelsStatus = 'downloading';
+				} else {
+					modelsStatus = 'pending';
+				}
+			}
+		} catch {
+			// ignore
 		}
 
 		// Check which auth methods are configured
@@ -106,6 +127,18 @@
 				<div style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
 					<span style="--c:var(--color-green-600)">&#10003;</span>
 					<span>{$i18n.t('Working alone mode enabled')}</span>
+				</div>
+			{/if}
+
+			{#if modelsStatus === 'ready'}
+				<div style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
+					<span style="--c:var(--color-green-600)">&#10003;</span>
+					<span>{$i18n.t('AI engine components installed')}</span>
+				</div>
+			{:else if modelsStatus === 'downloading'}
+				<div style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
+					<span style="--c:var(--color-blue-600)">&#8635;</span>
+					<span>{$i18n.t('AI engine components downloading...')}</span>
 				</div>
 			{/if}
 

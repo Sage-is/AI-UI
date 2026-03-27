@@ -13,6 +13,7 @@
 	import { getKnowledgeBases } from '$lib/apis/knowledge';
 	import { getFunctions } from '$lib/apis/functions';
 	import { getModels, getToolServersData, getVersionUpdates } from '$lib/apis';
+	import { getModelsStatus } from '$lib/apis/retrieval';
 	import { getAllTags } from '$lib/apis/chats';
 	import { getPrompts } from '$lib/apis/prompts';
 	import { getTools } from '$lib/apis/tools';
@@ -57,6 +58,7 @@
 	let localDBChats = [];
 
 	let version;
+	let modelDownloadPollTimer: ReturnType<typeof setInterval> | null = null;
 
 	onMount(async () => {
 		if ($user === undefined || $user === null) {
@@ -250,10 +252,55 @@
 				}
 			}
 			await tick();
+
+			// Poll for model download completion (admin only)
+			if ($user?.role === 'admin') {
+				startModelDownloadPoll();
+			}
 		}
 
 		loaded = true;
 	});
+
+	function startModelDownloadPoll() {
+		// Check once immediately, then poll every 10s if downloading
+		checkModelDownloadStatus();
+	}
+
+	async function checkModelDownloadStatus() {
+		try {
+			const res = await getModelsStatus(localStorage.token);
+			if (!res?.models) return;
+
+			const { embedding, whisper } = res.models;
+			const anyDownloading = [embedding, whisper].includes('downloading');
+
+			if (anyDownloading && !modelDownloadPollTimer) {
+				modelDownloadPollTimer = setInterval(checkModelDownloadStatus, 10000);
+			}
+
+			if (!anyDownloading && modelDownloadPollTimer) {
+				clearInterval(modelDownloadPollTimer);
+				modelDownloadPollTimer = null;
+
+				// Only toast if at least one component is ready (download just finished)
+				const readyCount = [embedding, whisper].filter((s) => s === 'ready').length;
+				const errorCount = [embedding, whisper].filter((s) => s === 'error').length;
+
+				if (readyCount > 0 && errorCount === 0) {
+					toast.success($i18n.t('AI engine is ready'));
+				} else if (errorCount > 0) {
+					toast.error(
+						$i18n.t('Some components failed to download: {{error}}', {
+							error: res.models.error ?? 'unknown error'
+						})
+					);
+				}
+			}
+		} catch {
+			// Silently ignore — poll will retry
+		}
+	}
 
 	const checkForVersionUpdates = async () => {
 		version = await getVersionUpdates('').catch((error) => {

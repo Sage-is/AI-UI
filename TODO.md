@@ -31,11 +31,12 @@
 ### Remaining
 - [x] Commit, build, smoke test (`make it_build`)
 - [x] `make release_finish` → tag v2.0.0, merge to master, push
-- [ ] `make it_build_multi_arch_push_GHCR` → push amd64+arm64 to GHCR
-- [ ] Verify: `docker pull ghcr.io/sage-is/ai-ui:2.0.0`
-- [ ] Push `Sage-is/homebrew-apps` repo to GitHub
-- [ ] Update sha256 in `Formula/ai-ui.rb`
-- [ ] Test: `brew tap sage-is/apps && brew install ai-ui`
+- [x] `make it_build_multi_arch_push_GHCR` → push amd64+arm64 to GHCR
+- [x] Verify: `docker pull ghcr.io/sage-is/ai-ui:2.0.0`
+- [x] Push `Sage-is/homebrew-apps` repo to GitHub
+- [x] Update sha256 in `Formula/ai-ui.rb`
+- [ ] Test: `brew tap sage-is/apps && brew install ai-ui` (after Docker image slimming)
+- [ ] Fix homebrew-apps Makefile `release_finish` — git flow state got stuck on v0.1.2 release; manual merge required to complete
 
 ---
 
@@ -59,11 +60,17 @@
 - [ ] SvelteKit 2.5 → latest (incremental improvements)
 
 ### Docker Image Slimming — Phase 1
-- [ ] Multi-stage Dockerfile: node builder → python:slim runtime
-- [ ] Split `requirements.txt` → `requirements-core.txt` + `requirements-ml.txt`
-- [ ] Drop node_modules + build tools from runtime image (~1.8GB saved)
-- [ ] Deduplicate static file copies (~300MB saved)
-- [ ] Target: ~3.5–4GB (down from 9.7GB)
+- [x] Multi-stage Dockerfile: frontend → python-build → python:slim runtime
+- [x] Split `requirements.txt` → core + `requirements-ml.txt` (ML installed via wizard)
+- [x] Drop node_modules, build tools, Node.js from runtime image
+- [x] Deduplicate static file copies (single copy + incremental sync)
+- [x] Strip cloud storage providers (S3/GCS/Azure) — local filesystem only, backup via rclone
+- [x] Strip unused packages: pandoc, git, opencv, playwright, nltk, pytube, youtube-transcript-api
+- [x] Non-blocking startup: embedding models loaded from cache or deferred to wizard
+- [x] AI Engine wizard step for on-demand ML package + model download
+- [x] `posthog<7` pin fixes chromadb telemetry error
+- [x] Production log level defaults to WARNING (dev stays INFO)
+- [ ] Target: ~2.5GB (down from 9.7GB) — further trimming possible
 
 ### Podman Compatibility
 - [ ] Test and fix Podman build issues (VM memory, rootless networking)
@@ -101,7 +108,7 @@
   - `FunctionEditor.svelte:45-47` — default template author/urls → sage-is
   - `SettingsModal.svelte:423-428` — add sage search keywords alongside open-webui ones
 - [ ] Migration idempotency guards on all `create_table` / `add_column` calls (10 migration files)
-- [ ] Fix or suppress ChromaDB telemetry error (`posthog capture() argument mismatch`) — likely a chromadb/posthog version incompatibility
+- [x] Fix ChromaDB telemetry error — pinned `posthog<7` (chromadb uses 3-arg capture removed in v7)
 - [ ] Replace login slideshow images (`app/static/assets/images/`) with original or CC/public domain photos — sea life, Azores landscapes, night sky/star shots. Source from Wikimedia Commons or original photography. Update `SlideShow.svelte` defaults if filenames change.
 
 ---
@@ -109,10 +116,24 @@
 ## v3.0 — Future
 
 ### Docker Image Slimming — Phase 2
-- [ ] Volume-based ML packages: install torch/transformers on demand to persistent volume
-- [ ] Setup wizard toggle: "Enable local AI processing?" triggers pip install to volume
-- [ ] `.env` flags for dev auto-install (`ENABLE_LOCAL_EMBEDDINGS`, `ENABLE_LOCAL_WHISPER`)
-- [ ] Target: ~1.2–1.5GB base image (ML packages in volume, downloaded once)
+- [x] Volume-based ML packages: `pip install --target` to data volume, persists across restarts
+- [x] AI Engine wizard step triggers pip install + model download in background
+- [ ] Target: ~1.5GB base image (chromadb transitive deps still heavy)
+
+### Developer Mode
+- [ ] `ai-ui dev` CLI command: clones repo, mounts source, enables DEV_MODE
+- [ ] DeveloperStep wizard: informational in prod, celebration with wizard illustration in dev mode
+- [ ] Node.js + npm installed to data volume on first dev start
+- [ ] Same image, same container — DEV_MODE=true switches to vite HMR + uvicorn reload
+
+### Upload & Download UX
+- [ ] Download progress streaming to frontend (WebSocket/SSE from backend)
+- [ ] Admin panel tab for AI Engine download status and progress
+- [ ] HF_TOKEN support for faster authenticated HuggingFace downloads
+- [ ] Download time estimates based on measured connection speed
+- [ ] Upload progress bars with percentage and speed meters
+- [ ] Configurable upload timeouts based on file size (replace hardcoded 240s)
+- [ ] Console/log viewer tab in admin (WebSocket log streaming)
 
 ### Platform
 - [ ] Sage.is hosted email notification service (for deployments without SMTP)

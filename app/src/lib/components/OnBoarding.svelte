@@ -72,14 +72,18 @@
 
 		<div
 			style="--w:100%; --h:100%; --pos:absolute; --top:0; --left:0; --bgi:linear-gradient(0deg, var(--tw-gradient-stops)); --tw-gradient-from:#000; --tw-gradient-to:transparent"
-	class="from-20%"
+			class="from-20%"
 		></div>
 
-		<div style="--w:100%; --h:100%; --pos:absolute; --top:0; --left:0; --bgc:rgb(0 0 0 / 0.5)"
-	class="backdrop-blur-xs"></div>
+		<div
+			style="--w:100%; --h:100%; --pos:absolute; --top:0; --left:0; --bgc:rgb(0 0 0 / 0.5)"
+			class="backdrop-blur-xs"
+		></div>
 
 		<div style="--pos:relative; --bgc:transparent; --w:100%; --minh:100vh; --d:flex; --z:10">
-			<div style="--d:flex; --fd:column; --jc:flex-end; --w:100%; --ai:center; --pb:2.5rem; --ta:center">
+			<div
+				style="--d:flex; --fd:column; --jc:flex-end; --w:100%; --ai:center; --pb:2.5rem; --ta:center"
+			>
 				<!-- Centered logo above rotating text -->
 				<div style="--d:flex; --jc:center; --mb:1.5rem">
 					<img
@@ -91,8 +95,7 @@
 					/>
 				</div>
 
-				<div style="--size:3rem; --size-lg:4.5rem"
-	class="font-secondary">
+				<div style="--size:3rem; --size-lg:4.5rem" class="font-secondary">
 					<Marquee
 						duration={5000}
 						words={[
@@ -116,15 +119,25 @@
 					<div style="--d:flex; --fd:column; --jc:center; --ai:center">
 						<button
 							aria-labelledby="get-started"
-							style="--pos:relative; --z:20; --d:flex; --p:0.2rem; --radius:9999px; --bgc:rgb(255 255 255 / 0.05); --hvr-bgc:rgb(255 255 255 / 0.1); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.8rem"
+							style="--pos:relative;
+								--z:20;
+								--d:flex; --p:0.2rem;
+								--radius:9999px;
+								--bgc:rgb(255 255 255 / 0.05);
+								--hvr-bgc:rgb(255 255 255 / 0.1);
+								--tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+								--weight:500; --size:0.8rem"
 							on:click={() => {
 								getStartedHandler();
 							}}
 						>
 							<ArrowRightCircle className="size-6" />
 						</button>
-						<div id="get-started" style="--mt:0.4rem; --size:1rem; --weight:500"
-	class="font-primary">
+						<div
+							id="get-started"
+							style="--mt:0.4rem; --size:1rem; --weight:500"
+							class="font-primary"
+						>
 							{$i18n.t(`Get started`)}
 						</div>
 					</div>

@@ -232,7 +232,7 @@ def merge_and_sort_query_results(query_results: list[dict], k: int) -> dict:
                     combined[doc_hash] = (distance, document, metadata)
                     continue  # if doc is new, no further comparison is needed
 
-                # if doc is alredy in, but new distance is better, update
+                # if doc is already in, but new distance is better, update
                 if distance > combined[doc_hash][0]:
                     combined[doc_hash] = (distance, document, metadata)
 
@@ -408,6 +408,12 @@ def get_embedding_function(
     azure_api_version=None,
 ):
     if embedding_engine == "":
+        if embedding_function is None:
+            def _not_ready(*args, **kwargs):
+                raise ValueError(
+                    "Embedding model not loaded. Install the AI Engine from the setup wizard."
+                )
+            return _not_ready
         return lambda query, prefix=None, user=None: embedding_function.encode(
             query, **({"prompt": prefix} if prefix else {})
         ).tolist()
@@ -720,6 +726,9 @@ def get_model_path(model: str, update_model: bool = False):
         log.debug(f"model_repo_path: {model_repo_path}")
         return model_repo_path
     except Exception as e:
+        if local_files_only:
+            log.debug(f"Model not cached locally: {model}")
+            raise  # Don't fallback to model name — prevents surprise download
         log.exception(f"Cannot determine model snapshot path: {e}")
         return model
 
@@ -747,16 +756,17 @@ def generate_openai_batch_embeddings(
                 "Authorization": f"Bearer {key}",
                 **(
                     {
-                        "X-OpenWebUI-User-Name": quote(user.name, safe=" "),
-                        "X-OpenWebUI-User-Id": user.id,
-                        "X-OpenWebUI-User-Email": user.email,
-                        "X-OpenWebUI-User-Role": user.role,
+                        "X-Sage-User-Name": quote(user.name, safe=" "),
+                        "X-Sage-User-Id": user.id,
+                        "X-Sage-User-Email": user.email,
+                        "X-Sage-User-Role": user.role,
                     }
                     if ENABLE_FORWARD_USER_INFO_HEADERS and user
                     else {}
                 ),
             },
             json=json_data,
+            timeout=60,
         )
         r.raise_for_status()
         data = r.json()
@@ -796,16 +806,17 @@ def generate_azure_openai_batch_embeddings(
                     "api-key": key,
                     **(
                         {
-                            "X-OpenWebUI-User-Name": quote(user.name, safe=" "),
-                            "X-OpenWebUI-User-Id": user.id,
-                            "X-OpenWebUI-User-Email": user.email,
-                            "X-OpenWebUI-User-Role": user.role,
+                            "X-Sage-User-Name": quote(user.name, safe=" "),
+                            "X-Sage-User-Id": user.id,
+                            "X-Sage-User-Email": user.email,
+                            "X-Sage-User-Role": user.role,
                         }
                         if ENABLE_FORWARD_USER_INFO_HEADERS and user
                         else {}
                     ),
                 },
                 json=json_data,
+                timeout=60,
             )
             if r.status_code == 429:
                 retry = float(r.headers.get("Retry-After", "1"))
@@ -846,16 +857,17 @@ def generate_ollama_batch_embeddings(
                 "Authorization": f"Bearer {key}",
                 **(
                     {
-                        "X-OpenWebUI-User-Name": quote(user.name, safe=" "),
-                        "X-OpenWebUI-User-Id": user.id,
-                        "X-OpenWebUI-User-Email": user.email,
-                        "X-OpenWebUI-User-Role": user.role,
+                        "X-Sage-User-Name": quote(user.name, safe=" "),
+                        "X-Sage-User-Id": user.id,
+                        "X-Sage-User-Email": user.email,
+                        "X-Sage-User-Role": user.role,
                     }
                     if ENABLE_FORWARD_USER_INFO_HEADERS
                     else {}
                 ),
             },
             json=json_data,
+            timeout=60,
         )
         r.raise_for_status()
         data = r.json()

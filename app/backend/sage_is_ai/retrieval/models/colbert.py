@@ -1,9 +1,13 @@
 import os
 import logging
-import torch
-import numpy as np
-from colbert.infra import ColBERTConfig
-from colbert.modeling.checkpoint import Checkpoint
+
+try:
+    import torch
+    import numpy as np
+    from colbert.infra import ColBERTConfig
+    from colbert.modeling.checkpoint import Checkpoint
+except ImportError:
+    torch = None
 
 from sage_is_ai.env import SRC_LOG_LEVELS
 

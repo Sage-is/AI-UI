@@ -186,6 +186,9 @@ dev_run:
 it_run:
 	$(CONTAINER_RUNTIME) run $(DOCKER_RUN_ARGS) $(IMAGE_NAME):$(IMAGE_TAG)
 
+it_run_ghcr:
+	$(CONTAINER_RUNTIME) run $(DOCKER_RUN_ARGS) $(GHCR_IMAGE_NAME):$(IMAGE_TAG)
+
 # Combine build and dev run targets
 it_build_n_dev_run: it_build
 	afplay /System/Library/Sounds/Glass.aiff
@@ -197,6 +200,14 @@ it_build_n_run: it_build
 
 it_build_n_run_no_cache: it_build_no_cache
 	@make it_run
+
+# Build and run with a throwaway volume (fresh-install test)
+# Cleans up the test volume on exit so it's ready for the next run.
+it_build_n_test_fresh: it_build
+	@echo "Running with fresh test volume (sage-test-data)..."
+	-$(CONTAINER_RUNTIME) run --rm -p $(PORT_MAPPING) -v sage-test-data:/app/backend/data $(IMAGE_NAME):latest
+	-$(CONTAINER_RUNTIME) volume rm sage-test-data 2>/dev/null || true
+	@echo "Test volume cleaned up."
 
 # ---------------------------------------------------------------------------
 # DB Upgrade Smoke Test

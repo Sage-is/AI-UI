@@ -737,32 +737,24 @@ log.info(f"[STATIC] Using FRONTEND_BUILD_DIR: {FRONTEND_BUILD_DIR}")
 
 SKIP_STATIC_CLEANUP = os.environ.get("SKIP_STATIC_CLEANUP", "false").lower() == "true"
 if SKIP_STATIC_CLEANUP:
-    log.info("[STATIC] SKIP_STATIC_CLEANUP is true, skipping static file cleanup and copy.")
+    log.info("[STATIC] SKIP_STATIC_CLEANUP is true, skipping static file sync.")
 else:
-    try:
-        if STATIC_DIR.exists():
-            log.info(f"[STATIC] Clearing STATIC_DIR: {STATIC_DIR}")
-            for item in STATIC_DIR.iterdir():
-                if item.is_file() or item.is_symlink():
-                    try:
-                        log.info(f"[STATIC] Removing file/symlink: {item}")
-                        item.unlink()
-                    except Exception as e:
-                        log.error(f"[STATIC] Failed to remove {item}: {e}")
-    except Exception as e:
-        log.error(f"[STATIC] Error clearing STATIC_DIR: {e}")
-
-    for file_path in (FRONTEND_BUILD_DIR / "static").glob("**/*"):
-        if file_path.is_file():
-            target_path = STATIC_DIR / file_path.relative_to(
-                (FRONTEND_BUILD_DIR / "static")
-            )
-            target_path.parent.mkdir(parents=True, exist_ok=True)
-            try:
-                log.info(f"[STATIC] Copying {file_path} -> {target_path}")
-                shutil.copyfile(file_path, target_path)
-            except Exception as e:
-                log.error(f"[STATIC] Failed to copy {file_path} to {target_path}: {e}")
+    # Sync any new/updated files from the build output into STATIC_DIR.
+    # Uses shutil.copy2 to preserve timestamps and only copies if source is newer,
+    # avoiding the destructive clear-and-recopy pattern that broke symlinks.
+    build_static = FRONTEND_BUILD_DIR / "static"
+    if build_static.exists():
+        STATIC_DIR.mkdir(parents=True, exist_ok=True)
+        for file_path in build_static.glob("**/*"):
+            if file_path.is_file():
+                target_path = STATIC_DIR / file_path.relative_to(build_static)
+                target_path.parent.mkdir(parents=True, exist_ok=True)
+                try:
+                    # Only copy if source is newer or target doesn't exist
+                    if not target_path.exists() or file_path.stat().st_mtime > target_path.stat().st_mtime:
+                        shutil.copy2(file_path, target_path)
+                except Exception as e:
+                    log.error(f"[STATIC] Failed to sync {file_path} to {target_path}: {e}")
 
     frontend_favicon = FRONTEND_BUILD_DIR / "static" / "favicon.png"
     if frontend_favicon.exists():
@@ -845,31 +837,8 @@ if CUSTOM_NAME:
 LICENSE_KEY = os.environ.get("LICENSE_KEY", "")
 
 ####################################
-# STORAGE PROVIDER
+# STORAGE — local filesystem only (backup/sync handled externally via rclone)
 ####################################
-
-STORAGE_PROVIDER = os.environ.get("STORAGE_PROVIDER", "local")  # defaults to local, s3
-
-S3_ACCESS_KEY_ID = os.environ.get("S3_ACCESS_KEY_ID", None)
-S3_SECRET_ACCESS_KEY = os.environ.get("S3_SECRET_ACCESS_KEY", None)
-S3_REGION_NAME = os.environ.get("S3_REGION_NAME", None)
-S3_BUCKET_NAME = os.environ.get("S3_BUCKET_NAME", None)
-S3_KEY_PREFIX = os.environ.get("S3_KEY_PREFIX", None)
-S3_ENDPOINT_URL = os.environ.get("S3_ENDPOINT_URL", None)
-S3_USE_ACCELERATE_ENDPOINT = (
-    os.environ.get("S3_USE_ACCELERATE_ENDPOINT", "false").lower() == "true"
-)
-S3_ADDRESSING_STYLE = os.environ.get("S3_ADDRESSING_STYLE", None)
-S3_ENABLE_TAGGING = os.getenv("S3_ENABLE_TAGGING", "false").lower() == "true"
-
-GCS_BUCKET_NAME = os.environ.get("GCS_BUCKET_NAME", None)
-GOOGLE_APPLICATION_CREDENTIALS_JSON = os.environ.get(
-    "GOOGLE_APPLICATION_CREDENTIALS_JSON", None
-)
-
-AZURE_STORAGE_ENDPOINT = os.environ.get("AZURE_STORAGE_ENDPOINT", None)
-AZURE_STORAGE_CONTAINER_NAME = os.environ.get("AZURE_STORAGE_CONTAINER_NAME", None)
-AZURE_STORAGE_KEY = os.environ.get("AZURE_STORAGE_KEY", None)
 
 ####################################
 # File Upload DIR

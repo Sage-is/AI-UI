@@ -199,6 +199,7 @@ async def verify_url(request: Request, user=Depends(get_admin_user)):
             r = requests.get(
                 url=f"{request.app.state.config.AUTOMATIC1111_BASE_URL}/sdapi/v1/options",
                 headers={"authorization": get_automatic1111_api_auth(request)},
+                timeout=60,
             )
             r.raise_for_status()
             return True
@@ -217,6 +218,7 @@ async def verify_url(request: Request, user=Depends(get_admin_user)):
             r = requests.get(
                 url=f"{request.app.state.config.COMFYUI_BASE_URL}/object_info",
                 headers=headers,
+                timeout=60,
             )
             r.raise_for_status()
             return True
@@ -235,6 +237,7 @@ def set_image_model(request: Request, model: str):
         r = requests.get(
             url=f"{request.app.state.config.AUTOMATIC1111_BASE_URL}/sdapi/v1/options",
             headers={"authorization": api_auth},
+            timeout=60,
         )
         options = r.json()
         if model != options["sd_model_checkpoint"]:
@@ -243,6 +246,7 @@ def set_image_model(request: Request, model: str):
                 url=f"{request.app.state.config.AUTOMATIC1111_BASE_URL}/sdapi/v1/options",
                 json=options,
                 headers={"authorization": api_auth},
+                timeout=60,
             )
     return request.app.state.config.IMAGE_GENERATION_MODEL
 
@@ -274,6 +278,7 @@ def get_image_model(request):
             r = requests.get(
                 url=f"{request.app.state.config.AUTOMATIC1111_BASE_URL}/sdapi/v1/options",
                 headers={"authorization": get_automatic1111_api_auth(request)},
+                timeout=60,
             )
             options = r.json()
             return options["sd_model_checkpoint"]
@@ -356,6 +361,7 @@ def get_models(request: Request, user=Depends(get_verified_user)):
             r = requests.get(
                 url=f"{request.app.state.config.COMFYUI_BASE_URL}/object_info",
                 headers=headers,
+                timeout=60,
             )
             info = r.json()
 
@@ -404,6 +410,7 @@ def get_models(request: Request, user=Depends(get_verified_user)):
             r = requests.get(
                 url=f"{request.app.state.config.AUTOMATIC1111_BASE_URL}/sdapi/v1/sd-models",
                 headers={"authorization": get_automatic1111_api_auth(request)},
+                timeout=60,
             )
             models = r.json()
             return list(
@@ -443,9 +450,9 @@ def load_b64_image_data(b64_str):
 def load_url_image_data(url, headers=None):
     try:
         if headers:
-            r = requests.get(url, headers=headers)
+            r = requests.get(url, headers=headers, timeout=60)
         else:
-            r = requests.get(url)
+            r = requests.get(url, timeout=60)
 
         r.raise_for_status()
         if r.headers["content-type"].split("/")[0] == "image":
@@ -499,10 +506,10 @@ async def image_generations(
             headers["Content-Type"] = "application/json"
 
             if ENABLE_FORWARD_USER_INFO_HEADERS:
-                headers["X-OpenWebUI-User-Name"] = quote(user.name, safe=" ")
-                headers["X-OpenWebUI-User-Id"] = user.id
-                headers["X-OpenWebUI-User-Email"] = user.email
-                headers["X-OpenWebUI-User-Role"] = user.role
+                headers["X-Sage-User-Name"] = quote(user.name, safe=" ")
+                headers["X-Sage-User-Id"] = user.id
+                headers["X-Sage-User-Email"] = user.email
+                headers["X-Sage-User-Role"] = user.role
 
             data = {
                 "model": (
@@ -530,6 +537,7 @@ async def image_generations(
                 url=f"{request.app.state.config.IMAGES_OPENAI_API_BASE_URL}/images/generations",
                 json=data,
                 headers=headers,
+                timeout=60,
             )
 
             r.raise_for_status()
@@ -567,6 +575,7 @@ async def image_generations(
                 url=f"{request.app.state.config.IMAGES_GEMINI_API_BASE_URL}/models/{model}:predict",
                 json=data,
                 headers=headers,
+                timeout=60,
             )
 
             r.raise_for_status()
@@ -670,6 +679,7 @@ async def image_generations(
                 url=f"{request.app.state.config.AUTOMATIC1111_BASE_URL}/sdapi/v1/txt2img",
                 json=data,
                 headers={"authorization": get_automatic1111_api_auth(request)},
+                timeout=60,
             )
 
             res = r.json()

@@ -67,11 +67,14 @@ except Exception:
 # LOGGING
 ####################################
 
+_env_mode = os.environ.get("ENV", "dev")
+_default_log_level = "WARNING" if _env_mode == "prod" else "INFO"
+
 GLOBAL_LOG_LEVEL = os.environ.get("GLOBAL_LOG_LEVEL", "").upper()
 if GLOBAL_LOG_LEVEL in logging.getLevelNamesMapping():
     logging.basicConfig(stream=sys.stdout, level=GLOBAL_LOG_LEVEL, force=True)
 else:
-    GLOBAL_LOG_LEVEL = "INFO"
+    GLOBAL_LOG_LEVEL = _default_log_level
 
 log = logging.getLogger(__name__)
 log.info(f"GLOBAL_LOG_LEVEL: {GLOBAL_LOG_LEVEL}")

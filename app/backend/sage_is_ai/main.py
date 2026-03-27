@@ -479,7 +479,8 @@ MMMMMMMMMMM               .88                                  MMMMMMMMMMMM MMMM
 v{VERSION} - building the Open Source AI user interface.
 {f"Commit: {WEBUI_BUILD_HASH}" if WEBUI_BUILD_HASH != "dev-build" else ""}
 https://github.com/Sage-is/AI-UI
-"""
+""",
+    flush=True,
 )
 
 
@@ -868,19 +869,37 @@ app.state.config.YOUTUBE_LOADER_PROXY_URL = YOUTUBE_LOADER_PROXY_URL
 
 
 
-app.state.EMBEDDING_FUNCTION = None
+def _embedding_not_ready(*args, **kwargs):
+    raise HTTPException(
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        detail="Embedding model not yet loaded. Complete setup wizard to download.",
+    )
+
+
+app.state.EMBEDDING_FUNCTION = _embedding_not_ready
 app.state.RERANKING_FUNCTION = None
 app.state.ef = None
 app.state.rf = None
 
 app.state.YOUTUBE_LOADER_TRANSLATION = None
 
+# Track download status for each component: pending | downloading | ready | error
+# Tiktoken is baked into the image (~1MB) so always ready.
+app.state.MODEL_DOWNLOAD_STATUS = {
+    "embedding": "pending",
+    "whisper": "pending",
+    "tiktoken": "ready",
+    "error": None,
+}
 
+# Try loading models from cache only (no network downloads).
+# If cached, set EMBEDDING_FUNCTION normally. If not, the guard stays in place
+# and the user can trigger downloads from the setup wizard.
 try:
     app.state.ef = get_ef(
         app.state.config.RAG_EMBEDDING_ENGINE,
         app.state.config.RAG_EMBEDDING_MODEL,
-        RAG_EMBEDDING_MODEL_AUTO_UPDATE,
+        False,  # auto_update=False — local cache only, no download
     )
 
     app.state.rf = get_rf(
@@ -888,48 +907,66 @@ try:
         app.state.config.RAG_RERANKING_MODEL,
         app.state.config.RAG_EXTERNAL_RERANKER_URL,
         app.state.config.RAG_EXTERNAL_RERANKER_API_KEY,
-        RAG_RERANKING_MODEL_AUTO_UPDATE,
+        False,
     )
 except Exception as e:
-    log.error(f"Error updating models: {e}")
-    pass
+    log.info(f"Models not cached yet, will be available after setup wizard: {e}")
 
 
-app.state.EMBEDDING_FUNCTION = get_embedding_function(
-    app.state.config.RAG_EMBEDDING_ENGINE,
-    app.state.config.RAG_EMBEDDING_MODEL,
-    embedding_function=app.state.ef,
-    url=(
-        app.state.config.RAG_OPENAI_API_BASE_URL
-        if app.state.config.RAG_EMBEDDING_ENGINE == "openai"
-        else (
-            app.state.config.RAG_OLLAMA_BASE_URL
-            if app.state.config.RAG_EMBEDDING_ENGINE == "ollama"
-            else app.state.config.RAG_AZURE_OPENAI_BASE_URL
-        )
-    ),
-    key=(
-        app.state.config.RAG_OPENAI_API_KEY
-        if app.state.config.RAG_EMBEDDING_ENGINE == "openai"
-        else (
-            app.state.config.RAG_OLLAMA_API_KEY
-            if app.state.config.RAG_EMBEDDING_ENGINE == "ollama"
-            else app.state.config.RAG_AZURE_OPENAI_API_KEY
-        )
-    ),
-    embedding_batch_size=app.state.config.RAG_EMBEDDING_BATCH_SIZE,
-    azure_api_version=(
-        app.state.config.RAG_AZURE_OPENAI_API_VERSION
-        if app.state.config.RAG_EMBEDDING_ENGINE == "azure_openai"
-        else None
-    ),
-)
+def _build_embedding_function(ef):
+    """Build the embedding function from a loaded SentenceTransformer or API config."""
+    return get_embedding_function(
+        app.state.config.RAG_EMBEDDING_ENGINE,
+        app.state.config.RAG_EMBEDDING_MODEL,
+        embedding_function=ef,
+        url=(
+            app.state.config.RAG_OPENAI_API_BASE_URL
+            if app.state.config.RAG_EMBEDDING_ENGINE == "openai"
+            else (
+                app.state.config.RAG_OLLAMA_BASE_URL
+                if app.state.config.RAG_EMBEDDING_ENGINE == "ollama"
+                else app.state.config.RAG_AZURE_OPENAI_BASE_URL
+            )
+        ),
+        key=(
+            app.state.config.RAG_OPENAI_API_KEY
+            if app.state.config.RAG_EMBEDDING_ENGINE == "openai"
+            else (
+                app.state.config.RAG_OLLAMA_API_KEY
+                if app.state.config.RAG_EMBEDDING_ENGINE == "ollama"
+                else app.state.config.RAG_AZURE_OPENAI_API_KEY
+            )
+        ),
+        embedding_batch_size=app.state.config.RAG_EMBEDDING_BATCH_SIZE,
+        azure_api_version=(
+            app.state.config.RAG_AZURE_OPENAI_API_VERSION
+            if app.state.config.RAG_EMBEDDING_ENGINE == "azure_openai"
+            else None
+        ),
+    )
+
+
+if app.state.ef is not None:
+    app.state.EMBEDDING_FUNCTION = _build_embedding_function(app.state.ef)
+    app.state.MODEL_DOWNLOAD_STATUS["embedding"] = "ready"
+    log.info("Embedding model loaded from cache")
+elif app.state.config.RAG_EMBEDDING_ENGINE in ["openai", "ollama", "azure_openai"]:
+    # API-based embedding engines don't need local model downloads
+    app.state.EMBEDDING_FUNCTION = _build_embedding_function(None)
+    app.state.MODEL_DOWNLOAD_STATUS["embedding"] = "ready"
 
 app.state.RERANKING_FUNCTION = get_reranking_function(
     app.state.config.RAG_RERANKING_ENGINE,
     app.state.config.RAG_RERANKING_MODEL,
     reranking_function=app.state.rf,
 )
+
+# Check whisper cache status
+import os as _os
+
+_whisper_dir = _os.environ.get("WHISPER_MODEL_DIR", "")
+if _whisper_dir and _os.path.isdir(_whisper_dir) and _os.listdir(_whisper_dir):
+    app.state.MODEL_DOWNLOAD_STATUS["whisper"] = "ready"
 
 ########################################
 #

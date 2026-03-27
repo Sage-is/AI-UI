@@ -26,7 +26,7 @@
 	let openaiVerified = false;
 	let openaiVerifying = false;
 
-	let ollamaUrl = 'http://localhost:11434';
+	let ollamaUrl = 'http://host.docker.internal:11434';
 	let ollamaVerified = false;
 	let ollamaVerifying = false;
 
@@ -232,7 +232,7 @@
 					<input
 						style="--w:100%; --radius:0.5rem; --py:0.4rem; --px:0.6rem; --size:0.75rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-300); --oe:none"
 						type="text"
-						placeholder="http://localhost:11434"
+						placeholder="http://host.docker.internal:11434"
 						bind:value={ollamaUrl}
 					/>
 				</div>

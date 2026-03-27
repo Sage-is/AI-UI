@@ -89,10 +89,10 @@ async def send_get_request(url, key=None, user: UserModel = None):
                     **({"Authorization": f"Bearer {key}"} if key else {}),
                     **(
                         {
-                            "X-OpenWebUI-User-Name": quote(user.name, safe=" "),
-                            "X-OpenWebUI-User-Id": user.id,
-                            "X-OpenWebUI-User-Email": user.email,
-                            "X-OpenWebUI-User-Role": user.role,
+                            "X-Sage-User-Name": quote(user.name, safe=" "),
+                            "X-Sage-User-Id": user.id,
+                            "X-Sage-User-Email": user.email,
+                            "X-Sage-User-Role": user.role,
                         }
                         if ENABLE_FORWARD_USER_INFO_HEADERS and user
                         else {}
@@ -141,12 +141,12 @@ async def send_post_request(
                 **({"Authorization": f"Bearer {key}"} if key else {}),
                 **(
                     {
-                        "X-OpenWebUI-User-Name": quote(user.name, safe=" "),
-                        "X-OpenWebUI-User-Id": user.id,
-                        "X-OpenWebUI-User-Email": user.email,
-                        "X-OpenWebUI-User-Role": user.role,
+                        "X-Sage-User-Name": quote(user.name, safe=" "),
+                        "X-Sage-User-Id": user.id,
+                        "X-Sage-User-Email": user.email,
+                        "X-Sage-User-Role": user.role,
                         **(
-                            {"X-OpenWebUI-Chat-Id": metadata.get("chat_id")}
+                            {"X-Sage-Chat-Id": metadata.get("chat_id")}
                             if metadata and metadata.get("chat_id")
                             else {}
                         ),
@@ -252,10 +252,10 @@ async def verify_connection(
                     **({"Authorization": f"Bearer {key}"} if key else {}),
                     **(
                         {
-                            "X-OpenWebUI-User-Name": quote(user.name, safe=" "),
-                            "X-OpenWebUI-User-Id": user.id,
-                            "X-OpenWebUI-User-Email": user.email,
-                            "X-OpenWebUI-User-Role": user.role,
+                            "X-Sage-User-Name": quote(user.name, safe=" "),
+                            "X-Sage-User-Id": user.id,
+                            "X-Sage-User-Email": user.email,
+                            "X-Sage-User-Role": user.role,
                         }
                         if ENABLE_FORWARD_USER_INFO_HEADERS and user
                         else {}
@@ -472,10 +472,10 @@ async def get_ollama_tags(
                     **({"Authorization": f"Bearer {key}"} if key else {}),
                     **(
                         {
-                            "X-OpenWebUI-User-Name": quote(user.name, safe=" "),
-                            "X-OpenWebUI-User-Id": user.id,
-                            "X-OpenWebUI-User-Email": user.email,
-                            "X-OpenWebUI-User-Role": user.role,
+                            "X-Sage-User-Name": quote(user.name, safe=" "),
+                            "X-Sage-User-Id": user.id,
+                            "X-Sage-User-Email": user.email,
+                            "X-Sage-User-Role": user.role,
                         }
                         if ENABLE_FORWARD_USER_INFO_HEADERS and user
                         else {}
@@ -842,10 +842,10 @@ async def copy_model(
                 **({"Authorization": f"Bearer {key}"} if key else {}),
                 **(
                     {
-                        "X-OpenWebUI-User-Name": quote(user.name, safe=" "),
-                        "X-OpenWebUI-User-Id": user.id,
-                        "X-OpenWebUI-User-Email": user.email,
-                        "X-OpenWebUI-User-Role": user.role,
+                        "X-Sage-User-Name": quote(user.name, safe=" "),
+                        "X-Sage-User-Id": user.id,
+                        "X-Sage-User-Email": user.email,
+                        "X-Sage-User-Role": user.role,
                     }
                     if ENABLE_FORWARD_USER_INFO_HEADERS and user
                     else {}
@@ -913,10 +913,10 @@ async def delete_model(
                 **({"Authorization": f"Bearer {key}"} if key else {}),
                 **(
                     {
-                        "X-OpenWebUI-User-Name": quote(user.name, safe=" "),
-                        "X-OpenWebUI-User-Id": user.id,
-                        "X-OpenWebUI-User-Email": user.email,
-                        "X-OpenWebUI-User-Role": user.role,
+                        "X-Sage-User-Name": quote(user.name, safe=" "),
+                        "X-Sage-User-Id": user.id,
+                        "X-Sage-User-Email": user.email,
+                        "X-Sage-User-Role": user.role,
                     }
                     if ENABLE_FORWARD_USER_INFO_HEADERS and user
                     else {}
@@ -977,10 +977,10 @@ async def show_model_info(
                 **({"Authorization": f"Bearer {key}"} if key else {}),
                 **(
                     {
-                        "X-OpenWebUI-User-Name": quote(user.name, safe=" "),
-                        "X-OpenWebUI-User-Id": user.id,
-                        "X-OpenWebUI-User-Email": user.email,
-                        "X-OpenWebUI-User-Role": user.role,
+                        "X-Sage-User-Name": quote(user.name, safe=" "),
+                        "X-Sage-User-Id": user.id,
+                        "X-Sage-User-Email": user.email,
+                        "X-Sage-User-Role": user.role,
                     }
                     if ENABLE_FORWARD_USER_INFO_HEADERS and user
                     else {}
@@ -1064,10 +1064,10 @@ async def embed(
                 **({"Authorization": f"Bearer {key}"} if key else {}),
                 **(
                     {
-                        "X-OpenWebUI-User-Name": quote(user.name, safe=" "),
-                        "X-OpenWebUI-User-Id": user.id,
-                        "X-OpenWebUI-User-Email": user.email,
-                        "X-OpenWebUI-User-Role": user.role,
+                        "X-Sage-User-Name": quote(user.name, safe=" "),
+                        "X-Sage-User-Id": user.id,
+                        "X-Sage-User-Email": user.email,
+                        "X-Sage-User-Role": user.role,
                     }
                     if ENABLE_FORWARD_USER_INFO_HEADERS and user
                     else {}
@@ -1151,10 +1151,10 @@ async def embeddings(
                 **({"Authorization": f"Bearer {key}"} if key else {}),
                 **(
                     {
-                        "X-OpenWebUI-User-Name": quote(user.name, safe=" "),
-                        "X-OpenWebUI-User-Id": user.id,
-                        "X-OpenWebUI-User-Email": user.email,
-                        "X-OpenWebUI-User-Role": user.role,
+                        "X-Sage-User-Name": quote(user.name, safe=" "),
+                        "X-Sage-User-Id": user.id,
+                        "X-Sage-User-Email": user.email,
+                        "X-Sage-User-Role": user.role,
                     }
                     if ENABLE_FORWARD_USER_INFO_HEADERS and user
                     else {}
@@ -1696,7 +1696,7 @@ async def download_file_stream(
                     file.seek(0)
 
                     url = f"{ollama_url}/api/blobs/sha256:{hashed}"
-                    response = requests.post(url, data=file)
+                    response = requests.post(url, data=file, timeout=240  # TODO: make configurable for large uploads)
 
                     if response.ok:
                         res = {
@@ -1795,7 +1795,7 @@ async def upload_model(
             # --- P3: Upload to ollama /api/blobs ---
             with open(file_path, "rb") as f:
                 url = f"{ollama_url}/api/blobs/sha256:{file_hash}"
-                response = requests.post(url, data=f)
+                response = requests.post(url, data=f, timeout=240  # TODO: make configurable for large uploads)
 
             if response.ok:
                 log.info(f"Uploaded to /api/blobs")  # DEBUG
@@ -1819,6 +1819,7 @@ async def upload_model(
                     url=f"{ollama_url}/api/create",
                     headers={"Content-Type": "application/json"},
                     data=json.dumps(create_payload),
+                    timeout=240  # TODO: make configurable for large uploads,
                 )
 
                 if create_resp.ok:
