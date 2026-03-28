@@ -4,7 +4,7 @@ All notable changes to [Sage.is AI-UI](https://github.com/Sage-is/AI-UI) are doc
 
 ---
 
-## [Unreleased]
+## [2.1.0] — 2026-03-28
 
 ### Added
 
@@ -17,10 +17,57 @@ Existing users sign in by clicking a link sent to their email. No password neede
 **"Forgetting your password(s)?" hint**
 The login page shows a help message below the password field when no OAuth providers are configured. A tooltip suggests the admin enable Google, GitHub, or LDAP sign-in.
 
+**Developer Onboarding**
+Added DeveloperStep component and DevMissionReminderModal for onboarding developers. Enhanced WelcomeStep with Developer Mode setup instructions. Implemented reminders for developers who signed up for the mission but remain in production mode.
+
+**DEV_MODE Environment Variable**
+Added DEV_MODE environment variable to toggle development features.
+
 ### Changed
 
 **Setup Wizard**
 Authentication is now the first optional step. The welcome screen offers four checkboxes: Authentication (Beta), Model Connections, Users, and Features. Admins choose what to configure; unchecked steps are skipped.
+
+**CompleteStep Component**
+Updated to reflect model download status and added polling for downloads.
+
+**CI/CD Workflow**
+Enhanced with fresh DB smoke test and detailed release process instructions.
+
+**Feature Checkbox Handling**
+Streamlined checkbox input handling for community sharing, message rating, notes, spaces, and webhooks.
+
+**Authentication UI**
+Updated button styles and translation text in magic link section.
+
+**Makefile**
+Enhanced multi-architecture build process and added GHCR login target. Added newline echo in it_clean target for better output readability.
+
+**Backend Scripts**
+Refactored backend startup script and enhanced model management.
+
+**Component Layouts**
+Updated various components to improve layout and user experience.
+
+### Fixed
+
+**Slideshow Image Paths**
+Updated image paths to use static assets directory.
+
+**Changelog Release Dates**
+Corrected release dates for versions 2.0.0 and 1.0.0.
+
+**Environment Handling**
+Set default package version to "0.0.0" if not found. Updated latest release version retrieval from GitHub API.
+
+**Docker Environment**
+Suppressed onnxruntime warnings in Docker environments.
+
+**Code Cleanup**
+Removed unused DEV_MODE toggle and related setup code from Dockerfile. Removed unused downloadLiteLLMConfig API endpoint. Simplified .dockerignore and .gitignore by removing unnecessary exclusions. Removed unused downloadLiteLLMConfig import from Database.
+
+**Translations**
+Updated translations to replace "wherever you are" with "with Sage.is AI-UI" across multiple languages.
 
 ---
 
