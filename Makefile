@@ -137,6 +137,7 @@ it_stop:
 it_clean:
 	$(CONTAINER_RUNTIME) system prune -f
 	$(CONTAINER_RUNTIME) builder prune --force
+	@echo ""
 
 it_gone:
 	@echo "Forcefully stopping and removing $(CONTAINER_NAME)..."
