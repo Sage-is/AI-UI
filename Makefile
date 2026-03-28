@@ -571,7 +571,7 @@ lint:
 	ghcr_login \
 	it_build_multi_arch_push_docker_hub it_build_multi_arch_push_GHCR \
 	it_build_multi_arch_all show-version setup_env setup_env_auto setup_env_template \
-	bump_release_version release_and_push_GHCR hotfix_and_push_GHCR \
+	require_gitflow_next bump_release_version release_and_push_GHCR hotfix_and_push_GHCR \
 	waha_start waha_stop waha_logs waha_status \
 	signal_start signal_stop signal_logs signal_status \
 	install_dev scan scan_secrets scan_sast scan_deps scan_container scan_dast \
@@ -580,6 +580,9 @@ lint:
 
 # Version Management with Git Flow
 # --------------------------------
+# Requires git-flow-next (Go rewrite). The old bash AVH edition is not supported.
+# Install: brew install git-flow-next
+#
 # These commands manage semantic versioning with Git Flow workflow.
 # All version tags start with 'v' (e.g., v1.2.3) following semantic versioning principles:
 # - major_release: Increments the first number (e.g., v1.2.3 -> v2.0.0)
@@ -589,7 +592,13 @@ lint:
 #
 # The 'v' prefix is consistently preserved in all version tags and branches.
 
-minor_release:
+require_gitflow_next:
+	@if ! git flow version 2>/dev/null | grep -q 'git-flow-next'; then \
+		echo "Error: git-flow-next required (Go rewrite). Install: brew install git-flow-next"; \
+		exit 1; \
+	fi
+
+minor_release: require_gitflow_next
 	@# Start a minor release with incremented minor version
 	git flow release start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{print $$1"."$$2+1".0"}')
 	@echo ""
@@ -605,7 +614,7 @@ minor_release:
 	@echo "  8. make ghcr_login               # Authenticate with GHCR"
 	@echo "  9. make release_and_push_GHCR    # Finish release + push to GHCR"
 
-patch_release:
+patch_release: require_gitflow_next
 	@# Start a patch release with incremented patch version
 	git flow release start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{print $$1"."$$2"."$$3+1}')
 	@echo ""
@@ -621,7 +630,7 @@ patch_release:
 	@echo "  8. make ghcr_login               # Authenticate with GHCR"
 	@echo "  9. make release_and_push_GHCR    # Finish release + push to GHCR"
 
-major_release:
+major_release: require_gitflow_next
 	@# Start a major release with incremented major version
 	git flow release start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{print $$1+1".0.0"}')
 	@echo ""
@@ -637,7 +646,7 @@ major_release:
 	@echo "  8. make ghcr_login               # Authenticate with GHCR"
 	@echo "  9. make release_and_push_GHCR    # Finish release + push to GHCR"
 
-hotfix:
+hotfix: require_gitflow_next
 	@# Start a hotfix with incremented patch.patch version (fourth component)
 	git flow hotfix start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{if (NF < 4) print $$1"."$$2"."$$3".1"; else print $$1"."$$2"."$$3"."$$4+1}')
 	@echo ""
@@ -652,19 +661,19 @@ hotfix:
 	@echo "  7. make ghcr_login               # Authenticate with GHCR"
 	@echo "  8. make hotfix_and_push_GHCR     # Finish hotfix + push to GHCR"
 
-release_finish:
+release_finish: require_gitflow_next
 	@echo "=== Finishing release ==="
 	@echo "Merging to master, tagging, pushing..."
-	git flow release finish "$$(git branch --show-current | sed 's/release\///')" && git push origin develop && git push origin master && git push --tags && git checkout develop
+	git flow release finish && git push origin develop && git push origin master && git push --tags && git checkout develop
 	@echo ""
 	@echo "=== Release complete ==="
 	@echo "Tag: v$(IMAGE_TAG)"
 	@echo "Pushed: develop, master, tags"
 
-hotfix_finish:
+hotfix_finish: require_gitflow_next
 	@echo "=== Finishing hotfix ==="
 	@echo "Merging to master, tagging, pushing..."
-	git flow hotfix finish "$$(git branch --show-current | sed 's/hotfix\///')" && git push origin develop && git push origin master && git push --tags && git checkout develop
+	git flow hotfix finish && git push origin develop && git push origin master && git push --tags && git checkout develop
 	@echo ""
 	@echo "=== Hotfix complete ==="
 
