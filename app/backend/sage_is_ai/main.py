@@ -10,6 +10,19 @@ import time
 import random
 from uuid import uuid4
 
+# Suppress onnxruntime cpuid_info C-level stderr warning on virtualized CPUs
+# (Docker Desktop on macOS reports "Unknown CPU vendor")
+_devnull = os.open(os.devnull, os.O_WRONLY)
+_saved_stderr = os.dup(2)
+os.dup2(_devnull, 2)
+os.close(_devnull)
+try:
+    import onnxruntime  # noqa: F401
+except ImportError:
+    pass
+os.dup2(_saved_stderr, 2)
+os.close(_saved_stderr)
+del _devnull, _saved_stderr
 
 from contextlib import asynccontextmanager
 from urllib.parse import urlencode, parse_qs, urlparse
@@ -386,6 +399,7 @@ from sage_is_ai.env import (
     VERSION,
     INSTANCE_ID,
     WEBUI_BUILD_HASH,
+    DEV_MODE,
     WEBUI_SECRET_KEY,
     WEBUI_SESSION_COOKIE_SAME_SITE,
     WEBUI_SESSION_COOKIE_SECURE,
@@ -463,6 +477,9 @@ class SPAStaticFiles(StaticFiles):
                 raise ex
 
 
+import os as _banner_os
+
+_port = _banner_os.environ.get("PORT", "8080")
 print(
     rf"""
 
@@ -475,10 +492,18 @@ Mb.     .dM `88888P8 `8888P88 `88888P' 88 dP `88888P' 88       M  MMMMM  MM M  M
 MMMMMMMMMMM               .88                                  MMMMMMMMMMMM MMMM
                       d8888P
 
-
 v{VERSION} - building the Open Source AI user interface.
 {f"Commit: {WEBUI_BUILD_HASH}" if WEBUI_BUILD_HASH != "dev-build" else ""}
-https://github.com/Sage-is/AI-UI
+Open in your browser:  http://localhost:{_port}
+{"Vite HMR:            http://localhost:5173" if DEV_MODE else ""}
+Source:                https://github.com/Sage-is/AI-UI
+
+> The best way to predict the future is to build it.
+> Your models are local. Your data is yours. No cloud required.
+> Teach it everything. It forgets nothing.
+> Built by humans who think AI should work for everyone.
+> Welcome aboard. Let's make something worth shipping.
+
 """,
     flush=True,
 )
@@ -1591,6 +1616,7 @@ async def get_app_config(request: Request):
         "status": True,
         "name": app.state.WEBUI_NAME,
         "version": VERSION,
+        "dev_mode": DEV_MODE,
         "default_locale": str(DEFAULT_LOCALE),
         "oauth": {
             "providers": {
