@@ -31,7 +31,7 @@
 	$: getFilteredPrompts(inputValue);
 
 	// Helper function to check if arrays are the same
-	// (based on unique IDs oder content)
+	// (based on unique IDs order content)
 	function arraysEqual(a, b) {
 		if (a.length !== b.length) return false;
 		for (let i = 0; i < a.length; i++) {
@@ -89,17 +89,17 @@
 	{#if filteredPrompts.length > 0}
 		<div
 			role="list"
-			style="--maxh:10rem; --of:auto; --ai:flex-start; {listStyle}; gap:0.2rem; --p:0.2rem}"
-			class="scrollbar-none {className}"
+			style="--maxh:22ch; --of:auto; --ai:flex-start; {listStyle}; gap:0.2rem; --p:0.2rem}"
+			class="{className}"
 		>
 			{#each filteredPrompts as prompt, idx (prompt.id || prompt.content)}
 				<!-- svelte-ignore a11y-no-interactive-element-to-noninteractive-role -->
 				<button
 					role="listitem"
 					class="waterfall group"
-					style="--m:0.2rem auto; --p:0.6rem; --shadow:6; --d:flex; --fd:column; --fx:1 1 0%; 
-					--fs:0; --w:90%; --radius:0.6rem; --bgc:transparent; 
-					--hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); 
+					style="--m:0.2rem auto; --p:0.6rem; --shadow:6; --d:flex; --fd:column; --fx:1 1 0%;
+					--fs:0; --w:90%; --radius:0.6rem; --bgc:transparent;
+					--hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05);
 					animation-delay: {idx *	60}ms"
 					on:click={() => onSelect({ type: 'prompt', data: prompt.content })}
 				>

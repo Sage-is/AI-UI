@@ -3,16 +3,15 @@
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd "$SCRIPT_DIR" || exit
 
-# Initialize runtime dependencies
-if [ -f "./init_models.sh" ]; then
-    ./init_models.sh
-fi
-
 # Add ML packages to PYTHONPATH if installed on data volume (persists across restarts)
 ML_PACKAGES="/app/backend/data/ml_packages"
 if [ -d "$ML_PACKAGES" ] && [ "$(ls -A "$ML_PACKAGES" 2>/dev/null)" ]; then
     export PYTHONPATH="$ML_PACKAGES:${PYTHONPATH:-}"
-    echo "ML packages loaded from data volume"
+fi
+
+# Check runtime dependencies (after PYTHONPATH is set)
+if [ -f "./init_models.sh" ]; then
+    ./init_models.sh
 fi
 
 KEY_FILE=.webui_secret_key
@@ -25,7 +24,7 @@ if test "$WEBUI_SECRET_KEY $WEBUI_JWT_SECRET_KEY" = " "; then
     echo $(head -c 32 /dev/random | base64) > "$KEY_FILE"
   fi
 
-  echo "Secret key loaded"
+  echo -e "Secret key loaded\n"
   WEBUI_SECRET_KEY=$(cat "$KEY_FILE")
 fi
 
@@ -63,4 +62,4 @@ if [ -n "$SPACE_ID" ]; then
   export WEBUI_URL=${SPACE_HOST}
 fi
 
-WEBUI_SECRET_KEY="$WEBUI_SECRET_KEY" exec uvicorn sage_is_ai.main:app --host "$HOST" --port "$PORT" --forwarded-allow-ips '*' --workers "${UVICORN_WORKERS:-1}"
+WEBUI_SECRET_KEY="$WEBUI_SECRET_KEY" exec uvicorn sage_is_ai.main:app --host "$HOST" --port "$PORT" --forwarded-allow-ips '*' --workers "${UVICORN_WORKERS:-1}" --log-level warning

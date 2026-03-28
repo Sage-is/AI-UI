@@ -56,6 +56,8 @@ def run_migrations():
         from alembic import command
         from alembic.config import Config
 
+        logging.getLogger("alembic.runtime.migration").setLevel(logging.WARNING)
+
         alembic_cfg = Config(SAGE_IS_AI_DIR / "alembic.ini")
 
         # Set the script location dynamically
@@ -1422,19 +1424,13 @@ def validate_cors_origin(origin):
 
 
 # For production, you should only need one host as
-# fastapi serves the svelte-kit built frontend and backend from the same host and port.
-# To test CORS_ALLOW_ORIGIN locally, you can set something like
-# CORS_ALLOW_ORIGIN=http://localhost:5173;http://localhost:8080
-# in your .env file depending on your frontend port, 5173 in this case.
+# FastAPI serves the Svelte frontend and API from the same origin.
+# CORS '*' is the sensible default — same-origin requests don't trigger CORS,
+# and production deployments behind nginx handle CORS at the proxy level.
+# Override with CORS_ALLOW_ORIGIN=https://example.com;https://other.com in .env
 CORS_ALLOW_ORIGIN = os.environ.get("CORS_ALLOW_ORIGIN", "*").split(";")
 
-if CORS_ALLOW_ORIGIN == ["*"]:
-    log.warning(
-        "\n\nWARNING: CORS_ALLOW_ORIGIN IS SET TO '*' - NOT RECOMMENDED FOR PRODUCTION DEPLOYMENTS.\n"
-    )
-else:
-    # You have to pick between a single wildcard or a list of origins.
-    # Doing both will result in CORS errors in the browser.
+if CORS_ALLOW_ORIGIN != ["*"]:
     for origin in CORS_ALLOW_ORIGIN:
         validate_cors_origin(origin)
 
@@ -1919,6 +1915,11 @@ VECTOR_DB = os.environ.get("VECTOR_DB", "chroma")
 CHROMA_DATA_PATH = f"{DATA_DIR}/vector_db"
 
 if VECTOR_DB == "chroma":
+    # Disable posthog telemetry — chromadb calls the old 3-arg capture() API
+    # which no longer exists in modern posthog. No-op it instead of downgrading.
+    import posthog
+
+    posthog.capture = lambda *args, **kwargs: None
     import chromadb
 
     CHROMA_TENANT = os.environ.get("CHROMA_TENANT", chromadb.DEFAULT_TENANT)

@@ -41,7 +41,7 @@ langchain-community==0.3.27
 
 ## Vector DB — only chromadb in base image; others installed at runtime if selected
 chromadb==0.6.3
-posthog<7  # chromadb uses 3-arg capture() removed in posthog v7
+posthog
 # pymilvus, qdrant-client, opensearch-py, elasticsearch, pinecone — runtime install via VECTOR_DB config
 
 # ML packages (torch, sentence-transformers, transformers, colbert-ai, faster-whisper,
