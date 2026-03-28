@@ -595,7 +595,7 @@ def transcription_handler(request, file_path, metadata):
                         else {}
                     ),
                 },
-                timeout=240  # TODO: make configurable for large uploads,
+                timeout=240,  # TODO: make timeout configurable for large uploads
             )
 
             r.raise_for_status()
@@ -649,7 +649,7 @@ def transcription_handler(request, file_path, metadata):
                 headers=headers,
                 params=params,
                 data=file_data,
-                timeout=240  # TODO: make configurable for large uploads,
+                timeout=240,  # TODO: make timeout configurable for large uploads
             )
             r.raise_for_status()
             response_data = r.json()
@@ -756,7 +756,7 @@ def transcription_handler(request, file_path, metadata):
                     headers={
                         "Ocp-Apim-Subscription-Key": api_key,
                     },
-                    timeout=240  # TODO: make configurable for large uploads,
+                    timeout=240,  # TODO: make timeout configurable for large uploads
                 )
 
             r.raise_for_status()

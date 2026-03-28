@@ -37,6 +37,7 @@
 		showSettings,
 		showShortcuts,
 		showChangesAndSetup,
+		showDevMissionReminder,
 		setupTriggerReason,
 		temporaryChatEnabled,
 		toolServers,
@@ -46,6 +47,7 @@
 	import Sidebar from '$lib/components/layout/Sidebar.svelte';
 	import SettingsModal from '$lib/components/chat/SettingsModal.svelte';
 	import ChangesAndSetupModal from '$lib/components/ChangesAndSetupModal.svelte';
+	import DevMissionReminderModal from '$lib/components/DevMissionReminderModal.svelte';
 	import AccountPending from '$lib/components/layout/Overlay/AccountPending.svelte';
 	import AccountExpired from '$lib/components/layout/Overlay/AccountExpired.svelte';
 	import UpdateInfoToast from '$lib/components/layout/UpdateInfoToast.svelte';
@@ -59,6 +61,7 @@
 
 	let version;
 	let modelDownloadPollTimer: ReturnType<typeof setInterval> | null = null;
+	let devMissionNagTimer: ReturnType<typeof setTimeout> | null = null;
 
 	onMount(async () => {
 		if ($user === undefined || $user === null) {
@@ -227,6 +230,12 @@
 				}
 			}
 
+			// Dev mission reminder: admin signed up but still on production
+			if ($user?.role === 'admin' && $settings?.devMissionSignup && !$config?.dev_mode) {
+				showDevMissionReminder.set(true);
+				startDevMissionNag();
+			}
+
 			if ($user?.role === 'admin' || ($user?.permissions?.chat?.temporary ?? true)) {
 				if ($page.url.searchParams.get('temporary-chat') === 'true') {
 					temporaryChatEnabled.set(true);
@@ -310,10 +319,52 @@
 			};
 		});
 	};
+
+	const devMissionNags = [
+		'Still in production mode. Your terminal misses you.',
+		'That CLI is not going to install itself. brew tap sage-is/apps && brew install ai-ui',
+		'Friendly reminder: you swore an oath to open a terminal.',
+		'Dev mode is two commands away. Just saying.',
+		'Production is for users. You signed up to be a builder.',
+		'ai-ui dev. That is it. Copy, paste, done.'
+	];
+
+	function startDevMissionNag() {
+		scheduleNextNag();
+	}
+
+	function scheduleNextNag() {
+		if (devMissionNagTimer) clearTimeout(devMissionNagTimer);
+		// Random delay between 30–60 minutes
+		const delay = (30 + Math.random() * 30) * 60 * 1000;
+		devMissionNagTimer = setTimeout(() => {
+			// Stop nagging if they opted out or switched to dev mode
+			if (!$settings?.devMissionSignup || $config?.dev_mode) {
+				devMissionNagTimer = null;
+				return;
+			}
+			const msg = devMissionNags[Math.floor(Math.random() * devMissionNags.length)];
+			toast.info($i18n.t(msg), { duration: 8000 });
+			scheduleNextNag();
+		}, delay);
+	}
+
+	function stopDevMissionNag() {
+		if (devMissionNagTimer) {
+			clearTimeout(devMissionNagTimer);
+			devMissionNagTimer = null;
+		}
+	}
+
+	// Clean up nag timer if setting changes
+	$: if (!$settings?.devMissionSignup || $config?.dev_mode) {
+		stopDevMissionNag();
+	}
 </script>
 
 <SettingsModal bind:show={$showSettings} />
 <ChangesAndSetupModal bind:show={$showChangesAndSetup} />
+<DevMissionReminderModal bind:show={$showDevMissionReminder} />
 
 {#if version && compareVersion(version.latest, version.current) && ($settings?.showUpdateToast ?? true)}
 	<div style="--pos:absolute; --bottom:2rem; --right:2rem; --z:50" in:fade={{ duration: 100 }}>

@@ -140,7 +140,7 @@ ENV OPENAI_API_KEY="" \
     ANONYMIZED_TELEMETRY=false \
     CHROMA_TELEMETRY=false \
     USER_AGENT="Sage-is-AI/2.0" \
-    ORT_LOG_LEVEL=ERROR
+    ORT_LOG_LEVEL=3
 
 ENV WHISPER_MODEL="base" \
     WHISPER_MODEL_DIR="/app/backend/data/cache/whisper/models"

@@ -77,6 +77,7 @@ export const showSettings = writable(false);
 export const showShortcuts = writable(false);
 export const showArchivedChats = writable(false);
 export const showChangesAndSetup = writable(false);
+export const showDevMissionReminder = writable(false);
 
 export type SetupTriggerReason = {
 	hasChangelog: boolean;
@@ -199,6 +200,7 @@ type Settings = {
 	copyFormatted?: boolean;
 	workingAlone?: boolean;
 	setupCompleted?: boolean;
+	devMissionSignup?: boolean;
 
 	models?: string[];
 	conversationMode?: boolean;
@@ -267,6 +269,7 @@ type Config = {
 	status: boolean;
 	name: string;
 	version: string;
+	dev_mode?: boolean;
 	default_locale: string;
 	default_models: string;
 	default_prompt_suggestions: PromptSuggestion[];

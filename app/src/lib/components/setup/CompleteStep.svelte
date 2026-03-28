@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount, getContext } from 'svelte';
-	import { WEBUI_NAME, models } from '$lib/stores';
+	import { WEBUI_NAME, models, config } from '$lib/stores';
 	import { getAllUsers } from '$lib/apis/users';
 	import { getAdminConfig, getOAuthConfig } from '$lib/apis/auths';
 	import { getModelsStatus } from '$lib/apis/retrieval';
@@ -49,21 +49,10 @@
 			featuresEnabled = 0;
 		}
 
-		// Check model download status
-		try {
-			const mStatus = await getModelsStatus(localStorage.token);
-			if (mStatus?.models) {
-				const { embedding, whisper } = mStatus.models;
-				if (embedding === 'ready' && whisper === 'ready') {
-					modelsStatus = 'ready';
-				} else if (embedding === 'downloading' || whisper === 'downloading') {
-					modelsStatus = 'downloading';
-				} else {
-					modelsStatus = 'pending';
-				}
-			}
-		} catch {
-			// ignore
+		// Check model download status and poll if downloading
+		await updateModelStatus();
+		if (embeddingStatus === 'downloading' || whisperStatus === 'downloading') {
+			pollTimer = setInterval(updateModelStatus, 5000);
 		}
 
 		// Check which auth methods are configured
@@ -78,6 +67,28 @@
 
 		loading = false;
 	});
+
+	async function updateModelStatus() {
+		try {
+			const mStatus = await getModelsStatus(localStorage.token);
+			if (mStatus?.models) {
+				embeddingStatus = mStatus.models.embedding ?? 'pending';
+				whisperStatus = mStatus.models.whisper ?? 'pending';
+
+				// Stop polling when nothing is downloading
+				if (embeddingStatus !== 'downloading' && whisperStatus !== 'downloading' && pollTimer) {
+					clearInterval(pollTimer);
+					pollTimer = null;
+				}
+			}
+		} catch {
+			// ignore
+		}
+	}
+
+	$: readyCount = [embeddingStatus, whisperStatus].filter((s) => s === 'ready').length;
+	$: downloadingCount = [embeddingStatus, whisperStatus].filter((s) => s === 'downloading').length;
+	$: totalComponents = 2;
 </script>
 
 <div style="--px:1.2rem; --pt:1.5rem; --pb:1.5rem; --ta:center">
@@ -130,15 +141,27 @@
 				</div>
 			{/if}
 
-			{#if modelsStatus === 'ready'}
+			{#if readyCount === totalComponents}
 				<div style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
 					<span style="--c:var(--color-green-600)">&#10003;</span>
 					<span>{$i18n.t('AI engine components installed')}</span>
 				</div>
-			{:else if modelsStatus === 'downloading'}
+			{:else if downloadingCount > 0}
 				<div style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
 					<span style="--c:var(--color-blue-600)">&#8635;</span>
-					<span>{$i18n.t('AI engine components downloading...')}</span>
+					<span>{$i18n.t('{{ready}} of {{total}} AI engine components ready...', { ready: readyCount, total: totalComponents })}</span>
+				</div>
+			{:else if readyCount > 0}
+				<div style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
+					<span style="--c:var(--color-green-600)">&#10003;</span>
+					<span>{$i18n.t('{{ready}} of {{total}} AI engine components installed', { ready: readyCount, total: totalComponents })}</span>
+				</div>
+			{/if}
+
+			{#if $config?.dev_mode}
+				<div style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
+					<span style="--c:var(--color-green-600)">&#10003;</span>
+					<span>{$i18n.t('Developer mode active')}</span>
 				</div>
 			{/if}
 

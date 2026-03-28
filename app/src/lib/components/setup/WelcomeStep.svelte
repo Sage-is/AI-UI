@@ -20,6 +20,7 @@
 	let includeUsers = true;
 	let includeFeatures = true;
 	let includeSearchAudio = true;
+	let includeDeveloper = false;
 
 	onMount(async () => {
 		hasModels = $models.length > 0;
@@ -43,7 +44,7 @@
 		loading = false;
 	});
 
-	$: canStart = includeAuth || includeConnection || includeUsers || includeFeatures || includeSearchAudio;
+	$: canStart = includeAuth || includeConnection || includeUsers || includeFeatures || includeSearchAudio || includeDeveloper;
 
 	const handleStart = () => {
 		const steps: string[] = [];
@@ -53,6 +54,7 @@
 		if (includeUsers) steps.push('users');
 		if (includeFeatures) steps.push('features');
 		if (includeSearchAudio) steps.push('search_audio');
+		if (includeDeveloper) steps.push('developer');
 		onStart(steps);
 	};
 </script>
@@ -184,6 +186,24 @@
 					</div>
 					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
 						{$i18n.t('Install local AI processing for document search and audio transcription')}
+					</div>
+				</div>
+			</label>
+
+			<!-- Developer Mode -->
+			<label
+				style="--d:flex; --ai:center; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+			>
+				<input type="checkbox" bind:checked={includeDeveloper} style="--w:1rem; --h:1rem; --shrink:0" />
+				<div>
+					<div style="--d:flex; --ai:center; --g:0.4rem">
+						<span style="--size:0.85rem; --weight:500">{$i18n.t('Developer Mode')}</span>
+						<Tooltip content={$i18n.t('Set up a local development environment to customize and contribute. Uses the ai-ui CLI to mount source code with hot reload.')} placement="right" className="flex items-center">
+							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><QuestionMarkCircle className="size-3.5" /></span>
+						</Tooltip>
+					</div>
+					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
+						{$i18n.t('Set up a local development environment')}
 					</div>
 				</div>
 			</label>
