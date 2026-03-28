@@ -16,15 +16,10 @@ from sage_is_ai.constants import ERROR_MESSAGES
 # Load .env file
 ####################################
 
-SAGE_IS_AI_DIR = Path(__file__).parent  # the path containing this file
-OPEN_WEBUI_DIR = SAGE_IS_AI_DIR  # backward compat alias
-print(SAGE_IS_AI_DIR)
+SAGE_IS_AI_DIR = Path(__file__).parent
 
-BACKEND_DIR = SAGE_IS_AI_DIR.parent  # the path containing this file
-BASE_DIR = BACKEND_DIR.parent  # the path containing the backend/
-
-print(BACKEND_DIR)
-print(BASE_DIR)
+BACKEND_DIR = SAGE_IS_AI_DIR.parent
+BASE_DIR = BACKEND_DIR.parent
 
 try:
     from dotenv import find_dotenv, load_dotenv
@@ -123,6 +118,7 @@ TRUSTED_SIGNATURE_KEY = os.environ.get("TRUSTED_SIGNATURE_KEY", "")
 ####################################
 
 ENV = os.environ.get("ENV", "dev")
+DEV_MODE = os.environ.get("DEV_MODE", "false").lower() == "true"
 
 FROM_INIT_PY = os.environ.get("FROM_INIT_PY", "False").lower() == "true"
 

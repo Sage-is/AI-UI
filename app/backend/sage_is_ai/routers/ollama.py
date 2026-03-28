@@ -1696,7 +1696,8 @@ async def download_file_stream(
                     file.seek(0)
 
                     url = f"{ollama_url}/api/blobs/sha256:{hashed}"
-                    response = requests.post(url, data=file, timeout=240  # TODO: make configurable for large uploads)
+                    # TODO: make timeout configurable for large uploads
+                    response = requests.post(url, data=file, timeout=240)
 
                     if response.ok:
                         res = {
@@ -1795,7 +1796,7 @@ async def upload_model(
             # --- P3: Upload to ollama /api/blobs ---
             with open(file_path, "rb") as f:
                 url = f"{ollama_url}/api/blobs/sha256:{file_hash}"
-                response = requests.post(url, data=f, timeout=240  # TODO: make configurable for large uploads)
+                response = requests.post(url, data=f, timeout=240)  # TODO: make timeout configurable for large uploads
 
             if response.ok:
                 log.info(f"Uploaded to /api/blobs")  # DEBUG
@@ -1819,7 +1820,7 @@ async def upload_model(
                     url=f"{ollama_url}/api/create",
                     headers={"Content-Type": "application/json"},
                     data=json.dumps(create_payload),
-                    timeout=240  # TODO: make configurable for large uploads,
+                    timeout=240,  # TODO: make timeout configurable for large uploads
                 )
 
                 if create_resp.ok:

@@ -2,7 +2,6 @@
 
 # Source environment variables
 if [ -f /app/.env ]; then
-  echo "Sourcing /app/.env..."
   . /app/.env
 else
   echo "No .env file found. Using default configuration."
@@ -21,7 +20,7 @@ setup_rclone() {
   remotes=$(env | grep -E '^RCLONE_CONFIG_[^_]+_TYPE=' | sed 's/RCLONE_CONFIG_\([^_]*\)_TYPE=.*/\1/' | sort -u)
 
   if [ -z "$remotes" ]; then
-    echo "No remotes found"
+    #echo "No remotes found"
     return 0
   fi
 
@@ -205,12 +204,14 @@ start_common() {
 
 # Function to start the application in production mode
 start_app() {
+  echo ""
   echo "Starting application in production mode..."
   start_common "./start.sh"
 }
 
 # Function to start the application in development mode
 start_dev() {
+  echo ""
   echo "Starting application in development mode..."
   start_common "./dev.sh"
 }
@@ -228,8 +229,9 @@ setup_rclone)
   ;;
 server)
   setup_rclone
-  # enable auto backup
-  export AUTO_BACKUP=true
+  # Auto backup off by default — enable with AUTO_BACKUP=true in .env
+  # Long-term: use dedicated volume backup solutions instead of in-container rclone
+  export AUTO_BACKUP=${AUTO_BACKUP:-false}
   start_app
   ;;
 dev)

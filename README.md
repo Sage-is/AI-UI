@@ -1,6 +1,6 @@
 # Sage WebUI
 
-## v2.0.0
+## v2.1.0
 
 **Sage.is an AI interface that puts you in control.**
 

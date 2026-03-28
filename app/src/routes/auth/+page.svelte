@@ -472,8 +472,13 @@
 												<button
 													type="button"
 													on:click={() => (showPassword = !showPassword)}
-													style="--pos:absolute; --r:0.4rem; --top:50%; --transform:translateY(-50%); --bgc:transparent; --p:0; --c:var(--color-gray-400); --hvr-c:var(--color-gray-600); --dark-hvr-c:var(--color-gray-300)"
-													aria-label={showPassword ? $i18n.t('Hide password') : $i18n.t('Show password')}
+													style="--pos:absolute;
+														--right:0.4rem; --top:calc(1rem - 20% );
+														--transform:translateY(-50%); --bgc:transparent;
+														--p:0; --c:var(--color-gray-400); --hvr-c:var(--color-gray-600); --dark-hvr-c:var(--color-gray-300)"
+													aria-label={showPassword
+														? $i18n.t('Hide password')
+														: $i18n.t('Show password')}
 												>
 													{#if showPassword}
 														<EyeSlash className="size-4" />
