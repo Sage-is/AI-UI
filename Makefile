@@ -567,7 +567,7 @@ lint:
 
 # ===========================================================================
 
-.PHONY: it_build it_build_no_cache dev_run it_run it_build_n_run it_build_n_run_no_cache \
+.PHONY: release it_build it_build_no_cache dev_run it_run it_build_n_run it_build_n_run_no_cache \
 	ghcr_login \
 	it_build_multi_arch_push_docker_hub it_build_multi_arch_push_GHCR \
 	it_build_multi_arch_all show-version setup_env setup_env_auto setup_env_template \
@@ -713,3 +713,8 @@ it_update:
 	$(CONTAINER_RUNTIME) stop $(CONTAINER_NAME) || true
 	@make it_build
 	@make it_run
+# ---------------------------------------------------------------------------
+# Interactive release (full flow via ~/bin/git-release)
+# ---------------------------------------------------------------------------
+release:
+	@scripts/release.sh
