@@ -63,9 +63,9 @@ pause() {
 	fi
 }
 
-# Helper: run a make target only if it exists
+# Helper: check if a make target exists
 has_target() {
-	make -n "$1" >/dev/null 2>&1
+	make -n "$1" >/dev/null 2>&1 || return 1
 }
 
 # If no type given, prompt
@@ -75,8 +75,8 @@ if [ -z "$TYPE" ]; then
 	echo "  Release Flow"
 	echo "========================================="
 	echo ""
-	has_target show-version && make show-version && echo ""
-	has_target check-upstream && make check-upstream && echo ""
+	(has_target show_version && make show_version && echo "") || true
+	(has_target check-upstream && make check-upstream && echo "") || true
 	echo "Release type:"
 	echo "  1) patch   — bump X.Y.Z+1"
 	echo "  2) minor   — bump X.Y+1.0"
@@ -137,6 +137,49 @@ echo ""
 make "$FINISH_TARGET"
 
 echo ""
-echo ">>> Done! Release complete."
+echo ">>> Release complete."
 echo ""
-has_target show-version && make show-version
+(has_target show_version && make show_version) || true
+
+# Step 3: Build and push container image (if project has the target)
+if has_target it_build_multi_arch_push_GHCR; then
+	echo ""
+	if $INTERACTIVE; then
+		read -r -p "Build multi-arch and push to GHCR? [Y/n] " ghcr_answer
+		ghcr_answer="${ghcr_answer:-Y}"
+	else
+		ghcr_answer="Y"
+	fi
+
+	if [[ "$ghcr_answer" =~ ^[Yy] ]]; then
+		echo ""
+		echo ">>> Step 3: make it_build_multi_arch_push_GHCR"
+		echo ""
+		make it_build_multi_arch_push_GHCR
+	else
+		echo "Skipping GHCR push."
+	fi
+fi
+
+# Step 4: Deploy (if project has the target)
+if has_target it_deploy; then
+	echo ""
+	if $INTERACTIVE; then
+		read -r -p "Deploy to production? [Y/n] " deploy_answer
+		deploy_answer="${deploy_answer:-Y}"
+	else
+		deploy_answer="Y"
+	fi
+
+	if [[ "$deploy_answer" =~ ^[Yy] ]]; then
+		echo ""
+		echo ">>> Step 4: make it_deploy"
+		echo ""
+		make it_deploy
+	else
+		echo "Skipping deploy."
+	fi
+fi
+
+echo ""
+echo ">>> Done!"

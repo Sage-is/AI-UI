@@ -227,6 +227,7 @@ it_build_n_test_fresh: it_build
 # The test copies the snapshot to a temp directory so the original is never
 # mutated, boots the app inside Docker, and exits after migrations complete.
 DB_SNAPSHOT_DIR := tools/db_snapshots
+DB_SNAPSHOT ?=
 DB_TEST_CONTAINER := sage-db-upgrade-test
 
 test_db_upgrade:
@@ -239,7 +240,7 @@ test_db_upgrade:
 	@echo "=== DB Upgrade Smoke Test ==="
 	@# Copy snapshot to temp dir so container writes don't mutate the original
 	@TMPDIR=$$(mktemp -d) && \
-	SNAPSHOT=$$(ls -1 $(DB_SNAPSHOT_DIR)/*.sqlite | head -1) && \
+	SNAPSHOT=$$([ -n "$(DB_SNAPSHOT)" ] && echo "$(DB_SNAPSHOT_DIR)/$(DB_SNAPSHOT)" || ls -1 $(DB_SNAPSHOT_DIR)/*.sqlite | head -1) && \
 	cp "$$SNAPSHOT" "$$TMPDIR/webui.db" && \
 	echo "Source: $$SNAPSHOT ($$(du -h "$$SNAPSHOT" | cut -f1))" && \
 	echo "Testing migrations against $(IMAGE_NAME):$(IMAGE_TAG)..." && \
