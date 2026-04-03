@@ -1,5 +1,6 @@
 .DS_Store
 .stfolder/
+.caprover
 node_modules
 /app/build
 /app/.svelte-kit
