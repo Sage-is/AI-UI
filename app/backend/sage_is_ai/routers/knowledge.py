@@ -10,7 +10,7 @@ from sage_is_ai.models.knowledge import (
     KnowledgeUserResponse,
 )
 from sage_is_ai.models.files import Files, FileModel, FileMetadataResponse
-from sage_is_ai.retrieval.vector.factory import VECTOR_DB_CLIENT
+from sage_is_ai.retrieval.vector.factory import VECTOR_DB_CLIENT, require_vector_db
 from sage_is_ai.routers.retrieval import (
     process_file,
     ProcessFileForm,
@@ -187,6 +187,7 @@ async def create_new_knowledge(
 
 @router.post("/reindex", response_model=bool)
 async def reindex_knowledge_files(request: Request, user=Depends(get_verified_user)):
+    require_vector_db()
     if user.role != "admin":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -441,6 +442,7 @@ async def update_file_from_knowledge_by_id(
     form_data: KnowledgeFileIdForm,
     user=Depends(get_verified_user),
 ):
+    require_vector_db()
     knowledge = Knowledges.get_knowledge_by_id(id=id)
     if not knowledge:
         raise HTTPException(
@@ -512,6 +514,7 @@ def remove_file_from_knowledge_by_id(
     form_data: KnowledgeFileIdForm,
     user=Depends(get_verified_user),
 ):
+    require_vector_db()
     knowledge = Knowledges.get_knowledge_by_id(id=id)
     if not knowledge:
         raise HTTPException(
@@ -600,6 +603,7 @@ def remove_file_from_knowledge_by_id(
 
 @router.delete("/{id}/delete", response_model=bool)
 async def delete_knowledge_by_id(id: str, user=Depends(get_verified_user)):
+    require_vector_db()
     knowledge = Knowledges.get_knowledge_by_id(id=id)
     if not knowledge:
         raise HTTPException(
@@ -663,6 +667,7 @@ async def delete_knowledge_by_id(id: str, user=Depends(get_verified_user)):
 
 @router.post("/{id}/reset", response_model=Optional[KnowledgeResponse])
 async def reset_knowledge_by_id(id: str, user=Depends(get_verified_user)):
+    require_vector_db()
     knowledge = Knowledges.get_knowledge_by_id(id=id)
     if not knowledge:
         raise HTTPException(
@@ -706,6 +711,7 @@ def add_files_to_knowledge_batch(
     """
     Add multiple files to a knowledge base
     """
+    require_vector_db()
     knowledge = Knowledges.get_knowledge_by_id(id=id)
     if not knowledge:
         raise HTTPException(

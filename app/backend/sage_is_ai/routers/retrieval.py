@@ -63,6 +63,7 @@ from sage_is_ai.utils.auth import get_admin_user, get_verified_user
 
 from sage_is_ai.config import (
     ENV,
+    VECTOR_DB,
     RAG_EMBEDDING_MODEL_AUTO_UPDATE,
     RAG_EMBEDDING_MODEL_TRUST_REMOTE_CODE,
     RAG_RERANKING_MODEL_AUTO_UPDATE,
@@ -371,6 +372,8 @@ async def update_embedding_config(
 
 @router.get("/models/status")
 async def get_models_status(request: Request, user=Depends(get_admin_user)):
+    from sage_is_ai.retrieval.vector.factory import VECTOR_DB_CLIENT
+
     return {
         "status": True,
         "models": request.app.state.MODEL_DOWNLOAD_STATUS,
@@ -379,6 +382,7 @@ async def get_models_status(request: Request, user=Depends(get_admin_user)):
         "embedding_ready": request.app.state.ef is not None
         or request.app.state.config.RAG_EMBEDDING_ENGINE
         in ["openai", "ollama", "azure_openai"],
+        "vector_db_ready": VECTOR_DB_CLIENT is not None,
     }
 
 
@@ -452,6 +456,28 @@ async def trigger_model_download(
                 if ml_target not in sys.path:
                     sys.path.insert(0, ml_target)
                 print("[AI Engine] ML packages installed", flush=True)
+
+            # Step 2: Install chromadb if VECTOR_DB is "chroma" and not yet available
+            if VECTOR_DB == "chroma":
+                try:
+                    import chromadb  # noqa: F401
+                except ImportError:
+                    print("[AI Engine] Installing chromadb...", flush=True)
+                    await run_in_threadpool(
+                        subprocess.run,
+                        ["pip", "install", "chromadb",
+                         "--target", ml_target,
+                         "--break-system-packages",
+                         "--root-user-action=ignore"],
+                        check=True,
+                    )
+                    import sys
+                    if ml_target not in sys.path:
+                        sys.path.insert(0, ml_target)
+                    # Re-initialize vector DB client now that chromadb is available
+                    from sage_is_ai.retrieval.vector import factory
+                    factory.VECTOR_DB_CLIENT = factory.Vector.get_vector(VECTOR_DB)
+                    print("[AI Engine] chromadb installed", flush=True)
 
             # Embedding model
             if "embedding" in form_data.components and dl_status["embedding"] == "downloading":
