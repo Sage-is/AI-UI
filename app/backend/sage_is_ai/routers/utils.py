@@ -1,4 +1,3 @@
-import black
 import logging
 import markdown
 
@@ -35,11 +34,18 @@ class CodeForm(BaseModel):
 @router.post("/code/format")
 async def format_code(form_data: CodeForm, user=Depends(get_admin_user)):
     try:
+        import black
+
         formatted_code = black.format_str(form_data.code, mode=black.Mode())
         return {"code": formatted_code}
-    except black.NothingChanged:
-        return {"code": form_data.code}
+    except ImportError:
+        raise HTTPException(
+            status_code=501,
+            detail="black is not installed. Run: pip install black",
+        )
     except Exception as e:
+        if "NothingChanged" in type(e).__name__:
+            return {"code": form_data.code}
         raise HTTPException(status_code=400, detail=str(e))
 
 

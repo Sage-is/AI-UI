@@ -12,12 +12,6 @@ from langchain_community.document_loaders import (
     OutlookMessageLoader,
     PyPDFLoader,
     TextLoader,
-    UnstructuredEPubLoader,
-    UnstructuredExcelLoader,
-    UnstructuredODTLoader,
-    UnstructuredPowerPointLoader,
-    UnstructuredRSTLoader,
-    UnstructuredXMLLoader,
     YoutubeLoader,
 )
 from langchain_core.documents import Document
@@ -113,7 +107,7 @@ class TikaLoader:
             endpoint += "/"
         endpoint += "tika/text"
 
-        r = requests.put(endpoint, data=data, headers=headers)
+        r = requests.put(endpoint, data=data, headers=headers, timeout=120)
 
         if r.ok:
             raw_metadata = r.json()
@@ -182,7 +176,7 @@ class DoclingLoader:
                     ]
 
             endpoint = f"{self.url}/v1alpha/convert/file"
-            r = requests.post(endpoint, files=files, data=params)
+            r = requests.post(endpoint, files=files, data=params, timeout=120)
 
         if r.ok:
             result = r.json()
@@ -365,14 +359,17 @@ class Loader:
             elif file_ext == "csv":
                 loader = CSVLoader(file_path, autodetect_encoding=True)
             elif file_ext == "rst":
+                from langchain_community.document_loaders import UnstructuredRSTLoader
                 loader = UnstructuredRSTLoader(file_path, mode="elements")
             elif file_ext == "xml":
+                from langchain_community.document_loaders import UnstructuredXMLLoader
                 loader = UnstructuredXMLLoader(file_path)
             elif file_ext in ["htm", "html"]:
                 loader = BSHTMLLoader(file_path, open_encoding="unicode_escape")
             elif file_ext == "md":
                 loader = TextLoader(file_path, autodetect_encoding=True)
             elif file_content_type == "application/epub+zip":
+                from langchain_community.document_loaders import UnstructuredEPubLoader
                 loader = UnstructuredEPubLoader(file_path)
             elif (
                 file_content_type
@@ -384,15 +381,18 @@ class Loader:
                 "application/vnd.ms-excel",
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             ] or file_ext in ["xls", "xlsx"]:
+                from langchain_community.document_loaders import UnstructuredExcelLoader
                 loader = UnstructuredExcelLoader(file_path)
             elif file_content_type in [
                 "application/vnd.ms-powerpoint",
                 "application/vnd.openxmlformats-officedocument.presentationml.presentation",
             ] or file_ext in ["ppt", "pptx"]:
+                from langchain_community.document_loaders import UnstructuredPowerPointLoader
                 loader = UnstructuredPowerPointLoader(file_path)
             elif file_ext == "msg":
                 loader = OutlookMessageLoader(file_path)
             elif file_ext == "odt":
+                from langchain_community.document_loaders import UnstructuredODTLoader
                 loader = UnstructuredODTLoader(file_path)
             elif self._is_text_file(file_ext, file_content_type):
                 loader = TextLoader(file_path, autodetect_encoding=True)

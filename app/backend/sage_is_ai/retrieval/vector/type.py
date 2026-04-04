@@ -8,4 +8,3 @@ class VectorType(StrEnum):
     PINECONE = "pinecone"
     ELASTICSEARCH = "elasticsearch"
     OPENSEARCH = "opensearch"
-    PGVECTOR = "pgvector"
