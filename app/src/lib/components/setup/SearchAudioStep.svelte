@@ -19,6 +19,7 @@
 	let embeddingStatus = 'pending';
 	let whisperStatus = 'pending';
 	let embeddingModel = '';
+	let vectorDbReady = false;
 
 	onMount(async () => {
 		try {
@@ -28,6 +29,7 @@
 				whisperStatus = res.models.whisper ?? 'pending';
 			}
 			embeddingModel = res?.embedding_model ?? '';
+			vectorDbReady = res?.vector_db_ready ?? false;
 		} catch {
 			// Status check failed — leave defaults
 		}
@@ -97,6 +99,14 @@
 					</div>
 					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
 						{embeddingModel || 'intfloat/multilingual-e5-large'} (~2.5 GB)
+					</div>
+					<div style="--size:0.65rem; --c:var(--color-gray-400); --dark-c:var(--color-gray-500); --mt:0.15rem">
+						ChromaDB (~100 MB) —
+						{#if vectorDbReady}
+							<span style="--c:var(--color-green-600)">{$i18n.t('installed')}</span>
+						{:else}
+							{$i18n.t('will be installed automatically')}
+						{/if}
 					</div>
 				</div>
 			</label>
