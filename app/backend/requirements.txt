@@ -1,5 +1,6 @@
 fastapi==0.115.7
 uvicorn[standard]==0.35.0
+typer
 pydantic==2.11.7
 itsdangerous
 # CVE-2026-24486 (HIGH): arbitrary file write — fixed in 0.0.22
@@ -16,15 +17,17 @@ async-timeout
 aiocache
 aiofiles
 starlette-compress==1.6.0
+beautifulsoup4
 httpx[socks,http2,zstd,cli,brotli]==0.28.1
 
 sqlalchemy==2.0.38
 alembic==1.14.0
 peewee==3.18.1
 peewee-migrate==1.12.2
-psycopg2-binary==2.9.9
-pgvector==0.4.0
 bcrypt==4.3.0
+pytz
+websocket-client
+huggingface_hub
 
 redis
 
@@ -39,9 +42,8 @@ langchain==0.3.26
 # CVE-2025-6984 (HIGH): insecure XML parsing (XXE) in document loaders
 langchain-community==0.3.27
 
-## Vector DB — only chromadb in base image; others installed at runtime if selected
-chromadb==0.6.3
-posthog
+## Vector DB — chromadb installed at runtime via AI Engine wizard if selected
+## chromadb, pymilvus, qdrant-client, opensearch-py, elasticsearch, pinecone — runtime install via VECTOR_DB config
 # pymilvus, qdrant-client, opensearch-py, elasticsearch, pinecone — runtime install via VECTOR_DB config
 
 # ML packages (torch, sentence-transformers, transformers, colbert-ai, faster-whisper,
@@ -51,16 +53,11 @@ posthog
 # Document processing (required by langchain_community.document_loaders)
 pypdf==4.3.1
 docx2txt==0.8
-python-pptx==1.0.2
-# CVE-2025-64712 (CRITICAL): path traversal via MSG attachments — fixed in 0.18.18
-unstructured==0.18.18
-pandas==2.2.3
-
+# unstructured + python-pptx — installed at runtime when non-PDF document types are uploaded
 ftfy==6.2.3
 fpdf2==2.8.2
 Markdown==3.7
 validators==0.35.0
-psutil
 soundfile==0.13.1
 
 # CVE-2025-48379 (HIGH): DDS heap buffer overflow — fixed in 11.3.0
@@ -72,8 +69,7 @@ PyJWT[crypto]==2.12.0
 # CVE-2026-27962 (CRITICAL): auth bypass via JWK header — fixed in 1.6.9
 authlib==1.6.9
 
-# CVE-2026-32274 (HIGH): arbitrary file writes from unsanitized input — fixed in 26.3.1
-black==26.3.1
+# black — installed at runtime if code formatting is needed
 
 pydub
 

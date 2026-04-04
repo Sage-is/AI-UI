@@ -24,6 +24,11 @@ skips:
   # intentionally bind to 0.0.0.0 inside the container. This is expected.
   - B104
 
+  # B608: "hardcoded SQL expressions" — false positives on SQLite JSON1 queries
+  # in models/chats.py. The f-strings only interpolate parameter names (e.g.,
+  # :tag_id_0); actual values are bound via SQLAlchemy .params().
+  - B608
+
 exclude_dirs:
   # Test code — test fixtures may intentionally contain "bad" patterns
   - app/backend/sage_is_ai/test

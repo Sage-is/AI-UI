@@ -34,10 +34,6 @@ class Vector:
                 from sage_is_ai.retrieval.vector.dbs.opensearch import OpenSearchClient
 
                 return OpenSearchClient()
-            case VectorType.PGVECTOR:
-                from sage_is_ai.retrieval.vector.dbs.pgvector import PgvectorClient
-
-                return PgvectorClient()
             case VectorType.ELASTICSEARCH:
                 from sage_is_ai.retrieval.vector.dbs.elasticsearch import (
                     ElasticsearchClient,
@@ -52,4 +48,11 @@ class Vector:
                 raise ValueError(f"Unsupported vector type: {vector_type}")
 
 
-VECTOR_DB_CLIENT = Vector.get_vector(VECTOR_DB)
+try:
+    VECTOR_DB_CLIENT = Vector.get_vector(VECTOR_DB)
+except ImportError:
+    VECTOR_DB_CLIENT = None
+    import logging
+    logging.getLogger(__name__).warning(
+        "Vector DB client not available — install required packages via the AI Engine wizard."
+    )

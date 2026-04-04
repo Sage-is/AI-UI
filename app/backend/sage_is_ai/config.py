@@ -1916,30 +1916,35 @@ VECTOR_DB = os.environ.get("VECTOR_DB", "chroma")
 CHROMA_DATA_PATH = f"{DATA_DIR}/vector_db"
 
 if VECTOR_DB == "chroma":
-    # Disable posthog telemetry — chromadb calls the old 3-arg capture() API
-    # which no longer exists in modern posthog. No-op it instead of downgrading.
-    import posthog
+    try:
+        # Disable posthog telemetry — chromadb calls the old 3-arg capture() API
+        # which no longer exists in modern posthog. No-op it instead of downgrading.
+        import posthog
 
-    posthog.capture = lambda *args, **kwargs: None
-    import chromadb
+        posthog.capture = lambda *args, **kwargs: None
+        import chromadb
 
-    CHROMA_TENANT = os.environ.get("CHROMA_TENANT", chromadb.DEFAULT_TENANT)
-    CHROMA_DATABASE = os.environ.get("CHROMA_DATABASE", chromadb.DEFAULT_DATABASE)
-    CHROMA_HTTP_HOST = os.environ.get("CHROMA_HTTP_HOST", "")
-    CHROMA_HTTP_PORT = int(os.environ.get("CHROMA_HTTP_PORT", "8000"))
-    CHROMA_CLIENT_AUTH_PROVIDER = os.environ.get("CHROMA_CLIENT_AUTH_PROVIDER", "")
-    CHROMA_CLIENT_AUTH_CREDENTIALS = os.environ.get(
-        "CHROMA_CLIENT_AUTH_CREDENTIALS", ""
-    )
-    # Comma-separated list of header=value pairs
-    CHROMA_HTTP_HEADERS = os.environ.get("CHROMA_HTTP_HEADERS", "")
-    if CHROMA_HTTP_HEADERS:
-        CHROMA_HTTP_HEADERS = dict(
-            [pair.split("=") for pair in CHROMA_HTTP_HEADERS.split(",")]
+        CHROMA_TENANT = os.environ.get("CHROMA_TENANT", chromadb.DEFAULT_TENANT)
+        CHROMA_DATABASE = os.environ.get("CHROMA_DATABASE", chromadb.DEFAULT_DATABASE)
+        CHROMA_HTTP_HOST = os.environ.get("CHROMA_HTTP_HOST", "")
+        CHROMA_HTTP_PORT = int(os.environ.get("CHROMA_HTTP_PORT", "8000"))
+        CHROMA_CLIENT_AUTH_PROVIDER = os.environ.get("CHROMA_CLIENT_AUTH_PROVIDER", "")
+        CHROMA_CLIENT_AUTH_CREDENTIALS = os.environ.get(
+            "CHROMA_CLIENT_AUTH_CREDENTIALS", ""
         )
-    else:
-        CHROMA_HTTP_HEADERS = None
-    CHROMA_HTTP_SSL = os.environ.get("CHROMA_HTTP_SSL", "false").lower() == "true"
+        # Comma-separated list of header=value pairs
+        CHROMA_HTTP_HEADERS = os.environ.get("CHROMA_HTTP_HEADERS", "")
+        if CHROMA_HTTP_HEADERS:
+            CHROMA_HTTP_HEADERS = dict(
+                [pair.split("=") for pair in CHROMA_HTTP_HEADERS.split(",")]
+            )
+        else:
+            CHROMA_HTTP_HEADERS = None
+        CHROMA_HTTP_SSL = os.environ.get("CHROMA_HTTP_SSL", "false").lower() == "true"
+    except ImportError:
+        log.warning(
+            "chromadb not installed. RAG features unavailable until installed via the AI Engine wizard."
+        )
 # this uses the model defined in the Dockerfile ENV variable. If you dont use docker or docker based deployments such as k8s, the default embedding model will be used (sentence-transformers/all-MiniLM-L6-v2)
 
 # Milvus
@@ -1985,62 +1990,6 @@ SSL_ASSERT_FINGERPRINT = os.environ.get("SSL_ASSERT_FINGERPRINT", None)
 ELASTICSEARCH_INDEX_PREFIX = os.environ.get(
     "ELASTICSEARCH_INDEX_PREFIX", "sage_is_ai_collections"
 )
-# Pgvector
-PGVECTOR_DB_URL = os.environ.get("PGVECTOR_DB_URL", DATABASE_URL)
-if VECTOR_DB == "pgvector" and not PGVECTOR_DB_URL.startswith("postgres"):
-    raise ValueError(
-        "Pgvector requires setting PGVECTOR_DB_URL or using Postgres with vector extension as the primary database."
-    )
-PGVECTOR_INITIALIZE_MAX_VECTOR_LENGTH = int(
-    os.environ.get("PGVECTOR_INITIALIZE_MAX_VECTOR_LENGTH", "1536")
-)
-
-PGVECTOR_PGCRYPTO = os.getenv("PGVECTOR_PGCRYPTO", "false").lower() == "true"
-PGVECTOR_PGCRYPTO_KEY = os.getenv("PGVECTOR_PGCRYPTO_KEY", None)
-if PGVECTOR_PGCRYPTO and not PGVECTOR_PGCRYPTO_KEY:
-    raise ValueError(
-        "PGVECTOR_PGCRYPTO is enabled but PGVECTOR_PGCRYPTO_KEY is not set. Please provide a valid key."
-    )
-
-
-PGVECTOR_POOL_SIZE = os.environ.get("PGVECTOR_POOL_SIZE", None)
-
-if PGVECTOR_POOL_SIZE != None:
-    try:
-        PGVECTOR_POOL_SIZE = int(PGVECTOR_POOL_SIZE)
-    except Exception:
-        PGVECTOR_POOL_SIZE = None
-
-PGVECTOR_POOL_MAX_OVERFLOW = os.environ.get("PGVECTOR_POOL_MAX_OVERFLOW", 0)
-
-if PGVECTOR_POOL_MAX_OVERFLOW == "":
-    PGVECTOR_POOL_MAX_OVERFLOW = 0
-else:
-    try:
-        PGVECTOR_POOL_MAX_OVERFLOW = int(PGVECTOR_POOL_MAX_OVERFLOW)
-    except Exception:
-        PGVECTOR_POOL_MAX_OVERFLOW = 0
-
-PGVECTOR_POOL_TIMEOUT = os.environ.get("PGVECTOR_POOL_TIMEOUT", 30)
-
-if PGVECTOR_POOL_TIMEOUT == "":
-    PGVECTOR_POOL_TIMEOUT = 30
-else:
-    try:
-        PGVECTOR_POOL_TIMEOUT = int(PGVECTOR_POOL_TIMEOUT)
-    except Exception:
-        PGVECTOR_POOL_TIMEOUT = 30
-
-PGVECTOR_POOL_RECYCLE = os.environ.get("PGVECTOR_POOL_RECYCLE", 3600)
-
-if PGVECTOR_POOL_RECYCLE == "":
-    PGVECTOR_POOL_RECYCLE = 3600
-else:
-    try:
-        PGVECTOR_POOL_RECYCLE = int(PGVECTOR_POOL_RECYCLE)
-    except Exception:
-        PGVECTOR_POOL_RECYCLE = 3600
-
 # Pinecone
 PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY", None)
 PINECONE_ENVIRONMENT = os.environ.get("PINECONE_ENVIRONMENT", None)

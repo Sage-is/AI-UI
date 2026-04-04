@@ -7,18 +7,12 @@ from sage_is_ai.internal.wrappers import register_connection
 from sage_is_ai.env import (
     SAGE_IS_AI_DIR,
     DATABASE_URL,
-    DATABASE_SCHEMA,
     SRC_LOG_LEVELS,
-    DATABASE_POOL_MAX_OVERFLOW,
-    DATABASE_POOL_RECYCLE,
-    DATABASE_POOL_SIZE,
-    DATABASE_POOL_TIMEOUT,
 )
 from peewee_migrate import Router
 from sqlalchemy import Dialect, create_engine, MetaData, types
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy.pool import QueuePool, NullPool
 from sqlalchemy.sql.type_api import _T
 from typing_extensions import Self
 
@@ -53,8 +47,7 @@ class JSONField(types.TypeDecorator):
 def handle_peewee_migration(DATABASE_URL):
     # db = None
     try:
-        # Replace the postgresql:// with postgres:// to handle the peewee migration
-        db = register_connection(DATABASE_URL.replace("postgresql://", "postgres://"))
+        db = register_connection(DATABASE_URL)
         migrate_dir = SAGE_IS_AI_DIR / "internal" / "migrations"
         router = Router(db, logger=log, migrate_dir=migrate_dir)
         router.run()
@@ -79,35 +72,14 @@ handle_peewee_migration(DATABASE_URL)
 
 
 SQLALCHEMY_DATABASE_URL = DATABASE_URL
-if "sqlite" in SQLALCHEMY_DATABASE_URL:
-    engine = create_engine(
-        SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-    )
-else:
-    if isinstance(DATABASE_POOL_SIZE, int):
-        if DATABASE_POOL_SIZE > 0:
-            engine = create_engine(
-                SQLALCHEMY_DATABASE_URL,
-                pool_size=DATABASE_POOL_SIZE,
-                max_overflow=DATABASE_POOL_MAX_OVERFLOW,
-                pool_timeout=DATABASE_POOL_TIMEOUT,
-                pool_recycle=DATABASE_POOL_RECYCLE,
-                pool_pre_ping=True,
-                poolclass=QueuePool,
-            )
-        else:
-            engine = create_engine(
-                SQLALCHEMY_DATABASE_URL, pool_pre_ping=True, poolclass=NullPool
-            )
-    else:
-        engine = create_engine(SQLALCHEMY_DATABASE_URL, pool_pre_ping=True)
-
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+)
 
 SessionLocal = sessionmaker(
     autocommit=False, autoflush=False, bind=engine, expire_on_commit=False
 )
-metadata_obj = MetaData(schema=DATABASE_SCHEMA)
-Base = declarative_base(metadata=metadata_obj)
+Base = declarative_base()
 Session = scoped_session(SessionLocal)
 
 

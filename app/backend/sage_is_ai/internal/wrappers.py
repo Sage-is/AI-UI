@@ -4,8 +4,7 @@ from contextvars import ContextVar
 from sage_is_ai.env import SRC_LOG_LEVELS
 from peewee import *
 from peewee import InterfaceError as PeeWeeInterfaceError
-from peewee import PostgresqlDatabase
-from playhouse.db_url import connect, parse
+from playhouse.db_url import connect
 from playhouse.shortcuts import ReconnectMixin
 
 log = logging.getLogger(__name__)
@@ -30,34 +29,13 @@ class PeeweeConnectionState(object):
 
 class CustomReconnectMixin(ReconnectMixin):
     reconnect_errors = (
-        # psycopg2
-        (OperationalError, "termin"),
-        (InterfaceError, "closed"),
-        # peewee
         (PeeWeeInterfaceError, "closed"),
     )
 
 
-class ReconnectingPostgresqlDatabase(CustomReconnectMixin, PostgresqlDatabase):
-    pass
-
-
 def register_connection(db_url):
     db = connect(db_url, unquote_user=True, unquote_password=True)
-    if isinstance(db, PostgresqlDatabase):
-        # Enable autoconnect for SQLite databases, managed by Peewee
-        db.autoconnect = True
-        db.reuse_if_open = True
-        log.info("Connected to PostgreSQL database")
-
-        # Get the connection details
-        connection = parse(db_url, unquote_user=True, unquote_password=True)
-
-        # Use our custom database class that supports reconnection
-        db = ReconnectingPostgresqlDatabase(**connection)
-        db.connect(reuse_if_open=True)
-    elif isinstance(db, SqliteDatabase):
-        # Enable autoconnect for SQLite databases, managed by Peewee
+    if isinstance(db, SqliteDatabase):
         db.autoconnect = True
         db.reuse_if_open = True
         log.info("Connected to SQLite database")
