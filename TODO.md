@@ -72,6 +72,11 @@
 - [x] Production log level defaults to WARNING (dev stays INFO)
 - [ ] Target: ~2.5GB (down from 9.7GB) — further trimming possible
 
+### Docker Image Slimming — Phase 2
+- [x] Volume-based ML packages: `pip install --target` to data volume, persists across restarts
+- [x] AI Engine wizard step triggers pip install + model download in background
+- [ ] Target: ~1.5GB base image (chromadb transitive deps still heavy)
+
 ### Podman Compatibility
 - [ ] Test and fix Podman build issues (VM memory, rootless networking)
 - [ ] Document Podman-specific setup (VM memory bump, `host.containers.internal`)
@@ -115,10 +120,13 @@
 
 ## v3.0 — Future
 
-### Docker Image Slimming — Phase 2
-- [x] Volume-based ML packages: `pip install --target` to data volume, persists across restarts
-- [x] AI Engine wizard step triggers pip install + model download in background
-- [ ] Target: ~1.5GB base image (chromadb transitive deps still heavy)
+### Backend Rewrite Research
+- [ ] Review `docs/backend-rewrite-research.md` with team
+- [ ] Phase -1: Generate contract test suite from OpenAPI spec (private submodule)
+- [ ] Phase 0 spike: chosen framework + streaming Ollama proxy
+- [ ] Team decision: Go + PocketBase, Rust + Loco, or Python + Django?
+
+
 
 ### Developer Mode
 - [ ] `ai-ui dev` CLI command: clones repo, mounts source, enables DEV_MODE
