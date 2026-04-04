@@ -56,3 +56,14 @@ except ImportError:
     logging.getLogger(__name__).warning(
         "Vector DB client not available — install required packages via the AI Engine wizard."
     )
+
+
+def require_vector_db():
+    """Raise 503 if the vector DB client is not available."""
+    if VECTOR_DB_CLIENT is None:
+        from fastapi import HTTPException
+
+        raise HTTPException(
+            status_code=503,
+            detail="Vector database not available. Run the AI Engine setup from Settings to install it.",
+        )
