@@ -118,15 +118,15 @@ DB snapshots for upgrade testing live in `tools/db_snapshots/` (gitignored, sync
 ## Documentation
 
 
-- [Configuration Options](./docs/README.md)
+- [Documentation Index](./docs/README.md)
 - [Messaging Bridges (WhatsApp, etc.)](./docs/bridges.md)
-- [API Reference](./API/examples.md)
+- [API Examples](./docs/API-examples.md)
 - [Development Workflow](./docs/DEVELOPMENT_WORKFLOW.md)
 - [API Refactoring Plan](./docs/api-refactoring-plan.md)
 - [Community Hub Integration](./docs/community-hub.md)
 - [Contributing](./docs/CONTRIBUTING.md)
-- [Bug Fixes & Improvements](./docs/) — Historical documentation of major fixes
-  - [Kokoro.js TTS Fix (July 28, 2025)](./docs/kokoro-tts-fix-2025-07-28.md)
+- [Documentation Archive](./docs/archive/README.md)
+- [Kokoro.js TTS Fix (July 28, 2025)](./docs/archive/fixes/kokoro-tts-fix-2025-07-28.md)
 
 ## Community
 
