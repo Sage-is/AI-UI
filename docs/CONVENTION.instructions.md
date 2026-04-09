@@ -26,7 +26,7 @@ Every development task follows the **Plan-Document-Execute-Verify** cycle:
 
 ## Styling
 
-Use [Startr.Style](https://startr.style) for all component styling. Inline CSS custom properties (`style="--d:flex; --ai:center"`) — never Tailwind utility classes or standalone CSS classes. See the [Development Workflow](DEVELOPMENT_WORKFLOW.md#styling-with-startrstyle) for the full reference.
+Use [Startr.Style](https://startr.style) for all component styling. Inline CSS custom properties (`style="--d:flex; --ai:center"`) — never Tailwind utility classes or standalone CSS classes. See the [Development Workflow](development-workflow.md#styling-with-startrstyle) for the full reference.
 
 ## Standard Operating Procedure
 
@@ -58,4 +58,4 @@ For each task, define:
 
 
 
-## See the [DEVELOPMENT_WORKFLOW.md](docs/DEVELOPMENT_WORKFLOW.md) for more details.
+## See the [development-workflow.md](development-workflow.md) for more details.

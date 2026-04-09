@@ -222,7 +222,7 @@
 					Couldn't find your language?
 					<a
 						style="--c:var(--color-gray-300); --weight:500; --td:underline"
-						href="https://github.com/Sage-is/AI-UI/blob/main/docs/CONTRIBUTING.md#-translations-and-internationalization"
+						href="https://github.com/Sage-is/AI-UI/blob/main/docs/contributing.md#-translations-and-internationalization"
 						target="_blank"
 					>
 						Help us translate Sage.is AI!

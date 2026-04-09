@@ -14,16 +14,16 @@ This directory now separates active reference material from historical audits, p
 
 ## Start Here
 
-- `DEVELOPMENT_WORKFLOW.md` — release flow, verification steps, and daily workflow
+- `development-workflow.md` — release flow, verification steps, and daily workflow
 - `product-stack.md` — architecture and product stack overview
 - `bridges.md` — WhatsApp, Telegram, Signal, and Email bridge setup
-- `SECURITY.md` — security posture and reporting notes
-- `CONTRIBUTING.md` — contribution process and expectations
+- `security.md` — security posture and reporting notes
+- `contributing.md` — contribution process and expectations
 - `troubleshooting.md` — common local and deployment issues
 
 ## Active Reference Docs
 
-- `API-examples.md` — API usage examples
+- `api-examples.md` — API usage examples
 - `api-refactoring-plan.md` — API cleanup reference and remaining ideas
 - `backend-rewrite-research.md` — backend rewrite options and research notes
 - `community-hub.md` — Community Hub product and integration notes

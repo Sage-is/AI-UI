@@ -57,7 +57,7 @@
 				{$i18n.t('GitHub Repository')}
 			</a>
 			<a
-				href="https://github.com/Sage-is/AI-UI/blob/master/CONTRIBUTING.md"
+				href="https://github.com/Sage-is/AI-UI/blob/master/docs/contributing.md"
 				target="_blank"
 				rel="noopener"
 				style="--size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400); --td:underline"
