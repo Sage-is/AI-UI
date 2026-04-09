@@ -438,6 +438,31 @@ signal_logs:
 signal_status:
 	@$(CONTAINER_RUNTIME) inspect --format='{{.State.Status}}' $(SIGNAL_CONTAINER_NAME) 2>/dev/null || echo "signal-cli-rest-api container is not running"
 
+# ---------------------------------------------------------------------------
+# Dependency Management (bun — runs inside Docker)
+# ---------------------------------------------------------------------------
+# All npm/bun operations happen inside a container. No local Node.js needed.
+#   make bun_install  — regenerate bun.lock from package.json
+#   make bun_add PKG=<name>  — add a package and update lockfile
+#   make bun_run CMD=<cmd>   — run an arbitrary bun command in the app dir
+
+BUN_IMAGE ?= oven/bun:1-debian
+BUN_RUN   := $(CONTAINER_RUNTIME) run --rm -v "$$(pwd)/app:/app" -w /app $(BUN_IMAGE)
+
+# bun_install: Regenerate bun.lock from package.json (after editing versions).
+bun_install:
+	$(BUN_RUN) bun install
+
+# bun_add: Add or upgrade a package. Usage: make bun_add PKG="socket.io-client@^4.8.3"
+bun_add:
+	@[ -n "$(PKG)" ] || { echo "Usage: make bun_add PKG=<package>"; exit 1; }
+	$(BUN_RUN) bun add $(PKG)
+
+# bun_run: Run an arbitrary bun command. Usage: make bun_run CMD="outdated"
+bun_run:
+	@[ -n "$(CMD)" ] || { echo "Usage: make bun_run CMD=<command>"; exit 1; }
+	$(BUN_RUN) bun $(CMD)
+
 # ===========================================================================
 # Developer Setup & Security Scanning (CI)
 # ===========================================================================
@@ -523,7 +548,7 @@ scan_deps:
 	$(TRIVY) fs --scanners vuln app/backend/requirements.txt
 	@echo ""
 	@echo "=== Dependency scan: Node (trivy) ==="
-	$(TRIVY) fs --scanners vuln app/package-lock.json
+	$(TRIVY) fs --scanners vuln app/bun.lock
 
 # scan_container: Scan a built container image for OS-level & library vulnerabilities.
 # Run after 'make it_build'. Uses the same IMAGE_NAME/IMAGE_TAG as build targets.
@@ -554,16 +579,16 @@ trivy_db_update:
 # Linting (CI)
 # ---------------------------------------------------------------------------
 # Rollup target that calls existing lint scripts from package.json + black.
-# Complements (does not replace) the per-tool npm scripts.
+# Complements (does not replace) the per-tool bun scripts.
 
 # lint: Run all linters — eslint, svelte-check, prettier, black.
 lint:
 	@echo "=== Frontend lint (eslint + svelte-check) ==="
-	cd app && npm run lint:frontend
-	cd app && npm run lint:types
+	cd app && bun run lint:frontend
+	cd app && bun run lint:types
 	@echo ""
 	@echo "=== Format check (prettier + black) ==="
-	cd app && npx prettier --check "**/*.{js,ts,svelte,css,md,html,json}" || true
+	cd app && bunx prettier --check "**/*.{js,ts,svelte,css,md,html,json}" || true
 	cd app && black --check --exclude ".venv/|/venv/" backend/ || true
 
 # ===========================================================================

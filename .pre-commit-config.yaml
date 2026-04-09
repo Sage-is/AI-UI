@@ -46,7 +46,7 @@ repos:
     rev: v2.4.1
     hooks:
       - id: codespell
-        exclude: '(\.svg|package-lock\.json|\.lock|\.css|.*-bundle\.js|emoji-shortcodes.*\.json|i18n/locales/)'
+        exclude: '(\.svg|bun\.lock|\.lock|\.css|.*-bundle\.js|emoji-shortcodes.*\.json|i18n/locales/)'
         args: ["--ignore-words-list", "ans"]
         additional_dependencies:
           - tomli  # needed for pyproject.toml config reading
@@ -67,3 +67,19 @@ repos:
       # Normalize trailing whitespace
       - id: trailing-whitespace
         exclude: ^app/node_modules/
+
+  # ---------------------------------------------------------------------------
+  # Dependency Audit — catch known CVEs in lockfiles before commit
+  # ---------------------------------------------------------------------------
+  # Runs Trivy against lockfiles when they change.
+  # Trivy is installed via `make install_dev`. Fully local, uses cached DB.
+  # This is a convenience check — the authoritative gate is: make scan_deps
+  - repo: local
+    hooks:
+      - id: audit-deps
+        name: audit-deps (trivy lockfile scan)
+        entry: trivy fs --scanners vuln --severity HIGH,CRITICAL --exit-code 1
+        language: system
+        files: (bun\.lock|requirements\.txt)$
+        pass_filenames: true
+        stages: [pre-commit]
