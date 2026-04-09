@@ -48,4 +48,4 @@ For each task, define:
 
 
 
-## See the [DEVELOPMENT_WORKFLOW.md](docs/DEVELOPMENT_WORKFLOW.md) for more details.
+## See the [development-workflow.md](docs/development-workflow.md) for more details.

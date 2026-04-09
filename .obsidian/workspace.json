@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/DEVELOPMENT_WORKFLOW.md",
+                "file": "docs/development-workflow.md",
                 "mode": "source",
                 "source": false
               },
@@ -168,7 +168,7 @@
   },
   "active": "efc1d269b4782aff",
   "lastOpenFiles": [
-    "docs/CONTRIBUTING.md",
+    "docs/contributing.md",
     "docs/API_REFACTORING_PLAN.md",
     "docs/apache.md",
     "docs/prompts/Sage_x.7.md",
@@ -177,7 +177,7 @@
     "docs/ENV_SCRIPTS_README.md",
     "docs/DOCKER_OPTIMIZATION_SUMMARY.md",
     "docs/DOCKER_BUILD_OPTIMIZATION.md",
-    "docs/DEVELOPMENT_WORKFLOW.md",
+    "docs/development-workflow.md",
     "docs/CONVENTION.instructions.md",
     "TODO.md",
     "app/src/lib/data/licenseData.ts",
