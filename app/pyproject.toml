@@ -181,7 +181,7 @@ force-include = { "CHANGELOG.md" = "sage_is_ai/CHANGELOG.md", build = "sage_is_a
 
 [tool.codespell]
 # Ref: https://github.com/codespell-project/codespell#using-a-config-file
-skip = '.git*,*.svg,package-lock.json,i18n,*.lock,*.css,*-bundle.js,locales,example-doc.txt,emoji-shortcodes.json'
+skip = '.git*,*.svg,bun.lock,i18n,*.lock,*.css,*-bundle.js,locales,example-doc.txt,emoji-shortcodes.json'
 check-hidden = true
 # ignore-regex = ''
 ignore-words-list = 'ans'

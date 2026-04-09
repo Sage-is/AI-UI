@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.5
 # =============================================================================
 # Three-stage build: frontend → python-build → runtime
-#   1. frontend:     Node.js — npm install, pyodide, vite build
+#   1. frontend:     Bun (deps) + Node.js (vite build)
 #   2. python-build: Python + build tools — pip install (compilation)
 #   3. runtime:      Python slim — copies from both, no Node, no gcc (~1.5GB)
 # =============================================================================
@@ -18,17 +18,20 @@ ARG UID=0
 ARG GID=0
 
 # =============================================================================
-# Stage 1: FRONTEND — Node.js for npm + vite build
+# Stage 1: FRONTEND — Bun for deps, Node.js for vite build
 # =============================================================================
 FROM node:22-bookworm AS frontend
 ARG BUILD_HASH
 
+# Install bun (fast dependency management; vite build stays on Node.js for memory)
+RUN npm install -g bun
+
 WORKDIR /app
 
-# Install Node.js dependencies (cache layer)
+# Install dependencies via bun (cache layer)
 COPY app/package.json /app/package.json
-COPY app/package-lock.json /app/package-lock.json
-RUN NODE_OPTIONS="--max-old-space-size=4096" npm install --legacy-peer-deps --loglevel verbose
+COPY app/bun.lock /app/bun.lock
+RUN bun install --frozen-lockfile
 
 # Setup Pyodide (cache layer)
 COPY app/scripts/prepare-pyodide.js /app/scripts/prepare-pyodide.js
@@ -47,7 +50,7 @@ COPY app/vite.config.ts /app/vite.config.ts
 COPY app/static/ /app/build/
 COPY app/src /app/src
 
-# Build frontend
+# Build frontend (Node.js runtime — bun's JSC OOMs on large Svelte builds)
 RUN NODE_OPTIONS="--max-old-space-size=4096" npx vite build
 
 # Copy custom.css after vite build (SvelteKit clears output dir during build)
