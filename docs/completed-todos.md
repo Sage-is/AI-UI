@@ -2,6 +2,44 @@
 
 *Moved from TODO.md on 2026-03-18 to keep the active task list focused.*
 
+*Updated on 2026-04-09 to preserve the v2.0.0 release snapshot and completed release follow-up tasks after the roadmap cleanup.*
+
+---
+
+## ✅ Roadmap History Snapshot (moved from TODO.md on 2026-04-09)
+
+### ✅ v2.0.0 Shipped
+- [x] Package rename: `open_webui` → `sage_is_ai` (imports, env vars, deployment artifacts)
+- [x] "Channel" → "Space" terminology (UI, API routes, socket events; DB schema rename deferred)
+- [x] Messaging Bridges — WhatsApp (WAHA), Telegram, Signal, Email (IMAP/SMTP)
+- [x] Spaces: @mentions, threads, reactions, member management, agent auto-reply on `?`
+- [x] Spaces: animated thinking indicators with rotating status phrases
+- [x] Setup wizard with live connection verification (Ollama, OpenAI endpoints)
+- [x] Home dashboard with recent/pinned conversations
+- [x] Sidebar search, collapsible folders and date groups
+- [x] Chat sharing between users ("Shared with me" / "Shared by me")
+- [x] Magic links for passwordless auth
+- [x] Knowledge base with multi-collection support
+- [x] AI document parsing with configurable ingestion modes (plain / structured / AI-parsed)
+- [x] Note editor with title management
+- [x] Security scanning framework: `make scan` (gitleaks, semgrep, bandit, trivy)
+- [x] Pre-commit git hooks (`.pre-commit-config.yaml`)
+- [x] Offline semgrep rules (`.semgrep/` — Python, JS/TS, Svelte)
+- [x] DB upgrade smoke test: `make test_db_upgrade`
+- [x] Dependency security upgrades (authlib, pillow, aiohttp, jspdf, etc.)
+- [x] Dead code cleanup (litellm endpoint, open-webui version check, Scarf analytics)
+- [x] Changelog parser fix (handles em-dash dates + prose format)
+- [x] Dockerfile: copies root CHANGELOG.md, removed stale app/CHANGELOG.md
+- [x] Simplified root `docker-compose.yaml` (single-service, Docker)
+
+### ✅ v2.0.0 Release Follow-Up Completed
+- [x] Commit, build, smoke test (`make it_build`)
+- [x] `make release_finish` → tag v2.0.0, merge to master, push
+- [x] `make it_build_multi_arch_push_GHCR` → push amd64+arm64 to GHCR
+- [x] Verify: `docker pull ghcr.io/sage-is/ai-ui:2.0.0`
+- [x] Push `Sage-is/homebrew-apps` repo to GitHub
+- [x] Update sha256 in `Formula/ai-ui.rb`
+
 ---
 
 ## ✅ Verified Completed (March 2026 audit)
