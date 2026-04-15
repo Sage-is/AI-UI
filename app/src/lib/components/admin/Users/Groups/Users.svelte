@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	const i18n = getContext('i18n');
 
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import Plus from '$lib/components/icons/Plus.svelte';
-	import { WEBUI_BASE_URL } from '$lib/constants';
+		import { WEBUI_BASE_URL } from '$lib/constants';
 	import Checkbox from '$lib/components/common/Checkbox.svelte';
 	import Badge from '$lib/components/common/Badge.svelte';
-	import Search from '$lib/components/icons/Search.svelte';
 
 	export let users = [];
 	export let userIds = [];
@@ -47,7 +46,7 @@
 	<div style="--d:flex; --w:100%">
 		<div style="--d:flex; --fx:1 1 0%">
 			<div style="--as:center; --mr:0.6rem">
-				<Search />
+				<Icon name="search" />
 			</div>
 			<input
 				style="--w:100%; --size:0.8rem; --pr:1rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"

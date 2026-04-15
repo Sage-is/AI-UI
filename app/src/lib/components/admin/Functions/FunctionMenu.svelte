@@ -2,15 +2,11 @@
 	import { DropdownMenu } from 'bits-ui';
 	import { flyAndScale } from '$lib/utils/transitions';
 	import { getContext } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import Dropdown from '$lib/components/common/Dropdown.svelte';
-	import GarbageBin from '$lib/components/icons/GarbageBin.svelte';
-	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import Share from '$lib/components/icons/Share.svelte';
-	import DocumentDuplicate from '$lib/components/icons/DocumentDuplicate.svelte';
-	import ArrowDownTray from '$lib/components/icons/ArrowDownTray.svelte';
-	import Switch from '$lib/components/common/Switch.svelte';
-	import GlobeAlt from '$lib/components/icons/GlobeAlt.svelte';
+		import Tooltip from '$lib/components/common/Tooltip.svelte';
+				import Switch from '$lib/components/common/Switch.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -53,7 +49,7 @@
 					style="--d:flex; --g:0.5rem; --jc:space-between; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --weight:500; --cur:pointerrounded-md"
 				>
 					<div style="--d:flex; --g:0.5rem; --ai:center">
-						<GlobeAlt />
+						<Icon name="globe-alt" />
 
 						<div style="--d:flex; --ai:center">{$i18n.t('Global')}</div>
 					</div>
@@ -96,7 +92,7 @@
 					shareHandler();
 				}}
 			>
-				<Share />
+				<Icon name="share" />
 				<div style="--d:flex; --ai:center">{$i18n.t('Share')}</div>
 			</DropdownMenu.Item>
 
@@ -106,7 +102,7 @@
 					cloneHandler();
 				}}
 			>
-				<DocumentDuplicate />
+				<Icon name="document-duplicate" />
 
 				<div style="--d:flex; --ai:center">{$i18n.t('Clone')}</div>
 			</DropdownMenu.Item>
@@ -117,7 +113,7 @@
 					exportHandler();
 				}}
 			>
-				<ArrowDownTray />
+				<Icon name="arrow-down-tray" />
 
 				<div style="--d:flex; --ai:center">{$i18n.t('Export')}</div>
 			</DropdownMenu.Item>
@@ -130,7 +126,7 @@
 					deleteHandler();
 				}}
 			>
-				<GarbageBin strokeWidth="2" />
+				<Icon name="garbage-bin" strokeWidth="2" />
 				<div style="--d:flex; --ai:center">{$i18n.t('Delete')}</div>
 			</DropdownMenu.Item>
 		</DropdownMenu.Content>

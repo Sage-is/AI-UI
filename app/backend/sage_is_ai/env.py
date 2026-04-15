@@ -317,6 +317,9 @@ else:
 
 DATABASE_URL = os.environ.get("DATABASE_URL", f"sqlite:///{DATA_DIR}/webui.db")
 
+# Maximum upload size (MB) for backup restore during onboarding
+BACKUP_RESTORE_MAX_SIZE_MB = int(os.environ.get("BACKUP_RESTORE_MAX_SIZE_MB", "512"))
+
 RESET_CONFIG_ON_START = (
     os.environ.get("RESET_CONFIG_ON_START", "False").lower() == "true"
 )

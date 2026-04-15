@@ -3,8 +3,8 @@
 	import { toast } from 'svelte-sonner';
 	import { sharedByMeChats, sharedWithMeChats } from '$lib/stores';
 	import { removeChatShareTarget, getChatsSharedByMe, getChatsSharedWithMe } from '$lib/apis/chat-shares';
-	import XMark from '$lib/components/icons/XMark.svelte';
-	import Tooltip from '$lib/components/common/Tooltip.svelte';
+		import Tooltip from '$lib/components/common/Tooltip.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -63,7 +63,7 @@
 						type="button"
 						on:click={() => removeTarget(target.id)}
 					>
-						<XMark className="size-3.5" />
+						<Icon name="x-mark" strokeWidth="2" className="size-3.5" />
 					</button>
 				</Tooltip>
 			</div>

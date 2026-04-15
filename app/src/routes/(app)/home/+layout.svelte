@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
 	import { WEBUI_NAME, showSidebar } from '$lib/stores';
-	import MenuLines from '$lib/components/icons/MenuLines.svelte';
-	import { page } from '$app/stores';
+		import { page } from '$app/stores';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const i18n = getContext('i18n');
 </script>
@@ -36,7 +36,7 @@
 					aria-label="Toggle Sidebar"
 				>
 					<div style="--m:auto; --as:center">
-						<MenuLines />
+						<Icon name="menu-lines" className="size-5" strokeWidth="2" />
 					</div>
 				</button>
 			</div>

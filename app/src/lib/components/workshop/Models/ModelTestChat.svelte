@@ -5,9 +5,9 @@
 	import { WEBUI_BASE_URL } from '$lib/constants';
 	import { chatCompletion, generateOpenAIChatCompletion } from '$lib/apis/openai';
 	import { splitStream } from '$lib/utils';
-	
+	import Icon from '$lib/components/Icon.svelte';
+
 	import Spinner from '$lib/components/common/Spinner.svelte';
-	import EyeSlash from '$lib/components/icons/EyeSlash.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -99,7 +99,7 @@
 
 			// Filter params to only include standard OpenAI parameters that Groq supports
 			const allowedParams = ['temperature', 'top_p', 'max_tokens', 'stop', 'presence_penalty', 'frequency_penalty'];
-			const filteredParams = liveModelData?.params ? 
+			const filteredParams = liveModelData?.params ?
 				Object.fromEntries(
 					Object.entries(liveModelData.params)
 						.filter(([key]) => allowedParams.includes(key) && key !== 'system')
@@ -192,19 +192,19 @@
 				modelOwnership: baseModel?.owned_by
 			});
 			toast.error('Error communicating with model: ' + (error?.message || 'Unknown error'));
-			
+
 			// Remove the failed assistant message
 			messages = messages.slice(0, -1);
 		} finally {
 			loading = false;
 			stopResponseFlag = false;
-			
+
 			// Ensure the last message is marked as not loading
 			if (messages.length > 0 && messages[messages.length - 1].role === 'assistant') {
 				messages[messages.length - 1].loading = false;
 				messages = [...messages];
 			}
-			
+
 			// Return focus to textarea for continued conversation
 			await tick();
 			if (textareaElement) {
@@ -229,7 +229,7 @@
 	onMount(() => {
 		// Set temporary chat mode
 		temporaryChatEnabled.set(true);
-		
+
 		return () => {
 			// Restore previous temporary chat setting when component is destroyed
 			temporaryChatEnabled.set(false);
@@ -241,12 +241,12 @@
 	<!-- Header -->
 	<div style="--d:flex; --ai:center; --jc:space-between; --p:1rem;  --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700)">
 		<div style="--d:flex; --ai:center; --g:0.5rem">
-			<EyeSlash className="size-4 text-gray-500" />
+			<Icon name="eye-slash" className="size-4 text-gray-500" />
 			<h3 style="--size:0.8rem; --weight:500; --c:var(--color-gray-700); --dark-c:var(--color-gray-300)">
 				{$i18n.t('Test Chat')}
 			</h3>
 		</div>
-		
+
 		{#if messages.length > 0}
 			<button
 				style="--size:0.6rem; --px:0.5rem; --py:0.2rem; --c:var(--color-gray-500); --hvr-c:var(--color-gray-700); --hvr-dark-c:var(--color-gray-300); --tn:color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1)"
@@ -279,7 +279,7 @@
 	{/if}
 
 	<!-- Messages -->
-	<div 
+	<div
 		style="--fx:1 1 0%; --ofy:auto; --p:1rem; --g:1rem"
 		bind:this={messagesContainer}
 	>
@@ -298,10 +298,10 @@
 				<div style="--d:flex"
 	class="{message.role === 'user' ? 'justify-end' : 'justify-start'}">
 					<div style="--maxw:80%; --radius:0.5rem; --px:0.6rem; --py:0.5rem; --size:0.8rem"
-	class="{message.role === 'user' 
-						? 'bg-gray-900 text-white dark:bg-white dark:text-black' 
+	class="{message.role === 'user'
+						? 'bg-gray-900 text-white dark:bg-white dark:text-black'
 						: 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700'}">
-						
+
 						{#if message.role === 'user'}
 							<div style="--ws:pre-wrap">{message.content}</div>
 						{:else}
@@ -338,7 +338,7 @@
 					style="--w:100%; --size:0.8rem; --bgc:#fff; --dark-bgc:var(--color-gray-800);  --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --radius:0.5rem; --px:0.6rem; --py:0.5rem; resize:none; --oe:none; height: auto; min-height: 2.5rem; max-height: 10rem;"
 				/>
 			</div>
-			
+
 			{#if loading}
 				<button
 					style="--px:0.6rem; --py:0.5rem; --size:0.8rem; --bgc:var(--color-gray-300); --c:var(--color-gray-600); --radius:0.5rem; --d:flex; --ai:center; --g:0.2rem"
@@ -357,9 +357,9 @@
 				</button>
 			{/if}
 		</div>
-		
+
 		<div style="--size:0.6rem; --c:var(--color-gray-500); --mt:0.5rem; --d:flex; --ai:center; --g:0.2rem">
-			<EyeSlash className="size-3" />
+			<Icon name="eye-slash" className="size-3" />
 			<span>{$i18n.t('Temporary chat - messages won\'t be saved')}</span>
 		</div>
 	</div>

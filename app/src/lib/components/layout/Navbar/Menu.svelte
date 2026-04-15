@@ -2,6 +2,7 @@
 	import { toast } from 'svelte-sonner';
 	import { DropdownMenu } from 'bits-ui';
 	import { getContext } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import fileSaver from 'file-saver';
 	const { saveAs } = fileSaver;
@@ -26,11 +27,7 @@
 
 	import Dropdown from '$lib/components/common/Dropdown.svelte';
 	import Tags from '$lib/components/chat/Tags.svelte';
-	import Map from '$lib/components/icons/Map.svelte';
-	import Clipboard from '$lib/components/icons/Clipboard.svelte';
-	import AdjustmentsHorizontal from '$lib/components/icons/AdjustmentsHorizontal.svelte';
-	import Cube from '$lib/components/icons/Cube.svelte';
-	import { getChatById } from '$lib/apis/chats';
+					import { getChatById } from '$lib/apis/chats';
 
 	const i18n = getContext('i18n');
 
@@ -259,7 +256,7 @@
 						await showArtifacts.set(false);
 					}}
 				>
-					<AdjustmentsHorizontal className=" size-4" strokeWidth="0.5" />
+					<Icon name="adjustments-horizontal" className=" size-4" strokeWidth="0.5" />
 					<div style="--d:flex; --ai:center">{$i18n.t('Controls')}</div>
 				</DropdownMenu.Item>
 			{/if}
@@ -317,7 +314,7 @@
 					await showArtifacts.set(false);
 				}}
 			>
-				<Map className=" size-4" strokeWidth="1.5" />
+				<Icon name="map" className=" size-4" strokeWidth="1.5" />
 				<div style="--d:flex; --ai:center">{$i18n.t('Overview')}</div>
 			</DropdownMenu.Item>
 
@@ -330,7 +327,7 @@
 					await showOverview.set(false);
 				}}
 			>
-				<Cube className=" size-4" strokeWidth="1.5" />
+				<Icon name="cube" className=" size-4" strokeWidth="1.5" />
 				<div style="--d:flex; --ai:center">{$i18n.t('Artifacts')}</div>
 			</DropdownMenu.Item>
 
@@ -403,7 +400,7 @@
 					}
 				}}
 			>
-				<Clipboard className=" size-4" strokeWidth="1.5" />
+				<Icon name="clipboard" className=" size-4" strokeWidth="1.5" />
 				<div style="--d:flex; --ai:center">{$i18n.t('Copy')}</div>
 			</DropdownMenu.Item>
 

@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { getContext, createEventDispatcher, onMount } from 'svelte';
 	import { createNewSpace, deleteSpaceById } from '$lib/apis/spaces';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import Modal from '$lib/components/common/Modal.svelte';
 	import AccessControl from '$lib/components/workshop/common/AccessControl.svelte';
 	import DeleteConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
-	import XMark from '$lib/components/icons/XMark.svelte';
 
 	import { toast } from 'svelte-sonner';
 	import { page } from '$app/stores';
@@ -90,7 +90,7 @@
 					show = false;
 				}}
 			>
-				<XMark className={'size-5'} />
+				<Icon name="x-mark" strokeWidth="2" className={'size-5'} />
 			</button>
 		</div>
 

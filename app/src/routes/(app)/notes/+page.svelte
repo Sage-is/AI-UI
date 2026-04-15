@@ -1,11 +1,11 @@
 <script>
 	import { showArchivedChats, showSidebar, user } from '$lib/stores';
 	import { getContext } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const i18n = getContext('i18n');
 
-	import MenuLines from '$lib/components/icons/MenuLines.svelte';
-	import UserMenu from '$lib/components/layout/Sidebar/UserMenu.svelte';
+		import UserMenu from '$lib/components/layout/Sidebar/UserMenu.svelte';
 	import Notes from '$lib/components/notes/Notes.svelte';
 </script>
 
@@ -23,7 +23,7 @@
 				aria-label="Toggle Sidebar"
 			>
 				<div style="--m:auto; --as:center">
-					<MenuLines />
+					<Icon name="menu-lines" className="size-5" strokeWidth="2" />
 				</div>
 			</button>
 		</div>

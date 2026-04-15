@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
 	import { onMount, getContext, tick, onDestroy } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	const i18n = getContext('i18n');
 
 	import { page } from '$app/stores';
 	import { mobile, showSidebar, user } from '$lib/stores';
 	import { updateSpaceById } from '$lib/apis/spaces';
 
-	import Cog6 from '$lib/components/icons/Cog6.svelte';
-	import SpaceModal from './SpaceModal.svelte';
+		import SpaceModal from './SpaceModal.svelte';
 
 	export let onUpdate: Function = () => {};
 
@@ -90,7 +90,7 @@
 			}}
 		>
 			<button style="--p:0.125rem; --hvr-dark-bgc:var(--color-gray-850); --radius:0.5rem; touch-action:auto" on:click={(e) => {}}>
-				<Cog6 className="size-3.5" />
+				<Icon name="cog6" className="size-3.5" />
 			</button>
 		</button>
 	{/if}

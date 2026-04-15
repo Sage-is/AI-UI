@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
 	import dayjs from 'dayjs';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import { onMount, getContext, createEventDispatcher } from 'svelte';
 	const i18n = getContext('i18n');
@@ -8,9 +9,7 @@
 
 	import Modal from '$lib/components/common/Modal.svelte';
 	import RichTextInput from '$lib/components/common/RichTextInput.svelte';
-	import XMark from '$lib/components/icons/XMark.svelte';
-	import MicSolid from '$lib/components/icons/MicSolid.svelte';
-	import Tooltip from '$lib/components/common/Tooltip.svelte';
+			import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import VoiceRecording from '$lib/components/chat/MessageInput/VoiceRecording.svelte';
 	export let show = false;
 
@@ -18,11 +17,11 @@
 	let content = '';
 
 	let voiceInput = false;
-	
-	// TODO: Future enhancement - Add logic to auto-stop voice input and ensure conversion 
+
+	// TODO: Future enhancement - Add logic to auto-stop voice input and ensure conversion
 	// is complete before allowing save. This would require:
 	// 1. Hooking into VoiceRecording component's stop/convert lifecycle
-	// 2. Adding promise-based conversion completion detection  
+	// 2. Adding promise-based conversion completion detection
 	// 3. Auto-triggering voice stop when save is clicked during recording
 	// Current implementation: Save button is disabled during voice input for safety
 </script>
@@ -36,7 +35,7 @@
 				show = false;
 			}}
 		>
-			<XMark className="size-3.5" />
+			<Icon name="x-mark" strokeWidth="2" className="size-3.5" />
 		</button>
 	</div>
 	<div style="--d:flex; --fd:column; --fd-md:row; --w:100%; --h:100%; --p: 1rem 0;--bgc: var(--white); --br: 1rem">
@@ -132,7 +131,7 @@
 									}
 								}}
 							>
-								<MicSolid className="size-5" />
+								<Icon name="mic-solid" className="size-5" />
 							</button>
 						</Tooltip>
 					{/if}

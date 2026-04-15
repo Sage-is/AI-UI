@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { getContext, onMount } from 'svelte';
 	import { models, config, toolServers } from '$lib/stores';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import { toast } from 'svelte-sonner';
 	import { deleteSharedChatById, getChatById, shareChatById } from '$lib/apis/chats';
@@ -9,7 +10,6 @@
 	import Modal from '../common/Modal.svelte';
 	import Link from '../icons/Link.svelte';
 	import Collapsible from '../common/Collapsible.svelte';
-	import XMark from '$lib/components/icons/XMark.svelte';
 
 	export let show = false;
 
@@ -26,7 +26,7 @@
 					show = false;
 				}}
 			>
-				<XMark className={'size-5'} />
+				<Icon name="x-mark" strokeWidth="2" className={'size-5'} />
 			</button>
 		</div>
 

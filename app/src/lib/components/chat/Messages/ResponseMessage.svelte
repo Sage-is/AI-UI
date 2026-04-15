@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
 	import dayjs from 'dayjs';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import { createEventDispatcher } from 'svelte';
 	import { onMount, tick, getContext } from 'svelte';
@@ -41,7 +42,6 @@
 	import RateComment from './RateComment.svelte';
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import WebSearchResults from './ResponseMessage/WebSearchResults.svelte';
-	import Sparkles from '$lib/components/icons/Sparkles.svelte';
 
 	import DeleteConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
 
@@ -224,7 +224,7 @@
 
 		// Check personal settings first, then fallback to global config
 		const useWebAPI = ($settings?.audio?.tts?.engine ?? $config.audio.tts.engine) === '';
-		
+
 		if (useWebAPI) {
 			let voices = [];
 			const getVoicesLoop = setInterval(() => {
@@ -1467,7 +1467,7 @@
 															/>
 														</div>
 													{:else}
-														<Sparkles strokeWidth="2.1" className="size-4" />
+														<Icon name="sparkles" strokeWidth="2.1" className="size-4" />
 													{/if}
 												</button>
 											</Tooltip>

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
 	import { createEventDispatcher, onMount, getContext, tick } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -14,7 +15,6 @@
 	import Switch from '$lib/components/common/Switch.svelte';
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import Plus from '$lib/components/icons/Plus.svelte';
 
 	import OpenAIConnection from './Connections/OpenAIConnection.svelte';
 	import AddConnectionModal from '$lib/components/AddConnectionModal.svelte';
@@ -139,7 +139,7 @@
 		console.log('[Connections] onMount called');
 		console.log('[Connections] User role:', $user?.role);
 		console.log('[Connections] Is admin?', $user?.role === 'admin');
-		
+
 		if ($user?.role === 'admin') {
 			console.log('[Connections] Starting admin connections initialization');
 			let ollamaConfig = {};
@@ -147,7 +147,7 @@
 
 			try {
 				console.log('[Connections] About to call Promise.all with 3 API calls...');
-				
+
 				await Promise.all([
 					(async () => {
 						console.log('[Connections] Fetching Ollama config...');
@@ -234,12 +234,12 @@
 						}
 					}
 				}
-				
+
 				console.log('[Connections] Initialization complete - component should render');
 			} catch (error) {
 				console.error('[Connections] Failed to load admin connections:', error);
 				toast.error('Failed to load connections settings: ' + String(error));
-				
+
 				// Set fallback values to prevent infinite spinner
 				ENABLE_OPENAI_API = false;
 				ENABLE_OLLAMA_API = false;
@@ -247,7 +247,7 @@
 					ENABLE_DIRECT_CONNECTIONS: false,
 					ENABLE_BASE_MODELS_CACHE: false
 				};
-				
+
 				console.log('[Connections] Fallback values set - component should render with defaults');
 			}
 		} else {
@@ -314,7 +314,7 @@
 											}}
 											type="button"
 										>
-											<Plus />
+											<Icon name="plus" strokeWidth="2" />
 										</button>
 									</Tooltip>
 								</div>
@@ -378,7 +378,7 @@
 										}}
 										type="button"
 									>
-										<Plus />
+										<Icon name="plus" strokeWidth="2" />
 									</button>
 								</Tooltip>
 							</div>

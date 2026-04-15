@@ -1,14 +1,13 @@
 <script lang="ts">
 	import { onMount, getContext } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const i18n = getContext('i18n');
 
 	import Skeleton from '$lib/components/chat/Messages/Skeleton.svelte';
 	import Markdown from '$lib/components/chat/Messages/Markdown.svelte';
-	import Pencil from '$lib/components/icons/Pencil.svelte';
-	import Textarea from '$lib/components/common/Textarea.svelte';
+		import Textarea from '$lib/components/common/Textarea.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import ArrowUpLeft from '$lib/components/icons/ArrowUpLeft.svelte';
 
 	export let message;
 	export let idx;
@@ -36,7 +35,7 @@
 						onInsert();
 					}}
 				>
-					<ArrowUpLeft className="size-3.5" strokeWidth="2" />
+					<Icon name="arrow-up-left" className="size-3.5" strokeWidth="2" />
 				</button>
 			</Tooltip>
 
@@ -48,7 +47,7 @@
 						onEdit();
 					}}
 				>
-					<Pencil className="size-3.5" strokeWidth="2" />
+					<Icon name="pencil" className="size-3.5" strokeWidth="2" />
 				</button>
 			</Tooltip>
 

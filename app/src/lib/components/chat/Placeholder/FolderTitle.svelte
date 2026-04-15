@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	const i18n = getContext('i18n');
 
 	import DOMPurify from 'dompurify';
@@ -16,11 +17,8 @@
 
 	import FolderModal from '$lib/components/layout/Sidebar/Folders/FolderModal.svelte';
 
-	import Folder from '$lib/components/icons/Folder.svelte';
-	import XMark from '$lib/components/icons/XMark.svelte';
-	import FolderMenu from '$lib/components/layout/Sidebar/Folders/FolderMenu.svelte';
-	import EllipsisHorizontal from '$lib/components/icons/EllipsisHorizontal.svelte';
-	import DeleteConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
+			import FolderMenu from '$lib/components/layout/Sidebar/Folders/FolderMenu.svelte';
+		import DeleteConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
 
 	export let folder = null;
 
@@ -118,7 +116,7 @@
 	class="@md:max-w-3xl group">
 		<div style="--ta:center; --d:flex; --g:0.8rem; --ai:center">
 			<div style="--radius:9999px; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-800); --p:0.6rem; --w:fit-content">
-				<Folder className="size-4.5" strokeWidth="2" />
+				<Icon name="folder" className="size-4.5" strokeWidth="2" />
 			</div>
 
 			<div style="--size:1.875rem">
@@ -140,7 +138,7 @@
 				}}
 			>
 				<button style="--p:0.4rem; --hvr-dark-bgc:var(--color-gray-850); --radius:9999px; touch-action:auto" on:click={(e) => {}}>
-					<EllipsisHorizontal className="size-4" strokeWidth="2.5" />
+					<Icon name="ellipsis-horizontal" className="size-4" strokeWidth="2.5" />
 				</button>
 			</FolderMenu>
 		</div>

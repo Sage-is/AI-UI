@@ -1,9 +1,9 @@
 <script lang="ts">
 	import Fuse from 'fuse.js';
-	import Bolt from '$lib/components/icons/Bolt.svelte';
-	import { onMount, getContext } from 'svelte';
+		import { onMount, getContext } from 'svelte';
 	import { settings, WEBUI_NAME } from '$lib/stores';
 	import { WEBUI_VERSION } from '$lib/constants';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -69,7 +69,7 @@
 	style="--mb:0.2rem; --d:flex; --g:0.2rem; --size:0.6rem; --weight:500; --ai:center; --c:var(--color-gray-600); --dark-c:var(--color-gray-400)"
 >
 	{#if filteredPrompts.length > 0}
-		<Bolt />
+		<Icon name="bolt" className="size-3" />
 		{$i18n.t('Suggested')}
 	{:else}
 		<!-- Keine Vorschläge -->

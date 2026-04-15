@@ -1,9 +1,9 @@
 <script lang="ts">
 	import Modal from '$lib/components/common/Modal.svelte';
 	import { getContext } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	const i18n = getContext('i18n');
-	import XMark from '$lib/components/icons/XMark.svelte';
-	import { getFeedbackById } from '$lib/apis/evaluations';
+		import { getFeedbackById } from '$lib/apis/evaluations';
 	import { toast } from 'svelte-sonner';
 	import Spinner from '$lib/components/common/Spinner.svelte';
 
@@ -47,7 +47,7 @@
 					{$i18n.t('Feedback Details')}
 				</div>
 				<button style="--as:center" on:click={close} aria-label="Close">
-					<XMark className={'size-5'} />
+					<Icon name="x-mark" strokeWidth="2" className={'size-5'} />
 				</button>
 			</div>
 

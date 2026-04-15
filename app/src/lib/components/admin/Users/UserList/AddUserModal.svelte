@@ -3,13 +3,13 @@
 	import { createEventDispatcher } from 'svelte';
 	import { onMount, getContext } from 'svelte';
 	import { addUser } from '$lib/apis/auths';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import { WEBUI_BASE_URL } from '$lib/constants';
 
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import Modal from '$lib/components/common/Modal.svelte';
 	import { generateInitialsImage } from '$lib/utils';
-	import XMark from '$lib/components/icons/XMark.svelte';
 
 	const i18n = getContext('i18n');
 	const dispatch = createEventDispatcher();
@@ -134,7 +134,7 @@
 					show = false;
 				}}
 			>
-				<XMark className={'size-5'} />
+				<Icon name="x-mark" strokeWidth="2" className={'size-5'} />
 			</button>
 		</div>
 
@@ -254,10 +254,10 @@
 									/>
 
 									<button
-										style="--w:100%; --size:0.8rem; 
-										--weight:500; --p:0.6rem; 
+										style="--w:100%; --size:0.8rem;
+										--weight:500; --p:0.6rem;
 										--shadow:6;
-										--bgc:transparent; 
+										--bgc:transparent;
 										--hvr-bgc:var(--color-gray-100);  ; --dark-bc:var(--color-gray-850); --hvr-dark-bgc:var(--color-gray-850); --ta:center; --radius:0.6rem"
 										type="button"
 										on:click={() => {

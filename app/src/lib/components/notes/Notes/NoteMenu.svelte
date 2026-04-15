@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { DropdownMenu } from 'bits-ui';
 	import { getContext, onMount } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import { flyAndScale } from '$lib/utils/transitions';
 	import { fade, slide } from 'svelte/transition';
@@ -8,12 +9,6 @@
 	import { showSettings, mobile, showSidebar, user } from '$lib/stores';
 
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import ArchiveBox from '$lib/components/icons/ArchiveBox.svelte';
-	import Download from '$lib/components/icons/Download.svelte';
-	import GarbageBin from '$lib/components/icons/GarbageBin.svelte';
-	import DocumentDuplicate from '$lib/components/icons/DocumentDuplicate.svelte';
-	import Share from '$lib/components/icons/Share.svelte';
-	import Link from '$lib/components/icons/Link.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -52,7 +47,7 @@
 				<DropdownMenu.SubTrigger
 					style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem"
 				>
-					<Download strokeWidth="2" />
+					<Icon name="download" strokeWidth="2" />
 
 					<div style="--d:flex; --ai:center">{$i18n.t('Download')}</div>
 				</DropdownMenu.SubTrigger>
@@ -96,7 +91,7 @@
 					<DropdownMenu.SubTrigger
 						style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem"
 					>
-						<Share strokeWidth="2" />
+						<Icon name="share" strokeWidth="2" />
 
 						<div style="--d:flex; --ai:center">{$i18n.t('Share')}</div>
 					</DropdownMenu.SubTrigger>
@@ -113,7 +108,7 @@
 									onCopyLink();
 								}}
 							>
-								<Link />
+								<Icon name="link" />
 								<div style="--d:flex; --ai:center">{$i18n.t('Copy link')}</div>
 							</DropdownMenu.Item>
 						{/if}
@@ -125,7 +120,7 @@
 									onCopyToClipboard();
 								}}
 							>
-								<DocumentDuplicate strokeWidth="2" />
+								<Icon name="document-duplicate" strokeWidth="2" />
 								<div style="--d:flex; --ai:center">{$i18n.t('Copy to clipboard')}</div>
 							</DropdownMenu.Item>
 						{/if}
@@ -139,7 +134,7 @@
 					onDelete();
 				}}
 			>
-				<GarbageBin strokeWidth="2" />
+				<Icon name="garbage-bin" strokeWidth="2" />
 				<div style="--d:flex; --ai:center">{$i18n.t('Delete')}</div>
 			</DropdownMenu.Item>
 		</DropdownMenu.Content>

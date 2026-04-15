@@ -3,6 +3,7 @@
 	import { WEBUI_NAME, config, user, showSidebar } from '$lib/stores';
 	import { goto } from '$app/navigation';
 	import { onMount, getContext } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
@@ -15,8 +16,7 @@
 	import { updateUserRole, getUsers, getManagedUsers, deleteUserById } from '$lib/apis/users';
 
 	import Pagination from '$lib/components/common/Pagination.svelte';
-	import ChatBubbles from '$lib/components/icons/ChatBubbles.svelte';
-	import Tooltip from '$lib/components/common/Tooltip.svelte';
+		import Tooltip from '$lib/components/common/Tooltip.svelte';
 
 	import EditUserModal from '$lib/components/admin/Users/UserList/EditUserModal.svelte';
 	import UserChatsModal from '$lib/components/admin/Users/UserList/UserChatsModal.svelte';
@@ -26,10 +26,7 @@
 	import RoleUpdateConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
 
 	import Badge from '$lib/components/common/Badge.svelte';
-	import Plus from '$lib/components/icons/Plus.svelte';
-	import ChevronUp from '$lib/components/icons/ChevronUp.svelte';
-	import ChevronDown from '$lib/components/icons/ChevronDown.svelte';
-	import About from '$lib/components/chat/Settings/About.svelte';
+				import About from '$lib/components/chat/Settings/About.svelte';
 	import Banner from '$lib/components/common/Banner.svelte';
 	import Markdown from '$lib/components/chat/Messages/Markdown.svelte';
 	import Spinner from '$lib/components/common/Spinner.svelte';
@@ -213,7 +210,7 @@
 								showAddUserModal = !showAddUserModal;
 							}}
 						>
-							<Plus className="size-3.5" />
+							<Icon name="plus" strokeWidth="2" className="size-3.5" />
 						</button>
 					</Tooltip>
 				</div>
@@ -243,14 +240,14 @@
 							{#if orderBy === 'role'}
 								<span style="--weight:400"
 									>{#if direction === 'asc'}
-										<ChevronUp className="size-2" />
+										<Icon name="chevron-up" className="size-2" />
 									{:else}
-										<ChevronDown className="size-2" />
+										<Icon name="chevron-down" className="size-2" />
 									{/if}
 								</span>
 							{:else}
 								<span style="--v:hidden">
-									<ChevronUp className="size-2" />
+									<Icon name="chevron-up" className="size-2" />
 								</span>
 							{/if}
 						</div>
@@ -266,14 +263,14 @@
 							{#if orderBy === 'name'}
 								<span style="--weight:400"
 									>{#if direction === 'asc'}
-										<ChevronUp className="size-2" />
+										<Icon name="chevron-up" className="size-2" />
 									{:else}
-										<ChevronDown className="size-2" />
+										<Icon name="chevron-down" className="size-2" />
 									{/if}
 								</span>
 							{:else}
 								<span style="--v:hidden">
-									<ChevronUp className="size-2" />
+									<Icon name="chevron-up" className="size-2" />
 								</span>
 							{/if}
 						</div>
@@ -289,14 +286,14 @@
 							{#if orderBy === 'email'}
 								<span style="--weight:400"
 									>{#if direction === 'asc'}
-										<ChevronUp className="size-2" />
+										<Icon name="chevron-up" className="size-2" />
 									{:else}
-										<ChevronDown className="size-2" />
+										<Icon name="chevron-down" className="size-2" />
 									{/if}
 								</span>
 							{:else}
 								<span style="--v:hidden">
-									<ChevronUp className="size-2" />
+									<Icon name="chevron-up" className="size-2" />
 								</span>
 							{/if}
 						</div>
@@ -313,14 +310,14 @@
 							{#if orderBy === 'last_active_at'}
 								<span style="--weight:400"
 									>{#if direction === 'asc'}
-										<ChevronUp className="size-2" />
+										<Icon name="chevron-up" className="size-2" />
 									{:else}
-										<ChevronDown className="size-2" />
+										<Icon name="chevron-down" className="size-2" />
 									{/if}
 								</span>
 							{:else}
 								<span style="--v:hidden">
-									<ChevronUp className="size-2" />
+									<Icon name="chevron-up" className="size-2" />
 								</span>
 							{/if}
 						</div>
@@ -335,14 +332,14 @@
 							{#if orderBy === 'created_at'}
 								<span style="--weight:400"
 									>{#if direction === 'asc'}
-										<ChevronUp className="size-2" />
+										<Icon name="chevron-up" className="size-2" />
 									{:else}
-										<ChevronDown className="size-2" />
+										<Icon name="chevron-down" className="size-2" />
 									{/if}
 								</span>
 							{:else}
 								<span style="--v:hidden">
-									<ChevronUp className="size-2" />
+									<Icon name="chevron-up" className="size-2" />
 								</span>
 							{/if}
 						</div>
@@ -359,14 +356,14 @@
 							{#if orderBy === 'oauth_sub'}
 								<span style="--weight:400"
 									>{#if direction === 'asc'}
-										<ChevronUp className="size-2" />
+										<Icon name="chevron-up" className="size-2" />
 									{:else}
-										<ChevronDown className="size-2" />
+										<Icon name="chevron-down" className="size-2" />
 									{/if}
 								</span>
 							{:else}
 								<span style="--v:hidden">
-									<ChevronUp className="size-2" />
+									<Icon name="chevron-up" className="size-2" />
 								</span>
 							{/if}
 						</div>
@@ -438,7 +435,7 @@
 												selectedUser = user;
 											}}
 										>
-											<ChatBubbles />
+											<Icon name="chat-bubbles" />
 										</button>
 									</Tooltip>
 								{/if}

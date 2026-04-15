@@ -1,14 +1,12 @@
 <script lang="ts">
 	import { DropdownMenu } from 'bits-ui';
 	import { flyAndScale } from '$lib/utils/transitions';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import { getContext } from 'svelte';
 
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import Link from '$lib/components/icons/Link.svelte';
-	import Eye from '$lib/components/icons/Eye.svelte';
-	import EyeSlash from '$lib/components/icons/EyeSlash.svelte';
-	import { settings } from '$lib/stores';
+				import { settings } from '$lib/stores';
 
 	const i18n = getContext('i18n');
 
@@ -57,9 +55,9 @@
 			}}
 		>
 			{#if ($settings?.pinnedModels ?? []).includes(model?.id)}
-				<EyeSlash />
+				<Icon name="eye-slash" />
 			{:else}
-				<Eye />
+				<Icon name="eye" />
 			{/if}
 
 			<div style="--d:flex; --ai:center">
@@ -82,7 +80,7 @@
 				show = false;
 			}}
 		>
-			<Link />
+			<Icon name="link" />
 
 			<div style="--d:flex; --ai:center">{$i18n.t('Copy Link')}</div>
 		</button>

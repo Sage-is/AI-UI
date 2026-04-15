@@ -2,8 +2,7 @@
 	import { getContext } from 'svelte';
 	import CitationsModal from './CitationsModal.svelte';
 	import Collapsible from '$lib/components/common/Collapsible.svelte';
-	import ChevronDown from '$lib/components/icons/ChevronDown.svelte';
-	import ChevronUp from '$lib/components/icons/ChevronUp.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -186,9 +185,9 @@
 					</div>
 					<div style="--fs:0">
 						{#if isCollapsibleOpen}
-							<ChevronUp strokeWidth="3.5" className="size-3.5" />
+							<Icon name="chevron-up" strokeWidth="3.5" className="size-3.5" />
 						{:else}
-							<ChevronDown strokeWidth="3.5" className="size-3.5" />
+							<Icon name="chevron-down" strokeWidth="3.5" className="size-3.5" />
 						{/if}
 					</div>
 				</div>

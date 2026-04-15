@@ -14,10 +14,12 @@ This file tracks active work only.
 
 ---
 
-## Release Wrap-Up
+## Release Wrap-Up (after Docker image slimming)
 
-- [ ] Test: `brew tap sage-is/apps && brew install ai-ui` (after Docker image slimming)
-- [ ] Fix homebrew-apps Makefile `release_finish` — git flow state got stuck on v0.1.2 release; manual merge required to complete
+- [ ] Test: `brew tap sage-is/apps && brew install ai-ui`
+- [ ] Fix homebrew-apps Makefile `release_finish`
+- [ ] git flow state got stuck on v0.1.2 release; manual merge required to complete
+- [ ] celebrate!!! :D
 
 ---
 

@@ -2,6 +2,7 @@
 	import { toast } from 'svelte-sonner';
 	import { models, settings, user, config } from '$lib/stores';
 	import { createEventDispatcher, onMount, getContext, tick } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const dispatch = createEventDispatcher();
 	import { getModels } from '$lib/apis';
@@ -10,8 +11,7 @@
 	import Switch from '$lib/components/common/Switch.svelte';
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import Plus from '$lib/components/icons/Plus.svelte';
-	import Model from './Evaluations/Model.svelte';
+		import Model from './Evaluations/Model.svelte';
 	import ArenaModelModal from './Evaluations/ArenaModelModal.svelte';
 
 	const i18n = getContext('i18n');
@@ -134,7 +134,7 @@
 											showAddModel = true;
 										}}
 									>
-										<Plus />
+										<Icon name="plus" strokeWidth="2" />
 									</button>
 								</Tooltip>
 							</div>

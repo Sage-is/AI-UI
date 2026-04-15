@@ -129,6 +129,12 @@ DEV_RUN_ARGS := --rm -p $(PORT_MAPPING) \
 	-v $(ENV_FILE) \
 	-v $(FRONTEND_SRC) \
 	-v $(STATIC_SRC) \
+	-v $$(pwd)/app/svelte.config.js:/app/svelte.config.js \
+	-v $$(pwd)/app/vite.config.ts:/app/vite.config.ts \
+	-v $$(pwd)/app/tsconfig.json:/app/tsconfig.json \
+	-v $$(pwd)/app/postcss.config.js:/app/postcss.config.js \
+	-v $$(pwd)/app/tailwind.config.js:/app/tailwind.config.js \
+	-v $$(pwd)/app/package.json:/app/package.json \
 	--name $(CONTAINER_NAME)
 
 it_stop:

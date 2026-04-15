@@ -1,5 +1,6 @@
 <script>
 	import { toast } from 'svelte-sonner';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import { createEventDispatcher, getContext, onMount } from 'svelte';
 	const i18n = getContext('i18n');
@@ -14,11 +15,6 @@
 	import ModelList from './ModelList.svelte';
 	import { getModelsConfig, setModelsConfig } from '$lib/apis/configs';
 	import Spinner from '$lib/components/common/Spinner.svelte';
-	import Minus from '$lib/components/icons/Minus.svelte';
-	import Plus from '$lib/components/icons/Plus.svelte';
-	import ChevronUp from '$lib/components/icons/ChevronUp.svelte';
-	import ChevronDown from '$lib/components/icons/ChevronDown.svelte';
-	import XMark from '$lib/components/icons/XMark.svelte';
 
 	export let show = false;
 	export let initHandler = () => {};
@@ -132,7 +128,7 @@
 					show = false;
 				}}
 			>
-				<XMark className={'size-5'} />
+				<Icon name="x-mark" strokeWidth="2" className={'size-5'} />
 			</button>
 		</div>
 
@@ -175,14 +171,14 @@
 									{#if sortKey === 'model'}
 										<span style="--weight:400; --as:center">
 											{#if sortOrder === 'asc'}
-												<ChevronUp className="size-3" />
+												<Icon name="chevron-up" className="size-3" />
 											{:else}
-												<ChevronDown className="size-3" />
+												<Icon name="chevron-down" className="size-3" />
 											{/if}
 										</span>
 									{:else}
 										<span style="--v:hidden">
-											<ChevronUp className="size-3" />
+											<Icon name="chevron-up" className="size-3" />
 										</span>
 									{/if}
 								</button>
@@ -257,7 +253,7 @@
 															);
 														}}
 													>
-														<Minus strokeWidth="2" className="size-3.5" />
+														<Icon name="minus" strokeWidth="2" className="size-3.5" />
 													</button>
 												</div>
 											</div>

@@ -2,6 +2,7 @@
 	import { toast } from 'svelte-sonner';
 	import { createEventDispatcher, onMount, getContext, tick } from 'svelte';
 	import { getModels as _getModels, getToolServersData } from '$lib/apis';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const dispatch = createEventDispatcher();
 	const i18n = getContext('i18n');
@@ -11,8 +12,7 @@
 	import Switch from '$lib/components/common/Switch.svelte';
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import Plus from '$lib/components/icons/Plus.svelte';
-	import Connection from './Tools/Connection.svelte';
+		import Connection from './Tools/Connection.svelte';
 
 	import AddServerModal from '$lib/components/AddServerModal.svelte';
 
@@ -69,7 +69,7 @@
 									}}
 									type="button"
 								>
-									<Plus />
+									<Icon name="plus" strokeWidth="2" />
 								</button>
 							</Tooltip>
 						</div>
@@ -93,7 +93,7 @@
 
 					<div style="--my:0.4rem">
 						<div
-							class={`text-xs 
+							class={`text-xs
 								${($settings?.highContrastMode ?? false) ? 'text-gray-800 dark:text-gray-100' : 'text-gray-500'}`}
 						>
 							{$i18n.t('Connect to your own OpenAPI compatible external tool servers.')}

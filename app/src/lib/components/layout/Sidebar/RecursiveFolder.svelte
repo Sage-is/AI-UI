@@ -1,5 +1,6 @@
 <script>
 	import { getContext, createEventDispatcher, onMount, onDestroy, tick } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const i18n = getContext('i18n');
 	const dispatch = createEventDispatcher();
@@ -30,8 +31,6 @@
 	import Collapsible from '../../common/Collapsible.svelte';
 	import DragGhost from '$lib/components/common/DragGhost.svelte';
 
-	import FolderOpen from '$lib/components/icons/FolderOpen.svelte';
-	import EllipsisHorizontal from '$lib/components/icons/EllipsisHorizontal.svelte';
 
 	import ChatItem from './ChatItem.svelte';
 	import FolderMenu from './Folders/FolderMenu.svelte';
@@ -398,7 +397,7 @@
 			style="--bgc:rgb(0 0 0 / 0.8); backdrop-filter:blur(40px); --px:0.5rem; --py:0.2rem; --radius:0.5rem; --w:fit-content; --maxw:10rem"
 		>
 			<div style="--d:flex; --ai:center; --g:0.2rem">
-				<FolderOpen className="size-3.5" strokeWidth="2" />
+				<Icon name="folder-open" className="size-3.5" strokeWidth="2" />
 				<div style="--size:0.6rem; --c:#fff; --line-clamp:1">
 					{folders[folderId].name}
 				</div>
@@ -501,13 +500,13 @@
 				{/if}
 
 				<button
-					style="--pos:absolute; 
-						--z:10; 
-						--right:0.5rem; 
-						--v:{isFolderHovered ? 'visible' : 'hidden'}; 
-						--as:center; 
-						--d:flex; 
-						--ai:center; 
+					style="--pos:absolute;
+						--z:10;
+						--right:0.5rem;
+						--v:{isFolderHovered ? 'visible' : 'hidden'};
+						--as:center;
+						--d:flex;
+						--ai:center;
 						--dark-c:var(--color-gray-300)"
 					on:pointerup={(e) => {
 						e.stopPropagation();
@@ -529,7 +528,7 @@
 							style="--p:0.125rem; --hvr-dark-bgc:var(--color-gray-850); --radius:0.5rem; touch-action:auto"
 							on:click={(e) => {}}
 						>
-							<EllipsisHorizontal className="size-4" strokeWidth="2.5" />
+							<Icon name="ellipsis-horizontal" className="size-4" strokeWidth="2.5" />
 						</button>
 					</FolderMenu>
 				</button>

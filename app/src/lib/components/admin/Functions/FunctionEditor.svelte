@@ -8,7 +8,7 @@
 	import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
 	import Badge from '$lib/components/common/Badge.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import ChevronLeft from '$lib/components/icons/ChevronLeft.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	let formElement = null;
 	let loading = false;
@@ -310,7 +310,7 @@ class Pipe:
 									}}
 									type="button"
 								>
-									<ChevronLeft strokeWidth="2.5" />
+									<Icon name="chevron-left" strokeWidth="2.5" />
 								</button>
 							</Tooltip>
 						</div>

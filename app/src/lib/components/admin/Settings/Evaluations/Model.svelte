@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { getContext, createEventDispatcher } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	const dispatch = createEventDispatcher();
 	const i18n = getContext('i18n');
 
-	import Cog6 from '$lib/components/icons/Cog6.svelte';
-	import ArenaModelModal from './ArenaModelModal.svelte';
+		import ArenaModelModal from './ArenaModelModal.svelte';
 	export let model;
 
 	let showModel = false;
@@ -56,7 +56,7 @@
 					showModel = true;
 				}}
 			>
-				<Cog6 />
+				<Icon name="cog6" />
 			</button>
 		</div>
 	</div>

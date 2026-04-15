@@ -3,6 +3,7 @@
 	import { toast } from 'svelte-sonner';
 	import { v4 as uuidv4 } from 'uuid';
 	import { PaneGroup, Pane, PaneResizer } from 'paneforge';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import { onMount, getContext, onDestroy, tick } from 'svelte';
 	const i18n = getContext('i18n');
@@ -44,12 +45,8 @@
 
 	import SyncConfirmDialog from '../../common/ConfirmDialog.svelte';
 	import RichTextInput from '$lib/components/common/RichTextInput.svelte';
-	import EllipsisVertical from '$lib/components/icons/EllipsisVertical.svelte';
-	import Drawer from '$lib/components/common/Drawer.svelte';
-	import ChevronLeft from '$lib/components/icons/ChevronLeft.svelte';
-	import LockClosed from '$lib/components/icons/LockClosed.svelte';
-	import AccessControlModal from '../common/AccessControlModal.svelte';
-	import Search from '$lib/components/icons/Search.svelte';
+		import Drawer from '$lib/components/common/Drawer.svelte';
+			import AccessControlModal from '../common/AccessControlModal.svelte';
 
 	let largeScreen = true;
 
@@ -715,7 +712,7 @@
 									showAccessControlModal = true;
 								}}
 							>
-								<LockClosed strokeWidth="2.5" className="size-3.5" />
+								<Icon name="lock-closed" strokeWidth="2.5" className="size-3.5" />
 
 								<div style="--size:0.8rem; --weight:500; --fs:0">
 									{$i18n.t('Access')}
@@ -753,7 +750,7 @@
 												pane.expand();
 											}}
 										>
-											<ChevronLeft strokeWidth="2.5" />
+											<Icon name="chevron-left" strokeWidth="2.5" />
 										</button>
 									</div>
 								{/if}
@@ -820,7 +817,7 @@
 											selectedFileId = null;
 										}}
 									>
-										<ChevronLeft strokeWidth="2.5" />
+										<Icon name="chevron-left" strokeWidth="2.5" />
 									</button>
 								</div>
 								<div style="--fx:1 1 0%; --size:1.2rem; --line-clamp:1">
@@ -866,7 +863,7 @@
 						<div style="--px:0.6rem">
 							<div style="--d:flex; --mb:0.125rem">
 								<div style="--as:center; --ml:0.2rem; --mr:0.6rem">
-									<Search />
+									<Icon name="search" />
 								</div>
 								<input
 									style="--w:100%; --size:0.8rem; --pr:1rem; --py:0.2rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"

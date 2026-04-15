@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import panzoom, { type PanZoom } from 'panzoom';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import fileSaver from 'file-saver';
 	const { saveAs } = fileSaver;
 
-	import XMark from '$lib/components/icons/XMark.svelte';
 
 	export let show = false;
 	export let src = '';
@@ -85,7 +85,7 @@
 						show = false;
 					}}
 				>
-					<XMark className={'size-6'} />
+					<Icon name="x-mark" strokeWidth="2" className={'size-6'} />
 				</button>
 			</div>
 

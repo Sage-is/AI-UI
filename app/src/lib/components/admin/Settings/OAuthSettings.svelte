@@ -6,6 +6,7 @@
 <script lang="ts">
 	import { onMount, getContext, createEventDispatcher } from 'svelte';
 	import { toast } from 'svelte-sonner';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import {
 		getOAuthConfig,
@@ -23,7 +24,6 @@
 	import Switch from '$lib/components/common/Switch.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import Textarea from '$lib/components/common/Textarea.svelte';
-	import QuestionMarkCircle from '$lib/components/icons/QuestionMarkCircle.svelte';
 
 	const i18n = getContext('i18n');
 	const dispatch = createEventDispatcher();
@@ -531,7 +531,7 @@
 								className="flex items-center"
 							>
 								<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"
-									><QuestionMarkCircle className="size-3.5" /></span
+									><Icon name="question-mark-circle" strokeWidth="2" className="size-3.5" /></span
 								>
 							</Tooltip>
 						</div>
@@ -587,7 +587,7 @@
 								>
 									<span
 										style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"
-										><QuestionMarkCircle className="size-3.5" /></span
+										><Icon name="question-mark-circle" strokeWidth="2" className="size-3.5" /></span
 									>
 								</Tooltip>
 							</div>
@@ -625,7 +625,7 @@
 								className="flex items-center"
 							>
 								<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"
-									><QuestionMarkCircle className="size-3.5" /></span
+									><Icon name="question-mark-circle" strokeWidth="2" className="size-3.5" /></span
 								>
 							</Tooltip>
 						</div>

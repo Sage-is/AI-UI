@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { marked } from 'marked';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import { getContext, tick } from 'svelte';
 	import dayjs from '$lib/dayjs';
@@ -10,11 +11,8 @@
 
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import { copyToClipboard, sanitizeResponseContent } from '$lib/utils';
-	import ArrowUpTray from '$lib/components/icons/ArrowUpTray.svelte';
-	import Check from '$lib/components/icons/Check.svelte';
-	import ModelItemMenu from './ModelItemMenu.svelte';
-	import EllipsisHorizontal from '$lib/components/icons/EllipsisHorizontal.svelte';
-	import { toast } from 'svelte-sonner';
+			import ModelItemMenu from './ModelItemMenu.svelte';
+		import { toast } from 'svelte-sonner';
 
 	const i18n = getContext('i18n');
 
@@ -224,7 +222,7 @@
 						unloadModelHandler(item.value);
 					}}
 				>
-					<ArrowUpTray className="size-3" />
+					<Icon name="arrow-up-tray" className="size-3" />
 				</button>
 			</Tooltip>
 		{/if}
@@ -245,13 +243,13 @@
 					showMenu = !showMenu;
 				}}
 			>
-				<EllipsisHorizontal />
+				<Icon name="ellipsis-horizontal" />
 			</button>
 		</ModelItemMenu>
 
 		{#if value === item.value}
 			<div>
-				<Check className="size-3" />
+				<Icon name="check" className="size-3" />
 			</div>
 		{/if}
 	</div>

@@ -2,9 +2,9 @@
 	import { getContext } from 'svelte';
 	import { settings } from '$lib/stores';
 	import { updateUserSettings } from '$lib/apis/users';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import Modal from './common/Modal.svelte';
-	import XMark from '$lib/components/icons/XMark.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -25,9 +25,7 @@
 	<!-- Close button -->
 	<div style="--d:flex; --jc:flex-end; --px:0.5rem; --pt:0.5rem">
 		<button on:click={dismiss} aria-label={$i18n.t('Close')}>
-			<XMark className={'size-5'}>
-				<p class="sr-only">{$i18n.t('Close')}</p>
-			</XMark>
+			<Icon name="x-mark" strokeWidth="2" className={'size-5'} />
 		</button>
 	</div>
 

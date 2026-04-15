@@ -1,12 +1,12 @@
 <script lang="ts">
 	import Sortable from 'sortablejs';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import { createEventDispatcher, getContext, onMount } from 'svelte';
 	const i18n = getContext('i18n');
 
 	import { models } from '$lib/stores';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import EllipsisVertical from '$lib/components/icons/EllipsisVertical.svelte';
 
 	export let modelIds = [];
 
@@ -48,7 +48,7 @@
 			<div style="--d:flex; --g:0.5rem; --w:100%; --jc:space-between; --ai:center" id="model-item-{modelId}">
 				<Tooltip content={modelId} placement="top-start">
 					<div style="--d:flex; --ai:center; --g:0.2rem">
-						<EllipsisVertical className="size-4 cursor-move item-handle" />
+						<Icon name="ellipsis-vertical" className="size-4 cursor-move item-handle" />
 
 						<div style="--size:0.8rem; --fx:1 1 0%; --py:0.2rem; --radius:0.5rem">
 							{#if $models.find((model) => model.id === modelId)}

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import ArrowTurnDownRight from '$lib/components/icons/ArrowTurnDownRight.svelte';
-	import { onMount, tick, getContext } from 'svelte';
+		import { onMount, tick, getContext } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -23,7 +23,7 @@
 				title={followUp}
 				aria-label={followUp}
 			>
-				<ArrowTurnDownRight className="size-3.5" />
+				<Icon name="arrow-turn-down-right" className="size-3.5" />
 
 				<div style="--line-clamp:1">
 					{followUp}

@@ -5,7 +5,7 @@
 	import { user } from '$lib/stores';
 	import Checkbox from '$lib/components/common/Checkbox.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import Search from '$lib/components/icons/Search.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -94,7 +94,7 @@
 <div style="--d:flex; --fd:column; --g:0.6rem">
 	<!-- Search -->
 	<div style="--d:flex; --ai:center; --g:0.5rem; --px:0.5rem; --py:0.4rem; --radius:0.5rem; --bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800)">
-		<Search className="size-4 text-gray-400" />
+		<Icon name="search" className="size-4 text-gray-400" />
 		<input
 			bind:value={searchQuery}
 			placeholder={$i18n.t('Search people and groups...')}

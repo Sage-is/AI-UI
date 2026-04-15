@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { onMount, getContext } from 'svelte';
 	import { toast } from 'svelte-sonner';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import { getModelsStatus, triggerModelDownload } from '$lib/apis/retrieval';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import QuestionMarkCircle from '$lib/components/icons/QuestionMarkCircle.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -94,7 +94,7 @@
 							<span style="--size:0.6rem; --c:var(--color-blue-600); --weight:500">{$i18n.t('downloading...')}</span>
 						{/if}
 						<Tooltip content={$i18n.t('Embedding model for RAG document search and knowledge base queries. Required for uploading and searching documents.')} placement="right" className="flex items-center">
-							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><QuestionMarkCircle className="size-3.5" /></span>
+							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><Icon name="question-mark-circle" strokeWidth="2" className="size-3.5" /></span>
 						</Tooltip>
 					</div>
 					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
@@ -130,7 +130,7 @@
 							<span style="--size:0.6rem; --c:var(--color-blue-600); --weight:500">{$i18n.t('downloading...')}</span>
 						{/if}
 						<Tooltip content={$i18n.t('Whisper model for transcribing audio files and voice input into text.')} placement="right" className="flex items-center">
-							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><QuestionMarkCircle className="size-3.5" /></span>
+							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><Icon name="question-mark-circle" strokeWidth="2" className="size-3.5" /></span>
 						</Tooltip>
 					</div>
 					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">

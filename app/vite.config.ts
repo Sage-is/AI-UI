@@ -11,7 +11,7 @@ const viteServerConfig = {
 			res.setHeader('Access-Control-Allow-Origin', '*');
 			res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
 			res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-			
+
 			// Only set COEP headers for production builds, not in development
 			// COEP can cause issues with development tools and localhost
 			const isDevelopment = process.env.NODE_ENV !== 'production';
@@ -62,6 +62,11 @@ export default defineConfig({
 			'/static': {  // Proxy the static folder
 				target: 'http://localhost:8080',
 				changeOrigin: true
+			},
+			'/sprites': {  // Proxy the sprites folder
+				target: 'http://localhost:8080',
+				changeOrigin: true,
+				rewrite: (path) => '/static' + path
 			},
 			'/uploads': {  // Proxy the uploads folder
 				target: 'http://localhost:8080',

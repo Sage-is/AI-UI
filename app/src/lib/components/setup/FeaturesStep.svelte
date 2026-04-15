@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { onMount, getContext } from 'svelte';
 	import { toast } from 'svelte-sonner';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import { getAdminConfig, updateAdminConfig } from '$lib/apis/auths';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import QuestionMarkCircle from '$lib/components/icons/QuestionMarkCircle.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -86,7 +86,7 @@
 					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('Community Sharing')}</span>
 						<Tooltip content={$i18n.t('Let users publish conversations to a shared community feed visible to all platform members.')} placement="right" className="flex items-center">
-							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><QuestionMarkCircle className="size-3.5" /></span>
+							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><Icon name="question-mark-circle" strokeWidth="2" className="size-3.5" /></span>
 						</Tooltip>
 					</div>
 					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
@@ -104,7 +104,7 @@
 					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('Message Rating')}</span>
 						<Tooltip content={$i18n.t('Show thumbs up/down buttons on AI responses so users can provide feedback on response quality.')} placement="right" className="flex items-center">
-							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><QuestionMarkCircle className="size-3.5" /></span>
+							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><Icon name="question-mark-circle" strokeWidth="2" className="size-3.5" /></span>
 						</Tooltip>
 					</div>
 					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
@@ -123,7 +123,7 @@
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('Notes')}</span>
 						<span style="--size:0.55rem; --c:var(--color-amber-600); --weight:600; --px:0.3rem; --py:0.1rem; --radius:0.25rem; --bgc:var(--color-amber-100); --dark-bgc:var(--color-amber-900); --dark-c:var(--color-amber-400)">{$i18n.t('Beta')}</span>
 						<Tooltip content={$i18n.t('Adds a personal note-taking area where users can save and organize text notes. This feature is still in beta and may change.')} placement="right" className="flex items-center">
-							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><QuestionMarkCircle className="size-3.5" /></span>
+							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><Icon name="question-mark-circle" strokeWidth="2" className="size-3.5" /></span>
 						</Tooltip>
 					</div>
 					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
@@ -142,7 +142,7 @@
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('Spaces')}</span>
 						<span style="--size:0.55rem; --c:var(--color-amber-600); --weight:600; --px:0.3rem; --py:0.1rem; --radius:0.25rem; --bgc:var(--color-amber-100); --dark-bgc:var(--color-amber-900); --dark-c:var(--color-amber-400)">{$i18n.t('Beta')}</span>
 						<Tooltip content={$i18n.t('Create shared workspaces where teams can collaborate with dedicated models, knowledge bases, and conversation history. This feature is still in beta and may change.')} placement="right" className="flex items-center">
-							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><QuestionMarkCircle className="size-3.5" /></span>
+							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><Icon name="question-mark-circle" strokeWidth="2" className="size-3.5" /></span>
 						</Tooltip>
 					</div>
 					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
@@ -160,7 +160,7 @@
 					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('User Webhooks')}</span>
 						<Tooltip content={$i18n.t('Allow users to set up webhook URLs that receive notifications when events occur, such as new messages or completed responses.')} placement="right" className="flex items-center">
-							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><QuestionMarkCircle className="size-3.5" /></span>
+							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><Icon name="question-mark-circle" strokeWidth="2" className="size-3.5" /></span>
 						</Tooltip>
 					</div>
 					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">

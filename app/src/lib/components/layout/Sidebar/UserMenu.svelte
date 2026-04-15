@@ -2,6 +2,7 @@
 	import { createEventDispatcher, getContext, onMount, onDestroy } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { fade } from 'svelte/transition';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import { getUsage } from '$lib/apis';
 	import { userSignOut } from '$lib/apis/auths';
@@ -9,14 +10,7 @@
 	import { showSettings, mobile, showSidebar, showShortcuts, user } from '$lib/stores';
 
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import ArchiveBox from '$lib/components/icons/ArchiveBox.svelte';
-	import QuestionMarkCircle from '$lib/components/icons/QuestionMarkCircle.svelte';
-	import Map from '$lib/components/icons/Map.svelte';
-	import Keyboard from '$lib/components/icons/Keyboard.svelte';
-	import ShortcutsModal from '$lib/components/chat/ShortcutsModal.svelte';
-	import Settings from '$lib/components/icons/Settings.svelte';
-	import UserGroup from '$lib/components/icons/UserGroup.svelte';
-	import SignOut from '$lib/components/icons/SignOut.svelte';
+					import ShortcutsModal from '$lib/components/chat/ShortcutsModal.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -130,7 +124,7 @@
 			}}
 		>
 			<div style="--as:center; --mr:0.6rem">
-				<Settings className="w-5 h-5" strokeWidth="1.5" />
+				<Icon name="settings" className="w-5 h-5" strokeWidth="1.5" />
 			</div>
 			<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
 				{$i18n.t('Settings')}
@@ -146,7 +140,7 @@
 			}}
 		>
 			<div style="--as:center; --mr:0.6rem">
-				<ArchiveBox className="size-5" strokeWidth="1.5" />
+				<Icon name="archive-box" className="size-5" strokeWidth="1.5" />
 			</div>
 			<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
 				{$i18n.t('Archived Chats')}
@@ -163,7 +157,7 @@
 				}}
 			>
 				<div style="--as:center; --mr:0.6rem">
-					<UserGroup className="w-5 h-5" strokeWidth="1.5" />
+					<Icon name="user-group" className="w-5 h-5" strokeWidth="1.5" />
 				</div>
 				<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
 					{$i18n.t('Admin Panel')}
@@ -183,7 +177,7 @@
 					close();
 				}}
 			>
-				<QuestionMarkCircle className="size-5" />
+				<Icon name="question-mark-circle" strokeWidth="2" className="size-5" />
 				<div style="--d:flex; --ai:center">{$i18n.t('Documentation')}</div>
 			</button>
 
@@ -194,7 +188,7 @@
 					close();
 				}}
 			>
-				<Map className="size-5" />
+				<Icon name="map" strokeWidth="2" className="size-5" />
 				<div style="--d:flex; --ai:center">{$i18n.t('Releases')}</div>
 			</button>
 
@@ -205,7 +199,7 @@
 					close();
 				}}
 			>
-				<Keyboard className="size-5" />
+				<Icon name="keyboard" strokeWidth="2" className="size-5" />
 				<div style="--d:flex; --ai:center">{$i18n.t('Keyboard shortcuts')}</div>
 			</button>
 		{/if}
@@ -225,7 +219,7 @@
 			}}
 		>
 			<div style="--as:center; --mr:0.6rem">
-				<SignOut className="w-5 h-5" strokeWidth="1.5" />
+				<Icon name="sign-out" className="w-5 h-5" strokeWidth="1.5" />
 			</div>
 			<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">
 				{$i18n.t('Sign Out')}

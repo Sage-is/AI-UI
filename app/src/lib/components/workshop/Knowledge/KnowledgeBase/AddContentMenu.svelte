@@ -2,14 +2,11 @@
 	import { DropdownMenu } from 'bits-ui';
 	import { flyAndScale } from '$lib/utils/transitions';
 	import { getContext, createEventDispatcher } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	const dispatch = createEventDispatcher();
 
 	import Dropdown from '$lib/components/common/Dropdown.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import ArrowUpCircle from '$lib/components/icons/ArrowUpCircle.svelte';
-	import BarsArrowUp from '$lib/components/icons/BarsArrowUp.svelte';
-	import FolderOpen from '$lib/components/icons/FolderOpen.svelte';
-	import ArrowPath from '$lib/components/icons/ArrowPath.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -62,7 +59,7 @@
 					dispatch('upload', { type: 'files' });
 				}}
 			>
-				<ArrowUpCircle strokeWidth="2" />
+				<Icon name="arrow-up-circle" strokeWidth="2" />
 				<div style="--d:flex; --ai:center">{$i18n.t('Upload files')}</div>
 			</DropdownMenu.Item>
 
@@ -72,7 +69,7 @@
 					dispatch('upload', { type: 'directory' });
 				}}
 			>
-				<FolderOpen strokeWidth="2" />
+				<Icon name="folder-open" strokeWidth="2" />
 				<div style="--d:flex; --ai:center">{$i18n.t('Upload directory')}</div>
 			</DropdownMenu.Item>
 
@@ -88,7 +85,7 @@
 						dispatch('sync', { type: 'directory' });
 					}}
 				>
-					<ArrowPath strokeWidth="2" />
+					<Icon name="arrow-path" strokeWidth="2" />
 					<div style="--d:flex; --ai:center">{$i18n.t('Sync directory')}</div>
 				</DropdownMenu.Item>
 			</Tooltip>
@@ -99,7 +96,7 @@
 					dispatch('upload', { type: 'text' });
 				}}
 			>
-				<BarsArrowUp strokeWidth="2" />
+				<Icon name="bars-arrow-up" strokeWidth="2" />
 				<div style="--d:flex; --ai:center">{$i18n.t('Add text content')}</div>
 			</DropdownMenu.Item>
 		</DropdownMenu.Content>

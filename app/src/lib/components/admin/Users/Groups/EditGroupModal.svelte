@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
 	import { getContext, onMount } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	const i18n = getContext('i18n');
 
 	import Spinner from '$lib/components/common/Spinner.svelte';
@@ -8,10 +9,7 @@
 	import Display from './Display.svelte';
 	import Permissions from './Permissions.svelte';
 	import Users from './Users.svelte';
-	import UserPlusSolid from '$lib/components/icons/UserPlusSolid.svelte';
-	import WrenchSolid from '$lib/components/icons/WrenchSolid.svelte';
-	import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
-	import XMark from '$lib/components/icons/XMark.svelte';
+			import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
 
 	export let onSubmit: Function = () => {};
 	export let onDelete: Function = () => {};
@@ -127,7 +125,7 @@
 					show = false;
 				}}
 			>
-				<XMark className={'size-5'} />
+				<Icon name="x-mark" strokeWidth="2" className={'size-5'} />
 			</button>
 		</div>
 
@@ -189,7 +187,7 @@
 									type="button"
 								>
 									<div style="--as:center; --mr:0.5rem">
-										<WrenchSolid />
+										<Icon name="wrench-solid" />
 									</div>
 									<div style="--as:center">{$i18n.t('Permissions')}</div>
 								</button>
@@ -208,7 +206,7 @@
 									type="button"
 								>
 									<div style="--as:center; --mr:0.5rem">
-										<UserPlusSolid />
+										<Icon name="user-plus-solid" />
 									</div>
 									<div style="--as:center">{$i18n.t('Users')} ({userIds.length})</div>
 								</button>

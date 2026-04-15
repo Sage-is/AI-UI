@@ -3,6 +3,7 @@
 	export let selectedModelId = '';
 
 	import { marked } from 'marked';
+	import Icon from '$lib/components/Icon.svelte';
 	// Configure marked with extensions
 	marked.use({
 		breaks: true,
@@ -49,10 +50,7 @@
 
 	import Messages from '$lib/components/notes/NoteEditor/Chat/Messages.svelte';
 	import MessageInput from '$lib/components/channel/MessageInput.svelte';
-	import XMark from '$lib/components/icons/XMark.svelte';
-	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import Pencil from '$lib/components/icons/Pencil.svelte';
-	import PencilSquare from '$lib/components/icons/PencilSquare.svelte';
+		import Tooltip from '$lib/components/common/Tooltip.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -335,7 +333,7 @@ Based on the user's instruction, update and enhance the existing notes or select
 				show = !show;
 			}}
 		>
-			<XMark className="size-5" strokeWidth="2.5" />
+			<Icon name="x-mark" className="size-5" strokeWidth="2.5" />
 		</button>
 	</div>
 
@@ -413,7 +411,7 @@ Based on the user's instruction, update and enhance the existing notes or select
 											? ' text-sky-500 dark:text-sky-300 bg-sky-50 dark:bg-sky-200/5'
 											: 'bg-transparent text-gray-600 dark:text-gray-300 '} disabled:opacity-50 disabled:pointer-events-none"
 									>
-										<PencilSquare className="size-4" strokeWidth="1.75" />
+										<Icon name="pencil-square" className="size-4" strokeWidth="1.75" />
 										<span
 											style="--d:block; --ws:nowrap; --of:hidden; text-overflow:ellipsis; --lh:1; --pr:0.125rem"
 											>{$i18n.t('Edit')}</span

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
 	import { onMount, getContext } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import { user, config, settings } from '$lib/stores';
 	import { updateUserProfile, createAPIKey, getAPIKey, getSessionUser } from '$lib/apis/auths';
@@ -11,8 +12,7 @@
 	import { getGravatarUrl } from '$lib/apis/utils';
 	import { generateInitialsImage, canvasPixelTest } from '$lib/utils';
 	import { copyToClipboard } from '$lib/utils';
-	import Plus from '$lib/components/icons/Plus.svelte';
-	import Tooltip from '$lib/components/common/Tooltip.svelte';
+		import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import SensitiveInput from '$lib/components/common/SensitiveInput.svelte';
 
 	const i18n = getContext('i18n');
@@ -288,8 +288,8 @@
 				>
 					<span style="--weight:500">{$i18n.t('API keys')}</span>
 					<details
-						style="--d:inline; --size:0.6rem; 
-					--c:var(--color-gray-400); 
+						style="--d:inline; --size:0.6rem;
+					--c:var(--color-gray-400);
 					--dark-c:var(--color-gray-500);--w: 80%;
 					--m: auto;--b:0"
 						on:click|stopPropagation
@@ -460,7 +460,7 @@
 											createAPIKeyHandler();
 										}}
 									>
-										<Plus strokeWidth="2" className=" size-3.5" />
+										<Icon name="plus" strokeWidth="2" className=" size-3.5" />
 
 										{$i18n.t('Create new secret key')}</button
 									>
