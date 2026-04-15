@@ -1,19 +1,16 @@
 <script>
 	import { createEventDispatcher, getContext, onMount } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	const i18n = getContext('i18n');
 	const dispatch = createEventDispatcher();
 
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import Modal from '$lib/components/common/Modal.svelte';
 	import { models } from '$lib/stores';
-	import Plus from '$lib/components/icons/Plus.svelte';
-	import Minus from '$lib/components/icons/Minus.svelte';
-	import PencilSolid from '$lib/components/icons/PencilSolid.svelte';
-	import { toast } from 'svelte-sonner';
+				import { toast } from 'svelte-sonner';
 	import AccessControl from '$lib/components/workshop/common/AccessControl.svelte';
 	import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
-	import XMark from '$lib/components/icons/XMark.svelte';
-	import { WEBUI_BASE_URL } from '$lib/constants';
+		import { WEBUI_BASE_URL } from '$lib/constants';
 
 	export let show = false;
 	export let edit = false;
@@ -145,7 +142,7 @@
 					show = false;
 				}}
 			>
-				<XMark className={'size-5'} />
+				<Icon name="x-mark" strokeWidth="2" className={'size-5'} />
 			</button>
 		</div>
 
@@ -240,7 +237,7 @@
 	class="bg-fixed"
 								>
 									<div style="--my:auto; --c:#fff">
-										<PencilSolid className="size-4" />
+										<Icon name="pencil-solid" className="size-4" />
 									</div>
 								</div>
 							</button>
@@ -340,7 +337,7 @@
 														modelIds = modelIds.filter((_, idx) => idx !== modelIdx);
 													}}
 												>
-													<Minus strokeWidth="2" className="size-3.5" />
+													<Icon name="minus" strokeWidth="2" className="size-3.5" />
 												</button>
 											</div>
 										</div>
@@ -376,7 +373,7 @@
 										addModelHandler();
 									}}
 								>
-									<Plus className="size-3.5" strokeWidth="2" />
+									<Icon name="plus" className="size-3.5" strokeWidth="2" />
 								</button>
 							</div>
 						</div>

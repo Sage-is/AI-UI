@@ -3,6 +3,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import { onMount, getContext } from 'svelte';
 	import { addUser } from '$lib/apis/auths';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import Modal from '../../common/Modal.svelte';
 	import {
@@ -13,7 +14,6 @@
 	import Spinner from '../../common/Spinner.svelte';
 	import Switch from '$lib/components/common/Switch.svelte';
 	import Valves from '$lib/components/common/Valves.svelte';
-	import XMark from '$lib/components/icons/XMark.svelte';
 
 	const i18n = getContext('i18n');
 	const dispatch = createEventDispatcher();
@@ -98,7 +98,7 @@
 					show = false;
 				}}
 			>
-				<XMark className={'size-5'} />
+				<Icon name="x-mark" strokeWidth="2" className={'size-5'} />
 			</button>
 		</div>
 

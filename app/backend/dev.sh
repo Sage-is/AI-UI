@@ -30,9 +30,10 @@ export CORS_ALLOW_ORIGIN=http://localhost:5173
 export SKIP_STATIC_CLEANUP=true
 
 WEBUI_SECRET_KEY="$WEBUI_SECRET_KEY" \
-exec uvicorn sage_is_ai.main:app \
+uvicorn sage_is_ai.main:app \
     --port $PORT \
     --host 0.0.0.0 \
     --forwarded-allow-ips '*' \
-    --reload \
-    & cd /app/ && npm run dev
+    --reload &
+
+cd /app/ && exec bun run vite dev --host 0.0.0.0

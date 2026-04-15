@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { onMount, tick, getContext } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import Textarea from '$lib/components/common/Textarea.svelte';
 	import { toast } from 'svelte-sonner';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import AccessControl from '../common/AccessControl.svelte';
-	import LockClosed from '$lib/components/icons/LockClosed.svelte';
-	import AccessControlModal from '../common/AccessControlModal.svelte';
+		import AccessControlModal from '../common/AccessControlModal.svelte';
 	import { user } from '$lib/stores';
 	import { slugify } from '$lib/utils';
 	import Spinner from '$lib/components/common/Spinner.svelte';
@@ -120,7 +120,7 @@
 									showAccessControlModal = true;
 								}}
 							>
-								<LockClosed strokeWidth="2.5" className="size-3.5" />
+								<Icon name="lock-closed" strokeWidth="2.5" className="size-3.5" />
 
 								<div style="--size:0.8rem; --weight:500; --fs:0">
 									{$i18n.t('Access')}

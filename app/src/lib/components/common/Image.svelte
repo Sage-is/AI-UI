@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { WEBUI_BASE_URL } from '$lib/constants';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import { settings } from '$lib/stores';
 	import ImagePreview from './ImagePreview.svelte';
-	import XMark from '$lib/components/icons/XMark.svelte';
-	import { getContext } from 'svelte';
+		import { getContext } from 'svelte';
 
 	export let src = '';
 	export let alt = '';
@@ -50,7 +50,7 @@
 					onDismiss();
 				}}
 			>
-				<XMark className={'size-4'} />
+				<Icon name="x-mark" strokeWidth="2" className={'size-4'} />
 			</button>
 		</div>
 	{/if}

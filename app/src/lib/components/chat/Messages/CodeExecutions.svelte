@@ -1,9 +1,7 @@
 <script lang="ts">
 	import CodeExecutionModal from './CodeExecutionModal.svelte';
 	import Spinner from '$lib/components/common/Spinner.svelte';
-	import Check from '$lib/components/icons/Check.svelte';
-	import XMark from '$lib/components/icons/XMark.svelte';
-	import EllipsisHorizontal from '$lib/components/icons/EllipsisHorizontal.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	export let codeExecutions = [];
 
@@ -41,11 +39,11 @@
 					>
 						{#if execution?.result}
 							{#if execution.result?.error}
-								<XMark />
+								<Icon name="x-mark" className="size-3.5" strokeWidth="2" />
 							{:else if execution.result?.output}
-								<Check strokeWidth="3" className="size-3" />
+								<Icon name="check" strokeWidth="3" className="size-3" />
 							{:else}
-								<EllipsisHorizontal />
+								<Icon name="ellipsis-horizontal" />
 							{/if}
 						{:else}
 							<Spinner className="size-4" />

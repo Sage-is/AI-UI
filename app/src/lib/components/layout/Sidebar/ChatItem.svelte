@@ -2,6 +2,7 @@
 	import { toast } from 'svelte-sonner';
 	import { goto, invalidate, invalidateAll } from '$app/navigation';
 	import { onMount, getContext, createEventDispatcher, tick, onDestroy } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	const i18n = getContext('i18n');
 
 	const dispatch = createEventDispatcher();
@@ -32,15 +33,9 @@
 	import ChatMenu from './ChatMenu.svelte';
 	import DeleteConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
 	import ShareChatModal from '$lib/components/chat/ShareChatModal.svelte';
-	import GarbageBin from '$lib/components/icons/GarbageBin.svelte';
-	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import ArchiveBox from '$lib/components/icons/ArchiveBox.svelte';
-	import DragGhost from '$lib/components/common/DragGhost.svelte';
-	import Check from '$lib/components/icons/Check.svelte';
-	import XMark from '$lib/components/icons/XMark.svelte';
-	import Document from '$lib/components/icons/Document.svelte';
-	import Sparkles from '$lib/components/icons/Sparkles.svelte';
-	import { generateTitle } from '$lib/apis';
+		import Tooltip from '$lib/components/common/Tooltip.svelte';
+		import DragGhost from '$lib/components/common/DragGhost.svelte';
+					import { generateTitle } from '$lib/apis';
 
 	export let className = '';
 
@@ -288,7 +283,7 @@
 			style="--bgc:rgb(0 0 0 / 0.8); backdrop-filter:blur(40px); --px:0.5rem; --py:0.2rem; --radius:0.5rem; --w:fit-content; --maxw:10rem"
 		>
 			<div style="--d:flex; --ai:center; --g:0.2rem">
-				<Document className=" size-[18px]" strokeWidth="2" />
+				<Icon name="document" className=" size-[18px]" strokeWidth="2" />
 				<div style="--size:0.6rem; --c:#fff; --line-clamp:1">
 					{title}
 				</div>
@@ -420,7 +415,7 @@
 				<!-- TODO: add shortcut support using "generate-title-button" id -->
 					<button
 						style="--d:none;
-							--as:center; 
+							--as:center;
 							--hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						id="generate-title-button"
 						on:click={(e) => {
@@ -431,7 +426,7 @@
 							generateTitleHandler();
 						}}
 					>
-						<Sparkles strokeWidth="2" />
+						<Icon name="sparkles" strokeWidth="2" />
 					</button>
 				</Tooltip>
 			</div>
@@ -445,7 +440,7 @@
 						}}
 						type="button"
 					>
-						<ArchiveBox className="size-4  translate-y-[0.5px]" strokeWidth="2" />
+						<Icon name="archive-box" className="size-4  translate-y-[0.5px]" strokeWidth="2" />
 					</button>
 				</Tooltip>
 
@@ -457,7 +452,7 @@
 						}}
 						type="button"
 					>
-						<GarbageBin strokeWidth="2" />
+						<Icon name="garbage-bin" strokeWidth="2" />
 					</button>
 				</Tooltip>
 			</div>

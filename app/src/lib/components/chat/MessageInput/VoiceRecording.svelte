@@ -3,9 +3,9 @@
 	import { tick, getContext, onMount, onDestroy } from 'svelte';
 	import { config, settings } from '$lib/stores';
 	import { blobToFile, calculateSHA256, extractCurlyBraceWords } from '$lib/utils';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import { transcribeAudio } from '$lib/apis/audio';
-	import XMark from '$lib/components/icons/XMark.svelte';
 
 	import dayjs from 'dayjs';
 	import LocalizedFormat from 'dayjs/plugin/localizedFormat';
@@ -408,7 +408,7 @@
 				onCancel();
 			}}
 		>
-			<XMark className={'size-4'} />
+			<Icon name="x-mark" strokeWidth="2" className={'size-4'} />
 		</button>
 	</div>
 

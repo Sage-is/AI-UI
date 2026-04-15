@@ -15,8 +15,8 @@
 	import { updateSpaceById } from '$lib/apis/spaces';
 	import { getAllUsers } from '$lib/apis/users';
 	import Modal from '$lib/components/common/Modal.svelte';
-	import GarbageBin from '$lib/components/icons/GarbageBin.svelte';
-	import Tooltip from '$lib/components/common/Tooltip.svelte';
+		import Tooltip from '$lib/components/common/Tooltip.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -145,7 +145,7 @@
 								style="--c:var(--color-gray-500); --hvr-c:var(--color-red-500); --tn:color 150ms"
 								on:click={() => removeMember(member.id)}
 							>
-								<GarbageBin className="size-4" />
+								<Icon name="garbage-bin" className="size-4" />
 							</button>
 						</Tooltip>
 					</div>

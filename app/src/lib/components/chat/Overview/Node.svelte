@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { WEBUI_BASE_URL } from '$lib/constants';
 	import { Handle, Position, type NodeProps } from '@xyflow/svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import ProfileImage from '../Messages/ProfileImage.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import Heart from '$lib/components/icons/Heart.svelte';
 
 	type $$Props = NodeProps;
 	export let data: $$Props['data'];
@@ -58,12 +58,10 @@
 								data.message.favorite = !(data?.message?.favorite ?? false);
 							}}
 						>
-							<Heart
-								className="size-3 {data?.message?.favorite
+							<Icon name="heart" className="size-3 {data?.message?.favorite
 									? 'fill-red-500 stroke-red-500'
 									: 'hover:fill-red-500 hover:stroke-red-500'} "
-								strokeWidth="2.5"
-							/>
+								strokeWidth="2.5" />
 						</button>
 					</div>
 

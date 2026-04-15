@@ -7,8 +7,8 @@
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import { WEBUI_API_BASE_URL } from '$lib/constants';
 	import { copyToClipboard as _copyToClipboard } from '$lib/utils';
+	import Icon from '$lib/components/Icon.svelte';
 
-	import XMark from '$lib/components/icons/XMark.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -171,7 +171,7 @@
 						show = false;
 					}}
 				>
-					<XMark className={'size-5'} />
+					<Icon name="x-mark" strokeWidth="2" className={'size-5'} />
 				</button>
 			</div>
 		</div>

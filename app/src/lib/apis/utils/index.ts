@@ -33,3 +33,19 @@ export const getHTMLFromMarkdown = async (token: string, md: string) => {
 export const downloadDatabase = async (token: string) =>
 	downloadFile('/db/download', 'webui.db', token, 'downloadDatabase');
 
+export const restoreFromBackup = async (file: File) => {
+	const formData = new FormData();
+	formData.append('file', file);
+
+	const res = await fetch(`${WEBUI_API_BASE_URL}/utils/db/restore`, {
+		method: 'POST',
+		body: formData
+	});
+
+	if (!res.ok) {
+		const err = await res.json();
+		throw err.detail || 'Restore failed';
+	}
+	return res.json();
+};
+

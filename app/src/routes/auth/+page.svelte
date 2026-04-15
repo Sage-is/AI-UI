@@ -18,6 +18,7 @@
 		verifyMagicLink
 	} from '$lib/apis/auths';
 	import { getBranding } from '$lib/apis/configs';
+	import { restoreFromBackup } from '$lib/apis/utils';
 
 	import { WEBUI_API_BASE_URL, WEBUI_BASE_URL } from '$lib/constants';
 	import { WEBUI_NAME, config, user, socket } from '$lib/stores';
@@ -26,10 +27,8 @@
 
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import QuestionMarkCircle from '$lib/components/icons/QuestionMarkCircle.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	import OnBoarding from '$lib/components/OnBoarding.svelte';
-	import Eye from '$lib/components/icons/Eye.svelte';
-	import EyeSlash from '$lib/components/icons/EyeSlash.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -44,6 +43,12 @@
 	let showPassword = false;
 
 	let ldapUsername = '';
+
+	// Backup restore state
+	let showRestoreBackup = false;
+	let restoreFile = null;
+	let restoreLoading = false;
+	let restoreFileInput;
 
 	// Magic link email login state
 	let magicLinkMode = false;
@@ -132,6 +137,27 @@
 		} else {
 			await signUpHandler();
 		}
+	};
+
+	const handleRestoreBackup = async () => {
+		if (!restoreFile) return;
+		restoreLoading = true;
+		try {
+			await restoreFromBackup(restoreFile);
+			toast.success($i18n.t('Backup restored successfully. Reloading...'));
+			setTimeout(() => {
+				window.location.reload();
+			}, 1500);
+		} catch (error) {
+			toast.error(`${error}`);
+			restoreLoading = false;
+		}
+	};
+
+	const formatFileSize = (bytes) => {
+		if (bytes < 1024) return `${bytes} B`;
+		if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+		return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 	};
 
 	const handleMagicLinkSend = async () => {
@@ -481,9 +507,9 @@
 														: $i18n.t('Show password')}
 												>
 													{#if showPassword}
-														<EyeSlash className="size-4" />
+														<Icon name="eye-slash" className="size-4" />
 													{:else}
-														<Eye className="size-4" />
+														<Icon name="eye" className="size-4" />
 													{/if}
 												</button>
 											</div>
@@ -502,7 +528,7 @@
 												placement="top"
 												className="flex items-center"
 											>
-												<span style="cursor:help"><QuestionMarkCircle className="size-3.5" /></span>
+												<span style="cursor:help"><Icon name="question-mark-circle" strokeWidth="2" className="size-3.5" /></span>
 											</Tooltip>
 										</div>
 									{/if}
@@ -540,6 +566,124 @@
 									{/if}
 								</div>
 							</form>
+
+							{#if $config?.onboarding ?? false}
+								<div style="--d:inline-flex; --ai:center; --jc:center; --w:100%">
+									<hr
+										style="--w:8rem; --h:1px; --my:1rem; --bw:0; --dark-bgc:rgb(236 236 236 / 0.1); --bgc:rgb(78 78 78 / 0.1)"
+									/>
+									<span
+										style="--px:0.6rem; --size:0.8rem; --weight:500; --c:var(--color-gray-900); --dark-c:#fff; --bgc:transparent"
+										>{$i18n.t('or')}</span
+									>
+									<hr
+										style="--w:8rem; --h:1px; --my:1rem; --bw:0; --dark-bgc:rgb(236 236 236 / 0.1); --bgc:rgb(78 78 78 / 0.1)"
+									/>
+								</div>
+
+								<input
+									bind:this={restoreFileInput}
+									type="file"
+									accept=".db,.sqlite,.zip"
+									hidden
+									on:change={(e) => {
+										const files = e.target.files;
+										if (files && files.length > 0) {
+											restoreFile = files[0];
+										}
+									}}
+								/>
+
+								{#if !showRestoreBackup}
+									<button
+										style="--bgc:rgb(78 78 78 / 0.05);
+											--hvr-bgc:rgb(78 78 78 / 0.1);
+											--dark-bgc:rgb(236 236 236 / 0.05);
+											--hvr-dark-bgc:rgb(236 236 236 / 0.1);
+											--dark-c:var(--color-gray-300);
+											--hvr-dark-c:#fff;
+											--tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+											--w:100%; --radius:9999px; --weight:500; --size:0.8rem; --py:0.625rem;
+											--p:1em 1.5em; --m:auto;
+											--d:flex; --jc:center; --ai:center;"
+										type="button"
+										on:click={() => {
+											showRestoreBackup = true;
+										}}
+									>
+										<Icon name="cloud-arrow-up" className="size-5" strokeWidth="1.5" />
+										<span style="--ml:0.4rem">{$i18n.t('Restore from Backup')}</span>
+									</button>
+								{:else}
+									<div style="--d:flex; --fd:column; --g:0.6rem; --w:100%">
+										{#if !restoreFile}
+											<button
+												style="--bgc:rgb(78 78 78 / 0.05);
+													--hvr-bgc:rgb(78 78 78 / 0.1);
+													--dark-bgc:rgb(236 236 236 / 0.05);
+													--hvr-dark-bgc:rgb(236 236 236 / 0.1);
+													--dark-c:var(--color-gray-300);
+													--hvr-dark-c:#fff;
+													--tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+													--w:100%; --radius:9999px; --weight:500; --size:0.8rem; --py:0.625rem;
+													--p:1em 1.5em; --m:auto;
+													--d:flex; --jc:center; --ai:center;"
+												type="button"
+												on:click={() => {
+													restoreFileInput?.click();
+												}}
+											>
+												{$i18n.t('Choose backup file...')}
+											</button>
+										{:else}
+											<div
+												style="--d:flex; --fd:column; --ai:center; --g:0.4rem; --ta:center"
+											>
+												<div
+													style="--size:0.75rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)"
+												>
+													{restoreFile.name} ({formatFileSize(restoreFile.size)})
+												</div>
+												<div style="--d:flex; --g:0.5rem; --w:100%">
+													<button
+														style="--bgc:rgb(78 78 78 / 0.05);
+															--hvr-bgc:rgb(78 78 78 / 0.1);
+															--dark-bgc:rgb(236 236 236 / 0.05);
+															--hvr-dark-bgc:rgb(236 236 236 / 0.1);
+															--dark-c:var(--color-gray-300);
+															--hvr-dark-c:#fff;
+															--tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+															--w:100%; --radius:9999px; --weight:500; --size:0.8rem; --py:0.625rem;
+															--p:1em 1.5em; --m:auto;
+															--d:flex; --jc:center; --ai:center;"
+														type="button"
+														disabled={restoreLoading}
+														on:click={handleRestoreBackup}
+													>
+														{#if restoreLoading}
+															<Spinner className="size-4 mr-2" />
+															{$i18n.t('Restoring...')}
+														{:else}
+															{$i18n.t('Restore')}
+														{/if}
+													</button>
+												</div>
+												<button
+													type="button"
+													style="--size:0.7rem; --c:var(--color-gray-400); --hvr-c:var(--color-gray-600); --td:underline; --bgc:transparent"
+													on:click={() => {
+														restoreFile = null;
+														showRestoreBackup = false;
+														if (restoreFileInput) restoreFileInput.value = '';
+													}}
+												>
+													{$i18n.t('Cancel')}
+												</button>
+											</div>
+										{/if}
+									</div>
+								{/if}
+							{/if}
 
 							{#if Object.keys($config?.oauth?.providers ?? {}).length > 0}
 								<div style="--d:inline-flex; --ai:center; --jc:center; --w:100%">

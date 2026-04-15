@@ -1,8 +1,6 @@
 <script lang="ts">
-	import ChevronDown from '$lib/components/icons/ChevronDown.svelte';
-	import ChevronUp from '$lib/components/icons/ChevronUp.svelte';
-	import Search from '$lib/components/icons/Search.svelte';
-	import Collapsible from '$lib/components/common/Collapsible.svelte';
+				import Collapsible from '$lib/components/common/Collapsible.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	export let status = { urls: [], query: '' };
 	let state = false;
@@ -15,9 +13,9 @@
 		<slot />
 
 		{#if state}
-			<ChevronUp strokeWidth="3.5" className="size-3.5 " />
+			<Icon name="chevron-up" strokeWidth="3.5" className="size-3.5 " />
 		{:else}
-			<ChevronDown strokeWidth="3.5" className="size-3.5 " />
+			<Icon name="chevron-down" strokeWidth="3.5" className="size-3.5 " />
 		{/if}
 	</div>
 	<div
@@ -32,7 +30,7 @@
 	class="group/item"
 			>
 				<div style="--d:flex; --g:0.5rem; --ai:center">
-					<Search />
+					<Icon name="search" />
 
 					<div style="--line-clamp:1">
 						{status.query}

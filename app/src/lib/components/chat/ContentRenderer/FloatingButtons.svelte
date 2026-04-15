@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
 	import { getContext, tick } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	const i18n = getContext('i18n');
 
-	import ChatBubble from '$lib/components/icons/ChatBubble.svelte';
-	import LightBulb from '$lib/components/icons/LightBulb.svelte';
 
 	export let id = '';
 	export let model = null;
@@ -21,7 +20,7 @@
 			toast.error('Model not selected');
 			return;
 		}
-		
+
 		const prompt = [
 			// Blockquote each line of the selected text
 			...selectedText.split('\n').map((line) => `> ${line}`),
@@ -29,10 +28,10 @@
 			// Then your question
 			floatingInputValue
 		].join('\n');
-		
+
 		// Directly submit to main conversation using submitMessage
 		await submitMessage(id, prompt);
-		
+
 		// Reset state and close floating buttons
 		floatingInputValue = '';
 		closeHandler();
@@ -44,7 +43,7 @@
 			toast.error('Model not selected');
 			return;
 		}
-		
+
 		const quotedText = selectedText
 			.split('\n')
 			.map((line) => `> ${line}`)
@@ -53,7 +52,7 @@
 
 		// Directly submit to main conversation using submitMessage
 		await submitMessage(id, prompt);
-		
+
 		// Reset state and close floating buttons
 		closeHandler();
 		closeFloatingButtons();
@@ -89,7 +88,7 @@
 					}, 0);
 				}}
 			>
-				<ChatBubble className="size-3 shrink-0" />
+				<Icon name="chat-bubble" className="size-3 shrink-0" />
 				<div style="--fs:0">{$i18n.t('Ask')}</div>
 			</button>
 			<button
@@ -99,7 +98,7 @@
 					explainHandler();
 				}}
 			>
-				<LightBulb className="size-3 shrink-0" />
+				<Icon name="light-bulb" className="size-3 shrink-0" />
 				<div style="--fs:0">{$i18n.t('Explain')}</div>
 			</button>
 		</div>

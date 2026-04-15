@@ -2,6 +2,7 @@
 	import dayjs from 'dayjs';
 	import { onMount, tick, getContext } from 'svelte';
 	import { createEventDispatcher } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import { mobile, settings } from '$lib/stores';
 
@@ -11,7 +12,6 @@
 
 	import ResponseMessage from './ResponseMessage.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import Merge from '$lib/components/icons/Merge.svelte';
 
 	import Markdown from './Markdown.svelte';
 	import Name from './Name.svelte';
@@ -338,7 +338,7 @@
 										mergeResponsesHandler();
 									}}
 								>
-									<Merge className=" size-5 " />
+									<Icon name="merge" className=" size-5 " />
 								</button>
 							</Tooltip>
 						</div>

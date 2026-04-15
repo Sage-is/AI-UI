@@ -1,11 +1,11 @@
 <script>
 	import { createEventDispatcher, getContext } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import Modal from '$lib/components/common/Modal.svelte';
 	import { addNewMemory, updateMemoryById } from '$lib/apis/memories';
 	import { toast } from 'svelte-sonner';
 	import Spinner from '$lib/components/common/Spinner.svelte';
-	import XMark from '$lib/components/icons/XMark.svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -48,7 +48,7 @@
 					show = false;
 				}}
 			>
-				<XMark className={'size-5'} />
+				<Icon name="x-mark" strokeWidth="2" className={'size-5'} />
 			</button>
 		</div>
 

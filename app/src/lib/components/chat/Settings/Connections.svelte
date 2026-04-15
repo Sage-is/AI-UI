@@ -2,6 +2,7 @@
 	import { toast } from 'svelte-sonner';
 	import { createEventDispatcher, onMount, getContext, tick } from 'svelte';
 	import { getModels as _getModels } from '$lib/apis';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const dispatch = createEventDispatcher();
 	const i18n = getContext('i18n');
@@ -11,8 +12,7 @@
 	import Switch from '$lib/components/common/Switch.svelte';
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import Plus from '$lib/components/icons/Plus.svelte';
-	import Connection from './Connections/Connection.svelte';
+		import Connection from './Connections/Connection.svelte';
 
 	import AddConnectionModal from '$lib/components/AddConnectionModal.svelte';
 
@@ -93,7 +93,7 @@
 									}}
 									type="button"
 								>
-									<Plus />
+									<Icon name="plus" strokeWidth="2" />
 								</button>
 							</Tooltip>
 						</div>

@@ -1,12 +1,12 @@
 <script lang="ts">
 	import Modal from '$lib/components/common/Modal.svelte';
 	import { getContext } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	export let show = false;
 	export let model = null;
 	export let feedbacks = [];
 	export let onClose: () => void = () => {};
 	const i18n = getContext('i18n');
-	import XMark from '$lib/components/icons/XMark.svelte';
 
 	const close = () => {
 		show = false;
@@ -38,7 +38,7 @@
 				{model.name}
 			</div>
 			<button style="--as:center" on:click={close} aria-label="Close">
-				<XMark className={'size-5'} />
+				<Icon name="x-mark" strokeWidth="2" className={'size-5'} />
 			</button>
 		</div>
 		<div style="--px:1.2rem; --pb:1rem; --dark-c:var(--color-gray-200)">

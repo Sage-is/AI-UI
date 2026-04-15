@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
 	import { getContext, onMount } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	const i18n = getContext('i18n');
 
 	import Modal from '$lib/components/common/Modal.svelte';
 	import ManageOllama from '../Models/Manage/ManageOllama.svelte';
-	import XMark from '$lib/components/icons/XMark.svelte';
 
 	export let show = false;
 	export let urlIdx: number | null = null;
@@ -28,7 +28,7 @@
 					show = false;
 				}}
 			>
-				<XMark className={'size-5'} />
+				<Icon name="x-mark" strokeWidth="2" className={'size-5'} />
 			</button>
 		</div>
 

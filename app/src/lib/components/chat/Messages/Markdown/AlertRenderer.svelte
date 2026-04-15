@@ -6,7 +6,7 @@
 	interface AlertTheme {
 		border: string;
 		text: string;
-		icon: ComponentType;
+		icon: string;
 	}
 
 	export interface AlertData {
@@ -19,27 +19,27 @@
 		NOTE: {
 			border: 'border-sky-500',
 			text: 'text-sky-500',
-			icon: Info
+			icon: 'info'
 		},
 		TIP: {
 			border: 'border-emerald-500',
 			text: 'text-emerald-500',
-			icon: LightBulb
+			icon: 'light-bulb'
 		},
 		IMPORTANT: {
 			border: 'border-purple-500',
 			text: 'text-purple-500',
-			icon: Star
+			icon: 'star'
 		},
 		WARNING: {
 			border: 'border-yellow-500',
 			text: 'text-yellow-500',
-			icon: ArrowRightCircle
+			icon: 'arrow-right-circle'
 		},
 		CAUTION: {
 			border: 'border-rose-500',
 			text: 'text-rose-500',
-			icon: Bolt
+			icon: 'bolt'
 		}
 	};
 
@@ -63,13 +63,8 @@
 </script>
 
 <script lang="ts">
-	import Info from '$lib/components/icons/Info.svelte';
-	import Star from '$lib/components/icons/Star.svelte';
-	import LightBulb from '$lib/components/icons/LightBulb.svelte';
-	import Bolt from '$lib/components/icons/Bolt.svelte';
-	import ArrowRightCircle from '$lib/components/icons/ArrowRightCircle.svelte';
 	import MarkdownTokens from './MarkdownTokens.svelte';
-	import type { ComponentType } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	export let token: Token;
 	export let alert: AlertData;
@@ -102,7 +97,7 @@ Renders the following Markdown as alerts:
 <div class={`border-l-4 pl-2.5 ${alertStyles[alert.type].border} my-0.5`}>
 	<div style="--ai:center; --d:flex; --g:0.2rem; --py:0.4rem"
 	class="{alertStyles[alert.type].text}">
-		<svelte:component this={alertStyles[alert.type].icon} className="inline-block size-4" />
+		<Icon name={alertStyles[alert.type].icon} className="inline-block size-4" />
 		<span style="--weight:500">{alert.type}</span>
 	</div>
 	<div style="--pb:0.5rem">

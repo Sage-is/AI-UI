@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import Plus from '$lib/components/icons/Plus.svelte';
-	import { WEBUI_BASE_URL } from '$lib/constants';
+		import { WEBUI_BASE_URL } from '$lib/constants';
 	import { getBranding } from '$lib/apis/configs';
 
 	let selected = '';

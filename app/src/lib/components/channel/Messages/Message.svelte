@@ -4,6 +4,7 @@
 	import isToday from 'dayjs/plugin/isToday';
 	import isYesterday from 'dayjs/plugin/isYesterday';
 	import localizedFormat from 'dayjs/plugin/localizedFormat';
+	import Icon from '$lib/components/Icon.svelte';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(isToday);
@@ -30,18 +31,13 @@
 	import ProfileImage from '$lib/components/chat/Messages/ProfileImage.svelte';
 	import Name from '$lib/components/chat/Messages/Name.svelte';
 	import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
-	import GarbageBin from '$lib/components/icons/GarbageBin.svelte';
-	import Pencil from '$lib/components/icons/Pencil.svelte';
-	import Tooltip from '$lib/components/common/Tooltip.svelte';
+			import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import Textarea from '$lib/components/common/Textarea.svelte';
 	import Image from '$lib/components/common/Image.svelte';
 	import FileItem from '$lib/components/common/FileItem.svelte';
 	import ProfilePreview from './Message/ProfilePreview.svelte';
-	import ChatBubbleOvalEllipsis from '$lib/components/icons/ChatBubbleOvalEllipsis.svelte';
-	import FaceSmile from '$lib/components/icons/FaceSmile.svelte';
-	import ReactionPicker from './Message/ReactionPicker.svelte';
-	import ChevronRight from '$lib/components/icons/ChevronRight.svelte';
-	import { formatDate } from '$lib/utils';
+			import ReactionPicker from './Message/ReactionPicker.svelte';
+		import { formatDate } from '$lib/utils';
 
 	export let message;
 	export let showUserProfile = true;
@@ -100,7 +96,7 @@
 									showButtons = true;
 								}}
 							>
-								<FaceSmile />
+								<Icon name="face-smile" />
 							</button>
 						</Tooltip>
 					</ReactionPicker>
@@ -113,7 +109,7 @@
 									onThread(message.id);
 								}}
 							>
-								<ChatBubbleOvalEllipsis />
+								<Icon name="chat-bubble-oval-ellipsis" />
 							</button>
 						</Tooltip>
 					{/if}
@@ -127,7 +123,7 @@
 									editedContent = message.content;
 								}}
 							>
-								<Pencil />
+								<Icon name="pencil" />
 							</button>
 						</Tooltip>
 
@@ -136,7 +132,7 @@
 								style="--hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem; --p:0.2rem"
 								on:click={() => (showDeleteConfirmDialog = true)}
 							>
-								<GarbageBin />
+								<Icon name="garbage-bin" />
 							</button>
 						</Tooltip>
 					{/if}
@@ -329,7 +325,7 @@
 										<div
 											style="--d:flex; --ai:center; --g:0.4rem; --bgc:rgb(155 155 155 / 0.1); outline-style:solid; outline-color:rgb(78 78 78 / 0.3); outline-color:rgb(205 205 205 / 0.3); outline-width:1px; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.6rem; --px:0.2rem; --py:0.2rem; --cur:pointer; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)"
 										>
-											<FaceSmile />
+											<Icon name="face-smile" />
 										</div>
 									</Tooltip>
 								</ReactionPicker>
@@ -353,7 +349,7 @@
 								>
 
 								<span style="--ml:0.2rem">
-									<ChevronRight className="size-2.5" strokeWidth="3" />
+									<Icon name="chevron-right" className="size-2.5" strokeWidth="3" />
 								</span>
 								<!-- {$i18n.t('View Replies')} -->
 							</button>

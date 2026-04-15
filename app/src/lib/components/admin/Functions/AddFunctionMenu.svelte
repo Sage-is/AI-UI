@@ -2,20 +2,11 @@
 	import { DropdownMenu } from 'bits-ui';
 	import { flyAndScale } from '$lib/utils/transitions';
 	import { getContext } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import Dropdown from '$lib/components/common/Dropdown.svelte';
-	import GarbageBin from '$lib/components/icons/GarbageBin.svelte';
-	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import Share from '$lib/components/icons/Share.svelte';
-	import DocumentDuplicate from '$lib/components/icons/DocumentDuplicate.svelte';
-	import ArrowDownTray from '$lib/components/icons/ArrowDownTray.svelte';
-	import Switch from '$lib/components/common/Switch.svelte';
-	import GlobeAlt from '$lib/components/icons/GlobeAlt.svelte';
-	import Github from '$lib/components/icons/Github.svelte';
-	import Plus from '$lib/components/icons/Plus.svelte';
-	import Pencil from '$lib/components/icons/Pencil.svelte';
-	import PencilSolid from '$lib/components/icons/PencilSolid.svelte';
-	import Link from '$lib/components/icons/Link.svelte';
+		import Tooltip from '$lib/components/common/Tooltip.svelte';
+				import Switch from '$lib/components/common/Switch.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -56,7 +47,7 @@
 				}}
 			>
 				<div style="--as:center; --mr:0.5rem">
-					<PencilSolid />
+					<Icon name="pencil-solid" />
 				</div>
 				<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">{$i18n.t('New Function')}</div>
 			</button>
@@ -69,7 +60,7 @@
 				}}
 			>
 				<div style="--as:center; --mr:0.5rem">
-					<Link />
+					<Icon name="link" />
 				</div>
 				<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">{$i18n.t('Import From Link')}</div>
 			</button>

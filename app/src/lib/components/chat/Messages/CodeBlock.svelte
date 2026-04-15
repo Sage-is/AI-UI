@@ -1,5 +1,6 @@
 <script lang="ts">
 	import mermaid from 'mermaid';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import { v4 as uuidv4 } from 'uuid';
 
@@ -14,10 +15,6 @@
 	import { config } from '$lib/stores';
 	import { executeCode } from '$lib/apis/utils';
 	import { toast } from 'svelte-sonner';
-	import ChevronUp from '$lib/components/icons/ChevronUp.svelte';
-	import ChevronUpDown from '$lib/components/icons/ChevronUpDown.svelte';
-	import CommandLine from '$lib/components/icons/CommandLine.svelte';
-	import Cube from '$lib/components/icons/Cube.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -442,7 +439,7 @@
 						on:click={collapseCodeBlock}
 					>
 						<div style="--translatey:-0.5px">
-							<ChevronUpDown className="size-3" />
+							<Icon name="chevron-up-down" className="size-3" />
 						</div>
 
 						<div>
@@ -457,7 +454,7 @@
 							on:click={previewCode}
 						>
 							<div style="--translatey:-0.5px">
-								<Cube className="size-3" />
+								<Icon name="cube" strokeWidth="2" className="size-3" />
 							</div>
 
 							<div>
@@ -483,7 +480,7 @@
 								}}
 							>
 								<div style="--translatey:-0.5px">
-									<CommandLine className="size-3" />
+									<Icon name="command-line" className="size-3" />
 								</div>
 
 								<div>

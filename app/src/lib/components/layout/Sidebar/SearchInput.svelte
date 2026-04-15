@@ -3,8 +3,7 @@
 	import { tags } from '$lib/stores';
 	import { getContext, createEventDispatcher, onMount, onDestroy, tick } from 'svelte';
 	import { fade } from 'svelte/transition';
-	import Search from '$lib/components/icons/Search.svelte';
-	import XMark from '$lib/components/icons/XMark.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const dispatch = createEventDispatcher();
 	const i18n = getContext('i18n');
@@ -97,7 +96,7 @@
 		<div
 			style="--as:center; --py:0.5rem; --btlr:0.6rem; --bblr:0.6rem; --bgc:transparent; --dark-c:var(--color-gray-300)"
 		>
-			<Search />
+			<Icon name="search" />
 		</div>
 
 		<input
@@ -160,7 +159,7 @@
 					style="--p:0.125rem; --radius:9999px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={clearSearchInput}
 				>
-					<XMark className="size-3" strokeWidth="2" />
+					<Icon name="x-mark" className="size-3" strokeWidth="2" />
 				</button>
 			</div>
 		{/if}

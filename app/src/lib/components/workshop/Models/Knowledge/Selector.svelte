@@ -1,13 +1,13 @@
 <script lang="ts">
 	import Fuse from 'fuse.js';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import { DropdownMenu } from 'bits-ui';
 	import { onMount, getContext, createEventDispatcher } from 'svelte';
 	import { flyAndScale } from '$lib/utils/transitions';
 	import { knowledge } from '$lib/stores';
 	import Dropdown from '$lib/components/common/Dropdown.svelte';
-	import Search from '$lib/components/icons/Search.svelte';
-	import { getNoteList } from '$lib/apis/notes';
+		import { getNoteList } from '$lib/apis/notes';
 	import dayjs from 'dayjs';
 
 	const i18n = getContext('i18n');
@@ -152,7 +152,7 @@
 			<div style="--d:flex; --w:100%; --g:0.5rem; --py:0.125rem; --px:0.5rem; --pb:0.5rem">
 				<div style="--d:flex; --fx:1 1 0%">
 					<div style="--as:center; --ml:0.2rem; --mr:0.6rem">
-						<Search />
+						<Icon name="search" />
 					</div>
 					<input
 						style="--w:100%; --size:0.8rem; --pr:1rem; --py:0.2rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"

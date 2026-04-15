@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
 	import { getContext, onMount } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	const i18n = getContext('i18n');
 
 	import { settings } from '$lib/stores';
@@ -8,15 +9,11 @@
 	import { verifyOllamaConnection } from '$lib/apis/ollama';
 
 	import Modal from '$lib/components/common/Modal.svelte';
-	import Plus from '$lib/components/icons/Plus.svelte';
-	import Minus from '$lib/components/icons/Minus.svelte';
-	import PencilSolid from '$lib/components/icons/PencilSolid.svelte';
-	import SensitiveInput from '$lib/components/common/SensitiveInput.svelte';
+				import SensitiveInput from '$lib/components/common/SensitiveInput.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import Switch from '$lib/components/common/Switch.svelte';
 	import Tags from './common/Tags.svelte';
 	import Spinner from '$lib/components/common/Spinner.svelte';
-	import XMark from '$lib/components/icons/XMark.svelte';
 
 	export let onSubmit: Function = () => {};
 	export let onDelete: Function = () => {};
@@ -211,7 +208,7 @@
 					show = false;
 				}}
 			>
-				<XMark className={'size-5'} />
+				<Icon name="x-mark" strokeWidth="2" className={'size-5'} />
 			</button>
 		</div>
 
@@ -434,7 +431,7 @@
 														modelIds = modelIds.filter((_, idx) => idx !== modelIdx);
 													}}
 												>
-													<Minus strokeWidth="2" className="size-3.5" />
+													<Icon name="minus" strokeWidth="2" className="size-3.5" />
 												</button>
 											</div>
 										</li>
@@ -487,7 +484,7 @@
 										addModelHandler();
 									}}
 								>
-									<Plus className="size-3.5" strokeWidth="2" />
+									<Icon name="plus" className="size-3.5" strokeWidth="2" />
 								</button>
 							</div>
 						</div>

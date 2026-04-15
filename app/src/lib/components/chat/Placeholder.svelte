@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
 	import { marked } from 'marked';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import { onMount, getContext, tick, createEventDispatcher } from 'svelte';
 	import { blur, fade } from 'svelte/transition';
@@ -22,8 +23,7 @@
 
 	import Suggestions from './Suggestions.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import EyeSlash from '$lib/components/icons/EyeSlash.svelte';
-	import MessageInput from './MessageInput.svelte';
+		import MessageInput from './MessageInput.svelte';
 	import FolderPlaceholder from './Placeholder/FolderPlaceholder.svelte';
 	import FolderTitle from './Placeholder/FolderTitle.svelte';
 	import { getChatList } from '$lib/apis/chats';
@@ -88,7 +88,7 @@
 			placement="top"
 		>
 			<div style="--d:flex; --ai:center; --g:0.5rem; --c:var(--color-gray-500); --weight:500; --size:1.125rem; --my:0.5rem; --w:fit-content">
-				<EyeSlash strokeWidth="2.5" className="size-5" />{$i18n.t('Temporary Chat')}
+				<Icon name="eye-slash" strokeWidth="2.5" className="size-5" />{$i18n.t('Temporary Chat')}
 			</div>
 		</Tooltip>
 	{/if}

@@ -109,6 +109,10 @@ COPY --from=python-build /usr/local/bin/ /usr/local/bin/
 # Copy tiktoken cache
 COPY --from=python-build /app/backend/tiktoken_cache/ /app/backend/tiktoken_cache/
 
+# Copy bun binary + node_modules for dev mode (hot reload via `make dev_run`)
+COPY --from=frontend /usr/local/bin/bun /usr/local/bin/bun
+COPY --from=frontend /app/node_modules/ /app/node_modules/
+
 # Copy vite build output (frontend)
 COPY --from=frontend /app/build/ /app/build/
 

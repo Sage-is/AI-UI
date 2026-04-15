@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import { getContext } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	const i18n = getContext('i18n');
 	import Tooltip from '../Tooltip.svelte';
-	import XMark from '$lib/components/icons/XMark.svelte';
-	import Badge from '../Badge.svelte';
+		import Badge from '../Badge.svelte';
 	import { showSearch, searchQuery } from '$lib/stores';
 	const dispatch = createEventDispatcher();
 
@@ -14,20 +14,20 @@
 {#each tags as tag}
 	<Tooltip content={tag.name}>
 		<li
-			style="--pos:relative; 
-				--px:0.4rem; 
-				--py:0.2px; 
-				--g:0.125rem; 
-				--d:flex; 
-				--jc:space-between; 
-				--h:fit-content; 
-				--w:fit-content; 
-				--ai:center; 
-				--radius:9999px; 
-				--bgc:rgb(155 155 155 / 0.2); 
-				--c:var(--color-gray-700); 
-				--dark-c:var(--color-gray-200); 
-				--tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); 
+			style="--pos:relative;
+				--px:0.4rem;
+				--py:0.2px;
+				--g:0.125rem;
+				--d:flex;
+				--jc:space-between;
+				--h:fit-content;
+				--w:fit-content;
+				--ai:center;
+				--radius:9999px;
+				--bgc:rgb(155 155 155 / 0.2);
+				--c:var(--color-gray-700);
+				--dark-c:var(--color-gray-200);
+				--tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1);
 				--cur:pointer"
 			class="group/tags max-h-fit"
 		>
@@ -42,8 +42,8 @@
 				{tag.name}
 			</button>
 			<div
-				style="--pos:absolute; 
-				--right:0.125rem; 
+				style="--pos:absolute;
+				--right:0.125rem;
 				--tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			>
 				<button
@@ -55,7 +55,7 @@
 					type="button"
 					aria-label={$i18n.t('Remove this tag from list')}
 				>
-					<XMark className="size-3" strokeWidth="2.5" />
+					<Icon name="x-mark" className="size-3" strokeWidth="2.5" />
 				</button>
 			</div>
 		</li>

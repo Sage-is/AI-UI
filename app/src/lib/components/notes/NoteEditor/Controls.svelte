@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	const i18n = getContext('i18n');
 
-	import XMark from '$lib/components/icons/XMark.svelte';
-	import { models } from '$lib/stores';
+		import { models } from '$lib/stores';
 	import Collapsible from '$lib/components/common/Collapsible.svelte';
 	import FileItem from '$lib/components/common/FileItem.svelte';
 	import Image from '$lib/components/common/Image.svelte';
@@ -25,7 +25,7 @@
 				show = !show;
 			}}
 		>
-			<XMark className="size-5" strokeWidth="2.5" />
+			<Icon name="x-mark" className="size-5" strokeWidth="2.5" />
 		</button>
 	</div>
 

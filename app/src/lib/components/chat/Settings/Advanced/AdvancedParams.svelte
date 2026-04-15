@@ -2,8 +2,8 @@
 	import Switch from '$lib/components/common/Switch.svelte';
 	import Textarea from '$lib/components/common/Textarea.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import Plus from '$lib/components/icons/Plus.svelte';
-	import { getContext } from 'svelte';
+		import { getContext } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -212,7 +212,7 @@
 			max: '10',
 			defaultValue: 5.0
 		},
-		// Repeat penalty parameters  
+		// Repeat penalty parameters
 		{
 			key: 'repeat_penalty',
 			label: 'Repeat Penalty',
@@ -358,7 +358,7 @@
 	// DRY: Unified parameter toggle function
 	function toggleParameter(config: any) {
 		const { key, type, defaultValue } = config;
-		
+
 		if (type === 'tristate') {
 			params[key] = (params?.[key] ?? null) === null ? defaultValue : params[key] ? false : null;
 		} else if (type === 'function_calling') {
@@ -372,7 +372,7 @@
 	function getButtonLabel(config: any) {
 		const { key, type } = config;
 		const value = params?.[key] ?? null;
-		
+
 		if (type === 'tristate') {
 			if (value === true) return 'On';
 			if (value === false) return 'Off';
@@ -538,7 +538,7 @@
 				}}
 			>
 				<div>
-					<Plus />
+					<Icon name="plus" strokeWidth="2" />
 				</div>
 				<div>{$i18n.t('Add Custom Parameter')}</div>
 			</button>

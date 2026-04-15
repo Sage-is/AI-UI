@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
 	import fileSaver from 'file-saver';
+	import Icon from '$lib/components/Icon.svelte';
 	const { saveAs } = fileSaver;
 
 	import dayjs from 'dayjs';
@@ -13,17 +14,12 @@
 	import { deleteFeedbackById, exportAllFeedbacks, getAllFeedbacks } from '$lib/apis/evaluations';
 
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import ArrowDownTray from '$lib/components/icons/ArrowDownTray.svelte';
-	import Badge from '$lib/components/common/Badge.svelte';
-	import CloudArrowUp from '$lib/components/icons/CloudArrowUp.svelte';
-	import Pagination from '$lib/components/common/Pagination.svelte';
+		import Badge from '$lib/components/common/Badge.svelte';
+		import Pagination from '$lib/components/common/Pagination.svelte';
 	import FeedbackMenu from './FeedbackMenu.svelte';
 	import FeedbackModal from './FeedbackModal.svelte';
-	import EllipsisHorizontal from '$lib/components/icons/EllipsisHorizontal.svelte';
 
-	import ChevronUp from '$lib/components/icons/ChevronUp.svelte';
-	import ChevronDown from '$lib/components/icons/ChevronDown.svelte';
-	import { WEBUI_BASE_URL } from '$lib/constants';
+			import { WEBUI_BASE_URL } from '$lib/constants';
 
 	export let feedbacks = [];
 
@@ -186,7 +182,7 @@
 						exportHandler();
 					}}
 				>
-					<ArrowDownTray className="size-3" />
+					<Icon name="arrow-down-tray" className="size-3" />
 				</button>
 			</Tooltip>
 		</div>
@@ -219,14 +215,14 @@
 							{#if orderBy === 'user'}
 								<span style="--weight:400">
 									{#if direction === 'asc'}
-										<ChevronUp className="size-2" />
+										<Icon name="chevron-up" className="size-2" />
 									{:else}
-										<ChevronDown className="size-2" />
+										<Icon name="chevron-down" className="size-2" />
 									{/if}
 								</span>
 							{:else}
 								<span style="--v:hidden">
-									<ChevronUp className="size-2" />
+									<Icon name="chevron-up" className="size-2" />
 								</span>
 							{/if}
 						</div>
@@ -242,14 +238,14 @@
 							{#if orderBy === 'model_id'}
 								<span style="--weight:400">
 									{#if direction === 'asc'}
-										<ChevronUp className="size-2" />
+										<Icon name="chevron-up" className="size-2" />
 									{:else}
-										<ChevronDown className="size-2" />
+										<Icon name="chevron-down" className="size-2" />
 									{/if}
 								</span>
 							{:else}
 								<span style="--v:hidden">
-									<ChevronUp className="size-2" />
+									<Icon name="chevron-up" className="size-2" />
 								</span>
 							{/if}
 						</div>
@@ -265,14 +261,14 @@
 							{#if orderBy === 'rating'}
 								<span style="--weight:400">
 									{#if direction === 'asc'}
-										<ChevronUp className="size-2" />
+										<Icon name="chevron-up" className="size-2" />
 									{:else}
-										<ChevronDown className="size-2" />
+										<Icon name="chevron-down" className="size-2" />
 									{/if}
 								</span>
 							{:else}
 								<span style="--v:hidden">
-									<ChevronUp className="size-2" />
+									<Icon name="chevron-up" className="size-2" />
 								</span>
 							{/if}
 						</div>
@@ -288,14 +284,14 @@
 							{#if orderBy === 'updated_at'}
 								<span style="--weight:400">
 									{#if direction === 'asc'}
-										<ChevronUp className="size-2" />
+										<Icon name="chevron-up" className="size-2" />
 									{:else}
-										<ChevronDown className="size-2" />
+										<Icon name="chevron-down" className="size-2" />
 									{/if}
 								</span>
 							{:else}
 								<span style="--v:hidden">
-									<ChevronUp className="size-2" />
+									<Icon name="chevron-up" className="size-2" />
 								</span>
 							{/if}
 						</div>
@@ -380,7 +376,7 @@
 								<button
 									style="--as:center; --w:fit-content; --size:0.8rem; --p:0.4rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 								>
-									<EllipsisHorizontal />
+									<Icon name="ellipsis-horizontal" />
 								</button>
 							</FeedbackMenu>
 						</td>
@@ -414,7 +410,7 @@
 					</div>
 
 					<div style="--as:center">
-						<CloudArrowUp className="size-3" strokeWidth="3" />
+						<Icon name="cloud-arrow-up" className="size-3" strokeWidth="3" />
 					</div>
 				</button>
 			</Tooltip>

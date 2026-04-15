@@ -2,15 +2,13 @@
 	import { DropdownMenu } from 'bits-ui';
 	import { flyAndScale } from '$lib/utils/transitions';
 	import { getContext, createEventDispatcher } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const i18n = getContext('i18n');
 	const dispatch = createEventDispatcher();
 
 	import Dropdown from '$lib/components/common/Dropdown.svelte';
-	import GarbageBin from '$lib/components/icons/GarbageBin.svelte';
-	import Pencil from '$lib/components/icons/Pencil.svelte';
-	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import Download from '$lib/components/icons/Download.svelte';
+			import Tooltip from '$lib/components/common/Tooltip.svelte';
 
 	export let align: 'start' | 'end' = 'start';
 	export let onEdit = () => {};
@@ -46,7 +44,7 @@
 					onEdit();
 				}}
 			>
-				<Pencil strokeWidth="2" />
+				<Icon name="pencil" strokeWidth="2" />
 				<div style="--d:flex; --ai:center">{$i18n.t('Edit')}</div>
 			</DropdownMenu.Item>
 
@@ -56,7 +54,7 @@
 					onExport();
 				}}
 			>
-				<Download strokeWidth="2" />
+				<Icon name="download" strokeWidth="2" />
 
 				<div style="--d:flex; --ai:center">{$i18n.t('Export')}</div>
 			</DropdownMenu.Item>
@@ -67,7 +65,7 @@
 					onDelete();
 				}}
 			>
-				<GarbageBin strokeWidth="2" />
+				<Icon name="garbage-bin" strokeWidth="2" />
 				<div style="--d:flex; --ai:center">{$i18n.t('Delete')}</div>
 			</DropdownMenu.Item>
 		</DropdownMenu.Content>

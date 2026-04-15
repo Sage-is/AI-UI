@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
 	import type { SetupTriggerReason } from '$lib/stores';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import { config, settings, setupTriggerReason } from '$lib/stores';
 	import { updateUserSettings } from '$lib/apis/users';
 
 	import Modal from './common/Modal.svelte';
-	import XMark from '$lib/components/icons/XMark.svelte';
-	import ChangelogPanel from './setup/ChangelogPanel.svelte';
+		import ChangelogPanel from './setup/ChangelogPanel.svelte';
 	import WelcomeStep from './setup/WelcomeStep.svelte';
 	import ConnectionStep from './setup/ConnectionStep.svelte';
 	import FeaturesStep from './setup/FeaturesStep.svelte';
@@ -184,9 +184,7 @@
 			on:click={handleClose}
 			aria-label={$i18n.t('Close')}
 		>
-			<XMark className={'size-5'}>
-				<p class="sr-only">{$i18n.t('Close')}</p>
-			</XMark>
+			<Icon name="x-mark" strokeWidth="2" className={'size-5'} />
 		</button>
 	</div>
 

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
 	import { onMount, getContext } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import {
 		getBridgeConnections,
@@ -16,7 +17,6 @@
 	import Switch from '$lib/components/common/Switch.svelte';
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import Plus from '$lib/components/icons/Plus.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -183,7 +183,7 @@
 			style="--d:flex; --ai:center; --g:0.2rem; --px:0.6rem; --py:0.4rem; --br:0.5rem; --bg:var(--color-gray-800); --c:white; --size:0.8rem; --dark-bg:var(--color-gray-200); --dark-c:var(--color-gray-900)"
 			on:click={openAddModal}
 		>
-			<Plus className="size-3.5" />
+			<Icon name="plus" strokeWidth="2" className="size-3.5" />
 			{$i18n.t('Add Bridge')}
 		</button>
 	</div>

@@ -2,6 +2,7 @@
 	import { DropdownMenu } from 'bits-ui';
 	import { marked } from 'marked';
 	import Fuse from 'fuse.js';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import dayjs from '$lib/dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
@@ -25,10 +26,7 @@
 	import { getModels } from '$lib/apis';
 	import { getBranding, type Branding } from '$lib/apis/configs';
 
-	import ChevronDown from '$lib/components/icons/ChevronDown.svelte';
-	import Check from '$lib/components/icons/Check.svelte';
-	import Search from '$lib/components/icons/Search.svelte';
-	import Tooltip from '$lib/components/common/Tooltip.svelte';
+				import Tooltip from '$lib/components/common/Tooltip.svelte';
 
 	import ModelItem from './ModelItem.svelte';
 
@@ -384,7 +382,7 @@
 			{:else}
 				{placeholder}
 			{/if}
-			<ChevronDown className=" self-center ml-2 size-3" strokeWidth="2.5" />
+			<Icon name="chevron-down" className=" self-center ml-2 size-3" strokeWidth="2.5" />
 		</div>
 	</DropdownMenu.Trigger>
 
@@ -400,7 +398,7 @@
 				<div
 					style="--d:flex; --ai:center; --g:0.625rem; --px:1.2rem; --mt:0.8rem; --mb:0.4rem"
 				>
-					<Search className="size-4" strokeWidth="2.5" />
+					<Icon name="search" className="size-4" strokeWidth="2.5" />
 
 					<input
 						id="model-search-input"

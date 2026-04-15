@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { getContext } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import { settings, socket, user } from '$lib/stores';
 
 	import { getSpaceThreadMessages, sendMessage } from '$lib/apis/spaces';
 
-	import XMark from '$lib/components/icons/XMark.svelte';
-	import MessageInput from '../chat/MessageInput.svelte';
+		import MessageInput from '../chat/MessageInput.svelte';
 	import Messages from './Messages.svelte';
 	import { onDestroy, tick } from 'svelte';
 	import { toast } from 'svelte-sonner';
@@ -191,7 +191,7 @@
 						onClose();
 					}}
 				>
-					<XMark />
+					<Icon name="x-mark" className="size-3.5" strokeWidth="2" />
 				</button>
 			</div>
 		</div>

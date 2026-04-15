@@ -1,14 +1,12 @@
 <script lang="ts">
 	import { getContext, onMount } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const i18n = getContext('i18n');
 
 	import { getGroups } from '$lib/apis/groups';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import Plus from '$lib/components/icons/Plus.svelte';
-	import UserCircleSolid from '$lib/components/icons/UserCircleSolid.svelte';
-	import XMark from '$lib/components/icons/XMark.svelte';
-	import Badge from '$lib/components/common/Badge.svelte';
+				import Badge from '$lib/components/common/Badge.svelte';
 
 	export let onChange: Function = () => {};
 
@@ -198,7 +196,7 @@
 										type="button"
 										on:click={() => {}}
 									>
-										<Plus className="size-3.5" />
+										<Icon name="plus" strokeWidth="2" className="size-3.5" />
 									</button>
 								</Tooltip>
 							</div> -->
@@ -214,7 +212,7 @@
 							<div style="--d:flex; --ai:center; --g:0.6rem; --jc:space-between; --size:0.6rem; --w:100%; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)">
 								<div style="--d:flex; --ai:center; --g:0.4rem; --w:100%; --weight:500">
 									<div>
-										<UserCircleSolid className="size-4" />
+										<Icon name="user-circle-solid" className="size-4" />
 									</div>
 
 									<div>
@@ -257,7 +255,7 @@
 											);
 										}}
 									>
-										<XMark />
+										<Icon name="x-mark" className="size-3.5" strokeWidth="2" />
 									</button>
 								</div>
 							</div>

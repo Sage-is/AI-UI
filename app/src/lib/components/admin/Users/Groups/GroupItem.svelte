@@ -1,15 +1,13 @@
 <script>
 	import { toast } from 'svelte-sonner';
 	import { getContext } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const i18n = getContext('i18n');
 
 	import { deleteGroupById, updateGroupById } from '$lib/apis/groups';
 
-	import Pencil from '$lib/components/icons/Pencil.svelte';
-	import User from '$lib/components/icons/User.svelte';
-	import UserCircleSolid from '$lib/components/icons/UserCircleSolid.svelte';
-	import GroupModal from './EditGroupModal.svelte';
+				import GroupModal from './EditGroupModal.svelte';
 
 	export let users = [];
 	export let group = {
@@ -63,7 +61,7 @@
 >
 	<div style="--d:flex; --ai:center; --g:0.4rem; --w:100%; --weight:500; --fx:1 1 0%">
 		<div>
-			<UserCircleSolid className="size-4" />
+			<Icon name="user-circle-solid" className="size-4" />
 		</div>
 		<div style="--line-clamp:1">
 			{group.name}
@@ -74,11 +72,11 @@
 		{group.user_ids.length}
 
 		<div>
-			<User className="size-3.5" />
+			<Icon name="user" className="size-3.5" />
 		</div>
 
 		<div style="--radius:0.5rem; --p:0.2rem; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)">
-			<Pencil className="size-3.5" />
+			<Icon name="pencil" className="size-3.5" />
 		</div>
 	</div>
 </button>

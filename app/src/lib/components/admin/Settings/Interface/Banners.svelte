@@ -2,10 +2,9 @@
 	import Switch from '$lib/components/common/Switch.svelte';
 	import Textarea from '$lib/components/common/Textarea.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import EllipsisVertical from '$lib/components/icons/EllipsisVertical.svelte';
-	import XMark from '$lib/components/icons/XMark.svelte';
-	import Sortable from 'sortablejs';
+			import Sortable from 'sortablejs';
 	import { getContext } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	const i18n = getContext('i18n');
 
 	export let banners = [];
@@ -57,7 +56,7 @@
 	class="{banners?.length > 0 ? 'mt-2' : ''}" bind:this={bannerListElement}>
 	{#each banners as banner, bannerIdx (banner.id)}
 		<div style="--d:flex; --jc:space-between; --ai:flex-start; --ml:-0.2rem" id="banner-item-{banner.id}">
-			<EllipsisVertical className="size-4 cursor-move item-handle" />
+			<Icon name="ellipsis-vertical" className="size-4 cursor-move item-handle" />
 
 			<div style="--d:flex; --fd:row; --fx:1 1 0%; --g:0.5rem; --ai:flex-start">
 				<select
@@ -96,7 +95,7 @@
 					banners = banners;
 				}}
 			>
-				<XMark className={'size-4'} />
+				<Icon name="x-mark" strokeWidth="2" className={'size-4'} />
 			</button>
 		</div>
 	{/each}

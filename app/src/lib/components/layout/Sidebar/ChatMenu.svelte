@@ -2,6 +2,7 @@
 	import { DropdownMenu } from 'bits-ui';
 	import { flyAndScale } from '$lib/utils/transitions';
 	import { getContext, createEventDispatcher } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import fileSaver from 'file-saver';
 	const { saveAs } = fileSaver;
@@ -12,16 +13,9 @@
 	const dispatch = createEventDispatcher();
 
 	import Dropdown from '$lib/components/common/Dropdown.svelte';
-	import GarbageBin from '$lib/components/icons/GarbageBin.svelte';
-	import Pencil from '$lib/components/icons/Pencil.svelte';
-	import Tooltip from '$lib/components/common/Tooltip.svelte';
+			import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import Tags from '$lib/components/chat/Tags.svelte';
-	import Share from '$lib/components/icons/Share.svelte';
-	import ArchiveBox from '$lib/components/icons/ArchiveBox.svelte';
-	import DocumentDuplicate from '$lib/components/icons/DocumentDuplicate.svelte';
-	import Bookmark from '$lib/components/icons/Bookmark.svelte';
-	import BookmarkSlash from '$lib/components/icons/BookmarkSlash.svelte';
-	import {
+						import {
 		getChatById,
 		getChatPinnedStatusById,
 		toggleChatPinnedStatusById
@@ -29,7 +23,6 @@
 	import { chats, settings, theme, user } from '$lib/stores';
 	import { createMessagesList } from '$lib/utils';
 	import { downloadChatAsPDF } from '$lib/apis/utils';
-	import Download from '$lib/components/icons/Download.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -245,10 +238,10 @@
 				}}
 			>
 				{#if pinned}
-					<BookmarkSlash strokeWidth="2" />
+					<Icon name="bookmark-slash" strokeWidth="2" />
 					<div style="--d:flex; --ai:center">{$i18n.t('Unpin')}</div>
 				{:else}
-					<Bookmark strokeWidth="2" />
+					<Icon name="bookmark" strokeWidth="2" />
 					<div style="--d:flex; --ai:center">{$i18n.t('Pin')}</div>
 				{/if}
 			</DropdownMenu.Item>
@@ -259,7 +252,7 @@
 					renameHandler();
 				}}
 			>
-				<Pencil strokeWidth="2" />
+				<Icon name="pencil" strokeWidth="2" />
 				<div style="--d:flex; --ai:center">{$i18n.t('Rename')}</div>
 			</DropdownMenu.Item>
 
@@ -269,7 +262,7 @@
 					cloneChatHandler();
 				}}
 			>
-				<DocumentDuplicate strokeWidth="2" />
+				<Icon name="document-duplicate" strokeWidth="2" />
 				<div style="--d:flex; --ai:center">{$i18n.t('Clone')}</div>
 			</DropdownMenu.Item>
 
@@ -279,7 +272,7 @@
 					archiveChatHandler();
 				}}
 			>
-				<ArchiveBox strokeWidth="2" />
+				<Icon name="archive-box" className="size-3.5" strokeWidth="2" />
 				<div style="--d:flex; --ai:center">{$i18n.t('Archive')}</div>
 			</DropdownMenu.Item>
 
@@ -290,7 +283,7 @@
 						shareHandler();
 					}}
 				>
-					<Share />
+					<Icon name="share" />
 					<div style="--d:flex; --ai:center">{$i18n.t('Share')}</div>
 				</DropdownMenu.Item>
 			{/if}
@@ -299,7 +292,7 @@
 				<DropdownMenu.SubTrigger
 					style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem"
 				>
-					<Download strokeWidth="2" />
+					<Icon name="download" strokeWidth="2" />
 
 					<div style="--d:flex; --ai:center">{$i18n.t('Download')}</div>
 				</DropdownMenu.SubTrigger>
@@ -344,7 +337,7 @@
 					deleteHandler();
 				}}
 			>
-				<GarbageBin strokeWidth="2" />
+				<Icon name="garbage-bin" strokeWidth="2" />
 				<div style="--d:flex; --ai:center">{$i18n.t('Delete')}</div>
 			</DropdownMenu.Item>
 

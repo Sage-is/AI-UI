@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { onMount, getContext } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import { WEBUI_NAME, models } from '$lib/stores';
 	import { getAllUsers } from '$lib/apis/users';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import QuestionMarkCircle from '$lib/components/icons/QuestionMarkCircle.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -93,7 +93,7 @@
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('Authentication')}</span>
 						<span style="--size:0.55rem; --c:var(--color-amber-600); --weight:600; --px:0.3rem; --py:0.1rem; --radius:0.25rem; --bgc:var(--color-amber-100); --dark-bgc:var(--color-amber-900); --dark-c:var(--color-amber-400)">{$i18n.t('Beta')}</span>
 						<Tooltip content={$i18n.t('Set up Google, GitHub, or email magic link sign-in so users can log in without a password.')} placement="right" className="flex items-center">
-							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><QuestionMarkCircle className="size-3.5" /></span>
+							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><Icon name="question-mark-circle" strokeWidth="2" className="size-3.5" /></span>
 						</Tooltip>
 					</div>
 					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
@@ -114,7 +114,7 @@
 							<span style="--size:0.6rem; --c:var(--color-green-600); --weight:500">{$i18n.t('configured')}</span>
 						{/if}
 						<Tooltip content={$i18n.t('Configure API endpoints for AI model providers like OpenAI or Ollama. Required for the platform to generate responses.')} placement="right" className="flex items-center">
-							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><QuestionMarkCircle className="size-3.5" /></span>
+							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><Icon name="question-mark-circle" strokeWidth="2" className="size-3.5" /></span>
 						</Tooltip>
 					</div>
 					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
@@ -135,7 +135,7 @@
 							<span style="--size:0.6rem; --c:var(--color-green-600); --weight:500">{$i18n.t('configured')}</span>
 						{/if}
 						<Tooltip content={$i18n.t('Add team members, assign roles, or choose to work alone. You can manage users anytime from Admin > Users.')} placement="right" className="flex items-center">
-							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><QuestionMarkCircle className="size-3.5" /></span>
+							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><Icon name="question-mark-circle" strokeWidth="2" className="size-3.5" /></span>
 						</Tooltip>
 					</div>
 					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
@@ -163,7 +163,7 @@
 					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('Features')}</span>
 						<Tooltip content={$i18n.t('Toggle platform capabilities such as community sharing, notes, spaces, and message rating.')} placement="right" className="flex items-center">
-							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><QuestionMarkCircle className="size-3.5" /></span>
+							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><Icon name="question-mark-circle" strokeWidth="2" className="size-3.5" /></span>
 						</Tooltip>
 					</div>
 					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
@@ -181,7 +181,7 @@
 					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('AI Engine')}</span>
 						<Tooltip content={$i18n.t('Install local AI components for document search, knowledge base, and audio transcription. Downloads run in the background (~2.5 GB total).')} placement="right" className="flex items-center">
-							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><QuestionMarkCircle className="size-3.5" /></span>
+							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><Icon name="question-mark-circle" strokeWidth="2" className="size-3.5" /></span>
 						</Tooltip>
 					</div>
 					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">
@@ -199,7 +199,7 @@
 					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('Developer Mode')}</span>
 						<Tooltip content={$i18n.t('Set up a local development environment to customize and contribute. Uses the ai-ui CLI to mount source code with hot reload.')} placement="right" className="flex items-center">
-							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><QuestionMarkCircle className="size-3.5" /></span>
+							<span style="--c:var(--color-gray-400); --dark-c:var(--color-gray-500); cursor:help"><Icon name="question-mark-circle" strokeWidth="2" className="size-3.5" /></span>
 						</Tooltip>
 					</div>
 					<div style="--size:0.7rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-400)">

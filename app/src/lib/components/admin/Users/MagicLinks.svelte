@@ -2,6 +2,7 @@
 	import { toast } from 'svelte-sonner';
 	import dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
+	import Icon from '$lib/components/Icon.svelte';
 	dayjs.extend(relativeTime);
 
 	import { onMount, getContext } from 'svelte';
@@ -9,8 +10,7 @@
 	import { WEBUI_BASE_URL } from '$lib/constants';
 
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import Plus from '$lib/components/icons/Plus.svelte';
-	import Badge from '$lib/components/common/Badge.svelte';
+		import Badge from '$lib/components/common/Badge.svelte';
 	import Spinner from '$lib/components/common/Spinner.svelte';
 
 	import {
@@ -193,7 +193,7 @@
 					showCreateForm = !showCreateForm;
 				}}
 			>
-				<Plus className="size-3.5" />
+				<Icon name="plus" strokeWidth="2" className="size-3.5" />
 			</button>
 		</Tooltip>
 	</div>

@@ -3,16 +3,11 @@
 	import { flyAndScale } from '$lib/utils/transitions';
 	import { getContext } from 'svelte';
 	import { config } from '$lib/stores';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import Dropdown from '$lib/components/common/Dropdown.svelte';
-	import GarbageBin from '$lib/components/icons/GarbageBin.svelte';
-	import Pencil from '$lib/components/icons/Pencil.svelte';
-	import Tooltip from '$lib/components/common/Tooltip.svelte';
+			import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import Tags from '$lib/components/chat/Tags.svelte';
-	import Share from '$lib/components/icons/Share.svelte';
-	import ArchiveBox from '$lib/components/icons/ArchiveBox.svelte';
-	import DocumentDuplicate from '$lib/components/icons/DocumentDuplicate.svelte';
-	import ArrowDownTray from '$lib/components/icons/ArrowDownTray.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -52,7 +47,7 @@
 						shareHandler();
 					}}
 				>
-					<Share />
+					<Icon name="share" />
 					<div style="--d:flex; --ai:center">{$i18n.t('Share')}</div>
 				</DropdownMenu.Item>
 			{/if}
@@ -63,7 +58,7 @@
 					cloneHandler();
 				}}
 			>
-				<DocumentDuplicate />
+				<Icon name="document-duplicate" />
 
 				<div style="--d:flex; --ai:center">{$i18n.t('Clone')}</div>
 			</DropdownMenu.Item>
@@ -74,7 +69,7 @@
 					exportHandler();
 				}}
 			>
-				<ArrowDownTray />
+				<Icon name="arrow-down-tray" />
 
 				<div style="--d:flex; --ai:center">{$i18n.t('Export')}</div>
 			</DropdownMenu.Item>
@@ -87,7 +82,7 @@
 					deleteHandler();
 				}}
 			>
-				<GarbageBin strokeWidth="2" />
+				<Icon name="garbage-bin" strokeWidth="2" />
 				<div style="--d:flex; --ai:center">{$i18n.t('Delete')}</div>
 			</DropdownMenu.Item>
 		</DropdownMenu.Content>

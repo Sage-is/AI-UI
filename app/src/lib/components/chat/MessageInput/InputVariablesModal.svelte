@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { getContext, onMount, tick } from 'svelte';
 	import { models, config } from '$lib/stores';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import { toast } from 'svelte-sonner';
 	import { copyToClipboard } from '$lib/utils';
 
-	import XMark from '$lib/components/icons/XMark.svelte';
-	import Modal from '$lib/components/common/Modal.svelte';
+		import Modal from '$lib/components/common/Modal.svelte';
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import MapSelector from '$lib/components/common/Valves/MapSelector.svelte';
 
@@ -54,12 +54,12 @@
 
 <Modal bind:show size="md">
 	<div>
-		<div style="--d:flex; 
-					--jc:space-between; 
-					--dark-c:var(--color-gray-300); 
+		<div style="--d:flex;
+					--jc:space-between;
+					--dark-c:var(--color-gray-300);
 					--px:1.2rem; --pt:1rem; --pb:0.5rem">
-			<div style="--size:1.125rem; 
-					--weight:500; 
+			<div style="--size:1.125rem;
+					--weight:500;
 					--as:center">{title || $i18n.t('Input Variables')}</div>
 			<button
 				style="--as:center"
@@ -67,7 +67,7 @@
 					show = false;
 				}}
 			>
-				<XMark className={'size-5'} />
+				<Icon name="x-mark" strokeWidth="2" className={'size-5'} />
 			</button>
 		</div>
 

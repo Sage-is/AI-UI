@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { marked } from 'marked';
 	import fileSaver from 'file-saver';
+	import Icon from '$lib/components/Icon.svelte';
 	const { saveAs } = fileSaver;
 
 	import { onMount, getContext, tick } from 'svelte';
@@ -18,25 +19,17 @@
 	import { page } from '$app/stores';
 
 	import { getModels } from '$lib/apis';
-	import Search from '$lib/components/icons/Search.svelte';
-	import Tooltip from '$lib/components/common/Tooltip.svelte';
+		import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import Switch from '$lib/components/common/Switch.svelte';
 	import Spinner from '$lib/components/common/Spinner.svelte';
-	import XMark from '$lib/components/icons/XMark.svelte';
 
 	import ModelEditor from '$lib/components/workshop/Models/ModelEditor.svelte';
 	import { toast } from 'svelte-sonner';
 	import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
-	import Cog6 from '$lib/components/icons/Cog6.svelte';
-	import ConfigureModelsModal from './Models/ConfigureModelsModal.svelte';
-	import Wrench from '$lib/components/icons/Wrench.svelte';
-	import ArrowDownTray from '$lib/components/icons/ArrowDownTray.svelte';
-	import ManageModelsModal from './Models/ManageModelsModal.svelte';
+		import ConfigureModelsModal from './Models/ConfigureModelsModal.svelte';
+			import ManageModelsModal from './Models/ManageModelsModal.svelte';
 	import ModelMenu from '$lib/components/admin/Settings/Models/ModelMenu.svelte';
-	import EllipsisHorizontal from '$lib/components/icons/EllipsisHorizontal.svelte';
-	import EyeSlash from '$lib/components/icons/EyeSlash.svelte';
-	import Eye from '$lib/components/icons/Eye.svelte';
-	import { WEBUI_BASE_URL } from '$lib/constants';
+				import { WEBUI_BASE_URL } from '$lib/constants';
 	import { getBranding, type Branding } from '$lib/apis/configs';
 
 	let shiftKey = false;
@@ -276,7 +269,7 @@
 								showManageModal = true;
 							}}
 						>
-							<ArrowDownTray />
+							<Icon name="arrow-down-tray" />
 						</button>
 					</Tooltip>
 
@@ -288,7 +281,7 @@
 								showConfigModal = true;
 							}}
 						>
-							<Cog6 />
+							<Icon name="cog6" />
 						</button>
 					</Tooltip>
 				</div>
@@ -297,7 +290,7 @@
 			<div style="--d:flex; --fx:1 1 0%; --ai:center; --w:100%; --g:0.5rem">
 				<div style="--d:flex; --fx:1 1 0%; --ai:center">
 					<div style="--as:center; --ml:0.2rem; --mr:0.6rem">
-						<Search className="size-3.5" />
+						<Icon name="search" className="size-3.5" />
 					</div>
 					<input
 						style="--w:100%; --size:0.8rem; --py:0.2rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
@@ -312,7 +305,7 @@
 									searchValue = '';
 								}}
 							>
-								<XMark className="size-3" strokeWidth="2" />
+								<Icon name="x-mark" className="size-3" strokeWidth="2" />
 							</button>
 						</div>
 					{/if}
@@ -390,9 +383,9 @@
 										}}
 									>
 										{#if model?.meta?.hidden}
-											<EyeSlash />
+											<Icon name="eye-slash" />
 										{:else}
-											<Eye />
+											<Icon name="eye" />
 										{/if}
 									</button>
 								</Tooltip>
@@ -438,7 +431,7 @@
 										style="--as:center; --w:fit-content; --size:0.8rem; --p:0.4rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 										type="button"
 									>
-										<EllipsisHorizontal className="size-5" />
+										<Icon name="ellipsis-horizontal" className="size-5" />
 									</button>
 								</ModelMenu>
 

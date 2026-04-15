@@ -1,10 +1,10 @@
 <script>
 	import { getContext } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	const i18n = getContext('i18n');
 
 	import Modal from '$lib/components/common/Modal.svelte';
 	import AccessControl from './AccessControl.svelte';
-	import XMark from '$lib/components/icons/XMark.svelte';
 
 	export let show = false;
 	export let accessControl = {};
@@ -27,7 +27,7 @@
 					show = false;
 				}}
 			>
-				<XMark className={'size-5'} />
+				<Icon name="x-mark" strokeWidth="2" className={'size-5'} />
 			</button>
 		</div>
 

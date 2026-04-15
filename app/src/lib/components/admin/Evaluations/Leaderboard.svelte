@@ -1,6 +1,7 @@
 <script lang="ts">
 	import * as ort from 'onnxruntime-web';
 	import { env, AutoModel, AutoTokenizer } from '@huggingface/transformers';
+	import Icon from '$lib/components/Icon.svelte';
 
 	env.backends.onnx.wasm.wasmPaths = '/wasm/';
 
@@ -11,11 +12,8 @@
 
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import Search from '$lib/components/icons/Search.svelte';
 
-	import ChevronUp from '$lib/components/icons/ChevronUp.svelte';
-	import ChevronDown from '$lib/components/icons/ChevronDown.svelte';
-	import { WEBUI_BASE_URL } from '$lib/constants';
+			import { WEBUI_BASE_URL } from '$lib/constants';
 
 	const i18n = getContext('i18n');
 
@@ -351,7 +349,7 @@
 		<Tooltip content={$i18n.t('Re-rank models by topic similarity')}>
 			<div style="--d:flex; --fx:1 1 0%">
 				<div style="--as:center; --ml:0.2rem; --mr:0.6rem">
-					<Search className="size-3" />
+					<Icon name="search" className="size-3" />
 				</div>
 				<input
 					style="--w:100%; --size:0.8rem; --pr:1rem; --py:0.2rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
@@ -402,14 +400,14 @@
 							{#if orderBy === 'rating'}
 								<span style="--weight:400">
 									{#if direction === 'asc'}
-										<ChevronUp className="size-2" />
+										<Icon name="chevron-up" className="size-2" />
 									{:else}
-										<ChevronDown className="size-2" />
+										<Icon name="chevron-down" className="size-2" />
 									{/if}
 								</span>
 							{:else}
 								<span style="--v:hidden">
-									<ChevronUp className="size-2" />
+									<Icon name="chevron-up" className="size-2" />
 								</span>
 							{/if}
 						</div>
@@ -424,14 +422,14 @@
 							{#if orderBy === 'name'}
 								<span style="--weight:400">
 									{#if direction === 'asc'}
-										<ChevronUp className="size-2" />
+										<Icon name="chevron-up" className="size-2" />
 									{:else}
-										<ChevronDown className="size-2" />
+										<Icon name="chevron-down" className="size-2" />
 									{/if}
 								</span>
 							{:else}
 								<span style="--v:hidden">
-									<ChevronUp className="size-2" />
+									<Icon name="chevron-up" className="size-2" />
 								</span>
 							{/if}
 						</div>
@@ -446,14 +444,14 @@
 							{#if orderBy === 'rating'}
 								<span style="--weight:400">
 									{#if direction === 'asc'}
-										<ChevronUp className="size-2" />
+										<Icon name="chevron-up" className="size-2" />
 									{:else}
-										<ChevronDown className="size-2" />
+										<Icon name="chevron-down" className="size-2" />
 									{/if}
 								</span>
 							{:else}
 								<span style="--v:hidden">
-									<ChevronUp className="size-2" />
+									<Icon name="chevron-up" className="size-2" />
 								</span>
 							{/if}
 						</div>
@@ -468,14 +466,14 @@
 							{#if orderBy === 'won'}
 								<span style="--weight:400">
 									{#if direction === 'asc'}
-										<ChevronUp className="size-2" />
+										<Icon name="chevron-up" className="size-2" />
 									{:else}
-										<ChevronDown className="size-2" />
+										<Icon name="chevron-down" className="size-2" />
 									{/if}
 								</span>
 							{:else}
 								<span style="--v:hidden">
-									<ChevronUp className="size-2" />
+									<Icon name="chevron-up" className="size-2" />
 								</span>
 							{/if}
 						</div>
@@ -490,14 +488,14 @@
 							{#if orderBy === 'lost'}
 								<span style="--weight:400">
 									{#if direction === 'asc'}
-										<ChevronUp className="size-2" />
+										<Icon name="chevron-up" className="size-2" />
 									{:else}
-										<ChevronDown className="size-2" />
+										<Icon name="chevron-down" className="size-2" />
 									{/if}
 								</span>
 							{:else}
 								<span style="--v:hidden">
-									<ChevronUp className="size-2" />
+									<Icon name="chevron-up" className="size-2" />
 								</span>
 							{/if}
 						</div>

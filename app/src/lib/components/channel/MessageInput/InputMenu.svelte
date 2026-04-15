@@ -2,17 +2,14 @@
 	import { DropdownMenu } from 'bits-ui';
 	import { flyAndScale } from '$lib/utils/transitions';
 	import { getContext, onMount, tick } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	import { config, user, tools as _tools, mobile } from '$lib/stores';
 	import { getTools } from '$lib/apis/tools';
 
 	import Dropdown from '$lib/components/common/Dropdown.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import DocumentArrowUpSolid from '$lib/components/icons/DocumentArrowUpSolid.svelte';
-	import Switch from '$lib/components/common/Switch.svelte';
-	import GlobeAltSolid from '$lib/components/icons/GlobeAltSolid.svelte';
-	import WrenchSolid from '$lib/components/icons/WrenchSolid.svelte';
-	import CameraSolid from '$lib/components/icons/CameraSolid.svelte';
+		import Switch from '$lib/components/common/Switch.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -58,7 +55,7 @@
 						screenCaptureHandler();
 					}}
 				>
-					<CameraSolid />
+					<Icon name="camera-solid" />
 					<div style="--line-clamp:1">{$i18n.t('Capture')}</div>
 				</DropdownMenu.Item>
 			{/if}
@@ -69,7 +66,7 @@
 					uploadFilesHandler();
 				}}
 			>
-				<DocumentArrowUpSolid />
+				<Icon name="document-arrow-up-solid" />
 				<div style="--line-clamp:1">{$i18n.t('Upload Files')}</div>
 			</DropdownMenu.Item>
 		</DropdownMenu.Content>

@@ -2,6 +2,7 @@
 	import { toast } from 'svelte-sonner';
 	import dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
+	import Icon from '$lib/components/Icon.svelte';
 	dayjs.extend(relativeTime);
 
 	import { onMount, getContext } from 'svelte';
@@ -11,17 +12,9 @@
 	import { WEBUI_BASE_URL } from '$lib/constants';
 
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import Plus from '$lib/components/icons/Plus.svelte';
-	import Badge from '$lib/components/common/Badge.svelte';
-	import UsersSolid from '$lib/components/icons/UsersSolid.svelte';
-	import ChevronRight from '$lib/components/icons/ChevronRight.svelte';
-	import EllipsisHorizontal from '$lib/components/icons/EllipsisHorizontal.svelte';
-	import Search from '$lib/components/icons/Search.svelte';
-	import User from '$lib/components/icons/User.svelte';
-	import UserCircleSolid from '$lib/components/icons/UserCircleSolid.svelte';
-	import GroupModal from './Groups/EditGroupModal.svelte';
-	import Pencil from '$lib/components/icons/Pencil.svelte';
-	import GroupItem from './Groups/GroupItem.svelte';
+		import Badge from '$lib/components/common/Badge.svelte';
+							import GroupModal from './Groups/EditGroupModal.svelte';
+		import GroupItem from './Groups/GroupItem.svelte';
 	import AddGroupModal from './Groups/AddGroupModal.svelte';
 	import { createNewGroup, getGroups } from '$lib/apis/groups';
 	import {
@@ -160,7 +153,7 @@
 			<div style="--d:flex; --w:100%; --g:0.5rem">
 				<div style="--d:flex; --fx:1 1 0%">
 					<div style="--as:center; --ml:0.2rem; --mr:0.6rem">
-						<Search />
+						<Icon name="search" />
 					</div>
 					<input
 						style="--w:100%; --size:0.8rem; --pr:1rem; --py:0.2rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
@@ -177,7 +170,7 @@
 								showCreateGroupModal = !showCreateGroupModal;
 							}}
 						>
-							<Plus className="size-3.5" />
+							<Icon name="plus" strokeWidth="2" className="size-3.5" />
 						</button>
 					</Tooltip>
 				</div>
@@ -245,7 +238,7 @@
 			>
 				<div style="--d:flex; --ai:center; --g:0.625rem">
 					<div style="--p:0.4rem; --bgc:rgb(0 0 0 / 0.05); --dark-bgc:rgb(255 255 255 / 0.1); --radius:9999px">
-						<UsersSolid className="size-4" />
+						<Icon name="users-solid" className="size-4" />
 					</div>
 
 					<div style="--ta:left">
@@ -258,7 +251,7 @@
 				</div>
 
 				<div>
-					<ChevronRight strokeWidth="2.5" />
+					<Icon name="chevron-right" strokeWidth="2.5" />
 				</div>
 			</button>
 		{/if}

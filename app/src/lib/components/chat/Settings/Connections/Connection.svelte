@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { getContext, tick } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	const i18n = getContext('i18n');
 
 	import { settings } from '$lib/stores';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import SensitiveInput from '$lib/components/common/SensitiveInput.svelte';
-	import Cog6 from '$lib/components/icons/Cog6.svelte';
-	import AddConnectionModal from '$lib/components/AddConnectionModal.svelte';
+		import AddConnectionModal from '$lib/components/AddConnectionModal.svelte';
 	import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
 
 	export let onDelete = () => {};
@@ -91,7 +91,7 @@
 				}}
 				type="button"
 			>
-				<Cog6 />
+				<Icon name="cog6" />
 			</button>
 		</Tooltip>
 	</div>

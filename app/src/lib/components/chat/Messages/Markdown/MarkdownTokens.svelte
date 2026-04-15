@@ -1,6 +1,7 @@
 <script lang="ts">
 	import DOMPurify from 'dompurify';
 	import { onMount, getContext } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	const i18n = getContext('i18n');
 
 	import fileSaver from 'file-saver';
@@ -17,7 +18,6 @@
 	import AlertRenderer, { alertComponent } from './AlertRenderer.svelte';
 	import Collapsible from '$lib/components/common/Collapsible.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import ArrowDownTray from '$lib/components/icons/ArrowDownTray.svelte';
 
 	import Source from './Source.svelte';
 	import { settings } from '$lib/stores';
@@ -182,7 +182,7 @@
 							exportTableToCSVHandler(token, tokenIdx);
 						}}
 					>
-						<ArrowDownTray className=" size-3.5" strokeWidth="1.5" />
+						<Icon name="arrow-down-tray" className=" size-3.5" strokeWidth="1.5" />
 					</button>
 				</Tooltip>
 			</div>

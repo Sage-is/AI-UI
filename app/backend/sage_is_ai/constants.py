@@ -83,6 +83,12 @@ class ERROR_MESSAGES(str, Enum):
 
     DB_NOT_SQLITE = "This feature is only available when running with SQLite databases."
 
+    DB_RESTORE_NOT_ALLOWED = "Database restore is only available during initial setup when no users exist."
+    DB_RESTORE_INVALID_FILE = "The uploaded file is not a valid SQLite database or supported backup archive."
+    DB_RESTORE_NO_USERS = "The backup database does not contain any user accounts."
+    DB_RESTORE_FILE_TOO_LARGE = "The backup file exceeds the maximum allowed size."
+    DB_RESTORE_PATH_TRAVERSAL = "The backup archive contains invalid file paths."
+
     INVALID_URL = (
         "Oops! The URL you provided is invalid. Please double-check and try again."
     )

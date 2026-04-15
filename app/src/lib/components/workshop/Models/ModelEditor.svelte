@@ -4,6 +4,7 @@
 	import { models, functions, knowledge as knowledgeCollections, user } from '$lib/stores';
 	import { WEBUI_BASE_URL } from '$lib/constants';
 	import { getBranding, type Branding } from '$lib/apis/configs';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -20,8 +21,7 @@
 	import { stringify } from 'postcss';
 	import { toast } from 'svelte-sonner';
 	import Spinner from '$lib/components/common/Spinner.svelte';
-	import XMark from '$lib/components/icons/XMark.svelte';
-	import ToggleChip from '$lib/components/common/ToggleChip.svelte';
+		import ToggleChip from '$lib/components/common/ToggleChip.svelte';
 	import { getNoteList } from '$lib/apis/notes';
 
 	const i18n = getContext('i18n');
@@ -613,7 +613,7 @@
 													info.meta.suggestion_prompts = info.meta.suggestion_prompts;
 												}}
 											>
-												<XMark className={'size-4'} />
+												<Icon name="x-mark" strokeWidth="2" className={'size-4'} />
 											</button>
 										</div>
 									{/each}
