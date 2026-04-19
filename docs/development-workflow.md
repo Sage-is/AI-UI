@@ -160,28 +160,30 @@ For each task, define:
 
 ### TODO Management
 
-**Organization Principle**: TODOs are organized in **reverse chronological order** (newest first) to keep current work at the top and ensure immediate priorities are visible.
+`TODO.md` is the canonical task list. `KANBAN.canvas` auto-generates from it and inline source tags.
 
-**Structure:**
-1. **Current Week** - 🔥 Critical tasks for this week (always at top)
-2. **High Priority** - 🔶 Next milestone work
-3. **Medium Priority** - 🔷 Soon
-4. **Low Priority** - 🔹 Nice to have
-5. **Completed Work** - ✅ Previous weeks in reverse chronological order
+**Kanban columns** (see the convention table at the top of `TODO.md`):
 
-**Categories (in order of priority):**
-1. **Documentation & Admin Management** - Category for meta-work
-2. **Critical Infrastructure & Security**
-3. **High Priority** - User-facing fixes
-4. **Medium Priority** - Feature development
-5. **Low Priority** - Nice-to-have improvements
+| Column      | Markdown section  | Inline tag  |
+|-------------|-------------------|-------------|
+| Backlog     | `## Backlog`      | `# NOTE:`   |
+| TODO        | `## TODO`         | `# TODO:`   |
+| In Progress | `## In Progress`  | `# FIXME:`  |
+| Bugs        | `## Bugs`         | `# BUG:`    |
+| Done        | `- [x]` items / `## Done` | —   |
 
+**Workflow:**
+1. New work starts as `- [ ]` in TODO, grouped by version milestone.
+2. When you begin work, move the item to In Progress and tag the relevant source line with `# FIXME:`.
+3. When done, check off the item (`- [x]`) and remove the inline tag.
+4. Periodically move checked items to `docs/completed-todos.md`.
 
-**Status tracking:**
-- [ ] Planned
-- 🔄 In Progress
-- ✅ Completed
-- ❌ Cancelled/Won't Do
+**Inline tags in source:**
+- `# TODO:` — tracked work not yet started.
+- `# FIXME:` — actively being worked on.
+- `# BUG:` — confirmed defect.
+- `# NOTE:` — documentation, not a work item (unless it flags deferred cleanup).
+- `# DEPRECATED:` — scheduled for removal; track in TODO.md with the target version.
 
 ### Admin Integration Standards
 
