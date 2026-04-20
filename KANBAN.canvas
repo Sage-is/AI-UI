@@ -12,7 +12,7 @@
       "y": 0
     },
     {
-      "height": 8620,
+      "height": 3580,
       "id": "col-todo",
       "label": "TODO",
       "type": "group",
@@ -21,868 +21,678 @@
       "y": 0
     },
     {
+      "children": [
+        {
+          "checked": false,
+          "line_num": 42,
+          "tags": [],
+          "text": "Test: `brew tap sage-is/apps && brew install ai-ui`"
+        },
+        {
+          "checked": false,
+          "line_num": 43,
+          "tags": [],
+          "text": "Fix homebrew-apps Makefile `release_finish`"
+        },
+        {
+          "checked": false,
+          "line_num": 44,
+          "tags": [],
+          "text": "git flow state got stuck on v0.1.2 release; manual merge required to complete"
+        },
+        {
+          "checked": false,
+          "line_num": 45,
+          "tags": [],
+          "text": "celebrate!!! :D"
+        }
+      ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "9f7d96481e0dc94f",
+      "id": "33d0e7f358a9eada",
+      "line_num": 41,
       "source": "todo_md",
-      "tags": [],
-      "text": "**Test: `brew tap sage-is/apps && brew install ai-ui`**",
+      "tags": [
+        "#critical"
+      ],
+      "text": "**Homebrew Tap Release: Finish and verify the brew install path**\n- [ ] Test: `brew tap sage-is/apps && brew install ai-ui`\n- [ ] Fix homebrew-apps Makefile `release_finish`\n- [ ] git flow state got stuck on v0.1.2 release; manual merge required to complete\n- [ ] celebrate!!! :D\n\n`#critical`\n`TODO.md:L41`",
       "type": "text",
       "width": 280,
       "x": 360,
       "y": 60
     },
     {
+      "children": [
+        {
+          "checked": false,
+          "line_num": 50,
+          "tags": [],
+          "text": "Outgoing email notifications (reuse bridge SMTP config)"
+        },
+        {
+          "checked": false,
+          "line_num": 51,
+          "tags": [],
+          "text": "Consolidate LDAP config into Auth/Integrations tab"
+        }
+      ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "32e2487e1fc57a6b",
+      "id": "f0024b51d0af14ba",
+      "line_num": 49,
       "source": "todo_md",
       "tags": [],
-      "text": "**Fix homebrew-apps Makefile `release_finish`**",
+      "text": "**Auth & Onboarding: Email notifications and LDAP consolidation**\n- [ ] Outgoing email notifications (reuse bridge SMTP config)\n- [ ] Consolidate LDAP config into Auth/Integrations tab\n\n`TODO.md:L49`",
       "type": "text",
       "width": 280,
       "x": 360,
       "y": 150
     },
     {
+      "children": [
+        {
+          "checked": false,
+          "line_num": 54,
+          "tags": [],
+          "text": "Agent context mode: `conversation` (last ~5 messages) and `full` (all recent) \u2014 `single` already ships"
+        },
+        {
+          "checked": false,
+          "line_num": 55,
+          "tags": [],
+          "text": "Optional per-agent TTL for auto-reply expiration"
+        }
+      ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "8bf67f17e22e0875",
+      "id": "8295f2767c83fb79",
+      "line_num": 53,
       "source": "todo_md",
       "tags": [],
-      "text": "**git flow state got stuck on v0.1.2 release; manual merge required to complete**",
+      "text": "**Spaces Enhancements: Agent context modes and auto-reply TTL**\n- [ ] Agent context mode: `conversation` (last ~5 messages) and `full` (all recent) \u2014 `single` already ships\n- [ ] Optional per-agent TTL for auto-reply expiration\n\n`TODO.md:L53`",
       "type": "text",
       "width": 280,
       "x": 360,
       "y": 240
     },
     {
+      "children": [
+        {
+          "checked": false,
+          "line_num": 59,
+          "tags": [],
+          "text": "Svelte 4 \u2192 5"
+        },
+        {
+          "checked": false,
+          "line_num": 60,
+          "tags": [],
+          "text": "Vite 5 \u2192 6"
+        },
+        {
+          "checked": false,
+          "line_num": 61,
+          "tags": [],
+          "text": "SvelteKit 2.5 \u2192 latest"
+        }
+      ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "c8066e69545619ef",
+      "id": "5d81d7ae697c30ac",
+      "line_num": 58,
       "source": "todo_md",
       "tags": [],
-      "text": "**celebrate!!! :D**",
+      "text": "**Frontend Toolchain Upgrade: Svelte 5, Vite 6, SvelteKit latest**\n- [ ] Svelte 4 \u2192 5\n- [ ] Vite 5 \u2192 6\n- [ ] SvelteKit 2.5 \u2192 latest\n\n`TODO.md:L58`",
       "type": "text",
       "width": 280,
       "x": 360,
       "y": 330
     },
     {
+      "children": [
+        {
+          "checked": false,
+          "line_num": 64,
+          "tags": [],
+          "text": "Hit the ~2.5GB target (down from 9.7GB)"
+        },
+        {
+          "checked": false,
+          "line_num": 65,
+          "tags": [],
+          "text": "Hit the ~1.5GB base-image target after trimming heavy transitive deps"
+        }
+      ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "de54d87cb126f88c",
+      "id": "a9b2b455b186c48e",
+      "line_num": 63,
       "source": "todo_md",
       "tags": [],
-      "text": "**Outgoing email notifications (reuse bridge SMTP config)**",
+      "text": "**Docker Image Slimming: Get below 2.5 GB**\n- [ ] Hit the ~2.5GB target (down from 9.7GB)\n- [ ] Hit the ~1.5GB base-image target after trimming heavy transitive deps\n\n`TODO.md:L63`",
       "type": "text",
       "width": 280,
       "x": 360,
       "y": 420
     },
     {
+      "children": [
+        {
+          "checked": false,
+          "line_num": 68,
+          "tags": [],
+          "text": "Test and fix Podman build issues (VM memory, rootless networking)"
+        },
+        {
+          "checked": false,
+          "line_num": 69,
+          "tags": [],
+          "text": "Document Podman-specific setup (VM memory bump, `host.containers.internal`)"
+        },
+        {
+          "checked": false,
+          "line_num": 70,
+          "tags": [],
+          "text": "Revisit Makefile `CONTAINER_RUNTIME` auto-detection once Podman is a verified alternative"
+        }
+      ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "8a85aed837b66fa7",
+      "id": "069559706e1e3fee",
+      "line_num": 67,
       "source": "todo_md",
       "tags": [],
-      "text": "**Consolidate LDAP config into Auth/Integrations tab**",
+      "text": "**Podman Compatibility: Verify builds and document setup**\n- [ ] Test and fix Podman build issues (VM memory, rootless networking)\n- [ ] Document Podman-specific setup (VM memory bump, `host.containers.internal`)\n- [ ] Revisit Makefile `CONTAINER_RUNTIME` auto-detection once Podman is a verified alternative\n\n`TODO.md:L67`",
       "type": "text",
       "width": 280,
       "x": 360,
       "y": 510
     },
     {
+      "children": [
+        {
+          "checked": false,
+          "line_num": 73,
+          "tags": [],
+          "text": "`make install_dev` \u2014 auto-install dev tools via Homebrew"
+        },
+        {
+          "checked": false,
+          "line_num": 74,
+          "tags": [],
+          "text": "`make scan_container` \u2014 trivy image scanning (post-build)"
+        },
+        {
+          "checked": false,
+          "line_num": 75,
+          "tags": [],
+          "text": "`make lint` \u2014 eslint + prettier + black rollup"
+        },
+        {
+          "checked": false,
+          "line_num": 76,
+          "tags": [],
+          "text": "Gate release finish on passing DB tests and scans"
+        },
+        {
+          "checked": false,
+          "line_num": 77,
+          "tags": [],
+          "text": "Support the same gated release flow locally or on CI"
+        },
+        {
+          "checked": false,
+          "line_num": 78,
+          "tags": [],
+          "text": "Staging CapRover instance for pre-prod testing"
+        },
+        {
+          "checked": false,
+          "line_num": 80,
+          "tags": [],
+          "text": "Selenium-driven browser regression tests"
+        },
+        {
+          "checked": false,
+          "line_num": 81,
+          "tags": [],
+          "text": "OWASP ZAP DAST via `make scan_dast`"
+        }
+      ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "4dc4aed19ba25ad6",
+      "id": "1ead7c65fa12fceb",
+      "line_num": 72,
       "source": "todo_md",
       "tags": [],
-      "text": "**Agent context mode: `conversation` (last ~5 messages) and `full` (all recent) \u2014 `single` already ships**",
+      "text": "**CI/CD Pipeline: Gated releases, scanning, and regression tests**\n- [ ] `make install_dev` \u2014 auto-install dev tools via Homebrew\n- [ ] `make scan_container` \u2014 trivy image scanning (post-build)\n- [ ] `make lint` \u2014 eslint + prettier + black rollup\n- [ ] Gate release finish on passing DB tests and scans\n- [ ] Support the same gated release flow locally or on CI\n- [ ] Staging CapRover instance for pre-prod testing\n- [ ] Selenium-driven browser regression tests\n- [ ] OWASP ZAP DAST via `make scan_dast`\n\n`TODO.md:L72`",
       "type": "text",
       "width": 280,
       "x": 360,
       "y": 600
     },
     {
+      "children": [
+        {
+          "checked": false,
+          "line_num": 84,
+          "tags": [],
+          "text": "Evaluate migrating Makefile to a cleaner build tool (Rake, Invoke, or Just)"
+        }
+      ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "dd3a76c40aed7e5a",
+      "id": "8f068c52d1bcf0c0",
+      "line_num": 83,
       "source": "todo_md",
       "tags": [],
-      "text": "**Optional per-agent TTL for auto-reply expiration**",
+      "text": "**Build System Evaluation: Consider alternatives to Make**\n- [ ] Evaluate migrating Makefile to a cleaner build tool (Rake, Invoke, or Just)\n\n`TODO.md:L83`",
       "type": "text",
       "width": 280,
       "x": 360,
       "y": 690
     },
     {
+      "children": [
+        {
+          "checked": false,
+          "line_num": 87,
+          "tags": [],
+          "text": "AI-parsed ingestion mode + admin Documents page cleanup"
+        },
+        {
+          "checked": false,
+          "line_num": 88,
+          "tags": [],
+          "text": "Fold engine-specific config under `<details>/<summary>` in the admin page"
+        }
+      ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "59b773ce52fbc8c1",
+      "id": "bee5bc12b27f3fc1",
+      "line_num": 86,
       "source": "todo_md",
       "tags": [],
-      "text": "**Svelte 4 \u2192 5**",
+      "text": "**Knowledge Base Improvements: AI ingestion and admin cleanup**\n- [ ] AI-parsed ingestion mode + admin Documents page cleanup\n- [ ] Fold engine-specific config under `<details>/<summary>` in the admin page\n\n`TODO.md:L86`",
       "type": "text",
       "width": 280,
       "x": 360,
       "y": 780
     },
     {
+      "children": [
+        {
+          "checked": false,
+          "line_num": 91,
+          "tags": [],
+          "text": "Channel \u2192 Space DB migration (Alembic rename of tables, columns, enum values)"
+        },
+        {
+          "checked": false,
+          "line_num": 92,
+          "tags": [],
+          "text": "Rename `components/channel/` directory \u2192 `components/space/`"
+        },
+        {
+          "checked": false,
+          "line_num": 93,
+          "tags": [],
+          "text": "Replace wrapper `<div>` elements with semantic custom elements"
+        },
+        {
+          "checked": false,
+          "line_num": 94,
+          "tags": [],
+          "text": "Swagger UI: custom styling, branding, auth handling"
+        },
+        {
+          "checked": false,
+          "line_num": 95,
+          "tags": [],
+          "text": "CapRover one-click template"
+        },
+        {
+          "checked": false,
+          "line_num": 96,
+          "tags": [],
+          "text": "Scrub remaining upstream open-webui references in comments and defaults"
+        },
+        {
+          "checked": false,
+          "line_num": 97,
+          "tags": [],
+          "text": "Add migration idempotency guards on all `create_table` / `add_column` calls"
+        },
+        {
+          "checked": false,
+          "line_num": 98,
+          "tags": [],
+          "text": "Replace login slideshow images with original or CC/public-domain photos"
+        }
+      ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "864ff73963ab04e3",
+      "id": "67ed9b4384e85418",
+      "line_num": 90,
       "source": "todo_md",
       "tags": [],
-      "text": "**Vite 5 \u2192 6**",
+      "text": "**Codebase Cleanup: Channel\u2192Space rename, semantic HTML, branding**\n- [ ] Channel \u2192 Space DB migration (Alembic rename of tables, columns, enum values)\n- [ ] Rename `components/channel/` directory \u2192 `components/space/`\n- [ ] Replace wrapper `<div>` elements with semantic custom elements\n- [ ] Swagger UI: custom styling, branding, auth handling\n- [ ] CapRover one-click template\n- [ ] Scrub remaining upstream open-webui references in comments and defaults\n- [ ] Add migration idempotency guards on all `create_table` / `add_column` calls\n- [ ] Replace login slideshow images with original or CC/public-domain photos\n\n`TODO.md:L90`",
       "type": "text",
       "width": 280,
       "x": 360,
       "y": 870
     },
     {
+      "children": [
+        {
+          "checked": false,
+          "line_num": 103,
+          "tags": [],
+          "text": "Review `docs/backend-rewrite-research.md` with team"
+        },
+        {
+          "checked": false,
+          "line_num": 104,
+          "tags": [],
+          "text": "Phase -1: Generate contract test suite from OpenAPI spec (private submodule)"
+        },
+        {
+          "checked": false,
+          "line_num": 105,
+          "tags": [],
+          "text": "Phase 0 spike: chosen framework + streaming Ollama proxy"
+        },
+        {
+          "checked": false,
+          "line_num": 106,
+          "tags": [],
+          "text": "Team decision: Go + PocketBase, Rust + Loco, or Python + Django?"
+        }
+      ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "34a79ff6cf818943",
+      "id": "e7fa4bfe202d461d",
+      "line_num": 102,
       "source": "todo_md",
       "tags": [],
-      "text": "**SvelteKit 2.5 \u2192 latest**",
+      "text": "**Backend Rewrite Research: Evaluate framework options and build contract tests**\n- [ ] Review `docs/backend-rewrite-research.md` with team\n- [ ] Phase -1: Generate contract test suite from OpenAPI spec (private submodule)\n- [ ] Phase 0 spike: chosen framework + streaming Ollama proxy\n- [ ] Team decision: Go + PocketBase, Rust + Loco, or Python + Django?\n\n`TODO.md:L102`",
       "type": "text",
       "width": 280,
       "x": 360,
       "y": 960
     },
     {
+      "children": [
+        {
+          "checked": false,
+          "line_num": 109,
+          "tags": [],
+          "text": "`ai-ui dev` CLI command: clones repo, mounts source, enables DEV_MODE"
+        },
+        {
+          "checked": false,
+          "line_num": 110,
+          "tags": [],
+          "text": "DeveloperStep wizard: informational in prod, celebration with wizard illustration in dev mode"
+        },
+        {
+          "checked": false,
+          "line_num": 111,
+          "tags": [],
+          "text": "Node.js + npm installed to data volume on first dev start"
+        },
+        {
+          "checked": false,
+          "line_num": 112,
+          "tags": [],
+          "text": "Same image, same container \u2014 `DEV_MODE=true` switches to vite HMR + uvicorn reload"
+        }
+      ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "5fe278a4a75fda43",
+      "id": "2527a8b14eb45f1e",
+      "line_num": 108,
       "source": "todo_md",
       "tags": [],
-      "text": "**Hit the ~2.5GB target (down from 9.7GB)**",
+      "text": "**Developer Mode: Single image, dev CLI, HMR**\n- [ ] `ai-ui dev` CLI command: clones repo, mounts source, enables DEV_MODE\n- [ ] DeveloperStep wizard: informational in prod, celebration with wizard illustration in dev mode\n- [ ] Node.js + npm installed to data volume on first dev start\n- [ ] Same image, same container \u2014 `DEV_MODE=true` switches to vite HMR + uvicorn reload\n\n`TODO.md:L108`",
       "type": "text",
       "width": 280,
       "x": 360,
       "y": 1050
     },
     {
+      "children": [
+        {
+          "checked": false,
+          "line_num": 115,
+          "tags": [],
+          "text": "Download progress streaming to frontend (WebSocket/SSE from backend)"
+        },
+        {
+          "checked": false,
+          "line_num": 116,
+          "tags": [],
+          "text": "Admin panel tab for AI Engine download status and progress"
+        },
+        {
+          "checked": false,
+          "line_num": 117,
+          "tags": [],
+          "text": "`HF_TOKEN` support for faster authenticated HuggingFace downloads"
+        },
+        {
+          "checked": false,
+          "line_num": 118,
+          "tags": [],
+          "text": "Download time estimates based on measured connection speed"
+        },
+        {
+          "checked": false,
+          "line_num": 119,
+          "tags": [],
+          "text": "Upload progress bars with percentage and speed meters"
+        },
+        {
+          "checked": false,
+          "line_num": 121,
+          "tags": [],
+          "text": "Configurable upload timeouts based on file size (replace hardcoded 240s)"
+        },
+        {
+          "checked": false,
+          "line_num": 123,
+          "tags": [],
+          "text": "Console/log viewer tab in admin (WebSocket log streaming)"
+        }
+      ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "04d76156962b10b7",
+      "id": "fa26f438554602b7",
+      "line_num": 114,
       "source": "todo_md",
       "tags": [],
-      "text": "**Hit the ~1.5GB base-image target after trimming heavy transitive deps**",
+      "text": "**Upload & Download UX: Progress streaming, time estimates, admin viewer**\n- [ ] Download progress streaming to frontend (WebSocket/SSE from backend)\n- [ ] Admin panel tab for AI Engine download status and progress\n- [ ] `HF_TOKEN` support for faster authenticated HuggingFace downloads\n- [ ] Download time estimates based on measured connection speed\n- [ ] Upload progress bars with percentage and speed meters\n- [ ] Configurable upload timeouts based on file size (replace hardcoded 240s)\n- [ ] Console/log viewer tab in admin (WebSocket log streaming)\n\n`TODO.md:L114`",
       "type": "text",
       "width": 280,
       "x": 360,
       "y": 1140
     },
     {
+      "children": [
+        {
+          "checked": false,
+          "line_num": 126,
+          "tags": [],
+          "text": "Sage.is hosted email notification service (for deployments without SMTP)"
+        },
+        {
+          "checked": false,
+          "line_num": 127,
+          "tags": [],
+          "text": "Workspace switcher (project-scoped model configs, shared vs private)"
+        },
+        {
+          "checked": false,
+          "line_num": 128,
+          "tags": [],
+          "text": "Built-in task tracking (convert chat responses to tasks, due dates, progress)"
+        },
+        {
+          "checked": false,
+          "line_num": 129,
+          "tags": [],
+          "text": "Personal analytics dashboard (usage patterns, model preferences)"
+        },
+        {
+          "checked": false,
+          "line_num": 130,
+          "tags": [],
+          "text": "Semantic search across all chats and documents"
+        },
+        {
+          "checked": false,
+          "line_num": 131,
+          "tags": [],
+          "text": "Mobile-first optimizations (swipe gestures, PWA enhancements)"
+        },
+        {
+          "checked": false,
+          "line_num": 132,
+          "tags": [],
+          "text": "Accessibility: screen reader, high contrast, keyboard navigation"
+        }
+      ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "0f6fff5ab53048c0",
+      "id": "638c4bf46a7cca6b",
+      "line_num": 125,
       "source": "todo_md",
       "tags": [],
-      "text": "**Test and fix Podman build issues (VM memory, rootless networking)**",
+      "text": "**Platform Features: Workspaces, analytics, search, mobile, a11y**\n- [ ] Sage.is hosted email notification service (for deployments without SMTP)\n- [ ] Workspace switcher (project-scoped model configs, shared vs private)\n- [ ] Built-in task tracking (convert chat responses to tasks, due dates, progress)\n- [ ] Personal analytics dashboard (usage patterns, model preferences)\n- [ ] Semantic search across all chats and documents\n- [ ] Mobile-first optimizations (swipe gestures, PWA enhancements)\n- [ ] Accessibility: screen reader, high contrast, keyboard navigation\n\n`TODO.md:L125`",
       "type": "text",
       "width": 280,
       "x": 360,
       "y": 1230
     },
     {
+      "children": [
+        {
+          "checked": false,
+          "line_num": 137,
+          "tags": [],
+          "text": "Intelligent load balancing for multiple Ollama backends (`ollama.py:1`)"
+        },
+        {
+          "checked": false,
+          "line_num": 138,
+          "tags": [],
+          "text": "Update Ollama type support when upstream adds new types (`ollama.py:1378`)"
+        },
+        {
+          "checked": false,
+          "line_num": 139,
+          "tags": [],
+          "text": "Handle tool name collisions by prepending toolkit name (`utils/tools.py:109`)"
+        },
+        {
+          "checked": false,
+          "line_num": 140,
+          "tags": [],
+          "text": "Replace legacy system message insertion with `add_or_update_system_message` (`middleware.py:997`)"
+        },
+        {
+          "checked": false,
+          "line_num": 141,
+          "tags": [],
+          "text": "Add retries to audio processing requests (`audio.py:1120`)"
+        },
+        {
+          "checked": false,
+          "line_num": 142,
+          "tags": [],
+          "text": "Remove deprecated `WEBUI_JWT_SECRET_KEY` fallback at next major version (`env.py:393`)"
+        }
+      ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "7aa2ed8ef8fcb066",
+      "id": "2c6d4fac1672ff9b",
+      "line_num": 136,
       "source": "todo_md",
       "tags": [],
-      "text": "**Document Podman-specific setup (VM memory bump, `host.containers.internal`)**",
+      "text": "**Backend Inline TODOs: Load balancing, type updates, deprecation removal**\n- [ ] Intelligent load balancing for multiple Ollama backends (`ollama.py:1`)\n- [ ] Update Ollama type support when upstream adds new types (`ollama.py:1378`)\n- [ ] Handle tool name collisions by prepending toolkit name (`utils/tools.py:109`)\n- [ ] Replace legacy system message insertion with `add_or_update_system_message` (`middleware.py:997`)\n- [ ] Add retries to audio processing requests (`audio.py:1120`)\n- [ ] Remove deprecated `WEBUI_JWT_SECRET_KEY` fallback at next major version (`env.py:393`)\n\n`TODO.md:L136`",
       "type": "text",
       "width": 280,
       "x": 360,
       "y": 1320
     },
     {
+      "children": [
+        {
+          "checked": false,
+          "line_num": 145,
+          "tags": [],
+          "text": "Filter order handling in model config (`FiltersSelector.svelte:34`)"
+        },
+        {
+          "checked": false,
+          "line_num": 146,
+          "tags": [],
+          "text": "Voice input auto-stop logic in Knowledge Base (`AddTextContentModal.svelte:21`)"
+        },
+        {
+          "checked": false,
+          "line_num": 147,
+          "tags": [],
+          "text": "Shortcut support for generate-title button (`ChatItem.svelte:415`)"
+        },
+        {
+          "checked": false,
+          "line_num": 148,
+          "tags": [],
+          "text": "User-facing error for Space participant issues (`Space.svelte:81`)"
+        },
+        {
+          "checked": false,
+          "line_num": 149,
+          "tags": [],
+          "text": "Emoji picker search filtering (`EmojiPickerClean.svelte:47`)"
+        },
+        {
+          "checked": false,
+          "line_num": 150,
+          "tags": [],
+          "text": "Update RichTextInput Bubble/Floating to v3 (`RichTextInput.svelte:79`)"
+        },
+        {
+          "checked": false,
+          "line_num": 151,
+          "tags": [],
+          "text": "Note pages feature \u2014 multiple pages per note (`NoteEditor.svelte:80`)"
+        },
+        {
+          "checked": false,
+          "line_num": 152,
+          "tags": [],
+          "text": "Decide native vs custom file handling in notes (`NoteEditor/Chat.svelte:191`)"
+        },
+        {
+          "checked": false,
+          "line_num": 153,
+          "tags": [],
+          "text": "Investigate Kokoro worker issues (`kokoro.worker.ts:4`)"
+        }
+      ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "12ab762d56b0dc60",
+      "id": "81f61ad7dae635ad",
+      "line_num": 144,
       "source": "todo_md",
       "tags": [],
-      "text": "**Revisit Makefile `CONTAINER_RUNTIME` auto-detection once Podman is a verified alternative**",
+      "text": "**Frontend Inline TODOs: UX polish, component upgrades, bug investigation**\n- [ ] Filter order handling in model config (`FiltersSelector.svelte:34`)\n- [ ] Voice input auto-stop logic in Knowledge Base (`AddTextContentModal.svelte:21`)\n- [ ] Shortcut support for generate-title button (`ChatItem.svelte:415`)\n- [ ] User-facing error for Space participant issues (`Space.svelte:81`)\n- [ ] Emoji picker search filtering (`EmojiPickerClean.svelte:47`)\n- [ ] Update RichTextInput Bubble/Floating to v3 (`RichTextInput.svelte:79`)\n- [ ] Note pages feature \u2014 multiple pages per note (`NoteEditor.svelte:80`)\n- [ ] Decide native vs custom file handling in notes (`NoteEditor/Chat.svelte:191`)\n- [ ] Investigate Kokoro worker issues (`kokoro.worker.ts:4`)\n\n`TODO.md:L144`",
       "type": "text",
       "width": 280,
       "x": 360,
       "y": 1410
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "63308ad00f5ccc98",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**`make install_dev` \u2014 auto-install dev tools via Homebrew**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 1500
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "841a2bf4d783e4d1",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**`make scan_container` \u2014 trivy image scanning (post-build)**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 1590
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "01e6b24aee02e9a8",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**`make lint` \u2014 eslint + prettier + black rollup**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 1680
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "37c03cff8909f9e4",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Gate release finish on passing DB tests and scans**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 1770
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "9c935e0396441d71",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Support the same gated release flow locally or on CI**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 1860
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "5f12dab7d48cd0a4",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Staging CapRover instance for pre-prod testing**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 1950
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "fe0264f20a1a4bbf",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Selenium-driven browser regression tests**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 2040
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "c0ecea91b8df98be",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**OWASP ZAP DAST via `make scan_dast`**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 2130
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "9ff8513614b4dbb5",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Evaluate migrating Makefile to a cleaner build tool (Rake, Invoke, or Just)**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 2220
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "8729e6fc6eaabd37",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**AI-parsed ingestion mode + admin Documents page cleanup**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 2310
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "5a94d6d01d999e1d",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Fold engine-specific config under `<details>/<summary>` in the admin page**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 2400
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "bedd37951cf66a5a",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Channel \u2192 Space DB migration (Alembic rename of tables, columns, enum values)**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 2490
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "1540d425ec1778bb",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Rename `components/channel/` directory \u2192 `components/space/`**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 2580
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "d8520d6bfe91a8d9",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Replace wrapper `<div>` elements with semantic custom elements**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 2670
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "aa8964217b23e628",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Swagger UI: custom styling, branding, auth handling**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 2760
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "a6eb267643c155f8",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**CapRover one-click template**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 2850
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "1cf9ae0b06978395",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Scrub remaining upstream open-webui references in comments and defaults**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 2940
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "dcc81aeed48a76e5",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Add migration idempotency guards on all `create_table` / `add_column` calls**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 3030
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "93df091ef6d1fb26",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Replace login slideshow images with original or CC/public-domain photos**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 3120
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "c7f117f71ff8b39b",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Review `docs/backend-rewrite-research.md` with team**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 3210
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "3930bc73b14602a4",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Phase -1: Generate contract test suite from OpenAPI spec (private submodule)**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 3300
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "0009d95990cb58a6",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Phase 0 spike: chosen framework + streaming Ollama proxy**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 3390
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "4210283b18d2a089",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Team decision: Go + PocketBase, Rust + Loco, or Python + Django?**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 3480
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "5349015eb92ac46f",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**`ai-ui dev` CLI command: clones repo, mounts source, enables DEV_MODE**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 3570
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "33c92395170fbf53",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**DeveloperStep wizard: informational in prod, celebration with wizard illustration in dev mode**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 3660
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "ce7d1f62fcecc18e",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Node.js + npm installed to data volume on first dev start**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 3750
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "e90a3d1269809362",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Same image, same container \u2014 `DEV_MODE=true` switches to vite HMR + uvicorn reload**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 3840
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "c58cb297fafe0ab3",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Download progress streaming to frontend (WebSocket/SSE from backend)**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 3930
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "a1d2f0200bc263ec",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Admin panel tab for AI Engine download status and progress**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 4020
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "179a5218b87c9840",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**`HF_TOKEN` support for faster authenticated HuggingFace downloads**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 4110
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "7d6955e0b22f134c",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Download time estimates based on measured connection speed**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 4200
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "86a5b8b3f0f2b889",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Upload progress bars with percentage and speed meters**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 4290
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "2ca206252784383a",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Configurable upload timeouts based on file size (replace hardcoded 240s)**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 4380
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "a705dd56073b5480",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Console/log viewer tab in admin (WebSocket log streaming)**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 4470
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "102fef6ff8160081",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Sage.is hosted email notification service (for deployments without SMTP)**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 4560
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "ad4d965488a7b1f8",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Workspace switcher (project-scoped model configs, shared vs private)**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 4650
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "f9452731cb85f4da",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Built-in task tracking (convert chat responses to tasks, due dates, progress)**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 4740
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "dbd0291cf42e7f68",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Personal analytics dashboard (usage patterns, model preferences)**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 4830
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "a7beb5b6f7b5cebc",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Semantic search across all chats and documents**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 4920
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "9e599071a5fa7bbb",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Mobile-first optimizations (swipe gestures, PWA enhancements)**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 5010
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "6abef135cf3b0324",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Accessibility: screen reader, high contrast, keyboard navigation**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 5100
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "c9d0ed8015adc751",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Intelligent load balancing for multiple Ollama backends (`ollama.py:1`)**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 5190
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "98d4be1e0b5212b4",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Update Ollama type support when upstream adds new types (`ollama.py:1378`)**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 5280
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "a84342758082692b",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Handle tool name collisions by prepending toolkit name (`utils/tools.py:109`)**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 5370
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "978c62124e523fa1",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Replace legacy system message insertion with `add_or_update_system_message` (`middleware.py:997`)**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 5460
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "1a16cc7c2b3fca3c",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Add retries to audio processing requests (`audio.py:1120`)**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 5550
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "02e06fd03bbb74de",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Remove deprecated `WEBUI_JWT_SECRET_KEY` fallback at next major version (`env.py:393`)**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 5640
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "37ff3bd51dac4a41",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Filter order handling in model config (`FiltersSelector.svelte:34`)**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 5730
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "cb90ed22b2b59c9d",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Voice input auto-stop logic in Knowledge Base (`AddTextContentModal.svelte:21`)**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 5820
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "7b6439826c7d01aa",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Shortcut support for generate-title button (`ChatItem.svelte:415`)**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 5910
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "b24f875588ceaac2",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**User-facing error for Space participant issues (`Space.svelte:81`)**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 6000
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "9aaa31f4db8e5d33",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Emoji picker search filtering (`EmojiPickerClean.svelte:47`)**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 6090
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "37e473b349a47a61",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Update RichTextInput Bubble/Floating to v3 (`RichTextInput.svelte:79`)**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 6180
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "c7b0a6d21914745b",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Note pages feature \u2014 multiple pages per note (`NoteEditor.svelte:80`)**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 6270
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "2e595dc86103f247",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Decide native vs custom file handling in notes (`NoteEditor/Chat.svelte:191`)**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 6360
-    },
-    {
-      "file_path": "TODO.md",
-      "height": 80,
-      "id": "e0234e788aba6e49",
-      "source": "todo_md",
-      "tags": [],
-      "text": "**Investigate Kokoro worker issues (`kokoro.worker.ts:4`)**",
-      "type": "text",
-      "width": 280,
-      "x": 360,
-      "y": 6450
     },
     {
       "file_path": "app/backend/sage_is_ai/main.py",
@@ -895,7 +705,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 6540
+      "y": 1500
     },
     {
       "file_path": "app/backend/sage_is_ai/routers/spaces.py",
@@ -908,7 +718,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 6630
+      "y": 1590
     },
     {
       "file_path": "app/backend/sage_is_ai/routers/images.py",
@@ -921,7 +731,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 6720
+      "y": 1680
     },
     {
       "file_path": "app/backend/sage_is_ai/routers/audio.py",
@@ -934,7 +744,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 6810
+      "y": 1770
     },
     {
       "file_path": "app/backend/sage_is_ai/routers/audio.py",
@@ -947,7 +757,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 6900
+      "y": 1860
     },
     {
       "file_path": "app/backend/sage_is_ai/routers/audio.py",
@@ -960,7 +770,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 6990
+      "y": 1950
     },
     {
       "file_path": "app/backend/sage_is_ai/routers/audio.py",
@@ -973,7 +783,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 7080
+      "y": 2040
     },
     {
       "file_path": "app/backend/sage_is_ai/routers/ollama.py",
@@ -986,7 +796,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 7170
+      "y": 2130
     },
     {
       "file_path": "app/backend/sage_is_ai/routers/ollama.py",
@@ -999,7 +809,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 7260
+      "y": 2220
     },
     {
       "file_path": "app/backend/sage_is_ai/routers/ollama.py",
@@ -1012,7 +822,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 7350
+      "y": 2310
     },
     {
       "file_path": "app/backend/sage_is_ai/routers/ollama.py",
@@ -1025,7 +835,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 7440
+      "y": 2400
     },
     {
       "file_path": "app/backend/sage_is_ai/routers/ollama.py",
@@ -1038,7 +848,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 7530
+      "y": 2490
     },
     {
       "file_path": "app/backend/sage_is_ai/routers/ollama.py",
@@ -1051,7 +861,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 7620
+      "y": 2580
     },
     {
       "file_path": "app/backend/sage_is_ai/utils/tools.py",
@@ -1064,7 +874,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 7710
+      "y": 2670
     },
     {
       "file_path": "app/backend/sage_is_ai/utils/middleware.py",
@@ -1077,7 +887,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 7800
+      "y": 2760
     },
     {
       "file_path": "app/src/lib/components/workshop/Models/FiltersSelector.svelte",
@@ -1090,7 +900,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 7890
+      "y": 2850
     },
     {
       "file_path": "app/src/lib/components/workshop/Knowledge/KnowledgeBase/AddTextContentModal.svelte",
@@ -1103,7 +913,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 7980
+      "y": 2940
     },
     {
       "file_path": "app/src/lib/components/layout/Sidebar/ChatItem.svelte",
@@ -1116,7 +926,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 8070
+      "y": 3030
     },
     {
       "file_path": "app/src/lib/components/channel/Space.svelte",
@@ -1129,7 +939,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 8160
+      "y": 3120
     },
     {
       "file_path": "app/src/lib/components/common/EmojiPickerClean.svelte",
@@ -1142,7 +952,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 8250
+      "y": 3210
     },
     {
       "file_path": "app/src/lib/components/common/RichTextInput.svelte",
@@ -1155,7 +965,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 8340
+      "y": 3300
     },
     {
       "file_path": "app/src/lib/components/notes/NoteEditor.svelte",
@@ -1168,7 +978,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 8430
+      "y": 3390
     },
     {
       "file_path": "app/src/lib/components/notes/NoteEditor/Chat.svelte",
@@ -1181,7 +991,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 8520
+      "y": 3480
     },
     {
       "color": "5",
@@ -1212,6 +1022,39 @@
       "width": 300,
       "x": 1400,
       "y": 0
+    },
+    {
+      "children": [
+        {
+          "checked": true,
+          "line_num": 175,
+          "tags": [],
+          "text": "Restructure TODO.md to TodoScope conventions"
+        },
+        {
+          "checked": true,
+          "line_num": 176,
+          "tags": [],
+          "text": "Fix duplicate rows in `.todoscope-exclude.csv`"
+        },
+        {
+          "checked": true,
+          "line_num": 177,
+          "tags": [],
+          "text": "Run TodoScope scanner and verify kanban board matches expectations"
+        }
+      ],
+      "file_path": "TODO.md",
+      "height": 80,
+      "id": "d552afe3881a77fb",
+      "line_num": 174,
+      "source": "todo_md",
+      "tags": [],
+      "text": "**TodoScope Alignment**\n- [x] Restructure TODO.md to TodoScope conventions\n- [x] Fix duplicate rows in `.todoscope-exclude.csv`\n- [x] Run TodoScope scanner and verify kanban board matches expectations\n\n`TODO.md:L174`",
+      "type": "text",
+      "width": 280,
+      "x": 1410,
+      "y": 60
     }
   ]
 }
