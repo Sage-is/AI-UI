@@ -59,20 +59,7 @@
 						onDelete();
 					}}
 				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke-width="2"
-						stroke="currentColor"
-						style="--w:1rem; --h:1rem"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-						/>
-					</svg>
+					<Icon name="minus-circle-outline" className="size-4" strokeWidth="2" />
 				</button>
 			</Tooltip>
 		</div>

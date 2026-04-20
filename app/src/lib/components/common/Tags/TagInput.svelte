@@ -2,6 +2,7 @@
 	import { createEventDispatcher, getContext } from 'svelte';
 	import { tags } from '$lib/stores';
 	import { toast } from 'svelte-sonner';
+	import Icon from '$lib/components/Icon.svelte';
 	const dispatch = createEventDispatcher();
 
 	const i18n = getContext('i18n');
@@ -45,20 +46,7 @@
 			</datalist>
 
 			<button type="button" aria-label={$i18n.t('Save Tag')} on:click={addTagHandler}>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					viewBox="0 0 16 16"
-					fill="currentColor"
-					stroke-width="2"
-					aria-hidden="true"
-					style="--w:0.6rem; --h:0.6rem"
-				>
-					<path
-						fill-rule="evenodd"
-						d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z"
-						clip-rule="evenodd"
-					/>
-				</svg>
+				<Icon name="check-fill-16" className="size-[0.6rem]" strokeWidth="2" />
 			</button>
 		</div>
 	{/if}
@@ -72,18 +60,7 @@
 		}}
 	>
 		<div style="--m:auto; --as:center">
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				viewBox="0 0 16 16"
-				aria-hidden="true"
-				fill="currentColor"
-				style="--w:0.6rem; --h:0.6rem; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1)"
-	class="{showTagInput ? 'rotate-45' : ''} transform"
-			>
-				<path
-					d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z"
-				/>
-			</svg>
+			<Icon name="plus-fill-16" className="size-[0.6rem]" />
 		</div>
 	</button>
 

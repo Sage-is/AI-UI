@@ -46,32 +46,19 @@
 
 	import RichTextInput from '../common/RichTextInput.svelte';
 	import Spinner from '../common/Spinner.svelte';
-	import MicSolid from '../icons/MicSolid.svelte';
 	import VoiceRecording from '../chat/MessageInput/VoiceRecording.svelte';
 	import DeleteConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
-	import MenuLines from '../icons/MenuLines.svelte';
-	import ChatBubbleOval from '../icons/ChatBubbleOval.svelte';
 
-	import Calendar from '../icons/Calendar.svelte';
-	import Users from '../icons/Users.svelte';
 
 	import Image from '../common/Image.svelte';
 	import FileItem from '../common/FileItem.svelte';
 	import FilesOverlay from '../chat/MessageInput/FilesOverlay.svelte';
 	import RecordMenu from './RecordMenu.svelte';
 	import NoteMenu from './Notes/NoteMenu.svelte';
-	import EllipsisHorizontal from '../icons/EllipsisHorizontal.svelte';
-	import Sparkles from '../icons/Sparkles.svelte';
-	import SparklesSolid from '../icons/SparklesSolid.svelte';
 	import Tooltip from '../common/Tooltip.svelte';
-	import Bars3BottomLeft from '../icons/Bars3BottomLeft.svelte';
-	import ArrowUturnLeft from '../icons/ArrowUturnLeft.svelte';
-	import ArrowUturnRight from '../icons/ArrowUturnRight.svelte';
 	import Sidebar from '../common/Sidebar.svelte';
-	import ArrowRight from '../icons/ArrowRight.svelte';
-	import Cog6 from '../icons/Cog6.svelte';
 	import AiMenu from './AIMenu.svelte';
-	import AdjustmentsHorizontalOutline from '../icons/AdjustmentsHorizontalOutline.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	export let id: null | string = null;
 
@@ -902,7 +889,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 									aria-label="Toggle Sidebar"
 								>
 									<div style="--m:auto; --as:center">
-										<MenuLines />
+										<Icon name="menu-lines" />
 									</div>
 								</button>
 							</div>
@@ -928,11 +915,11 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 							/>
 
 							<div
-								style="--d:flex; 
-									--as:center; 
-									--ai:center; 
-									--g:0.4rem; 
-									--pl:0.5rem; 
+								style="--d:flex;
+									--as:center;
+									--ai:center;
+									--g:0.4rem;
+									--pl:0.5rem;
 								{titleInputFocused && !titleGenerating ? '' : '--d:none; --pe:none; --w:0; --overflow:hidden'}"
 							>
 								<Tooltip content={$i18n.t('Generate')}>
@@ -948,7 +935,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 											titleInputFocused = false;
 										}}
 									>
-										<Sparkles strokeWidth="2" />
+										<Icon name="sparkles" strokeWidth="2" />
 									</button>
 								</Tooltip>
 							</div>
@@ -972,7 +959,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 												}}
 												disabled={!editor.can().undo()}
 											>
-												<ArrowUturnLeft className="size-4" />
+												<Icon name="arrow-uturn-left" className="size-4" />
 											</button>
 
 											<button
@@ -984,7 +971,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 												}}
 												disabled={!editor.can().redo()}
 											>
-												<ArrowUturnRight className="size-4" />
+												<Icon name="arrow-uturn-right" className="size-4" />
 											</button>
 										</div>
 									</div>
@@ -1004,7 +991,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 											}
 										}}
 									>
-										<ChatBubbleOval />
+										<Icon name="chat-bubble-oval" />
 									</button>
 								</Tooltip>
 
@@ -1022,7 +1009,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 											}
 										}}
 									>
-										<AdjustmentsHorizontalOutline />
+										<Icon name="adjustments-horizontal-outline" />
 									</button>
 								</Tooltip>
 
@@ -1061,7 +1048,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 									<div
 										style="--p:0.2rem; --bgc:transparent; --hvr-bgc:rgb(255 255 255 / 0.05); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.5rem"
 									>
-										<EllipsisHorizontal className="size-5" />
+										<Icon name="ellipsis-horizontal" className="size-5" />
 									</div>
 								</NoteMenu>
 							</div>
@@ -1085,7 +1072,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 								<button
 									style="--d:flex; --ai:center; --g:0.2rem; --w:fit-content; --py:0.2rem; --px:0.4rem; --radius:0.5rem; --minw:fit-content"
 								>
-									<Calendar className="size-3.5" strokeWidth="2" />
+									<Icon name="calendar" className="size-3.5" strokeWidth="2" />
 
 									<!-- check for same date, yesterday, last week, and other -->
 
@@ -1117,7 +1104,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 									}}
 									disabled={note?.user_id !== $user?.id && $user?.role !== 'admin'}
 								>
-									<Users className="size-3.5" strokeWidth="2" />
+									<Icon name="users" className="size-3.5" strokeWidth="2" />
 
 									<span> {note?.access_control ? $i18n.t('Private') : $i18n.t('Everyone')} </span>
 								</button>
@@ -1332,7 +1319,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 							<div
 								style="--cur:pointer; --p:0.625rem; --d:flex; --radius:9999px;  --bc:var(--color-gray-50); --bgc:#fff; --dark-bs:none; --dark-bgc:var(--color-gray-850); --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --shadow:5"
 							>
-								<MicSolid className="size-4.5" />
+								<Icon name="mic-solid" className="size-4.5" />
 							</div>
 						</Tooltip>
 					</RecordMenu>
@@ -1364,7 +1351,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 									<div
 										style="--cur:pointer; --p:0.625rem; --d:flex; --radius:9999px;  --bc:var(--color-gray-50); --bgc:#fff; --dark-bs:none; --dark-bgc:var(--color-gray-850); --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --shadow:5"
 									>
-										<SparklesSolid />
+										<Icon name="sparkles-solid" />
 									</div>
 								</AiMenu>
 							{/if}

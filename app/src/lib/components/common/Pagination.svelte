@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { Pagination } from 'bits-ui';
 	import { createEventDispatcher } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
-	import ChevronLeft from '../icons/ChevronLeft.svelte';
-	import ChevronRight from '../icons/ChevronRight.svelte';
 
 	export let page = 0;
 	export let count = 0;
@@ -17,7 +16,7 @@
 				style="--mr:25px; --d:inline-flex; --w:2rem; --h:2rem; --ai:center; --jc:center; --radius:9px; --bgc:transparent; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850)"
 	class="active:scale-98 disabled:cursor-not-allowed disabled:text-gray-400 dark:disabled:text-gray-700 hover:disabled:bg-transparent dark:hover:disabled:bg-transparent"
 			>
-				<ChevronLeft className="size-4" strokeWidth="2" />
+				<Icon name="chevron-left" className="size-4" strokeWidth="2" />
 			</Pagination.PrevButton>
 			<div style="--d:flex; --ai:center; --g:0.625rem">
 				{#each pages as page (page.key)}
@@ -39,7 +38,7 @@
 				style="--ml:25px; --d:inline-flex; --w:2rem; --h:2rem; --ai:center; --jc:center; --radius:9px; --bgc:transparent; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850)"
 	class="active:scale-98 disabled:cursor-not-allowed disabled:text-gray-400 dark:disabled:text-gray-700 hover:disabled:bg-transparent dark:hover:disabled:bg-transparent"
 			>
-				<ChevronRight className="size-4" strokeWidth="2" />
+				<Icon name="chevron-right" className="size-4" strokeWidth="2" />
 			</Pagination.NextButton>
 		</div>
 	</Pagination.Root>

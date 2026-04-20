@@ -65,8 +65,9 @@ function classEquivalent(cls) {
 
 // ─── Find all files that import from icons/ ──────────────────────────
 
+// Find files with either $lib or relative icon imports, plus any still using old PascalCase tags
 const allFiles = execSync(
-  `grep -rl "from '\\$lib/components/icons/" ${SRC_DIR} --include="*.svelte" --include="*.ts"`,
+  `grep -rl "from '\\$lib/components/icons/\\|from '\\./icons/\\|from '\\.\\./icons/" ${SRC_DIR} --include="*.svelte" --include="*.ts" 2>/dev/null || true`,
   { encoding: 'utf-8' }
 ).trim().split('\n').filter(Boolean);
 
@@ -80,8 +81,8 @@ for (const filePath of allFiles) {
   let content = readFileSync(filePath, 'utf-8');
   const original = content;
 
-  // Collect all icon imports in this file
-  const importRegex = /import\s+(\w+)\s+from\s+['"]\$lib\/components\/icons\/(\w+)\.svelte['"];?\n?/g;
+  // Collect all icon imports in this file ($lib paths AND relative paths)
+  const importRegex = /import\s+(\w+)\s+from\s+['"](?:\$lib\/components\/icons|\.\.?\/icons)\/(\w+)\.svelte['"];?\n?/g;
   const localIcons = {}; // localName -> iconMeta entry
   let match;
 
@@ -103,13 +104,27 @@ for (const filePath of allFiles) {
 
   // Add the new Icon import (if not already present)
   if (!content.includes("import Icon from '$lib/components/Icon.svelte'")) {
-    // Insert after last remaining import, or at the top of <script>
-    const lastImportIdx = content.lastIndexOf('\nimport ');
-    if (lastImportIdx !== -1) {
-      const lineEnd = content.indexOf('\n', lastImportIdx + 1);
-      content = content.slice(0, lineEnd + 1) +
-        "\timport Icon from '$lib/components/Icon.svelte';\n" +
-        content.slice(lineEnd + 1);
+    // Find all import lines and insert after the last one
+    const lines = content.split('\n');
+    let lastImportLine = -1;
+    let inMultiLineImport = false;
+    for (let i = 0; i < lines.length; i++) {
+      const trimmed = lines[i].trim();
+      if (trimmed.startsWith('import ') && !inMultiLineImport) {
+        if (trimmed.includes('{') && !trimmed.includes('}')) {
+          inMultiLineImport = true;
+        }
+        lastImportLine = i;
+      } else if (inMultiLineImport) {
+        lastImportLine = i;
+        if (trimmed.includes('}')) {
+          inMultiLineImport = false;
+        }
+      }
+    }
+    if (lastImportLine >= 0) {
+      lines.splice(lastImportLine + 1, 0, "\timport Icon from '$lib/components/Icon.svelte';");
+      content = lines.join('\n');
     }
   }
 

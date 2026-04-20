@@ -11,6 +11,7 @@
 	} from '$lib/utils';
 	import { tick, getContext, onMount, onDestroy } from 'svelte';
 	import { toast } from 'svelte-sonner';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -112,20 +113,7 @@
 					style="--px:0.5rem; --pt:0.125rem; --pb:0.2rem; --size:0.6rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-100); --bgc:#fff; --dark-bgc:var(--color-gray-900); --bblr:0.6rem; --bbrr:0.6rem; --d:flex; --ai:center; --g:0.2rem"
 				>
 					<div>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke-width="1.5"
-							stroke="currentColor"
-							style="--w:0.6rem; --h:0.6rem"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
-							/>
-						</svg>
+						<Icon name="info" className="size-[0.6rem]" />
 					</div>
 
 					<div style="--line-clamp:1">

@@ -6,9 +6,9 @@
 	import Selector from './ModelSelector/Selector.svelte';
 	import Tooltip from '../common/Tooltip.svelte';
 	import Switch from '../common/Switch.svelte';
-	import ChatBubbleOval from '../icons/ChatBubbleOval.svelte';
 
 	import { updateUserSettings } from '$lib/apis/users';
+	import Icon from '$lib/components/Icon.svelte';
 	const i18n = getContext('i18n');
 
 	export let selectedModels = [''];
@@ -92,16 +92,7 @@
 								}}
 								aria-label="Add Model"
 							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke-width="2"
-									stroke="currentColor"
-									style="--w:0.8rem; --h:0.8rem"
-								>
-									<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
-								</svg>
+								<Icon name="plus-24" className="size-[0.8rem]" strokeWidth="2" />
 							</button>
 						</Tooltip>
 					</div>
@@ -119,16 +110,7 @@
 								}}
 								aria-label="Remove Model"
 							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke-width="2"
-									stroke="currentColor"
-									style="--w:0.6rem; --h:0.6rem"
-								>
-									<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15" />
-								</svg>
+								<Icon name="minus-24" className="size-[0.6rem]" strokeWidth="2" />
 							</button>
 						</Tooltip>
 					</div>
@@ -167,7 +149,7 @@
 			}}
 		>
 			<div style="--d:flex; --g:0.4rem; --ai:center">
-				<ChatBubbleOval className="size-3" strokeWidth="2.5" />
+				<Icon name="chat-bubble-oval" className="size-3" strokeWidth="2.5" />
 				{$i18n.t('Temporary Chat')}
 			</div>
 			<Switch state={$temporaryChatEnabled} />

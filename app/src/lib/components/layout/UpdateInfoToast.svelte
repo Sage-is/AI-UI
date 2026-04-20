@@ -5,7 +5,7 @@
 	const i18n = getContext('i18n');
 
 	import { WEBUI_VERSION } from '$lib/constants';
-	import XMark from '../icons/XMark.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	export let version = {
 		current: WEBUI_VERSION,
@@ -33,7 +33,7 @@
 				dispatch('close');
 			}}
 		>
-			<XMark />
+			<Icon name="x-mark" />
 		</button>
 	</div>
 </div>

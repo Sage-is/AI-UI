@@ -14,8 +14,7 @@
 
 	import CustomNode from './Overview/Node.svelte';
 	import Flow from './Overview/Flow.svelte';
-	import XMark from '../icons/XMark.svelte';
-	import ArrowLeft from '../icons/ArrowLeft.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const { width, height } = useStore();
 
@@ -168,7 +167,7 @@
 					showOverview.set(false);
 				}}
 			>
-				<ArrowLeft className="size-3.5" />
+				<Icon name="arrow-left" className="size-3.5" />
 			</button>
 			<div style="--size:1.125rem; --weight:500; --as:center"
 	class="font-primary">{$i18n.t('Chat Overview')}</div>
@@ -180,7 +179,7 @@
 				showOverview.set(false);
 			}}
 		>
-			<XMark className="size-3.5" />
+			<Icon name="x-mark" className="size-3.5" />
 		</button>
 	</div>
 

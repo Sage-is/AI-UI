@@ -109,18 +109,7 @@
 					}}
 				>
 					<div style="--as:center">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 20 20"
-							fill="currentColor"
-							style="--h:1rem; --w:1rem"
-						>
-							<path
-								fill-rule="evenodd"
-								d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z"
-								clip-rule="evenodd"
-							/>
-						</svg>
+						<Icon name="arrow-left-fill-20" className="size-4" />
 					</div>
 					<div style="--as:center; --size:0.8rem; --weight:500">{$i18n.t('Back')}</div>
 				</button>

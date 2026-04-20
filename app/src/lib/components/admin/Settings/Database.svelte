@@ -8,6 +8,7 @@
 	import { toast } from 'svelte-sonner';
 	import { getAllUserChats } from '$lib/apis/chats';
 	import { exportConfig, importConfig } from '$lib/apis/configs';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -70,19 +71,7 @@
 				}}
 			>
 				<div style="--as:center; --mr:0.6rem">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						viewBox="0 0 16 16"
-						fill="currentColor"
-						style="--w:1rem; --h:1rem"
-					>
-						<path d="M2 3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3Z" />
-						<path
-							fill-rule="evenodd"
-							d="M13 6H3v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V6ZM8.75 7.75a.75.75 0 0 0-1.5 0v2.69L6.03 9.22a.75.75 0 0 0-1.06 1.06l2.5 2.5a.75.75 0 0 0 1.06 0l2.5-2.5a.75.75 0 1 0-1.06-1.06l-1.22 1.22V7.75Z"
-							clip-rule="evenodd"
-						/>
-					</svg>
+					<Icon name="database-fill-16-c160" className="size-4" />
 				</div>
 				<div style="--as:center; --size:0.8rem; --weight:500">
 					{$i18n.t('Import Config from JSON File')}
@@ -101,19 +90,7 @@
 				}}
 			>
 				<div style="--as:center; --mr:0.6rem">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						viewBox="0 0 16 16"
-						fill="currentColor"
-						style="--w:1rem; --h:1rem"
-					>
-						<path d="M2 3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3Z" />
-						<path
-							fill-rule="evenodd"
-							d="M13 6H3v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V6ZM8.75 7.75a.75.75 0 0 0-1.5 0v2.69L6.03 9.22a.75.75 0 0 0-1.06 1.06l2.5 2.5a.75.75 0 0 0 1.06 0l2.5-2.5a.75.75 0 1 0-1.06-1.06l-1.22 1.22V7.75Z"
-							clip-rule="evenodd"
-						/>
-					</svg>
+					<Icon name="database-fill-16-c160" className="size-4" />
 				</div>
 				<div style="--as:center; --size:0.8rem; --weight:500">
 					{$i18n.t('Export Config to JSON File')}
@@ -138,19 +115,7 @@
 						}}
 					>
 						<div style="--as:center; --mr:0.6rem">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 16 16"
-								fill="currentColor"
-								style="--w:1rem; --h:1rem"
-							>
-								<path d="M2 3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3Z" />
-								<path
-									fill-rule="evenodd"
-									d="M13 6H3v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V6ZM8.75 7.75a.75.75 0 0 0-1.5 0v2.69L6.03 9.22a.75.75 0 0 0-1.06 1.06l2.5 2.5a.75.75 0 0 0 1.06 0l2.5-2.5a.75.75 0 1 0-1.06-1.06l-1.22 1.22V7.75Z"
-									clip-rule="evenodd"
-								/>
-							</svg>
+							<Icon name="database-fill-16-c160" className="size-4" />
 						</div>
 						<div style="--as:center; --size:0.8rem; --weight:500">{$i18n.t('Download Database')}</div>
 					</button>
@@ -163,19 +128,7 @@
 					}}
 				>
 					<div style="--as:center; --mr:0.6rem">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 16 16"
-							fill="currentColor"
-							style="--w:1rem; --h:1rem"
-						>
-							<path d="M2 3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3Z" />
-							<path
-								fill-rule="evenodd"
-								d="M13 6H3v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V6ZM8.75 7.75a.75.75 0 0 0-1.5 0v2.69L6.03 9.22a.75.75 0 0 0-1.06 1.06l2.5 2.5a.75.75 0 0 0 1.06 0l2.5-2.5a.75.75 0 1 0-1.06-1.06l-1.22 1.22V7.75Z"
-								clip-rule="evenodd"
-							/>
-						</svg>
+						<Icon name="database-fill-16-c160" className="size-4" />
 					</div>
 					<div style="--as:center; --size:0.8rem; --weight:500">
 						{$i18n.t('Export All Chats (All Users)')}

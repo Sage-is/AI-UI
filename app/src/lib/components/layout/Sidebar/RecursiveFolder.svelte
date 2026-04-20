@@ -26,8 +26,6 @@
 		updateChatFolderIdById
 	} from '$lib/apis/chats';
 
-	import ChevronDown from '../../icons/ChevronDown.svelte';
-	import ChevronRight from '../../icons/ChevronRight.svelte';
 	import Collapsible from '../../common/Collapsible.svelte';
 	import DragGhost from '$lib/components/common/DragGhost.svelte';
 
@@ -450,9 +448,9 @@
 			>
 				<div style="--c:var(--color-gray-300); --dark-c:var(--color-gray-600)">
 					{#if open}
-						<ChevronDown className=" size-3" strokeWidth="2.5" />
+						<Icon name="chevron-down" className=" size-3" strokeWidth="2.5" />
 					{:else}
-						<ChevronRight className=" size-3" strokeWidth="2.5" />
+						<Icon name="chevron-right" className=" size-3" strokeWidth="2.5" />
 					{/if}
 				</div>
 

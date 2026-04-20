@@ -59,7 +59,7 @@
 	import Loader from '../common/Loader.svelte';
 	import AddFilesPlaceholder from '../AddFilesPlaceholder.svelte';
 	import Folder from '../common/Folder.svelte';
-	import Plus from '../icons/Plus.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	import Tooltip from '../common/Tooltip.svelte';
 	import Folders from './Sidebar/Folders.svelte';
 	import { getSpaces, createNewSpace } from '$lib/apis/spaces';
@@ -68,11 +68,6 @@
 	import SharedWithMeList from './Sidebar/SharedWithMeList.svelte';
 	import SharedByMeList from './Sidebar/SharedByMeList.svelte';
 	import SpaceItem from './Sidebar/SpaceItem.svelte';
-	import PencilSquare from '../icons/PencilSquare.svelte';
-	import Home from '../icons/Home.svelte';
-	import Search from '../icons/Search.svelte';
-	import ChevronDown from '../icons/ChevronDown.svelte';
-	import ChevronRight from '../icons/ChevronRight.svelte';
 	import SearchModal from './SearchModal.svelte';
 	import FolderModal from './Sidebar/Folders/FolderModal.svelte';
 
@@ -631,20 +626,7 @@
 				}}
 			>
 				<div style="--m:auto; --as:center">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke-width="2"
-						stroke="currentColor"
-						style="--w:1.2rem; --h:1.2rem"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12"
-						/>
-					</svg>
+					<Icon name="menu-lines" className="size-[1.2rem]" strokeWidth="2" />
 				</div>
 			</button>
 
@@ -690,7 +672,7 @@
 				</div>
 
 				<div>
-					<PencilSquare className=" size-5" strokeWidth="2" />
+					<Icon name="pencil-square" className=" size-5" strokeWidth="2" />
 				</div>
 			</a>
 		</div>
@@ -711,7 +693,7 @@
 					draggable="false"
 				>
 					<div style="--as:center">
-						<Home strokeWidth="2" className="size-[1.1rem]" />
+						<Icon name="home" strokeWidth="2" className="size-[1.1rem]" />
 					</div>
 
 					<div style="--d:flex; --as:center; --translatey:0.5px">
@@ -733,7 +715,7 @@
 				draggable="false"
 			>
 				<div style="--as:center">
-					<Search strokeWidth="2" className="size-[1.1rem]" />
+					<Icon name="search" strokeWidth="2" className="size-[1.1rem]" />
 				</div>
 
 				<div style="--d:flex; --as:center; --translatey:0.5px">
@@ -760,23 +742,7 @@
 					draggable="false"
 				>
 					<div style="--as:center">
-						<svg
-							style="--w:1rem; --h:1rem"
-							aria-hidden="true"
-							xmlns="http://www.w3.org/2000/svg"
-							width="24"
-							height="24"
-							fill="none"
-							viewBox="0 0 24 24"
-						>
-							<path
-								stroke="currentColor"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M10 3v4a1 1 0 0 1-1 1H5m4 8h6m-6-4h6m4-8v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1Z"
-							/>
-						</svg>
+						<Icon name="document-text" className="size-4" />
 					</div>
 
 					<div style="--d:flex; --as:center; --translatey:0.5px">
@@ -804,20 +770,7 @@
 					draggable="false"
 				>
 					<div style="--as:center">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke-width="2"
-							stroke="currentColor"
-							style="--w:1.1rem; --h:1.1rem"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								d="M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 0 0 2.25-2.25V6a2.25 2.25 0 0 0-2.25-2.25H6A2.25 2.25 0 0 0 3.75 6v2.25A2.25 2.25 0 0 0 6 10.5Zm0 9.75h2.25A2.25 2.25 0 0 0 10.5 18v-2.25a2.25 2.25 0 0 0-2.25-2.25H6a2.25 2.25 0 0 0-2.25 2.25V18A2.25 2.25 0 0 0 6 20.25Zm9.75-9.75H18a2.25 2.25 0 0 0 2.25-2.25V6A2.25 2.25 0 0 0 18 3.75h-2.25A2.25 2.25 0 0 0 13.5 6v2.25a2.25 2.25 0 0 0 2.25 2.25Z"
-							/>
-						</svg>
+						<Icon name="squares-plus" className="size-[1.1rem]" strokeWidth="2" />
 					</div>
 
 					<div style="--d:flex; --as:center; --translatey:0.5px">
@@ -982,24 +935,11 @@
 										localStorage.setItem('showPinnedChat', String(showPinnedChat));
 									}}
 								>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										fill="none"
-										viewBox="0 0 24 24"
-										stroke-width="2"
-										stroke="currentColor"
-										style="--w:0.8rem; --h:0.8rem"
-									>
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
-										/>
-									</svg>
+									<Icon name="bookmark" className="size-[0.8rem]" strokeWidth="2" />
 									{#if showPinnedChat}
-										<ChevronDown className="size-2.5" strokeWidth="2.5" />
+										<Icon name="chevron-down" className="size-2.5" strokeWidth="2.5" />
 									{:else}
-										<ChevronRight className="size-2.5" strokeWidth="2.5" />
+										<Icon name="chevron-right" className="size-2.5" strokeWidth="2.5" />
 									{/if}
 								</button>
 							</Tooltip>
@@ -1019,24 +959,11 @@
 									}}
 								>
 									<!-- Share/outgoing arrow icon -->
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										fill="none"
-										viewBox="0 0 24 24"
-										stroke-width="2"
-										stroke="currentColor"
-										style="--w:0.8rem; --h:0.8rem"
-									>
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"
-										/>
-									</svg>
+									<Icon name="share-outline" className="size-[0.8rem]" strokeWidth="2" />
 									{#if showSharedByMe}
-										<ChevronDown className="size-2.5" strokeWidth="2.5" />
+										<Icon name="chevron-down" className="size-2.5" strokeWidth="2.5" />
 									{:else}
-										<ChevronRight className="size-2.5" strokeWidth="2.5" />
+										<Icon name="chevron-right" className="size-2.5" strokeWidth="2.5" />
 									{/if}
 								</button>
 							</Tooltip>
@@ -1056,24 +983,11 @@
 									}}
 								>
 									<!-- Envelope icon -->
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										fill="none"
-										viewBox="0 0 24 24"
-										stroke-width="2"
-										stroke="currentColor"
-										style="--w:0.8rem; --h:0.8rem"
-									>
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
-										/>
-									</svg>
+									<Icon name="envelope-outline" className="size-[0.8rem]" strokeWidth="2" />
 									{#if showSharedWithMe}
-										<ChevronDown className="size-2.5" strokeWidth="2.5" />
+										<Icon name="chevron-down" className="size-2.5" strokeWidth="2.5" />
 									{:else}
-										<ChevronRight className="size-2.5" strokeWidth="2.5" />
+										<Icon name="chevron-right" className="size-2.5" strokeWidth="2.5" />
 									{/if}
 								</button>
 							</Tooltip>
@@ -1099,24 +1013,11 @@
 										}
 									}}
 								>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										fill="none"
-										viewBox="0 0 24 24"
-										stroke-width="2"
-										stroke="currentColor"
-										style="--w:0.8rem; --h:0.8rem"
-									>
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z"
-										/>
-									</svg>
+									<Icon name="folder" className="size-[0.8rem]" strokeWidth="2" />
 									{#if allFoldersCollapsed}
-										<ChevronRight className="size-2.5" strokeWidth="2.5" />
+										<Icon name="chevron-right" className="size-2.5" strokeWidth="2.5" />
 									{:else}
-										<ChevronDown className="size-2.5" strokeWidth="2.5" />
+										<Icon name="chevron-down" className="size-2.5" strokeWidth="2.5" />
 									{/if}
 								</button>
 							</Tooltip>
@@ -1136,24 +1037,11 @@
 										}
 									}}
 								>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										fill="none"
-										viewBox="0 0 24 24"
-										stroke-width="2"
-										stroke="currentColor"
-										style="--w:0.8rem; --h:0.8rem"
-									>
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-										/>
-									</svg>
+									<Icon name="clock-outline" className="size-[0.8rem]" strokeWidth="2" />
 									{#if allDateGroupsCollapsed}
-										<ChevronRight className="size-2.5" strokeWidth="2.5" />
+										<Icon name="chevron-right" className="size-2.5" strokeWidth="2.5" />
 									{:else}
-										<ChevronDown className="size-2.5" strokeWidth="2.5" />
+										<Icon name="chevron-down" className="size-2.5" strokeWidth="2.5" />
 									{/if}
 								</button>
 							</Tooltip>
@@ -1341,9 +1229,9 @@
 								>
 									<div style="--c:var(--color-gray-300); --dark-c:var(--color-gray-600); --fs:0">
 										{#if collapsedDateGroups[group.timeRange]}
-											<ChevronRight className="size-3" strokeWidth="2.5" />
+											<Icon name="chevron-right" className="size-3" strokeWidth="2.5" />
 										{:else}
-											<ChevronDown className="size-3" strokeWidth="2.5" />
+											<Icon name="chevron-down" className="size-3" strokeWidth="2.5" />
 										{/if}
 									</div>
 									<div style="--fx:1 1 0%">
@@ -1423,9 +1311,9 @@
 							{/if}
 						{:else}
 							<div
-								style="--w:100%; --d:flex; --jc:center; 
-									--py:0.2rem; --size:0.6rem; 
-									animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; 
+								style="--w:100%; --d:flex; --jc:center;
+									--py:0.2rem; --size:0.6rem;
+									animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 									--ai:center; --g:0.5rem"
 							>
 								<Spinner className=" size-4" />

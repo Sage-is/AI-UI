@@ -12,11 +12,8 @@
 
 	import { copyToClipboard } from '$lib/utils';
 
-	import DocumentDuplicate from '../icons/DocumentDuplicate.svelte';
 	import Tooltip from './Tooltip.svelte';
-	import Clipboard from '../icons/Clipboard.svelte';
-	import Reset from '../icons/Reset.svelte';
-	import ArrowDownTray from '../icons/ArrowDownTray.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	export let className = '';
 	export let svg = '';
@@ -63,7 +60,7 @@
 							downloadAsSVG();
 						}}
 					>
-						<ArrowDownTray className=" size-4" />
+						<Icon name="arrow-down-tray" className=" size-4" />
 					</button>
 				</Tooltip>
 
@@ -74,7 +71,7 @@
 							resetPanZoomViewport();
 						}}
 					>
-						<Reset className=" size-4" />
+						<Icon name="reset" className=" size-4" />
 					</button>
 				</Tooltip>
 
@@ -86,7 +83,7 @@
 							toast.success($i18n.t('Copied to clipboard'));
 						}}
 					>
-						<Clipboard className=" size-4" strokeWidth="1.5" />
+						<Icon name="clipboard" className=" size-4" strokeWidth="1.5" />
 					</button>
 				</Tooltip>
 			</div>

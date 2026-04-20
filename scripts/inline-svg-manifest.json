@@ -1,0 +1,1542 @@
+{
+  "brands": [
+    {
+      "hash": "8961efcc2e38",
+      "viewBox": "0 0 24 24",
+      "type": "brand",
+      "pathPreview": "M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5",
+      "pathCount": 4,
+      "innerContent": "<path\n\t\t\t\t\t\t\td=\"M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z\"\n\t\t\t\t\t\t\tfill=\"#4285F4\"\n\t\t\t\t\t\t/>\n\t\t\t\t\t\t<path\n\t\t\t\t\t\t\td=\"M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z\"\n\t\t\t\t\t\t\tfill=\"#34A853\"\n\t\t\t\t\t\t/>\n\t\t\t\t\t\t<path\n\t\t\t\t\t\t\td=\"M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z\"\n\t\t\t\t\t\t\tfill=\"#FBBC05\"\n\t\t\t\t\t\t/>\n\t\t\t\t\t\t<path\n\t\t\t\t\t\t\td=\"M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z\"\n\t\t\t\t\t\t\tfill=\"#EA4335\"\n\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/admin/Settings/OAuthSettings.svelte:181"
+      ]
+    },
+    {
+      "hash": "8a555a0aed70",
+      "viewBox": "0 0 48 48",
+      "type": "brand",
+      "pathPreview": "M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2",
+      "pathCount": 5,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\t\t\tfill=\"#EA4335\"\n\t\t\t\t\t\t\t\t\t\t\t\t\td=\"M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z\"\n\t\t\t\t\t\t\t\t\t\t\t\t/><path\n\t\t\t\t\t\t\t\t\t\t\t\t\tfill=\"#4285F4\"\n\t\t\t\t\t\t\t\t\t\t\t\t\td=\"M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z\"\n\t\t\t\t\t\t\t\t\t\t\t\t/><path\n\t\t\t\t\t\t\t\t\t\t\t\t\tfill=\"#FBBC05\"\n\t\t\t\t\t\t\t\t\t\t\t\t\td=\"M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z\"\n\t\t\t\t\t\t\t\t\t\t\t\t/><path\n\t\t\t\t\t\t\t\t\t\t\t\t\tfill=\"#34A853\"\n\t\t\t\t\t\t\t\t\t\t\t\t\td=\"M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z\"\n\t\t\t\t\t\t\t\t\t\t\t\t/><path fill=\"none\" d=\"M0 0h48v48H0z\" />",
+      "files": [
+        "app/src/routes/auth/+page.svelte:712"
+      ]
+    },
+    {
+      "hash": "7df0a607f665",
+      "viewBox": "0 0 21 21",
+      "type": "brand",
+      "pathPreview": "(no paths)",
+      "pathCount": 0,
+      "innerContent": "<rect x=\"1\" y=\"1\" width=\"9\" height=\"9\" fill=\"#f25022\" /><rect\n\t\t\t\t\t\t\t\t\t\t\t\t\tx=\"1\"\n\t\t\t\t\t\t\t\t\t\t\t\t\ty=\"11\"\n\t\t\t\t\t\t\t\t\t\t\t\t\twidth=\"9\"\n\t\t\t\t\t\t\t\t\t\t\t\t\theight=\"9\"\n\t\t\t\t\t\t\t\t\t\t\t\t\tfill=\"#00a4ef\"\n\t\t\t\t\t\t\t\t\t\t\t\t/><rect x=\"11\" y=\"1\" width=\"9\" height=\"9\" fill=\"#7fba00\" /><rect\n\t\t\t\t\t\t\t\t\t\t\t\t\tx=\"11\"\n\t\t\t\t\t\t\t\t\t\t\t\t\ty=\"11\"\n\t\t\t\t\t\t\t\t\t\t\t\t\twidth=\"9\"\n\t\t\t\t\t\t\t\t\t\t\t\t\theight=\"9\"\n\t\t\t\t\t\t\t\t\t\t\t\t\tfill=\"#ffb900\"\n\t\t\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/routes/auth/+page.svelte:741"
+      ]
+    }
+  ],
+  "icons": [
+    {
+      "hash": "bbdf91ad2015",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 ",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\t\t\t\td=\"m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125\"\n\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/workshop/Models.svelte:439",
+        "app/src/lib/components/chat/Settings/Personalization/ManageModal.svelte:118",
+        "app/src/lib/components/admin/Settings/Models.svelte:400",
+        "app/src/lib/components/admin/Users/UserList.svelte:451"
+      ]
+    },
+    {
+      "hash": "213db53ff5ae",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M4 2a1.5 1.5 0 0 0-1.5 1.5v9A1.5 1.5 0 0 0 4 14h8a",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\td=\"M4 2a1.5 1.5 0 0 0-1.5 1.5v9A1.5 1.5 0 0 0 4 14h8a1.5 1.5 0 0 0 1.5-1.5V6.621a1.5 1.5 0 0 0-.44-1.06L9.94 2.439A1.5 1.5 0 0 0 8.878 2H4Zm4 9.5a.75.75 0 0 1-.75-.75V8.06l-.72.72a.75.75 0 0 1-1.06-1.06l2-2a.75.75 0 0 1 1.06 0l2 2a.75.75 0 1 1-1.06 1.06l-.72-.72v2.69a.75.75 0 0 1-.75.75Z\"\n\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/workshop/Models.svelte:575",
+        "app/src/lib/components/workshop/Prompts.svelte:300",
+        "app/src/lib/components/chat/Settings/Chats.svelte:137",
+        "app/src/lib/components/admin/Settings/Models.svelte:520",
+        "app/src/lib/components/admin/Settings/Interface.svelte:560",
+        "app/src/lib/components/admin/Functions.svelte:508",
+        "app/src/lib/components/notes/Notes.svelte:435"
+      ]
+    },
+    {
+      "hash": "331fad2e5827",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M4 2a1.5 1.5 0 0 0-1.5 1.5v9A1.5 1.5 0 0 0 4 14h8a",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\td=\"M4 2a1.5 1.5 0 0 0-1.5 1.5v9A1.5 1.5 0 0 0 4 14h8a1.5 1.5 0 0 0 1.5-1.5V6.621a1.5 1.5 0 0 0-.44-1.06L9.94 2.439A1.5 1.5 0 0 0 8.878 2H4Zm4 3.5a.75.75 0 0 1 .75.75v2.69l.72-.72a.75.75 0 1 1 1.06 1.06l-2 2a.75.75 0 0 1-1.06 0l-2-2a.75.75 0 0 1 1.06-1.06l.72.72V6.25A.75.75 0 0 1 8 5.5Z\"\n\t\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/workshop/Models.svelte:602",
+        "app/src/lib/components/workshop/Prompts.svelte:330",
+        "app/src/lib/components/chat/Settings/Chats.svelte:161",
+        "app/src/lib/components/admin/Settings/Models.svelte:546",
+        "app/src/lib/components/admin/Settings/Interface.svelte:591",
+        "app/src/lib/components/admin/Functions.svelte:545"
+      ]
+    },
+    {
+      "hash": "274126669861",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\td=\"M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125\"\n\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/workshop/Prompts.svelte:206",
+        "app/src/lib/components/chat/Messages/UserMessage.svelte:444",
+        "app/src/lib/components/chat/Messages/ResponseMessage.svelte:1002",
+        "app/src/lib/components/admin/Functions/FunctionMenu.svelte:71"
+      ]
+    },
+    {
+      "hash": "7834a6e61c8a",
+      "viewBox": "0 0 20 20",
+      "type": "fill",
+      "pathPreview": "M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 ",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\td=\"M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z\"\n\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/workshop/Models/ModelEditorWithChat.svelte:112",
+        "app/src/lib/components/workshop/Models/ModelEditor.svelte:316",
+        "app/src/lib/components/workshop/Knowledge/CreateKnowledgeBase.svelte:56"
+      ]
+    },
+    {
+      "hash": "92897b7bc2c4",
+      "viewBox": "0 0 20 20",
+      "type": "fill",
+      "pathPreview": "M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 00",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\td=\"M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z\"\n\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/workshop/Models/ModelEditor.svelte:583",
+        "app/src/lib/components/admin/Settings/Interface.svelte:409",
+        "app/src/lib/components/admin/Settings/Interface.svelte:441"
+      ]
+    },
+    {
+      "hash": "87ec9ed77dc0",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\t\tstroke-width=\"2\"\n\t\t\t\t\t\t\t\t\td=\"M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z\"\n\t\t\t\t\t\t\t\t></path>",
+      "files": [
+        "app/src/lib/components/workshop/Models/ModelEditor.svelte:713"
+      ]
+    },
+    {
+      "hash": "a51737b05692",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\td=\"M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88\"\n\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/workshop/Models/ModelMenu.svelte:57",
+        "app/src/lib/components/admin/Settings/Models/ModelMenu.svelte:54"
+      ]
+    },
+    {
+      "hash": "899c858cdcd5",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 ",
+      "pathCount": 2,
+      "innerContent": "<path\n\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\td=\"M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z\"\n\t\t\t\t\t\t/>\n\t\t\t\t\t\t<path\n\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\td=\"M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z\"\n\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/workshop/Models/ModelMenu.svelte:72",
+        "app/src/lib/components/admin/Settings/Models/ModelMenu.svelte:69"
+      ]
+    },
+    {
+      "hash": "f29c331e1bc9",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h1",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\td=\"M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z\"\n\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/workshop/common/AccessControl.svelte:91"
+      ]
+    },
+    {
+      "hash": "2e01a3159768",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M6.115 5.19l.319 1.913A6 6 0 008.11 10.36L9.75 12l",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\td=\"M6.115 5.19l.319 1.913A6 6 0 008.11 10.36L9.75 12l-.387.775c-.217.433-.132.956.21 1.298l1.348 1.348c.21.21.329.497.329.795v1.089c0 .426.24.815.622 1.006l.153.076c.433.217.956.132 1.298-.21l.723-.723a8.7 8.7 0 002.288-4.042 1.087 1.087 0 00-.358-1.099l-1.33-1.108c-.251-.21-.582-.299-.905-.245l-1.17.195a1.125 1.125 0 01-.98-.314l-.295-.295a1.125 1.125 0 010-1.591l.13-.132a1.125 1.125 0 011.3-.21l.603.302a.809.809 0 001.086-1.086L14.25 7.5l1.256-.837a4.5 4.5 0 001.528-1.732l.146-.292M6.115 5.19A9 9 0 1017.18 4.64M6.115 5.19A8.965 8.965 0 0112 3c1.929 0 3.716.607 5.18 1.64\"\n\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/workshop/common/AccessControl.svelte:106"
+      ]
+    },
+    {
+      "hash": "fad69faa10f7",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 ",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\td=\"M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z\"\n\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/workshop/Knowledge/KnowledgeBase/AddContentMenu.svelte:35",
+        "app/src/lib/components/common/Tags/TagInput.svelte:75"
+      ]
+    },
+    {
+      "hash": "cd8888c4228c",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M15.75 19.5 8.25 12l7.5-7.5",
+      "pathCount": 1,
+      "innerContent": "{\n\t\tiframeElement.contentWindow.addEventListener(\n\t\t\t'click',\n\t\t\tfunction (e) {\n\t\t\t\tconst target = e.target.closest('a');\n\t\t\t\tif (target && target.href) {\n\t\t\t\t\te.preventDefault();\n\t\t\t\t\tconst url = new URL(target.href, iframeElement.baseURI);\n\t\t\t\t\tif (url.origin === window.location.origin) {\n\t\t\t\t\t\tiframeElement.contentWindow.history.pushState(\n\t\t\t\t\t\t\tnull,\n\t\t\t\t\t\t\t'',\n\t\t\t\t\t\t\turl.pathname + url.search + url.hash\n\t\t\t\t\t\t);\n\t\t\t\t\t} else {\n\t\t\t\t\t\tconsole.info('External navigation blocked:', url.href);\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t},\n\t\t\ttrue\n\t\t);\n\n\t\t// Cancel drag when hovering over iframe\n\t\tiframeElement.contentWindow.addEventListener('mouseenter', function (e) {\n\t\t\te.preventDefault();\n\t\t\tiframeElement.contentWindow.addEventListener('dragstart', (event) => {\n\t\t\t\tevent.preventDefault();\n\t\t\t});\n\t\t});\n\t};\n\n\tconst showFullScreen = () => {\n\t\tif (iframeElement.requestFullscreen) {\n\t\t\tiframeElement.requestFullscreen();\n\t\t} else if (iframeElement.webkitRequestFullscreen) {\n\t\t\tiframeElement.webkitRequestFullscreen();\n\t\t} else if (iframeElement.msRequestFullscreen) {\n\t\t\tiframeElement.msRequestFullscreen();\n\t\t}\n\t};\n\n\tconst downloadArtifact = () => {\n\t\tconst blob = new Blob([contents[selectedContentIdx].content], { type: 'text/html' });\n\t\tconst url = URL.createObjectURL(blob);\n\t\tconst a = document.createElement('a');\n\t\ta.href = url;\n\t\ta.download = `artifact-${$chatId}-${selectedContentIdx}.html`;\n\t\tdocument.body.appendChild(a);\n\t\ta.click();\n\t\tdocument.body.removeChild(a);\n\t\tURL.revokeObjectURL(url);\n\t};\n\n\tonMount(() => {\n\t\tartifactCode.subscribe((value) => {\n\t\t\tif (contents) {\n\t\t\t\tconst codeIdx = contents.findIndex((content) => content.content.includes(value));\n\t\t\t\tselectedContentIdx = codeIdx !== -1 ? codeIdx : 0;\n\t\t\t}\n\t\t});\n\t});\n</script>\n\n<div style=\"--w:100%; --h:100%; --pos:relative; --d:flex; --fd:column; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)\">\n\t<div style=\"--w:100%; --h:100%; --d:flex; --fd:column; --fx:1 1 0%; --pos:relative\">\n\t\t{#if contents.length > 0}\n\t\t\t<div\n\t\t\t\tstyle=\"--pe:auto; --z:20; --d:flex; --jc:space-between; --ai:center; --p:0.625rem; --c:var(--color-gray-900); --dark-c:#fff\"\n\tclass=\"font-primar\"\n\t\t\t>\n\t\t\t\t<button\n\t\t\t\t\tstyle=\"--as:center; --pe:auto; --p:0.2rem; --radius:9999px; --bgc:#fff; --dark-bgc:var(--color-gray-850)\"\n\t\t\t\t\ton:click={() => {\n\t\t\t\t\t\tshowArtifacts.set(false);\n\t\t\t\t\t}}\n\t\t\t\t>\n\t\t\t\t\t<Icon name=\"arrow-left\" className=\"size-3.5  text-gray-900 dark:text-white\" />\n\t\t\t\t</button>\n\n\t\t\t\t<div style=\"--fx:1 1 0%; --d:flex; --ai:center; --jc:space-between; --pr:0.2rem\">\n\t\t\t\t\t<div style=\"--d:flex; --ai:center; --g:0.5rem\">\n\t\t\t\t\t\t<div style=\"--d:flex; --ai:center; --g:0.125rem; --as:center; --minw:fit-content\" dir=\"ltr\">\n\t\t\t\t\t\t\t<button\n\t\t\t\t\t\t\t\tstyle=\"--as:center; --p:0.2rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-dark-c:#fff; --hvr-c:#000; --radius:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)\"\n\tclass=\"disabled:cursor-not-allowed\"\n\t\t\t\t\t\t\t\ton:click={() => navigateContent('prev')}\n\t\t\t\t\t\t\t\tdisabled={contents.length <= 1}\n\t\t\t\t\t\t\t>\n\t\t\t\t\t\t\t\t<svg\n\t\t\t\t\t\t\t\t\txmlns=\"http://www.w3.org/2000/svg\"\n\t\t\t\t\t\t\t\t\tfill=\"none\"\n\t\t\t\t\t\t\t\t\tviewBox=\"0 0 24 24\"\n\t\t\t\t\t\t\t\t\tstroke=\"currentColor\"\n\t\t\t\t\t\t\t\t\tstroke-width=\"2.5\"\n\t\t\t\t\t\t\t\t\tstyle=\"--w:0.8rem; --h:0.8rem\"\n\t\t\t\t\t\t\t\t>\n\t\t\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\t\t\td=\"M15.75 19.5 8.25 12l7.5-7.5\"\n\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/Artifacts.svelte:114",
+        "app/src/lib/components/chat/Messages/UserMessage.svelte:348",
+        "app/src/lib/components/chat/Messages/UserMessage.svelte:523",
+        "app/src/lib/components/chat/Messages/ResponseMessage.svelte:900"
+      ]
+    },
+    {
+      "hash": "84e222f38ccd",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "m8.25 4.5 7.5 7.5-7.5 7.5",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\t\t\td=\"m8.25 4.5 7.5 7.5-7.5 7.5\"\n\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/Artifacts.svelte:258",
+        "app/src/lib/components/chat/Messages/UserMessage.svelte:417",
+        "app/src/lib/components/chat/Messages/UserMessage.svelte:592",
+        "app/src/lib/components/chat/Messages/ResponseMessage.svelte:969"
+      ]
+    },
+    {
+      "hash": "e4981cb3cd17",
+      "viewBox": "0 0 20 20",
+      "type": "fill",
+      "pathPreview": "M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.7",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\td=\"M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z\"\n\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/Settings/Personalization/ManageModal.svelte:63",
+        "app/src/lib/components/chat/Settings/Chats.svelte:254",
+        "app/src/lib/components/chat/Settings/Chats.svelte:341",
+        "app/src/lib/components/chat/Messages/UserMessage.svelte:218",
+        "app/src/lib/components/chat/MessageInput.svelte:1083",
+        "app/src/lib/components/layout/ChatsModal.svelte:84",
+        "app/src/lib/components/channel/SpaceAgentsModal.svelte:68",
+        "app/src/lib/components/channel/MessageInput.svelte:696",
+        "app/src/lib/components/channel/SpaceMembersModal.svelte:101"
+      ]
+    },
+    {
+      "hash": "867032709b5c",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.05",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\td=\"m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/Settings/Personalization/ManageModal.svelte:154",
+        "app/src/lib/components/chat/Messages/UserMessage.svelte:496",
+        "app/src/lib/components/chat/Messages/ResponseMessage.svelte:1425",
+        "app/src/lib/components/layout/ChatsModal.svelte:286",
+        "app/src/lib/components/layout/ChatsModal.svelte:411",
+        "app/src/lib/components/admin/Settings/Bridges.svelte:289",
+        "app/src/lib/components/admin/Users/UserList.svelte:477"
+      ]
+    },
+    {
+      "hash": "e810af2d1534",
+      "viewBox": "0 0 24 24",
+      "type": "fill",
+      "pathPreview": "M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84",
+      "pathCount": 2,
+      "innerContent": "<path\n\t\t\t\t\t\t\td=\"M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375Z\"\n\t\t\t\t\t\t/>\n\t\t\t\t\t\t<path\n\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\td=\"m3.087 9 .54 9.176A3 3 0 0 0 6.62 21h10.757a3 3 0 0 0 2.995-2.824L20.913 9H3.087ZM12 10.5a.75.75 0 0 1 .75.75v4.94l1.72-1.72a.75.75 0 1 1 1.06 1.06l-3 3a.75.75 0 0 1-1.06 0l-3-3a.75.75 0 1 1 1.06-1.06l1.72 1.72v-4.94a.75.75 0 0 1 .75-.75Z\"\n\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/Settings/Chats.svelte:189"
+      ]
+    },
+    {
+      "hash": "b923e747d362",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M2 3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1a1 1 0 0 1-1 ",
+      "pathCount": 2,
+      "innerContent": "<path d=\"M2 3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3Z\" />\n\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\td=\"M13 6H3v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V6ZM5.72 7.47a.75.75 0 0 1 1.06 0L8 8.69l1.22-1.22a.75.75 0 1 1 1.06 1.06L9.06 9.75l1.22 1.22a.75.75 0 1 1-1.06 1.06L8 10.81l-1.22 1.22a.75.75 0 0 1-1.06-1.06l1.22-1.22-1.22-1.22a.75.75 0 0 1 0-1.06Z\"\n\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/Settings/Chats.svelte:211",
+        "app/src/lib/components/chat/Settings/Chats.svelte:298"
+      ]
+    },
+    {
+      "hash": "b6f1810208fc",
+      "viewBox": "0 0 20 20",
+      "type": "fill",
+      "pathPreview": "M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\td=\"M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z\"\n\t\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/Settings/Chats.svelte:235",
+        "app/src/lib/components/chat/Settings/Chats.svelte:322",
+        "app/src/lib/components/chat/Settings/Account.svelte:346",
+        "app/src/lib/components/chat/Settings/Account.svelte:400"
+      ]
+    },
+    {
+      "hash": "b8ae83e3eb98",
+      "viewBox": "0 0 24 24",
+      "type": "fill",
+      "pathPreview": "M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84",
+      "pathCount": 2,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\td=\"M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375Z\"\n\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\td=\"m3.087 9 .54 9.176A3 3 0 0 0 6.62 21h10.757a3 3 0 0 0 2.995-2.824L20.913 9H3.087Zm6.163 3.75A.75.75 0 0 1 10 12h4a.75.75 0 0 1 0 1.5h-4a.75.75 0 0 1-.75-.75Z\"\n\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/Settings/Chats.svelte:275"
+      ]
+    },
+    {
+      "hash": "8f4e216cb521",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M4 2a1.5 1.5 0 0 0-1.5 1.5v9A1.5 1.5 0 0 0 4 14h8a",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\td=\"M4 2a1.5 1.5 0 0 0-1.5 1.5v9A1.5 1.5 0 0 0 4 14h8a1.5 1.5 0 0 0 1.5-1.5V6.621a1.5 1.5 0 0 0-.44-1.06L9.94 2.439A1.5 1.5 0 0 0 8.878 2H4Zm7 7a.75.75 0 0 1-.75.75h-4.5a.75.75 0 0 1 0-1.5h4.5A.75.75 0 0 1 11 9Z\"\n\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/Settings/Chats.svelte:362"
+      ]
+    },
+    {
+      "hash": "59267ad3b2a5",
+      "viewBox": "0 0 20 20",
+      "type": "fill",
+      "pathPreview": "m2.695 14.762-1.262 3.155a.5.5 0 0 0 .65.65l3.155-",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\td=\"m2.695 14.762-1.262 3.155a.5.5 0 0 0 .65.65l3.155-1.262a4 4 0 0 0 1.343-.886L17.5 5.501a2.121 2.121 0 0 0-3-3L3.58 13.419a4 4 0 0 0-.885 1.343Z\"\n\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/Settings/Account.svelte:176"
+      ]
+    },
+    {
+      "hash": "236e488a8353",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M11.986 3H12a2 2 0 0 1 2 2v6a2 2 0 0 1-1.5 1.937V7",
+      "pathCount": 2,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\t\t\t\td=\"M11.986 3H12a2 2 0 0 1 2 2v6a2 2 0 0 1-1.5 1.937V7A2.5 2.5 0 0 0 10 4.5H4.063A2 2 0 0 1 6 3h.014A2.25 2.25 0 0 1 8.25 1h1.5a2.25 2.25 0 0 1 2.236 2ZM10.5 4v-.75a.75.75 0 0 0-.75-.75h-1.5a.75.75 0 0 0-.75.75V4h3Z\"\n\t\t\t\t\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\t\t\t\td=\"M3 6a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H3Zm1.75 2.5a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5ZM4 11.75a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 0 1.5h-3.5a.75.75 0 0 1-.75-.75Z\"\n\t\t\t\t\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/Settings/Account.svelte:359",
+        "app/src/lib/components/chat/Settings/Account.svelte:413"
+      ]
+    },
+    {
+      "hash": "562049dc7a77",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\t\t\t\t\t\td=\"M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99\"\n\t\t\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/Settings/Account.svelte:440"
+      ]
+    },
+    {
+      "hash": "5c21d3d2e243",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\t\t\t\td=\"M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184\"\n\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/Messages/UserMessage.svelte:470",
+        "app/src/lib/components/chat/Messages/ResponseMessage.svelte:1033",
+        "app/src/lib/components/chat/Messages/CitationsModal.svelte:148"
+      ]
+    },
+    {
+      "hash": "381946150fb6",
+      "viewBox": "0 0 24 24",
+      "type": "fill",
+      "pathPreview": "(no paths)",
+      "pathCount": 0,
+      "innerContent": "<style>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t.spinner_S1WN {\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tanimation: spinner_MGfb 0.8s linear infinite;\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tanimation-delay: -0.8s;\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t.spinner_Km9P {\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tanimation-delay: -0.65s;\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t.spinner_JApP {\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tanimation-delay: -0.5s;\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t@keyframes spinner_MGfb {\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t93.75%,\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t100% {\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\topacity: 0.2;\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t\t\t\t\t</style>\n\t\t\t\t\t\t\t\t\t\t\t\t\t<circle class=\"spinner_S1WN\" cx=\"4\" cy=\"12\" r=\"3\" />\n\t\t\t\t\t\t\t\t\t\t\t\t\t<circle class=\"spinner_S1WN spinner_Km9P\" cx=\"12\" cy=\"12\" r=\"3\" />\n\t\t\t\t\t\t\t\t\t\t\t\t\t<circle class=\"spinner_S1WN spinner_JApP\" cx=\"20\" cy=\"12\" r=\"3\" />",
+      "files": [
+        "app/src/lib/components/chat/Messages/ResponseMessage.svelte:1067",
+        "app/src/lib/components/chat/Messages/ResponseMessage.svelte:1151"
+      ]
+    },
+    {
+      "hash": "0529eb4d2401",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M17.25 9.75 19.5 12m0 0 2.25 2.25M19.5 12l2.25-2.2",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\td=\"M17.25 9.75 19.5 12m0 0 2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6 4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/Messages/ResponseMessage.svelte:1100"
+      ]
+    },
+    {
+      "hash": "a8d625ecb456",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\td=\"M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/Messages/ResponseMessage.svelte:1116"
+      ]
+    },
+    {
+      "hash": "94f604e11eaa",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\td=\"m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/Messages/ResponseMessage.svelte:1184"
+      ]
+    },
+    {
+      "hash": "c65f3d6fae03",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\t\t\t\t\t\td=\"M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z\"\n\t\t\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/Messages/ResponseMessage.svelte:1230"
+      ]
+    },
+    {
+      "hash": "96bfff82cbcb",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\t\t\t\td=\"M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/Messages/ResponseMessage.svelte:1272"
+      ]
+    },
+    {
+      "hash": "3a77205a7f4c",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\t\t\t\td=\"M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/Messages/ResponseMessage.svelte:1311"
+      ]
+    },
+    {
+      "hash": "cd659e49ee20",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z",
+      "pathCount": 2,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\td=\"M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\td=\"M15.91 11.672a.375.375 0 0 1 0 .656l-5.603 3.113a.375.375 0 0 1-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112Z\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/Messages/ResponseMessage.svelte:1344"
+      ]
+    },
+    {
+      "hash": "a5f246e0e268",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\t\t\t\t\t\td=\"M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99\"\n\t\t\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/Messages/ResponseMessage.svelte:1393"
+      ]
+    },
+    {
+      "hash": "b0179e503025",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M4.22 11.78a.75.75 0 0 1 0-1.06L9.44 5.5H5.75a.75.",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\td=\"M4.22 11.78a.75.75 0 0 1 0-1.06L9.44 5.5H5.75a.75.75 0 0 1 0-1.5h5.5a.75.75 0 0 1 .75.75v5.5a.75.75 0 0 1-1.5 0V6.56l-5.22 5.22a.75.75 0 0 1-1.06 0Z\"\n\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/Messages/ResponseMessage/WebSearchResults.svelte:45",
+        "app/src/lib/components/chat/Messages/ResponseMessage/WebSearchResults.svelte:79",
+        "app/src/lib/components/common/Banner.svelte:76",
+        "app/src/lib/components/common/Banner.svelte:109"
+      ]
+    },
+    {
+      "hash": "99b3325ee35e",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M4.5 12.75l6 6 9-13.5",
+      "pathCount": 1,
+      "innerContent": "<path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M4.5 12.75l6 6 9-13.5\" />",
+      "files": [
+        "app/src/lib/components/chat/Messages/CitationsModal.svelte:136"
+      ]
+    },
+    {
+      "hash": "9b84e7f14108",
+      "viewBox": "0 0 24 24",
+      "type": "fill",
+      "pathPreview": "(no paths)",
+      "pathCount": 0,
+      "innerContent": "<style>\n\t\t\t\t\t\t\t.spinner_qM83 {\n\t\t\t\t\t\t\t\tanimation: spinner_8HQG 1.05s infinite;\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t.spinner_oXPr {\n\t\t\t\t\t\t\t\tanimation-delay: 0.1s;\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t.spinner_ZTLf {\n\t\t\t\t\t\t\t\tanimation-delay: 0.2s;\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t@keyframes spinner_8HQG {\n\t\t\t\t\t\t\t\t0%,\n\t\t\t\t\t\t\t\t57.14% {\n\t\t\t\t\t\t\t\t\tanimation-timing-function: cubic-bezier(0.33, 0.66, 0.66, 1);\n\t\t\t\t\t\t\t\t\ttransform: translate(0);\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t28.57% {\n\t\t\t\t\t\t\t\t\tanimation-timing-function: cubic-bezier(0.33, 0, 0.66, 0.33);\n\t\t\t\t\t\t\t\t\ttransform: translateY(-6px);\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t100% {\n\t\t\t\t\t\t\t\t\ttransform: translate(0);\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t</style><circle class=\"spinner_qM83\" cx=\"4\" cy=\"12\" r=\"3\" /><circle\n\t\t\t\t\t\t\tclass=\"spinner_qM83 spinner_oXPr\"\n\t\t\t\t\t\t\tcx=\"12\"\n\t\t\t\t\t\t\tcy=\"12\"\n\t\t\t\t\t\t\tr=\"3\"\n\t\t\t\t\t\t/><circle class=\"spinner_qM83 spinner_ZTLf\" cx=\"20\" cy=\"12\" r=\"3\" />",
+      "files": [
+        "app/src/lib/components/chat/MessageInput/CallOverlay.svelte:717"
+      ]
+    },
+    {
+      "hash": "36237f3dec1f",
+      "viewBox": "0 0 24 24",
+      "type": "fill",
+      "pathPreview": "(no paths)",
+      "pathCount": 0,
+      "innerContent": "<style>\n\t\t\t\t\t\t\t\t.spinner_qM83 {\n\t\t\t\t\t\t\t\t\tanimation: spinner_8HQG 1.05s infinite;\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t.spinner_oXPr {\n\t\t\t\t\t\t\t\t\tanimation-delay: 0.1s;\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t.spinner_ZTLf {\n\t\t\t\t\t\t\t\t\tanimation-delay: 0.2s;\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t@keyframes spinner_8HQG {\n\t\t\t\t\t\t\t\t\t0%,\n\t\t\t\t\t\t\t\t\t57.14% {\n\t\t\t\t\t\t\t\t\t\tanimation-timing-function: cubic-bezier(0.33, 0.66, 0.66, 1);\n\t\t\t\t\t\t\t\t\t\ttransform: translate(0);\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t28.57% {\n\t\t\t\t\t\t\t\t\t\tanimation-timing-function: cubic-bezier(0.33, 0, 0.66, 0.33);\n\t\t\t\t\t\t\t\t\t\ttransform: translateY(-6px);\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t100% {\n\t\t\t\t\t\t\t\t\t\ttransform: translate(0);\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t</style><circle class=\"spinner_qM83\" cx=\"4\" cy=\"12\" r=\"3\" /><circle\n\t\t\t\t\t\t\t\tclass=\"spinner_qM83 spinner_oXPr\"\n\t\t\t\t\t\t\t\tcx=\"12\"\n\t\t\t\t\t\t\t\tcy=\"12\"\n\t\t\t\t\t\t\t\tr=\"3\"\n\t\t\t\t\t\t\t/><circle class=\"spinner_qM83 spinner_ZTLf\" cx=\"20\" cy=\"12\" r=\"3\" />",
+      "files": [
+        "app/src/lib/components/chat/MessageInput/CallOverlay.svelte:798"
+      ]
+    },
+    {
+      "hash": "f89f98ff7ec9",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.7",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\td=\"M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z\"\n\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/MessageInput/CallOverlay.svelte:874"
+      ]
+    },
+    {
+      "hash": "d30e5e5a3658",
+      "viewBox": "0 0 20 20",
+      "type": "fill",
+      "pathPreview": "M15.312 11.424a5.5 5.5 0 0 1-9.201 2.466l-.312-.31",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\td=\"M15.312 11.424a5.5 5.5 0 0 1-9.201 2.466l-.312-.311h2.433a.75.75 0 0 0 0-1.5H3.989a.75.75 0 0 0-.75.75v4.242a.75.75 0 0 0 1.5 0v-2.43l.31.31a7 7 0 0 0 11.712-3.138.75.75 0 0 0-1.449-.39Zm1.23-3.723a.75.75 0 0 0 .219-.53V2.929a.75.75 0 0 0-1.5 0V5.36l-.31-.31A7 7 0 0 0 3.239 8.188a.75.75 0 1 0 1.448.389A5.5 5.5 0 0 1 13.89 6.11l.311.31h-2.432a.75.75 0 0 0 0 1.5h4.243a.75.75 0 0 0 .53-.219Z\"\n\t\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/MessageInput/CallOverlay.svelte:903"
+      ]
+    },
+    {
+      "hash": "691849f802d1",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.",
+      "pathCount": 2,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\t\td=\"M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z\"\n\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\t\td=\"M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z\"\n\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/MessageInput/CallOverlay.svelte:927"
+      ]
+    },
+    {
+      "hash": "615542c7b24e",
+      "viewBox": "0 0 20 20",
+      "type": "fill",
+      "pathPreview": "M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\td=\"M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z\"\n\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/MessageInput/CallOverlay.svelte:987"
+      ]
+    },
+    {
+      "hash": "ad864fcb5a24",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "m19.5 8.25-7.5 7.5-7.5-7.5",
+      "pathCount": 1,
+      "innerContent": "<path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"m19.5 8.25-7.5 7.5-7.5-7.5\"\n\t\t\t\t\t\t\t></path>",
+      "files": [
+        "app/src/lib/components/chat/MessageInput/InputMenu.svelte:154"
+      ]
+    },
+    {
+      "hash": "7257d058b290",
+      "viewBox": "0 0 87.3 78",
+      "type": "fill",
+      "pathPreview": "m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75",
+      "pathCount": 6,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\td=\"m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z\"\n\t\t\t\t\t\t\t\tfill=\"#0066da\"\n\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\td=\"m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z\"\n\t\t\t\t\t\t\t\tfill=\"#00ac47\"\n\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\td=\"m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z\"\n\t\t\t\t\t\t\t\tfill=\"#ea4335\"\n\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\td=\"m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z\"\n\t\t\t\t\t\t\t\tfill=\"#00832d\"\n\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\td=\"m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z\"\n\t\t\t\t\t\t\t\tfill=\"#2684fc\"\n\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\td=\"m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z\"\n\t\t\t\t\t\t\t\tfill=\"#ffba00\"\n\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/MessageInput/InputMenu.svelte:237"
+      ]
+    },
+    {
+      "hash": "5025fe41fd1a",
+      "viewBox": "0 0 32 32",
+      "type": "fill",
+      "pathPreview": "mask0_87_7796",
+      "pathCount": 10,
+      "innerContent": "<mask\n\t\t\t\t\t\t\t\t\tid=\"mask0_87_7796\"\n\t\t\t\t\t\t\t\t\tstyle=\"mask-type:alpha\"\n\t\t\t\t\t\t\t\t\tmaskUnits=\"userSpaceOnUse\"\n\t\t\t\t\t\t\t\t\tx=\"0\"\n\t\t\t\t\t\t\t\t\ty=\"6\"\n\t\t\t\t\t\t\t\t\twidth=\"32\"\n\t\t\t\t\t\t\t\t\theight=\"20\"\n\t\t\t\t\t\t\t\t>\n\t\t\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\t\t\td=\"M7.82979 26C3.50549 26 0 22.5675 0 18.3333C0 14.1921 3.35322 10.8179 7.54613 10.6716C9.27535 7.87166 12.4144 6 16 6C20.6308 6 24.5169 9.12183 25.5829 13.3335C29.1316 13.3603 32 16.1855 32 19.6667C32 23.0527 29 26 25.8723 25.9914L7.82979 26Z\"\n\t\t\t\t\t\t\t\t\t\tfill=\"#C4C4C4\"\n\t\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t</mask>\n\t\t\t\t\t\t\t\t<g mask=\"url(#mask0_87_7796)\">\n\t\t\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\t\t\td=\"M7.83017 26.0001C5.37824 26.0001 3.18957 24.8966 1.75391 23.1691L18.0429 16.3335L30.7089 23.4647C29.5926 24.9211 27.9066 26.0001 26.0004 25.9915C23.1254 26.0001 12.0629 26.0001 7.83017 26.0001Z\"\n\t\t\t\t\t\t\t\t\t\tfill=\"url(#paint0_linear_87_7796)\"\n\t\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\t\t\td=\"M25.5785 13.3149L18.043 16.3334L30.709 23.4647C31.5199 22.4065 32.0004 21.0916 32.0004 19.6669C32.0004 16.1857 29.1321 13.3605 25.5833 13.3337C25.5817 13.3274 25.5801 13.3212 25.5785 13.3149Z\"\n\t\t\t\t\t\t\t\t\t\tfill=\"url(#paint1_linear_87_7796)\"\n\t\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\t\t\td=\"M7.06445 10.7028L18.0423 16.3333L25.5779 13.3148C24.5051 9.11261 20.6237 6 15.9997 6C12.4141 6 9.27508 7.87166 7.54586 10.6716C7.3841 10.6773 7.22358 10.6877 7.06445 10.7028Z\"\n\t\t\t\t\t\t\t\t\t\tfill=\"url(#paint2_linear_87_7796)\"\n\t\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\t\t\td=\"M1.7535 23.1687L18.0425 16.3331L7.06471 10.7026C3.09947 11.0792 0 14.3517 0 18.3331C0 20.1665 0.657197 21.8495 1.7535 23.1687Z\"\n\t\t\t\t\t\t\t\t\t\tfill=\"url(#paint3_linear_87_7796)\"\n\t\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t</g>\n\t\t\t\t\t\t\t\t<defs>\n\t\t\t\t\t\t\t\t\t<linearGradient\n\t\t\t\t\t\t\t\t\t\tid=\"paint0_linear_87_7796\"\n\t\t\t\t\t\t\t\t\t\tx1=\"4.42591\"\n\t\t\t\t\t\t\t\t\t\ty1=\"24.6668\"\n\t\t\t\t\t\t\t\t\t\tx2=\"27.2309\"\n\t\t\t\t\t\t\t\t\t\ty2=\"23.2764\"\n\t\t\t\t\t\t\t\t\t\tgradientUnits=\"userSpaceOnUse\"\n\t\t\t\t\t\t\t\t\t>\n\t\t\t\t\t\t\t\t\t\t<stop stop-color=\"#2086B8\" />\n\t\t\t\t\t\t\t\t\t\t<stop offset=\"1\" stop-color=\"#46D3F6\" />\n\t\t\t\t\t\t\t\t\t</linearGradient>\n\t\t\t\t\t\t\t\t\t<linearGradient\n\t\t\t\t\t\t\t\t\t\tid=\"paint1_linear_87_7796\"\n\t\t\t\t\t\t\t\t\t\tx1=\"23.8302\"\n\t\t\t\t\t\t\t\t\t\ty1=\"19.6668\"\n\t\t\t\t\t\t\t\t\t\tx2=\"30.2108\"\n\t\t\t\t\t\t\t\t\t\ty2=\"15.2082\"\n\t\t\t\t\t\t\t\t\t\tgradientUnits=\"userSpaceOnUse\"\n\t\t\t\t\t\t\t\t\t>\n\t\t\t\t\t\t\t\t\t\t<stop stop-color=\"#1694DB\" />\n\t\t\t\t\t\t\t\t\t\t<stop offset=\"1\" stop-color=\"#62C3FE\" />\n\t\t\t\t\t\t\t\t\t</linearGradient>\n\t\t\t\t\t\t\t\t\t<linearGradient\n\t\t\t\t\t\t\t\t\t\tid=\"paint2_linear_87_7796\"\n\t\t\t\t\t\t\t\t\t\tx1=\"8.51037\"\n\t\t\t\t\t\t\t\t\t\ty1=\"7.33333\"\n\t\t\t\t\t\t\t\t\t\tx2=\"23.3335\"\n\t\t\t\t\t\t\t\t\t\ty2=\"15.9348\"\n\t\t\t\t\t\t\t\t\t\tgradientUnits=\"userSpaceOnUse\"\n\t\t\t\t\t\t\t\t\t>\n\t\t\t\t\t\t\t\t\t\t<stop stop-color=\"#0D3D78\" />\n\t\t\t\t\t\t\t\t\t\t<stop offset=\"1\" stop-color=\"#063B83\" />\n\t\t\t\t\t\t\t\t\t</linearGradient>\n\t\t\t\t\t\t\t\t\t<linearGradient\n\t\t\t\t\t\t\t\t\t\tid=\"paint3_linear_87_7796\"\n\t\t\t\t\t\t\t\t\t\tx1=\"-0.340429\"\n\t\t\t\t\t\t\t\t\t\ty1=\"19.9998\"\n\t\t\t\t\t\t\t\t\t\tx2=\"14.5634\"\n\t\t\t\t\t\t\t\t\t\ty2=\"14.4649\"\n\t\t\t\t\t\t\t\t\t\tgradientUnits=\"userSpaceOnUse\"\n\t\t\t\t\t\t\t\t\t>\n\t\t\t\t\t\t\t\t\t\t<stop stop-color=\"#16589B\" />\n\t\t\t\t\t\t\t\t\t\t<stop offset=\"1\" stop-color=\"#1464B7\" />\n\t\t\t\t\t\t\t\t\t</linearGradient>\n\t\t\t\t\t\t\t\t</defs>",
+      "files": [
+        "app/src/lib/components/chat/MessageInput/InputMenu.svelte:272"
+      ]
+    },
+    {
+      "hash": "e271185e1750",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 ",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\td=\"m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z\"\n\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/MessageInput/Commands/Prompts.svelte:115",
+        "app/src/lib/components/chat/ModelSelector/ModelItem.svelte:190",
+        "app/src/lib/components/admin/Settings/Interface.svelte:126"
+      ]
+    },
+    {
+      "hash": "f85174a4ed58",
+      "viewBox": "0 0 24 24",
+      "type": "fill",
+      "pathPreview": "(no paths)",
+      "pathCount": 0,
+      "innerContent": "<style>\n\t\t\t\t\t\t\t.spinner_OSmW {\n\t\t\t\t\t\t\t\ttransform-origin: center;\n\t\t\t\t\t\t\t\tanimation: spinner_T6mA 0.75s step-end infinite;\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t@keyframes spinner_T6mA {\n\t\t\t\t\t\t\t\t8.3% {\n\t\t\t\t\t\t\t\t\ttransform: rotate(30deg);\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t16.6% {\n\t\t\t\t\t\t\t\t\ttransform: rotate(60deg);\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t25% {\n\t\t\t\t\t\t\t\t\ttransform: rotate(90deg);\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t33.3% {\n\t\t\t\t\t\t\t\t\ttransform: rotate(120deg);\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t41.6% {\n\t\t\t\t\t\t\t\t\ttransform: rotate(150deg);\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t50% {\n\t\t\t\t\t\t\t\t\ttransform: rotate(180deg);\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t58.3% {\n\t\t\t\t\t\t\t\t\ttransform: rotate(210deg);\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t66.6% {\n\t\t\t\t\t\t\t\t\ttransform: rotate(240deg);\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t75% {\n\t\t\t\t\t\t\t\t\ttransform: rotate(270deg);\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t83.3% {\n\t\t\t\t\t\t\t\t\ttransform: rotate(300deg);\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t91.6% {\n\t\t\t\t\t\t\t\t\ttransform: rotate(330deg);\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t100% {\n\t\t\t\t\t\t\t\t\ttransform: rotate(360deg);\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t</style><g class=\"spinner_OSmW\"\n\t\t\t\t\t\t\t><rect x=\"11\" y=\"1\" width=\"2\" height=\"5\" opacity=\".14\" /><rect\n\t\t\t\t\t\t\t\tx=\"11\"\n\t\t\t\t\t\t\t\ty=\"1\"\n\t\t\t\t\t\t\t\twidth=\"2\"\n\t\t\t\t\t\t\t\theight=\"5\"\n\t\t\t\t\t\t\t\ttransform=\"rotate(30 12 12)\"\n\t\t\t\t\t\t\t\topacity=\".29\"\n\t\t\t\t\t\t\t/><rect\n\t\t\t\t\t\t\t\tx=\"11\"\n\t\t\t\t\t\t\t\ty=\"1\"\n\t\t\t\t\t\t\t\twidth=\"2\"\n\t\t\t\t\t\t\t\theight=\"5\"\n\t\t\t\t\t\t\t\ttransform=\"rotate(60 12 12)\"\n\t\t\t\t\t\t\t\topacity=\".43\"\n\t\t\t\t\t\t\t/><rect\n\t\t\t\t\t\t\t\tx=\"11\"\n\t\t\t\t\t\t\t\ty=\"1\"\n\t\t\t\t\t\t\t\twidth=\"2\"\n\t\t\t\t\t\t\t\theight=\"5\"\n\t\t\t\t\t\t\t\ttransform=\"rotate(90 12 12)\"\n\t\t\t\t\t\t\t\topacity=\".57\"\n\t\t\t\t\t\t\t/><rect\n\t\t\t\t\t\t\t\tx=\"11\"\n\t\t\t\t\t\t\t\ty=\"1\"\n\t\t\t\t\t\t\t\twidth=\"2\"\n\t\t\t\t\t\t\t\theight=\"5\"\n\t\t\t\t\t\t\t\ttransform=\"rotate(120 12 12)\"\n\t\t\t\t\t\t\t\topacity=\".71\"\n\t\t\t\t\t\t\t/><rect\n\t\t\t\t\t\t\t\tx=\"11\"\n\t\t\t\t\t\t\t\ty=\"1\"\n\t\t\t\t\t\t\t\twidth=\"2\"\n\t\t\t\t\t\t\t\theight=\"5\"\n\t\t\t\t\t\t\t\ttransform=\"rotate(150 12 12)\"\n\t\t\t\t\t\t\t\topacity=\".86\"\n\t\t\t\t\t\t\t/><rect x=\"11\" y=\"1\" width=\"2\" height=\"5\" transform=\"rotate(180 12 12)\" /></g\n\t\t\t\t\t\t>",
+      "files": [
+        "app/src/lib/components/chat/MessageInput/VoiceRecording.svelte:448"
+      ]
+    },
+    {
+      "hash": "a6fd8b955d9c",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "m4.5 12.75 6 6 9-13.5",
+      "pathCount": 1,
+      "innerContent": "<path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"m4.5 12.75 6 6 9-13.5\" />",
+      "files": [
+        "app/src/lib/components/chat/MessageInput/VoiceRecording.svelte:545"
+      ]
+    },
+    {
+      "hash": "d4561910738a",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M12 6v12m6-6H6",
+      "pathCount": 1,
+      "innerContent": "<path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 6v12m6-6H6\" />",
+      "files": [
+        "app/src/lib/components/chat/ModelSelector.svelte:95"
+      ]
+    },
+    {
+      "hash": "4458a1d522e5",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M19.5 12h-15",
+      "pathCount": 1,
+      "innerContent": "<path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M19.5 12h-15\" />",
+      "files": [
+        "app/src/lib/components/chat/ModelSelector.svelte:122"
+      ]
+    },
+    {
+      "hash": "01be4eb5406a",
+      "viewBox": "0 0 20 20",
+      "type": "fill",
+      "pathPreview": "M8.34 1.804A1 1 0 019.32 1h1.36a1 1 0 01.98.804l.2",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\t\t\td=\"M8.34 1.804A1 1 0 019.32 1h1.36a1 1 0 01.98.804l.295 1.473c.497.144.971.342 1.416.587l1.25-.834a1 1 0 011.262.125l.962.962a1 1 0 01.125 1.262l-.834 1.25c.245.445.443.919.587 1.416l1.473.294a1 1 0 01.804.98v1.361a1 1 0 01-.804.98l-1.473.295a6.95 6.95 0 01-.587 1.416l.834 1.25a1 1 0 01-.125 1.262l-.962.962a1 1 0 01-1.262.125l-1.25-.834a6.953 6.953 0 01-1.416.587l-.294 1.473a1 1 0 01-.98.804H9.32a1 1 0 01-.98-.804l-.295-1.473a6.957 6.957 0 01-1.416-.587l-1.25.834a1 1 0 01-1.262-.125l-.962-.962a1 1 0 01-.125-1.262l.834-1.25a6.957 6.957 0 01-.587-1.416l-1.473-.294A1 1 0 011 10.68V9.32a1 1 0 01.804-.98l1.473-.295c.144-.497.342-.971.587-1.416l-.834-1.25a1 1 0 01.125-1.262l.962-.962A1 1 0 015.38 3.03l1.25.834a6.957 6.957 0 011.416-.587l.294-1.473zM13 10a3 3 0 11-6 0 3 3 0 016 0z\"\n\t\t\t\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/SettingsModal.svelte:602"
+      ]
+    },
+    {
+      "hash": "eb22045c9ecc",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M2 4.25A2.25 2.25 0 0 1 4.25 2h7.5A2.25 2.25 0 0 1",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\t\t\td=\"M2 4.25A2.25 2.25 0 0 1 4.25 2h7.5A2.25 2.25 0 0 1 14 4.25v5.5A2.25 2.25 0 0 1 11.75 12h-1.312c.1.128.21.248.328.36a.75.75 0 0 1 .234.545v.345a.75.75 0 0 1-.75.75h-4.5a.75.75 0 0 1-.75-.75v-.345a.75.75 0 0 1 .234-.545c.118-.111.228-.232.328-.36H4.25A2.25 2.25 0 0 1 2 9.75v-5.5Zm2.25-.75a.75.75 0 0 0-.75.75v4.5c0 .414.336.75.75.75h7.5a.75.75 0 0 0 .75-.75v-4.5a.75.75 0 0 0-.75-.75h-7.5Z\"\n\t\t\t\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/SettingsModal.svelte:636",
+        "app/src/lib/components/admin/Settings.svelte:314"
+      ]
+    },
+    {
+      "hash": "1e03d626fcfe",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M1 9.5A3.5 3.5 0 0 0 4.5 13H12a3 3 0 0 0 .917-5.85",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\t\td=\"M1 9.5A3.5 3.5 0 0 0 4.5 13H12a3 3 0 0 0 .917-5.857 2.503 2.503 0 0 0-3.198-3.019 3.5 3.5 0 0 0-6.628 2.171A3.5 3.5 0 0 0 1 9.5Z\"\n\t\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/SettingsModal.svelte:671",
+        "app/src/lib/components/admin/Settings.svelte:179"
+      ]
+    },
+    {
+      "hash": "5fb1fd40a51d",
+      "viewBox": "0 0 24 24",
+      "type": "fill",
+      "pathPreview": "M12 6.75a5.25 5.25 0 0 1 6.775-5.025.75.75 0 0 1 .",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\t\t\t\td=\"M12 6.75a5.25 5.25 0 0 1 6.775-5.025.75.75 0 0 1 .313 1.248l-3.32 3.319c.063.475.276.934.641 1.299.365.365.824.578 1.3.64l3.318-3.319a.75.75 0 0 1 1.248.313 5.25 5.25 0 0 1-5.472 6.756c-1.018-.086-1.87.1-2.309.634L7.344 21.3A3.298 3.298 0 1 1 2.7 16.657l8.684-7.151c.533-.44.72-1.291.634-2.309A5.342 5.342 0 0 1 12 6.75ZM4.117 19.125a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75h-.008a.75.75 0 0 1-.75-.75v-.008Z\"\n\t\t\t\t\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/SettingsModal.svelte:705",
+        "app/src/lib/components/admin/Settings.svelte:238"
+      ]
+    },
+    {
+      "hash": "abc849dfa18f",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M7.557 2.066A.75.75 0 0 1 8 2.75v10.5a.75.75 0 0 1",
+      "pathCount": 2,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\td=\"M7.557 2.066A.75.75 0 0 1 8 2.75v10.5a.75.75 0 0 1-1.248.56L3.59 11H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.59l3.162-2.81a.75.75 0 0 1 .805-.124ZM12.95 3.05a.75.75 0 1 0-1.06 1.06 5.5 5.5 0 0 1 0 7.78.75.75 0 1 0 1.06 1.06 7 7 0 0 0 0-9.9Z\"\n\t\t\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\t\t\t\td=\"M10.828 5.172a.75.75 0 1 0-1.06 1.06 2.5 2.5 0 0 1 0 3.536.75.75 0 1 0 1.06 1.06 4 4 0 0 0 0-5.656Z\"\n\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/SettingsModal.svelte:762",
+        "app/src/lib/components/admin/Settings.svelte:338"
+      ]
+    },
+    {
+      "hash": "5ca3ef3e4289",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M8 2C4.262 2 1 4.57 1 8c0 1.86.98 3.486 2.455 4.56",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\t\t\td=\"M8 2C4.262 2 1 4.57 1 8c0 1.86.98 3.486 2.455 4.566a3.472 3.472 0 0 1-.469 1.26.75.75 0 0 0 .713 1.14 6.961 6.961 0 0 0 3.06-1.06c.403.062.818.094 1.241.094 3.738 0 7-2.57 7-6s-3.262-6-7-6ZM5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm7-1a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM8 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z\"\n\t\t\t\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/SettingsModal.svelte:797"
+      ]
+    },
+    {
+      "hash": "6ed2a32b5a23",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M15 8A7 7 0 1 1 1 8a7 7 0 0 1 14 0Zm-5-2a2 2 0 1 1",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\t\t\td=\"M15 8A7 7 0 1 1 1 8a7 7 0 0 1 14 0Zm-5-2a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM8 9c-1.825 0-3.422.977-4.295 2.437A5.49 5.49 0 0 0 8 13.5a5.49 5.49 0 0 0 4.294-2.063A4.997 4.997 0 0 0 8 9Z\"\n\t\t\t\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/SettingsModal.svelte:831"
+      ]
+    },
+    {
+      "hash": "05f2ed1d9b98",
+      "viewBox": "0 0 20 20",
+      "type": "fill",
+      "pathPreview": "M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\t\t\td=\"M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z\"\n\t\t\t\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/SettingsModal.svelte:865"
+      ]
+    },
+    {
+      "hash": "ac0f2cc3781f",
+      "viewBox": "0 0 24 24",
+      "type": "fill",
+      "pathPreview": "M4.5 3.75a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h15a3 3 ",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\td=\"M4.5 3.75a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V6.75a3 3 0 0 0-3-3h-15Zm4.125 3a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Zm-3.873 8.703a4.126 4.126 0 0 1 7.746 0 .75.75 0 0 1-.351.92 7.47 7.47 0 0 1-3.522.877 7.47 7.47 0 0 1-3.522-.877.75.75 0 0 1-.351-.92ZM15 8.25a.75.75 0 0 0 0 1.5h3.75a.75.75 0 0 0 0-1.5H15ZM14.25 12a.75.75 0 0 1 .75-.75h3.75a.75.75 0 0 1 0 1.5H15a.75.75 0 0 1-.75-.75Zm.75 2.25a.75.75 0 0 0 0 1.5h3.75a.75.75 0 0 0 0-1.5H15Z\"\n\t\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/SettingsModal.svelte:902"
+      ]
+    },
+    {
+      "hash": "1577f4542698",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M2 2.75A.75.75 0 0 1 2.75 2C8.963 2 14 7.037 14 13",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\td=\"M2 2.75A.75.75 0 0 1 2.75 2C8.963 2 14 7.037 14 13.25a.75.75 0 0 1-1.5 0c0-5.385-4.365-9.75-9.75-9.75A.75.75 0 0 1 2 2.75Zm0 4.5a.75.75 0 0 1 .75-.75 6.75 6.75 0 0 1 6.75 6.75.75.75 0 0 1-1.5 0C8 10.35 5.65 8 2.75 8A.75.75 0 0 1 2 7.25ZM3.5 11a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z\"\n\t\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/ModelSelector/ModelItem.svelte:145"
+      ]
+    },
+    {
+      "hash": "350c5cfc7d36",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M8.914 6.025a.75.75 0 0 1 1.06 0 3.5 3.5 0 0 1 0 4",
+      "pathCount": 2,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\td=\"M8.914 6.025a.75.75 0 0 1 1.06 0 3.5 3.5 0 0 1 0 4.95l-2 2a3.5 3.5 0 0 1-5.396-4.402.75.75 0 0 1 1.251.827 2 2 0 0 0 3.085 2.514l2-2a2 2 0 0 0 0-2.828.75.75 0 0 1 0-1.06Z\"\n\t\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\td=\"M7.086 9.975a.75.75 0 0 1-1.06 0 3.5 3.5 0 0 1 0-4.95l2-2a3.5 3.5 0 0 1 5.396 4.402.75.75 0 0 1-1.251-.827 2 2 0 0 0-3.085-2.514l-2 2a2 2 0 0 0 0 2.828.75.75 0 0 1 0 1.06Z\"\n\t\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/ModelSelector/ModelItem.svelte:162",
+        "app/src/lib/components/admin/Users.svelte:129"
+      ]
+    },
+    {
+      "hash": "7fa965571bd2",
+      "viewBox": "0 0 24 24",
+      "type": "mixed",
+      "pathPreview": "M6 18 17.94 6M18 18 6.06 6",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\tstroke=\"currentColor\"\n\t\t\t\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\t\t\t\tstroke-width=\"2\"\n\t\t\t\t\t\t\t\t\t\t\td=\"M6 18 17.94 6M18 18 6.06 6\"\n\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/ModelSelector/Selector.svelte:629",
+        "app/src/lib/components/admin/Settings/Models/Manage/ManageOllama.svelte:703"
+      ]
+    },
+    {
+      "hash": "1607333f9c07",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M8 14a.75.75 0 0 1-.75-.75V4.56L4.03 7.78a.75.75 0",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\td=\"M8 14a.75.75 0 0 1-.75-.75V4.56L4.03 7.78a.75.75 0 0 1-1.06-1.06l4.5-4.5a.75.75 0 0 1 1.06 0l4.5 4.5a.75.75 0 0 1-1.06 1.06L8.75 4.56v8.69A.75.75 0 0 1 8 14Z\"\n\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/ContentRenderer/FloatingButtons.svelte:132",
+        "app/src/lib/components/chat/MessageInput.svelte:1979",
+        "app/src/lib/components/channel/MessageInput.svelte:987"
+      ]
+    },
+    {
+      "hash": "12ddcdf44431",
+      "viewBox": "0 0 20 20",
+      "type": "fill",
+      "pathPreview": "M10 3a.75.75 0 01.75.75v10.638l3.96-4.158a.75.75 0",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\t\td=\"M10 3a.75.75 0 01.75.75v10.638l3.96-4.158a.75.75 0 111.08 1.04l-5.25 5.5a.75.75 0 01-1.08 0l-5.25-5.5a.75.75 0 111.08-1.04l3.96 4.158V3.75A.75.75 0 0110 3z\"\n\t\t\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/MessageInput.svelte:876",
+        "app/src/lib/components/channel/MessageInput.svelte:581"
+      ]
+    },
+    {
+      "hash": "b32b2f4de1a2",
+      "viewBox": "0 0 24 24",
+      "type": "fill",
+      "pathPreview": "M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\td=\"M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/MessageInput.svelte:1054"
+      ]
+    },
+    {
+      "hash": "51ddaec76fd5",
+      "viewBox": "0 0 20 20",
+      "type": "fill",
+      "pathPreview": "M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\t\t\t\td=\"M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/MessageInput.svelte:1668",
+        "app/src/lib/components/channel/MessageInput.svelte:887"
+      ]
+    },
+    {
+      "hash": "bac9f9b26b31",
+      "viewBox": "0 0 20 20",
+      "type": "fill",
+      "pathPreview": "M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z",
+      "pathCount": 2,
+      "innerContent": "<path d=\"M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z\" />\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\td=\"M5.5 9.643a.75.75 0 00-1.5 0V10c0 3.06 2.29 5.585 5.25 5.954V17.5h-1.5a.75.75 0 000 1.5h4.5a.75.75 0 000-1.5h-1.5v-1.546A6.001 6.001 0 0016 10v-.357a.75.75 0 00-1.5 0V10a4.5 4.5 0 01-9 0v-.357z\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/MessageInput.svelte:1865",
+        "app/src/lib/components/channel/MessageInput.svelte:935"
+      ]
+    },
+    {
+      "hash": "a484f47a5a25",
+      "viewBox": "0 0 24 24",
+      "type": "fill",
+      "pathPreview": "M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\td=\"M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm6-2.438c0-.724.588-1.312 1.313-1.312h4.874c.725 0 1.313.588 1.313 1.313v4.874c0 .725-.588 1.313-1.313 1.313H9.564a1.312 1.312 0 01-1.313-1.313V9.564z\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/MessageInput.svelte:1889",
+        "app/src/lib/components/channel/MessageInput.svelte:960"
+      ]
+    },
+    {
+      "hash": "f4ae6edb0b10",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\t\t\t\t\td=\"M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z\"\n\t\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/chat/Navbar.svelte:157",
+        "app/src/lib/components/layout/Navbar.svelte:98"
+      ]
+    },
+    {
+      "hash": "200b2ce0e3fe",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.",
+      "pathCount": 1,
+      "innerContent": "<path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244\" />",
+      "files": [
+        "app/src/lib/components/chat/ShareChatModal.svelte:138"
+      ]
+    },
+    {
+      "hash": "d26eb992e9d8",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4",
+      "pathCount": 1,
+      "innerContent": "<path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z\" />",
+      "files": [
+        "app/src/lib/components/chat/ShareChatModal.svelte:240"
+      ]
+    },
+    {
+      "hash": "e77b0b898280",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M7.487 2.89a.75.75 0 1 0-1.474-.28l-.455 2.388H3.6",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\td=\"M7.487 2.89a.75.75 0 1 0-1.474-.28l-.455 2.388H3.61a.75.75 0 0 0 0 1.5h1.663l-.571 2.998H2.75a.75.75 0 0 0 0 1.5h1.666l-.403 2.114a.75.75 0 0 0 1.474.28l.456-2.394h2.973l-.403 2.114a.75.75 0 0 0 1.474.28l.456-2.394h1.947a.75.75 0 0 0 0-1.5h-1.661l.57-2.998h1.95a.75.75 0 0 0 0-1.5h-1.664l.402-2.108a.75.75 0 0 0-1.474-.28l-.455 2.388H7.085l.402-2.108ZM6.8 6.498l-.571 2.998h2.973l.57-2.998H6.8Z\"\n\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/layout/Sidebar/SpaceItem.svelte:64"
+      ]
+    },
+    {
+      "hash": "c59b2f948625",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M2 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM6.5 8a1.",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\td=\"M2 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM6.5 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM12.5 6.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z\"\n\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/layout/Sidebar/ChatItem.svelte:493",
+        "app/src/lib/components/layout/Sidebar/ChatItem.svelte:515"
+      ]
+    },
+    {
+      "hash": "09876bb693c8",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1",
+      "pathCount": 2,
+      "innerContent": "<path\n\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\td=\"M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z\"\n\t\t\t\t\t/>\n\t\t\t\t\t<path\n\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\td=\"M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z\"\n\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/layout/Navbar/Menu.svelte:227",
+        "app/src/lib/components/admin/Functions.svelte:398"
+      ]
+    },
+    {
+      "hash": "d40c671a22a1",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M15.75 7.5a1.5 1.5 0 1 1 .412 1.033l-4.21 2.34a1.5",
+      "pathCount": 1,
+      "innerContent": "<circle cx=\"12\" cy=\"12\" r=\"11\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" />\n\t\t\t\t\t\t\t<g transform=\"translate(-2.5, 1)\">\n\t\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\td=\"M15.75 7.5a1.5 1.5 0 1 1 .412 1.033l-4.21 2.34a1.501 1.501 0 0 1 0 .754l4.21 2.34a1.5 1.5 0 1 1-.364.655l-4.21-2.34a1.5 1.5 0 1 1 0-2.064l4.21-2.34A1.5 1.5 0 0 1 15.75 7.5Z\"\n\t\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t</g>",
+      "files": [
+        "app/src/lib/components/layout/Navbar/Menu.svelte:274"
+      ]
+    },
+    {
+      "hash": "0e063ec24b80",
+      "viewBox": "0 0 24 24",
+      "type": "fill",
+      "pathPreview": "M15.75 4.5a3 3 0 1 1 .825 2.066l-8.421 4.679a3.002",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\td=\"M15.75 4.5a3 3 0 1 1 .825 2.066l-8.421 4.679a3.002 3.002 0 0 1 0 1.51l8.421 4.679a3 3 0 1 1-.729 1.31l-8.421-4.678a3 3 0 1 1 0-4.132l8.421-4.679a3 3 0 0 1-.096-.755Z\"\n\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/layout/Navbar/Menu.svelte:291"
+      ]
+    },
+    {
+      "hash": "9b086eb5927b",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.2",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\td=\"M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3\"\n\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/layout/Navbar/Menu.svelte:338"
+      ]
+    },
+    {
+      "hash": "f8ca1ca47308",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\td=\"M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12\"\n\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/layout/Sidebar.svelte:629"
+      ]
+    },
+    {
+      "hash": "39fe73010ea3",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M10 3v4a1 1 0 0 1-1 1H5m4 8h6m-6-4h6m4-8v16a1 1 0 ",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\tstroke=\"currentColor\"\n\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\tstroke-width=\"2\"\n\t\t\t\t\t\t\t\td=\"M10 3v4a1 1 0 0 1-1 1H5m4 8h6m-6-4h6m4-8v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1Z\"\n\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/layout/Sidebar.svelte:758"
+      ]
+    },
+    {
+      "hash": "20bc9ba2abca",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\td=\"M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 0 0 2.25-2.25V6a2.25 2.25 0 0 0-2.25-2.25H6A2.25 2.25 0 0 0 3.75 6v2.25A2.25 2.25 0 0 0 6 10.5Zm0 9.75h2.25A2.25 2.25 0 0 0 10.5 18v-2.25a2.25 2.25 0 0 0-2.25-2.25H6a2.25 2.25 0 0 0-2.25 2.25V18A2.25 2.25 0 0 0 6 20.25Zm9.75-9.75H18a2.25 2.25 0 0 0 2.25-2.25V6A2.25 2.25 0 0 0 18 3.75h-2.25A2.25 2.25 0 0 0 13.5 6v2.25a2.25 2.25 0 0 0 2.25 2.25Z\"\n\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/layout/Sidebar.svelte:802"
+      ]
+    },
+    {
+      "hash": "cd76b80610b0",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L1",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\t\t\t\td=\"M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z\"\n\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/layout/Sidebar.svelte:980"
+      ]
+    },
+    {
+      "hash": "1c3507666397",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\t\t\t\td=\"M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z\"\n\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/layout/Sidebar.svelte:1017"
+      ]
+    },
+    {
+      "hash": "aa8b9f617cad",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.2",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\t\t\t\td=\"M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75\"\n\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/layout/Sidebar.svelte:1054",
+        "app/src/routes/auth/+page.svelte:841"
+      ]
+    },
+    {
+      "hash": "073f915a0d0c",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\t\t\t\td=\"M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z\"\n\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/layout/Sidebar.svelte:1097"
+      ]
+    },
+    {
+      "hash": "79d8f6edfcc0",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\t\t\t\td=\"M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z\"\n\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/layout/Sidebar.svelte:1134"
+      ]
+    },
+    {
+      "hash": "e6ca18109f72",
+      "viewBox": "0 0 20 20",
+      "type": "fill",
+      "pathPreview": "M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 ",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\td=\"M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z\"\n\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/layout/ChatsModal.svelte:103",
+        "app/src/lib/components/admin/Users/UserList.svelte:185"
+      ]
+    },
+    {
+      "hash": "6095ef2d0ab5",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M9 8.25H7.5a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 ",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\td=\"M9 8.25H7.5a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25H15m0-3-3-3m0 0-3 3m3-3V15\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/layout/ChatsModal.svelte:258",
+        "app/src/lib/components/layout/ChatsModal.svelte:386"
+      ]
+    },
+    {
+      "hash": "1a4ced691c52",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M8.5 4.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0ZM10.9",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\td=\"M8.5 4.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0ZM10.9 12.006c.11.542-.348.994-.9.994H2c-.553 0-1.01-.452-.902-.994a5.002 5.002 0 0 1 9.803 0ZM14.002 12h-1.59a2.556 2.556 0 0 0-.04-.29 6.476 6.476 0 0 0-1.167-2.603 3.002 3.002 0 0 1 3.633 1.911c.18.522-.283.982-.836.982ZM12 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z\"\n\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/admin/Users.svelte:77"
+      ]
+    },
+    {
+      "hash": "75a29789e69e",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M8 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM3.156 11",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\td=\"M8 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM3.156 11.763c.16-.629.44-1.21.813-1.72a2.5 2.5 0 0 0-2.725 1.377c-.136.287.102.58.418.58h1.449c.01-.077.025-.156.045-.237ZM12.847 11.763c.02.08.036.16.046.237h1.446c.316 0 .554-.293.417-.579a2.5 2.5 0 0 0-2.722-1.378c.374.51.653 1.09.813 1.72ZM14 7.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM3.5 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM5 13c-.552 0-1.013-.455-.876-.99a4.002 4.002 0 0 1 7.753 0c.136.535-.324.99-.877.99H5Z\"\n\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/admin/Users.svelte:103"
+      ]
+    },
+    {
+      "hash": "65113a7f4e49",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M8.75 2.75a.75.75 0 0 0-1.5 0v5.69L5.03 6.22a.75.7",
+      "pathCount": 2,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\td=\"M8.75 2.75a.75.75 0 0 0-1.5 0v5.69L5.03 6.22a.75.75 0 0 0-1.06 1.06l3.5 3.5a.75.75 0 0 0 1.06 0l3.5-3.5a.75.75 0 0 0-1.06-1.06L8.75 8.44V2.75Z\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\td=\"M3.5 9.75a.75.75 0 0 0-1.5 0v1.5A2.75 2.75 0 0 0 4.75 14h6.5A2.75 2.75 0 0 0 14 11.25v-1.5a.75.75 0 0 0-1.5 0v1.5c0 .69-.56 1.25-1.25 1.25h-6.5c-.69 0-1.25-.56-1.25-1.25v-1.5Z\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/admin/Settings/Documents.svelte:912",
+        "app/src/lib/components/admin/Settings/Pipelines.svelte:396",
+        "app/src/lib/components/admin/Settings/Models/Manage/ManageOllama.svelte:646",
+        "app/src/lib/components/admin/Settings/Audio.svelte:383"
+      ]
+    },
+    {
+      "hash": "21636dd5812b",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.7",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\td=\"M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z\"\n\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/admin/Settings/OAuthSettings.svelte:207",
+        "app/src/lib/components/admin/Settings/OAuthSettings.svelte:295",
+        "app/src/lib/components/admin/Settings/OAuthSettings.svelte:388"
+      ]
+    },
+    {
+      "hash": "ddd0d2e0b8d8",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\td=\"M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z\"\n\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/admin/Settings/OAuthSettings.svelte:278"
+      ]
+    },
+    {
+      "hash": "e7546d1caca3",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.07",
+      "pathCount": 2,
+      "innerContent": "<path\n\t\t\t\t\t\t\td=\"M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z\"\n\t\t\t\t\t\t/>\n\t\t\t\t\t\t<path\n\t\t\t\t\t\t\td=\"M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z\"\n\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/admin/Settings/OAuthSettings.svelte:363"
+      ]
+    },
+    {
+      "hash": "37bc1b439da1",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1Zm0 2.5a1.25 1.25",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\td=\"M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1Zm0 2.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5ZM6.5 7.5h3v4.5h-1V8.5h-2v-1Z\"\n\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/admin/Settings/OAuthSettings.svelte:487"
+      ]
+    },
+    {
+      "hash": "ade75520c185",
+      "viewBox": "0 0 24 24",
+      "type": "fill",
+      "pathPreview": "M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8",
+      "pathCount": 2,
+      "innerContent": "<style>\n\t\t\t\t\t\t\t\t\t\t\t.spinner_ajPY {\n\t\t\t\t\t\t\t\t\t\t\t\ttransform-origin: center;\n\t\t\t\t\t\t\t\t\t\t\t\tanimation: spinner_AtaB 0.75s infinite linear;\n\t\t\t\t\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\t\t\t\t\t@keyframes spinner_AtaB {\n\t\t\t\t\t\t\t\t\t\t\t\t100% {\n\t\t\t\t\t\t\t\t\t\t\t\t\ttransform: rotate(360deg);\n\t\t\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t\t</style>\n\t\t\t\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\t\t\t\td=\"M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z\"\n\t\t\t\t\t\t\t\t\t\t\topacity=\".25\"\n\t\t\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\t\t\t\td=\"M10.14,1.16a11,11,0,0,0-9,8.92A1.59,1.59,0,0,0,2.46,12,1.52,1.52,0,0,0,4.11,10.7a8,8,0,0,1,6.66-6.61A1.42,1.42,0,0,0,12,2.69h0A1.57,1.57,0,0,0,10.14,1.16Z\"\n\t\t\t\t\t\t\t\t\t\t\tclass=\"spinner_ajPY\"\n\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/admin/Settings/Pipelines.svelte:298",
+        "app/src/lib/components/admin/Settings/Pipelines.svelte:367",
+        "app/src/lib/components/admin/Settings/Models/Manage/ManageOllama.svelte:617",
+        "app/src/lib/components/admin/Settings/Models/Manage/ManageOllama.svelte:950",
+        "app/src/lib/components/common/Spinner.svelte:6"
+      ]
+    },
+    {
+      "hash": "cd81a986f7ab",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M7.25 10.25a.75.75 0 0 0 1.5 0V4.56l2.22 2.22a.75.",
+      "pathCount": 2,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\td=\"M7.25 10.25a.75.75 0 0 0 1.5 0V4.56l2.22 2.22a.75.75 0 1 0 1.06-1.06l-3.5-3.5a.75.75 0 0 0-1.06 0l-3.5 3.5a.75.75 0 0 0 1.06 1.06l2.22-2.22v5.69Z\"\n\t\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\t\t\td=\"M3.5 9.75a.75.75 0 0 0-1.5 0v1.5A2.75 2.75 0 0 0 4.75 14h6.5A2.75 2.75 0 0 0 14 11.25v-1.5a.75.75 0 0 0-1.5 0v1.5c0 .69-.56 1.25-1.25 1.25h-6.5c-.69 0-1.25-.56-1.25-1.25v-1.5Z\"\n\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/admin/Settings/Pipelines.svelte:327",
+        "app/src/lib/components/admin/Settings/Models/Manage/ManageOllama.svelte:810",
+        "app/src/lib/components/admin/Settings/Models/Manage/ManageOllama.svelte:979"
+      ]
+    },
+    {
+      "hash": "92a07925b920",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M5 3.25V4H2.75a.75.75 0 0 0 0 1.5h.3l.815 8.15A1.5",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\t\t\t\td=\"M5 3.25V4H2.75a.75.75 0 0 0 0 1.5h.3l.815 8.15A1.5 1.5 0 0 0 5.357 15h5.285a1.5 1.5 0 0 0 1.493-1.35l.815-8.15h.3a.75.75 0 0 0 0-1.5H11v-.75A2.25 2.25 0 0 0 8.75 1h-1.5A2.25 2.25 0 0 0 5 3.25Zm2.25-.75a.75.75 0 0 0-.75.75V4h3v-.75a.75.75 0 0 0-.75-.75h-1.5ZM6.05 6a.75.75 0 0 1 .787.713l.275 5.5a.75.75 0 0 1-1.498.075l-.275-5.5A.75.75 0 0 1 6.05 6Zm3.9 0a.75.75 0 0 1 .712.787l-.275 5.5a.75.75 0 0 1-1.498-.075l.275-5.5a.75.75 0 0 1 .786-.711Z\"\n\t\t\t\t\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/admin/Settings/Pipelines.svelte:459",
+        "app/src/lib/components/admin/Settings/Models/Manage/ManageOllama.svelte:762"
+      ]
+    },
+    {
+      "hash": "c16051fac24d",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M2 3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1a1 1 0 0 1-1 ",
+      "pathCount": 2,
+      "innerContent": "<path d=\"M2 3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3Z\" />\n\t\t\t\t\t\t<path\n\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\td=\"M13 6H3v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V6ZM8.75 7.75a.75.75 0 0 0-1.5 0v2.69L6.03 9.22a.75.75 0 0 0-1.06 1.06l2.5 2.5a.75.75 0 0 0 1.06 0l2.5-2.5a.75.75 0 1 0-1.06-1.06l-1.22 1.22V7.75Z\"\n\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/admin/Settings/Database.svelte:73",
+        "app/src/lib/components/admin/Settings/Database.svelte:104",
+        "app/src/lib/components/admin/Settings/Database.svelte:141",
+        "app/src/lib/components/admin/Settings/Database.svelte:166"
+      ]
+    },
+    {
+      "hash": "dd9e0f50d953",
+      "viewBox": "0 0 495 495",
+      "type": "fill",
+      "pathPreview": "M495,237.199v-30H383.75v-86.075c24.992,31.105,63.3",
+      "pathCount": 2,
+      "innerContent": "<path d=\"M495,237.199v-30H383.75v-86.075c24.992,31.105,63.335,51.048,106.25,51.048v-30c-58.586,0-106.25-47.664-106.25-106.25h-30c0,58.586-47.664,106.25-106.25,106.25S141.25,94.509,141.25,35.923h-30c0,58.586-47.664,106.25-106.25,106.25v30c42.915,0,81.258-19.943,106.25-51.048v86.075H0v30h111.25v100.101c-10.643,2.41-17.7,7.139-23.697,11.178c-6.839,4.607-11.356,7.651-21.931,7.651c-10.574,0-15.092-3.043-21.93-7.651C35.247,342.79,24.737,335.708,5,335.708v30c10.574,0,15.092,3.043,21.93,7.651c8.445,5.689,18.955,12.771,38.692,12.771s30.248-7.081,38.693-12.771c6.839-4.607,11.357-7.651,21.932-7.651s15.092,3.044,21.931,7.651c8.445,5.689,18.955,12.771,38.692,12.771s30.247-7.081,38.692-12.771c6.838-4.607,11.355-7.651,21.929-7.651c10.575,0,15.093,3.044,21.932,7.651c8.445,5.689,18.956,12.771,38.693,12.771c19.738,0,30.249-7.081,38.694-12.771c6.839-4.607,11.357-7.651,21.932-7.651c10.576,0,15.095,3.044,21.934,7.651c8.445,5.689,18.957,12.77,38.695,12.77s30.25-7.081,38.695-12.77c6.839-4.607,11.358-7.651,21.934-7.651v-30c-19.738,0-30.25,7.081-38.695,12.77c-6.839,4.607-11.358,7.651-21.934,7.651s-15.095-3.044-21.934-7.651c-5.995-4.039-13.049-8.765-23.687-11.176V237.199H495z M353.75,121.125v86.075H262.5v-35.852C299.285,167.3,331.71,148.555,353.75,121.125z M141.25,121.125c22.04,27.431,54.465,46.176,91.25,50.222v35.852h-91.25V121.125z M353.75,337.3c-10.646,2.409-17.704,7.139-23.702,11.179c-6.839,4.607-11.357,7.651-21.932,7.651c-10.575,0-15.092-3.043-21.931-7.651c-8.445-5.689-18.956-12.771-38.693-12.771c-19.737,0-30.247,7.081-38.692,12.771c-6.838,4.607-11.355,7.651-21.93,7.651s-15.092-3.043-21.93-7.651c-5.995-4.039-13.051-8.767-23.69-11.177V237.199h212.5V337.3z\" />\n\t\t\t\t<path d=\"M429.371,429.077c-10.576,0-15.095-3.044-21.934-7.651c-8.446-5.689-18.957-12.77-38.695-12.77c-19.738,0-30.248,7.081-38.694,12.77c-6.839,4.607-11.357,7.651-21.932,7.651c-10.575,0-15.092-3.043-21.931-7.651c-8.445-5.689-18.956-12.77-38.693-12.77c-19.737,0-30.247,7.081-38.691,12.77c-6.838,4.607-11.356,7.651-21.93,7.651s-15.092-3.043-21.931-7.651c-8.445-5.689-18.956-12.77-38.693-12.77c-19.738,0-30.248,7.081-38.693,12.77c-6.838,4.607-11.356,7.651-21.931,7.651c-10.574,0-15.092-3.043-21.93-7.651c-8.445-5.689-18.955-12.77-38.692-12.77v30c10.574,0,15.092,3.043,21.93,7.651c8.445,5.689,18.955,12.77,38.692,12.77c19.737,0,30.248-7.081,38.693-12.77c6.839-4.607,11.356-7.651,21.932-7.651c10.575,0,15.092,3.043,21.931,7.651c8.445,5.689,18.955,12.77,38.692,12.77s30.247-7.081,38.692-12.771c6.838-4.607,11.355-7.65,21.929-7.65c10.575,0,15.093,3.043,21.932,7.651c8.445,5.689,18.956,12.77,38.693,12.77c19.738,0,30.248-7.081,38.694-12.77c6.839-4.607,11.357-7.651,21.932-7.651c10.576,0,15.095,3.044,21.934,7.651c8.446,5.689,18.957,12.77,38.695,12.77s30.249-7.081,38.695-12.77c6.839-4.607,11.358-7.651,21.934-7.651v-30c-19.738,0-30.249,7.081-38.695,12.77C444.466,426.033,439.947,429.077,429.371,429.077z\" />",
+      "files": [
+        "app/src/lib/components/admin/Settings/Bridges.svelte:199"
+      ]
+    },
+    {
+      "hash": "34fd2cc4fa56",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\t\t\td=\"M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182\"\n\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/admin/Settings/Bridges.svelte:243"
+      ]
+    },
+    {
+      "hash": "9f5f0eb149a5",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 ",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\t\t\td=\"m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10\"\n\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/admin/Settings/Bridges.svelte:266"
+      ]
+    },
+    {
+      "hash": "940d4e1debba",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M7 1a.75.75 0 0 1 .75.75V6h-1.5V1.75A.75.75 0 0 1 ",
+      "pathCount": 2,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\td=\"M7 1a.75.75 0 0 1 .75.75V6h-1.5V1.75A.75.75 0 0 1 7 1ZM6.25 6v2.94L5.03 7.72a.75.75 0 0 0-1.06 1.06l2.5 2.5a.75.75 0 0 0 1.06 0l2.5-2.5a.75.75 0 1 0-1.06-1.06L7.75 8.94V6H10a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h2.25Z\"\n\t\t\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\t\t\t\td=\"M4.268 14A2 2 0 0 0 6 15h6a2 2 0 0 0 2-2v-3a2 2 0 0 0-1-1.732V11a3 3 0 0 1-3 3H4.268Z\"\n\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/admin/Settings/Models/Manage/ManageOllama.svelte:581"
+      ]
+    },
+    {
+      "hash": "ca63de04c45b",
+      "viewBox": "0 0 20 20",
+      "type": "fill",
+      "pathPreview": "M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\t\td=\"M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H3.989a.75.75 0 00-.75.75v4.242a.75.75 0 001.5 0v-2.43l.31.31a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.23-3.723a.75.75 0 00.219-.53V2.929a.75.75 0 00-1.5 0V5.36l-.31-.31A7 7 0 003.239 8.188a.75.75 0 101.448.389A5.5 5.5 0 0113.89 6.11l.311.31h-2.432a.75.75 0 000 1.5h4.243a.75.75 0 00.53-.219z\"\n\t\t\t\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/admin/Settings/Images.svelte:341",
+        "app/src/lib/components/admin/Settings/Images.svelte:477",
+        "app/src/lib/components/AddConnectionModal.svelte:280",
+        "app/src/lib/components/AddServerModal.svelte:218"
+      ]
+    },
+    {
+      "hash": "1b0ae0d13edf",
+      "viewBox": "0 0 24 24",
+      "type": "fill",
+      "pathPreview": "M11.644 1.59a.75.75 0 0 1 .712 0l9.75 5.25a.75.75 ",
+      "pathCount": 3,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\td=\"M11.644 1.59a.75.75 0 0 1 .712 0l9.75 5.25a.75.75 0 0 1 0 1.32l-9.75 5.25a.75.75 0 0 1-.712 0l-9.75-5.25a.75.75 0 0 1 0-1.32l9.75-5.25Z\"\n\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\t\td=\"m3.265 10.602 7.668 4.129a2.25 2.25 0 0 0 2.134 0l7.668-4.13 1.37.739a.75.75 0 0 1 0 1.32l-9.75 5.25a.75.75 0 0 1-.71 0l-9.75-5.25a.75.75 0 0 1 0-1.32l1.37-.738Z\"\n\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\t\td=\"m10.933 19.231-7.668-4.13-1.37.739a.75.75 0 0 0 0 1.32l9.75 5.25c.221.12.489.12.71 0l9.75-5.25a.75.75 0 0 0 0-1.32l-1.37-.738-7.668 4.13a2.25 2.25 0 0 1-2.134-.001Z\"\n\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/admin/Settings/Connections/OpenAIConnection.svelte:77",
+        "app/src/lib/components/admin/Settings.svelte:387"
+      ]
+    },
+    {
+      "hash": "3574ce5fc2f4",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M6.955 1.45A.5.5 0 0 1 7.452 1h1.096a.5.5 0 0 1 .4",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\td=\"M6.955 1.45A.5.5 0 0 1 7.452 1h1.096a.5.5 0 0 1 .497.45l.17 1.699c.484.12.94.312 1.356.562l1.321-1.081a.5.5 0 0 1 .67.033l.774.775a.5.5 0 0 1 .034.67l-1.08 1.32c.25.417.44.873.561 1.357l1.699.17a.5.5 0 0 1 .45.497v1.096a.5.5 0 0 1-.45.497l-1.699.17c-.12.484-.312.94-.562 1.356l1.082 1.322a.5.5 0 0 1-.034.67l-.774.774a.5.5 0 0 1-.67.033l-1.322-1.08c-.416.25-.872.44-1.356.561l-.17 1.699a.5.5 0 0 1-.497.45H7.452a.5.5 0 0 1-.497-.45l-.17-1.699a4.973 4.973 0 0 1-1.356-.562L4.108 13.37a.5.5 0 0 1-.67-.033l-.774-.775a.5.5 0 0 1-.034-.67l1.08-1.32a4.971 4.971 0 0 1-.561-1.357l-1.699-.17A.5.5 0 0 1 1 8.548V7.452a.5.5 0 0 1 .45-.497l1.699-.17c.12-.484.312-.94.562-1.356L2.629 4.107a.5.5 0 0 1 .034-.67l.774-.774a.5.5 0 0 1 .67-.033L5.43 3.71a4.97 4.97 0 0 1 1.356-.561l.17-1.699ZM6 8c0 .538.212 1.026.558 1.385l.057.057a2 2 0 0 0 2.828-2.828l-.058-.056A2 2 0 0 0 6 8Z\"\n\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/admin/Settings.svelte:112",
+        "app/src/lib/components/admin/Users/Groups/EditGroupModal.svelte:160"
+      ]
+    },
+    {
+      "hash": "7767ebb5e652",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M8 1a3.5 3.5 0 0 0-3.5 3.5V7A1.5 1.5 0 0 0 3 8.5v5",
+      "pathCount": 1,
+      "innerContent": "<path fill-rule=\"evenodd\" d=\"M8 1a3.5 3.5 0 0 0-3.5 3.5V7A1.5 1.5 0 0 0 3 8.5v5A1.5 1.5 0 0 0 4.5 15h7a1.5 1.5 0 0 0 1.5-1.5v-5A1.5 1.5 0 0 0 11.5 7V4.5A3.5 3.5 0 0 0 8 1Zm2 6V4.5a2 2 0 1 0-4 0V7h4Z\" clip-rule=\"evenodd\" />",
+      "files": [
+        "app/src/lib/components/admin/Settings.svelte:137"
+      ]
+    },
+    {
+      "hash": "bdbf4383a7a8",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0ZM4.5 7.5a1.5 1.5",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\td=\"M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0ZM4.5 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3ZM7 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM9.5 5.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3ZM12 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z\"\n\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/admin/Settings.svelte:157"
+      ]
+    },
+    {
+      "hash": "8d3ad7981ee7",
+      "viewBox": "0 0 20 20",
+      "type": "fill",
+      "pathPreview": "M10 1c3.866 0 7 1.79 7 4s-3.134 4-7 4-7-1.79-7-4 3",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\td=\"M10 1c3.866 0 7 1.79 7 4s-3.134 4-7 4-7-1.79-7-4 3.134-4 7-4zm5.694 8.13c.464-.264.91-.583 1.306-.952V10c0 2.21-3.134 4-7 4s-7-1.79-7-4V8.178c.396.37.842.688 1.306.953C5.838 10.006 7.854 10.5 10 10.5s4.162-.494 5.694-1.37zM3 13.179V15c0 2.21 3.134 4 7 4s7-1.79 7-4v-1.822c-.396.37-.842.688-1.306.953-1.532.875-3.548 1.369-5.694 1.369s-4.162-.494-5.694-1.37A7.009 7.009 0 013 13.179z\"\n\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/admin/Settings.svelte:201"
+      ]
+    },
+    {
+      "hash": "e85efcc46769",
+      "viewBox": "0 0 24 24",
+      "type": "fill",
+      "pathPreview": "M11.625 16.5a1.875 1.875 0 1 0 0-3.75 1.875 1.875 ",
+      "pathCount": 3,
+      "innerContent": "<path d=\"M11.625 16.5a1.875 1.875 0 1 0 0-3.75 1.875 1.875 0 0 0 0 3.75Z\" />\n\t\t\t\t\t<path\n\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\td=\"M5.625 1.5H9a3.75 3.75 0 0 1 3.75 3.75v1.875c0 1.036.84 1.875 1.875 1.875H16.5a3.75 3.75 0 0 1 3.75 3.75v7.875c0 1.035-.84 1.875-1.875 1.875H5.625a1.875 1.875 0 0 1-1.875-1.875V3.375c0-1.036.84-1.875 1.875-1.875Zm6 16.5c.66 0 1.277-.19 1.797-.518l1.048 1.048a.75.75 0 0 0 1.06-1.06l-1.047-1.048A3.375 3.375 0 1 0 11.625 18Z\"\n\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t/>\n\t\t\t\t\t<path\n\t\t\t\t\t\td=\"M14.25 5.25a5.23 5.23 0 0 0-1.279-3.434 9.768 9.768 0 0 1 6.963 6.963A5.23 5.23 0 0 0 16.5 7.5h-1.875a.375.375 0 0 1-.375-.375V5.25Z\"\n\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/admin/Settings.svelte:262"
+      ]
+    },
+    {
+      "hash": "4741c51f0bdf",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M2 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\td=\"M2 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4Zm2.22 1.97a.75.75 0 0 0 0 1.06l.97.97-.97.97a.75.75 0 1 0 1.06 1.06l1.5-1.5a.75.75 0 0 0 0-1.06l-1.5-1.5a.75.75 0 0 0-1.06 0ZM8.75 8.5a.75.75 0 0 0 0 1.5h2.5a.75.75 0 0 0 0-1.5h-2.5Z\"\n\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/admin/Settings.svelte:290"
+      ]
+    },
+    {
+      "hash": "ac49ef38494b",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M2 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\td=\"M2 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4Zm10.5 5.707a.5.5 0 0 0-.146-.353l-1-1a.5.5 0 0 0-.708 0L9.354 9.646a.5.5 0 0 1-.708 0L6.354 7.354a.5.5 0 0 0-.708 0l-2 2a.5.5 0 0 0-.146.353V12a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5V9.707ZM12 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z\"\n\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/admin/Settings.svelte:363"
+      ]
+    },
+    {
+      "hash": "9678c1de478b",
+      "viewBox": "0 0 495 390",
+      "type": "fill",
+      "pathPreview": "M495,237.199v-30H383.75v-86.075c24.992,31.105,63.3",
+      "pathCount": 1,
+      "innerContent": "<path d=\"M495,237.199v-30H383.75v-86.075c24.992,31.105,63.335,51.048,106.25,51.048v-30c-58.586,0-106.25-47.664-106.25-106.25h-30c0,58.586-47.664,106.25-106.25,106.25S141.25,94.509,141.25,35.923h-30c0,58.586-47.664,106.25-106.25,106.25v30c42.915,0,81.258-19.943,106.25-51.048v86.075H0v30h111.25v100.101c-10.643,2.41-17.7,7.139-23.697,11.178c-6.839,4.607-11.356,7.651-21.931,7.651c-10.574,0-15.092-3.043-21.93-7.651C35.247,342.79,24.737,335.708,5,335.708v30c10.574,0,15.092,3.043,21.93,7.651c8.445,5.689,18.955,12.771,38.692,12.771s30.248-7.081,38.693-12.771c6.839-4.607,11.357-7.651,21.932-7.651s15.092,3.044,21.931,7.651c8.445,5.689,18.955,12.771,38.692,12.771s30.247-7.081,38.692-12.771c6.838-4.607,11.355-7.651,21.929-7.651c10.575,0,15.093,3.044,21.932,7.651c8.445,5.689,18.956,12.771,38.693,12.771c19.738,0,30.249-7.081,38.694-12.771c6.839-4.607,11.357-7.651,21.932-7.651c10.576,0,15.095,3.044,21.934,7.651c8.445,5.689,18.957,12.77,38.695,12.77s30.25-7.081,38.695-12.77c6.839-4.607,11.358-7.651,21.934-7.651v-30c-19.738,0-30.25,7.081-38.695,12.77c-6.839,4.607-11.358,7.651-21.934,7.651s-15.095-3.044-21.934-7.651c-5.995-4.039-13.049-8.765-23.687-11.176V237.199H495z M353.75,121.125v86.075H262.5v-35.852C299.285,167.3,331.71,148.555,353.75,121.125z M141.25,121.125c22.04,27.431,54.465,46.176,91.25,50.222v35.852h-91.25V121.125z M353.75,337.3c-10.646,2.409-17.704,7.139-23.702,11.179c-6.839,4.607-11.357,7.651-21.932,7.651c-10.575,0-15.092-3.043-21.931-7.651c-8.445-5.689-18.956-12.771-38.693-12.771c-19.737,0-30.247,7.081-38.692,12.771c-6.838,4.607-11.355,7.651-21.93,7.651s-15.092-3.043-21.93-7.651c-5.995-4.039-13.051-8.767-23.69-11.177V237.199h212.5V337.3z\" />",
+      "files": [
+        "app/src/lib/components/admin/Settings.svelte:415"
+      ]
+    },
+    {
+      "hash": "161253947807",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M8 7c3.314 0 6-1.343 6-3s-2.686-3-6-3-6 1.343-6 3 ",
+      "pathCount": 3,
+      "innerContent": "<path d=\"M8 7c3.314 0 6-1.343 6-3s-2.686-3-6-3-6 1.343-6 3 2.686 3 6 3Z\" />\n\t\t\t\t\t<path\n\t\t\t\t\t\td=\"M8 8.5c1.84 0 3.579-.37 4.914-1.037A6.33 6.33 0 0 0 14 6.78V8c0 1.657-2.686 3-6 3S2 9.657 2 8V6.78c.346.273.72.5 1.087.683C4.42 8.131 6.16 8.5 8 8.5Z\"\n\t\t\t\t\t/>\n\t\t\t\t\t<path\n\t\t\t\t\t\td=\"M8 12.5c1.84 0 3.579-.37 4.914-1.037.366-.183.74-.41 1.086-.684V12c0 1.657-2.686 3-6 3s-6-1.343-6-3v-1.22c.346.273.72.5 1.087.683C4.42 12.131 6.16 12.5 8 12.5Z\"\n\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/admin/Settings.svelte:435"
+      ]
+    },
+    {
+      "hash": "c5cebf8637b4",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M4 2a1.5 1.5 0 0 0-1.5 1.5v9A1.5 1.5 0 0 0 4 14h8a",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\td=\"M4 2a1.5 1.5 0 0 0-1.5 1.5v9A1.5 1.5 0 0 0 4 14h8a1.5 1.5 0 0 0 1.5-1.5V6.621a1.5 1.5 0 0 0-.44-1.06L9.94 2.439A1.5 1.5 0 0 0 8.878 2H4Zm6 5.75a.75.75 0 0 1 1.5 0v3.5a.75.75 0 0 1-1.5 0v-3.5Zm-2.75 1.5a.75.75 0 0 1 1.5 0v2a.75.75 0 0 1-1.5 0v-2Zm-2 .75a.75.75 0 0 0-.75.75v.5a.75.75 0 0 0 1.5 0v-.5a.75.75 0 0 0-.75-.75Z\"\n\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/admin/Evaluations.svelte:74"
+      ]
+    },
+    {
+      "hash": "b78376d79361",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M5.25 2A2.25 2.25 0 0 0 3 4.25v9a.75.75 0 0 0 1.18",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\t\td=\"M5.25 2A2.25 2.25 0 0 0 3 4.25v9a.75.75 0 0 0 1.183.613l1.692-1.195 1.692 1.195a.75.75 0 0 0 .866 0l1.692-1.195 1.693 1.195A.75.75 0 0 0 13 13.25v-9A2.25 2.25 0 0 0 10.75 2h-5.5Zm3.03 3.28a.75.75 0 0 0-1.06-1.06L4.97 6.47a.75.75 0 0 0 0 1.06l2.25 2.25a.75.75 0 0 0 1.06-1.06l-.97-.97h1.315c.76 0 1.375.616 1.375 1.375a.75.75 0 0 0 1.5 0A2.875 2.875 0 0 0 8.625 6.25H7.311l.97-.97Z\"\n\t\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/admin/Evaluations.svelte:102"
+      ]
+    },
+    {
+      "hash": "48622a6db120",
+      "viewBox": "0 0 20 20",
+      "type": "fill",
+      "pathPreview": "M10 9a3 3 0 100-6 3 3 0 000 6zM6 8a2 2 0 11-4 0 2 ",
+      "pathCount": 1,
+      "innerContent": "<path d=\"M10 9a3 3 0 100-6 3 3 0 000 6zM6 8a2 2 0 11-4 0 2 2 0 014 0zM1.49 15.326a.78.78 0 01-.358-.442 3 3 0 014.308-3.516 6.484 6.484 0 00-1.905 3.959c-.023.222-.014.442.025.654a4.97 4.97 0 01-2.07-.655zM16.44 15.98a4.97 4.97 0 002.07-.654.78.78 0 00.357-.442 3 3 0 00-4.308-3.517 6.484 6.484 0 011.907 3.96 2.32 2.32 0 01-.026.654zM18 8a2 2 0 11-4 0 2 2 0 014 0zM5.304 16.19a.844.844 0 01-.277-.71 5 5 0 019.947 0 .843.843 0 01-.277.71A6.975 6.975 0 0110 18a6.974 6.974 0 01-4.696-1.81z\" />",
+      "files": [
+        "app/src/lib/components/channel/Navbar.svelte:142"
+      ]
+    },
+    {
+      "hash": "24b0d8ed857e",
+      "viewBox": "0 0 20 20",
+      "type": "fill",
+      "pathPreview": "M7 8a3 3 0 100-6 3 3 0 000 6zM14.5 9a2.5 2.5 0 100",
+      "pathCount": 1,
+      "innerContent": "<path d=\"M7 8a3 3 0 100-6 3 3 0 000 6zM14.5 9a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM1.615 16.428a1.224 1.224 0 01-.569-1.175 6.002 6.002 0 0111.908 0c.058.467-.172.92-.57 1.174A9.953 9.953 0 017 18a9.953 9.953 0 01-5.385-1.572zM14.5 16h-.106c.07-.297.088-.611.048-.933a7.47 7.47 0 00-1.588-3.755 4.502 4.502 0 015.874 2.636.818.818 0 01-.36.98A7.465 7.465 0 0114.5 16z\" />",
+      "files": [
+        "app/src/lib/components/channel/Navbar.svelte:156"
+      ]
+    },
+    {
+      "hash": "1c06de67c8a3",
+      "viewBox": "0 0 20 20",
+      "type": "fill",
+      "pathPreview": "M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.",
+      "pathCount": 1,
+      "innerContent": "<path fill-rule=\"evenodd\" d=\"M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z\" clip-rule=\"evenodd\" />",
+      "files": [
+        "app/src/lib/components/channel/Navbar.svelte:171"
+      ]
+    },
+    {
+      "hash": "a61bff155cd8",
+      "viewBox": "0 0 20 20",
+      "type": "fill",
+      "pathPreview": "M10.75 2.75a.75.75 0 0 0-1.5 0v8.614L6.295 8.235a.",
+      "pathCount": 2,
+      "innerContent": "<path\n\t\t\t\t\t\t\td=\"M10.75 2.75a.75.75 0 0 0-1.5 0v8.614L6.295 8.235a.75.75 0 1 0-1.09 1.03l4.25 4.5a.75.75 0 0 0 1.09 0l4.25-4.5a.75.75 0 0 0-1.09-1.03l-2.955 3.129V2.75Z\"\n\t\t\t\t\t\t/>\n\t\t\t\t\t\t<path\n\t\t\t\t\t\t\td=\"M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z\"\n\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/common/ImagePreview.svelte:164"
+      ]
+    },
+    {
+      "hash": "99c4751efb7f",
+      "viewBox": "0 0 24 24",
+      "type": "fill",
+      "pathPreview": "M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1",
+      "pathCount": 2,
+      "innerContent": "<path\n\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\td=\"M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625ZM7.5 15a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 7.5 15Zm.75 2.25a.75.75 0 0 0 0 1.5H12a.75.75 0 0 0 0-1.5H8.25Z\"\n\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t/>\n\t\t\t\t\t<path\n\t\t\t\t\t\td=\"M12.971 1.816A5.23 5.23 0 0 1 14.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 0 1 3.434 1.279 9.768 9.768 0 0 0-6.963-6.963Z\"\n\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/common/FileItem.svelte:72"
+      ]
+    },
+    {
+      "hash": "c04d6db9ea54",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M3.28 2.22a.75.75 0 0 0-1.06 1.06l10.5 10.5a.75.75",
+      "pathCount": 2,
+      "innerContent": "<path\n\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\td=\"M3.28 2.22a.75.75 0 0 0-1.06 1.06l10.5 10.5a.75.75 0 1 0 1.06-1.06l-1.322-1.323a7.012 7.012 0 0 0 2.16-3.11.87.87 0 0 0 0-.567A7.003 7.003 0 0 0 4.82 3.76l-1.54-1.54Zm3.196 3.195 1.135 1.136A1.502 1.502 0 0 1 9.45 8.389l1.136 1.135a3 3 0 0 0-4.109-4.109Z\"\n\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t/>\n\t\t\t\t<path\n\t\t\t\t\td=\"m7.812 10.994 1.816 1.816A7.003 7.003 0 0 1 1.38 8.28a.87.87 0 0 1 0-.566 6.985 6.985 0 0 1 1.113-2.039l2.513 2.513a3 3 0 0 0 2.806 2.806Z\"\n\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/common/SensitiveInput.svelte:42"
+      ]
+    },
+    {
+      "hash": "d1792f69f780",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z",
+      "pathCount": 2,
+      "innerContent": "<path d=\"M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z\" />\n\t\t\t\t<path\n\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\td=\"M1.38 8.28a.87.87 0 0 1 0-.566 7.003 7.003 0 0 1 13.238.006.87.87 0 0 1 0 .566A7.003 7.003 0 0 1 1.379 8.28ZM11 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z\"\n\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/common/SensitiveInput.svelte:59"
+      ]
+    },
+    {
+      "hash": "99fadf620e70",
+      "viewBox": "0 0 16 16",
+      "type": "fill",
+      "pathPreview": "M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\tfill-rule=\"evenodd\"\n\t\t\t\t\t\td=\"M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z\"\n\t\t\t\t\t\tclip-rule=\"evenodd\"\n\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/common/Tags/TagInput.svelte:48"
+      ]
+    },
+    {
+      "hash": "d09c68c8896f",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "m5 12 4.7 4.5 9.3-9",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\tstroke=\"currentColor\"\n\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\tstroke-width=\"3\"\n\t\t\t\t\td=\"m5 12 4.7 4.5 9.3-9\"\n\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/common/Checkbox.svelte:40"
+      ]
+    },
+    {
+      "hash": "e33b2fe0734c",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M5 12h14",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\tstroke=\"currentColor\"\n\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\tstroke-width=\"3\"\n\t\t\t\t\td=\"M5 12h14\"\n\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/common/Checkbox.svelte:56"
+      ]
+    },
+    {
+      "hash": "9e3d9082de9a",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\td=\"M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z\"\n\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/lib/components/notes/NoteEditor/Chat/Message.svelte:62"
+      ]
+    },
+    {
+      "hash": "2ffd44f9aaba",
+      "viewBox": "0 0 24 24",
+      "type": "fill",
+      "pathPreview": "M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 ",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\t\t\tfill=\"currentColor\"\n\t\t\t\t\t\t\t\t\t\t\t\t\td=\"M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.92 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57C20.565 21.795 24 17.31 24 12c0-6.63-5.37-12-12-12z\"\n\t\t\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/routes/auth/+page.svelte:771"
+      ]
+    },
+    {
+      "hash": "d530bfb48720",
+      "viewBox": "0 0 24 24",
+      "type": "stroke",
+      "pathPreview": "M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.91",
+      "pathCount": 1,
+      "innerContent": "<path\n\t\t\t\t\t\t\t\t\t\t\t\t\tstroke-linecap=\"round\"\n\t\t\t\t\t\t\t\t\t\t\t\t\tstroke-linejoin=\"round\"\n\t\t\t\t\t\t\t\t\t\t\t\t\td=\"M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z\"\n\t\t\t\t\t\t\t\t\t\t\t\t/>",
+      "files": [
+        "app/src/routes/auth/+page.svelte:791"
+      ]
+    }
+  ]
+}

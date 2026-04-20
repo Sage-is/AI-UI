@@ -15,15 +15,11 @@
 	} from '$lib/apis/prompts';
 
 	import PromptMenu from './Prompts/PromptMenu.svelte';
-	import EllipsisHorizontal from '../icons/EllipsisHorizontal.svelte';
 	import DeleteConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
-	import Search from '../icons/Search.svelte';
-	import Plus from '../icons/Plus.svelte';
-	import ChevronRight from '../icons/ChevronRight.svelte';
 	import Spinner from '../common/Spinner.svelte';
 	import Tooltip from '../common/Tooltip.svelte';
 	import { capitalizeFirstLetter, slugify } from '$lib/utils';
-	import XMark from '../icons/XMark.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const i18n = getContext('i18n');
 	let promptsImportInputElement: HTMLInputElement;
@@ -140,13 +136,13 @@
 					style="--px:0.5rem; --py:0.5rem; --radius:0.6rem; --hvr-bgc:rgb(78 78 78 / 0.1); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.8rem; --d:flex; --ai:center; --g:0.2rem"
 					href="/workshop/prompts/create"
 				>
-					<Plus className="size-3.5" />
+					<Icon name="plus" className="size-3.5" />
 				</a>
 			</div>
 
 			<div style="--d:flex; --fx:1 1 0%">
 				<div style="--as:center; --ml:0.2rem; --mr:0.6rem">
-					<Search className="size-3.5" />
+					<Icon name="search" className="size-3.5" />
 				</div>
 				<input
 					style="--w:100%; --size:0.8rem; --pr:1rem; --py:0.2rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
@@ -162,7 +158,7 @@
 								query = '';
 							}}
 						>
-							<XMark className="size-3" strokeWidth="2" />
+							<Icon name="x-mark" className="size-3" strokeWidth="2" />
 						</button>
 					</div>
 				{/if}
@@ -207,20 +203,7 @@
 						type="button"
 						href={`/workshop/prompts/edit?command=${encodeURIComponent(prompt.command)}`}
 					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke-width="1.5"
-							stroke="currentColor"
-							style="--w:1rem; --h:1rem"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"
-							/>
-						</svg>
+						<Icon name="pencil" className="size-4" />
 					</a>
 
 					<PromptMenu
@@ -243,7 +226,7 @@
 							style="--as:center; --w:fit-content; --size:0.8rem; --p:0.4rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 							type="button"
 						>
-							<EllipsisHorizontal className="size-5" />
+							<Icon name="ellipsis-horizontal" className="size-5" />
 						</button>
 					</PromptMenu>
 				</div>
@@ -301,18 +284,7 @@
 					<div style="--as:center; --mr:0.5rem; --weight:500; --line-clamp:1">{$i18n.t('Import Prompts')}</div>
 
 					<div style="--as:center">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 16 16"
-							fill="currentColor"
-							style="--w:1rem; --h:1rem"
-						>
-							<path
-								fill-rule="evenodd"
-								d="M4 2a1.5 1.5 0 0 0-1.5 1.5v9A1.5 1.5 0 0 0 4 14h8a1.5 1.5 0 0 0 1.5-1.5V6.621a1.5 1.5 0 0 0-.44-1.06L9.94 2.439A1.5 1.5 0 0 0 8.878 2H4Zm4 9.5a.75.75 0 0 1-.75-.75V8.06l-.72.72a.75.75 0 0 1-1.06-1.06l2-2a.75.75 0 0 1 1.06 0l2 2a.75.75 0 1 1-1.06 1.06l-.72-.72v2.69a.75.75 0 0 1-.75.75Z"
-								clip-rule="evenodd"
-							/>
-						</svg>
+						<Icon name="clipboard-import" className="size-4" />
 					</div>
 				</button>
 
@@ -331,18 +303,7 @@
 						</div>
 
 						<div style="--as:center">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 16 16"
-								fill="currentColor"
-								style="--w:1rem; --h:1rem"
-							>
-								<path
-									fill-rule="evenodd"
-									d="M4 2a1.5 1.5 0 0 0-1.5 1.5v9A1.5 1.5 0 0 0 4 14h8a1.5 1.5 0 0 0 1.5-1.5V6.621a1.5 1.5 0 0 0-.44-1.06L9.94 2.439A1.5 1.5 0 0 0 8.878 2H4Zm4 3.5a.75.75 0 0 1 .75.75v2.69l.72-.72a.75.75 0 1 1 1.06 1.06l-2 2a.75.75 0 0 1-1.06 0l-2-2a.75.75 0 0 1 1.06-1.06l.72.72V6.25A.75.75 0 0 1 8 5.5Z"
-									clip-rule="evenodd"
-								/>
-							</svg>
+							<Icon name="clipboard-import-331f" className="size-4" />
 						</div>
 					</button>
 				{/if}
@@ -370,7 +331,7 @@
 
 				<div>
 					<div>
-						<ChevronRight />
+						<Icon name="chevron-right" />
 					</div>
 				</div>
 			</a>

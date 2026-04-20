@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	const dispatch = createEventDispatcher();
 
 	export let state = 'unchecked';
@@ -37,37 +38,9 @@
 >
 	<div style="--top:0; --left:0; --pos:absolute; --w:100%; --h:100%; --d:flex; --jc:center; --ai:center">
 		{#if _state === 'checked'}
-			<svg
-				style="--w:0.6rem; --h:0.6rem"
-				aria-hidden="true"
-				xmlns="http://www.w3.org/2000/svg"
-				fill="none"
-				viewBox="0 0 24 24"
-			>
-				<path
-					stroke="currentColor"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-width="3"
-					d="m5 12 4.7 4.5 9.3-9"
-				/>
-			</svg>
+			<Icon name="checkbox-check" className="size-[0.6rem]" />
 		{:else if indeterminate}
-			<svg
-				style="--w:0.6rem; --h:0.8rem; --c:var(--color-gray-800); --dark-c:#fff"
-				aria-hidden="true"
-				xmlns="http://www.w3.org/2000/svg"
-				fill="none"
-				viewBox="0 0 24 24"
-			>
-				<path
-					stroke="currentColor"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-width="3"
-					d="M5 12h14"
-				/>
-			</svg>
+			<Icon name="minus" className="size-[0.6rem]" />
 		{/if}
 	</div>
 

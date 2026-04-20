@@ -33,6 +33,7 @@
 	import Mentions from './MessageInput/Mentions.svelte';
 	import InputVariablesModal from '../chat/MessageInput/InputVariablesModal.svelte';
 	import IndicatorStack from './IndicatorStack.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	export let placeholder = $i18n.t('Send a Message');
 	export let transparentBackground = false;
@@ -578,18 +579,7 @@
 									scrollToBottom();
 								}}
 							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 20 20"
-									fill="currentColor"
-									style="--w:1.2rem; --h:1.2rem"
-								>
-									<path
-										fill-rule="evenodd"
-										d="M10 3a.75.75 0 01.75.75v10.638l3.96-4.158a.75.75 0 111.08 1.04l-5.25 5.5a.75.75 0 01-1.08 0l-5.25-5.5a.75.75 0 111.08-1.04l3.96 4.158V3.75A.75.75 0 0110 3z"
-										clip-rule="evenodd"
-									/>
-								</svg>
+								<Icon name="arrow-down-fill-20" className="size-[1.2rem]" />
 							</button>
 						</div>
 					{/if}
@@ -693,16 +683,7 @@
 														files = files;
 													}}
 												>
-													<svg
-														xmlns="http://www.w3.org/2000/svg"
-														viewBox="0 0 20 20"
-														fill="currentColor"
-														style="--w:1rem; --h:1rem"
-													>
-														<path
-															d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"
-														/>
-													</svg>
+													<Icon name="x-mark" className="size-4" />
 												</button>
 											</div>
 										</div>
@@ -884,16 +865,7 @@
 												type="button"
 												aria-label="More"
 											>
-												<svg
-													xmlns="http://www.w3.org/2000/svg"
-													viewBox="0 0 20 20"
-													fill="currentColor"
-													style="--w:1.2rem; --h:1.2rem"
-												>
-													<path
-														d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"
-													/>
-												</svg>
+												<Icon name="plus-fill-20-51dd" className="size-[1.2rem]" />
 											</button>
 										</InputMenu>
 									{/if}
@@ -932,17 +904,7 @@
 											}}
 											aria-label="Voice Input"
 										>
-											<svg
-												xmlns="http://www.w3.org/2000/svg"
-												viewBox="0 0 20 20"
-												fill="currentColor"
-												style="--w:1.2rem; --h:1.2rem; --translatey:0.5px"
-											>
-												<path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z" />
-												<path
-													d="M5.5 9.643a.75.75 0 00-1.5 0V10c0 3.06 2.29 5.585 5.25 5.954V17.5h-1.5a.75.75 0 000 1.5h4.5a.75.75 0 000-1.5h-1.5v-1.546A6.001 6.001 0 0016 10v-.357a.75.75 0 00-1.5 0V10a4.5 4.5 0 01-9 0v-.357z"
-												/>
-											</svg>
+											<Icon name="mic-fill-20" className="size-[1.2rem]" />
 										</button>
 									</Tooltip>
 								{/if}
@@ -957,18 +919,7 @@
 														onStop();
 													}}
 												>
-													<svg
-														xmlns="http://www.w3.org/2000/svg"
-														viewBox="0 0 24 24"
-														fill="currentColor"
-														style="--w:1.2rem; --h:1.2rem"
-													>
-														<path
-															fill-rule="evenodd"
-															d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm6-2.438c0-.724.588-1.312 1.313-1.312h4.874c.725 0 1.313.588 1.313 1.313v4.874c0 .725-.588 1.313-1.313 1.313H9.564a1.312 1.312 0 01-1.313-1.313V9.564z"
-															clip-rule="evenodd"
-														/>
-													</svg>
+													<Icon name="stop-circle-fill" className="size-[1.2rem]" />
 												</button>
 											</Tooltip>
 										</div>
@@ -984,18 +935,7 @@
 													type="submit"
 													disabled={content === '' && files.length === 0}
 												>
-													<svg
-														xmlns="http://www.w3.org/2000/svg"
-														viewBox="0 0 16 16"
-														fill="currentColor"
-														style="--w:1.2rem; --h:1.2rem"
-													>
-														<path
-															fill-rule="evenodd"
-															d="M8 14a.75.75 0 0 1-.75-.75V4.56L4.03 7.78a.75.75 0 0 1-1.06-1.06l4.5-4.5a.75.75 0 0 1 1.06 0l4.5 4.5a.75.75 0 0 1-1.06 1.06L8.75 4.56v8.69A.75.75 0 0 1 8 14Z"
-															clip-rule="evenodd"
-														/>
-													</svg>
+													<Icon name="send-up-fill-16" className="size-[1.2rem]" />
 												</button>
 											</Tooltip>
 										</div>

@@ -11,8 +11,8 @@
 	import CallOverlay from './MessageInput/CallOverlay.svelte';
 	import Drawer from '../common/Drawer.svelte';
 	import Overview from './Overview.svelte';
-	import EllipsisVertical from '../icons/EllipsisVertical.svelte';
 	import Artifacts from './Artifacts.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	export let history;
 	export let models = [];
@@ -198,7 +198,7 @@
 	class="bg-background group">
 				<div style="--z:10; --d:flex; --h:1.75rem; --w:1.2rem; --ai:center; --jc:center"
 	class="rounded-xs">
-					<EllipsisVertical className="size-4 invisible group-hover:visible" />
+					<Icon name="ellipsis-vertical" className="size-4 invisible group-hover:visible" />
 				</div>
 			</PaneResizer>
 		{/if}

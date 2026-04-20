@@ -63,11 +63,6 @@ export default defineConfig({
 				target: 'http://localhost:8080',
 				changeOrigin: true
 			},
-			'/sprites': {  // Proxy the sprites folder
-				target: 'http://localhost:8080',
-				changeOrigin: true,
-				rewrite: (path) => '/static' + path
-			},
 			'/uploads': {  // Proxy the uploads folder
 				target: 'http://localhost:8080',
 				changeOrigin: true

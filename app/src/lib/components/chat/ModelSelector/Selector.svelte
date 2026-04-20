@@ -626,23 +626,7 @@
 										cancelModelPullHandler(model);
 									}}
 								>
-									<svg
-										style="--w:1rem; --h:1rem; --c:var(--color-gray-800); --dark-c:#fff"
-										aria-hidden="true"
-										xmlns="http://www.w3.org/2000/svg"
-										width="24"
-										height="24"
-										fill="currentColor"
-										viewBox="0 0 24 24"
-									>
-										<path
-											stroke="currentColor"
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											stroke-width="2"
-											d="M6 18 17.94 6M18 18 6.06 6"
-										/>
-									</svg>
+									<Icon name="xmark-mixed-24" className="size-4" />
 								</button>
 							</Tooltip>
 						</div>

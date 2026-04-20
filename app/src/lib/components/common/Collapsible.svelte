@@ -32,12 +32,11 @@
 	import { slide } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 
-	import ChevronUp from '../icons/ChevronUp.svelte';
-	import ChevronDown from '../icons/ChevronDown.svelte';
 	import Spinner from './Spinner.svelte';
 	import CodeBlock from '../chat/Messages/CodeBlock.svelte';
 	import Markdown from '../chat/Messages/Markdown.svelte';
 	import Image from './Image.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	export let open = false;
 
@@ -156,9 +155,9 @@
 
 				<div style="--d:flex; --as:center; --translatey:1px">
 					{#if open}
-						<ChevronUp strokeWidth="3.5" className="size-3.5" />
+						<Icon name="chevron-up" strokeWidth="3.5" className="size-3.5" />
 					{:else}
-						<ChevronDown strokeWidth="3.5" className="size-3.5" />
+						<Icon name="chevron-down" strokeWidth="3.5" className="size-3.5" />
 					{/if}
 				</div>
 			</div>
@@ -182,9 +181,9 @@
 					{#if chevron}
 						<div style="--d:flex; --as:flex-start; --translatey:0.2rem">
 							{#if open}
-								<ChevronUp strokeWidth="3.5" className="size-3.5" />
+								<Icon name="chevron-up" strokeWidth="3.5" className="size-3.5" />
 							{:else}
-								<ChevronDown strokeWidth="3.5" className="size-3.5" />
+								<Icon name="chevron-down" strokeWidth="3.5" className="size-3.5" />
 							{/if}
 						</div>
 					{/if}

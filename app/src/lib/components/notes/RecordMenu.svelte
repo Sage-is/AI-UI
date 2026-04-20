@@ -4,11 +4,8 @@
 
 	import { showSettings, mobile, showSidebar, user } from '$lib/stores';
 	import { fade, slide } from 'svelte/transition';
+	import Icon from '$lib/components/Icon.svelte';
 
-	import Mic from '../icons/Mic.svelte';
-	import CursorArrowRays from '../icons/CursorArrowRays.svelte';
-	import DocumentArrowUp from '../icons/DocumentArrowUp.svelte';
-	import CloudArrowUp from '../icons/CloudArrowUp.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -49,7 +46,7 @@
 				}}
 			>
 				<div style="--as:center; --mr:0.5rem">
-					<Mic className="size-4" strokeWidth="2" />
+					<Icon name="mic" className="size-4" strokeWidth="2" />
 				</div>
 				<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">{$i18n.t('Record')}</div>
 			</button>
@@ -62,7 +59,7 @@
 				}}
 			>
 				<div style="--as:center; --mr:0.5rem">
-					<CursorArrowRays className="size-4" strokeWidth="2" />
+					<Icon name="cursor-arrow-rays" className="size-4" strokeWidth="2" />
 				</div>
 				<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">{$i18n.t('Capture Audio')}</div>
 			</button>
@@ -75,7 +72,7 @@
 				}}
 			>
 				<div style="--as:center; --mr:0.5rem">
-					<CloudArrowUp className="size-4" strokeWidth="2" />
+					<Icon name="cloud-arrow-up" className="size-4" strokeWidth="2" />
 				</div>
 				<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">{$i18n.t('Upload Audio')}</div>
 			</button>
