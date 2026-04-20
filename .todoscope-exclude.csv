@@ -5,3 +5,4 @@ app/cypress,End-to-end test runner fixtures and snapshots
 app/static,Compiled and vendored static assets
 docs,Archived planning docs — not active work
 tools/tw2startr,Vendored tooling — not part of this project's TODOs
+app/.svelte-kit,Generated SvelteKit build output — not source
