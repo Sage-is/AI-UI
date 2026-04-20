@@ -3,6 +3,7 @@
 	const i18n = getContext('i18n');
 
 	import Switch from '$lib/components/common/Switch.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	// Default values for permissions
 	const defaultPermissions = {
@@ -96,7 +97,7 @@
 													model_ids = model_ids.filter((_, idx) => idx !== modelIdx);
 												}}
 											>
-												<Minus strokeWidth="2" className="size-3.5" />
+												<Icon name="minus" strokeWidth="2" className="size-3.5" />
 											</button>
 										</div>
 									</div>
@@ -135,7 +136,7 @@
 								}
 							}}
 						>
-							<Plus className="size-3.5" strokeWidth="2" />
+							<Icon name="plus" className="size-3.5" strokeWidth="2" />
 						</button>
 					</div>
 				</div>

@@ -21,12 +21,8 @@
 	import Menu from './Navbar/Menu.svelte';
 	import { page } from '$app/stores';
 	import UserMenu from './Sidebar/UserMenu.svelte';
-	import MenuLines from '../icons/MenuLines.svelte';
-	import AdjustmentsHorizontal from '../icons/AdjustmentsHorizontal.svelte';
-	import Map from '../icons/Map.svelte';
 	import { stringify } from 'postcss';
-	import PencilSquare from '../icons/PencilSquare.svelte';
-	import Plus from '../icons/Plus.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -67,7 +63,7 @@
 					aria-label="Toggle Sidebar"
 				>
 					<div style="--m:auto; --as:center">
-						<MenuLines />
+						<Icon name="menu-lines" />
 					</div>
 				</button>
 			</div>
@@ -99,20 +95,7 @@
 							id="chat-context-menu-button"
 						>
 							<div style="--m:auto; --as:center">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke-width="1.5"
-									stroke="currentColor"
-									style="--w:1.2rem; --h:1.2rem"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
-									/>
-								</svg>
+								<Icon name="ellipsis-horizontal" className="size-[1.2rem]" />
 							</div>
 						</button>
 					</Menu>
@@ -126,7 +109,7 @@
 							aria-label="Controls"
 						>
 							<div style="--m:auto; --as:center">
-								<AdjustmentsHorizontal className=" size-5" strokeWidth="0.5" />
+								<Icon name="adjustments-horizontal" className=" size-5" strokeWidth="0.5" />
 							</div>
 						</button>
 					</Tooltip>
@@ -142,7 +125,7 @@
 							aria-label="Controls"
 						>
 							<div style="--m:auto; --as:center">
-								<AdjustmentsHorizontal className=" size-5" strokeWidth="0.5" />
+								<Icon name="adjustments-horizontal" className=" size-5" strokeWidth="0.5" />
 							</div>
 						</button>
 					</Tooltip>
@@ -161,7 +144,7 @@
 						aria-label="New Chat"
 					>
 						<div style="--m:auto; --as:center">
-							<PencilSquare className=" size-5" strokeWidth="2" />
+							<Icon name="pencil-square" className=" size-5" strokeWidth="2" />
 						</div>
 					</button>
 				</Tooltip>

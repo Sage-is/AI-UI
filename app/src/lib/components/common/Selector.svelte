@@ -4,9 +4,7 @@
 	import { flyAndScale } from '$lib/utils/transitions';
 
 	import { createEventDispatcher } from 'svelte';
-	import ChevronDown from '../icons/ChevronDown.svelte';
-	import Check from '../icons/Check.svelte';
-	import Search from '../icons/Search.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -46,7 +44,7 @@
 	class="h-input placeholder-gray-400 focus:outline-hidden"
 			{placeholder}
 		/>
-		<ChevronDown className="absolute end-2 top-1/2 -translate-y-[45%] size-3.5" strokeWidth="2.5" />
+		<Icon name="chevron-down" className="absolute end-2 top-1/2 -translate-y-[45%] size-3.5" strokeWidth="2.5" />
 	</Select.Trigger>
 	<Select.Content
 		style="--w:100%; --radius:0.5rem; --bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-c:#fff; --shadow:4;  --bc:rgb(205 205 205 / 0.3); --dark-bc:rgb(78 78 78 / 0.4); --oe:none"
@@ -56,7 +54,7 @@
 		<slot>
 			{#if searchEnabled}
 				<div style="--d:flex; --ai:center; --g:0.625rem; --px:1.2rem; --mt:0.8rem; --mb:0.6rem">
-					<Search className="size-4" strokeWidth="2.5" />
+					<Icon name="search" className="size-4" strokeWidth="2.5" />
 
 					<input
 						bind:value={searchValue}
@@ -80,7 +78,7 @@
 
 						{#if value === item.value}
 							<div style="--ml:auto">
-								<Check />
+								<Icon name="check" />
 							</div>
 						{/if}
 					</Select.Item>

@@ -12,9 +12,8 @@
 	import SpaceAgentsModal from './SpaceAgentsModal.svelte';
 	import SpaceMembersModal from './SpaceMembersModal.svelte';
 	import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
-	import MenuLines from '../icons/MenuLines.svelte';
-	import EllipsisVertical from '../icons/EllipsisVertical.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -78,7 +77,7 @@
 					aria-label="Toggle Sidebar"
 				>
 					<div style="--m:auto; --as:center">
-						<MenuLines />
+						<Icon name="menu-lines" />
 					</div>
 				</button>
 			</div>
@@ -122,7 +121,7 @@
 								style="--d:flex; --radius:0.6rem; --p:0.4rem; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 								aria-label="Space Menu"
 							>
-								<EllipsisVertical className="size-4" />
+								<Icon name="ellipsis-vertical" className="size-4" />
 							</button>
 						</DropdownMenu.Trigger>
 
@@ -140,9 +139,7 @@
 									showAgentsModal = true;
 								}}
 							>
-								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="--w:1rem; --h:1rem">
-									<path d="M10 9a3 3 0 100-6 3 3 0 000 6zM6 8a2 2 0 11-4 0 2 2 0 014 0zM1.49 15.326a.78.78 0 01-.358-.442 3 3 0 014.308-3.516 6.484 6.484 0 00-1.905 3.959c-.023.222-.014.442.025.654a4.97 4.97 0 01-2.07-.655zM16.44 15.98a4.97 4.97 0 002.07-.654.78.78 0 00.357-.442 3 3 0 00-4.308-3.517 6.484 6.484 0 011.907 3.96 2.32 2.32 0 01-.026.654zM18 8a2 2 0 11-4 0 2 2 0 014 0zM5.304 16.19a.844.844 0 01-.277-.71 5 5 0 019.947 0 .843.843 0 01-.277.71A6.975 6.975 0 0110 18a6.974 6.974 0 01-4.696-1.81z" />
-								</svg>
+								<Icon name="users-fill-20" className="size-4" />
 								{$i18n.t('Manage Agents')}
 							</DropdownMenu.Item>
 
@@ -154,9 +151,7 @@
 									showMembersModal = true;
 								}}
 							>
-								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="--w:1rem; --h:1rem">
-									<path d="M7 8a3 3 0 100-6 3 3 0 000 6zM14.5 9a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM1.615 16.428a1.224 1.224 0 01-.569-1.175 6.002 6.002 0 0111.908 0c.058.467-.172.92-.57 1.174A9.953 9.953 0 017 18a9.953 9.953 0 01-5.385-1.572zM14.5 16h-.106c.07-.297.088-.611.048-.933a7.47 7.47 0 00-1.588-3.755 4.502 4.502 0 015.874 2.636.818.818 0 01-.36.98A7.465 7.465 0 0114.5 16z" />
-								</svg>
+								<Icon name="user-group-fill-20" className="size-4" />
 								{$i18n.t('Manage Members')}
 							</DropdownMenu.Item>
 
@@ -169,9 +164,7 @@
 										showDeleteConfirm = true;
 									}}
 								>
-									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="--w:1rem; --h:1rem">
-										<path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clip-rule="evenodd" />
-									</svg>
+									<Icon name="bell-fill-20" className="size-4" />
 									{$i18n.t('Delete Space')}
 								</DropdownMenu.Item>
 							{/if}

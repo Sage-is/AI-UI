@@ -26,11 +26,9 @@
 	import Tooltip from '../common/Tooltip.svelte';
 	import Menu from '$lib/components/layout/Navbar/Menu.svelte';
 	import UserMenu from '$lib/components/layout/Sidebar/UserMenu.svelte';
-	import MenuLines from '../icons/MenuLines.svelte';
-	import AdjustmentsHorizontal from '../icons/AdjustmentsHorizontal.svelte';
 
-	import PencilSquare from '../icons/PencilSquare.svelte';
 	import Banner from '../common/Banner.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -81,10 +79,10 @@
 		<div style="--d:flex; --maxw:100%; --w:100%; --mx:auto; --p:0.2rem; --pt:0.125rem; --grad:0deg; --grad-color: hsl(273, 99%, 100%)">
 			<div style="--d:flex; --ai:center; --w:100%; --maxw:100%">
 				<div
-					style="--mr:0.2rem; 
-					--as:flex-start; 
-					--d:flex; --fx:none; 
-					--ai:center; 
+					style="--mr:0.2rem;
+					--as:flex-start;
+					--d:flex; --fx:none;
+					--ai:center;
 					--c:var(--color-gray-600);
 					{$showSidebar
 					? '--d:none;'
@@ -103,7 +101,7 @@
 						aria-label="Toggle Sidebar"
 					>
 						<div style="--m:auto; --as:center">
-							<MenuLines />
+							<Icon name="menu-lines" />
 						</div>
 					</button>
 
@@ -120,7 +118,7 @@
 								aria-label="New Chat"
 							>
 								<div style="--m:auto; --as:center">
-									<PencilSquare className=" size-5" strokeWidth="2" />
+									<Icon name="pencil-square" className=" size-5" strokeWidth="2" />
 								</div>
 							</button>
 						</Tooltip>
@@ -156,20 +154,7 @@
 									id="chat-context-menu-button"
 								>
 									<div style="--m:auto; --as:center">
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											fill="none"
-											viewBox="0 0 24 24"
-											stroke-width="1.5"
-											stroke="currentColor"
-											style="--w:1.2rem; --h:1.2rem"
-										>
-											<path
-												stroke-linecap="round"
-												stroke-linejoin="round"
-												d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
-											/>
-										</svg>
+										<Icon name="ellipsis-horizontal" className="size-[1.2rem]" />
 									</div>
 								</button>
 								{#if hasShareTargets}
@@ -191,7 +176,7 @@
 							aria-label="Controls"
 						>
 							<div style="--m:auto; --as:center">
-								<AdjustmentsHorizontal className=" size-5" strokeWidth="0.5" />
+								<Icon name="adjustments-horizontal" className=" size-5" strokeWidth="0.5" />
 							</div>
 						</button>
 					</Tooltip>
@@ -209,7 +194,7 @@
 								aria-label="New Chat"
 							>
 								<div style="--m:auto; --as:center">
-									<PencilSquare className=" size-5" strokeWidth="2" />
+									<Icon name="pencil-square" className=" size-5" strokeWidth="2" />
 								</div>
 							</button>
 						</Tooltip>

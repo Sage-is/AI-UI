@@ -18,24 +18,17 @@
 		toggleGlobalById
 	} from '$lib/apis/functions';
 
-	import ArrowDownTray from '../icons/ArrowDownTray.svelte';
 	import Tooltip from '../common/Tooltip.svelte';
 	import ConfirmDialog from '../common/ConfirmDialog.svelte';
 	import { getModels } from '$lib/apis';
 	import FunctionMenu from './Functions/FunctionMenu.svelte';
-	import EllipsisHorizontal from '../icons/EllipsisHorizontal.svelte';
 	import Switch from '../common/Switch.svelte';
 	import ValvesModal from '../workshop/common/ValvesModal.svelte';
 	import ManifestModal from '../workshop/common/ManifestModal.svelte';
-	import Heart from '../icons/Heart.svelte';
 	import DeleteConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
-	import GarbageBin from '../icons/GarbageBin.svelte';
-	import Search from '../icons/Search.svelte';
-	import Plus from '../icons/Plus.svelte';
-	import ChevronRight from '../icons/ChevronRight.svelte';
-	import XMark from '../icons/XMark.svelte';
 	import AddFunctionMenu from './Functions/AddFunctionMenu.svelte';
 	import ImportModal from '../ImportModal.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -235,7 +228,7 @@
 	<div style="--d:flex; --w:100%; --g:0.5rem">
 		<div style="--d:flex; --fx:1 1 0%">
 			<div style="--as:center; --ml:0.2rem; --mr:0.6rem">
-				<Search className="size-3.5" />
+				<Icon name="search" className="size-3.5" />
 			</div>
 			<input
 				style="--w:100%; --size:0.8rem; --pr:1rem; --py:0.2rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
@@ -251,7 +244,7 @@
 							query = '';
 						}}
 					>
-						<XMark className="size-3" strokeWidth="2" />
+						<Icon name="x-mark" className="size-3" strokeWidth="2" />
 					</button>
 				</div>
 			{/if}
@@ -269,7 +262,7 @@
 				<div
 					style="--px:0.5rem; --py:0.5rem; --radius:0.6rem; --hvr-bgc:rgb(78 78 78 / 0.1); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.8rem; --d:flex; --ai:center; --g:0.2rem"
 				>
-					<Plus className="size-3.5" />
+					<Icon name="plus" className="size-3.5" />
 				</div>
 			</AddFunctionMenu>
 		</div>
@@ -374,7 +367,7 @@
 								deleteHandler(func);
 							}}
 						>
-							<GarbageBin />
+							<Icon name="garbage-bin" />
 						</button>
 					</Tooltip>
 				{:else}
@@ -388,7 +381,7 @@
 									showManifestModal = true;
 								}}
 							>
-								<Heart />
+								<Icon name="heart" />
 							</button>
 						</Tooltip>
 					{/if}
@@ -402,25 +395,7 @@
 								showValvesModal = true;
 							}}
 						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								fill="none"
-								viewBox="0 0 24 24"
-								stroke-width="1.5"
-								stroke="currentColor"
-								style="--w:1rem; --h:1rem"
-							>
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"
-								/>
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-								/>
-							</svg>
+							<Icon name="cog6" className="size-4" />
 						</button>
 					</Tooltip>
 
@@ -453,7 +428,7 @@
 							style="--as:center; --w:fit-content; --size:0.8rem; --p:0.4rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 							type="button"
 						>
-							<EllipsisHorizontal className="size-5" />
+							<Icon name="ellipsis-horizontal" className="size-5" />
 						</button>
 					</FunctionMenu>
 				{/if}
@@ -512,18 +487,7 @@
 			<div style="--as:center; --mr:0.5rem; --weight:500; --line-clamp:1">{$i18n.t('Import Functions')}</div>
 
 			<div style="--as:center">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					viewBox="0 0 16 16"
-					fill="currentColor"
-					style="--w:1rem; --h:1rem"
-				>
-					<path
-						fill-rule="evenodd"
-						d="M4 2a1.5 1.5 0 0 0-1.5 1.5v9A1.5 1.5 0 0 0 4 14h8a1.5 1.5 0 0 0 1.5-1.5V6.621a1.5 1.5 0 0 0-.44-1.06L9.94 2.439A1.5 1.5 0 0 0 8.878 2H4Zm4 9.5a.75.75 0 0 1-.75-.75V8.06l-.72.72a.75.75 0 0 1-1.06-1.06l2-2a.75.75 0 0 1 1.06 0l2 2a.75.75 0 1 1-1.06 1.06l-.72-.72v2.69a.75.75 0 0 1-.75.75Z"
-						clip-rule="evenodd"
-					/>
-				</svg>
+				<Icon name="clipboard-import" className="size-4" />
 			</div>
 		</button>
 
@@ -549,18 +513,7 @@
 				</div>
 
 				<div style="--as:center">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						viewBox="0 0 16 16"
-						fill="currentColor"
-						style="--w:1rem; --h:1rem"
-					>
-						<path
-							fill-rule="evenodd"
-							d="M4 2a1.5 1.5 0 0 0-1.5 1.5v9A1.5 1.5 0 0 0 4 14h8a1.5 1.5 0 0 0 1.5-1.5V6.621a1.5 1.5 0 0 0-.44-1.06L9.94 2.439A1.5 1.5 0 0 0 8.878 2H4Zm4 3.5a.75.75 0 0 1 .75.75v2.69l.72-.72a.75.75 0 1 1 1.06 1.06l-2 2a.75.75 0 0 1-1.06 0l-2-2a.75.75 0 0 1 1.06-1.06l.72.72V6.25A.75.75 0 0 1 8 5.5Z"
-							clip-rule="evenodd"
-						/>
-					</svg>
+					<Icon name="clipboard-import-331f" className="size-4" />
 				</div>
 			</button>
 		{/if}
@@ -587,7 +540,7 @@
 
 			<div>
 				<div>
-					<ChevronRight />
+					<Icon name="chevron-right" />
 				</div>
 			</div>
 		</a>

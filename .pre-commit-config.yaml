@@ -47,7 +47,7 @@ repos:
     hooks:
       - id: codespell
         exclude: '(\.svg|bun\.lock|\.lock|\.css|.*-bundle\.js|emoji-shortcodes.*\.json|i18n/locales/)'
-        args: ["--ignore-words-list", "ans"]
+        args: ["--ignore-words-list", "ans,whats"]
         additional_dependencies:
           - tomli  # needed for pyproject.toml config reading
 

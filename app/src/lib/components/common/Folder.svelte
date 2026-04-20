@@ -4,11 +4,9 @@
 	const i18n = getContext('i18n');
 	const dispatch = createEventDispatcher();
 
-	import ChevronDown from '../icons/ChevronDown.svelte';
-	import ChevronRight from '../icons/ChevronRight.svelte';
 	import Collapsible from './Collapsible.svelte';
 	import Tooltip from './Tooltip.svelte';
-	import Plus from '../icons/Plus.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	export let open = true;
 
@@ -138,16 +136,16 @@
 		>
 			<!-- svelte-ignore a11y-no-static-element-interactions -->
 			<div
-				style="--w:100%; 
+				style="--w:100%;
 					--of:hidden;
-					--pos:relative; 
-					--d:flex; 
-					--ai:center; 
-					--jc:space-between; 
-					--hvr-bgc:var(--color-gray-100); 
-					--hvr-dark-bgc:var(--color-gray-900); 
-					--c:var(--color-gray-500); 
-					--dark-c:var(--color-gray-500); 
+					--pos:relative;
+					--d:flex;
+					--ai:center;
+					--jc:space-between;
+					--hvr-bgc:var(--color-gray-100);
+					--hvr-dark-bgc:var(--color-gray-900);
+					--c:var(--color-gray-500);
+					--dark-c:var(--color-gray-500);
 					--tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1);
 					--m:0;
 					--radius:0.6rem;"
@@ -158,9 +156,9 @@
 				>
 					<div style="--c:var(--color-gray-300); --dark-c:var(--color-gray-600)">
 						{#if open}
-							<ChevronDown className=" size-3" strokeWidth="2.5" />
+							<Icon name="chevron-down" className=" size-3" strokeWidth="2.5" />
 						{:else}
-							<ChevronRight className=" size-3" strokeWidth="2.5" />
+							<Icon name="chevron-right" className=" size-3" strokeWidth="2.5" />
 						{/if}
 					</div>
 
@@ -173,16 +171,16 @@
 					<Tooltip content={onAddLabel}>
 						<button
 							id="{id}-add-button"
-							style="--pos:absolute; 
-								--z:10; 
-								--right:0.5rem; 
-								--as:center; --d:flex; 
-								--ai:center; --jc:center; 
-								--dark-c: var(--color-gray-300); 
-								--p:0.2rem; --hvr-bgc:var(--color-gray-100); 
-								--hvr-dark-bgc:var(--color-gray-850); 
-								--radius:9999px; 
-								--tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); 
+							style="--pos:absolute;
+								--z:10;
+								--right:0.5rem;
+								--as:center; --d:flex;
+								--ai:center; --jc:center;
+								--dark-c: var(--color-gray-300);
+								--p:0.2rem; --hvr-bgc:var(--color-gray-100);
+								--hvr-dark-bgc:var(--color-gray-850);
+								--radius:9999px;
+								--tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1);
 								--touch-action:auto"
 							class="group-hover:visible"
 							on:pointerup={(e) => {
@@ -193,7 +191,7 @@
 								onAdd();
 							}}
 						>
-							<Plus className=" size-3" strokeWidth="2.5" />
+							<Icon name="plus" className=" size-3" strokeWidth="2.5" />
 						</button>
 					</Tooltip>
 				{/if}

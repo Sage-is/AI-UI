@@ -12,9 +12,9 @@
 	import MessageInput from '../chat/MessageInput.svelte';
 	import Navbar from './Navbar.svelte';
 	import Drawer from '../common/Drawer.svelte';
-	import EllipsisVertical from '../icons/EllipsisVertical.svelte';
 	import Thread from './Thread.svelte';
 	import IndicatorStack from './IndicatorStack.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -372,7 +372,7 @@
 			>
 				<div style="--z:10; --d:flex; --h:1.75rem; --w:1.2rem; --ai:center; --jc:center"
 	class="rounded-xs">
-					<EllipsisVertical className="size-4 invisible group-hover:visible" />
+					<Icon name="ellipsis-vertical" className="size-4 invisible group-hover:visible" />
 				</div>
 			</PaneResizer>
 

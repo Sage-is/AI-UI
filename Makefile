@@ -175,19 +175,6 @@ it_build_no_cache:
 	@afplay /System/Library/Sounds/Glass.aiff
 	@echo ""
 
-
-build_slim:
-	# Build a slim version of the image from the Dockerimage
-	# Note at the moment manual use of the site is required to build the slim version
-	# we need to add selenium automation to the build process to automate this
-	# see https://github.com/slimtoolkit/slim
-	slim build --http-probe  --include-path /app/backend --include-path /app/static --continue-after=160  $(IMAGE_NAME)
-
-it_run_slim:
-	# Run the slim version of the image
-	$(CONTAINER_RUNTIME) run $(DOCKER_RUN_ARGS) $(IMAGE_NAME).slim:latest
-
-
 dev_run:
 	$(CONTAINER_RUNTIME) run $(DEV_RUN_ARGS) $(IMAGE_NAME):$(IMAGE_TAG) bash -c "/app/backend/restore_backup_start.sh dev"
 

@@ -6,11 +6,10 @@
 	const i18n = getContext('i18n');
 
 	import Modal from './Modal.svelte';
-	import XMark from '../icons/XMark.svelte';
-	import Info from '../icons/Info.svelte';
 	import Switch from './Switch.svelte';
 	import Tooltip from './Tooltip.svelte';
 	import dayjs from 'dayjs';
+	import Icon from '$lib/components/Icon.svelte';
 
 	export let item;
 	export let show = false;
@@ -71,7 +70,7 @@
 							show = false;
 						}}
 					>
-						<XMark />
+						<Icon name="x-mark" />
 					</button>
 				</div>
 			</div>
@@ -108,7 +107,7 @@
 							</div>
 
 							<div style="--d:flex; --ai:center; --g:0.2rem; --fs:0">
-								<Info />
+								<Icon name="info" />
 
 								Formatting may be inconsistent from source.
 							</div>

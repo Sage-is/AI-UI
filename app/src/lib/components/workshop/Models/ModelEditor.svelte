@@ -313,18 +313,7 @@
 			}}
 		>
 			<div style="--as:center">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					viewBox="0 0 20 20"
-					fill="currentColor"
-					style="--h:1rem; --w:1rem"
-				>
-					<path
-						fill-rule="evenodd"
-						d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z"
-						clip-rule="evenodd"
-					/>
-				</svg>
+				<Icon name="arrow-left-fill-20" className="size-4" />
 			</div>
 			<div style="--as:center; --size:0.8rem; --weight:500">{'Back'}</div>
 		</button>
@@ -580,16 +569,7 @@
 										}
 									}}
 								>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										viewBox="0 0 20 20"
-										fill="currentColor"
-										style="--w:1rem; --h:1rem"
-									>
-										<path
-											d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z"
-										/>
-									</svg>
+									<Icon name="plus-fill-20" className="size-4" />
 								</button>
 							{/if}
 						</div>
@@ -710,14 +690,7 @@
 							}}
 							disabled={loading}
 						>
-							<svg style="--w:1rem; --h:1rem" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-								></path>
-							</svg>
+							<Icon name="chat-bubble-dots" className="size-4" />
 							<div style="--as:center; --weight:500">
 								{#if edit}
 									{$i18n.t('Save & Chat')}

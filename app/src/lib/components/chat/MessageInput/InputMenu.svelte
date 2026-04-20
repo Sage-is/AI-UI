@@ -151,20 +151,7 @@
 						}}
 						title={showAllTools ? $i18n.t('Show Less') : $i18n.t('Show All')}
 					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke-width="2.5"
-							stroke="currentColor"
-							style="--w:0.6rem; --h:0.6rem; --tn:transform 150ms cubic-bezier(0.4, 0, 0.2, 1); --tdn:200ms; --c:var(--color-gray-300); --dark-c:var(--color-gray-600)"
-	class="{showAllTools
-								? 'rotate-180'
-								: ''}"
-						>
-							<path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"
-							></path>
-						</svg>
+						<Icon name="chevron-down" className="size-[0.6rem]" strokeWidth="2.5" />
 					</button>
 				{/if}
 				<hr style="--bc:rgb(0 0 0 / 0.05); --dark-bc:rgb(255 255 255 / 0.05); --my:0.2rem" />

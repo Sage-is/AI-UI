@@ -4,10 +4,8 @@
 
 	import { showSettings, mobile, showSidebar, user } from '$lib/stores';
 	import { fade, slide } from 'svelte/transition';
+	import Icon from '$lib/components/Icon.svelte';
 
-	import PencilSquare from '../icons/PencilSquare.svelte';
-	import ChatBubbleOval from '../icons/ChatBubbleOval.svelte';
-	import Sparkles from '../icons/Sparkles.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -42,7 +40,7 @@
 				}}
 			>
 				<div style="--as:center; --mr:0.5rem">
-					<Sparkles className="size-4" strokeWidth="2" />
+					<Icon name="sparkles" className="size-4" strokeWidth="2" />
 				</div>
 				<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">{$i18n.t('Enhance')}</div>
 			</button>
@@ -55,7 +53,7 @@
 				}}
 			>
 				<div style="--as:center; --mr:0.5rem">
-					<ChatBubbleOval className="size-4" strokeWidth="2" />
+					<Icon name="chat-bubble-oval" className="size-4" strokeWidth="2" />
 				</div>
 				<div style="--as:center; overflow:hidden; text-overflow:ellipsis; --ws:nowrap">{$i18n.t('Chat')}</div>
 			</button>

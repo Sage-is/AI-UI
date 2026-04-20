@@ -7,12 +7,9 @@
 	import { artifactCode, chatId, settings, showArtifacts, showControls } from '$lib/stores';
 	import { copyToClipboard, createMessagesList } from '$lib/utils';
 
-	import XMark from '../icons/XMark.svelte';
-	import ArrowsPointingOut from '../icons/ArrowsPointingOut.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	import Tooltip from '../common/Tooltip.svelte';
 	import SvgPanZoom from '../common/SVGPanZoom.svelte';
-	import ArrowLeft from '../icons/ArrowLeft.svelte';
-	import ArrowDownTray from '../icons/ArrowDownTray.svelte';
 
 	export let overlay = false;
 	export let history;
@@ -217,7 +214,7 @@
 						showArtifacts.set(false);
 					}}
 				>
-					<ArrowLeft className="size-3.5  text-gray-900 dark:text-white" />
+					<Icon name="arrow-left" className="size-3.5  text-gray-900 dark:text-white" />
 				</button>
 
 				<div style="--fx:1 1 0%; --d:flex; --ai:center; --jc:space-between; --pr:0.2rem">
@@ -229,20 +226,7 @@
 								on:click={() => navigateContent('prev')}
 								disabled={contents.length <= 1}
 							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke="currentColor"
-									stroke-width="2.5"
-									style="--w:0.8rem; --h:0.8rem"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										d="M15.75 19.5 8.25 12l7.5-7.5"
-									/>
-								</svg>
+								<Icon name="chevron-left" className="size-[0.8rem]" strokeWidth="2.5" />
 							</button>
 
 							<div style="--size:0.6rem; --as:center; --dark-c:var(--color-gray-100); --minw:fit-content">
@@ -258,20 +242,7 @@
 								on:click={() => navigateContent('next')}
 								disabled={contents.length <= 1}
 							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke="currentColor"
-									stroke-width="2.5"
-									style="--w:0.8rem; --h:0.8rem"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										d="m8.25 4.5 7.5 7.5-7.5 7.5"
-									/>
-								</svg>
+								<Icon name="chevron-right" className="size-[0.8rem]" strokeWidth="2.5" />
 							</button>
 						</div>
 					</div>
@@ -296,7 +267,7 @@
 	class="bg-none"
 								on:click={downloadArtifact}
 							>
-								<ArrowDownTray className="size-3.5" />
+								<Icon name="arrow-down-tray" className="size-3.5" />
 							</button>
 						</Tooltip>
 
@@ -307,7 +278,7 @@
 	class="bg-none"
 									on:click={showFullScreen}
 								>
-									<ArrowsPointingOut className="size-3.5" />
+									<Icon name="arrows-pointing-out" className="size-3.5" />
 								</button>
 							</Tooltip>
 						{/if}
@@ -322,7 +293,7 @@
 						showArtifacts.set(false);
 					}}
 				>
-					<XMark className="size-3.5 text-gray-900 dark:text-white" />
+					<Icon name="xmark" className="size-3.5 text-gray-900 dark:text-white" />
 				</button>
 			</div>
 		{/if}

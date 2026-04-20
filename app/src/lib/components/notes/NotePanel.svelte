@@ -3,7 +3,7 @@
 	import { Pane, PaneResizer } from 'paneforge';
 
 	import Drawer from '../common/Drawer.svelte';
-	import EllipsisVertical from '../icons/EllipsisVertical.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	export let show = false;
 	export let pane = null;
@@ -84,7 +84,7 @@
 	>
 		<div style="--z:10; --d:flex; --h:1.75rem; --w:1.2rem; --ai:center; --jc:center"
 	class="rounded-xs">
-			<EllipsisVertical className="size-4 invisible group-hover:visible" />
+			<Icon name="ellipsis-vertical" className="size-4 invisible group-hover:visible" />
 		</div>
 	</PaneResizer>
 

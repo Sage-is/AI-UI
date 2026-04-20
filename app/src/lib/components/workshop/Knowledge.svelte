@@ -21,12 +21,10 @@
 	import DeleteConfirmDialog from '../common/ConfirmDialog.svelte';
 	import ItemMenu from './Knowledge/ItemMenu.svelte';
 	import Badge from '../common/Badge.svelte';
-	import Search from '../icons/Search.svelte';
-	import Plus from '../icons/Plus.svelte';
 	import Spinner from '../common/Spinner.svelte';
 	import { capitalizeFirstLetter } from '$lib/utils';
 	import Tooltip from '../common/Tooltip.svelte';
-	import XMark from '../icons/XMark.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	let loaded = false;
 
@@ -113,13 +111,13 @@
 					aria-label={$i18n.t('Create Knowledge')}
 					href="/workshop/knowledge/create"
 				>
-					<Plus className="size-3.5" />
+					<Icon name="plus" className="size-3.5" />
 				</a>
 			</div>
 
 			<div style="--d:flex; --fx:1 1 0%">
 				<div style="--as:center; --ml:0.2rem; --mr:0.6rem">
-					<Search className="size-3.5" />
+					<Icon name="search" className="size-3.5" />
 				</div>
 				<input
 					style="--w:100%; --size:0.8rem; --py:0.2rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
@@ -134,7 +132,7 @@
 								query = '';
 							}}
 						>
-							<XMark className="size-3" strokeWidth="2" />
+							<Icon name="x-mark" className="size-3" strokeWidth="2" />
 						</button>
 					</div>
 				{/if}

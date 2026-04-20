@@ -7,7 +7,7 @@
 
 	import Marquee from './common/Marquee.svelte';
 	import SlideShow from './common/SlideShow.svelte';
-	import ArrowRightCircle from './icons/ArrowRightCircle.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	export let show = true;
 	export let getStartedHandler = () => {};
@@ -131,7 +131,7 @@
 								getStartedHandler();
 							}}
 						>
-							<ArrowRightCircle className="size-6" />
+							<Icon name="arrow-right-circle" className="size-6" />
 						</button>
 						<div
 							id="get-started"

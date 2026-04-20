@@ -21,6 +21,7 @@
 	import Textarea from '$lib/components/common/Textarea.svelte';
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import Banners from './Interface/Banners.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -123,20 +124,7 @@
 							'A task model is used when performing tasks such as generating titles for chats and web search queries'
 						)}
 					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke-width="1.5"
-							stroke="currentColor"
-							style="--w:0.8rem; --h:0.8rem"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
-							/>
-						</svg>
+						<Icon name="info" className="size-[0.8rem]" />
 					</Tooltip>
 				</div>
 
@@ -406,16 +394,7 @@
 								}
 							}}
 						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 20 20"
-								fill="currentColor"
-								style="--w:1rem; --h:1rem"
-							>
-								<path
-									d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z"
-								/>
-							</svg>
+							<Icon name="plus-fill-20" className="size-4" />
 						</button>
 					</div>
 
@@ -438,16 +417,7 @@
 									}
 								}}
 							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 20 20"
-									fill="currentColor"
-									style="--w:1rem; --h:1rem"
-								>
-									<path
-										d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z"
-									/>
-								</svg>
+								<Icon name="plus-fill-20" className="size-4" />
 							</button>
 						</div>
 						<div style="--d:grid; --gtc-lg:repeat(2, minmax(0, 1fr)); --fd:column; --g:0.4rem">
@@ -557,18 +527,7 @@
 								</div>
 
 								<div style="--as:center">
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										viewBox="0 0 16 16"
-										fill="currentColor"
-										style="--w:0.8rem; --h:0.8rem"
-									>
-										<path
-											fill-rule="evenodd"
-											d="M4 2a1.5 1.5 0 0 0-1.5 1.5v9A1.5 1.5 0 0 0 4 14h8a1.5 1.5 0 0 0 1.5-1.5V6.621a1.5 1.5 0 0 0-.44-1.06L9.94 2.439A1.5 1.5 0 0 0 8.878 2H4Zm4 9.5a.75.75 0 0 1-.75-.75V8.06l-.72.72a.75.75 0 0 1-1.06-1.06l2-2a.75.75 0 0 1 1.06 0l2 2a.75.75 0 1 1-1.06 1.06l-.72-.72v2.69a.75.75 0 0 1-.75.75Z"
-											clip-rule="evenodd"
-										/>
-									</svg>
+									<Icon name="clipboard-import" className="size-[0.8rem]" />
 								</div>
 							</button>
 
@@ -588,18 +547,7 @@
 									</div>
 
 									<div style="--as:center">
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											viewBox="0 0 16 16"
-											fill="currentColor"
-											style="--w:0.8rem; --h:0.8rem"
-										>
-											<path
-												fill-rule="evenodd"
-												d="M4 2a1.5 1.5 0 0 0-1.5 1.5v9A1.5 1.5 0 0 0 4 14h8a1.5 1.5 0 0 0 1.5-1.5V6.621a1.5 1.5 0 0 0-.44-1.06L9.94 2.439A1.5 1.5 0 0 0 8.878 2H4Zm4 3.5a.75.75 0 0 1 .75.75v2.69l.72-.72a.75.75 0 1 1 1.06 1.06l-2 2a.75.75 0 0 1-1.06 0l-2-2a.75.75 0 0 1 1.06-1.06l.72.72V6.25A.75.75 0 0 1 8 5.5Z"
-												clip-rule="evenodd"
-											/>
-										</svg>
+										<Icon name="clipboard-import-331f" className="size-[0.8rem]" />
 									</div>
 								</button>
 							{/if}

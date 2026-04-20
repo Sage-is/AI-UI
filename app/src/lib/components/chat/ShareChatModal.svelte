@@ -9,7 +9,6 @@
 	import { copyToClipboard } from '$lib/utils';
 
 	import Modal from '../common/Modal.svelte';
-	import Link from '../icons/Link.svelte';
 		import ShareTargetPicker from './ShareTargetPicker.svelte';
 	import ShareTargetList from './ShareTargetList.svelte';
 
@@ -136,9 +135,7 @@
 				<!-- Link sharing section -->
 				<details open>
 					<summary style="--cur:pointer; --d:flex; --ai:center; --g:0.5rem; --py:0.5rem; --size:0.8125rem; --weight:600; --c:var(--color-gray-700); --dark-c:var(--color-gray-300); --us:none; --ls:normal">
-						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="--w:0.8rem; --h:0.8rem">
-							<path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
-						</svg>
+						<Icon name="link-chain-outline" className="size-[0.8rem]" strokeWidth="2" />
 						{$i18n.t('Link')}
 					</summary>
 					<div style="--pt:0.2rem; --pb:0.5rem; --pl:1.375rem">
@@ -221,7 +218,7 @@
 											show = false;
 										}}
 									>
-										<Link />
+										<Icon name="link" />
 
 										{#if chat.share_id}
 											{$i18n.t('Update and Copy Link')}
@@ -238,9 +235,7 @@
 				<!-- People & Groups sharing section -->
 				<details open>
 					<summary style="--cur:pointer; --d:flex; --ai:center; --g:0.5rem; --py:0.5rem; --size:0.8125rem; --weight:600; --c:var(--color-gray-700); --dark-c:var(--color-gray-300); --us:none; --ls:normal; --bt:1px solid var(--color-gray-100); --dark-bt:1px solid var(--color-gray-800); --pt:0.6rem">
-						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="--w:0.8rem; --h:0.8rem">
-							<path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
-						</svg>
+						<Icon name="users-group-outline" className="size-[0.8rem]" strokeWidth="2" />
 						{$i18n.t('People & Groups')}
 						{#if existingTargets.length > 0}
 							<span style="--px:0.4rem; --py:0.0625rem; --radius:9999px; --size:0.6875rem; --weight:500; --bgc:var(--color-green-100); --c:var(--color-green-700); --dark-bgc:var(--color-green-900); --dark-c:var(--color-green-300)">

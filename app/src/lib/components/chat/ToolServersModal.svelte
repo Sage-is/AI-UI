@@ -8,7 +8,6 @@
 	import { copyToClipboard } from '$lib/utils';
 
 	import Modal from '../common/Modal.svelte';
-	import Link from '../icons/Link.svelte';
 	import Collapsible from '../common/Collapsible.svelte';
 
 	export let show = false;
