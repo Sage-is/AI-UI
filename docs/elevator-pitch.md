@@ -38,7 +38,7 @@
 >
 > It's free. If you need help setting it up, that's where we come in.
 
-**If they're hooked:** "Alex's father loves a model called DeepSeek but hated how long-winded it was. In about two minutes, Alex stepped him through built a custom version with clear instructions to keep things short. Same AI brain, different recipe. Now it works exactly the way his dad thinks. That's what we do — for entire organizations."
+**If they're hooked:** "Alex's father loves a model called DeepSeek but hated how long-winded it was. In about two minutes, Alex walked him through building a custom version with clear instructions to keep things short. Same AI brain, different recipe. Now it works exactly the way his dad thinks. That's what we do — for entire organizations."
 
 ---
 
@@ -187,7 +187,7 @@ Every property of the cake maps to the product. Use these naturally:
 | Mix it right in the pan | Set it up on your own computer |
 | The recipe is public | The code is open source |
 | Naturally vegan | Inclusive by default |
-| Depression-era ingenuity | Built for teams that can't afford enterprise AI, but need it|
+| Depression-era ingenuity | Built for teams that can't afford enterprise AI, but need **it**|
 | Grandma's recipe, passed down freely | Community-built, shared freely |
 | You can change the recipe | You can customize everything |
 | Baked in your kitchen | Runs on your infrastructure |
@@ -209,13 +209,13 @@ The cake gives you something almost no open-source project has: **a physical, se
 ## Speaker Notes
 
 ### For Alex
-You naturally go deep and technical. That's your superpower in a room full of developers or IT leads. For this pitch, your job is to *hold back.* Lead with the cake. Trust it. You can always go deeper — but you can never un-lose someone who glazed over in the first fifteen seconds. Your dad's DeepSeek story is your best weapon. It's concrete, it's funny, and it proves the point without any jargon. And the cockeyed cake is literally in your family — you're not borrowing a metaphor, you're sharing a memory.
+The cockeyed cake metaphor is yours — and that matters. You didn't borrow an analogy from a marketing book. You reached into your own family, your own kitchen, your first date. That's why it lands. You naturally go deep and technical, and that's your superpower in a room full of developers or IT leads. But for this pitch, your job is to *hold back.* Lead with the cake. Trust it. You can always go deeper — but you can never un-lose someone who glazed over in the first fifteen seconds. Your dad's DeepSeek story is your second weapon. It's concrete, it's funny, and it proves the point without any jargon.
 
 ### For Izzy
-Your instinct for metaphor and emotional truth is what makes this pitch land. The cake metaphor was born from your mind and your life — own it completely. The teacher story is yours — tell it with the details (she thought she was too much of a pushover, the AI helped her find the voice she wished she had). For the education audience, your credibility as someone who left music teaching *because this mattered that much* is powerful. Don't hide that transition — it's proof of conviction. And when someone asks why you left teaching: "I didn't leave teaching. I'm making sure the next generation of teachers has the right tools — not the store-bought ones."
+Your instinct for emotional truth is what makes this pitch stick. The teacher story is yours — tell it with the details (she thought she was too much of a pushover, the AI helped her find the voice she wished she had). For the education audience, your credibility as someone who left music teaching *because this mattered that much* is powerful. Don't hide that transition — it's proof of conviction. And when someone asks why you left teaching: "I didn't leave teaching. I'm making sure the next generation of teachers has the right tools — not the store-bought ones." You and Alex share the cockeyed cake — it's both of your grandmothers, both of your histories. When you tell it, it's a love story and a mission statement at the same time.
 
 ### Together
-When you're both present, let Izzy open with the hook and the cake metaphor. Let Alex pick up with the "here's what it actually does" specifics. The origin story — both grandmothers, first date, cockeyed cake — that's your closer when the moment calls for it. It's the most human thing in this pitch, and it makes you unforgettable.
+When you're both present, let Alex open with the cake metaphor — it's his, and the conviction shows. Izzy picks up the emotional thread: the education angle, the maker mindset, what's at stake for kids. Then Alex brings the engine: here's what it actually does, here's how fast it works. The origin story — both grandmothers, first date, cockeyed cake — that's your closer when the moment calls for it. It's the most human thing in this pitch, and it makes you unforgettable.
 
 Don't rehearse a script. Rehearse the *handoff points.*
 
