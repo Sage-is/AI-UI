@@ -1,0 +1,7 @@
+path,reason
+app/node_modules,Third-party JS dependencies
+app/build,Generated Vite/Svelte build output — not source
+app/cypress,End-to-end test runner fixtures and snapshots
+app/static,Compiled and vendored static assets
+docs,Archived planning docs — not active work
+tools/tw2startr,Vendored tooling — not part of this project's TODOs
