@@ -3,7 +3,7 @@
 This file tracks active work only.
 
 > Historical snapshots and completed bulk moved to `docs/completed-todos.md` and `docs/archive/` on 2026-04-09.
-
+>
 > **Convention** — Sections below map to kanban columns. Inline source-code
 > tags use the same vocabulary so items stay cross-referenced between this
 > file and the codebase. `KANBAN.canvas` auto-generates from this file and
@@ -31,18 +31,23 @@ This file tracks active work only.
 
 ## In Progress
 
-_No items currently in progress. Move items here and tag source with `# FIXME:` when work begins._
+_Items currently in progress. Move items here and or use tag source with `# FIXME:` when work begins._
+
+- [ ] **Docker Image Slimming**: (Alexander Somma)
+  - [x] Hit the ~2.5GB target (down from 9.7GB)
+  - [ ] Hit the ~1.5GB base-image target after trimming heavy transitive deps
 
 ---
 
 ## TODO
 
 ### Release Wrap-Up
-- [ ] **Homebrew Tap Release**: Finish and verify the brew install path #critical
-  - [ ] Test: `brew tap sage-is/apps && brew install ai-ui`
-  - [ ] Fix homebrew-apps Makefile `release_finish`
-  - [ ] git flow state got stuck on v0.1.2 release; manual merge required to complete
-  - [ ] celebrate!!! :D
+
+- [x] **Homebrew Tap Release**: Finish and verify the brew install path #critical
+  - [x] Test: `brew tap sage-is/apps && brew install ai-ui`
+  - [x] Fix homebrew-apps Makefile `release_finish`
+  - [x] git flow state got stuck on v0.1.2 release; manual merge required to complete
+  - [x] celebrate!!! :D
 
 ### v2.x — Near Term
 
@@ -60,28 +65,10 @@ _No items currently in progress. Move items here and tag source with `# FIXME:` 
   - [ ] Vite 5 → 6
   - [ ] SvelteKit 2.5 → latest
 
-- [ ] **Docker Image Slimming**: Get below 2.5 GB
-  - [ ] Hit the ~2.5GB target (down from 9.7GB)
-  - [ ] Hit the ~1.5GB base-image target after trimming heavy transitive deps
-
 - [ ] **Podman Compatibility**: Verify builds and document setup
   - [ ] Test and fix Podman build issues (VM memory, rootless networking)
   - [ ] Document Podman-specific setup (VM memory bump, `host.containers.internal`)
   - [ ] Revisit Makefile `CONTAINER_RUNTIME` auto-detection once Podman is a verified alternative
-
-- [ ] **CI/CD Pipeline**: Gated releases, scanning, and regression tests
-  - [ ] `make install_dev` — auto-install dev tools via Homebrew
-  - [ ] `make scan_container` — trivy image scanning (post-build)
-  - [ ] `make lint` — eslint + prettier + black rollup
-  - [ ] Gate release finish on passing DB tests and scans
-  - [ ] Support the same gated release flow locally or on CI
-  - [ ] Staging CapRover instance for pre-prod testing
-    <!-- inline: Makefile:572 -->
-  - [ ] Selenium-driven browser regression tests
-  - [ ] OWASP ZAP DAST via `make scan_dast`
-
-- [ ] **Build System Evaluation**: Consider alternatives to Make
-  - [ ] Evaluate migrating Makefile to a cleaner build tool (Rake, Invoke, or Just)
 
 - [ ] **Knowledge Base Improvements**: AI ingestion and admin cleanup
   - [ ] AI-parsed ingestion mode + admin Documents page cleanup
@@ -158,6 +145,20 @@ _No items currently in progress. Move items here and tag source with `# FIXME:` 
 
 _Items deferred to a later planning cycle. Move here from TODO when deprioritized._
 
+- [ ] **CI/CD Pipeline**: Gated releases, scanning, and regression tests
+  - [ ] `make install_dev` — auto-install dev tools via Homebrew
+  - [ ] `make scan_container` — trivy image scanning (post-build)
+  - [ ] `make lint` — eslint + prettier + black rollup
+  - [ ] Gate release finish on passing DB tests and scans
+  - [ ] Support the same gated release flow locally or on CI
+  - [ ] Staging CapRover instance for pre-prod testing
+    <!-- inline: Makefile:572 -->
+  - [ ] Selenium-driven browser regression tests
+  - [ ] OWASP ZAP DAST via `make scan_dast`
+
+- [ ] **Build System Evaluation**: Consider alternatives to Make
+  - [ ] Evaluate migrating Makefile to a cleaner build tool (Rake, Invoke, or Just)
+
 ---
 
 ## Bugs
@@ -175,5 +176,3 @@ _No known bugs. Use `# BUG:` inline tags to flag defects in source._
   - [x] Restructure TODO.md to TodoScope conventions
   - [x] Fix duplicate rows in `.todoscope-exclude.csv`
   - [x] Run TodoScope scanner and verify kanban board matches expectations
-
-
