@@ -4,15 +4,19 @@
 
 ---
 
-## The 30-Second Hook (The Barbecue)
+## The 45-Second Hook (The Barbecue)
 
-> You know how when you use ChatGPT or Google's AI, it's like buying a cake from the grocery store? It's fine. It works. But you don't get to pick the ingredients, you can't change the recipe, and you don't really know what's in it.
+> We're both educators. I taught high school IB music for the past 20 years. Alex was Etsy's 5th employe and since having our son, has also focused on education. These days we are building for the future. I've stepped away from full time teaching to work on our project.
+>
+> You know ChatGPT or Google's AI?
+>
+>Using them is a like buying a factory-made cake from the grocery store. It's fine. It works. But you don't get to pick the ingredients, you can't change the recipe, and you don't really know what's in it.
 >
 > We built something different. You know cockeyed cake? The one your grandmother made — no eggs, no butter, no fancy equipment, you mix it right in the pan? That's what our AI Sage.is. A free tool that lets you make your own AIs from scratch. You pick the ingredients. You write the recipe. You bake it in your own oven. And nothing ever needs to leave your kitchen.
 >
 > It's as easy as cake. Not ***π***.
 
-**That's the fork.** Stop here if eyes are bright. If they lean in, pick a branch:
+**That's the fork.** Stop here if eyes are bright. If they lean in, pick it up and choose a slice:
 
 ---
 
@@ -22,7 +26,7 @@
 
 > Right now, students are using ChatGPT to write essays, and teachers have no idea what's happening. They're guessing. Was this the student's work? Did AI do it? How much? It's a black box.
 >
-> With Sage.is AI-UI, the school runs its own AI — on their own computers, behind their own walls. Teachers can see *how* students are engaging with AI. Not to police them — to *teach* them. To say, "I see you asked the AI to write this paragraph for you. What if instead you asked it to help you brainstorm?" That's the difference between a consumer mindset and a maker mindset.
+> With Sage.is AI, the school runs its own AI — on their own computers, behind their own walls. Teachers can see *how* students are engaging with AI. Not to police them but to *teach* them. To say, "I see you asked the AI to write this paragraph for you. What if instead you asked it to help you brainstorm?" That's the difference between a consumer mindset and a maker mindset.
 >
 > We think AI in education is here to stay. The question is whether kids learn to use it like a crutch or like a power tool.
 
@@ -34,7 +38,7 @@
 
 > Most companies are sending their internal data ( strategy docs, client info, financials) all  through someone else's AI servers. They don't think about it because it feels like just another search bar.
 >
-> With Sage.is AI, you can run the whole thing yourself. Your data never leaves your building. And you can create AI workers — trained on your documents, your processes, your way of doing things. Need one that writes proposals in your brand voice? Done. One that answers HR questions from your actual policy handbook? Done.
+> With Sage.is AI, you can run the whole thing yourself. Your data never has to leave the building. And you can create AI workers — trained on your documents, your processes, your way of doing things. Need an AI assistant that writes proposals in your brand voice? Done. One that answers HR questions from your actual policy handbook? Done.
 >
 > It's free. If you need help setting it up, that's where we come in.
 
@@ -72,22 +76,22 @@ Use when someone says: *"Okay wait, tell me more."*
 
 ### Then: What Sage.is actually
 
-> Sage.is AI-UI is free. You install it. You pick which AI models you want, there are hundreds, many of them as good or better than ChatGPT for specific tasks. Then you get a clean, simple interface where you can:
+> Sage.is AI-UI is free. You download and install it. You pick which AI models you want, there are hundreds, many of them as good or better than ChatGPT for specific tasks. Then you get a clean, simple interface where you can:
 >
 > - **Chat** with any AI model, switch between them, compare answers
 > - **Build agents** — custom AIs with specific personalities, knowledge, and instructions
 > - **Feed it your documents** — PDFs, websites, handbooks — and it answers questions from *your* information, not the internet's (unless you want it to search online)
 > - **Collaborate** — multiple people in the same workspace, with shared AI agents and shared knowledge
 >
-> Everything runs on your hardware. Nothing phones home. And like cockeyed cake, the recipe is public — anyone can see exactly how it works. There's no secrets and no hidden ingredients.
+> Everything runs on your hardware. Nothing leaves your computer unless you make that choice. And like cockeyed cake, our recipe is public — anyone can see exactly how it works. There's no secrets and no hidden ingredients.
 
 ### Then: Branch by audience (use the 2-minute sections above)
 
 ### Close with the ask
 
-> **For personal use:** It's free. Go to sage.is, download it, and you'll be up and running in ten minutes if you are ok with using the command line. We're going to be releasing a friendlier installer soon.
+> **For personal use:** It's free. Go to sage.is, download it, and you'll be up and running in ten minutes if you are ok with using the command line. We're going to be releasing a friendlier install very soon.
 >
-> **For your school or organization:** Same thing — free to use. If you want help setting it up, training your team, or building custom AI for your workflow, that's what we do. Reach out at sage.is and we'll walk you through it.
+> **For schools or organizations:** Same thing: it's free to use. If you want help setting it up, training your team, or building custom AI for your workflow, that's what we do. Reach out at sage.is and we'll walk you through it.
 
 ---
 

@@ -49,6 +49,37 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [x] git flow state got stuck on v0.1.2 release; manual merge required to complete
   - [x] celebrate!!! :D
 
+### Privacy & Poka-Yoke #critical
+
+- [ ] **Review & implement Poka-Yoke privacy plan**: Three structural mistake-proofing changes surfaced by panel review
+  - [ ] **PK-1 — Local/External model indicator**: Add `is_external` + `provider_label` to model API response; show Local/External badge in model selector, response bubbles, and space agent messages
+  - [ ] **PK-2 — Admin chat access default OFF**: Change `ENABLE_ADMIN_CHAT_ACCESS` default to `False` in `config.py:1378`; add audit log line in `routers/chats.py:86`; add visible banner when admin views a user's chats
+  - [ ] **PK-3 — Workshop external model warning**: Show inline warning when an agent is created with an external-provider base model
+  - [ ] Update CHANGELOG.md: document breaking change (admin chat access now opt-in)
+  - [ ] Full plan at: `~/agent-planning/plans/poka-yoke-buzzing-sedgewick.md`
+
+### Pitch & Documentation
+
+- [ ] **Pitch — Fix Privacy Absolutes**: Audit `docs/elevator-pitch.md` for unconditional privacy claims
+  - [ ] Replace "nothing phones home" → "nothing leaves your building unless you send it"
+  - [ ] Replace "we don't store data" → "Sage stores nothing; schools may store by default; ephemeral mode is available"
+  - [ ] Add educator-visibility default sentence: "Sage ships with educator visibility on by default. Students can toggle privacy at any time."
+  - [ ] Revise model-transparency claim: "when a user is permitted to inspect an agent, they always see which model it calls"
+  - [ ] Audit remaining absolute claims for similar conditionals
+
+- [ ] **Pitch — Pick Primary Audience**: Decide family pitch vs. org pitch as the launch face
+  - [ ] Choose one audience for the current pitch (family: local/budget-first, or org: sovereignty/compliance)
+  - [ ] Revise opening hook for that audience only
+  - [ ] Confirm cake metaphor stays in the family version only
+  - [ ] Stub a second pitch outline for the other audience
+
+- [ ] **Publish Threat Model**: One public document establishing what Sage defends and what it does not
+  - [ ] Document what Sage-the-company stores (nothing) vs. what schools may store (by default)
+  - [ ] Document residual risks for users of the anonymizing proxy
+  - [ ] Document warrant/subpoena response sequence for school deployments
+  - [ ] Written commitment: no automated behavioral flagging (hate speech, self-harm, etc.) without explicit school opt-in
+  - [ ] Publish to `docs/` and link from README and elevator-pitch
+
 ### v2.x — Near Term
 
 - [ ] **Auth & Onboarding**: Email notifications and LDAP consolidation

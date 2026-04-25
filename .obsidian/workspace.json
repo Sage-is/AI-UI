@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/development-workflow.md",
+                "file": "docs/elevator-pitch.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "DEVELOPMENT_WORKFLOW"
+              "title": "elevator-pitch"
             }
           }
         ]
@@ -78,7 +78,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "ce1771fb9791e223",
@@ -94,6 +95,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "docs/elevator-pitch.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +105,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks"
+              "title": "Backlinks for elevator-pitch"
             }
           },
           {
@@ -168,6 +170,7 @@
   },
   "active": "efc1d269b4782aff",
   "lastOpenFiles": [
+    "docs/development-workflow.md",
     "docs/contributing.md",
     "docs/API_REFACTORING_PLAN.md",
     "docs/apache.md",
@@ -177,7 +180,6 @@
     "docs/ENV_SCRIPTS_README.md",
     "docs/DOCKER_OPTIMIZATION_SUMMARY.md",
     "docs/DOCKER_BUILD_OPTIMIZATION.md",
-    "docs/development-workflow.md",
     "docs/CONVENTION.instructions.md",
     "TODO.md",
     "app/src/lib/data/licenseData.ts",

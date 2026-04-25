@@ -1209,7 +1209,8 @@ async def inspect_websocket(request: Request, call_next):
         upgrade = (request.headers.get("Upgrade") or "").lower()
         connection = (request.headers.get("Connection") or "").lower().split(",")
         # Check that there's the correct headers for an upgrade, else reject the connection
-        # This is to work around this upstream issue: https://github.com/miguelgrinberg/python-engineio/issues/367
+        # This is to work around this upstream issue:
+        # https://github.com/miguelgrinberg/python-engineio/issues/367
         if upgrade != "websocket" or "upgrade" not in connection:
             return JSONResponse(
                 status_code=status.HTTP_400_BAD_REQUEST,
