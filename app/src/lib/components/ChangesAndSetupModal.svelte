@@ -31,6 +31,17 @@
 
 	// Determine whether to show wizard (welcome + steps)
 	function needsWizard(reason: SetupTriggerReason): boolean {
+		// WHY this guard belongs here, not at the modal mount: the changelog
+		// path also lives in this modal, and trial-mode users still benefit
+		// from the changelog when the version bumps. Suppressing only the
+		// wizard branch keeps the changelog flow alive while preventing the
+		// admin setup wizard from auto-opening for workshop sessions.
+		// Uses `try_sage.enabled` (gated to authenticated users) rather than
+		// `features.enable_try_sage` so anonymous users still get the wizard
+		// if they somehow trigger it.
+		// `manualTrigger` lets the TrialMode admin tab still re-open the
+		// wizard for diagnostics — the operator opting in beats the gate.
+		if ($config?.try_sage?.enabled && !reason.manualTrigger) return false;
 		return reason.needsModels || reason.needsUsers || reason.manualTrigger;
 	}
 

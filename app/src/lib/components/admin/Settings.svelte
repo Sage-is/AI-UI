@@ -24,6 +24,7 @@
 	import Tools from './Settings/Tools.svelte';
 	import Bridges from './Settings/Bridges.svelte';
 	import OAuthSettings from './Settings/OAuthSettings.svelte';
+	import TrialMode from './Settings/TrialMode.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 
 	const i18n = getContext('i18n');
@@ -54,7 +55,8 @@
 			'images',
 			'pipelines',
 			'bridges',
-			'db'
+			'db',
+			'trial-mode'
 		].includes(tabFromPath)
 			? tabFromPath
 			: 'general';
@@ -303,6 +305,25 @@
 			</div>
 			<div style="--as:center">{$i18n.t('Database')}</div>
 		</button>
+
+		<!-- WHY this tab is gated on enable_try_sage: in non-trial deploys
+		     the panel has nothing to show — the limits/llm-status endpoints
+		     404, the readouts would be empty, and the "Reopen setup wizard"
+		     button is redundant with the changelog flow. -->
+		{#if $config?.features?.enable_try_sage}
+			<button
+				id="trial-mode"
+				style="{selectedTab === 'trial-mode' ? 'font-weight: 600;' : ''}"
+				on:click={() => {
+					goto('/admin/settings/trial-mode');
+				}}
+			>
+				<div style="--as:center; --mr:0.5rem">
+					<Icon name="settings-gear-fill-16" className="size-4" />
+				</div>
+				<div style="--as:center">{$i18n.t('Trial Mode')}</div>
+			</button>
+		{/if}
 	</div>
 
 	<div style="--fx:1 1 0%; --mt:0.6rem; --mt-lg:0; --ofy:scroll; --pr:0.2rem"
@@ -381,6 +402,8 @@
 					toast.success($i18n.t('Settings saved successfully!'));
 				}}
 			/>
+		{:else if selectedTab === 'trial-mode' && $config?.features?.enable_try_sage}
+			<TrialMode />
 		{:else if selectedTab === 'pipelines'}
 			<Pipelines
 				saveHandler={() => {

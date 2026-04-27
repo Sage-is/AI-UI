@@ -11,6 +11,21 @@ export const WEBUI_NAME = writable(APP_NAME);
 export const config: Writable<Config | undefined> = writable(undefined);
 export const user: Writable<SessionUser | undefined> = writable(undefined);
 
+// try.sage personas. Banner and user-menu persona switcher both render
+// from this store. Hydrated by `loadPersonas()` from
+// `$lib/utils/sage-runtime`; `null` means "not yet fetched". Reset to
+// `null` after admin extend/reset to force re-fetch and pick up rotated
+// magic-link URLs.
+export const tryPersonas: Writable<
+	Array<{ key: string; label: string; role: string; login_url: string }> | null
+> = writable(null);
+
+// try.sage tutorial replay trigger. The TrialMode admin panel increments
+// this counter to ask <TrySageTutorial> to re-open after the operator
+// clicks "Replay tutorial". A counter (not a boolean) so consecutive
+// replays each fire a fresh subscription event.
+export const tutorialReopen: Writable<number> = writable(0);
+
 // Electron App
 export const isApp = writable(false);
 export const appInfo = writable(null);
@@ -292,6 +307,12 @@ type Config = {
 		enable_version_update_check: boolean;
 		enable_websocket?: boolean;
 		enable_notes?: boolean;
+		// Trial-mode flag. Backend exposes this to anonymous users so the
+		// banner mounts on /auth and /join routes before login. Detailed
+		// trial state (countdown, seat count, tutorial steps) lives in
+		// the gated `try_sage` block below — that one only populates for
+		// authenticated users.
+		enable_try_sage?: boolean;
 	};
 	oauth: {
 		providers: {
@@ -304,6 +325,29 @@ type Config = {
 		pending_user_overlay_description?: string;
 		theme?: string;
 		custom_css?: string;
+	};
+	// try.sage trial state. Populated only for authenticated users when
+	// ENABLE_TRY_SAGE is on; anonymous users see {enabled: false} and use
+	// `features.enable_try_sage` to decide whether to mount the banner.
+	try_sage?: {
+		enabled: boolean;
+		reset_at?: string;
+		reset_interval_hours?: number;
+		admin_extend_hours?: number;
+		seat_count?: number;
+		banner_text?: string;
+		// Tutorial steps come through as a JSON-encoded string so admins
+		// can edit them via the config UI without restarting. Frontend
+		// parses on first read (see TrySageTutorial.svelte).
+		tutorial_steps_json?: string;
+	};
+	// Analytics shim. Each provider is enabled by populating its config
+	// block; multiple providers can run side-by-side. Empty values mean
+	// "not enabled" — no script tag injected, no events sent.
+	analytics?: {
+		matomo?: { url?: string; site_id?: string };
+		ga?: { measurement_id?: string };
+		plausible?: { domain?: string; script_url?: string };
 	};
 };
 

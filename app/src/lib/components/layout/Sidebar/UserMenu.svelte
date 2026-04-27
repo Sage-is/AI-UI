@@ -11,6 +11,7 @@
 
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 					import ShortcutsModal from '$lib/components/chat/ShortcutsModal.svelte';
+	import TryPersonaSwitcher from '$lib/components/TryPersonaSwitcher.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -164,6 +165,15 @@
 				</div>
 			</button>
 		{/if}
+
+		<!--
+			try.sage persona switcher (B3). Self-gated by
+			`$config?.features?.enable_try_sage`; renders nothing in
+			production deployments. Sibling banner agent (B-banner-admin)
+			owns admin reset/extend controls — those live in
+			`+layout.svelte`, not here.
+		-->
+		<TryPersonaSwitcher />
 
 		{#if help}
 			<hr

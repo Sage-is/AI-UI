@@ -732,6 +732,41 @@ it_update:
 	$(CONTAINER_RUNTIME) stop $(CONTAINER_NAME) || true
 	@make it_build
 	@make it_run
+
+# ---------------------------------------------------------------------------
+# try.sage trial mode (workshop / demo deployment)
+# ---------------------------------------------------------------------------
+# Boots the same image as `it_run` but flips on the trial runtime: hidden LLM
+# connection, persona seeds, 24h auto-reset, banner. The hidden connection
+# secrets stay env-only — the API key never lands in the config DB. See
+# docs/try-sage-deployment.md and docs/try-sage-docker-exploration.md.
+TRY_SAGE_USER_SEAT_COUNT      ?= 3
+TRY_SAGE_RESET_INTERVAL_HOURS ?= 24
+
+try_sage_start:
+	@# Fail fast on missing secrets so the operator sees the problem before
+	@# the container boots into a half-configured trial.
+	@for v in TRY_SAGE_LLM_API_URL TRY_SAGE_LLM_API_KEY TRY_SAGE_LLM_MODELS; do \
+		eval "val=\$$$$v"; \
+		if [ -z "$$val" ]; then \
+			echo "Error: $$v is not set. Put it in .env or export it before running this target."; \
+			echo "       See docs/try-sage-deployment.md for the full env contract."; \
+			exit 1; \
+		fi; \
+	done
+	@echo "Starting try.sage trial container ($(CONTAINER_NAME))..."
+	$(CONTAINER_RUNTIME) run -d $(DOCKER_RUN_ARGS) \
+		-e ENABLE_TRY_SAGE=true \
+		-e TRY_SAGE_LLM_API_URL="$(TRY_SAGE_LLM_API_URL)" \
+		-e TRY_SAGE_LLM_API_KEY="$(TRY_SAGE_LLM_API_KEY)" \
+		-e TRY_SAGE_LLM_MODELS="$(TRY_SAGE_LLM_MODELS)" \
+		-e TRY_SAGE_USER_SEAT_COUNT="$(TRY_SAGE_USER_SEAT_COUNT)" \
+		-e TRY_SAGE_RESET_INTERVAL_HOURS="$(TRY_SAGE_RESET_INTERVAL_HOURS)" \
+		$(IMAGE_NAME):$(IMAGE_TAG)
+
+try_sage_stop:
+	@echo "Stopping try.sage trial container ($(CONTAINER_NAME))..."
+	$(CONTAINER_RUNTIME) rm -f $(CONTAINER_NAME) || true
 # ---------------------------------------------------------------------------
 # Interactive release (full flow via ~/bin/git-release)
 # ---------------------------------------------------------------------------
