@@ -120,6 +120,7 @@ DB snapshots for upgrade testing live in `tools/db_snapshots/` (gitignored, sync
 
 - [Documentation Index](./docs/README.md)
 - [Messaging Bridges (WhatsApp, etc.)](./docs/bridges.md)
+- [try.sage Trial Deployment](./docs/try-sage-deployment.md)
 - [API Examples](./docs/api-examples.md)
 - [Development Workflow](./docs/development-workflow.md)
 - [API Refactoring Plan](./docs/api-refactoring-plan.md)

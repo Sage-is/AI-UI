@@ -633,3 +633,61 @@ PIP_PACKAGE_INDEX_OPTIONS = os.getenv("PIP_PACKAGE_INDEX_OPTIONS", "").split()
 ####################################
 
 EXTERNAL_PWA_MANIFEST_URL = os.environ.get("EXTERNAL_PWA_MANIFEST_URL")
+
+
+####################################
+# try.sage TRIAL MODE
+####################################
+# Trial-deployment configuration for try.sage.is.
+# All values here are env-only — never persisted to the config DB and never
+# returned in any API response. Tunable runtime values (intervals, seat
+# count, banner text, etc.) live in config.py wrapped in PersistentConfig.
+#
+# Why split this way:
+#   - ENABLE_TRY_SAGE toggles whole subsystems at import time (router
+#     registration, lifespan task spawn, hidden-connection install).
+#     Persisting it would let an admin flip it via the UI without a restart,
+#     which is unsafe — handlers would race against startup wiring.
+#   - The hidden LLM connection is the trial's keys-to-the-kingdom.
+#     Persisting URL/key to the config DB would defeat the "admins cannot
+#     see or edit" contract from the plan. Keeping them env-only means they
+#     never touch the DB at rest.
+#   - Persona passwords are optional; if unset, the seed routine generates
+#     random ones and logs them once at first boot. Personas are normally
+#     reached via magic-link JWT, so a password is a fallback.
+
+ENABLE_TRY_SAGE = os.environ.get("ENABLE_TRY_SAGE", "False").lower() == "true"
+
+# Hidden OpenAI-compatible inference connection.
+# When try mode is on, the inference resolver unions this connection into
+# its provider list, but every admin-facing connections endpoint filters it
+# out. Exposed models are restricted to TRY_SAGE_LLM_MODELS so users cannot
+# call non-trial models by ID.
+TRY_SAGE_LLM_API_URL = os.environ.get("TRY_SAGE_LLM_API_URL", "")
+TRY_SAGE_LLM_API_KEY = os.environ.get("TRY_SAGE_LLM_API_KEY", "")
+
+
+def _parse_try_sage_models(raw: str) -> list[str]:
+    """Accept either a JSON array (e.g. '["gpt-4o","gpt-4o-mini"]') or a
+    comma-separated list (e.g. 'gpt-4o, gpt-4o-mini'). Anything else logs
+    a warning and degrades to an empty allowlist."""
+    raw = (raw or "").strip()
+    if not raw:
+        return []
+    try:
+        parsed = json.loads(raw)
+        if isinstance(parsed, list):
+            return [str(m).strip() for m in parsed if str(m).strip()]
+    except (json.JSONDecodeError, TypeError):
+        pass
+    return [m.strip() for m in raw.split(",") if m.strip()]
+
+
+TRY_SAGE_LLM_MODELS = _parse_try_sage_models(os.environ.get("TRY_SAGE_LLM_MODELS", ""))
+
+# Per-persona seed passwords. Optional — the seed routine generates random
+# passwords and logs them once if any are unset. Personas use magic-link
+# JWTs in normal use; passwords are a fallback for direct sign-in.
+TRY_SAGE_ADMIN_PASSWORD = os.environ.get("TRY_SAGE_ADMIN_PASSWORD", "")
+TRY_SAGE_FACILITATOR_PASSWORD = os.environ.get("TRY_SAGE_FACILITATOR_PASSWORD", "")
+TRY_SAGE_USER_PASSWORD = os.environ.get("TRY_SAGE_USER_PASSWORD", "")
