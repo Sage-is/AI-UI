@@ -33,9 +33,29 @@ This file tracks active work only.
 
 _Items currently in progress. Move items here and or use tag source with `# FIXME:` when work begins._
 
-- [ ] **Docker Image Slimming**: (Alexander Somma)
-  - [x] Hit the ~2.5GB target (down from 9.7GB)
-  - [ ] Hit the ~1.5GB base-image target after trimming heavy transitive deps
+- [ ] **try.sage Runtime and Admin Controls**: (Alexander Somma + Izzy Plante)
+  - [ ] Gate try.sage.is ai behind env vars
+  - [ ] Seed default try.sage agents, including Sage Strawberry, Sage Startr.Style and AstroPi AI tutor
+  - [ ] Register `https://markdown-search.production.openco.ca` in `TOOL_SERVER_CONNECTIONS` for try.sage mode (reuse existing OpenAPI markdown server)
+  - [ ] Add a small OpenAPI dummy-tools server with clearly labeled placeholder endpoints that advertise advanced capabilities without exposing them in try mode
+  - [ ] Add a small set of trial helper endpoints (status, limits, reset policy) that return clear "you are in try mode" responses
+  - [ ] Default trial instances to auto-reset after 24 hours via env-configurable try.sage settings
+  - [ ] Add admin-only control to extend the reset deadline one day at a time
+  - [ ] Add admin-only quick-reset action for immediate reset when needed
+  - [ ] Enforce role-based permissions so only admins can extend or force-reset trial instances
+  - [ ] Document env vars, reset semantics, and admin-control behavior for local and CapRover deployments
+
+- [ ] **try.sage.is Experience and Insights**: (Alexander Somma + Izzy Plante)
+  - [ ] Show a persistent top-of-screen try.sage banner with a clear countdown to next reset
+  - [ ] Show admin-specific reset controls in the user-bar area when logged in as admin
+  - [ ] Non admin should see messaging that admins can reset this timer etc...
+  - [ ] Add user-bar switching between the three try.sage personas: admin, facilitator, and user
+  - [ ] Add onboarding/tutorial guidance for workshop access, model switching, chat map, artifacts, and other key try.sage features, including how to build a Bialik Sage example agent
+  - [ ] Publish a Bialik Sage tutorial content package: three short videos plus a follow-up email with system prompts so users can experiment with their own version
+  - [ ] Keep system prompt disclosure only in the dedicated system-prompt video and update that single short video per team session, independent of codebase releases
+  - [ ] Decide which tutorial steps are dismissible versus always available from help/navigation
+  - [ ] Add Matomo analytics for try.sage usage across supported platforms, including persona switching, tutorial engagement, and core feature entry points
+  - [ ] Document the try.sage UX and analytics event map for product and implementation teams
 
 ---
 
@@ -176,6 +196,10 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
 
 _Items deferred to a later planning cycle. Move here from TODO when deprioritized._
 
+- [ ] **Docker Image Slimming (Pinned / Paused)**: (Alexander Somma)
+  - [x] Hit the ~2.5GB target (down from 9.7GB)
+  - [ ] Hit the ~1.5GB base-image target after trimming heavy transitive deps
+
 - [ ] **CI/CD Pipeline**: Gated releases, scanning, and regression tests
   - [ ] `make install_dev` — auto-install dev tools via Homebrew
   - [ ] `make scan_container` — trivy image scanning (post-build)
@@ -190,11 +214,49 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 - [ ] **Build System Evaluation**: Consider alternatives to Make
   - [ ] Evaluate migrating Makefile to a cleaner build tool (Rake, Invoke, or Just)
 
+- [ ] **Auto Reset Mode (Trial Environments)**: Env-var controlled data/session reset with user countdown messaging
+  - [ ] Define env vars for reset enablement and interval (local + CapRover compatible)
+  - [ ] Add startup/runtime wiring to enforce auto-reset behavior when enabled
+  - [ ] Document env var defaults and deployment examples in docs
+  - [ ] Add UI messaging to show users they are in a trial environment
+  - [ ] Show time remaining until reset ("n time to reset") in a visible countdown
+  - [ ] Add pre-reset warning state and post-reset confirmation messaging
+  - [ ] Add basic tests for reset timing logic and user-facing message visibility
+
+- [ ] **Full Regression Testing Suite**: End-to-end coverage for core user flows, integrations, and release confidence
+  - [ ] Standardize Svelte unit/integration tests on Vitest, matching current Svelte guidance
+  - [ ] Add jsdom plus `@testing-library/svelte` for component regression coverage where DOM interaction matters
+  - [ ] Cover high-risk Svelte components first: chat composer, microphone/transcription flow, auth forms, settings, and uploads
+  - [ ] Expand the existing Cypress E2E suite to cover the core happy-path and failure-path user journeys
+  - [ ] Define a deterministic test-data strategy for local and CI runs: seeded state where needed, stubs where faster and safer
+  - [ ] Evaluate Playwright for cross-browser smoke coverage and trace-based CI debugging before deciding on dual-stack vs migration
+  - [ ] Gate releases on a tiered regression pipeline: fast Vitest checks first, browser regressions after, smoke coverage on release builds
+  - [ ] Document how to run each regression layer locally and in deployment pipelines
+
+- [ ] **Audio Regression Testing Suite**: Deterministic voice-input coverage across recorder, transcription, and chat-input handoff
+  - [ ] Define the audio test pyramid: unit logic, component behavior, browser E2E, and limited real-device smoke coverage
+  - [ ] Build a golden audio corpus for regression runs: clean speech, silence, noisy input, clipped speech, accented speech, and low-volume samples
+  - [ ] Add deterministic browser audio tests that feed known audio files as fake microphone input instead of relying on a live human mic in CI
+  - [ ] Auto-grant microphone permissions in browser test runs and verify recording state transitions, processing UI, and transcript insertion into chat input
+  - [ ] Cover failure paths explicitly: permission denied, empty transcript, transcription failure, canceled recording, and timeout handling
+  - [ ] Add transcript assertions using normalized text matching where exact punctuation is not stable
+  - [ ] Decide which audio paths run full end-to-end against the real backend transcription flow versus mocked/stubbed transcription responses
+  - [ ] Evaluate Playwright specifically for browser-level media permission control, fake microphone input, cross-browser smoke tests, and trace debugging
+  - [ ] Keep a small manual or staged real-microphone smoke suite for supported devices instead of making live microphone capture a required CI gate
+  - [ ] Document how to run audio regression tests locally, in CI, and on staging with the required browser flags, fixtures, and expected assertions
 ---
 
 ## Bugs
 
-_No known bugs. Use `# BUG:` inline tags to flag defects in source._
+- [ ] **Chat Microphone Recording Does Not Populate Message Input**: Recording from the microphone icon in chat does not process speech into the text field used to send messages #bug
+  - [ ] Reproduce the issue in the chat interface and confirm whether capture, transcription, or input binding is failing
+  - [ ] Trace the microphone/transcription flow from recorder output into the chat composer state
+  - [ ] Fix the handoff so completed recordings populate the message input field
+  - [ ] Add regression coverage for microphone-to-input behavior in chat
+
+*(Surfaced by user report in chat, 2026-04-27.)*
+
+
 
 ---
 

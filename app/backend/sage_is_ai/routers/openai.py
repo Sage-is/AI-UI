@@ -45,9 +45,57 @@ from sage_is_ai.utils.misc import (
 from sage_is_ai.utils.auth import get_admin_user, get_verified_user
 from sage_is_ai.utils.access_control import has_access
 
+# try.sage trial mode: the hidden-connection registry is unioned into the
+# inference-only resolver below. Admin-facing endpoints in this file read
+# from app.state.config.OPENAI_API_BASE_URLS / KEYS / CONFIGS (the public,
+# DB-persisted lists) and never touch this registry — that's the structural
+# guarantee that hidden connections cannot leak through admin GETs.
+from sage_is_ai.utils.try_sage_hidden_connections import (
+    filter_models_to_allowlist,
+    get_hidden_connections,
+    resolve_hidden_connection,
+)
+
 
 log = logging.getLogger(__name__)
 log.setLevel(SRC_LOG_LEVELS["OPENAI"])
+
+
+def _resolve_inference_endpoint(request: Request, model: dict) -> tuple[str, str, dict]:
+    """Resolve (url, key, api_config) for a model returned by get_all_models.
+
+    For models served by a hidden connection (try.sage trial mode), the
+    URL and key live in app.state.try_sage_hidden_connections — NOT in
+    OPENAI_API_BASE_URLS, which is the admin-managed public list.
+    Recognized by the ``_try_sage_hidden_id`` marker stamped onto every
+    hidden-conn model dict during get_all_models_responses.
+
+    For all other models we fall back to the original public-list
+    indexing via ``urlIdx``. This is the single point where dispatch
+    sites (chat/completions, embeddings, proxy) decide which connection
+    to route to.
+    """
+    hidden_id = model.get("_try_sage_hidden_id")
+    if hidden_id:
+        conn = resolve_hidden_connection(request.app, hidden_id)
+        if conn is None:
+            # Lost the hidden connection between model-list and dispatch
+            # (e.g., env reload mid-request). 404 the call rather than
+            # silently routing to a wrong provider.
+            raise HTTPException(
+                status_code=404,
+                detail="Model not found",
+            )
+        return conn["url"], conn["key"], conn.get("config", {}) or {}
+
+    idx = model.get("urlIdx", 0)
+    url = request.app.state.config.OPENAI_API_BASE_URLS[idx]
+    key = request.app.state.config.OPENAI_API_KEYS[idx]
+    api_config = request.app.state.config.OPENAI_API_CONFIGS.get(
+        str(idx),
+        request.app.state.config.OPENAI_API_CONFIGS.get(url, {}),  # Legacy support
+    )
+    return url, key, api_config
 
 
 ##########################################
@@ -375,6 +423,84 @@ async def get_all_models_responses(request: Request, user: UserModel) -> list:
     return responses
 
 
+async def _get_hidden_connection_models(
+    request: Request, user: UserModel
+) -> list[dict]:
+    """Fetch model lists from try.sage hidden connections and return flat
+    model dicts ready to merge into ``get_all_models``.
+
+    Each returned model carries:
+      - ``_try_sage_hidden_id`` — the hidden connection's stable ID, used
+        by the dispatch resolver to recover URL/key.
+      - ``urlIdx = -1`` — sentinel that this model is NOT indexable into
+        OPENAI_API_BASE_URLS. Any code that still tries will IndexError
+        loudly rather than silently routing to the wrong provider.
+
+    The model list is then filtered to ``TRY_SAGE_LLM_MODELS`` (allowlist
+    enforced at the union point so a non-trial model ID cannot be called
+    even if the upstream provider technically serves it).
+    """
+    hidden_connections = get_hidden_connections(request.app)
+    if not hidden_connections:
+        return []
+
+    # One model-list fetch per hidden connection. In practice there is
+    # exactly one, but we keep this loop generic so future trial flavors
+    # (e.g., one connection per region) work without refactor.
+    fetch_tasks = [
+        send_get_request(
+            f"{conn['url']}/models",
+            conn.get("key"),
+            user=user,
+        )
+        for conn in hidden_connections
+    ]
+    responses = await asyncio.gather(*fetch_tasks)
+
+    merged: list[dict] = []
+    for conn, response in zip(hidden_connections, responses):
+        if not response:
+            log.warning(
+                "try.sage hidden connection %s returned no models (auth or network issue).",
+                conn.get("id"),
+            )
+            continue
+        raw_models = (
+            response if isinstance(response, list) else response.get("data") or []
+        )
+        if not isinstance(raw_models, list):
+            continue
+
+        for model in raw_models:
+            if not isinstance(model, dict):
+                continue
+            model_id = model.get("id") or model.get("name")
+            if not model_id:
+                continue
+            merged.append(
+                {
+                    **model,
+                    "id": model_id,
+                    "name": model.get("name", model_id),
+                    "owned_by": "openai",
+                    "openai": model,
+                    "connection_type": "external",
+                    # Sentinel — see docstring. Dispatch sites resolve via
+                    # _try_sage_hidden_id, never index OPENAI_API_BASE_URLS.
+                    "urlIdx": -1,
+                    "_try_sage_hidden_id": conn["id"],
+                }
+            )
+
+        # Apply the model allowlist on a per-connection basis so models
+        # not in TRY_SAGE_LLM_MODELS are removed even though the upstream
+        # provider returned them. Models from OTHER hidden connections
+        # (or non-hidden) pass through filter_models_to_allowlist.
+        merged = filter_models_to_allowlist(merged, conn["id"])
+
+    return merged
+
+
 async def get_filtered_models(models, user):
     # Filter models based on user access control
     filtered_models = []
@@ -392,8 +518,16 @@ async def get_filtered_models(models, user):
 async def get_all_models(request: Request, user: UserModel) -> dict[str, list]:
     log.info("get_all_models()")
 
+    # Note: when ENABLE_OPENAI_API is False we still want hidden try.sage
+    # connections to surface (the trial deployment may run with the public
+    # OpenAI surface disabled, relying entirely on the hidden connection).
+    # We short-circuit only when there are also no hidden connections.
     if not request.app.state.config.ENABLE_OPENAI_API:
-        return {"data": []}
+        hidden_only = await _get_hidden_connection_models(request, user=user)
+        request.app.state.OPENAI_MODELS = {
+            model["id"]: model for model in hidden_only
+        }
+        return {"data": hidden_only}
 
     responses = await get_all_models_responses(request, user=user)
 
@@ -444,6 +578,15 @@ async def get_all_models(request: Request, user: UserModel) -> dict[str, list]:
         return merged_list
 
     models = {"data": merge_models_lists(map(extract_data, responses))}
+
+    # try.sage trial mode: union the hidden connection's models into the
+    # public list. They carry _try_sage_hidden_id so dispatch sites route
+    # them back through the hidden registry (not OPENAI_API_BASE_URLS).
+    # Already filtered to TRY_SAGE_LLM_MODELS inside the helper.
+    hidden_models = await _get_hidden_connection_models(request, user=user)
+    if hidden_models:
+        models["data"].extend(hidden_models)
+
     log.debug(f"models: {models}")
 
     request.app.state.OPENAI_MODELS = {model["id"]: model for model in models["data"]}
@@ -764,13 +907,12 @@ async def generate_chat_completion(
             detail="Model not found",
         )
 
-    # Get the API config for the model
-    api_config = request.app.state.config.OPENAI_API_CONFIGS.get(
-        str(idx),
-        request.app.state.config.OPENAI_API_CONFIGS.get(
-            request.app.state.config.OPENAI_API_BASE_URLS[idx], {}
-        ),  # Legacy support
-    )
+    # Resolve URL / key / api_config in one place — handles both
+    # admin-managed connections (via OPENAI_API_BASE_URLS[idx]) and
+    # try.sage hidden connections (via the in-memory registry). Hidden
+    # connections never appear in the public lists, so direct indexing
+    # would IndexError; the resolver routes them through the registry.
+    url, key, api_config = _resolve_inference_endpoint(request, model)
 
     prefix_id = api_config.get("prefix_id", None)
     if prefix_id:
@@ -784,9 +926,6 @@ async def generate_chat_completion(
             "email": user.email,
             "role": user.role,
         }
-
-    url = request.app.state.config.OPENAI_API_BASE_URLS[idx]
-    key = request.app.state.config.OPENAI_API_KEYS[idx]
 
     # Check if model is from "o" series
     is_o_series = payload["model"].lower().startswith(("o1", "o3", "o4"))
@@ -915,17 +1054,22 @@ async def embeddings(request: Request, form_data: dict, user):
     Returns:
         dict: OpenAI-compatible embeddings response.
     """
-    idx = 0
     # Prepare payload/body
     body = json.dumps(form_data)
-    # Find correct backend url/key based on model
+    # Find correct backend url/key based on model — handles both
+    # admin-managed and try.sage hidden connections through the resolver.
     await get_all_models(request, user=user)
     model_id = form_data.get("model")
     models = request.app.state.OPENAI_MODELS
-    if model_id in models:
-        idx = models[model_id]["urlIdx"]
-    url = request.app.state.config.OPENAI_API_BASE_URLS[idx]
-    key = request.app.state.config.OPENAI_API_KEYS[idx]
+    model = models.get(model_id) if model_id else None
+    if model is None:
+        # Fall back to the first public connection — preserves the
+        # original "idx = 0" behavior when an unrecognized model_id is
+        # passed (some upstream callers rely on this).
+        url = request.app.state.config.OPENAI_API_BASE_URLS[0]
+        key = request.app.state.config.OPENAI_API_KEYS[0]
+    else:
+        url, key, _ = _resolve_inference_endpoint(request, model)
     r = None
     session = None
     streaming = False

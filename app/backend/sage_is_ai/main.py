@@ -93,6 +93,8 @@ from sage_is_ai.routers import (
     files,
     functions,
     magic_links,
+    sage_dummy_tools,
+    sage_runtime,
     memories,
     models,
     knowledge,
@@ -350,6 +352,22 @@ from sage_is_ai.config import (
     BRIDGE_AUTO_CREATE_USERS,
     BRIDGE_DEFAULT_USER_ROLE,
     BRIDGE_RATE_LIMIT_PER_MINUTE,
+    # try.sage trial mode (runtime-tunable; env-only secrets live in env.py)
+    TRY_SAGE_RESET_INTERVAL_HOURS,
+    TRY_SAGE_ADMIN_EXTEND_HOURS,
+    TRY_SAGE_RESET_AT,
+    TRY_SAGE_TOOL_SERVER_URL,
+    TRY_SAGE_DUMMY_TOOL_SERVER_URL,
+    TRY_SAGE_PERSONA_SEED_ENABLED,
+    TRY_SAGE_USER_SEAT_COUNT,
+    TRY_SAGE_TUTORIAL_STEPS_JSON,
+    TRY_SAGE_BANNER_TEXT,
+    # Analytics shim (provider-agnostic; frontend decides which to load)
+    ANALYTICS_MATOMO_URL,
+    ANALYTICS_MATOMO_SITE_ID,
+    ANALYTICS_GA_MEASUREMENT_ID,
+    ANALYTICS_PLAUSIBLE_DOMAIN,
+    ANALYTICS_PLAUSIBLE_SCRIPT_URL,
     # Misc
     ENV,
     CACHE_DIR,
@@ -414,6 +432,13 @@ from sage_is_ai.env import (
     ENABLE_OTEL,
     EXTERNAL_PWA_MANIFEST_URL,
     AIOHTTP_CLIENT_SESSION_SSL,
+    # try.sage trial-mode master switch and env-only secrets. Imported here
+    # so the /api/config response can advertise enabled-state to the
+    # frontend; URL/key are NEVER returned in any response.
+    ENABLE_TRY_SAGE,
+    TRY_SAGE_LLM_API_URL,
+    TRY_SAGE_LLM_API_KEY,
+    TRY_SAGE_LLM_MODELS,
 )
 
 
@@ -525,6 +550,84 @@ async def periodic_temporary_account_cleanup():
             log.error(f"Error in temporary account cleanup: {e}")
 
 
+async def periodic_try_sage_reset(app):
+    """Sleep-loop that fires the trial reset when the deadline passes.
+
+    Wakes every 5 minutes. The actual wipe only runs when
+    TRY_SAGE_RESET_AT <= now, so 99% of ticks are a cheap dict read.
+    The 5-minute cadence is a deliberate trade: it bounds the
+    worst-case drift on the deadline at ~5 minutes (fine for a 24h
+    workshop window) while staying well inside the Anthropic prompt
+    cache window for any tooling that observes this loop's logs.
+    Polling more often would burn cache hits for no behavioural gain.
+
+    Loops forever; lifespan teardown cancels the task.
+    """
+    # Deferred imports — match periodic_temporary_account_cleanup's
+    # pattern, avoid lifespan-time circulars, and keep the cold path
+    # off the import graph for non-trial deployments.
+    from datetime import datetime, timedelta, timezone
+
+    from sage_is_ai.utils.try_sage_seed import reset_persona_state
+    from sage_is_ai.utils.try_sage_tool_servers import (
+        register_try_sage_tool_servers,
+    )
+    from sage_is_ai.utils.try_sage_hidden_connections import (
+        register_hidden_connections,
+    )
+
+    POLL_SECONDS = 300  # 5 minutes — see docstring.
+
+    while True:
+        try:
+            await asyncio.sleep(POLL_SECONDS)
+            cfg = app.state.config
+            raw = cfg.TRY_SAGE_RESET_AT
+            if not raw:
+                # Lifespan startup or /status will initialise it.
+                continue
+
+            try:
+                deadline = datetime.fromisoformat(raw)
+                if deadline.tzinfo is None:
+                    deadline = deadline.replace(tzinfo=timezone.utc)
+            except ValueError:
+                log.warning(
+                    "try_sage.reset.skip reason=parse_error raw=%r", raw
+                )
+                continue
+
+            now = datetime.now(timezone.utc)
+            if now < deadline:
+                continue
+
+            # Deadline passed — run the reset. The order matches the
+            # lifespan startup order: tool servers re-registered first
+            # (idempotent against config drift in long-running pods),
+            # hidden connection re-registered next (memory-only, so a
+            # warm-reloaded pod refreshes its in-process state if env
+            # vars were rotated since boot), then persona state wiped.
+            # Doing the wipe last means the registries are healthy
+            # before any new persona-issued chat hits inference.
+            await register_try_sage_tool_servers(app)
+            register_hidden_connections(app)
+            await reset_persona_state(app)
+
+            new_deadline = now + timedelta(
+                hours=cfg.TRY_SAGE_RESET_INTERVAL_HOURS
+            )
+            cfg.TRY_SAGE_RESET_AT = new_deadline.isoformat()
+            log.info(
+                "try_sage.reset.complete next_reset=%s",
+                new_deadline.isoformat(),
+            )
+        except Exception:
+            # Per-iteration error containment — match the existing
+            # cleanup task's pattern. A single bad reset must never
+            # kill the loop; the next tick retries cleanly.
+            log.exception("try_sage.reset.error")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.instance_id = INSTANCE_ID
@@ -562,8 +665,28 @@ async def lifespan(app: FastAPI):
         limiter = anyio.to_thread.current_default_thread_limiter()
         limiter.total_tokens = THREAD_POOL_SIZE
 
+    # try.sage trial mode bootstrap. Order matters:
+    #   1. Tool servers (markdown-search + dummy-tools) — idempotent,
+    #      deduped by URL across reboots and resets.
+    #   2. Hidden inference connection — memory-only, never persisted.
+    #      The connection lives on app.state.try_sage_hidden_connections,
+    #      separate from app.state.config.OPENAI_API_BASE_URLS, so admin
+    #      endpoints structurally cannot leak the URL or key.
+    #   3. Persona seed + agents + KBs + magic-link cache. Safe to skip
+    #      when ENABLE_TRY_SAGE is False; the helper short-circuits.
+    from sage_is_ai.utils.try_sage_tool_servers import register_try_sage_tool_servers
+    from sage_is_ai.utils.try_sage_hidden_connections import register_hidden_connections
+    from sage_is_ai.utils.try_sage_seed import seed_try_sage
+    await register_try_sage_tool_servers(app)
+    register_hidden_connections(app)
+    await seed_try_sage(app)
+
     asyncio.create_task(periodic_usage_pool_cleanup())
     asyncio.create_task(periodic_temporary_account_cleanup())
+    # Trial-mode reset loop. Spawned only when try mode is on so
+    # non-trial deployments don't carry an idle 5-minute-tick task.
+    if ENABLE_TRY_SAGE:
+        asyncio.create_task(periodic_try_sage_reset(app))
 
     if app.state.config.ENABLE_BASE_MODELS_CACHE:
         await get_all_models(
@@ -761,6 +884,26 @@ app.state.config.ENABLE_USER_WEBHOOKS = ENABLE_USER_WEBHOOKS
 
 app.state.config.ENABLE_EVALUATION_ARENA_MODELS = ENABLE_EVALUATION_ARENA_MODELS
 app.state.config.EVALUATION_ARENA_MODELS = EVALUATION_ARENA_MODELS
+
+# try.sage trial-mode runtime config. Secrets (URL/key) stay in env.py
+# and are imported directly where needed; everything here is admin-safe.
+app.state.config.TRY_SAGE_RESET_INTERVAL_HOURS = TRY_SAGE_RESET_INTERVAL_HOURS
+app.state.config.TRY_SAGE_ADMIN_EXTEND_HOURS = TRY_SAGE_ADMIN_EXTEND_HOURS
+app.state.config.TRY_SAGE_RESET_AT = TRY_SAGE_RESET_AT
+app.state.config.TRY_SAGE_TOOL_SERVER_URL = TRY_SAGE_TOOL_SERVER_URL
+app.state.config.TRY_SAGE_DUMMY_TOOL_SERVER_URL = TRY_SAGE_DUMMY_TOOL_SERVER_URL
+app.state.config.TRY_SAGE_PERSONA_SEED_ENABLED = TRY_SAGE_PERSONA_SEED_ENABLED
+app.state.config.TRY_SAGE_USER_SEAT_COUNT = TRY_SAGE_USER_SEAT_COUNT
+app.state.config.TRY_SAGE_TUTORIAL_STEPS_JSON = TRY_SAGE_TUTORIAL_STEPS_JSON
+app.state.config.TRY_SAGE_BANNER_TEXT = TRY_SAGE_BANNER_TEXT
+
+# Analytics shim. Empty values mean "not enabled"; multiple providers
+# can be configured at once and the frontend will dispatch to all of them.
+app.state.config.ANALYTICS_MATOMO_URL = ANALYTICS_MATOMO_URL
+app.state.config.ANALYTICS_MATOMO_SITE_ID = ANALYTICS_MATOMO_SITE_ID
+app.state.config.ANALYTICS_GA_MEASUREMENT_ID = ANALYTICS_GA_MEASUREMENT_ID
+app.state.config.ANALYTICS_PLAUSIBLE_DOMAIN = ANALYTICS_PLAUSIBLE_DOMAIN
+app.state.config.ANALYTICS_PLAUSIBLE_SCRIPT_URL = ANALYTICS_PLAUSIBLE_SCRIPT_URL
 
 app.state.config.OAUTH_USERNAME_CLAIM = OAUTH_USERNAME_CLAIM
 app.state.config.OAUTH_PICTURE_CLAIM = OAUTH_PICTURE_CLAIM
@@ -1268,6 +1411,16 @@ app.include_router(groups.router, prefix="/api/v1/groups", tags=["groups"])
 app.include_router(
     magic_links.router, prefix="/api/v1/magic-links", tags=["magic-links"]
 )
+app.include_router(
+    sage_dummy_tools.router,
+    prefix="/api/v1/sage/dummy-tools",
+    tags=["sage-dummy-tools"],
+)
+app.include_router(
+    sage_runtime.router,
+    prefix="/api/v1/sage/runtime",
+    tags=["sage-runtime"],
+)
 app.include_router(files.router, prefix="/api/v1/files", tags=["files"])
 app.include_router(functions.router, prefix="/api/v1/functions", tags=["functions"])
 app.include_router(
@@ -1635,6 +1788,11 @@ async def get_app_config(request: Request):
             "enable_magic_link_login": ENABLE_MAGIC_LINK_LOGIN.value,
             "enable_websocket": ENABLE_WEBSOCKET_SUPPORT,
             "enable_version_update_check": ENABLE_VERSION_UPDATE_CHECK,
+            # Anonymous users need this so the trial banner mounts on /auth
+            # and /join routes before login. Detailed trial state (reset
+            # timestamp, seat count, etc.) is gated to authenticated users
+            # below — pre-auth UI fetches it from /api/v1/sage/runtime/*.
+            "enable_try_sage": ENABLE_TRY_SAGE,
             **(
                 {
                     "enable_direct_connections": app.state.config.ENABLE_DIRECT_CONNECTIONS,
@@ -1697,6 +1855,39 @@ async def get_app_config(request: Request):
                     "pending_user_overlay_title": app.state.config.PENDING_USER_OVERLAY_TITLE,
                     "pending_user_overlay_content": app.state.config.PENDING_USER_OVERLAY_CONTENT,
                     "response_watermark": app.state.config.RESPONSE_WATERMARK,
+                },
+                # try.sage trial state. Only ever populated when the trial
+                # subsystem is on. The hidden LLM connection's URL and key
+                # are deliberately absent — only the public surface (reset
+                # cadence, seat count, banner copy, tutorial steps) is
+                # exposed to the frontend.
+                "try_sage": (
+                    {
+                        "enabled": True,
+                        "reset_at": str(app.state.config.TRY_SAGE_RESET_AT),
+                        "reset_interval_hours": app.state.config.TRY_SAGE_RESET_INTERVAL_HOURS,
+                        "admin_extend_hours": app.state.config.TRY_SAGE_ADMIN_EXTEND_HOURS,
+                        "seat_count": app.state.config.TRY_SAGE_USER_SEAT_COUNT,
+                        "banner_text": app.state.config.TRY_SAGE_BANNER_TEXT,
+                        "tutorial_steps_json": app.state.config.TRY_SAGE_TUTORIAL_STEPS_JSON,
+                    }
+                    if ENABLE_TRY_SAGE
+                    else {"enabled": False}
+                ),
+                # Analytics shim. The frontend loads each provider's
+                # script tag only if its config is non-empty.
+                "analytics": {
+                    "matomo": {
+                        "url": app.state.config.ANALYTICS_MATOMO_URL,
+                        "site_id": app.state.config.ANALYTICS_MATOMO_SITE_ID,
+                    },
+                    "ga": {
+                        "measurement_id": app.state.config.ANALYTICS_GA_MEASUREMENT_ID,
+                    },
+                    "plausible": {
+                        "domain": app.state.config.ANALYTICS_PLAUSIBLE_DOMAIN,
+                        "script_url": app.state.config.ANALYTICS_PLAUSIBLE_SCRIPT_URL,
+                    },
                 },
                 "license_metadata": app.state.LICENSE_METADATA,
                 **(

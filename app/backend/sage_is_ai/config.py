@@ -3119,3 +3119,153 @@ BRIDGE_RATE_LIMIT_PER_MINUTE = PersistentConfig(
     "bridges.rate_limit_per_minute",
     int(os.environ.get("BRIDGE_RATE_LIMIT_PER_MINUTE", "30")),
 )
+
+
+####################################
+# try.sage TRIAL MODE — runtime-tunable settings
+####################################
+# Tunable values for the trial environment. The master switch
+# (ENABLE_TRY_SAGE) and the secret hidden-connection details live in env.py
+# because they must not be DB-persisted. Everything here is safe to expose
+# to admins via the UI and persist via PersistentConfig.
+
+# Reset cadence. The auto-reset task wipes per-persona chats and files at
+# this interval. 24h by default — long enough for a workshop session.
+TRY_SAGE_RESET_INTERVAL_HOURS = PersistentConfig(
+    "TRY_SAGE_RESET_INTERVAL_HOURS",
+    "try_sage.reset.interval_hours",
+    int(os.environ.get("TRY_SAGE_RESET_INTERVAL_HOURS", "24")),
+)
+
+# How much an admin can extend the current reset window with one click.
+# Granularity is one extension at a time (the endpoint enforces no
+# stacking) so misuse can't push a trial out indefinitely.
+TRY_SAGE_ADMIN_EXTEND_HOURS = PersistentConfig(
+    "TRY_SAGE_ADMIN_EXTEND_HOURS",
+    "try_sage.admin.extend_hours",
+    int(os.environ.get("TRY_SAGE_ADMIN_EXTEND_HOURS", "24")),
+)
+
+# ISO8601 timestamp for the next scheduled reset. Updated by the auto-reset
+# task and the admin extend/reset endpoints. Persisted so it survives
+# restarts — a pod that bounces mid-window picks up where it left off.
+TRY_SAGE_RESET_AT = PersistentConfig(
+    "TRY_SAGE_RESET_AT",
+    "try_sage.reset.at",
+    "",
+)
+
+# OpenAPI tool servers registered automatically when try mode is on.
+# Both URLs flow into TOOL_SERVER_CONNECTIONS at lifespan startup (deduped
+# by URL) so admins see them in the tool servers list and chats can call
+# them without manual registration.
+TRY_SAGE_TOOL_SERVER_URL = PersistentConfig(
+    "TRY_SAGE_TOOL_SERVER_URL",
+    "try_sage.tool_servers.real_url",
+    os.environ.get(
+        "TRY_SAGE_TOOL_SERVER_URL",
+        "https://markdown-search.production.openco.ca",
+    ),
+)
+
+# Dummy-tools server URL. Empty by default — the lifespan hook fills this
+# in once the in-process dummy router is mounted (we cannot know the real
+# WEBUI_URL until startup) so do not set it manually unless you want to
+# point at an external dummy.
+TRY_SAGE_DUMMY_TOOL_SERVER_URL = PersistentConfig(
+    "TRY_SAGE_DUMMY_TOOL_SERVER_URL",
+    "try_sage.tool_servers.dummy_url",
+    os.environ.get("TRY_SAGE_DUMMY_TOOL_SERVER_URL", ""),
+)
+
+# Whether the persona seed runs at all. Kept separate from ENABLE_TRY_SAGE
+# so a deployer can run try mode against an externally-provisioned set of
+# accounts without re-seeding on every boot.
+TRY_SAGE_PERSONA_SEED_ENABLED = PersistentConfig(
+    "TRY_SAGE_PERSONA_SEED_ENABLED",
+    "try_sage.persona.seed_enabled",
+    os.environ.get("TRY_SAGE_PERSONA_SEED_ENABLED", "True").lower() == "true",
+)
+
+# Number of try-user-{n} accounts. Total personas = 2 (admin + facilitator)
+# + this. Default 3 → 5 personas total. Capped at 5 to keep the persona
+# switcher and banner UX manageable.
+_seat_count_raw = int(os.environ.get("TRY_SAGE_USER_SEAT_COUNT", "3"))
+TRY_SAGE_USER_SEAT_COUNT = PersistentConfig(
+    "TRY_SAGE_USER_SEAT_COUNT",
+    "try_sage.persona.user_seat_count",
+    max(1, min(5, _seat_count_raw)),
+)
+
+# Tutorial steps shown in the try-mode tutorial overlay. JSON array of
+# {id, title, video_url, dismissible, description?}. When unset the
+# frontend falls back to a baked-in default that renders "video coming
+# soon" placeholder cards — see TrySageTutorial.svelte (B4).
+TRY_SAGE_TUTORIAL_STEPS_JSON = PersistentConfig(
+    "TRY_SAGE_TUTORIAL_STEPS_JSON",
+    "try_sage.tutorial.steps_json",
+    os.environ.get("TRY_SAGE_TUTORIAL_STEPS_JSON", ""),
+)
+
+# Banner copy shown in the always-visible row alongside the countdown.
+TRY_SAGE_BANNER_TEXT = PersistentConfig(
+    "TRY_SAGE_BANNER_TEXT",
+    "try_sage.banner.text",
+    os.environ.get("TRY_SAGE_BANNER_TEXT", "try.sage trial"),
+)
+
+# Persona-KB content version. The seed routine hashes the contents of every
+# `data/try_sage_agents/{slug}/kb/` directory and compares against this
+# value. When the hash changes (someone edited a doc), only the affected
+# agent's KB re-ingests; otherwise we skip the expensive embedding pass.
+# Persisted as a JSON object keyed by slug — `{"sage-startr-style": "abcd…"}`
+# — so each agent's KB version is tracked independently.
+TRY_SAGE_KB_INGESTED_VERSION = PersistentConfig(
+    "TRY_SAGE_KB_INGESTED_VERSION",
+    "try_sage.kb.ingested_version",
+    os.environ.get("TRY_SAGE_KB_INGESTED_VERSION", "{}"),
+)
+
+
+####################################
+# Analytics — provider-agnostic shim
+####################################
+# Frontend reads these from /api/config and dispatches to whichever
+# providers are configured (Matomo, Google Analytics, Plausible). Empty
+# values mean "not enabled". Multiple providers can be configured at once.
+
+ANALYTICS_MATOMO_URL = PersistentConfig(
+    "ANALYTICS_MATOMO_URL",
+    "analytics.matomo.url",
+    os.environ.get("ANALYTICS_MATOMO_URL", ""),
+)
+
+ANALYTICS_MATOMO_SITE_ID = PersistentConfig(
+    "ANALYTICS_MATOMO_SITE_ID",
+    "analytics.matomo.site_id",
+    os.environ.get("ANALYTICS_MATOMO_SITE_ID", ""),
+)
+
+ANALYTICS_GA_MEASUREMENT_ID = PersistentConfig(
+    "ANALYTICS_GA_MEASUREMENT_ID",
+    "analytics.ga.measurement_id",
+    os.environ.get("ANALYTICS_GA_MEASUREMENT_ID", ""),
+)
+
+ANALYTICS_PLAUSIBLE_DOMAIN = PersistentConfig(
+    "ANALYTICS_PLAUSIBLE_DOMAIN",
+    "analytics.plausible.domain",
+    os.environ.get("ANALYTICS_PLAUSIBLE_DOMAIN", ""),
+)
+
+ANALYTICS_PLAUSIBLE_SCRIPT_URL = PersistentConfig(
+    "ANALYTICS_PLAUSIBLE_SCRIPT_URL",
+    "analytics.plausible.script_url",
+    # Self-hosted Plausible deployments override this; cloud Plausible
+    # uses the default. Kept as a setting rather than a constant so a
+    # deployer can point at their own JS bundle.
+    os.environ.get(
+        "ANALYTICS_PLAUSIBLE_SCRIPT_URL",
+        "https://plausible.io/js/script.js",
+    ),
+)
