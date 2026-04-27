@@ -6,9 +6,11 @@
 	const { saveAs } = fileSaver;
 	import mermaid from 'mermaid';
 
-	import { goto } from '$app/navigation';
+	import { goto, afterNavigate } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { fade } from 'svelte/transition';
+
+	import { initAnalytics, pageview } from '$lib/utils/analytics';
 
 	import { getKnowledgeBases } from '$lib/apis/knowledge';
 	import { getFunctions } from '$lib/apis/functions';
@@ -48,10 +50,12 @@
 	import SettingsModal from '$lib/components/chat/SettingsModal.svelte';
 	import ChangesAndSetupModal from '$lib/components/ChangesAndSetupModal.svelte';
 	import DevMissionReminderModal from '$lib/components/DevMissionReminderModal.svelte';
+	import TrySageTutorial from '$lib/components/setup/TrySageTutorial.svelte';
 	import AccountPending from '$lib/components/layout/Overlay/AccountPending.svelte';
 	import AccountExpired from '$lib/components/layout/Overlay/AccountExpired.svelte';
 	import UpdateInfoToast from '$lib/components/layout/UpdateInfoToast.svelte';
 	import Spinner from '$lib/components/common/Spinner.svelte';
+	import TrySageBanner from '$lib/components/TrySageBanner.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -360,11 +364,24 @@
 	$: if (!$settings?.devMissionSignup || $config?.dev_mode) {
 		stopDevMissionNag();
 	}
+
+	// Analytics shim. `initAnalytics` is idempotent and gated on the
+	// presence of `$config.analytics.*` blocks, so this re-runs safely
+	// whenever the config store re-emits (admin edits, hot-reload).
+	$: if ($config) initAnalytics();
+
+	// Virtual pageview on every SvelteKit client-side navigation.
+	// SvelteKit does not fire a native browser pageview on SPA route
+	// transitions, so analytics providers would under-count without this.
+	afterNavigate(({ to }) => {
+		if (to) pageview(to.url.pathname);
+	});
 </script>
 
 <SettingsModal bind:show={$showSettings} />
 <ChangesAndSetupModal bind:show={$showChangesAndSetup} />
 <DevMissionReminderModal bind:show={$showDevMissionReminder} />
+<TrySageTutorial />
 
 {#if version && compareVersion(version.latest, version.current) && ($settings?.showUpdateToast ?? true)}
 	<div style="--pos:absolute; --bottom:2rem; --right:2rem; --z:50" in:fade={{ duration: 100 }}>
@@ -379,6 +396,7 @@
 {/if}
 
 {#if $user}
+	<TrySageBanner />
 	<div style="--pos:relative" class="app">
 		<div
 			style="--bg:var(--white); --br: 1rem; --shadow:6; --bgc:#fff; --dark-bgc:var(--color-gray-900); --h:100vh; --maxh:100dvh; --of:auto; --d:flex; --fd:row; --jc:flex-end"
