@@ -107,6 +107,18 @@ _DEFAULT_AGENT_SLUGS: list[str] = [
 ]
 _AGENTS_WITH_KB: set[str] = {"sage-startr-style", "astropi-ai-tutor"}
 
+# Per-slug fallback `base_model` when the MD frontmatter ships an empty
+# value. The MD files are content, not code — workshop authors edit them
+# without rebuilding — so we keep a code-side safety net mapping each
+# canonical agent to a sensible Groq-served model. If the upstream
+# provider changes its model IDs, edit here AND the MD frontmatter
+# together. Slugs not in this map fall through to "" (admin must pick).
+_AGENT_DEFAULT_BASE_MODELS: dict[str, str] = {
+    "sage-strawberry": "openai/gpt-oss-120b",
+    "sage-startr-style": "qwen/qwen3-32b",
+    "astropi-ai-tutor": "meta-llama/llama-4-scout-17b-16e-instruct",
+}
+
 
 def _parse_agent_md(path: str) -> Optional[dict]:
     """Parse one agent definition file.
@@ -146,11 +158,16 @@ def _parse_agent_md(path: str) -> Optional[dict]:
         return None
 
     body = match.group(2).strip()
+    slug = meta.get("slug")
+    # Fall back to the per-slug default when the MD ships empty. Without
+    # a base_model the agent has nothing to call and never appears in
+    # the model selector — see the seed-data README for the rationale.
+    base_model = meta.get("base_model", "") or _AGENT_DEFAULT_BASE_MODELS.get(slug, "")
     return {
-        "slug": meta.get("slug"),
+        "slug": slug,
         "name": meta.get("name"),
         "description": meta.get("description", ""),
-        "base_model": meta.get("base_model", ""),
+        "base_model": base_model,
         "system_prompt": body,
     }
 
@@ -511,12 +528,16 @@ def mint_persona_magic_link(email: str, ttl_hours: int) -> str:
       - claim `type="magic_link"` so `verify_magic_link_login` accepts it
       - `sub` is the persona email
       - unique `jti` to prevent replay across resets
-    Only the TTL differs (24h-ish vs. 15min) — that's the whole point of
-    this helper.
 
-    Returns the full URL or, if WEBUI_URL is empty (e.g. local dev with
-    no host configured), a relative `/auth#magic_token=...` URL. The
-    frontend banner handles both shapes.
+    Returns a fully-qualified URL. Resolution order for the host:
+      1. ``WEBUI_URL`` config (operator-set, the prod or LAN-friendly path)
+      2. ``http://localhost:{WEBUI_PORT}`` env (single-host local dev)
+      3. ``http://localhost:8080`` (matches the default Makefile mapping)
+
+    A relative URL is never returned — that path used to land here when
+    operators printed links to a terminal and tried to copy-paste, ending
+    up with broken `localhost`-less URLs that wouldn't resolve in a
+    browser. Always emit something a human can click.
     """
     # Deferred imports — same reason as the rest of the module: we don't
     # want a `mint_persona_magic_link` import to drag the entire auth
@@ -535,7 +556,11 @@ def mint_persona_magic_link(email: str, ttl_hours: int) -> str:
 
     base = (WEBUI_URL.value or "").rstrip("/")
     if not base:
-        return f"/auth#magic_token={token}"
+        # Last-resort fallback for local-dev workshops where the operator
+        # never configured WEBUI_URL. Matches `PORT_MAPPING ?= 8080:8080`
+        # in the Makefile. Operator can still override via WEBUI_URL.
+        port = os.environ.get("WEBUI_PORT", "8080")
+        base = f"http://localhost:{port}"
     return f"{base}/auth#magic_token={token}"
 
 
@@ -595,19 +620,92 @@ async def seed_try_sage(app) -> None:
         if slug in _AGENTS_WITH_KB:
             _ensure_kb(app, admin_user.id, slug)
 
-    # Persona-link cache. Lives on app.state (not in DB) — these are
-    # short-lived enough that a pod bounce regenerating them is fine,
-    # and storing JWTs in the config DB would be a credential-leak vector.
-    ttl_hours = int(app.state.config.TRY_SAGE_RESET_INTERVAL_HOURS)
-    app.state.try_sage_persona_links = {
-        persona["key"]: mint_persona_magic_link(persona["email"], ttl_hours)
-        for persona in personas
-    }
+    # Persona-link cache. Lives on app.state (not in DB).
+    #
+    # Stable links by design: mint once on first boot and reuse across
+    # every subsequent seed call (resets, drift correction). Reset wipes
+    # account contents, not the magic-link tokens — operators want to
+    # hand out URLs once before a workshop and trust them across a
+    # week-long campaign. TTL is `TRY_SAGE_PERSONA_LINK_TTL_DAYS`
+    # (default 7 days) rather than the reset interval so links outlast
+    # many reset cycles within a single workshop.
+    #
+    # If the cache survives the seed call (the normal path), no new JWTs
+    # get minted and no fresh URLs print to the terminal — the previously-
+    # shared links remain valid.
+    ttl_days = int(app.state.config.TRY_SAGE_PERSONA_LINK_TTL_DAYS)
+    ttl_hours = ttl_days * 24
+
+    existing = getattr(app.state, "try_sage_persona_links", None) or {}
+    cached_keys = {p["key"] for p in personas if p["key"] in existing}
+    needs_mint = cached_keys != {p["key"] for p in personas}
+
+    if needs_mint:
+        # First boot, or seat-count change added new personas. Mint only
+        # the missing ones — preserve any links that were already cached.
+        new_links = dict(existing)
+        for persona in personas:
+            if persona["key"] not in new_links:
+                new_links[persona["key"]] = mint_persona_magic_link(
+                    persona["email"], ttl_hours
+                )
+        app.state.try_sage_persona_links = new_links
+
     log.info(
         f"try_sage_seed: seeded {len(personas)} personas, "
         f"{len(_DEFAULT_AGENT_SLUGS)} agents, KB folders for "
         f"{sorted(_AGENTS_WITH_KB)}"
     )
+
+    # Print persona magic links to stdout — but only when we actually
+    # minted (or re-minted) something. Reset cycles preserve the cache,
+    # so the operator's terminal stays clean. First boot prints once;
+    # adding a new persona seat prints once per added seat.
+    if needs_mint:
+        _print_persona_links(
+            personas, app.state.try_sage_persona_links, ttl_hours
+        )
+
+
+def _print_persona_links(
+    personas: list[dict], links: dict[str, str], ttl_hours: int
+) -> None:
+    """Render the persona-link block to stdout in a workshop-friendly format.
+
+    Kept as its own helper so the formatting is testable and so `flush=True`
+    is in one place. Width is fixed at 80 columns to fit a typical terminal
+    without wrapping URLs to a second line.
+
+    Fires only on initial seed (or when a new persona seat is added) —
+    reset cycles preserve the cache and stay quiet. See `seed_try_sage`.
+    """
+    bar = "=" * 80
+    # Persona key column width sized to the longest key for tidy alignment.
+    key_width = max(len(p["key"]) for p in personas)
+    ttl_days = max(1, ttl_hours // 24)
+
+    print(bar, flush=True)
+    print(
+        f"try.sage trial — persona magic links (valid for ~{ttl_days} days)",
+        flush=True,
+    )
+    print(bar, flush=True)
+    print(
+        "Open any URL below to sign in as that persona. Links survive "
+        "resets — only account contents (chats, files) get wiped.",
+        flush=True,
+    )
+    print("", flush=True)
+    for persona in personas:
+        url = links.get(persona["key"], "<unavailable>")
+        print(f"  {persona['key']:<{key_width}}  {url}", flush=True)
+    print("", flush=True)
+    print(
+        "Same links appear in the trial banner and at "
+        "GET /api/v1/sage/runtime/personas.",
+        flush=True,
+    )
+    print(bar, flush=True)
 
 
 async def reset_persona_state(app) -> None:

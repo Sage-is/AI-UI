@@ -33,15 +33,25 @@ Persisting them — even as a "hidden" row — would mean a DB dump leaks
 the trial's keys-to-the-kingdom. Keeping them in process memory means
 a restart re-reads the env, and a DB compromise reveals nothing.
 
-Why the model allowlist defaults to empty
------------------------------------------
+Why the model allowlist is opt-in narrowing
+-------------------------------------------
 
-``TRY_SAGE_LLM_MODELS`` is the gate that decides which models from the
-upstream provider are exposed. The upstream provider may technically
-serve hundreds of model IDs; we expose only the ones the trial pays for.
-Defaulting to **empty** (rather than "all") is safe-by-default: a
-misconfigured deployment exposes zero models rather than every model the
-upstream key can call. Operators must opt models in explicitly.
+``TRY_SAGE_LLM_MODELS`` is an *opt-in narrowing filter*, not a gate.
+
+- **Empty (default)**: pass through every model the upstream provider
+  serves. The upstream key is the real authority on what the trial can
+  call — its IAM/permissions are the gate, not our allowlist.
+- **Populated**: constrain the trial to that subset. Useful when the
+  upstream key can call expensive models (GPT-4 class) and the trial
+  should only expose cheap ones (GPT-4o-mini class).
+
+Earlier revisions defaulted "empty" to "expose nothing" as defense in
+depth. In practice that doubled the friction during workshop bring-up:
+operators set URL+key, hit `/api/models`, saw an empty list, thought
+the trial was broken, opened the docs to find out about a third env
+var. The upstream key already constrains what the trial can call —
+making the allowlist required just hid that signal behind a confusing
+empty response.
 """
 
 import hashlib
@@ -132,10 +142,12 @@ def register_hidden_connections(app) -> None:
     entry = _build_hidden_entry(url, key)
     app.state.try_sage_hidden_connections = [entry]
 
+    allowlist_size = len(TRY_SAGE_LLM_MODELS)
     log.info(
-        "try.sage registered hidden LLM connection (id=%s, allowlist=%d models).",
+        "try.sage registered hidden LLM connection (id=%s, allowlist=%d %s).",
         entry["id"],
-        len(TRY_SAGE_LLM_MODELS),
+        allowlist_size,
+        "models" if allowlist_size > 0 else "models — empty means 'pass through full upstream list'",
     )
 
 
@@ -176,20 +188,65 @@ def filter_admin_visible(connections: list[dict]) -> list[dict]:
     return [conn for conn in connections if not is_hidden_connection(conn)]
 
 
+def _matches_allowlist(model_id: str, allowlist: set[str]) -> bool:
+    """Vendor-prefix-tolerant allowlist match.
+
+    Upstream providers (Groq, OpenRouter, etc.) often namespace model
+    IDs by vendor — ``openai/gpt-oss-120b``, ``qwen/qwen3-32b``,
+    ``meta-llama/llama-4-scout-17b-16e-instruct``. Operators tend to
+    write the bare name in ``TRY_SAGE_LLM_MODELS``. Exact match would
+    drop every model and the trial would silently expose nothing.
+
+    Match rules:
+
+    1. **Exact**: ``"openai/gpt-oss-120b" == "openai/gpt-oss-120b"``.
+    2. **Bare entry → namespaced model**: an allowlist entry without
+       ``/`` matches a model ID whose final path segment equals it.
+       ``gpt-oss-120b`` matches ``openai/gpt-oss-120b`` but not
+       ``openai/gpt-oss-20b``. Tail-segment compare, not substring —
+       avoids `gpt-4` matching `gpt-4-turbo`.
+
+    Trade-off: a bare allowlist entry matches every vendor that serves
+    the same tail name. Acceptable for trial mode — the operator can
+    always write the full prefixed ID for surgical control.
+    """
+    if model_id in allowlist:
+        return True
+    tail = model_id.rsplit("/", 1)[-1]
+    for entry in allowlist:
+        if "/" in entry:
+            continue  # Namespaced entries only match exactly (handled above).
+        if tail == entry:
+            return True
+    return False
+
+
 def filter_models_to_allowlist(
     models: list[dict], hidden_conn_id: str
 ) -> list[dict]:
-    """Trim a model list down to ``TRY_SAGE_LLM_MODELS`` for a given hidden conn.
+    """Optionally narrow a model list to ``TRY_SAGE_LLM_MODELS``.
 
     Models served by *other* connections (positive ``urlIdx``, or
     different ``hidden_conn_id``) are passed through unchanged — this
     helper is only authoritative for one hidden connection at a time.
 
-    The allowlist defaults to empty, so an unset ``TRY_SAGE_LLM_MODELS``
-    means zero models are exposed from the hidden connection. That is
-    intentional — see the module docstring on safe-by-default.
+    Allowlist semantics (see module docstring):
+
+    - **Empty** (default): pass every hidden-conn model through. The
+      upstream provider's key is the real gate — if the trial deployer
+      doesn't want users hitting the upstream's full catalog they can
+      either narrow the upstream key's permissions or set this list.
+    - **Populated**: keep only the named model IDs from the hidden
+      connection. Match is vendor-prefix tolerant (see
+      ``_matches_allowlist``) so an operator can write `qwen3-32b` and
+      have it match Groq's `qwen/qwen3-32b`.
     """
     allowlist = set(TRY_SAGE_LLM_MODELS or [])
+
+    # No allowlist → no filtering. Hidden-conn models pass through with
+    # the same handling as any other connection.
+    if not allowlist:
+        return list(models)
 
     filtered: list[dict] = []
     for model in models:
@@ -198,11 +255,11 @@ def filter_models_to_allowlist(
             filtered.append(model)
             continue
 
-        model_id = model.get("id") or model.get("name")
-        if model_id in allowlist:
+        model_id = model.get("id") or model.get("name") or ""
+        if _matches_allowlist(model_id, allowlist):
             filtered.append(model)
         # else: drop it. The upstream provider may technically serve
-        # this model, but the trial does not expose it.
+        # this model, but the trial deployer chose to narrow.
     return filtered
 
 
@@ -228,15 +285,26 @@ def get_hidden_status(app) -> dict:
     """Diagnostic dict for ``GET /api/v1/sage/runtime/llm-status`` (admin).
 
     Returns ``{"configured": bool, "model_count": int}`` only — never
-    the URL or key. ``configured`` is True iff at least one hidden
-    connection is registered AND the model allowlist is non-empty
-    (because a registered connection with an empty allowlist exposes
-    zero models, which is operationally indistinguishable from "not
-    configured" for the trial).
+    the URL or key.
+
+    ``configured`` is True iff at least one hidden connection is
+    registered. The allowlist is no longer required for "configured" —
+    an empty allowlist now means "pass through the upstream provider's
+    full model list" (see ``filter_models_to_allowlist`` and the module
+    docstring).
+
+    ``model_count`` reports the *allowlist* length:
+    - ``0`` means "no narrowing — every model the upstream serves is
+      exposed"
+    - ``N`` means "exactly these N model IDs are exposed"
+
+    Admins reading this endpoint should treat ``configured: true,
+    model_count: 0`` as "fully open to the upstream catalog" rather
+    than "broken".
     """
     connections = get_hidden_connections(app)
     model_count = len(TRY_SAGE_LLM_MODELS or [])
     return {
-        "configured": bool(connections) and model_count > 0,
+        "configured": bool(connections),
         "model_count": model_count,
     }

@@ -33,29 +33,58 @@ This file tracks active work only.
 
 _Items currently in progress. Move items here and or use tag source with `# FIXME:` when work begins._
 
-- [ ] **try.sage Runtime and Admin Controls**: (Alexander Somma + Izzy Plante)
-  - [ ] Gate try.sage.is ai behind env vars
-  - [ ] Seed default try.sage agents, including Sage Strawberry, Sage Startr.Style and AstroPi AI tutor
-  - [ ] Register `https://markdown-search.production.openco.ca` in `TOOL_SERVER_CONNECTIONS` for try.sage mode (reuse existing OpenAPI markdown server)
-  - [ ] Add a small OpenAPI dummy-tools server with clearly labeled placeholder endpoints that advertise advanced capabilities without exposing them in try mode
-  - [ ] Add a small set of trial helper endpoints (status, limits, reset policy) that return clear "you are in try mode" responses
-  - [ ] Default trial instances to auto-reset after 24 hours via env-configurable try.sage settings
-  - [ ] Add admin-only control to extend the reset deadline one day at a time
-  - [ ] Add admin-only quick-reset action for immediate reset when needed
-  - [ ] Enforce role-based permissions so only admins can extend or force-reset trial instances
-  - [ ] Document env vars, reset semantics, and admin-control behavior for local and CapRover deployments
+- [ ] **try.sage Manual Regression Testing**: (Alexander Somma + Izzy Plante) #critical — Phase A backend and Phase B frontend shipped 2026-04-27. Smoke before merge.
+  - [ ] Run `make try_sage_start` in a clean checkout. Container boots and `/api/v1/sage/runtime/status` responds.
+  - [ ] `GET /api/v1/sage/runtime/personas` returns 5 entries with non-empty `login_url` JWTs.
+  - [ ] Open a persona magic link in incognito. Sign-in lands on the home route as the right user.
+  - [ ] Banner shows live countdown. Admin extend/reset CTAs work. Non-admin sees the info line.
+  - [ ] Persona switcher in the user menu lists all 5 personas. Click navigates as expected.
+  - [ ] Tutorial modal opens on first persona sign-in. Steps render placeholder cards. Dismiss works.
+  - [ ] Admin → Settings → Trial Mode tab opens. "Reopen setup wizard" + "Replay tutorial" both fire.
+  - [ ] `GET /api/v1/configs/connections` as admin does NOT list the hidden try.sage connection.
+  - [ ] `GET /api/models` shows only the IDs in `TRY_SAGE_LLM_MODELS`. Chat completions against those models work.
+  - [ ] `make try_sage_stop` cleanly removes the container.
+  - [ ] Set `ENABLE_TRY_SAGE=false`. Confirm `/api/v1/sage/runtime/*` all 404.
+  - [ ] File one bug per defect found against the list above.
 
-- [ ] **try.sage.is Experience and Insights**: (Alexander Somma + Izzy Plante)
-  - [ ] Show a persistent top-of-screen try.sage banner with a clear countdown to next reset
-  - [ ] Show admin-specific reset controls in the user-bar area when logged in as admin
-  - [ ] Non admin should see messaging that admins can reset this timer etc...
-  - [ ] Add user-bar switching between the three try.sage personas: admin, facilitator, and user
-  - [ ] Add onboarding/tutorial guidance for workshop access, model switching, chat map, artifacts, and other key try.sage features, including how to build a Bialik Sage example agent
-  - [ ] Publish a Bialik Sage tutorial content package: three short videos plus a follow-up email with system prompts so users can experiment with their own version
-  - [ ] Keep system prompt disclosure only in the dedicated system-prompt video and update that single short video per team session, independent of codebase releases
-  - [ ] Decide which tutorial steps are dismissible versus always available from help/navigation
-  - [ ] Add Matomo analytics for try.sage usage across supported platforms, including persona switching, tutorial engagement, and core feature entry points
-  - [ ] Document the try.sage UX and analytics event map for product and implementation teams
+- [ ] **try.sage Production Decisions**: (Alexander Somma + Izzy Plante) — Surfaced by Docker exploration. Block CapRover one-click rollout.
+  - [ ] Decide where `TRY_SAGE_LLM_API_KEY` lives in production: plain env, Docker secret mount, or external vault. Recommend Docker secret for try.sage.is itself, plain env for self-hosted workshops.
+  - [ ] Decide whether to publish a `:latest-try-sage` image tag or stick to one tag stream gated by env var.
+  - [ ] Decide whether trial deployments use a separate named volume (`sage-try-data`) to keep production state clean. Recommend yes.
+  - [ ] Land the runtime-variant approach (one image, env-gated) per `docs/try-sage-docker-exploration.md`.
+  - [ ] Add the dummy-tools server question to the same review: keep, remove, or replace with real preview capability (web search, sandboxed runner).
+
+- [ ] **try.sage Tutorial Video Production**: (Alexander Somma + Izzy Plante) — Content work, not code.
+  - [ ] Pick individual videos from the [working playlist](https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u) for each of the 6 default tutorial steps.
+  - [ ] Populate `TRY_SAGE_TUTORIAL_STEPS_JSON` per workshop deployment with the chosen URLs and step descriptions.
+  - [ ] Publish the Bialik Sage tutorial content package: three short videos plus a follow-up email with system prompts.
+  - [ ] Keep system-prompt disclosure only in the dedicated system-prompt video. Swap that one video per team session without a codebase release.
+
+- [ ] **try.sage Runtime and Admin Controls**: (Alexander Somma + Izzy Plante) — Shipped Phase A 2026-04-27. Pending regression sign-off.
+  - [x] Gate try.sage.is ai behind env vars
+  - [x] Seed default try.sage agents: Sage Strawberry, Sage Startr.Style, AstroPi AI tutor (with KBs)
+  - [x] Register `https://markdown-search.production.openco.ca` in `TOOL_SERVER_CONNECTIONS`
+  - [x] Add a dummy-tools server with placeholder endpoints (revisit later — see Production Decisions)
+  - [x] Trial helper endpoints: status, personas, limits, llm-status, extend, reset
+  - [x] Auto-reset every 24h via env-configurable settings; selective wipe preserves persona accounts and KBs
+  - [x] Admin-only extend (capped at one extension per window) and force-reset
+  - [x] RBAC via existing `get_admin_user` dependency on protected endpoints
+  - [x] Hidden OpenAI-compatible LLM connection (memory-only, never persisted, never echoed in any response)
+  - [x] Model allowlist via `TRY_SAGE_LLM_MODELS`
+  - [x] Document env vars, reset semantics, admin controls in `docs/try-sage-deployment.md`
+  - [x] Makefile targets `try_sage_start` / `try_sage_stop`
+
+- [ ] **try.sage.is Experience and Insights**: (Alexander Somma + Izzy Plante) — Shipped Phase B 2026-04-27. Pending regression sign-off.
+  - [x] Persistent top-of-screen try.sage banner with live HH:MM:SS countdown
+  - [x] Admin extend/reset CTAs in the banner row (live next to the countdown they affect)
+  - [x] Non-admin info line directing to docs and admin
+  - [x] User-bar persona switcher: admin + facilitator + 3 trial users (configurable up to 5 trial users)
+  - [x] Tutorial overlay with config-driven steps (`TRY_SAGE_TUTORIAL_STEPS_JSON`); 6-step default with placeholder cards when unset
+  - [x] Setup wizard suppression in trial mode + admin escape hatch in Admin → Settings → Trial Mode
+  - [x] Per-step `dismissible` flag honored; localStorage seen-flag persists across sessions
+  - [x] Provider-agnostic analytics shim (Matomo + GA + Plausible) wired via `$config.analytics`
+  - [x] Pure-Svelte zero-dep QR encoder for persona magic-link sharing in workshops
+  - [x] Document the UX + analytics event map in `docs/try-sage-deployment.md`
 
 ---
 
@@ -214,14 +243,13 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 - [ ] **Build System Evaluation**: Consider alternatives to Make
   - [ ] Evaluate migrating Makefile to a cleaner build tool (Rake, Invoke, or Just)
 
-- [ ] **Auto Reset Mode (Trial Environments)**: Env-var controlled data/session reset with user countdown messaging
-  - [ ] Define env vars for reset enablement and interval (local + CapRover compatible)
-  - [ ] Add startup/runtime wiring to enforce auto-reset behavior when enabled
-  - [ ] Document env var defaults and deployment examples in docs
-  - [ ] Add UI messaging to show users they are in a trial environment
-  - [ ] Show time remaining until reset ("n time to reset") in a visible countdown
-  - [ ] Add pre-reset warning state and post-reset confirmation messaging
-  - [ ] Add basic tests for reset timing logic and user-facing message visibility
+- [ ] **Auto Reset Mode (Trial Environments)**: Mostly delivered by try.sage. Two gaps remain — see subitems. Reference: `docs/try-sage-deployment.md`.
+  - [x] Env vars for reset enablement and interval — `ENABLE_TRY_SAGE`, `TRY_SAGE_RESET_INTERVAL_HOURS`
+  - [x] Lifespan task fires the reset selectively (chats + files only; KBs and accounts persist)
+  - [x] Banner countdown + pre-reset warning state (blue → amber when `hours_until_reset < 1`)
+  - [x] Admin extend/reset endpoints with audit log lines
+  - [ ] **Post-reset confirmation messaging** — when the auto-reset fires, signed-in users currently see no signal. Add a one-shot toast or banner state: "Trial reset complete — chats and uploads cleared." Drive it from a `try_sage.last_reset_at` timestamp the frontend compares against `localStorage.try_sage_last_seen_reset`.
+  - [ ] **Tests for reset timing and message visibility** — pytest spec for `periodic_try_sage_reset` (mock the clock, assert selective wipe runs at the right tick); Vitest spec for `TrySageBanner` countdown formatting and color-shift threshold.
 
 - [ ] **Full Regression Testing Suite**: End-to-end coverage for core user flows, integrations, and release confidence
   - [ ] Standardize Svelte unit/integration tests on Vitest, matching current Svelte guidance

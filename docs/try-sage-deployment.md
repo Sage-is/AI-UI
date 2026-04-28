@@ -2,7 +2,7 @@
 
 ## Overview
 
-try.sage is a trial mode for Sage WebUI. It runs a shared Sage instance for a workshop or demo. The instance boots with a master switch, seeds five persona accounts, registers two tool servers, and routes inference through a hidden LLM connection that admins cannot see. Every 24 hours it wipes persona chats and uploaded files. Persona accounts and seeded knowledge bases survive the reset. The reset cycle is configurable. An admin can extend the window or reset on demand.
+try.sage is a trial mode for Sage WebUI. It runs a shared Sage instance for a workshop or demo. The instance boots with a master switch, seeds five persona accounts, registers two tool servers, and routes inference through a hidden LLM connection that admins cannot see. Every 24 hours it wipes persona chats and uploaded files. Persona accounts, seeded knowledge bases, and persona magic-link URLs all survive the reset — operators hand out URLs once and trust them across the campaign. The reset cycle and link TTL are configurable. An admin can extend the window or reset on demand.
 
 The mode solves three problems at once. It hides upstream LLM keys from anyone signed into the trial, including admins. It gives workshop facilitators a way to share signed-in personas through magic links. It guarantees a clean state at a known cadence so each cohort starts fresh.
 
@@ -16,7 +16,9 @@ WEBUI_URL=https://try.sage.is
 
 TRY_SAGE_LLM_API_URL=https://api.openai.com/v1
 TRY_SAGE_LLM_API_KEY=sk-your-upstream-key
-TRY_SAGE_LLM_MODELS=["gpt-4o-mini","gpt-4o"]
+
+# Optional: narrow the model list. Omit to expose the upstream's full catalog.
+# TRY_SAGE_LLM_MODELS=["gpt-4o-mini","gpt-4o"]
 ```
 
 Then build and start:
@@ -27,7 +29,7 @@ make it_build_n_run
 
 `WEBUI_URL` must point at the public origin. The dummy-tools server URL is derived from it. Magic-link URLs in the banner also use it. Without it, persona logins land on `localhost`.
 
-`TRY_SAGE_LLM_MODELS` defaults to empty. An empty allowlist exposes zero models. Set at least one model ID before you open the trial to users.
+`TRY_SAGE_LLM_MODELS` is optional. Empty (the default) exposes the upstream provider's full model list. Set the variable when you want to narrow the trial to a specific subset.
 
 ## Environment Variables
 
@@ -40,7 +42,7 @@ Variables marked **secret** must never reach the config DB or any API response. 
 | `ENABLE_TRY_SAGE` | `false` | Master switch. When `false`, every `/api/v1/sage/runtime/*` endpoint returns 404 and no try-mode wiring runs. |
 | `TRY_SAGE_LLM_API_URL` | `""` | OpenAI-compatible base URL for the hidden inference connection. **Secret.** |
 | `TRY_SAGE_LLM_API_KEY` | `""` | API key for the hidden connection. **Secret.** |
-| `TRY_SAGE_LLM_MODELS` | `""` | JSON array (`["a","b"]`) or CSV (`a,b`) of model IDs exposed from the hidden connection. Empty means zero models. |
+| `TRY_SAGE_LLM_MODELS` | `""` | Optional. JSON array (`["a","b"]`) or CSV (`a,b`) of model IDs exposed from the hidden connection. Empty means "expose the upstream provider's full model list" — the upstream key's permissions are the real gate. Set this when you want to narrow the trial. |
 | `TRY_SAGE_ADMIN_PASSWORD` | random | Optional password for `try-admin@try.sage.is`. Random + logged once at first boot if unset. |
 | `TRY_SAGE_FACILITATOR_PASSWORD` | random | Same for the facilitator persona. |
 | `TRY_SAGE_USER_PASSWORD` | random | Same for every `try-user-N` persona. |
@@ -51,8 +53,9 @@ These are seeded from env vars but can also be edited via the admin config UI wi
 
 | Variable | Default | Description |
 | --- | --- | --- |
-| `TRY_SAGE_RESET_INTERVAL_HOURS` | `24` | Auto-reset cadence in hours. |
+| `TRY_SAGE_RESET_INTERVAL_HOURS` | `24` | Auto-reset cadence in hours. Reset wipes persona chats and uploads only. |
 | `TRY_SAGE_ADMIN_EXTEND_HOURS` | `24` | How much one admin extension adds. One extension per window. |
+| `TRY_SAGE_PERSONA_LINK_TTL_DAYS` | `7` | Magic-link JWT lifetime in days. Decoupled from the reset interval — links stay stable across resets, only account contents get wiped. Restart the container to force fresh links. |
 | `TRY_SAGE_RESET_AT` | auto | ISO8601 timestamp for the next reset. Set automatically; safe to leave alone. |
 | `TRY_SAGE_TOOL_SERVER_URL` | `https://markdown-search.production.openco.ca` | Real OpenAPI tool server registered at startup. |
 | `TRY_SAGE_DUMMY_TOOL_SERVER_URL` | derived from `WEBUI_URL` | Override only if you point at an external dummy. |
@@ -95,7 +98,9 @@ Personas sign in through long-lived magic-link JWTs, not email. The links live i
 1. The banner has a collapsible `<details>` block titled "Persona links". Closed by default so URLs do not appear on a projector. When open it shows a labeled button, the full URL, a copy icon, and a QR code per persona.
 2. `GET /api/v1/sage/runtime/personas` returns the same list as JSON.
 
-Anyone with a URL can sign in as that persona. That is the workshop UX — the facilitator opens the `<details>` and shares whatever they want, then closes it. Links rotate at every reset, so the previous cohort's URLs stop working when a new window starts.
+Anyone with a URL can sign in as that persona. That is the workshop UX — the facilitator opens the `<details>` and shares whatever they want, then closes it.
+
+Links are stable across resets by default. Reset wipes account contents (chats, uploads) but keeps the persona JWTs intact. The TTL is `TRY_SAGE_PERSONA_LINK_TTL_DAYS` (default 7 days). Hand a URL out before the workshop and it stays valid through every reset cycle until the JWT expires or you restart the container. To force fresh URLs early, restart — the seed mints new links on a cold cache.
 
 If the seed cannot find a persona at reset time, the seed creates it. Persona accounts persist across resets — only their chats and uploaded files get wiped.
 
@@ -143,11 +148,11 @@ The trial deployment ships with one upstream LLM provider that:
 
 The contract is structural, not filtered. The hidden connection never touches the public list, so it cannot leak through any admin GET, POST, or DB dump.
 
-`TRY_SAGE_LLM_MODELS` is the gate. Only models whose IDs appear in the allowlist are exposed through `/api/models`. The upstream provider may serve hundreds of models; the trial exposes only what you opt in.
+`TRY_SAGE_LLM_MODELS` is the optional narrowing filter. Empty (the default) passes through every model the upstream provider serves. Populate the list when you want the trial to expose only a subset.
 
-### Warning: empty allowlist breaks the trial
+### Narrowing the model list (optional)
 
-`TRY_SAGE_LLM_MODELS` defaults to `""`. With the default, `/api/models` returns zero models from the hidden connection and the trial appears broken to users. This is intentional — safe-by-default. Set the variable explicitly:
+The upstream provider's API key already controls what the trial can call. Most workshops run fine with the default — `/api/models` shows the upstream's full catalog and users pick from there. Narrow when you want guardrails on top:
 
 ```bash
 TRY_SAGE_LLM_MODELS=["gpt-4o-mini","gpt-4o"]
@@ -164,8 +169,10 @@ TRY_SAGE_LLM_MODELS=gpt-4o-mini, gpt-4o
 Hit `GET /api/v1/sage/runtime/llm-status` as admin to confirm the hidden connection is live:
 
 ```json
-{"configured": true, "model_count": 2}
+{"configured": true, "model_count": 0}
 ```
+
+`model_count: 0` means "no narrowing — full upstream catalog exposed". `model_count: N` means exactly `N` model IDs are allowlisted. `configured: false` means the hidden connection is not registered (URL or key missing).
 
 `configured` is `true` only when the connection is registered AND the allowlist is non-empty. The endpoint never returns the URL or the key.
 
@@ -235,7 +242,10 @@ WEBUI_URL=https://your-trial-domain.example.com
 
 TRY_SAGE_LLM_API_URL=https://api.openai.com/v1
 TRY_SAGE_LLM_API_KEY=sk-your-upstream-key
-TRY_SAGE_LLM_MODELS=["gpt-4o-mini","gpt-4o"]
+
+# Optional: narrow which models the trial exposes. Omit to expose the
+# upstream's full catalog (the upstream key's permissions are the gate).
+# TRY_SAGE_LLM_MODELS=["gpt-4o-mini","gpt-4o"]
 
 TRY_SAGE_RESET_INTERVAL_HOURS=24
 TRY_SAGE_ADMIN_EXTEND_HOURS=24
@@ -252,13 +262,15 @@ Set `srv-captain--<your-app>` for the upstream once the app boots, then map the 
 
 ## Troubleshooting
 
-**No models showing up.** `TRY_SAGE_LLM_MODELS` is empty. The default exposes zero models. Set at least one model ID. Confirm with `GET /api/v1/sage/runtime/llm-status` as admin — `configured` must be `true` and `model_count` must be `> 0`.
+**No models showing up.** Hit `GET /api/v1/sage/runtime/llm-status` as admin. If `configured: false`, `TRY_SAGE_LLM_API_URL` or `TRY_SAGE_LLM_API_KEY` is empty — set both. If `configured: true` but `/api/models` is empty, the upstream provider returned no models for that key — check the upstream credentials separately.
 
 **Personas do not exist.** Either `TRY_SAGE_PERSONA_SEED_ENABLED` is `false`, or the first boot has not finished yet, or the seed errored. Check the boot logs for `try_sage_seed: seeded N personas`. If you see `try_sage_seed: admin persona missing; cannot seed agents`, the User model layer rejected the admin row — usually a unique-constraint clash from an older deployment. Resolve the duplicate email in the DB and restart.
 
 **Reset never fires.** Look for `try_sage.reset.skip reason=parse_error raw=...` in logs. `TRY_SAGE_RESET_AT` was hand-edited to a non-ISO8601 string. Edit it through the admin config UI to a valid ISO8601 timestamp, or clear it — the next `/status` call initialises it cleanly.
 
-**Magic links 401.** Two causes. The JWT secret rotated since the link was minted (restart, or rotate the cohort's URLs by hitting `/reset`). Or `WEBUI_URL` is wrong — the link points at a host the app does not serve from. Set `WEBUI_URL` to the public origin and restart.
+**Magic links 401.** Three causes. The JWT secret rotated since the link was minted (restart fixes it). The `TRY_SAGE_PERSONA_LINK_TTL_DAYS` window expired (restart re-mints). Or `WEBUI_URL` is wrong — the link points at a host the app does not serve from. Set `WEBUI_URL` to the public origin and restart. Reset alone does not rotate JWTs — it wipes account contents only.
+
+**Magic links land on `localhost` from a remote browser.** `WEBUI_URL` is unset. The backend falls back to `http://localhost:8080`, which only resolves on the host running Docker. Set `WEBUI_URL` to the address operators actually reach the trial through (e.g., `https://try.sage.is`) and restart.
 
 **Tool servers duplicate after restart.** Should not happen. The registrar dedupes by URL. If you see duplicates, the `url` field on existing entries was edited (trailing slash, scheme change). Trim the duplicates manually in the Tool Servers panel.
 
@@ -290,7 +302,7 @@ All endpoints return 404 when `ENABLE_TRY_SAGE` is `false`.
 ]
 ```
 
-Magic links rotate silently when their JWT crosses 50% TTL.
+Magic links are stable across resets. The cache populates once at boot and survives every reset cycle. Restart the container to mint new links.
 
 ### `GET /api/v1/sage/runtime/limits` (public)
 

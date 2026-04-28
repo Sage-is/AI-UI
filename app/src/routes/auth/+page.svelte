@@ -175,24 +175,35 @@
 	};
 
 	const checkOauthCallback = async () => {
-		if (!$page.url.hash) {
+		// Read the hash from `window.location` directly. SvelteKit's
+		// `$page.url.hash` is sometimes empty on initial mount when the
+		// page was opened via a deep link with a fragment — falling
+		// through to `window.location.hash` is the reliable read.
+		const rawHash =
+			(typeof window !== 'undefined' && window.location.hash) || $page.url.hash || '';
+		if (!rawHash) {
 			return;
 		}
-		const hash = $page.url.hash.substring(1);
+		const hash = rawHash.startsWith('#') ? rawHash.substring(1) : rawHash;
 		if (!hash) {
 			return;
 		}
 		const params = new URLSearchParams(hash);
 
-		// Magic link token (email login)
+		// Magic link token (email login + try.sage persona links).
 		const magicToken = params.get('magic_token');
 		if (magicToken) {
+			console.log('[auth] magic_token present, verifying…');
 			try {
 				const sessionUser = await verifyMagicLink(magicToken);
+				console.log('[auth] verifyMagicLink response:', sessionUser);
 				if (sessionUser) {
 					await setSessionUser(sessionUser);
+				} else {
+					toast.error($i18n.t('Invalid or expired link. Please request a new one.'));
 				}
 			} catch (err) {
+				console.error('[auth] verifyMagicLink failed:', err);
 				toast.error($i18n.t('Invalid or expired link. Please request a new one.'));
 			}
 			return;
@@ -255,11 +266,16 @@
 	}
 
 	onMount(async () => {
+		// Magic-link / OAuth callback runs FIRST so a magic_token in the URL
+		// hash wins over any stale session in $user. Without this order, a
+		// previous persona's session would short-circuit the new one's
+		// auto-login via goto() before verify finished.
+		await checkOauthCallback();
+
 		if ($user !== undefined) {
 			const redirectPath = querystringValue('redirect') || '/';
 			goto(redirectPath);
 		}
-		await checkOauthCallback();
 
 		// Load branding
 		try {

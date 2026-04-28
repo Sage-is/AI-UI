@@ -5,17 +5,24 @@
   and authenticated users both see it. Mounted from `routes/(app)/+layout.svelte`
   so it sits above the app shell on every gated route.
 
-  Layout has two parts:
+  Layout has three parts:
 
-    1. Always-visible row (projection-safe). Shows the trial countdown and,
-       when the current user is admin, "Extend reset" + "Reset now" CTAs.
-       The countdown ticks every second — yes that's a 1Hz timer, but the
-       UX feedback during a live workshop is worth it. We clean up onDestroy.
+    1. Always-visible countdown row (projection-safe). Shows the trial
+       countdown and, when the current user is admin, "Extend reset" +
+       "Reset now" CTAs. The countdown ticks every second — yes that's a
+       1Hz timer, but the UX feedback during a live workshop is worth it.
+       We clean up onDestroy.
 
-    2. Collapsible <details> labeled "Persona links" (closed by default).
-       Holding the persona magic links behind a closed <details> means the
-       facilitator has to consciously expand the block before any login URL
-       hits the projector. That keeps the JWTs off-screen until intended.
+    2. Always-visible persona-jump row. One button per persona — clicking
+       hard-navigates to the persona's magic-link URL. Visible without
+       expanding anything because the buttons themselves are not sensitive:
+       they just say "Sign in as Workshop Facilitator". The actual JWT URL
+       is hidden until the user clicks; the projector never sees it.
+
+    3. Collapsible <details> labeled "Share links and QR codes" (closed by
+       default). This holds the parts that ARE projection-sensitive: the
+       raw URL string and the scannable QR. Facilitator opens it on
+       purpose when handing out links to attendees, then closes it again.
 
   Admin actions are intentionally co-located with the countdown rather
   than buried in the user menu (the parallel B-persona-switcher agent
@@ -237,29 +244,47 @@
 		</div>
 
 		<!--
-			Collapsible persona links. Closed by default — see component
-			header comment for the projection-safety reasoning.
+			Always-visible persona-jump row. Buttons themselves carry no
+			sensitive data — only the persona's display label — so it's
+			safe to render on the projector. The actual JWT URL is the
+			button's click handler target, never displayed inline here.
+		-->
+		{#if $tryPersonas && $tryPersonas.length > 0}
+			<div class="flex flex-wrap items-center gap-1.5 pt-0.5">
+				<span class="opacity-70 mr-1">Sign in as:</span>
+				{#each $tryPersonas as persona (persona.key)}
+					<button
+						type="button"
+						class="px-2 py-0.5 rounded-md bg-white/50 hover:bg-white/80 dark:bg-black/20 dark:hover:bg-black/40 text-xs font-medium transition"
+						on:click={() => onSignInAs(persona)}
+						title="Open this persona's magic-link URL"
+					>
+						{persona.label}
+					</button>
+				{/each}
+			</div>
+		{/if}
+
+		<!--
+			Collapsible share block — URLs and QR codes only. Closed by
+			default so the projector never sees a JWT URL or scannable QR
+			until the facilitator deliberately expands it.
 		-->
 		{#if $tryPersonas && $tryPersonas.length > 0}
 			<details class="group mt-1">
 				<summary class="cursor-pointer select-none text-xs opacity-80 hover:opacity-100">
-					Persona links ({$tryPersonas.length})
+					Share links and QR codes ({$tryPersonas.length})
 				</summary>
 
 				<div class="mt-2 grid grid-cols-1 gap-2">
 					{#each $tryPersonas as persona (persona.key)}
 						<div
 							class="grid items-center gap-2 p-2 rounded-md bg-white/40 dark:bg-black/20"
-							style="grid-template-columns: minmax(0,12rem) auto minmax(0,1fr) auto;"
+							style="grid-template-columns: minmax(0,8rem) auto minmax(0,1fr) auto;"
 						>
-							<button
-								type="button"
-								class="px-2 py-1 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium truncate text-left"
-								on:click={() => onSignInAs(persona)}
-								title="Sign in as {persona.label}"
-							>
-								Sign in as {persona.label}
-							</button>
+							<span class="text-xs font-medium truncate" title={persona.label}>
+								{persona.label}
+							</span>
 
 							<button
 								type="button"

@@ -319,7 +319,7 @@ from sage_is_ai.config import (
     DEFAULT_MODEL_SELECTOR_FILTER,
     EVALUATION_ARENA_MODELS,
     SIMPLE_REDIRECTS,
-    # WebUI (OAuth)
+    # AI-UI(OAuth)
     ENABLE_OAUTH_ROLE_MANAGEMENT,
     OAUTH_ROLES_CLAIM,
     OAUTH_EMAIL_CLAIM,
@@ -327,7 +327,7 @@ from sage_is_ai.config import (
     OAUTH_USERNAME_CLAIM,
     OAUTH_ALLOWED_ROLES,
     OAUTH_ADMIN_ROLES,
-    # WebUI (LDAP)
+    # AI-UI(LDAP)
     ENABLE_LDAP,
     LDAP_SERVER_LABEL,
     LDAP_SERVER_HOST,
@@ -355,6 +355,7 @@ from sage_is_ai.config import (
     # try.sage trial mode (runtime-tunable; env-only secrets live in env.py)
     TRY_SAGE_RESET_INTERVAL_HOURS,
     TRY_SAGE_ADMIN_EXTEND_HOURS,
+    TRY_SAGE_PERSONA_LINK_TTL_DAYS,
     TRY_SAGE_RESET_AT,
     TRY_SAGE_TOOL_SERVER_URL,
     TRY_SAGE_DUMMY_TOOL_SERVER_URL,
@@ -889,6 +890,7 @@ app.state.config.EVALUATION_ARENA_MODELS = EVALUATION_ARENA_MODELS
 # and are imported directly where needed; everything here is admin-safe.
 app.state.config.TRY_SAGE_RESET_INTERVAL_HOURS = TRY_SAGE_RESET_INTERVAL_HOURS
 app.state.config.TRY_SAGE_ADMIN_EXTEND_HOURS = TRY_SAGE_ADMIN_EXTEND_HOURS
+app.state.config.TRY_SAGE_PERSONA_LINK_TTL_DAYS = TRY_SAGE_PERSONA_LINK_TTL_DAYS
 app.state.config.TRY_SAGE_RESET_AT = TRY_SAGE_RESET_AT
 app.state.config.TRY_SAGE_TOOL_SERVER_URL = TRY_SAGE_TOOL_SERVER_URL
 app.state.config.TRY_SAGE_DUMMY_TOOL_SERVER_URL = TRY_SAGE_DUMMY_TOOL_SERVER_URL

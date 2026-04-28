@@ -743,10 +743,28 @@ it_update:
 TRY_SAGE_USER_SEAT_COUNT      ?= 3
 TRY_SAGE_RESET_INTERVAL_HOURS ?= 24
 
+# Dedicated volume for trial state. Stays separate from VOLUME_DATA so a
+# workstation can run a production container and a trial container at the
+# same time without cross-contamination. Override at the command line if
+# you want to share the prod volume on purpose.
+TRY_SAGE_VOLUME_DATA          ?= sage-try-data:/app/backend/data
+
+# Mirrors DOCKER_RUN_ARGS but mounts the trial volume. We can't use Make's
+# target-specific overrides because DOCKER_RUN_ARGS uses `:=` (immediate
+# expansion) — VOLUME_DATA is baked in at definition time and a recipe
+# override would not flow through.
+TRY_SAGE_DOCKER_RUN_ARGS := --rm -p $(PORT_MAPPING) \
+	--add-host=host.docker.internal:host-gateway \
+	-v $(TRY_SAGE_VOLUME_DATA) \
+	-v $(ENV_FILE) \
+	--name $(CONTAINER_NAME)
+
 try_sage_start:
 	@# Fail fast on missing secrets so the operator sees the problem before
-	@# the container boots into a half-configured trial.
-	@for v in TRY_SAGE_LLM_API_URL TRY_SAGE_LLM_API_KEY TRY_SAGE_LLM_MODELS; do \
+	@# the container boots into a half-configured trial. TRY_SAGE_LLM_MODELS
+	@# is intentionally NOT in this list — empty means "expose the upstream
+	@# provider's full model list". Operators opt in to narrowing.
+	@for v in TRY_SAGE_LLM_API_URL TRY_SAGE_LLM_API_KEY; do \
 		eval "val=\$$$$v"; \
 		if [ -z "$$val" ]; then \
 			echo "Error: $$v is not set. Put it in .env or export it before running this target."; \
@@ -754,9 +772,15 @@ try_sage_start:
 			exit 1; \
 		fi; \
 	done
-	@echo "Starting try.sage trial container ($(CONTAINER_NAME))..."
-	$(CONTAINER_RUNTIME) run -d $(DOCKER_RUN_ARGS) \
+	@echo "Starting try.sage trial container ($(CONTAINER_NAME)) in foreground. Ctrl-C to stop."
+	@# WEBUI_URL drives the host portion of every persona magic-link URL
+	@# the seed prints to the terminal. Forward it explicitly so what the
+	@# operator sees in their shell wins over whatever's in .env. If it's
+	@# unset in the shell environment the backend falls back to
+	@# `http://localhost:8080` (matches PORT_MAPPING above).
+	$(CONTAINER_RUNTIME) run $(TRY_SAGE_DOCKER_RUN_ARGS) \
 		-e ENABLE_TRY_SAGE=true \
+		$(if $(WEBUI_URL),-e WEBUI_URL="$(WEBUI_URL)",) \
 		-e TRY_SAGE_LLM_API_URL="$(TRY_SAGE_LLM_API_URL)" \
 		-e TRY_SAGE_LLM_API_KEY="$(TRY_SAGE_LLM_API_KEY)" \
 		-e TRY_SAGE_LLM_MODELS="$(TRY_SAGE_LLM_MODELS)" \
@@ -764,6 +788,9 @@ try_sage_start:
 		-e TRY_SAGE_RESET_INTERVAL_HOURS="$(TRY_SAGE_RESET_INTERVAL_HOURS)" \
 		$(IMAGE_NAME):$(IMAGE_TAG)
 
+# For foreground runs (the default above) Ctrl-C stops the container and
+# `--rm` cleans the row. This target is the fallback for cases where the
+# operator backgrounded the container manually (e.g. ctrl-z + bg).
 try_sage_stop:
 	@echo "Stopping try.sage trial container ($(CONTAINER_NAME))..."
 	$(CONTAINER_RUNTIME) rm -f $(CONTAINER_NAME) || true
