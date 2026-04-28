@@ -23,7 +23,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
 
 from sage_is_ai.env import ENABLE_TRY_SAGE, SRC_LOG_LEVELS
-from sage_is_ai.utils.auth import decode_token, get_admin_user
+from sage_is_ai.utils.auth import get_admin_user
 from sage_is_ai.utils.try_sage_hidden_connections import get_hidden_status
 from sage_is_ai.utils.try_sage_seed import (
     get_persona_definitions,
@@ -91,31 +91,32 @@ def _ensure_reset_at(request: Request) -> datetime:
     return parsed
 
 
-def _maybe_rotate_persona_link(
+def _get_persona_link(
     request: Request, persona_key: str, email: str, ttl_hours: int
 ) -> str:
-    """Return a magic-link URL for the persona, refreshing it when the
-    cached JWT is past 50% TTL. Silent rotation keeps the workshop banner
-    serving usable URLs even if the deployer never restarts and the
-    auto-reset hasn't fired yet."""
+    """Return the cached magic-link URL for a persona.
+
+    No silent rotation. The seed populates the cache once at boot and
+    every entry survives across resets — operators want stable URLs
+    they can hand out before a workshop and trust across the full
+    `TRY_SAGE_PERSONA_LINK_TTL_DAYS` window (7 days by default).
+
+    The only path that mints a fresh link from this endpoint is the
+    cold-start race: lifespan startup hadn't populated the cache yet
+    when the first `/personas` request landed. After that the cache
+    serves every read.
+
+    To force fresh URLs (e.g., after a JWT-secret rotation, or when
+    the operator wants to invalidate previously-shared links), restart
+    the container — the cache lives on `app.state` and is rebuilt on
+    boot.
+    """
     cache = getattr(request.app.state, "try_sage_persona_links", None)
     cached = cache.get(persona_key) if cache else None
-
     if cached:
-        # Pull the JWT out of the URL fragment to inspect its exp claim.
-        # Format: ${WEBUI_URL}/auth#magic_token=<jwt>
-        token = cached.rsplit("magic_token=", 1)[-1]
-        try:
-            data = decode_token(token)
-            exp = int(data.get("exp", 0))
-            iat = int(data.get("iat", 0))
-            half_life = (exp - iat) / 2 if exp > iat else 0
-            if exp - _now_utc().timestamp() > half_life > 0:
-                return cached
-        except Exception:
-            # Decode failure (expired, secret rotated, malformed) → re-mint.
-            pass
+        return cached
 
+    # Cold-start fallback. Mint and cache so subsequent reads are stable.
     fresh = mint_persona_magic_link(email, ttl_hours)
     if cache is None:
         request.app.state.try_sage_persona_links = {}
@@ -200,13 +201,16 @@ async def get_status(request: Request):
 @router.get("/personas", response_model=list[PersonaEntry])
 async def get_personas(request: Request):
     _require_try_sage_enabled()
-    ttl_hours = int(request.app.state.config.TRY_SAGE_RESET_INTERVAL_HOURS)
+    # TTL only matters on the cold-start cache-miss path inside
+    # `_get_persona_link`. Once seed has populated the cache, this value
+    # is unused — links live as long as the JWT they were minted with.
+    ttl_hours = int(request.app.state.config.TRY_SAGE_PERSONA_LINK_TTL_DAYS) * 24
     return [
         {
             "key": p["key"],
             "label": p["label"],
             "role": p["role"],
-            "login_url": _maybe_rotate_persona_link(
+            "login_url": _get_persona_link(
                 request, p["key"], p["email"], ttl_hours
             ),
         }

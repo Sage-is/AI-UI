@@ -372,7 +372,7 @@
 
 					<div style="--mb:0.625rem; --w:100%; --jc:space-between">
 						<div style="--d:flex; --w:100%; --jc:space-between">
-							<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('WebUI URL')}</div>
+							<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('AI-UI URL')}</div>
 						</div>
 
 						<div style="--d:flex; --mt:0.5rem; --g:0.5rem">

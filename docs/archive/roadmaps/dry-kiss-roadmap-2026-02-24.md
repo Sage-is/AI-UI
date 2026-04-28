@@ -12,7 +12,7 @@ tags:
 
 # DRY/KISS Roadmap — 2026-02-24
 
-Audit of code duplication, dead dependencies, and simplification opportunities across the Sage WebUI codebase.
+Audit of code duplication, dead dependencies, and simplification opportunities across the Sage.is AI-UIcodebase.
 
 ---
 

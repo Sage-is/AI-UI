@@ -1,6 +1,6 @@
 # Community Hub Integration
 
-Sage WebUI integrates with the [Sage Community Hub](https://community.sage.is) to let users browse, share, and deploy workshop items (models, prompts, tools, functions, knowledge) across their Sage instances.
+Sage.is AI-UIintegrates with the [Sage Community Hub](https://community.sage.is) to let users browse, share, and deploy workshop items (models, prompts, tools, functions, knowledge) across their Sage instances.
 
 ## Overview
 
@@ -150,7 +150,7 @@ const ALLOWED_ORIGINS = [
 
 ## Files Reference
 
-### Sage WebUI files involved in community integration:
+### Sage.is AI-UIfiles involved in community integration:
 
 | File | Role |
 |------|------|

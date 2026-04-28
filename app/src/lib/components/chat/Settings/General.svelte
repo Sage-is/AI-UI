@@ -175,7 +175,7 @@
 <div style="--d:flex; --fd:column; --h:100%; --jc:space-between; --size:0.8rem" id="tab-general">
 	<div style="--ofy:scroll; --maxh:28rem; --maxh-lg:100%">
 		<div class="">
-			<div style="--mb:0.2rem; --size:0.8rem; --weight:500">{$i18n.t('WebUI Settings')}</div>
+			<div style="--mb:0.2rem; --size:0.8rem; --weight:500">{$i18n.t('AI-UI Settings')}</div>
 
 			<div style="--d:flex; --w:100%; --jc:space-between">
 				<div style="--as:center; --size:0.6rem; --weight:500">{$i18n.t('Theme')}</div>

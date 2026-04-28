@@ -1207,8 +1207,18 @@ async def send_magic_link_login(request: Request, form_data: MagicLinkSendForm):
 
 
 @router.post("/magic-link/verify")
-async def verify_magic_link_login(request: Request, form_data: MagicLinkVerifyForm):
-    """Verify a magic link token and return a session JWT for the user."""
+async def verify_magic_link_login(
+    request: Request, response: Response, form_data: MagicLinkVerifyForm
+):
+    """Verify a magic link token and return a session JWT for the user.
+
+    Issues a session-cookie identical to the one `signin` sets at the
+    same path. The frontend reads the user from `localStorage.token`
+    and from the cookie interchangeably, but the server-side session
+    check on every authenticated route reads the cookie — without it,
+    the post-login `window.location.href = '/'` redirect bounces back
+    to `/auth` because the layout's auth gate sees no session.
+    """
     payload = decode_token(form_data.token)
     if not payload or payload.get("type") != "magic_link":
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or expired link")
@@ -1217,15 +1227,39 @@ async def verify_magic_link_login(request: Request, form_data: MagicLinkVerifyFo
     if not user:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or expired link")
 
-    # Issue a session token (same as password login)
+    # Issue a session token (same as password login).
+    expires_delta = parse_duration(request.app.state.config.JWT_EXPIRES_IN)
+    expires_at = None
+    if expires_delta:
+        expires_at = int(time.time()) + int(expires_delta.total_seconds())
+
     session_token = create_token(
         data={"id": user.id},
-        expires_delta=parse_duration(request.app.state.config.JWT_EXPIRES_IN),
+        expires_delta=expires_delta,
+    )
+
+    datetime_expires_at = (
+        datetime.datetime.fromtimestamp(expires_at, datetime.timezone.utc)
+        if expires_at
+        else None
+    )
+
+    # Set the cookie token. Mirrors `signin` at lines 638-662 — the
+    # session check on every authenticated endpoint reads from this
+    # cookie, not from the response body.
+    response.set_cookie(
+        key="token",
+        value=session_token,
+        expires=datetime_expires_at,
+        httponly=True,
+        samesite=WEBUI_AUTH_COOKIE_SAME_SITE,
+        secure=WEBUI_AUTH_COOKIE_SECURE,
     )
 
     return {
         "token": session_token,
         "token_type": "Bearer",
+        "expires_at": expires_at,
         "id": user.id,
         "email": user.email,
         "name": user.name,

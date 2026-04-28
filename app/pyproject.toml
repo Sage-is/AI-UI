@@ -145,7 +145,7 @@ classifiers = [
 ]
 
 [project.scripts]
-WEB-AI-Sage-WebUI = "sage_is_ai:app"
+WEB-AI-Sage-AI-UI = "sage_is_ai:app"
 
 [build-system]
 requires = ["hatchling"]

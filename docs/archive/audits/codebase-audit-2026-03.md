@@ -12,7 +12,7 @@ tags:
 
 # Codebase Audit — March 2026
 
-Full-stack audit of the Sage WebUI project (excluding `submodules/`).
+Full-stack audit of the Sage.is AI-UIproject (excluding `submodules/`).
 
 ---
 

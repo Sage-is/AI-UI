@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(kill %1)",
+      "Bash(pkill -f \"import ast\")",
+      "Bash(pkill -9 -f \"autoenv\\\\|import ast\\\\|--noprofile\")",
+      "Read(//private/tmp/**)",
+      "Bash(rm -f /tmp/sage-cookie.txt)",
+      "Bash(docker rm *)"
+    ]
+  }
+}

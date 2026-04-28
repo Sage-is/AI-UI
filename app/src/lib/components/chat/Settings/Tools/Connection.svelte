@@ -43,7 +43,7 @@
 <div style="--d:flex; --w:100%; --g:0.5rem; --ai:center">
 	<Tooltip
 		className="w-full relative"
-		content={$i18n.t(`WebUI will make requests to "{{url}}"`, {
+		content={$i18n.t(`AI-UI will make requests to "{{url}}"`, {
 			url: `${connection?.url}/${connection?.path ?? 'openapi.json'}`
 		})}
 		placement="top-start"

@@ -3146,6 +3146,18 @@ TRY_SAGE_ADMIN_EXTEND_HOURS = PersistentConfig(
     int(os.environ.get("TRY_SAGE_ADMIN_EXTEND_HOURS", "24")),
 )
 
+# Persona magic-link JWT lifetime, decoupled from the reset interval.
+# Reset wipes account contents (chats, files) but does NOT rotate the
+# persona links — operators want stable URLs they can hand out before
+# the workshop and reuse across resets. 7 days covers a typical
+# week-long workshop without leaving a link valid indefinitely. An
+# operator who needs fresh links can restart the container.
+TRY_SAGE_PERSONA_LINK_TTL_DAYS = PersistentConfig(
+    "TRY_SAGE_PERSONA_LINK_TTL_DAYS",
+    "try_sage.persona.link_ttl_days",
+    int(os.environ.get("TRY_SAGE_PERSONA_LINK_TTL_DAYS", "7")),
+)
+
 # ISO8601 timestamp for the next scheduled reset. Updated by the auto-reset
 # task and the admin extend/reset endpoints. Persisted so it survives
 # restarts — a pod that bounces mid-window picks up where it left off.

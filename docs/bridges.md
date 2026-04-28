@@ -14,7 +14,7 @@ tags:
 
 # Messaging Bridges
 
-Sage WebUI can connect to external messaging platforms so users can interact with AI directly from WhatsApp, Telegram, Email, and other chat apps. Bridges support two modes:
+Sage.is AI-UIcan connect to external messaging platforms so users can interact with AI directly from WhatsApp, Telegram, Email, and other chat apps. Bridges support two modes:
 
 - **AI Chat** — External users message Sage and get AI responses directly in their messaging app
 - **Channel Bridge** — Mirror messages between an external chat and a Sage channel for bidirectional human + AI conversations

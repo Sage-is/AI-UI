@@ -49,7 +49,7 @@
 <div style="--d:flex; --w:100%; --g:0.5rem; --ai:center">
 	<Tooltip
 		className="w-full relative"
-		content={$i18n.t(`WebUI will make requests to "{{url}}/chat/completions"`, {
+		content={$i18n.t(`AI-UI will make requests to "{{url}}/chat/completions"`, {
 			url
 		})}
 		placement="top-start"

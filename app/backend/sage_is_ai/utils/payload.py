@@ -15,7 +15,7 @@ def apply_model_system_prompt_to_body(
     if not system:
         return form_data
 
-    # Metadata (WebUI Usage)
+    # Metadata (AI-UI Usage)
     if metadata:
         variables = metadata.get("variables", {})
         if variables:
@@ -59,13 +59,13 @@ def apply_model_params_to_body(
 
 def remove_open_webui_params(params: dict) -> dict:
     """
-    Removes OpenWebUI specific parameters from the provided dictionary.
+    Removes AI-UI specific parameters from the provided dictionary.
 
     Args:
         params (dict): The dictionary containing parameters.
 
     Returns:
-        dict: The modified dictionary with OpenWebUI parameters removed.
+        dict: The modified dictionary with AI-UI parameters removed.
     """
     open_webui_params = {
         "stream_response": bool,

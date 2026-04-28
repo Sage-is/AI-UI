@@ -8,7 +8,7 @@
 [![License](https://img.shields.io/badge/License-AGPL_v3%2B-blue)](LICENSE)
 [![Discord](https://img.shields.io/badge/Discord-Community-blue?logo=discord&logoColor=white)](https://discord.gg/3BtwHkXS)
 
-Sage WebUI transforms how you interact with AI. Built for privacy and flexibility, it runs entirely on your infrastructure while supporting the latest AI models from Ollama, OpenAI, and beyond.
+Sage.is AI-UItransforms how you interact with AI. Built for privacy and flexibility, it runs entirely on your infrastructure while supporting the latest AI models from Ollama, OpenAI, and beyond.
 
 ![Demo](./demo.gif)
 
@@ -42,7 +42,7 @@ If you want to do front end dev and see changes to svelte files live, go instead
 
 ## Available Make Commands
 
-- `make it_run` — Start Sage WebUI with Docker
+- `make it_run` — Start Sage.is AI-UIwith Docker
 - `make it_stop` — Stop running containers
 - `make it_build` — Build Docker images
 - `make it_clean` — Clean up containers and images
@@ -66,7 +66,7 @@ If you want to do front end dev and see changes to svelte files live, go instead
 
 ## Configuration
 
-Sage WebUI works out of the box, but you can customize it:
+Sage.is AI-UIworks out of the box, but you can customize it:
 
 **Environment Variables:**
 - `OPENAI_API_KEY` — Connect to OpenAI models
@@ -77,7 +77,7 @@ Sage WebUI works out of the box, but you can customize it:
 
 ## Styling
 
-Sage WebUI uses [Startr.Style](https://startr.style) — a utility-complete CSS framework under 50KB (8KB gzipped). Instead of class-based utilities, Startr.Style uses inline CSS custom properties for full access to the CSS spec with zero compilation:
+Sage.is AI-UIuses [Startr.Style](https://startr.style) — a utility-complete CSS framework under 50KB (8KB gzipped). Instead of class-based utilities, Startr.Style uses inline CSS custom properties for full access to the CSS spec with zero compilation:
 
 ```html
 <div style="--d:flex; --ai:center; --g:1rem; --p:1rem; --br:0.5rem">
