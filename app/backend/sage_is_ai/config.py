@@ -2342,10 +2342,22 @@ RAG_ALLOWED_FILE_EXTENSIONS = PersistentConfig(
     ],
 )
 
+# Default embedding engine: "" means the local sentence-transformers
+# stack (requires the AI Engine wizard for the torch + model download).
+# When try.sage trial mode is on, default to "chroma" instead — that
+# routes through chromadb's bundled DefaultEmbeddingFunction (ONNX
+# runtime + all-MiniLM-L6-v2, ~80MB lazy download into the data volume)
+# so the seeded KBs ingest on first boot without dragging in torch.
+# An explicit operator-set RAG_EMBEDDING_ENGINE env var still wins.
+_default_rag_embedding_engine = (
+    "chroma"
+    if os.environ.get("ENABLE_TRY_SAGE", "False").lower() == "true"
+    else ""
+)
 RAG_EMBEDDING_ENGINE = PersistentConfig(
     "RAG_EMBEDDING_ENGINE",
     "rag.embedding_engine",
-    os.environ.get("RAG_EMBEDDING_ENGINE", ""),
+    os.environ.get("RAG_EMBEDDING_ENGINE", _default_rag_embedding_engine),
 )
 
 PDF_EXTRACT_IMAGES = PersistentConfig(
