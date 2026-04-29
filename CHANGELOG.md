@@ -4,6 +4,27 @@ All notable changes to [Sage.is AI-UI](https://github.com/Sage-is/AI-UI) are doc
 
 ---
 
+## [2.2.0] — 2026-04-29
+
+### Added
+
+**Persona Magic Links**
+Magic links now carry a persona. An operator hands out one URL before a workshop. The link drops the participant into a pre-configured account with the right tutorial, system prompt, and tool servers already wired up. No signup. No configuration step. The link works.
+
+**Embedded Tutorials**
+Tutorials ship inside the persona. Astropi AI Tutor, Sage Startr Style, and Sage Strawberry each open with their own walkthrough on first load. The tutorial knows what tools the persona has and what the participant should try first.
+
+**Persona Switcher**
+Participants switch between personas mid-session without losing the link. Useful for facilitators demoing more than one workshop track from the same browser.
+
+**Stable Persona URLs Across Resets**
+Account resets wipe chats and files but leave the persona link intact. Operators print URLs ahead of time and reuse them across sessions. Link TTL is 7 days by default and configurable via `TRY_SAGE_PERSONA_LINK_TTL_DAYS`.
+
+**Trial Tool Server Registration**
+Personas register their own tool servers on activation. Each tutorial gets the tools it expects without admin intervention.
+
+---
+
 ## [2.1.0] — 2026-03-28
 
 ### Added

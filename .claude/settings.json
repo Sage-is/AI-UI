@@ -6,7 +6,8 @@
       "Bash(pkill -9 -f \"autoenv\\\\|import ast\\\\|--noprofile\")",
       "Read(//private/tmp/**)",
       "Bash(rm -f /tmp/sage-cookie.txt)",
-      "Bash(docker rm *)"
+      "Bash(docker rm *)",
+      "Bash(git -C /Users/somma/Documents/Projects/GitHub/WEB-AI--Sage-is-AI-UI log --oneline -30)"
     ]
   }
 }
