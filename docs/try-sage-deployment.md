@@ -207,12 +207,12 @@ Real example pointing at the team's working playlist:
 
 ```bash
 TRY_SAGE_TUTORIAL_STEPS_JSON='[
-  {"id":"welcome","title":"Welcome to try.sage","video_url":"https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u","dismissible":true,"description":"Workshop access overview."},
+  {"id":"welcome","title":"Welcome to try.sage.is AI","video_url":"https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u","dismissible":true,"description":"Workshop access overview."},
   {"id":"model-switching","title":"Switch models","video_url":"https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u","dismissible":true,"description":"Pick a different model mid-chat."},
   {"id":"chat-map","title":"Chat map","video_url":"https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u","dismissible":true,"description":"Branch and revisit conversation forks."},
   {"id":"artifacts","title":"Artifacts","video_url":"https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u","dismissible":true,"description":"Render code and HTML side-by-side with chat."},
-  {"id":"bialik-sage","title":"Build a Bialik Sage","video_url":"https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u","dismissible":true,"description":"Create a custom agent from a system prompt."},
-  {"id":"done","title":"You are ready","video_url":"","dismissible":true,"description":"Wrap up. Re-open from the Help menu any time."}
+  {"id":"bialik-sage","title":"Building a Bialik Sage","video_url":"https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u","dismissible":true,"description":"Create a custom agent from a system prompt."},
+  {"id":"done","title":"Everything","video_url":"","dismissible":true,"description":"Wrap up. Re-open from the Help menu any time."}
 ]'
 ```
 
