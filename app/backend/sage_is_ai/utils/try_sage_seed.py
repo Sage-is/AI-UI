@@ -73,10 +73,11 @@ def get_persona_definitions(app) -> list[dict]:
         {
             "key": "facilitator",
             "email": "try-facilitator@try.sage.is",
-            "role": "user",
+            "role": "facilitator",
             "label": "Facilitator",
-            # The "facilitator" group is a label only — actual group
-            # membership is admin-managed via Groups model elsewhere.
+            # Group membership is set up by `_ensure_facilitator_group` —
+            # the facilitator persona joins a "Facilitators" group with
+            # workshop.* permissions enabled.
             "group": "facilitator",
         },
     ]
@@ -273,19 +274,111 @@ def _ensure_persona_account(persona: dict) -> Optional[Any]:
     return user
 
 
+def _ensure_persona_ui_settings(user: Any) -> None:
+    """Pin a persona's default UI settings (model + theme) without clobbering
+    existing customization.
+
+    Sets `settings.ui.models = ["sage-strawberry"]` and
+    `settings.ui.theme = "light"` only when those keys are absent. An admin
+    who explored other models in a previous session keeps their pick;
+    a freshly-seeded admin lands on Strawberry like every other persona.
+
+    `update_user_settings_by_id` does a top-level dict.update, so we read
+    the existing `ui` block, merge with `setdefault`, and write the merged
+    dict back as a single `{"ui": {...}}` key.
+    """
+    from sage_is_ai.models.users import Users
+
+    existing_settings = user.settings.model_dump() if user.settings else {}
+    existing_ui = dict(existing_settings.get("ui") or {})
+
+    desired_ui = dict(existing_ui)
+    desired_ui.setdefault("models", ["sage-strawberry"])
+    desired_ui.setdefault("theme", "light")
+
+    if desired_ui != existing_ui:
+        Users.update_user_settings_by_id(user.id, {"ui": desired_ui})
+
+
+_FACILITATOR_GROUP_NAME = "Facilitators"
+
+
+def _ensure_facilitator_group(admin_user_id: str, facilitator_user_id: str) -> None:
+    """Find-or-create the Facilitators group and add the persona to it.
+
+    Workshop access in this codebase is gated by
+    `has_permission(user.id, "workshop.<resource>", USER_PERMISSIONS)`,
+    which consults group-level permission overrides before falling back
+    to the global default. Granting facilitators workshop access without
+    flipping the global default for *all* users means a dedicated group
+    with `workshop.*` overrides set to True.
+
+    Idempotent on both axes: `add_users_to_group` already de-dupes user
+    ids, and we look up by name rather than creating a new row each boot.
+    """
+    from sage_is_ai.models.groups import GroupForm, Groups
+
+    group = next(
+        (g for g in Groups.get_groups() if g.name == _FACILITATOR_GROUP_NAME),
+        None,
+    )
+    if not group:
+        group = Groups.insert_new_group(
+            admin_user_id,
+            GroupForm(
+                name=_FACILITATOR_GROUP_NAME,
+                description="try.sage facilitator workshop access",
+                permissions={
+                    "workshop": {
+                        "models": True,
+                        "knowledge": True,
+                        "prompts": True,
+                        "tools": True,
+                    },
+                },
+            ),
+        )
+        if not group:
+            log.error("try_sage_seed: failed to create Facilitators group")
+            return
+
+    Groups.add_users_to_group(group.id, [facilitator_user_id])
+
+
 # ---------------------------------------------------------------------------
 # Agent + KB ensure
 # ---------------------------------------------------------------------------
 
 
-def _ensure_agent(persona_user_id: str, agent_def: dict) -> None:
+_DEFAULT_AGENT_CAPABILITIES: dict = {
+    # Workshop default: lock down everything except citations so trial
+    # users see clean, focused chats. Citations is the one signal we
+    # explicitly want — KB-backed agents (Startr.Style, AstroPi) cite
+    # their source documents, which is the whole point of seeding KBs.
+    # Admins can flip individual capabilities on per-agent post-seed
+    # if they want to demo vision/code/etc.
+    "vision": False,
+    "file_upload": False,
+    "image_generation": False,
+    "code_interpreter": False,
+    "citations": True,
+}
+
+
+def _ensure_agent(persona_user_id: str, agent_def: dict, kb_id: Optional[str] = None) -> None:
     """Find-or-update one agent (a Model row) by slug.
 
     Agents in this codebase ARE model rows with `base_model_id` set —
     same shape the admin Models UI creates. We reuse `Models.insert_new_model`
     on first boot and `Models.update_model_by_id` on subsequent boots to
     refresh the system prompt from source.
+
+    When `kb_id` is provided, the agent gets bound to that knowledge
+    collection via `meta.knowledge` (same shape the admin UI writes when
+    a user picks a KB from the Knowledge selector — see
+    `app/src/lib/components/workshop/Models/Knowledge.svelte:212-218`).
     """
+    from sage_is_ai.models.knowledge import Knowledges
     from sage_is_ai.models.models import (
         ModelForm,
         ModelMeta,
@@ -302,7 +395,32 @@ def _ensure_agent(persona_user_id: str, agent_def: dict) -> None:
     # into the chat completion request. We dump as plain dict because
     # ModelParams allows extra keys.
     params = ModelParams(system=agent_def["system_prompt"])
-    meta = ModelMeta(description=agent_def["description"])
+
+    # Build meta extras: KB binding (if any) and capability defaults.
+    # ModelMeta allows extra keys (`extra="allow"`) so `knowledge` flows
+    # through unchanged into the JSON column.
+    meta_kwargs: dict = {
+        "description": agent_def["description"],
+        "capabilities": dict(_DEFAULT_AGENT_CAPABILITIES),
+    }
+    if kb_id:
+        kb_record = Knowledges.get_knowledge_by_id(kb_id)
+        if kb_record:
+            # Mirror the dict shape the admin UI emits when binding a KB
+            # to a model — name/description/data fields, not just id.
+            # `routers/knowledge.py:633-640` reads back via `k.get("id")`,
+            # so id is the load-bearing field; the rest is for display.
+            meta_kwargs["knowledge"] = [
+                {
+                    "id": kb_record.id,
+                    "user_id": kb_record.user_id,
+                    "name": kb_record.name,
+                    "description": kb_record.description,
+                    "data": kb_record.data,
+                    "type": "collection",
+                }
+            ]
+    meta = ModelMeta(**meta_kwargs)
 
     form = ModelForm(
         id=slug,
@@ -345,6 +463,37 @@ def _ensure_kb(app, persona_user_id: str, slug: str) -> Optional[str]:
         KnowledgeForm,
         Knowledges,
     )
+    from sage_is_ai.retrieval.vector.factory import VECTOR_DB_CLIENT
+
+    # Bail out cleanly when the vector backend is missing — typically
+    # chromadb hasn't been installed yet (the AI Engine wizard handles
+    # that). Without a vector client, ingestion would silently fail per
+    # file and leave behind an empty KB row that breaks the workshop UI
+    # (`/workshop/knowledge/{id}` 404s, agent editor throws on load).
+    # Returning None here means: do not create a KB row, do not bind
+    # anything to the agent. When chromadb is later installed and the
+    # container restarts, this function runs again and seeds cleanly.
+    if VECTOR_DB_CLIENT is None:
+        # Clean up any orphaned empty KB rows from a previous boot that
+        # tried to ingest before chromadb was available. Leaving them
+        # in place keeps the workshop page broken even after we stop
+        # binding them to agents.
+        kb_collection_name = f"try_sage_kb_{slug}"
+        for kb in Knowledges.get_knowledge_bases():
+            if kb.name == kb_collection_name and not (
+                (kb.data or {}).get("file_ids") or []
+            ):
+                Knowledges.delete_knowledge_by_id(kb.id)
+                log.info(
+                    f"try_sage_seed: deleted orphan empty KB row {kb.id} "
+                    f"for {slug}; will re-create on next vector-DB-ready boot."
+                )
+        log.warning(
+            f"try_sage_seed: vector DB unavailable; skipping KB for {slug}. "
+            "Install chromadb (or your configured vector backend) via the "
+            "AI Engine wizard, then restart to seed the agent KB."
+        )
+        return None
 
     kb_dir = os.path.join(_AGENTS_DIR, slug, "kb")
     if not os.path.isdir(kb_dir):
@@ -388,10 +537,20 @@ def _ensure_kb(app, persona_user_id: str, slug: str) -> Optional[str]:
             log.error(f"try_sage_seed: failed to create KB for {slug}")
             return None
 
-    # Skip ingestion if the source hasn't changed. We still return the kb
-    # id so the caller can bind it to the agent.
-    if version_map.get(slug) == folder_hash:
+    # Skip ingestion if the source hasn't changed AND the existing KB
+    # actually has data. The `data.file_ids` sanity check catches the
+    # case where a previous boot stamped the version map as "done" even
+    # though every per-file ingestion failed (e.g. chromadb wasn't
+    # installed yet). Without this check we'd return a kb_id pointing
+    # at an empty KB row that breaks the agent editor and the KB page.
+    existing_file_ids = (knowledge.data or {}).get("file_ids") or []
+    if version_map.get(slug) == folder_hash and existing_file_ids:
         return knowledge.id
+    if version_map.get(slug) == folder_hash and not existing_file_ids:
+        log.info(
+            f"try_sage_seed: KB {slug} hash matches but file_ids empty; "
+            "previous ingestion failed silently, re-ingesting."
+        )
 
     # Hash differs — re-ingest. We deliberately do NOT delete the existing
     # collection here; `process_file` writes per-file embeddings and the
@@ -446,6 +605,17 @@ def _ensure_kb(app, persona_user_id: str, slug: str) -> Optional[str]:
             log.exception(f"try_sage_seed: ingest failure for {full_path}: {e}")
             continue
         new_file_ids.append(file_id)
+
+    # Bail out before stamping anything if every file failed. Marking the
+    # version as "done" with no data is exactly the bug that caused
+    # silent half-baked KBs to persist across resets — see the empty
+    # `data.file_ids` recovery branch above. Returning None also stops
+    # the caller from binding a useless KB to the agent.
+    if not new_file_ids:
+        log.warning(
+            f"try_sage_seed: no files ingested for {slug}; will retry next boot."
+        )
+        return None
 
     # Stamp the new file ids into the KB row and persist the version.
     Knowledges.update_knowledge_data_by_id(
@@ -607,18 +777,33 @@ async def seed_try_sage(app) -> None:
         log.error("try_sage_seed: admin persona missing; cannot seed agents")
         return
 
-    # Agent + KB pass. Each agent file → ensure agent row → if KB folder
-    # exists, ensure KB row + ingest.
+    # Agent + KB pass. KB ingestion runs FIRST so we can capture the KB
+    # id and bind it into the agent's `meta.knowledge` on the same pass.
+    # Without that binding the KB sits in the vector store unconnected
+    # and RAG never fires for its agent.
     for slug in _DEFAULT_AGENT_SLUGS:
         md_path = os.path.join(_AGENTS_DIR, f"{slug}.md")
         agent_def = _parse_agent_md(md_path)
         if not agent_def:
             continue
 
-        _ensure_agent(admin_user.id, agent_def)
-
+        kb_id: Optional[str] = None
         if slug in _AGENTS_WITH_KB:
-            _ensure_kb(app, admin_user.id, slug)
+            kb_id = _ensure_kb(app, admin_user.id, slug)
+
+        _ensure_agent(admin_user.id, agent_def, kb_id=kb_id)
+
+    # UI settings pass. Pin every persona to Sage Strawberry as the
+    # default model and Light theme — non-destructively (existing
+    # custom values win). Run after agents exist so the model id we
+    # pin actually resolves.
+    for user in persona_users.values():
+        _ensure_persona_ui_settings(user)
+
+    # Facilitator group + workshop access.
+    facilitator_user = persona_users.get("facilitator")
+    if facilitator_user:
+        _ensure_facilitator_group(admin_user.id, facilitator_user.id)
 
     # Persona-link cache. Lives on app.state (not in DB).
     #
@@ -711,16 +896,29 @@ def _print_persona_links(
 async def reset_persona_state(app) -> None:
     """Per-reset wipe.
 
-    Removes each persona's chats and uploaded files, rotates magic links,
-    and re-runs seed for drift correction. Persona accounts and KBs
-    survive — the whole point of this design is a fast reset.
+    Removes each persona's chats and uploaded files, invalidates active
+    session JWTs (so everyone bounces back to the welcome page on their
+    next API call), and re-runs seed for drift correction. Persona
+    accounts, KBs, and the persona magic-link cache survive — the whole
+    point of this design is a fast reset where the same magic links keep
+    working across the workshop window.
+
+    Session invalidation is implemented as an issued-at cutoff: every
+    session token mints with `iat`; the cutoff timestamp is the most
+    recent reset; `get_current_user` rejects sessions whose `iat <
+    cutoff`. The magic-link JWTs (separate token type) are NOT subject
+    to this check, so the persona links stay valid for their full TTL.
 
     Explicitly does NOT:
       - call `Storage.delete_all_files()` (would wipe persona-KB source)
       - call `VECTOR_DB_CLIENT.reset()` (would force re-embed of every KB)
       - delete persona User rows (would break magic-link continuity and
         every Chat/File foreign key on the next reset)
+      - rotate the persona magic-link cache (links stay stable across
+        every in-window reset; only natural JWT expiry rotates them)
     """
+    import time as _time
+
     from sage_is_ai.env import ENABLE_TRY_SAGE
     from sage_is_ai.models.chats import Chats
     from sage_is_ai.models.files import Files
@@ -729,6 +927,11 @@ async def reset_persona_state(app) -> None:
 
     if not ENABLE_TRY_SAGE:
         return
+
+    # Invalidate every session JWT issued before this moment. Done up
+    # front so a slow chats/files wipe doesn't leave a window where a
+    # signed-in admin can still poke the API mid-reset.
+    app.state.config.TRY_SAGE_SESSIONS_INVALIDATED_AT = int(_time.time())
 
     personas = get_persona_definitions(app)
 

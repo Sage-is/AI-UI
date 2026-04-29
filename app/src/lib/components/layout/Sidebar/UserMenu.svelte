@@ -194,7 +194,7 @@
 			<button
 				style={helpItemStyle}
 				on:click={() => {
-					window.open('https://github.com/Sage-is/AI-UI/releases', '_blank');
+					window.open('https://github.com/Sage-is/AI-UI/tags', '_blank');
 					close();
 				}}
 			>

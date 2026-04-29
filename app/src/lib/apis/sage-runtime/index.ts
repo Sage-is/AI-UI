@@ -34,6 +34,13 @@ export type RuntimeStatus = {
 	hours_until_reset: number;
 	banner_text: string;
 	tutorial_steps: TutorialStep[];
+	// Background-install state for the trial-mode vector backend
+	// (chromadb). Mirrors `app.state.MODEL_DOWNLOAD_STATUS["chromadb"]`.
+	// "ready" = imported and seed bound KBs, "downloading" = first-boot
+	// pip install in progress, "error" = install failed (engine_error
+	// has details), "pending" = unknown / not yet attempted.
+	engine_status?: 'ready' | 'downloading' | 'error' | 'pending';
+	engine_error?: string | null;
 };
 
 export type Persona = {

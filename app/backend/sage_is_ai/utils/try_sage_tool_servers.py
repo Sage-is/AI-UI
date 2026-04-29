@@ -17,7 +17,7 @@ duplicate on restart. Persisting the mutated list back through
 
 import logging
 
-from sage_is_ai.env import ENABLE_TRY_SAGE, SRC_LOG_LEVELS
+from sage_is_ai.env import ENABLE_TRY_SAGE, SRC_LOG_LEVELS, TRY_SAGE_TOOL_SERVER_API_KEY
 
 log = logging.getLogger(__name__)
 log.setLevel(SRC_LOG_LEVELS["MAIN"])
@@ -26,12 +26,15 @@ log.setLevel(SRC_LOG_LEVELS["MAIN"])
 # Mirrors the ``ToolServerConnection`` Pydantic shape in ``routers/configs.py``
 # (url / path / auth_type / key / config). Anything else would silently drop
 # when the model coerces the list on the next admin save.
-def _build_entry(url: str) -> dict:
+def _build_entry(url: str, key: str = "") -> dict:
     return {
         "url": url,
         "path": "openapi.json",
-        "auth_type": "none",
-        "key": "",
+        # Bearer auth flips on whenever a key is supplied. Empty key keeps
+        # the historical "none" auth_type so the dummy in-process server
+        # (no key) still registers cleanly.
+        "auth_type": "bearer" if key else "none",
+        "key": key,
         "config": {"enable": True},
     }
 
@@ -49,12 +52,34 @@ async def register_try_sage_tool_servers(app) -> None:
     registered: list[str] = []
     skipped: list[str] = []
 
+    # Real markdown-search tool server. The bearer key comes from
+    # TRY_SAGE_TOOL_SERVER_API_KEY (env-only) — when set, every boot
+    # writes it into the entry so admins never have to populate it
+    # manually. When unset, we fall back to the historical "none" auth
+    # and let an admin add the key by hand.
+    real_key = (TRY_SAGE_TOOL_SERVER_API_KEY or "").strip()
     real_url = (config.TRY_SAGE_TOOL_SERVER_URL or "").strip()
     if real_url:
-        if real_url in existing_urls:
-            skipped.append(real_url)
+        existing_entry = next(
+            (e for e in existing if isinstance(e, dict) and e.get("url") == real_url),
+            None,
+        )
+        if existing_entry is not None:
+            # Honor an env-supplied key as the source of truth: refresh
+            # the entry's auth_type/key in place. Skip the rewrite when
+            # the env key is empty so we don't clobber an admin-managed
+            # key set via the UI.
+            if real_key and (
+                existing_entry.get("key") != real_key
+                or existing_entry.get("auth_type") != "bearer"
+            ):
+                existing_entry["auth_type"] = "bearer"
+                existing_entry["key"] = real_key
+                registered.append(real_url)
+            else:
+                skipped.append(real_url)
         else:
-            existing.append(_build_entry(real_url))
+            existing.append(_build_entry(real_url, real_key))
             existing_urls.add(real_url)
             registered.append(real_url)
     else:

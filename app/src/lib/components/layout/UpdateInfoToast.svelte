@@ -21,7 +21,7 @@
 			LATEST_VERSION: version.latest
 		})}
 
-		<a href="https://github.com/Sage-is/AI-UI/releases" target="_blank" style="--td:underline">
+		<a href="https://github.com/Sage-is/AI-UI/tags" target="_blank" style="--td:underline">
 			{$i18n.t('Update for the latest features and improvements.')}</a
 		>
 	</div>

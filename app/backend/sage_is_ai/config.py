@@ -1912,8 +1912,36 @@ Ensure that the tools are effectively utilized to achieve the highest-quality an
 
 VECTOR_DB = os.environ.get("VECTOR_DB", "chroma")
 
-# Chroma
+# Chroma — every CHROMA_* constant is defined unconditionally so
+# `retrieval/vector/dbs/chroma.py` can import them even when chromadb
+# isn't installed yet (it imports them at module-load time, regardless
+# of whether ChromaClient ever gets instantiated). Without this split,
+# the try.sage runtime install path breaks: chromadb gets pip-installed
+# at lifespan, but config.py's chroma block already failed at module-
+# load time, so `from sage_is_ai.config import CHROMA_HTTP_HOST` blows
+# up when the factory tries to re-init.
 CHROMA_DATA_PATH = f"{DATA_DIR}/vector_db"
+CHROMA_HTTP_HOST = os.environ.get("CHROMA_HTTP_HOST", "")
+CHROMA_HTTP_PORT = int(os.environ.get("CHROMA_HTTP_PORT", "8000"))
+CHROMA_CLIENT_AUTH_PROVIDER = os.environ.get("CHROMA_CLIENT_AUTH_PROVIDER", "")
+CHROMA_CLIENT_AUTH_CREDENTIALS = os.environ.get(
+    "CHROMA_CLIENT_AUTH_CREDENTIALS", ""
+)
+_chroma_http_headers_raw = os.environ.get("CHROMA_HTTP_HEADERS", "")
+CHROMA_HTTP_HEADERS = (
+    dict(pair.split("=") for pair in _chroma_http_headers_raw.split(","))
+    if _chroma_http_headers_raw
+    else None
+)
+CHROMA_HTTP_SSL = os.environ.get("CHROMA_HTTP_SSL", "false").lower() == "true"
+# Tenant/database default to the literal values chromadb itself uses
+# when no override is set (`default_tenant`, `default_database` per
+# chromadb 0.6.3). Pulling from env first means an operator override
+# still wins. The chromadb block below replaces these with the
+# package's actual constants when available, but the literal defaults
+# are correct enough that the factory can construct a working client.
+CHROMA_TENANT = os.environ.get("CHROMA_TENANT", "default_tenant")
+CHROMA_DATABASE = os.environ.get("CHROMA_DATABASE", "default_database")
 
 if VECTOR_DB == "chroma":
     try:
@@ -1924,23 +1952,12 @@ if VECTOR_DB == "chroma":
         posthog.capture = lambda *args, **kwargs: None
         import chromadb
 
-        CHROMA_TENANT = os.environ.get("CHROMA_TENANT", chromadb.DEFAULT_TENANT)
-        CHROMA_DATABASE = os.environ.get("CHROMA_DATABASE", chromadb.DEFAULT_DATABASE)
-        CHROMA_HTTP_HOST = os.environ.get("CHROMA_HTTP_HOST", "")
-        CHROMA_HTTP_PORT = int(os.environ.get("CHROMA_HTTP_PORT", "8000"))
-        CHROMA_CLIENT_AUTH_PROVIDER = os.environ.get("CHROMA_CLIENT_AUTH_PROVIDER", "")
-        CHROMA_CLIENT_AUTH_CREDENTIALS = os.environ.get(
-            "CHROMA_CLIENT_AUTH_CREDENTIALS", ""
-        )
-        # Comma-separated list of header=value pairs
-        CHROMA_HTTP_HEADERS = os.environ.get("CHROMA_HTTP_HEADERS", "")
-        if CHROMA_HTTP_HEADERS:
-            CHROMA_HTTP_HEADERS = dict(
-                [pair.split("=") for pair in CHROMA_HTTP_HEADERS.split(",")]
-            )
-        else:
-            CHROMA_HTTP_HEADERS = None
-        CHROMA_HTTP_SSL = os.environ.get("CHROMA_HTTP_SSL", "false").lower() == "true"
+        # Replace tenant/database defaults with chromadb's canonical
+        # constants if no operator override is set.
+        if "CHROMA_TENANT" not in os.environ:
+            CHROMA_TENANT = chromadb.DEFAULT_TENANT
+        if "CHROMA_DATABASE" not in os.environ:
+            CHROMA_DATABASE = chromadb.DEFAULT_DATABASE
     except ImportError:
         log.warning(
             "chromadb not installed. RAG features unavailable until installed via the AI Engine wizard."
@@ -3165,6 +3182,19 @@ TRY_SAGE_RESET_AT = PersistentConfig(
     "TRY_SAGE_RESET_AT",
     "try_sage.reset.at",
     "",
+)
+
+# Unix timestamp (seconds) of the most recent trial reset. Session JWTs
+# whose `iat` claim is older than this value are rejected by
+# `get_current_user`, so a "Reset now" click effectively logs every
+# active persona out and forces them to reuse their (still-valid)
+# magic links. Persisted so the cutoff survives container restarts —
+# a pod that bounces moments after a reset still rejects pre-reset
+# tokens. Stored as int seconds; `0` means "no reset has happened yet".
+TRY_SAGE_SESSIONS_INVALIDATED_AT = PersistentConfig(
+    "TRY_SAGE_SESSIONS_INVALIDATED_AT",
+    "try_sage.reset.sessions_invalidated_at",
+    int(os.environ.get("TRY_SAGE_SESSIONS_INVALIDATED_AT", "0")),
 )
 
 # OpenAPI tool servers registered automatically when try mode is on.
