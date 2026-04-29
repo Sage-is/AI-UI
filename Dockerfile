@@ -173,9 +173,21 @@ RUN if [ $UID -ne 0 ]; then \
     adduser --uid $UID --gid $GID --home $HOME --disabled-password --no-create-home app; \
     fi
 
-# Disable chroma telemetry
-RUN mkdir -p $HOME/.cache/chroma && \
-    echo -n 00000000-0000-0000-0000-000000000000 > $HOME/.cache/chroma/telemetry_user_id
+# Persist chroma's local cache (telemetry id + ONNX embedding model bundle)
+# in the data volume. chromadb constructs paths via `Path.home() / ".cache"
+# / "chroma" / ...` — Python's `Path.home()` reads the HOME env var, not
+# XDG_CACHE_HOME, so the only reliable redirect is at the filesystem layer.
+# Symlinking $HOME/.cache/chroma into the persisted /app/backend/data/cache
+# tree matches the existing convention for libraries that don't expose a
+# cache-path env var (sentence-transformers, HF, whisper, tiktoken all
+# point at /app/backend/data/cache via their respective env vars). Survives
+# fresh container starts AND CapRover redeploys as long as the volume is
+# mounted at /app/backend/data — which is the standard mount path in both
+# the Makefile workflow and the docs/try-sage-deployment.md CapRover guide.
+RUN mkdir -p /app/backend/data/cache/chroma && \
+    mkdir -p $HOME/.cache && \
+    ln -s /app/backend/data/cache/chroma $HOME/.cache/chroma && \
+    echo -n 00000000-0000-0000-0000-000000000000 > /app/backend/data/cache/chroma/telemetry_user_id
 
 # Fix ownership if not root
 RUN if [ $UID -ne 0 ]; then \

@@ -261,6 +261,8 @@ ANALYTICS_PLAUSIBLE_DOMAIN=
 
 Set `srv-captain--<your-app>` for the upstream once the app boots, then map the public domain to `WEBUI_URL`. The dummy-tools server URL derives from `WEBUI_URL`, so set the domain before the first restart.
 
+Add a Persistent Directory in CapRover (App → Configs) mounted at **`/app/backend/data`**. This holds the SQLite app DB, persona magic-link cache, the seeded knowledge bases, and (via a build-time symlink in the image) the chromadb ONNX embedding-model bundle (~80MB). Without this mount, the bundle re-downloads on every container start. With it, first boot pays the download once and every redeploy reuses the cached weights.
+
 ## Troubleshooting
 
 **No models showing up.** Hit `GET /api/v1/sage/runtime/llm-status` as admin. If `configured: false`, `TRY_SAGE_LLM_API_URL` or `TRY_SAGE_LLM_API_KEY` is empty — set both. If `configured: true` but `/api/models` is empty, the upstream provider returned no models for that key — check the upstream credentials separately.
