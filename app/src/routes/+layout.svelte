@@ -610,7 +610,7 @@
 		} else if ($config?.ui?.theme) {
 			theme.set($config.ui.theme);
 		} else {
-			theme.set('system');
+			theme.set('light');
 		}
 
 		mobile.set(window.innerWidth < BREAKPOINT);

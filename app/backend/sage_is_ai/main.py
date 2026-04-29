@@ -357,6 +357,7 @@ from sage_is_ai.config import (
     TRY_SAGE_ADMIN_EXTEND_HOURS,
     TRY_SAGE_PERSONA_LINK_TTL_DAYS,
     TRY_SAGE_RESET_AT,
+    TRY_SAGE_SESSIONS_INVALIDATED_AT,
     TRY_SAGE_TOOL_SERVER_URL,
     TRY_SAGE_DUMMY_TOOL_SERVER_URL,
     TRY_SAGE_PERSONA_SEED_ENABLED,
@@ -675,12 +676,29 @@ async def lifespan(app: FastAPI):
     #      endpoints structurally cannot leak the URL or key.
     #   3. Persona seed + agents + KBs + magic-link cache. Safe to skip
     #      when ENABLE_TRY_SAGE is False; the helper short-circuits.
+    #      The seed gracefully no-ops on KBs when the vector backend is
+    #      missing — the next step picks up the slack in the background.
+    #   4. Vector backend auto-install (fire-and-forget). chromadb is
+    #      intentionally absent from `requirements.txt` (the marketed
+    #      app expects an admin to run the AI Engine wizard); for trial
+    #      mode that's wrong, since the seed needs a working vector
+    #      store to ingest KB markdown. We launch the install in a
+    #      background task so lifespan returns immediately; once the
+    #      install finishes, the helper itself re-runs `seed_try_sage`
+    #      so KBs ingest without operator action. Safe no-op when
+    #      chromadb is already importable (subsequent boots find the
+    #      install on PYTHONPATH via `start.sh`).
     from sage_is_ai.utils.try_sage_tool_servers import register_try_sage_tool_servers
     from sage_is_ai.utils.try_sage_hidden_connections import register_hidden_connections
+    from sage_is_ai.utils.try_sage_engine_install import (
+        ensure_try_sage_vector_backend,
+    )
     from sage_is_ai.utils.try_sage_seed import seed_try_sage
     await register_try_sage_tool_servers(app)
     register_hidden_connections(app)
     await seed_try_sage(app)
+    if ENABLE_TRY_SAGE:
+        asyncio.create_task(ensure_try_sage_vector_backend(app))
 
     asyncio.create_task(periodic_usage_pool_cleanup())
     asyncio.create_task(periodic_temporary_account_cleanup())
@@ -892,6 +910,7 @@ app.state.config.TRY_SAGE_RESET_INTERVAL_HOURS = TRY_SAGE_RESET_INTERVAL_HOURS
 app.state.config.TRY_SAGE_ADMIN_EXTEND_HOURS = TRY_SAGE_ADMIN_EXTEND_HOURS
 app.state.config.TRY_SAGE_PERSONA_LINK_TTL_DAYS = TRY_SAGE_PERSONA_LINK_TTL_DAYS
 app.state.config.TRY_SAGE_RESET_AT = TRY_SAGE_RESET_AT
+app.state.config.TRY_SAGE_SESSIONS_INVALIDATED_AT = TRY_SAGE_SESSIONS_INVALIDATED_AT
 app.state.config.TRY_SAGE_TOOL_SERVER_URL = TRY_SAGE_TOOL_SERVER_URL
 app.state.config.TRY_SAGE_DUMMY_TOOL_SERVER_URL = TRY_SAGE_DUMMY_TOOL_SERVER_URL
 app.state.config.TRY_SAGE_PERSONA_SEED_ENABLED = TRY_SAGE_PERSONA_SEED_ENABLED
@@ -1059,6 +1078,12 @@ app.state.MODEL_DOWNLOAD_STATUS = {
     "embedding": "pending",
     "whisper": "pending",
     "tiktoken": "ready",
+    # `chromadb` is the trial mode's auto-installed vector backend.
+    # Lifespan sets this to "downloading" → "ready" / "error" via
+    # try_sage_engine_install.ensure_try_sage_vector_backend so admins
+    # see install progress in the trial banner instead of wondering
+    # why their KBs are empty on first boot.
+    "chromadb": "ready",
     "error": None,
 }
 

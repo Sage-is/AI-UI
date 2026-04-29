@@ -58,6 +58,7 @@ These are seeded from env vars but can also be edited via the admin config UI wi
 | `TRY_SAGE_PERSONA_LINK_TTL_DAYS` | `7` | Magic-link JWT lifetime in days. Decoupled from the reset interval — links stay stable across resets, only account contents get wiped. Restart the container to force fresh links. |
 | `TRY_SAGE_RESET_AT` | auto | ISO8601 timestamp for the next reset. Set automatically; safe to leave alone. |
 | `TRY_SAGE_TOOL_SERVER_URL` | `https://markdown-search.production.openco.ca` | Real OpenAPI tool server registered at startup. |
+| `TRY_SAGE_TOOL_SERVER_API_KEY` | `""` | Bearer token for the markdown-search server. **Secret, env-only.** When set, the registration shim writes `auth_type=bearer` and the key into the entry on every boot/reset, so admins never enter it manually. When empty, the entry registers as `auth_type=none` and an admin must populate the key by hand. |
 | `TRY_SAGE_DUMMY_TOOL_SERVER_URL` | derived from `WEBUI_URL` | Override only if you point at an external dummy. |
 | `TRY_SAGE_PERSONA_SEED_ENABLED` | `true` | Set `false` to skip persona/agent/KB seeding. Useful when you provision personas externally. |
 | `TRY_SAGE_USER_SEAT_COUNT` | `3` | Number of `try-user-N` accounts. Capped at 5. Total personas = 2 + this. |
@@ -209,7 +210,7 @@ Real example pointing at the team's working playlist:
 TRY_SAGE_TUTORIAL_STEPS_JSON='[
   {"id":"welcome","title":"Welcome to try.sage.is AI","video_url":"https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u","dismissible":true,"description":"Workshop access overview."},
   {"id":"model-switching","title":"Switch models","video_url":"https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u","dismissible":true,"description":"Pick a different model mid-chat."},
-  {"id":"chat-map","title":"Chat map","video_url":"https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u","dismissible":true,"description":"Branch and revisit conversation forks."},
+  {"id":"chat-map","title":"Chat Overview","video_url":"https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u","dismissible":true,"description":"Branch and revisit conversation forks."},
   {"id":"artifacts","title":"Artifacts","video_url":"https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u","dismissible":true,"description":"Render code and HTML side-by-side with chat."},
   {"id":"bialik-sage","title":"Building a Bialik Sage","video_url":"https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u","dismissible":true,"description":"Create a custom agent from a system prompt."},
   {"id":"done","title":"Everything","video_url":"","dismissible":true,"description":"Wrap up. Re-open from the Help menu any time."}

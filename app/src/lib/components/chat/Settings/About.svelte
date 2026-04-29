@@ -12,26 +12,26 @@
 	const i18n: any = getContext('i18n');
 
 	let ollamaVersion = '';
-	
+
 	// Simple HTML rendering of markdown - KISS approach
 	let licenseTableHtml = '';
-	
+
 	// Convert markdown table to basic HTML
 	const renderMarkdownTable = (markdown: string): string => {
 		const lines = markdown.split('\n');
 		let html = '<table class="min-w-full text-xs border-collapse border border-gray-300 dark:border-gray-600">\n';
 		let isHeader = true;
 		let isTableStarted = false;
-		
+
 		for (const line of lines) {
 			if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
 				if (!isTableStarted) {
 					html += '<thead>\n';
 					isTableStarted = true;
 				}
-				
+
 				const cells = line.split('|').slice(1, -1).map(cell => cell.trim());
-				
+
 				if (isHeader && cells.length > 0) {
 					html += '<tr class="bg-gray-100 dark:bg-gray-800">\n';
 					cells.forEach(cell => {
@@ -56,11 +56,11 @@
 				}
 			}
 		}
-		
+
 		html += '</tbody>\n</table>';
 		return html;
 	};
-	
+
 	// Initialize the license table HTML
 	licenseTableHtml = renderMarkdownTable(licenseMarkdown);
 
@@ -114,7 +114,7 @@
 
 						{#if $config?.features?.enable_version_update_check}
 							<a
-								href="https://github.com/Sage-is/AI-UI/releases/tag/v{version.latest}"
+								href="https://github.com/Sage-is/AI-UI/tags"
 								target="_blank"
 							>
 								{updateAvailable === null
@@ -217,9 +217,9 @@
 					--m:1rem auto;
 					--p: 2rem;">
 			Copyright (c) 2023-2025 <a href="https://sage.is" target="_blank" style="--td:underline"
-								>The Sage.is</a> Team 
-					and Open Source Contributors. 
-			All rights reserved and published under the 
+								>The Sage.is</a> Team
+					and Open Source Contributors.
+			All rights reserved and published under the
 				GNU AFFERO GENERAL PUBLIC LICENSE
 		  		   	Version 3, 19 November 2007
 

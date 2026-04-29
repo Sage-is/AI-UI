@@ -59,6 +59,15 @@
 	// is filtered out). We fetch from /status in that case.
 	let resetAtOverride: string | null = null;
 
+	// Background-install state for chromadb (the trial vector backend).
+	// Polled from /sage/runtime/status until "ready". Drives a small
+	// inline indicator so admins (and users) see *why* knowledge bases
+	// are empty during the first-boot install window — Poka-Yoke
+	// against "is this thing broken?" tickets.
+	let engineStatus: 'ready' | 'downloading' | 'error' | 'pending' = 'ready';
+	let engineError: string | null = null;
+	let enginePollTimer: ReturnType<typeof setInterval> | null = null;
+
 	// Reactive: the source-of-truth ISO8601 reset deadline.
 	$: resetAtIso = $config?.try_sage?.reset_at ?? resetAtOverride ?? null;
 	$: resetAtMs = resetAtIso ? Date.parse(resetAtIso) : null;
@@ -113,9 +122,36 @@
 			try {
 				const status = await getStatus(localStorage.token ?? '');
 				if (status?.reset_at) resetAtOverride = status.reset_at;
+				if (status?.engine_status) engineStatus = status.engine_status;
+				if (status?.engine_error) engineError = status.engine_error;
 			} catch {
 				// 404 → try mode is off backend-side. Leave countdown blank.
 			}
+		}
+
+		// Engine-status poller. Only ticks while the install is in flight.
+		// 5s cadence is fine — the install itself takes 30s–2min, and a
+		// short flash of "Setting up…" right after first boot is the
+		// expected UX. Stops the moment the helper reports "ready" or
+		// "error" so we don't burn requests for the rest of the session.
+		const pollEngineStatus = async () => {
+			try {
+				const status = await getStatus(localStorage.token ?? '');
+				if (status?.engine_status) engineStatus = status.engine_status;
+				engineError = status?.engine_error ?? null;
+				if (engineStatus === 'ready' || engineStatus === 'error') {
+					if (enginePollTimer) clearInterval(enginePollTimer);
+					enginePollTimer = null;
+				}
+			} catch {
+				// Transient — keep polling.
+			}
+		};
+		// Kick off only if we haven't already learned status is "ready"
+		// from the anonymous-fallback fetch above. Saves an idle timer
+		// for 99% of post-first-boot sessions.
+		if (engineStatus !== 'ready') {
+			enginePollTimer = setInterval(pollEngineStatus, 5000);
 		}
 
 		// Hydrate personas for the collapsible block. Cheap on first mount;
@@ -131,6 +167,7 @@
 
 	onDestroy(() => {
 		if (tickTimer) clearInterval(tickTimer);
+		if (enginePollTimer) clearInterval(enginePollTimer);
 	});
 
 	// ─────────────────────────────────────────────────────────────────
@@ -173,19 +210,30 @@
 
 	async function onReset() {
 		if (busy) return;
-		// Destructive: wipes persona chats. confirm() is the lightest
-		// possible UI guard; the action lives behind admin role anyway.
-		if (!confirm('Reset try.sage trial now? Persona chats and uploads will be wiped.')) {
+		// Destructive: wipes persona chats AND invalidates every active
+		// session (the admin's included). Lighter UI guard than a modal —
+		// the action already lives behind admin role.
+		if (
+			!confirm(
+				'Reset try.sage trial now? Persona chats and uploads will be wiped, and every signed-in user will be bounced back to the welcome page. Magic links stay valid.'
+			)
+		) {
 			return;
 		}
 		busy = true;
 		try {
 			await forceReset(localStorage.token);
-			toast.success('Trial reset complete');
-			await refreshAfterAdminAction();
+			toast.success('Trial reset — signing you out');
+			// Bounce ourselves: the backend has just invalidated this
+			// session's JWT (its `iat` is now older than the reset
+			// cutoff). Wipe localStorage and hard-navigate to /auth so
+			// the admin reuses their persona magic link to come back
+			// in. Other signed-in users get bounced organically on
+			// their next API call (layout's 401 handler kicks in).
+			localStorage.removeItem('token');
+			window.location.href = '/auth';
 		} catch (err: any) {
 			toast.error(err?.detail ?? err?.message ?? 'Reset failed');
-		} finally {
 			busy = false;
 		}
 	}
@@ -237,6 +285,37 @@
 			style="--maxw:60ch; --m:0 auto; --px:1rem; --py:0.5rem; --radius:0.75rem; --pe:auto; --shadow:6; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --translatey:-14ch; --translatey-hvr:-1ch"
 		>
 
+
+			<!--
+			First-boot engine-install indicator. Renders only while the
+			background chromadb install is in flight (or has errored).
+			Disappears the moment it lands in "ready" so the banner stays
+			clean for the rest of the workshop. Poka-Yoke against the
+			"why are knowledge bases empty?" question.
+		-->
+			{#if engineStatus === 'downloading'}
+				<div
+					class="flex items-center gap-2 text-[11px] opacity-90"
+					title="chromadb is being installed into the persisted ml_packages volume. First boot only — subsequent boots are instant."
+				>
+					<span
+						class="inline-block size-2 rounded-full bg-current animate-pulse"
+						aria-hidden="true"
+					></span>
+					<span>
+						Setting up knowledge bases — first-boot install, ~30s–2 min. Agents work meanwhile;
+						KBs land automatically when ready.
+					</span>
+				</div>
+			{:else if engineStatus === 'error'}
+				<div class="flex items-center gap-2 text-[11px] text-red-700 dark:text-red-200">
+					<span class="inline-block size-2 rounded-full bg-current" aria-hidden="true"></span>
+					<span>
+						Knowledge-base setup failed{engineError ? `: ${engineError}` : ''}. Run the AI Engine
+						wizard from Admin → Settings, then Reset now.
+					</span>
+				</div>
+			{/if}
 
 			<!--
 			Always-visible persona-jump row. Buttons themselves carry no

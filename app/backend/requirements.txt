@@ -42,9 +42,11 @@ langchain==0.3.26
 # CVE-2025-6984 (HIGH): insecure XML parsing (XXE) in document loaders
 langchain-community==0.3.27
 
-## Vector DB — chromadb installed at runtime via AI Engine wizard if selected
-## chromadb, pymilvus, qdrant-client, opensearch-py, elasticsearch, pinecone — runtime install via VECTOR_DB config
-# pymilvus, qdrant-client, opensearch-py, elasticsearch, pinecone — runtime install via VECTOR_DB config
+## Vector DB — chromadb baked in (default backend, ~50MB).
+## Other backends (pymilvus, qdrant-client, opensearch-py, elasticsearch, pinecone) still
+## install at runtime via the AI Engine wizard when an operator picks a non-chroma VECTOR_DB.
+## Pin matches app/pyproject.toml — bump both in lockstep.
+chromadb==0.6.3
 
 # ML packages (torch, sentence-transformers, transformers, colbert-ai, faster-whisper,
 # onnxruntime) — installed at runtime via the AI Engine wizard step (requirements-ml.txt)
@@ -62,7 +64,8 @@ soundfile==0.13.1
 
 # CVE-2025-48379 (HIGH): DDS heap buffer overflow — fixed in 11.3.0
 # CVE-2026-25990 (HIGH): out-of-bounds write via crafted PSD — fixed in 12.1.1
-pillow==12.1.1
+# CVE-2026-40192 (HIGH): DoS via decompression bomb in FITS image processing — fixed in 12.2.0
+pillow==12.2.0
 
 # CVE-2026-32597 (HIGH): accepts unknown crit header extensions — fixed in 2.12.0
 PyJWT[crypto]==2.12.0

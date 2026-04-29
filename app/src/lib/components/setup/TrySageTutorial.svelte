@@ -50,7 +50,7 @@
 		},
 		{
 			id: 'chat-map',
-			title: 'Chat map',
+			title: 'Chat Overview',
 			dismissible: true,
 			description: 'See where your conversation goes.'
 		},
