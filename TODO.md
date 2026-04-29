@@ -37,10 +37,11 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [ ] Run `make try_sage_start` in a clean checkout. Container boots and `/api/v1/sage/runtime/status` responds.
   - [ ] `GET /api/v1/sage/runtime/personas` returns 5 entries with non-empty `login_url` JWTs.
   - [ ] Open a persona magic link in incognito. Sign-in lands on the home route as the right user.
-  - [ ] Banner shows live countdown. Admin extend/reset CTAs work. Non-admin sees the info line.
-  - [ ] Persona switcher in the user menu lists all 5 personas. Click navigates as expected.
-  - [ ] Tutorial modal opens on first persona sign-in. Steps render placeholder cards. Dismiss works.
-  - [ ] Admin → Settings → Trial Mode tab opens. "Reopen setup wizard" + "Replay tutorial" both fire.
+  - [x] Banner shows live countdown. Admin extend/reset CTAs work. Non-admin sees the info line.
+  - [x] Persona switcher in the user menu lists all 5 personas. Click navigates as expected.
+  - [ ] Persona switcher should be cleaned
+  - [x] Tutorial modal opens on first persona sign-in. Steps render placeholder cards. Dismiss works.
+  - [x] Admin → Settings → Trial Mode tab opens. "Reopen setup wizard" + "Replay tutorial" both fire.
   - [ ] `GET /api/v1/configs/connections` as admin does NOT list the hidden try.sage connection.
   - [ ] `GET /api/models` shows only the IDs in `TRY_SAGE_LLM_MODELS`. Chat completions against those models work.
   - [ ] `make try_sage_stop` cleanly removes the container.
@@ -49,6 +50,7 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
 
 - [ ] **try.sage Production Decisions**: (Alexander Somma + Izzy Plante) — Surfaced by Docker exploration. Block CapRover one-click rollout.
   - [ ] Decide where `TRY_SAGE_LLM_API_KEY` lives in production: plain env, Docker secret mount, or external vault. Recommend Docker secret for try.sage.is itself, plain env for self-hosted workshops.
+    - [ ] note:As we use cap rover and the system injects env vars we're leaning this way
   - [ ] Decide whether to publish a `:latest-try-sage` image tag or stick to one tag stream gated by env var.
   - [ ] Decide whether trial deployments use a separate named volume (`sage-try-data`) to keep production state clean. Recommend yes.
   - [ ] Land the runtime-variant approach (one image, env-gated) per `docs/try-sage-docker-exploration.md`.
