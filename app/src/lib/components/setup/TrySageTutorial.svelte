@@ -70,7 +70,7 @@
 			id: 'done',
 			title: 'Everything',
 			dismissible: true,
-			description: 'Have fun. Resets every 24 hours.'
+			description: 'Have fun and try.sage.is! Everything resets every 24 hours.'
 		}
 	];
 
