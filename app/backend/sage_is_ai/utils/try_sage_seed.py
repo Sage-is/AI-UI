@@ -67,14 +67,14 @@ def get_persona_definitions(app) -> list[dict]:
             "key": "admin",
             "email": "try-admin@try.sage.is",
             "role": "admin",
-            "label": "Sage Admin",
+            "label": "Admin",
             "group": None,
         },
         {
             "key": "facilitator",
             "email": "try-facilitator@try.sage.is",
             "role": "user",
-            "label": "Workshop Facilitator",
+            "label": "Facilitator",
             # The "facilitator" group is a label only — actual group
             # membership is admin-managed via Groups model elsewhere.
             "group": "facilitator",
@@ -86,7 +86,7 @@ def get_persona_definitions(app) -> list[dict]:
                 "key": f"user-{i}",
                 "email": f"try-user-{i}@try.sage.is",
                 "role": "user",
-                "label": f"Trial User {i}",
+                "label": f"User {i}",
                 "group": None,
             }
         )

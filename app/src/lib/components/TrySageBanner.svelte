@@ -40,13 +40,8 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { toast } from 'svelte-sonner';
 
-	import { config, user, tryPersonas } from '$lib/stores';
-	import {
-		extendReset,
-		forceReset,
-		getStatus,
-		type Persona
-	} from '$lib/apis/sage-runtime';
+	import { config, user, tryPersonas, showSidebar, mobile } from '$lib/stores';
+	import { extendReset, forceReset, getStatus, type Persona } from '$lib/apis/sage-runtime';
 	import { getBackendConfig } from '$lib/apis';
 	import { loadPersonas, invalidatePersonas } from '$lib/utils/sage-runtime';
 
@@ -90,6 +85,13 @@
 	// Color shifts to warning amber when reset is < 1 hour away, so the
 	// facilitator gets a passive "wrap up soon" cue without any pop-up.
 	$: warning = hoursRemaining !== null && hoursRemaining < 1;
+
+	// Sidebar push offset. The desktop sidebar is 280px and pushes the
+	// chat shell to the right when open; without compensating the banner
+	// it stays centered over the *full* viewport and reads as off-center
+	// over the actual chat content. On mobile the sidebar overlays
+	// (doesn't push), so we only shift on non-mobile.
+	$: sidebarShiftPx = $showSidebar && !$mobile ? 280 : 0;
 
 	// ─────────────────────────────────────────────────────────────────
 	// Lifecycle
@@ -209,103 +211,126 @@
 </script>
 
 {#if enabled}
+	<!--
+		The banner floats above the app shell rather than occupying layout
+		space. Two reasons:
+
+		1. The left sidebar (admin, chat list, etc.) was overlapping the
+		   banner's edges because both reflow under the chat shell. A
+		   fixed-position floating pill side-steps z-index conflicts
+		   without restructuring the layout grid.
+		2. Constrained to `--maxw: 60ch` + `--m:auto` so the banner reads
+		   like a centered pill instead of a full-width strip. Doesn't
+		   push the navbar or chat content down on first paint.
+
+		Outer pointer-events:none lets clicks fall through the empty
+		left/right margins; inner pointer-events:auto restores them on
+		the actual banner content.
+	-->
 	<div
-		class="w-full px-4 py-2 text-xs flex flex-col gap-1 {warning
-			? 'bg-yellow-500/20 text-yellow-700 dark:text-yellow-200'
-			: 'bg-blue-500/20 text-blue-700 dark:text-blue-200'}"
+		style="--pos:fixed; --top:0.5rem; --left:{sidebarShiftPx}px; --right:0; --z:1000; --pe:none; --tn:left 200ms ease"
 	>
-		<!-- Always-visible projection-safe row -->
-		<div class="flex flex-wrap items-center justify-between gap-2">
-			<div class="font-medium">
-				try.sage trial — resets in
-				<span class="font-mono tabular-nums ml-1">{countdownLabel}</span>
-			</div>
+		<div
+			class="text-xs flex flex-col gap-1 {warning
+				? 'bg-yellow-500/20 text-yellow-700 dark:text-yellow-200'
+				: 'bg-blue-500/20 text-blue-700 dark:text-blue-200'}"
+			style="--maxw:60ch; --m:0 auto; --px:1rem; --py:0.5rem; --radius:0.75rem; --pe:auto; --shadow:6; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --translatey:-14ch; --translatey-hvr:-1ch"
+		>
 
-			{#if isAdmin}
-				<div class="flex items-center gap-2">
-					<button
-						type="button"
-						class="px-2 py-1 rounded-md bg-white/40 hover:bg-white/60 dark:bg-black/20 dark:hover:bg-black/30 disabled:opacity-50 transition"
-						on:click={onExtend}
-						disabled={busy}
-					>
-						Extend reset
-					</button>
-					<button
-						type="button"
-						class="px-2 py-1 rounded-md bg-white/40 hover:bg-white/60 dark:bg-black/20 dark:hover:bg-black/30 disabled:opacity-50 transition"
-						on:click={onReset}
-						disabled={busy}
-					>
-						Reset now
-					</button>
-				</div>
-			{/if}
-		</div>
 
-		<!--
+			<!--
 			Always-visible persona-jump row. Buttons themselves carry no
 			sensitive data — only the persona's display label — so it's
 			safe to render on the projector. The actual JWT URL is the
 			button's click handler target, never displayed inline here.
 		-->
-		{#if $tryPersonas && $tryPersonas.length > 0}
-			<div class="flex flex-wrap items-center gap-1.5 pt-0.5">
-				<span class="opacity-70 mr-1">Sign in as:</span>
-				{#each $tryPersonas as persona (persona.key)}
-					<button
-						type="button"
-						class="px-2 py-0.5 rounded-md bg-white/50 hover:bg-white/80 dark:bg-black/20 dark:hover:bg-black/40 text-xs font-medium transition"
-						on:click={() => onSignInAs(persona)}
-						title="Open this persona's magic-link URL"
-					>
-						{persona.label}
-					</button>
-				{/each}
-			</div>
-		{/if}
+			{#if $tryPersonas && $tryPersonas.length > 0}
+				<div class="flex flex-wrap items-center gap-1.5 pt-0.5">
+					<span class="opacity-70 mr-1">Sign in as:</span>
+					{#each $tryPersonas as persona (persona.key)}
+						<button
+							type="button"
+							class="px-2 py-0.5 rounded-md bg-white/50 hover:bg-white/80 dark:bg-black/20 dark:hover:bg-black/40 text-xs font-medium transition"
+							on:click={() => onSignInAs(persona)}
+							title="Open this persona's magic-link URL"
+						>
+							{persona.label}
+						</button>
+					{/each}
+				</div>
+			{/if}
 
-		<!--
+			<!--
 			Collapsible share block — URLs and QR codes only. Closed by
 			default so the projector never sees a JWT URL or scannable QR
 			until the facilitator deliberately expands it.
 		-->
-		{#if $tryPersonas && $tryPersonas.length > 0}
-			<details class="group mt-1">
-				<summary class="cursor-pointer select-none text-xs opacity-80 hover:opacity-100">
-					Share links and QR codes ({$tryPersonas.length})
-				</summary>
+			{#if $tryPersonas && $tryPersonas.length > 0}
+				<details class="group mt-1">
+					<summary class="cursor-pointer select-none text-xs opacity-80 hover:opacity-100">
+						Share links and QR codes ({$tryPersonas.length})
+					</summary>
 
-				<div class="mt-2 grid grid-cols-1 gap-2">
-					{#each $tryPersonas as persona (persona.key)}
-						<div
-							class="grid items-center gap-2 p-2 rounded-md bg-white/40 dark:bg-black/20"
-							style="grid-template-columns: minmax(0,8rem) auto minmax(0,1fr) auto;"
+					<div class="mt-2 grid grid-cols-1 gap-2">
+						{#each $tryPersonas as persona (persona.key)}
+							<div
+								class="grid items-center gap-2 p-2 rounded-md bg-white/40 dark:bg-black/20"
+								style="grid-template-columns: minmax(0,8rem) auto minmax(0,1fr) auto;"
+							>
+								<span class="text-xs font-medium truncate" title={persona.label}>
+									{persona.label}
+								</span>
+
+								<button
+									type="button"
+									class="p-1 rounded hover:bg-black/10 dark:hover:bg-white/10"
+									on:click={() => onCopy(persona)}
+									title="Copy login URL"
+									aria-label="Copy login URL for {persona.label}"
+								>
+									<Icon name="clipboard-copy-16" className="size-4" />
+								</button>
+
+								<code
+									class="text-[10px] font-mono truncate text-gray-700 dark:text-gray-300"
+									title={persona.login_url}>{persona.login_url}</code
+								>
+
+								<!--<QRCode value={persona.login_url} size={64} ecc="M" />-->
+							</div>
+						{/each}
+					</div>
+				</details>
+			{/if}
+
+						<!-- Always-visible projection-safe row -->
+			<div class="flex flex-wrap items-center justify-between gap-2">
+				{#if isAdmin}
+					<div class="flex items-center gap-2">
+						<button
+							type="button"
+							class="px-2 py-1 rounded-md bg-white/40 hover:bg-white/60 dark:bg-black/20 dark:hover:bg-black/30 disabled:opacity-50 transition"
+							on:click={onExtend}
+							disabled={busy}
 						>
-							<span class="text-xs font-medium truncate" title={persona.label}>
-								{persona.label}
-							</span>
+							Extend reset
+						</button>
+						<button
+							type="button"
+							class="px-2 py-1 rounded-md bg-white/40 hover:bg-white/60 dark:bg-black/20 dark:hover:bg-black/30 disabled:opacity-50 transition"
+							on:click={onReset}
+							disabled={busy}
+						>
+							Reset now
+						</button>
+					</div>
+				{/if}
 
-							<button
-								type="button"
-								class="p-1 rounded hover:bg-black/10 dark:hover:bg-white/10"
-								on:click={() => onCopy(persona)}
-								title="Copy login URL"
-								aria-label="Copy login URL for {persona.label}"
-							>
-								<Icon name="clipboard-copy-16" className="size-4" />
-							</button>
-
-							<code
-								class="text-[10px] font-mono truncate text-gray-700 dark:text-gray-300"
-								title={persona.login_url}>{persona.login_url}</code
-							>
-
-							<QRCode value={persona.login_url} size={64} ecc="M" />
-						</div>
-					{/each}
+				<div class="font-medium">
+					Enjoy try.sage.is AI trial. Things reset in
+					<span class="font-mono tabular-nums ml-1">{countdownLabel}</span>
 				</div>
-			</details>
-		{/if}
+			</div>
+		</div>
 	</div>
 {/if}

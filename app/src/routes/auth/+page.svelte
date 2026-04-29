@@ -29,6 +29,7 @@
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 	import OnBoarding from '$lib/components/OnBoarding.svelte';
+	import TrySageWelcome from '$lib/components/TrySageWelcome.svelte';
 	import BrandIcon from '$lib/components/BrandIcon.svelte';
 
 	const i18n = getContext('i18n');
@@ -329,6 +330,17 @@
 	}}
 />
 
+<!--
+	try.sage trial mode: strictly invite-only. Replace the entire
+	signin/signup surface with a welcome page directing visitors to
+	their facilitator's email/QR. A magic-link arrival is handled by
+	`checkOauthCallback` in onMount above and navigates away before
+	this branch ever paints, so anyone who lands here in trial mode
+	is by definition someone WITHOUT an invite link.
+-->
+{#if $config?.features?.enable_try_sage}
+	<TrySageWelcome />
+{:else}
 <div style="--w:100%; --h:100vh; --maxh:100dvh; --c:#fff; --pos:relative">
 	<div
 		style="--w:100%; --h:100%; --pos:absolute; --top:0; --left:0; --bgc:#fff; --dark-bgc:#000"
@@ -938,3 +950,4 @@
 		</div>
 	{/if}
 </div>
+{/if}

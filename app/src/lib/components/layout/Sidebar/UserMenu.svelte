@@ -173,7 +173,7 @@
 			owns admin reset/extend controls — those live in
 			`+layout.svelte`, not here.
 		-->
-		<TryPersonaSwitcher />
+		<!--<TryPersonaSwitcher />-->
 
 		{#if help}
 			<hr
