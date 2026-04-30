@@ -888,7 +888,7 @@
 	"Model Permissions": "Autorisations du modèle",
 	"Model unloaded successfully": "Le modèle a été déchargé avec succès",
 	"Model updated successfully": "Le modèle a été mis à jour avec succès",
-	"Model(s) do not support file upload": "Le(s) modèle(s) ne supportent pas le téléversement de fichiers",
+	"File upload turned off": "Le(s) modèle(s) ne supportent pas le téléversement de fichiers",
 	"Modelfile Content": "Contenu du Fichier de Modèle",
 	"Models": "Modèles",
 	"Models Access": "Accès aux modèles",

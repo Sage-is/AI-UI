@@ -888,7 +888,7 @@
 	"Model Permissions": "模型權限",
 	"Model unloaded successfully": "成功卸載模型",
 	"Model updated successfully": "成功更新模型",
-	"Model(s) do not support file upload": "模型不支援檔案上傳",
+	"File upload turned off": "模型不支援檔案上傳",
 	"Modelfile Content": "模型檔案內容",
 	"Models": "模型",
 	"Models Access": "模型存取",

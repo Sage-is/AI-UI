@@ -91,6 +91,13 @@
 
 	$: enabled = $config?.features?.enable_try_sage === true;
 	$: isAdmin = $user?.role === 'admin';
+	// Banner default tuck — admin sits a bit higher (more tucked) than
+	// non-admin so the persona-jump row peeks for trial users while
+	// admins get a quieter pill until they hover. Hover always brings
+	// the banner down to --translatey-hvr (-1ch) regardless of role.
+	// Computed as a reactive scalar instead of {#if} inside the style
+	// attribute because Svelte forbids logic blocks in attribute values.
+	$: translateyDefault = isAdmin ? '-15ch' : '-10ch';
 	// Color shifts to warning amber when reset is < 1 hour away, so the
 	// facilitator gets a passive "wrap up soon" cue without any pop-up.
 	$: warning = hoursRemaining !== null && hoursRemaining < 1;
@@ -280,12 +287,19 @@
 	>
 		<div
 			class="text-xs flex flex-col gap-1 {warning
-				? 'bg-yellow-500/20 text-yellow-700 dark:text-yellow-200'
-				: 'bg-blue-500/20 text-blue-700 dark:text-blue-200'}"
-			style="--maxw:60ch; --m:0 auto; --px:1rem; --py:0.5rem; --radius:0.75rem; --pe:auto; --shadow:6; --tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1); --translatey:-14ch; --translatey-hvr:-1ch"
+				? 'text-yellow-700 dark:text-yellow-200'
+				: 'text-blue-700 dark:text-blue-200'}"
+			style="--maxw:60ch;
+				--m:0 auto;
+				--px:1rem;
+				--py:0.5rem;
+				--radius:0.75rem;
+				--pe:auto;
+				--shadow:6;
+				--tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+				--translatey:{translateyDefault};
+				--translatey-hvr:-1ch"
 		>
-
-
 			<!--
 			First-boot engine-install indicator. Renders only while the
 			background chromadb install is in flight (or has errored).
@@ -298,13 +312,11 @@
 					class="flex items-center gap-2 text-[11px] opacity-90"
 					title="chromadb is being installed into the persisted ml_packages volume. First boot only — subsequent boots are instant."
 				>
-					<span
-						class="inline-block size-2 rounded-full bg-current animate-pulse"
-						aria-hidden="true"
+					<span class="inline-block size-2 rounded-full bg-current animate-pulse" aria-hidden="true"
 					></span>
 					<span>
-						Setting up knowledge bases — first-boot install, ~30s–2 min. Agents work meanwhile;
-						KBs land automatically when ready.
+						Setting up knowledge bases — first-boot install, ~30s–2 min. Agents work meanwhile; KBs
+						land automatically when ready.
 					</span>
 				</div>
 			{:else if engineStatus === 'error'}
@@ -382,7 +394,7 @@
 				</details>
 			{/if}
 
-						<!-- Always-visible projection-safe row -->
+			<!-- Always-visible projection-safe row -->
 			<div class="flex flex-wrap items-center justify-between gap-2">
 				{#if isAdmin}
 					<div class="flex items-center gap-2">
