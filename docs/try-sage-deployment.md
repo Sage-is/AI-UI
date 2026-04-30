@@ -1,8 +1,8 @@
-# try.sage Trial Deployment
+# Try.sage.is a Trial Deployment
 
 ## Overview
 
-try.sage is a trial mode for Sage WebUI. It runs a shared Sage instance for a workshop or demo. The instance boots with a master switch, seeds five persona accounts, registers two tool servers, and routes inference through a hidden LLM connection that admins cannot see. Every 24 hours it wipes persona chats and uploaded files. Persona accounts, seeded knowledge bases, and persona magic-link URLs all survive the reset — operators hand out URLs once and trust them across the campaign. The reset cycle and link TTL are configurable. An admin can extend the window or reset on demand.
+Try.sage.is a trial mode for Sage.is AI-UI. It runs a shared Sage instance for a workshop or demo. The instance boots with a master switch, seeds five persona accounts, registers two tool servers, and routes inference through a hidden LLM connection that admins cannot see. Every 24 hours it wipes persona chats and uploaded files. Persona accounts, seeded knowledge bases, and persona magic-link URLs all survive the reset — operators hand out URLs once and trust them across the campaign. The reset cycle and link TTL are configurable. An admin can extend the window or reset on demand.
 
 The mode solves three problems at once. It hides upstream LLM keys from anyone signed into the trial, including admins. It gives workshop facilitators a way to share signed-in personas through magic links. It guarantees a clean state at a known cadence so each cohort starts fresh.
 
@@ -122,7 +122,7 @@ A background task wakes every 5 minutes and checks `TRY_SAGE_RESET_AT`. When the
 - Seeded agents (Sage Strawberry, Sage Startr.Style, AstroPi AI Tutor).
 - KB collections. The seed routine skips re-ingestion when the source folder hash is unchanged.
 - Tool server registrations. The registrar is idempotent and dedupes by URL.
-- Files whose path lives under `data/try_sage_agents/` — those are seed-managed KB sources.
+- Files whose path lives under `app/backend/sage_is_ai/data/try_sage_agents/` — those are seed-managed KB sources.
 
 ### Manual control
 

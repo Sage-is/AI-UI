@@ -227,6 +227,8 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
 
 _Items deferred to a later planning cycle. Move here from TODO when deprioritized._
 
+- [ ] **Alex bio update** (Alexander Somma): Add Alex's background to the sage.is/about and sage.education pages — currently only Izzy's story appears. Should include Etsy backend, teaching career, and CTO role.
+
 - [ ] **Docker Image Slimming (Pinned / Paused)**: (Alexander Somma)
   - [x] Hit the ~2.5GB target (down from 9.7GB)
   - [ ] Hit the ~1.5GB base-image target after trimming heavy transitive deps
