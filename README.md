@@ -1,4 +1,4 @@
-# Sage WebUI
+# Sage.is AI-UI
 
 ## v2.2.0
 
@@ -8,11 +8,11 @@
 [![License](https://img.shields.io/badge/License-AGPL_v3%2B-blue)](LICENSE)
 [![Discord](https://img.shields.io/badge/Discord-Community-blue?logo=discord&logoColor=white)](https://discord.gg/3BtwHkXS)
 
-Sage.is AI-UItransforms how you interact with AI. Built for privacy and flexibility, it runs entirely on your infrastructure while supporting the latest AI models from Ollama, OpenAI, and beyond.
+Sage.is AI-UI transforms how you interact with AI. Built for privacy and flexibility, it runs entirely on your infrastructure while supporting the latest AI models from Ollama, OpenAI, and beyond.
 
 ![Demo](./demo.gif)
 
-## Why Sage WebUI?
+## Why Sage.is AI-UI?
 
 **Privacy First** — Your conversations never leave your server. Complete data sovereignty.
 
@@ -42,7 +42,7 @@ If you want to do front end dev and see changes to svelte files live, go instead
 
 ## Available Make Commands
 
-- `make it_run` — Start Sage.is AI-UIwith Docker
+- `make it_run` — Start Sage.is AI-UI with Docker
 - `make it_stop` — Stop running containers
 - `make it_build` — Build Docker images
 - `make it_clean` — Clean up containers and images
@@ -66,7 +66,7 @@ If you want to do front end dev and see changes to svelte files live, go instead
 
 ## Configuration
 
-Sage.is AI-UIworks out of the box, but you can customize it:
+Sage.is AI-UI works out of the box, but you can customize it:
 
 **Environment Variables:**
 - `OPENAI_API_KEY` — Connect to OpenAI models
@@ -77,7 +77,7 @@ Sage.is AI-UIworks out of the box, but you can customize it:
 
 ## Styling
 
-Sage.is AI-UIuses [Startr.Style](https://startr.style) — a utility-complete CSS framework under 50KB (8KB gzipped). Instead of class-based utilities, Startr.Style uses inline CSS custom properties for full access to the CSS spec with zero compilation:
+Sage.is AI-UI uses [Startr.Style](https://startr.style) — a utility-complete CSS framework under 50KB (8KB gzipped). Instead of class-based utilities, Startr.Style uses inline CSS custom properties for full access to the CSS spec with zero compilation:
 
 ```html
 <div style="--d:flex; --ai:center; --g:1rem; --p:1rem; --br:0.5rem">
@@ -139,7 +139,7 @@ DB snapshots for upgrade testing live in `tools/db_snapshots/` (gitignored, sync
 
 [GNU Affero General Public License v3](LICENSE)
 
-The GNU Affero General Public License (AGPL) v3 is used here because this project (Sage WebUI) is a web-based AI interface that runs as a network service, and AGPL ensures that any modifications or derivative works—especially those deployed online—must also be open-sourced under the same license. This prevents proprietary exploitation of the codebase while allowing free use and modification.
+The GNU Affero General Public License (AGPL) v3 is used here because this project (Sage.is AI-UI) is a web-based AI interface that runs as a network service, and AGPL ensures that any modifications or derivative works—especially those deployed online—must also be open-sourced under the same license. This prevents proprietary exploitation of the codebase while allowing free use and modification.
 
 It protects developers by:
 

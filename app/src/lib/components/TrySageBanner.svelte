@@ -97,7 +97,7 @@
 	// the banner down to --translatey-hvr (-1ch) regardless of role.
 	// Computed as a reactive scalar instead of {#if} inside the style
 	// attribute because Svelte forbids logic blocks in attribute values.
-	$: translateyDefault = isAdmin ? '-15ch' : '-10ch';
+	$: translateyDefault = isAdmin ? '-15ch' : '-12ch';
 	// Color shifts to warning amber when reset is < 1 hour away, so the
 	// facilitator gets a passive "wrap up soon" cue without any pop-up.
 	$: warning = hoursRemaining !== null && hoursRemaining < 1;
@@ -296,6 +296,7 @@
 				--radius:0.75rem;
 				--pe:auto;
 				--shadow:6;
+				--bgc: var(--color-blue-200);
 				--tn:all 150ms cubic-bezier(0.4, 0, 0.2, 1);
 				--translatey:{translateyDefault};
 				--translatey-hvr:-1ch"
