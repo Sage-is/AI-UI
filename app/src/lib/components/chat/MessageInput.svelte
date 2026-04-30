@@ -535,7 +535,7 @@
 		}
 
 		if (fileUploadCapableModels.length !== selectedModels.length) {
-			toast.error($i18n.t('Model(s) do not support file upload'));
+			toast.error($i18n.t('File upload turned off'));
 			return null;
 		}
 
