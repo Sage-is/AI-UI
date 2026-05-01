@@ -7,7 +7,13 @@
       "Read(//private/tmp/**)",
       "Bash(rm -f /tmp/sage-cookie.txt)",
       "Bash(docker rm *)",
-      "Bash(git -C /Users/somma/Documents/Projects/GitHub/WEB-AI--Sage-is-AI-UI log --oneline -30)"
+      "Bash(git -C /Users/somma/Documents/Projects/GitHub/WEB-AI--Sage-is-AI-UI log --oneline -30)",
+      "Bash(git log *)",
+      "Read(//Users/somma/**)",
+      "Read(//Users/somma/.caprover/**)",
+      "Bash(caprover --version)",
+      "Bash(git -C /Users/somma/Documents/Projects/GitHub/WEB-AI--Sage-is-AI-UI tag --list 'v2.*' --sort=-v:refname)",
+      "Bash(env)"
     ]
   }
 }

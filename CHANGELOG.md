@@ -4,6 +4,46 @@ All notable changes to [Sage.is AI-UI](https://github.com/Sage-is/AI-UI) are doc
 
 ---
 
+## [2.3.0] — 2026-05-01
+
+### Added
+
+**ChromaDB Embedding Engine**
+A ChromaDB-backed embedding engine joins the retrieval options. Pick it from Admin > Settings > Documents. The ONNX bundle persists to `/app/backend/data` so restarts skip the re-download.
+
+**Try.sage Welcome Page**
+Trial sessions open on a dedicated landing page. The page introduces the workshop, points to the persona picker, and sets expectations for the 24-hour reset cycle.
+
+### Changed
+
+**Mermaid Diagrams Render Bigger in Chat**
+Mind maps, flowcharts, and sequence diagrams open at a readable size by default. The chat passes a `40vh` minimum height through to the SVG viewport. Pan, zoom, reset, and download still work.
+
+**Sage Strawberry Knows Mind Maps**
+The try.sage onboarding agent now answers mind-map requests with a fenced mermaid `mindmap` block. Other diagram requests get the matching grammar — `flowchart`, `sequenceDiagram`, `stateDiagram`. The agent nudges trial users toward live workshops and the Sage.is team when they want to go deeper.
+
+**Try.sage Trial Polish**
+Persona tutorials end with a try.sage.is reference so participants know where they are. Persona descriptions and trial-mode UI settings tighten up. Tutorial flow and persona switcher behave better on first run. Trial tool-server registration is more reliable across resets.
+
+**Conversation Map Labels**
+Node labels in the conversation map strip raw markdown markup before rendering. Branch names read cleanly.
+
+**File Upload Disabled Message**
+"Model(s) do not support file upload" rewritten to "File upload turned off" across all locales. Shorter, plainer.
+
+**OAuth Callback Handling**
+Sign-in callbacks handle edge cases more gracefully. Affects Google and GitHub OAuth flows added in 2.1.0.
+
+**SVG and Icon Handling**
+Internal refactor of SVG and icon imports. Lays groundwork for the diagram-rendering changes above. No user-facing change on its own.
+
+### Fixed
+
+**Documentation Typos**
+Corrected typos and improved descriptions across documentation files.
+
+---
+
 ## [2.2.0] — 2026-04-29
 
 ### Added
