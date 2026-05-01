@@ -888,7 +888,7 @@
 	"Model Permissions": "Permisos dels models",
 	"Model unloaded successfully": "El model s'ha descarregat correctament",
 	"Model updated successfully": "Model actualitzat correctament",
-	"Model(s) do not support file upload": "El model no permet la pujada d'arxius",
+	"File upload turned off": "El model no permet la pujada d'arxius",
 	"Modelfile Content": "Contingut del Modelfile",
 	"Models": "Models",
 	"Models Access": "Accés als models",

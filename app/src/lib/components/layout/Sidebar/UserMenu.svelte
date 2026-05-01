@@ -173,7 +173,7 @@
 			owns admin reset/extend controls — those live in
 			`+layout.svelte`, not here.
 		-->
-		<TryPersonaSwitcher />
+		<!--<TryPersonaSwitcher />-->
 
 		{#if help}
 			<hr
@@ -194,7 +194,7 @@
 			<button
 				style={helpItemStyle}
 				on:click={() => {
-					window.open('https://github.com/Sage-is/AI-UI/releases', '_blank');
+					window.open('https://github.com/Sage-is/AI-UI/tags', '_blank');
 					close();
 				}}
 			>

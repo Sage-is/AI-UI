@@ -315,3 +315,8 @@ tools/db_snapshots/*.db
 
 # Docker app structure
 # Symlinks for development convenience
+
+# Outreach drafts (private — not for the public repo)
+# Keep README.md tracked so the folder's purpose is documented in git
+docs/outreach/*
+!docs/outreach/README.md

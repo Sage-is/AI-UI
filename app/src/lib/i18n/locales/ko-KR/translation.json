@@ -888,7 +888,7 @@
 	"Model Permissions": "모델 권한",
 	"Model unloaded successfully": "성공적으로 모델이 언로드되었습니다",
 	"Model updated successfully": "성공적으로 모델이 업데이트되었습니다",
-	"Model(s) do not support file upload": "모델이 파일 업로드를 지원하지 않습니다",
+	"File upload turned off": "모델이 파일 업로드를 지원하지 않습니다",
 	"Modelfile Content": "모델 파일 내용",
 	"Models": "모델",
 	"Models Access": "모델 접근",

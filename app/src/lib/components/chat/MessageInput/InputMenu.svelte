@@ -159,7 +159,7 @@
 
 			<Tooltip
 				content={fileUploadCapableModels.length !== selectedModels.length
-					? $i18n.t('Model(s) do not support file upload')
+					? $i18n.t('Image capture turned off')
 					: !fileUploadEnabled
 						? $i18n.t('You do not have permission to upload files.')
 						: ''}
@@ -191,7 +191,7 @@
 
 			<Tooltip
 				content={fileUploadCapableModels.length !== selectedModels.length
-					? $i18n.t('Model(s) do not support file upload')
+					? $i18n.t('File upload turned off')
 					: !fileUploadEnabled
 						? $i18n.t('You do not have permission to upload files.')
 						: ''}

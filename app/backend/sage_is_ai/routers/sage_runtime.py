@@ -136,6 +136,14 @@ class StatusResponse(BaseModel):
     hours_until_reset: float
     banner_text: str
     tutorial_steps: list  # List[dict] — opaque shape, defined by config
+    # State of the trial-mode background install of the vector backend.
+    # Mirrors `app.state.MODEL_DOWNLOAD_STATUS["chromadb"]`. The trial
+    # banner reads this and renders a small "Setting up knowledge bases…"
+    # line during the first-boot install window so admins (and users)
+    # see why KBs aren't bound yet. Values: "ready" | "downloading" |
+    # "error" | "pending".
+    engine_status: str
+    engine_error: Optional[str] = None
 
 
 class PersonaEntry(BaseModel):
@@ -189,12 +197,24 @@ async def get_status(request: Request):
         log.warning("TRY_SAGE_TUTORIAL_STEPS_JSON failed to parse; serving empty list")
         steps = []
 
+    # Surface the chromadb auto-install state. Reads the same
+    # `MODEL_DOWNLOAD_STATUS` dict the existing AI Engine wizard writes
+    # to — DRY with no parallel state to keep in sync. Defaults to
+    # "ready" when the dict is missing or the key never got set (e.g.
+    # try mode disabled mid-flight; banner just won't render the line).
+    dl_status = getattr(request.app.state, "MODEL_DOWNLOAD_STATUS", {}) or {}
+    engine_status = str(dl_status.get("chromadb") or "ready")
+    raw_err = dl_status.get("error")
+    engine_error = str(raw_err) if raw_err and "chromadb" in str(raw_err) else None
+
     return {
         "enabled": True,
         "reset_at": reset_at.isoformat(),
         "hours_until_reset": round(hours, 4),
         "banner_text": cfg.TRY_SAGE_BANNER_TEXT,
         "tutorial_steps": steps,
+        "engine_status": engine_status,
+        "engine_error": engine_error,
     }
 
 

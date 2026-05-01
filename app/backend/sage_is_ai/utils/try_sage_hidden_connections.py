@@ -127,6 +127,13 @@ def register_hidden_connections(app) -> None:
         app.state.try_sage_hidden_connections = []
         return
 
+    # Trial mode never wants the open-webui Arena Model surfaced — it's
+    # a meta "compare two models side-by-side" feature that confuses
+    # workshop attendees and clutters the model selector. Force it off
+    # at every boot and reset; if an admin flips it on via the UI mid-
+    # session it'll re-disable on the next reset cycle.
+    app.state.config.ENABLE_EVALUATION_ARENA_MODELS = False
+
     url = (TRY_SAGE_LLM_API_URL or "").strip()
     key = (TRY_SAGE_LLM_API_KEY or "").strip()
 
