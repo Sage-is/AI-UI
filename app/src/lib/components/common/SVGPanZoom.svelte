@@ -16,6 +16,7 @@
 	import Icon from '$lib/components/Icon.svelte';
 
 	export let className = '';
+	export let style = '';
 	export let svg = '';
 	export let content = '';
 
@@ -44,9 +45,16 @@
 	};
 </script>
 
+<!--
+	`style` passes through to the inner SVG-bearing div (the one that hosts
+	{@html svg}) so callers can apply a viewport-relative floor like
+	`--minh:40vh` directly to the canvas around the SVG. Mermaid diagrams in
+	chat use this so they render at a readable size; the artifacts panel
+	leaves it empty so its own parent layout drives the size.
+-->
 <div bind:this={sceneParentElement} style="--pos:relative"
 	class="{className}">
-	<div bind:this={sceneElement} style="--d:flex; --h:100%; --maxh:100%; --jc:center; --ai:center">
+	<div bind:this={sceneElement} style="--d:flex; --h:100%; --maxh:100%; --jc:center; --ai:center; {style}">
 		{@html svg}
 	</div>
 
