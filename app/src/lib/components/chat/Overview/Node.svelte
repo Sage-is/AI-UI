@@ -2,12 +2,25 @@
 	import { WEBUI_BASE_URL } from '$lib/constants';
 	import { Handle, Position, type NodeProps } from '@xyflow/svelte';
 	import Icon from '$lib/components/Icon.svelte';
+	import { removeDetails } from '$lib/utils';
 
 	import ProfileImage from '../Messages/ProfileImage.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 
 	type $$Props = NodeProps;
 	export let data: $$Props['data'];
+
+	// Strip <details type="reasoning"> and similar wrapper blocks from the
+	// preview snippet shown in the conversation map. Without this, raw
+	// "thinking" markup leaks into the node label as escaped HTML and
+	// the line-clamped preview reads "&lt;details type=..." instead of
+	// the actual answer. The reasoning block can still be inspected in
+	// the chat itself; the map is only for navigation.
+	$: previewContent = removeDetails(data?.message?.content ?? '', [
+		'reasoning',
+		'code_interpreter',
+		'tool_calls'
+	]).trim();
 </script>
 
 <div
@@ -15,7 +28,7 @@
 	class="group"
 >
 	<Tooltip
-		content={data?.message?.error ? data.message.error.content : data.message.content}
+		content={data?.message?.error ? data.message.error.content : previewContent}
 		style="--w:100%"
 		allowHTML={false}
 	>
@@ -35,7 +48,7 @@
 					{#if data?.message?.error}
 						<div style="--c:#ef4444; --line-clamp:2; --size:0.6rem; --mt:0.125rem">{data.message.error.content}</div>
 					{:else}
-						<div style="--c:var(--color-gray-500); --line-clamp:2; --size:0.6rem; --mt:0.125rem">{data.message.content}</div>
+						<div style="--c:var(--color-gray-500); --line-clamp:2; --size:0.6rem; --mt:0.125rem">{previewContent}</div>
 					{/if}
 				</div>
 			</div>
@@ -70,7 +83,7 @@
 							{data.message.error.content}
 						</div>
 					{:else}
-						<div style="--c:var(--color-gray-500); --line-clamp:2; --size:0.6rem; --mt:0.125rem">{data.message.content}</div>
+						<div style="--c:var(--color-gray-500); --line-clamp:2; --size:0.6rem; --mt:0.125rem">{previewContent}</div>
 					{/if}
 				</div>
 			</div>

@@ -37,10 +37,11 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [ ] Run `make try_sage_start` in a clean checkout. Container boots and `/api/v1/sage/runtime/status` responds.
   - [ ] `GET /api/v1/sage/runtime/personas` returns 5 entries with non-empty `login_url` JWTs.
   - [ ] Open a persona magic link in incognito. Sign-in lands on the home route as the right user.
-  - [ ] Banner shows live countdown. Admin extend/reset CTAs work. Non-admin sees the info line.
-  - [ ] Persona switcher in the user menu lists all 5 personas. Click navigates as expected.
-  - [ ] Tutorial modal opens on first persona sign-in. Steps render placeholder cards. Dismiss works.
-  - [ ] Admin → Settings → Trial Mode tab opens. "Reopen setup wizard" + "Replay tutorial" both fire.
+  - [x] Banner shows live countdown. Admin extend/reset CTAs work. Non-admin sees the info line.
+  - [x] Persona switcher in the user menu lists all 5 personas. Click navigates as expected.
+  - [ ] Persona switcher should be cleaned
+  - [x] Tutorial modal opens on first persona sign-in. Steps render placeholder cards. Dismiss works.
+  - [x] Admin → Settings → Trial Mode tab opens. "Reopen setup wizard" + "Replay tutorial" both fire.
   - [ ] `GET /api/v1/configs/connections` as admin does NOT list the hidden try.sage connection.
   - [ ] `GET /api/models` shows only the IDs in `TRY_SAGE_LLM_MODELS`. Chat completions against those models work.
   - [ ] `make try_sage_stop` cleanly removes the container.
@@ -49,6 +50,7 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
 
 - [ ] **try.sage Production Decisions**: (Alexander Somma + Izzy Plante) — Surfaced by Docker exploration. Block CapRover one-click rollout.
   - [ ] Decide where `TRY_SAGE_LLM_API_KEY` lives in production: plain env, Docker secret mount, or external vault. Recommend Docker secret for try.sage.is itself, plain env for self-hosted workshops.
+    - [ ] note:As we use cap rover and the system injects env vars we're leaning this way
   - [ ] Decide whether to publish a `:latest-try-sage` image tag or stick to one tag stream gated by env var.
   - [ ] Decide whether trial deployments use a separate named volume (`sage-try-data`) to keep production state clean. Recommend yes.
   - [ ] Land the runtime-variant approach (one image, env-gated) per `docs/try-sage-docker-exploration.md`.
@@ -225,6 +227,8 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
 
 _Items deferred to a later planning cycle. Move here from TODO when deprioritized._
 
+- [ ] **Alex bio update** (Alexander Somma): Add Alex's background to the sage.is/about and sage.education pages — currently only Izzy's story appears. Should include Etsy backend, teaching career, and CTO role.
+
 - [ ] **Docker Image Slimming (Pinned / Paused)**: (Alexander Somma)
   - [x] Hit the ~2.5GB target (down from 9.7GB)
   - [ ] Hit the ~1.5GB base-image target after trimming heavy transitive deps
@@ -283,6 +287,37 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] Add regression coverage for microphone-to-input behavior in chat
 
 *(Surfaced by user report in chat, 2026-04-27.)*
+
+- [ ] **try.sage Tutorial Does Not Auto-Open on First Persona Sign-In**: The TrySageTutorial modal is supposed to auto-open the first time a persona signs in (gated on `$config?.features?.enable_try_sage` + signed-in `$user` + missing `localStorage.try_sage_tutorial_seen_v1`). Manually triggering "Replay tutorial" from Admin → Trial Mode opens it correctly, so the modal itself works — only the auto-trigger fails. #bug
+  - [ ] Reproduce: clear `localStorage.try_sage_tutorial_seen_v1`, sign in via a persona magic link, confirm modal does NOT appear
+  - [ ] Inspect the `onMount`/reactive trigger condition in `app/src/lib/components/setup/TrySageTutorial.svelte` — likely the `$user` check fires before the user store hydrates after magic-link verify, OR the SvelteKit hard-navigation from `/auth#magic_token=...` lands before the layout has subscribed to `tutorialReopen`
+  - [ ] Fix so the auto-show fires on first persona sign-in, not just from the admin "Replay tutorial" button
+  - [ ] Add a Vitest spec that mounts the component with mocked `$config`, `$user`, and a clean `localStorage`, and asserts the modal opens
+
+*(Surfaced 2026-04-29 during manual regression of the persona sign-in flow.)*
+
+- [ ] **try.sage Tutorial Step Cards Render Empty**: When the tutorial does open (via Admin → Trial Mode → Replay tutorial), the step cards are missing content — title, "Video coming soon" placeholder, and `description` paragraph all missing or partially missing. #bug
+  - [ ] Reproduce: with `TRY_SAGE_TUTORIAL_STEPS_JSON` unset, open the tutorial via the admin replay button — confirm cards render without expected content
+  - [ ] Inspect the default-step rendering branch in `app/src/lib/components/setup/TrySageTutorial.svelte` — specifically the placeholder card layout that fires when `step.video_url` is empty/missing
+  - [ ] Confirm whether the `DEFAULT_STEPS` constant is reachable, the iteration is correct, and i18n wrapping isn't producing empty strings
+  - [ ] Fix the missing-cards rendering so at minimum each step shows: title, "Video coming soon" placeholder, and the step's `description` paragraph
+
+*(Surfaced 2026-04-29 in the same regression session.)*
+
+- [x] **Trial Banner Overlapped by Left Sidebar**: Once a persona signed in, the left sidebar (admin / chat list) overlapped the trial banner. Banner was a full-width strip pushed into the layout flow; sidebar's z-index let it cut into the banner's edges. #bug
+  - [x] Float the banner above the app shell rather than reflowing it inline. Outer wrapper `position:fixed; top:0.5rem; left:0; right:0; z:40; pointer-events:none`. Inner pill `max-w:60ch; margin:0 auto; pointer-events:auto; rounded; subtle shadow`. Doesn't push navbar/content down on first paint and z-index keeps it above the sidebar.
+  - [x] Edited `app/src/lib/components/TrySageBanner.svelte` outer wrapper only — inner content (countdown row, persona-jump row, `<details>` block) untouched.
+  - [x] Banner now slides 280px right when the desktop sidebar opens so it stays centered over the chat content, not the full viewport. Driven off the existing `showSidebar` store with a 200ms ease transition. Mobile is unaffected (sidebar overlays there).
+
+*(Surfaced + fixed 2026-04-29 during regression testing.)*
+
+- [ ] **Replace David / Sistine Chapel Art in Login Slideshow**: The login/onboarding/welcome slideshow ships a Michelangelo's David and a Sistine Chapel ceiling image — both are recognisable Renaissance pieces that don't fit the Sage.is brand and may carry licensing risk depending on the source photo. Swap for original or CC/public-domain imagery. #bug
+  - [ ] Find the offending images under `app/static/` (likely `static/assets/images/` or wherever `SlideShow.svelte` reads from) and confirm the exact filenames + license source
+  - [ ] Pick replacements: original Sage.is photography, or CC0 / public-domain alternatives that match the warm-workshop tone (libraries, classrooms, observatories, etc.)
+  - [ ] Replace files in-tree, keep filenames stable so `SlideShow.svelte` keeps working without code change. Run the build and visually confirm new images render in the welcome slideshow + try.sage welcome page.
+  - [ ] Cross-link with the existing **Codebase Cleanup → "Replace login slideshow images with original or CC/public-domain photos"** task — collapse if both are doing the same work.
+
+*(Surfaced 2026-04-29 reviewing the trial welcome page imagery.)*
 
 
 

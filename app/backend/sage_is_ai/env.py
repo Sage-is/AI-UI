@@ -666,6 +666,14 @@ ENABLE_TRY_SAGE = os.environ.get("ENABLE_TRY_SAGE", "False").lower() == "true"
 TRY_SAGE_LLM_API_URL = os.environ.get("TRY_SAGE_LLM_API_URL", "")
 TRY_SAGE_LLM_API_KEY = os.environ.get("TRY_SAGE_LLM_API_KEY", "")
 
+# Bearer token for the trial markdown-search tool server. Optional —
+# when empty the tool server is registered as `auth_type="none"` and
+# admins must populate the key by hand. When set, the key flows into
+# `TOOL_SERVER_CONNECTIONS` at every boot/reset. Env-only (never
+# persisted to DB) for the same reason as TRY_SAGE_LLM_API_KEY: a
+# curious admin in the trial UI should not be able to read it back.
+TRY_SAGE_TOOL_SERVER_API_KEY = os.environ.get("TRY_SAGE_TOOL_SERVER_API_KEY", "")
+
 
 def _parse_try_sage_models(raw: str) -> list[str]:
     """Accept either a JSON array (e.g. '["gpt-4o","gpt-4o-mini"]') or a

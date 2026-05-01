@@ -794,6 +794,24 @@ try_sage_start:
 try_sage_stop:
 	@echo "Stopping try.sage trial container ($(CONTAINER_NAME))..."
 	$(CONTAINER_RUNTIME) rm -f $(CONTAINER_NAME) || true
+
+# Stop, rebuild image, and restart. The dev loop's "I edited code, now
+# show me" target — runs everything as one command so an operator (or
+# an automation agent) doesn't pay an interactive permission prompt per
+# step. Foreground at the end so logs stream to the terminal.
+try_sage_reset: try_sage_stop it_build try_sage_start
+
+# Print the persona magic-link URLs for the running trial container.
+# Reads `/api/v1/sage/runtime/personas` and pretty-prints. Useful when
+# you've forgotten which links are live and don't want to scroll back
+# through container logs.
+try_sage_links:
+	@echo "Trial welcome URL: http://localhost:8080/auth (open in incognito)"
+	@echo ""
+	@curl -fsS http://localhost:8080/api/v1/sage/runtime/personas 2>/dev/null \
+		| python3 -c "import json, sys;\
+[print(f\"  {p['key']:12}  {p['login_url']}\") for p in json.load(sys.stdin)]" \
+		|| echo "  (container not responding on :8080 — is it running?)"
 # ---------------------------------------------------------------------------
 # Interactive release (full flow via ~/bin/git-release)
 # ---------------------------------------------------------------------------

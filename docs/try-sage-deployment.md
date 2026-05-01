@@ -1,8 +1,8 @@
-# try.sage Trial Deployment
+# Try.sage.is a Trial Deployment
 
 ## Overview
 
-try.sage is a trial mode for Sage WebUI. It runs a shared Sage instance for a workshop or demo. The instance boots with a master switch, seeds five persona accounts, registers two tool servers, and routes inference through a hidden LLM connection that admins cannot see. Every 24 hours it wipes persona chats and uploaded files. Persona accounts, seeded knowledge bases, and persona magic-link URLs all survive the reset — operators hand out URLs once and trust them across the campaign. The reset cycle and link TTL are configurable. An admin can extend the window or reset on demand.
+Try.sage.is a trial mode for Sage.is AI-UI. It runs a shared Sage instance for a workshop or demo. The instance boots with a master switch, seeds five persona accounts, registers two tool servers, and routes inference through a hidden LLM connection that admins cannot see. Every 24 hours it wipes persona chats and uploaded files. Persona accounts, seeded knowledge bases, and persona magic-link URLs all survive the reset — operators hand out URLs once and trust them across the campaign. The reset cycle and link TTL are configurable. An admin can extend the window or reset on demand.
 
 The mode solves three problems at once. It hides upstream LLM keys from anyone signed into the trial, including admins. It gives workshop facilitators a way to share signed-in personas through magic links. It guarantees a clean state at a known cadence so each cohort starts fresh.
 
@@ -58,6 +58,7 @@ These are seeded from env vars but can also be edited via the admin config UI wi
 | `TRY_SAGE_PERSONA_LINK_TTL_DAYS` | `7` | Magic-link JWT lifetime in days. Decoupled from the reset interval — links stay stable across resets, only account contents get wiped. Restart the container to force fresh links. |
 | `TRY_SAGE_RESET_AT` | auto | ISO8601 timestamp for the next reset. Set automatically; safe to leave alone. |
 | `TRY_SAGE_TOOL_SERVER_URL` | `https://markdown-search.production.openco.ca` | Real OpenAPI tool server registered at startup. |
+| `TRY_SAGE_TOOL_SERVER_API_KEY` | `""` | Bearer token for the markdown-search server. **Secret, env-only.** When set, the registration shim writes `auth_type=bearer` and the key into the entry on every boot/reset, so admins never enter it manually. When empty, the entry registers as `auth_type=none` and an admin must populate the key by hand. |
 | `TRY_SAGE_DUMMY_TOOL_SERVER_URL` | derived from `WEBUI_URL` | Override only if you point at an external dummy. |
 | `TRY_SAGE_PERSONA_SEED_ENABLED` | `true` | Set `false` to skip persona/agent/KB seeding. Useful when you provision personas externally. |
 | `TRY_SAGE_USER_SEAT_COUNT` | `3` | Number of `try-user-N` accounts. Capped at 5. Total personas = 2 + this. |
@@ -121,7 +122,7 @@ A background task wakes every 5 minutes and checks `TRY_SAGE_RESET_AT`. When the
 - Seeded agents (Sage Strawberry, Sage Startr.Style, AstroPi AI Tutor).
 - KB collections. The seed routine skips re-ingestion when the source folder hash is unchanged.
 - Tool server registrations. The registrar is idempotent and dedupes by URL.
-- Files whose path lives under `data/try_sage_agents/` — those are seed-managed KB sources.
+- Files whose path lives under `app/backend/sage_is_ai/data/try_sage_agents/` — those are seed-managed KB sources.
 
 ### Manual control
 
@@ -207,12 +208,12 @@ Real example pointing at the team's working playlist:
 
 ```bash
 TRY_SAGE_TUTORIAL_STEPS_JSON='[
-  {"id":"welcome","title":"Welcome to try.sage","video_url":"https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u","dismissible":true,"description":"Workshop access overview."},
+  {"id":"welcome","title":"Welcome to try.sage.is AI","video_url":"https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u","dismissible":true,"description":"Workshop access overview."},
   {"id":"model-switching","title":"Switch models","video_url":"https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u","dismissible":true,"description":"Pick a different model mid-chat."},
-  {"id":"chat-map","title":"Chat map","video_url":"https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u","dismissible":true,"description":"Branch and revisit conversation forks."},
+  {"id":"chat-map","title":"Chat Overview","video_url":"https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u","dismissible":true,"description":"Branch and revisit conversation forks."},
   {"id":"artifacts","title":"Artifacts","video_url":"https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u","dismissible":true,"description":"Render code and HTML side-by-side with chat."},
-  {"id":"bialik-sage","title":"Build a Bialik Sage","video_url":"https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u","dismissible":true,"description":"Create a custom agent from a system prompt."},
-  {"id":"done","title":"You are ready","video_url":"","dismissible":true,"description":"Wrap up. Re-open from the Help menu any time."}
+  {"id":"bialik-sage","title":"Building a Bialik Sage","video_url":"https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u","dismissible":true,"description":"Create a custom agent from a system prompt."},
+  {"id":"done","title":"Everything","video_url":"","dismissible":true,"description":"Wrap up. Re-open from the Help menu any time."}
 ]'
 ```
 
@@ -259,6 +260,8 @@ ANALYTICS_PLAUSIBLE_DOMAIN=
 ```
 
 Set `srv-captain--<your-app>` for the upstream once the app boots, then map the public domain to `WEBUI_URL`. The dummy-tools server URL derives from `WEBUI_URL`, so set the domain before the first restart.
+
+Add a Persistent Directory in CapRover (App → Configs) mounted at **`/app/backend/data`**. This holds the SQLite app DB, persona magic-link cache, the seeded knowledge bases, and (via a build-time symlink in the image) the chromadb ONNX embedding-model bundle (~80MB). Without this mount, the bundle re-downloads on every container start. With it, first boot pays the download once and every redeploy reuses the cached weights.
 
 ## Troubleshooting
 

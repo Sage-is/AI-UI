@@ -101,7 +101,24 @@ def get_ef(
     auto_update: bool = False,
 ):
     ef = None
-    if embedding_model and engine == "":
+    if engine == "chroma":
+        # ChromaDB ships a bundled ONNX-runtime embedding function
+        # (all-MiniLM-L6-v2). Picking this engine avoids the heavy
+        # torch + sentence-transformers stack that the AI Engine
+        # wizard otherwise installs at runtime, and is the default
+        # for try.sage trial mode where the seeded KBs need to
+        # ingest on first boot without an ~1GB image bloat. The
+        # ONNX weights download lazily into the data volume on first
+        # call (~80MB), so subsequent boots are fast.
+        try:
+            from chromadb.utils.embedding_functions import (
+                DefaultEmbeddingFunction,
+            )
+
+            ef = DefaultEmbeddingFunction()
+        except Exception as e:
+            log.error(f"Error loading chromadb DefaultEmbeddingFunction: {e}")
+    elif embedding_model and engine == "":
         from sentence_transformers import SentenceTransformer
 
         try:
@@ -381,7 +398,7 @@ async def get_models_status(request: Request, user=Depends(get_admin_user)):
         "embedding_engine": request.app.state.config.RAG_EMBEDDING_ENGINE,
         "embedding_ready": request.app.state.ef is not None
         or request.app.state.config.RAG_EMBEDDING_ENGINE
-        in ["openai", "ollama", "azure_openai"],
+        in ["openai", "ollama", "azure_openai", "chroma"],
         "vector_db_ready": VECTOR_DB_CLIENT is not None,
     }
 

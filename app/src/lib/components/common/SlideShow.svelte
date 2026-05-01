@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 
 	export let imageUrls = [
-		`${WEBUI_BASE_URL}/static/assets/images/adam.jpg`,
+		`${WEBUI_BASE_URL}/static/assets/images/library.webp`,
 		`${WEBUI_BASE_URL}/static/assets/images/galaxy.jpg`,
 		`${WEBUI_BASE_URL}/static/assets/images/earth.jpg`,
 		`${WEBUI_BASE_URL}/static/assets/images/space.jpg`

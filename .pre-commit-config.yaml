@@ -69,6 +69,24 @@ repos:
         exclude: ^app/node_modules/
 
   # ---------------------------------------------------------------------------
+  # Outreach Privacy — block private drafts from leaking into the public repo
+  # ---------------------------------------------------------------------------
+  # docs/outreach/ holds pre-send drafts that name prospects, schools, and
+  # pricing. The .gitignore handles plain `git add`. This hook is the second
+  # line: it refuses commits that include anything from that folder other
+  # than README.md, catching `git add -f` (which bypasses .gitignore).
+  - repo: local
+    hooks:
+      - id: block-outreach-drafts
+        name: block outreach drafts (privacy poka-yoke)
+        entry: bash -c 'echo "" >&2; echo "[ABORT] Outreach draft(s) staged for commit:" >&2; for f in "$@"; do echo "  - $f" >&2; done; echo "" >&2; echo "docs/outreach/ is private. Only README.md is tracked." >&2; echo "Drafts name real prospects — they must not enter the public repo." >&2; echo "If you genuinely need to commit one, edit .gitignore and this hook first." >&2; exit 1' --
+        language: system
+        files: ^docs/outreach/
+        exclude: ^docs/outreach/README\.md$
+        pass_filenames: true
+        stages: [pre-commit]
+
+  # ---------------------------------------------------------------------------
   # Dependency Audit — catch known CVEs in lockfiles before commit
   # ---------------------------------------------------------------------------
   # Runs Trivy against lockfiles when they change.

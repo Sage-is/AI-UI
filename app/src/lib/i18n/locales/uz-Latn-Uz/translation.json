@@ -888,7 +888,7 @@
 	"Model Permissions": "Model ruxsatnomalari",
 	"Model unloaded successfully": "Model muvaffaqiyatli yuklab olindi",
 	"Model updated successfully": "Model muvaffaqiyatli yangilandi",
-	"Model(s) do not support file upload": "Model(lar) faylni yuklashni qo'llab-quvvatlamaydi",
+	"File upload turned off": "Model(lar) faylni yuklashni qo'llab-quvvatlamaydi",
 	"Modelfile Content": "Model fayli tarkibi",
 	"Models": "Modellar",
 	"Models Access": "Modellarga kirish",

@@ -325,7 +325,13 @@
 		try {
 			if (await mermaid.parse(code)) {
 				const { svg } = await mermaid.render(`mermaid-${uuidv4()}`, code);
-				mermaidHtml = svg;
+				// Inject `--minh:40vh` into the existing style attribute on the
+				// rendered <svg> element. startr.style maps `--minh` → `min-height`,
+				// so the diagram itself gets a viewport-relative floor. Wrapping
+				// the SvgPanZoom container alone isn't enough: the SVG sizes from
+				// its viewBox aspect ratio and ignores ancestor min-height, so the
+				// hook has to land on the <svg> tag directly.
+				mermaidHtml = svg.replace(/(<svg\b[^>]*\sstyle=")/, '$1--minh:40vh; ');
 			}
 		} catch (error) {
 			console.log('Error:', error);
@@ -415,6 +421,7 @@
 		{#if lang === 'mermaid'}
 			{#if mermaidHtml}
 				<SvgPanZoom
+					style="--w:100%; --minh:40vh;"
 					className=" border border-gray-100 dark:border-gray-850 rounded-lg max-h-fit overflow-hidden"
 					svg={mermaidHtml}
 					content={_token.text}

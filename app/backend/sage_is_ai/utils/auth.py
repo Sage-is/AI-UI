@@ -226,6 +226,34 @@ def get_current_user(
         )
 
     if data is not None and "id" in data:
+        # try.sage reset cutoff: when a workshop facilitator hits "Reset
+        # now", every session JWT minted before that moment becomes
+        # invalid. Magic-link JWTs (token_type == "magic_link") are
+        # never used as session cookies, but we explicitly skip them
+        # here as belt-and-suspenders so a stray verification call
+        # cannot blow up the persona's link.
+        try:
+            cutoff = int(
+                getattr(
+                    request.app.state.config,
+                    "TRY_SAGE_SESSIONS_INVALIDATED_AT",
+                    0,
+                )
+                or 0
+            )
+        except (TypeError, ValueError):
+            cutoff = 0
+        if (
+            cutoff
+            and data.get("type") != "magic_link"
+            and int(data.get("iat", 0) or 0) < cutoff
+        ):
+            response.delete_cookie("token")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Session reset — please sign in again.",
+            )
+
         user = Users.get_user_by_id(data["id"])
         if user is None:
             raise HTTPException(

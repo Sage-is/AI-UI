@@ -38,7 +38,7 @@
 	const DEFAULT_STEPS: TutorialStep[] = [
 		{
 			id: 'welcome',
-			title: 'Welcome to try.sage',
+			title: 'Welcome to try.sage.is AI',
 			dismissible: true,
 			description: 'A workshop-friendly trial of Sage.is AI.'
 		},
@@ -50,7 +50,7 @@
 		},
 		{
 			id: 'chat-map',
-			title: 'Chat map',
+			title: 'Chat Overview',
 			dismissible: true,
 			description: 'See where your conversation goes.'
 		},
@@ -62,15 +62,15 @@
 		},
 		{
 			id: 'bialik-sage',
-			title: 'Build a Bialik Sage agent',
+			title: 'Building a Bialik Sage agent',
 			dismissible: true,
 			description: 'Make your own teaching assistant.'
 		},
 		{
 			id: 'done',
-			title: 'You are ready',
+			title: 'Everything',
 			dismissible: true,
-			description: 'Have fun. Resets every 24 hours.'
+			description: 'Have fun and try.sage.is! Everything resets every 24 hours.'
 		}
 	];
 
@@ -195,7 +195,8 @@
 				style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-850); --d:flex; --fd:column; --ai:center; --jc:center; --g:0.6rem; --p:1rem; --ta:center"
 			>
 				<div style="--size:1rem; --weight:500; --c:var(--color-gray-600); --dark-c:var(--color-gray-300)">
-					{$i18n?.t('Video coming soon')}
+					<!--{$i18n?.t('Video coming soon')}-->
+					<a href="mailto:support@sage.is">Schedule a workshop</a> to see {currentStep?.title ?? ''} in action.
 				</div>
 				{#if currentStep?.description}
 					<div

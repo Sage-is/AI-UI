@@ -417,6 +417,32 @@ def get_embedding_function(
         return lambda query, prefix=None, user=None: embedding_function.encode(
             query, **({"prompt": prefix} if prefix else {})
         ).tolist()
+    elif embedding_engine == "chroma":
+        # ChromaDB's DefaultEmbeddingFunction is callable with a list of
+        # strings and returns list[list[float]]. We normalize the single-
+        # string case so the caller's contract matches the other engines
+        # (a `prefix` arg is accepted but ignored — chromadb's bundled
+        # MiniLM doesn't take a prompt prefix).
+        if embedding_function is None:
+            def _not_ready(*args, **kwargs):
+                raise ValueError(
+                    "ChromaDB embedding function unavailable. "
+                    "Verify chromadb is installed in this image."
+                )
+            return _not_ready
+
+        def _embed_chroma(query, prefix=None, user=None):
+            texts = query if isinstance(query, list) else [query]
+            embeddings = embedding_function(texts)
+            # chromadb returns rows of np.float32 scalars; downstream
+            # validators (chroma's own collection.add, the OpenAI-shape
+            # JSON serializer) reject np.float32 inside a list and
+            # require native Python float. `float(x)` per element is
+            # the cheapest conversion that makes both happy.
+            result = [[float(x) for x in row] for row in embeddings]
+            return result if isinstance(query, list) else result[0]
+
+        return _embed_chroma
     elif embedding_engine in ["ollama", "openai", "azure_openai"]:
         func = lambda query, prefix=None, user=None: generate_embeddings(
             engine=embedding_engine,

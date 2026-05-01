@@ -641,7 +641,7 @@ async def signin(request: Request, response: Response, form_data: SigninForm):
             expires_at = int(time.time()) + int(expires_delta.total_seconds())
 
         token = create_token(
-            data={"id": user.id},
+            data={"id": user.id, "iat": int(time.time())},
             expires_delta=expires_delta,
         )
 
@@ -739,7 +739,7 @@ async def signup(request: Request, response: Response, form_data: SignupForm):
                 expires_at = int(time.time()) + int(expires_delta.total_seconds())
 
             token = create_token(
-                data={"id": user.id},
+                data={"id": user.id, "iat": int(time.time())},
                 expires_delta=expires_delta,
             )
 
@@ -1233,8 +1233,13 @@ async def verify_magic_link_login(
     if expires_delta:
         expires_at = int(time.time()) + int(expires_delta.total_seconds())
 
+    # Stamp `iat` into the session token so the try-mode reset cutoff
+    # in `get_current_user` can reject sessions issued before the most
+    # recent reset. The magic-link JWT itself (form_data.token) is
+    # untouched — it keeps its original iat/exp so the link stays valid
+    # across as many resets as fit inside its TTL.
     session_token = create_token(
-        data={"id": user.id},
+        data={"id": user.id, "iat": int(time.time())},
         expires_delta=expires_delta,
     )
 
