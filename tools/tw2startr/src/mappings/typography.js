@@ -16,6 +16,23 @@ const FONT_FAMILIES = {
 // ---------------------------------------------------------------------------
 
 const typographyRules = [
+	// ---- Font smoothing ----
+	{
+		pattern: /^(antialiased|subpixel-antialiased)$/,
+		convert: (match) => {
+			if (match[1] === 'antialiased') {
+				return [
+					{ prop: '-webkit-font-smoothing', value: 'antialiased' },
+					{ prop: '-moz-osx-font-smoothing', value: 'grayscale' }
+				];
+			}
+			return [
+				{ prop: '-webkit-font-smoothing', value: 'auto' },
+				{ prop: '-moz-osx-font-smoothing', value: 'auto' }
+			];
+		}
+	},
+
 	// ---- Font Size (named sizes only; text-{color} is handled in colors.js) ----
 	{
 		pattern: /^text-(xs|sm|base|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl|8xl|9xl)$/,

@@ -1,4 +1,10 @@
-export { convertClass, convertClasses, parsePrefixes } from './transformer/class-converter.js';
+export {
+  convertClass,
+  convertClasses,
+  parsePrefixes,
+  setCustomClassMap,
+  resetCustomClassMap,
+} from './transformer/class-converter.js';
 export { extractClassSegments, getStaticClasses } from './parser/class-extractor.js';
 export { parseElements } from './parser/svelte-parser.js';
 export { mergeStyles, parseStyleValue } from './transformer/style-merger.js';
