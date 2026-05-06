@@ -263,6 +263,27 @@ Set `srv-captain--<your-app>` for the upstream once the app boots, then map the 
 
 Add a Persistent Directory in CapRover (App → Configs) mounted at **`/app/backend/data`**. This holds the SQLite app DB, persona magic-link cache, the seeded knowledge bases, and (via a build-time symlink in the image) the chromadb ONNX embedding-model bundle (~80MB). Without this mount, the bundle re-downloads on every container start. With it, first boot pays the download once and every redeploy reuses the cached weights.
 
+### Production deployment: try.sage.is
+
+The live trial runs on the `try-sage-is` CapRover app at `captain.production.openco.ca`. First-deploy steps that produced it (2026-05-01, image `ghcr.io/sage-is/ai-ui:2.3.0`):
+
+1. **Build and push the image** from a `release/<X.Y.Z>` branch with `make release_and_push_GHCR`. That target runs `release_finish` (gitflow merge → tag `v<X.Y.Z>` → push) then `it_build_multi_arch_push_GHCR` (multi-arch buildx push of `:<X.Y.Z>` and `:latest` to GHCR). `IMAGE_TAG` auto-derives from the latest git tag, so the new tag must exist before the push step runs.
+2. **Create the app** in the CapRover dashboard with **Has Persistent Data: YES**. Add Persistent Directory `/app/backend/data` (label `try-sage-is-data`). Container HTTP Port `8080`. Instance Count `1` (SQLite does not tolerate multi-replica writes).
+3. **Bulk-paste env vars** (App Configs → Environmental Variables → Bulk Edit) using the block above. Leave `WEBUI_SECRET_KEY` unset — `app/backend/start.sh` auto-generates one on first boot and writes it to `/app/backend/data/.webui_secret_key`, so it stays stable across restarts as long as the persistent volume sticks around. Set `WEBUI_URL=https://try.sage.is` so persona magic links resolve to the public host.
+4. **Deploy by image name** via the Deployment tab → Method 6: paste `ghcr.io/sage-is/ai-ui:<X.Y.Z>`. No local `caprover deploy` config needed.
+5. **DNS + HTTPS**: Cloudflare CNAME `try` → `try-sage-is.production.openco.ca` (DNS-only / gray cloud during cert issue). Connect the domain in CapRover → Enable HTTPS → Force HTTPS. Once the LE cert is in place, flip Cloudflare back to proxied (orange cloud) with SSL/TLS mode **Full (strict)**.
+6. **Restart** so `WEBUI_URL` populates the persona magic-link cache. Verify `GET /api/v1/sage/runtime/status` returns `enabled: true` and `/api/v1/sage/runtime/personas` lists `login_url`s rooted at the public host (not `localhost`).
+
+#### Recovery: `release_and_push_GHCR` failed mid-way (buildx OOM)
+
+`release_finish` and `it_build_multi_arch_push_GHCR` are sequential, not transactional. If the gitflow side completes but the buildx push OOMs (Vite + arm64 emulation is the spike — bump Docker memory before retrying), the tag and merges are already on origin. Recovery is **just the build-and-push step**:
+
+```bash
+make it_build_multi_arch_push_GHCR
+```
+
+`IMAGE_TAG` already resolves to the new tag once `v<X.Y.Z>` exists, so the rerun names the image correctly. Do **not** rerun `release_and_push_GHCR` — `release_finish` will fail because the release branch is gone.
+
 ## Troubleshooting
 
 **No models showing up.** Hit `GET /api/v1/sage/runtime/llm-status` as admin. If `configured: false`, `TRY_SAGE_LLM_API_URL` or `TRY_SAGE_LLM_API_KEY` is empty — set both. If `configured: true` but `/api/models` is empty, the upstream provider returned no models for that key — check the upstream credentials separately.

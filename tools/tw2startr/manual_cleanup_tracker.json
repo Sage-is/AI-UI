@@ -1,0 +1,87 @@
+{
+  "timestamp": "2026-05-04",
+  "scope": "layouts manual cleanup wave",
+  "shimStylesheet": "/Users/somma/bin/tailwindcss-templates/layouts/tw2startr-manual-utilities.css",
+  "filesUpdated": [
+    "layouts/DentalPro.html",
+    "layouts/Pinwheel-tailwind.html",
+    "layouts/Tailwind Starter Template - Landing Page Template_ Windy Toolbox.html",
+    "layouts/essential.html",
+    "layouts/foundation.html",
+    "layouts/launch.html",
+    "layouts/outlet.html"
+  ],
+  "patternsHandled": [
+    {
+      "pattern": "focus:outline-none",
+      "strategy": "css shim",
+      "shim": ".focus\\:outline-none:focus { outline: 2px solid transparent; outline-offset: 2px; }",
+      "autoCandidate": "support focus pseudo prefix in converter"
+    },
+    {
+      "pattern": "focus:bg-white",
+      "strategy": "css shim",
+      "shim": ".focus\\:bg-white:focus { background-color: #fff; }",
+      "autoCandidate": "support focus pseudo prefix in converter"
+    },
+    {
+      "pattern": "focus:border-gray-500",
+      "strategy": "css shim",
+      "shim": ".focus\\:border-gray-500:focus { border-color: #6b7280; }",
+      "autoCandidate": "support focus pseudo prefix in converter"
+    },
+    {
+      "pattern": "group-hover:block",
+      "strategy": "css shim",
+      "shim": ".group:hover .group-hover\\:block { display: block; }",
+      "autoCandidate": "support group-hover prefix in converter"
+    },
+    {
+      "pattern": "lg:group-hover:visible",
+      "strategy": "css shim",
+      "shim": "@media (min-width:1024px) { .group:hover .lg\\:group-hover\\:visible { visibility: visible; } }",
+      "autoCandidate": "support stacked prefixes (breakpoint + state)"
+    },
+    {
+      "pattern": "lg:group-hover:opacity-100",
+      "strategy": "css shim",
+      "shim": "@media (min-width:1024px) { .group:hover .lg\\:group-hover\\:opacity-100 { opacity: 1; } }",
+      "autoCandidate": "support stacked prefixes (breakpoint + state)"
+    },
+    {
+      "pattern": "space-y-4",
+      "strategy": "css shim",
+      "shim": ".space-y-4 > * + * { margin-top: 1rem; }",
+      "autoCandidate": "emit combinator utility shims or parent gap fallback toggle"
+    },
+    {
+      "pattern": "space-x-2.5",
+      "strategy": "css shim",
+      "shim": ".space-x-2\\.5 > * + * { margin-left: 0.625rem; }",
+      "autoCandidate": "emit combinator utility shims"
+    },
+    {
+      "pattern": "md:space-x-12",
+      "strategy": "css shim",
+      "shim": "@media (min-width:768px) { .md\\:space-x-12 > * + * { margin-left: 3rem; } }",
+      "autoCandidate": "responsive combinator support"
+    },
+    {
+      "pattern": "lg:space-x-5",
+      "strategy": "css shim",
+      "shim": "@media (min-width:1024px) { .lg\\:space-x-5 > * + * { margin-left: 1.25rem; } }",
+      "autoCandidate": "responsive combinator support"
+    },
+    {
+      "pattern": "md:order-first|md:order-last|lg:order-first",
+      "strategy": "css shim",
+      "shim": "responsive order utility shims with media queries",
+      "autoCandidate": "responsive order support for plain CSS properties"
+    }
+  ],
+  "notes": [
+    "Tailwind CDN/config/min.css references removed from the 7 manual-queue files.",
+    "Class hooks are intentionally preserved where they are semantic or required for JS/component behavior.",
+    "Manual shim approach is behavior-safe and can be promoted to built-in converter support later."
+  ]
+}

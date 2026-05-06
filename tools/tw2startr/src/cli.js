@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { parseElements, replaceTag } from './parser/svelte-parser.js';
 import { processContent } from './transformer/partial-handler.js';
+import { setCustomClassMap, resetCustomClassMap } from './transformer/class-converter.js';
 import { generateDiff } from './reporter/diff-reporter.js';
 import { SummaryReporter } from './reporter/summary-reporter.js';
 import { ManualReviewCollector } from './reporter/manual-review.js';
@@ -19,6 +20,7 @@ export function parseArgs(argv) {
     basePath: process.cwd(),
     exclude: [],
     glob: null,
+    classMapPath: null,
     help: false,
     files: [],
   };
@@ -60,6 +62,10 @@ export function parseArgs(argv) {
         i++;
         if (rawArgs[i]) args.exclude.push(rawArgs[i]);
         break;
+      case '--class-map':
+        i++;
+        args.classMapPath = rawArgs[i] || null;
+        break;
       case '--help':
       case '-h':
         args.help = true;
@@ -96,6 +102,7 @@ Options:
   --no-backup          Skip backups
   --path <dir>         Base directory (default: cwd)
   --exclude <pattern>  Exclude glob patterns
+  --class-map <file>   JSON class map for project-specific utility classes
   --help, -h           Show help
 
 Examples:
@@ -169,6 +176,23 @@ function matchGlob(filePath, pattern) {
   return regex.test(normalizedPath);
 }
 
+function loadClassMap(classMapPath, basePath) {
+  if (!classMapPath) return {};
+
+  const resolvedPath = path.isAbsolute(classMapPath)
+    ? classMapPath
+    : path.resolve(basePath, classMapPath);
+
+  const raw = fs.readFileSync(resolvedPath, 'utf8');
+  const parsed = JSON.parse(raw);
+
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw new Error(`class map must be a JSON object: ${resolvedPath}`);
+  }
+
+  return parsed;
+}
+
 /**
  * Main CLI execution.
  */
@@ -210,6 +234,24 @@ export async function run(argv) {
   if (files.length === 0) {
     console.log('No files to process.');
     return;
+  }
+
+  // Reset map each run to avoid stale mappings across repeated CLI invocations.
+  resetCustomClassMap();
+  if (args.classMapPath) {
+    try {
+      const classMap = loadClassMap(args.classMapPath, args.basePath);
+      setCustomClassMap(classMap);
+      if (args.verbose) {
+        const resolvedPath = path.isAbsolute(args.classMapPath)
+          ? args.classMapPath
+          : path.resolve(args.basePath, args.classMapPath);
+        console.log(`Loaded class map: ${resolvedPath}\n`);
+      }
+    } catch (error) {
+      console.error(`Error loading class map: ${error.message}`);
+      process.exit(1);
+    }
   }
 
   const reporter = new SummaryReporter();

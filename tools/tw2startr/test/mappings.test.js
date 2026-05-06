@@ -158,20 +158,20 @@ describe('Typography mappings', () => {
 
 describe('Color mappings', () => {
   it('converts background colors', () => {
-    expect(convertClass('bg-white')).toMatchObject({ converted: true, properties: [{ prop: '--bgc', value: '#fff' }] });
-    expect(convertClass('bg-gray-850')).toMatchObject({ converted: true, properties: [{ prop: '--bgc', value: 'var(--color-gray-850, #262626)' }] });
+    expect(convertClass('bg-white')).toMatchObject({ converted: true, properties: [{ prop: '--bgc', value: 'hsl(0 0% 100%)' }] });
+    expect(convertClass('bg-gray-850')).toMatchObject({ converted: true, properties: [{ prop: '--bgc', value: 'var(--color-gray-850, hsl(0 0% 15%))' }] });
   });
 
   it('converts text colors', () => {
-    expect(convertClass('text-gray-700')).toMatchObject({ converted: true, properties: [{ prop: '--c', value: 'var(--color-gray-700, #4e4e4e)' }] });
-    expect(convertClass('text-white')).toMatchObject({ converted: true, properties: [{ prop: '--c', value: '#fff' }] });
+    expect(convertClass('text-gray-700')).toMatchObject({ converted: true, properties: [{ prop: '--c', value: 'var(--color-gray-700, hsl(0 0% 31%))' }] });
+    expect(convertClass('text-white')).toMatchObject({ converted: true, properties: [{ prop: '--c', value: 'hsl(0 0% 100%)' }] });
   });
 
   it('converts colors with opacity', () => {
     const result = convertClass('bg-white/50');
     expect(result.converted).toBe(true);
     expect(result.properties[0].prop).toBe('--bgc');
-    expect(result.properties[0].value).toMatch(/rgb\(255 255 255 \/ 0\.5\)/);
+    expect(result.properties[0].value).toMatch(/hsl\(0 0% 100% \/ 0\.5\)/);
   });
 
   it('converts border colors', () => {

@@ -13,7 +13,9 @@
       "Read(//Users/somma/.caprover/**)",
       "Bash(caprover --version)",
       "Bash(git -C /Users/somma/Documents/Projects/GitHub/WEB-AI--Sage-is-AI-UI tag --list 'v2.*' --sort=-v:refname)",
-      "Bash(env)"
+      "Bash(env)",
+      "Bash(docker manifest *)",
+      "Bash(docker buildx *)"
     ]
   }
 }

@@ -100,6 +100,12 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [x] git flow state got stuck on v0.1.2 release; manual merge required to complete
   - [x] celebrate!!! :D
 
+- [ ] **`make caprover_app_create APP=<name>` wrapper**: One Makefile call to register a new CapRover app via the HTTP API (`/api/v2/user/apps/appDefinitions/register`), POST the env-var block, set the persistent volume path, and connect a custom domain. Driver: avoid the dashboard click-through we did for `try-sage-is` on `captain.production.openco.ca` 2026-05-01.
+
+- [ ] **Port `sharded-zooming-parrot` Poka-Yoke release plan to this Makefile**: Add `release_preflight` (Docker memory, working tree clean, gh auth, develop synced) before any irreversible step in `release_and_push_GHCR`; make `it_build_multi_arch_push_GHCR` safe to re-run after a partial failure. Driver: 2.3.0 release_finish completed but buildx OOMed mid-push, leaving the tag on origin without a matching GHCR image. Plan at `~/.claude/plans/sharded-zooming-parrot.md`.
+
+- [ ] **TODO.md cleanup pass**: After 2.3.0 ship, reconcile completed work, drop or re-scope stale items, re-tag inline tags so KANBAN.canvas regenerates cleanly. Whole-file pass, not surgical edits.
+
 ### Privacy & Poka-Yoke #critical
 
 - [ ] **Review & implement Poka-Yoke privacy plan**: Three structural mistake-proofing changes surfaced by panel review
@@ -141,6 +147,8 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [ ] Agent context mode: `conversation` (last ~5 messages) and `full` (all recent) — `single` already ships
   - [ ] Optional per-agent TTL for auto-reply expiration
     <!-- inline: spaces.py:384 -->
+  - [ ] **Silverbullet integration into Spaces** — wire the self-hosted Silverbullet PKM/wiki tool into Spaces so a Space can carry a structured note-graph alongside chats and files. Planning conversation first (architecture, auth, data model) before any code.
+
 
 - [ ] **Frontend Toolchain Upgrade**: Svelte 5, Vite 6, SvelteKit latest
   - [ ] Svelte 4 → 5

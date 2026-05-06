@@ -31,8 +31,8 @@ export function resolveSpacing(value) {
 }
 
 /**
- * Resolve color: 'gray-700' -> 'var(--color-gray-700, #4e4e4e)', 'white' -> '#fff'
- * With opacity: 'white/50' -> 'rgb(255 255 255 / 0.5)'
+ * Resolve color: 'gray-700' -> 'var(--color-gray-700, hsl(0 0% 31%))', 'white' -> 'hsl(0 0% 100%)'
+ * With opacity: 'white/50' -> 'hsl(0 0% 100% / 0.5)'
  */
 export function resolveColor(colorStr) {
 	if (!colorStr) return null;
@@ -56,26 +56,62 @@ export function resolveColor(colorStr) {
 	if (!colorValue) return null;
 
 	if (opacity !== null) {
-		// Need raw hex to compute rgba
 		const rawHex = RAW_COLORS[colorName];
 		if (rawHex) {
-			const rgb = hexToRgb(rawHex);
-			if (rgb) return `rgb(${rgb.r} ${rgb.g} ${rgb.b} / ${opacity})`;
+			const hsl = hexToHsl(rawHex);
+			if (hsl) return `hsl(${hsl.h} ${hsl.s}% ${hsl.l}% / ${opacity})`;
 		}
 		return null;
 	}
 
-	return colorValue;
+	// Convert palette value (hex or var(--x, #hex)) to use hsl
+	return hexColorToHsl(colorValue);
 }
 
 /**
- * Convert hex to RGB components
+ * Convert a hex color string to HSL components.
  */
-function hexToRgb(hex) {
+function hexToHsl(hex) {
 	hex = hex.replace('#', '');
 	if (hex.length === 3) hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
 	const num = parseInt(hex, 16);
-	return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+	let r = ((num >> 16) & 255) / 255;
+	let g = ((num >> 8) & 255) / 255;
+	let b = (num & 255) / 255;
+	const max = Math.max(r, g, b), min = Math.min(r, g, b);
+	let h = 0, s = 0;
+	const l = (max + min) / 2;
+	if (max !== min) {
+		const d = max - min;
+		s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+		switch (max) {
+			case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+			case g: h = ((b - r) / d + 2) / 6; break;
+			case b: h = ((r - g) / d + 4) / 6; break;
+		}
+	}
+	return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
+}
+
+/**
+ * Convert a COLOR_PALETTE value (plain hex or var(--x, #hex)) to its HSL equivalent.
+ * '#15803d' -> 'hsl(142 72% 29%)'
+ * 'var(--color-gray-100, #ececec)' -> 'var(--color-gray-100, hsl(0 0% 93%))'
+ */
+function hexColorToHsl(colorValue) {
+	// var(--token, #hex) form
+	const varMatch = colorValue.match(/^(var\([^,]+,\s*)(#[0-9a-fA-F]{3,6})(\))$/);
+	if (varMatch) {
+		const hsl = hexToHsl(varMatch[2]);
+		if (hsl) return `${varMatch[1]}hsl(${hsl.h} ${hsl.s}% ${hsl.l}%)${varMatch[3]}`;
+		return colorValue;
+	}
+	// Plain #hex
+	if (/^#[0-9a-fA-F]{3,6}$/.test(colorValue)) {
+		const hsl = hexToHsl(colorValue);
+		if (hsl) return `hsl(${hsl.h} ${hsl.s}% ${hsl.l}%)`;
+	}
+	return colorValue;
 }
 
 /**

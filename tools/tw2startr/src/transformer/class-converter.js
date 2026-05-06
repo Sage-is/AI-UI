@@ -1,5 +1,51 @@
 import allRules from '../mappings/index.js';
 
+let customClassMap = new Map();
+
+/**
+ * Configure project-specific class mappings.
+ *
+ * Input shape:
+ * {
+ *   "class-name": { "--prop": "value", "plain-css-prop": "value" },
+ *   "another-class": [
+ *     { "prop": "--w", "value": "100%" },
+ *     { "prop": "--mx", "value": "auto" }
+ *   ]
+ * }
+ */
+export function setCustomClassMap(mapObject = {}) {
+  const next = new Map();
+
+  for (const [className, mapping] of Object.entries(mapObject)) {
+    if (!className || typeof className !== 'string') continue;
+
+    if (Array.isArray(mapping)) {
+      const normalized = mapping
+        .filter((entry) => entry && typeof entry.prop === 'string' && typeof entry.value === 'string')
+        .map((entry) => ({ prop: entry.prop, value: entry.value }));
+      if (normalized.length > 0) next.set(className, normalized);
+      continue;
+    }
+
+    if (mapping && typeof mapping === 'object') {
+      const normalized = Object.entries(mapping)
+        .filter(([prop, value]) => typeof prop === 'string' && typeof value === 'string')
+        .map(([prop, value]) => ({ prop, value }));
+      if (normalized.length > 0) next.set(className, normalized);
+    }
+  }
+
+  customClassMap = next;
+}
+
+/**
+ * Reset project-specific class mappings.
+ */
+export function resetCustomClassMap() {
+  customClassMap = new Map();
+}
+
 /**
  * Responsive prefix → startr.style suffix mapping
  */
@@ -168,14 +214,21 @@ export function convertClass(twClass) {
     };
   }
 
-  // Try matching against all rules
+  // First try project-specific class map for direct class-name matches.
   let matchResult = null;
+  if (customClassMap.has(baseClass)) {
+    const mapped = customClassMap.get(baseClass) || [];
+    matchResult = mapped.map((entry) => ({ prop: entry.prop, value: entry.value }));
+  }
 
-  for (const rule of allRules) {
-    const match = baseClass.match(rule.pattern);
-    if (match) {
-      matchResult = rule.convert(match);
-      if (matchResult !== null) break;
+  // Fall back to built-in rules.
+  if (!matchResult) {
+    for (const rule of allRules) {
+      const match = baseClass.match(rule.pattern);
+      if (match) {
+        matchResult = rule.convert(match);
+        if (matchResult !== null) break;
+      }
     }
   }
 
@@ -244,6 +297,49 @@ export function convertClass(twClass) {
 }
 
 /**
+ * Merge legacy opacity modifier classes into their base color class.
+ * e.g. ['bg-green-700', 'bg-opacity-40'] → ['bg-green-700/40']
+ * Handles: bg-opacity, text-opacity, border-opacity, ring-opacity
+ */
+function combineOpacityModifiers(classes) {
+  const result = [...classes];
+  for (const prefix of ['bg', 'text', 'border', 'ring', 'fill', 'stroke']) {
+    const opIdx = result.findIndex(c => new RegExp(`^${prefix}-opacity-(\\d+)$`).test(c));
+    if (opIdx === -1) continue;
+    const opVal = result[opIdx].match(/-(\d+)$/)[1];
+    // Find the matching color class (not the opacity class itself, not other opacity classes)
+    const colorIdx = result.findIndex((c, i) => {
+      if (i === opIdx) return false;
+      if (!c.startsWith(`${prefix}-`)) return false;
+      if (/^(bg|text|border|ring|fill|stroke)-opacity-/.test(c)) return false;
+      return true;
+    });
+    if (colorIdx === -1) continue;
+    result[colorIdx] = result[colorIdx] + '/' + opVal;
+    result.splice(opIdx, 1);
+  }
+  return result;
+}
+
+/**
+ * Guard against outputting values that look like unresolved Tailwind tokens.
+ * Throws an error so the caller can treat the class as unconverted rather than
+ * silently writing garbage like --bgc:opacity-50 or --bgc:green-700.
+ */
+function assertValidCssValue(prop, value, originalClass) {
+  if (/^opacity-\d+$/.test(value)) {
+    throw new Error(
+      `unresolved opacity modifier "${value}" for ${prop} (class: "${originalClass}") — pair bg-opacity-* with a bg-{color} class`
+    );
+  }
+  if (/^[a-z]+-\d{3}$/.test(value)) {
+    throw new Error(
+      `unresolved color token "${value}" for ${prop} (class: "${originalClass}")`
+    );
+  }
+}
+
+/**
  * Convert multiple Tailwind classes.
  * Returns { converted: [{prop, value, originalClass, review?}], unconverted: [string], reviews: [string] }
  */
@@ -252,12 +348,26 @@ export function convertClasses(classes) {
   const unconverted = [];
   const reviews = [];
 
-  for (const cls of classes) {
+  // Merge legacy opacity modifiers (bg-opacity-40 etc.) into their color class
+  // before individual conversion so we never emit half-resolved values.
+  const mergedClasses = combineOpacityModifiers(classes);
+
+  for (const cls of mergedClasses) {
     const result = convertClass(cls);
     if (result.converted) {
+      let guardFailed = false;
       for (const prop of result.properties) {
+        try {
+          assertValidCssValue(prop.prop, prop.value, result.originalClass);
+        } catch (err) {
+          reviews.push(err.message);
+          unconverted.push(result.originalClass);
+          guardFailed = true;
+          break;
+        }
         converted.push({ ...prop, originalClass: result.originalClass });
       }
+      if (guardFailed) continue;
       if (result.review) {
         reviews.push(`${result.originalClass}: ${result.review}`);
       }
