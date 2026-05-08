@@ -1782,25 +1782,25 @@
     {
       "children": [
         {
-          "checked": false,
+          "checked": true,
           "line_num": 300,
           "tags": [],
           "text": "Reproduce: clear `localStorage.try_sage_tutorial_seen_v1`, sign in via a persona magic link, confirm modal does NOT appear"
         },
         {
-          "checked": false,
+          "checked": true,
           "line_num": 301,
           "tags": [],
           "text": "Inspect the `onMount`/reactive trigger condition in `app/src/lib/components/setup/TrySageTutorial.svelte` \u2014 likely the `$user` check fires before the user store hydrates after magic-link verify, OR the SvelteKit hard-navigation from `/auth#magic_token=...` lands before the layout has subscribed to `tutorialReopen`"
         },
         {
-          "checked": false,
+          "checked": true,
           "line_num": 302,
           "tags": [],
           "text": "Fix so the auto-show fires on first persona sign-in, not just from the admin \"Replay tutorial\" button"
         },
         {
-          "checked": false,
+          "checked": true,
           "line_num": 303,
           "tags": [],
           "text": "Add a Vitest spec that mounts the component with mocked `$config`, `$user`, and a clean `localStorage`, and asserts the modal opens"
@@ -1814,7 +1814,7 @@
       "tags": [
         "#bug"
       ],
-      "text": "**try.sage Tutorial Does Not Auto-Open on First Persona Sign-In: The TrySageTutorial modal is supposed to auto-open the first time a persona signs in (gated on `$config?.features?.enable_try_sage` + signed-in `$user` + missing `localStorage.try_sage_tutorial_seen_v1`). Manually triggering \"Replay tutorial\" from Admin \u2192 Trial Mode opens it correctly, so the modal itself works \u2014 only the auto-trigger fails.**\n- [ ] Reproduce: clear `localStorage.try_sage_tutorial_seen_v1`, sign in via a persona magic link, confirm modal does NOT appear\n- [ ] Inspect the `onMount`/reactive trigger condition in `app/src/lib/components/setup/TrySageTutorial.svelte` \u2014 likely the `$user` check fires before the user store hydrates after magic-link verify, OR the SvelteKit hard-navigation from `/auth#magic_token=...` lands before the layout has subscribed to `tutorialReopen`\n- [ ] Fix so the auto-show fires on first persona sign-in, not just from the admin \"Replay tutorial\" button\n- [ ] Add a Vitest spec that mounts the component with mocked `$config`, `$user`, and a clean `localStorage`, and asserts the modal opens\n\n`#bug`\n`TODO.md:L299`",
+      "text": "**try.sage Tutorial Does Not Auto-Open on First Persona Sign-In: The TrySageTutorial modal is supposed to auto-open the first time a persona signs in (gated on `$config?.features?.enable_try_sage` + signed-in `$user` + missing `localStorage.try_sage_tutorial_seen_v1`). Manually triggering \"Replay tutorial\" from Admin \u2192 Trial Mode opens it correctly, so the modal itself works \u2014 only the auto-trigger fails.**\n- [x] Reproduce: clear `localStorage.try_sage_tutorial_seen_v1`, sign in via a persona magic link, confirm modal does NOT appear\n- [x] Inspect the `onMount`/reactive trigger condition in `app/src/lib/components/setup/TrySageTutorial.svelte` \u2014 likely the `$user` check fires before the user store hydrates after magic-link verify, OR the SvelteKit hard-navigation from `/auth#magic_token=...` lands before the layout has subscribed to `tutorialReopen`\n- [x] Fix so the auto-show fires on first persona sign-in, not just from the admin \"Replay tutorial\" button\n- [x] Add a Vitest spec that mounts the component with mocked `$config`, `$user`, and a clean `localStorage`, and asserts the modal opens\n\n`#bug`\n`TODO.md:L299`",
       "type": "text",
       "width": 280,
       "x": 1060,
@@ -1823,39 +1823,39 @@
     {
       "children": [
         {
-          "checked": false,
-          "line_num": 308,
+          "checked": true,
+          "line_num": 324,
           "tags": [],
           "text": "Reproduce: with `TRY_SAGE_TUTORIAL_STEPS_JSON` unset, open the tutorial via the admin replay button \u2014 confirm cards render without expected content"
         },
         {
-          "checked": false,
-          "line_num": 309,
+          "checked": true,
+          "line_num": 325,
           "tags": [],
           "text": "Inspect the default-step rendering branch in `app/src/lib/components/setup/TrySageTutorial.svelte` \u2014 specifically the placeholder card layout that fires when `step.video_url` is empty/missing"
         },
         {
-          "checked": false,
-          "line_num": 310,
+          "checked": true,
+          "line_num": 326,
           "tags": [],
           "text": "Confirm whether the `DEFAULT_STEPS` constant is reachable, the iteration is correct, and i18n wrapping isn't producing empty strings"
         },
         {
-          "checked": false,
-          "line_num": 311,
+          "checked": true,
+          "line_num": 327,
           "tags": [],
           "text": "Fix the missing-cards rendering so at minimum each step shows: title, \"Video coming soon\" placeholder, and the step's `description` paragraph"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "40c62a19d9c03eeb",
-      "line_num": 307,
+      "id": "68e48597e1c71bd5",
+      "line_num": 323,
       "source": "todo_md",
       "tags": [
         "#bug"
       ],
-      "text": "**try.sage Tutorial Step Cards Render Empty: When the tutorial does open (via Admin \u2192 Trial Mode \u2192 Replay tutorial), the step cards are missing content \u2014 title, \"Video coming soon\" placeholder, and `description` paragraph all missing or partially missing.**\n- [ ] Reproduce: with `TRY_SAGE_TUTORIAL_STEPS_JSON` unset, open the tutorial via the admin replay button \u2014 confirm cards render without expected content\n- [ ] Inspect the default-step rendering branch in `app/src/lib/components/setup/TrySageTutorial.svelte` \u2014 specifically the placeholder card layout that fires when `step.video_url` is empty/missing\n- [ ] Confirm whether the `DEFAULT_STEPS` constant is reachable, the iteration is correct, and i18n wrapping isn't producing empty strings\n- [ ] Fix the missing-cards rendering so at minimum each step shows: title, \"Video coming soon\" placeholder, and the step's `description` paragraph\n\n`#bug`\n`TODO.md:L307`",
+      "text": "**try.sage Tutorial Step Cards Render Empty: When the tutorial does open (via Admin \u2192 Trial Mode \u2192 Replay tutorial), the step cards are missing content \u2014 title, \"Video coming soon\" placeholder, and `description` paragraph all missing or partially missing.**\n- [x] Reproduce: with `TRY_SAGE_TUTORIAL_STEPS_JSON` unset, open the tutorial via the admin replay button \u2014 confirm cards render without expected content\n- [x] Inspect the default-step rendering branch in `app/src/lib/components/setup/TrySageTutorial.svelte` \u2014 specifically the placeholder card layout that fires when `step.video_url` is empty/missing\n- [x] Confirm whether the `DEFAULT_STEPS` constant is reachable, the iteration is correct, and i18n wrapping isn't producing empty strings\n- [x] Fix the missing-cards rendering so at minimum each step shows: title, \"Video coming soon\" placeholder, and the step's `description` paragraph\n\n`#bug`\n`TODO.md:L323`",
       "type": "text",
       "width": 280,
       "x": 1060,
@@ -1865,32 +1865,32 @@
       "children": [
         {
           "checked": true,
-          "line_num": 316,
+          "line_num": 332,
           "tags": [],
           "text": "Float the banner above the app shell rather than reflowing it inline. Outer wrapper `position:fixed; top:0.5rem; left:0; right:0; z:40; pointer-events:none`. Inner pill `max-w:60ch; margin:0 auto; pointer-events:auto; rounded; subtle shadow`. Doesn't push navbar/content down on first paint and z-index keeps it above the sidebar."
         },
         {
           "checked": true,
-          "line_num": 317,
+          "line_num": 333,
           "tags": [],
           "text": "Edited `app/src/lib/components/TrySageBanner.svelte` outer wrapper only \u2014 inner content (countdown row, persona-jump row, `<details>` block) untouched."
         },
         {
           "checked": true,
-          "line_num": 318,
+          "line_num": 334,
           "tags": [],
           "text": "Banner now slides 280px right when the desktop sidebar opens so it stays centered over the chat content, not the full viewport. Driven off the existing `showSidebar` store with a 200ms ease transition. Mobile is unaffected (sidebar overlays there)."
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "23ac54f07ac03d17",
-      "line_num": 315,
+      "id": "845ac8837bb44b28",
+      "line_num": 331,
       "source": "todo_md",
       "tags": [
         "#bug"
       ],
-      "text": "**Trial Banner Overlapped by Left Sidebar: Once a persona signed in, the left sidebar (admin / chat list) overlapped the trial banner. Banner was a full-width strip pushed into the layout flow; sidebar's z-index let it cut into the banner's edges.**\n- [x] Float the banner above the app shell rather than reflowing it inline. Outer wrapper `position:fixed; top:0.5rem; left:0; right:0; z:40; pointer-events:none`. Inner pill `max-w:60ch; margin:0 auto; pointer-events:auto; rounded; subtle shadow`. Doesn't push navbar/content down on first paint and z-index keeps it above the sidebar.\n- [x] Edited `app/src/lib/components/TrySageBanner.svelte` outer wrapper only \u2014 inner content (countdown row, persona-jump row, `<details>` block) untouched.\n- [x] Banner now slides 280px right when the desktop sidebar opens so it stays centered over the chat content, not the full viewport. Driven off the existing `showSidebar` store with a 200ms ease transition. Mobile is unaffected (sidebar overlays there).\n\n`#bug`\n`TODO.md:L315`",
+      "text": "**Trial Banner Overlapped by Left Sidebar: Once a persona signed in, the left sidebar (admin / chat list) overlapped the trial banner. Banner was a full-width strip pushed into the layout flow; sidebar's z-index let it cut into the banner's edges.**\n- [x] Float the banner above the app shell rather than reflowing it inline. Outer wrapper `position:fixed; top:0.5rem; left:0; right:0; z:40; pointer-events:none`. Inner pill `max-w:60ch; margin:0 auto; pointer-events:auto; rounded; subtle shadow`. Doesn't push navbar/content down on first paint and z-index keeps it above the sidebar.\n- [x] Edited `app/src/lib/components/TrySageBanner.svelte` outer wrapper only \u2014 inner content (countdown row, persona-jump row, `<details>` block) untouched.\n- [x] Banner now slides 280px right when the desktop sidebar opens so it stays centered over the chat content, not the full viewport. Driven off the existing `showSidebar` store with a 200ms ease transition. Mobile is unaffected (sidebar overlays there).\n\n`#bug`\n`TODO.md:L331`",
       "type": "text",
       "width": 280,
       "x": 1060,
@@ -1899,39 +1899,39 @@
     {
       "children": [
         {
-          "checked": false,
-          "line_num": 323,
+          "checked": true,
+          "line_num": 339,
           "tags": [],
           "text": "Find the offending images under `app/static/` (likely `static/assets/images/` or wherever `SlideShow.svelte` reads from) and confirm the exact filenames + license source"
         },
         {
-          "checked": false,
-          "line_num": 324,
+          "checked": true,
+          "line_num": 340,
           "tags": [],
           "text": "Pick replacements: original Sage.is photography, or CC0 / public-domain alternatives that match the warm-workshop tone (libraries, classrooms, observatories, etc.)"
         },
         {
-          "checked": false,
-          "line_num": 325,
+          "checked": true,
+          "line_num": 341,
           "tags": [],
           "text": "Replace files in-tree, keep filenames stable so `SlideShow.svelte` keeps working without code change. Run the build and visually confirm new images render in the welcome slideshow + try.sage welcome page."
         },
         {
-          "checked": false,
-          "line_num": 326,
+          "checked": true,
+          "line_num": 342,
           "tags": [],
           "text": "Cross-link with the existing **Codebase Cleanup \u2192 \"Replace login slideshow images with original or CC/public-domain photos\"** task \u2014 collapse if both are doing the same work."
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "6209661501cccfcd",
-      "line_num": 322,
+      "id": "b21e68d5bea1e846",
+      "line_num": 338,
       "source": "todo_md",
       "tags": [
         "#bug"
       ],
-      "text": "**Replace David / Sistine Chapel Art in Login Slideshow: The login/onboarding/welcome slideshow ships a Michelangelo's David and a Sistine Chapel ceiling image \u2014 both are recognisable Renaissance pieces that don't fit the Sage.is brand and may carry licensing risk depending on the source photo. Swap for original or CC/public-domain imagery.**\n- [ ] Find the offending images under `app/static/` (likely `static/assets/images/` or wherever `SlideShow.svelte` reads from) and confirm the exact filenames + license source\n- [ ] Pick replacements: original Sage.is photography, or CC0 / public-domain alternatives that match the warm-workshop tone (libraries, classrooms, observatories, etc.)\n- [ ] Replace files in-tree, keep filenames stable so `SlideShow.svelte` keeps working without code change. Run the build and visually confirm new images render in the welcome slideshow + try.sage welcome page.\n- [ ] Cross-link with the existing **Codebase Cleanup \u2192 \"Replace login slideshow images with original or CC/public-domain photos\"** task \u2014 collapse if both are doing the same work.\n\n`#bug`\n`TODO.md:L322`",
+      "text": "**Replace David / Sistine Chapel Art in Login Slideshow: The login/onboarding/welcome slideshow ships a Michelangelo's David and a Sistine Chapel ceiling image \u2014 both are recognisable Renaissance pieces that don't fit the Sage.is brand and may carry licensing risk depending on the source photo. Swap for original or CC/public-domain imagery.**\n- [x] Find the offending images under `app/static/` (likely `static/assets/images/` or wherever `SlideShow.svelte` reads from) and confirm the exact filenames + license source\n- [x] Pick replacements: original Sage.is photography, or CC0 / public-domain alternatives that match the warm-workshop tone (libraries, classrooms, observatories, etc.)\n- [x] Replace files in-tree, keep filenames stable so `SlideShow.svelte` keeps working without code change. Run the build and visually confirm new images render in the welcome slideshow + try.sage welcome page.\n- [x] Cross-link with the existing **Codebase Cleanup \u2192 \"Replace login slideshow images with original or CC/public-domain photos\"** task \u2014 collapse if both are doing the same work.\n\n`#bug`\n`TODO.md:L338`",
       "type": "text",
       "width": 280,
       "x": 1060,
@@ -1992,30 +1992,30 @@
       "children": [
         {
           "checked": true,
-          "line_num": 340,
+          "line_num": 319,
           "tags": [],
           "text": "Restructure TODO.md to TodoScope conventions"
         },
         {
           "checked": true,
-          "line_num": 341,
+          "line_num": 320,
           "tags": [],
           "text": "Fix duplicate rows in `.todoscope-exclude.csv`"
         },
         {
           "checked": true,
-          "line_num": 342,
+          "line_num": 321,
           "tags": [],
           "text": "Run TodoScope scanner and verify kanban board matches expectations"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "83d5e8f369e9e876",
-      "line_num": 339,
+      "id": "09262b617a2c6fed",
+      "line_num": 318,
       "source": "todo_md",
       "tags": [],
-      "text": "**TodoScope Alignment**\n- [x] Restructure TODO.md to TodoScope conventions\n- [x] Fix duplicate rows in `.todoscope-exclude.csv`\n- [x] Run TodoScope scanner and verify kanban board matches expectations\n\n`TODO.md:L339`",
+      "text": "**TodoScope Alignment**\n- [x] Restructure TODO.md to TodoScope conventions\n- [x] Fix duplicate rows in `.todoscope-exclude.csv`\n- [x] Run TodoScope scanner and verify kanban board matches expectations\n\n`TODO.md:L318`",
       "type": "text",
       "width": 280,
       "x": 1410,
