@@ -104,6 +104,14 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
 
 - [ ] **Port `sharded-zooming-parrot` Poka-Yoke release plan to this Makefile**: Add `release_preflight` (Docker memory, working tree clean, gh auth, develop synced) before any irreversible step in `release_and_push_GHCR`; make `it_build_multi_arch_push_GHCR` safe to re-run after a partial failure. Driver: 2.3.0 release_finish completed but buildx OOMed mid-push, leaving the tag on origin without a matching GHCR image. Plan at `~/.claude/plans/sharded-zooming-parrot.md`.
 
+- [ ] **Tri-repo Jidoka (自働化) + Poka-Yoke (ポカヨケ) for the publish flow**: Make distribution drift across `WEB-AI--Sage-is-AI-UI`, `homebrew-apps`, and `WEB-Sage.Education-docs` mechanically impossible. Driver: 2026-05-10 brew `ai-ui try` ship walked through manual feature-finish → minor_release → release_finish; same flow needs to propagate canonical facts (image tag, volume name, install command, CLI version) without operator memory. Local automation only — no cloud CI. Plan at `~/.claude/plans/given-our-newest-trends-modular-sloth.md`.
+  - [ ] **Source of truth** — `distribution.env` hardlinked across all three repos (CLI_VERSION, SERVER_TAG, IMAGE, VOLUME, DATA_MOUNT, WAITLIST_URL). Edit once, three repos see it. Matches existing hardlink discipline in `~/.claude/CLAUDE.md`.
+  - [ ] **Poka-yoke** — pre-commit hook in each repo refuses commits whose declared image/volume/version conflict with `distribution.env`. Same hook installed via `make install_dev`. Wrong values can't reach the index.
+  - [ ] **Jidoka** — `make sync-from-distribution` in each repo regenerates templated docs/formula/Makefile fragments from `distribution.env`; `release_finish` calls it on the two siblings before tagging. If any sibling's working tree turns dirty after the regen, the release halts with the diff printed (machine stops itself; operator confirms or fixes).
+  - [ ] **Render layer** — Docusaurus install commands and version strings pulled from `distribution.env` via remote-content plugin or build-time include. Brew formula caveats and AI-UI README install section regenerated from the same templates.
+  - [ ] **Cross-repo workflow doctrine** — every repo's README + TODO.md states the `git flow feature start <name>` policy explicitly so contributors entering through any of the three see the same path. No central-SaaS-PR assumption.
+  - [ ] **Bootstrap order** — homebrew-apps first (canonical volume + `--tag` flag on `ai-ui start`), then AI-UI (Makefile reads `distribution.env` for VOLUME_DATA + IMAGE_TAG defaults), then Sage.Education-docs (templated install pages).
+
 - [ ] **TODO.md cleanup pass**: After 2.3.0 ship, reconcile completed work, drop or re-scope stale items, re-tag inline tags so KANBAN.canvas regenerates cleanly. Whole-file pass, not surgical edits.
 
 ### Privacy & Poka-Yoke #critical

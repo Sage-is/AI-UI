@@ -15,7 +15,17 @@
       "Bash(git -C /Users/somma/Documents/Projects/GitHub/WEB-AI--Sage-is-AI-UI tag --list 'v2.*' --sort=-v:refname)",
       "Bash(env)",
       "Bash(docker manifest *)",
-      "Bash(docker buildx *)"
+      "Bash(docker buildx *)",
+      "Bash(bash -n /Users/somma/Documents/Projects/GitHub/homebrew-apps/ai-ui)",
+      "Bash(bash /Users/somma/Documents/Projects/GitHub/homebrew-apps/ai-ui --help)",
+      "Bash(command -v shellcheck)",
+      "Bash(shellcheck -S warning /Users/somma/Documents/Projects/GitHub/homebrew-apps/ai-ui)",
+      "Bash(command -v brew)",
+      "Bash(ruby -c /Users/somma/Documents/Projects/GitHub/homebrew-apps/Formula/ai-ui.rb)",
+      "Bash(ruby -c /Users/somma/Documents/Projects/GitHub/homebrew-apps/Formula/ai-ui@1.rb)"
+    ],
+    "additionalDirectories": [
+      "/Users/somma/Documents/Projects/GitHub/homebrew-apps"
     ]
   }
 }
