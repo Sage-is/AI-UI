@@ -12,7 +12,7 @@ if [ -f "./init_models.sh" ]; then
     ./init_models.sh
 fi
 
-KEY_FILE=.webui_secret_key
+KEY_FILE=data/.webui_secret_key
 
 PORT="${PORT:-8080}"
 HOST="${HOST:-0.0.0.0}"
