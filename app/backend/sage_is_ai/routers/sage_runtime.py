@@ -49,9 +49,18 @@ _NOT_FOUND = HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 
 def _require_try_sage_enabled() -> None:
-    """Single guard used by every public endpoint. Module-level constant
-    rather than a Depends() dependency so admin endpoints can stack the
-    enabled check before authentication failures generate misleading 401s."""
+    """Gate every endpoint behind the trial flag.
+
+    Used two ways:
+
+      * Called inline at the top of public handlers.
+      * Declared as ``Depends(_require_try_sage_enabled)`` on admin
+        handlers — listed BEFORE ``Depends(get_admin_user)`` so the 404
+        fires before auth has a chance to leak a 401/403. Without this
+        ordering an unauthenticated probe of an admin route reveals the
+        route exists, defeating the "look like the trial subsystem was
+        never installed" contract.
+    """
     if not ENABLE_TRY_SAGE:
         raise _NOT_FOUND
 
@@ -255,16 +264,22 @@ async def get_limits(request: Request):
 
 
 @router.get("/llm-status", response_model=LLMStatusResponse)
-async def get_llm_status(request: Request, user=Depends(get_admin_user)):
-    _require_try_sage_enabled()
+async def get_llm_status(
+    request: Request,
+    _gate: None = Depends(_require_try_sage_enabled),
+    user=Depends(get_admin_user),
+):
     # Diagnostic-only. Never returns the URL or key — that contract is
     # enforced inside get_hidden_status itself.
     return get_hidden_status(request.app)
 
 
 @router.post("/extend", response_model=ExtendResponse)
-async def extend_reset(request: Request, user=Depends(get_admin_user)):
-    _require_try_sage_enabled()
+async def extend_reset(
+    request: Request,
+    _gate: None = Depends(_require_try_sage_enabled),
+    user=Depends(get_admin_user),
+):
     cfg = request.app.state.config
     extend_by = int(cfg.TRY_SAGE_ADMIN_EXTEND_HOURS)
     interval = int(cfg.TRY_SAGE_RESET_INTERVAL_HOURS)
@@ -294,8 +309,11 @@ async def extend_reset(request: Request, user=Depends(get_admin_user)):
 
 
 @router.post("/reset", response_model=ResetResponse)
-async def force_reset(request: Request, user=Depends(get_admin_user)):
-    _require_try_sage_enabled()
+async def force_reset(
+    request: Request,
+    _gate: None = Depends(_require_try_sage_enabled),
+    user=Depends(get_admin_user),
+):
     cfg = request.app.state.config
 
     # Emit the audit line BEFORE the wipe so it lands in logs even if the
