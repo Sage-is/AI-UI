@@ -156,6 +156,7 @@ setup: setup_env setup_siblings
 # Common docker run arguments
 DOCKER_RUN_ARGS := --rm -p $(PORT_MAPPING) \
 	--add-host=host.docker.internal:host-gateway \
+	$(if $(WEBUI_SECRET_KEY),-e WEBUI_SECRET_KEY=$(WEBUI_SECRET_KEY),) \
 	-v $(VOLUME_DATA) \
 	-v $(ENV_FILE) \
 	--name $(CONTAINER_NAME)
@@ -163,6 +164,7 @@ DOCKER_RUN_ARGS := --rm -p $(PORT_MAPPING) \
 DEV_RUN_ARGS := --rm -p $(PORT_MAPPING) \
 	--add-host=host.docker.internal:host-gateway \
 	-p 5173:5173 \
+	$(if $(WEBUI_SECRET_KEY),-e WEBUI_SECRET_KEY=$(WEBUI_SECRET_KEY),) \
 	-v $(VOLUME_DATA) \
 	-v $(ENV_FILE) \
 	-v $(FRONTEND_SRC) \
