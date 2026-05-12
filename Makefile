@@ -788,18 +788,14 @@ try_sage_start:
 		-e TRY_SAGE_RESET_INTERVAL_HOURS="$(TRY_SAGE_RESET_INTERVAL_HOURS)" \
 		$(IMAGE_NAME):$(IMAGE_TAG)
 
-# For foreground runs (the default above) Ctrl-C stops the container and
-# `--rm` cleans the row. This target is the fallback for cases where the
-# operator backgrounded the container manually (e.g. ctrl-z + bg).
-try_sage_stop:
-	@echo "Stopping try.sage trial container ($(CONTAINER_NAME))..."
-	$(CONTAINER_RUNTIME) rm -f $(CONTAINER_NAME) || true
-
-# Stop, rebuild image, and restart. The dev loop's "I edited code, now
-# show me" target — runs everything as one command so an operator (or
-# an automation agent) doesn't pay an interactive permission prompt per
-# step. Foreground at the end so logs stream to the terminal.
-try_sage_reset: try_sage_stop it_build try_sage_start
+# Rebuild image and restart. The dev loop's "I edited code, now show me"
+# target. We drop any stale trial container first so `docker run --name`
+# doesn't conflict (e.g. if the operator backgrounded a previous run with
+# ctrl-z + bg). Foreground at the end so logs stream to the terminal.
+try_sage_reset:
+	@$(CONTAINER_RUNTIME) rm -f $(CONTAINER_NAME) 2>/dev/null || true
+	$(MAKE) it_build
+	$(MAKE) try_sage_start
 
 # Print the persona magic-link URLs for the running trial container.
 # Reads `/api/v1/sage/runtime/personas` and pretty-prints. Useful when

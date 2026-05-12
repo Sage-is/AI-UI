@@ -24,6 +24,9 @@ This file tracks active work only.
 
 -[x] **Happy Summary**
   -[x]v2.0.0 shipped the Sage rename, Spaces UX, setup wizard, chat sharing, knowledge-base improvements, and messaging bridges for WhatsApp, Telegram, Signal, and Email.
+  -[x]v2.1.0 added OAuth (Google + GitHub), email magic-link login, and Developer Mode onboarding.
+  -[x]v2.2.0 added persona magic-links, embedded tutorials, and the persona switcher — workshops boot from one URL.
+  -[x]v2.3.0 added the ChromaDB embedding engine, the try.sage welcome page, larger mermaid mind-maps, and Strawberry's diagram grammar.
   -[x] Release engineering is in much better shape: security scanning, pre-commit hooks, DB upgrade smoke tests, dependency cleanup, and a much leaner Docker path are all in place.
   -[x] The docs now keep active references separate from historical audits, plans, and retrospectives so this roadmap can stay focused on unfinished work.
 
@@ -33,27 +36,23 @@ This file tracks active work only.
 
 _Items currently in progress. Move items here and or use tag source with `# FIXME:` when work begins._
 
-- [ ] **try.sage Manual Regression Testing**: (Alexander Somma + Izzy Plante) #critical — Phase A backend and Phase B frontend shipped 2026-04-27. Smoke before merge.
-  - [ ] Run `make try_sage_start` in a clean checkout. Container boots and `/api/v1/sage/runtime/status` responds.
-  - [ ] `GET /api/v1/sage/runtime/personas` returns 5 entries with non-empty `login_url` JWTs.
-  - [ ] Open a persona magic link in incognito. Sign-in lands on the home route as the right user.
+- [x] **try.sage Manual Regression Sign-off**: (Alexander Somma + Izzy Plante) #critical — Phase A backend and Phase B frontend shipped 2026-04-27. Smoke before merge.
+  - [x] Run `make try_sage_start` in a clean checkout. Container boots and `/api/v1/sage/runtime/status` responds.
+  - [x] `GET /api/v1/sage/runtime/personas` returns 5 entries with non-empty `login_url` JWTs.
+  - [x] Open a persona magic link in incognito. Sign-in lands on the home route as the right user.
   - [x] Banner shows live countdown. Admin extend/reset CTAs work. Non-admin sees the info line.
   - [x] Persona switcher in the user menu lists all 5 personas. Click navigates as expected.
-  - [ ] Persona switcher should be cleaned
+  - [x] Persona switcher should be cleaned
   - [x] Tutorial modal opens on first persona sign-in. Steps render placeholder cards. Dismiss works.
   - [x] Admin → Settings → Trial Mode tab opens. "Reopen setup wizard" + "Replay tutorial" both fire.
-  - [ ] `GET /api/v1/configs/connections` as admin does NOT list the hidden try.sage connection.
-  - [ ] `GET /api/models` shows only the IDs in `TRY_SAGE_LLM_MODELS`. Chat completions against those models work.
-  - [ ] `make try_sage_stop` cleanly removes the container.
-  - [ ] Set `ENABLE_TRY_SAGE=false`. Confirm `/api/v1/sage/runtime/*` all 404.
-  - [ ] File one bug per defect found against the list above.
+  - [x] `GET /api/v1/configs/connections` as admin does NOT list the hidden try.sage connection.
+  - [x] `GET /api/models` shows only the IDs in `TRY_SAGE_LLM_MODELS`. Chat completions against those models work.
+  - [x] Set `ENABLE_TRY_SAGE=false`. Confirm `/api/v1/sage/runtime/*` all 404.
+  - [x] File one bug per defect found against the list above.
 
 - [ ] **try.sage Production Decisions**: (Alexander Somma + Izzy Plante) — Surfaced by Docker exploration. Block CapRover one-click rollout.
-  - [ ] Decide where `TRY_SAGE_LLM_API_KEY` lives in production: plain env, Docker secret mount, or external vault. Recommend Docker secret for try.sage.is itself, plain env for self-hosted workshops.
-    - [ ] note:As we use cap rover and the system injects env vars we're leaning this way
-  - [ ] Decide whether to publish a `:latest-try-sage` image tag or stick to one tag stream gated by env var.
-  - [ ] Decide whether trial deployments use a separate named volume (`sage-try-data`) to keep production state clean. Recommend yes.
-  - [ ] Land the runtime-variant approach (one image, env-gated) per `docs/try-sage-docker-exploration.md`.
+  - [x] Decide where `TRY_SAGE_LLM_API_KEY` lives in production: plain env, Docker secret mount, or external vault. Recommend Docker secret for try.sage.is itself, plain env for self-hosted workshops.
+    - [x] note:As we use cap rover and the system injects env vars we're leaning this way
   - [ ] Add the dummy-tools server question to the same review: keep, remove, or replace with real preview capability (web search, sandboxed runner).
 
 - [ ] **try.sage Tutorial Video Production**: (Alexander Somma + Izzy Plante) — Content work, not code.
@@ -62,43 +61,11 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [ ] Publish the Custom Sage tutorial content package: three short videos plus a follow-up email with system prompts.
   - [ ] Keep system-prompt disclosure only in the dedicated system-prompt video. Swap that one video per team session without a codebase release.
 
-- [ ] **try.sage Runtime and Admin Controls**: (Alexander Somma + Izzy Plante) — Shipped Phase A 2026-04-27. Pending regression sign-off.
-  - [x] Gate try.sage.is ai behind env vars
-  - [x] Seed default try.sage agents: Sage Strawberry, Sage Startr.Style, AstroPi AI tutor (with KBs)
-  - [x] Register `https://tool-server.example.com` in `TOOL_SERVER_CONNECTIONS`
-  - [x] Add a dummy-tools server with placeholder endpoints (revisit later — see Production Decisions)
-  - [x] Trial helper endpoints: status, personas, limits, llm-status, extend, reset
-  - [x] Auto-reset every 24h via env-configurable settings; selective wipe preserves persona accounts and KBs
-  - [x] Admin-only extend (capped at one extension per window) and force-reset
-  - [x] RBAC via existing `get_admin_user` dependency on protected endpoints
-  - [x] Hidden OpenAI-compatible LLM connection (memory-only, never persisted, never echoed in any response)
-  - [x] Model allowlist via `TRY_SAGE_LLM_MODELS`
-  - [x] Document env vars, reset semantics, admin controls in `docs/try-sage-deployment.md`
-  - [x] Makefile targets `try_sage_start` / `try_sage_stop`
-
-- [ ] **try.sage.is Experience and Insights**: (Alexander Somma + Izzy Plante) — Shipped Phase B 2026-04-27. Pending regression sign-off.
-  - [x] Persistent top-of-screen try.sage banner with live HH:MM:SS countdown
-  - [x] Admin extend/reset CTAs in the banner row (live next to the countdown they affect)
-  - [x] Non-admin info line directing to docs and admin
-  - [x] User-bar persona switcher: admin + facilitator + 3 trial users (configurable up to 5 trial users)
-  - [x] Tutorial overlay with config-driven steps (`TRY_SAGE_TUTORIAL_STEPS_JSON`); 6-step default with placeholder cards when unset
-  - [x] Setup wizard suppression in trial mode + admin escape hatch in Admin → Settings → Trial Mode
-  - [x] Per-step `dismissible` flag honored; localStorage seen-flag persists across sessions
-  - [x] Provider-agnostic analytics shim (Matomo + GA + Plausible) wired via `$config.analytics`
-  - [x] Pure-Svelte zero-dep QR encoder for persona magic-link sharing in workshops
-  - [x] Document the UX + analytics event map in `docs/try-sage-deployment.md`
-
 ---
 
 ## TODO
 
 ### Release Wrap-Up
-
-- [x] **Homebrew Tap Release**: Finish and verify the brew install path #critical
-  - [x] Test: `brew tap sage-is/apps && brew install ai-ui`
-  - [x] Fix homebrew-apps Makefile `release_finish`
-  - [x] git flow state got stuck on v0.1.2 release; manual merge required to complete
-  - [x] celebrate!!! :D
 
 - [ ] **`make caprover_app_create APP=<name>` wrapper**: One Makefile call to register a new CapRover app via the HTTP API (`/api/v2/user/apps/appDefinitions/register`), POST the env-var block, set the persistent volume path, and connect a custom domain. Driver: avoid the dashboard click-through we did for `try-sage-is` on `captain.example.com` 2026-05-01.
 
@@ -183,12 +150,6 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [ ] Replace login slideshow images with original or CC/public-domain photos
 
 ### v3.0 — Future
-
-- [ ] **Backend Rewrite Research**: Evaluate framework options and build contract tests
-  - [ ] Review `docs/backend-rewrite-research.md` with team
-  - [ ] Phase -1: Generate contract test suite from OpenAPI spec (private submodule)
-  - [ ] Phase 0 spike: chosen framework + streaming Ollama proxy
-  - [ ] Team decision: Go + PocketBase, Rust + Loco, or Python + Django?
 
 - [ ] **Developer Mode**: Single image, dev CLI, HMR
   - [ ] `ai-ui dev` CLI command: clones repo, mounts source, enables DEV_MODE
@@ -295,25 +256,85 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] Evaluate Playwright specifically for browser-level media permission control, fake microphone input, cross-browser smoke tests, and trace debugging
   - [ ] Keep a small manual or staged real-microphone smoke suite for supported devices instead of making live microphone capture a required CI gate
   - [ ] Document how to run audio regression tests locally, in CI, and on staging with the required browser flags, fixtures, and expected assertions
+
+- [ ] **Backend Rewrite Research**: Evaluate framework options and build contract tests
+  - [ ] Review `docs/backend-rewrite-research.md` with team
+  - [ ] Phase -1: Generate contract test suite from OpenAPI spec (private submodule)
+  - [ ] Phase 0 spike: chosen framework + streaming Ollama proxy
+  - [ ] Team decision: Go + PocketBase, Rust + Loco, or Python + Django?
+
 ---
 
 ## Bugs
 
-- [ ] **Chat Microphone Recording Does Not Populate Message Input**: Recording from the microphone icon in chat does not process speech into the text field used to send messages #bug
+- [x] **try.sage Runtime `/llm-status` Endpoint Not Env-Gated**: With `ENABLE_TRY_SAGE=false`, `GET /api/v1/sage/runtime/llm-status` returns `403 {"detail":"Not authenticated"}` instead of 404. The route handler is registered unconditionally; auth is the only barrier. Sibling endpoints (`status`, `personas`, `limits`) correctly 404 when the env flag is off. #critical #bug
+  - [x] Locate the `llm-status` route handler in the trial runtime router
+  - [x] Confirm whether it sits outside the trial router or whether the router-level `enable_try_sage` check is missing for this handler specifically — root cause was **dependency order**: `_require_try_sage_enabled()` was called inline AFTER `Depends(get_admin_user)` had already evaluated, so auth's 401/403 fired before the env-gate's 404. Same defect class affected `/extend` and `/reset`.
+  - [x] Add the same gating that protects `status` / `personas` / `limits` so the route returns 404 when the env flag is false — fix at `app/backend/sage_is_ai/routers/sage_runtime.py:267-272`: lifted gate into `_gate: None = Depends(_require_try_sage_enabled)` parameter listed BEFORE `Depends(get_admin_user)`. Applied to `/llm-status`, `/extend`, `/reset`. Docstring of `_require_try_sage_enabled` now documents the ordering contract.
+  - [x] Re-run the trial smoke for-loop; confirm `404 /llm-status` — verified against fresh `sage-is/ai-ui:bug-verify` image; all seven trial endpoints (`status`, `personas`, `limits`, `llm-status`, `extend`, `clear`, `reset`) return 404.
+
+*(Surfaced 2026-05-10 during the regression sweep — caught by the `for ep in status personas limits llm-status extend clear` curl loop.)*
+
+- [x] **Unregistered `/api/*` Paths Return SPA HTML Instead of 404**: With `ENABLE_TRY_SAGE=false`, `GET /api/v1/sage/runtime/extend` and `GET /api/v1/sage/runtime/clear` return `200 text/html` (5463 bytes, identical etag) — the SvelteKit static catch-all serves `index.html` for unregistered backend paths. Breaks any curl-based smoke test that expects 404 for absent routes and masks future router-registration bugs. #bug
+  - [x] Locate where the SPA static catch-all is mounted in the FastAPI app — `SPAStaticFiles.get_response` in `app/backend/sage_is_ai/main.py`.
+  - [x] Add a guard so `/api/*` paths that don't match a registered router return JSON 404, not the SPA index — fix at `app/backend/sage_is_ai/main.py:498-510`: in `SPAStaticFiles.get_response`, paths equal to `api` or starting with `api/` now return `JSONResponse(status_code=404, content={"detail": "Not Found"})` instead of falling through to `index.html`.
+  - [x] Verify with a curl against any made-up `/api/v1/nonexistent` path — should return 404 with `application/json` — verified: `GET /api/v1/literally_made_up_path` returns `404 Not Found` with 22-byte JSON body. Non-api SPA paths still return `200 text/html` (frontend routing intact).
+  - [x] Re-run the trial smoke for-loop; `extend` and `clear` should report `404 /<endpoint>` — verified, plus `/reset` also 404 (which would have been a third leak without this fix).
+
+*(Surfaced 2026-05-10 during the same sweep.)*
+
+- [ ] **Chat Microphone Recording Does Not Populate Message Input**: Recording from the microphone icon in chat does not process speech into the text field used to send messages #critical #bug
   - [ ] Reproduce the issue in the chat interface and confirm whether capture, transcription, or input binding is failing
   - [ ] Trace the microphone/transcription flow from recorder output into the chat composer state
   - [ ] Fix the handoff so completed recordings populate the message input field
   - [ ] Add regression coverage for microphone-to-input behavior in chat
 
-*(Surfaced by user report in chat, 2026-04-27.)*
+*(Surfaced by user report in chat, 2026-05-11.)*
 
-- [ ] **try.sage Tutorial Does Not Auto-Open on First Persona Sign-In**: The TrySageTutorial modal is supposed to auto-open the first time a persona signs in (gated on `$config?.features?.enable_try_sage` + signed-in `$user` + missing `localStorage.try_sage_tutorial_seen_v1`). Manually triggering "Replay tutorial" from Admin → Trial Mode opens it correctly, so the modal itself works — only the auto-trigger fails. #bug
-  - [x] Reproduce: clear `localStorage.try_sage_tutorial_seen_v1`, sign in via a persona magic link, confirm modal does NOT appear
-  - [x] Inspect the `onMount`/reactive trigger condition in `app/src/lib/components/setup/TrySageTutorial.svelte` — likely the `$user` check fires before the user store hydrates after magic-link verify, OR the SvelteKit hard-navigation from `/auth#magic_token=...` lands before the layout has subscribed to `tutorialReopen`
-  - [x] Fix so the auto-show fires on first persona sign-in, not just from the admin "Replay tutorial" button
-  - [x] Add a Vitest spec that mounts the component with mocked `$config`, `$user`, and a clean `localStorage`, and asserts the modal opens
+- [ ] **Code Fence in chat renders near invisible**: when inputting text in chat and using codefence the typed or pasted text in the codefence is white on light grey.
+  - [ ] to reproduce start new chat, use backticks and click space key to open codefence ux. Type words.
+  - [ ] Depending on text entered various colors visible. Take note of low contrast combinations.
+  - [ ] Locate cause of color issue and fix
 
-*(Surfaced 2026-04-29 during manual regression of the persona sign-in flow.)*
+
+---
+
+## Done
+
+> Completed items are moved to `docs/completed-todos.md` periodically.
+> Check off items with `- [x]` and leave them in place until the next cleanup.
+
+- [x] **Homebrew Tap Release**: Finish and verify the brew install path #critical
+  - [x] Test: `brew tap sage-is/apps && brew install ai-ui`
+  - [x] Fix homebrew-apps Makefile `release_finish`
+  - [x] git flow state got stuck on v0.1.2 release; manual merge required to complete
+  - [x] celebrate!!! :D
+
+- [x] **try.sage Runtime and Admin Controls**: (Alexander Somma + Izzy Plante) — Shipped Phase A 2026-04-27.
+  - [x] Gate try.sage.is ai behind env vars
+  - [x] Seed default try.sage agents: Sage Strawberry, Sage Startr.Style, AstroPi AI tutor (with KBs)
+  - [x] Register `https://tool-server.example.com` in `TOOL_SERVER_CONNECTIONS`
+  - [x] Add a dummy-tools server with placeholder endpoints (revisit later — see Production Decisions)
+  - [x] Trial helper endpoints: status, personas, limits, llm-status, extend, reset
+  - [x] Auto-reset every 24h via env-configurable settings; selective wipe preserves persona accounts and KBs
+  - [x] Admin-only extend (capped at one extension per window) and force-reset
+  - [x] RBAC via existing `get_admin_user` dependency on protected endpoints
+  - [x] Hidden OpenAI-compatible LLM connection (memory-only, never persisted, never echoed in any response)
+  - [x] Model allowlist via `TRY_SAGE_LLM_MODELS`
+  - [x] Document env vars, reset semantics, admin controls in `docs/try-sage-deployment.md`
+  - [x] Makefile targets `try_sage_start` / `try_sage_stop`
+
+- [x] **try.sage.is Experience and Insights**: (Alexander Somma + Izzy Plante) — Shipped Phase B 2026-04-27.
+  - [x] Persistent top-of-screen try.sage banner with live HH:MM:SS countdown
+  - [x] Admin extend/reset CTAs in the banner row (live next to the countdown they affect)
+  - [x] Non-admin info line directing to docs and admin
+  - [x] User-bar persona switcher: admin + facilitator + 3 trial users (configurable up to 5 trial users)
+  - [x] Tutorial overlay with config-driven steps (`TRY_SAGE_TUTORIAL_STEPS_JSON`); 6-step default with placeholder cards when unset
+  - [x] Setup wizard suppression in trial mode + admin escape hatch in Admin → Settings → Trial Mode
+  - [x] Per-step `dismissible` flag honored; localStorage seen-flag persists across sessions
+  - [x] Provider-agnostic analytics shim (Matomo + GA + Plausible) wired via `$config.analytics`
+  - [x] Pure-Svelte zero-dep QR encoder for persona magic-link sharing in workshops
+  - [x] Document the UX + analytics event map in `docs/try-sage-deployment.md`
 
 - [x] **try.sage Tutorial Step Cards Render Empty**: When the tutorial does open (via Admin → Trial Mode → Replay tutorial), the step cards are missing content — title, "Video coming soon" placeholder, and `description` paragraph all missing or partially missing. #bug
   - [x] Reproduce: with `TRY_SAGE_TUTORIAL_STEPS_JSON` unset, open the tutorial via the admin replay button — confirm cards render without expected content
@@ -338,14 +359,13 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 
 *(Surfaced 2026-04-29 reviewing the trial welcome page imagery.)*
 
+- [x] **try.sage Tutorial Does Not Auto-Open on First Persona Sign-In**: The TrySageTutorial modal is supposed to auto-open the first time a persona signs in (gated on `$config?.features?.enable_try_sage` + signed-in `$user` + missing `localStorage.try_sage_tutorial_seen_v1`). Manually triggering "Replay tutorial" from Admin → Trial Mode opens it correctly, so the modal itself works — only the auto-trigger fails. #bug
+  - [x] Reproduce: clear `localStorage.try_sage_tutorial_seen_v1`, sign in via a persona magic link, confirm modal does NOT appear
+  - [x] Inspect the `onMount`/reactive trigger condition in `app/src/lib/components/setup/TrySageTutorial.svelte` — likely the `$user` check fires before the user store hydrates after magic-link verify, OR the SvelteKit hard-navigation from `/auth#magic_token=...` lands before the layout has subscribed to `tutorialReopen`
+  - [x] Fix so the auto-show fires on first persona sign-in, not just from the admin "Replay tutorial" button
+  - [x] Add a Vitest spec that mounts the component with mocked `$config`, `$user`, and a clean `localStorage`, and asserts the modal opens
 
-
----
-
-## Done
-
-> Completed items are moved to `docs/completed-todos.md` periodically.
-> Check off items with `- [x]` and leave them in place until the next cleanup.
+*(Surfaced 2026-04-29 during manual regression of the persona sign-in flow.)*
 
 - [x] TodoScope Alignment
   - [x] Restructure TODO.md to TodoScope conventions

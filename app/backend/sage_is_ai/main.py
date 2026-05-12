@@ -498,8 +498,17 @@ class SPAStaticFiles(StaticFiles):
                 if path.endswith(".js"):
                     # Return 404 for javascript files
                     raise ex
-                else:
-                    return await super().get_response("index.html", scope)
+                if path == "api" or path.startswith("api/"):
+                    # Never serve the SPA index for unmatched backend paths.
+                    # An unregistered /api/* route must look like a 404, not
+                    # like a 200 HTML page — otherwise smoke tests pass on
+                    # routes that don't exist and router-registration bugs
+                    # hide behind the SPA shell.
+                    return JSONResponse(
+                        status_code=404,
+                        content={"detail": "Not Found"},
+                    )
+                return await super().get_response("index.html", scope)
             else:
                 raise ex
 
