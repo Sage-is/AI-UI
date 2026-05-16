@@ -765,6 +765,7 @@ app = FastAPI(
 )
 
 oauth_manager = OAuthManager(app)
+app.state.oauth_manager = oauth_manager
 
 app.state.instance_id = None
 app.state.config = AppConfig(
@@ -2024,15 +2025,17 @@ async def get_current_usage(user=Depends(get_verified_user)):
 # OAuth Login & Callback
 ############################
 
-# SessionMiddleware is used by authlib for oauth
-if len(OAUTH_PROVIDERS) > 0:
-    app.add_middleware(
-        SessionMiddleware,
-        secret_key=WEBUI_SECRET_KEY,
-        session_cookie="oui-session",
-        same_site=WEBUI_SESSION_COOKIE_SAME_SITE,
-        https_only=WEBUI_SESSION_COOKIE_SECURE,
-    )
+# SessionMiddleware is used by authlib for oauth — must be unconditional
+# because middleware cannot be added after app startup (Starlette limitation).
+# If added only when OAUTH_PROVIDERS is non-empty at boot, the callback
+# fails with a session error when providers are configured via the admin UI.
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=WEBUI_SECRET_KEY,
+    session_cookie="oui-session",
+    same_site=WEBUI_SESSION_COOKIE_SAME_SITE,
+    https_only=WEBUI_SESSION_COOKIE_SECURE,
+)
 
 
 @app.get("/oauth/{provider}/login")
