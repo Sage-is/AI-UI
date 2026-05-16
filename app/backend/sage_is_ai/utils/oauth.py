@@ -79,8 +79,13 @@ auth_manager_config.OAUTH_UPDATE_PICTURE_ON_LOGIN = OAUTH_UPDATE_PICTURE_ON_LOGI
 
 class OAuthManager:
     def __init__(self, app):
-        self.oauth = OAuth()
         self.app = app
+        self.reload()
+
+    def reload(self):
+        # Rebuild the authlib registry from the current OAUTH_PROVIDERS so
+        # providers configured via the admin UI take effect without a restart.
+        self.oauth = OAuth()
         for _, provider_config in OAUTH_PROVIDERS.items():
             provider_config["register"](self.oauth)
 
