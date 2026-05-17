@@ -18,7 +18,14 @@
 #   make help           — list all targets
 # =============================================================================
 
-# Load environment variables from .env if it exists
+# Load canonical distribution facts (hardlinked from homebrew-apps).
+# Missing-OK — fresh clones run `make distribution_sync` to establish it.
+-include distribution.env
+export
+
+# Load environment variables from .env if it exists.
+# Loaded AFTER distribution.env so per-machine .env values can override
+# canonical defaults.
 ifneq (,$(wildcard ./.env))
     include .env
     export
@@ -38,7 +45,8 @@ GIT_REPO_SLUG := $(shell git remote get-url origin 2>/dev/null | sed -E 's|\.git
 IMAGE_NAME ?= $(GIT_REPO_SLUG)
 GHCR_IMAGE_NAME ?= ghcr.io/$(GIT_REPO_SLUG)
 GIT_TAG := $(shell git tag --sort=-v:refname | sed 's/^v//' | head -n 1)
-IMAGE_TAG := $(if $(GIT_TAG),$(GIT_TAG),latest)
+# Precedence: git tag (release in progress) > distribution.env SERVER_TAG > latest.
+IMAGE_TAG := $(if $(GIT_TAG),$(GIT_TAG),$(or $(SERVER_TAG),latest))
 GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 ifeq ($(GIT_BRANCH),HEAD)
     GIT_BRANCH := $(shell git describe --tags --exact-match 2>/dev/null || git rev-parse --short HEAD)
@@ -47,7 +55,10 @@ SAFE_GIT_BRANCH := $(subst /,-,$(GIT_BRANCH))
 SAFE_GIT_BRANCH := $(shell echo $(SAFE_GIT_BRANCH) | tr '[:upper:]' '[:lower:]')
 CONTAINER_NAME ?= $(shell echo $(GIT_REPO_SLUG) | tr '/' '-')
 PORT_MAPPING ?= 8080:8080
-VOLUME_DATA ?= sage-is-ai:/app/backend/data
+# Default volume comes from distribution.env (VOLUME + DATA_MOUNT). Fresh
+# installs land on `sage-ai-data:/app/backend/data`; existing installs with
+# a `.env` override keep their old volume name via the ?= precedence.
+VOLUME_DATA ?= $(or $(VOLUME),sage-ai-data):$(or $(DATA_MOUNT),/app/backend/data)
 ENV_FILE := $$(pwd)/.env:/app/.env
 FRONTEND_SRC := $$(pwd)/app/src/:/app/src/
 STATIC_SRC := $$(pwd)/app/static/:/app/static/
@@ -249,6 +260,20 @@ test_db_upgrade:
 	rm -rf "$$TMPDIR"
 
 # Fresh DB smoke test — verifies clean schema creation from scratch.
+## wizard_smoke — drive the AI Engine setup wizard end-to-end via API.
+##
+## Boots a clean container off $(IMAGE_NAME):$(IMAGE_TAG), signs up the
+## canonical test user (test@example.com / zaq12wsx — convention; never use
+## in production), triggers the wizard, polls until the embedding model is
+## ready, and exercises the file-upload → add-to-knowledge-base path that
+## returns 400 when ml_packages is broken. Exits non-zero on any failure.
+##
+## Use this BEFORE pushing :latest to GHCR. The structural alternative
+## (build-time stage that catches conflicts before tagging) lands once we
+## prove this loop is stable.
+wizard_smoke:
+	@scripts/wizard-smoke.sh $(IMAGE_TAG)
+
 test_db_fresh:
 	@echo "=== Fresh DB Smoke Test ==="
 	@TMPDIR=$$(mktemp -d) && \
@@ -594,7 +619,7 @@ lint:
 	waha_start waha_stop waha_logs waha_status \
 	signal_start signal_stop signal_logs signal_status \
 	install_dev scan scan_secrets scan_sast scan_deps scan_container scan_dast \
-	trivy_db_update lint test_db_upgrade test_db_fresh
+	trivy_db_update lint test_db_upgrade test_db_fresh wizard_smoke
 
 
 # Version Management with Git Flow
@@ -680,7 +705,7 @@ hotfix: require_gitflow_next
 	@echo "  7. make ghcr_login               # Authenticate with GHCR"
 	@echo "  8. make hotfix_and_push_GHCR     # Finish hotfix + push to GHCR"
 
-release_finish: require_gitflow_next
+release_finish: require_gitflow_next distribution_verify
 	@echo "=== Finishing release ==="
 	@echo "Merging to master, tagging, pushing..."
 	git flow release finish && git push origin develop && git push origin master && git push --tags && git checkout develop
@@ -689,7 +714,7 @@ release_finish: require_gitflow_next
 	@echo "Tag: v$(IMAGE_TAG)"
 	@echo "Pushed: develop, master, tags"
 
-hotfix_finish: require_gitflow_next
+hotfix_finish: require_gitflow_next distribution_verify
 	@echo "=== Finishing hotfix ==="
 	@echo "Merging to master, tagging, pushing..."
 	git flow hotfix finish && git push origin develop && git push origin master && git push --tags && git checkout develop
@@ -813,3 +838,51 @@ try_sage_links:
 # ---------------------------------------------------------------------------
 release:
 	@scripts/release.sh
+
+# ---------------------------------------------------------------------------
+# Distribution.env hardlink chain (Jidoka 自働化 primitive)
+# ---------------------------------------------------------------------------
+# distribution.env is the single source of truth for canonical distribution
+# facts (image, server tag, volume, install command, CLI version). It lives
+# in homebrew-apps and is hardlinked into this repo and WEB-Sage.Education-docs
+# so an edit in any one propagates immediately to the other two.
+#
+# Hardlinks don't survive a fresh `git clone` — the new clone has its own
+# inode. After cloning, run `make distribution_sync` from any sibling to
+# re-establish the chain.
+#
+# `release_finish` calls `distribution_verify` so a release halts if the
+# chain has drifted (e.g. an editor wrote a copy instead of editing in place).
+
+# Where the sibling repos live. Override SIBLING_HOMEBREW if homebrew-apps
+# is checked out somewhere other than `../homebrew-apps`.
+SIBLING_HOMEBREW ?= ../homebrew-apps
+SIBLING_DOCS     ?= ../WEB-Sage.Education-docs
+SIBLING_AI_UI    ?= .
+DIST_SOURCE      := $(SIBLING_HOMEBREW)/distribution.env
+
+distribution_sync:
+	@test -f $(DIST_SOURCE) || { \
+		echo "ERROR: $(DIST_SOURCE) not found."; \
+		echo "  Clone homebrew-apps as a sibling first:"; \
+		echo "    git clone https://github.com/Sage-is/homebrew-apps.git $(SIBLING_HOMEBREW)"; \
+		exit 1; \
+	}
+	@ln -f $(DIST_SOURCE) $(SIBLING_AI_UI)/distribution.env
+	@test -d $(SIBLING_DOCS) && ln -f $(DIST_SOURCE) $(SIBLING_DOCS)/distribution.env || \
+		echo "NOTE: $(SIBLING_DOCS) not present; skipping docs hardlink."
+	@$(MAKE) distribution_verify
+
+distribution_verify:
+	@expected=3; \
+	test -d $(SIBLING_DOCS) || expected=2; \
+	for f in $(DIST_SOURCE) $(SIBLING_AI_UI)/distribution.env $(SIBLING_DOCS)/distribution.env; do \
+		test -e "$$f" || continue; \
+		links=$$(stat -f "%l" "$$f" 2>/dev/null || stat -c "%h" "$$f"); \
+		if [ "$$links" != "$$expected" ]; then \
+			echo "FAIL: $$f has $$links links, expected $$expected"; \
+			echo "  Run 'make distribution_sync' to re-establish the chain."; \
+			exit 1; \
+		fi; \
+	done; \
+	echo "OK: distribution.env hardlink chain intact ($$expected links)."

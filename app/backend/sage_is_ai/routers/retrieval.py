@@ -434,44 +434,35 @@ async def trigger_model_download(
                 import torch  # noqa: F401
                 import sentence_transformers  # noqa: F401
             except ImportError:
-                print("[AI Engine] Installing ML packages...", flush=True)
+                print("[AI Engine] Installing ML packages from locked manifest...", flush=True)
                 # __file__ = sage_is_ai/routers/retrieval.py → 3 levels up to backend/
-                ml_req = os.path.join(
+                ml_lock = os.path.join(
                     os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                    "requirements-ml.txt",
+                    "requirements-ml.lock",
                 )
                 os.makedirs(ml_target, exist_ok=True)
 
-                # Install torch first (CPU by default, CUDA if configured)
-                torch_url = "https://download.pytorch.org/whl/cpu"
-                if os.environ.get("USE_CUDA_DOCKER", "").lower() == "true":
-                    torch_url = f"https://download.pytorch.org/whl/{os.environ.get('USE_CUDA_DOCKER_VER', 'cu121')}"
-                print("[AI Engine] Downloading PyTorch...", flush=True)
+                # Single uv pip install pass against a hashed lockfile. The
+                # resolver caught any incompatible closure (torch/transformers/
+                # numpy) at lockfile-compile time on the dev host, so this
+                # install can only succeed or fail deterministically.
+                # CUDA is intentionally not supported in 2.3.1; the 2.4 bundle
+                # ships a per-arch × per-accel matrix.
                 await run_in_threadpool(
                     subprocess.run,
-                    ["pip", "install", "torch",
-                     "--index-url", torch_url,
+                    ["uv", "pip", "install",
+                     "-r", ml_lock,
                      "--target", ml_target,
-                     "--break-system-packages",
-                     "--root-user-action=ignore"],
+                     "--break-system-packages"],
                     check=True,
                 )
 
-                # Install remaining ML packages
-                print("[AI Engine] Downloading sentence-transformers, whisper...", flush=True)
-                await run_in_threadpool(
-                    subprocess.run,
-                    ["pip", "install", "-r", ml_req,
-                     "--target", ml_target,
-                     "--break-system-packages",
-                     "--root-user-action=ignore"],
-                    check=True,
-                )
-
-                # Add to PYTHONPATH so imports work immediately
+                # Append to sys.path so imports work without shadowing
+                # system packages (bcrypt, uvicorn, click, anyio, pydantic).
+                # Transitional measure; the 2.4 bundle replaces runtime install.
                 import sys
                 if ml_target not in sys.path:
-                    sys.path.insert(0, ml_target)
+                    sys.path.append(ml_target)
                 print("[AI Engine] ML packages installed", flush=True)
 
             # Step 2: Install chromadb if VECTOR_DB is "chroma" and not yet available
@@ -482,15 +473,16 @@ async def trigger_model_download(
                     print("[AI Engine] Installing chromadb...", flush=True)
                     await run_in_threadpool(
                         subprocess.run,
-                        ["pip", "install", "chromadb",
+                        ["uv", "pip", "install", "chromadb",
                          "--target", ml_target,
-                         "--break-system-packages",
-                         "--root-user-action=ignore"],
+                         "--break-system-packages"],
                         check=True,
                     )
+                    # Append (not insert) for the same reason as the main ML
+                    # install above: system packages must keep priority.
                     import sys
                     if ml_target not in sys.path:
-                        sys.path.insert(0, ml_target)
+                        sys.path.append(ml_target)
                     # Re-initialize vector DB client now that chromadb is available
                     from sage_is_ai.retrieval.vector import factory
                     factory.VECTOR_DB_CLIENT = factory.Vector.get_vector(VECTOR_DB)

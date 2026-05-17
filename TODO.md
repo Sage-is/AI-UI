@@ -36,6 +36,35 @@ This file tracks active work only.
 
 _Items currently in progress. Move items here and or use tag source with `# FIXME:` when work begins._
 
+- [ ] **Ship 2.3.1 — Jidoka spine + three Poka-Yoke children**: `distribution.env` hardlinked across AI-UI, homebrew-apps, Sage.Education-docs (the atom); AI-UI Makefile reads it for VOLUME_DATA + IMAGE_TAG defaults; three bug-fix children — env-gate dependency order (`sage_runtime.py`), SPA `/api/*` JSON 404 (`main.py`), ML wizard transitional fix (`retrieval.py:474` append; Dockerfile `sitecustomize.py`; `start.sh` PYTHONPATH block removed; `requirements-ml.txt` `transformers>=4.47.0` pin). CHANGELOG labels the ML fix as transitional on the kaizen (改善) path; structural fix is the signed per-arch tarball bundle (Shape B) shipping in 2.4. Plan: `~/.claude/plans/given-our-newest-trends-modular-sloth.md`. #critical
+  - [x] ML wizard fix: `retrieval.py:474` `sys.path.insert(0) → append`
+  - [x] ML wizard fix: delete PYTHONPATH block in `start.sh:6-10`
+  - [x] ML wizard fix: `sitecustomize.py` RUN in Dockerfile (loads ml_packages after site-packages)
+  - [x] ML wizard fix: pin `transformers>=4.47.0,<5.0` in `requirements-ml.txt`
+  - [x] Env-gate fix: `sage_runtime.py` lifted `_require_try_sage_enabled` ahead of `get_admin_user` Depends
+  - [x] SPA fall-through fix: `main.py` returns JSON 404 for unmatched `/api/*`
+  - [x] `try_sage_stop` removed from Makefile; `try_sage_reset` cleans up inline
+  - [x] `CONVENTION.instructions.md` documents the FastAPI env-gate dependency-ordering contract
+  - [x] Canonical `distribution.env` created in homebrew-apps
+  - [x] `distribution_sync` + `distribution_verify` Makefile targets in AI-UI and homebrew-apps; verify wired into `release_finish` + `hotfix_finish`
+  - [x] AI-UI Makefile `-include distribution.env`; `VOLUME_DATA` + `IMAGE_TAG` default from it
+  - [x] homebrew-apps `ai-ui` CLI bumped to 1.1.0; sources `distribution.env`; `--tag X.Y.Z` flag on `start`, `try`, `update`
+  - [x] homebrew-apps Formula caveats updated (`ai-ui.rb` + `ai-ui@1.rb`)
+  - [x] homebrew-apps README documents the `distribution.env` contract + two-version-track + `git flow feature start` policy
+  - [x] Hardlink chain established (`make distribution_sync` from homebrew-apps; verify shows 3 links)
+  - [x] PANEL_PUSH_HISTORY entry for 2026-05-12 panel (Arment / Hashimoto / Hickey) appended to `.env`; prior malformed line fixed
+  - [ ] Build `:bug-verify` image on Alexander's silicon (in progress)
+  - [ ] [MANUALLY] Run wizard from clean volume on `:bug-verify`; confirm login pre- and post-wizard; `bcrypt.__file__` lives in `/usr/local/lib`; embedding download succeeds
+  - [ ] [MANUALLY] Cross-arch teammate runs the same wizard pass on a different arch
+  - [ ] [MANUALLY] Commit bug-fix files on develop
+  - [ ] [MANUALLY] `make patch_release` → creates `release/2.3.1`
+  - [ ] On the release branch: `make bump_release_version`, write CHANGELOG.md 2.3.1 entry (three Fixed blocks + Added block + Changed block + Docs block), check off TODO subitems
+  - [ ] [MANUALLY] Smoke loop on release-tagged image (`it_build`, `test_db_upgrade`, `test_db_fresh`, `it_run`)
+  - [ ] [MANUALLY] Staging deploy verification (CapRover staging if available) BEFORE pushing `:latest`
+  - [ ] [MANUALLY] `make ghcr_login` → `make release_and_push_GHCR`
+  - [ ] Regenerate `KANBAN.canvas` from finalized TODO.md
+  - [ ] **2.4 follow-up (separate plan)** — signed per-arch ML bundle tarballs on GitHub Releases; wizard pulls via `curl | sha256sum -c | tar -xz`; `distribution.env` carries `ML_BUNDLE_TAG` + per-variant SHA256s; decommission `sitecustomize.py` and runtime pip install
+
 - [x] **try.sage Manual Regression Sign-off**: (Alexander Somma + Izzy Plante) #critical — Phase A backend and Phase B frontend shipped 2026-04-27. Smoke before merge.
   - [x] Run `make try_sage_start` in a clean checkout. Container boots and `/api/v1/sage/runtime/status` responds.
   - [x] `GET /api/v1/sage/runtime/personas` returns 5 entries with non-empty `login_url` JWTs.
@@ -203,6 +232,15 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
 ## Backlog
 
 _Items deferred to a later planning cycle. Move here from TODO when deprioritized._
+
+- [ ] **Buff Out the Default First-Run Landing Page** — try.sage already has a polished welcome page (persona picker, banner, branded imagery, tutorial overlay). The default first-run landing for a fresh self-hosted install is much thinner. Port the relevant pieces — minus the trial-only bits — so a fresh install feels like a finished product, not an empty room.
+  - [ ] Audit what `try.sage` welcome ships today (`TrySage*` components in `app/src/lib/components/`): copy, imagery, tutorial-step cards, layout, animations.
+  - [ ] Identify which pieces are *trial-only* (banner countdown, persona switcher, magic-link QR) vs. *generally useful for any first-run* (welcome card, "what to try first" buttons, tutorial overlay, branded slideshow continuity).
+  - [ ] Design the default landing — what does a new admin see *immediately* after completing the setup wizard? Empty home with the chat composer is too thin. Suggested shape: a one-card welcome with "Start a chat", "Set up Ollama", "Create a Space", "Invite users" CTAs that link into the actual flows.
+  - [ ] Add a default tutorial overlay (same component as `TrySageTutorial`, different content). Steps focus on the *self-hosted* admin journey: where chats go, where data lives, how to add a model, how to invite users.
+  - [ ] Localize copy via i18n.
+  - [ ] Vitest spec covering the auto-show + dismiss + replay flow (parallel to the try.sage tutorial spec).
+  - [ ] Make the "Replay welcome" admin escape hatch available outside trial mode — sibling to the existing Trial Mode tab.
 
 - [ ] **Learning Visibility Dashboard**: Mentioned in `the-arsonists-smoke-detector.md`. We need to build this as we are publishing the article soon to the sage.education resource page.
 

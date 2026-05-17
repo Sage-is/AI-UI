@@ -3,13 +3,11 @@
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd "$SCRIPT_DIR" || exit
 
-# Add ML packages to PYTHONPATH if installed on data volume (persists across restarts)
-ML_PACKAGES="/app/backend/data/ml_packages"
-if [ -d "$ML_PACKAGES" ] && [ "$(ls -A "$ML_PACKAGES" 2>/dev/null)" ]; then
-    export PYTHONPATH="$ML_PACKAGES:${PYTHONPATH:-}"
-fi
+# ml_packages now loads via sitecustomize.py (Dockerfile) so system bcrypt,
+# uvicorn, click, anyio, pydantic keep priority. The 2.4 bundle replaces
+# runtime install entirely.
 
-# Check runtime dependencies (after PYTHONPATH is set)
+# Check runtime dependencies
 if [ -f "./init_models.sh" ]; then
     ./init_models.sh
 fi
