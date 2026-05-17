@@ -4,7 +4,8 @@ typer
 pydantic==2.11.7
 itsdangerous
 # CVE-2026-24486 (HIGH): arbitrary file write — fixed in 0.0.22
-python-multipart==0.0.22
+# CVE-2026-42561 (HIGH): pre-0.0.27 parser issue — bumped 2026-05-17.
+python-multipart==0.0.27
 
 python-socketio==5.13.0
 passlib[bcrypt]==1.7.4
@@ -38,7 +39,10 @@ asgiref==3.8.1
 
 tiktoken
 
-langchain==0.3.26
+# CVE-2026-45134 (HIGH): LangSmith SDK public prompt pull deserializes
+# untrusted manifests without trust boundary warning. Fixed in 0.3.30.
+# Bumped 2026-05-17.
+langchain==0.3.30
 # CVE-2025-6984 (HIGH): insecure XML parsing (XXE) in document loaders
 langchain-community==0.3.27
 
@@ -47,6 +51,19 @@ langchain-community==0.3.27
 ## install at runtime via the AI Engine wizard when an operator picks a non-chroma VECTOR_DB.
 ## Pin matches app/pyproject.toml — bump both in lockstep.
 chromadb==0.6.3
+# chromadb (and friends) pull ML transitives that the wizard-installed
+# transformers (4.57.6) imports at runtime. Since system site-packages
+# is on sys.path BEFORE the wizard-installed ml_packages (intentional —
+# keeps bcrypt/uvicorn/etc system-resolved), the system versions win for
+# any shared package. So they must be inside the range transformers
+# accepts. Pinned set, all removable once the 2.4 bundle owns the full
+# ML stack:
+#   - tokenizers       transformers wants <=0.23.0; chromadb wants >=0.13.2
+#   - huggingface-hub  transformers wants <1.0; tokenizers wants >=0.16.4,<2
+#   - numpy            torch+transformers ecosystems still wobble on 2.x ABI
+tokenizers<=0.23.0
+huggingface-hub<1.0
+numpy<2
 
 # ML packages (torch, sentence-transformers, transformers, colbert-ai, faster-whisper,
 # onnxruntime) — installed at runtime via the AI Engine wizard step (requirements-ml.txt)

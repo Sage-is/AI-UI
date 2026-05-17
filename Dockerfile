@@ -106,6 +106,24 @@ RUN apt-get update && \
 COPY --from=python-build /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
 COPY --from=python-build /usr/local/bin/ /usr/local/bin/
 
+# ml_packages (data-volume install via wizard) loads AFTER site-packages so the
+# system bcrypt/uvicorn/click/anyio/pydantic always win. Transitional: the 2.4
+# bundle replaces this with a signed tarball pulled into the data volume.
+RUN printf 'import sys, os\n_ml = "/app/backend/data/ml_packages"\nif os.path.isdir(_ml) and _ml not in sys.path:\n    sys.path.append(_ml)\n' \
+    > /usr/local/lib/python3.11/sitecustomize.py
+
+# Install `uv` for the runtime ML wizard install. Pinned so a 0.x breaking
+# change cannot ship via the base image. The release artifact name uses the
+# same arch tokens as `uname -m` on Linux (x86_64, aarch64) — both Docker
+# buildx targets are covered. Bump UV_VERSION to the latest release that has
+# both x86_64 and aarch64 Linux gnu artifacts at edit time:
+#   curl -s https://api.github.com/repos/astral-sh/uv/releases/latest | jq -r .tag_name
+ARG UV_VERSION=0.5.18
+RUN ARCH=$(uname -m) && \
+    curl -fsSL "https://github.com/astral-sh/uv/releases/download/${UV_VERSION}/uv-${ARCH}-unknown-linux-gnu.tar.gz" \
+      | tar -xz -C /usr/local/bin --strip-components=1 "uv-${ARCH}-unknown-linux-gnu/uv" && \
+    uv --version
+
 # Copy tiktoken cache
 COPY --from=python-build /app/backend/tiktoken_cache/ /app/backend/tiktoken_cache/
 
