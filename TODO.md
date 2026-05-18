@@ -66,7 +66,7 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [x] `make patch_release` → `release/2.3.1` created
   - [x] `make bump_release_version` (app/package.json 2.3.0 → 2.3.1)
   - [x] CHANGELOG.md 2.3.1 entry written above [2.3.0] (Added/Fixed/Security/Changed/Docs blocks)
-  - [ ] [MANUALLY] Cross-arch teammate runs `make wizard_smoke IMAGE_TAG=bug-verify` on amd64
+  - [ ] Cross-arch smoke via buildx + QEMU: `make cross_smoke IMAGE_TAG=bug-verify` (builds linux/amd64, runs wizard end-to-end on Apple Silicon host — no teammate needed). 2.3.1 added `it_build_amd64` and `cross_smoke` Makefile targets + `PLATFORM` env in `scripts/wizard-smoke.sh`.
   - [ ] [MANUALLY] Commit the release-branch artifacts (CHANGELOG, TODO, package.json, README.md) on `release/2.3.1`
   - [ ] [MANUALLY] Smoke loop on release-tagged image (`it_build`, `test_db_upgrade`, `test_db_fresh`, `it_run`, `wizard_smoke IMAGE_TAG=2.3.1`)
   - [ ] [MANUALLY] Staging deploy verification (CapRover staging if available) BEFORE pushing `:latest`
@@ -93,11 +93,7 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
     - [x] note:As we use cap rover and the system injects env vars we're leaning this way
   - [ ] Add the dummy-tools server question to the same review: keep, remove, or replace with real preview capability (web search, sandboxed runner).
 
-- [ ] **try.sage Tutorial Video Production**: (Alexander Somma + Izzy Plante) — Content work, not code.
-  - [ ] Pick individual videos from the [working playlist](https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u) for each of the 6 default tutorial steps.
-  - [ ] Populate `TRY_SAGE_TUTORIAL_STEPS_JSON` per workshop deployment with the chosen URLs and step descriptions.
-  - [ ] Publish the Bialik Sage tutorial content package: three short videos plus a follow-up email with system prompts.
-  - [ ] Keep system-prompt disclosure only in the dedicated system-prompt video. Swap that one video per team session without a codebase release.
+
 
 ---
 
@@ -241,6 +237,12 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
 ## Backlog
 
 _Items deferred to a later planning cycle. Move here from TODO when deprioritized._
+
+- [ ] **try.sage Tutorial Video Production**: (Alexander Somma + Izzy Plante) — Content work, not code.
+  - [ ] Pick individual videos from the [working playlist](https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u) for each of the 6 default tutorial steps.
+  - [ ] Populate `TRY_SAGE_TUTORIAL_STEPS_JSON` per workshop deployment with the chosen URLs and step descriptions.
+  - [ ] Publish the Bialik Sage tutorial content package: three short videos plus a follow-up email with system prompts.
+  - [ ] Keep system-prompt disclosure only in the dedicated system-prompt video. Swap that one video per team session without a codebase release.
 
 - [ ] **Buff Out the Default First-Run Landing Page** — try.sage already has a polished welcome page (persona picker, banner, branded imagery, tutorial overlay). The default first-run landing for a fresh self-hosted install is much thinner. Port the relevant pieces — minus the trial-only bits — so a fresh install feels like a finished product, not an empty room.
   - [ ] Audit what `try.sage` welcome ships today (`TrySage*` components in `app/src/lib/components/`): copy, imagery, tutorial-step cards, layout, animations.
