@@ -274,6 +274,30 @@ test_db_upgrade:
 wizard_smoke:
 	@scripts/wizard-smoke.sh $(IMAGE_TAG)
 
+## it_build_amd64 — build an amd64 image via buildx + --load.
+##
+## Useful on Apple Silicon to validate the same image teammates will run
+## on x86_64 Linux hosts (CapRover, GHCR consumers, etc). Slower than the
+## native build because layers are emulated. Tag is suffixed `-amd64` so
+## it sits beside the host-arch image without overwriting it.
+it_build_amd64:
+	@echo "Building Docker image for linux/amd64 via buildx..."
+	@docker buildx build --platform linux/amd64 --load \
+	    -t $(IMAGE_NAME):$(IMAGE_TAG)-amd64 \
+	    .
+	@afplay /System/Library/Sounds/Glass.aiff
+	@echo ""
+
+## cross_smoke — build the amd64 image then smoke it via QEMU.
+##
+## End-to-end cross-arch verification on a single host. Same flow as
+## `wizard_smoke` but with PLATFORM=linux/amd64 and a longer timeout
+## because QEMU emulation is 3-5x slower than native. Use this in place
+## of "ask a teammate to run smoke on amd64."
+cross_smoke: it_build_amd64
+	@INSTALL_TIMEOUT_SEC=2700 PLATFORM=linux/amd64 \
+	  scripts/wizard-smoke.sh $(IMAGE_TAG)-amd64
+
 test_db_fresh:
 	@echo "=== Fresh DB Smoke Test ==="
 	@TMPDIR=$$(mktemp -d) && \
@@ -619,7 +643,8 @@ lint:
 	waha_start waha_stop waha_logs waha_status \
 	signal_start signal_stop signal_logs signal_status \
 	install_dev scan scan_secrets scan_sast scan_deps scan_container scan_dast \
-	trivy_db_update lint test_db_upgrade test_db_fresh wizard_smoke
+	trivy_db_update lint test_db_upgrade test_db_fresh wizard_smoke \
+	it_build_amd64 cross_smoke
 
 
 # Version Management with Git Flow
