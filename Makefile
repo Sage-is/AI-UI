@@ -298,6 +298,41 @@ cross_smoke: it_build_amd64
 	@INSTALL_TIMEOUT_SEC=2700 PLATFORM=linux/amd64 \
 	  scripts/wizard-smoke.sh $(IMAGE_TAG)-amd64
 
+## release_smoke — one-button pre-flight for the current release branch.
+##
+## Refuses to run unless on `release/X.Y.Z`. Derives the version from the
+## branch name (no IMAGE_TAG to mistype). Builds `sage-is/ai-ui:X.Y.Z`,
+## smokes it natively, then builds + smokes the amd64 variant via Rosetta.
+## Poka-yoke: operator can't smoke against the wrong tag, can't forget
+## either arch, can't skip the rebuild before push.
+##
+## Use this AS the last step before `make release_and_push_GHCR`.
+release_smoke:
+	@case "$(GIT_BRANCH)" in \
+	  release/*) ;; \
+	  *) echo "ERROR: release_smoke must run from a release/X.Y.Z branch."; \
+	     echo "       current branch: $(GIT_BRANCH)"; \
+	     echo "       Run 'make patch_release' (or minor_release / major_release) first."; \
+	     exit 1;; \
+	esac
+	@if [ -z "$(RELEASE_VERSION)" ]; then \
+	  echo "ERROR: RELEASE_VERSION empty despite being on a release/* branch."; \
+	  echo "       Branch name parse failed? GIT_BRANCH=$(GIT_BRANCH)"; \
+	  exit 1; \
+	fi
+	@echo ""
+	@echo "=== release_smoke for $(RELEASE_VERSION) ==="
+	@echo "  branch: $(GIT_BRANCH)"
+	@echo "  tag:    $(IMAGE_NAME):$(RELEASE_VERSION)"
+	@echo ""
+	@$(MAKE) it_build IMAGE_TAG=$(RELEASE_VERSION)
+	@$(MAKE) wizard_smoke IMAGE_TAG=$(RELEASE_VERSION)
+	@$(MAKE) cross_smoke IMAGE_TAG=$(RELEASE_VERSION)
+	@echo ""
+	@echo "=== $(RELEASE_VERSION) smoke-clean on native arch + linux/amd64 ==="
+	@echo "    Next: deploy to staging, verify, then 'make release_and_push_GHCR'."
+	@afplay /System/Library/Sounds/Glass.aiff 2>/dev/null || true
+
 test_db_fresh:
 	@echo "=== Fresh DB Smoke Test ==="
 	@TMPDIR=$$(mktemp -d) && \
@@ -644,7 +679,7 @@ lint:
 	signal_start signal_stop signal_logs signal_status \
 	install_dev scan scan_secrets scan_sast scan_deps scan_container scan_dast \
 	trivy_db_update lint test_db_upgrade test_db_fresh wizard_smoke \
-	it_build_amd64 cross_smoke
+	it_build_amd64 cross_smoke release_smoke
 
 
 # Version Management with Git Flow
