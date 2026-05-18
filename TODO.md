@@ -332,6 +332,13 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 
 *(Surfaced 2026-05-10 during the same sweep.)*
 
+- [ ] **AI Engine Wizard Embedding Download Has No Stall Watchdog**: When the embedding model fetch from HuggingFace stalls (network drop, HF outage, slow link), the wizard sits in `embedding=downloading` indefinitely. No timeout, no retry, no resumable state surfaced to the admin. `wizard-smoke.sh` catches this externally via `INSTALL_TIMEOUT_SEC`, but a real user has no signal except an idle spinner. #bug
+  - [ ] Surface HF download progress (bytes, last-byte timestamp) to `request.app.state.MODEL_DOWNLOAD_STATUS` so the status endpoint exposes liveness.
+  - [ ] Watchdog in `_download` (`retrieval.py`): if cache size hasn't grown in N minutes (configurable, default 5), mark status=`stalled`, capture the error, allow retry via a re-POST to `/api/v1/retrieval/models/download`.
+  - [ ] Surface stalled state in the wizard UI with a retry button + "check your connection" hint.
+
+*(Surfaced 2026-05-18 during the cross-arch smoke run when an internet drop wedged the embedding download. The wizard never noticed.)*
+
 - [ ] **Chat Microphone Recording Does Not Populate Message Input**: Recording from the microphone icon in chat does not process speech into the text field used to send messages #critical #bug
   - [ ] Reproduce the issue in the chat interface and confirm whether capture, transcription, or input binding is failing
   - [ ] Trace the microphone/transcription flow from recorder output into the chat composer state
