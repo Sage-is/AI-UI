@@ -4,6 +4,64 @@ All notable changes to [Sage.is AI-UI](https://github.com/Sage-is/AI-UI) are doc
 
 ---
 
+## [2.3.1] — 2026-05-18
+
+### Added
+
+**Shared `distribution.env` Contract Across Three Repos**
+Sage.is AI-UI, the homebrew-apps tap, and the Sage.Education docs now read canonical distribution facts — image, server tag, volume name, install command, CLI version — from a single hardlinked `distribution.env`. Edit once, three repos see it. The first Jidoka (自働化) primitive: drift across the three repos is mechanically impossible instead of a memory tax. Each repo's Makefile runs `distribution_verify` as a release gate; `distribution_sync` re-establishes the hardlink chain on a fresh clone.
+
+**Automated Wizard Smoke (`scripts/wizard-smoke.sh`)**
+End-to-end tester drives the AI Engine setup wizard via API on a clean container — signup → install trigger → embedding model download → import smoke → file upload → add-to-knowledge-base. Replaces the manual browser dance. Wired into `make wizard_smoke`. The smoke also doubles as the harness for the 2.4 bundle work.
+
+**Convention: `test@example.com` / `zaq12wsx` is the Sage.is Automated Smoke User**
+Canonical fixture for `wizard-smoke`, Selenium, ZAP DAST proxy runs, and any future automated harness. Documented in `CONVENTION.instructions.md`. Production deployments never create this user.
+
+### Fixed
+
+**Try.sage `/llm-status` Honors `ENABLE_TRY_SAGE=false`**
+The admin-only `/api/v1/sage/runtime/llm-status` endpoint returns 404 when the trial-mode flag is off. The router-level gate ran in the wrong dependency order — auth fired before the env check, so the route leaked through with a 403 instead of disappearing. Same fix applied to `/extend` and `/reset`. The gate now sits ahead of the auth dependency for every trial-mode admin handler. Documented as a contract in `CONVENTION.instructions.md`.
+
+**Unregistered `/api/*` Paths Return JSON 404**
+Curl-driven smoke tests see proper 404s for missing backend routes. The SvelteKit static catch-all was serving `index.html` for any unmatched path, including `/api/*`, which masked router-registration bugs and broke automated checks. The SPA fall-through skips `/api/*` and returns a JSON 404 instead. Frontend routing for non-api paths is unchanged.
+
+**ML Wizard No Longer Shadows System bcrypt and Breaks Login** *(transitional fix)*
+The ML wizard installs framework packages — `bcrypt`, `uvicorn`, `click`, `anyio`, `pydantic` — into the data volume as transitive dependencies of `sentence-transformers`. Until now those packages loaded ahead of the system versions, so a freshly installed `bcrypt 5.0.0` shadowed the system `bcrypt 4.3.0` and broke password verification. Three changes restore the correct precedence: the wizard appends ml_packages to `sys.path` instead of inserting at the front (`app/backend/sage_is_ai/routers/retrieval.py`); the container loads ml_packages via `sitecustomize.py` after `site-packages` instead of via `PYTHONPATH` ahead of it (`Dockerfile`, `app/backend/start.sh`); and the install itself moves off raw `pip` onto `uv` driven by a hashed lockfile so the resolver cannot deliver a self-inconsistent set at wizard time.
+
+**ML Wizard Switches to `uv` + Hashed Lockfile** *(transitional fix)*
+The wizard previously ran two `pip install --target` passes — one for `torch`, one for `requirements-ml.txt` — and pip's silent `--target` collision left a stale `torch 2.1.2` next to a fresh `transformers 4.57.6` and `numpy 2.4.5`. The combination threw on import (`AttributeError: torch.utils._pytree has no register_pytree_node` and a NumPy 1.x/2.x ABI break). The fix swaps `pip` for `uv` (pinned at base-image build) driven by a hashed `requirements-ml.lock` generated once at edit time. `uv`'s resolver refuses self-inconsistent closures, so the failure mode moves from user wizard runs back to dev-host commits, where it belongs. torch comes from the PyTorch CPU index — no `nvidia-*` wheel chain dragged along.
+
+**Base Image Pins `tokenizers`, `huggingface-hub`, `numpy` Inside transformers' Range**
+The system site-packages picks up `tokenizers`, `huggingface-hub`, and `numpy` transitively from `chromadb` and `langchain-community`. Since `sitecustomize.py` keeps system ahead of ml_packages on `sys.path` (protecting bcrypt and friends), the system versions are the ones `transformers 4.57.6` imports at runtime. Pinning them to `<=0.23.0`, `<1.0`, and `<2` keeps the import-time version checks satisfied. Removable once the 2.4 bundle owns the full ML stack.
+
+**This fix is transitional.** The structural fix is a signed per-arch × per-accel tarball bundle published on GitHub Releases, pulled into the container at wizard-activation time and verified against SHA256s declared in `distribution.env`. That work ships in **2.4** under the kaizen (改善) banner — and reuses the same `requirements-ml.lock` as its build input. Until then, ml_packages remains a runtime install, just a well-behaved one.
+
+### Security
+
+**Bump `langchain` to 0.3.30** (CVE-2026-45134 — HIGH)
+LangSmith SDK public prompt pull deserialized untrusted manifests without a trust boundary warning. Fixed upstream in 0.3.30.
+
+**Bump `python-multipart` to 0.0.27** (CVE-2026-42561 — HIGH)
+Streaming parser issue pre-0.0.27. Bumped past the affected range.
+
+### Changed
+
+**Makefile: `try_sage_stop` Dropped, `try_sage_reset` Cleans Up Inline**
+The standalone `try_sage_stop` target ran `docker rm` against a hardcoded container name that didn't match the brew CLI's name. Removed. `try_sage_reset` drops any stale trial container itself before rebuilding. Brew users continue with `ai-ui stop`.
+
+**Makefile Reads `distribution.env` Defaults**
+`VOLUME_DATA` and `IMAGE_TAG` defaults come from `distribution.env` when present. Explicit `make VAR=value` overrides still win.
+
+**CUDA Path Temporarily Off in the Wizard** *(deferred to 2.4)*
+The `USE_CUDA_DOCKER=true` branch is removed from `retrieval.py` for 2.3.1. The wizard installs CPU-only torch from the locked manifest regardless of the env flag. CUDA returns in **2.4** as one cell of the per-arch × per-accel bundle matrix, where it can be tested as a first-class artifact rather than an env-flag escape hatch. Users running CUDA today should hold on `:2.3.0` or watch the 2.4 release notes for the bundle URL.
+
+### Docs
+
+**Env-Gate Dependency-Order Contract**
+`CONVENTION.instructions.md` documents the FastAPI ordering rule: env-gate `Depends()` must precede auth `Depends()` so a disabled feature looks like 404, not 403. Right and wrong patterns shown side by side. Reference: the `/llm-status` fix above.
+
+---
+
 ## [2.3.0] — 2026-05-01
 
 ### Added
