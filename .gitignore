@@ -18,6 +18,9 @@
 !/app/backend/.dockerignore
 !/app/backend/.gitignore
 
+# Large backup tgz
+*.tgz
+
 node_modules
 /app/.svelte-kit
 vite.config.js.timestamp-*
