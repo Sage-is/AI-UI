@@ -52,27 +52,17 @@ For each task, define:
 
 ## Hidden Artifact Policy
 
-Dotfiles and dotfolders are denied by default everywhere in the repo and may
-only be committed if they are explicitly allowlisted in `.gitignore`.
+Dotfiles and dotfolders are denied by default everywhere in the repo and may only be committed if they are explicitly allowlisted in `.gitignore`. Approved shared hidden artifacts must be safe to version and useful to the whole repo, such as repo metadata, security tooling, safe example templates, and intentionally shared knowledge folders like `.obsidian/`.
 
-Approved shared hidden artifacts must be safe to version and useful to the
-whole repo, such as repo metadata, security tooling, safe example templates,
-and intentionally shared knowledge folders like `.obsidian/`.
+Safe dotfile templates should prefer the generic `!.*.example` allowlist rule instead of one-off entries. A sanitized hidden example file is versionable by default when it ends in `.example`.
 
-Nested hidden config is not exempt. If a hidden file or folder anywhere in the
-tree is intentional and should be versioned, it must be explicitly added to the
-allowlist.
+Nested hidden config is not exempt. If a hidden file or folder anywhere in the tree is intentional and should be versioned, it must be explicitly added to the allowlist.
 
-Local automation state, editor state, backup-managed folders, secret-bearing
-files, and any ambiguous hidden artifact stay excluded unless the team reviews
-and explicitly adds them to the allowlist.
+Local automation state, editor state, backup-managed folders, secret-bearing files, and any ambiguous hidden artifact stay excluded unless the team reviews and explicitly adds them to the allowlist.
 
 ## FastAPI Dependency Ordering for Env-Gated Routes
 
-When a route is gated by both an env flag (e.g. `ENABLE_TRY_SAGE`) and an auth
-dependency (e.g. `get_admin_user`), the env gate **must** appear earlier in the
-handler's parameter list than the auth dependency. FastAPI evaluates `Depends`
-left to right; the first one to raise wins.
+When a route is gated by both an env flag (e.g. `ENABLE_TRY_SAGE`) and an auth dependency (e.g. `get_admin_user`), the env gate **must** appear earlier in the handler's parameter list than the auth dependency. FastAPI evaluates `Depends` left to right; the first one to raise wins.
 
 ```python
 # CORRECT — env gate fires first, returns 404 when feature disabled.
@@ -93,11 +83,6 @@ async def get_llm_status(
     _require_try_sage_enabled()  # too late: auth already 403'd unauth'd callers
 ```
 
-**Why it matters:** A disabled feature must look like it doesn't exist (404),
-not like the caller is unauthorized (403). The latter signals "the path is
-real, try harder" — wrong information and a small surface-area leak. The gate
-must fire before auth so unauthenticated callers also see 404.
+**Why it matters:** A disabled feature must look like it doesn't exist (404), not like the caller is unauthorized (403). The latter signals "the path is real, try harder" — wrong information and a small surface-area leak. The gate must fire before auth so unauthenticated callers also see 404.
 
-**Reference fix:** 2.3.1 / 2026-05-12 — `app/backend/sage_is_ai/routers/sage_runtime.py`
-lifted `_require_try_sage_enabled` into a `_gate` Depends parameter ahead of
-`get_admin_user` for `/llm-status`, `/extend`, `/reset`.
+**Reference fix:** 2.3.1 / 2026-05-12 — `app/backend/sage_is_ai/routers/sage_runtime.py` lifted `_require_try_sage_enabled` into a `_gate` Depends parameter ahead of `get_admin_user` for `/llm-status`, `/extend`, `/reset`.

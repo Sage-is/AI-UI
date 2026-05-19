@@ -104,6 +104,7 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
 - [ ] **Repo-wide hidden-artifact allowlist rollout**: Deny dotfiles and dotfolders everywhere in the repo by default; explicitly include only approved shared hidden artifacts so local state cannot drift into git by accident.
   - [x] Implement the repo-wide hidden-artifact allowlist in `.gitignore`
   - [x] Document the contributor approval rule for new hidden artifacts in `CONVENTION.instructions.md`
+  - [x] Use `!.*.example` as the generic allowlist for sanitized hidden example templates
   - [x] Verify included vs excluded hidden artifacts (`.obsidian/`, `.semgrep/`, `.env.example`, `.claude/`, `.env`, `app/.eslintrc.cjs`, `app/backend/.gitignore`)
   - [ ] Review currently tracked hidden artifacts and remove any that should be excluded going forward
 
