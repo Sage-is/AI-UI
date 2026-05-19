@@ -111,7 +111,8 @@ help:
 	@echo "This command lists available make commands."
 	@echo ""
 	@echo "Usage examples:"
-	@echo "  0) Setup .env:     make setup_env"
+	@echo "  0a) Fresh setup:   make setup        # .env + sibling hardlinks"
+	@echo "  0b) .env only:     make setup_env"
 	@echo "  1) Build:          make it_build"
 	@echo "  2) Run:            make it_run"
 	@echo ""
@@ -133,6 +134,24 @@ setup_env_auto:
 setup_env_template:
 	@chmod +x tools/setup_project_env.sh
 	@tools/setup_project_env.sh --template
+
+## setup_siblings — establish the distribution.env hardlink chain across siblings.
+##
+## Verifies that ../homebrew-apps and ../WEB-Sage.Education-docs are checked
+## out as siblings. If either is missing, prints the exact `git clone` command
+## and exits non-zero (machine stops itself — jidoka). If all three are
+## present, calls distribution_sync to (re)establish the hardlinks.
+##
+## Run once on a fresh machine. Idempotent — safe to re-run.
+setup_siblings:
+	@chmod +x tools/setup_siblings.sh
+	@tools/setup_siblings.sh
+
+## setup — fresh-machine bootstrap. Runs setup_env + setup_siblings.
+setup: setup_env setup_siblings
+	@echo ""
+	@echo "=== Setup complete ==="
+	@echo "    Next: make it_build && make it_run"
 
 # Common docker run arguments
 DOCKER_RUN_ARGS := --rm -p $(PORT_MAPPING) \
@@ -694,7 +713,7 @@ lint:
 .PHONY: release it_build it_build_no_cache dev_run it_run it_build_n_run it_build_n_run_no_cache \
 	ghcr_login \
 	it_build_multi_arch_push_docker_hub it_build_multi_arch_push_GHCR \
-	it_build_multi_arch_all show-version setup_env setup_env_auto setup_env_template \
+	it_build_multi_arch_all show-version setup setup_env setup_env_auto setup_env_template setup_siblings \
 	require_gitflow_next bump_release_version release_and_push_GHCR hotfix_and_push_GHCR \
 	waha_start waha_stop waha_logs waha_status \
 	signal_start signal_stop signal_logs signal_status \
@@ -929,13 +948,17 @@ DIST_SOURCE      := $(SIBLING_HOMEBREW)/distribution.env
 distribution_sync:
 	@test -f $(DIST_SOURCE) || { \
 		echo "ERROR: $(DIST_SOURCE) not found."; \
-		echo "  Clone homebrew-apps as a sibling first:"; \
-		echo "    git clone https://github.com/Sage-is/homebrew-apps.git $(SIBLING_HOMEBREW)"; \
+		echo "       Run 'make setup_siblings' first (or clone homebrew-apps"; \
+		echo "       as a sibling: git clone https://github.com/Sage-is/homebrew-apps.git $(SIBLING_HOMEBREW))"; \
+		exit 1; \
+	}
+	@test -d $(SIBLING_DOCS) || { \
+		echo "ERROR: $(SIBLING_DOCS) not found."; \
+		echo "       Run 'make setup_siblings' first."; \
 		exit 1; \
 	}
 	@ln -f $(DIST_SOURCE) $(SIBLING_AI_UI)/distribution.env
-	@test -d $(SIBLING_DOCS) && ln -f $(DIST_SOURCE) $(SIBLING_DOCS)/distribution.env || \
-		echo "NOTE: $(SIBLING_DOCS) not present; skipping docs hardlink."
+	@ln -f $(DIST_SOURCE) $(SIBLING_DOCS)/distribution.env
 	@$(MAKE) distribution_verify
 
 distribution_verify:
