@@ -45,8 +45,20 @@ GIT_REPO_SLUG := $(shell git remote get-url origin 2>/dev/null | sed -E 's|\.git
 IMAGE_NAME ?= $(GIT_REPO_SLUG)
 GHCR_IMAGE_NAME ?= ghcr.io/$(GIT_REPO_SLUG)
 GIT_TAG := $(shell git tag --sort=-v:refname | sed 's/^v//' | head -n 1)
-# Precedence: git tag (release in progress) > distribution.env SERVER_TAG > latest.
-IMAGE_TAG := $(if $(GIT_TAG),$(GIT_TAG),$(or $(SERVER_TAG),latest))
+
+# Release version detection. Prefers release/X.Y.Z or hotfix/X.Y.Z branch name
+# so that `make it_build` on a release branch tags the *new* version, not the
+# *previous* one. Falls back to GIT_TAG so off-release-branch behavior is
+# unchanged.
+RELEASE_VERSION := $(shell git rev-parse --abbrev-ref HEAD 2>/dev/null | awk '/^(release|hotfix)\// { sub(/^(release|hotfix)\//, ""); print }')
+ifeq ($(RELEASE_VERSION),)
+    RELEASE_VERSION := $(GIT_TAG)
+endif
+
+# Precedence: release/hotfix branch version > git tag > distribution.env SERVER_TAG > latest.
+# RELEASE_VERSION already collapses (branch || tag), so this just adds the
+# SERVER_TAG and latest fallbacks for a totally empty repo.
+IMAGE_TAG := $(if $(RELEASE_VERSION),$(RELEASE_VERSION),$(or $(SERVER_TAG),latest))
 GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 ifeq ($(GIT_BRANCH),HEAD)
     GIT_BRANCH := $(shell git describe --tags --exact-match 2>/dev/null || git rev-parse --short HEAD)
@@ -64,11 +76,7 @@ FRONTEND_SRC := $$(pwd)/app/src/:/app/src/
 STATIC_SRC := $$(pwd)/app/static/:/app/static/
 BACKEND_SRC := $$(pwd)/app/backend/:/app/backend/
 
-# Release version detection (prefers release/* branch name, falls back to latest tag)
-RELEASE_VERSION := $(shell git rev-parse --abbrev-ref HEAD | sed -n 's/^release\///p')
-ifeq ($(RELEASE_VERSION),)
-	RELEASE_VERSION := $(GIT_TAG)
-endif
+# (RELEASE_VERSION defined above, near GIT_TAG, so IMAGE_TAG can read it.)
 
 # Architectures to build for
 ARCHITECTURES ?= amd64 arm64 # Not used at the moment
@@ -272,7 +280,7 @@ test_db_upgrade:
 ## (build-time stage that catches conflicts before tagging) lands once we
 ## prove this loop is stable.
 wizard_smoke:
-	@scripts/wizard-smoke.sh $(IMAGE_TAG)
+	@scripts/wizard-smoke.sh $(IMAGE_NAME):$(IMAGE_TAG)
 
 ## it_build_amd64 — build an amd64 image via buildx + --load.
 ##
@@ -296,7 +304,7 @@ it_build_amd64:
 ## of "ask a teammate to run smoke on amd64."
 cross_smoke: it_build_amd64
 	@INSTALL_TIMEOUT_SEC=2700 PLATFORM=linux/amd64 \
-	  scripts/wizard-smoke.sh $(IMAGE_TAG)-amd64
+	  scripts/wizard-smoke.sh $(IMAGE_NAME):$(IMAGE_TAG)-amd64
 
 ## release_smoke — one-button pre-flight for the current release branch.
 ##
@@ -309,15 +317,28 @@ cross_smoke: it_build_amd64
 ## Use this AS the last step before `make release_and_push_GHCR`.
 release_smoke:
 	@case "$(GIT_BRANCH)" in \
-	  release/*) ;; \
-	  *) echo "ERROR: release_smoke must run from a release/X.Y.Z branch."; \
+	  release/*|hotfix/*) ;; \
+	  *) echo "ERROR: release_smoke must run from a release/X.Y.Z or hotfix/X.Y.Z branch."; \
 	     echo "       current branch: $(GIT_BRANCH)"; \
-	     echo "       Run 'make patch_release' (or minor_release / major_release) first."; \
+	     echo "       Run 'make patch_release' (or minor_release / major_release / hotfix) first."; \
 	     exit 1;; \
 	esac
 	@if [ -z "$(RELEASE_VERSION)" ]; then \
 	  echo "ERROR: RELEASE_VERSION empty despite being on a release/* branch."; \
 	  echo "       Branch name parse failed? GIT_BRANCH=$(GIT_BRANCH)"; \
+	  exit 1; \
+	fi
+	@if ! git diff --quiet HEAD; then \
+	  echo "ERROR: working tree has uncommitted changes."; \
+	  echo "       release_smoke must validate what release_finish will tag,"; \
+	  echo "       and release_finish only pushes what's committed."; \
+	  git status --short; \
+	  exit 1; \
+	fi
+	@PKG_VER=$$(python3 -c "import json; print(json.load(open('app/package.json'))['version'])" 2>/dev/null); \
+	 if [ "$$PKG_VER" != "$(RELEASE_VERSION)" ]; then \
+	  echo "ERROR: app/package.json version is $$PKG_VER but RELEASE_VERSION is $(RELEASE_VERSION)."; \
+	  echo "       Run 'make bump_release_version' first."; \
 	  exit 1; \
 	fi
 	@echo ""
@@ -702,68 +723,52 @@ require_gitflow_next:
 		exit 1; \
 	fi
 
-minor_release: require_gitflow_next
-	@# Start a minor release with incremented minor version
-	git flow release start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{print $$1"."$$2+1".0"}')
+# Shared "Next steps" cascade for the three release-start targets.
+# Single source of truth — if the release flow changes, edit here.
+define next_steps_release
 	@echo ""
 	@echo "=== Release branch created ==="
 	@echo "Next steps:"
 	@echo "  1. make bump_release_version     # Update package.json + README.md"
-	@echo "  2. Update CHANGELOG.md with release notes"
-	@echo "  3. git add -A && git commit      # Commit version bump + changelog"
-	@echo "  4. make it_build                 # Build Docker image"
-	@echo "  5. make test_db_upgrade          # Verify DB migrations"
-	@echo "  6. make test_db_fresh            # Verify fresh DB creation"
-	@echo "  7. make it_run                   # Smoke test the app"
-	@echo "  8. make ghcr_login               # Authenticate with GHCR"
-	@echo "  9. make release_and_push_GHCR    # Finish release + push to GHCR"
+	@echo "  2. Edit CHANGELOG.md with release notes, then commit"
+	@echo "  3. make release_smoke            # Build :X.Y.Z + smoke native + amd64"
+	@echo "  4. (Staging deploy + verify against :X.Y.Z image)"
+	@echo "  5. make ghcr_login               # Authenticate with GHCR"
+	@echo "  6. make release_and_push_GHCR    # Finish + push (gated on release_smoke)"
+endef
+
+# Hotfix variant — same shape, hotfix-flavored copy.
+define next_steps_hotfix
+	@echo ""
+	@echo "=== Hotfix branch created ==="
+	@echo "Next steps:"
+	@echo "  1. Fix the issue, then commit"
+	@echo "  2. make bump_release_version     # Update package.json + README.md (+ commit)"
+	@echo "  3. make release_smoke            # Build :X.Y.Z + smoke native + amd64"
+	@echo "  4. (Staging deploy + verify)"
+	@echo "  5. make ghcr_login"
+	@echo "  6. make hotfix_and_push_GHCR     # Finish + push (gated on release_smoke)"
+endef
+
+minor_release: require_gitflow_next
+	@# Start a minor release with incremented minor version
+	git flow release start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{print $$1"."$$2+1".0"}')
+	$(next_steps_release)
 
 patch_release: require_gitflow_next
 	@# Start a patch release with incremented patch version
 	git flow release start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{print $$1"."$$2"."$$3+1}')
-	@echo ""
-	@echo "=== Release branch created ==="
-	@echo "Next steps:"
-	@echo "  1. make bump_release_version     # Update package.json + README.md"
-	@echo "  2. Update CHANGELOG.md with release notes"
-	@echo "  3. git add -A && git commit      # Commit version bump + changelog"
-	@echo "  4. make it_build                 # Build Docker image"
-	@echo "  5. make test_db_upgrade          # Verify DB migrations"
-	@echo "  6. make test_db_fresh            # Verify fresh DB creation"
-	@echo "  7. make it_run                   # Smoke test the app"
-	@echo "  8. make ghcr_login               # Authenticate with GHCR"
-	@echo "  9. make release_and_push_GHCR    # Finish release + push to GHCR"
+	$(next_steps_release)
 
 major_release: require_gitflow_next
 	@# Start a major release with incremented major version
 	git flow release start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{print $$1+1".0.0"}')
-	@echo ""
-	@echo "=== Release branch created ==="
-	@echo "Next steps:"
-	@echo "  1. make bump_release_version     # Update package.json + README.md"
-	@echo "  2. Update CHANGELOG.md with release notes"
-	@echo "  3. git add -A && git commit      # Commit version bump + changelog"
-	@echo "  4. make it_build                 # Build Docker image"
-	@echo "  5. make test_db_upgrade          # Verify DB migrations"
-	@echo "  6. make test_db_fresh            # Verify fresh DB creation"
-	@echo "  7. make it_run                   # Smoke test the app"
-	@echo "  8. make ghcr_login               # Authenticate with GHCR"
-	@echo "  9. make release_and_push_GHCR    # Finish release + push to GHCR"
+	$(next_steps_release)
 
 hotfix: require_gitflow_next
 	@# Start a hotfix with incremented patch.patch version (fourth component)
 	git flow hotfix start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{if (NF < 4) print $$1"."$$2"."$$3".1"; else print $$1"."$$2"."$$3"."$$4+1}')
-	@echo ""
-	@echo "=== Hotfix branch created ==="
-	@echo "Next steps:"
-	@echo "  1. Fix the issue"
-	@echo "  2. make bump_release_version     # Update package.json + README.md"
-	@echo "  3. git add -A && git commit      # Commit fix + version bump"
-	@echo "  4. make it_build                 # Build Docker image"
-	@echo "  5. make test_db_upgrade          # Verify DB migrations"
-	@echo "  6. make it_run                   # Smoke test the app"
-	@echo "  7. make ghcr_login               # Authenticate with GHCR"
-	@echo "  8. make hotfix_and_push_GHCR     # Finish hotfix + push to GHCR"
+	$(next_steps_hotfix)
 
 release_finish: require_gitflow_next distribution_verify
 	@echo "=== Finishing release ==="
@@ -781,7 +786,7 @@ hotfix_finish: require_gitflow_next distribution_verify
 	@echo ""
 	@echo "=== Hotfix complete ==="
 
-release_and_push_GHCR: release_finish
+release_and_push_GHCR: release_smoke release_finish
 	@echo ""
 	@echo "=== Building and pushing to GHCR ==="
 	@make it_build_multi_arch_push_GHCR
@@ -790,7 +795,7 @@ release_and_push_GHCR: release_finish
 	@echo "Verify: docker pull $(GHCR_IMAGE_NAME):$(IMAGE_TAG)"
 	@echo "Verify: docker pull $(GHCR_IMAGE_NAME):latest"
 
-hotfix_and_push_GHCR: hotfix_finish
+hotfix_and_push_GHCR: release_smoke hotfix_finish
 	@echo ""
 	@echo "=== Building and pushing to GHCR ==="
 	@make it_build_multi_arch_push_GHCR

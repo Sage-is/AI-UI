@@ -20,8 +20,16 @@
 
 set -euo pipefail
 
-IMAGE_TAG="${1:-bug-verify}"
-IMAGE="sage-is/ai-ui:${IMAGE_TAG}"
+# First arg is the FULL image reference (e.g. sage-is/ai-ui:bug-verify).
+# Refusing a bare tag is intentional: the Makefile derives IMAGE_NAME from
+# git remote, so a fork can have a different image name. Passing just the
+# tag here used to silently smoke the upstream name on forks. Don't.
+IMAGE="${1:-}"
+if [ -z "$IMAGE" ] || [ "${IMAGE#*:}" = "$IMAGE" ]; then
+  echo "Usage: $(basename "$0") IMAGE_NAME:TAG (e.g. sage-is/ai-ui:bug-verify)" >&2
+  echo "       The Makefile normally passes \$(IMAGE_NAME):\$(IMAGE_TAG)." >&2
+  exit 2
+fi
 CONTAINER="sage-ai-wizard-smoke"
 VOLUME="sage-ai-wizard-smoke-data"
 PORT="${PORT:-8181}"  # non-default so we don't collide with a running dev container on :8080
