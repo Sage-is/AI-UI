@@ -99,6 +99,14 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
 
 ## TODO
 
+### Repo Hygiene & Security
+
+- [ ] **Repo-wide hidden-artifact allowlist rollout**: Deny dotfiles and dotfolders everywhere in the repo by default; explicitly include only approved shared hidden artifacts so local state cannot drift into git by accident.
+  - [x] Implement the repo-wide hidden-artifact allowlist in `.gitignore`
+  - [x] Document the contributor approval rule for new hidden artifacts in `CONVENTION.instructions.md`
+  - [x] Verify included vs excluded hidden artifacts (`.obsidian/`, `.semgrep/`, `.env.example`, `.claude/`, `.env`, `app/.eslintrc.cjs`, `app/backend/.gitignore`)
+  - [ ] Review currently tracked hidden artifacts and remove any that should be excluded going forward
+
 ### Release Wrap-Up
 
 - [ ] **`make caprover_app_create APP=<name>` wrapper**: One Makefile call to register a new CapRover app via the HTTP API (`/api/v2/user/apps/appDefinitions/register`), POST the env-var block, set the persistent volume path, and connect a custom domain. Driver: avoid the dashboard click-through we did for `try-sage-is` on `captain.production.openco.ca` 2026-05-01.
@@ -237,6 +245,11 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
 ## Backlog
 
 _Items deferred to a later planning cycle. Move here from TODO when deprioritized._
+
+- [ ] **History purge for excluded hidden artifacts**: After the root hidden-artifact allowlist lands and the team reviews scope, run BFG Repo-Cleaner or `git filter-repo`, rotate any exposed secrets, and coordinate clone remediation for anyone with an existing copy of the repo.
+  - [ ] Confirm which previously committed hidden artifacts must be purged from history
+  - [ ] Prepare the team runbook for rewrite, force-push, and clone remediation
+  - [ ] Rotate any credentials exposed by now-excluded hidden artifacts
 
 - [ ] **try.sage Tutorial Video Production**: (Alexander Somma + Izzy Plante) — Content work, not code.
   - [ ] Pick individual videos from the [working playlist](https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u) for each of the 6 default tutorial steps.

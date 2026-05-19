@@ -50,6 +50,23 @@ For each task, define:
 
 ## See the [development-workflow.md](docs/development-workflow.md) for more details.
 
+## Hidden Artifact Policy
+
+Dotfiles and dotfolders are denied by default everywhere in the repo and may
+only be committed if they are explicitly allowlisted in `.gitignore`.
+
+Approved shared hidden artifacts must be safe to version and useful to the
+whole repo, such as repo metadata, security tooling, safe example templates,
+and intentionally shared knowledge folders like `.obsidian/`.
+
+Nested hidden config is not exempt. If a hidden file or folder anywhere in the
+tree is intentional and should be versioned, it must be explicitly added to the
+allowlist.
+
+Local automation state, editor state, backup-managed folders, secret-bearing
+files, and any ambiguous hidden artifact stay excluded unless the team reviews
+and explicitly adds them to the allowlist.
+
 ## FastAPI Dependency Ordering for Env-Gated Routes
 
 When a route is gated by both an env flag (e.g. `ENABLE_TRY_SAGE`) and an auth
