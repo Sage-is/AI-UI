@@ -1,6 +1,6 @@
 # Sage.is AI-UI
 
-## v2.3.0
+## v2.3.1
 
 **Sage.is an AI interface that puts you in control.**
 

@@ -20,8 +20,16 @@
 
 set -euo pipefail
 
-IMAGE_TAG="${1:-bug-verify}"
-IMAGE="sage-is/ai-ui:${IMAGE_TAG}"
+# First arg is the FULL image reference (e.g. sage-is/ai-ui:bug-verify).
+# Refusing a bare tag is intentional: the Makefile derives IMAGE_NAME from
+# git remote, so a fork can have a different image name. Passing just the
+# tag here used to silently smoke the upstream name on forks. Don't.
+IMAGE="${1:-}"
+if [ -z "$IMAGE" ] || [ "${IMAGE#*:}" = "$IMAGE" ]; then
+  echo "Usage: $(basename "$0") IMAGE_NAME:TAG (e.g. sage-is/ai-ui:bug-verify)" >&2
+  echo "       The Makefile normally passes \$(IMAGE_NAME):\$(IMAGE_TAG)." >&2
+  exit 2
+fi
 CONTAINER="sage-ai-wizard-smoke"
 VOLUME="sage-ai-wizard-smoke-data"
 PORT="${PORT:-8181}"  # non-default so we don't collide with a running dev container on :8080
@@ -30,7 +38,17 @@ EMAIL="test@example.com"
 PASSWORD="zaq12wsx"
 NAME="Test User"
 
-# Generous because multilingual-e5-large is ~1.1GB plus dependencies.
+# PLATFORM (optional) — set e.g. PLATFORM=linux/amd64 to smoke a cross-arch
+# image on an Apple Silicon host via QEMU. Empty means use the host arch.
+PLATFORM="${PLATFORM:-}"
+PLATFORM_FLAG=""
+if [ -n "$PLATFORM" ]; then
+  PLATFORM_FLAG="--platform $PLATFORM"
+fi
+
+# Generous because multilingual-e5-large is ~1.1GB plus dependencies. The
+# default suits a native run (~6 min wall time). QEMU emulation can be
+# 3-5x slower — set INSTALL_TIMEOUT_SEC=2700 (45 min) for cross-arch runs.
 INSTALL_TIMEOUT_SEC="${INSTALL_TIMEOUT_SEC:-900}"  # 15 minutes
 POLL_INTERVAL_SEC=10
 
@@ -78,8 +96,8 @@ docker rm -f "$CONTAINER" >/dev/null 2>&1 || true
 docker volume rm "$VOLUME"  >/dev/null 2>&1 || true
 
 # 2. Boot
-echo "[smoke] booting container"
-docker run -d --name "$CONTAINER" -p "${PORT}:8080" -v "${VOLUME}:/app/backend/data" "$IMAGE" >/dev/null
+echo "[smoke] booting container${PLATFORM:+ ($PLATFORM via QEMU)}"
+docker run -d $PLATFORM_FLAG --name "$CONTAINER" -p "${PORT}:8080" -v "${VOLUME}:/app/backend/data" "$IMAGE" >/dev/null
 
 # 3. Wait for healthcheck
 for i in $(seq 1 30); do

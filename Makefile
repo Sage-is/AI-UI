@@ -45,8 +45,20 @@ GIT_REPO_SLUG := $(shell git remote get-url origin 2>/dev/null | sed -E 's|\.git
 IMAGE_NAME ?= $(GIT_REPO_SLUG)
 GHCR_IMAGE_NAME ?= ghcr.io/$(GIT_REPO_SLUG)
 GIT_TAG := $(shell git tag --sort=-v:refname | sed 's/^v//' | head -n 1)
-# Precedence: git tag (release in progress) > distribution.env SERVER_TAG > latest.
-IMAGE_TAG := $(if $(GIT_TAG),$(GIT_TAG),$(or $(SERVER_TAG),latest))
+
+# Release version detection. Prefers release/X.Y.Z or hotfix/X.Y.Z branch name
+# so that `make it_build` on a release branch tags the *new* version, not the
+# *previous* one. Falls back to GIT_TAG so off-release-branch behavior is
+# unchanged.
+RELEASE_VERSION := $(shell git rev-parse --abbrev-ref HEAD 2>/dev/null | awk '/^(release|hotfix)\// { sub(/^(release|hotfix)\//, ""); print }')
+ifeq ($(RELEASE_VERSION),)
+    RELEASE_VERSION := $(GIT_TAG)
+endif
+
+# Precedence: release/hotfix branch version > git tag > distribution.env SERVER_TAG > latest.
+# RELEASE_VERSION already collapses (branch || tag), so this just adds the
+# SERVER_TAG and latest fallbacks for a totally empty repo.
+IMAGE_TAG := $(if $(RELEASE_VERSION),$(RELEASE_VERSION),$(or $(SERVER_TAG),latest))
 GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 ifeq ($(GIT_BRANCH),HEAD)
     GIT_BRANCH := $(shell git describe --tags --exact-match 2>/dev/null || git rev-parse --short HEAD)
@@ -64,11 +76,7 @@ FRONTEND_SRC := $$(pwd)/app/src/:/app/src/
 STATIC_SRC := $$(pwd)/app/static/:/app/static/
 BACKEND_SRC := $$(pwd)/app/backend/:/app/backend/
 
-# Release version detection (prefers release/* branch name, falls back to latest tag)
-RELEASE_VERSION := $(shell git rev-parse --abbrev-ref HEAD | sed -n 's/^release\///p')
-ifeq ($(RELEASE_VERSION),)
-	RELEASE_VERSION := $(GIT_TAG)
-endif
+# (RELEASE_VERSION defined above, near GIT_TAG, so IMAGE_TAG can read it.)
 
 # Architectures to build for
 ARCHITECTURES ?= amd64 arm64 # Not used at the moment
@@ -103,7 +111,8 @@ help:
 	@echo "This command lists available make commands."
 	@echo ""
 	@echo "Usage examples:"
-	@echo "  0) Setup .env:     make setup_env"
+	@echo "  0a) Fresh setup:   make setup        # .env + sibling hardlinks"
+	@echo "  0b) .env only:     make setup_env"
 	@echo "  1) Build:          make it_build"
 	@echo "  2) Run:            make it_run"
 	@echo ""
@@ -125,6 +134,24 @@ setup_env_auto:
 setup_env_template:
 	@chmod +x tools/setup_project_env.sh
 	@tools/setup_project_env.sh --template
+
+## setup_siblings — establish the distribution.env hardlink chain across siblings.
+##
+## Verifies that ../homebrew-apps and ../WEB-Sage.Education-docs are checked
+## out as siblings. If either is missing, prints the exact `git clone` command
+## and exits non-zero (machine stops itself — jidoka). If all three are
+## present, calls distribution_sync to (re)establish the hardlinks.
+##
+## Run once on a fresh machine. Idempotent — safe to re-run.
+setup_siblings:
+	@chmod +x tools/setup_siblings.sh
+	@tools/setup_siblings.sh
+
+## setup — fresh-machine bootstrap. Runs setup_env + setup_siblings.
+setup: setup_env setup_siblings
+	@echo ""
+	@echo "=== Setup complete ==="
+	@echo "    Next: make it_build && make it_run"
 
 # Common docker run arguments
 DOCKER_RUN_ARGS := --rm -p $(PORT_MAPPING) \
@@ -272,7 +299,79 @@ test_db_upgrade:
 ## (build-time stage that catches conflicts before tagging) lands once we
 ## prove this loop is stable.
 wizard_smoke:
-	@scripts/wizard-smoke.sh $(IMAGE_TAG)
+	@scripts/wizard-smoke.sh $(IMAGE_NAME):$(IMAGE_TAG)
+
+## it_build_amd64 — build an amd64 image via buildx + --load.
+##
+## Useful on Apple Silicon to validate the same image teammates will run
+## on x86_64 Linux hosts (CapRover, GHCR consumers, etc). Slower than the
+## native build because layers are emulated. Tag is suffixed `-amd64` so
+## it sits beside the host-arch image without overwriting it.
+it_build_amd64:
+	@echo "Building Docker image for linux/amd64 via buildx..."
+	@docker buildx build --platform linux/amd64 --load \
+	    -t $(IMAGE_NAME):$(IMAGE_TAG)-amd64 \
+	    .
+	@afplay /System/Library/Sounds/Glass.aiff
+	@echo ""
+
+## cross_smoke — build the amd64 image then smoke it via QEMU.
+##
+## End-to-end cross-arch verification on a single host. Same flow as
+## `wizard_smoke` but with PLATFORM=linux/amd64 and a longer timeout
+## because QEMU emulation is 3-5x slower than native. Use this in place
+## of "ask a teammate to run smoke on amd64."
+cross_smoke: it_build_amd64
+	@INSTALL_TIMEOUT_SEC=2700 PLATFORM=linux/amd64 \
+	  scripts/wizard-smoke.sh $(IMAGE_NAME):$(IMAGE_TAG)-amd64
+
+## release_smoke — one-button pre-flight for the current release branch.
+##
+## Refuses to run unless on `release/X.Y.Z`. Derives the version from the
+## branch name (no IMAGE_TAG to mistype). Builds `sage-is/ai-ui:X.Y.Z`,
+## smokes it natively, then builds + smokes the amd64 variant via Rosetta.
+## Poka-yoke: operator can't smoke against the wrong tag, can't forget
+## either arch, can't skip the rebuild before push.
+##
+## Use this AS the last step before `make release_and_push_GHCR`.
+release_smoke:
+	@case "$(GIT_BRANCH)" in \
+	  release/*|hotfix/*) ;; \
+	  *) echo "ERROR: release_smoke must run from a release/X.Y.Z or hotfix/X.Y.Z branch."; \
+	     echo "       current branch: $(GIT_BRANCH)"; \
+	     echo "       Run 'make patch_release' (or minor_release / major_release / hotfix) first."; \
+	     exit 1;; \
+	esac
+	@if [ -z "$(RELEASE_VERSION)" ]; then \
+	  echo "ERROR: RELEASE_VERSION empty despite being on a release/* branch."; \
+	  echo "       Branch name parse failed? GIT_BRANCH=$(GIT_BRANCH)"; \
+	  exit 1; \
+	fi
+	@if ! git diff --quiet HEAD; then \
+	  echo "ERROR: working tree has uncommitted changes."; \
+	  echo "       release_smoke must validate what release_finish will tag,"; \
+	  echo "       and release_finish only pushes what's committed."; \
+	  git status --short; \
+	  exit 1; \
+	fi
+	@PKG_VER=$$(python3 -c "import json; print(json.load(open('app/package.json'))['version'])" 2>/dev/null); \
+	 if [ "$$PKG_VER" != "$(RELEASE_VERSION)" ]; then \
+	  echo "ERROR: app/package.json version is $$PKG_VER but RELEASE_VERSION is $(RELEASE_VERSION)."; \
+	  echo "       Run 'make bump_release_version' first."; \
+	  exit 1; \
+	fi
+	@echo ""
+	@echo "=== release_smoke for $(RELEASE_VERSION) ==="
+	@echo "  branch: $(GIT_BRANCH)"
+	@echo "  tag:    $(IMAGE_NAME):$(RELEASE_VERSION)"
+	@echo ""
+	@$(MAKE) it_build IMAGE_TAG=$(RELEASE_VERSION)
+	@$(MAKE) wizard_smoke IMAGE_TAG=$(RELEASE_VERSION)
+	@$(MAKE) cross_smoke IMAGE_TAG=$(RELEASE_VERSION)
+	@echo ""
+	@echo "=== $(RELEASE_VERSION) smoke-clean on native arch + linux/amd64 ==="
+	@echo "    Next: deploy to staging, verify, then 'make release_and_push_GHCR'."
+	@afplay /System/Library/Sounds/Glass.aiff 2>/dev/null || true
 
 test_db_fresh:
 	@echo "=== Fresh DB Smoke Test ==="
@@ -614,12 +713,13 @@ lint:
 .PHONY: release it_build it_build_no_cache dev_run it_run it_build_n_run it_build_n_run_no_cache \
 	ghcr_login \
 	it_build_multi_arch_push_docker_hub it_build_multi_arch_push_GHCR \
-	it_build_multi_arch_all show-version setup_env setup_env_auto setup_env_template \
+	it_build_multi_arch_all show-version setup setup_env setup_env_auto setup_env_template setup_siblings \
 	require_gitflow_next bump_release_version release_and_push_GHCR hotfix_and_push_GHCR \
 	waha_start waha_stop waha_logs waha_status \
 	signal_start signal_stop signal_logs signal_status \
 	install_dev scan scan_secrets scan_sast scan_deps scan_container scan_dast \
-	trivy_db_update lint test_db_upgrade test_db_fresh wizard_smoke
+	trivy_db_update lint test_db_upgrade test_db_fresh wizard_smoke \
+	it_build_amd64 cross_smoke release_smoke
 
 
 # Version Management with Git Flow
@@ -642,68 +742,52 @@ require_gitflow_next:
 		exit 1; \
 	fi
 
-minor_release: require_gitflow_next
-	@# Start a minor release with incremented minor version
-	git flow release start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{print $$1"."$$2+1".0"}')
+# Shared "Next steps" cascade for the three release-start targets.
+# Single source of truth — if the release flow changes, edit here.
+define next_steps_release
 	@echo ""
 	@echo "=== Release branch created ==="
 	@echo "Next steps:"
 	@echo "  1. make bump_release_version     # Update package.json + README.md"
-	@echo "  2. Update CHANGELOG.md with release notes"
-	@echo "  3. git add -A && git commit      # Commit version bump + changelog"
-	@echo "  4. make it_build                 # Build Docker image"
-	@echo "  5. make test_db_upgrade          # Verify DB migrations"
-	@echo "  6. make test_db_fresh            # Verify fresh DB creation"
-	@echo "  7. make it_run                   # Smoke test the app"
-	@echo "  8. make ghcr_login               # Authenticate with GHCR"
-	@echo "  9. make release_and_push_GHCR    # Finish release + push to GHCR"
+	@echo "  2. Edit CHANGELOG.md with release notes, then commit"
+	@echo "  3. make release_smoke            # Build :X.Y.Z + smoke native + amd64"
+	@echo "  4. (Staging deploy + verify against :X.Y.Z image)"
+	@echo "  5. make ghcr_login               # Authenticate with GHCR"
+	@echo "  6. make release_and_push_GHCR    # Finish + push (gated on release_smoke)"
+endef
+
+# Hotfix variant — same shape, hotfix-flavored copy.
+define next_steps_hotfix
+	@echo ""
+	@echo "=== Hotfix branch created ==="
+	@echo "Next steps:"
+	@echo "  1. Fix the issue, then commit"
+	@echo "  2. make bump_release_version     # Update package.json + README.md (+ commit)"
+	@echo "  3. make release_smoke            # Build :X.Y.Z + smoke native + amd64"
+	@echo "  4. (Staging deploy + verify)"
+	@echo "  5. make ghcr_login"
+	@echo "  6. make hotfix_and_push_GHCR     # Finish + push (gated on release_smoke)"
+endef
+
+minor_release: require_gitflow_next
+	@# Start a minor release with incremented minor version
+	git flow release start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{print $$1"."$$2+1".0"}')
+	$(next_steps_release)
 
 patch_release: require_gitflow_next
 	@# Start a patch release with incremented patch version
 	git flow release start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{print $$1"."$$2"."$$3+1}')
-	@echo ""
-	@echo "=== Release branch created ==="
-	@echo "Next steps:"
-	@echo "  1. make bump_release_version     # Update package.json + README.md"
-	@echo "  2. Update CHANGELOG.md with release notes"
-	@echo "  3. git add -A && git commit      # Commit version bump + changelog"
-	@echo "  4. make it_build                 # Build Docker image"
-	@echo "  5. make test_db_upgrade          # Verify DB migrations"
-	@echo "  6. make test_db_fresh            # Verify fresh DB creation"
-	@echo "  7. make it_run                   # Smoke test the app"
-	@echo "  8. make ghcr_login               # Authenticate with GHCR"
-	@echo "  9. make release_and_push_GHCR    # Finish release + push to GHCR"
+	$(next_steps_release)
 
 major_release: require_gitflow_next
 	@# Start a major release with incremented major version
 	git flow release start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{print $$1+1".0.0"}')
-	@echo ""
-	@echo "=== Release branch created ==="
-	@echo "Next steps:"
-	@echo "  1. make bump_release_version     # Update package.json + README.md"
-	@echo "  2. Update CHANGELOG.md with release notes"
-	@echo "  3. git add -A && git commit      # Commit version bump + changelog"
-	@echo "  4. make it_build                 # Build Docker image"
-	@echo "  5. make test_db_upgrade          # Verify DB migrations"
-	@echo "  6. make test_db_fresh            # Verify fresh DB creation"
-	@echo "  7. make it_run                   # Smoke test the app"
-	@echo "  8. make ghcr_login               # Authenticate with GHCR"
-	@echo "  9. make release_and_push_GHCR    # Finish release + push to GHCR"
+	$(next_steps_release)
 
 hotfix: require_gitflow_next
 	@# Start a hotfix with incremented patch.patch version (fourth component)
 	git flow hotfix start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{if (NF < 4) print $$1"."$$2"."$$3".1"; else print $$1"."$$2"."$$3"."$$4+1}')
-	@echo ""
-	@echo "=== Hotfix branch created ==="
-	@echo "Next steps:"
-	@echo "  1. Fix the issue"
-	@echo "  2. make bump_release_version     # Update package.json + README.md"
-	@echo "  3. git add -A && git commit      # Commit fix + version bump"
-	@echo "  4. make it_build                 # Build Docker image"
-	@echo "  5. make test_db_upgrade          # Verify DB migrations"
-	@echo "  6. make it_run                   # Smoke test the app"
-	@echo "  7. make ghcr_login               # Authenticate with GHCR"
-	@echo "  8. make hotfix_and_push_GHCR     # Finish hotfix + push to GHCR"
+	$(next_steps_hotfix)
 
 release_finish: require_gitflow_next distribution_verify
 	@echo "=== Finishing release ==="
@@ -721,7 +805,7 @@ hotfix_finish: require_gitflow_next distribution_verify
 	@echo ""
 	@echo "=== Hotfix complete ==="
 
-release_and_push_GHCR: release_finish
+release_and_push_GHCR: release_smoke release_finish
 	@echo ""
 	@echo "=== Building and pushing to GHCR ==="
 	@make it_build_multi_arch_push_GHCR
@@ -730,7 +814,7 @@ release_and_push_GHCR: release_finish
 	@echo "Verify: docker pull $(GHCR_IMAGE_NAME):$(IMAGE_TAG)"
 	@echo "Verify: docker pull $(GHCR_IMAGE_NAME):latest"
 
-hotfix_and_push_GHCR: hotfix_finish
+hotfix_and_push_GHCR: release_smoke hotfix_finish
 	@echo ""
 	@echo "=== Building and pushing to GHCR ==="
 	@make it_build_multi_arch_push_GHCR
@@ -864,13 +948,17 @@ DIST_SOURCE      := $(SIBLING_HOMEBREW)/distribution.env
 distribution_sync:
 	@test -f $(DIST_SOURCE) || { \
 		echo "ERROR: $(DIST_SOURCE) not found."; \
-		echo "  Clone homebrew-apps as a sibling first:"; \
-		echo "    git clone https://github.com/Sage-is/homebrew-apps.git $(SIBLING_HOMEBREW)"; \
+		echo "       Run 'make setup_siblings' first (or clone homebrew-apps"; \
+		echo "       as a sibling: git clone https://github.com/Sage-is/homebrew-apps.git $(SIBLING_HOMEBREW))"; \
+		exit 1; \
+	}
+	@test -d $(SIBLING_DOCS) || { \
+		echo "ERROR: $(SIBLING_DOCS) not found."; \
+		echo "       Run 'make setup_siblings' first."; \
 		exit 1; \
 	}
 	@ln -f $(DIST_SOURCE) $(SIBLING_AI_UI)/distribution.env
-	@test -d $(SIBLING_DOCS) && ln -f $(DIST_SOURCE) $(SIBLING_DOCS)/distribution.env || \
-		echo "NOTE: $(SIBLING_DOCS) not present; skipping docs hardlink."
+	@ln -f $(DIST_SOURCE) $(SIBLING_DOCS)/distribution.env
 	@$(MAKE) distribution_verify
 
 distribution_verify:
