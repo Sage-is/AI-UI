@@ -130,6 +130,12 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [ ] Pre-flight in `ai-ui start`: refuse to launch when another container is already bound to the configured port or container name; prompt the operator to `ai-ui stop` first rather than silently double-binding.
   - [ ] Smoke: an `ai-ui` formula test (`test do` block) that installs the agent, asserts the service starts, hits `/health`, then deregisters cleanly.
 
+- [ ] **Update banner: redirect admins to auto-update config**: Replace `UpdateInfoToast.svelte` copy with deployment-shape-aware guidance — auto-deploying installs (CapRover, Portainer, K8s) pick up new tags automatically; brew/manual installs run `ai-ui update --tag X.Y.Z` (shown inline). New docs page `WEB-Sage.Education-docs/docs/admin/auto-updates.md` covers config per deployment shape + `support@sage.is` contact. No backend changes — CapRover's existing auto-pull is the structural poka-yoke; this is messaging only. Plan: `~/.claude/plans/given-our-newest-trends-modular-sloth.md`.
+  - [ ] Edit `app/src/lib/components/layout/UpdateInfoToast.svelte`: new copy + inline `<code>` for the command + two links
+  - [ ] Update `app/src/lib/i18n/locales/en-US/translation.json` with new strings; other locales fall back to English until translated
+  - [ ] Create `WEB-Sage.Education-docs/docs/admin/auto-updates.md` (CapRover config + brew alt + Portainer/K8s/other one-paragraph each + Need help? → `support@sage.is`)
+  - [ ] Verify: banner renders with new copy when current < latest for an admin; release-notes link points at the specific tag; docs page renders in Docusaurus dev server
+
 - [ ] **TODO.md cleanup pass**: After 2.3.0 ship, reconcile completed work, drop or re-scope stale items, re-tag inline tags so KANBAN.canvas regenerates cleanly. Whole-file pass, not surgical edits.
 
 ### Privacy & Poka-Yoke #critical
