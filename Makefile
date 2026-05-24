@@ -812,6 +812,10 @@ release_and_push_GHCR: release_smoke release_finish
 	@echo "=== Building and pushing to GHCR ==="
 	@make it_build_multi_arch_push_GHCR
 	@echo ""
+	@echo "=== Pinning SERVER_TAG=$(IMAGE_TAG) in distribution.env ==="
+	@perl -i -pe 's/^SERVER_TAG=.*/SERVER_TAG=$(IMAGE_TAG)/' $(DIST_SOURCE)
+	@echo "OK: distribution.env SERVER_TAG=$(IMAGE_TAG)"
+	@echo ""
 	@echo "=== Release $(IMAGE_TAG) published ==="
 	@echo "Verify: docker pull $(GHCR_IMAGE_NAME):$(IMAGE_TAG)"
 	@echo "Verify: docker pull $(GHCR_IMAGE_NAME):latest"
@@ -820,6 +824,10 @@ hotfix_and_push_GHCR: release_smoke hotfix_finish
 	@echo ""
 	@echo "=== Building and pushing to GHCR ==="
 	@make it_build_multi_arch_push_GHCR
+	@echo ""
+	@echo "=== Pinning SERVER_TAG=$(IMAGE_TAG) in distribution.env ==="
+	@perl -i -pe 's/^SERVER_TAG=.*/SERVER_TAG=$(IMAGE_TAG)/' $(DIST_SOURCE)
+	@echo "OK: distribution.env SERVER_TAG=$(IMAGE_TAG)"
 	@echo ""
 	@echo "=== Hotfix $(IMAGE_TAG) published ==="
 	@echo "Verify: docker pull $(GHCR_IMAGE_NAME):$(IMAGE_TAG)"
