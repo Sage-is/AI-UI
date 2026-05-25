@@ -290,6 +290,8 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [x] Hit the ~2.5GB target (down from 9.7GB)
   - [ ] Hit the ~1.5GB base-image target after trimming heavy transitive deps
 
+- [ ] **Dockerfile: stop running pip as root**: Every `make it_build` prints `WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager` from the runtime stage. Fix by switching pip installs into a venv (`python -m venv /opt/venv` then `pip install …` against that venv) or by adding a non-root build user before the pip step. Bundled with the broader "non-root container" hardening if/when that lands; standalone fix is small.
+
 - [ ] **CI/CD Pipeline**: Gated releases, scanning, and regression tests
   - [ ] `make install_dev` — auto-install dev tools via Homebrew
   - [ ] `make scan_container` — trivy image scanning (post-build)
@@ -339,6 +341,18 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] Phase -1: Generate contract test suite from OpenAPI spec (private submodule)
   - [ ] Phase 0 spike: chosen framework + streaming Ollama proxy
   - [ ] Team decision: Go + PocketBase, Rust + Loco, or Python + Django?
+
+- [ ] **Open WebUI Fork Maintainer Outreach**: Reach out to the BSD-3 / MIT fork cohort identified in `docs/outreach/open-webui-forks.md`. Six maintainers were shortlisted as potential allies after evaluating 32 forks. No fork has stood up its own community channel — every README still points at the upstream Open WebUI Discord — so there is a clear opening for Sage.is AI to consolidate the cohort.
+  - [ ] Review the shortlist with the team and prioritize who to contact first
+  - [ ] Draft a generic outreach template plus per-fork customization for the top three
+  - [ ] Contact `blascerecer/open-webui` (101 stars, BSD-3, MCP bridge) — direct technical overlap with Sage.is AI's MCP work
+  - [ ] Contact Public AI Movement (`forpublicai`) at hello@publicai.network — strongest mission match, "AI as public infrastructure"
+  - [ ] Contact AMD-affiliated `aigdat/raux` via the GAIA team on LinkedIn — Tier-1 silicon vendor signal
+  - [ ] Contact `AI3clauseBSD/claused-webai` (francoisp / headgasket) — most ideologically aligned, building a federation of "former-open" projects
+  - [ ] Contact `BochaAI/open-webui-Bocha` at info@bochaai.com — vendor MCP integration angle, geographic diversity
+  - [ ] Contact `hasanraiyan/open-webui` (Raiyan Hasan) — indie BSD-3 maintainer with public email
+  - [ ] Decide whether to stand up a Matrix room or Discord for the BSD-3 Open WebUI cohort
+  - [ ] Refresh the CSV (`docs/outreach/open-webui-forks.csv`) every ~6 months as forks evolve and as the license conversation matures
 
 ---
 
