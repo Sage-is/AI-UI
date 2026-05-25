@@ -34,6 +34,11 @@ endif
 # Auto-detect container runtime (prefer podman, fall back to docker)
 CONTAINER_RUNTIME ?= $(shell command -v podman 2>/dev/null || echo docker)
 
+# Cross-platform "build complete" chime.
+# macOS: plays the system Glass sound. Linux/WSL/Windows: silent no-op.
+# Resolved once at parse time so per-site call sites stay one line.
+NOTIFY_DONE := $(shell command -v afplay >/dev/null 2>&1 && echo "afplay /System/Library/Sounds/Glass.aiff" || echo "true")
+
 # Derive org/repo from git remote (e.g. git@github.com:Sage-is/AI-UI.git -> sage-is/ai-ui)
 GIT_REPO_SLUG := $(shell git remote get-url origin 2>/dev/null | sed -E 's|\.git$$||; s|.*[:/]([^/]+/[^/]+)$$|\1|' | tr '[:upper:]' '[:lower:]')
 
@@ -67,6 +72,9 @@ SAFE_GIT_BRANCH := $(subst /,-,$(GIT_BRANCH))
 SAFE_GIT_BRANCH := $(shell echo $(SAFE_GIT_BRANCH) | tr '[:upper:]' '[:lower:]')
 CONTAINER_NAME ?= $(shell echo $(GIT_REPO_SLUG) | tr '/' '-')
 PORT_MAPPING ?= 8080:8080
+# Host-side port from PORT_MAPPING (`HOST:CONTAINER` → HOST). Reference this
+# in help text and curl URLs so they track when PORT_MAPPING is overridden.
+LOCAL_PORT := $(firstword $(subst :, ,$(PORT_MAPPING)))
 # Default volume comes from distribution.env (VOLUME + DATA_MOUNT). Fresh
 # installs land on `sage-ai-data:/app/backend/data`; existing installs with
 # a `.env` override keep their old volume name via the ?= precedence.
@@ -153,13 +161,18 @@ setup: setup_env setup_siblings
 	@echo "=== Setup complete ==="
 	@echo "    Next: make it_build && make it_run"
 
-# Common docker run arguments
-DOCKER_RUN_ARGS := --rm -p $(PORT_MAPPING) \
+# Base flags every container run needs. DOCKER_RUN_ARGS and
+# TRY_SAGE_DOCKER_RUN_ARGS both extend this — add a flag here and it
+# applies to both production and trial runs.
+COMMON_RUN_ARGS := --rm -p $(PORT_MAPPING) \
 	--add-host=host.docker.internal:host-gateway \
-	$(if $(WEBUI_SECRET_KEY),-e WEBUI_SECRET_KEY=$(WEBUI_SECRET_KEY),) \
-	-v $(VOLUME_DATA) \
 	-v $(ENV_FILE) \
 	--name $(CONTAINER_NAME)
+
+# Production run: COMMON + secret-key pass-through + prod volume.
+DOCKER_RUN_ARGS := $(COMMON_RUN_ARGS) \
+	$(if $(WEBUI_SECRET_KEY),-e WEBUI_SECRET_KEY=$(WEBUI_SECRET_KEY),) \
+	-v $(VOLUME_DATA)
 
 DEV_RUN_ARGS := --rm -p $(PORT_MAPPING) \
 	--add-host=host.docker.internal:host-gateway \
@@ -200,7 +213,7 @@ it_build:
 	            -t $(IMAGE_NAME):$(IMAGE_TAG)-$(SAFE_GIT_BRANCH) \
 	            -t $(IMAGE_NAME):$(SAFE_GIT_BRANCH) \
 	            .
-	@afplay /System/Library/Sounds/Glass.aiff
+	@$(NOTIFY_DONE)
 	@echo ""
 
 # Build Docker Image without Cache and with Branch Name
@@ -212,7 +225,7 @@ it_build_no_cache:
 	                     -t $(IMAGE_NAME):$(IMAGE_TAG)-$(SAFE_GIT_BRANCH) \
 	                     -t $(IMAGE_NAME):$(SAFE_GIT_BRANCH) \
 	                     .
-	@afplay /System/Library/Sounds/Glass.aiff
+	@$(NOTIFY_DONE)
 	@echo ""
 
 dev_run:
@@ -227,7 +240,7 @@ it_run_ghcr:
 
 # Combine build and dev run targets
 it_build_n_dev_run: it_build
-	@afplay /System/Library/Sounds/Glass.aiff
+	@$(NOTIFY_DONE)
 	@echo ""
 	@make dev_run
 
@@ -314,7 +327,7 @@ it_build_amd64:
 	@docker buildx build --platform linux/amd64 --load \
 	    -t $(IMAGE_NAME):$(IMAGE_TAG)-amd64 \
 	    .
-	@afplay /System/Library/Sounds/Glass.aiff
+	@$(NOTIFY_DONE)
 	@echo ""
 
 ## cross_smoke — build the amd64 image then smoke it via QEMU.
@@ -373,7 +386,7 @@ release_smoke:
 	@echo ""
 	@echo "=== $(RELEASE_VERSION) smoke-clean on native arch + linux/amd64 ==="
 	@echo "    Next: deploy to staging, verify, then 'make release_and_push_GHCR'."
-	@afplay /System/Library/Sounds/Glass.aiff 2>/dev/null || true
+	@$(NOTIFY_DONE)
 
 test_db_fresh:
 	@echo "=== Fresh DB Smoke Test ==="
@@ -421,31 +434,27 @@ endef
 # Bring down container instances on each SAGE_HOST
 it_down_sage_hosts:
 	@echo "Bringing down instances on SAGE_HOSTS from .env file..."
-	@if [ -f .env ]; then \
-		grep -E "^SAGE_HOSTS=" .env | cut -d '=' -f2 | tr ',' '\n' | while read host; do \
-			echo "Stopping containers on $$host..."; \
-			ssh "$$host" "docker stop $$(docker ps -aqf 'name=sage*') && docker rm $$(docker ps -aqf 'name=sage*')" || echo "Failed to stop containers on $$host"; \
-		done; \
-	else \
-		echo ".env file not found. Cannot read SAGE_HOSTS."; \
-		exit 1; \
-	fi
+	@[ -f .env ] || { echo "ERROR: .env file not found. Cannot read SAGE_HOSTS."; exit 1; }
+	@hosts=$$(grep -E "^SAGE_HOSTS=" .env | cut -d '=' -f2 | tr ',' '\n' | grep -v '^$$'); \
+	[ -n "$$hosts" ] || { echo "ERROR: SAGE_HOSTS missing or empty in .env"; exit 1; }; \
+	echo "$$hosts" | while read host; do \
+		echo "Stopping containers on $$host..."; \
+		ssh "$$host" "docker stop $$(docker ps -aqf 'name=sage*') && docker rm $$(docker ps -aqf 'name=sage*')" || echo "Failed to stop containers on $$host"; \
+	done
 
 # Check for running Sage instances on each SAGE_HOST
 it_check_sage_hosts:
 	@echo "Checking for running Sage instances on SAGE_HOSTS from .env file..."
-	@if [ -f .env ]; then \
-		echo "Host                 | Container ID    | Name             | Image                | Status           | Created"; \
-		echo "-------------------- | --------------- | ---------------- | -------------------- | ---------------- | ---------------"; \
-		grep -E "^SAGE_HOSTS=" .env | cut -d '=' -f2 | tr ',' '\n' | while read host; do \
-			echo "$$host:"; \
-			ssh "$$host" "docker ps --format '{{.ID}} | {{.Names}} | {{.Image}} | {{.Status}} | {{.CreatedAt}}' -f 'name=sage*'" || echo "   Failed to connect to $$host"; \
-			echo ""; \
-		done; \
-	else \
-		echo ".env file not found. Cannot read SAGE_HOSTS."; \
-		exit 1; \
-	fi
+	@[ -f .env ] || { echo "ERROR: .env file not found. Cannot read SAGE_HOSTS."; exit 1; }
+	@hosts=$$(grep -E "^SAGE_HOSTS=" .env | cut -d '=' -f2 | tr ',' '\n' | grep -v '^$$'); \
+	[ -n "$$hosts" ] || { echo "ERROR: SAGE_HOSTS missing or empty in .env"; exit 1; }; \
+	echo "Host                 | Container ID    | Name             | Image                | Status           | Created"; \
+	echo "-------------------- | --------------- | ---------------- | -------------------- | ---------------- | ---------------"; \
+	echo "$$hosts" | while read host; do \
+		echo "$$host:"; \
+		ssh "$$host" "docker ps --format '{{.ID}} | {{.Names}} | {{.Image}} | {{.Status}} | {{.CreatedAt}}' -f 'name=sage*'" || echo "   Failed to connect to $$host"; \
+		echo ""; \
+	done
 
 # Main multi-arch build targets
 it_build_multi_arch_push_docker_hub:
@@ -707,8 +716,8 @@ lint:
 	cd app && bun run lint:types
 	@echo ""
 	@echo "=== Format check (prettier + black) ==="
-	cd app && bunx prettier --check "**/*.{js,ts,svelte,css,md,html,json}" || true
-	cd app && black --check --exclude ".venv/|/venv/" backend/ || true
+	cd app && bunx prettier --check "**/*.{js,ts,svelte,css,md,html,json}"
+	cd app && black --check --exclude ".venv/|/venv/" backend/
 
 # ===========================================================================
 
@@ -813,8 +822,7 @@ release_and_push_GHCR: release_smoke release_finish
 	@make it_build_multi_arch_push_GHCR
 	@echo ""
 	@echo "=== Pinning SERVER_TAG=$(IMAGE_TAG) in distribution.env ==="
-	@perl -i -pe 's/^SERVER_TAG=.*/SERVER_TAG=$(IMAGE_TAG)/' $(DIST_SOURCE)
-	@echo "OK: distribution.env SERVER_TAG=$(IMAGE_TAG)"
+	@$(MAKE) _pin_server_tag IMAGE_TAG=$(IMAGE_TAG)
 	@echo ""
 	@echo "=== Release $(IMAGE_TAG) published ==="
 	@echo "Verify: docker pull $(GHCR_IMAGE_NAME):$(IMAGE_TAG)"
@@ -826,8 +834,7 @@ hotfix_and_push_GHCR: release_smoke hotfix_finish
 	@make it_build_multi_arch_push_GHCR
 	@echo ""
 	@echo "=== Pinning SERVER_TAG=$(IMAGE_TAG) in distribution.env ==="
-	@perl -i -pe 's/^SERVER_TAG=.*/SERVER_TAG=$(IMAGE_TAG)/' $(DIST_SOURCE)
-	@echo "OK: distribution.env SERVER_TAG=$(IMAGE_TAG)"
+	@$(MAKE) _pin_server_tag IMAGE_TAG=$(IMAGE_TAG)
 	@echo ""
 	@echo "=== Hotfix $(IMAGE_TAG) published ==="
 	@echo "Verify: docker pull $(GHCR_IMAGE_NAME):$(IMAGE_TAG)"
@@ -868,15 +875,10 @@ TRY_SAGE_RESET_INTERVAL_HOURS ?= 24
 # you want to share the prod volume on purpose.
 TRY_SAGE_VOLUME_DATA          ?= sage-try-data:/app/backend/data
 
-# Mirrors DOCKER_RUN_ARGS but mounts the trial volume. We can't use Make's
-# target-specific overrides because DOCKER_RUN_ARGS uses `:=` (immediate
-# expansion) — VOLUME_DATA is baked in at definition time and a recipe
-# override would not flow through.
-TRY_SAGE_DOCKER_RUN_ARGS := --rm -p $(PORT_MAPPING) \
-	--add-host=host.docker.internal:host-gateway \
-	-v $(TRY_SAGE_VOLUME_DATA) \
-	-v $(ENV_FILE) \
-	--name $(CONTAINER_NAME)
+# Trial run: COMMON + dedicated trial volume. No WEBUI_SECRET_KEY
+# pass-through — try.sage rotates session keys per reset.
+TRY_SAGE_DOCKER_RUN_ARGS := $(COMMON_RUN_ARGS) \
+	-v $(TRY_SAGE_VOLUME_DATA)
 
 try_sage_start:
 	@# Fail fast on missing secrets so the operator sees the problem before
@@ -921,12 +923,12 @@ try_sage_reset:
 # you've forgotten which links are live and don't want to scroll back
 # through container logs.
 try_sage_links:
-	@echo "Trial welcome URL: http://localhost:8080/auth (open in incognito)"
+	@echo "Trial welcome URL: http://localhost:$(LOCAL_PORT)/auth (open in incognito)"
 	@echo ""
-	@curl -fsS http://localhost:8080/api/v1/sage/runtime/personas 2>/dev/null \
+	@curl -fsS http://localhost:$(LOCAL_PORT)/api/v1/sage/runtime/personas 2>/dev/null \
 		| python3 -c "import json, sys;\
 [print(f\"  {p['key']:12}  {p['login_url']}\") for p in json.load(sys.stdin)]" \
-		|| echo "  (container not responding on :8080 — is it running?)"
+		|| echo "  (container not responding on :$(LOCAL_PORT) — is it running?)"
 # ---------------------------------------------------------------------------
 # Interactive release (full flow via ~/bin/git-release)
 # ---------------------------------------------------------------------------
@@ -984,3 +986,15 @@ distribution_verify:
 		fi; \
 	done; \
 	echo "OK: distribution.env hardlink chain intact ($$expected links)."
+
+# Rewrites SERVER_TAG in distribution.env while preserving the inode (so the
+# hardlink chain stays intact) and verifies the chain afterward. `perl -i` /
+# `sed -i` would rename a temp file over the target and break hardlinks.
+_pin_server_tag:
+	@test -n "$(IMAGE_TAG)" || { echo "ERROR: _pin_server_tag needs IMAGE_TAG=X.Y.Z"; exit 1; }
+	@tmp=$$(mktemp) && \
+	  perl -pe 's/^SERVER_TAG=.*/SERVER_TAG=$(IMAGE_TAG)/' $(DIST_SOURCE) > "$$tmp" && \
+	  cat "$$tmp" > $(DIST_SOURCE) && \
+	  rm -f "$$tmp"
+	@$(MAKE) distribution_verify
+	@echo "OK: distribution.env SERVER_TAG=$(IMAGE_TAG)"

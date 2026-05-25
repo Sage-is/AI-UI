@@ -15,30 +15,30 @@
       "children": [
         {
           "checked": false,
-          "line_num": 251,
+          "line_num": 265,
           "tags": [],
           "text": "Confirm which previously committed hidden artifacts must be purged from history"
         },
         {
           "checked": false,
-          "line_num": 252,
+          "line_num": 266,
           "tags": [],
           "text": "Prepare the team runbook for rewrite, force-push, and clone remediation"
         },
         {
           "checked": false,
-          "line_num": 253,
+          "line_num": 267,
           "tags": [],
           "text": "Rotate any credentials exposed by now-excluded hidden artifacts"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "37589290c71350bb",
-      "line_num": 250,
+      "id": "1d8fbeb745f0ada0",
+      "line_num": 264,
       "source": "todo_md",
       "tags": [],
-      "text": "**History purge for excluded hidden artifacts: After the root hidden-artifact allowlist lands and the team reviews scope, run BFG Repo-Cleaner or `git filter-repo`, rotate any exposed secrets, and coordinate clone remediation for anyone with an existing copy of the repo.**\n- [ ] Confirm which previously committed hidden artifacts must be purged from history\n- [ ] Prepare the team runbook for rewrite, force-push, and clone remediation\n- [ ] Rotate any credentials exposed by now-excluded hidden artifacts\n\n`TODO.md:L250`",
+      "text": "**History purge for excluded hidden artifacts: After the root hidden-artifact allowlist lands and the team reviews scope, run BFG Repo-Cleaner or `git filter-repo`, rotate any exposed secrets, and coordinate clone remediation for anyone with an existing copy of the repo.**\n- [ ] Confirm which previously committed hidden artifacts must be purged from history\n- [ ] Prepare the team runbook for rewrite, force-push, and clone remediation\n- [ ] Rotate any credentials exposed by now-excluded hidden artifacts\n\n`TODO.md:L264`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -48,36 +48,36 @@
       "children": [
         {
           "checked": false,
-          "line_num": 256,
+          "line_num": 270,
           "tags": [],
           "text": "Pick individual videos from the [working playlist](https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u) for each of the 6 default tutorial steps."
         },
         {
           "checked": false,
-          "line_num": 257,
+          "line_num": 271,
           "tags": [],
           "text": "Populate `TRY_SAGE_TUTORIAL_STEPS_JSON` per workshop deployment with the chosen URLs and step descriptions."
         },
         {
           "checked": false,
-          "line_num": 258,
+          "line_num": 272,
           "tags": [],
           "text": "Publish the Custom Sage tutorial content package: three short videos plus a follow-up email with system prompts."
         },
         {
           "checked": false,
-          "line_num": 259,
+          "line_num": 273,
           "tags": [],
           "text": "Keep system-prompt disclosure only in the dedicated system-prompt video. Swap that one video per team session without a codebase release."
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "85b1c018519e1e4f",
-      "line_num": 255,
+      "id": "9ccbc90d79dd8e30",
+      "line_num": 269,
       "source": "todo_md",
       "tags": [],
-      "text": "**try.sage Tutorial Video Production: (Alexander Somma + Izzy Plante) \u2014 Content work, not code.**\n- [ ] Pick individual videos from the [working playlist](https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u) for each of the 6 default tutorial steps.\n- [ ] Populate `TRY_SAGE_TUTORIAL_STEPS_JSON` per workshop deployment with the chosen URLs and step descriptions.\n- [ ] Publish the Custom Sage tutorial content package: three short videos plus a follow-up email with system prompts.\n- [ ] Keep system-prompt disclosure only in the dedicated system-prompt video. Swap that one video per team session without a codebase release.\n\n`TODO.md:L255`",
+      "text": "**try.sage Tutorial Video Production: (Alexander Somma + Izzy Plante) \u2014 Content work, not code.**\n- [ ] Pick individual videos from the [working playlist](https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u) for each of the 6 default tutorial steps.\n- [ ] Populate `TRY_SAGE_TUTORIAL_STEPS_JSON` per workshop deployment with the chosen URLs and step descriptions.\n- [ ] Publish the Custom Sage tutorial content package: three short videos plus a follow-up email with system prompts.\n- [ ] Keep system-prompt disclosure only in the dedicated system-prompt video. Swap that one video per team session without a codebase release.\n\n`TODO.md:L269`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -87,54 +87,54 @@
       "children": [
         {
           "checked": false,
-          "line_num": 262,
+          "line_num": 276,
           "tags": [],
           "text": "Audit what `try.sage` welcome ships today (`TrySage*` components in `app/src/lib/components/`): copy, imagery, tutorial-step cards, layout, animations."
         },
         {
           "checked": false,
-          "line_num": 263,
+          "line_num": 277,
           "tags": [],
           "text": "Identify which pieces are *trial-only* (banner countdown, persona switcher, magic-link QR) vs. *generally useful for any first-run* (welcome card, \"what to try first\" buttons, tutorial overlay, branded slideshow continuity)."
         },
         {
           "checked": false,
-          "line_num": 264,
+          "line_num": 278,
           "tags": [],
           "text": "Design the default landing \u2014 what does a new admin see *immediately* after completing the setup wizard? Empty home with the chat composer is too thin. Suggested shape: a one-card welcome with \"Start a chat\", \"Set up Ollama\", \"Create a Space\", \"Invite users\" CTAs that link into the actual flows."
         },
         {
           "checked": false,
-          "line_num": 265,
+          "line_num": 279,
           "tags": [],
           "text": "Add a default tutorial overlay (same component as `TrySageTutorial`, different content). Steps focus on the *self-hosted* admin journey: where chats go, where data lives, how to add a model, how to invite users."
         },
         {
           "checked": false,
-          "line_num": 266,
+          "line_num": 280,
           "tags": [],
           "text": "Localize copy via i18n."
         },
         {
           "checked": false,
-          "line_num": 267,
+          "line_num": 281,
           "tags": [],
           "text": "Vitest spec covering the auto-show + dismiss + replay flow (parallel to the try.sage tutorial spec)."
         },
         {
           "checked": false,
-          "line_num": 268,
+          "line_num": 282,
           "tags": [],
           "text": "Make the \"Replay welcome\" admin escape hatch available outside trial mode \u2014 sibling to the existing Trial Mode tab."
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "319cb5d7753e86b8",
-      "line_num": 261,
+      "id": "201452f634fefbc4",
+      "line_num": 275,
       "source": "todo_md",
       "tags": [],
-      "text": "**Buff Out the Default First-Run Landing Page \u2014 try.sage already has a polished welcome page (persona picker, banner, branded imagery, tutorial overlay). The default first-run landing for a fresh self-hosted install is much thinner. Port the relevant pieces \u2014 minus the trial-only bits \u2014 so a fresh install feels like a finished product, not an empty room.**\n- [ ] Audit what `try.sage` welcome ships today (`TrySage*` components in `app/src/lib/components/`): copy, imagery, tutorial-step cards, layout, animations.\n- [ ] Identify which pieces are *trial-only* (banner countdown, persona switcher, magic-link QR) vs. *generally useful for any first-run* (welcome card, \"what to try first\" buttons, tutorial overlay, branded slideshow continuity).\n- [ ] Design the default landing \u2014 what does a new admin see *immediately* after completing the setup wizard? Empty home with the chat composer is too thin. Suggested shape: a one-card welcome with \"Start a chat\", \"Set up Ollama\", \"Create a Space\", \"Invite users\" CTAs that link into the actual flows.\n- [ ] Add a default tutorial overlay (same component as `TrySageTutorial`, different content). Steps focus on the *self-hosted* admin journey: where chats go, where data lives, how to add a model, how to invite users.\n- [ ] Localize copy via i18n.\n- [ ] Vitest spec covering the auto-show + dismiss + replay flow (parallel to the try.sage tutorial spec).\n- [ ] Make the \"Replay welcome\" admin escape hatch available outside trial mode \u2014 sibling to the existing Trial Mode tab.\n\n`TODO.md:L261`",
+      "text": "**Buff Out the Default First-Run Landing Page \u2014 try.sage already has a polished welcome page (persona picker, banner, branded imagery, tutorial overlay). The default first-run landing for a fresh self-hosted install is much thinner. Port the relevant pieces \u2014 minus the trial-only bits \u2014 so a fresh install feels like a finished product, not an empty room.**\n- [ ] Audit what `try.sage` welcome ships today (`TrySage*` components in `app/src/lib/components/`): copy, imagery, tutorial-step cards, layout, animations.\n- [ ] Identify which pieces are *trial-only* (banner countdown, persona switcher, magic-link QR) vs. *generally useful for any first-run* (welcome card, \"what to try first\" buttons, tutorial overlay, branded slideshow continuity).\n- [ ] Design the default landing \u2014 what does a new admin see *immediately* after completing the setup wizard? Empty home with the chat composer is too thin. Suggested shape: a one-card welcome with \"Start a chat\", \"Set up Ollama\", \"Create a Space\", \"Invite users\" CTAs that link into the actual flows.\n- [ ] Add a default tutorial overlay (same component as `TrySageTutorial`, different content). Steps focus on the *self-hosted* admin journey: where chats go, where data lives, how to add a model, how to invite users.\n- [ ] Localize copy via i18n.\n- [ ] Vitest spec covering the auto-show + dismiss + replay flow (parallel to the try.sage tutorial spec).\n- [ ] Make the \"Replay welcome\" admin escape hatch available outside trial mode \u2014 sibling to the existing Trial Mode tab.\n\n`TODO.md:L275`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -143,11 +143,11 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "9ad48fb813bb895d",
-      "line_num": 270,
+      "id": "ee6e3c581acb2bf9",
+      "line_num": 284,
       "source": "todo_md",
       "tags": [],
-      "text": "**Learning Visibility Dashboard: Mentioned in `the-arsonists-smoke-detector.md`. We need to build this as we are publishing the article soon to the sage.education resource page.**\n`TODO.md:L270`",
+      "text": "**Learning Visibility Dashboard: Mentioned in `the-arsonists-smoke-detector.md`. We need to build this as we are publishing the article soon to the sage.education resource page.**\n`TODO.md:L284`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -156,11 +156,11 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "e2153947aa0211c1",
-      "line_num": 273,
+      "id": "b3ef897d880303fe",
+      "line_num": 287,
       "source": "todo_md",
       "tags": [],
-      "text": "**Alex bio update (Alexander Somma): Add Alex's background to the sage.is/about and sage.education pages \u2014 currently only Izzy's story appears. Should include Etsy backend, teaching career, and CTO role.**\n`TODO.md:L273`",
+      "text": "**Alex bio update (Alexander Somma): Add Alex's background to the sage.is/about and sage.education pages \u2014 currently only Izzy's story appears. Should include Etsy backend, teaching career, and CTO role.**\n`TODO.md:L287`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -170,24 +170,24 @@
       "children": [
         {
           "checked": true,
-          "line_num": 276,
+          "line_num": 290,
           "tags": [],
           "text": "Hit the ~2.5GB target (down from 9.7GB)"
         },
         {
           "checked": false,
-          "line_num": 277,
+          "line_num": 291,
           "tags": [],
           "text": "Hit the ~1.5GB base-image target after trimming heavy transitive deps"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "dc86822a9c57d93f",
-      "line_num": 275,
+      "id": "62f4f350539fee6e",
+      "line_num": 289,
       "source": "todo_md",
       "tags": [],
-      "text": "**Docker Image Slimming (Pinned / Paused): (Alexander Somma)**\n- [x] Hit the ~2.5GB target (down from 9.7GB)\n- [ ] Hit the ~1.5GB base-image target after trimming heavy transitive deps\n\n`TODO.md:L275`",
+      "text": "**Docker Image Slimming (Pinned / Paused): (Alexander Somma)**\n- [x] Hit the ~2.5GB target (down from 9.7GB)\n- [ ] Hit the ~1.5GB base-image target after trimming heavy transitive deps\n\n`TODO.md:L289`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -197,60 +197,60 @@
       "children": [
         {
           "checked": false,
-          "line_num": 280,
+          "line_num": 294,
           "tags": [],
           "text": "`make install_dev` \u2014 auto-install dev tools via Homebrew"
         },
         {
           "checked": false,
-          "line_num": 281,
+          "line_num": 295,
           "tags": [],
           "text": "`make scan_container` \u2014 trivy image scanning (post-build)"
         },
         {
           "checked": false,
-          "line_num": 282,
+          "line_num": 296,
           "tags": [],
           "text": "`make lint` \u2014 eslint + prettier + black rollup"
         },
         {
           "checked": false,
-          "line_num": 283,
+          "line_num": 297,
           "tags": [],
           "text": "Gate release finish on passing DB tests and scans"
         },
         {
           "checked": false,
-          "line_num": 284,
+          "line_num": 298,
           "tags": [],
           "text": "Support the same gated release flow locally or on CI"
         },
         {
           "checked": false,
-          "line_num": 285,
+          "line_num": 299,
           "tags": [],
           "text": "Staging CapRover instance for pre-prod testing"
         },
         {
           "checked": false,
-          "line_num": 287,
+          "line_num": 301,
           "tags": [],
           "text": "Selenium-driven browser regression tests"
         },
         {
           "checked": false,
-          "line_num": 288,
+          "line_num": 302,
           "tags": [],
           "text": "OWASP ZAP DAST via `make scan_dast`"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "8ca028bf6da6c22d",
-      "line_num": 279,
+      "id": "4c15a7a3b629c34a",
+      "line_num": 293,
       "source": "todo_md",
       "tags": [],
-      "text": "**CI/CD Pipeline: Gated releases, scanning, and regression tests**\n- [ ] `make install_dev` \u2014 auto-install dev tools via Homebrew\n- [ ] `make scan_container` \u2014 trivy image scanning (post-build)\n- [ ] `make lint` \u2014 eslint + prettier + black rollup\n- [ ] Gate release finish on passing DB tests and scans\n- [ ] Support the same gated release flow locally or on CI\n- [ ] Staging CapRover instance for pre-prod testing\n- [ ] Selenium-driven browser regression tests\n- [ ] OWASP ZAP DAST via `make scan_dast`\n\n`TODO.md:L279`",
+      "text": "**CI/CD Pipeline: Gated releases, scanning, and regression tests**\n- [ ] `make install_dev` \u2014 auto-install dev tools via Homebrew\n- [ ] `make scan_container` \u2014 trivy image scanning (post-build)\n- [ ] `make lint` \u2014 eslint + prettier + black rollup\n- [ ] Gate release finish on passing DB tests and scans\n- [ ] Support the same gated release flow locally or on CI\n- [ ] Staging CapRover instance for pre-prod testing\n- [ ] Selenium-driven browser regression tests\n- [ ] OWASP ZAP DAST via `make scan_dast`\n\n`TODO.md:L293`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -260,18 +260,18 @@
       "children": [
         {
           "checked": false,
-          "line_num": 291,
+          "line_num": 305,
           "tags": [],
           "text": "Evaluate migrating Makefile to a cleaner build tool (Rake, Invoke, or Just)"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "e3d4059dabd7832e",
-      "line_num": 290,
+      "id": "faa06b97891188c1",
+      "line_num": 304,
       "source": "todo_md",
       "tags": [],
-      "text": "**Build System Evaluation: Consider alternatives to Make**\n- [ ] Evaluate migrating Makefile to a cleaner build tool (Rake, Invoke, or Just)\n\n`TODO.md:L290`",
+      "text": "**Build System Evaluation: Consider alternatives to Make**\n- [ ] Evaluate migrating Makefile to a cleaner build tool (Rake, Invoke, or Just)\n\n`TODO.md:L304`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -281,48 +281,48 @@
       "children": [
         {
           "checked": true,
-          "line_num": 294,
+          "line_num": 308,
           "tags": [],
           "text": "Env vars for reset enablement and interval \u2014 `ENABLE_TRY_SAGE`, `TRY_SAGE_RESET_INTERVAL_HOURS`"
         },
         {
           "checked": true,
-          "line_num": 295,
+          "line_num": 309,
           "tags": [],
           "text": "Lifespan task fires the reset selectively (chats + files only; KBs and accounts persist)"
         },
         {
           "checked": true,
-          "line_num": 296,
+          "line_num": 310,
           "tags": [],
           "text": "Banner countdown + pre-reset warning state (blue \u2192 amber when `hours_until_reset < 1`)"
         },
         {
           "checked": true,
-          "line_num": 297,
+          "line_num": 311,
           "tags": [],
           "text": "Admin extend/reset endpoints with audit log lines"
         },
         {
           "checked": false,
-          "line_num": 298,
+          "line_num": 312,
           "tags": [],
           "text": "**Post-reset confirmation messaging** \u2014 when the auto-reset fires, signed-in users currently see no signal. Add a one-shot toast or banner state: \"Trial reset complete \u2014 chats and uploads cleared.\" Drive it from a `try_sage.last_reset_at` timestamp the frontend compares against `localStorage.try_sage_last_seen_reset`."
         },
         {
           "checked": false,
-          "line_num": 299,
+          "line_num": 313,
           "tags": [],
           "text": "**Tests for reset timing and message visibility** \u2014 pytest spec for `periodic_try_sage_reset` (mock the clock, assert selective wipe runs at the right tick); Vitest spec for `TrySageBanner` countdown formatting and color-shift threshold."
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "5502fc07bf1467e7",
-      "line_num": 293,
+      "id": "559834d990f1e962",
+      "line_num": 307,
       "source": "todo_md",
       "tags": [],
-      "text": "**Auto Reset Mode (Trial Environments): Mostly delivered by try.sage. Two gaps remain \u2014 see subitems. Reference: `docs/try-sage-deployment.md`.**\n- [x] Env vars for reset enablement and interval \u2014 `ENABLE_TRY_SAGE`, `TRY_SAGE_RESET_INTERVAL_HOURS`\n- [x] Lifespan task fires the reset selectively (chats + files only; KBs and accounts persist)\n- [x] Banner countdown + pre-reset warning state (blue \u2192 amber when `hours_until_reset < 1`)\n- [x] Admin extend/reset endpoints with audit log lines\n- [ ] **Post-reset confirmation messaging** \u2014 when the auto-reset fires, signed-in users currently see no signal. Add a one-shot toast or banner state: \"Trial reset complete \u2014 chats and uploads cleared.\" Drive it from a `try_sage.last_reset_at` timestamp the frontend compares against `localStorage.try_sage_last_seen_reset`.\n- [ ] **Tests for reset timing and message visibility** \u2014 pytest spec for `periodic_try_sage_reset` (mock the clock, assert selective wipe runs at the right tick); Vitest spec for `TrySageBanner` countdown formatting and color-shift threshold.\n\n`TODO.md:L293`",
+      "text": "**Auto Reset Mode (Trial Environments): Mostly delivered by try.sage. Two gaps remain \u2014 see subitems. Reference: `docs/try-sage-deployment.md`.**\n- [x] Env vars for reset enablement and interval \u2014 `ENABLE_TRY_SAGE`, `TRY_SAGE_RESET_INTERVAL_HOURS`\n- [x] Lifespan task fires the reset selectively (chats + files only; KBs and accounts persist)\n- [x] Banner countdown + pre-reset warning state (blue \u2192 amber when `hours_until_reset < 1`)\n- [x] Admin extend/reset endpoints with audit log lines\n- [ ] **Post-reset confirmation messaging** \u2014 when the auto-reset fires, signed-in users currently see no signal. Add a one-shot toast or banner state: \"Trial reset complete \u2014 chats and uploads cleared.\" Drive it from a `try_sage.last_reset_at` timestamp the frontend compares against `localStorage.try_sage_last_seen_reset`.\n- [ ] **Tests for reset timing and message visibility** \u2014 pytest spec for `periodic_try_sage_reset` (mock the clock, assert selective wipe runs at the right tick); Vitest spec for `TrySageBanner` countdown formatting and color-shift threshold.\n\n`TODO.md:L307`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -332,60 +332,60 @@
       "children": [
         {
           "checked": false,
-          "line_num": 302,
+          "line_num": 316,
           "tags": [],
           "text": "Standardize Svelte unit/integration tests on Vitest, matching current Svelte guidance"
         },
         {
           "checked": false,
-          "line_num": 303,
+          "line_num": 317,
           "tags": [],
           "text": "Add jsdom plus `@testing-library/svelte` for component regression coverage where DOM interaction matters"
         },
         {
           "checked": false,
-          "line_num": 304,
+          "line_num": 318,
           "tags": [],
           "text": "Cover high-risk Svelte components first: chat composer, microphone/transcription flow, auth forms, settings, and uploads"
         },
         {
           "checked": false,
-          "line_num": 305,
+          "line_num": 319,
           "tags": [],
           "text": "Expand the existing Cypress E2E suite to cover the core happy-path and failure-path user journeys"
         },
         {
           "checked": false,
-          "line_num": 306,
+          "line_num": 320,
           "tags": [],
           "text": "Define a deterministic test-data strategy for local and CI runs: seeded state where needed, stubs where faster and safer"
         },
         {
           "checked": false,
-          "line_num": 307,
+          "line_num": 321,
           "tags": [],
           "text": "Evaluate Playwright for cross-browser smoke coverage and trace-based CI debugging before deciding on dual-stack vs migration"
         },
         {
           "checked": false,
-          "line_num": 308,
+          "line_num": 322,
           "tags": [],
           "text": "Gate releases on a tiered regression pipeline: fast Vitest checks first, browser regressions after, smoke coverage on release builds"
         },
         {
           "checked": false,
-          "line_num": 309,
+          "line_num": 323,
           "tags": [],
           "text": "Document how to run each regression layer locally and in deployment pipelines"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "9a82c487fd47d060",
-      "line_num": 301,
+      "id": "c42bf40cdd0119f6",
+      "line_num": 315,
       "source": "todo_md",
       "tags": [],
-      "text": "**Full Regression Testing Suite: End-to-end coverage for core user flows, integrations, and release confidence**\n- [ ] Standardize Svelte unit/integration tests on Vitest, matching current Svelte guidance\n- [ ] Add jsdom plus `@testing-library/svelte` for component regression coverage where DOM interaction matters\n- [ ] Cover high-risk Svelte components first: chat composer, microphone/transcription flow, auth forms, settings, and uploads\n- [ ] Expand the existing Cypress E2E suite to cover the core happy-path and failure-path user journeys\n- [ ] Define a deterministic test-data strategy for local and CI runs: seeded state where needed, stubs where faster and safer\n- [ ] Evaluate Playwright for cross-browser smoke coverage and trace-based CI debugging before deciding on dual-stack vs migration\n- [ ] Gate releases on a tiered regression pipeline: fast Vitest checks first, browser regressions after, smoke coverage on release builds\n- [ ] Document how to run each regression layer locally and in deployment pipelines\n\n`TODO.md:L301`",
+      "text": "**Full Regression Testing Suite: End-to-end coverage for core user flows, integrations, and release confidence**\n- [ ] Standardize Svelte unit/integration tests on Vitest, matching current Svelte guidance\n- [ ] Add jsdom plus `@testing-library/svelte` for component regression coverage where DOM interaction matters\n- [ ] Cover high-risk Svelte components first: chat composer, microphone/transcription flow, auth forms, settings, and uploads\n- [ ] Expand the existing Cypress E2E suite to cover the core happy-path and failure-path user journeys\n- [ ] Define a deterministic test-data strategy for local and CI runs: seeded state where needed, stubs where faster and safer\n- [ ] Evaluate Playwright for cross-browser smoke coverage and trace-based CI debugging before deciding on dual-stack vs migration\n- [ ] Gate releases on a tiered regression pipeline: fast Vitest checks first, browser regressions after, smoke coverage on release builds\n- [ ] Document how to run each regression layer locally and in deployment pipelines\n\n`TODO.md:L315`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -395,72 +395,72 @@
       "children": [
         {
           "checked": false,
-          "line_num": 312,
+          "line_num": 326,
           "tags": [],
           "text": "Define the audio test pyramid: unit logic, component behavior, browser E2E, and limited real-device smoke coverage"
         },
         {
           "checked": false,
-          "line_num": 313,
+          "line_num": 327,
           "tags": [],
           "text": "Build a golden audio corpus for regression runs: clean speech, silence, noisy input, clipped speech, accented speech, and low-volume samples"
         },
         {
           "checked": false,
-          "line_num": 314,
+          "line_num": 328,
           "tags": [],
           "text": "Add deterministic browser audio tests that feed known audio files as fake microphone input instead of relying on a live human mic in CI"
         },
         {
           "checked": false,
-          "line_num": 315,
+          "line_num": 329,
           "tags": [],
           "text": "Auto-grant microphone permissions in browser test runs and verify recording state transitions, processing UI, and transcript insertion into chat input"
         },
         {
           "checked": false,
-          "line_num": 316,
+          "line_num": 330,
           "tags": [],
           "text": "Cover failure paths explicitly: permission denied, empty transcript, transcription failure, canceled recording, and timeout handling"
         },
         {
           "checked": false,
-          "line_num": 317,
+          "line_num": 331,
           "tags": [],
           "text": "Add transcript assertions using normalized text matching where exact punctuation is not stable"
         },
         {
           "checked": false,
-          "line_num": 318,
+          "line_num": 332,
           "tags": [],
           "text": "Decide which audio paths run full end-to-end against the real backend transcription flow versus mocked/stubbed transcription responses"
         },
         {
           "checked": false,
-          "line_num": 319,
+          "line_num": 333,
           "tags": [],
           "text": "Evaluate Playwright specifically for browser-level media permission control, fake microphone input, cross-browser smoke tests, and trace debugging"
         },
         {
           "checked": false,
-          "line_num": 320,
+          "line_num": 334,
           "tags": [],
           "text": "Keep a small manual or staged real-microphone smoke suite for supported devices instead of making live microphone capture a required CI gate"
         },
         {
           "checked": false,
-          "line_num": 321,
+          "line_num": 335,
           "tags": [],
           "text": "Document how to run audio regression tests locally, in CI, and on staging with the required browser flags, fixtures, and expected assertions"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "b8895279ff6330a3",
-      "line_num": 311,
+      "id": "820056e32ce8bbc9",
+      "line_num": 325,
       "source": "todo_md",
       "tags": [],
-      "text": "**Audio Regression Testing Suite: Deterministic voice-input coverage across recorder, transcription, and chat-input handoff**\n- [ ] Define the audio test pyramid: unit logic, component behavior, browser E2E, and limited real-device smoke coverage\n- [ ] Build a golden audio corpus for regression runs: clean speech, silence, noisy input, clipped speech, accented speech, and low-volume samples\n- [ ] Add deterministic browser audio tests that feed known audio files as fake microphone input instead of relying on a live human mic in CI\n- [ ] Auto-grant microphone permissions in browser test runs and verify recording state transitions, processing UI, and transcript insertion into chat input\n- [ ] Cover failure paths explicitly: permission denied, empty transcript, transcription failure, canceled recording, and timeout handling\n- [ ] Add transcript assertions using normalized text matching where exact punctuation is not stable\n- [ ] Decide which audio paths run full end-to-end against the real backend transcription flow versus mocked/stubbed transcription responses\n- [ ] Evaluate Playwright specifically for browser-level media permission control, fake microphone input, cross-browser smoke tests, and trace debugging\n- [ ] Keep a small manual or staged real-microphone smoke suite for supported devices instead of making live microphone capture a required CI gate\n- [ ] Document how to run audio regression tests locally, in CI, and on staging with the required browser flags, fixtures, and expected assertions\n\n`TODO.md:L311`",
+      "text": "**Audio Regression Testing Suite: Deterministic voice-input coverage across recorder, transcription, and chat-input handoff**\n- [ ] Define the audio test pyramid: unit logic, component behavior, browser E2E, and limited real-device smoke coverage\n- [ ] Build a golden audio corpus for regression runs: clean speech, silence, noisy input, clipped speech, accented speech, and low-volume samples\n- [ ] Add deterministic browser audio tests that feed known audio files as fake microphone input instead of relying on a live human mic in CI\n- [ ] Auto-grant microphone permissions in browser test runs and verify recording state transitions, processing UI, and transcript insertion into chat input\n- [ ] Cover failure paths explicitly: permission denied, empty transcript, transcription failure, canceled recording, and timeout handling\n- [ ] Add transcript assertions using normalized text matching where exact punctuation is not stable\n- [ ] Decide which audio paths run full end-to-end against the real backend transcription flow versus mocked/stubbed transcription responses\n- [ ] Evaluate Playwright specifically for browser-level media permission control, fake microphone input, cross-browser smoke tests, and trace debugging\n- [ ] Keep a small manual or staged real-microphone smoke suite for supported devices instead of making live microphone capture a required CI gate\n- [ ] Document how to run audio regression tests locally, in CI, and on staging with the required browser flags, fixtures, and expected assertions\n\n`TODO.md:L325`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -470,43 +470,43 @@
       "children": [
         {
           "checked": false,
-          "line_num": 324,
+          "line_num": 338,
           "tags": [],
           "text": "Review `docs/backend-rewrite-research.md` with team"
         },
         {
           "checked": false,
-          "line_num": 325,
+          "line_num": 339,
           "tags": [],
           "text": "Phase -1: Generate contract test suite from OpenAPI spec (private submodule)"
         },
         {
           "checked": false,
-          "line_num": 326,
+          "line_num": 340,
           "tags": [],
           "text": "Phase 0 spike: chosen framework + streaming Ollama proxy"
         },
         {
           "checked": false,
-          "line_num": 327,
+          "line_num": 341,
           "tags": [],
           "text": "Team decision: Go + PocketBase, Rust + Loco, or Python + Django?"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "75e325021533eb14",
-      "line_num": 323,
+      "id": "d07544be46ab04b5",
+      "line_num": 337,
       "source": "todo_md",
       "tags": [],
-      "text": "**Backend Rewrite Research: Evaluate framework options and build contract tests**\n- [ ] Review `docs/backend-rewrite-research.md` with team\n- [ ] Phase -1: Generate contract test suite from OpenAPI spec (private submodule)\n- [ ] Phase 0 spike: chosen framework + streaming Ollama proxy\n- [ ] Team decision: Go + PocketBase, Rust + Loco, or Python + Django?\n\n`TODO.md:L323`",
+      "text": "**Backend Rewrite Research: Evaluate framework options and build contract tests**\n- [ ] Review `docs/backend-rewrite-research.md` with team\n- [ ] Phase -1: Generate contract test suite from OpenAPI spec (private submodule)\n- [ ] Phase 0 spike: chosen framework + streaming Ollama proxy\n- [ ] Team decision: Go + PocketBase, Rust + Loco, or Python + Django?\n\n`TODO.md:L337`",
       "type": "text",
       "width": 280,
       "x": 10,
       "y": 1050
     },
     {
-      "height": 3940,
+      "height": 4120,
       "id": "col-todo",
       "label": "TODO",
       "type": "group",
@@ -637,13 +637,51 @@
       "y": 330
     },
     {
+      "children": [
+        {
+          "checked": false,
+          "line_num": 126,
+          "tags": [],
+          "text": "LaunchAgent plist template baked into `ai-ui.rb` / `ai-ui@1.rb`'s `service do` block with full `ProgramArguments` (binary + `start` subcommand + the flags that actually launch the container), `KeepAlive { SuccessfulExit=false }`, `RunAtLoad=true`, `StandardOutPath`/`StandardErrorPath` \u2192 `/opt/homebrew/var/log/ai-ui.{log,err.log}`."
+        },
+        {
+          "checked": false,
+          "line_num": 127,
+          "tags": [],
+          "text": "`--system` flag (or a sibling `ai-ui-headless` formula) installs a LaunchDaemon under `/Library/LaunchDaemons/` for unattended-reboot uptime \u2014 for boxes where nobody logs in after power-cycle. Document the tradeoff vs. auto-login + LaunchAgent."
+        },
+        {
+          "checked": false,
+          "line_num": 128,
+          "tags": [],
+          "text": "`ai-ui start` / `ai-ui stop` / `ai-ui update` integrate with `launchctl` (or `brew services`) so the lifecycle is one command on each side and idempotent across re-runs."
+        },
+        {
+          "checked": false,
+          "line_num": 129,
+          "tags": [],
+          "text": "Idempotent install/upgrade: `brew upgrade ai-ui` must not duplicate the plist, silently evict a running service, or leave an orphan plist after `brew uninstall`. `brew services list` should always reflect reality."
+        },
+        {
+          "checked": false,
+          "line_num": 130,
+          "tags": [],
+          "text": "Pre-flight in `ai-ui start`: refuse to launch when another container is already bound to the configured port or container name; prompt the operator to `ai-ui stop` first rather than silently double-binding."
+        },
+        {
+          "checked": false,
+          "line_num": 131,
+          "tags": [],
+          "text": "Smoke: an `ai-ui` formula test (`test do` block) that installs the agent, asserts the service starts, hits `/health`, then deregisters cleanly."
+        }
+      ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "987221c363bf7cb0",
+      "id": "9c2d6d3ee547003d",
       "line_num": 125,
       "source": "todo_md",
       "tags": [],
-      "text": "**TODO.md cleanup pass: After 2.3.0 ship, reconcile completed work, drop or re-scope stale items, re-tag inline tags so KANBAN.canvas regenerates cleanly. Whole-file pass, not surgical edits.**\n`TODO.md:L125`",
+      "text": "**`ai-ui` brew formula self-manages a launchd service: The `homebrew-apps` formula should ship a complete LaunchAgent plist so `brew services start ai-ui` (or `ai-ui start`) brings the container up at user login, restarts on crash, and survives shell exit \u2014 no operator-side launchd surgery, no hand-patching `~/Library/LaunchAgents/*.plist`. Validated the pattern on a deployment 2026-05-19 against the stock `cloudflared` brew formula, which ships a plist with no subcommand in `ProgramArguments`; cloudflared then prints help and exits 1, KeepAlive retries forever, brew shows `error 1`, and the only fix is hand-patching the plist (which `brew upgrade` later silently overwrites). Our formula must not repeat that wart. Same Poka-Yoke direction as `make upgrade` + the brew CLI's `ai-ui update --tag X.Y.Z`.**\n- [ ] LaunchAgent plist template baked into `ai-ui.rb` / `ai-ui@1.rb`'s `service do` block with full `ProgramArguments` (binary + `start` subcommand + the flags that actually launch the container), `KeepAlive { SuccessfulExit=false }`, `RunAtLoad=true`, `StandardOutPath`/`StandardErrorPath` \u2192 `/opt/homebrew/var/log/ai-ui.{log,err.log}`.\n- [ ] `--system` flag (or a sibling `ai-ui-headless` formula) installs a LaunchDaemon under `/Library/LaunchDaemons/` for unattended-reboot uptime \u2014 for boxes where nobody logs in after power-cycle. Document the tradeoff vs. auto-login + LaunchAgent.\n- [ ] `ai-ui start` / `ai-ui stop` / `ai-ui update` integrate with `launchctl` (or `brew services`) so the lifecycle is one command on each side and idempotent across re-runs.\n- [ ] Idempotent install/upgrade: `brew upgrade ai-ui` must not duplicate the plist, silently evict a running service, or leave an orphan plist after `brew uninstall`. `brew services list` should always reflect reality.\n- [ ] Pre-flight in `ai-ui start`: refuse to launch when another container is already bound to the configured port or container name; prompt the operator to `ai-ui stop` first rather than silently double-binding.\n- [ ] Smoke: an `ai-ui` formula test (`test do` block) that installs the agent, asserts the service starts, hits `/health`, then deregisters cleanly.\n\n`TODO.md:L125`",
       "type": "text",
       "width": 280,
       "x": 360,
@@ -653,87 +691,49 @@
       "children": [
         {
           "checked": false,
-          "line_num": 130,
-          "tags": [],
-          "text": "**PK-1 \u2014 Local/External model indicator**: Add `is_external` + `provider_label` to model API response; show Local/External badge in model selector, response bubbles, and space agent messages"
-        },
-        {
-          "checked": false,
-          "line_num": 131,
-          "tags": [],
-          "text": "**PK-2 \u2014 Admin chat access default OFF**: Change `ENABLE_ADMIN_CHAT_ACCESS` default to `False` in `config.py:1378`; add audit log line in `routers/chats.py:86`; add visible banner when admin views a user's chats"
-        },
-        {
-          "checked": false,
-          "line_num": 132,
-          "tags": [],
-          "text": "**PK-3 \u2014 Workshop external model warning**: Show inline warning when an agent is created with an external-provider base model"
-        },
-        {
-          "checked": false,
-          "line_num": 133,
-          "tags": [],
-          "text": "Update CHANGELOG.md: document breaking change (admin chat access now opt-in)"
-        },
-        {
-          "checked": false,
           "line_num": 134,
           "tags": [],
-          "text": "Full plan at: `~/agent-planning/plans/poka-yoke-buzzing-sedgewick.md`"
+          "text": "Edit `app/src/lib/components/layout/UpdateInfoToast.svelte`: new copy + inline `<code>` for the command + two links"
+        },
+        {
+          "checked": false,
+          "line_num": 135,
+          "tags": [],
+          "text": "Update `app/src/lib/i18n/locales/en-US/translation.json` with new strings; other locales fall back to English until translated"
+        },
+        {
+          "checked": false,
+          "line_num": 136,
+          "tags": [],
+          "text": "Create `WEB-Sage.Education-docs/docs/admin/auto-updates.md` (CapRover config + brew alt + Portainer/K8s/other one-paragraph each + Need help? \u2192 `support@sage.is`)"
+        },
+        {
+          "checked": false,
+          "line_num": 137,
+          "tags": [],
+          "text": "Verify: banner renders with new copy when current < latest for an admin; release-notes link points at the specific tag; docs page renders in Docusaurus dev server"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "a59a81aaa8f4a16d",
-      "line_num": 129,
+      "id": "f5563f1d7b01942f",
+      "line_num": 133,
       "source": "todo_md",
       "tags": [],
-      "text": "**Review & implement Poka-Yoke privacy plan: Three structural mistake-proofing changes surfaced by panel review**\n- [ ] **PK-1 \u2014 Local/External model indicator**: Add `is_external` + `provider_label` to model API response; show Local/External badge in model selector, response bubbles, and space agent messages\n- [ ] **PK-2 \u2014 Admin chat access default OFF**: Change `ENABLE_ADMIN_CHAT_ACCESS` default to `False` in `config.py:1378`; add audit log line in `routers/chats.py:86`; add visible banner when admin views a user's chats\n- [ ] **PK-3 \u2014 Workshop external model warning**: Show inline warning when an agent is created with an external-provider base model\n- [ ] Update CHANGELOG.md: document breaking change (admin chat access now opt-in)\n- [ ] Full plan at: `~/agent-planning/plans/poka-yoke-buzzing-sedgewick.md`\n\n`TODO.md:L129`",
+      "text": "**Update banner: redirect admins to auto-update config: Replace `UpdateInfoToast.svelte` copy with deployment-shape-aware guidance \u2014 auto-deploying installs (CapRover, Portainer, K8s) pick up new tags automatically; brew/manual installs run `ai-ui update --tag X.Y.Z` (shown inline). New docs page `WEB-Sage.Education-docs/docs/admin/auto-updates.md` covers config per deployment shape + `support@sage.is` contact. No backend changes \u2014 CapRover's existing auto-pull is the structural poka-yoke; this is messaging only. Plan: `~/.claude/plans/given-our-newest-trends-modular-sloth.md`.**\n- [ ] Edit `app/src/lib/components/layout/UpdateInfoToast.svelte`: new copy + inline `<code>` for the command + two links\n- [ ] Update `app/src/lib/i18n/locales/en-US/translation.json` with new strings; other locales fall back to English until translated\n- [ ] Create `WEB-Sage.Education-docs/docs/admin/auto-updates.md` (CapRover config + brew alt + Portainer/K8s/other one-paragraph each + Need help? \u2192 `support@sage.is`)\n- [ ] Verify: banner renders with new copy when current < latest for an admin; release-notes link points at the specific tag; docs page renders in Docusaurus dev server\n\n`TODO.md:L133`",
       "type": "text",
       "width": 280,
       "x": 360,
       "y": 510
     },
     {
-      "children": [
-        {
-          "checked": false,
-          "line_num": 139,
-          "tags": [],
-          "text": "Replace \"nothing phones home\" \u2192 \"nothing leaves your building unless you send it\""
-        },
-        {
-          "checked": false,
-          "line_num": 140,
-          "tags": [],
-          "text": "Replace \"we don't store data\" \u2192 \"Sage stores nothing; schools may store by default; ephemeral mode is available\""
-        },
-        {
-          "checked": false,
-          "line_num": 141,
-          "tags": [],
-          "text": "Add educator-visibility default sentence: \"Sage ships with educator visibility on by default. Students can toggle privacy at any time.\""
-        },
-        {
-          "checked": false,
-          "line_num": 142,
-          "tags": [],
-          "text": "Revise model-transparency claim: \"when a user is permitted to inspect an agent, they always see which model it calls\""
-        },
-        {
-          "checked": false,
-          "line_num": 143,
-          "tags": [],
-          "text": "Audit remaining absolute claims for similar conditionals"
-        }
-      ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "a4449ac67eb998fc",
-      "line_num": 138,
+      "id": "571375302a46615c",
+      "line_num": 139,
       "source": "todo_md",
       "tags": [],
-      "text": "**Pitch \u2014 Fix Privacy Absolutes: Audit `docs/elevator-pitch.md` for unconditional privacy claims**\n- [ ] Replace \"nothing phones home\" \u2192 \"nothing leaves your building unless you send it\"\n- [ ] Replace \"we don't store data\" \u2192 \"Sage stores nothing; schools may store by default; ephemeral mode is available\"\n- [ ] Add educator-visibility default sentence: \"Sage ships with educator visibility on by default. Students can toggle privacy at any time.\"\n- [ ] Revise model-transparency claim: \"when a user is permitted to inspect an agent, they always see which model it calls\"\n- [ ] Audit remaining absolute claims for similar conditionals\n\n`TODO.md:L138`",
+      "text": "**TODO.md cleanup pass: After 2.3.0 ship, reconcile completed work, drop or re-scope stale items, re-tag inline tags so KANBAN.canvas regenerates cleanly. Whole-file pass, not surgical edits.**\n`TODO.md:L139`",
       "type": "text",
       "width": 280,
       "x": 360,
@@ -743,36 +743,42 @@
       "children": [
         {
           "checked": false,
+          "line_num": 144,
+          "tags": [],
+          "text": "**PK-1 \u2014 Local/External model indicator**: Add `is_external` + `provider_label` to model API response; show Local/External badge in model selector, response bubbles, and space agent messages"
+        },
+        {
+          "checked": false,
+          "line_num": 145,
+          "tags": [],
+          "text": "**PK-2 \u2014 Admin chat access default OFF**: Change `ENABLE_ADMIN_CHAT_ACCESS` default to `False` in `config.py:1378`; add audit log line in `routers/chats.py:86`; add visible banner when admin views a user's chats"
+        },
+        {
+          "checked": false,
           "line_num": 146,
           "tags": [],
-          "text": "Choose one audience for the current pitch (family: local/budget-first, or org: sovereignty/compliance)"
+          "text": "**PK-3 \u2014 Workshop external model warning**: Show inline warning when an agent is created with an external-provider base model"
         },
         {
           "checked": false,
           "line_num": 147,
           "tags": [],
-          "text": "Revise opening hook for that audience only"
+          "text": "Update CHANGELOG.md: document breaking change (admin chat access now opt-in)"
         },
         {
           "checked": false,
           "line_num": 148,
           "tags": [],
-          "text": "Confirm cake metaphor stays in the family version only"
-        },
-        {
-          "checked": false,
-          "line_num": 149,
-          "tags": [],
-          "text": "Stub a second pitch outline for the other audience"
+          "text": "Full plan at: `~/agent-planning/plans/poka-yoke-buzzing-sedgewick.md`"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "e1078e88a1b1ac8b",
-      "line_num": 145,
+      "id": "28c65fe6b6579333",
+      "line_num": 143,
       "source": "todo_md",
       "tags": [],
-      "text": "**Pitch \u2014 Pick Primary Audience: Decide family pitch vs. org pitch as the launch face**\n- [ ] Choose one audience for the current pitch (family: local/budget-first, or org: sovereignty/compliance)\n- [ ] Revise opening hook for that audience only\n- [ ] Confirm cake metaphor stays in the family version only\n- [ ] Stub a second pitch outline for the other audience\n\n`TODO.md:L145`",
+      "text": "**Review & implement Poka-Yoke privacy plan: Three structural mistake-proofing changes surfaced by panel review**\n- [ ] **PK-1 \u2014 Local/External model indicator**: Add `is_external` + `provider_label` to model API response; show Local/External badge in model selector, response bubbles, and space agent messages\n- [ ] **PK-2 \u2014 Admin chat access default OFF**: Change `ENABLE_ADMIN_CHAT_ACCESS` default to `False` in `config.py:1378`; add audit log line in `routers/chats.py:86`; add visible banner when admin views a user's chats\n- [ ] **PK-3 \u2014 Workshop external model warning**: Show inline warning when an agent is created with an external-provider base model\n- [ ] Update CHANGELOG.md: document breaking change (admin chat access now opt-in)\n- [ ] Full plan at: `~/agent-planning/plans/poka-yoke-buzzing-sedgewick.md`\n\n`TODO.md:L143`",
       "type": "text",
       "width": 280,
       "x": 360,
@@ -782,42 +788,42 @@
       "children": [
         {
           "checked": false,
-          "line_num": 152,
-          "tags": [],
-          "text": "Document what Sage-the-company stores (nothing) vs. what schools may store (by default)"
-        },
-        {
-          "checked": false,
           "line_num": 153,
           "tags": [],
-          "text": "Document residual risks for users of the anonymizing proxy"
+          "text": "Replace \"nothing phones home\" \u2192 \"nothing leaves your building unless you send it\""
         },
         {
           "checked": false,
           "line_num": 154,
           "tags": [],
-          "text": "Document warrant/subpoena response sequence for school deployments"
+          "text": "Replace \"we don't store data\" \u2192 \"Sage stores nothing; schools may store by default; ephemeral mode is available\""
         },
         {
           "checked": false,
           "line_num": 155,
           "tags": [],
-          "text": "Written commitment: no automated behavioral flagging (hate speech, self-harm, etc.) without explicit school opt-in"
+          "text": "Add educator-visibility default sentence: \"Sage ships with educator visibility on by default. Students can toggle privacy at any time.\""
         },
         {
           "checked": false,
           "line_num": 156,
           "tags": [],
-          "text": "Publish to `docs/` and link from README and elevator-pitch"
+          "text": "Revise model-transparency claim: \"when a user is permitted to inspect an agent, they always see which model it calls\""
+        },
+        {
+          "checked": false,
+          "line_num": 157,
+          "tags": [],
+          "text": "Audit remaining absolute claims for similar conditionals"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "8c7bce28f8ed290d",
-      "line_num": 151,
+      "id": "2a8af3b9f9184a19",
+      "line_num": 152,
       "source": "todo_md",
       "tags": [],
-      "text": "**Publish Threat Model: One public document establishing what Sage defends and what it does not**\n- [ ] Document what Sage-the-company stores (nothing) vs. what schools may store (by default)\n- [ ] Document residual risks for users of the anonymizing proxy\n- [ ] Document warrant/subpoena response sequence for school deployments\n- [ ] Written commitment: no automated behavioral flagging (hate speech, self-harm, etc.) without explicit school opt-in\n- [ ] Publish to `docs/` and link from README and elevator-pitch\n\n`TODO.md:L151`",
+      "text": "**Pitch \u2014 Fix Privacy Absolutes: Audit `docs/elevator-pitch.md` for unconditional privacy claims**\n- [ ] Replace \"nothing phones home\" \u2192 \"nothing leaves your building unless you send it\"\n- [ ] Replace \"we don't store data\" \u2192 \"Sage stores nothing; schools may store by default; ephemeral mode is available\"\n- [ ] Add educator-visibility default sentence: \"Sage ships with educator visibility on by default. Students can toggle privacy at any time.\"\n- [ ] Revise model-transparency claim: \"when a user is permitted to inspect an agent, they always see which model it calls\"\n- [ ] Audit remaining absolute claims for similar conditionals\n\n`TODO.md:L152`",
       "type": "text",
       "width": 280,
       "x": 360,
@@ -827,24 +833,36 @@
       "children": [
         {
           "checked": false,
+          "line_num": 160,
+          "tags": [],
+          "text": "Choose one audience for the current pitch (family: local/budget-first, or org: sovereignty/compliance)"
+        },
+        {
+          "checked": false,
           "line_num": 161,
           "tags": [],
-          "text": "Outgoing email notifications (reuse bridge SMTP config)"
+          "text": "Revise opening hook for that audience only"
         },
         {
           "checked": false,
           "line_num": 162,
           "tags": [],
-          "text": "Consolidate LDAP config into Auth/Integrations tab"
+          "text": "Confirm cake metaphor stays in the family version only"
+        },
+        {
+          "checked": false,
+          "line_num": 163,
+          "tags": [],
+          "text": "Stub a second pitch outline for the other audience"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "0df4f3dfd3e18975",
-      "line_num": 160,
+      "id": "7a93e6b827f195d3",
+      "line_num": 159,
       "source": "todo_md",
       "tags": [],
-      "text": "**Auth & Onboarding: Email notifications and LDAP consolidation**\n- [ ] Outgoing email notifications (reuse bridge SMTP config)\n- [ ] Consolidate LDAP config into Auth/Integrations tab\n\n`TODO.md:L160`",
+      "text": "**Pitch \u2014 Pick Primary Audience: Decide family pitch vs. org pitch as the launch face**\n- [ ] Choose one audience for the current pitch (family: local/budget-first, or org: sovereignty/compliance)\n- [ ] Revise opening hook for that audience only\n- [ ] Confirm cake metaphor stays in the family version only\n- [ ] Stub a second pitch outline for the other audience\n\n`TODO.md:L159`",
       "type": "text",
       "width": 280,
       "x": 360,
@@ -854,30 +872,42 @@
       "children": [
         {
           "checked": false,
-          "line_num": 165,
+          "line_num": 166,
           "tags": [],
-          "text": "Agent context mode: `conversation` (last ~5 messages) and `full` (all recent) \u2014 `single` already ships"
+          "text": "Document what Sage-the-company stores (nothing) vs. what schools may store (by default)"
         },
         {
           "checked": false,
-          "line_num": 166,
+          "line_num": 167,
           "tags": [],
-          "text": "Optional per-agent TTL for auto-reply expiration"
+          "text": "Document residual risks for users of the anonymizing proxy"
         },
         {
           "checked": false,
           "line_num": 168,
           "tags": [],
-          "text": "**Silverbullet integration into Spaces** \u2014 wire the self-hosted Silverbullet PKM/wiki tool into Spaces so a Space can carry a structured note-graph alongside chats and files. Planning conversation first (architecture, auth, data model) before any code."
+          "text": "Document warrant/subpoena response sequence for school deployments"
+        },
+        {
+          "checked": false,
+          "line_num": 169,
+          "tags": [],
+          "text": "Written commitment: no automated behavioral flagging (hate speech, self-harm, etc.) without explicit school opt-in"
+        },
+        {
+          "checked": false,
+          "line_num": 170,
+          "tags": [],
+          "text": "Publish to `docs/` and link from README and elevator-pitch"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "52e6843151e32693",
-      "line_num": 164,
+      "id": "4ec3fdadad6a9ac2",
+      "line_num": 165,
       "source": "todo_md",
       "tags": [],
-      "text": "**Spaces Enhancements: Agent context modes and auto-reply TTL**\n- [ ] Agent context mode: `conversation` (last ~5 messages) and `full` (all recent) \u2014 `single` already ships\n- [ ] Optional per-agent TTL for auto-reply expiration\n- [ ] **Silverbullet integration into Spaces** \u2014 wire the self-hosted Silverbullet PKM/wiki tool into Spaces so a Space can carry a structured note-graph alongside chats and files. Planning conversation first (architecture, auth, data model) before any code.\n\n`TODO.md:L164`",
+      "text": "**Publish Threat Model: One public document establishing what Sage defends and what it does not**\n- [ ] Document what Sage-the-company stores (nothing) vs. what schools may store (by default)\n- [ ] Document residual risks for users of the anonymizing proxy\n- [ ] Document warrant/subpoena response sequence for school deployments\n- [ ] Written commitment: no automated behavioral flagging (hate speech, self-harm, etc.) without explicit school opt-in\n- [ ] Publish to `docs/` and link from README and elevator-pitch\n\n`TODO.md:L165`",
       "type": "text",
       "width": 280,
       "x": 360,
@@ -887,30 +917,24 @@
       "children": [
         {
           "checked": false,
-          "line_num": 172,
+          "line_num": 175,
           "tags": [],
-          "text": "Svelte 4 \u2192 5"
+          "text": "Outgoing email notifications (reuse bridge SMTP config)"
         },
         {
           "checked": false,
-          "line_num": 173,
+          "line_num": 176,
           "tags": [],
-          "text": "Vite 5 \u2192 6"
-        },
-        {
-          "checked": false,
-          "line_num": 174,
-          "tags": [],
-          "text": "SvelteKit 2.5 \u2192 latest"
+          "text": "Consolidate LDAP config into Auth/Integrations tab"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "5fee762aa271cbb5",
-      "line_num": 171,
+      "id": "6d21740d0bd26870",
+      "line_num": 174,
       "source": "todo_md",
       "tags": [],
-      "text": "**Frontend Toolchain Upgrade: Svelte 5, Vite 6, SvelteKit latest**\n- [ ] Svelte 4 \u2192 5\n- [ ] Vite 5 \u2192 6\n- [ ] SvelteKit 2.5 \u2192 latest\n\n`TODO.md:L171`",
+      "text": "**Auth & Onboarding: Email notifications and LDAP consolidation**\n- [ ] Outgoing email notifications (reuse bridge SMTP config)\n- [ ] Consolidate LDAP config into Auth/Integrations tab\n\n`TODO.md:L174`",
       "type": "text",
       "width": 280,
       "x": 360,
@@ -920,30 +944,30 @@
       "children": [
         {
           "checked": false,
-          "line_num": 177,
-          "tags": [],
-          "text": "Test and fix Podman build issues (VM memory, rootless networking)"
-        },
-        {
-          "checked": false,
-          "line_num": 178,
-          "tags": [],
-          "text": "Document Podman-specific setup (VM memory bump, `host.containers.internal`)"
-        },
-        {
-          "checked": false,
           "line_num": 179,
           "tags": [],
-          "text": "Revisit Makefile `CONTAINER_RUNTIME` auto-detection once Podman is a verified alternative"
+          "text": "Agent context mode: `conversation` (last ~5 messages) and `full` (all recent) \u2014 `single` already ships"
+        },
+        {
+          "checked": false,
+          "line_num": 180,
+          "tags": [],
+          "text": "Optional per-agent TTL for auto-reply expiration"
+        },
+        {
+          "checked": false,
+          "line_num": 182,
+          "tags": [],
+          "text": "**Silverbullet integration into Spaces** \u2014 wire the self-hosted Silverbullet PKM/wiki tool into Spaces so a Space can carry a structured note-graph alongside chats and files. Planning conversation first (architecture, auth, data model) before any code."
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "cc2b9d1ce089ba84",
-      "line_num": 176,
+      "id": "d003fe9eb25936ae",
+      "line_num": 178,
       "source": "todo_md",
       "tags": [],
-      "text": "**Podman Compatibility: Verify builds and document setup**\n- [ ] Test and fix Podman build issues (VM memory, rootless networking)\n- [ ] Document Podman-specific setup (VM memory bump, `host.containers.internal`)\n- [ ] Revisit Makefile `CONTAINER_RUNTIME` auto-detection once Podman is a verified alternative\n\n`TODO.md:L176`",
+      "text": "**Spaces Enhancements: Agent context modes and auto-reply TTL**\n- [ ] Agent context mode: `conversation` (last ~5 messages) and `full` (all recent) \u2014 `single` already ships\n- [ ] Optional per-agent TTL for auto-reply expiration\n- [ ] **Silverbullet integration into Spaces** \u2014 wire the self-hosted Silverbullet PKM/wiki tool into Spaces so a Space can carry a structured note-graph alongside chats and files. Planning conversation first (architecture, auth, data model) before any code.\n\n`TODO.md:L178`",
       "type": "text",
       "width": 280,
       "x": 360,
@@ -953,24 +977,30 @@
       "children": [
         {
           "checked": false,
-          "line_num": 182,
+          "line_num": 186,
           "tags": [],
-          "text": "AI-parsed ingestion mode + admin Documents page cleanup"
+          "text": "Svelte 4 \u2192 5"
         },
         {
           "checked": false,
-          "line_num": 183,
+          "line_num": 187,
           "tags": [],
-          "text": "Fold engine-specific config under `<details>/<summary>` in the admin page"
+          "text": "Vite 5 \u2192 6"
+        },
+        {
+          "checked": false,
+          "line_num": 188,
+          "tags": [],
+          "text": "SvelteKit 2.5 \u2192 latest"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "3731f5df8497663a",
-      "line_num": 181,
+      "id": "47dabfb54436dace",
+      "line_num": 185,
       "source": "todo_md",
       "tags": [],
-      "text": "**Knowledge Base Improvements: AI ingestion and admin cleanup**\n- [ ] AI-parsed ingestion mode + admin Documents page cleanup\n- [ ] Fold engine-specific config under `<details>/<summary>` in the admin page\n\n`TODO.md:L181`",
+      "text": "**Frontend Toolchain Upgrade: Svelte 5, Vite 6, SvelteKit latest**\n- [ ] Svelte 4 \u2192 5\n- [ ] Vite 5 \u2192 6\n- [ ] SvelteKit 2.5 \u2192 latest\n\n`TODO.md:L185`",
       "type": "text",
       "width": 280,
       "x": 360,
@@ -980,60 +1010,30 @@
       "children": [
         {
           "checked": false,
-          "line_num": 186,
-          "tags": [],
-          "text": "Channel \u2192 Space DB migration (Alembic rename of tables, columns, enum values)"
-        },
-        {
-          "checked": false,
-          "line_num": 187,
-          "tags": [],
-          "text": "Rename `components/channel/` directory \u2192 `components/space/`"
-        },
-        {
-          "checked": false,
-          "line_num": 188,
-          "tags": [],
-          "text": "Replace wrapper `<div>` elements with semantic custom elements"
-        },
-        {
-          "checked": false,
-          "line_num": 189,
-          "tags": [],
-          "text": "Swagger UI: custom styling, branding, auth handling"
-        },
-        {
-          "checked": false,
-          "line_num": 190,
-          "tags": [],
-          "text": "CapRover one-click template"
-        },
-        {
-          "checked": false,
           "line_num": 191,
           "tags": [],
-          "text": "Scrub remaining upstream open-webui references in comments and defaults"
+          "text": "Test and fix Podman build issues (VM memory, rootless networking)"
         },
         {
           "checked": false,
           "line_num": 192,
           "tags": [],
-          "text": "Add migration idempotency guards on all `create_table` / `add_column` calls"
+          "text": "Document Podman-specific setup (VM memory bump, `host.containers.internal`)"
         },
         {
           "checked": false,
           "line_num": 193,
           "tags": [],
-          "text": "Replace login slideshow images with original or CC/public-domain photos"
+          "text": "Revisit Makefile `CONTAINER_RUNTIME` auto-detection once Podman is a verified alternative"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "f2260b886f0f6b56",
-      "line_num": 185,
+      "id": "513aad3e175f805d",
+      "line_num": 190,
       "source": "todo_md",
       "tags": [],
-      "text": "**Codebase Cleanup: Channel\u2192Space rename, semantic HTML, branding**\n- [ ] Channel \u2192 Space DB migration (Alembic rename of tables, columns, enum values)\n- [ ] Rename `components/channel/` directory \u2192 `components/space/`\n- [ ] Replace wrapper `<div>` elements with semantic custom elements\n- [ ] Swagger UI: custom styling, branding, auth handling\n- [ ] CapRover one-click template\n- [ ] Scrub remaining upstream open-webui references in comments and defaults\n- [ ] Add migration idempotency guards on all `create_table` / `add_column` calls\n- [ ] Replace login slideshow images with original or CC/public-domain photos\n\n`TODO.md:L185`",
+      "text": "**Podman Compatibility: Verify builds and document setup**\n- [ ] Test and fix Podman build issues (VM memory, rootless networking)\n- [ ] Document Podman-specific setup (VM memory bump, `host.containers.internal`)\n- [ ] Revisit Makefile `CONTAINER_RUNTIME` auto-detection once Podman is a verified alternative\n\n`TODO.md:L190`",
       "type": "text",
       "width": 280,
       "x": 360,
@@ -1043,36 +1043,24 @@
       "children": [
         {
           "checked": false,
-          "line_num": 198,
+          "line_num": 196,
           "tags": [],
-          "text": "`ai-ui dev` CLI command: clones repo, mounts source, enables DEV_MODE"
+          "text": "AI-parsed ingestion mode + admin Documents page cleanup"
         },
         {
           "checked": false,
-          "line_num": 199,
+          "line_num": 197,
           "tags": [],
-          "text": "DeveloperStep wizard: informational in prod, celebration with wizard illustration in dev mode"
-        },
-        {
-          "checked": false,
-          "line_num": 200,
-          "tags": [],
-          "text": "Node.js + npm installed to data volume on first dev start"
-        },
-        {
-          "checked": false,
-          "line_num": 201,
-          "tags": [],
-          "text": "Same image, same container \u2014 `DEV_MODE=true` switches to vite HMR + uvicorn reload"
+          "text": "Fold engine-specific config under `<details>/<summary>` in the admin page"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "0621645459b33e69",
-      "line_num": 197,
+      "id": "0eafa7b23b15000b",
+      "line_num": 195,
       "source": "todo_md",
       "tags": [],
-      "text": "**Developer Mode: Single image, dev CLI, HMR**\n- [ ] `ai-ui dev` CLI command: clones repo, mounts source, enables DEV_MODE\n- [ ] DeveloperStep wizard: informational in prod, celebration with wizard illustration in dev mode\n- [ ] Node.js + npm installed to data volume on first dev start\n- [ ] Same image, same container \u2014 `DEV_MODE=true` switches to vite HMR + uvicorn reload\n\n`TODO.md:L197`",
+      "text": "**Knowledge Base Improvements: AI ingestion and admin cleanup**\n- [ ] AI-parsed ingestion mode + admin Documents page cleanup\n- [ ] Fold engine-specific config under `<details>/<summary>` in the admin page\n\n`TODO.md:L195`",
       "type": "text",
       "width": 280,
       "x": 360,
@@ -1082,54 +1070,60 @@
       "children": [
         {
           "checked": false,
+          "line_num": 200,
+          "tags": [],
+          "text": "Channel \u2192 Space DB migration (Alembic rename of tables, columns, enum values)"
+        },
+        {
+          "checked": false,
+          "line_num": 201,
+          "tags": [],
+          "text": "Rename `components/channel/` directory \u2192 `components/space/`"
+        },
+        {
+          "checked": false,
+          "line_num": 202,
+          "tags": [],
+          "text": "Replace wrapper `<div>` elements with semantic custom elements"
+        },
+        {
+          "checked": false,
+          "line_num": 203,
+          "tags": [],
+          "text": "Swagger UI: custom styling, branding, auth handling"
+        },
+        {
+          "checked": false,
           "line_num": 204,
           "tags": [],
-          "text": "Download progress streaming to frontend (WebSocket/SSE from backend)"
+          "text": "CapRover one-click template"
         },
         {
           "checked": false,
           "line_num": 205,
           "tags": [],
-          "text": "Admin panel tab for AI Engine download status and progress"
+          "text": "Scrub remaining upstream open-webui references in comments and defaults"
         },
         {
           "checked": false,
           "line_num": 206,
           "tags": [],
-          "text": "`HF_TOKEN` support for faster authenticated HuggingFace downloads"
+          "text": "Add migration idempotency guards on all `create_table` / `add_column` calls"
         },
         {
           "checked": false,
           "line_num": 207,
           "tags": [],
-          "text": "Download time estimates based on measured connection speed"
-        },
-        {
-          "checked": false,
-          "line_num": 208,
-          "tags": [],
-          "text": "Upload progress bars with percentage and speed meters"
-        },
-        {
-          "checked": false,
-          "line_num": 210,
-          "tags": [],
-          "text": "Configurable upload timeouts based on file size (replace hardcoded 240s)"
-        },
-        {
-          "checked": false,
-          "line_num": 212,
-          "tags": [],
-          "text": "Console/log viewer tab in admin (WebSocket log streaming)"
+          "text": "Replace login slideshow images with original or CC/public-domain photos"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "abf5ff10afe10e03",
-      "line_num": 203,
+      "id": "ffe388c8493a9afc",
+      "line_num": 199,
       "source": "todo_md",
       "tags": [],
-      "text": "**Upload & Download UX: Progress streaming, time estimates, admin viewer**\n- [ ] Download progress streaming to frontend (WebSocket/SSE from backend)\n- [ ] Admin panel tab for AI Engine download status and progress\n- [ ] `HF_TOKEN` support for faster authenticated HuggingFace downloads\n- [ ] Download time estimates based on measured connection speed\n- [ ] Upload progress bars with percentage and speed meters\n- [ ] Configurable upload timeouts based on file size (replace hardcoded 240s)\n- [ ] Console/log viewer tab in admin (WebSocket log streaming)\n\n`TODO.md:L203`",
+      "text": "**Codebase Cleanup: Channel\u2192Space rename, semantic HTML, branding**\n- [ ] Channel \u2192 Space DB migration (Alembic rename of tables, columns, enum values)\n- [ ] Rename `components/channel/` directory \u2192 `components/space/`\n- [ ] Replace wrapper `<div>` elements with semantic custom elements\n- [ ] Swagger UI: custom styling, branding, auth handling\n- [ ] CapRover one-click template\n- [ ] Scrub remaining upstream open-webui references in comments and defaults\n- [ ] Add migration idempotency guards on all `create_table` / `add_column` calls\n- [ ] Replace login slideshow images with original or CC/public-domain photos\n\n`TODO.md:L199`",
       "type": "text",
       "width": 280,
       "x": 360,
@@ -1139,54 +1133,36 @@
       "children": [
         {
           "checked": false,
+          "line_num": 212,
+          "tags": [],
+          "text": "`ai-ui dev` CLI command: clones repo, mounts source, enables DEV_MODE"
+        },
+        {
+          "checked": false,
+          "line_num": 213,
+          "tags": [],
+          "text": "DeveloperStep wizard: informational in prod, celebration with wizard illustration in dev mode"
+        },
+        {
+          "checked": false,
+          "line_num": 214,
+          "tags": [],
+          "text": "Node.js + npm installed to data volume on first dev start"
+        },
+        {
+          "checked": false,
           "line_num": 215,
           "tags": [],
-          "text": "Sage.is hosted email notification service (for deployments without SMTP)"
-        },
-        {
-          "checked": false,
-          "line_num": 216,
-          "tags": [],
-          "text": "Workspace switcher (project-scoped model configs, shared vs private)"
-        },
-        {
-          "checked": false,
-          "line_num": 217,
-          "tags": [],
-          "text": "Built-in task tracking (convert chat responses to tasks, due dates, progress)"
-        },
-        {
-          "checked": false,
-          "line_num": 218,
-          "tags": [],
-          "text": "Personal analytics dashboard (usage patterns, model preferences)"
-        },
-        {
-          "checked": false,
-          "line_num": 219,
-          "tags": [],
-          "text": "Semantic search across all chats and documents"
-        },
-        {
-          "checked": false,
-          "line_num": 220,
-          "tags": [],
-          "text": "Mobile-first optimizations (swipe gestures, PWA enhancements)"
-        },
-        {
-          "checked": false,
-          "line_num": 221,
-          "tags": [],
-          "text": "Accessibility: screen reader, high contrast, keyboard navigation"
+          "text": "Same image, same container \u2014 `DEV_MODE=true` switches to vite HMR + uvicorn reload"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "54db8ba204dbdde7",
-      "line_num": 214,
+      "id": "1bca251c34cff4ec",
+      "line_num": 211,
       "source": "todo_md",
       "tags": [],
-      "text": "**Platform Features: Workspaces, analytics, search, mobile, a11y**\n- [ ] Sage.is hosted email notification service (for deployments without SMTP)\n- [ ] Workspace switcher (project-scoped model configs, shared vs private)\n- [ ] Built-in task tracking (convert chat responses to tasks, due dates, progress)\n- [ ] Personal analytics dashboard (usage patterns, model preferences)\n- [ ] Semantic search across all chats and documents\n- [ ] Mobile-first optimizations (swipe gestures, PWA enhancements)\n- [ ] Accessibility: screen reader, high contrast, keyboard navigation\n\n`TODO.md:L214`",
+      "text": "**Developer Mode: Single image, dev CLI, HMR**\n- [ ] `ai-ui dev` CLI command: clones repo, mounts source, enables DEV_MODE\n- [ ] DeveloperStep wizard: informational in prod, celebration with wizard illustration in dev mode\n- [ ] Node.js + npm installed to data volume on first dev start\n- [ ] Same image, same container \u2014 `DEV_MODE=true` switches to vite HMR + uvicorn reload\n\n`TODO.md:L211`",
       "type": "text",
       "width": 280,
       "x": 360,
@@ -1196,48 +1172,54 @@
       "children": [
         {
           "checked": false,
+          "line_num": 218,
+          "tags": [],
+          "text": "Download progress streaming to frontend (WebSocket/SSE from backend)"
+        },
+        {
+          "checked": false,
+          "line_num": 219,
+          "tags": [],
+          "text": "Admin panel tab for AI Engine download status and progress"
+        },
+        {
+          "checked": false,
+          "line_num": 220,
+          "tags": [],
+          "text": "`HF_TOKEN` support for faster authenticated HuggingFace downloads"
+        },
+        {
+          "checked": false,
+          "line_num": 221,
+          "tags": [],
+          "text": "Download time estimates based on measured connection speed"
+        },
+        {
+          "checked": false,
+          "line_num": 222,
+          "tags": [],
+          "text": "Upload progress bars with percentage and speed meters"
+        },
+        {
+          "checked": false,
+          "line_num": 224,
+          "tags": [],
+          "text": "Configurable upload timeouts based on file size (replace hardcoded 240s)"
+        },
+        {
+          "checked": false,
           "line_num": 226,
           "tags": [],
-          "text": "Intelligent load balancing for multiple Ollama backends (`ollama.py:1`)"
-        },
-        {
-          "checked": false,
-          "line_num": 227,
-          "tags": [],
-          "text": "Update Ollama type support when upstream adds new types (`ollama.py:1378`)"
-        },
-        {
-          "checked": false,
-          "line_num": 228,
-          "tags": [],
-          "text": "Handle tool name collisions by prepending toolkit name (`utils/tools.py:109`)"
-        },
-        {
-          "checked": false,
-          "line_num": 229,
-          "tags": [],
-          "text": "Replace legacy system message insertion with `add_or_update_system_message` (`middleware.py:997`)"
-        },
-        {
-          "checked": false,
-          "line_num": 230,
-          "tags": [],
-          "text": "Add retries to audio processing requests (`audio.py:1120`)"
-        },
-        {
-          "checked": false,
-          "line_num": 231,
-          "tags": [],
-          "text": "Remove deprecated `WEBUI_JWT_SECRET_KEY` fallback at next major version (`env.py:393`)"
+          "text": "Console/log viewer tab in admin (WebSocket log streaming)"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "cddacac41236568c",
-      "line_num": 225,
+      "id": "af935dbc324b8540",
+      "line_num": 217,
       "source": "todo_md",
       "tags": [],
-      "text": "**Backend Inline TODOs: Load balancing, type updates, deprecation removal**\n- [ ] Intelligent load balancing for multiple Ollama backends (`ollama.py:1`)\n- [ ] Update Ollama type support when upstream adds new types (`ollama.py:1378`)\n- [ ] Handle tool name collisions by prepending toolkit name (`utils/tools.py:109`)\n- [ ] Replace legacy system message insertion with `add_or_update_system_message` (`middleware.py:997`)\n- [ ] Add retries to audio processing requests (`audio.py:1120`)\n- [ ] Remove deprecated `WEBUI_JWT_SECRET_KEY` fallback at next major version (`env.py:393`)\n\n`TODO.md:L225`",
+      "text": "**Upload & Download UX: Progress streaming, time estimates, admin viewer**\n- [ ] Download progress streaming to frontend (WebSocket/SSE from backend)\n- [ ] Admin panel tab for AI Engine download status and progress\n- [ ] `HF_TOKEN` support for faster authenticated HuggingFace downloads\n- [ ] Download time estimates based on measured connection speed\n- [ ] Upload progress bars with percentage and speed meters\n- [ ] Configurable upload timeouts based on file size (replace hardcoded 240s)\n- [ ] Console/log viewer tab in admin (WebSocket log streaming)\n\n`TODO.md:L217`",
       "type": "text",
       "width": 280,
       "x": 360,
@@ -1247,70 +1229,178 @@
       "children": [
         {
           "checked": false,
+          "line_num": 229,
+          "tags": [],
+          "text": "Sage.is hosted email notification service (for deployments without SMTP)"
+        },
+        {
+          "checked": false,
+          "line_num": 230,
+          "tags": [],
+          "text": "Workspace switcher (project-scoped model configs, shared vs private)"
+        },
+        {
+          "checked": false,
+          "line_num": 231,
+          "tags": [],
+          "text": "Built-in task tracking (convert chat responses to tasks, due dates, progress)"
+        },
+        {
+          "checked": false,
+          "line_num": 232,
+          "tags": [],
+          "text": "Personal analytics dashboard (usage patterns, model preferences)"
+        },
+        {
+          "checked": false,
+          "line_num": 233,
+          "tags": [],
+          "text": "Semantic search across all chats and documents"
+        },
+        {
+          "checked": false,
           "line_num": 234,
           "tags": [],
-          "text": "Filter order handling in model config (`FiltersSelector.svelte:34`)"
+          "text": "Mobile-first optimizations (swipe gestures, PWA enhancements)"
         },
         {
           "checked": false,
           "line_num": 235,
           "tags": [],
-          "text": "Voice input auto-stop logic in Knowledge Base (`AddTextContentModal.svelte:21`)"
-        },
-        {
-          "checked": false,
-          "line_num": 236,
-          "tags": [],
-          "text": "Shortcut support for generate-title button (`ChatItem.svelte:415`)"
-        },
-        {
-          "checked": false,
-          "line_num": 237,
-          "tags": [],
-          "text": "User-facing error for Space participant issues (`Space.svelte:81`)"
-        },
-        {
-          "checked": false,
-          "line_num": 238,
-          "tags": [],
-          "text": "Emoji picker search filtering (`EmojiPickerClean.svelte:47`)"
-        },
-        {
-          "checked": false,
-          "line_num": 239,
-          "tags": [],
-          "text": "Update RichTextInput Bubble/Floating to v3 (`RichTextInput.svelte:79`)"
-        },
+          "text": "Accessibility: screen reader, high contrast, keyboard navigation"
+        }
+      ],
+      "file_path": "TODO.md",
+      "height": 80,
+      "id": "49abb8f691078b26",
+      "line_num": 228,
+      "source": "todo_md",
+      "tags": [],
+      "text": "**Platform Features: Workspaces, analytics, search, mobile, a11y**\n- [ ] Sage.is hosted email notification service (for deployments without SMTP)\n- [ ] Workspace switcher (project-scoped model configs, shared vs private)\n- [ ] Built-in task tracking (convert chat responses to tasks, due dates, progress)\n- [ ] Personal analytics dashboard (usage patterns, model preferences)\n- [ ] Semantic search across all chats and documents\n- [ ] Mobile-first optimizations (swipe gestures, PWA enhancements)\n- [ ] Accessibility: screen reader, high contrast, keyboard navigation\n\n`TODO.md:L228`",
+      "type": "text",
+      "width": 280,
+      "x": 360,
+      "y": 1770
+    },
+    {
+      "children": [
         {
           "checked": false,
           "line_num": 240,
           "tags": [],
-          "text": "Note pages feature \u2014 multiple pages per note (`NoteEditor.svelte:80`)"
+          "text": "Intelligent load balancing for multiple Ollama backends (`ollama.py:1`)"
         },
         {
           "checked": false,
           "line_num": 241,
           "tags": [],
-          "text": "Decide native vs custom file handling in notes (`NoteEditor/Chat.svelte:191`)"
+          "text": "Update Ollama type support when upstream adds new types (`ollama.py:1378`)"
         },
         {
           "checked": false,
           "line_num": 242,
+          "tags": [],
+          "text": "Handle tool name collisions by prepending toolkit name (`utils/tools.py:109`)"
+        },
+        {
+          "checked": false,
+          "line_num": 243,
+          "tags": [],
+          "text": "Replace legacy system message insertion with `add_or_update_system_message` (`middleware.py:997`)"
+        },
+        {
+          "checked": false,
+          "line_num": 244,
+          "tags": [],
+          "text": "Add retries to audio processing requests (`audio.py:1120`)"
+        },
+        {
+          "checked": false,
+          "line_num": 245,
+          "tags": [],
+          "text": "Remove deprecated `WEBUI_JWT_SECRET_KEY` fallback at next major version (`env.py:393`)"
+        }
+      ],
+      "file_path": "TODO.md",
+      "height": 80,
+      "id": "2177d1f1ce1103ee",
+      "line_num": 239,
+      "source": "todo_md",
+      "tags": [],
+      "text": "**Backend Inline TODOs: Load balancing, type updates, deprecation removal**\n- [ ] Intelligent load balancing for multiple Ollama backends (`ollama.py:1`)\n- [ ] Update Ollama type support when upstream adds new types (`ollama.py:1378`)\n- [ ] Handle tool name collisions by prepending toolkit name (`utils/tools.py:109`)\n- [ ] Replace legacy system message insertion with `add_or_update_system_message` (`middleware.py:997`)\n- [ ] Add retries to audio processing requests (`audio.py:1120`)\n- [ ] Remove deprecated `WEBUI_JWT_SECRET_KEY` fallback at next major version (`env.py:393`)\n\n`TODO.md:L239`",
+      "type": "text",
+      "width": 280,
+      "x": 360,
+      "y": 1860
+    },
+    {
+      "children": [
+        {
+          "checked": false,
+          "line_num": 248,
+          "tags": [],
+          "text": "Filter order handling in model config (`FiltersSelector.svelte:34`)"
+        },
+        {
+          "checked": false,
+          "line_num": 249,
+          "tags": [],
+          "text": "Voice input auto-stop logic in Knowledge Base (`AddTextContentModal.svelte:21`)"
+        },
+        {
+          "checked": false,
+          "line_num": 250,
+          "tags": [],
+          "text": "Shortcut support for generate-title button (`ChatItem.svelte:415`)"
+        },
+        {
+          "checked": false,
+          "line_num": 251,
+          "tags": [],
+          "text": "User-facing error for Space participant issues (`Space.svelte:81`)"
+        },
+        {
+          "checked": false,
+          "line_num": 252,
+          "tags": [],
+          "text": "Emoji picker search filtering (`EmojiPickerClean.svelte:47`)"
+        },
+        {
+          "checked": false,
+          "line_num": 253,
+          "tags": [],
+          "text": "Update RichTextInput Bubble/Floating to v3 (`RichTextInput.svelte:79`)"
+        },
+        {
+          "checked": false,
+          "line_num": 254,
+          "tags": [],
+          "text": "Note pages feature \u2014 multiple pages per note (`NoteEditor.svelte:80`)"
+        },
+        {
+          "checked": false,
+          "line_num": 255,
+          "tags": [],
+          "text": "Decide native vs custom file handling in notes (`NoteEditor/Chat.svelte:191`)"
+        },
+        {
+          "checked": false,
+          "line_num": 256,
           "tags": [],
           "text": "Investigate Kokoro worker issues (`kokoro.worker.ts:4`)"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "29cbd65349567f29",
-      "line_num": 233,
+      "id": "902723eb9c672176",
+      "line_num": 247,
       "source": "todo_md",
       "tags": [],
-      "text": "**Frontend Inline TODOs: UX polish, component upgrades, bug investigation**\n- [ ] Filter order handling in model config (`FiltersSelector.svelte:34`)\n- [ ] Voice input auto-stop logic in Knowledge Base (`AddTextContentModal.svelte:21`)\n- [ ] Shortcut support for generate-title button (`ChatItem.svelte:415`)\n- [ ] User-facing error for Space participant issues (`Space.svelte:81`)\n- [ ] Emoji picker search filtering (`EmojiPickerClean.svelte:47`)\n- [ ] Update RichTextInput Bubble/Floating to v3 (`RichTextInput.svelte:79`)\n- [ ] Note pages feature \u2014 multiple pages per note (`NoteEditor.svelte:80`)\n- [ ] Decide native vs custom file handling in notes (`NoteEditor/Chat.svelte:191`)\n- [ ] Investigate Kokoro worker issues (`kokoro.worker.ts:4`)\n\n`TODO.md:L233`",
+      "text": "**Frontend Inline TODOs: UX polish, component upgrades, bug investigation**\n- [ ] Filter order handling in model config (`FiltersSelector.svelte:34`)\n- [ ] Voice input auto-stop logic in Knowledge Base (`AddTextContentModal.svelte:21`)\n- [ ] Shortcut support for generate-title button (`ChatItem.svelte:415`)\n- [ ] User-facing error for Space participant issues (`Space.svelte:81`)\n- [ ] Emoji picker search filtering (`EmojiPickerClean.svelte:47`)\n- [ ] Update RichTextInput Bubble/Floating to v3 (`RichTextInput.svelte:79`)\n- [ ] Note pages feature \u2014 multiple pages per note (`NoteEditor.svelte:80`)\n- [ ] Decide native vs custom file handling in notes (`NoteEditor/Chat.svelte:191`)\n- [ ] Investigate Kokoro worker issues (`kokoro.worker.ts:4`)\n\n`TODO.md:L247`",
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 1770
+      "y": 1950
     },
     {
       "file_path": "app/backend/sage_is_ai/main.py",
@@ -1323,7 +1413,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 1860
+      "y": 2040
     },
     {
       "file_path": "app/backend/sage_is_ai/routers/spaces.py",
@@ -1336,7 +1426,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 1950
+      "y": 2130
     },
     {
       "file_path": "app/backend/sage_is_ai/routers/images.py",
@@ -1349,7 +1439,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 2040
+      "y": 2220
     },
     {
       "file_path": "app/backend/sage_is_ai/routers/audio.py",
@@ -1362,7 +1452,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 2130
+      "y": 2310
     },
     {
       "file_path": "app/backend/sage_is_ai/routers/audio.py",
@@ -1375,7 +1465,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 2220
+      "y": 2400
     },
     {
       "file_path": "app/backend/sage_is_ai/routers/audio.py",
@@ -1388,7 +1478,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 2310
+      "y": 2490
     },
     {
       "file_path": "app/backend/sage_is_ai/routers/audio.py",
@@ -1401,7 +1491,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 2400
+      "y": 2580
     },
     {
       "file_path": "app/backend/sage_is_ai/routers/ollama.py",
@@ -1414,7 +1504,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 2490
+      "y": 2670
     },
     {
       "file_path": "app/backend/sage_is_ai/routers/ollama.py",
@@ -1427,7 +1517,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 2580
+      "y": 2760
     },
     {
       "file_path": "app/backend/sage_is_ai/routers/ollama.py",
@@ -1440,7 +1530,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 2670
+      "y": 2850
     },
     {
       "file_path": "app/backend/sage_is_ai/routers/ollama.py",
@@ -1453,7 +1543,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 2760
+      "y": 2940
     },
     {
       "file_path": "app/backend/sage_is_ai/routers/ollama.py",
@@ -1466,7 +1556,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 2850
+      "y": 3030
     },
     {
       "file_path": "app/backend/sage_is_ai/routers/ollama.py",
@@ -1479,7 +1569,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 2940
+      "y": 3120
     },
     {
       "file_path": "app/backend/sage_is_ai/utils/tools.py",
@@ -1492,7 +1582,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 3030
+      "y": 3210
     },
     {
       "file_path": "app/backend/sage_is_ai/utils/middleware.py",
@@ -1505,7 +1595,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 3120
+      "y": 3300
     },
     {
       "file_path": "app/src/lib/components/workshop/Models/FiltersSelector.svelte",
@@ -1518,7 +1608,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 3210
+      "y": 3390
     },
     {
       "file_path": "app/src/lib/components/workshop/Knowledge/KnowledgeBase/AddTextContentModal.svelte",
@@ -1531,7 +1621,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 3300
+      "y": 3480
     },
     {
       "file_path": "app/src/lib/components/layout/Sidebar/ChatItem.svelte",
@@ -1544,7 +1634,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 3390
+      "y": 3570
     },
     {
       "file_path": "app/src/lib/components/channel/Space.svelte",
@@ -1557,7 +1647,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 3480
+      "y": 3660
     },
     {
       "file_path": "app/src/lib/components/common/EmojiPickerClean.svelte",
@@ -1570,7 +1660,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 3570
+      "y": 3750
     },
     {
       "file_path": "app/src/lib/components/common/RichTextInput.svelte",
@@ -1583,7 +1673,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 3660
+      "y": 3840
     },
     {
       "file_path": "app/src/lib/components/notes/NoteEditor.svelte",
@@ -1596,7 +1686,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 3750
+      "y": 3930
     },
     {
       "file_path": "app/src/lib/components/notes/NoteEditor/Chat.svelte",
@@ -1609,7 +1699,7 @@
       "type": "text",
       "width": 280,
       "x": 360,
-      "y": 3840
+      "y": 4020
     },
     {
       "color": "5",
@@ -1901,39 +1991,39 @@
       "children": [
         {
           "checked": true,
-          "line_num": 334,
+          "line_num": 348,
           "tags": [],
           "text": "Locate the `llm-status` route handler in the trial runtime router"
         },
         {
           "checked": true,
-          "line_num": 335,
+          "line_num": 349,
           "tags": [],
           "text": "Confirm whether it sits outside the trial router or whether the router-level `enable_try_sage` check is missing for this handler specifically \u2014 root cause was **dependency order**: `_require_try_sage_enabled()` was called inline AFTER `Depends(get_admin_user)` had already evaluated, so auth's 401/403 fired before the env-gate's 404. Same defect class affected `/extend` and `/reset`."
         },
         {
           "checked": true,
-          "line_num": 336,
+          "line_num": 350,
           "tags": [],
           "text": "Add the same gating that protects `status` / `personas` / `limits` so the route returns 404 when the env flag is false \u2014 fix at `app/backend/sage_is_ai/routers/sage_runtime.py:267-272`: lifted gate into `_gate: None = Depends(_require_try_sage_enabled)` parameter listed BEFORE `Depends(get_admin_user)`. Applied to `/llm-status`, `/extend`, `/reset`. Docstring of `_require_try_sage_enabled` now documents the ordering contract."
         },
         {
           "checked": true,
-          "line_num": 337,
+          "line_num": 351,
           "tags": [],
           "text": "Re-run the trial smoke for-loop; confirm `404 /llm-status` \u2014 verified against fresh `sage-is/ai-ui:bug-verify` image; all seven trial endpoints (`status`, `personas`, `limits`, `llm-status`, `extend`, `clear`, `reset`) return 404."
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "dc875ae7cef25580",
-      "line_num": 333,
+      "id": "a1c15bec280ef83d",
+      "line_num": 347,
       "source": "todo_md",
       "tags": [
         "#critical",
         "#bug"
       ],
-      "text": "**try.sage Runtime `/llm-status` Endpoint Not Env-Gated: With `ENABLE_TRY_SAGE=false`, `GET /api/v1/sage/runtime/llm-status` returns `403 {\"detail\":\"Not authenticated\"}` instead of 404. The route handler is registered unconditionally; auth is the only barrier. Sibling endpoints (`status`, `personas`, `limits`) correctly 404 when the env flag is off.**\n- [x] Locate the `llm-status` route handler in the trial runtime router\n- [x] Confirm whether it sits outside the trial router or whether the router-level `enable_try_sage` check is missing for this handler specifically \u2014 root cause was **dependency order**: `_require_try_sage_enabled()` was called inline AFTER `Depends(get_admin_user)` had already evaluated, so auth's 401/403 fired before the env-gate's 404. Same defect class affected `/extend` and `/reset`.\n- [x] Add the same gating that protects `status` / `personas` / `limits` so the route returns 404 when the env flag is false \u2014 fix at `app/backend/sage_is_ai/routers/sage_runtime.py:267-272`: lifted gate into `_gate: None = Depends(_require_try_sage_enabled)` parameter listed BEFORE `Depends(get_admin_user)`. Applied to `/llm-status`, `/extend`, `/reset`. Docstring of `_require_try_sage_enabled` now documents the ordering contract.\n- [x] Re-run the trial smoke for-loop; confirm `404 /llm-status` \u2014 verified against fresh `sage-is/ai-ui:bug-verify` image; all seven trial endpoints (`status`, `personas`, `limits`, `llm-status`, `extend`, `clear`, `reset`) return 404.\n\n`#critical` `#bug`\n`TODO.md:L333`",
+      "text": "**try.sage Runtime `/llm-status` Endpoint Not Env-Gated: With `ENABLE_TRY_SAGE=false`, `GET /api/v1/sage/runtime/llm-status` returns `403 {\"detail\":\"Not authenticated\"}` instead of 404. The route handler is registered unconditionally; auth is the only barrier. Sibling endpoints (`status`, `personas`, `limits`) correctly 404 when the env flag is off.**\n- [x] Locate the `llm-status` route handler in the trial runtime router\n- [x] Confirm whether it sits outside the trial router or whether the router-level `enable_try_sage` check is missing for this handler specifically \u2014 root cause was **dependency order**: `_require_try_sage_enabled()` was called inline AFTER `Depends(get_admin_user)` had already evaluated, so auth's 401/403 fired before the env-gate's 404. Same defect class affected `/extend` and `/reset`.\n- [x] Add the same gating that protects `status` / `personas` / `limits` so the route returns 404 when the env flag is false \u2014 fix at `app/backend/sage_is_ai/routers/sage_runtime.py:267-272`: lifted gate into `_gate: None = Depends(_require_try_sage_enabled)` parameter listed BEFORE `Depends(get_admin_user)`. Applied to `/llm-status`, `/extend`, `/reset`. Docstring of `_require_try_sage_enabled` now documents the ordering contract.\n- [x] Re-run the trial smoke for-loop; confirm `404 /llm-status` \u2014 verified against fresh `sage-is/ai-ui:bug-verify` image; all seven trial endpoints (`status`, `personas`, `limits`, `llm-status`, `extend`, `clear`, `reset`) return 404.\n\n`#critical` `#bug`\n`TODO.md:L347`",
       "type": "text",
       "width": 280,
       "x": 1060,
@@ -1943,39 +2033,39 @@
       "children": [
         {
           "checked": false,
-          "line_num": 357,
+          "line_num": 371,
           "tags": [],
           "text": "Reproduce the issue in the chat interface and confirm whether capture, transcription, or input binding is failing"
         },
         {
           "checked": false,
-          "line_num": 358,
+          "line_num": 372,
           "tags": [],
           "text": "Trace the microphone/transcription flow from recorder output into the chat composer state"
         },
         {
           "checked": false,
-          "line_num": 359,
+          "line_num": 373,
           "tags": [],
           "text": "Fix the handoff so completed recordings populate the message input field"
         },
         {
           "checked": false,
-          "line_num": 360,
+          "line_num": 374,
           "tags": [],
           "text": "Add regression coverage for microphone-to-input behavior in chat"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "256e45209c747442",
-      "line_num": 356,
+      "id": "df325ae7c927b3d2",
+      "line_num": 370,
       "source": "todo_md",
       "tags": [
         "#critical",
         "#bug"
       ],
-      "text": "**Chat Microphone Recording Does Not Populate Message Input: Recording from the microphone icon in chat does not process speech into the text field used to send messages**\n- [ ] Reproduce the issue in the chat interface and confirm whether capture, transcription, or input binding is failing\n- [ ] Trace the microphone/transcription flow from recorder output into the chat composer state\n- [ ] Fix the handoff so completed recordings populate the message input field\n- [ ] Add regression coverage for microphone-to-input behavior in chat\n\n`#critical` `#bug`\n`TODO.md:L356`",
+      "text": "**Chat Microphone Recording Does Not Populate Message Input: Recording from the microphone icon in chat does not process speech into the text field used to send messages**\n- [ ] Reproduce the issue in the chat interface and confirm whether capture, transcription, or input binding is failing\n- [ ] Trace the microphone/transcription flow from recorder output into the chat composer state\n- [ ] Fix the handoff so completed recordings populate the message input field\n- [ ] Add regression coverage for microphone-to-input behavior in chat\n\n`#critical` `#bug`\n`TODO.md:L370`",
       "type": "text",
       "width": 280,
       "x": 1060,
@@ -1985,38 +2075,38 @@
       "children": [
         {
           "checked": true,
-          "line_num": 342,
+          "line_num": 356,
           "tags": [],
           "text": "Locate where the SPA static catch-all is mounted in the FastAPI app \u2014 `SPAStaticFiles.get_response` in `app/backend/sage_is_ai/main.py`."
         },
         {
           "checked": true,
-          "line_num": 343,
+          "line_num": 357,
           "tags": [],
           "text": "Add a guard so `/api/*` paths that don't match a registered router return JSON 404, not the SPA index \u2014 fix at `app/backend/sage_is_ai/main.py:498-510`: in `SPAStaticFiles.get_response`, paths equal to `api` or starting with `api/` now return `JSONResponse(status_code=404, content={\"detail\": \"Not Found\"})` instead of falling through to `index.html`."
         },
         {
           "checked": true,
-          "line_num": 344,
+          "line_num": 358,
           "tags": [],
           "text": "Verify with a curl against any made-up `/api/v1/nonexistent` path \u2014 should return 404 with `application/json` \u2014 verified: `GET /api/v1/literally_made_up_path` returns `404 Not Found` with 22-byte JSON body. Non-api SPA paths still return `200 text/html` (frontend routing intact)."
         },
         {
           "checked": true,
-          "line_num": 345,
+          "line_num": 359,
           "tags": [],
           "text": "Re-run the trial smoke for-loop; `extend` and `clear` should report `404 /<endpoint>` \u2014 verified, plus `/reset` also 404 (which would have been a third leak without this fix)."
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "0d23c53c02fbce09",
-      "line_num": 341,
+      "id": "9a0353f0b6eaa35b",
+      "line_num": 355,
       "source": "todo_md",
       "tags": [
         "#bug"
       ],
-      "text": "**Unregistered `/api/*` Paths Return SPA HTML Instead of 404: With `ENABLE_TRY_SAGE=false`, `GET /api/v1/sage/runtime/extend` and `GET /api/v1/sage/runtime/clear` return `200 text/html` (5463 bytes, identical etag) \u2014 the SvelteKit static catch-all serves `index.html` for unregistered backend paths. Breaks any curl-based smoke test that expects 404 for absent routes and masks future router-registration bugs.**\n- [x] Locate where the SPA static catch-all is mounted in the FastAPI app \u2014 `SPAStaticFiles.get_response` in `app/backend/sage_is_ai/main.py`.\n- [x] Add a guard so `/api/*` paths that don't match a registered router return JSON 404, not the SPA index \u2014 fix at `app/backend/sage_is_ai/main.py:498-510`: in `SPAStaticFiles.get_response`, paths equal to `api` or starting with `api/` now return `JSONResponse(status_code=404, content={\"detail\": \"Not Found\"})` instead of falling through to `index.html`.\n- [x] Verify with a curl against any made-up `/api/v1/nonexistent` path \u2014 should return 404 with `application/json` \u2014 verified: `GET /api/v1/literally_made_up_path` returns `404 Not Found` with 22-byte JSON body. Non-api SPA paths still return `200 text/html` (frontend routing intact).\n- [x] Re-run the trial smoke for-loop; `extend` and `clear` should report `404 /<endpoint>` \u2014 verified, plus `/reset` also 404 (which would have been a third leak without this fix).\n\n`#bug`\n`TODO.md:L341`",
+      "text": "**Unregistered `/api/*` Paths Return SPA HTML Instead of 404: With `ENABLE_TRY_SAGE=false`, `GET /api/v1/sage/runtime/extend` and `GET /api/v1/sage/runtime/clear` return `200 text/html` (5463 bytes, identical etag) \u2014 the SvelteKit static catch-all serves `index.html` for unregistered backend paths. Breaks any curl-based smoke test that expects 404 for absent routes and masks future router-registration bugs.**\n- [x] Locate where the SPA static catch-all is mounted in the FastAPI app \u2014 `SPAStaticFiles.get_response` in `app/backend/sage_is_ai/main.py`.\n- [x] Add a guard so `/api/*` paths that don't match a registered router return JSON 404, not the SPA index \u2014 fix at `app/backend/sage_is_ai/main.py:498-510`: in `SPAStaticFiles.get_response`, paths equal to `api` or starting with `api/` now return `JSONResponse(status_code=404, content={\"detail\": \"Not Found\"})` instead of falling through to `index.html`.\n- [x] Verify with a curl against any made-up `/api/v1/nonexistent` path \u2014 should return 404 with `application/json` \u2014 verified: `GET /api/v1/literally_made_up_path` returns `404 Not Found` with 22-byte JSON body. Non-api SPA paths still return `200 text/html` (frontend routing intact).\n- [x] Re-run the trial smoke for-loop; `extend` and `clear` should report `404 /<endpoint>` \u2014 verified, plus `/reset` also 404 (which would have been a third leak without this fix).\n\n`#bug`\n`TODO.md:L355`",
       "type": "text",
       "width": 280,
       "x": 1060,
@@ -2026,32 +2116,32 @@
       "children": [
         {
           "checked": false,
-          "line_num": 350,
+          "line_num": 364,
           "tags": [],
           "text": "Surface HF download progress (bytes, last-byte timestamp) to `request.app.state.MODEL_DOWNLOAD_STATUS` so the status endpoint exposes liveness."
         },
         {
           "checked": false,
-          "line_num": 351,
+          "line_num": 365,
           "tags": [],
           "text": "Watchdog in `_download` (`retrieval.py`): if cache size hasn't grown in N minutes (configurable, default 5), mark status=`stalled`, capture the error, allow retry via a re-POST to `/api/v1/retrieval/models/download`."
         },
         {
           "checked": false,
-          "line_num": 352,
+          "line_num": 366,
           "tags": [],
           "text": "Surface stalled state in the wizard UI with a retry button + \"check your connection\" hint."
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "189b2a758a379c67",
-      "line_num": 349,
+      "id": "da3666885995c0c0",
+      "line_num": 363,
       "source": "todo_md",
       "tags": [
         "#bug"
       ],
-      "text": "**AI Engine Wizard Embedding Download Has No Stall Watchdog: When the embedding model fetch from HuggingFace stalls (network drop, HF outage, slow link), the wizard sits in `embedding=downloading` indefinitely. No timeout, no retry, no resumable state surfaced to the admin. `wizard-smoke.sh` catches this externally via `INSTALL_TIMEOUT_SEC`, but a real user has no signal except an idle spinner.**\n- [ ] Surface HF download progress (bytes, last-byte timestamp) to `request.app.state.MODEL_DOWNLOAD_STATUS` so the status endpoint exposes liveness.\n- [ ] Watchdog in `_download` (`retrieval.py`): if cache size hasn't grown in N minutes (configurable, default 5), mark status=`stalled`, capture the error, allow retry via a re-POST to `/api/v1/retrieval/models/download`.\n- [ ] Surface stalled state in the wizard UI with a retry button + \"check your connection\" hint.\n\n`#bug`\n`TODO.md:L349`",
+      "text": "**AI Engine Wizard Embedding Download Has No Stall Watchdog: When the embedding model fetch from HuggingFace stalls (network drop, HF outage, slow link), the wizard sits in `embedding=downloading` indefinitely. No timeout, no retry, no resumable state surfaced to the admin. `wizard-smoke.sh` catches this externally via `INSTALL_TIMEOUT_SEC`, but a real user has no signal except an idle spinner.**\n- [ ] Surface HF download progress (bytes, last-byte timestamp) to `request.app.state.MODEL_DOWNLOAD_STATUS` so the status endpoint exposes liveness.\n- [ ] Watchdog in `_download` (`retrieval.py`): if cache size hasn't grown in N minutes (configurable, default 5), mark status=`stalled`, capture the error, allow retry via a re-POST to `/api/v1/retrieval/models/download`.\n- [ ] Surface stalled state in the wizard UI with a retry button + \"check your connection\" hint.\n\n`#bug`\n`TODO.md:L363`",
       "type": "text",
       "width": 280,
       "x": 1060,
@@ -2061,30 +2151,30 @@
       "children": [
         {
           "checked": false,
-          "line_num": 365,
+          "line_num": 379,
           "tags": [],
           "text": "to reproduce start new chat, use backticks and click space key to open codefence ux. Type words."
         },
         {
           "checked": false,
-          "line_num": 366,
+          "line_num": 380,
           "tags": [],
           "text": "Depending on text entered various colors visible. Take note of low contrast combinations."
         },
         {
           "checked": false,
-          "line_num": 367,
+          "line_num": 381,
           "tags": [],
           "text": "Locate cause of color issue and fix"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "8da069c360f55e6d",
-      "line_num": 364,
+      "id": "5d19103f4635fe9c",
+      "line_num": 378,
       "source": "todo_md",
       "tags": [],
-      "text": "**Code Fence in chat renders near invisible: when inputting text in chat and using codefence the typed or pasted text in the codefence is white on light grey.**\n- [ ] to reproduce start new chat, use backticks and click space key to open codefence ux. Type words.\n- [ ] Depending on text entered various colors visible. Take note of low contrast combinations.\n- [ ] Locate cause of color issue and fix\n\n`TODO.md:L364`",
+      "text": "**Code Fence in chat renders near invisible: when inputting text in chat and using codefence the typed or pasted text in the codefence is white on light grey.**\n- [ ] to reproduce start new chat, use backticks and click space key to open codefence ux. Type words.\n- [ ] Depending on text entered various colors visible. Take note of low contrast combinations.\n- [ ] Locate cause of color issue and fix\n\n`TODO.md:L378`",
       "type": "text",
       "width": 280,
       "x": 1060,
@@ -2094,38 +2184,38 @@
       "children": [
         {
           "checked": true,
-          "line_num": 410,
+          "line_num": 424,
           "tags": [],
           "text": "Reproduce: with `TRY_SAGE_TUTORIAL_STEPS_JSON` unset, open the tutorial via the admin replay button \u2014 confirm cards render without expected content"
         },
         {
           "checked": true,
-          "line_num": 411,
+          "line_num": 425,
           "tags": [],
           "text": "Inspect the default-step rendering branch in `app/src/lib/components/setup/TrySageTutorial.svelte` \u2014 specifically the placeholder card layout that fires when `step.video_url` is empty/missing"
         },
         {
           "checked": true,
-          "line_num": 412,
+          "line_num": 426,
           "tags": [],
           "text": "Confirm whether the `DEFAULT_STEPS` constant is reachable, the iteration is correct, and i18n wrapping isn't producing empty strings"
         },
         {
           "checked": true,
-          "line_num": 413,
+          "line_num": 427,
           "tags": [],
           "text": "Fix the missing-cards rendering so at minimum each step shows: title, \"Video coming soon\" placeholder, and the step's `description` paragraph"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "8b737de8f89c5dbb",
-      "line_num": 409,
+      "id": "9e113099ef18c562",
+      "line_num": 423,
       "source": "todo_md",
       "tags": [
         "#bug"
       ],
-      "text": "**try.sage Tutorial Step Cards Render Empty: When the tutorial does open (via Admin \u2192 Trial Mode \u2192 Replay tutorial), the step cards are missing content \u2014 title, \"Video coming soon\" placeholder, and `description` paragraph all missing or partially missing.**\n- [x] Reproduce: with `TRY_SAGE_TUTORIAL_STEPS_JSON` unset, open the tutorial via the admin replay button \u2014 confirm cards render without expected content\n- [x] Inspect the default-step rendering branch in `app/src/lib/components/setup/TrySageTutorial.svelte` \u2014 specifically the placeholder card layout that fires when `step.video_url` is empty/missing\n- [x] Confirm whether the `DEFAULT_STEPS` constant is reachable, the iteration is correct, and i18n wrapping isn't producing empty strings\n- [x] Fix the missing-cards rendering so at minimum each step shows: title, \"Video coming soon\" placeholder, and the step's `description` paragraph\n\n`#bug`\n`TODO.md:L409`",
+      "text": "**try.sage Tutorial Step Cards Render Empty: When the tutorial does open (via Admin \u2192 Trial Mode \u2192 Replay tutorial), the step cards are missing content \u2014 title, \"Video coming soon\" placeholder, and `description` paragraph all missing or partially missing.**\n- [x] Reproduce: with `TRY_SAGE_TUTORIAL_STEPS_JSON` unset, open the tutorial via the admin replay button \u2014 confirm cards render without expected content\n- [x] Inspect the default-step rendering branch in `app/src/lib/components/setup/TrySageTutorial.svelte` \u2014 specifically the placeholder card layout that fires when `step.video_url` is empty/missing\n- [x] Confirm whether the `DEFAULT_STEPS` constant is reachable, the iteration is correct, and i18n wrapping isn't producing empty strings\n- [x] Fix the missing-cards rendering so at minimum each step shows: title, \"Video coming soon\" placeholder, and the step's `description` paragraph\n\n`#bug`\n`TODO.md:L423`",
       "type": "text",
       "width": 280,
       "x": 1060,
@@ -2135,32 +2225,32 @@
       "children": [
         {
           "checked": true,
-          "line_num": 418,
+          "line_num": 432,
           "tags": [],
           "text": "Float the banner above the app shell rather than reflowing it inline. Outer wrapper `position:fixed; top:0.5rem; left:0; right:0; z:40; pointer-events:none`. Inner pill `max-w:60ch; margin:0 auto; pointer-events:auto; rounded; subtle shadow`. Doesn't push navbar/content down on first paint and z-index keeps it above the sidebar."
         },
         {
           "checked": true,
-          "line_num": 419,
+          "line_num": 433,
           "tags": [],
           "text": "Edited `app/src/lib/components/TrySageBanner.svelte` outer wrapper only \u2014 inner content (countdown row, persona-jump row, `<details>` block) untouched."
         },
         {
           "checked": true,
-          "line_num": 420,
+          "line_num": 434,
           "tags": [],
           "text": "Banner now slides 280px right when the desktop sidebar opens so it stays centered over the chat content, not the full viewport. Driven off the existing `showSidebar` store with a 200ms ease transition. Mobile is unaffected (sidebar overlays there)."
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "e85b5192c2231f0c",
-      "line_num": 417,
+      "id": "ede0822330da40d9",
+      "line_num": 431,
       "source": "todo_md",
       "tags": [
         "#bug"
       ],
-      "text": "**Trial Banner Overlapped by Left Sidebar: Once a persona signed in, the left sidebar (admin / chat list) overlapped the trial banner. Banner was a full-width strip pushed into the layout flow; sidebar's z-index let it cut into the banner's edges.**\n- [x] Float the banner above the app shell rather than reflowing it inline. Outer wrapper `position:fixed; top:0.5rem; left:0; right:0; z:40; pointer-events:none`. Inner pill `max-w:60ch; margin:0 auto; pointer-events:auto; rounded; subtle shadow`. Doesn't push navbar/content down on first paint and z-index keeps it above the sidebar.\n- [x] Edited `app/src/lib/components/TrySageBanner.svelte` outer wrapper only \u2014 inner content (countdown row, persona-jump row, `<details>` block) untouched.\n- [x] Banner now slides 280px right when the desktop sidebar opens so it stays centered over the chat content, not the full viewport. Driven off the existing `showSidebar` store with a 200ms ease transition. Mobile is unaffected (sidebar overlays there).\n\n`#bug`\n`TODO.md:L417`",
+      "text": "**Trial Banner Overlapped by Left Sidebar: Once a persona signed in, the left sidebar (admin / chat list) overlapped the trial banner. Banner was a full-width strip pushed into the layout flow; sidebar's z-index let it cut into the banner's edges.**\n- [x] Float the banner above the app shell rather than reflowing it inline. Outer wrapper `position:fixed; top:0.5rem; left:0; right:0; z:40; pointer-events:none`. Inner pill `max-w:60ch; margin:0 auto; pointer-events:auto; rounded; subtle shadow`. Doesn't push navbar/content down on first paint and z-index keeps it above the sidebar.\n- [x] Edited `app/src/lib/components/TrySageBanner.svelte` outer wrapper only \u2014 inner content (countdown row, persona-jump row, `<details>` block) untouched.\n- [x] Banner now slides 280px right when the desktop sidebar opens so it stays centered over the chat content, not the full viewport. Driven off the existing `showSidebar` store with a 200ms ease transition. Mobile is unaffected (sidebar overlays there).\n\n`#bug`\n`TODO.md:L431`",
       "type": "text",
       "width": 280,
       "x": 1060,
@@ -2170,38 +2260,38 @@
       "children": [
         {
           "checked": true,
-          "line_num": 425,
+          "line_num": 439,
           "tags": [],
           "text": "Find the offending images under `app/static/` (likely `static/assets/images/` or wherever `SlideShow.svelte` reads from) and confirm the exact filenames + license source"
         },
         {
           "checked": true,
-          "line_num": 426,
+          "line_num": 440,
           "tags": [],
           "text": "Pick replacements: original Sage.is photography, or CC0 / public-domain alternatives that match the warm-workshop tone (libraries, classrooms, observatories, etc.)"
         },
         {
           "checked": true,
-          "line_num": 427,
+          "line_num": 441,
           "tags": [],
           "text": "Replace files in-tree, keep filenames stable so `SlideShow.svelte` keeps working without code change. Run the build and visually confirm new images render in the welcome slideshow + try.sage welcome page."
         },
         {
           "checked": true,
-          "line_num": 428,
+          "line_num": 442,
           "tags": [],
           "text": "Cross-link with the existing **Codebase Cleanup \u2192 \"Replace login slideshow images with original or CC/public-domain photos\"** task \u2014 collapse if both are doing the same work."
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "a80ec20055443b4f",
-      "line_num": 424,
+      "id": "c06580212ce34994",
+      "line_num": 438,
       "source": "todo_md",
       "tags": [
         "#bug"
       ],
-      "text": "**Replace David / Sistine Chapel Art in Login Slideshow: The login/onboarding/welcome slideshow ships a Michelangelo's David and a Sistine Chapel ceiling image \u2014 both are recognisable Renaissance pieces that don't fit the Sage.is brand and may carry licensing risk depending on the source photo. Swap for original or CC/public-domain imagery.**\n- [x] Find the offending images under `app/static/` (likely `static/assets/images/` or wherever `SlideShow.svelte` reads from) and confirm the exact filenames + license source\n- [x] Pick replacements: original Sage.is photography, or CC0 / public-domain alternatives that match the warm-workshop tone (libraries, classrooms, observatories, etc.)\n- [x] Replace files in-tree, keep filenames stable so `SlideShow.svelte` keeps working without code change. Run the build and visually confirm new images render in the welcome slideshow + try.sage welcome page.\n- [x] Cross-link with the existing **Codebase Cleanup \u2192 \"Replace login slideshow images with original or CC/public-domain photos\"** task \u2014 collapse if both are doing the same work.\n\n`#bug`\n`TODO.md:L424`",
+      "text": "**Replace David / Sistine Chapel Art in Login Slideshow: The login/onboarding/welcome slideshow ships a Michelangelo's David and a Sistine Chapel ceiling image \u2014 both are recognisable Renaissance pieces that don't fit the Sage.is brand and may carry licensing risk depending on the source photo. Swap for original or CC/public-domain imagery.**\n- [x] Find the offending images under `app/static/` (likely `static/assets/images/` or wherever `SlideShow.svelte` reads from) and confirm the exact filenames + license source\n- [x] Pick replacements: original Sage.is photography, or CC0 / public-domain alternatives that match the warm-workshop tone (libraries, classrooms, observatories, etc.)\n- [x] Replace files in-tree, keep filenames stable so `SlideShow.svelte` keeps working without code change. Run the build and visually confirm new images render in the welcome slideshow + try.sage welcome page.\n- [x] Cross-link with the existing **Codebase Cleanup \u2192 \"Replace login slideshow images with original or CC/public-domain photos\"** task \u2014 collapse if both are doing the same work.\n\n`#bug`\n`TODO.md:L438`",
       "type": "text",
       "width": 280,
       "x": 1060,
@@ -2211,38 +2301,38 @@
       "children": [
         {
           "checked": true,
-          "line_num": 433,
+          "line_num": 447,
           "tags": [],
           "text": "Reproduce: clear `localStorage.try_sage_tutorial_seen_v1`, sign in via a persona magic link, confirm modal does NOT appear"
         },
         {
           "checked": true,
-          "line_num": 434,
+          "line_num": 448,
           "tags": [],
           "text": "Inspect the `onMount`/reactive trigger condition in `app/src/lib/components/setup/TrySageTutorial.svelte` \u2014 likely the `$user` check fires before the user store hydrates after magic-link verify, OR the SvelteKit hard-navigation from `/auth#magic_token=...` lands before the layout has subscribed to `tutorialReopen`"
         },
         {
           "checked": true,
-          "line_num": 435,
+          "line_num": 449,
           "tags": [],
           "text": "Fix so the auto-show fires on first persona sign-in, not just from the admin \"Replay tutorial\" button"
         },
         {
           "checked": true,
-          "line_num": 436,
+          "line_num": 450,
           "tags": [],
           "text": "Add a Vitest spec that mounts the component with mocked `$config`, `$user`, and a clean `localStorage`, and asserts the modal opens"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "fb0e59df7af41873",
-      "line_num": 432,
+      "id": "b5e2e3562ea5f7ff",
+      "line_num": 446,
       "source": "todo_md",
       "tags": [
         "#bug"
       ],
-      "text": "**try.sage Tutorial Does Not Auto-Open on First Persona Sign-In: The TrySageTutorial modal is supposed to auto-open the first time a persona signs in (gated on `$config?.features?.enable_try_sage` + signed-in `$user` + missing `localStorage.try_sage_tutorial_seen_v1`). Manually triggering \"Replay tutorial\" from Admin \u2192 Trial Mode opens it correctly, so the modal itself works \u2014 only the auto-trigger fails.**\n- [x] Reproduce: clear `localStorage.try_sage_tutorial_seen_v1`, sign in via a persona magic link, confirm modal does NOT appear\n- [x] Inspect the `onMount`/reactive trigger condition in `app/src/lib/components/setup/TrySageTutorial.svelte` \u2014 likely the `$user` check fires before the user store hydrates after magic-link verify, OR the SvelteKit hard-navigation from `/auth#magic_token=...` lands before the layout has subscribed to `tutorialReopen`\n- [x] Fix so the auto-show fires on first persona sign-in, not just from the admin \"Replay tutorial\" button\n- [x] Add a Vitest spec that mounts the component with mocked `$config`, `$user`, and a clean `localStorage`, and asserts the modal opens\n\n`#bug`\n`TODO.md:L432`",
+      "text": "**try.sage Tutorial Does Not Auto-Open on First Persona Sign-In: The TrySageTutorial modal is supposed to auto-open the first time a persona signs in (gated on `$config?.features?.enable_try_sage` + signed-in `$user` + missing `localStorage.try_sage_tutorial_seen_v1`). Manually triggering \"Replay tutorial\" from Admin \u2192 Trial Mode opens it correctly, so the modal itself works \u2014 only the auto-trigger fails.**\n- [x] Reproduce: clear `localStorage.try_sage_tutorial_seen_v1`, sign in via a persona magic link, confirm modal does NOT appear\n- [x] Inspect the `onMount`/reactive trigger condition in `app/src/lib/components/setup/TrySageTutorial.svelte` \u2014 likely the `$user` check fires before the user store hydrates after magic-link verify, OR the SvelteKit hard-navigation from `/auth#magic_token=...` lands before the layout has subscribed to `tutorialReopen`\n- [x] Fix so the auto-show fires on first persona sign-in, not just from the admin \"Replay tutorial\" button\n- [x] Add a Vitest spec that mounts the component with mocked `$config`, `$user`, and a clean `localStorage`, and asserts the modal opens\n\n`#bug`\n`TODO.md:L446`",
       "type": "text",
       "width": 280,
       "x": 1060,
@@ -2262,38 +2352,38 @@
       "children": [
         {
           "checked": true,
-          "line_num": 378,
+          "line_num": 392,
           "tags": [],
           "text": "Test: `brew tap sage-is/apps && brew install ai-ui`"
         },
         {
           "checked": true,
-          "line_num": 379,
+          "line_num": 393,
           "tags": [],
           "text": "Fix homebrew-apps Makefile `release_finish`"
         },
         {
           "checked": true,
-          "line_num": 380,
+          "line_num": 394,
           "tags": [],
           "text": "git flow state got stuck on v0.1.2 release; manual merge required to complete"
         },
         {
           "checked": true,
-          "line_num": 381,
+          "line_num": 395,
           "tags": [],
           "text": "celebrate!!! :D"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "11280f97418edc1f",
-      "line_num": 377,
+      "id": "8286701c9b8dc5ee",
+      "line_num": 391,
       "source": "todo_md",
       "tags": [
         "#critical"
       ],
-      "text": "**Homebrew Tap Release: Finish and verify the brew install path**\n- [x] Test: `brew tap sage-is/apps && brew install ai-ui`\n- [x] Fix homebrew-apps Makefile `release_finish`\n- [x] git flow state got stuck on v0.1.2 release; manual merge required to complete\n- [x] celebrate!!! :D\n\n`#critical`\n`TODO.md:L377`",
+      "text": "**Homebrew Tap Release: Finish and verify the brew install path**\n- [x] Test: `brew tap sage-is/apps && brew install ai-ui`\n- [x] Fix homebrew-apps Makefile `release_finish`\n- [x] git flow state got stuck on v0.1.2 release; manual merge required to complete\n- [x] celebrate!!! :D\n\n`#critical`\n`TODO.md:L391`",
       "type": "text",
       "width": 280,
       "x": 1410,
@@ -2390,84 +2480,84 @@
       "children": [
         {
           "checked": true,
-          "line_num": 384,
+          "line_num": 398,
           "tags": [],
           "text": "Gate try.sage.is ai behind env vars"
         },
         {
           "checked": true,
-          "line_num": 385,
+          "line_num": 399,
           "tags": [],
           "text": "Seed default try.sage agents: Sage Strawberry, Sage Startr.Style, AstroPi AI tutor (with KBs)"
         },
         {
           "checked": true,
-          "line_num": 386,
+          "line_num": 400,
           "tags": [],
           "text": "Register `https://tool-server.example.com` in `TOOL_SERVER_CONNECTIONS`"
         },
         {
           "checked": true,
-          "line_num": 387,
+          "line_num": 401,
           "tags": [],
           "text": "Add a dummy-tools server with placeholder endpoints (revisit later \u2014 see Production Decisions)"
         },
         {
           "checked": true,
-          "line_num": 388,
+          "line_num": 402,
           "tags": [],
           "text": "Trial helper endpoints: status, personas, limits, llm-status, extend, reset"
         },
         {
           "checked": true,
-          "line_num": 389,
+          "line_num": 403,
           "tags": [],
           "text": "Auto-reset every 24h via env-configurable settings; selective wipe preserves persona accounts and KBs"
         },
         {
           "checked": true,
-          "line_num": 390,
+          "line_num": 404,
           "tags": [],
           "text": "Admin-only extend (capped at one extension per window) and force-reset"
         },
         {
           "checked": true,
-          "line_num": 391,
+          "line_num": 405,
           "tags": [],
           "text": "RBAC via existing `get_admin_user` dependency on protected endpoints"
         },
         {
           "checked": true,
-          "line_num": 392,
+          "line_num": 406,
           "tags": [],
           "text": "Hidden OpenAI-compatible LLM connection (memory-only, never persisted, never echoed in any response)"
         },
         {
           "checked": true,
-          "line_num": 393,
+          "line_num": 407,
           "tags": [],
           "text": "Model allowlist via `TRY_SAGE_LLM_MODELS`"
         },
         {
           "checked": true,
-          "line_num": 394,
+          "line_num": 408,
           "tags": [],
           "text": "Document env vars, reset semantics, admin controls in `docs/try-sage-deployment.md`"
         },
         {
           "checked": true,
-          "line_num": 395,
+          "line_num": 409,
           "tags": [],
           "text": "Makefile targets `try_sage_start` / `try_sage_stop`"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "f67481724450f3de",
-      "line_num": 383,
+      "id": "804f885e11621e3e",
+      "line_num": 397,
       "source": "todo_md",
       "tags": [],
-      "text": "**try.sage Runtime and Admin Controls: (Alexander Somma + Izzy Plante) \u2014 Shipped Phase A 2026-04-27.**\n- [x] Gate try.sage.is ai behind env vars\n- [x] Seed default try.sage agents: Sage Strawberry, Sage Startr.Style, AstroPi AI tutor (with KBs)\n- [x] Register `https://tool-server.example.com` in `TOOL_SERVER_CONNECTIONS`\n- [x] Add a dummy-tools server with placeholder endpoints (revisit later \u2014 see Production Decisions)\n- [x] Trial helper endpoints: status, personas, limits, llm-status, extend, reset\n- [x] Auto-reset every 24h via env-configurable settings; selective wipe preserves persona accounts and KBs\n- [x] Admin-only extend (capped at one extension per window) and force-reset\n- [x] RBAC via existing `get_admin_user` dependency on protected endpoints\n- [x] Hidden OpenAI-compatible LLM connection (memory-only, never persisted, never echoed in any response)\n- [x] Model allowlist via `TRY_SAGE_LLM_MODELS`\n- [x] Document env vars, reset semantics, admin controls in `docs/try-sage-deployment.md`\n- [x] Makefile targets `try_sage_start` / `try_sage_stop`\n\n`TODO.md:L383`",
+      "text": "**try.sage Runtime and Admin Controls: (Alexander Somma + Izzy Plante) \u2014 Shipped Phase A 2026-04-27.**\n- [x] Gate try.sage.is ai behind env vars\n- [x] Seed default try.sage agents: Sage Strawberry, Sage Startr.Style, AstroPi AI tutor (with KBs)\n- [x] Register `https://tool-server.example.com` in `TOOL_SERVER_CONNECTIONS`\n- [x] Add a dummy-tools server with placeholder endpoints (revisit later \u2014 see Production Decisions)\n- [x] Trial helper endpoints: status, personas, limits, llm-status, extend, reset\n- [x] Auto-reset every 24h via env-configurable settings; selective wipe preserves persona accounts and KBs\n- [x] Admin-only extend (capped at one extension per window) and force-reset\n- [x] RBAC via existing `get_admin_user` dependency on protected endpoints\n- [x] Hidden OpenAI-compatible LLM connection (memory-only, never persisted, never echoed in any response)\n- [x] Model allowlist via `TRY_SAGE_LLM_MODELS`\n- [x] Document env vars, reset semantics, admin controls in `docs/try-sage-deployment.md`\n- [x] Makefile targets `try_sage_start` / `try_sage_stop`\n\n`TODO.md:L397`",
       "type": "text",
       "width": 280,
       "x": 1410,
@@ -2477,72 +2567,72 @@
       "children": [
         {
           "checked": true,
-          "line_num": 398,
+          "line_num": 412,
           "tags": [],
           "text": "Persistent top-of-screen try.sage banner with live HH:MM:SS countdown"
         },
         {
           "checked": true,
-          "line_num": 399,
+          "line_num": 413,
           "tags": [],
           "text": "Admin extend/reset CTAs in the banner row (live next to the countdown they affect)"
         },
         {
           "checked": true,
-          "line_num": 400,
+          "line_num": 414,
           "tags": [],
           "text": "Non-admin info line directing to docs and admin"
         },
         {
           "checked": true,
-          "line_num": 401,
+          "line_num": 415,
           "tags": [],
           "text": "User-bar persona switcher: admin + facilitator + 3 trial users (configurable up to 5 trial users)"
         },
         {
           "checked": true,
-          "line_num": 402,
+          "line_num": 416,
           "tags": [],
           "text": "Tutorial overlay with config-driven steps (`TRY_SAGE_TUTORIAL_STEPS_JSON`); 6-step default with placeholder cards when unset"
         },
         {
           "checked": true,
-          "line_num": 403,
+          "line_num": 417,
           "tags": [],
           "text": "Setup wizard suppression in trial mode + admin escape hatch in Admin \u2192 Settings \u2192 Trial Mode"
         },
         {
           "checked": true,
-          "line_num": 404,
+          "line_num": 418,
           "tags": [],
           "text": "Per-step `dismissible` flag honored; localStorage seen-flag persists across sessions"
         },
         {
           "checked": true,
-          "line_num": 405,
+          "line_num": 419,
           "tags": [],
           "text": "Provider-agnostic analytics shim (Matomo + GA + Plausible) wired via `$config.analytics`"
         },
         {
           "checked": true,
-          "line_num": 406,
+          "line_num": 420,
           "tags": [],
           "text": "Pure-Svelte zero-dep QR encoder for persona magic-link sharing in workshops"
         },
         {
           "checked": true,
-          "line_num": 407,
+          "line_num": 421,
           "tags": [],
           "text": "Document the UX + analytics event map in `docs/try-sage-deployment.md`"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "b8800d6262822be4",
-      "line_num": 397,
+      "id": "23a4bb16f916ee75",
+      "line_num": 411,
       "source": "todo_md",
       "tags": [],
-      "text": "**try.sage.is Experience and Insights: (Alexander Somma + Izzy Plante) \u2014 Shipped Phase B 2026-04-27.**\n- [x] Persistent top-of-screen try.sage banner with live HH:MM:SS countdown\n- [x] Admin extend/reset CTAs in the banner row (live next to the countdown they affect)\n- [x] Non-admin info line directing to docs and admin\n- [x] User-bar persona switcher: admin + facilitator + 3 trial users (configurable up to 5 trial users)\n- [x] Tutorial overlay with config-driven steps (`TRY_SAGE_TUTORIAL_STEPS_JSON`); 6-step default with placeholder cards when unset\n- [x] Setup wizard suppression in trial mode + admin escape hatch in Admin \u2192 Settings \u2192 Trial Mode\n- [x] Per-step `dismissible` flag honored; localStorage seen-flag persists across sessions\n- [x] Provider-agnostic analytics shim (Matomo + GA + Plausible) wired via `$config.analytics`\n- [x] Pure-Svelte zero-dep QR encoder for persona magic-link sharing in workshops\n- [x] Document the UX + analytics event map in `docs/try-sage-deployment.md`\n\n`TODO.md:L397`",
+      "text": "**try.sage.is Experience and Insights: (Alexander Somma + Izzy Plante) \u2014 Shipped Phase B 2026-04-27.**\n- [x] Persistent top-of-screen try.sage banner with live HH:MM:SS countdown\n- [x] Admin extend/reset CTAs in the banner row (live next to the countdown they affect)\n- [x] Non-admin info line directing to docs and admin\n- [x] User-bar persona switcher: admin + facilitator + 3 trial users (configurable up to 5 trial users)\n- [x] Tutorial overlay with config-driven steps (`TRY_SAGE_TUTORIAL_STEPS_JSON`); 6-step default with placeholder cards when unset\n- [x] Setup wizard suppression in trial mode + admin escape hatch in Admin \u2192 Settings \u2192 Trial Mode\n- [x] Per-step `dismissible` flag honored; localStorage seen-flag persists across sessions\n- [x] Provider-agnostic analytics shim (Matomo + GA + Plausible) wired via `$config.analytics`\n- [x] Pure-Svelte zero-dep QR encoder for persona magic-link sharing in workshops\n- [x] Document the UX + analytics event map in `docs/try-sage-deployment.md`\n\n`TODO.md:L411`",
       "type": "text",
       "width": 280,
       "x": 1410,
@@ -2552,30 +2642,30 @@
       "children": [
         {
           "checked": true,
-          "line_num": 441,
+          "line_num": 455,
           "tags": [],
           "text": "Restructure TODO.md to TodoScope conventions"
         },
         {
           "checked": true,
-          "line_num": 442,
+          "line_num": 456,
           "tags": [],
           "text": "Fix duplicate rows in `.todoscope-exclude.csv`"
         },
         {
           "checked": true,
-          "line_num": 443,
+          "line_num": 457,
           "tags": [],
           "text": "Run TodoScope scanner and verify kanban board matches expectations"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "b08abbb86960e885",
-      "line_num": 440,
+      "id": "fa012b4f974215b0",
+      "line_num": 454,
       "source": "todo_md",
       "tags": [],
-      "text": "**TodoScope Alignment**\n- [x] Restructure TODO.md to TodoScope conventions\n- [x] Fix duplicate rows in `.todoscope-exclude.csv`\n- [x] Run TodoScope scanner and verify kanban board matches expectations\n\n`TODO.md:L440`",
+      "text": "**TodoScope Alignment**\n- [x] Restructure TODO.md to TodoScope conventions\n- [x] Fix duplicate rows in `.todoscope-exclude.csv`\n- [x] Run TodoScope scanner and verify kanban board matches expectations\n\n`TODO.md:L454`",
       "type": "text",
       "width": 280,
       "x": 1410,
