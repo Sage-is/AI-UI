@@ -1,29 +1,32 @@
-.github
-.git
-.DS_Store
-docs
-kubernetes
-node_modules
+# Hidden-artifact allowlist: deny dotfiles and dotfolders everywhere in the
+# build context unless they are intentionally needed inside the image.
+.*
+
+# Build & dependency output
+node_modules/
 /app/.svelte-kit
 /app/package
-.env
-.env.*
+__pycache__/
+venv/
+
+# Local-only directories
+docs/
+kubernetes/
+_old/
+_test/
+uploads/
+backend/data/*
+
+# Vite timestamp artifacts
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
-__pycache__
-.idea
-venv
-_old
-uploads
-.ipynb_checkpoints
-**/*.db
-_test
 
-# Dev/design source files
+# Binary / data files
+**/*.db
 **/*.xcf
 
+# Repo metadata (not needed at runtime)
 README.md
 LICENSE
 Dockerfile
 Makefile
-backend/data/*
