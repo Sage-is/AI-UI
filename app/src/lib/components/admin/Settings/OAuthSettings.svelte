@@ -428,7 +428,7 @@
 		</div>
 
 		<!-- OAuth merge and Signup controls — shown in both wizard and admin -->
-		{#if compact && adminConfig}
+		{#if adminConfig}
 			<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.6rem" />
 			<div style="--d:flex; --fd:column; --g:0.5rem; --mb:0.4rem">
 				<label style="--d:flex; --ai:center; --g:0.6rem; cursor:pointer">
