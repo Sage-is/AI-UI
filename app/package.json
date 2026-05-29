@@ -1,6 +1,6 @@
 {
 	"name": "WEB-AI-Sage-WebUI",
-	"version": "2.3.1",
+	"version": "2.3.2",
 	"private": true,
 	"scripts": {
 		"dev": "bun run pyodide:fetch && vite dev --host",
