@@ -4,6 +4,39 @@ All notable changes to [Sage.is AI-UI](https://github.com/Sage-is/AI-UI) are doc
 
 ---
 
+## [2.3.2] — 2026-05-29
+
+### Added
+
+**UpdateInfoToast Carries Auto-Update Guidance**
+When the in-app update toast fires it now tells the user how to apply the update for their install path — `ai-ui update --tag X.Y.Z` for brew, a redeploy click for CapRover, `docker pull` + `docker run` for self-host. Translations land for the new strings across the existing locale set, so the toast speaks the user's language instead of falling back to English.
+
+### Fixed
+
+**OAuth Provider Config Takes Effect Without a Restart**
+Saving an OAuth client_id / client_secret in the admin panel required a container restart before the change was honored. Two bugs cooperated. `SessionMiddleware` only mounted at boot when `OAUTH_PROVIDERS` was non-empty, so a provider added later via the UI hit the callback with no session middleware and a generic 500. And `PersistentConfig` treated blank stored values as set, so an empty DB row blocked the env-var fallback. `SessionMiddleware` is now unconditional — the cookie cost is invisible on installs that never enable OAuth — blank stored values fall back to env defaults, and `OAuthManager.reload()` rebuilds the authlib registry from the live `OAUTH_PROVIDERS` dict so admins can add or swap providers from the UI without bouncing the container.
+
+**OAuth Merge and Signup Toggles Visible in Admin Panel**
+The OAuth Settings form gated `Merge Accounts by Email` and `Enable New Sign Ups` behind a `compact && adminConfig` check that only the setup wizard satisfied. The admin panel rendered the same component without `compact={true}` and the toggles vanished. Operators rediscovered them by re-running the wizard. The gate is now `{#if adminConfig}` so both surfaces render the same controls.
+
+### Changed
+
+**`OAUTH_MERGE_ACCOUNTS_BY_EMAIL` Defaults to `True` on Fresh Installs**
+The default flipped from `False` to `True`. Workshop deployments and self-host single-admins almost always want OAuth identities auto-linked to the matching local account — the old default left first-time OAuth sign-ins blocked with an opaque 403. Existing installs keep their saved value through `PersistentConfig`; only fresh installs see the new default. The per-provider link-mode work tracked in the OAuth UX & Identity Linking TODO will eventually deprecate this global toggle in favor of `silent_merge_by_email` / `verify_via_magic_link` / `disabled` per provider.
+
+**Cross-Platform Build Notifications**
+The Makefile's build-complete notification used `afplay` (macOS-only) which exited non-zero on Linux and Windows and broke build chains there. A portable `NOTIFY_DONE` macro wraps `terminal-notifier` on macOS, `notify-send` on Linux, and falls back to a no-op elsewhere. The build no longer fails when the notifier is missing.
+
+**Makefile DX Pass**
+`COMMON_RUN_ARGS` is factored out of three `docker run` recipes so a flag change lands in one place instead of three. `LOCAL_PORT` is now its own variable. `SAGE_HOSTS` guards block the try.sage targets when the host file is misconfigured, replacing a silent no-op with a loud error. The `|| true` that swallowed lint failures is removed — lint now stops the build instead of marching on with a stale image. New `_pin_server_tag` helper rewrites `SERVER_TAG` in the canonical `distribution.env` via a `cat tmp > target` pattern that preserves the hardlink chain inode across all three sibling repos.
+
+### Security
+
+**`.dockerignore` Adopts the Hidden-Artifact Allowlist Pattern**
+The build context now denies all dotfiles and dotfolders by default (`.*` wildcard) and explicitly re-includes only the artifacts the image actually needs. Mirrors the repo-wide allowlist already in `.gitignore` and the contributor rule in `CONVENTION.instructions.md`. Closes the silent-leak path where a new `.env.local`, `.secrets/`, or `.aws/` at the repo root could ride into the image without anyone noticing.
+
+---
+
 ## [2.3.1] — 2026-05-18
 
 ### Added
