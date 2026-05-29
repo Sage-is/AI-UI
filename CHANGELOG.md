@@ -24,11 +24,17 @@ The OAuth Settings form gated `Merge Accounts by Email` and `Enable New Sign Ups
 **`OAUTH_MERGE_ACCOUNTS_BY_EMAIL` Defaults to `True` on Fresh Installs**
 The default flipped from `False` to `True`. Workshop deployments and self-host single-admins almost always want OAuth identities auto-linked to the matching local account — the old default left first-time OAuth sign-ins blocked with an opaque 403. Existing installs keep their saved value through `PersistentConfig`; only fresh installs see the new default. The per-provider link-mode work tracked in the OAuth UX & Identity Linking TODO will eventually deprecate this global toggle in favor of `silent_merge_by_email` / `verify_via_magic_link` / `disabled` per provider.
 
+**`WEBUI_SECRET_KEY` Now Persists Across Container Recreates**
+The auto-generated secret key moved from `.webui_secret_key` in the container's working directory to `data/.webui_secret_key` in the persistent data volume. Previously a fresh container generated a new secret key and invalidated every existing JWT — sessions silently logged out after every `docker rm` + `docker run`. The key now survives container recreates as long as the data volume sticks around. Operators who want to inject their own key can still pass `WEBUI_SECRET_KEY` via run-time env, and the Makefile's `it_run` / `dev_run` recipes now forward it as `-e WEBUI_SECRET_KEY=<value>` automatically when set.
+
 **Cross-Platform Build Notifications**
 The Makefile's build-complete notification used `afplay` (macOS-only) which exited non-zero on Linux and Windows and broke build chains there. A portable `NOTIFY_DONE` macro wraps `terminal-notifier` on macOS, `notify-send` on Linux, and falls back to a no-op elsewhere. The build no longer fails when the notifier is missing.
 
 **Makefile DX Pass**
 `COMMON_RUN_ARGS` is factored out of three `docker run` recipes so a flag change lands in one place instead of three. `LOCAL_PORT` is now its own variable. `SAGE_HOSTS` guards block the try.sage targets when the host file is misconfigured, replacing a silent no-op with a loud error. The `|| true` that swallowed lint failures is removed — lint now stops the build instead of marching on with a stale image. New `_pin_server_tag` helper rewrites `SERVER_TAG` in the canonical `distribution.env` via a `cat tmp > target` pattern that preserves the hardlink chain inode across all three sibling repos.
+
+**Auto-Pin `SERVER_TAG` in `distribution.env` After GHCR Push**
+`release_and_push_GHCR` and `hotfix_and_push_GHCR` now write the released `IMAGE_TAG` into the canonical `distribution.env` once the multi-arch image is confirmed on GHCR, via the inode-preserving `_pin_server_tag` helper. The pin propagates instantly to the homebrew-apps tap and the Sage.Education docs sibling repos through the hardlink chain. Operators no longer run a separate pin step after release — `distribution.env` can only describe a `SERVER_TAG` that exists on GHCR.
 
 ### Security
 
