@@ -641,10 +641,31 @@ install_dev:
 	pip install --user bandit
 	@echo ""
 	@# --- Wire up pre-commit git hooks ---
-	@echo "Installing pre-commit git hooks (.pre-commit-config.yaml)..."
-	pre-commit install
+	@$(MAKE) install_hooks
 	@echo ""
 	@echo "Done. Verify with: make scan"
+
+# install_hooks: Wire pre-commit framework hooks for all stages we use.
+# Idempotent — re-running is safe and overwrites any existing stub.
+#
+# Stages installed:
+#   pre-commit      gitleaks, bandit, codespell, hygiene, audit-deps,
+#                   distribution-chain-verify (refuse if hardlink chain broken)
+#   post-checkout   distribution-chain-heal (silent re-link if chain broken
+#                   and content matches; warn if content diverges)
+#   post-merge      distribution-chain-heal
+#   post-rewrite    distribution-chain-heal (covers rebase + commit --amend)
+install_hooks:
+	@command -v pre-commit >/dev/null 2>&1 || { \
+		echo "ERROR: pre-commit not installed. Run: make install_dev"; \
+		exit 1; \
+	}
+	@echo "Installing pre-commit hooks (commit + checkout + merge + rewrite stages)..."
+	pre-commit install
+	pre-commit install --hook-type post-checkout
+	pre-commit install --hook-type post-merge
+	pre-commit install --hook-type post-rewrite
+	@echo "Hooks wired. distribution.env hardlink chain is now self-healing."
 
 # ---------------------------------------------------------------------------
 # Security Scanning Targets
@@ -996,6 +1017,43 @@ distribution_verify:
 		fi; \
 	done; \
 	echo "OK: distribution.env hardlink chain intact ($$expected links)."
+
+# Self-heal the hardlink chain when a git operation (checkout / merge /
+# rebase / amend) has rewritten distribution.env in place. Direction is the
+# inverse of distribution_sync: we trust this repo's distribution.env as the
+# new canonical because that's what git just wrote. Siblings get re-linked
+# to it. If a sibling holds *different* content, we WARN and exit clean —
+# silent overwrite of a divergent sibling would mask drift.
+#
+# Silent on the happy path: most checkouts don't touch distribution.env, so
+# the inode survives and the chain is intact.
+distribution_heal:
+	@test -f $(SIBLING_AI_UI)/distribution.env || exit 0
+	@if [ -e $(DIST_SOURCE) ]; then \
+		links=$$(stat -f "%l" $(SIBLING_AI_UI)/distribution.env 2>/dev/null || \
+		         stat -c "%h" $(SIBLING_AI_UI)/distribution.env); \
+		expected=2; \
+		test -d $(SIBLING_DOCS) && expected=3; \
+		if [ "$$links" = "$$expected" ]; then exit 0; fi; \
+		if ! cmp -s $(SIBLING_AI_UI)/distribution.env $(DIST_SOURCE); then \
+			echo ""; \
+			echo "WARN: distribution.env hardlink chain broken AND content has diverged."; \
+			echo "  AI-UI:        $(SIBLING_AI_UI)/distribution.env"; \
+			echo "  homebrew-apps: $(DIST_SOURCE)"; \
+			echo "  Run 'diff $(SIBLING_AI_UI)/distribution.env $(DIST_SOURCE)' and reconcile."; \
+			echo "  Then run 'make distribution_sync' to re-establish the chain."; \
+			exit 0; \
+		fi; \
+		ln -f $(SIBLING_AI_UI)/distribution.env $(DIST_SOURCE); \
+	fi
+	@if [ -d $(SIBLING_DOCS) ] && [ -e $(SIBLING_DOCS)/distribution.env ]; then \
+		if ! cmp -s $(SIBLING_AI_UI)/distribution.env $(SIBLING_DOCS)/distribution.env; then \
+			echo "WARN: $(SIBLING_DOCS)/distribution.env diverges; leaving alone."; \
+		else \
+			ln -f $(SIBLING_AI_UI)/distribution.env $(SIBLING_DOCS)/distribution.env; \
+		fi; \
+	fi
+	@$(MAKE) -s distribution_verify
 
 # Rewrites SERVER_TAG in distribution.env while preserving the inode (so the
 # hardlink chain stays intact) and verifies the chain afterward. `perl -i` /
