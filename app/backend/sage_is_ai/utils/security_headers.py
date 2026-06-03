@@ -77,12 +77,69 @@ def set_xframe(value: str):
     return {"X-Frame-Options": value}
 
 
+# Lean fallback emitted when PERMISSIONS_POLICY env var is missing or malformed.
+# Only widely-supported, currently-recognized features. We explicitly do NOT
+# ship ad-tech feature names (browsing-topics, run-ad-auction, join-ad-interest-group,
+# private-state-token-*, private-aggregation, attribution-reporting) because most
+# browsers reject them or treat them as origin-trial-only — they generate console
+# noise without adding security, eroding operator trust in real warnings.
+PERMISSIONS_POLICY_DEFAULT = (
+    "accelerometer=(), "
+    "autoplay=(), "
+    "camera=(), "
+    "clipboard-read=(self), "
+    "clipboard-write=(self), "
+    "display-capture=(), "
+    "encrypted-media=(), "
+    "fullscreen=(self), "
+    "geolocation=(), "
+    "gyroscope=(), "
+    "magnetometer=(), "
+    "microphone=(self), "
+    "midi=(), "
+    "payment=(), "
+    "picture-in-picture=(self), "
+    "publickey-credentials-get=(), "
+    "screen-wake-lock=(), "
+    "sync-xhr=(), "
+    "usb=(), "
+    "xr-spatial-tracking=()"
+)
+
+# Tokens that must never appear in a Permissions-Policy value we emit.
+# Browser console warnings around these are noise — they're ad-tech experiments
+# that most browsers reject. If an operator pastes a "comprehensive" header from
+# a blog post and it contains these, we reject and fall back to the lean default.
+PERMISSIONS_POLICY_REJECTED_FEATURES = (
+    "browsing-topics",
+    "run-ad-auction",
+    "join-ad-interest-group",
+    "private-state-token-redemption",
+    "private-state-token-issuance",
+    "private-aggregation",
+    "attribution-reporting",
+    "interest-cohort",  # legacy FLoC name
+)
+
+
 # Set Permissions-Policy response header
 def set_permissions_policy(value: str):
-    pattern = r"^(?:(accelerometer|autoplay|camera|clipboard-read|clipboard-write|fullscreen|geolocation|gyroscope|magnetometer|microphone|midi|payment|picture-in-picture|sync-xhr|usb|xr-spatial-tracking)=\((self)?\),?)*$"
+    # Reject the header value if it carries any ad-tech feature names.
+    lowered = value.lower()
+    if any(token in lowered for token in PERMISSIONS_POLICY_REJECTED_FEATURES):
+        return {"Permissions-Policy": PERMISSIONS_POLICY_DEFAULT}
+
+    # Allow our supported feature allowlist. Spaces between entries are permitted.
+    pattern = (
+        r"^(?:(accelerometer|autoplay|camera|clipboard-read|clipboard-write|"
+        r"display-capture|encrypted-media|fullscreen|geolocation|gyroscope|"
+        r"magnetometer|microphone|midi|payment|picture-in-picture|"
+        r"publickey-credentials-get|screen-wake-lock|sync-xhr|usb|"
+        r"xr-spatial-tracking)=\((self)?\),?\s*)*$"
+    )
     match = re.match(pattern, value, re.IGNORECASE)
     if not match:
-        value = "none"
+        value = PERMISSIONS_POLICY_DEFAULT
     return {"Permissions-Policy": value}
 
 
