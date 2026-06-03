@@ -70,6 +70,16 @@ ifeq ($(GIT_BRANCH),HEAD)
 endif
 SAFE_GIT_BRANCH := $(subst /,-,$(GIT_BRANCH))
 SAFE_GIT_BRANCH := $(shell echo $(SAFE_GIT_BRANCH) | tr '[:upper:]' '[:lower:]')
+# OCI image provenance labels (org.opencontainers.image.*). Applied to every
+# build target below so `docker inspect` + CapRover's deploy-history git-hash
+# column show source + version + creation provenance. Without these, image-pull
+# deploys display `n/a` in CapRover's hash column.
+OCI_LABELS := --label org.opencontainers.image.revision=$(shell git rev-parse HEAD) \
+              --label org.opencontainers.image.source=https://github.com/Sage-is/AI-UI \
+              --label org.opencontainers.image.version=$(IMAGE_TAG) \
+              --label org.opencontainers.image.created=$(shell date -u +%Y-%m-%dT%H:%M:%SZ) \
+              --label org.opencontainers.image.title=Sage.is-AI-UI \
+              --label org.opencontainers.image.licenses=MIT
 CONTAINER_NAME ?= $(shell echo $(GIT_REPO_SLUG) | tr '/' '-')
 PORT_MAPPING ?= 8080:8080
 # Host-side port from PORT_MAPPING (`HOST:CONTAINER` → HOST). Reference this
@@ -208,7 +218,7 @@ it_gone:
 it_build:
 	@echo "Building Docker image with BuildKit enabled..."
 	@export DOCKER_BUILDKIT=1 && \
-	$(CONTAINER_RUNTIME) build --load -t $(IMAGE_NAME):$(IMAGE_TAG) \
+	$(CONTAINER_RUNTIME) build --load $(OCI_LABELS) -t $(IMAGE_NAME):$(IMAGE_TAG) \
 	            -t $(IMAGE_NAME):latest \
 	            -t $(IMAGE_NAME):$(IMAGE_TAG)-$(SAFE_GIT_BRANCH) \
 	            -t $(IMAGE_NAME):$(SAFE_GIT_BRANCH) \
@@ -220,7 +230,7 @@ it_build:
 it_build_no_cache:
 	@echo "Building Docker image without cache and with BuildKit enabled..."
 	@export DOCKER_BUILDKIT=1 && \
-	$(CONTAINER_RUNTIME) build --no-cache --load -t $(IMAGE_NAME):$(IMAGE_TAG) \
+	$(CONTAINER_RUNTIME) build --no-cache --load $(OCI_LABELS) -t $(IMAGE_NAME):$(IMAGE_TAG) \
 	                     -t $(IMAGE_NAME):latest \
 	                     -t $(IMAGE_NAME):$(IMAGE_TAG)-$(SAFE_GIT_BRANCH) \
 	                     -t $(IMAGE_NAME):$(SAFE_GIT_BRANCH) \
@@ -324,7 +334,7 @@ wizard_smoke:
 ## it sits beside the host-arch image without overwriting it.
 it_build_amd64:
 	@echo "Building Docker image for linux/amd64 via buildx..."
-	@docker buildx build --platform linux/amd64 --load \
+	@docker buildx build --platform linux/amd64 --load $(OCI_LABELS) \
 	    -t $(IMAGE_NAME):$(IMAGE_TAG)-amd64 \
 	    .
 	@$(NOTIFY_DONE)
@@ -425,7 +435,7 @@ ensure_builder:
 define build_multi_arch
 	@make it_clean
 	@make ensure_builder
-	docker buildx build --platform linux/amd64,linux/arm64 \
+	docker buildx build --platform linux/amd64,linux/arm64 $(OCI_LABELS) \
 		-t $(1):$(IMAGE_TAG) \
 		-t $(1):latest \
 		--push .
