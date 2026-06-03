@@ -831,19 +831,106 @@ hotfix: require_gitflow_next
 	git flow hotfix start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{if (NF < 4) print $$1"."$$2"."$$3".1"; else print $$1"."$$2"."$$3"."$$4+1}')
 	$(next_steps_hotfix)
 
-release_finish: require_gitflow_next distribution_verify
+# Self-heal git-flow stale state before release/hotfix finish — POKA-YOKE.
+#
+# git-flow-next persists per-step state in .git/gitflow/state/*.json. If a
+# previous `release finish` aborted before the merge actually ran (e.g.
+# operator cancelled, pre-flight failed, terminal closed), the state file
+# survives. The next `release finish` then errors with "a merge is already
+# in progress" — a misleading message, since no merge is in progress and
+# the working tree is clean.
+#
+# This target detects the false-positive case and calls `--continue` so
+# the finish proceeds. It refuses to act when ANY of these is true,
+# kicking the decision back to the operator with named conditions:
+#
+#   - A real in-progress merge exists (.git/MERGE_HEAD present)
+#   - A real in-progress rebase exists (.git/REBASE_HEAD or rebase-merge dir)
+#   - The recorded release branch no longer exists
+#   - The recorded parent branch (master) already contains the release
+#     branch tip — meaning the merge already happened; "continue" would
+#     re-run it and could cause duplicate commits
+#   - Working tree is dirty
+_release_finish_heal:
+	@state_file=.git/gitflow/state/merge.json; \
+	test -f "$$state_file" || exit 0; \
+	if [ -e .git/MERGE_HEAD ]; then \
+		echo "REFUSE TO HEAL: a real git merge is in progress."; \
+		echo "  Resolve conflicts and: git commit"; \
+		echo "  Or abort: git merge --abort"; \
+		exit 1; \
+	fi; \
+	if [ -e .git/REBASE_HEAD ] || [ -d .git/rebase-merge ] || [ -d .git/rebase-apply ]; then \
+		echo "REFUSE TO HEAL: a real git rebase is in progress."; \
+		echo "  Continue: git rebase --continue"; \
+		echo "  Or abort: git rebase --abort"; \
+		exit 1; \
+	fi; \
+	if [ -n "$$(git status --porcelain)" ]; then \
+		echo "REFUSE TO HEAL: working tree is dirty."; \
+		echo "  Commit or stash before re-running release_finish."; \
+		exit 1; \
+	fi; \
+	branch=$$(python3 -c "import json,sys; print(json.load(open('$$state_file'))['fullBranchName'])" 2>/dev/null); \
+	parent=$$(python3 -c "import json,sys; print(json.load(open('$$state_file'))['parentBranch'])" 2>/dev/null); \
+	step=$$(python3 -c "import json,sys; print(json.load(open('$$state_file'))['currentStep'])" 2>/dev/null); \
+	if [ -z "$$branch" ] || [ -z "$$parent" ]; then \
+		echo "REFUSE TO HEAL: stale gitflow state file is unparsable."; \
+		echo "  Inspect: cat $$state_file"; \
+		echo "  Remove manually if appropriate."; \
+		exit 1; \
+	fi; \
+	if ! git rev-parse --verify "$$branch" >/dev/null 2>&1; then \
+		echo "REFUSE TO HEAL: state file names branch '$$branch' which no longer exists."; \
+		echo "  Inspect: cat $$state_file"; \
+		echo "  Remove manually if appropriate (the release was likely already finished)."; \
+		exit 1; \
+	fi; \
+	if git merge-base --is-ancestor "$$branch" "$$parent" 2>/dev/null; then \
+		echo "REFUSE TO HEAL: '$$parent' already contains '$$branch'."; \
+		echo "  The merge already happened in an earlier run. Running --continue"; \
+		echo "  could create duplicate commits. Inspect:"; \
+		echo "    git log --oneline $$parent ^$$branch | head"; \
+		echo "    git log --oneline $$branch ^$$parent | head"; \
+		exit 1; \
+	fi; \
+	echo "=== Healing stale gitflow state ==="; \
+	echo "  branch: $$branch"; \
+	echo "  parent: $$parent"; \
+	echo "  step:   $$step"; \
+	echo "  working tree clean, no real merge/rebase, parent does not"; \
+	echo "  contain branch — safe to --continue."; \
+	echo ""; \
+	type=$$(python3 -c "import json,sys; print(json.load(open('$$state_file'))['branchType'])" 2>/dev/null); \
+	name=$$(python3 -c "import json,sys; print(json.load(open('$$state_file'))['branchName'])" 2>/dev/null); \
+	git flow $$type finish $$name --continue
+
+# If _release_finish_heal already drove `git flow release finish --continue`
+# to completion, the release branch is gone and we just need to push.
+# Otherwise (no stale state), run the normal `git flow release finish` path.
+release_finish: require_gitflow_next distribution_verify _release_finish_heal
 	@echo "=== Finishing release ==="
-	@echo "Merging to master, tagging, pushing..."
-	git flow release finish && git push origin develop && git push origin master && git push --tags && git checkout develop
+	@if git branch --list 'release/*' | grep -q .; then \
+		echo "Merging to master, tagging, pushing..."; \
+		git flow release finish; \
+	else \
+		echo "Release branch already merged (heal completed it); pushing only."; \
+	fi
+	git push origin develop && git push origin master && git push --tags && git checkout develop
 	@echo ""
 	@echo "=== Release complete ==="
 	@echo "Tag: v$(IMAGE_TAG)"
 	@echo "Pushed: develop, master, tags"
 
-hotfix_finish: require_gitflow_next distribution_verify
+hotfix_finish: require_gitflow_next distribution_verify _release_finish_heal
 	@echo "=== Finishing hotfix ==="
-	@echo "Merging to master, tagging, pushing..."
-	git flow hotfix finish && git push origin develop && git push origin master && git push --tags && git checkout develop
+	@if git branch --list 'hotfix/*' | grep -q .; then \
+		echo "Merging to master, tagging, pushing..."; \
+		git flow hotfix finish; \
+	else \
+		echo "Hotfix branch already merged (heal completed it); pushing only."; \
+	fi
+	git push origin develop && git push origin master && git push --tags && git checkout develop
 	@echo ""
 	@echo "=== Hotfix complete ==="
 
