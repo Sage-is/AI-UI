@@ -87,6 +87,40 @@ repos:
         stages: [pre-commit]
 
   # ---------------------------------------------------------------------------
+  # distribution.env hardlink chain — Tri-repo Jidoka poka-yoke
+  # ---------------------------------------------------------------------------
+  # distribution.env is hardlinked across AI-UI, homebrew-apps, and
+  # Sage.Education-docs so a single edit propagates to all three repos.
+  # Editors that atomic-save (write-to-temp then rename) silently break the
+  # chain — every commit thereafter only updates AI-UI's copy. These hooks
+  # are the safety net.
+  #
+  # commit-time      verify  → refuse if chain broken; tells operator to
+  #                           run `make distribution_sync` first.
+  # post-checkout    heal    → re-link siblings to AI-UI's new content.
+  # post-merge       heal    → covers merge commits.
+  # post-rewrite     heal    → covers rebase + `commit --amend`.
+  #
+  # heal warns and exits clean if a sibling holds DIFFERENT content (vs.
+  # silently overwriting it). distribution_sync is the manual reconcile.
+  - repo: local
+    hooks:
+      - id: distribution-chain-verify
+        name: distribution.env hardlink chain intact
+        entry: make -s distribution_verify
+        language: system
+        files: ^distribution\.env$
+        pass_filenames: false
+        stages: [pre-commit]
+      - id: distribution-chain-heal
+        name: distribution.env hardlink chain heal
+        entry: make -s distribution_heal
+        language: system
+        always_run: true
+        pass_filenames: false
+        stages: [post-checkout, post-merge, post-rewrite]
+
+  # ---------------------------------------------------------------------------
   # Dependency Audit — catch known CVEs in lockfiles before commit
   # ---------------------------------------------------------------------------
   # Runs Trivy against lockfiles when they change.
