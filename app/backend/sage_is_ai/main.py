@@ -765,6 +765,7 @@ app = FastAPI(
 )
 
 oauth_manager = OAuthManager(app)
+app.state.oauth_manager = oauth_manager
 
 app.state.instance_id = None
 app.state.config = AppConfig(
@@ -2024,15 +2025,17 @@ async def get_current_usage(user=Depends(get_verified_user)):
 # OAuth Login & Callback
 ############################
 
-# SessionMiddleware is used by authlib for oauth
-if len(OAUTH_PROVIDERS) > 0:
-    app.add_middleware(
-        SessionMiddleware,
-        secret_key=WEBUI_SECRET_KEY,
-        session_cookie="oui-session",
-        same_site=WEBUI_SESSION_COOKIE_SAME_SITE,
-        https_only=WEBUI_SESSION_COOKIE_SECURE,
-    )
+# SessionMiddleware is used by authlib for oauth — must be unconditional
+# because middleware cannot be added after app startup (Starlette limitation).
+# If added only when OAUTH_PROVIDERS is non-empty at boot, the callback
+# fails with a session error when providers are configured via the admin UI.
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=WEBUI_SECRET_KEY,
+    session_cookie="oui-session",
+    same_site=WEBUI_SESSION_COOKIE_SAME_SITE,
+    https_only=WEBUI_SESSION_COOKIE_SECURE,
+)
 
 
 @app.get("/oauth/{provider}/login")
@@ -2109,6 +2112,19 @@ async def healthcheck_with_db():
 
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+# SvelteKit-built HTML references SPA assets at root paths like /assets/loader.js.
+# The boot-time sync in config.py copies these from FRONTEND_BUILD_DIR/static/assets/
+# into STATIC_DIR/assets/, so serve them at /assets from STATIC_DIR. Without this
+# mount the SPA root mount falls through to FRONTEND_BUILD_DIR/assets/ which does
+# not exist (the build's assets live under FRONTEND_BUILD_DIR/static/assets/),
+# producing 404s for loader.js, custom.css, fonts, etc.
+if (STATIC_DIR / "assets").exists():
+    app.mount(
+        "/assets",
+        StaticFiles(directory=STATIC_DIR / "assets"),
+        name="spa-assets",
+    )
 
 
 # It should be noted that this endpoint is required to be at the root level for

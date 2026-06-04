@@ -1128,6 +1128,7 @@ async def update_oauth_config(
 
     # Re-register OAuth providers so changes take effect immediately
     load_oauth_providers()
+    request.app.state.oauth_manager.reload()
 
     return _auth_config_dict()
 

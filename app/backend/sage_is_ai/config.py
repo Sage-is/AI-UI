@@ -171,7 +171,7 @@ class PersistentConfig(Generic[T]):
         self.config_path = config_path
         self.env_value = env_value
         self.config_value = get_config_value(config_path)
-        if self.config_value is not None and ENABLE_PERSISTENT_CONFIG:
+        if self.config_value not in (None, "") and ENABLE_PERSISTENT_CONFIG:
             log.info(f"'{env_name}' loaded from the latest database entry")
             self.value = self.config_value
         else:
@@ -310,7 +310,7 @@ ENABLE_OAUTH_SIGNUP = PersistentConfig(
 OAUTH_MERGE_ACCOUNTS_BY_EMAIL = PersistentConfig(
     "OAUTH_MERGE_ACCOUNTS_BY_EMAIL",
     "oauth.merge_accounts_by_email",
-    os.environ.get("OAUTH_MERGE_ACCOUNTS_BY_EMAIL", "False").lower() == "true",
+    os.environ.get("OAUTH_MERGE_ACCOUNTS_BY_EMAIL", "True").lower() == "true",
 )
 
 OAUTH_PROVIDERS = {}
