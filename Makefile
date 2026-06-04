@@ -841,12 +841,24 @@ hotfix: require_gitflow_next
 # the working tree is clean.
 #
 # This target detects the false-positive case and calls `--continue` so
-# the finish proceeds. The `--no-verify` flag prevents git-flow-next from
-# running pre-commit hooks during its INTERNAL merge commit. Operator
-# commits still run all hooks; this only bypasses them for the merge
-# commit git-flow itself drives (a fast-forward merge stages zero files,
-# pre-commit reports every hook as "Skipped", and git-flow-next misreads
-# that as commit failure). Confirmed in git-flow-next 1.0.0 release.
+# the finish proceeds. Two flags accompany every git-flow finish call:
+#
+#   --no-ff      Force a real merge commit even when release/X.Y.Z is a
+#                fast-forward over master. git-flow-next 1.0.0 tries to
+#                create a merge commit unconditionally; when the merge is
+#                fast-forward-able, `git commit` then has nothing to
+#                commit ("nothing to commit, working tree clean") and
+#                git-flow-next aborts with a misleading
+#                "failed to commit merge" error. Forcing --no-ff gives
+#                git-commit something real to record. (Bonus: it preserves
+#                the release branch shape in the master history graph.)
+#
+#   --no-verify  Bypass pre-commit-framework hooks on git-flow's INTERNAL
+#                merge commit. Those hooks are for the operator-commit
+#                surface; they have nothing to check on an auto-driven
+#                merge and report Skipped for every entry. git-flow-next
+#                surfaces the Skipped output even on success, which is
+#                noise. Belt-and-suspenders alongside --no-ff.
 #
 # Heal refuses to act when ANY of these is true, kicking the decision back
 # to the operator with named conditions:
@@ -910,7 +922,7 @@ _release_finish_heal:
 	echo ""; \
 	type=$$(python3 -c "import json,sys; print(json.load(open('$$state_file'))['branchType'])" 2>/dev/null); \
 	name=$$(python3 -c "import json,sys; print(json.load(open('$$state_file'))['branchName'])" 2>/dev/null); \
-	git flow $$type finish $$name --continue --no-verify
+	git flow $$type finish $$name --continue --no-ff --no-verify
 
 # If _release_finish_heal already drove `git flow release finish --continue`
 # to completion, the release branch is gone and we just need to push.
@@ -919,7 +931,7 @@ release_finish: require_gitflow_next distribution_verify _release_finish_heal
 	@echo "=== Finishing release ==="
 	@if git branch --list 'release/*' | grep -q .; then \
 		echo "Merging to master, tagging, pushing..."; \
-		git flow release finish --no-verify; \
+		git flow release finish --no-ff --no-verify; \
 	else \
 		echo "Release branch already merged (heal completed it); pushing only."; \
 	fi
@@ -933,7 +945,7 @@ hotfix_finish: require_gitflow_next distribution_verify _release_finish_heal
 	@echo "=== Finishing hotfix ==="
 	@if git branch --list 'hotfix/*' | grep -q .; then \
 		echo "Merging to master, tagging, pushing..."; \
-		git flow hotfix finish --no-verify; \
+		git flow hotfix finish --no-ff --no-verify; \
 	else \
 		echo "Hotfix branch already merged (heal completed it); pushing only."; \
 	fi
