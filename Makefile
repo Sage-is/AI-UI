@@ -841,8 +841,15 @@ hotfix: require_gitflow_next
 # the working tree is clean.
 #
 # This target detects the false-positive case and calls `--continue` so
-# the finish proceeds. It refuses to act when ANY of these is true,
-# kicking the decision back to the operator with named conditions:
+# the finish proceeds. The `--no-verify` flag prevents git-flow-next from
+# running pre-commit hooks during its INTERNAL merge commit. Operator
+# commits still run all hooks; this only bypasses them for the merge
+# commit git-flow itself drives (a fast-forward merge stages zero files,
+# pre-commit reports every hook as "Skipped", and git-flow-next misreads
+# that as commit failure). Confirmed in git-flow-next 1.0.0 release.
+#
+# Heal refuses to act when ANY of these is true, kicking the decision back
+# to the operator with named conditions:
 #
 #   - A real in-progress merge exists (.git/MERGE_HEAD present)
 #   - A real in-progress rebase exists (.git/REBASE_HEAD or rebase-merge dir)
@@ -903,7 +910,7 @@ _release_finish_heal:
 	echo ""; \
 	type=$$(python3 -c "import json,sys; print(json.load(open('$$state_file'))['branchType'])" 2>/dev/null); \
 	name=$$(python3 -c "import json,sys; print(json.load(open('$$state_file'))['branchName'])" 2>/dev/null); \
-	git flow $$type finish $$name --continue
+	git flow $$type finish $$name --continue --no-verify
 
 # If _release_finish_heal already drove `git flow release finish --continue`
 # to completion, the release branch is gone and we just need to push.
@@ -912,7 +919,7 @@ release_finish: require_gitflow_next distribution_verify _release_finish_heal
 	@echo "=== Finishing release ==="
 	@if git branch --list 'release/*' | grep -q .; then \
 		echo "Merging to master, tagging, pushing..."; \
-		git flow release finish; \
+		git flow release finish --no-verify; \
 	else \
 		echo "Release branch already merged (heal completed it); pushing only."; \
 	fi
@@ -926,7 +933,7 @@ hotfix_finish: require_gitflow_next distribution_verify _release_finish_heal
 	@echo "=== Finishing hotfix ==="
 	@if git branch --list 'hotfix/*' | grep -q .; then \
 		echo "Merging to master, tagging, pushing..."; \
-		git flow hotfix finish; \
+		git flow hotfix finish --no-verify; \
 	else \
 		echo "Hotfix branch already merged (heal completed it); pushing only."; \
 	fi
