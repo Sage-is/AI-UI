@@ -2113,6 +2113,19 @@ async def healthcheck_with_db():
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
+# SvelteKit-built HTML references SPA assets at root paths like /assets/loader.js.
+# The boot-time sync in config.py copies these from FRONTEND_BUILD_DIR/static/assets/
+# into STATIC_DIR/assets/, so serve them at /assets from STATIC_DIR. Without this
+# mount the SPA root mount falls through to FRONTEND_BUILD_DIR/assets/ which does
+# not exist (the build's assets live under FRONTEND_BUILD_DIR/static/assets/),
+# producing 404s for loader.js, custom.css, fonts, etc.
+if (STATIC_DIR / "assets").exists():
+    app.mount(
+        "/assets",
+        StaticFiles(directory=STATIC_DIR / "assets"),
+        name="spa-assets",
+    )
+
 
 # It should be noted that this endpoint is required to be at the root level for
 # web crawlers to find it.
