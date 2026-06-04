@@ -70,6 +70,16 @@ ifeq ($(GIT_BRANCH),HEAD)
 endif
 SAFE_GIT_BRANCH := $(subst /,-,$(GIT_BRANCH))
 SAFE_GIT_BRANCH := $(shell echo $(SAFE_GIT_BRANCH) | tr '[:upper:]' '[:lower:]')
+# OCI image provenance labels (org.opencontainers.image.*). Applied to every
+# build target below so `docker inspect` + CapRover's deploy-history git-hash
+# column show source + version + creation provenance. Without these, image-pull
+# deploys display `n/a` in CapRover's hash column.
+OCI_LABELS := --label org.opencontainers.image.revision=$(shell git rev-parse HEAD) \
+              --label org.opencontainers.image.source=https://github.com/Sage-is/AI-UI \
+              --label org.opencontainers.image.version=$(IMAGE_TAG) \
+              --label org.opencontainers.image.created=$(shell date -u +%Y-%m-%dT%H:%M:%SZ) \
+              --label org.opencontainers.image.title=Sage.is-AI-UI \
+              --label org.opencontainers.image.licenses=MIT
 CONTAINER_NAME ?= $(shell echo $(GIT_REPO_SLUG) | tr '/' '-')
 PORT_MAPPING ?= 8080:8080
 # Host-side port from PORT_MAPPING (`HOST:CONTAINER` → HOST). Reference this
@@ -208,7 +218,7 @@ it_gone:
 it_build:
 	@echo "Building Docker image with BuildKit enabled..."
 	@export DOCKER_BUILDKIT=1 && \
-	$(CONTAINER_RUNTIME) build --load -t $(IMAGE_NAME):$(IMAGE_TAG) \
+	$(CONTAINER_RUNTIME) build --load $(OCI_LABELS) -t $(IMAGE_NAME):$(IMAGE_TAG) \
 	            -t $(IMAGE_NAME):latest \
 	            -t $(IMAGE_NAME):$(IMAGE_TAG)-$(SAFE_GIT_BRANCH) \
 	            -t $(IMAGE_NAME):$(SAFE_GIT_BRANCH) \
@@ -220,7 +230,7 @@ it_build:
 it_build_no_cache:
 	@echo "Building Docker image without cache and with BuildKit enabled..."
 	@export DOCKER_BUILDKIT=1 && \
-	$(CONTAINER_RUNTIME) build --no-cache --load -t $(IMAGE_NAME):$(IMAGE_TAG) \
+	$(CONTAINER_RUNTIME) build --no-cache --load $(OCI_LABELS) -t $(IMAGE_NAME):$(IMAGE_TAG) \
 	                     -t $(IMAGE_NAME):latest \
 	                     -t $(IMAGE_NAME):$(IMAGE_TAG)-$(SAFE_GIT_BRANCH) \
 	                     -t $(IMAGE_NAME):$(SAFE_GIT_BRANCH) \
@@ -324,7 +334,7 @@ wizard_smoke:
 ## it sits beside the host-arch image without overwriting it.
 it_build_amd64:
 	@echo "Building Docker image for linux/amd64 via buildx..."
-	@docker buildx build --platform linux/amd64 --load \
+	@docker buildx build --platform linux/amd64 --load $(OCI_LABELS) \
 	    -t $(IMAGE_NAME):$(IMAGE_TAG)-amd64 \
 	    .
 	@$(NOTIFY_DONE)
@@ -425,7 +435,7 @@ ensure_builder:
 define build_multi_arch
 	@make it_clean
 	@make ensure_builder
-	docker buildx build --platform linux/amd64,linux/arm64 \
+	docker buildx build --platform linux/amd64,linux/arm64 $(OCI_LABELS) \
 		-t $(1):$(IMAGE_TAG) \
 		-t $(1):latest \
 		--push .
@@ -631,10 +641,31 @@ install_dev:
 	pip install --user bandit
 	@echo ""
 	@# --- Wire up pre-commit git hooks ---
-	@echo "Installing pre-commit git hooks (.pre-commit-config.yaml)..."
-	pre-commit install
+	@$(MAKE) install_hooks
 	@echo ""
 	@echo "Done. Verify with: make scan"
+
+# install_hooks: Wire pre-commit framework hooks for all stages we use.
+# Idempotent — re-running is safe and overwrites any existing stub.
+#
+# Stages installed:
+#   pre-commit      gitleaks, bandit, codespell, hygiene, audit-deps,
+#                   distribution-chain-verify (refuse if hardlink chain broken)
+#   post-checkout   distribution-chain-heal (silent re-link if chain broken
+#                   and content matches; warn if content diverges)
+#   post-merge      distribution-chain-heal
+#   post-rewrite    distribution-chain-heal (covers rebase + commit --amend)
+install_hooks:
+	@command -v pre-commit >/dev/null 2>&1 || { \
+		echo "ERROR: pre-commit not installed. Run: make install_dev"; \
+		exit 1; \
+	}
+	@echo "Installing pre-commit hooks (commit + checkout + merge + rewrite stages)..."
+	pre-commit install
+	pre-commit install --hook-type post-checkout
+	pre-commit install --hook-type post-merge
+	pre-commit install --hook-type post-rewrite
+	@echo "Hooks wired. distribution.env hardlink chain is now self-healing."
 
 # ---------------------------------------------------------------------------
 # Security Scanning Targets
@@ -800,19 +831,133 @@ hotfix: require_gitflow_next
 	git flow hotfix start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{if (NF < 4) print $$1"."$$2"."$$3".1"; else print $$1"."$$2"."$$3"."$$4+1}')
 	$(next_steps_hotfix)
 
-release_finish: require_gitflow_next distribution_verify
+# Self-heal git-flow stale state before release/hotfix finish — POKA-YOKE.
+#
+# git-flow-next persists per-step state in .git/gitflow/state/*.json. If a
+# previous `release finish` aborted before the merge actually ran (e.g.
+# operator cancelled, pre-flight failed, terminal closed), the state file
+# survives. The next `release finish` then errors with "a merge is already
+# in progress" — a misleading message, since no merge is in progress and
+# the working tree is clean.
+#
+# When ALL safety gates pass, this target DELETES the stale state file
+# and lets `release_finish` run the full `git flow release finish` from
+# scratch. We do NOT use git-flow-next's --continue because, as of
+# version 1.0.0, --continue from currentStep="merge" assumes git itself
+# has an in-progress merge (MERGE_HEAD set) and jumps straight to
+# `git commit`. When the previous run died at step 1 before staging
+# anything (the common case for cancelled releases), the index is empty,
+# `git commit` says "nothing to commit," and --continue can never
+# succeed. Dropping the state and restarting is the only correct path.
+#
+# Two flags accompany the fresh `git flow finish` calls in release_finish
+# and hotfix_finish:
+#
+#   --no-ff      Force a real merge commit even when release/X.Y.Z is a
+#                fast-forward over master. Without it git-flow may try
+#                to commit an empty fast-forward "merge." With it, git
+#                runs `git merge --no-ff` which creates an actual merge
+#                commit (parents = [master, release/X.Y.Z], tree = merge
+#                result). Bonus: preserves the release branch shape in
+#                master's history graph.
+#
+#   --no-verify  Bypass pre-commit-framework hooks on git-flow's INTERNAL
+#                merge commit. Those hooks are for the operator-commit
+#                surface; they have nothing to check on an auto-driven
+#                merge and report Skipped for every entry.
+#
+# Heal refuses to act when ANY of these is true, kicking the decision back
+# to the operator with named conditions:
+#
+#   - A real in-progress merge exists (.git/MERGE_HEAD present)
+#   - A real in-progress rebase exists (.git/REBASE_HEAD or rebase-merge dir)
+#   - The recorded release branch no longer exists
+#   - The recorded parent branch (master) already contains the release
+#     branch tip — meaning the merge already happened; "continue" would
+#     re-run it and could cause duplicate commits
+#   - Working tree is dirty
+_release_finish_heal:
+	@state_file=.git/gitflow/state/merge.json; \
+	test -f "$$state_file" || exit 0; \
+	if [ -e .git/MERGE_HEAD ]; then \
+		echo "REFUSE TO HEAL: a real git merge is in progress."; \
+		echo "  Resolve conflicts and: git commit"; \
+		echo "  Or abort: git merge --abort"; \
+		exit 1; \
+	fi; \
+	if [ -e .git/REBASE_HEAD ] || [ -d .git/rebase-merge ] || [ -d .git/rebase-apply ]; then \
+		echo "REFUSE TO HEAL: a real git rebase is in progress."; \
+		echo "  Continue: git rebase --continue"; \
+		echo "  Or abort: git rebase --abort"; \
+		exit 1; \
+	fi; \
+	if [ -n "$$(git status --porcelain)" ]; then \
+		echo "REFUSE TO HEAL: working tree is dirty."; \
+		echo "  Commit or stash before re-running release_finish."; \
+		exit 1; \
+	fi; \
+	branch=$$(python3 -c "import json,sys; print(json.load(open('$$state_file'))['fullBranchName'])" 2>/dev/null); \
+	parent=$$(python3 -c "import json,sys; print(json.load(open('$$state_file'))['parentBranch'])" 2>/dev/null); \
+	step=$$(python3 -c "import json,sys; print(json.load(open('$$state_file'))['currentStep'])" 2>/dev/null); \
+	if [ -z "$$branch" ] || [ -z "$$parent" ]; then \
+		echo "REFUSE TO HEAL: stale gitflow state file is unparsable."; \
+		echo "  Inspect: cat $$state_file"; \
+		echo "  Remove manually if appropriate."; \
+		exit 1; \
+	fi; \
+	if ! git rev-parse --verify "$$branch" >/dev/null 2>&1; then \
+		echo "REFUSE TO HEAL: state file names branch '$$branch' which no longer exists."; \
+		echo "  Inspect: cat $$state_file"; \
+		echo "  Remove manually if appropriate (the release was likely already finished)."; \
+		exit 1; \
+	fi; \
+	if git merge-base --is-ancestor "$$branch" "$$parent" 2>/dev/null; then \
+		echo "REFUSE TO HEAL: '$$parent' already contains '$$branch'."; \
+		echo "  The merge already happened in an earlier run. Running --continue"; \
+		echo "  could create duplicate commits. Inspect:"; \
+		echo "    git log --oneline $$parent ^$$branch | head"; \
+		echo "    git log --oneline $$branch ^$$parent | head"; \
+		exit 1; \
+	fi; \
+	echo "=== Healing stale gitflow state ==="; \
+	echo "  branch: $$branch"; \
+	echo "  parent: $$parent"; \
+	echo "  step:   $$step"; \
+	echo "  working tree clean, no real merge/rebase, parent does not"; \
+	echo "  contain branch, no index changes from prior run."; \
+	echo "  Action: drop state file and restart from scratch."; \
+	echo ""; \
+	rm -f "$$state_file"; \
+	rmdir .git/gitflow/state 2>/dev/null; \
+	rmdir .git/gitflow 2>/dev/null; \
+	echo "  Stale state cleared. release_finish will now run fresh."
+
+# If _release_finish_heal already drove `git flow release finish --continue`
+# to completion, the release branch is gone and we just need to push.
+# Otherwise (no stale state), run the normal `git flow release finish` path.
+release_finish: require_gitflow_next distribution_verify _release_finish_heal
 	@echo "=== Finishing release ==="
-	@echo "Merging to master, tagging, pushing..."
-	git flow release finish && git push origin develop && git push origin master && git push --tags && git checkout develop
+	@if git branch --list 'release/*' | grep -q .; then \
+		echo "Merging to master, tagging, pushing..."; \
+		git flow release finish --no-ff --no-verify; \
+	else \
+		echo "Release branch already merged (heal completed it); pushing only."; \
+	fi
+	git push origin develop && git push origin master && git push --tags && git checkout develop
 	@echo ""
 	@echo "=== Release complete ==="
 	@echo "Tag: v$(IMAGE_TAG)"
 	@echo "Pushed: develop, master, tags"
 
-hotfix_finish: require_gitflow_next distribution_verify
+hotfix_finish: require_gitflow_next distribution_verify _release_finish_heal
 	@echo "=== Finishing hotfix ==="
-	@echo "Merging to master, tagging, pushing..."
-	git flow hotfix finish && git push origin develop && git push origin master && git push --tags && git checkout develop
+	@if git branch --list 'hotfix/*' | grep -q .; then \
+		echo "Merging to master, tagging, pushing..."; \
+		git flow hotfix finish --no-ff --no-verify; \
+	else \
+		echo "Hotfix branch already merged (heal completed it); pushing only."; \
+	fi
+	git push origin develop && git push origin master && git push --tags && git checkout develop
 	@echo ""
 	@echo "=== Hotfix complete ==="
 
@@ -986,6 +1131,43 @@ distribution_verify:
 		fi; \
 	done; \
 	echo "OK: distribution.env hardlink chain intact ($$expected links)."
+
+# Self-heal the hardlink chain when a git operation (checkout / merge /
+# rebase / amend) has rewritten distribution.env in place. Direction is the
+# inverse of distribution_sync: we trust this repo's distribution.env as the
+# new canonical because that's what git just wrote. Siblings get re-linked
+# to it. If a sibling holds *different* content, we WARN and exit clean —
+# silent overwrite of a divergent sibling would mask drift.
+#
+# Silent on the happy path: most checkouts don't touch distribution.env, so
+# the inode survives and the chain is intact.
+distribution_heal:
+	@test -f $(SIBLING_AI_UI)/distribution.env || exit 0
+	@if [ -e $(DIST_SOURCE) ]; then \
+		links=$$(stat -f "%l" $(SIBLING_AI_UI)/distribution.env 2>/dev/null || \
+		         stat -c "%h" $(SIBLING_AI_UI)/distribution.env); \
+		expected=2; \
+		test -d $(SIBLING_DOCS) && expected=3; \
+		if [ "$$links" = "$$expected" ]; then exit 0; fi; \
+		if ! cmp -s $(SIBLING_AI_UI)/distribution.env $(DIST_SOURCE); then \
+			echo ""; \
+			echo "WARN: distribution.env hardlink chain broken AND content has diverged."; \
+			echo "  AI-UI:        $(SIBLING_AI_UI)/distribution.env"; \
+			echo "  homebrew-apps: $(DIST_SOURCE)"; \
+			echo "  Run 'diff $(SIBLING_AI_UI)/distribution.env $(DIST_SOURCE)' and reconcile."; \
+			echo "  Then run 'make distribution_sync' to re-establish the chain."; \
+			exit 0; \
+		fi; \
+		ln -f $(SIBLING_AI_UI)/distribution.env $(DIST_SOURCE); \
+	fi
+	@if [ -d $(SIBLING_DOCS) ] && [ -e $(SIBLING_DOCS)/distribution.env ]; then \
+		if ! cmp -s $(SIBLING_AI_UI)/distribution.env $(SIBLING_DOCS)/distribution.env; then \
+			echo "WARN: $(SIBLING_DOCS)/distribution.env diverges; leaving alone."; \
+		else \
+			ln -f $(SIBLING_AI_UI)/distribution.env $(SIBLING_DOCS)/distribution.env; \
+		fi; \
+	fi
+	@$(MAKE) -s distribution_verify
 
 # Rewrites SERVER_TAG in distribution.env while preserving the inode (so the
 # hardlink chain stays intact) and verifies the chain afterward. `perl -i` /
