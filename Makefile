@@ -840,25 +840,31 @@ hotfix: require_gitflow_next
 # in progress" — a misleading message, since no merge is in progress and
 # the working tree is clean.
 #
-# This target detects the false-positive case and calls `--continue` so
-# the finish proceeds. Two flags accompany every git-flow finish call:
+# When ALL safety gates pass, this target DELETES the stale state file
+# and lets `release_finish` run the full `git flow release finish` from
+# scratch. We do NOT use git-flow-next's --continue because, as of
+# version 1.0.0, --continue from currentStep="merge" assumes git itself
+# has an in-progress merge (MERGE_HEAD set) and jumps straight to
+# `git commit`. When the previous run died at step 1 before staging
+# anything (the common case for cancelled releases), the index is empty,
+# `git commit` says "nothing to commit," and --continue can never
+# succeed. Dropping the state and restarting is the only correct path.
+#
+# Two flags accompany the fresh `git flow finish` calls in release_finish
+# and hotfix_finish:
 #
 #   --no-ff      Force a real merge commit even when release/X.Y.Z is a
-#                fast-forward over master. git-flow-next 1.0.0 tries to
-#                create a merge commit unconditionally; when the merge is
-#                fast-forward-able, `git commit` then has nothing to
-#                commit ("nothing to commit, working tree clean") and
-#                git-flow-next aborts with a misleading
-#                "failed to commit merge" error. Forcing --no-ff gives
-#                git-commit something real to record. (Bonus: it preserves
-#                the release branch shape in the master history graph.)
+#                fast-forward over master. Without it git-flow may try
+#                to commit an empty fast-forward "merge." With it, git
+#                runs `git merge --no-ff` which creates an actual merge
+#                commit (parents = [master, release/X.Y.Z], tree = merge
+#                result). Bonus: preserves the release branch shape in
+#                master's history graph.
 #
 #   --no-verify  Bypass pre-commit-framework hooks on git-flow's INTERNAL
 #                merge commit. Those hooks are for the operator-commit
 #                surface; they have nothing to check on an auto-driven
-#                merge and report Skipped for every entry. git-flow-next
-#                surfaces the Skipped output even on success, which is
-#                noise. Belt-and-suspenders alongside --no-ff.
+#                merge and report Skipped for every entry.
 #
 # Heal refuses to act when ANY of these is true, kicking the decision back
 # to the operator with named conditions:
@@ -918,11 +924,13 @@ _release_finish_heal:
 	echo "  parent: $$parent"; \
 	echo "  step:   $$step"; \
 	echo "  working tree clean, no real merge/rebase, parent does not"; \
-	echo "  contain branch — safe to --continue."; \
+	echo "  contain branch, no index changes from prior run."; \
+	echo "  Action: drop state file and restart from scratch."; \
 	echo ""; \
-	type=$$(python3 -c "import json,sys; print(json.load(open('$$state_file'))['branchType'])" 2>/dev/null); \
-	name=$$(python3 -c "import json,sys; print(json.load(open('$$state_file'))['branchName'])" 2>/dev/null); \
-	git flow $$type finish $$name --continue --no-ff --no-verify
+	rm -f "$$state_file"; \
+	rmdir .git/gitflow/state 2>/dev/null; \
+	rmdir .git/gitflow 2>/dev/null; \
+	echo "  Stale state cleared. release_finish will now run fresh."
 
 # If _release_finish_heal already drove `git flow release finish --continue`
 # to completion, the release branch is gone and we just need to push.
