@@ -61,6 +61,8 @@ from sage_is_ai.utils.misc import (
 )
 from sage_is_ai.utils.auth import get_admin_user, get_verified_user
 
+from sage_is_ai.diagnostics import EndpointUnreachable
+
 from sage_is_ai.config import (
     ENV,
     VECTOR_DB,
@@ -1517,6 +1519,13 @@ async def process_file(
                 "content": text_content,
             }
 
+    except EndpointUnreachable:
+        # Let the FastAPI exception handler in main.py convert this to a
+        # structured 503 naming the bad URL and pointing at /admin/diagnostics.
+        # The previous blanket `except Exception` here was the surface that
+        # turned an embedding-endpoint outage into a misleading
+        # `400: 'NoneType' object is not iterable` for the operator.
+        raise
     except Exception as e:
         log.exception(e)
         if "No pandoc was found" in str(e):
