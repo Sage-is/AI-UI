@@ -52,6 +52,8 @@ from sage_is_ai.utils.payload import (
 from sage_is_ai.utils.auth import get_admin_user, get_verified_user
 from sage_is_ai.utils.access_control import has_access
 
+from sage_is_ai.diagnostics import EndpointUnreachable, endpoint_health
+
 
 from sage_is_ai.config import (
     UPLOAD_DIR,
@@ -100,10 +102,15 @@ async def send_get_request(url, key=None, user: UserModel = None):
                 },
                 ssl=AIOHTTP_CLIENT_SESSION_SSL,
             ) as response:
-                return await response.json()
+                payload = await response.json()
+                endpoint_health.record_success(url, capability="ollama/list_models")
+                return payload
     except Exception as e:
-        # Handle connection error here
+        # Multi-URL fan-out: caller iterates over configured endpoints and
+        # tolerates per-URL failure. Keep the return-None semantic; surface
+        # the outage in the registry so /admin/diagnostics shows it.
         log.error(f"Connection error: {e}")
+        endpoint_health.record_failure(url, e, capability="ollama/list_models")
         return None
 
 
@@ -272,12 +279,18 @@ async def verify_connection(
                     raise Exception(detail)
 
                 data = await r.json()
+                endpoint_health.record_success(
+                    url, capability="ollama/verify_connection"
+                )
                 return data
-        except aiohttp.ClientError as e:
+        except (aiohttp.ClientError, asyncio.TimeoutError) as e:
             log.exception(f"Client error: {str(e)}")
-            raise HTTPException(
-                status_code=500, detail="Sage.is AI: Server Connection Error"
+            endpoint_health.record_failure(
+                url, e, capability="ollama/verify_connection"
             )
+            raise EndpointUnreachable(
+                url, underlying=e, capability="ollama/verify_connection"
+            ) from e
         except Exception as e:
             log.exception(f"Unexpected error: {e}")
             error_detail = f"Unexpected error: {str(e)}"
