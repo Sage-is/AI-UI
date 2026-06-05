@@ -709,6 +709,13 @@ async def lifespan(app: FastAPI):
     if ENABLE_TRY_SAGE:
         asyncio.create_task(ensure_try_sage_vector_backend(app))
 
+    # Phase 2c — seed the EndpointHealth registry with every configured
+    # external URL before the first user request arrives. Fire-and-forget
+    # so uvicorn doesn't wait on slow DNS at boot. Failures are diagnostic,
+    # never fatal — the registry captures them for /admin/diagnostics.
+    from sage_is_ai.diagnostics import run_boot_probes
+    asyncio.create_task(run_boot_probes(app))
+
     asyncio.create_task(periodic_usage_pool_cleanup())
     asyncio.create_task(periodic_temporary_account_cleanup())
     # Trial-mode reset loop. Spawned only when try mode is on so

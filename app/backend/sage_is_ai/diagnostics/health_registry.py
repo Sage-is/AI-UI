@@ -129,13 +129,20 @@ class EndpointHealth:
     def _save_snapshot(self) -> None:
         if self._snapshot_path is None:
             return
+        # Snapshot writes can race when many record_* calls fire concurrently
+        # (boot probes run in a thread pool). Serialize the entire write
+        # under the same lock so two writers can't both touch the temp file
+        # at the same time. The lock is RLock so re-entry from snapshot()
+        # is safe.
         try:
             self._snapshot_path.parent.mkdir(parents=True, exist_ok=True)
-            tmp = self._snapshot_path.with_suffix(self._snapshot_path.suffix + ".tmp")
             with self._lock:
                 payload = self.snapshot()
-            tmp.write_text(json.dumps(payload, indent=2))
-            tmp.replace(self._snapshot_path)
+                tmp = self._snapshot_path.with_suffix(
+                    self._snapshot_path.suffix + ".tmp"
+                )
+                tmp.write_text(json.dumps(payload, indent=2))
+                tmp.replace(self._snapshot_path)
         except OSError as e:
             log.warning("EndpointHealth snapshot write failed: %s", e)
 
