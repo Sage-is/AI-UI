@@ -24,6 +24,8 @@ from sage_is_ai.models.notes import Notes
 from sage_is_ai.retrieval.vector.main import GetResult
 from sage_is_ai.utils.access_control import has_access
 
+from sage_is_ai.diagnostics import EndpointUnreachable, endpoint_health
+
 
 from sage_is_ai.env import (
     SRC_LOG_LEVELS,
@@ -797,12 +799,18 @@ def generate_openai_batch_embeddings(
         r.raise_for_status()
         data = r.json()
         if "data" in data:
+            endpoint_health.record_success(url, capability="embedding/openai")
             return [elem["embedding"] for elem in data["data"]]
         else:
-            raise "Something went wrong :/"
+            raise ValueError(
+                f"openai embeddings response missing 'data' key: {data}"
+            )
     except Exception as e:
         log.exception(f"Error generating openai batch embeddings: {e}")
-        return None
+        endpoint_health.record_failure(url, e, capability="embedding/openai")
+        raise EndpointUnreachable(
+            url, underlying=e, capability="embedding/openai"
+        ) from e
 
 
 def generate_azure_openai_batch_embeddings(
@@ -851,13 +859,25 @@ def generate_azure_openai_batch_embeddings(
             r.raise_for_status()
             data = r.json()
             if "data" in data:
+                endpoint_health.record_success(url, capability="embedding/azure_openai")
                 return [elem["embedding"] for elem in data["data"]]
             else:
-                raise Exception("Something went wrong :/")
-        return None
+                raise ValueError(
+                    f"azure openai embeddings response missing 'data' key: {data}"
+                )
+        raise EndpointUnreachable(
+            url,
+            underlying=Exception("azure openai retried 5x with 429; giving up"),
+            capability="embedding/azure_openai",
+        )
+    except EndpointUnreachable:
+        raise
     except Exception as e:
         log.exception(f"Error generating azure openai batch embeddings: {e}")
-        return None
+        endpoint_health.record_failure(url, e, capability="embedding/azure_openai")
+        raise EndpointUnreachable(
+            url, underlying=e, capability="embedding/azure_openai"
+        ) from e
 
 
 def generate_ollama_batch_embeddings(
@@ -899,12 +919,18 @@ def generate_ollama_batch_embeddings(
         data = r.json()
 
         if "embeddings" in data:
+            endpoint_health.record_success(url, capability="embedding/ollama")
             return data["embeddings"]
         else:
-            raise "Something went wrong :/"
+            raise ValueError(
+                f"ollama embeddings response missing 'embeddings' key: {data}"
+            )
     except Exception as e:
         log.exception(f"Error generating ollama batch embeddings: {e}")
-        return None
+        endpoint_health.record_failure(url, e, capability="embedding/ollama")
+        raise EndpointUnreachable(
+            url, underlying=e, capability="embedding/ollama"
+        ) from e
 
 
 def generate_embeddings(
@@ -953,6 +979,11 @@ def generate_embeddings(
             user,
         )
         return embeddings[0] if isinstance(text, str) else embeddings
+    else:
+        raise ValueError(
+            f"generate_embeddings: unknown engine '{engine}' "
+            "(expected 'ollama', 'openai', or 'azure_openai')"
+        )
 
 
 import operator

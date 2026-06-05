@@ -1408,6 +1408,28 @@ app.add_middleware(
 )
 
 
+from sage_is_ai.diagnostics import EndpointUnreachable
+
+
+@app.exception_handler(EndpointUnreachable)
+async def _endpoint_unreachable_handler(request, exc: EndpointUnreachable):
+    underlying = (
+        f"{type(exc.underlying).__name__}: {exc.underlying}"
+        if exc.underlying is not None
+        else None
+    )
+    return JSONResponse(
+        status_code=503,
+        content={
+            "detail": str(exc),
+            "url": exc.url,
+            "capability": exc.capability,
+            "underlying": underlying,
+            "fix": "Visit /admin/diagnostics for endpoint status and how-to-fix.",
+        },
+    )
+
+
 app.mount("/ws", socket_app)
 
 
