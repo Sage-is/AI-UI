@@ -24,6 +24,7 @@ from sage_is_ai.constants import ERROR_MESSAGES
 
 
 from sage_is_ai.routers.openai import get_all_models_responses
+from sage_is_ai.diagnostics import endpoint_health
 
 from sage_is_ai.utils.auth import get_admin_user
 
@@ -87,15 +88,19 @@ async def process_pipeline_inlet_filter(request, payload, user, models):
                 "body": payload,
             }
 
+            filter_url = f"{url}/{filter['id']}/filter/inlet"
             try:
                 async with session.post(
-                    f"{url}/{filter['id']}/filter/inlet",
+                    filter_url,
                     headers=headers,
                     json=request_data,
                     ssl=AIOHTTP_CLIENT_SESSION_SSL,
                 ) as response:
                     payload = await response.json()
                     response.raise_for_status()
+                    endpoint_health.record_success(
+                        filter_url, capability="pipelines/inlet_filter"
+                    )
             except aiohttp.ClientResponseError as e:
                 res = (
                     await response.json()
@@ -105,7 +110,13 @@ async def process_pipeline_inlet_filter(request, payload, user, models):
                 if "detail" in res:
                     raise Exception(response.status, res["detail"])
             except Exception as e:
+                # Multi-filter fan-out: one failing filter must not crash
+                # the whole chain. Surface in the registry for diagnostics
+                # without raising.
                 log.exception(f"Connection error: {e}")
+                endpoint_health.record_failure(
+                    filter_url, e, capability="pipelines/inlet_filter"
+                )
 
     return payload
 
@@ -140,15 +151,19 @@ async def process_pipeline_outlet_filter(request, payload, user, models):
                 "body": payload,
             }
 
+            filter_url = f"{url}/{filter['id']}/filter/outlet"
             try:
                 async with session.post(
-                    f"{url}/{filter['id']}/filter/outlet",
+                    filter_url,
                     headers=headers,
                     json=request_data,
                     ssl=AIOHTTP_CLIENT_SESSION_SSL,
                 ) as response:
                     payload = await response.json()
                     response.raise_for_status()
+                    endpoint_health.record_success(
+                        filter_url, capability="pipelines/outlet_filter"
+                    )
             except aiohttp.ClientResponseError as e:
                 try:
                     res = (
@@ -161,7 +176,11 @@ async def process_pipeline_outlet_filter(request, payload, user, models):
                 except Exception:
                     pass
             except Exception as e:
+                # Multi-filter fan-out: surface in the registry without raising.
                 log.exception(f"Connection error: {e}")
+                endpoint_health.record_failure(
+                    filter_url, e, capability="pipelines/outlet_filter"
+                )
 
     return payload
 
@@ -233,6 +252,7 @@ async def upload_pipeline(
                 f"{url}/pipelines/upload",
                 headers={"Authorization": f"Bearer {key}"},
                 files=files,
+                timeout=60,
             )
 
         r.raise_for_status()
@@ -284,6 +304,7 @@ async def add_pipeline(
             f"{url}/pipelines/add",
             headers={"Authorization": f"Bearer {key}"},
             json={"url": form_data.url},
+            timeout=10,
         )
 
         r.raise_for_status()
@@ -329,6 +350,7 @@ async def delete_pipeline(
             f"{url}/pipelines/delete",
             headers={"Authorization": f"Bearer {key}"},
             json={"id": form_data.id},
+            timeout=10,
         )
 
         r.raise_for_status()
@@ -363,7 +385,11 @@ async def get_pipelines(
         url = request.app.state.config.OPENAI_API_BASE_URLS[urlIdx]
         key = request.app.state.config.OPENAI_API_KEYS[urlIdx]
 
-        r = requests.get(f"{url}/pipelines", headers={"Authorization": f"Bearer {key}"})
+        r = requests.get(
+            f"{url}/pipelines",
+            headers={"Authorization": f"Bearer {key}"},
+            timeout=10,
+        )
 
         r.raise_for_status()
         data = r.json()
@@ -401,7 +427,9 @@ async def get_pipeline_valves(
         key = request.app.state.config.OPENAI_API_KEYS[urlIdx]
 
         r = requests.get(
-            f"{url}/{pipeline_id}/valves", headers={"Authorization": f"Bearer {key}"}
+            f"{url}/{pipeline_id}/valves",
+            headers={"Authorization": f"Bearer {key}"},
+            timeout=10,
         )
 
         r.raise_for_status()
@@ -442,6 +470,7 @@ async def get_pipeline_valves_spec(
         r = requests.get(
             f"{url}/{pipeline_id}/valves/spec",
             headers={"Authorization": f"Bearer {key}"},
+            timeout=10,
         )
 
         r.raise_for_status()
@@ -484,6 +513,7 @@ async def update_pipeline_valves(
             f"{url}/{pipeline_id}/valves/update",
             headers={"Authorization": f"Bearer {key}"},
             json={**form_data},
+            timeout=10,
         )
 
         r.raise_for_status()
