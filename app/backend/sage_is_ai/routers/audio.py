@@ -1,3 +1,4 @@
+import asyncio
 import hashlib
 import json
 import logging
@@ -34,6 +35,7 @@ from pydantic import BaseModel
 
 
 from sage_is_ai.utils.auth import get_admin_user, get_verified_user
+from sage_is_ai.diagnostics import EndpointUnreachable, endpoint_health
 from sage_is_ai.config import (
     WHISPER_MODEL_AUTO_UPDATE,
     WHISPER_MODEL_DIR,
@@ -331,6 +333,9 @@ async def speech(request: Request, user=Depends(get_verified_user)):
     r = None
     if request.app.state.config.TTS_ENGINE == "openai":
         payload["model"] = request.app.state.config.TTS_MODEL
+        tts_url = (
+            f"{request.app.state.config.TTS_OPENAI_API_BASE_URL}/audio/speech"
+        )
 
         try:
             timeout = aiohttp.ClientTimeout(total=AIOHTTP_CLIENT_TIMEOUT)
@@ -338,7 +343,7 @@ async def speech(request: Request, user=Depends(get_verified_user)):
                 timeout=timeout, trust_env=True
             ) as session:
                 r = await session.post(
-                    url=f"{request.app.state.config.TTS_OPENAI_API_BASE_URL}/audio/speech",
+                    url=tts_url,
                     json=payload,
                     headers={
                         "Content-Type": "application/json",
@@ -365,8 +370,17 @@ async def speech(request: Request, user=Depends(get_verified_user)):
                 async with aiofiles.open(file_body_path, "w") as f:
                     await f.write(json.dumps(payload))
 
+            endpoint_health.record_success(tts_url, capability="audio/tts/openai")
             return FileResponse(file_path)
 
+        except (aiohttp.ClientConnectorError, aiohttp.ClientConnectionError, asyncio.TimeoutError) as e:
+            # Connection-class failure: endpoint unreachable, surface via
+            # the boundary handler so admin sees a 503 naming the URL.
+            log.exception(e)
+            endpoint_health.record_failure(tts_url, e, capability="audio/tts/openai")
+            raise EndpointUnreachable(
+                tts_url, underlying=e, capability="audio/tts/openai"
+            ) from e
         except Exception as e:
             log.exception(e)
             detail = None
@@ -398,13 +412,15 @@ async def speech(request: Request, user=Depends(get_verified_user)):
                 detail="Invalid voice id",
             )
 
+        tts_url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
+
         try:
             timeout = aiohttp.ClientTimeout(total=AIOHTTP_CLIENT_TIMEOUT)
             async with aiohttp.ClientSession(
                 timeout=timeout, trust_env=True
             ) as session:
                 async with session.post(
-                    f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}",
+                    tts_url,
                     json={
                         "text": payload["input"],
                         "model_id": request.app.state.config.TTS_MODEL,
@@ -425,8 +441,15 @@ async def speech(request: Request, user=Depends(get_verified_user)):
                     async with aiofiles.open(file_body_path, "w") as f:
                         await f.write(json.dumps(payload))
 
+            endpoint_health.record_success(tts_url, capability="audio/tts/elevenlabs")
             return FileResponse(file_path)
 
+        except (aiohttp.ClientConnectorError, aiohttp.ClientConnectionError, asyncio.TimeoutError) as e:
+            log.exception(e)
+            endpoint_health.record_failure(tts_url, e, capability="audio/tts/elevenlabs")
+            raise EndpointUnreachable(
+                tts_url, underlying=e, capability="audio/tts/elevenlabs"
+            ) from e
         except Exception as e:
             log.exception(e)
             detail = None
@@ -457,6 +480,11 @@ async def speech(request: Request, user=Depends(get_verified_user)):
         locale = "-".join(request.app.state.config.TTS_VOICE.split("-")[:1])
         output_format = request.app.state.config.TTS_AZURE_SPEECH_OUTPUT_FORMAT
 
+        tts_url = (
+            (base_url or f"https://{region}.tts.speech.microsoft.com")
+            + "/cognitiveservices/v1"
+        )
+
         try:
             data = f"""<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="{locale}">
                 <voice name="{language}">{payload["input"]}</voice>
@@ -466,8 +494,7 @@ async def speech(request: Request, user=Depends(get_verified_user)):
                 timeout=timeout, trust_env=True
             ) as session:
                 async with session.post(
-                    (base_url or f"https://{region}.tts.speech.microsoft.com")
-                    + "/cognitiveservices/v1",
+                    tts_url,
                     headers={
                         "Ocp-Apim-Subscription-Key": request.app.state.config.TTS_API_KEY,
                         "Content-Type": "application/ssml+xml",
@@ -484,8 +511,15 @@ async def speech(request: Request, user=Depends(get_verified_user)):
                     async with aiofiles.open(file_body_path, "w") as f:
                         await f.write(json.dumps(payload))
 
+                    endpoint_health.record_success(tts_url, capability="audio/tts/azure")
                     return FileResponse(file_path)
 
+        except (aiohttp.ClientConnectorError, aiohttp.ClientConnectionError, asyncio.TimeoutError) as e:
+            log.exception(e)
+            endpoint_health.record_failure(tts_url, e, capability="audio/tts/azure")
+            raise EndpointUnreachable(
+                tts_url, underlying=e, capability="audio/tts/azure"
+            ) from e
         except Exception as e:
             log.exception(e)
             detail = None
