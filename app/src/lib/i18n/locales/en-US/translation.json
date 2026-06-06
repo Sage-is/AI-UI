@@ -9,6 +9,7 @@
 	"[Today at] h:mm A": "",
 	"[Yesterday at] h:mm A": "",
 	"{{ models }}": "",
+	"{{COMPLETED}} of {{TOTAL}} complete": "{{COMPLETED}} of {{TOTAL}} complete",
 	"{{COUNT}} Available Tools": "",
 	"{{COUNT}} characters": "",
 	"{{COUNT}} hidden lines": "",
@@ -163,6 +164,9 @@
 	"Bocha Search API Key": "",
 	"Bold": "",
 	"Boosting or penalizing specific tokens for constrained responses. Bias values will be clamped between -100 and 100 (inclusive). (Default: none)": "",
+	"Boot probes still running": "Boot probes still running",
+	"Boot status": "Boot status",
+	"Browser headers": "Browser headers",
 	"Both Docling OCR Engine and Language(s) must be provided or both left empty.": "",
 	"Brave Search API Key": "",
 	"Bullet List": "",
@@ -334,6 +338,7 @@
 	"Default to ALL": "",
 	"Default to segmented retrieval for focused and relevant content extraction, this is recommended for most cases.": "",
 	"Default User Role": "",
+	"Degraded": "Degraded",
 	"Delete": "",
 	"Delete a model": "",
 	"Delete All Chats": "",
@@ -358,6 +363,133 @@
 	"Describe your knowledge base and objectives": "",
 	"Description": "",
 	"Detect Artifacts Automatically": "",
+	"Diagnostics": "Diagnostics",
+	"diagnostics": {
+		"note": {
+			"reverse_proxy_may_override": "Reverse proxy may override this header. Check browser DevTools."
+		},
+		"summary": {
+			"openai": {
+				"list_models": {
+					"ok": "OpenAI list-models endpoint is reachable.",
+					"degraded": "OpenAI list-models endpoint is degraded.",
+					"unreachable": "OpenAI list-models endpoint unreachable. Model picker will be empty."
+				},
+				"verify_connection": {
+					"ok": "OpenAI verify-connection succeeded.",
+					"degraded": "OpenAI verify-connection degraded.",
+					"unreachable": "OpenAI verify-connection failed. Chat completions will 503."
+				}
+			},
+			"ollama": {
+				"list_models": {
+					"ok": "Ollama list-models endpoint is reachable.",
+					"degraded": "Ollama list-models endpoint is degraded.",
+					"unreachable": "Ollama list-models endpoint unreachable. Local models will not appear."
+				},
+				"verify_connection": {
+					"ok": "Ollama verify-connection succeeded.",
+					"degraded": "Ollama verify-connection degraded.",
+					"unreachable": "Ollama verify-connection failed. Local chat completions will 503."
+				}
+			},
+			"rag": {
+				"tika": {
+					"ok": "Tika document extractor is reachable.",
+					"degraded": "Tika document extractor is degraded.",
+					"unreachable": "Tika unreachable. Office/PDF uploads will fail extraction."
+				},
+				"docling": {
+					"ok": "Docling document extractor is reachable.",
+					"degraded": "Docling document extractor is degraded.",
+					"unreachable": "Docling unreachable. Layout-aware extraction is disabled."
+				},
+				"reranker": {
+					"ok": "External reranker is reachable.",
+					"degraded": "External reranker is degraded.",
+					"unreachable": "Reranker unreachable. Retrieval falls back to vector-only ranking."
+				}
+			},
+			"embedding": {
+				"openai": {
+					"ok": "Knowledge embedding service is reachable.",
+					"degraded": "Knowledge embedding service is degraded.",
+					"unreachable": "Embedding endpoint unreachable. Knowledge uploads cannot compute vectors."
+				},
+				"ollama": {
+					"ok": "Ollama embedding service is reachable.",
+					"degraded": "Ollama embedding service is degraded.",
+					"unreachable": "Ollama embedding unreachable. Knowledge uploads cannot compute vectors."
+				},
+				"azure_openai": {
+					"ok": "Azure OpenAI embedding service is reachable.",
+					"degraded": "Azure OpenAI embedding service is degraded.",
+					"unreachable": "Azure OpenAI embedding unreachable. Knowledge uploads cannot compute vectors."
+				}
+			},
+			"audio": {
+				"tts": {
+					"openai": {
+						"ok": "OpenAI text-to-speech endpoint is reachable.",
+						"degraded": "OpenAI text-to-speech endpoint is degraded.",
+						"unreachable": "OpenAI TTS unreachable. Voice responses will silently fail."
+					},
+					"elevenlabs": {
+						"ok": "ElevenLabs text-to-speech endpoint is reachable.",
+						"degraded": "ElevenLabs text-to-speech endpoint is degraded.",
+						"unreachable": "ElevenLabs TTS unreachable. Voice responses will silently fail."
+					},
+					"azure": {
+						"ok": "Azure text-to-speech endpoint is reachable.",
+						"degraded": "Azure text-to-speech endpoint is degraded.",
+						"unreachable": "Azure TTS unreachable. Voice responses will silently fail."
+					}
+				}
+			},
+			"pipelines": {
+				"inlet_filter": {
+					"ok": "Pipelines inlet filter is reachable.",
+					"degraded": "Pipelines inlet filter is degraded.",
+					"unreachable": "Pipelines inlet filter unreachable. Prompts bypass moderation."
+				},
+				"outlet_filter": {
+					"ok": "Pipelines outlet filter is reachable.",
+					"degraded": "Pipelines outlet filter is degraded.",
+					"unreachable": "Pipelines outlet filter unreachable. Responses bypass moderation."
+				}
+			},
+			"unknown": {
+				"ok": "Endpoint is reachable.",
+				"degraded": "Endpoint is degraded.",
+				"unreachable": "Endpoint is unreachable."
+			},
+			"data_dir_writable": {
+				"ok": "Data directory is writable.",
+				"degraded": "Data directory is not writable. Mount a persistent volume and chown to the app user."
+			},
+			"secret_key_persisted": {
+				"ok": "WEBUI_SECRET_KEY is persisted correctly.",
+				"degraded": "WEBUI_SECRET_KEY may regenerate on each boot, invalidating sessions."
+			},
+			"alembic_head": {
+				"ok": "Database schema matches code.",
+				"degraded": "Database is behind code. Restart container to run pending migrations.",
+				"unknown": "Database schema version check failed."
+			},
+			"static_asset": {
+				"ok": "Asset {{PATH}} is present.",
+				"degraded": "Asset {{PATH}} is missing. Rebuild the frontend or verify the /assets mount."
+			},
+			"permissions_policy": {
+				"ok": "Permissions-Policy header is healthy.",
+				"degraded": "Permissions-Policy header contains a rejected feature. Remove it from PERMISSIONS_POLICY env."
+			},
+			"content_security_policy": {
+				"ok": "Content-Security-Policy header is set.",
+				"degraded": "No Content-Security-Policy configured. Set CONTENT_SECURITY_POLICY env."
+			}
+		}
+	},
 	"Dictate": "",
 	"Didn't fully follow instructions": "",
 	"Direct": "",
@@ -390,6 +522,7 @@
 	"Docling": "",
 	"Docling Server URL required.": "",
 	"Document": "",
+	"Documentation coming in 2.3.4": "Documentation coming in 2.3.4",
 	"Document Intelligence": "",
 	"Document Intelligence endpoint and key required.": "",
 	"Documentation": "",
@@ -456,6 +589,7 @@
 	"Enable New Sign Ups": "",
 	"Enabled": "",
 	"Endpoint URL": "",
+	"Endpoints": "Endpoints",
 	"Enforce Temporary Chat": "",
 	"Enhance": "",
 	"Ensure your CSV file includes 4 columns in this order: Name, Email, Password, Role.": "",
@@ -614,6 +748,7 @@
 	"Failed to copy link": "",
 	"Failed to create API Key.": "",
 	"Failed to delete note": "",
+	"Failed to load diagnostics.": "Failed to load diagnostics.",
 	"Failed to extract content from the file: {{error}}": "",
 	"Failed to extract content from the file.": "",
 	"Failed to fetch models": "",
@@ -775,6 +910,7 @@
 	"Invalid JSON file": "",
 	"Invalid Tag": "",
 	"is typing...": "",
+	"Issues": "Issues",
 	"Italic": "",
 	"January": "",
 	"Jina API Key": "",
@@ -809,6 +945,7 @@
 	"Languages": "",
 	"Last Active": "",
 	"Last Modified": "",
+	"Last refreshed {{TIME}}": "Last refreshed {{TIME}}",
 	"Last reply": "",
 	"LDAP": "",
 	"LDAP server updated": "",
@@ -829,6 +966,7 @@
 	"Llama.cpp": "",
 	"LLMs can make mistakes. Verify important information.": "",
 	"Loader": "",
+	"Loading diagnostics...": "Loading diagnostics...",
 	"Loading Kokoro.js...": "",
 	"Local": "",
 	"Local Task Model": "",
@@ -951,6 +1089,7 @@
 	"OAuth ID": "",
 	"October": "",
 	"Off": "",
+	"OK": "OK",
 	"Okay, Let's Go!": "",
 	"OLED Dark": "",
 	"Ollama": "",
@@ -1047,7 +1186,11 @@
 	"Previous 30 days": "",
 	"Previous 7 days": "",
 	"Previous message": "Previous message",
+	"Previously configured": "Previously configured",
 	"Private": "",
+	"Probe failed": "Probe failed",
+	"Probe succeeded": "Probe succeeded",
+	"Probing...": "Probing...",
 	"Profile Image": "",
 	"Prompt": "",
 	"Prompt (e.g. Tell me a fun fact about the Roman Empire)": "",
@@ -1065,6 +1208,8 @@
 	"Query Generation Prompt": "",
 	"RAG Template": "",
 	"Rating": "",
+	"Re-probe": "Re-probe",
+	"Re-probe all": "Re-probe all",
 	"Re-rank models by topic similarity": "",
 	"Read": "",
 	"Read Aloud": "",
@@ -1212,6 +1357,7 @@
 	"Show All": "",
 	"Show image preview": "",
 	"Show Less": "",
+	"Show me how to fix this": "Show me how to fix this",
 	"Show Model": "",
 	"Show shortcuts": "",
 	"Show your support!": "",
@@ -1235,6 +1381,7 @@
 	"Speech recognition error: {{error}}": "",
 	"Speech-to-Text": "",
 	"Speech-to-Text Engine": "",
+	"Static assets": "Static assets",
 	"Stop": "",
 	"Stop Generating": "",
 	"Stop Sequence": "",
@@ -1268,6 +1415,7 @@
 	"Tavily API Key": "",
 	"Tavily Extract Depth": "",
 	"Tell us more:": "",
+	"Technical detail": "Technical detail",
 	"Temperature": "",
 	"Temporary Chat": "",
 	"Text Splitter": "",
@@ -1373,10 +1521,12 @@
 	"Unarchive All Archived Chats": "",
 	"Unarchive Chat": "",
 	"Underline": "",
+	"Unknown": "Unknown",
 	"Unloads {{FROM_NOW}}": "",
 	"Unlock mysteries": "",
 	"Unpin": "",
 	"Unravel secrets": "",
+	"Unreachable": "Unreachable",
 	"Unsupported file type.": "",
 	"Untagged": "",
 	"Untitled": "",
