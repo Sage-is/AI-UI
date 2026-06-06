@@ -45,7 +45,11 @@ from sage_is_ai.utils.misc import (
 from sage_is_ai.utils.auth import get_admin_user, get_verified_user
 from sage_is_ai.utils.access_control import has_access
 
-from sage_is_ai.diagnostics import EndpointUnreachable, endpoint_health
+from sage_is_ai.diagnostics import (
+    EndpointUnreachable,
+    endpoint_health,
+    assert_newly_added_urls_reachable,
+)
 
 # try.sage trial mode: the hidden-connection registry is unioned into the
 # inference-only resolver below. Admin-facing endpoints in this file read
@@ -202,6 +206,27 @@ class OpenAIConfigForm(BaseModel):
 async def update_config(
     request: Request, form_data: OpenAIConfigForm, user=Depends(get_admin_user)
 ):
+    # Phase 2d — refuse to persist a NEWLY-ADDED unreachable URL.
+    # Existing-but-now-broken URLs in the list are not blocking (the
+    # operator may be editing an unrelated field). The registry sees both.
+    currently_persisted = request.app.state.config.OPENAI_API_BASE_URLS or []
+    try:
+        assert_newly_added_urls_reachable(
+            submitted=form_data.OPENAI_API_BASE_URLS,
+            currently_persisted=currently_persisted,
+            capability="openai/list_models",
+        )
+    except EndpointUnreachable as exc:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "message": str(exc),
+                "url": exc.url,
+                "capability": exc.capability,
+                "suggestion": "Verify the URL is correct and the server is running, then re-save.",
+            },
+        ) from exc
+
     request.app.state.config.ENABLE_OPENAI_API = form_data.ENABLE_OPENAI_API
     request.app.state.config.OPENAI_API_BASE_URLS = form_data.OPENAI_API_BASE_URLS
     request.app.state.config.OPENAI_API_KEYS = form_data.OPENAI_API_KEYS

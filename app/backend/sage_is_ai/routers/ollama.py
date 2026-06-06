@@ -52,7 +52,11 @@ from sage_is_ai.utils.payload import (
 from sage_is_ai.utils.auth import get_admin_user, get_verified_user
 from sage_is_ai.utils.access_control import has_access
 
-from sage_is_ai.diagnostics import EndpointUnreachable, endpoint_health
+from sage_is_ai.diagnostics import (
+    EndpointUnreachable,
+    endpoint_health,
+    assert_newly_added_urls_reachable,
+)
 
 
 from sage_is_ai.config import (
@@ -316,6 +320,25 @@ class OllamaConfigForm(BaseModel):
 async def update_config(
     request: Request, form_data: OllamaConfigForm, user=Depends(get_admin_user)
 ):
+    # Phase 2d — refuse to persist a NEWLY-ADDED unreachable URL.
+    currently_persisted = request.app.state.config.OLLAMA_BASE_URLS or []
+    try:
+        assert_newly_added_urls_reachable(
+            submitted=form_data.OLLAMA_BASE_URLS,
+            currently_persisted=currently_persisted,
+            capability="ollama/list_models",
+        )
+    except EndpointUnreachable as exc:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "message": str(exc),
+                "url": exc.url,
+                "capability": exc.capability,
+                "suggestion": "Verify the URL is correct and the server is running, then re-save.",
+            },
+        ) from exc
+
     request.app.state.config.ENABLE_OLLAMA_API = form_data.ENABLE_OLLAMA_API
 
     request.app.state.config.OLLAMA_BASE_URLS = form_data.OLLAMA_BASE_URLS
