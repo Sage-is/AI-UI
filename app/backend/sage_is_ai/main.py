@@ -89,6 +89,7 @@ from sage_is_ai.routers import (
     notes,
     folders,
     configs,
+    diagnostics,
     groups,
     files,
     functions,
@@ -1493,6 +1494,9 @@ app.include_router(
     evaluations.router, prefix="/api/v1/evaluations", tags=["evaluations"]
 )
 app.include_router(utils.router, prefix="/api/v1/utils", tags=["utils"])
+app.include_router(
+    diagnostics.router, prefix="/api/v1/diagnostics", tags=["diagnostics"]
+)
 
 
 try:
