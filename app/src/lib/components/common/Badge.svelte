@@ -1,6 +1,7 @@
 <script lang="ts">
 	export let type = 'info';
 	export let content = '';
+	export let ariaLabel: string | null = null;
 
 	const colorStyles: Record<string, string> = {
 		info: '--bgc:rgb(59 130 246 / 0.30); --c:#1e3a8a; --dark-bgc:rgb(96 165 250 / 0.25); --dark-c:#93c5fd',
@@ -12,6 +13,8 @@
 </script>
 
 <div
+	role="status"
+	aria-label={ariaLabel ?? content}
 	style="--size:0.6rem; --weight:700; --w:fit-content; --px:0.5rem; --radius:0.125rem; --tt:uppercase; --line-clamp:1; --mr:0.125rem; {colorStyles[type] ?? colorStyles['info']}"
 >
 	{content}
