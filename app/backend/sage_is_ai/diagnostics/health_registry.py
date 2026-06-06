@@ -55,10 +55,20 @@ class EndpointHealth:
     singleton elsewhere. Tests can instantiate fresh copies.
     """
 
+    # Rate-limit window (seconds) between record_success-triggered snapshot
+    # writes. record_success fires on every healthy request — snapshotting
+    # on each one would burn disk for no gain. Failures still flush
+    # immediately so a 2.3.3 outage isn't lost across a restart.
+    _SUCCESS_SNAPSHOT_INTERVAL_S = 30.0
+
     def __init__(self, snapshot_path: Optional[Path] = None):
         self._lock = threading.RLock()
         self._records: Dict[str, EndpointRecord] = {}
         self._snapshot_path = snapshot_path
+        # Tracks when record_success last persisted to disk. Single
+        # class-level timestamp; the RLock already serializes access so
+        # we don't need per-URL bookkeeping. 0.0 means "never written".
+        self._last_persisted_at: float = 0.0
         self._load_snapshot()
 
     # ---- mutators ----------------------------------------------------------
@@ -84,6 +94,12 @@ class EndpointHealth:
                 rec.last_error_class = result.error_class
                 rec.last_error_message = result.error_message
                 rec.consecutive_failures += 1
+        # NOTE: do NOT touch self._last_persisted_at here. That timestamp
+        # is owned solely by record_success() for its rate-limit decision.
+        # If a failure burst kept resetting it, record_success could see a
+        # fresh value and skip its periodic flush, losing recovered-endpoint
+        # state across a container restart. Failures always flush
+        # synchronously below.
         self._save_snapshot()
 
     def record_failure(
@@ -100,9 +116,17 @@ class EndpointHealth:
             rec.last_error_class = type(exc).__name__
             rec.last_error_message = str(exc)
             rec.consecutive_failures += 1
+        # See record_probe for why we don't update _last_persisted_at here.
         self._save_snapshot()
 
     def record_success(self, url: str, capability: Optional[str] = None) -> None:
+        # Phase 3a fix for the Phase 2 oversight: record_success previously
+        # never persisted, so a container restart resurrected the last failure
+        # state for endpoints that had since healed. We now snapshot, but
+        # rate-limit to one write per _SUCCESS_SNAPSHOT_INTERVAL_S because
+        # this fires on every healthy request. Failures still flush
+        # synchronously via record_probe/record_failure.
+        should_persist = False
         with self._lock:
             rec = self._records.setdefault(url, EndpointRecord(url=url))
             rec.capability = capability or rec.capability
@@ -113,6 +137,11 @@ class EndpointHealth:
             rec.last_error_class = None
             rec.last_error_message = None
             rec.consecutive_failures = 0
+            if now - self._last_persisted_at >= self._SUCCESS_SNAPSHOT_INTERVAL_S:
+                self._last_persisted_at = now
+                should_persist = True
+        if should_persist:
+            self._save_snapshot()
 
     # ---- readers -----------------------------------------------------------
 
@@ -130,13 +159,15 @@ class EndpointHealth:
         if self._snapshot_path is None:
             return
         # Snapshot writes can race when many record_* calls fire concurrently
-        # (boot probes run in a thread pool). Serialize the entire write
-        # under the same lock so two writers can't both touch the temp file
-        # at the same time. The lock is RLock so re-entry from snapshot()
-        # is safe.
+        # (boot probes run in a thread pool). Hold the lock across the ENTIRE
+        # sequence — snapshot() through tmp.replace() — so the bytes on disk
+        # always reflect a single coherent moment in _records. RLock allows
+        # re-entry from snapshot() inside the same call. mkdir() also goes
+        # inside the lock so two concurrent writers can't both lose the
+        # directory race; cost is negligible.
         try:
-            self._snapshot_path.parent.mkdir(parents=True, exist_ok=True)
             with self._lock:
+                self._snapshot_path.parent.mkdir(parents=True, exist_ok=True)
                 payload = self.snapshot()
                 tmp = self._snapshot_path.with_suffix(
                     self._snapshot_path.suffix + ".tmp"
