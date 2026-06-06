@@ -488,14 +488,14 @@ def _check_static_asset(rel_path: str) -> dict:
     if exists:
         return _row(
             "ok",
-            "diagnostics.summary.static_assets.ok",
-            {"path": rel_path},
+            "diagnostics.summary.static_asset.ok",
+            {"PATH": rel_path},
             technical=technical,
         )
     return _row(
         "degraded",
-        "diagnostics.summary.static_assets.degraded",
-        {"path": rel_path},
+        "diagnostics.summary.static_asset.degraded",
+        {"PATH": rel_path},
         issue_type="static_asset_missing",
         technical=technical,
     )
