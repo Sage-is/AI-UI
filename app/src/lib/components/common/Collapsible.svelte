@@ -87,13 +87,22 @@
 
 <div {id} class={className}>
 	{#if title !== null}
-		<!-- svelte-ignore a11y-no-static-element-interactions -->
-		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<div
 			style="--cur:pointer"
 	class="{buttonClassName}"
+			role="button"
+			tabindex={disabled ? -1 : 0}
+			aria-expanded={open}
+			aria-disabled={disabled}
 			on:pointerup={() => {
 				if (!disabled) {
+					open = !open;
+				}
+			}}
+			on:keydown={(e) => {
+				if (disabled) return;
+				if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+					e.preventDefault();
 					open = !open;
 				}
 			}}
@@ -163,13 +172,22 @@
 			</div>
 		</div>
 	{:else}
-		<!-- svelte-ignore a11y-no-static-element-interactions -->
-		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<div
 			style="--cur:pointer"
 	class="{buttonClassName}"
+			role="button"
+			tabindex={disabled ? -1 : 0}
+			aria-expanded={open}
+			aria-disabled={disabled}
 			on:pointerup={() => {
 				if (!disabled) {
+					open = !open;
+				}
+			}}
+			on:keydown={(e) => {
+				if (disabled) return;
+				if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+					e.preventDefault();
 					open = !open;
 				}
 			}}

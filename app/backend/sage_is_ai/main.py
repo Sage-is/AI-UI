@@ -89,6 +89,7 @@ from sage_is_ai.routers import (
     notes,
     folders,
     configs,
+    diagnostics,
     groups,
     files,
     functions,
@@ -708,6 +709,13 @@ async def lifespan(app: FastAPI):
     await seed_try_sage(app)
     if ENABLE_TRY_SAGE:
         asyncio.create_task(ensure_try_sage_vector_backend(app))
+
+    # Phase 2c — seed the EndpointHealth registry with every configured
+    # external URL before the first user request arrives. Fire-and-forget
+    # so uvicorn doesn't wait on slow DNS at boot. Failures are diagnostic,
+    # never fatal — the registry captures them for /admin/diagnostics.
+    from sage_is_ai.diagnostics import run_boot_probes
+    asyncio.create_task(run_boot_probes(app))
 
     asyncio.create_task(periodic_usage_pool_cleanup())
     asyncio.create_task(periodic_temporary_account_cleanup())
@@ -1408,6 +1416,28 @@ app.add_middleware(
 )
 
 
+from sage_is_ai.diagnostics import EndpointUnreachable
+
+
+@app.exception_handler(EndpointUnreachable)
+async def _endpoint_unreachable_handler(request, exc: EndpointUnreachable):
+    underlying = (
+        f"{type(exc.underlying).__name__}: {exc.underlying}"
+        if exc.underlying is not None
+        else None
+    )
+    return JSONResponse(
+        status_code=503,
+        content={
+            "detail": str(exc),
+            "url": exc.url,
+            "capability": exc.capability,
+            "underlying": underlying,
+            "fix": "Visit /admin/diagnostics for endpoint status and how-to-fix.",
+        },
+    )
+
+
 app.mount("/ws", socket_app)
 
 
@@ -1464,6 +1494,9 @@ app.include_router(
     evaluations.router, prefix="/api/v1/evaluations", tags=["evaluations"]
 )
 app.include_router(utils.router, prefix="/api/v1/utils", tags=["utils"])
+app.include_router(
+    diagnostics.router, prefix="/api/v1/diagnostics", tags=["diagnostics"]
+)
 
 
 try:
