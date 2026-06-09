@@ -45,6 +45,12 @@ from sage_is_ai.utils.misc import (
 from sage_is_ai.utils.auth import get_admin_user, get_verified_user
 from sage_is_ai.utils.access_control import has_access
 
+from sage_is_ai.diagnostics import (
+    EndpointUnreachable,
+    endpoint_health,
+    assert_newly_added_urls_reachable,
+)
+
 # try.sage trial mode: the hidden-connection registry is unioned into the
 # inference-only resolver below. Admin-facing endpoints in this file read
 # from app.state.config.OPENAI_API_BASE_URLS / KEYS / CONFIGS (the public,
@@ -126,10 +132,16 @@ async def send_get_request(url, key=None, user: UserModel = None):
                 },
                 ssl=AIOHTTP_CLIENT_SESSION_SSL,
             ) as response:
-                return await response.json()
+                payload = await response.json()
+                endpoint_health.record_success(url, capability="openai/list_models")
+                return payload
     except Exception as e:
-        # Handle connection error here
+        # Multi-URL fan-out: caller iterates over configured endpoints and
+        # tolerates per-URL failure (one bad endpoint must not crash the
+        # whole list). Keep the return-None semantic; surface the outage
+        # in the EndpointHealth registry so /admin/diagnostics shows it.
         log.error(f"Connection error: {e}")
+        endpoint_health.record_failure(url, e, capability="openai/list_models")
         return None
 
 
@@ -194,6 +206,27 @@ class OpenAIConfigForm(BaseModel):
 async def update_config(
     request: Request, form_data: OpenAIConfigForm, user=Depends(get_admin_user)
 ):
+    # Phase 2d — refuse to persist a NEWLY-ADDED unreachable URL.
+    # Existing-but-now-broken URLs in the list are not blocking (the
+    # operator may be editing an unrelated field). The registry sees both.
+    currently_persisted = request.app.state.config.OPENAI_API_BASE_URLS or []
+    try:
+        assert_newly_added_urls_reachable(
+            submitted=form_data.OPENAI_API_BASE_URLS,
+            currently_persisted=currently_persisted,
+            capability="openai/list_models",
+        )
+    except EndpointUnreachable as exc:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "message": str(exc),
+                "url": exc.url,
+                "capability": exc.capability,
+                "suggestion": "Verify the URL is correct and the server is running, then re-save.",
+            },
+        ) from exc
+
     request.app.state.config.ENABLE_OPENAI_API = form_data.ENABLE_OPENAI_API
     request.app.state.config.OPENAI_API_BASE_URLS = form_data.OPENAI_API_BASE_URLS
     request.app.state.config.OPENAI_API_KEYS = form_data.OPENAI_API_KEYS
@@ -676,12 +709,20 @@ async def get_models(
                             ]
 
                         models = response_data
-            except aiohttp.ClientError as e:
-                # ClientError covers all aiohttp requests issues
+                        endpoint_health.record_success(
+                            url, capability="openai/list_models"
+                        )
+            except (aiohttp.ClientError, asyncio.TimeoutError) as e:
+                # Network-class failure: surface via the boundary handler
+                # so the operator gets a structured 503 with a fix-pointer
+                # to /admin/diagnostics naming the unreachable URL.
                 log.exception(f"Client error: {str(e)}")
-                raise HTTPException(
-                    status_code=500, detail="Sage.is AI: Server Connection Error"
+                endpoint_health.record_failure(
+                    url, e, capability="openai/list_models"
                 )
+                raise EndpointUnreachable(
+                    url, underlying=e, capability="openai/list_models"
+                ) from e
             except Exception as e:
                 log.exception(f"Unexpected error: {e}")
                 error_detail = f"Unexpected error: {str(e)}"
@@ -746,6 +787,9 @@ async def verify_connection(
                         raise Exception(error_detail)
 
                     response_data = await r.json()
+                    endpoint_health.record_success(
+                        url, capability="openai/verify_connection"
+                    )
                     return response_data
             else:
                 headers["Authorization"] = f"Bearer {key}"
@@ -764,14 +808,22 @@ async def verify_connection(
                         raise Exception(error_detail)
 
                     response_data = await r.json()
+                    endpoint_health.record_success(
+                        url, capability="openai/verify_connection"
+                    )
                     return response_data
 
-        except aiohttp.ClientError as e:
-            # ClientError covers all aiohttp requests issues
+        except (aiohttp.ClientError, asyncio.TimeoutError) as e:
+            # Network-class failure: surface via the boundary handler.
+            # Admin sees a 503 with the bad URL named, instead of a
+            # generic 500 they have to dig through container logs for.
             log.exception(f"Client error: {str(e)}")
-            raise HTTPException(
-                status_code=500, detail="Sage.is AI: Server Connection Error"
+            endpoint_health.record_failure(
+                url, e, capability="openai/verify_connection"
             )
+            raise EndpointUnreachable(
+                url, underlying=e, capability="openai/verify_connection"
+            ) from e
         except Exception as e:
             log.exception(f"Unexpected error: {e}")
             error_detail = f"Unexpected error: {str(e)}"

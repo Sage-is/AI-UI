@@ -37,6 +37,8 @@ This file tracks active work only.
 
 _Items currently in progress. Move items here and or use tag source with `# FIXME:` when work begins._
 
+- [ ] **DEFER until 2026-06-10: deploy 2.3.2 to try.sage.is**: `v2.3.2` tagged 2026-06-03; image `ghcr.io/sage-is/ai-ui:2.3.2` published with OCI labels. **try.sage.is is in active-use freeze through 2026-06-10** (Bialic actively using it — no production deploys to that target during the window). `sage.startr.cloud` is NOT under the freeze and can be redeployed at any time. After 2026-06-10: CapRover Method-6 image-pull at captain.try.sage.is → `try-sage-is` app → `ghcr.io/sage-is/ai-ui:2.3.2`. Verify `/assets/loader.js` returns 200 (currently 404) and Permissions-Policy is the lean allowlist. #critical
+
 - [x] **Ship 2.3.1 — Jidoka spine + three Poka-Yoke children**: Shipped 2026-05-19. Tag `v2.3.1` pushed, `ghcr.io/sage-is/ai-ui:2.3.1` published, `SERVER_TAG=2.3.1` pinned across the hardlink chain. Detail in `CHANGELOG.md`; plan at `~/.claude/plans/given-our-newest-trends-modular-sloth.md`. #critical
 
 - [x] **try.sage Manual Regression Sign-off** (2026-04-27): Phase A backend + Phase B frontend shipped. All 12 smoke checks passed (container boot, persona magic-links, banner, switcher, tutorial, admin tab, hidden connection, model filter, env-gate disable). Reference left for future regression-pass authors.
@@ -356,6 +358,15 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 ---
 
 ## Bugs
+
+- [ ] **Knowledge file upload fails with misleading `'NoneType' object is not iterable`**: Hit on sage.startr.cloud 2026-06-05 running 2.3.2; try.sage.is on 2.3.2 does NOT exhibit this. The user-visible error is `400: 'NoneType' object is not iterable`. Root cause is downstream of the actual failure: `generate_openai_batch_embeddings` at [retrieval/utils.py:803-805](app/backend/sage_is_ai/retrieval/utils.py#L803-L805) (and the ollama/azure_openai siblings) catches every exception, logs it via `log.exception`, and returns `None`. The caller `generate_multiple` at [retrieval/utils.py:462](app/backend/sage_is_ai/retrieval/utils.py#L462) calls `embeddings.extend(func(...))` — `None` is not iterable, so the user sees the TypeError instead of the real cause (DNS failure, 401, model not loaded, endpoint not listening, etc.). The real error is in the container logs as the `log.exception` block immediately preceding the TypeError traceback. The try.sage.is vs sage.startr.cloud divergence is most likely (a) different `RAG_EMBEDDING_ENGINE` value (try.sage may be on `chroma` or local sentence-transformer, bypassing this path entirely), or (b) stale URL/key in the sage.startr.cloud DB from the inherited 2-month-old volume. #critical #bug
+  - [ ] **Fix the silent-failure footgun**: replace `return None` in all three `generate_*_batch_embeddings` functions with `raise EndpointUnreachable(url, underlying)` so callers see the real cause. This IS Phase 2 of the 2.3.3 hardening plan, applied one layer deeper than originally scoped. See `~/.claude/plans/due-to-the-many-silly-ladybug.md`.
+  - [ ] **Map `EndpointUnreachable` → `503` with `{detail, url, fix}`** in a FastAPI exception handler so the UI gets a structured fix-pointer instead of a misleading TypeError.
+  - [ ] **Boot probe the embedding URL** so `/admin/diagnostics` lights up red BEFORE the next upload, not at first failure.
+  - [ ] **Diagnose sage.startr.cloud specifically**: read the container log for the `log.exception` block preceding a TypeError. Determine which engine is configured (openai? chroma? bare?) and what URL it points at. Compare to try.sage.is's working config.
+  - [ ] **Refresh the bug's surface footprint**: the same `Exception → None` swallow exists in `generate_ollama_batch_embeddings`, `generate_azure_openai_batch_embeddings`, and likely the reranker — audit them as a class, fix them together.
+
+*(Surfaced 2026-06-05 by Alexander; sage.startr.cloud only; try.sage.is unaffected on identical 2.3.2 image.)*
 
 - [x] **try.sage Runtime `/llm-status` Endpoint Not Env-Gated**: With `ENABLE_TRY_SAGE=false`, `GET /api/v1/sage/runtime/llm-status` returns `403 {"detail":"Not authenticated"}` instead of 404. The route handler is registered unconditionally; auth is the only barrier. Sibling endpoints (`status`, `personas`, `limits`) correctly 404 when the env flag is off. #critical #bug
   - [x] Locate the `llm-status` route handler in the trial runtime router

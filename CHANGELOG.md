@@ -4,6 +4,72 @@ All notable changes to [Sage.is AI-UI](https://github.com/Sage-is/AI-UI) are doc
 
 ---
 
+## [2.3.3] — 2026-06-07
+
+### Added
+
+**Admin Diagnostics Page at `/admin/diagnostics`**
+A read-only operator dashboard. One page renders every external endpoint the container talks to: OpenAI, Ollama, Tika, Docling, the reranker, the embedding service. Boot status sits beside it: data writable, secret key persisted, Alembic at head. Static-asset health and live browser headers round out the page. Each row carries a plain-English summary. Technical detail collapses open underneath. Issues sort worst-first across all sections. URLs the operator removed from config show up in a separate "Previously configured" group. Re-probe-all and per-row re-probe both work. Refresh is manual. The header shows "Last refreshed N ago" via a dayjs ticker.
+
+**`EndpointHealth` Registry**
+Every HTTP-backed capability reports the outcome of each call into one in-memory registry keyed by URL. Boot probes seed it at startup. Runtime calls keep it fresh. Save-time probes populate it when an admin adds a URL. The registry snapshots to `data/diagnostics.json` so the dashboard survives container restarts. The diagnostics page reads from it as the single source of truth.
+
+**Structured `EndpointUnreachable → 503` Boundary**
+A new `EndpointUnreachable(url, underlying, capability)` exception replaces the silent-failure pattern at every HTTP boundary. A FastAPI exception handler maps it to 503 with a structured body: `{detail, url, capability, underlying, fix}`. The `fix` field points at `/admin/diagnostics`. HTTP wrappers raise the exception. Routers let it pass through. The boundary handler ships the response.
+
+**Lifespan Boot Probes**
+Startup fans out probe calls across every configured external URL in a thread pool with a 5-second timeout, populates the registry, then yields to uvicorn. The port binds without waiting on slow DNS. A `BootProbeProgress` object exposes started_at, completed_at, total, completed, in_flight. The dashboard reads it and suppresses the "issues at top" alarm while probes are still in flight, so an operator who opens the page two seconds after boot doesn't see misleading red.
+
+**Save-Time URL Probe Pre-Check**
+Admin saves on `/openai/config/update` and `/ollama/config/update` probe every URL in the submitted list. A newly-added unreachable URL refuses with `400 {detail, url, capability, suggestion}`. The bad URL can't reach the database. Existing-but-now-broken URLs don't block the save, because the operator may be editing an unrelated field. Those land in the registry instead. Stale Cloudflare tunnel URLs can no longer enter persisted config via the admin flow.
+
+**Self-Healing `distribution.env` Hardlink Chain**
+A `make install_hooks` target wires four pre-commit-framework hook stages: `pre-commit`, `post-checkout`, `post-merge`, `post-rewrite`. The commit hook refuses to record a chain break and names the fix. The post-* hooks silently re-link siblings to AI-UI's content when git itself rewrites the file via checkout, merge, rebase, or amend. Editors that atomic-save broke the chain invisibly. The next commit only updated one repo and drift crept in. The chain heals itself now.
+
+**Self-Healing `release_finish`**
+The Makefile target detects stale `.git/gitflow/state/*.json` when safe and drops it before driving a fresh finish. The operator who Ctrl-C'd a release attempt last week can re-run `make release_finish` today without manual surgery. Heal refuses when a real merge or rebase is in progress, the working tree is dirty, the recorded release branch is missing, or master already contains it. All three `git flow finish` invocations now pass `--no-ff --no-verify` to sidestep the fast-forward empty-commit bug and the misclassified pre-commit-hooks-skipped failure mode in git-flow-next 1.0.0.
+
+### Fixed
+
+**Misleading `400: 'NoneType' object is not iterable` on Knowledge Upload**
+The sage.startr.cloud knowledge upload returned this TypeError when its embedding endpoint was unreachable. The cause was three stack frames downstream of the user-visible error. `generate_openai_batch_embeddings` caught every exception, logged it, and returned `None`. The caller called `embeddings.extend(None)` and crashed. The same `Exception → return None` pattern lived in the Ollama and Azure OpenAI siblings. The three batch-embedding functions now raise `EndpointUnreachable` instead of swallowing exceptions. The retrieval router lets the new exception pass through to the 503 handler instead of converting it to a generic 400. The dispatcher gets an explicit `else: raise ValueError` so unknown engines fail loud. Two pre-existing Python 3 bugs got fixed in the same pass — `raise "string"` statements that would themselves crash. try.sage.is on the same 2.3.2 image never hit this because its embedding engine is `chroma`: a different dispatcher branch with no HTTP boundary.
+
+**Admin `verify_connection` Reports a Useful Error**
+The admin "Verify connection" buttons in OpenAI and Ollama settings returned `500 "Server Connection Error"` when the URL was unreachable. The error didn't name the URL or hint at a fix. They return 503 with the structured body now. The operator sees which URL failed, what underlying error fired, and the pointer to `/admin/diagnostics`. The TTS engines get the same treatment. Connection-class failures raise `EndpointUnreachable`. HTTP-error responses keep the existing detail-extraction so the engine's own error message still surfaces.
+
+**`/assets/loader.js` 404**
+Operators upgrading from older deployments hit 404 on `/assets/loader.js` because the SPA expected the file under `/assets` but the container only mounted `/static/assets`. A second mount at `/assets` serves the same directory. Confirmed live on both sage.startr.cloud and try.sage.is before this landed.
+
+**Ad-Tech Feature Names in Permissions-Policy Trigger Browser Console Warnings**
+Most operators copy-pasted "comprehensive" Permissions-Policy headers from blog posts that included `browsing-topics`, `run-ad-auction`, `join-ad-interest-group`, `private-state-token-*`, `private-aggregation`, `attribution-reporting`, and `interest-cohort`. Browsers reject every one of these or treat them as origin-trial-only. The operator got noise in the console and no security benefit. A lean default allowlist replaces the previous fallback, which was the invalid string `"none"`. A reject list catches the ad-tech names. If any appear in the operator's value, the header falls back to the lean default. The allowed-features regex now covers `display-capture`, `encrypted-media`, `publickey-credentials-get`, and `screen-wake-lock` so modern operators don't trip the validator.
+
+**CapRover Deploy History Shows `n/a` Instead of Git Hash**
+Multi-arch images previously shipped without OCI provenance labels. CapRover's deploy-history column couldn't compute a commit hash. A DRY `OCI_LABELS` Makefile variable lands `org.opencontainers.image.revision/source/version/created/title/licenses` on every `it_build`, `it_build_no_cache`, `it_build_amd64`, and `build_multi_arch` invocation. The hash populates on the next release.
+
+**git-flow-next 1.0.0 Failures During `release_finish`**
+Three failure modes the operator hit while shipping 2.3.2 are now closed. First, git-flow-next preserved per-step state at `.git/gitflow/state/*.json` after an aborted release. The next finish errored with "a merge is already in progress" even when the working tree was clean. The new `_release_finish_heal` target drops the stale state when safe. Second, git-flow-next tried to commit a fast-forward merge as a real merge commit. `git commit` reported "nothing to commit" and the finish failed. `--no-ff` forces a real merge commit. Third, git-flow-next's internal merge commit triggered the pre-commit framework with no staged files. Hooks reported `Skipped` for every entry. git-flow-next misread `Skipped` as a commit failure. `--no-verify` bypasses hooks for git-flow's plumbing commits while keeping them in force for every operator commit.
+
+### Changed
+
+**`start.sh` Hardening**
+The boot script now runs under `set -euo pipefail` and emits CapRover-readable failure messages when something refuses to work. The format is "WHAT HAPPENED / WHAT THIS BREAKS / HOW TO FIX" per deployment shape. A pre-flight check tests data directory writability and names the running uid if the test fails. Key generation validates the persisted file is exactly 44 chars (32 random bytes base64-encoded with padding) before trusting it. An ephemeral-mount detector reads `/proc/mounts` and warns if `data/` is on tmpfs, overlay, overlay2, or aufs. The secret key persisted to that filesystem will regenerate on every restart, silently logging every user out.
+
+**Connection-Class Failures Across Audio, Ollama, Pipelines**
+Same treatment as the OpenAI and Ollama config endpoints. TTS (OpenAI, ElevenLabs, Azure) records each call's outcome into the registry. Pipelines filters surface failures into the registry without raising, because one bad filter shouldn't crash the whole filter chain. Every `requests.*` call in `pipelines.py` got a `timeout=10` (or `60` for the file upload site). Closes the CWE-400 bandit findings on the seven control-plane admin endpoints there.
+
+### Security
+
+**`record_success` Now Persists, Rate-Limited**
+The Phase 2 EndpointHealth registry had a subtle bug. `record_success` updated the in-memory record but never called `_save_snapshot()`. After a container restart, a long-healthy endpoint resurrected as whatever its last failure state was. The fix rate-limits writes to one per 30 seconds via a single class-level timestamp the existing RLock serializes. The success path no longer hits disk on every healthy call, but the registry reflects current reality across restarts. Failure paths still flush synchronously and don't reset the success timer, so a failure burst can't starve the periodic flush.
+
+**Diagnostics Response Carries No Secret Material**
+The new `/api/v1/diagnostics/health` endpoint is built only from `endpoint_health.snapshot()`, which holds URLs but never key material. The secret-key check returns length, presence boolean, and filesystem type. Never the key value itself. A top-of-file invariant comment and a CI grep assertion enforce it. The POST `/api/v1/diagnostics/probe` endpoint rejects any URL not in the active config set, closing the SSRF surface that an admin-gated arbitrary-URL prober would otherwise expose.
+
+**Pre-Commit Bandit Catches `requests` Without Timeout**
+The bandit B113 hook caught seven `requests.*` calls in `pipelines.py` shipping with no timeout. A CWE-400 unbounded-wait vector. All seven now carry an explicit `timeout=10` or `timeout=60`. The hook runs on every commit going forward.
+
+---
+
 ## [2.3.2] — 2026-05-29
 
 ### Added
