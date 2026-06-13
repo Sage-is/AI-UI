@@ -1,0 +1,59 @@
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: /app
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      python-security:
+        applies-to: security-updates
+        patterns: ["*"]
+      python-minor-patch:
+        applies-to: version-updates
+        update-types: [minor, patch]
+    open-pull-requests-limit: 5
+    labels: [dependencies, python]
+
+  - package-ecosystem: pip
+    directory: /app/backend
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      backend-security:
+        applies-to: security-updates
+        patterns: ["*"]
+    open-pull-requests-limit: 5
+    labels: [dependencies, python, backend]
+
+  - package-ecosystem: npm
+    directory: /app
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      svelte-security:
+        applies-to: security-updates
+        patterns: ["*"]
+      svelte-minor-patch:
+        applies-to: version-updates
+        update-types: [minor, patch]
+    open-pull-requests-limit: 5
+    labels: [dependencies, javascript, frontend]
+
+  - package-ecosystem: npm
+    directory: /tools/tw2startr
+    schedule:
+      interval: monthly
+    groups:
+      tw2startr-all:
+        patterns: ["*"]
+    open-pull-requests-limit: 2
+    labels: [dependencies, javascript, tooling]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    labels: [dependencies, ci]
