@@ -488,7 +488,163 @@
 				"ok": "Content-Security-Policy header is set.",
 				"degraded": "No Content-Security-Policy configured. Set CONTENT_SECURITY_POLICY env."
 			}
-		}
+		},
+		"fix": {
+			"endpoint_unreachable": {
+				"plain": "A configured external URL is not responding. Most often the URL is stale, blocked by firewall, or the upstream service is down. Clear or correct it in Admin → Settings → Connections.",
+				"caprover": {
+					"0": "Open the Admin settings and navigate to Connections.",
+					"1": "Find the unreachable URL row. Click \"Verify Connection\" to confirm it still fails, then either correct the URL or delete the row.",
+					"2": "Save. The diagnostics page re-probes automatically on next refresh."
+				},
+				"docker_compose": {
+					"0": "Open the running container UI at /admin/settings/connections, correct or remove the stale URL, and Save.",
+					"1": "If the bad URL came from an env var (OPENAI_API_BASE_URLS, OLLAMA_BASE_URLS), edit the env and bounce the stack."
+				},
+				"brew": {
+					"0": "Stop the running container so it does not keep retrying.",
+					"1": "Open the Admin connections page and remove or correct the URL. For env-var-set URLs, edit ~/.config/ai-ui/env directly.",
+					"2": "Start the container again."
+				}
+			},
+			"endpoint_degraded": {
+				"plain": "The endpoint is responding but slowly, returning 5xx, or otherwise unhealthy. The rootstock can reach it; the upstream service appears to be the problem.",
+				"universal": {
+					"0": "Check the upstream provider's status page. Most degraded states are transient at the provider side.",
+					"1": "If the degradation persists more than ~10 minutes, treat the URL as unreachable: clear or replace it in Admin → Settings → Connections."
+				}
+			},
+			"secret_key_ephemeral": {
+				"plain": "WEBUI_SECRET_KEY is regenerating on each container boot, which invalidates every existing session. Set it as a persistent environment variable so it survives restarts.",
+				"caprover": {
+					"0": "Generate a 44-character key in your terminal.",
+					"1": "In CapRover, open Apps → <your-app> → App Configs → Environmental Variables and add WEBUI_SECRET_KEY with the generated value.",
+					"2": "Save and Update App to restart the container with the new env."
+				},
+				"docker_compose": {
+					"0": "Generate a 44-character key in your terminal.",
+					"1": "Add WEBUI_SECRET_KEY=<the-generated-value> to your .env file (or directly to the environment: block in docker-compose.yml).",
+					"2": "Bounce the stack so the new env is picked up."
+				},
+				"brew": {
+					"0": "Generate a 44-character key.",
+					"1": "Add WEBUI_SECRET_KEY=<the-value> to ~/.config/ai-ui/env so it persists.",
+					"2": "Restart the brew service so it re-reads the env."
+				}
+			},
+			"alembic_pending": {
+				"plain": "The database is behind the application code. Migrations will run on the next container start.",
+				"caprover": {
+					"0": "Open Apps → <your-app> → Deployment and click Force Rebuild & Restart. The backend runs alembic upgrade head at startup."
+				},
+				"docker_compose": {
+					"0": "Restart the stack. The backend runs alembic upgrade head at startup."
+				},
+				"brew": {
+					"0": "Restart the brew service. The backend runs alembic upgrade head at startup."
+				}
+			},
+			"alembic_ahead": {
+				"plain": "The database is at a NEWER revision than the application code expects. This happens when an image is downgraded after a successful migration. Downgrading the database is NOT safe.",
+				"universal": {
+					"0": "Deploy a matching (newer) application version that supports the database revision you have. The reverse-direction migrations were not designed for production rollback.",
+					"1": "If the matching version is unavailable, restore from the pre-upgrade backup you took before the most recent deploy.",
+					"2": "DO NOT factory-reset the data volume. The configuration tables, OAuth links, persona links, and embeddings are all on the same volume; resetting loses every operator-curated artifact."
+				}
+			},
+			"data_not_writable": {
+				"plain": "/app/backend/data is read-only or missing. The wizard cannot persist its install state, the secret key cannot be saved, and the database may be lost on the next restart.",
+				"caprover": {
+					"0": "Open Apps → <your-app> → App Configs → Persistent Directories and ensure /app/backend/data is mounted to persistent storage.",
+					"1": "If the path exists but is unwritable, the ownership inside the container is wrong. Exec into the container and confirm the running user owns /app/backend/data."
+				},
+				"docker_compose": {
+					"0": "Confirm your docker-compose.yml mounts a host directory or volume to /app/backend/data.",
+					"1": "If the volume mount looks right, fix the ownership on the host so the container user (uid 1000 by default) can write."
+				},
+				"brew": {
+					"0": "Restore write permission on the brew-managed data directory."
+				}
+			},
+			"static_asset_missing": {
+				"plain": "A canonical SPA asset returns 404. The image build likely shipped without the asset OR the /assets mount is missing.",
+				"caprover": {
+					"0": "Force a clean rebuild from the most recent published image. If the asset is still missing after rebuild, file an issue: it is a build-pipeline regression."
+				},
+				"docker_compose": {
+					"0": "Pull the latest image and recreate the container."
+				},
+				"brew": {
+					"0": "Run the brew update command to fetch the latest image build."
+				}
+			},
+			"permissions_policy_invalid": {
+				"plain": "The PERMISSIONS_POLICY environment variable contains a rejected feature (typically ad-tech tokens like browsing-topics or run-ad-auction copy-pasted from a blog post). The browser ignores the whole header.",
+				"caprover": {
+					"0": "Open Apps → <your-app> → App Configs → Environmental Variables.",
+					"1": "Either remove PERMISSIONS_POLICY entirely to use the framework's lean default, or replace its value with only the features your deployment actually grants."
+				},
+				"docker_compose": {
+					"0": "Edit the env file or docker-compose.yml. Remove ad-tech feature tokens (browsing-topics, run-ad-auction, join-ad-interest-group, etc.).",
+					"1": "Bounce the stack."
+				},
+				"brew": {
+					"0": "Remove PERMISSIONS_POLICY from ~/.config/ai-ui/env (or set it to a lean allowlist). Restart."
+				}
+			},
+			"csp_missing": {
+				"plain": "No Content-Security-Policy is set. The application functions, but browsers cannot constrain script sources. Add a CSP env value appropriate for your deployment.",
+				"universal": {
+					"0": "Set CONTENT_SECURITY_POLICY in the application's environment. A reasonable starting policy for a self-hosted deployment is in the documentation.",
+					"1": "Restart the container so the new policy is applied to every response."
+				}
+			}
+		},
+		"library": {
+			"sqlite_open": {
+				"title": "Open the SQLite database inside the container",
+				"description": "Use this to inspect persistent state directly. The container path /app/backend/data/webui.db holds all configuration and chat tables."
+			},
+			"inspect_stale_openai_urls": {
+				"title": "Inspect OpenAI base-URL history",
+				"description": "Show the last few config rows that touched OPENAI_API_BASE_URLS. Useful when a stale URL is wedged in the database."
+			},
+			"inspect_stale_ollama_urls": {
+				"title": "Inspect Ollama base-URL history",
+				"description": "Same as the OpenAI lookup but for OLLAMA_BASE_URLS."
+			},
+			"generate_secret_key": {
+				"title": "Generate a WEBUI_SECRET_KEY",
+				"description": "Produces a 44-character base64-encoded value. Set this as an environment variable so sessions survive container restarts."
+			},
+			"run_pending_migrations": {
+				"title": "Run pending Alembic migrations",
+				"description": "The application normally runs this at startup. Use this manual command only when the diagnostics page reports alembic_pending and a restart is not an option.",
+				"warning": "Do not run this when alembic_ahead is the diagnostic. Downgrading the database breaks the configuration tables."
+			},
+			"restart_container": {
+				"title": "Restart the container",
+				"description": "Bounce the container. Use this after fixing an environment variable or when alembic_pending needs to drain."
+			}
+		},
+		"How to fix": "How to fix",
+		"Close": "Close",
+		"We're not sure of your deployment type": "We're not sure of your deployment type",
+		"Pick your deployment": "Pick your deployment",
+		"CapRover": "CapRover",
+		"Docker Compose": "Docker Compose",
+		"Homebrew": "Homebrew",
+		"Steps for {{SHAPE}}": "Steps for {{SHAPE}}",
+		"Not on {{SHAPE}}? Show other deployment types": "Not on {{SHAPE}}? Show other deployment types",
+		"Hide other deployment types": "Hide other deployment types",
+		"UI path": "UI path",
+		"Copy": "Copy",
+		"Copy command": "Copy command",
+		"Copy {{TITLE}} command": "Copy {{TITLE}} command",
+		"Copied to clipboard": "Copied to clipboard",
+		"Command library": "Command library",
+		"Recovery snippets. Copy and paste into your own terminal. The library never runs commands for you.": "Recovery snippets. Copy and paste into your own terminal. The library never runs commands for you.",
+		"This issue type is not yet documented. See Technical detail and the command library below.": "This issue type is not yet documented. See Technical detail and the command library below."
 	},
 	"Dictate": "",
 	"Didn't fully follow instructions": "",
@@ -1401,7 +1557,6 @@
 	"Supported MIME Types": "",
 	"Sync directory": "",
 	"System": "",
-	"System Prompt": "",
 	"System Prompt": "",
 	"Tags": "",
 	"Tags Generation": "",
