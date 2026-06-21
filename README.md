@@ -2,27 +2,27 @@
 
 ## v2.3.3
 
-**Sage.is an AI interface that puts you in control.**
+An AI interface you run on your own hardware, with your own models, on your own terms.
 
 [![GitHub stars](https://img.shields.io/github/stars/Sage-is/AI-UI?style=social)](https://github.com/Sage-is/AI-UI)
 [![License](https://img.shields.io/badge/License-AGPL_v3%2B-blue)](LICENSE)
 [![Discord](https://img.shields.io/badge/Discord-Community-blue?logo=discord&logoColor=white)](https://discord.gg/3BtwHkXS)
 
-Sage.is AI-UI transforms how you interact with AI. Built for privacy and flexibility, it runs entirely on your infrastructure while supporting the latest AI models from Ollama, OpenAI, and beyond.
+Sage.is AI-UI is a chat and orchestration layer that runs on your own infrastructure. It talks to whichever model providers you have available: local Ollama, OpenAI, Anthropic, or anything that speaks the OpenAI API.
 
 ![Demo](./demo.gif)
 
 ## Why Sage.is AI-UI?
 
-**Privacy First** — Your conversations never leave your server. Complete data sovereignty.
+**Your data stays put.** Conversations never leave the server you run Sage.is on. No telemetry on chat content, no exfiltration paths, no cloud dependency unless you graft one.
 
-**Universal Compatibility** — Works with Ollama, OpenAI, Anthropic, and any OpenAI-compatible API.
+**Bring your own models.** Sage.is works with Ollama, OpenAI, Anthropic, and any OpenAI-compatible API. Mix providers per conversation if you want.
 
-**Built for Teams** — Granular permissions, user groups, and role-based access control.
+**Teams work the way teams work.** Permissions, user groups, role-based access. Nothing exotic; nothing missing.
 
-**Extensible** — Plugin architecture, custom functions, and RAG integration out of the box.
+**Plug things in.** Custom functions, RAG, code execution, image generation, voice. The pieces compose.
 
-**Community Hub** — Browse, share, and deploy models, prompts, tools, and knowledge across your Sage instances via [community.sage.is](https://community.sage.is).
+**Community Hub.** Browse and share models, prompts, tools, and knowledge across your Sage instances via [community.sage.is](https://community.sage.is).
 
 ## Quick Start
 
@@ -34,11 +34,9 @@ cd AI-UI
 make it_build_n_run
 ```
 
-
 Now open [http://localhost:8080](http://localhost:8080) and create your admin account.
 
 If you want to do front end dev and see changes to svelte files live, go instead to [http://localhost:5173/](http://localhost:5173/) as this will update on file change.
-
 
 ## Available Make Commands
 
@@ -54,26 +52,26 @@ If you want to do front end dev and see changes to svelte files live, go instead
 
 ## Core Features
 
-- **Multi-Model Chat** — Switch between different AI models in the same chat or even talk to multiple AI models at the same time
-- **Knowledge Bases** — Create RAG-powered AIs by uploading PDFs, docs, and websites directly into your chats or into Workshop Knoweldge
-- **Community Hub** — Browse, share, and deploy community models, prompts, tools, and knowledge directly to your Sage instances ([docs](./docs/community-hub.md))
-- **Messaging Bridges** — Connect external platforms like WhatsApp, Telegram, Signal, and Email directly to Sage AI for chat or channel mirroring ([docs](./docs/bridges.md))
-- **Code Execution** — Built-in Python environment with custom function support
-- **Voice & Video** — Hands-free conversations with speech-to-text and text-to-speech
-- **Image Generation** — Integrate DALL-E, ComfyUI, or AUTOMATIC1111
-- **Progressive Web App** — Works offline, installs like a native app
-- **Enterprise Ready** — SSO, LDAP, detailed audit logs
+- **Multi-model chat:** switch between models in the same chat, or talk to several at once.
+- **Knowledge bases:** RAG-powered chats from PDFs, docs, websites, or Workshop Knowledge.
+- **Community Hub:** browse, share, and deploy community models, prompts, tools, and knowledge ([docs](./docs/community-hub.md)).
+- **Messaging bridges:** WhatsApp, Telegram, Signal, and email feed conversations and channels through Sage ([docs](./docs/bridges.md)).
+- **Code execution:** built-in Python environment with custom function support.
+- **Voice & video:** speech-to-text and text-to-speech for hands-free conversation.
+- **Image generation:** DALL-E, ComfyUI, or AUTOMATIC1111.
+- **Progressive web app:** offline-capable, installs like a native app.
+- **Enterprise auth:** SSO, LDAP, audit logs.
 
 ## Configuration
 
-Sage.is AI-UI works out of the box, but you can customize it:
+Sage.is AI-UI runs with sensible defaults. You can override:
 
 **Environment Variables:**
+
 - `OPENAI_API_KEY` — Connect to OpenAI models
 - `ANTHROPIC_API_KEY` — Enable Claude models
 - `OLLAMA_BASE_URL` — Point to your Ollama instance
 - `ENABLE_RAG` — Enable document processing (default: true)
-
 
 ## Styling
 
@@ -91,15 +89,17 @@ See [Startr.Style docs](https://startr.style) for the full property reference, r
 
 ## CI/CD & Release Workflow
 
-The Makefile is the CI/CD framework. No GitHub Actions, no vendor lock-in. Same targets run on a developer laptop or a build server — Linux, macOS, or Windows (WSL).
+The Makefile IS the CI/CD framework. The same targets run on a developer laptop or a build server. Linux, macOS, and Windows (WSL) all work. GitHub Actions is not a dependency, but the targets compose with it if you want to call them from a hosted runner.
 
 **Security scanning:**
+
 ```bash
 make install_dev          # Install gitleaks, semgrep, bandit, trivy via Homebrew
 make scan                 # Run all scans (secrets, SAST, dependency vulnerabilities)
 ```
 
 **Release process:**
+
 ```bash
 make major_release        # (or minor_release / patch_release) — creates release branch
 make bump_release_version # Updates package.json + README.md
@@ -111,12 +111,11 @@ make it_run               # Smoke test
 make release_and_push_GHCR # Finish release, tag, push to GHCR
 ```
 
-Each release target prints the full checklist. Steps are guidance today — gated enforcement (require tests to pass before `release_finish`) is planned for a future release, runnable locally or on a CI server.
+Each release target prints the full checklist. Steps are guidance today; gated enforcement (require tests to pass before `release_finish`) is planned for a future release, runnable locally or on a CI server.
 
 DB snapshots for upgrade testing live in `tools/db_snapshots/` (gitignored, synced via SyncThing). See `tools/db_snapshots/README.md` for details.
 
 ## Documentation
-
 
 - [Documentation Index](./docs/README.md)
 - [Messaging Bridges (WhatsApp, etc.)](./docs/bridges.md)
@@ -131,7 +130,7 @@ DB snapshots for upgrade testing live in `tools/db_snapshots/` (gitignored, sync
 
 ## Community
 
-- **Community Hub:** [Browse & share models, prompts, tools, and more](https://community.sage.is) — Deploy community items directly to your Sage instances
+- **Community Hub:** [Browse & share models, prompts, tools, and more](https://community.sage.is). Deploy community items directly to your Sage instances.
 - **Discord:** [Join our community](https://discord.gg/3BtwHkXS)
 - **Issues:** [Report bugs](https://github.com/Sage-is/AI-UI/issues)
 
@@ -139,16 +138,17 @@ DB snapshots for upgrade testing live in `tools/db_snapshots/` (gitignored, sync
 
 [GNU Affero General Public License v3](LICENSE)
 
-The GNU Affero General Public License (AGPL) v3 is used here because this project (Sage.is AI-UI) is a web-based AI interface that runs as a network service, and AGPL ensures that any modifications or derivative works—especially those deployed online—must also be open-sourced under the same license. This prevents proprietary exploitation of the codebase while allowing free use and modification.
+Sage.is AI-UI ships under AGPL-3.0. The choice is deliberate: this is a network service, and AGPL Section 13 closes the SaaS loophole that the plain GPL leaves open. If you modify Sage.is AI-UI and host the modified version for other users, you owe those users your source. If you run Sage.is AI-UI unmodified, AGPL imposes no extra obligation on you.
 
-It protects developers by:
+What that means in practice:
 
-- Enforcing copyleft: Any changes or extensions to the software must be shared back with the community, preserving the open-source nature and preventing companies from taking the code private without contributing improvements.
-- Safeguarding against SaaS loopholes: Unlike GPL, AGPL closes the "SaaS loophole" by requiring source code availability for network-accessible versions, ensuring users can access and modify the software even when it's hosted as a service.
-- Promoting collaboration: It encourages contributions by guaranteeing that enhancements benefit everyone, reducing the risk of forks diverging into incompatible proprietary versions.
-- Legal clarity: It provides strong protections against patent claims and ensures freedom to run, study, share, and modify the code, with no warranties but clear liability limits.
+If you run unmodified Sage.is AI-UI as-is, you do not need to publish anything. The license stays as it is.
 
-This aligns with the project's privacy-first ethos, as it keeps AI interfaces open and accountable.
+If you fork Sage.is AI-UI, change the code, and put the fork in front of users over a network, you must offer those users your source. Internal use without remote users does not trigger the source-disclosure obligation.
+
+If you build a **Sprig™** against the published Sprig Spec™ contract (`docs/bonsai/sprig-spec-v1-draft.md`), your Sprig™ is not a derivative work of Sage.is AI-UI. The Sprig™ communicates across an arms-length process boundary using a published protocol — the same pattern that lets proprietary userspace run on a GPL'd Linux kernel without inheriting the kernel's license. Sprig™ authors choose their own license. Proprietary, MIT, Apache-2.0, AGPL, anything. See `docs/bonsai/` for the full license-compatibility section.
+
+Standard AGPL freedoms apply: run, study, share, and modify. Standard warranty disclaimers and liability limits apply. Patent grants from contributors apply.
 
 ---
 

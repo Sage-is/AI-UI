@@ -11,8 +11,7 @@
 		hasFix,
 		getStepsFor,
 		getAllShapesFor,
-		type DeploymentShape,
-		type FixStep
+		type DeploymentShape
 	} from './fixRegistry';
 
 	const i18n: any = getContext('i18n');
@@ -167,7 +166,7 @@
 						{#if showOtherShapes && allShapes}
 							<div class="mt-3 space-y-4">
 								{#each ['caprover', 'docker_compose', 'brew'].filter((s) => s !== activeShape) as otherShape}
-									{@const otherSteps = allShapes[otherShape as DeploymentShape]}
+									{@const otherSteps = allShapes[otherShape]}
 									{#if otherSteps.length > 0}
 										<div
 											class="rounded border border-gray-200 dark:border-gray-700 p-3 bg-gray-50 dark:bg-gray-900"
@@ -175,7 +174,7 @@
 											<h4
 												class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2"
 											>
-												{shapeLabel(otherShape as DeploymentShape)}
+												{shapeLabel(otherShape)}
 											</h4>
 											<ol
 												class="list-decimal list-inside space-y-2 text-sm text-gray-800 dark:text-gray-200"

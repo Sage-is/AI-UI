@@ -163,6 +163,7 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [ ] Optional per-agent TTL for auto-reply expiration
     <!-- inline: spaces.py:384 -->
   - [ ] **Silverbullet integration into Spaces** — wire the self-hosted Silverbullet PKM/wiki tool into Spaces so a Space can carry a structured note-graph alongside chats and files. Planning conversation first (architecture, auth, data model) before any code.
+  - [ ] **Space theming for creator-led visual differentiation** (2026-06-15) — let Space creators set a visual theme so users do not confuse one Space for another. Minimum viable: a "Theme" tab in Space settings (creator-only) with an accent-color picker + optional logo upload that tints navigation chrome and message-thread accents. The pain: switching between e.g. "Math Tutoring Space" and "Math Department Admin Space" looks identical today, leading to mis-posts. Especially load-bearing for workshop facilitators (each workshop gets its own visual identity so students always know which one they are in) and multi-org operators on shared Rootstocks. Avoid full custom-CSS injection (XSS surface); for workshop/trial deployments, ship pre-built theme presets (bio = green, math = blue, etc.) so non-technical facilitators can theme without picking colors.
 
 
 - [ ] **Frontend Toolchain Upgrade**: Svelte 5, Vite 6, SvelteKit latest
