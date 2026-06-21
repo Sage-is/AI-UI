@@ -6,7 +6,7 @@
 	import Icon from '$lib/components/Icon.svelte';
 	import { copyToClipboard } from '$lib/utils';
 
-	import { commandLibrary, type CommandEntry } from './commandLibrary';
+	import { commandLibrary } from './commandLibrary';
 
 	const i18n: any = getContext('i18n');
 
