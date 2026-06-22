@@ -11,6 +11,7 @@
 	export let label: string = '';
 	export let record: any = {};
 	export let onProbe: ((url: string, capability: string) => Promise<void>) | null = null;
+	export let onFix: ((issueType: string) => void) | null = null;
 	export let capability: string = '';
 	export let url: string = '';
 
@@ -86,13 +87,13 @@
 				</button>
 			{/if}
 
-			{#if record?.issue_type}
+			{#if record?.issue_type && onFix}
 				<button
 					type="button"
-					class="text-xs px-2 py-1 rounded border border-gray-200 dark:border-gray-700 opacity-50 cursor-not-allowed"
-					disabled
-					aria-disabled="true"
-					title={$i18n.t('Documentation coming in 2.3.4')}
+					class="text-xs px-2 py-1 rounded border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800"
+					on:click={() => onFix && onFix(record.issue_type)}
+					aria-label={$i18n.t('Show me how to fix this')}
+					title={$i18n.t('Show me how to fix this')}
 				>
 					{$i18n.t('Show me how to fix this')}
 				</button>
