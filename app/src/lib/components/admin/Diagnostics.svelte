@@ -15,6 +15,9 @@
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 	import DiagnosticRow from '$lib/components/admin/Diagnostics/DiagnosticRow.svelte';
+	import HowToFixModal from '$lib/components/admin/Diagnostics/HowToFixModal.svelte';
+	import CommandLibrary from '$lib/components/admin/Diagnostics/CommandLibrary.svelte';
+	import type { DeploymentShape } from '$lib/components/admin/Diagnostics/fixRegistry';
 
 	const i18n: any = getContext('i18n');
 
@@ -24,6 +27,21 @@
 	let refreshing = false;
 	let tickKey = 0;
 	let tickInterval: ReturnType<typeof setInterval> | null = null;
+
+	// HowToFixModal state
+	let fixModalShow = false;
+	let fixModalIssueType: string | null = null;
+
+	$: deploymentShape = (health?.deployment_shape?.shape ?? 'unknown') as DeploymentShape;
+	$: deploymentConfidence = (health?.deployment_shape?.confidence ?? 'unknown') as
+		| 'high'
+		| 'low'
+		| 'unknown';
+
+	const openFixModal = (issueType: string) => {
+		fixModalIssueType = issueType;
+		fixModalShow = true;
+	};
 
 	// tickKey is referenced so this re-evaluates when the ticker fires.
 	$: lastRefreshedLabel =
@@ -283,10 +301,10 @@
 							{#if issue.row.issue_type}
 								<button
 									type="button"
-									class="text-xs px-2 py-1 rounded border border-gray-200 dark:border-gray-700 opacity-50 cursor-not-allowed flex-none"
-									disabled
-									aria-disabled="true"
-									title={$i18n.t('Documentation coming in 2.3.4')}
+									class="text-xs px-2 py-1 rounded border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 flex-none"
+									on:click={() => openFixModal(issue.row.issue_type)}
+									aria-label={$i18n.t('Show me how to fix this')}
+									title={$i18n.t('Show me how to fix this')}
 								>
 									{$i18n.t('Show me how to fix this')}
 								</button>
@@ -310,6 +328,7 @@
 						label={url}
 						record={row}
 						onProbe={probeOne}
+						onFix={openFixModal}
 						capability={row?.technical?.capability ?? ''}
 						{url}
 					/>
@@ -320,7 +339,7 @@
 						<Collapsible chevron={true} title={$i18n.t('Previously configured')}>
 							<div slot="content" class="pt-2">
 								{#each ghostEndpoints as [url, row]}
-									<DiagnosticRow label={url} record={row} />
+									<DiagnosticRow label={url} record={row} onFix={openFixModal} />
 								{/each}
 							</div>
 						</Collapsible>
@@ -336,7 +355,7 @@
 			</h2>
 			{#each ['data_dir_writable', 'secret_key_persisted', 'alembic_head'] as key}
 				{#if health?.boot_status?.[key]}
-					<DiagnosticRow label={key} record={health.boot_status[key]} />
+					<DiagnosticRow label={key} record={health.boot_status[key]} onFix={openFixModal} />
 				{/if}
 			{/each}
 		</div>
@@ -348,7 +367,7 @@
 			</h2>
 			{#each ['/assets/loader.js', '/assets/custom.css', '/manifest.json', '/favicon.ico'] as path}
 				{#if health?.static_assets?.[path]}
-					<DiagnosticRow label={path} record={health.static_assets[path]} />
+					<DiagnosticRow label={path} record={health.static_assets[path]} onFix={openFixModal} />
 				{/if}
 			{/each}
 		</div>
@@ -363,9 +382,21 @@
 					<DiagnosticRow
 						label={key}
 						record={health.browser_headers[key]?.configured ?? health.browser_headers[key]}
+						onFix={openFixModal}
 					/>
 				{/if}
 			{/each}
 		</div>
+
+		<!-- Command library (Phase 3d) -->
+		<CommandLibrary />
 	{/if}
 </div>
+
+<!-- How-to-fix modal (Phase 3c) -->
+<HowToFixModal
+	bind:show={fixModalShow}
+	issueType={fixModalIssueType}
+	defaultShape={deploymentShape}
+	shapeConfidence={deploymentConfidence}
+/>

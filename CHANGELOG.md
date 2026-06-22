@@ -4,6 +4,31 @@ All notable changes to [Sage.is AI-UI](https://github.com/Sage-is/AI-UI) are doc
 
 ---
 
+## [2.3.4] — 2026-06-14
+
+### Added
+
+**How-to-fix modals on `/admin/diagnostics`**
+Each failing diagnostic row now carries a "Show me how to fix this" button. The button opens a modal with deployment-shape-aware steps. The backend already detects the deployment shape (CapRover, Docker Compose, Homebrew, or unknown) and reports a confidence level; the modal reads both. When confidence is high, the modal renders the detected shape's steps inline plus a "Not on CapRover? Show other deployment types" expander that opens the alternatives below. When confidence is low or unknown, the modal opens with radio buttons asking the operator to pick their deployment shape before showing any steps. Steps cite specific UI paths (`Apps → App Configs → Environmental Variables`) and ship copy-to-clipboard commands (`head -c 32 /dev/random | base64`). A fix registry covers nine `issue_type` values the diagnostics router emits: `endpoint_unreachable`, `endpoint_degraded`, `secret_key_ephemeral`, `alembic_pending`, `alembic_ahead`, `data_not_writable`, `static_asset_missing`, `permissions_policy_invalid`, `csp_missing`. An undocumented `issue_type` falls back to a "documentation coming" message rather than rendering blank.
+
+**Command library at the bottom of `/admin/diagnostics`**
+Six recovery snippets surface as collapsible rows with copy-to-clipboard buttons. The catalog covers opening SQLite inside the container, inspecting stale OpenAI and Ollama base-URL history rows, generating a `WEBUI_SECRET_KEY`, running pending Alembic migrations (with an inline warning that this MUST NOT run when `alembic_ahead` is the diagnostic), and restarting the container. There is no run button anywhere. The library never executes a command on the operator's behalf. The previous generation of the diagnostics page considered an arbitrary-shell run surface; the design rejected that as anti-poka-yoke and the snippet catalog replaces it.
+
+**62 new i18n keys in `en-US/translation.json`**
+The `diagnostics.fix.*` namespace covers 49 step descriptions and plain-English summaries across nine issue types. The `diagnostics.library.*` namespace covers 13 titles, descriptions, and the migration warning text. Around 17 modal and library UI strings (deployment-shape labels, `Copy`, `Copied to clipboard`, `Steps for CapRover`, and similar) land alongside. Other locales lag without blocking; the keys are scoped so a translator can fill them at any cadence.
+
+### Fixed
+
+**"Documentation coming in 2.3.4" placeholder buttons now work**
+Phase 3b in 2.3.3 shipped the "Show me how to fix this" button stub in `DiagnosticRow.svelte` and the Issues banner with `disabled aria-disabled="true" title="Documentation coming in 2.3.4"`. The buttons are now functional. The disabled-button styling is replaced with the standard outlined-button styling. The click handler routes through a new `onFix(issueType)` prop in `DiagnosticRow.svelte` to an `openFixModal(issueType)` handler in `Diagnostics.svelte`, which sets the modal's `issueType`, `defaultShape`, and `shapeConfidence` props from the diagnostics response.
+
+### Security
+
+**No arbitrary-shell run surface in the diagnostics page**
+The command library is copy-only by design. Every snippet renders as a `<pre>` block with a Copy button next to it; the operator pastes into their own terminal and runs under their own audit trail. The earlier generation of the diagnostics page considered embedding a run surface; that was rejected because the admin token plus a freeform shell box is a remote-code-execution primitive. The catalog covers the same six recovery cases without the primitive.
+
+---
+
 ## [2.3.3] — 2026-06-07
 
 ### Added
