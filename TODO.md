@@ -283,6 +283,12 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] Vitest spec covering the auto-show + dismiss + replay flow (parallel to the try.sage tutorial spec).
   - [ ] Make the "Replay welcome" admin escape hatch available outside trial mode — sibling to the existing Trial Mode tab.
 
+- [ ] **Provider logos for remote models**: Agents and remote models show no brand icon today — only a name, and sometimes only an icon with no provider mark. Ship recognizable logos for hosted providers (Claude/Anthropic, ChatGPT/OpenAI, Gemini/Google, etc.) so users can tell at a glance which service a model calls. Builds on **PK-1** (Local/External badge) above — PK-1 adds `is_external` + `provider_label` to the model API; this is the visual layer that turns `provider_label` into a logo. Bundle local engines (Ollama, etc.) into the same icon set so the treatment is consistent across local and remote.
+  - [ ] Map `provider_label` → logo asset; ship a known-provider icon set (Anthropic, OpenAI, Google, Mistral, Meta, Ollama) plus a neutral fallback for unknown providers.
+  - [ ] Render the logo in the model selector, response bubbles, and Space agent messages — same surfaces PK-1 badges the Local/External state.
+  - [ ] Icon-only display option for agents that have no avatar set, so a remote-backed agent still carries a brand mark.
+  - [ ] Use license-clean marks (official brand assets where the brand permits, or simple-icons / public-domain equivalents); document the source per logo to avoid trademark/licensing risk. Cross-check with the slideshow image-licensing discipline already applied in Codebase Cleanup.
+
 - [ ] **Learning Visibility Dashboard**: Mentioned in `the-arsonists-smoke-detector.md`. We need to build this as we are publishing the article soon to the sage.education resource page.
 
 
