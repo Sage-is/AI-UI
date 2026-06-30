@@ -46,6 +46,17 @@ async def graft_sprig(
             detail=f"Unknown sprig '{form_data.name}' or unsupported capability",
         )
 
+    # Capture prior embedding cultivar widths BEFORE grafting (top-graft will
+    # terminate them) so we can warn on a dimensionality swap.
+    new_dim = supervisor.CATALOG[form_data.name].get("dim")
+    prior_dims = {
+        supervisor.CATALOG.get(n, {}).get("dim")
+        for n, h in supervisor.handles().items()
+        if h.get("state") == "rooted"
+        and supervisor.CATALOG.get(n, {}).get("capability") == "embedding"
+    }
+    prior_dims.discard(None)
+
     # Spawn the Sprig™ child process and poll it to healthy.
     try:
         handle = await supervisor.graft(form_data.name, form_data.capability)
@@ -90,6 +101,19 @@ async def graft_sprig(
         request.app.state.MODEL_DOWNLOAD_STATUS["embedding"] = "ready"
     endpoint_health.record_success(handle.base_url, capability="sprig:embedding")
 
+    # Dimension-swap guard (best-effort, non-blocking): warn if we just top-grafted
+    # away an embedding cultivar of a different width. Collections built at the old
+    # width must be reindexed (Knowledge → Reindex) before they accept new vectors.
+    # Full cross-session collection validation is deferred (graft #3).
+    warning = None
+    if new_dim is not None and any(d != new_dim for d in prior_dims):
+        warning = (
+            f"Embedding width changed to {new_dim}-dim. Knowledge bases embedded at "
+            f"{sorted(prior_dims)}-dim must be reindexed (Knowledge → Reindex) before "
+            f"they accept new queries."
+        )
+        log.warning(warning)
+
     return GraftResponse(
         status=True,
         name=handle.name,
@@ -97,4 +121,5 @@ async def graft_sprig(
         base_url=handle.base_url,
         embedding_engine=cfg.RAG_EMBEDDING_ENGINE,
         embedding_model=cfg.RAG_EMBEDDING_MODEL,
+        warning=warning,
     )
