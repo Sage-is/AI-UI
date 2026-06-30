@@ -80,6 +80,7 @@ from sage_is_ai.routers import (
     ollama,
     openai,
     retrieval,
+    sprigs,
     pipelines,
     tasks,
     auths,
@@ -754,11 +755,22 @@ async def lifespan(app: FastAPI):
     else:
         app.state.bridge_manager = None
 
+    # Initialize Sprig™ Supervisor (Phase 8.0 first graft) — grafts capabilities
+    # at runtime as loopback child processes. No autostart; acts on explicit graft.
+    from sage_is_ai.sprigs.supervisor import SprigSupervisor
+
+    app.state.sprig_supervisor = SprigSupervisor(app)
+    await app.state.sprig_supervisor.start()
+
     yield
 
     # Shutdown Bridge Manager
     if getattr(app.state, "bridge_manager", None):
         await app.state.bridge_manager.shutdown()
+
+    # Shutdown Sprig™ Supervisor — SIGTERM (then SIGKILL) grafted child processes
+    if getattr(app.state, "sprig_supervisor", None):
+        await app.state.sprig_supervisor.shutdown()
 
     if hasattr(app.state, "redis_task_command_listener"):
         app.state.redis_task_command_listener.cancel()
@@ -1450,6 +1462,9 @@ app.include_router(tasks.router, prefix="/api/v1/tasks", tags=["tasks"])
 app.include_router(images.router, prefix="/api/v1/images", tags=["images"])
 
 app.include_router(audio.router, prefix="/api/v1/audio", tags=["audio"])
+app.include_router(
+    sprigs.router, prefix="/api/v1/retrieval/sprigs", tags=["sprigs"]
+)
 app.include_router(retrieval.router, prefix="/api/v1/retrieval", tags=["retrieval"])
 
 app.include_router(configs.router, prefix="/api/v1/configs", tags=["configs"])

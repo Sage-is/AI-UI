@@ -1,0 +1,147 @@
+<script lang="ts">
+	import { onMount, getContext } from 'svelte';
+	import { toast } from 'svelte-sonner';
+	import { goto } from '$app/navigation';
+
+	import { user } from '$lib/stores';
+	import { getSprigCatalog, graftSprig } from '$lib/apis/retrieval';
+
+	import Badge from '$lib/components/common/Badge.svelte';
+	import Spinner from '$lib/components/common/Spinner.svelte';
+
+	const i18n: any = getContext('i18n');
+
+	let loaded = false;
+	let refreshing = false;
+	let graftingName: string | null = null;
+
+	let catalog: Record<string, any> = {};
+	let grafted: Record<string, any> = {};
+
+	// Supervisor lifecycle state -> operator-facing label + badge colour.
+	const stateLabel: Record<string, string> = { rooted: 'Grafted', wilted: 'Wilted' };
+	const stateBadge: Record<string, string> = { rooted: 'success', wilted: 'error' };
+
+	const load = async () => {
+		refreshing = true;
+		try {
+			const res = await getSprigCatalog(localStorage.token);
+			catalog = res?.catalog ?? {};
+			grafted = res?.grafted ?? {};
+		} catch (e) {
+			toast.error($i18n.t('Failed to load Sprig catalog'));
+		}
+		refreshing = false;
+	};
+
+	const graft = async (name: string, capability: string) => {
+		graftingName = name;
+		try {
+			await graftSprig(localStorage.token, { name, capability });
+			toast.success($i18n.t('Grafted {{name}}', { name }));
+		} catch (e) {
+			toast.error($i18n.t('Failed to graft {{name}}', { name }));
+		}
+		graftingName = null;
+		await load();
+	};
+
+	onMount(async () => {
+		if ($user?.role !== 'admin') {
+			await goto('/');
+			return;
+		}
+		await load();
+		loaded = true;
+	});
+
+	$: entries = Object.entries(catalog) as [string, any][];
+	$: graftedCount = Object.values(grafted).filter((g: any) => g?.state === 'rooted').length;
+</script>
+
+<div class="flex flex-col gap-1 my-1.5">
+	<div class="flex justify-between items-start gap-3">
+		<div class="min-w-0">
+			<h1 class="text-lg font-semibold text-gray-900 dark:text-gray-100">{$i18n.t('Sprigs')}™</h1>
+			<div class="text-xs text-gray-500 dark:text-gray-400">
+				{$i18n.t(
+					'Capabilities grafted onto the Rootstock™ at runtime — no model download, no pip install.'
+				)}
+			</div>
+		</div>
+		<button
+			class="text-xs px-2.5 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-1.5 flex-none"
+			on:click={load}
+			disabled={refreshing}
+		>
+			{#if refreshing}<Spinner className="size-3" />{/if}
+			{$i18n.t('Refresh')}
+		</button>
+	</div>
+
+	{#if loaded && entries.length > 0}
+		<div class="text-xs text-gray-400 dark:text-gray-500">
+			{$i18n.t('{{grafted}} of {{total}} grafted', { grafted: graftedCount, total: entries.length })}
+		</div>
+	{/if}
+</div>
+
+{#if !loaded}
+	<div class="flex justify-center py-10"><Spinner /></div>
+{:else if entries.length === 0}
+	<div class="text-sm text-gray-500 dark:text-gray-400 py-6">
+		{$i18n.t('No Sprigs in the catalog.')}
+	</div>
+{:else}
+	<div class="flex flex-col gap-2 mt-1">
+		{#each entries as [name, spec]}
+			{@const g = grafted[name]}
+			{@const isGrafted = g && g.state === 'rooted'}
+			<div
+				class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 flex items-start gap-3"
+			>
+				<div class="flex-none pt-0.5">
+					<Badge
+						type={g ? (stateBadge[g.state] ?? 'muted') : 'muted'}
+						content={g ? $i18n.t(stateLabel[g.state] ?? 'Sprouted') : $i18n.t('Sprouted')}
+					/>
+				</div>
+
+				<div class="flex-1 min-w-0">
+					<div class="text-sm font-semibold text-gray-900 dark:text-gray-100 break-all">
+						{name}
+					</div>
+					<div class="text-xs text-gray-500 dark:text-gray-400">
+						{$i18n.t('Capability')}: {spec.capability}{spec.model ? ` · ${spec.model}` : ''}
+					</div>
+					{#if g}
+						<div class="text-xs text-gray-400 dark:text-gray-500 mt-1 font-mono break-all">
+							{g.base_url}{g.pid ? ` · pid ${g.pid}` : ''}
+						</div>
+					{/if}
+				</div>
+
+				<div class="flex-none">
+					{#if isGrafted}
+						<a
+							href="/admin/diagnostics"
+							class="text-xs px-2.5 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800"
+							title={$i18n.t('View health in Diagnostics')}
+						>
+							{$i18n.t('Health')}
+						</a>
+					{:else}
+						<button
+							class="text-xs px-3.5 py-1.5 rounded-full bg-black text-white dark:bg-white dark:text-black hover:opacity-90 disabled:opacity-50 flex items-center gap-1.5"
+							on:click={() => graft(name, spec.capability)}
+							disabled={graftingName === name}
+						>
+							{#if graftingName === name}<Spinner className="size-3" />{/if}
+							{$i18n.t('Graft')}
+						</button>
+					{/if}
+				</div>
+			</div>
+		{/each}
+	</div>
+{/if}
