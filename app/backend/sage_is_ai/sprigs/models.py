@@ -34,3 +34,4 @@ class GraftResponse(BaseModel):
     base_url: str
     embedding_engine: str
     embedding_model: str
+    warning: Optional[str] = None

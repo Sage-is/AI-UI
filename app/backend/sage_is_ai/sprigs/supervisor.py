@@ -51,11 +51,44 @@ class SprigSupervisor:
     """Spawns and supervises grafted Sprig™ child processes."""
 
     # The catalog IS the allowlist. Only these (name -> spec) may be grafted.
+    #   server: "mock"      -> mock_embedding_server (deterministic, no model)
+    #           "embedding" -> embedding_server (real model; pick backend below)
+    #   backend (embedding only): "onnx" (chromadb ONNX MiniLM, no torch) |
+    #           "sentence-transformers" (needs torch — AI Engine install or graft #3)
+    #   model:  mock tag, or the model id passed to the real server
+    #   dim:    declared embedding width (the vector store binds this per collection)
+    #   ready_timeout_s: per-cultivar health deadline (real models download weights)
     CATALOG: dict[str, dict] = {
         "mock-embedding": {
             "capability": "embedding",
+            "server": "mock",
             "model": "mock-embedding",
             "dim": _MOCK_EMBEDDING_DIM,
+            "ready_timeout_s": 15.0,
+        },
+        "all-MiniLM-onnx": {
+            "capability": "embedding",
+            "server": "embedding",
+            "backend": "onnx",
+            "model": "all-MiniLM-L6-v2",
+            "dim": 384,  # same width as the mock -> no collection migration
+            "ready_timeout_s": 120.0,  # first graft pulls ~80MB ONNX weights
+        },
+        "multilingual-e5-large": {
+            "capability": "embedding",
+            "server": "embedding",
+            "backend": "sentence-transformers",
+            "model": "intfloat/multilingual-e5-large",
+            "dim": 1024,  # needs torch (AI Engine install / graft #3); ~2.2GB cold pull
+            "ready_timeout_s": 300.0,
+        },
+        "bge-large-en-v1.5": {
+            "capability": "embedding",
+            "server": "embedding",
+            "backend": "sentence-transformers",
+            "model": "BAAI/bge-large-en-v1.5",
+            "dim": 1024,  # needs torch; ~1.3GB cold pull
+            "ready_timeout_s": 300.0,
         },
     }
 
@@ -87,6 +120,55 @@ class SprigSupervisor:
             }
         return out
 
+    def _build_argv(self, name: str, spec: dict) -> tuple[list[str], float]:
+        """Resolve the child module + args from the catalog 'server' selector.
+
+        Returns (argv_after_`python -m`, ready_timeout_s). argv may contain the
+        literal token "{port}", which graft() substitutes once a port is reserved.
+        Raises ValueError (surfaced as a clear graft failure) when a cultivar's
+        runtime deps are missing on this Rootstock™.
+        """
+        server = spec.get("server", "mock")
+        dim = str(spec["dim"])
+        ready_timeout = float(spec.get("ready_timeout_s", _HEALTH_TIMEOUT_S))
+
+        if server == "mock":
+            return (
+                ["sage_is_ai.sprigs.mock_embedding_server", "--port", "{port}", "--dim", dim],
+                ready_timeout,
+            )
+
+        if server == "embedding":
+            backend = spec.get("backend", "onnx")
+            if backend == "sentence-transformers":
+                # Fail fast + clearly on a slim Rootstock™ rather than spawning a
+                # child that dies on `import torch` (whose reason is in DEVNULL'd stderr).
+                import importlib.util
+
+                missing = [
+                    m
+                    for m in ("torch", "sentence_transformers")
+                    if importlib.util.find_spec(m) is None
+                ]
+                if missing:
+                    raise ValueError(
+                        f"cultivar '{name}' needs {', '.join(missing)}, not installed in "
+                        f"this Rootstock™. Install the AI Engine, or graft a bundled "
+                        f"Sprig™ (graft #3)."
+                    )
+            return (
+                [
+                    "sage_is_ai.sprigs.embedding_server",
+                    "--port", "{port}",
+                    "--backend", backend,
+                    "--model", spec.get("model", ""),
+                    "--dim", dim,
+                ],
+                ready_timeout,
+            )
+
+        raise ValueError(f"unknown sprig server '{server}' for '{name}'")
+
     async def graft(self, name: str, capability: str) -> SprigHandle:
         spec = self.CATALOG.get(name)
         if spec is None or spec["capability"] != capability:
@@ -100,6 +182,24 @@ class SprigSupervisor:
             log.info("sprig '%s' already grafted on port %s", name, existing.port)
             return existing
 
+        # Pick the Sprig™ module + argv from the catalog 'server' selector.
+        argv, ready_timeout = self._build_argv(name, spec)
+
+        # TOP-GRAFT: the Rootstock™ has a single RAG_EMBEDDING_* config + one
+        # EMBEDDING_FUNCTION, so only one embedding cultivar may be rooted at a
+        # time. Terminate any OTHER rooted embedding sprig BEFORE spawning the new
+        # one — frees its port deterministically, no process/port leak. If the new
+        # graft then fails its health check, the except below prunes the new one,
+        # leaving zero embedding sprigs rooted (the honest state).
+        if capability == "embedding":
+            for other in [
+                n
+                for n, h in list(self._sprigs.items())
+                if n != name and h.capability == "embedding"
+            ]:
+                log.info("top-grafting: pruning prior embedding sprig '%s'", other)
+                await self._terminate(other)
+
         port = _reserve_loopback_port()
         handle = SprigHandle(
             name=name,
@@ -111,11 +211,7 @@ class SprigSupervisor:
             process=await asyncio.create_subprocess_exec(
                 sys.executable,
                 "-m",
-                "sage_is_ai.sprigs.mock_embedding_server",
-                "--port",
-                str(port),
-                "--dim",
-                str(spec["dim"]),
+                *[a.format(port=port) for a in argv],
                 # DEVNULL (not PIPE): we don't capture logs yet, and an unread PIPE
                 # would deadlock the child once its stdout buffer fills.
                 stdout=asyncio.subprocess.DEVNULL,
@@ -128,7 +224,7 @@ class SprigSupervisor:
         self._sprigs[name] = handle
 
         try:
-            await self._wait_until_healthy(handle)
+            await self._wait_until_healthy(handle, timeout=ready_timeout)
         except Exception:
             await self._terminate(name)
             raise

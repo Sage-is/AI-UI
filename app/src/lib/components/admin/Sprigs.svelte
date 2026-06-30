@@ -37,8 +37,9 @@
 	const graft = async (name: string, capability: string) => {
 		graftingName = name;
 		try {
-			await graftSprig(localStorage.token, { name, capability });
+			const res = await graftSprig(localStorage.token, { name, capability });
 			toast.success($i18n.t('Grafted {{name}}', { name }));
+			if (res?.warning) toast.warning(res.warning);
 		} catch (e) {
 			toast.error($i18n.t('Failed to graft {{name}}', { name }));
 		}
@@ -112,7 +113,9 @@
 						{name}
 					</div>
 					<div class="text-xs text-gray-500 dark:text-gray-400">
-						{$i18n.t('Capability')}: {spec.capability}{spec.model ? ` · ${spec.model}` : ''}
+						{spec.capability}{spec.model ? ` · ${spec.model}` : ''}{spec.dim
+							? ` · ${spec.dim}d`
+							: ''}
 					</div>
 					{#if g}
 						<div class="text-xs text-gray-400 dark:text-gray-500 mt-1 font-mono break-all">
