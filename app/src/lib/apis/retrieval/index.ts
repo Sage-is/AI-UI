@@ -89,6 +89,18 @@ type ModelDownloadForm = {
 export const triggerModelDownload = async (token: string, payload: ModelDownloadForm) =>
 	api('/models/download', 'POST', payload, token, 'triggerModelDownload');
 
+export const getSprigCatalog = async (token: string) =>
+	api('/sprigs/catalog', 'GET', undefined, token, 'getSprigCatalog');
+
+type GraftSprigForm = {
+	name: string;
+	capability: string;
+};
+
+// Graft a capability Sprig™ onto the Rootstock™ at runtime (Phase 8.0).
+export const graftSprig = async (token: string, payload: GraftSprigForm) =>
+	api('/sprigs/graft', 'POST', payload, token, 'graftSprig');
+
 export const getRerankingConfig = async (token: string) =>
 	api('/reranking', 'GET', undefined, token);
 

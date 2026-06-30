@@ -3,7 +3,7 @@
 	import { toast } from 'svelte-sonner';
 	import Icon from '$lib/components/Icon.svelte';
 
-	import { getModelsStatus, triggerModelDownload } from '$lib/apis/retrieval';
+	import { getModelsStatus, triggerModelDownload, graftSprig } from '$lib/apis/retrieval';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 
 	const i18n = getContext('i18n');
@@ -56,6 +56,22 @@
 		} catch {
 			toast.error($i18n.t('Failed to start download'));
 		}
+		onNext();
+	};
+
+	let grafting = false;
+
+	// Graft a local embedding Sprig™ instead of downloading model weights — the
+	// one wizard toggle that performs a real runtime graft (Phase 8.0).
+	const graftAndNext = async () => {
+		grafting = true;
+		try {
+			await graftSprig(localStorage.token, { name: 'mock-embedding', capability: 'embedding' });
+			toast.success($i18n.t('Grafted embedding Sprig™. Document search is ready.'));
+		} catch {
+			toast.error($i18n.t('Failed to graft Sprig™'));
+		}
+		grafting = false;
 		onNext();
 	};
 </script>
@@ -156,6 +172,14 @@
 				style="--px:0.6rem; --py:0.3rem; --size:0.7rem; --c:var(--color-gray-400); --hvr-c:var(--color-gray-600); --td:underline"
 			>
 				{$i18n.t('Skip')}
+			</button>
+
+			<button
+				on:click={graftAndNext}
+				disabled={grafting}
+				style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:transparent; --c:var(--color-gray-700); --dark-c:var(--color-gray-200); --bc:var(--color-gray-300); --dark-bc:var(--color-gray-600); --bw:1px; --bs:solid; --radius:9999px; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+			>
+				{$i18n.t('Graft Sprigs™ for me')}
 			</button>
 
 			<button
