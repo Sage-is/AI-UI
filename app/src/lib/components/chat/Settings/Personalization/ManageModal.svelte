@@ -84,7 +84,7 @@
 										<th scope="col" style="--px:0.6rem; --py:0.5rem; --ta:right" />
 									</tr>
 								</thead>
-								<tbody style="--d:table">
+								<tbody style="--w:100%">
 									{#each memories as memory}
 										<tr style=" --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --ai:center">
 											<td style="--d:table;--px:0.6rem; --py:0.2rem">

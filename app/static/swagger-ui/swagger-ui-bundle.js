@@ -61913,7 +61913,7 @@
 						return '</thead>\n';
 					}),
 					(cC.tbody_open = function () {
-						return '<tbody style="--d:table">\n';
+						return '<tbody style="--w:100%">\n';
 					}),
 					(cC.tbody_close = function () {
 						return '</tbody>\n';

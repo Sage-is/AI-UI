@@ -152,6 +152,52 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [ ] Written commitment: no automated behavioral flagging (hate speech, self-harm, etc.) without explicit school opt-in
   - [ ] Publish to `docs/` and link from README and elevator-pitch
 
+### Bonsai™ Spec Site & Documentation Architecture
+
+_Decisions locked 2026-06-28 by panel-review with Rich Harris, Maggie Appleton, Rauno Freiberg, and Daniel Stenberg. Outcome: `bonsai.sage.is/sprig-spec/v1/` as the canonical spec hub, `sage.is/bonsai/` as the curious-visitor explainer, `spec.sage.is` reserved for future non-Bonsai specs._
+
+_Implementation precedes docs (2026-06-30 panel-push; Decision #19 in the Bonsai™ roadmap): the First Graft card below ships before the spec-site/explainer cards in this section._
+
+- [ ] **First Graft: make one wizard toggle pull a Sprig** (2026-06-30): Walking-skeleton slice through 8.C→8.G for ONE capability — wire the existing "Graft Sprigs™ for me" wizard path to graft sprig-embedding-mock, run it on a loopback port, point RAG_EMBEDDING_ENGINE=openai dispatch at it, return one real embedding. Defer 8.A.2 spec-promotion, the other five 8.B repos, sigstore, prune/topgraft/revive, state.json, migration banner, image slimming until graft #2. #bonsai #critical
+
+- [ ] **Stand up `bonsai.sage.is` spec hub** (2026-06-28): New repo `Sage-is/bonsai-docs` at `~/Documents/Projects/GitHub/BONSAI/docs/`. 11ty + Cloudflare Pages. CNAME `bonsai.sage.is`. Renders single-page views of the canonical spec content pulled from GitHub at build time. This is the polish target — implementers spend hours here, polish compounds. #bonsai
+  - [ ] Scaffold the 11ty project (matches sage.is build pattern: bun + `@11ty/eleventy`, Cloudflare Pages deploy via `wrangler.toml`)
+  - [ ] Vendor the sage.is book theme — copy `_includes/`, `assets/css/`, and the `books/` templates from `~/Documents/Projects/GitHub/WEB-Sage.is/src/`
+  - [ ] Build-time spec fetch: `git clone --depth 1 --branch v1.0.0 sage-is/sprig-spec` and the rootstock-spec sibling into the 11ty data dir
+  - [ ] Render `bonsai.sage.is/sprig-spec/v1/` and `bonsai.sage.is/rootstock-spec/v1/` as single-page renders of `v1.md`
+  - [ ] Catalog-hub home at `bonsai.sage.is/` reusing the `books.njk` card-grid pattern — one card per spec, version, license, read/clone CTAs
+  - [ ] Cloudflare Pages deploy + CNAME `bonsai.sage.is` → `bonsai-docs.pages.dev`
+  - [ ] Configure `$id` URLs in `sprig-spec/v1.md` and `rootstock-spec/v1.md` to reference the canonical `bonsai.sage.is` URL once the site is live
+
+- [ ] **Author `sage.is/bonsai/` explainer** (2026-06-28): Curious-visitor doorway on the main marketing site at `~/Documents/Projects/GitHub/WEB-Sage.is/src/bonsai/`. Sub-path on the existing 11ty build, NOT a separate subdomain. Catches the long-tail SEO that should never hit normative spec text. Polish bar: good content + correct typography + clear illustrations. Does NOT need interaction polish; the spec hub carries that. #bonsai
+  - [ ] Write "What is Bonsai™?" explainer page with the architectural metaphor in plain prose
+  - [ ] Write "What is a Sprig™?" with one or two illustrations (per Maggie's layered-design argument)
+  - [ ] Write the AGPL-and-proprietary-Sprigs FAQ — covers Decision #13 (arms-length boundary doctrine) in newcomer-friendly language
+  - [ ] Add hand-off CTA: "Ready to write a Sprig™?" → link to `bonsai.sage.is/sprig-spec/v1/`
+  - [ ] Add hand-off CTA: "Want to build a conformant Rootstock™?" → link to `bonsai.sage.is/rootstock-spec/v1/`
+  - [ ] Long-tail SEO meta: title/description/og: tags tuned for "what is bonsai sage", "how do I write a sprig", "sage AGPL plugin"
+
+- [ ] **Reserve `spec.sage.is` DNS** (2026-06-28): Set up the subdomain now without a site behind it. Reason: if Sage.is ever publishes a non-Bonsai spec, that's the canonical URL home. Avoids painting into a corner where every Sage.is spec inherits the Bonsai metaphor in its URL. Per Daniel Stenberg's guardrail in the panel review. #bonsai #dns
+  - [ ] Add `spec.sage.is` CNAME record (parked, no content)
+  - [ ] Document in `docs/` why it's reserved so it doesn't get repurposed casually
+
+- [ ] **Confirm Bonsai™ metaphor horizon before `bonsai.sage.is` ships** (2026-06-28): Open strategic question from Rich Harris's line of inquiry. The chosen canonical URL is doubly committed — to Sage.is staying AND to Bonsai™ surviving as the architectural name for 10+ years. If the architecture rebrands later, every JSON Schema `$id`, every conformance citation, every blog reference takes a 301. Decide before ship. #bonsai #strategic-decision
+  - [ ] Founders' decision: is Bonsai™ the long-horizon name?
+  - [ ] If yes — `bonsai.sage.is` ships as canonical
+  - [ ] If unsure — switch canonical URL to `spec.sage.is/sprig-v1/` (metaphor-durable; survives an architecture rename)
+  - [ ] Document the decision and the reasoning in a brief `docs/` note so future-us doesn't relitigate
+
+- [ ] **Define spec-hub polish punch-list** (2026-06-28): Translate Rauno Freiberg's "polish target" principle into a concrete pre-launch checklist for `bonsai.sage.is`. The list IS the bar — ship only when each is true. Explicitly excluded: the `sage.is/bonsai/` explainer does NOT need to hit this bar; content quality is its bar instead. #bonsai #polish
+  - [ ] Scroll-spy nav: current section highlighted, smooth scroll on anchor click, sticky table of contents on long pages
+  - [ ] Code-block copy buttons with success state ("Copied" pill, then fade back)
+  - [ ] Instant search across all specs (Pagefind or equivalent — fully client-side, no JS backend)
+  - [ ] Focus-ring spec — consistent, visible, WCAG-AA accessible across light/dark
+  - [ ] Typography scale + line-length cap (60-80ch); generous vertical rhythm
+  - [ ] Dark-mode handling: `prefers-color-scheme` default + explicit toggle, persisted
+  - [ ] Hover states on every interactive element (links, buttons, code-block actions)
+  - [ ] Animated reveal of nav items on scroll into view (subtle, sub-300ms)
+  - [ ] Cursor-following micro-details on the catalog home — 4ms attention, not pageant moves
+
 ### v2.x — Near Term
 
 - [ ] **Auth & Onboarding**: Email notifications and LDAP consolidation
@@ -362,6 +408,14 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] Decide whether to stand up a Matrix room or Discord for the BSD-3 Open WebUI cohort
   - [ ] Refresh the CSV (`docs/outreach/open-webui-forks.csv`) every ~6 months as forks evolve and as the license conversation matures
 
+- [ ] **Finish offload Tier B + native-UI relocations** (2026-06-26): host disk freed from 12% to ~50% available after Tier A (cache purge + BuildCruft sweep) and Movies symlinked manually. Remaining work, none of it blocks Bonsai™:
+  - [ ] Tier B `home` from admin shell — `sudo offload --target-home /Users/somma move home --apply`. Music symlink needs reconciling first (currently points at `/Volumes/Somma 01 Dock Drive/Music`, offload expects `/MovedHome/somma/Music`). Same-volume `mv` + re-symlink solves it in three commands.
+  - [ ] Tier B `app` (Signal, Obsidian, Steam, Keybase, VSCode, Cursor, Epic, Minecraft) — quit each before firing
+  - [ ] Tier B `dev` (CoreSimulator 5.8 GiB)
+  - [ ] Docker Desktop disk image relocation via native UI (~14 GiB, biggest single win remaining)
+  - [ ] iMovie Library + Music Library + Photos Library native-UI moves (per `offload relocations`)
+  - [ ] Track upstream fix on [`Sage-is/homebrew-apps#1`](https://github.com/Sage-is/homebrew-apps/issues/1) — `du -sk` → `stat -f %z` verification swap that unblocks one-shot `offload move home --apply` for APFS-clone-heavy targets like `~/Movies`. Until then, the manual rsync+stat-verify+symlink dance from the 2.3.4 ship session is the workaround.
+
 ---
 
 ## Bugs
@@ -374,22 +428,6 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] **Refresh the bug's surface footprint**: the same `Exception → None` swallow exists in `generate_ollama_batch_embeddings`, `generate_azure_openai_batch_embeddings`, and likely the reranker — audit them as a class, fix them together.
 
 *(Surfaced 2026-06-05 by Alexander; sage.startr.cloud only; try.sage.is unaffected on identical 2.3.2 image.)*
-
-- [x] **try.sage Runtime `/llm-status` Endpoint Not Env-Gated**: With `ENABLE_TRY_SAGE=false`, `GET /api/v1/sage/runtime/llm-status` returns `403 {"detail":"Not authenticated"}` instead of 404. The route handler is registered unconditionally; auth is the only barrier. Sibling endpoints (`status`, `personas`, `limits`) correctly 404 when the env flag is off. #critical #bug
-  - [x] Locate the `llm-status` route handler in the trial runtime router
-  - [x] Confirm whether it sits outside the trial router or whether the router-level `enable_try_sage` check is missing for this handler specifically — root cause was **dependency order**: `_require_try_sage_enabled()` was called inline AFTER `Depends(get_admin_user)` had already evaluated, so auth's 401/403 fired before the env-gate's 404. Same defect class affected `/extend` and `/reset`.
-  - [x] Add the same gating that protects `status` / `personas` / `limits` so the route returns 404 when the env flag is false — fix at `app/backend/sage_is_ai/routers/sage_runtime.py:267-272`: lifted gate into `_gate: None = Depends(_require_try_sage_enabled)` parameter listed BEFORE `Depends(get_admin_user)`. Applied to `/llm-status`, `/extend`, `/reset`. Docstring of `_require_try_sage_enabled` now documents the ordering contract.
-  - [x] Re-run the trial smoke for-loop; confirm `404 /llm-status` — verified against fresh `sage-is/ai-ui:bug-verify` image; all seven trial endpoints (`status`, `personas`, `limits`, `llm-status`, `extend`, `clear`, `reset`) return 404.
-
-*(Surfaced 2026-05-10 during the regression sweep — caught by the `for ep in status personas limits llm-status extend clear` curl loop.)*
-
-- [x] **Unregistered `/api/*` Paths Return SPA HTML Instead of 404**: With `ENABLE_TRY_SAGE=false`, `GET /api/v1/sage/runtime/extend` and `GET /api/v1/sage/runtime/clear` return `200 text/html` (5463 bytes, identical etag) — the SvelteKit static catch-all serves `index.html` for unregistered backend paths. Breaks any curl-based smoke test that expects 404 for absent routes and masks future router-registration bugs. #bug
-  - [x] Locate where the SPA static catch-all is mounted in the FastAPI app — `SPAStaticFiles.get_response` in `app/backend/sage_is_ai/main.py`.
-  - [x] Add a guard so `/api/*` paths that don't match a registered router return JSON 404, not the SPA index — fix at `app/backend/sage_is_ai/main.py:498-510`: in `SPAStaticFiles.get_response`, paths equal to `api` or starting with `api/` now return `JSONResponse(status_code=404, content={"detail": "Not Found"})` instead of falling through to `index.html`.
-  - [x] Verify with a curl against any made-up `/api/v1/nonexistent` path — should return 404 with `application/json` — verified: `GET /api/v1/literally_made_up_path` returns `404 Not Found` with 22-byte JSON body. Non-api SPA paths still return `200 text/html` (frontend routing intact).
-  - [x] Re-run the trial smoke for-loop; `extend` and `clear` should report `404 /<endpoint>` — verified, plus `/reset` also 404 (which would have been a third leak without this fix).
-
-*(Surfaced 2026-05-10 during the same sweep.)*
 
 - [ ] **AI Engine Wizard Embedding Download Has No Stall Watchdog**: When the embedding model fetch from HuggingFace stalls (network drop, HF outage, slow link), the wizard sits in `embedding=downloading` indefinitely. No timeout, no retry, no resumable state surfaced to the admin. `wizard-smoke.sh` catches this externally via `INSTALL_TIMEOUT_SEC`, but a real user has no signal except an idle spinner. #bug
   - [ ] Surface HF download progress (bytes, last-byte timestamp) to `request.app.state.MODEL_DOWNLOAD_STATUS` so the status endpoint exposes liveness.
@@ -418,6 +456,22 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 
 > Completed items are moved to `docs/completed-todos.md` periodically.
 > Check off items with `- [x]` and leave them in place until the next cleanup.
+
+- [x] **try.sage Runtime `/llm-status` Endpoint Not Env-Gated**: With `ENABLE_TRY_SAGE=false`, `GET /api/v1/sage/runtime/llm-status` returns `403 {"detail":"Not authenticated"}` instead of 404. The route handler is registered unconditionally; auth is the only barrier. Sibling endpoints (`status`, `personas`, `limits`) correctly 404 when the env flag is off. #critical #bug
+  - [x] Locate the `llm-status` route handler in the trial runtime router
+  - [x] Confirm whether it sits outside the trial router or whether the router-level `enable_try_sage` check is missing for this handler specifically — root cause was **dependency order**: `_require_try_sage_enabled()` was called inline AFTER `Depends(get_admin_user)` had already evaluated, so auth's 401/403 fired before the env-gate's 404. Same defect class affected `/extend` and `/reset`.
+  - [x] Add the same gating that protects `status` / `personas` / `limits` so the route returns 404 when the env flag is false — fix at `app/backend/sage_is_ai/routers/sage_runtime.py:267-272`: lifted gate into `_gate: None = Depends(_require_try_sage_enabled)` parameter listed BEFORE `Depends(get_admin_user)`. Applied to `/llm-status`, `/extend`, `/reset`. Docstring of `_require_try_sage_enabled` now documents the ordering contract.
+  - [x] Re-run the trial smoke for-loop; confirm `404 /llm-status` — verified against fresh `sage-is/ai-ui:bug-verify` image; all seven trial endpoints (`status`, `personas`, `limits`, `llm-status`, `extend`, `clear`, `reset`) return 404.
+
+*(Surfaced 2026-05-10 during the regression sweep — caught by the `for ep in status personas limits llm-status extend clear` curl loop.)*
+
+- [x] **Unregistered `/api/*` Paths Return SPA HTML Instead of 404**: With `ENABLE_TRY_SAGE=false`, `GET /api/v1/sage/runtime/extend` and `GET /api/v1/sage/runtime/clear` return `200 text/html` (5463 bytes, identical etag) — the SvelteKit static catch-all serves `index.html` for unregistered backend paths. Breaks any curl-based smoke test that expects 404 for absent routes and masks future router-registration bugs. #bug
+  - [x] Locate where the SPA static catch-all is mounted in the FastAPI app — `SPAStaticFiles.get_response` in `app/backend/sage_is_ai/main.py`.
+  - [x] Add a guard so `/api/*` paths that don't match a registered router return JSON 404, not the SPA index — fix at `app/backend/sage_is_ai/main.py:498-510`: in `SPAStaticFiles.get_response`, paths equal to `api` or starting with `api/` now return `JSONResponse(status_code=404, content={"detail": "Not Found"})` instead of falling through to `index.html`.
+  - [x] Verify with a curl against any made-up `/api/v1/nonexistent` path — should return 404 with `application/json` — verified: `GET /api/v1/literally_made_up_path` returns `404 Not Found` with 22-byte JSON body. Non-api SPA paths still return `200 text/html` (frontend routing intact).
+  - [x] Re-run the trial smoke for-loop; `extend` and `clear` should report `404 /<endpoint>` — verified, plus `/reset` also 404 (which would have been a third leak without this fix).
+
+*(Surfaced 2026-05-10 during the same sweep.)*
 
 - [x] **Homebrew Tap Release**: Finish and verify the brew install path #critical
   - [x] Test: `brew tap sage-is/apps && brew install ai-ui`
