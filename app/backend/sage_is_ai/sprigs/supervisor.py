@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
 import socket
 import sys
 import time
@@ -74,21 +75,123 @@ class SprigSupervisor:
             "dim": 384,  # same width as the mock -> no collection migration
             "ready_timeout_s": 120.0,  # first graft pulls ~80MB ONNX weights
         },
+        "minilm-onnx-inhoused": {
+            "capability": "embedding",
+            "server": "embedding",
+            "backend": "onnx",
+            "model": "all-MiniLM-L6-v2",
+            "dim": 384,  # same width as mock + graft-2 ONNX -> no reindex
+            "ready_timeout_s": 60.0,  # weights pre-seeded by oras pull, no S3 download
+            # --- graft #3: OCI-artifact offline delivery (in-housed weights) ---
+            "delivery": "oci-artifact",
+            "repo": "local-registry:5000/sprig-embedding-minilm-onnx",
+            "tag": "v1",
+            "insecure": True,  # localhost dev registry over HTTP. PROD: ghcr.io/sage-is + drop.
+            "binary_sha256": "14374a654078dea0b624b6cee6cadcefbcd714ef5964ffee1989fec578e6121d",
+        },
         "multilingual-e5-large": {
             "capability": "embedding",
             "server": "embedding",
-            "backend": "sentence-transformers",
+            # onnx-transformer: onnxruntime + tokenizers, NO torch. Slim rootstock.
+            "backend": "onnx-transformer",
+            "pooling": "mean",  # e5 uses mean pooling
             "model": "intfloat/multilingual-e5-large",
-            "dim": 1024,  # needs torch (AI Engine install / graft #3); ~2.2GB cold pull
-            "ready_timeout_s": 300.0,
+            "dim": 1024,
+            "ready_timeout_s": 120.0,  # weights pre-seeded by oras pull, no HF download
+            "delivery": "oci-artifact",
+            "seed": "model-dir",
+            "repo": "local-registry:5000/sprig-embedding-e5-large-onnx",
+            "tag": "v1",
+            "insecure": True,
+            "binary_sha256": "8fbe2a95fd729deb50a6fa9df7e7d49c78199ca3fa506c08b4f97161fca08a17",
         },
         "bge-large-en-v1.5": {
             "capability": "embedding",
             "server": "embedding",
-            "backend": "sentence-transformers",
+            "backend": "onnx-transformer",
+            "pooling": "cls",  # bge uses CLS pooling
             "model": "BAAI/bge-large-en-v1.5",
-            "dim": 1024,  # needs torch; ~1.3GB cold pull
-            "ready_timeout_s": 300.0,
+            "dim": 1024,
+            "ready_timeout_s": 120.0,
+            "delivery": "oci-artifact",
+            "seed": "model-dir",
+            "repo": "local-registry:5000/sprig-embedding-bge-onnx",
+            "tag": "v1",
+            "insecure": True,
+            "binary_sha256": "df16cc5d077c5f9756b130e435e26629beea7bf07ea00c7551e2fc96f7f9a410",
+        },
+        # "deliver" sprig — NOT a running server. Pulls the Svelte dev/build
+        # toolchain (node_modules, ~1.1GB) from OUR registry and extracts it into
+        # /app on demand, so it lives OUTSIDE the base rootstock image (dev mode
+        # grafts it; production never carries it). Decision #14 dev-svelte.
+        "dev-svelte": {
+            "capability": "dev",
+            "server": "deliver",
+            "model": "svelte dev/build toolchain (node_modules + bun)",
+            "dim": 0,
+            "delivery": "oci-artifact",
+            "seed": "app-dir",
+            "target": "/app",
+            "sentinel": "node_modules",
+            "ready_timeout_s": 120.0,
+            "repo": "local-registry:5000/sprig-dev-svelte",
+            "tag": "v2",
+            "insecure": True,
+            "binary_sha256": "c801539acd1373c2498c8f170eb4cba2643a0d48a15497d3446aafdbb418cb38",
+        },
+        # Vector DB substrate — the chromadb closure (~170MB: chromadb, onnxruntime,
+        # kubernetes, grpc, hnswlib, posthog) extracted straight into site-packages.
+        # factory.py boots with VECTOR_DB_CLIENT=None when absent; restart after
+        # delivery to activate (import bindings are frozen at boot).
+        "vector-chroma": {
+            "capability": "vector",
+            "server": "deliver",
+            "model": "chromadb vector DB + closure (site-packages overlay)",
+            "dim": 0,
+            "delivery": "oci-artifact",
+            "seed": "app-dir",
+            "target": "/usr/local/lib/python3.11/site-packages",
+            "sentinel": "chromadb",
+            "post_graft_note": "Vector DB delivered. Restart the Rootstock™ to activate document search.",
+            "ready_timeout_s": 180.0,
+            "repo": "local-registry:5000/sprig-vector-chroma",
+            "tag": "v1",
+            "insecure": True,
+            "binary_sha256": "4613edba24d576055b0ccfbe40955d3de90c2718e9fce2f20561fc9e7da53d6f",
+        },
+        # Static ffmpeg + ffprobe (johnvansickle 7.0.2) — audio transcode for
+        # pydub/whisper paths. Replaces the ~110MB apt ffmpeg codec stack.
+        "media-ffmpeg": {
+            "capability": "media",
+            "server": "deliver",
+            "model": "static ffmpeg + ffprobe 7.0.2",
+            "dim": 0,
+            "delivery": "oci-artifact",
+            "seed": "app-dir",
+            "target": "/usr/local/bin",
+            "sentinel": "ffmpeg",
+            "ready_timeout_s": 120.0,
+            "repo": "local-registry:5000/sprig-media-ffmpeg",
+            "tag": "v1",
+            "insecure": True,
+            "binary_sha256": "cfe4304c74ebcc04a8ee221968fdc783f46addbf5646c14971885bbb0e613bb2",
+        },
+        # rclone (static Go binary) — cloud backup/restore. restore_backup_start.sh
+        # skips backups gracefully when absent.
+        "backup-rclone": {
+            "capability": "backup",
+            "server": "deliver",
+            "model": "rclone (cloud backup)",
+            "dim": 0,
+            "delivery": "oci-artifact",
+            "seed": "app-dir",
+            "target": "/usr/local/bin",
+            "sentinel": "rclone",
+            "ready_timeout_s": 120.0,
+            "repo": "local-registry:5000/sprig-backup-rclone",
+            "tag": "v1",
+            "insecure": True,
+            "binary_sha256": "df0f3c87f32c5ae4e9c71cb976bc25db870c53c8b5c5491d8cba8844a216a61f",
         },
     }
 
@@ -116,7 +219,7 @@ class SprigSupervisor:
                 "base_url": h.base_url,
                 "model": h.model,
                 "pid": h.process.pid if h.process else None,
-                "state": "rooted" if alive else "wilted",
+                "state": h.state or ("rooted" if alive else "wilted"),
             }
         return out
 
@@ -156,18 +259,48 @@ class SprigSupervisor:
                         f"this Rootstock™. Install the AI Engine, or graft a bundled "
                         f"Sprig™ (graft #3)."
                     )
-            return (
-                [
-                    "sage_is_ai.sprigs.embedding_server",
-                    "--port", "{port}",
-                    "--backend", backend,
-                    "--model", spec.get("model", ""),
-                    "--dim", dim,
-                ],
-                ready_timeout,
-            )
+            args = [
+                "sage_is_ai.sprigs.embedding_server",
+                "--port", "{port}",
+                "--backend", backend,
+                "--model", spec.get("model", ""),
+                "--dim", dim,
+            ]
+            if backend == "onnx-transformer":
+                # onnxruntime + tokenizers, no torch; model.onnx comes from the
+                # oci-artifact (SPRIG_MODEL_DIR, set in graft()). Pooling per model.
+                args += ["--pooling", spec.get("pooling", "mean")]
+            return (args, ready_timeout)
 
         raise ValueError(f"unknown sprig server '{server}' for '{name}'")
+
+    async def _deliver(self, name: str, spec: dict) -> SprigHandle:
+        """A 'deliver' sprig has no server: pull + verify + extract the artifact
+        into its target (e.g. the dev/build toolchain into /app). Idempotent via
+        the artifact sentinel. Returns a handle in state 'delivered'."""
+        from sage_is_ai.env import DATA_DIR
+        from sage_is_ai.sprigs import artifact
+
+        try:
+            target = await artifact.ensure(
+                spec=spec, data_dir=DATA_DIR, catalog_name=name
+            )
+        except artifact.ArtifactError as exc:
+            raise ValueError(f"delivery failed for '{name}': {exc}") from exc
+
+        handle = SprigHandle(
+            name=name,
+            capability=spec["capability"],
+            port=0,
+            base_url="",
+            health_url="",
+            model=spec.get("model", ""),
+            process=None,
+            state="delivered",
+        )
+        self._sprigs[name] = handle
+        log.info("delivered sprig '%s' -> %s", name, target)
+        return handle
 
     async def graft(self, name: str, capability: str) -> SprigHandle:
         spec = self.CATALOG.get(name)
@@ -175,6 +308,11 @@ class SprigSupervisor:
             raise ValueError(
                 f"unknown sprig '{name}' or unsupported capability '{capability}'"
             )
+
+        # "deliver" sprigs (dev/build toolchain, assets) have no server — just
+        # pull + extract the artifact into its target.
+        if spec.get("server") == "deliver":
+            return await self._deliver(name, spec)
 
         # Idempotency: a live graft of the same name returns the existing handle.
         existing = self._sprigs.get(name)
@@ -184,6 +322,35 @@ class SprigSupervisor:
 
         # Pick the Sprig™ module + argv from the catalog 'server' selector.
         argv, ready_timeout = self._build_argv(name, spec)
+
+        # GRAFT #3: OCI-artifact cultivars pull + sha256-verify + extract + seed the
+        # offline weight cache BEFORE we disturb anything, so a failed pull leaves the
+        # current cultivar intact. The seeded cache makes the ONNX server load with
+        # zero chroma-S3 / HuggingFace egress.
+        child_env = None
+        if spec.get("delivery") == "oci-artifact":
+            from sage_is_ai.env import DATA_DIR
+            from sage_is_ai.sprigs import artifact
+
+            try:
+                served = await artifact.ensure(
+                    spec=spec, data_dir=DATA_DIR, catalog_name=name
+                )
+            except artifact.ArtifactError as exc:
+                raise ValueError(f"artifact delivery failed for '{name}': {exc}") from exc
+
+            child_env = {
+                **os.environ,
+                "OFFLINE_MODE": "true",
+                "HF_HUB_OFFLINE": "1",
+                "TRANSFORMERS_OFFLINE": "1",
+            }
+            if spec.get("backend") == "onnx-transformer":
+                # served == the extracted model dir (model.onnx + tokenizer.json)
+                child_env["SPRIG_MODEL_DIR"] = served
+            else:
+                # served == the seeded chroma cache dir (MiniLM DefaultEmbeddingFunction)
+                child_env["SPRIG_EMBEDDING_CACHE_DIR"] = served
 
         # TOP-GRAFT: the Rootstock™ has a single RAG_EMBEDDING_* config + one
         # EMBEDDING_FUNCTION, so only one embedding cultivar may be rooted at a
@@ -212,6 +379,9 @@ class SprigSupervisor:
                 sys.executable,
                 "-m",
                 *[a.format(port=port) for a in argv],
+                # env=None for non-oci cultivars => inherit parent env (unchanged);
+                # oci-artifact cultivars get the offline-forcing env built above.
+                env=child_env,
                 # DEVNULL (not PIPE): we don't capture logs yet, and an unread PIPE
                 # would deadlock the child once its stdout buffer fills.
                 stdout=asyncio.subprocess.DEVNULL,
@@ -233,6 +403,16 @@ class SprigSupervisor:
             "grafted sprig '%s' (pid %s) on %s", name, handle.process.pid, handle.base_url
         )
         return handle
+
+    async def prune(self, name: str) -> bool:
+        """Terminate + remove a grafted Sprig™. Returns True if it was present.
+
+        Idempotent. Revive is not a separate supervisor op — re-grafting the same
+        name (graft()) re-roots a wilted/pruned cultivar through the normal path.
+        """
+        present = name in self._sprigs
+        await self._terminate(name)
+        return present
 
     async def _wait_until_healthy(
         self, handle: SprigHandle, timeout: float = _HEALTH_TIMEOUT_S

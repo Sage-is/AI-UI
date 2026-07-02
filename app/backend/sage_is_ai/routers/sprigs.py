@@ -15,7 +15,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 
 from sage_is_ai.diagnostics import endpoint_health
 from sage_is_ai.retrieval.utils import get_embedding_function
-from sage_is_ai.sprigs.models import GraftRequest, GraftResponse
+from sage_is_ai.sprigs.models import GraftRequest, GraftResponse, PruneRequest
 from sage_is_ai.utils.auth import get_admin_user
 
 log = logging.getLogger(__name__)
@@ -35,15 +35,13 @@ async def graft_sprig(
 ):
     supervisor = request.app.state.sprig_supervisor
 
-    # Catalog allowlist (arbitrary-exec / SSRF defense): only known names and the
-    # embedding capability may be grafted in this cut.
-    if (
-        form_data.name not in supervisor.CATALOG
-        or form_data.capability != "embedding"
-    ):
+    # Catalog allowlist (arbitrary-exec / SSRF defense): the name must be in the
+    # catalog and the requested capability must match its entry.
+    entry = supervisor.CATALOG.get(form_data.name)
+    if entry is None or entry.get("capability") != form_data.capability:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Unknown sprig '{form_data.name}' or unsupported capability",
+            detail=f"Unknown sprig '{form_data.name}' or capability mismatch",
         )
 
     # Capture prior embedding cultivar widths BEFORE grafting (top-graft will
@@ -65,6 +63,18 @@ async def graft_sprig(
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=f"Graft failed: {e}",
+        )
+
+    # Non-embedding sprigs ("deliver": dev/build toolchain, vector DB, binaries)
+    # don't touch the embedding dispatch — report the delivery and return. A
+    # catalog post_graft_note (e.g. "restart to activate") surfaces as a warning.
+    if handle.capability != "embedding":
+        return GraftResponse(
+            status=True,
+            name=handle.name,
+            capability=handle.capability,
+            delivered=True,
+            warning=entry.get("post_graft_note"),
         )
 
     # Point the existing embedding dispatch at the grafted loopback Sprig™.
@@ -123,3 +133,47 @@ async def graft_sprig(
         embedding_model=cfg.RAG_EMBEDDING_MODEL,
         warning=warning,
     )
+
+
+@router.post("/prune")
+async def prune_sprig(
+    request: Request, form_data: PruneRequest, user=Depends(get_admin_user)
+):
+    """Terminate + remove a grafted Sprig™. (Revive = re-graft via /graft.)"""
+    supervisor = request.app.state.sprig_supervisor
+    h = supervisor.handles().get(form_data.name)
+    if h is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Sprig '{form_data.name}' is not grafted",
+        )
+
+    cfg = request.app.state.config
+    was_active_embedding = (
+        h.get("capability") == "embedding"
+        and h.get("base_url") == cfg.RAG_OPENAI_API_BASE_URL
+    )
+
+    await supervisor.prune(form_data.name)
+
+    if was_active_embedding:
+        # Dispatch pointed at the pruned loopback; reset to "no embedding
+        # configured" so requests fail clearly instead of hitting a dead port.
+        from sage_is_ai.routers.retrieval import get_ef
+
+        cfg.RAG_EMBEDDING_ENGINE = ""
+        cfg.RAG_EMBEDDING_MODEL = ""
+        request.app.state.ef = get_ef("", "")
+        request.app.state.EMBEDDING_FUNCTION = get_embedding_function(
+            "", "", request.app.state.ef, "", "", cfg.RAG_EMBEDDING_BATCH_SIZE
+        )
+        if getattr(request.app.state, "MODEL_DOWNLOAD_STATUS", None):
+            request.app.state.MODEL_DOWNLOAD_STATUS["embedding"] = "pending"
+        log.info("pruned active embedding sprig '%s'; dispatch reset", form_data.name)
+
+    return {
+        "status": True,
+        "name": form_data.name,
+        "pruned": True,
+        "embedding_reset": was_active_embedding,
+    }

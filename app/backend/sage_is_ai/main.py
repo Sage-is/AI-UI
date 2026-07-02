@@ -34,7 +34,6 @@ from aiocache import cached
 import aiohttp
 import anyio.to_thread
 import requests
-from redis import Redis
 
 
 from fastapi import (

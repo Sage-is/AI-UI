@@ -57,8 +57,32 @@ app.state.dim = None
 
 
 def _build_onnx():
-    """chromadb's bundled ONNX all-MiniLM-L6-v2 (384-dim). No torch."""
+    """chromadb's bundled ONNX all-MiniLM-L6-v2 (384-dim). No torch.
+
+    Graft #3: when SPRIG_EMBEDDING_CACHE_DIR is set, the weights were pre-seeded
+    into $HOME/.cache/chroma by the supervisor's artifact.ensure() (OCI-artifact
+    delivery). Assert the cache is present so a seeding regression fails the graft
+    loudly instead of silently triggering chromadb's S3 download.
+    """
+    from pathlib import Path
+
     from chromadb.utils.embedding_functions import DefaultEmbeddingFunction
+
+    if os.environ.get("SPRIG_EMBEDDING_CACHE_DIR"):
+        onnx = (
+            Path.home()
+            / ".cache"
+            / "chroma"
+            / "onnx_models"
+            / "all-MiniLM-L6-v2"
+            / "onnx"
+            / "model.onnx"
+        )
+        if not onnx.exists():
+            raise RuntimeError(
+                f"offline ONNX cache missing at {onnx}; refusing to fall back to "
+                f"chroma-S3. artifact.ensure() seeding regressed."
+            )
 
     ef = DefaultEmbeddingFunction()
 
@@ -87,11 +111,62 @@ def _build_sentence_transformers(model_id: str):
     return embed, model_id
 
 
-def _load(backend: str, model_id: str, dim: int) -> None:
+def _build_onnx_transformer(pooling: str, model_id: str = ""):
+    """Generic ONNX transformer embedder — onnxruntime + tokenizers, NO torch.
+
+    Loads model.onnx + tokenizer.json from ``$SPRIG_MODEL_DIR`` (seeded by the
+    supervisor's artifact.ensure() for oci-artifact delivery), tokenizes with the
+    Rust ``tokenizers`` lib, runs onnxruntime, then pools (``mean`` for e5-style,
+    ``cls`` for bge-style) and L2-normalizes. This runs 1024-dim cultivars like
+    intfloat/multilingual-e5-large and BAAI/bge-large-en-v1.5 on a slim, torch-free
+    Rootstock™. token_type_ids are fed only when the ONNX graph declares them.
+    """
+    import numpy as np
+    import onnxruntime as ort
+    from tokenizers import Tokenizer
+
+    model_dir = os.environ.get("SPRIG_MODEL_DIR", "")
+    onnx_path = os.path.join(model_dir, "model.onnx")
+    tok_path = os.path.join(model_dir, "tokenizer.json")
+    if not os.path.exists(onnx_path) or not os.path.exists(tok_path):
+        raise RuntimeError(
+            f"onnx-transformer needs model.onnx + tokenizer.json in SPRIG_MODEL_DIR "
+            f"({model_dir!r}); artifact.ensure() seeding regressed."
+        )
+
+    tok = Tokenizer.from_file(tok_path)
+    tok.enable_padding()
+    tok.enable_truncation(max_length=512)
+    sess = ort.InferenceSession(onnx_path, providers=["CPUExecutionProvider"])
+    input_names = {i.name for i in sess.get_inputs()}
+
+    def embed(texts: list[str]) -> list[list[float]]:
+        encs = tok.encode_batch(texts)
+        ids = np.array([e.ids for e in encs], dtype=np.int64)
+        mask = np.array([e.attention_mask for e in encs], dtype=np.int64)
+        feed = {"input_ids": ids, "attention_mask": mask}
+        if "token_type_ids" in input_names:
+            feed["token_type_ids"] = np.zeros_like(ids)
+        last = sess.run(None, feed)[0]  # [batch, seq, hidden]
+        if pooling == "cls":
+            vecs = last[:, 0]
+        else:  # mean pooling over non-pad tokens
+            m = mask[..., None].astype(np.float32)
+            vecs = (last * m).sum(1) / np.clip(m.sum(1), 1e-9, None)
+        vecs = vecs / np.clip(np.linalg.norm(vecs, axis=1, keepdims=True), 1e-12, None)
+        return [[float(x) for x in row] for row in vecs]
+
+    label = f"{model_id or os.path.basename(model_dir.rstrip('/')) or 'onnx-transformer'}({pooling})"
+    return embed, label
+
+
+def _load(backend: str, model_id: str, dim: int, pooling: str = "mean") -> None:
     try:
         log.warning("loading embedding cultivar backend=%s model=%s ...", backend, model_id)
         if backend == "onnx":
             embed, label = _build_onnx()
+        elif backend == "onnx-transformer":
+            embed, label = _build_onnx_transformer(pooling, model_id)
         elif backend == "sentence-transformers":
             embed, label = _build_sentence_transformers(model_id)
         else:
@@ -154,14 +229,19 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="sprig-embedding")
     parser.add_argument("--port", type=int, required=True)
     parser.add_argument(
-        "--backend", required=True, choices=["onnx", "sentence-transformers"]
+        "--backend",
+        required=True,
+        choices=["onnx", "onnx-transformer", "sentence-transformers"],
     )
     parser.add_argument("--model", default="")
     parser.add_argument("--dim", type=int, required=True)
+    parser.add_argument("--pooling", default="mean", choices=["mean", "cls"])
     args = parser.parse_args()
 
     threading.Thread(
-        target=_load, args=(args.backend, args.model, args.dim), daemon=True
+        target=_load,
+        args=(args.backend, args.model, args.dim, args.pooling),
+        daemon=True,
     ).start()
     uvicorn.run(app, host="127.0.0.1", port=args.port, log_level="warning")
 
