@@ -4,7 +4,7 @@
 	import { goto } from '$app/navigation';
 
 	import { user } from '$lib/stores';
-	import { getSprigCatalog, graftSprig } from '$lib/apis/retrieval';
+	import { getSprigCatalog, graftSprig, pruneSprig } from '$lib/apis/retrieval';
 
 	import Badge from '$lib/components/common/Badge.svelte';
 	import Spinner from '$lib/components/common/Spinner.svelte';
@@ -13,14 +13,22 @@
 
 	let loaded = false;
 	let refreshing = false;
-	let graftingName: string | null = null;
+	let busyName: string | null = null;
 
 	let catalog: Record<string, any> = {};
 	let grafted: Record<string, any> = {};
 
 	// Supervisor lifecycle state -> operator-facing label + badge colour.
-	const stateLabel: Record<string, string> = { rooted: 'Grafted', wilted: 'Wilted' };
-	const stateBadge: Record<string, string> = { rooted: 'success', wilted: 'error' };
+	const stateLabel: Record<string, string> = {
+		rooted: 'Grafted',
+		wilted: 'Wilted',
+		delivered: 'Delivered'
+	};
+	const stateBadge: Record<string, string> = {
+		rooted: 'success',
+		wilted: 'error',
+		delivered: 'info'
+	};
 
 	const load = async () => {
 		refreshing = true;
@@ -35,7 +43,7 @@
 	};
 
 	const graft = async (name: string, capability: string) => {
-		graftingName = name;
+		busyName = name;
 		try {
 			const res = await graftSprig(localStorage.token, { name, capability });
 			toast.success($i18n.t('Grafted {{name}}', { name }));
@@ -43,7 +51,24 @@
 		} catch (e) {
 			toast.error($i18n.t('Failed to graft {{name}}', { name }));
 		}
-		graftingName = null;
+		busyName = null;
+		await load();
+	};
+
+	const prune = async (name: string) => {
+		busyName = name;
+		try {
+			const res = await pruneSprig(localStorage.token, { name });
+			toast.success($i18n.t('Pruned {{name}}', { name }));
+			if (res?.embedding_reset) {
+				toast.info(
+					$i18n.t('Embedding dispatch reset — graft a cultivar to restore document search.')
+				);
+			}
+		} catch (e) {
+			toast.error($i18n.t('Failed to prune {{name}}', { name }));
+		}
+		busyName = null;
 		await load();
 	};
 
@@ -97,7 +122,7 @@
 	<div class="flex flex-col gap-2 mt-1">
 		{#each entries as [name, spec]}
 			{@const g = grafted[name]}
-			{@const isGrafted = g && g.state === 'rooted'}
+			{@const isGrafted = g && (g.state === 'rooted' || g.state === 'delivered')}
 			<div
 				class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 flex items-start gap-3"
 			>
@@ -124,23 +149,34 @@
 					{/if}
 				</div>
 
-				<div class="flex-none">
+				<div class="flex-none flex items-center gap-2">
 					{#if isGrafted}
-						<a
-							href="/admin/diagnostics"
-							class="text-xs px-2.5 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800"
-							title={$i18n.t('View health in Diagnostics')}
+						{#if g?.base_url}
+							<a
+								href="/admin/diagnostics"
+								class="text-xs px-2.5 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800"
+								title={$i18n.t('View health in Diagnostics')}
+							>
+								{$i18n.t('Health')}
+							</a>
+						{/if}
+						<button
+							class="text-xs px-3 py-1.5 rounded-full border border-red-300 text-red-600 dark:border-red-800 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 disabled:opacity-50 flex items-center gap-1.5"
+							on:click={() => prune(name)}
+							disabled={busyName === name}
+							title={$i18n.t('Terminate and remove this Sprig™')}
 						>
-							{$i18n.t('Health')}
-						</a>
+							{#if busyName === name}<Spinner className="size-3" />{/if}
+							{$i18n.t('Prune')}
+						</button>
 					{:else}
 						<button
 							class="text-xs px-3.5 py-1.5 rounded-full bg-black text-white dark:bg-white dark:text-black hover:opacity-90 disabled:opacity-50 flex items-center gap-1.5"
 							on:click={() => graft(name, spec.capability)}
-							disabled={graftingName === name}
+							disabled={busyName === name}
 						>
-							{#if graftingName === name}<Spinner className="size-3" />{/if}
-							{$i18n.t('Graft')}
+							{#if busyName === name}<Spinner className="size-3" />{/if}
+							{g && g.state === 'wilted' ? $i18n.t('Revive') : $i18n.t('Graft')}
 						</button>
 					{/if}
 				</div>
