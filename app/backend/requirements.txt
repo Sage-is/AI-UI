@@ -47,7 +47,7 @@ tiktoken
 # Bumped 2026-05-17.
 langchain==0.3.30
 # CVE-2025-6984 (HIGH): insecure XML parsing (XXE) in document loaders
-langchain-community==0.3.27
+langchain-community==0.4.2
 
 ## Vector DB — chromadb is NOT baked into the base rootstock (Bonsai™ slimming).
 ## Its ~170MB closure (chromadb, onnxruntime, kubernetes, grpc, hnswlib, posthog)
