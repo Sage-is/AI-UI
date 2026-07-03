@@ -80,7 +80,7 @@ ftfy==6.2.3
 # fpdf2 (+ fontTools + pillow + CJK fonts) rides the export-document Sprig™
 # (8.I.2). CVE pins move into the sprig build: fpdf2==2.8.2, pillow==12.2.0
 # (CVE-2025-48379, CVE-2026-25990, CVE-2026-40192).
-Markdown==3.7
+Markdown==3.10.2
 validators==0.35.0
 # soundfile — removed (8.I.2): imported nowhere in the codebase (dead dep).
 
