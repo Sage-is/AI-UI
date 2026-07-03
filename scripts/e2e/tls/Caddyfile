@@ -1,0 +1,15 @@
+# TLS termination for the e2e rootstock — self-signed via Caddy's internal CA.
+# Without https the browser inside the Cypress/noVNC runner is a non-localhost
+# INSECURE context: clipboard, crypto.subtle, service workers, and getUserMedia
+# (voice/call features) are all denied and silently untestable.
+# Cypress's own proxy absorbs the untrusted cert; humans hitting
+# https://localhost:8443 get the expected self-signed warning once.
+{
+	auto_https disable_redirects
+}
+
+https://sage-e2e-tls:8443, https://localhost:8443 {
+	tls internal
+	# reverse_proxy passes WebSocket upgrades through (socket.io needs this)
+	reverse_proxy sage-e2e:8080
+}

@@ -96,6 +96,7 @@
 			</div>
 		</div>
 		<button
+			data-cy="sprigs-refresh"
 			class="text-xs px-2.5 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-1.5 flex-none"
 			on:click={load}
 			disabled={refreshing}
@@ -124,9 +125,11 @@
 			{@const g = grafted[name]}
 			{@const isGrafted = g && (g.state === 'rooted' || g.state === 'delivered')}
 			<div
+				data-cy="sprig-card"
+				data-sprig={name}
 				class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 flex items-start gap-3"
 			>
-				<div class="flex-none pt-0.5">
+				<div class="flex-none pt-0.5" data-cy="sprig-state" data-state={g?.state ?? 'sprouted'}>
 					<Badge
 						type={g ? (stateBadge[g.state] ?? 'muted') : 'muted'}
 						content={g ? $i18n.t(stateLabel[g.state] ?? 'Sprouted') : $i18n.t('Sprouted')}
@@ -161,6 +164,7 @@
 							</a>
 						{/if}
 						<button
+							data-cy="sprig-prune"
 							class="text-xs px-3 py-1.5 rounded-full border border-red-300 text-red-600 dark:border-red-800 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 disabled:opacity-50 flex items-center gap-1.5"
 							on:click={() => prune(name)}
 							disabled={busyName === name}
@@ -171,6 +175,7 @@
 						</button>
 					{:else}
 						<button
+							data-cy="sprig-graft"
 							class="text-xs px-3.5 py-1.5 rounded-full bg-black text-white dark:bg-white dark:text-black hover:opacity-90 disabled:opacity-50 flex items-center gap-1.5"
 							on:click={() => graft(name, spec.capability)}
 							disabled={busyName === name}

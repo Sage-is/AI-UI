@@ -146,7 +146,7 @@ class SprigSupervisor:
         "vector-chroma": {
             "capability": "vector",
             "server": "deliver",
-            "model": "chromadb vector DB + closure (site-packages overlay)",
+            "model": "chromadb vector DB + ML runtime (site-packages overlay)",
             "dim": 0,
             "delivery": "oci-artifact",
             "seed": "app-dir",
@@ -155,9 +155,108 @@ class SprigSupervisor:
             "post_graft_note": "Vector DB delivered. Restart the Rootstock™ to activate document search.",
             "ready_timeout_s": 180.0,
             "repo": "local-registry:5000/sprig-vector-chroma",
+            # v2 (8.I.2): + numpy, tokenizers, huggingface_hub closure — these
+            # left the base rootstock; the onnx embedding cultivars pre-check
+            # for them and point here.
+            "tag": "v2",
+            "insecure": True,
+            "binary_sha256": "382b37fd4e0bf4131a26163db075eb1e842f87443f0c9bd200cab2727b552553",
+        },
+        # GGUF cultivar (8.I.3, gates green 2026-07-02): e5-large Q8_0 served by
+        # a static-PIE musl llama-server (llama.cpp b9859, built in-house) — ONE
+        # binary + ONE model file, zero Python deps in the child, any libc.
+        # Gate A: cos_min 0.99913 vs sentence-transformers, 0 tokenizer
+        # mismatches (sentencepiece exact), 5/5 retrieval recall. Gate B: 0.85x
+        # onnx CPU throughput. minilm/bge GGUF are HELD — llama.cpp's WPM
+        # tokenizer diverges from HF on Hangul (22 vs 52 tokens); their onnx
+        # cultivars remain canonical. Artifact is arm64; amd64 variety = 8.J.
+        "e5-large-gguf": {
+            "capability": "embedding",
+            "server": "llama-binary",
+            "model": "intfloat/multilingual-e5-large (GGUF Q8_0)",
+            "dim": 1024,
+            "gguf": "model.gguf",
+            "delivery": "oci-artifact",
+            "seed": "model-dir",
+            "sentinel": "model.gguf",
+            "ready_timeout_s": 240.0,
+            "repo": "local-registry:5000/sprig-embedding-e5-gguf",
             "tag": "v1",
             "insecure": True,
-            "binary_sha256": "4613edba24d576055b0ccfbe40955d3de90c2718e9fce2f20561fc9e7da53d6f",
+            "binary_sha256": "16f01a8d37e0e0ced47d0faef2b64de69d072f81399ac0c8b7065d72c459cdec",
+        },
+        # RAG engines — langchain + langchain-community + numpy + format-loader
+        # deps (pypdf, docx2txt, rank_bm25) as a site-packages overlay. The
+        # overlay dir is on sys.path from boot, so document chunking/loading and
+        # hybrid search work immediately after graft; ONLY web-page loading
+        # needs a restart (web/utils.py subclasses loader bases at import).
+        "rag-loaders": {
+            "capability": "rag",
+            "server": "deliver",
+            "model": "langchain RAG engines + document loaders (overlay)",
+            "dim": 0,
+            "delivery": "oci-artifact",
+            "seed": "app-dir",
+            "target": "/usr/local/lib/python3.11/site-packages",
+            "sentinel": "langchain",
+            "post_graft_note": "Document processing active. Web-page loading activates after a restart.",
+            "ready_timeout_s": 180.0,
+            "repo": "local-registry:5000/sprig-rag-loaders",
+            "tag": "v1",
+            "insecure": True,
+            "binary_sha256": "f207537072f6c055fe94cef57c27bef8213199770290708e8871ce132cd96c5d",
+        },
+        # PDF chat export — fpdf2 + fontTools + pillow into the overlay dir plus
+        # the CJK Noto fonts into /app/static/fonts (frontend pdf-style.css uses
+        # them too). Root-anchored tar; no restart needed (fpdf import is lazy).
+        "export-document": {
+            "capability": "export",
+            "server": "deliver",
+            "model": "PDF export (fpdf2 + CJK fonts)",
+            "dim": 0,
+            "delivery": "oci-artifact",
+            "seed": "app-dir",
+            "target": "/",
+            "sentinel": "usr/local/lib/python3.11/site-packages/fpdf",
+            "ready_timeout_s": 180.0,
+            "repo": "local-registry:5000/sprig-export-document",
+            "tag": "v1",
+            "insecure": True,
+            "binary_sha256": "5139f34d07ccbff59ae29fd041c2f7492cef28cee74aa08b58bf4523321235d8",
+        },
+        # Pyodide (browser code interpreter) — served from /app/build/pyodide
+        # (workers load indexURL '/pyodide/'). Serves immediately after graft.
+        "code-pyodide": {
+            "capability": "code",
+            "server": "deliver",
+            "model": "pyodide browser code interpreter",
+            "dim": 0,
+            "delivery": "oci-artifact",
+            "seed": "app-dir",
+            "target": "/app/build/pyodide",
+            "sentinel": "pyodide.js",
+            "ready_timeout_s": 180.0,
+            "repo": "local-registry:5000/sprig-code-pyodide",
+            "tag": "v1",
+            "insecure": True,
+            "binary_sha256": "d7683230a86a8874abce78889f06acfb40d3f1f545f4d85d089e862a88e9bf00",
+        },
+        # onnxruntime-web wasm — in-browser ML (Evaluations leaderboard, kokoro
+        # TTS worker); both consumers set wasmPaths='/wasm/'. Serves immediately.
+        "browser-ml": {
+            "capability": "browser-ml",
+            "server": "deliver",
+            "model": "onnxruntime-web wasm (in-browser ML)",
+            "dim": 0,
+            "delivery": "oci-artifact",
+            "seed": "app-dir",
+            "target": "/app/build/wasm",
+            "sentinel": "ort-wasm-simd-threaded.jsep.wasm",
+            "ready_timeout_s": 120.0,
+            "repo": "local-registry:5000/sprig-browser-ml",
+            "tag": "v1",
+            "insecure": True,
+            "binary_sha256": "b8b4617991ee2e1655dd9bee6a48f2e63d64ccacd578fe3301f3603a507e8b88",
         },
         # Static ffmpeg + ffprobe (johnvansickle 7.0.2) — audio transcode for
         # pydub/whisper paths. Replaces the ~110MB apt ffmpeg codec stack.
@@ -259,6 +358,26 @@ class SprigSupervisor:
                         f"this Rootstock™. Install the AI Engine, or graft a bundled "
                         f"Sprig™ (graft #3)."
                     )
+            if backend in ("onnx", "onnx-transformer"):
+                # 8.I.2: numpy/tokenizers/onnxruntime left the base rootstock —
+                # they ride the vector-chroma Sprig™ overlay. Fail fast with the
+                # fix instead of spawning a child that dies on import.
+                import importlib.util
+
+                needed = (
+                    ("chromadb", "onnxruntime", "numpy")
+                    if backend == "onnx"
+                    else ("onnxruntime", "tokenizers", "numpy")
+                )
+                missing = [
+                    m for m in needed if importlib.util.find_spec(m) is None
+                ]
+                if missing:
+                    raise ValueError(
+                        f"cultivar '{name}' needs {', '.join(missing)} — the ML "
+                        f"runtime rides with the vector-chroma Sprig™. Graft "
+                        f"vector-chroma first (restart to activate), then retry."
+                    )
             args = [
                 "sage_is_ai.sprigs.embedding_server",
                 "--port", "{port}",
@@ -271,6 +390,26 @@ class SprigSupervisor:
                 # oci-artifact (SPRIG_MODEL_DIR, set in graft()). Pooling per model.
                 args += ["--pooling", spec.get("pooling", "mean")]
             return (args, ready_timeout)
+
+        if server == "llama-binary":
+            # GGUF cultivar (8.I.3, Gate A+B passed): ONE static-PIE llama-server
+            # binary + ONE model file from the artifact — zero Python deps in the
+            # child, runs on any libc. Pooling + normalization come from GGUF
+            # metadata; /v1/embeddings is natively OpenAI-shaped; /health gates
+            # readiness (503 while the model loads). "{artifact_dir}" is
+            # substituted after artifact.ensure() in graft().
+            return (
+                [
+                    "{artifact_dir}/llama-server",
+                    "-m", "{artifact_dir}/" + spec.get("gguf", "model.gguf"),
+                    "--embeddings",
+                    "--host", "127.0.0.1",
+                    "--port", "{port}",
+                    "-ub", "512",
+                    "-c", "512",
+                ],
+                ready_timeout,
+            )
 
         raise ValueError(f"unknown sprig server '{server}' for '{name}'")
 
@@ -345,7 +484,10 @@ class SprigSupervisor:
                 "HF_HUB_OFFLINE": "1",
                 "TRANSFORMERS_OFFLINE": "1",
             }
-            if spec.get("backend") == "onnx-transformer":
+            if spec.get("server") == "llama-binary":
+                # Binary+GGUF cultivar: paths ride in argv, not env.
+                argv = [a.replace("{artifact_dir}", served) for a in argv]
+            elif spec.get("backend") == "onnx-transformer":
                 # served == the extracted model dir (model.onnx + tokenizer.json)
                 child_env["SPRIG_MODEL_DIR"] = served
             else:
@@ -368,6 +510,12 @@ class SprigSupervisor:
                 await self._terminate(other)
 
         port = _reserve_loopback_port()
+        # llama-binary sprigs exec the delivered static binary directly; python
+        # cultivars run as `python -m <module>` children.
+        if spec.get("server") == "llama-binary":
+            exec_argv = [a.format(port=port) for a in argv]
+        else:
+            exec_argv = [sys.executable, "-m", *[a.format(port=port) for a in argv]]
         handle = SprigHandle(
             name=name,
             capability=capability,
@@ -376,9 +524,7 @@ class SprigSupervisor:
             health_url=f"http://127.0.0.1:{port}/health",
             model=spec["model"],
             process=await asyncio.create_subprocess_exec(
-                sys.executable,
-                "-m",
-                *[a.format(port=port) for a in argv],
+                *exec_argv,
                 # env=None for non-oci cultivars => inherit parent env (unchanged);
                 # oci-artifact cultivars get the offline-forcing env built above.
                 env=child_env,

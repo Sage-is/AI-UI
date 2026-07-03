@@ -219,7 +219,9 @@ async def ensure(spec: dict, data_dir: Path, catalog_name: str) -> str:
         return str(target)
 
     if seed_mode == "model-dir":
-        sentinel = extract_dir / "model.onnx"
+        # Spec-driven sentinel: onnx cultivars ship model.onnx (default),
+        # llama-binary cultivars ship model.gguf.
+        sentinel = extract_dir / spec.get("sentinel", "model.onnx")
         serve_path = extract_dir
     else:
         serve_path = _chroma_cache_dir(data_dir)
@@ -251,9 +253,10 @@ async def ensure(spec: dict, data_dir: Path, catalog_name: str) -> str:
     await _extract(tar_zst, extract_dir)
 
     if seed_mode == "model-dir":
-        if not (extract_dir / "model.onnx").exists():
+        expected = spec.get("sentinel", "model.onnx")
+        if not (extract_dir / expected).exists():
             raise ArtifactExtractionError(
-                f"artifact for '{catalog_name}' is missing model.onnx (seed=model-dir)"
+                f"artifact for '{catalog_name}' is missing {expected} (seed=model-dir)"
             )
         log.warning(
             "artifact extracted for '%s' from %s:%s -> %s",

@@ -217,24 +217,28 @@ it_gone:
 # Build Docker Image with Branch Name
 it_build:
 	@echo "Building Docker image with BuildKit enabled..."
-	@export DOCKER_BUILDKIT=1 && \
+	@START=$$(date +%s) && export DOCKER_BUILDKIT=1 && \
 	$(CONTAINER_RUNTIME) build --load $(OCI_LABELS) -t $(IMAGE_NAME):$(IMAGE_TAG) \
 	            -t $(IMAGE_NAME):latest \
 	            -t $(IMAGE_NAME):$(IMAGE_TAG)-$(SAFE_GIT_BRANCH) \
 	            -t $(IMAGE_NAME):$(SAFE_GIT_BRANCH) \
-	            .
+	            . && \
+	END=$$(date +%s) && \
+	printf "⏱  it_build: %dm%02ds\n" $$(( (END-START)/60 )) $$(( (END-START)%60 ))
 	@$(NOTIFY_DONE)
 	@echo ""
 
 # Build Docker Image without Cache and with Branch Name
 it_build_no_cache:
 	@echo "Building Docker image without cache and with BuildKit enabled..."
-	@export DOCKER_BUILDKIT=1 && \
+	@START=$$(date +%s) && export DOCKER_BUILDKIT=1 && \
 	$(CONTAINER_RUNTIME) build --no-cache --load $(OCI_LABELS) -t $(IMAGE_NAME):$(IMAGE_TAG) \
 	                     -t $(IMAGE_NAME):latest \
 	                     -t $(IMAGE_NAME):$(IMAGE_TAG)-$(SAFE_GIT_BRANCH) \
 	                     -t $(IMAGE_NAME):$(SAFE_GIT_BRANCH) \
-	                     .
+	                     . && \
+	END=$$(date +%s) && \
+	printf "⏱  it_build_no_cache: %dm%02ds\n" $$(( (END-START)/60 )) $$(( (END-START)%60 ))
 	@$(NOTIFY_DONE)
 	@echo ""
 
@@ -325,6 +329,32 @@ test_db_upgrade:
 ## prove this loop is stable.
 wizard_smoke:
 	@scripts/wizard-smoke.sh $(IMAGE_NAME):$(IMAGE_TAG)
+
+## sprig_smoke — the Sprig™ lifecycle gate: bare boot, clean 503s with graft
+## pointers, every capability grafts back (fresh container each run).
+sprig_smoke:
+	@scripts/smoke/sprig-lifecycle.sh $(IMAGE_NAME):$(IMAGE_TAG)
+
+## parity_gate — GGUF embedding cultivars vs sentence-transformers reference
+## (Poka-Yoke: the Korean-probe canary; rerun on every llama.cpp tag bump).
+parity_gate:
+	@scripts/gates/embedding-parity/run-gate.sh
+
+## e2e — headless Cypress from a pinned sibling container (no npm on host);
+## videos land in app/cypress/videos. e2e_watch — same, but interactive GUI
+## served at http://localhost:6080/vnc.html (noVNC; WebRTC alt backlogged).
+e2e:
+	@scripts/e2e/run-cypress.sh $(IMAGE_NAME):$(IMAGE_TAG)
+
+e2e_watch:
+	@scripts/e2e/run-cypress-watch.sh $(IMAGE_NAME):$(IMAGE_TAG)
+
+## gauntlet — local-first automation, no CI service: everything a robot would
+## do, runnable and watchable on this machine. pre-push hook runs `gauntlet`;
+## activate with: git config core.hooksPath .githooks
+gauntlet: it_build sprig_smoke
+
+gauntlet_full: gauntlet parity_gate e2e
 
 ## it_build_amd64 — build an amd64 image via buildx + --load.
 ##

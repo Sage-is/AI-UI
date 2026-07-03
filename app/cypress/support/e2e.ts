@@ -15,6 +15,11 @@ const login = (email: string, password: string) => {
 			// Make sure to test against us english to have stable tests,
 			// regardless on local language preferences
 			localStorage.setItem('locale', 'en-US');
+			// Pre-seed the changelog version so the "What's New" modal never
+			// opens (deterministic — no copy-dependent dismiss click).
+			cy.request('/api/config').then((res) => {
+				localStorage.setItem('version', res.body.version);
+			});
 			// Visit auth page
 			cy.visit('/auth');
 			// Fill out the form
@@ -22,12 +27,31 @@ const login = (email: string, password: string) => {
 			cy.get('input[type="password"]').type(password);
 			// Submit the form
 			cy.get('button[type="submit"]').click();
-			// Wait until the user is redirected to the home page
-			cy.get('#chat-search').should('exist');
-			// Get the current version to skip the changelog dialog
-			if (localStorage.getItem('version') === null) {
-				cy.get('button').contains("Okay, Let's Go!").click();
-			}
+			// Logged-in anchor that exists regardless of sidebar state
+			// (#chat-search only renders with the sidebar open).
+			cy.get('#chat-input', { timeout: 20000 }).should('exist');
+			// Mark setup complete + changelog seen in SERVER-side user settings —
+			// the ChangesAndSetupModal triggers off $settings.version /
+			// $settings.setupCompleted (not localStorage), and would otherwise
+			// cover the UI on every restored-session visit.
+			cy.window().then((win) => {
+				const token = win.localStorage.getItem('token');
+				cy.request('/api/config').then((cfg) => {
+					cy.request({
+						method: 'POST',
+						url: '/api/v1/users/user/settings/update',
+						headers: { Authorization: `Bearer ${token}` },
+						body: {
+							ui: {
+								version: cfg.body.version,
+								setupCompleted: true,
+								workingAlone: true,
+								showChangelog: false
+							}
+						}
+					});
+				});
+			});
 		},
 		{
 			validate: () => {
@@ -56,7 +80,10 @@ const register = (name: string, email: string, password: string) => {
 			failOnStatusCode: false
 		})
 		.then((response) => {
-			expect(response.status).to.be.oneOf([200, 400]);
+			// 200 = created; 400 = already exists; 403 = signup closed (this fork
+			// hard-closes public signup once an admin exists — the subsequent
+			// loginAdmin is the real arbiter of whether the account works).
+			expect(response.status).to.be.oneOf([200, 400, 403]);
 		});
 };
 

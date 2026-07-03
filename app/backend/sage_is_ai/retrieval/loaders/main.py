@@ -4,17 +4,64 @@ import ftfy
 import sys
 import json
 
-from langchain_community.document_loaders import (
-    AzureAIDocumentIntelligenceLoader,
-    BSHTMLLoader,
-    CSVLoader,
-    Docx2txtLoader,
-    OutlookMessageLoader,
-    PyPDFLoader,
-    TextLoader,
-    YoutubeLoader,
-)
+# Format loaders ride the rag-loaders Sprig™; langchain_core stays in base.
+try:
+    from langchain_community.document_loaders import (
+        AzureAIDocumentIntelligenceLoader,
+        BSHTMLLoader,
+        CSVLoader,
+        Docx2txtLoader,
+        OutlookMessageLoader,
+        PyPDFLoader,
+        TextLoader,
+        YoutubeLoader,
+    )
+
+    RAG_LOADERS_AVAILABLE = True
+except ModuleNotFoundError:
+    RAG_LOADERS_AVAILABLE = False
 from langchain_core.documents import Document
+
+
+def _require_rag_loaders():
+    """Re-attempt the loader imports at call time so a freshly grafted
+    rag-loaders Sprig™ works without a restart (overlay dir is on sys.path
+    from boot)."""
+    global RAG_LOADERS_AVAILABLE
+    global AzureAIDocumentIntelligenceLoader, BSHTMLLoader, CSVLoader
+    global Docx2txtLoader, OutlookMessageLoader, PyPDFLoader, TextLoader
+    global YoutubeLoader
+    if not RAG_LOADERS_AVAILABLE:
+        import importlib
+
+        # Load-bearing: sprig tars pack a fixed --mtime, so extraction leaves
+        # the overlay dir mtime unchanged and FileFinder keeps a stale listing.
+        importlib.invalidate_caches()
+        try:
+            from langchain_community.document_loaders import (
+                AzureAIDocumentIntelligenceLoader as _az,
+                BSHTMLLoader as _bs,
+                CSVLoader as _csv,
+                Docx2txtLoader as _docx,
+                OutlookMessageLoader as _msg,
+                PyPDFLoader as _pdf,
+                TextLoader as _txt,
+                YoutubeLoader as _yt,
+            )
+        except ModuleNotFoundError:
+            from fastapi import HTTPException, status
+
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=(
+                    "Document loading requires the rag-loaders Sprig™ — "
+                    "graft it in Admin → Sprigs."
+                ),
+            )
+        AzureAIDocumentIntelligenceLoader, BSHTMLLoader = _az, _bs
+        CSVLoader, Docx2txtLoader, OutlookMessageLoader = _csv, _docx, _msg
+        PyPDFLoader, TextLoader, YoutubeLoader = _pdf, _txt, _yt
+        RAG_LOADERS_AVAILABLE = True
 
 from sage_is_ai.retrieval.loaders.external_document import ExternalDocumentLoader
 
@@ -208,6 +255,7 @@ class Loader:
     def load(
         self, filename: str, file_content_type: str, file_path: str
     ) -> list[Document]:
+        _require_rag_loaders()
         loader = self._get_loader(filename, file_content_type, file_path)
         docs = loader.load()
 

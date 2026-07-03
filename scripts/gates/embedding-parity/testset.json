@@ -1,0 +1,48 @@
+{
+  "parity": [
+    "The quick brown fox jumps over the lazy dog.",
+    "Sage.is grafts capabilities onto a slim rootstock at runtime.",
+    "Retrieval-augmented generation combines search with language models.",
+    "def embed(texts): return [model(t) for t in texts]",
+    "The mitochondria is the powerhouse of the cell.",
+    "In 2026, container images under 150MB are considered lightweight.",
+    "A single static binary plus one model file — no libc constraints.",
+    "错误的分词器会悄悄破坏检索质量。",
+    "埋め込みベクトルの品質はトークナイザーに依存する。",
+    "임베딩 모델은 문장의 의미를 벡터로 변환한다.",
+    "Les modèles d'embedding multilingues doivent gérer les accents é à ü ñ.",
+    "Der schnelle braune Fuchs springt über den faulen Hund.",
+    "Быстрая коричневая лиса прыгает через ленивую собаку.",
+    "🌱 emoji and symbols → must tokenize consistently ✅",
+    "MixedCASE tokens, URLs like https://sage.is/docs?a=1&b=2, and snake_case_identifiers",
+    "A much longer paragraph intended to exercise mean pooling across many tokens: the Bonsai architecture inverts the traditional monolithic container shape by keeping only the web framework, authentication, and a process supervisor in the base image, while every machine learning capability ships as a separately versioned, cryptographically signed artifact that operators graft onto the running system precisely when they need it and prune when they do not.",
+    "short",
+    "1234567890 !@#$%^&*()",
+    "   leading and trailing whitespace   ",
+    "Tab\tseparated\tvalues and\nnewlines"
+  ],
+  "corpus": [
+    "The Eiffel Tower is located in Paris, France and was completed in 1889.",
+    "Photosynthesis converts sunlight, water, and carbon dioxide into glucose and oxygen.",
+    "Docker containers share the host kernel but isolate the filesystem and processes.",
+    "The Great Barrier Reef is the world's largest coral reef system, off Australia.",
+    "Python's asyncio enables cooperative multitasking with coroutines and event loops.",
+    "Mount Everest, at 8849 meters, is Earth's highest mountain above sea level.",
+    "Vaccines train the immune system to recognize pathogens without causing disease.",
+    "The Rosetta Stone was key to deciphering Egyptian hieroglyphs.",
+    "TCP guarantees ordered, reliable delivery; UDP trades reliability for latency.",
+    "Beethoven composed his Ninth Symphony while almost completely deaf.",
+    "Chlorophyll gives plants their green color by absorbing red and blue light.",
+    "The Suez Canal connects the Mediterranean Sea to the Red Sea.",
+    "Rust's borrow checker prevents data races at compile time.",
+    "Honey never spoils due to its low moisture content and acidity.",
+    "The Turing test evaluates a machine's ability to exhibit human-like intelligence."
+  ],
+  "queries": [
+    {"q": "How do plants make food from light?", "expect": [1, 10]},
+    {"q": "famous landmark in the French capital", "expect": [0]},
+    {"q": "tallest peak on the planet", "expect": [5]},
+    {"q": "networking protocol reliability tradeoffs", "expect": [8]},
+    {"q": "memory safety in systems programming languages", "expect": [12]}
+  ]
+}

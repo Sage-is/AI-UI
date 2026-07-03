@@ -961,6 +961,7 @@
 			>
 				<div class="">
 					<input
+						data-cy="chat-file-input"
 						bind:this={filesInputElement}
 						bind:files={inputFiles}
 						type="file"

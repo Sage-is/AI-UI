@@ -18,8 +18,9 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import math
+import random
 
-import numpy as np
 import uvicorn
 from fastapi import FastAPI
 from pydantic import BaseModel
@@ -39,16 +40,19 @@ class EmbeddingRequest(BaseModel):
 
 
 def _vector(text: str, dim: int) -> list[float]:
-    """Deterministic, L2-normalized pseudo-embedding for a piece of text."""
+    """Deterministic, L2-normalized pseudo-embedding for a piece of text.
+
+    Pure stdlib (8.I.2: numpy left the base rootstock — the mock must run on
+    the bare Bonsai™). random.Random reproducibility is documented stable
+    across CPython versions. Vectors differ from the earlier numpy-seeded
+    implementation; smoke collections are always freshly created, so no
+    cross-version collection reuse exists for the mock.
+    """
     seed = int.from_bytes(hashlib.sha256(text.encode("utf-8")).digest()[:8], "big")
-    rng = np.random.default_rng(seed)
-    vec = rng.standard_normal(dim).astype(np.float32)
-    norm = float(np.linalg.norm(vec)) or 1.0
-    vec = vec / norm
-    # Native python float per element — numpy float32 scalars trip the
-    # downstream vector-store and JSON validators (same reason as the
-    # _embed_chroma path in retrieval/utils.py).
-    return [float(x) for x in vec]
+    rng = random.Random(seed)
+    vec = [rng.gauss(0.0, 1.0) for _ in range(dim)]
+    norm = math.sqrt(sum(x * x for x in vec)) or 1.0
+    return [x / norm for x in vec]
 
 
 @app.get("/health")

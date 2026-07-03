@@ -200,6 +200,7 @@
 
 								<div style="--fx:1 1 0%">
 									<input
+										data-cy="add-user-name"
 										style="--w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 	class="disabled:text-gray-500 dark:disabled:text-gray-500"
 										type="text"
@@ -218,6 +219,7 @@
 
 								<div style="--fx:1 1 0%">
 									<input
+										data-cy="add-user-email"
 										style="--w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 	class="disabled:text-gray-500 dark:disabled:text-gray-500"
 										type="email"
@@ -233,6 +235,7 @@
 
 								<div style="--fx:1 1 0%">
 									<input
+										data-cy="add-user-password"
 										style="--w:100%; --size:0.8rem; --bgc:transparent; --oe:none"
 	class="disabled:text-gray-500 dark:disabled:text-gray-500"
 										type="password"
@@ -294,6 +297,7 @@
 								? ' cursor-not-allowed'
 								: ''}"
 							type="submit"
+							data-cy="add-user-submit"
 							disabled={loading}
 						>
 							{$i18n.t('Save')}

@@ -63,8 +63,19 @@ COPY app/static/assets/custom.css /app/build/assets/custom.css
 #     consumers (Leaderboard.svelte, kokoro.worker.ts) set
 #     env.backends.onnx.wasm.wasmPaths = '/wasm/', served from /app/build/wasm
 #     (22MB saved). Keep /app/build/wasm itself!
+#   8.I.2 — three payloads leave the image entirely, each returns as a Sprig™:
+#   - /app/static-runtime/fonts (59MB CJK Noto): PDF-export only (backend
+#     pdf_generator.py + frontend pdf-style.css) → export-document Sprig™.
+#     UI fonts live in /app/static/assets/fonts, untouched.
+#   - /app/build/pyodide (62MB): code-interpreter feature → code-pyodide
+#     Sprig™; workers 404 gracefully until grafted.
+#   - /app/build/wasm (22MB): onnxruntime-web for Leaderboard + kokoro TTS →
+#     browser-ml Sprig™.
 COPY app/static/ /app/static-runtime/
-RUN rm -rf /app/static-runtime/pyodide && \
+RUN rm -rf /app/static-runtime/pyodide \
+      /app/static-runtime/fonts \
+      /app/build/pyodide \
+      /app/build/wasm && \
     rm -f /app/build/_app/immutable/assets/ort-wasm-*.wasm
 
 
@@ -164,7 +175,12 @@ RUN rm -f /usr/local/bin/python /usr/local/bin/python3 /usr/local/bin/python3.11
 #   - ml_packages (data-volume install via wizard) — transitional: the 2.4
 #     bundle replaces this with a signed tarball pulled into the data volume.
 RUN printf 'import sys, os\nfor _p in ("/usr/local/lib/python3.11/site-packages", "/app/backend/data/ml_packages"):\n    if os.path.isdir(_p) and _p not in sys.path:\n        sys.path.append(_p)\n' \
-    > /usr/lib/python3.11/sitecustomize.py
+    > /usr/lib/python3.11/sitecustomize.py && \
+    # Pre-create the overlay dir so sitecustomize ALWAYS puts it on sys.path:
+    # lazily-imported Sprig™ payloads (fpdf, langchain) then work immediately
+    # after graft — no restart. (vector-chroma still restarts: its import
+    # bindings freeze at boot in retrieval/vector/factory.py.)
+    mkdir -p /usr/local/lib/python3.11/site-packages
 
 # Install `uv` for the runtime ML wizard install. Pinned so a 0.x breaking
 # change cannot ship via the base image. The release artifact name uses the
@@ -208,6 +224,11 @@ WORKDIR /app/backend
 ## Environment variables ##
 # LANG parity with the former python:3.11-slim base (Wolfi sets no default)
 ENV LANG=C.UTF-8
+# One font location for both consumers: backend fpdf (env.py FONTS_DIR) and
+# frontend pdf-style.css (/static/fonts URL). The export-document Sprig™
+# delivers the CJK set here; env.py's default points at the backend package
+# dir, which never ships fonts.
+ENV FONTS_DIR=/app/static/fonts
 ENV ENV=prod \
     PORT=8080 \
     STATIC_DIR=/app/static \

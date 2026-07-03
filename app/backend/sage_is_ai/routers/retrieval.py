@@ -29,9 +29,50 @@ from pydantic import BaseModel
 import tiktoken
 
 
-from langchain.text_splitter import RecursiveCharacterTextSplitter, TokenTextSplitter
-from langchain_text_splitters import MarkdownHeaderTextSplitter
+# Text splitters ride the rag-loaders Sprig™ (langchain + langchain-community
+# leave the base rootstock; langchain_core stays — it is the interface layer
+# Document/BaseLoader/BaseRetriever that the rest of the codebase subclasses).
+try:
+    from langchain.text_splitter import (
+        RecursiveCharacterTextSplitter,
+        TokenTextSplitter,
+    )
+    from langchain_text_splitters import MarkdownHeaderTextSplitter
+except ModuleNotFoundError:
+    RecursiveCharacterTextSplitter = TokenTextSplitter = None
+    MarkdownHeaderTextSplitter = None
 from langchain_core.documents import Document
+
+
+def _require_text_splitters():
+    """Re-attempt the splitter imports at call time so a freshly grafted
+    rag-loaders Sprig™ works without a restart (overlay dir is on sys.path
+    from boot). invalidate_caches() is load-bearing: sprig tars are packed
+    with a fixed --mtime, so extraction leaves the overlay dir's mtime
+    unchanged and FileFinder would otherwise serve its stale boot-time
+    listing forever."""
+    global RecursiveCharacterTextSplitter, TokenTextSplitter
+    global MarkdownHeaderTextSplitter
+    if RecursiveCharacterTextSplitter is None:
+        import importlib
+
+        importlib.invalidate_caches()
+        try:
+            from langchain.text_splitter import (
+                RecursiveCharacterTextSplitter as _rc,
+                TokenTextSplitter as _tk,
+            )
+            from langchain_text_splitters import MarkdownHeaderTextSplitter as _md
+        except ModuleNotFoundError:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=(
+                    "Document chunking requires the rag-loaders Sprig™ — "
+                    "graft it in Admin → Sprigs."
+                ),
+            )
+        RecursiveCharacterTextSplitter, TokenTextSplitter = _rc, _tk
+        MarkdownHeaderTextSplitter = _md
 
 from sage_is_ai.models.files import FileModel, Files
 from sage_is_ai.models.knowledge import Knowledges
@@ -1124,6 +1165,7 @@ def save_docs_to_vector_db(
                 raise ValueError(ERROR_MESSAGES.DUPLICATE_CONTENT)
 
     if split:
+        _require_text_splitters()
         if request.app.state.config.TEXT_SPLITTER in ["", "character"]:
             text_splitter = RecursiveCharacterTextSplitter(
                 chunk_size=request.app.state.config.CHUNK_SIZE,

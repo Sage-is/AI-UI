@@ -8,10 +8,43 @@ from concurrent.futures import ThreadPoolExecutor
 import time
 
 from urllib.parse import quote
-from huggingface_hub import snapshot_download
-from langchain.retrievers import ContextualCompressionRetriever, EnsembleRetriever
-from langchain_community.retrievers import BM25Retriever
+
+# huggingface_hub + the langchain/langchain-community retrievers ride Sprigs™
+# (hf stack with the embedding overlays, retrievers with rag-loaders);
+# langchain_core stays in the base rootstock.
+try:
+    from langchain.retrievers import (
+        ContextualCompressionRetriever,
+        EnsembleRetriever,
+    )
+    from langchain_community.retrievers import BM25Retriever
+except ModuleNotFoundError:
+    ContextualCompressionRetriever = EnsembleRetriever = BM25Retriever = None
 from langchain_core.documents import Document
+
+
+def _require_hybrid_retrievers():
+    """Re-attempt the retriever imports at call time so a freshly grafted
+    rag-loaders Sprig™ works without a restart."""
+    global ContextualCompressionRetriever, EnsembleRetriever, BM25Retriever
+    if BM25Retriever is None:
+        import importlib
+
+        # Load-bearing: sprig tars pack a fixed --mtime — see retrieval.py.
+        importlib.invalidate_caches()
+        try:
+            from langchain.retrievers import (
+                ContextualCompressionRetriever as _cc,
+                EnsembleRetriever as _en,
+            )
+            from langchain_community.retrievers import BM25Retriever as _bm
+        except ModuleNotFoundError:
+            raise RuntimeError(
+                "Hybrid search requires the rag-loaders Sprig™ — "
+                "graft it in Admin → Sprigs (or disable hybrid search)."
+            )
+        ContextualCompressionRetriever, EnsembleRetriever = _cc, _en
+        BM25Retriever = _bm
 
 from sage_is_ai.config import VECTOR_DB
 from sage_is_ai.retrieval.vector.factory import VECTOR_DB_CLIENT
@@ -126,6 +159,7 @@ def query_doc_with_hybrid_search(
     hybrid_bm25_weight: float,
 ) -> dict:
     try:
+        _require_hybrid_retrievers()
         log.debug(f"query_doc_with_hybrid_search:doc {collection_name}")
         bm25_retriever = BM25Retriever.from_texts(
             texts=collection_result.documents[0],
@@ -750,6 +784,10 @@ def get_model_path(model: str, update_model: bool = False):
 
     # Attempt to query the huggingface_hub library to determine the local path and/or to update
     try:
+        # Lazy: huggingface_hub rides the embedding Sprig™ overlays / wizard
+        # ml_packages — only the sentence-transformers download path needs it.
+        from huggingface_hub import snapshot_download
+
         model_repo_path = snapshot_download(**snapshot_kwargs)
         log.debug(f"model_repo_path: {model_repo_path}")
         return model_repo_path
