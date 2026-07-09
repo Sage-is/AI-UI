@@ -10,8 +10,12 @@ Exposes the minimal OpenAI-compatible surface the Rootstock™ dispatch expects:
 Vectors are deterministic (seeded from a sha256 of the input text) so retrieval is
 reproducible across restarts in smoke tests. No model weights, no network, no GPU.
 
-DEFERRED (graft #2+): real model weights, sigstore-signed tar.zst packaging, oras
-pull, structured stderr log forwarding to the Rootstock™.
+This stays the deterministic mock (smoke + zero-dep fallback). Real cultivars are
+served by embedding_server.py (ONNX / sentence-transformers) or a static
+llama-server binary (GGUF), delivered via OCI artifact (see artifact.py).
+
+DEFERRED for the subsystem: sigstore/cosign signing of artifacts, structured stderr
+log forwarding to the Rootstock™ (server children are currently DEVNULL'd).
 """
 
 from __future__ import annotations

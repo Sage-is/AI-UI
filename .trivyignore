@@ -1,0 +1,14 @@
+# Trivy vuln-scan suppressions for the audit-deps pre-commit hook.
+# One CVE per entry; state why it's safe to ignore and when to revisit.
+
+# langchain-core 0.3.86: path traversal in legacy load_prompt()/
+# load_prompt_from_config() (langchain_core.prompts.loading). Not called
+# anywhere in this codebase (grep for `load_prompt` across app/backend
+# returns nothing) — unreachable in this app. Fixed only in 1.2.22, which
+# requires langchain>=... langchain-core<1.0.0 to be dropped; both pinned
+# sprig-side packages (langchain==0.3.30, langchain-community==0.3.27,
+# see app/backend/requirements.txt:51-56) require langchain-core<1.0.0 on
+# PyPI, so bumping breaks the RAG/sprig stack. Revisit when the sprig-side
+# langchain stack is upgraded past 0.3.x as a coordinated major bump
+# (tracked in TODO.md, Repo Hygiene & Security).
+CVE-2026-34070

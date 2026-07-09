@@ -1,24 +1,39 @@
-"""SprigSupervisor — minimal runtime grafting for the first-graft walking skeleton.
+"""SprigSupervisor — runtime grafting of Rootstock™ capabilities.
 
 Mirrors the BridgeManager lifecycle shape (``start`` / ``shutdown`` + a registry
-dict) but manages OS child processes. It grafts exactly one capability — a local
-embedding mock — by spawning it as a loopback subprocess and polling ``/health``
-until ready.
+dict) but manages OS child processes and on-disk overlays. Grafts a capability by
+either (a) spawning a loopback subprocess (embedding cultivars: mock, ONNX,
+onnx-transformer, or a static llama-server binary) and polling ``/health`` until
+ready, or (b) pulling + sha256-verifying + extracting an OCI artifact into a target
+("deliver" sprigs: vector-chroma, rag-loaders, export-document, code-pyodide,
+browser-ml, media-ffmpeg, backup-rclone, dev-svelte).
 
-Intentionally minimal (Phase 8.0 / Decision #19). DEFERRED until graft #2:
-``oras`` pull / sigstore verify, restart-with-backoff + health-watch loop,
-``state.json`` crash-recovery, prune / topgraft / revive, multi-entry catalog,
-multi-worker support, prior-config snapshot/restore, structured log capture.
+SHIPPED: the 15-entry CATALOG (11 capabilities, ALL zero-egress at graft time —
+the last live-pull entry, all-MiniLM-onnx, was retired 2026-07-05), ``oras``
+OCI-artifact delivery (see artifact.py), prune, top-graft (one cultivar rooted
+per server capability: embedding/reranker/stt), and durable grafts —
+start() reconciles from a volume-resident ``state.json`` so a graft survives a
+Rootstock™ restart, re-extracting deliver overlays from the volume-cached tar and
+re-spawning embedding cultivars offline. One worker owns the reconcile (flock).
+Revive is not a separate op — re-grafting a wilted name re-roots it through graft().
+
+DEFERRED: sigstore/cosign signing (sha256 pin is the current trust anchor),
+restart-with-backoff health-watch, full multi-worker support (one worker spawns
+children; the per-worker catalog view can still differ), structured child-log
+capture (server children are DEVNULL'd, so a failed graft's stderr is not surfaced).
 """
 
 from __future__ import annotations
 
 import asyncio
+import fcntl
+import json
 import logging
 import os
 import socket
 import sys
 import time
+from pathlib import Path
 
 import requests
 
@@ -67,20 +82,17 @@ class SprigSupervisor:
             "dim": _MOCK_EMBEDDING_DIM,
             "ready_timeout_s": 15.0,
         },
-        "all-MiniLM-onnx": {
-            "capability": "embedding",
-            "server": "embedding",
-            "backend": "onnx",
-            "model": "all-MiniLM-L6-v2",
-            "dim": 384,  # same width as the mock -> no collection migration
-            "ready_timeout_s": 120.0,  # first graft pulls ~80MB ONNX weights
-        },
+        # all-MiniLM-onnx (live chroma-S3/HF pull) was RETIRED 2026-07-05: it
+        # spawned the byte-identical child to minilm-onnx-inhoused below, and
+        # after any inhoused graft it silently served from the seeded cache
+        # anyway. The catalog is the allowlist — keeping it kept an
+        # admin-clickable ~80MB third-party egress on a zero-egress deployment.
         "minilm-onnx-inhoused": {
             "capability": "embedding",
             "server": "embedding",
             "backend": "onnx",
             "model": "all-MiniLM-L6-v2",
-            "dim": 384,  # same width as mock + graft-2 ONNX -> no reindex
+            "dim": 384,  # same width as the mock -> no reindex on swap
             "ready_timeout_s": 60.0,  # weights pre-seeded by oras pull, no S3 download
             # --- graft #3: OCI-artifact offline delivery (in-housed weights) ---
             "delivery": "oci-artifact",
@@ -184,6 +196,52 @@ class SprigSupervisor:
             "tag": "v1",
             "insecure": True,
             "binary_sha256": "16f01a8d37e0e0ced47d0faef2b64de69d072f81399ac0c8b7065d72c459cdec",
+        },
+        # Reranker cultivar — cross-encoder relevance scoring for hybrid search.
+        # Same static-PIE llama-server (b9859) as e5-large-gguf, in --rerank
+        # mode: /v1/rerank speaks the Jina/Cohere contract the existing
+        # ExternalReranker client already parses (retrieval/models/external.py).
+        # ONE binary + ONE model file, zero Python deps in the child. -ub/-c
+        # 2048: each (query, doc) pair must fit one ubatch (non-causal encoder);
+        # default CHUNK_SIZE chunks fit comfortably.
+        "bge-reranker-v2-m3-gguf": {
+            "capability": "reranker",
+            "server": "llama-binary",
+            "model": "BAAI/bge-reranker-v2-m3 (GGUF Q8_0)",
+            "dim": 0,  # not an embedding; no collection width binding
+            "gguf": "model.gguf",
+            "server_args": ["--rerank", "-ub", "2048", "-c", "2048"],
+            "delivery": "oci-artifact",
+            "seed": "model-dir",
+            "sentinel": "model.gguf",
+            "ready_timeout_s": 240.0,
+            "repo": "local-registry:5000/sprig-reranker-bge-gguf",
+            "tag": "v1",
+            "insecure": True,
+            "binary_sha256": "7c84c1d90f3eb217bff7f414569dafcd8b129731d023d308559f115f6143056f",
+        },
+        # STT cultivar — static whisper.cpp whisper-server + ggml base
+        # (multilingual, q8_0). Serves /v1/audio/transcriptions, which is
+        # EXACTLY where audio.py's STT_ENGINE="openai" client already POSTs —
+        # zero client changes. Kills the last local-STT HuggingFace pull.
+        "whisper-base-ggml": {
+            "capability": "stt",
+            "server": "whisper-binary",
+            "model": "whisper base multilingual (ggml q8_0)",
+            "dim": 0,
+            "ggml": "model.bin",
+            "delivery": "oci-artifact",
+            "seed": "model-dir",
+            "sentinel": "model.bin",
+            "ready_timeout_s": 120.0,
+            "post_graft_note": (
+                "Local speech-to-text active. For browser voice notes "
+                "(webm/opus), also graft media-ffmpeg."
+            ),
+            "repo": "local-registry:5000/sprig-stt-whisper-base",
+            "tag": "v1",
+            "insecure": True,
+            "binary_sha256": "5d570534a7f4524759ef1c9e4fa0fc5ea30652c0c7bd9008c732716582ebc641",
         },
         # RAG engines — langchain + langchain-community + numpy + format-loader
         # deps (pypdf, docx2txt, rank_bm25) as a site-packages overlay. The
@@ -297,14 +355,164 @@ class SprigSupervisor:
     def __init__(self, app):
         self.app = app
         self._sprigs: dict[str, SprigHandle] = {}
+        # Single-owner reconcile lock fd, held for the process lifetime (multi-worker
+        # guard). None until start() acquires it; released in shutdown().
+        self._reconcile_lock_fd: int | None = None
+        # Suppresses state.json writes while reconcile is re-grafting, so a sprig
+        # that fails to come up this boot stays in the desired-state for next boot.
+        self._reconciling = False
 
     async def start(self) -> None:
-        # No autostart in the skeleton; the supervisor acts only on explicit graft.
-        log.info("SprigSupervisor ready (no sprigs auto-grafted)")
+        """Restore grafts recorded on the data volume (state.json) so a grafted
+        capability survives a Rootstock™ restart. Exactly one worker reconciles
+        (spawns children); other workers skip via the non-blocking lock."""
+        workers = os.getenv("UVICORN_WORKERS", "1")
+        if not self._acquire_reconcile_lock():
+            log.info(
+                "another worker owns Sprig™ reconcile (UVICORN_WORKERS=%s); "
+                "this worker will not spawn children",
+                workers,
+            )
+            return
+        if workers not in ("", "1"):
+            log.warning(
+                "UVICORN_WORKERS=%s: Sprig™ child processes are spawned by ONE "
+                "worker; the grafted view (GET /catalog) may differ per worker. "
+                "Single-owner reconcile keeps the capability itself correct.",
+                workers,
+            )
+        await self._reconcile()
+        log.info("SprigSupervisor ready")
 
     async def shutdown(self) -> None:
         for name in list(self._sprigs):
             await self._terminate(name)
+        if self._reconcile_lock_fd is not None:
+            try:
+                os.close(self._reconcile_lock_fd)  # releases the flock
+            except OSError:
+                pass
+            self._reconcile_lock_fd = None
+
+    # --- durable graft state (survives a Rootstock™ restart) -------------------
+
+    def _state_path(self) -> Path:
+        """state.json lives on the DATA volume so it survives container recreation."""
+        from sage_is_ai.env import DATA_DIR
+
+        return Path(DATA_DIR) / "sage-is" / "sprigs" / "state.json"
+
+    def _read_state(self) -> list[dict]:
+        path = self._state_path()
+        if not path.exists():
+            return []
+        try:
+            data = json.loads(path.read_text())
+            return data.get("grafted", []) if isinstance(data, dict) else []
+        except (OSError, ValueError) as exc:
+            log.warning("could not read sprig state.json: %s", exc)
+            return []
+
+    def _persist_state(self) -> None:
+        """Write the durable graft list (name/capability/tag/kind — NOT ephemeral
+        ports or pids) to the volume. No-op during reconcile so a boot that fails to
+        restore one sprig doesn't drop it from the desired-state."""
+        if self._reconciling:
+            return
+        entries = [
+            {
+                "name": name,
+                "capability": h.capability,
+                "tag": self.CATALOG.get(name, {}).get("tag"),
+                "kind": (
+                    "deliver"
+                    if self.CATALOG.get(name, {}).get("server") == "deliver"
+                    else "server"
+                ),
+            }
+            for name, h in self._sprigs.items()
+        ]
+        path = self._state_path()
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            tmp = path.with_suffix(".json.tmp")
+            tmp.write_text(json.dumps({"grafted": entries}, indent=2))
+            tmp.replace(path)  # atomic
+        except OSError as exc:
+            log.warning("could not persist sprig state.json: %s", exc)
+
+    def _acquire_reconcile_lock(self) -> bool:
+        """Exclusive, non-blocking lock so exactly ONE worker reconciles/spawns.
+        Held for the process lifetime (released in shutdown). Returns True if this
+        worker owns reconcile; False if another worker holds it or locking failed."""
+        lock_path = self._state_path().parent / ".reconcile.lock"
+        try:
+            lock_path.parent.mkdir(parents=True, exist_ok=True)
+            fd = os.open(str(lock_path), os.O_RDWR | os.O_CREAT, 0o644)
+        except OSError as exc:
+            log.warning("could not open Sprig™ reconcile lock (%s); skipping restore", exc)
+            return False
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except (OSError, BlockingIOError):
+            os.close(fd)
+            return False
+        self._reconcile_lock_fd = fd
+        return True
+
+    async def _reconcile(self) -> None:
+        """Re-graft everything state.json says should be grafted, from the volume
+        (offline — cached tar / volume-resident weights). Best-effort per entry."""
+        entries = self._read_state()
+        if not entries:
+            return
+        log.info("reconciling %d grafted Sprig(s)™ from state.json", len(entries))
+        self._reconciling = True
+        try:
+            for entry in entries:
+                name = entry.get("name")
+                cap = entry.get("capability")
+                if not name:
+                    continue
+                if name not in self.CATALOG:
+                    # Image upgrade retired this entry. The capability's config
+                    # was already backstop-reset at import; tell the operator
+                    # WHY it came back un-grafted instead of skipping silently.
+                    log.warning(
+                        "state.json lists Sprig™ '%s' (%s) which this image's "
+                        "catalog no longer carries — skipping. Graft a current "
+                        "%s cultivar from Admin → Sprigs.",
+                        name, cap, cap,
+                    )
+                    continue
+                try:
+                    handle = await self.graft(name, cap)
+                    # Server capabilities each own a config slot that must be
+                    # re-pointed at the FRESH loopback port after re-spawn.
+                    if handle.process is not None:
+                        if cap == "embedding":
+                            from sage_is_ai.sprigs.embedding_dispatch import (
+                                point_embedding_at,
+                            )
+
+                            point_embedding_at(self.app, handle)
+                        elif cap == "reranker":
+                            from sage_is_ai.sprigs.reranker_dispatch import (
+                                point_reranker_at,
+                            )
+
+                            point_reranker_at(self.app, handle)
+                        elif cap == "stt":
+                            from sage_is_ai.sprigs.stt_dispatch import (
+                                point_stt_at,
+                            )
+
+                            point_stt_at(self.app, handle)
+                    log.info("reconciled Sprig™ '%s'", name)
+                except Exception as exc:  # noqa: BLE001 — best-effort restore
+                    log.warning("failed to reconcile Sprig™ '%s': %s", name, exc)
+        finally:
+            self._reconciling = False
 
     def handles(self) -> dict[str, dict]:
         """Serializable view of currently-grafted Sprigs™ for the catalog API."""
@@ -342,6 +550,19 @@ class SprigSupervisor:
 
         if server == "embedding":
             backend = spec.get("backend", "onnx")
+
+            # The find_spec pre-checks below run in THIS (parent) process, whose
+            # import-system directory listings were cached at boot — BEFORE a
+            # vector-chroma delivery extracted its overlay into site-packages.
+            # Reproducible tars carry a fixed mtime, so the stale FileFinder cache
+            # never notices the new packages (the 8.I.2 trap; every retry-import
+            # helper already invalidates). Without this, "graft vector-chroma →
+            # graft an onnx cultivar" falsely fails until a restart, even though
+            # the cultivar CHILD is a fresh python that imports the overlay fine.
+            import importlib
+
+            importlib.invalidate_caches()
+
             if backend == "sentence-transformers":
                 # Fail fast + clearly on a slim Rootstock™ rather than spawning a
                 # child that dies on `import torch` (whose reason is in DEVNULL'd stderr).
@@ -373,10 +594,14 @@ class SprigSupervisor:
                     m for m in needed if importlib.util.find_spec(m) is None
                 ]
                 if missing:
+                    # No restart needed for THIS retry — invalidate_caches above
+                    # makes the overlay visible as soon as vector-chroma delivers.
+                    # (Document search / the vector DB client still needs its
+                    # restart; that contract is vector-chroma's post_graft_note.)
                     raise ValueError(
                         f"cultivar '{name}' needs {', '.join(missing)} — the ML "
                         f"runtime rides with the vector-chroma Sprig™. Graft "
-                        f"vector-chroma first (restart to activate), then retry."
+                        f"vector-chroma first, then retry."
                     )
             args = [
                 "sage_is_ai.sprigs.embedding_server",
@@ -394,19 +619,37 @@ class SprigSupervisor:
         if server == "llama-binary":
             # GGUF cultivar (8.I.3, Gate A+B passed): ONE static-PIE llama-server
             # binary + ONE model file from the artifact — zero Python deps in the
-            # child, runs on any libc. Pooling + normalization come from GGUF
-            # metadata; /v1/embeddings is natively OpenAI-shaped; /health gates
-            # readiness (503 while the model loads). "{artifact_dir}" is
-            # substituted after artifact.ensure() in graft().
+            # child, runs on any libc. /health gates readiness (503 while the
+            # model loads). "{artifact_dir}" is substituted after artifact.ensure()
+            # in graft(). Mode/tuning args come from the catalog's server_args so
+            # one binary serves embedding (--embeddings) AND reranking (--rerank);
+            # the default keeps e5-large-gguf's argv byte-identical.
             return (
                 [
                     "{artifact_dir}/llama-server",
                     "-m", "{artifact_dir}/" + spec.get("gguf", "model.gguf"),
-                    "--embeddings",
                     "--host", "127.0.0.1",
                     "--port", "{port}",
-                    "-ub", "512",
-                    "-c", "512",
+                    *spec.get("server_args", ["--embeddings", "-ub", "512", "-c", "512"]),
+                ],
+                ready_timeout,
+            )
+
+        if server == "whisper-binary":
+            # STT cultivar: static whisper.cpp whisper-server + ggml model — the
+            # same one-binary-one-model shape as llama-binary. --inference-path
+            # makes it serve {base_url}/audio/transcriptions (base_url ends in
+            # /v1), which is EXACTLY where audio.py's STT_ENGINE="openai" client
+            # already POSTs multipart {file}. /health is 200-when-ready /
+            # 503-while-loading, same as llama-server — the poller needs nothing.
+            return (
+                [
+                    "{artifact_dir}/whisper-server",
+                    "-m", "{artifact_dir}/" + spec.get("ggml", "model.bin"),
+                    "--host", "127.0.0.1",
+                    "--port", "{port}",
+                    "--inference-path", "/v1/audio/transcriptions",
+                    *spec.get("server_args", ["-l", "auto"]),
                 ],
                 ready_timeout,
             )
@@ -438,6 +681,7 @@ class SprigSupervisor:
             state="delivered",
         )
         self._sprigs[name] = handle
+        self._persist_state()
         log.info("delivered sprig '%s' -> %s", name, target)
         return handle
 
@@ -484,8 +728,8 @@ class SprigSupervisor:
                 "HF_HUB_OFFLINE": "1",
                 "TRANSFORMERS_OFFLINE": "1",
             }
-            if spec.get("server") == "llama-binary":
-                # Binary+GGUF cultivar: paths ride in argv, not env.
+            if spec.get("server") in ("llama-binary", "whisper-binary"):
+                # Binary+model cultivar: paths ride in argv, not env.
                 argv = [a.replace("{artifact_dir}", served) for a in argv]
             elif spec.get("backend") == "onnx-transformer":
                 # served == the extracted model dir (model.onnx + tokenizer.json)
@@ -494,25 +738,26 @@ class SprigSupervisor:
                 # served == the seeded chroma cache dir (MiniLM DefaultEmbeddingFunction)
                 child_env["SPRIG_EMBEDDING_CACHE_DIR"] = served
 
-        # TOP-GRAFT: the Rootstock™ has a single RAG_EMBEDDING_* config + one
-        # EMBEDDING_FUNCTION, so only one embedding cultivar may be rooted at a
-        # time. Terminate any OTHER rooted embedding sprig BEFORE spawning the new
-        # one — frees its port deterministically, no process/port leak. If the new
-        # graft then fails its health check, the except below prunes the new one,
-        # leaving zero embedding sprigs rooted (the honest state).
-        if capability == "embedding":
+        # TOP-GRAFT: the Rootstock™ holds ONE config slot per server capability
+        # (RAG_EMBEDDING_*, RAG_RERANKING_*/RAG_EXTERNAL_RERANKER_*, STT_*), so
+        # only one cultivar per capability may be rooted at a time. Terminate any
+        # OTHER rooted same-capability sprig BEFORE spawning the new one — frees
+        # its port deterministically, no process/port leak. If the new graft then
+        # fails its health check, the except below prunes the new one, leaving
+        # zero cultivars of that capability rooted (the honest state).
+        if capability in ("embedding", "reranker", "stt"):
             for other in [
                 n
                 for n, h in list(self._sprigs.items())
-                if n != name and h.capability == "embedding"
+                if n != name and h.capability == capability
             ]:
-                log.info("top-grafting: pruning prior embedding sprig '%s'", other)
+                log.info("top-grafting: pruning prior %s sprig '%s'", capability, other)
                 await self._terminate(other)
 
         port = _reserve_loopback_port()
-        # llama-binary sprigs exec the delivered static binary directly; python
+        # Binary sprigs exec the delivered static binary directly; python
         # cultivars run as `python -m <module>` children.
-        if spec.get("server") == "llama-binary":
+        if spec.get("server") in ("llama-binary", "whisper-binary"):
             exec_argv = [a.format(port=port) for a in argv]
         else:
             exec_argv = [sys.executable, "-m", *[a.format(port=port) for a in argv]]
@@ -545,6 +790,7 @@ class SprigSupervisor:
             await self._terminate(name)
             raise
 
+        self._persist_state()
         log.info(
             "grafted sprig '%s' (pid %s) on %s", name, handle.process.pid, handle.base_url
         )
@@ -558,6 +804,7 @@ class SprigSupervisor:
         """
         present = name in self._sprigs
         await self._terminate(name)
+        self._persist_state()
         return present
 
     async def _wait_until_healthy(

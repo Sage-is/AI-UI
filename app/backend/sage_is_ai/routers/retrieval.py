@@ -508,28 +508,18 @@ async def trigger_model_download(
                     sys.path.append(ml_target)
                 print("[AI Engine] ML packages installed", flush=True)
 
-            # Step 2: Install chromadb if VECTOR_DB is "chroma" and not yet available
+            # Step 2: chromadb if VECTOR_DB is "chroma" — Sprig™-first (the
+            # vector-chroma artifact: volume-cached tar → registry), pinned-pip
+            # fallback. ONE shared implementation with the try.sage boot path
+            # (sprigs/vector_bootstrap.py); it owns the cleanup, sys.path, and
+            # factory re-init this block used to hand-roll.
             if VECTOR_DB == "chroma":
-                try:
-                    import chromadb  # noqa: F401
-                except ImportError:
-                    print("[AI Engine] Installing chromadb...", flush=True)
-                    await run_in_threadpool(
-                        subprocess.run,
-                        ["uv", "pip", "install", "chromadb",
-                         "--target", ml_target,
-                         "--break-system-packages"],
-                        check=True,
-                    )
-                    # Append (not insert) for the same reason as the main ML
-                    # install above: system packages must keep priority.
-                    import sys
-                    if ml_target not in sys.path:
-                        sys.path.append(ml_target)
-                    # Re-initialize vector DB client now that chromadb is available
-                    from sage_is_ai.retrieval.vector import factory
-                    factory.VECTOR_DB_CLIENT = factory.Vector.get_vector(VECTOR_DB)
-                    print("[AI Engine] chromadb installed", flush=True)
+                from sage_is_ai.sprigs.vector_bootstrap import ensure_chromadb
+
+                if await ensure_chromadb(request.app):
+                    print("[AI Engine] chromadb ready", flush=True)
+                else:
+                    print("[AI Engine] chromadb bootstrap FAILED", flush=True)
 
             # Embedding model
             if "embedding" in form_data.components and dl_status["embedding"] == "downloading":

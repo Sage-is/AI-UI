@@ -700,15 +700,12 @@ async def lifespan(app: FastAPI):
     #      install on PYTHONPATH via `start.sh`).
     from sage_is_ai.utils.try_sage_tool_servers import register_try_sage_tool_servers
     from sage_is_ai.utils.try_sage_hidden_connections import register_hidden_connections
-    from sage_is_ai.utils.try_sage_engine_install import (
-        ensure_try_sage_vector_backend,
-    )
     from sage_is_ai.utils.try_sage_seed import seed_try_sage
     await register_try_sage_tool_servers(app)
     register_hidden_connections(app)
     await seed_try_sage(app)
-    if ENABLE_TRY_SAGE:
-        asyncio.create_task(ensure_try_sage_vector_backend(app))
+    # NOTE: ensure_try_sage_vector_backend now fires AFTER the SprigSupervisor
+    # is up (below) — its bootstrap is Sprig™-first and needs the supervisor.
 
     # Phase 2c — seed the EndpointHealth registry with every configured
     # external URL before the first user request arrives. Fire-and-forget
@@ -754,12 +751,24 @@ async def lifespan(app: FastAPI):
     else:
         app.state.bridge_manager = None
 
-    # Initialize Sprig™ Supervisor (Phase 8.0 first graft) — grafts capabilities
-    # at runtime as loopback child processes. No autostart; acts on explicit graft.
+    # Initialize Sprig™ Supervisor — grafts capabilities at runtime as loopback
+    # child processes / overlays; start() reconciles durable grafts from the
+    # volume-resident state.json.
     from sage_is_ai.sprigs.supervisor import SprigSupervisor
 
     app.state.sprig_supervisor = SprigSupervisor(app)
     await app.state.sprig_supervisor.start()
+
+    # try.sage vector backend — AFTER the supervisor so the Sprig™-first
+    # chromadb bootstrap (vector-chroma: volume tar → registry → pip fallback)
+    # can graft. Background task: lifespan returns immediately; on success the
+    # helper re-runs seed_try_sage so trial KBs ingest without operator action.
+    if ENABLE_TRY_SAGE:
+        from sage_is_ai.utils.try_sage_engine_install import (
+            ensure_try_sage_vector_backend,
+        )
+
+        asyncio.create_task(ensure_try_sage_vector_backend(app))
 
     yield
 
@@ -1170,6 +1179,35 @@ def _build_embedding_function(ef):
     )
 
 
+# Restart-safety BACKSTOP for grafted embedding Sprigs™. This runs at import,
+# BEFORE the lifespan's SprigSupervisor boot reconcile re-grafts from state.json
+# and re-points the config at a fresh loopback port (supervisor.py). A grafted
+# embedding Sprig™ persists RAG_EMBEDDING_ENGINE="openai" +
+# RAG_OPENAI_API_KEY="sprig-local" (sprigs/embedding_dispatch.py) pointing at a
+# loopback subprocess that does NOT survive a Rootstock™ restart. Without this,
+# the block below would rebuild the embedding function against the dead
+# 127.0.0.1 port and report embedding "ready" until reconcile runs — and stay
+# broken-but-"ready" if reconcile fails (worker without the flock, corrupt
+# state.json, missing artifact). The "sprig-local" sentinel is set only by a
+# graft, so this never touches a real user RAG endpoint. Reset the dispatch so
+# it fails clean and shows un-ready; reconcile (or a manual re-graft from
+# Admin → Sprigs) restores it.
+if (
+    app.state.config.RAG_EMBEDDING_ENGINE == "openai"
+    and app.state.config.RAG_OPENAI_API_KEY == "sprig-local"
+):
+    log.warning(
+        "Embedding was grafted to a Sprig™ that did not survive restart "
+        "(RAG_OPENAI_API_BASE_URL=%s is a dead loopback); resetting embedding "
+        "dispatch. Re-graft an embedding cultivar from Admin → Sprigs.",
+        app.state.config.RAG_OPENAI_API_BASE_URL,
+    )
+    app.state.config.RAG_EMBEDDING_ENGINE = ""
+    app.state.config.RAG_EMBEDDING_MODEL = ""
+    app.state.config.RAG_OPENAI_API_BASE_URL = ""
+    app.state.config.RAG_OPENAI_API_KEY = ""
+    app.state.ef = None
+
 if app.state.ef is not None:
     app.state.EMBEDDING_FUNCTION = _build_embedding_function(app.state.ef)
     app.state.MODEL_DOWNLOAD_STATUS["embedding"] = "ready"
@@ -1178,6 +1216,26 @@ elif app.state.config.RAG_EMBEDDING_ENGINE in ["openai", "ollama", "azure_openai
     # API-based embedding engines don't need local model downloads
     app.state.EMBEDDING_FUNCTION = _build_embedding_function(None)
     app.state.MODEL_DOWNLOAD_STATUS["embedding"] = "ready"
+
+# Restart-safety BACKSTOP for grafted reranker Sprigs™ — same reasoning as the
+# embedding backstop above: the graft persisted engine="external" + the
+# "sprig-local" key pointing at a loopback child that did not survive restart.
+# Reset so hybrid search degrades to "no rerank" honestly; the supervisor's
+# boot reconcile (or a manual re-graft) restores it.
+if (
+    app.state.config.RAG_RERANKING_ENGINE == "external"
+    and app.state.config.RAG_EXTERNAL_RERANKER_API_KEY == "sprig-local"
+):
+    log.warning(
+        "Reranking was grafted to a Sprig™ that did not survive restart "
+        "(RAG_EXTERNAL_RERANKER_URL=%s); resetting reranking dispatch.",
+        app.state.config.RAG_EXTERNAL_RERANKER_URL,
+    )
+    app.state.config.RAG_RERANKING_ENGINE = ""
+    app.state.config.RAG_RERANKING_MODEL = ""
+    app.state.config.RAG_EXTERNAL_RERANKER_URL = ""
+    app.state.config.RAG_EXTERNAL_RERANKER_API_KEY = ""
+    app.state.rf = None
 
 app.state.RERANKING_FUNCTION = get_reranking_function(
     app.state.config.RAG_RERANKING_ENGINE,
@@ -1294,6 +1352,26 @@ app.state.config.TTS_AZURE_SPEECH_OUTPUT_FORMAT = AUDIO_TTS_AZURE_SPEECH_OUTPUT_
 app.state.faster_whisper_model = None
 app.state.speech_synthesiser = None
 app.state.speech_speaker_embeddings_dataset = None
+
+# Restart-safety BACKSTOP for grafted STT Sprigs™ — same reasoning as the
+# embedding/reranker backstops: engine="openai" + the "sprig-local" key mark a
+# graft-owned config pointing at a whisper-server child that did not survive
+# restart. Reset so STT fails clean (engine "" = local path with a clear
+# ImportError on a slim rootstock) instead of POSTing a dead loopback; the
+# supervisor's boot reconcile (or a manual re-graft) restores it.
+if (
+    app.state.config.STT_ENGINE == "openai"
+    and app.state.config.STT_OPENAI_API_KEY == "sprig-local"
+):
+    log.warning(
+        "STT was grafted to a Sprig™ that did not survive restart "
+        "(STT_OPENAI_API_BASE_URL=%s); resetting STT dispatch.",
+        app.state.config.STT_OPENAI_API_BASE_URL,
+    )
+    app.state.config.STT_ENGINE = ""
+    app.state.config.STT_MODEL = ""
+    app.state.config.STT_OPENAI_API_BASE_URL = ""
+    app.state.config.STT_OPENAI_API_KEY = ""
 
 
 ########################################

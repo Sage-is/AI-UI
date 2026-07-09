@@ -25,9 +25,14 @@ Loading happens in a background thread so uvicorn binds the port immediately and
 out within the cultivar's ``ready_timeout_s``. On a load failure the process exits
 non-zero so the supervisor's boot-crash check fails the graft fast.
 
-DEFERRED (graft #3 — the north-star "no end-user HuggingFace/pip pulls"):
-sigstore-verified oras tar.zst weight+runtime delivery, offline/air-gapped caching,
-structured stderr log forwarding. Runtime download is the graft-#2 bridge only.
+SHIPPED (the north-star "no end-user HuggingFace/pip pulls"): oras tar.zst weight
+delivery + offline/air-gapped caching (artifact.py seeds the cache and graft() sets
+OFFLINE_MODE/HF_HUB_OFFLINE). No catalog entry pulls live anymore — the last one
+(``all-MiniLM-onnx``) was retired 2026-07-05; every cultivar serves from the
+sha256-verified artifact.
+
+DEFERRED: sigstore/cosign signing of the artifact, and structured stderr log
+forwarding to the Rootstock™ (this server child is DEVNULL'd by the supervisor).
 """
 
 from __future__ import annotations

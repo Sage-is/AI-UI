@@ -41,5 +41,7 @@ class GraftResponse(BaseModel):
     base_url: Optional[str] = None
     embedding_engine: Optional[str] = None
     embedding_model: Optional[str] = None
+    reranking_engine: Optional[str] = None
+    reranking_model: Optional[str] = None
     warning: Optional[str] = None
     delivered: Optional[bool] = None

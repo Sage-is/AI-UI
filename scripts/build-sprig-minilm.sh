@@ -13,7 +13,9 @@
 #   and set the catalog entry repo -> ghcr.io/sage-is/... , insecure: False.
 #
 # Requirements: oras, zstd, tar, and sha256sum|shasum on PATH; the 6 ONNX files
-# present (run a graft-#2 ONNX graft once to populate the chroma cache).
+# present. Populate once on the BUILD host (this is where the one-time pull
+# lives, never the operator's box):
+#   python3 -c 'from chromadb.utils.embedding_functions import DefaultEmbeddingFunction as D; D()(["seed"])'
 set -euo pipefail
 
 REGISTRY="${REGISTRY:-localhost:5000}"

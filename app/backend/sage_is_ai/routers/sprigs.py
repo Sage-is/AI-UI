@@ -1,19 +1,25 @@
-"""Graft API — Phase 8.0 first-graft walking skeleton.
+"""Graft API — the Rootstock™ Graft Union™ surface.
 
-Minimal Rootstock™ Graft Union™ surface: a catalog read and a single graft action
-that spawns a local embedding Sprig™ and points the existing OpenAI-compatible
-embedding dispatch at it. Mounted under ``/api/v1/retrieval/sprigs`` to match the
-Rootstock Spec™ URL contract.
+Mounted under ``/api/v1/retrieval/sprigs`` to match the Rootstock Spec™ URL
+contract. Admin-gated. Endpoints:
+    GET  /catalog  -> the catalog + currently-grafted handles
+    POST /graft    -> graft a capability: spawn an embedding Sprig™ and point the
+                      OpenAI-compatible dispatch at it, or deliver a "deliver" sprig
+                      (oras pull + sha256 verify + extract). Top-grafts an embedding
+                      cultivar over any prior one. Revive = re-graft the same name.
+    POST /prune    -> terminate + remove a grafted Sprig™; resets the embedding
+                      dispatch when the pruned sprig was the active cultivar.
 
-DEFERRED (graft #2+): prune / topgraft / revive, oras pull + sigstore verify,
-service-endpoint delivery, variety selection. See Decision #19.
+Grafts survive a Rootstock™ restart: the supervisor persists a volume-resident
+state.json and reconciles on boot (see supervisor.py). DEFERRED: sigstore/cosign
+verify (sha256 pin is the trust anchor), service-endpoint delivery, catalog variety
+selection.
 """
 
 import logging
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 
-from sage_is_ai.diagnostics import endpoint_health
 from sage_is_ai.retrieval.utils import get_embedding_function
 from sage_is_ai.sprigs.models import GraftRequest, GraftResponse, PruneRequest
 from sage_is_ai.utils.auth import get_admin_user
@@ -65,6 +71,37 @@ async def graft_sprig(
             detail=f"Graft failed: {e}",
         )
 
+    # Reranker server child: point the EXISTING external-reranker dispatch at the
+    # grafted loopback /v1/rerank (shared with boot reconcile — no drift).
+    if handle.capability == "reranker":
+        from sage_is_ai.sprigs.reranker_dispatch import point_reranker_at
+
+        cfg = request.app.state.config
+        point_reranker_at(request.app, handle)
+        return GraftResponse(
+            status=True,
+            name=handle.name,
+            capability=handle.capability,
+            base_url=handle.base_url,
+            reranking_engine=cfg.RAG_RERANKING_ENGINE,
+            reranking_model=cfg.RAG_RERANKING_MODEL,
+            warning=entry.get("post_graft_note"),
+        )
+
+    # STT server child: point the EXISTING openai-compatible STT client at the
+    # grafted whisper-server (shared with boot reconcile — no drift).
+    if handle.capability == "stt":
+        from sage_is_ai.sprigs.stt_dispatch import point_stt_at
+
+        point_stt_at(request.app, handle)
+        return GraftResponse(
+            status=True,
+            name=handle.name,
+            capability=handle.capability,
+            base_url=handle.base_url,
+            warning=entry.get("post_graft_note"),
+        )
+
     # Non-embedding sprigs ("deliver": dev/build toolchain, vector DB, binaries)
     # don't touch the embedding dispatch — report the delivery and return. A
     # catalog post_graft_note (e.g. "restart to activate") surfaces as a warning.
@@ -77,39 +114,14 @@ async def graft_sprig(
             warning=entry.get("post_graft_note"),
         )
 
-    # Point the existing embedding dispatch at the grafted loopback Sprig™.
-    # Assigning to app.state.config.* auto-persists via PersistentConfig.save().
+    # Point the existing embedding dispatch at the grafted loopback Sprig™. Shared
+    # with the supervisor boot reconcile (sprigs/embedding_dispatch.py) so a graft
+    # from a request and a re-graft on restart are byte-identical. Sets the RAG_*
+    # config (auto-persists), rebuilds EMBEDDING_FUNCTION, and records diagnostics.
+    from sage_is_ai.sprigs.embedding_dispatch import point_embedding_at
+
     cfg = request.app.state.config
-    previous_url = cfg.RAG_OPENAI_API_BASE_URL
-    if previous_url and previous_url != handle.base_url:
-        log.info("graft replacing previous embedding base url %s", previous_url)
-    cfg.RAG_EMBEDDING_ENGINE = "openai"
-    cfg.RAG_EMBEDDING_MODEL = handle.model
-    cfg.RAG_OPENAI_API_BASE_URL = handle.base_url
-    cfg.RAG_OPENAI_API_KEY = "sprig-local"  # the mock ignores the key
-
-    # Rebuild the embedding function (mirrors POST /embedding/update at
-    # routers/retrieval.py:323-356). engine is hardcoded "openai" here, so we
-    # pass the openai url/key directly instead of the nested-ternary selection.
-    # Lazy import avoids any router import-order fragility.
-    from sage_is_ai.routers.retrieval import get_ef
-
-    request.app.state.ef = get_ef(cfg.RAG_EMBEDDING_ENGINE, cfg.RAG_EMBEDDING_MODEL)
-    request.app.state.EMBEDDING_FUNCTION = get_embedding_function(
-        cfg.RAG_EMBEDDING_ENGINE,
-        cfg.RAG_EMBEDDING_MODEL,
-        request.app.state.ef,
-        cfg.RAG_OPENAI_API_BASE_URL,
-        cfg.RAG_OPENAI_API_KEY,
-        cfg.RAG_EMBEDDING_BATCH_SIZE,
-        azure_api_version=None,
-    )
-
-    # Surface the grafted row in diagnostics immediately. (A real embedding would
-    # otherwise register it on first call as capability "embedding/openai".)
-    if getattr(request.app.state, "MODEL_DOWNLOAD_STATUS", None):
-        request.app.state.MODEL_DOWNLOAD_STATUS["embedding"] = "ready"
-    endpoint_health.record_success(handle.base_url, capability="sprig:embedding")
+    point_embedding_at(request.app, handle)
 
     # Dimension-swap guard (best-effort, non-blocking): warn if we just top-grafted
     # away an embedding cultivar of a different width. Collections built at the old
@@ -153,6 +165,15 @@ async def prune_sprig(
         h.get("capability") == "embedding"
         and h.get("base_url") == cfg.RAG_OPENAI_API_BASE_URL
     )
+    was_active_reranker = (
+        h.get("capability") == "reranker"
+        # ExternalReranker persists the FULL endpoint (base_url + /rerank).
+        and cfg.RAG_EXTERNAL_RERANKER_URL == (h.get("base_url") or "") + "/rerank"
+    )
+    was_active_stt = (
+        h.get("capability") == "stt"
+        and h.get("base_url") == cfg.STT_OPENAI_API_BASE_URL
+    )
 
     await supervisor.prune(form_data.name)
 
@@ -163,6 +184,10 @@ async def prune_sprig(
 
         cfg.RAG_EMBEDDING_ENGINE = ""
         cfg.RAG_EMBEDDING_MODEL = ""
+        # Clear the loopback URL + sprig-local sentinel key too, so no stale graft
+        # marker survives to confuse the boot restart-safety guard (main.py).
+        cfg.RAG_OPENAI_API_BASE_URL = ""
+        cfg.RAG_OPENAI_API_KEY = ""
         request.app.state.ef = get_ef("", "")
         request.app.state.EMBEDDING_FUNCTION = get_embedding_function(
             "", "", request.app.state.ef, "", "", cfg.RAG_EMBEDDING_BATCH_SIZE
@@ -171,9 +196,41 @@ async def prune_sprig(
             request.app.state.MODEL_DOWNLOAD_STATUS["embedding"] = "pending"
         log.info("pruned active embedding sprig '%s'; dispatch reset", form_data.name)
 
+    if was_active_reranker:
+        # Hybrid search null-checks RERANKING_FUNCTION, so this degrades to
+        # "no rerank" — the honest state — instead of scoring against a dead port.
+        cfg.RAG_RERANKING_ENGINE = ""
+        cfg.RAG_RERANKING_MODEL = ""
+        cfg.RAG_EXTERNAL_RERANKER_URL = ""
+        cfg.RAG_EXTERNAL_RERANKER_API_KEY = ""
+        request.app.state.rf = None
+        request.app.state.RERANKING_FUNCTION = None
+        log.info("pruned active reranker sprig '%s'; reranking reset", form_data.name)
+
+    if was_active_stt:
+        # Engine "" = the local faster-whisper path, which on a slim rootstock
+        # fails with a clear ImportError instead of POSTing a dead loopback.
+        cfg.STT_ENGINE = ""
+        cfg.STT_MODEL = ""
+        cfg.STT_OPENAI_API_BASE_URL = ""
+        cfg.STT_OPENAI_API_KEY = ""
+        request.app.state.faster_whisper_model = None
+        if getattr(request.app.state, "MODEL_DOWNLOAD_STATUS", None):
+            import os as _os
+
+            _wdir = _os.environ.get("WHISPER_MODEL_DIR", "")
+            request.app.state.MODEL_DOWNLOAD_STATUS["whisper"] = (
+                "ready"
+                if _wdir and _os.path.isdir(_wdir) and _os.listdir(_wdir)
+                else "pending"
+            )
+        log.info("pruned active stt sprig '%s'; STT dispatch reset", form_data.name)
+
     return {
         "status": True,
         "name": form_data.name,
         "pruned": True,
         "embedding_reset": was_active_embedding,
+        "reranking_reset": was_active_reranker,
+        "stt_reset": was_active_stt,
     }

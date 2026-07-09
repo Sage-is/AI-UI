@@ -32,7 +32,9 @@ echo "$WCT" | grep -q wasm && no "real wasm still shipped" || ok "wasm not shipp
 
 TOK=$(curl -s -X POST "$BASE/api/v1/auths/signup" -H 'Content-Type: application/json' -d '{"name":"S8","email":"s8@sage.is","password":"sprig-smoke-pw-123"}' | jq -r '.token // empty')
 AUTH="Authorization: Bearer $TOK"; [ -n "$TOK" ] && ok "admin signup (PyJWT alive)" || { no "signup"; exit 1; }
-G(){ curl -s --max-time 300 -X POST "$BASE/api/v1/retrieval/sprigs/graft" -H "$AUTH" -H 'Content-Type: application/json' -d "{\"name\":\"$1\",\"capability\":\"$2\"}"; }
+# 600s ceiling: by section 9 the rootstock runs several grafted server children
+# while pulling the biggest artifacts (dev-svelte ~1.1GB) — 300s flaked under load.
+G(){ curl -s --max-time 600 -X POST "$BASE/api/v1/retrieval/sprigs/graft" -H "$AUTH" -H 'Content-Type: application/json' -d "{\"name\":\"$1\",\"capability\":\"$2\"}"; }
 PDF(){ curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE/api/v1/utils/pdf" -H "$AUTH" -H 'Content-Type: application/json' -d '{"title":"t","messages":[{"role":"user","content":"hello sprig"}]}'; }
 
 echo "== 2. clean degradation pre-graft =="
@@ -49,12 +51,55 @@ GURL=$(echo "$GG" | jq -r '.base_url // empty')
 DIM=$(docker exec "$ROOT" sh -c "curl -s ${GURL}/embeddings -H 'Content-Type: application/json' -d '{\"input\":[\"hello gguf sprig\"]}' | jq '.data[0].embedding | length'")
 [ "$DIM" = "1024" ] && ok "1024-dim vector from the static binary (no python in child)" || no "gguf embed dim: $DIM"
 
+echo "== 2d. reranker cultivar: /v1/rerank from the static llama-server (bare rootstock) =="
+RR=$(G bge-reranker-v2-m3-gguf reranker)
+echo "$RR" | jq -e '.status==true' >/dev/null 2>&1 && ok "reranker grafts pre-vector (zero python deps)" || no "reranker graft: $(echo "$RR" | head -c 200)"
+RURL=$(echo "$RR" | jq -r '.base_url // empty')
+RES=$(X "curl -s ${RURL}/rerank -H 'Content-Type: application/json' -d '{\"model\":\"reranker\",\"query\":\"what is a panda?\",\"documents\":[\"the kernel reserves an ephemeral loopback port\",\"The giant panda is a bear species endemic to China.\"],\"top_n\":2}'")
+RTOP=$(echo "$RES" | jq -r '.results | sort_by(-.relevance_score) | .[0].index' 2>/dev/null)
+[ "$RTOP" = "1" ] && ok "rerank orders the panda doc first (relevance contract)" || no "rerank ordering: $(echo "$RES" | head -c 200)"
+RCFG=$(curl -s "$BASE/api/v1/retrieval/config" -H "$AUTH")
+echo "$RCFG" | jq -e '.RAG_RERANKING_ENGINE=="external" and (.RAG_EXTERNAL_RERANKER_URL|endswith("/rerank"))' >/dev/null 2>&1 \
+  && ok "reranking config points at the sprig" || no "reranking config not pointed: $(echo "$RCFG" | jq -c '{RAG_RERANKING_ENGINE,RAG_EXTERNAL_RERANKER_URL}' 2>/dev/null | head -c 150)"
+PRR=$(curl -s -X POST "$BASE/api/v1/retrieval/sprigs/prune" -H "$AUTH" -H 'Content-Type: application/json' -d '{"name":"bge-reranker-v2-m3-gguf"}')
+echo "$PRR" | jq -e '.reranking_reset==true' >/dev/null 2>&1 && ok "prune resets reranking dispatch" || no "prune reranking reset: $(echo "$PRR" | head -c 150)"
+curl -s "$BASE/api/v1/retrieval/config" -H "$AUTH" | jq -e '.RAG_RERANKING_ENGINE==""' >/dev/null 2>&1 \
+  && ok "reranking engine cleared post-prune" || no "stale reranking engine after prune"
+G bge-reranker-v2-m3-gguf reranker | jq -e '.status==true' >/dev/null 2>&1 && ok "re-graft (revive) reranker" || no "reranker revive failed"
+
+echo "== 2e. stt cultivar: whisper-server transcription (bare rootstock) =="
+X 'python3 -c "
+import math, struct, wave
+w = wave.open(\"/tmp/gate.wav\", \"w\")
+w.setnchannels(1); w.setsampwidth(2); w.setframerate(16000)
+w.writeframes(b\"\".join(struct.pack(\"<h\", int(12000*math.sin(2*math.pi*440*t/16000))) for t in range(16000)))
+w.close()"' && ok "test wav generated in-container" || no "wav generation failed"
+ST=$(G whisper-base-ggml stt)
+echo "$ST" | jq -e '.status==true' >/dev/null 2>&1 && ok "whisper sprig grafts (static binary, zero python deps)" || no "stt graft: $(echo "$ST" | head -c 200)"
+SURL=$(echo "$ST" | jq -r '.base_url // empty')
+SDIRECT=$(X "curl -s ${SURL}/audio/transcriptions -F file=@/tmp/gate.wav -F response_format=json")
+echo "$SDIRECT" | jq -e 'has("text")' >/dev/null 2>&1 && ok "whisper-server answers with {text} (direct)" || no "direct transcription: $(echo "$SDIRECT" | head -c 150)"
+# type= matters: the endpoint gates on content_type audio/* and curl would
+# otherwise send application/octet-stream -> 400 before reaching the sprig.
+SAPP=$(X "curl -s -o /dev/null -w '%{http_code}' -X POST http://localhost:8080/api/v1/audio/transcriptions -H '$AUTH' -F 'file=@/tmp/gate.wav;type=audio/wav'")
+[ "$SAPP" = "200" ] && ok "app /audio/transcriptions 200 through the grafted sprig" || no "app transcription: HTTP $SAPP"
+curl -s "$BASE/api/v1/retrieval/models/status" -H "$AUTH" | jq -e '.models.whisper=="ready" or .whisper=="ready"' >/dev/null 2>&1 \
+  && ok "wizard whisper status ready (HF download skippable)" || no "whisper status not ready post-graft"
+
 echo "== 3. vector-chroma v2 (now carries numpy+tokenizers+hf) =="
 VR=$(G vector-chroma vector)
 echo "$VR" | jq -e '.delivered==true' >/dev/null 2>&1 && ok "vector-chroma v2 delivered" || no "vector delivery: $(echo "$VR" | head -c 200)"
 docker restart "$ROOT" >/dev/null
 for i in $(seq 1 120); do [ "$(curl -s -o /dev/null -w '%{http_code}' "$BASE/health" 2>/dev/null)" = "200" ] && break; sleep 2; done
 ok "restarted healthy"
+# Reconcile re-points every server capability grafted before the restart
+# (gguf embedding from 2b, reranker from 2d, stt from 2e) at FRESH ports.
+RCFG2=$(curl -s "$BASE/api/v1/retrieval/config" -H "$AUTH")
+echo "$RCFG2" | jq -e '.RAG_RERANKING_ENGINE=="external"' >/dev/null 2>&1 \
+  && ok "reranker re-pointed by boot reconcile" || no "reranker config lost across restart"
+ACFG2=$(curl -s "$BASE/api/v1/audio/config" -H "$AUTH")
+echo "$ACFG2" | jq -e '.stt.ENGINE=="openai" and (.stt.OPENAI_API_BASE_URL|startswith("http://127.0.0.1"))' >/dev/null 2>&1 \
+  && ok "stt re-pointed by boot reconcile" || no "stt config lost across restart: $(echo "$ACFG2" | jq -c '.stt' 2>/dev/null | head -c 150)"
 X 'python3 -c "import chromadb, numpy, tokenizers, huggingface_hub"' && ok "chromadb + numpy + tokenizers + hf via overlay" || no "overlay imports failed"
 
 echo "== 4. mock grafts; chunking blocked until rag-loaders =="
@@ -80,6 +125,18 @@ echo "== 6b. live top-graft swap: onnx -> gguf, same width, RAG keeps working ==
 G e5-large-gguf embedding | jq -e '.status==true' >/dev/null 2>&1 && ok "top-graft onnx->gguf" || no "gguf top-graft failed"
 PT=$(curl -s -X POST "$BASE/api/v1/retrieval/process/text" -H "$AUTH" -H 'Content-Type: application/json' -d '{"name":"g","content":"gguf serving the whole rag path now","collection_name":"e5col"}')
 echo "$PT" | jq -e '.status==true' >/dev/null 2>&1 && ok "process/text through gguf cultivar (1024-dim, no reindex)" || no "gguf rag: $(echo "$PT" | head -c 150)"
+
+echo "== 6c. minilm-onnx-inhoused: the chroma-onnx seed path (in-housed MiniLM) =="
+# The ONLY catalog entry using artifact.py's chroma-onnx seed mode (extract ->
+# _seed_chroma_cache -> DefaultEmbeddingFunction serves offline). NOT covered by
+# 6/6b (those are model-dir seeds). (all-MiniLM-onnx, the old live-pull twin of
+# this entry, was retired 2026-07-05 — the whole catalog is zero-egress now.)
+MI=$(G minilm-onnx-inhoused embedding)
+echo "$MI" | jq -e '.status==true' >/dev/null 2>&1 && ok "minilm-onnx-inhoused grafts (chroma-onnx seed)" || no "minilm graft: $(echo "$MI" | head -c 200)"
+MURL=$(echo "$MI" | jq -r '.base_url // empty')
+MDIM=$(X "curl -s ${MURL}/embeddings -H 'Content-Type: application/json' -d '{\"input\":[\"in-housed minilm\"]}' | jq '.data[0].embedding | length'")
+[ "$MDIM" = "384" ] && ok "384-dim vector from the seeded chroma cache (offline)" || no "minilm embed dim: $MDIM"
+X 'jq -e ".grafted | length > 0" /app/backend/data/sage-is/sprigs/state.json' >/dev/null 2>&1 && ok "state.json on the volume records grafts (restart durability)" || no "state.json missing/empty"
 
 echo "== 7. export-document graft — NO restart, pdf renders =="
 G export-document export | jq -e '.delivered==true' >/dev/null 2>&1 && ok "export-document delivered" || no "export delivery"

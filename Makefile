@@ -330,10 +330,37 @@ test_db_upgrade:
 wizard_smoke:
 	@scripts/wizard-smoke.sh $(IMAGE_NAME):$(IMAGE_TAG)
 
+## sprig_registry — idempotent: ensures the local OCI registry (dev-machine
+## artifact store for `oras`-delivered Sprigs™) is up on sage-network. Does
+## NOT seed it — a fresh registry is empty; see TODO.md for the packaging-
+## script gap (only sprig-embedding-minilm-onnx has a build script in git;
+## the other 11 catalog artifacts on this machine have no in-repo recipe).
+sprig_registry:
+	@$(CONTAINER_RUNTIME) network inspect sage-network >/dev/null 2>&1 || $(CONTAINER_RUNTIME) network create sage-network >/dev/null
+	@$(CONTAINER_RUNTIME) ps --format '{{.Names}}' | grep -qx local-registry || { \
+		echo "== starting local-registry (sage-network) =="; \
+		$(CONTAINER_RUNTIME) rm -f local-registry >/dev/null 2>&1 || true; \
+		$(CONTAINER_RUNTIME) run -d --name local-registry --network sage-network -p 5000:5000 registry:2 >/dev/null; \
+		for i in $$(seq 1 30); do curl -fsS http://localhost:5000/v2/ >/dev/null 2>&1 && break; sleep 0.5; done; \
+	}
+	@echo "local-registry: up ($$(curl -fsS http://localhost:5000/v2/_catalog 2>/dev/null || echo 'unreachable'))"
+
 ## sprig_smoke — the Sprig™ lifecycle gate: bare boot, clean 503s with graft
 ## pointers, every capability grafts back (fresh container each run).
-sprig_smoke:
+sprig_smoke: sprig_registry
 	@scripts/smoke/sprig-lifecycle.sh $(IMAGE_NAME):$(IMAGE_TAG)
+
+## sprig_durability — grafts survive a FULL container recreation, restored
+## offline from the data volume (state.json + boot reconcile + cached tar).
+## Stops local-registry mid-test to prove no-network restore; restarts it after.
+sprig_durability: sprig_registry
+	@scripts/smoke/sprig-durability.sh $(IMAGE_NAME):$(IMAGE_TAG)
+
+## sprig_publish — push every local sprig tag to ghcr.io/sage-is and GATE on
+## public visibility (fails with fix URLs for any non-public package; GitHub
+## has no API for the flip). Idempotent — run after any build-sprig-*.sh.
+sprig_publish: sprig_registry
+	@scripts/publish-sprigs.sh
 
 ## parity_gate — GGUF embedding cultivars vs sentence-transformers reference
 ## (Poka-Yoke: the Korean-probe canary; rerun on every llama.cpp tag bump).
@@ -346,6 +373,14 @@ parity_gate:
 e2e:
 	@scripts/e2e/run-cypress.sh $(IMAGE_NAME):$(IMAGE_TAG)
 
+## e2e_heavy — opt-in heavy cultivar grafts through the real admin UI:
+## bge-large-en-v1.5 (~600MB+ OCI artifact) top-grafted by minilm-onnx-inhoused
+## with the 1024→384 width warning asserted. Zero egress (registry-only) since
+## the all-MiniLM-onnx live-pull entry was retired 2026-07-05.
+## Deliberately in NO gauntlet — run it when you want the big ones proven.
+e2e_heavy: sprig_registry
+	@SPEC='cypress/e2e/heavy/*.cy.ts' scripts/e2e/run-cypress.sh $(IMAGE_NAME):$(IMAGE_TAG)
+
 e2e_watch:
 	@scripts/e2e/run-cypress-watch.sh $(IMAGE_NAME):$(IMAGE_TAG)
 
@@ -354,7 +389,7 @@ e2e_watch:
 ## activate with: git config core.hooksPath .githooks
 gauntlet: it_build sprig_smoke
 
-gauntlet_full: gauntlet parity_gate e2e
+gauntlet_full: gauntlet sprig_durability parity_gate e2e
 
 ## it_build_amd64 — build an amd64 image via buildx + --load.
 ##
@@ -791,7 +826,8 @@ lint:
 	signal_start signal_stop signal_logs signal_status \
 	install_dev scan scan_secrets scan_sast scan_deps scan_container scan_dast \
 	trivy_db_update lint test_db_upgrade test_db_fresh wizard_smoke \
-	it_build_amd64 cross_smoke release_smoke
+	it_build_amd64 cross_smoke release_smoke \
+	sprig_registry sprig_smoke sprig_durability sprig_publish parity_gate e2e e2e_watch e2e_heavy gauntlet gauntlet_full
 
 
 # Version Management with Git Flow

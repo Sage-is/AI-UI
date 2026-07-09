@@ -36,8 +36,10 @@
 			const res = await getSprigCatalog(localStorage.token);
 			catalog = res?.catalog ?? {};
 			grafted = res?.grafted ?? {};
-		} catch (e) {
-			toast.error($i18n.t('Failed to load Sprig catalog'));
+		} catch (e: any) {
+			// Surface the backend's reason (FastAPI throws {detail}) instead of a
+			// generic message — the detail carries the actual fix pointer.
+			toast.error(e?.detail ?? $i18n.t('Failed to load Sprig catalog'));
 		}
 		refreshing = false;
 	};
@@ -48,8 +50,14 @@
 			const res = await graftSprig(localStorage.token, { name, capability });
 			toast.success($i18n.t('Grafted {{name}}', { name }));
 			if (res?.warning) toast.warning(res.warning);
-		} catch (e) {
-			toast.error($i18n.t('Failed to graft {{name}}', { name }));
+		} catch (e: any) {
+			// The backend detail names the actual cause and fix (e.g. "cultivar
+			// needs numpy — graft vector-chroma first"). Show it, not just "Failed".
+			toast.error(
+				e?.detail
+					? `${$i18n.t('Failed to graft {{name}}', { name })}: ${e.detail}`
+					: $i18n.t('Failed to graft {{name}}', { name })
+			);
 		}
 		busyName = null;
 		await load();
@@ -65,8 +73,22 @@
 					$i18n.t('Embedding dispatch reset — graft a cultivar to restore document search.')
 				);
 			}
-		} catch (e) {
-			toast.error($i18n.t('Failed to prune {{name}}', { name }));
+			if (res?.reranking_reset) {
+				toast.info(
+					$i18n.t('Reranking reset — hybrid search runs without rerank until a reranker is grafted.')
+				);
+			}
+			if (res?.stt_reset) {
+				toast.info(
+					$i18n.t('Speech-to-text reset — graft an STT Sprig™ to restore local voice input.')
+				);
+			}
+		} catch (e: any) {
+			toast.error(
+				e?.detail
+					? `${$i18n.t('Failed to prune {{name}}', { name })}: ${e.detail}`
+					: $i18n.t('Failed to prune {{name}}', { name })
+			);
 		}
 		busyName = null;
 		await load();
@@ -82,7 +104,11 @@
 	});
 
 	$: entries = Object.entries(catalog) as [string, any][];
-	$: graftedCount = Object.values(grafted).filter((g: any) => g?.state === 'rooted').length;
+	// Count matches the cards' own "grafted" test (rooted || delivered) so the
+	// "{{grafted}} of {{total}}" line can't contradict the badges below it.
+	$: graftedCount = Object.values(grafted).filter(
+		(g: any) => g?.state === 'rooted' || g?.state === 'delivered'
+	).length;
 </script>
 
 <div class="flex flex-col gap-1 my-1.5">
@@ -107,7 +133,7 @@
 	</div>
 
 	{#if loaded && entries.length > 0}
-		<div class="text-xs text-gray-400 dark:text-gray-500">
+		<div class="text-xs text-gray-400 dark:text-gray-500" data-cy="sprigs-grafted-count">
 			{$i18n.t('{{grafted}} of {{total}} grafted', { grafted: graftedCount, total: entries.length })}
 		</div>
 	{/if}

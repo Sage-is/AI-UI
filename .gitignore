@@ -8,6 +8,7 @@
 !/.gitignore
 !/.gitleaks.toml
 !/.pre-commit-config.yaml
+!/.trivyignore
 !.todoscope-exclude.csv
 !.obsidian/
 !.obsidian/**

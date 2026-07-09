@@ -11,9 +11,13 @@ Proven against a LOCAL registry (localhost:5000, --plain-http). Production swap 
 ``ghcr.io/sage-is`` is a one-line catalog change (set ``insecure: False`` and
 ``oras login`` at deploy). See scripts/build-sprig-minilm.sh for the packaging side.
 
+The verified tar is cached on the DATA volume (keyed on tag), so a re-graft after a
+restart extracts offline with no network — the supervisor's boot reconcile relies on
+this to restore "deliver" overlays that live in the ephemeral container layer.
+
 DEFERRED to graft #3.1: cosign/sigstore keyless verify, multi-blob manifests,
-torch-cultivar bundling, restart/backoff/state.json. The sha256 pin + the image
-build audit trail is the trust anchor for this cut.
+torch-cultivar bundling. The sha256 pin + the image build audit trail is the trust
+anchor for this cut.
 """
 
 from __future__ import annotations
@@ -168,16 +172,80 @@ async def _seed_chroma_cache(extracted: Path, cache_dir: Path) -> None:
         )
 
 
-async def ensure(spec: dict, data_dir: Path, catalog_name: str) -> str:
-    """Pull → verify → extract → seed. Returns the chroma cache dir to serve from.
+async def _obtain_tar(spec: dict, root: Path, catalog_name: str) -> Path:
+    """Return a sha256-verified ``tar.zst`` for this cultivar, preferring the copy
+    already cached on the data volume over a network pull.
 
-    Idempotent: if the ONNX sentinel already exists in the cache, returns
-    immediately without touching the network (offline-safe restart / re-graft).
+    The cache path is keyed on the catalog ``tag`` (``<name>-<tag>.tar.zst`` under
+    the cultivar's volume-resident root). Consequences:
+
+    - **Restart durability / air-gap:** a re-graft after a container restart finds
+      the verified tar on the volume and extracts offline — no ``oras``, no network,
+      which is what makes "deliver" overlays (extracted into the ephemeral container
+      layer) survive a restart.
+    - **Tag-bump correctness:** bumping a cultivar's tag changes the cache key, so a
+      stale-tag tar is a cache miss and forces a fresh pull (fixes the old "sentinel
+      present ⇒ never re-pull" footgun for the tar side).
+
+    On a cache miss it pulls via ``oras``, verifies against the pin BEFORE the tar
+    enters the cache, promotes it to the stable path, and drops stale-tag caches.
+    """
+    repo = spec.get("repo")
+    tag = spec.get("tag", "latest")
+    expected_sha = spec.get("binary_sha256")
+    insecure = bool(spec.get("insecure", False))
+    if not repo or not expected_sha:
+        raise ArtifactError(
+            f"cultivar '{catalog_name}' delivery=oci-artifact requires "
+            f"'repo' and 'binary_sha256' in the catalog."
+        )
+
+    cached = root / f"{catalog_name}-{tag}.tar.zst"
+    if cached.exists():
+        try:
+            await _verify_sha256(cached, expected_sha)
+            log.warning(
+                "using volume-cached artifact for '%s' (%s); no network pull",
+                catalog_name, cached.name,
+            )
+            return cached
+        except ArtifactVerificationError:
+            log.warning(
+                "cached artifact for '%s' failed sha256; discarding and re-pulling",
+                catalog_name,
+            )
+            cached.unlink(missing_ok=True)
+
+    staging = root / ".staging"
+    if staging.exists():
+        shutil.rmtree(staging, ignore_errors=True)
+    staging.mkdir(parents=True, exist_ok=True)
+    tar_zst = await _pull(repo, tag, staging, insecure=insecure)
+    await _verify_sha256(tar_zst, expected_sha)  # gate BEFORE it enters the cache
+
+    # Promote to the stable cache path; drop stale-tag caches for this cultivar.
+    for old in root.glob(f"{catalog_name}-*.tar.zst"):
+        if old != cached:
+            old.unlink(missing_ok=True)
+    tar_zst.replace(cached)
+    shutil.rmtree(staging, ignore_errors=True)
+    return cached
+
+
+async def ensure(spec: dict, data_dir: Path, catalog_name: str) -> str:
+    """Obtain (cached-or-pull) → verify → extract → seed. Returns the path to serve.
+
+    Idempotent and offline-safe on restart/re-graft:
+    - weight cultivars (model-dir / chroma-onnx) extract onto the DATA volume, so
+      their sentinel survives a restart and we short-circuit with no work;
+    - "deliver" overlays (app-dir) extract into the ephemeral container layer, so on
+      restart the target is gone — we re-extract from the volume-cached tar
+      (``_obtain_tar``, no network) and re-stamp the delivered-tag marker.
 
     Raises ArtifactError subclasses; graft() maps these to a clear graft failure
     and prunes the half-grafted sprig.
     """
-    # Two seed modes:
+    # Two weight seed modes:
     #   "chroma-onnx" -> extract MiniLM weights into chromadb's cache; serve via the
     #                    onnx backend (DefaultEmbeddingFunction). Returns the cache dir.
     #   "model-dir"   -> extract model.onnx + tokenizer.json; serve via the
@@ -186,36 +254,35 @@ async def ensure(spec: dict, data_dir: Path, catalog_name: str) -> str:
     root = _artifact_root(data_dir, catalog_name)
     extract_dir = root / "extracted"
 
-    # "app-dir": deliver toolchain/assets straight into a target path (e.g. the
-    # tar carries node_modules/ and we extract it into /app). No server, no cache.
+    # "app-dir": deliver toolchain/assets into a container-layer target (e.g. the
+    # tar carries node_modules/ and we extract it into /app). The target is NOT on
+    # the data volume, so it vanishes on container recreation. The delivered-tag
+    # marker (on the volume) + the volume-cached tar let boot re-deliver offline; we
+    # re-deliver whenever the delivered tag != the catalog tag (restart or tag bump).
     if seed_mode == "app-dir":
         target = Path(spec.get("target", "/app"))
-        sentinel = target / spec.get("sentinel", "")
-        if spec.get("sentinel") and sentinel.exists():
-            log.warning("delivery '%s' already present at %s; skipping pull",
-                        catalog_name, sentinel)
-            return str(target)
-        repo = spec.get("repo")
+        sentinel_name = spec.get("sentinel", "")
+        sentinel = target / sentinel_name
         tag = spec.get("tag", "latest")
-        expected_sha = spec.get("binary_sha256")
-        insecure = bool(spec.get("insecure", False))
-        if not repo or not expected_sha:
-            raise ArtifactError(
-                f"cultivar '{catalog_name}' delivery=oci-artifact requires "
-                f"'repo' and 'binary_sha256'."
-            )
-        staging = root / ".staging"
-        if staging.exists():
-            shutil.rmtree(staging, ignore_errors=True)
-        staging.mkdir(parents=True, exist_ok=True)
-        tar_zst = await _pull(repo, tag, staging, insecure=insecure)
-        await _verify_sha256(tar_zst, expected_sha)
+        tag_marker = root / ".delivered-tag"
+        already = (
+            bool(sentinel_name)
+            and sentinel.exists()
+            and tag_marker.exists()
+            and tag_marker.read_text().strip() == tag
+        )
+        if already:
+            log.warning("delivery '%s' tag %s already present at %s; skipping",
+                        catalog_name, tag, sentinel)
+            return str(target)
+        tar_zst = await _obtain_tar(spec, root, catalog_name)
         await _extract(tar_zst, target)  # extract the packed tree into target
-        if spec.get("sentinel") and not sentinel.exists():
+        if sentinel_name and not sentinel.exists():
             raise ArtifactExtractionError(
                 f"delivery '{catalog_name}' missing {sentinel} after extract"
             )
-        log.warning("delivered '%s' from %s:%s -> %s", catalog_name, repo, tag, target)
+        tag_marker.write_text(tag)
+        log.warning("delivered '%s' tag %s -> %s", catalog_name, tag, target)
         return str(target)
 
     if seed_mode == "model-dir":
@@ -227,29 +294,35 @@ async def ensure(spec: dict, data_dir: Path, catalog_name: str) -> str:
         serve_path = _chroma_cache_dir(data_dir)
         sentinel = serve_path.joinpath(*_ONNX_SENTINEL)
 
-    if sentinel.exists():
+    # Weights live on the DATA volume: this sentinel survives a restart, so a
+    # re-graft short-circuits with no pull and no extract — but ONLY while the
+    # delivered tag matches the catalog. An image upgrade that bumps a weight
+    # cultivar's tag must re-pull, or the deployment silently serves the OLD
+    # weights forever (the upgrade-path gap: sentinel-only checks can't see a
+    # version change). Same `.delivered-tag` marker pattern as app-dir mode.
+    tag = spec.get("tag", "latest")
+    tag_marker = root / ".delivered-tag"
+    if (
+        sentinel.exists()
+        and tag_marker.exists()
+        and tag_marker.read_text().strip() == tag
+    ):
         log.warning(
-            "artifact already present for '%s' (%s); skipping pull", catalog_name, sentinel
+            "artifact already present for '%s' tag %s (%s); skipping pull",
+            catalog_name, tag, sentinel,
         )
         return str(serve_path)
-
-    repo = spec.get("repo")
-    tag = spec.get("tag", "latest")
-    expected_sha = spec.get("binary_sha256")
-    insecure = bool(spec.get("insecure", False))
-    if not repo or not expected_sha:
-        raise ArtifactError(
-            f"cultivar '{catalog_name}' delivery=oci-artifact requires "
-            f"'repo' and 'binary_sha256' in the catalog."
+    if sentinel.exists():
+        log.warning(
+            "artifact for '%s' is a different tag (want %s); re-pulling",
+            catalog_name, tag,
         )
 
-    staging = root / ".staging"
-    if staging.exists():
-        shutil.rmtree(staging, ignore_errors=True)
-    staging.mkdir(parents=True, exist_ok=True)
-
-    tar_zst = await _pull(repo, tag, staging, insecure=insecure)
-    await _verify_sha256(tar_zst, expected_sha)  # gate extraction on integrity
+    tar_zst = await _obtain_tar(spec, root, catalog_name)
+    # Wipe the old extract tree first so a tag upgrade can't leave stale files
+    # (e.g. an old tokenizer) mixed under the new weights.
+    if extract_dir.exists():
+        shutil.rmtree(extract_dir, ignore_errors=True)
     await _extract(tar_zst, extract_dir)
 
     if seed_mode == "model-dir":
@@ -258,15 +331,12 @@ async def ensure(spec: dict, data_dir: Path, catalog_name: str) -> str:
             raise ArtifactExtractionError(
                 f"artifact for '{catalog_name}' is missing {expected} (seed=model-dir)"
             )
-        log.warning(
-            "artifact extracted for '%s' from %s:%s -> %s",
-            catalog_name, repo, tag, extract_dir,
-        )
+        tag_marker.write_text(tag)
+        log.warning("artifact extracted for '%s' tag %s -> %s", catalog_name, tag, extract_dir)
         return str(extract_dir)
 
     cache_dir = _chroma_cache_dir(data_dir)
     await _seed_chroma_cache(extract_dir, cache_dir)
-    log.warning(
-        "artifact seeded for '%s' from %s:%s -> %s", catalog_name, repo, tag, cache_dir
-    )
+    tag_marker.write_text(tag)
+    log.warning("artifact seeded for '%s' tag %s -> %s", catalog_name, tag, cache_dir)
     return str(cache_dir)

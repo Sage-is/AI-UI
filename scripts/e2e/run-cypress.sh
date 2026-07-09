@@ -6,7 +6,10 @@
 #
 # Usage: scripts/e2e/run-cypress.sh [image]      (default sage-is/ai-ui:develop)
 #   KEEP=1        keep the rootstock container on failure (debugging)
-#   SPEC=<glob>   override spec selection (e.g. 'cypress/e2e/upstream/*.cy.ts')
+#   SPEC=<glob>   override spec selection (e.g. 'cypress/e2e/upstream/*.cy.ts').
+#                 Passed as --config specPattern=<glob>, NOT --spec: Cypress 15
+#                 intersects --spec with the config's top-level-only specPattern,
+#                 so subdir specs (upstream/, heavy/) are unreachable via --spec.
 #
 # The rootstock joins sage-network so deliver-sprigs can pull from
 # local-registry (vector-chroma toast test). Videos land in app/cypress/videos.
@@ -53,7 +56,7 @@ docker run --rm --network "$NET" \
   -v "$REPO/app:/e2e" -w /e2e \
   -e "CYPRESS_baseUrl=https://sage-e2e-tls:8443" \
   -e "CYPRESS_COMMERCIAL_RECOMMENDATIONS=0" \
-  "$CYPRESS_IMG" ${SPEC:+--spec "$SPEC"} "${REPORT_ARGS[@]}"
+  "$CYPRESS_IMG" ${SPEC:+--config "specPattern=$SPEC"} "${REPORT_ARGS[@]}"
 RC=$?
 set -e
 

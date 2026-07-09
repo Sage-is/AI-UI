@@ -3,9 +3,12 @@ import { defineConfig } from 'cypress';
 export default defineConfig({
 	e2e: {
 		baseUrl: 'http://localhost:8080',
-		// Top-level specs only. cypress/e2e/upstream/ holds inherited suites
-		// that need an Ollama backend — run them explicitly with
-		//   --spec 'cypress/e2e/upstream/*.cy.ts'
+		// Top-level specs only. Subdir suites are opt-in: cypress/e2e/upstream/
+		// (inherited suites needing an Ollama backend) and cypress/e2e/heavy/
+		// (big cultivar grafts — `make e2e_heavy`). NOTE: `--spec` cannot reach
+		// them (Cypress intersects it with specPattern); the runner overrides
+		// the pattern instead: SPEC='cypress/e2e/heavy/*.cy.ts' → --config
+		// specPattern=... (see scripts/e2e/run-cypress.sh).
 		specPattern: 'cypress/e2e/*.cy.{js,jsx,ts,tsx}',
 		// Grafts pull artifacts and flip UI state asynchronously; one retry
 		// absorbs timing flakes without hiding real regressions.
