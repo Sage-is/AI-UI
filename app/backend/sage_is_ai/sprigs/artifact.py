@@ -15,9 +15,17 @@ The verified tar is cached on the DATA volume (keyed on tag), so a re-graft afte
 restart extracts offline with no network — the supervisor's boot reconcile relies on
 this to restore "deliver" overlays that live in the ephemeral container layer.
 
-DEFERRED to graft #3.1: cosign/sigstore keyless verify, multi-blob manifests,
-torch-cultivar bundling. The sha256 pin + the image build audit trail is the trust
-anchor for this cut.
+Signing (graft #3.1, shipped): artifacts carry a minisign signature as a second
+file in the OCI artifact (``<tar>.minisig``), verified OFFLINE after the sha256
+gate and before extraction — see ``sprigs/minisign.py`` for the trust model and
+the sigstore-vs-minisign rationale. Policy: a present signature is always
+verified (fail-closed); a signature becomes REQUIRED per-entry via the catalog
+field ``signed: True`` or globally via ``SPRIG_REQUIRE_SIGNED=1``. The pinned
+public key ships in ``_DEFAULT_PUBKEY`` below (env ``SPRIG_MINISIGN_PUBKEY``
+overrides, and a catalog entry may pin its own ``pubkey`` — the hook a future
+marketplace needs for third-party publishers).
+
+DEFERRED: multi-blob manifests, torch-cultivar bundling.
 """
 
 from __future__ import annotations
@@ -25,10 +33,19 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import logging
+import os
 import shutil
 from pathlib import Path
 
+from sage_is_ai.sprigs.minisign import MinisignError, verify_file
+
 log = logging.getLogger("sprig.artifact")
+
+# The Sage.is artifact-signing public key (the one-line base64 form of a
+# minisign .pub). Ships with the image — same trust root as the sha256 pins.
+# Empty until the production keypair is generated ([MANUALLY], key custody is
+# the operator's); until then only entries/envs that opt in enforce signing.
+_DEFAULT_PUBKEY = ""
 
 # chromadb DefaultEmbeddingFunction reads Path.home()/.cache/chroma/onnx_models;
 # in-container $HOME/.cache/chroma is symlinked to DATA_DIR/cache/chroma (Dockerfile).
@@ -132,6 +149,68 @@ async def _verify_sha256(path: Path, expected: str) -> None:
     log.warning("sha256 OK for %s (%s)", path.name, actual)
 
 
+def _signing_policy(spec: dict) -> tuple[str, bool]:
+    """Resolve (pubkey, required) for one cultivar.
+
+    Precedence: catalog entry ``pubkey`` > ``SPRIG_MINISIGN_PUBKEY`` env >
+    the baked ``_DEFAULT_PUBKEY``. Required when the entry says ``signed: True``
+    or ``SPRIG_REQUIRE_SIGNED`` is set (a global ratchet for hardened deploys).
+    """
+    pubkey = (
+        spec.get("pubkey")
+        or os.environ.get("SPRIG_MINISIGN_PUBKEY", "").strip()
+        or _DEFAULT_PUBKEY
+    )
+    required = bool(spec.get("signed")) or os.environ.get(
+        "SPRIG_REQUIRE_SIGNED", ""
+    ).lower() in ("1", "true", "yes")
+    return pubkey, required
+
+
+async def _verify_signature(
+    tar_zst: Path, spec: dict, catalog_name: str
+) -> None:
+    """Enforce the signing policy on a sha256-verified tar. Fail-closed.
+
+    - Signature present + key pinned  -> verify (any failure refuses the graft).
+    - Signature present, no key       -> refuse if required, else loud warning.
+    - Signature missing               -> refuse if required, else no-op.
+    """
+    pubkey, required = _signing_policy(spec)
+    sig = tar_zst.parent / (tar_zst.name + ".minisig")
+
+    if not sig.exists():
+        if required:
+            raise ArtifactVerificationError(
+                f"cultivar '{catalog_name}' requires a signed artifact, but "
+                f"{tar_zst.name} has no .minisig. Refusing to extract. "
+                f"(Re-publish with scripts/sign-sprigs.sh.)"
+            )
+        return
+
+    if not pubkey:
+        if required:
+            raise ArtifactVerificationError(
+                f"cultivar '{catalog_name}' requires signature verification but "
+                f"no public key is pinned (catalog 'pubkey', "
+                f"SPRIG_MINISIGN_PUBKEY, or _DEFAULT_PUBKEY). Refusing."
+            )
+        log.warning(
+            "artifact for '%s' carries a signature but no public key is "
+            "pinned; signature NOT verified", catalog_name,
+        )
+        return
+
+    try:
+        comment = await asyncio.to_thread(verify_file, tar_zst, sig, pubkey)
+    except MinisignError as exc:
+        raise ArtifactVerificationError(
+            f"minisign verification failed for '{catalog_name}': {exc}. "
+            f"Refusing to extract (tampered artifact or wrong signing key)."
+        ) from exc
+    log.warning("minisign OK for %s (%s)", tar_zst.name, comment)
+
+
 async def _extract(tar_zst: Path, dest: Path) -> None:
     """Decompress + untar into dest (zstd via tar's compress-program shim)."""
     dest.mkdir(parents=True, exist_ok=True)
@@ -201,20 +280,32 @@ async def _obtain_tar(spec: dict, root: Path, catalog_name: str) -> Path:
         )
 
     cached = root / f"{catalog_name}-{tag}.tar.zst"
+    cached_sig = root / f"{catalog_name}-{tag}.tar.zst.minisig"
+    _, sig_required = _signing_policy(spec)
     if cached.exists():
-        try:
-            await _verify_sha256(cached, expected_sha)
+        if sig_required and not cached_sig.exists():
+            # The cache predates the signing requirement; the registry copy may
+            # be signed by now — fall through to a fresh pull instead of failing.
             log.warning(
-                "using volume-cached artifact for '%s' (%s); no network pull",
-                catalog_name, cached.name,
+                "cached artifact for '%s' has no signature but one is now "
+                "required; re-pulling", catalog_name,
             )
-            return cached
-        except ArtifactVerificationError:
-            log.warning(
-                "cached artifact for '%s' failed sha256; discarding and re-pulling",
-                catalog_name,
-            )
-            cached.unlink(missing_ok=True)
+        else:
+            try:
+                await _verify_sha256(cached, expected_sha)
+                await _verify_signature(cached, spec, catalog_name)
+                log.warning(
+                    "using volume-cached artifact for '%s' (%s); no network pull",
+                    catalog_name, cached.name,
+                )
+                return cached
+            except ArtifactVerificationError:
+                log.warning(
+                    "cached artifact for '%s' failed verification; discarding "
+                    "and re-pulling", catalog_name,
+                )
+                cached.unlink(missing_ok=True)
+                cached_sig.unlink(missing_ok=True)
 
     staging = root / ".staging"
     if staging.exists():
@@ -222,11 +313,22 @@ async def _obtain_tar(spec: dict, root: Path, catalog_name: str) -> Path:
     staging.mkdir(parents=True, exist_ok=True)
     tar_zst = await _pull(repo, tag, staging, insecure=insecure)
     await _verify_sha256(tar_zst, expected_sha)  # gate BEFORE it enters the cache
+    await _verify_signature(tar_zst, spec, catalog_name)  # same gate discipline
 
     # Promote to the stable cache path; drop stale-tag caches for this cultivar.
     for old in root.glob(f"{catalog_name}-*.tar.zst"):
         if old != cached:
             old.unlink(missing_ok=True)
+    for old in root.glob(f"{catalog_name}-*.tar.zst.minisig"):
+        if old != cached_sig:
+            old.unlink(missing_ok=True)
+    pulled_sig = staging / (tar_zst.name + ".minisig")
+    if pulled_sig.exists():
+        pulled_sig.replace(cached_sig)
+    else:
+        # No signature in this publish: drop any stale one so it can't be
+        # paired with the new tar (a mismatched pair must not look signed).
+        cached_sig.unlink(missing_ok=True)
     tar_zst.replace(cached)
     shutil.rmtree(staging, ignore_errors=True)
     return cached

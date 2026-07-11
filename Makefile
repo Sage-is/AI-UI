@@ -359,8 +359,22 @@ sprig_durability: sprig_registry
 ## sprig_publish — push every local sprig tag to ghcr.io/sage-is and GATE on
 ## public visibility (fails with fix URLs for any non-public package; GitHub
 ## has no API for the flip). Idempotent — run after any build-sprig-*.sh.
+## After signing (sprig_sign), run with FORCE=1: manifests changed digest.
 sprig_publish: sprig_registry
 	@scripts/publish-sprigs.sh
+
+## sprig_sign — minisign-sign every artifact tag in the local registry, in
+## place (SIGN_KEY=<secret key> required; tar bytes unchanged so sha256 pins
+## hold). Then: FORCE=1 make sprig_publish. Third parties verify: minisign -Vm.
+sprig_sign: sprig_registry
+	@scripts/sign-sprigs.sh
+
+## sprig_signing — the artifact-signing gate: signs two small artifacts with
+## the committed DEV fixture key, boots with SPRIG_REQUIRE_SIGNED=1, and
+## proves all four paths — verified graft, unsigned refused, tampered-sig
+## refused, and restart re-verifying the cached signature offline.
+sprig_signing: sprig_registry
+	@scripts/smoke/sprig-signing.sh $(IMAGE_NAME):$(IMAGE_TAG)
 
 ## parity_gate — GGUF embedding cultivars vs sentence-transformers reference
 ## (Poka-Yoke: the Korean-probe canary; rerun on every llama.cpp tag bump).
@@ -389,7 +403,7 @@ e2e_watch:
 ## activate with: git config core.hooksPath .githooks
 gauntlet: it_build sprig_smoke
 
-gauntlet_full: gauntlet sprig_durability parity_gate e2e
+gauntlet_full: gauntlet sprig_durability sprig_signing parity_gate e2e
 
 ## it_build_amd64 — build an amd64 image via buildx + --load.
 ##
@@ -827,7 +841,7 @@ lint:
 	install_dev scan scan_secrets scan_sast scan_deps scan_container scan_dast \
 	trivy_db_update lint test_db_upgrade test_db_fresh wizard_smoke \
 	it_build_amd64 cross_smoke release_smoke \
-	sprig_registry sprig_smoke sprig_durability sprig_publish parity_gate e2e e2e_watch e2e_heavy gauntlet gauntlet_full
+	sprig_registry sprig_smoke sprig_durability sprig_sign sprig_signing sprig_publish parity_gate e2e e2e_watch e2e_heavy gauntlet gauntlet_full
 
 
 # Version Management with Git Flow

@@ -93,10 +93,22 @@ if [ "$MANAGE_REGISTRY" = "1" ]; then
   for _ in $(seq 1 30); do curl -fsS "http://localhost:5000/v2/" >/dev/null 2>&1 && break; sleep 0.5; done
 fi
 
-# --- push (single tar.zst layer; sprig.yaml is inside it) ---------------------
+# --- push (tar.zst layer + optional .minisig layer; sprig.yaml is inside) -----
+# SIGN_KEY=<minisign secret key> signs the tar before push (SIGN_NOPASS=1 for
+# the committed dev fixture; real keys prompt). Verify side: sprigs/minisign.py.
+SIG_LAYER=()
+if [ -n "${SIGN_KEY:-}" ]; then
+  KEY_DIR="$(cd "$(dirname "$SIGN_KEY")" && pwd)"
+  MTTY=""; [ -z "${SIGN_NOPASS:-}" ] && [ -t 0 ] && MTTY="-it"
+  docker run --rm $MTTY -v "$OUT_DIR:/w" -v "$KEY_DIR:/keys:ro" alpine:3.20 sh -c \
+    "apk add --no-cache minisign >/dev/null 2>&1 && minisign -S ${SIGN_NOPASS:+-W} \
+     -s /keys/$(basename "$SIGN_KEY") -m /w/$(basename "$OUT") \
+     -t 'sage-is $NAME:$TAG sha256=$TAR_SHA'"
+  SIG_LAYER=("$(basename "$OUT").minisig:application/vnd.sage-is.sprig.minisig")
+fi
 PUSH=(oras push "$REGISTRY/$NAME:$TAG" --artifact-type "$ARTIFACT_TYPE")
 [ "$INSECURE" = "1" ] && PUSH+=(--plain-http)
-( cd "$OUT_DIR" && "${PUSH[@]}" "$(basename "$OUT"):$LAYER_TYPE" )
+( cd "$OUT_DIR" && "${PUSH[@]}" "$(basename "$OUT"):$LAYER_TYPE" ${SIG_LAYER[@]+"${SIG_LAYER[@]}"} )
 
 echo
 echo "pushed: $REGISTRY/$NAME:$TAG"

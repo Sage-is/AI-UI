@@ -15,6 +15,8 @@
 #
 # Requirements: oras (or the dockerized shim), gh (authed, write:packages),
 # jq, the local registry on sage-network. Idempotent; safe to re-run.
+# FORCE=1 re-pushes tags that already exist remotely — required after
+# scripts/sign-sprigs.sh, because signing changes each manifest digest.
 set -uo pipefail
 
 SRC="${SRC:-localhost:5000}"                 # host-published local registry
@@ -36,7 +38,7 @@ NON_PUBLIC=()
 echo "== pushing every local tag to $DEST =="
 for r in $(curl -fsS "http://$SRC/v2/_catalog" | jq -r '.repositories[]'); do
   for t in $(curl -fsS "http://$SRC/v2/$r/tags/list" | jq -r '.tags[]'); do
-    if oras manifest fetch "$DEST/$r:$t" >/dev/null 2>&1; then
+    if [ -z "${FORCE:-}" ] && oras manifest fetch "$DEST/$r:$t" >/dev/null 2>&1; then
       echo "  = $r:$t already published"
     else
       printf "  ↑ %s:%s ... " "$r" "$t"
