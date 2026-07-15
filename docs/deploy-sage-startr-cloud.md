@@ -4,28 +4,32 @@ Target: **sage.startr.cloud**, amd64, currently v2.3.2 (32 users, 1982 chats,
 18 knowledge bases, embedding engine = `openai` / text-embedding-3-small).
 Snapshot used for rehearsal: `tools/db_snapshots/2026-07-12/` (read-only).
 
-## Go / no-go: the amd64 capability gap (READ FIRST)
+## Go / no-go: the amd64 capability gap (CLOSED 2026-07-15)
 
 The slim rootstock dropped chromadb, langchain, pypdf/docx2txt, fpdf2, and the
 whisper/embedding runtimes from the base image (they were baked into v2.3.2).
-Those capabilities now arrive as Sprigs. **Every one of those Sprigs is
-arm64-only today** (roadmap 8.J has not shipped amd64 builds). The host-arch
-guard correctly refuses them on amd64, which means on this target the upgrade
-would leave four production-critical capabilities with no recovery path:
+Those capabilities now arrive as Sprigs. The 8.J amd64 artifacts shipped
+2026-07-15: every production-critical capability now grafts on this target.
 
 | Capability | Depends on Sprig | amd64 today |
 | --- | --- | --- |
-| Document search / RAG retrieval | `vector-chroma` | REFUSED (arm64-only) |
-| Document ingestion / upload | `rag-loaders` | REFUSED (arm64-only) |
-| Chat → PDF export | `export-document` | REFUSED (arm64-only) |
-| Local embedding (non-OpenAI) | `e5-large-gguf` etc. | REFUSED (arm64-only) |
-| STT (voice notes) | `whisper-base-ggml` | REFUSED (arm64-only) |
+| Document search / RAG retrieval | `vector-chroma` | GRAFTS (`v2-amd64`) |
+| Document ingestion / upload | `rag-loaders` | GRAFTS (`v1-amd64`) |
+| Chat → PDF export | `export-document` | GRAFTS (`v1-amd64`) |
+| Local embedding (non-OpenAI) | ONNX cultivars (e5/bge/minilm) | GRAFTS (arch-neutral weights) |
+| STT (voice notes) | `whisper-base-ggml` | GRAFTS (`v1-amd64`) |
 
-`make upgrade_gate` proves this on the real snapshot and prints the gap
-explicitly (section 6 + `CAPABILITY GAP` + `DEPLOY NOTE`). What still works on
-amd64: chat, auth, all users/chats/knowledge rows, the OpenAI-hosted embedding
-config (external API, untouched), and every architecture-neutral Sprig (themes,
-code-pyodide, browser-ml).
+Embedding runs the ONNX path on amd64 (weights are arch-neutral; the
+onnxruntime rides `vector-chroma`). `e5-large-gguf` and the reranker stay
+arm64-only until the llama.cpp amd64 build lands — both optional. Known gap:
+browser voice notes (webm/opus) also need `media-ffmpeg`, which has no amd64
+build yet — recorded voice notes transcribe only from wav/mp3 until it ships.
+
+`make upgrade_gate` proves all five grafts on the real snapshot (section 6 now
+FAILS on any refusal — the gap is a blocker again, not a note). What always
+worked on amd64: chat, auth, all users/chats/knowledge rows, the OpenAI-hosted
+embedding config (external API, untouched), and every architecture-neutral
+Sprig (themes, code-pyodide, browser-ml).
 
 Mitigating fact: this production store's chroma already records **zero
 collections** (654 orphaned HNSW dirs from a historic chroma upgrade), so
@@ -54,26 +58,27 @@ real multi-arch release: an amd64 rootstock image plus amd64 Sprig artifacts.
   server binary swapped. The helper pulls, swaps, verifies the ELF arch,
   repacks reproducibly, signs, and pushes under the `-amd64` tag.
 
-**Remaining (the amd64 artifact builds — a scoped follow-on, roadmap 8.J):**
-- The 3 recipe-having binaries need amd64 server builds: `llama-server`
-  (e5-gguf, reranker) and `whisper-server` (stt). First attempt hit a real yak
-  — llama.cpp b9859's web-UI embed step fails under the static musl config
-  when cross-built; that build needs a fix (disable the bundled web UI, or
-  vendor a prebuilt asset) before the amd64 binary lands. Once it does,
-  `repack-sprig-arch.sh` produces the three amd64 GGUF artifacts.
-- The 8 recipe-less artifacts (`vector-chroma`, `rag-loaders`,
-  `export-document`, `media-ffmpeg`, `backup-rclone`, and the onnx weight
-  cultivars' serving overlay) need their build recipes written first — the
-  same #critical recipe-gap that gates reproducibility — then amd64 builds:
-  static amd64 ffmpeg/rclone are downloads; the python-wheel closures
-  (chromadb/onnxruntime/hnswlib/pillow/fpdf) need amd64 wheels via buildx.
-- Move option (an arm64 host) or the deps-baked amd64 variant remain fallbacks
-  if the artifact builds slip; the schema + image work above stand regardless.
+**Shipped 2026-07-15 (closes the gap for this target):**
+- amd64 artifact builds for `vector-chroma` (`v2-amd64`), `rag-loaders`
+  (`v1-amd64`), `export-document` (`v1-amd64`), `whisper-base-ggml`
+  (`v1-amd64`) — new recipes `scripts/build-sprig-{vector-chroma,rag-loaders,
+  export-document}.sh` plus the ARCH-parameterized whisper recipe. Each build
+  runs its sanity gate on the target arch under QEMU before packing.
+- The ONNX weight cultivars flipped to both-arch in the CATALOG (weights are
+  arch-neutral bytes; the onnxruntime rides `vector-chroma`). Local embedding
+  on amd64 is the ONNX path.
+- All recipes and the publish flow run oras DOCKERIZED — no host oras anywhere.
 
-Until the amd64 artifacts land, deploying to the amd64 target is a **functional
-downgrade** for on-box document/embedding/export features. The neutral Sprigs
-(themes, code-pyodide, browser-ml) and everything non-Sprig already work on the
-amd64 image.
+**Still remaining (optional, not deploy-critical):**
+- The llama.cpp amd64 yak (`e5-large-gguf`, reranker): b9859's web-UI embed
+  step fails under the static musl cross-build — disable the bundled web UI or
+  vendor a prebuilt asset, then `repack-sprig-arch.sh` produces the amd64 tags.
+- `media-ffmpeg` / `backup-rclone` amd64 (static downloads) and `dev-svelte`.
+  Until media-ffmpeg lands, browser voice notes (webm/opus) do not transcode
+  on amd64.
+
+Deploying to the amd64 target is no longer a functional downgrade: document
+search, ingestion, PDF export, local embedding, and STT all graft.
 
 ## What this build fixes and adds (safe on any arch)
 
@@ -101,17 +106,18 @@ amd64 image.
 ### [MANUALLY] Pre-deploy, one-time
 1. Generate the production minisign key (recipe in `scripts/dev-keys/README.md`),
    `SIGN_KEY=~/sage-keys/sprig.key make sprig_sign`, then
-   `FORCE=1 make sprig_publish`. The publish gate now derives the repo list from
+   `FORCE=1 make sprig_publish`. The publish gate derives the repo list from
    the CATALOG and checks anonymous pullability via the ghcr token endpoint —
-   it will FAIL loudly on the two theme packages (`sprig-theme-workshop-bio`,
-   `sprig-theme-workshop-math`), which are built but not yet pushed/public.
-   Push them and flip both to Public in the GitHub package settings.
+   all 16 packages are published and public as of 2026-07-15 (amd64 tags
+   included), so a failure here means a NEW package that needs its one-time
+   Public flip in the GitHub package settings.
 2. [WE] Pin the `.pub` line as `_DEFAULT_PUBKEY` in `artifact.py`, flip catalog
    entries to `signed: True` if enforcing signatures.
 
 ### [WE] Rehearse
-3. `make upgrade_gate` — must pass (the amd64 capability-gap note is expected on
-   an amd64 target; it is a go/no-go signal, not a failure).
+3. `make upgrade_gate` — must pass. Section 6 now asserts every
+   production-critical capability GRAFTS on the target arch; any refusal fails
+   the gate (a missing pin or unpublished tag, not an accepted gap).
 4. `KEEP=1 make upgrade_gate` then the Cypress half:
    `TARGET_URL=http://sage-upgrade:8080 CYPRESS_ADMIN_EMAIL=upgrade-gate@sage.is
    CYPRESS_ADMIN_PASSWORD=upgrade-gate-pw-1234 SPEC='cypress/e2e/upgrade/*.cy.ts'

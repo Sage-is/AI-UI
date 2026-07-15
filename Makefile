@@ -49,9 +49,10 @@ GIT_REPO_SLUG := $(shell git remote get-url origin 2>/dev/null | sed -E 's|\.git
 # installs get the new default.
 IMAGE_NAME ?= $(GIT_REPO_SLUG)
 # REGISTRY is the ONE knob for where the app image AND the Sprig™ catalog publish.
-# Default ghcr.io/sage-is (current public home). Point it at an in-cluster
-# registry later — `make ship REGISTRY=registry.example.com/sage-is` —
-# and nothing else changes: sha256 pins guarantee the same bytes from any host.
+# Default ghcr.io/sage-is (current public home). Point it at the in-house
+# registry later — `make ship REGISTRY=sprigs.sage.is/sage-is` (sage-branded
+# name; the metal may be the CapRover cluster) — and nothing else changes:
+# sha256 pins guarantee the same bytes from any host.
 REGISTRY ?= ghcr.io/sage-is
 # Image repo derives from REGISTRY so the image and catalog track the same host.
 # notdir(sage-is/ai-ui)=ai-ui, so the default stays byte-identical to the old

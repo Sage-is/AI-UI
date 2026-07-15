@@ -245,7 +245,9 @@ class SprigSupervisor:
             "tag": "v1",
             "insecure": SPRIG_REGISTRY_INSECURE,
             "binary_sha256": "14374a654078dea0b624b6cee6cadcefbcd714ef5964ffee1989fec578e6121d",
-        }, arch={"arm64": {}}),
+            # onnx WEIGHTS are arch-neutral bytes (same tag+sha both arches);
+            # the arch-bound part is the onnxruntime they ride (vector-chroma).
+        }, arch={"arm64": {}, "amd64": {}}),
         "multilingual-e5-large": _sprig({
             "capability": "embedding",
             "server": "embedding",
@@ -261,7 +263,7 @@ class SprigSupervisor:
             "tag": "v1",
             "insecure": SPRIG_REGISTRY_INSECURE,
             "binary_sha256": "8fbe2a95fd729deb50a6fa9df7e7d49c78199ca3fa506c08b4f97161fca08a17",
-        }, arch={"arm64": {}}),
+        }, arch={"arm64": {}, "amd64": {}}),  # neutral weights, see minilm note
         "bge-large-en-v1.5": _sprig({
             "capability": "embedding",
             "server": "embedding",
@@ -276,7 +278,7 @@ class SprigSupervisor:
             "tag": "v1",
             "insecure": SPRIG_REGISTRY_INSECURE,
             "binary_sha256": "df16cc5d077c5f9756b130e435e26629beea7bf07ea00c7551e2fc96f7f9a410",
-        }, arch={"arm64": {}}),
+        }, arch={"arm64": {}, "amd64": {}}),  # neutral weights, see minilm note
         # "deliver" sprig — NOT a running server. Pulls the Svelte dev/build
         # toolchain (node_modules, ~1.1GB) from OUR registry and extracts it into
         # /app on demand, so it lives OUTSIDE the base rootstock image (dev mode
@@ -318,7 +320,10 @@ class SprigSupervisor:
             "tag": "v2",
             "insecure": SPRIG_REGISTRY_INSECURE,
             "binary_sha256": "382b37fd4e0bf4131a26163db075eb1e842f87443f0c9bd200cab2727b552553",
-        }, arch={"arm64": {}}),
+        }, arch={"arm64": {}, "amd64": {
+            "tag": "v2-amd64",
+            "binary_sha256": "045b9862caf418d7d9c8a44bb96de013f2850f6604a7b78b4f5237d7c7e45a4b",
+        }}),
         # GGUF cultivar (8.I.3, gates green 2026-07-02): e5-large Q8_0 served by
         # a static-PIE musl llama-server (llama.cpp b9859, built in-house) — ONE
         # binary + ONE model file, zero Python deps in the child, any libc.
@@ -387,7 +392,10 @@ class SprigSupervisor:
             "tag": "v1",
             "insecure": SPRIG_REGISTRY_INSECURE,
             "binary_sha256": "5d570534a7f4524759ef1c9e4fa0fc5ea30652c0c7bd9008c732716582ebc641",
-        }, arch={"arm64": {}}),
+        }, arch={"arm64": {}, "amd64": {
+            "tag": "v1-amd64",
+            "binary_sha256": "ac30634805224c9272baf59edfffa933f63e38e12bbc569daf43f8ec23a7c013",
+        }}),
         # Interface themes — design tokens only (one self-contained theme.css),
         # extracted onto the DATA volume (seed=model-dir) and served at
         # /themes/active.css. No process, no executable code: the css is
@@ -444,7 +452,10 @@ class SprigSupervisor:
             "tag": "v1",
             "insecure": SPRIG_REGISTRY_INSECURE,
             "binary_sha256": "f207537072f6c055fe94cef57c27bef8213199770290708e8871ce132cd96c5d",
-        }, arch={"arm64": {}}),
+        }, arch={"arm64": {}, "amd64": {
+            "tag": "v1-amd64",
+            "binary_sha256": "1aba23ed93a76fc45bd98dc14fc1315b2e987f2c45deab210a7efb1329a246b0",
+        }}),
         # PDF chat export — fpdf2 + fontTools + pillow into the overlay dir plus
         # the CJK Noto fonts into /app/static/fonts (frontend pdf-style.css uses
         # them too). Root-anchored tar; no restart needed (fpdf import is lazy).
@@ -462,7 +473,10 @@ class SprigSupervisor:
             "tag": "v1",
             "insecure": SPRIG_REGISTRY_INSECURE,
             "binary_sha256": "5139f34d07ccbff59ae29fd041c2f7492cef28cee74aa08b58bf4523321235d8",
-        }, arch={"arm64": {}}),
+        }, arch={"arm64": {}, "amd64": {
+            "tag": "v1-amd64",
+            "binary_sha256": "913bfe99a2982c820d5e4f94c476bd749edce5b5fcccc673a2bee449766905b1",
+        }}),
         # Pyodide (browser code interpreter) — served from /app/build/pyodide
         # (workers load indexURL '/pyodide/'). Serves immediately after graft.
         "code-pyodide": _sprig({

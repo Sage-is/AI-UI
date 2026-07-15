@@ -166,16 +166,20 @@ A2="Authorization: Bearer $T2"
 docker logs "${ROOT}-tgt" 2>&1 | grep -q "Sprig™ host architecture: $TARGET_ARCH" \
   && ok "boot logs the detected host arch ($TARGET_ARCH)" || no "arch not logged at boot"
 
-# The four capabilities the production data actually depends on. On amd64 today
-# every one is arm64-gated (8.J), so each MUST be refused with the arch reason.
+# The four capabilities the production data actually depends on. Since the
+# 8.J amd64 artifacts shipped (vector-chroma/rag-loaders/export-document
+# overlays + the arch-neutral ONNX embedding weights), every one MUST graft on
+# the target arch — a refusal is now a capability gap and FAILS the gate.
+# Embedding asserts the ONNX cultivar (the amd64 path); e5-large-gguf stays
+# arm64-gated until the llama.cpp amd64 build lands.
 GAPPED=0
-for pair in "vector-chroma:vector" "rag-loaders:rag" "export-document:export" "e5-large-gguf:embedding"; do
+for pair in "vector-chroma:vector" "rag-loaders:rag" "export-document:export" "multilingual-e5-large:embedding"; do
   nm="${pair%%:*}"; cap="${pair##*:}"
   R=$(curl -s --max-time 60 -X POST "http://localhost:$((PORT+1))/api/v1/retrieval/sprigs/graft" \
     -H "$A2" -H 'Content-Type: application/json' -d "{\"name\":\"$nm\",\"capability\":\"$cap\"}")
   if echo "$R" | jq -e '.delivered==true or .status==true' >/dev/null 2>&1; then
     ok "$nm grafts on $TARGET_ARCH (capability available)"
-  elif echo "$R" | grep -q "requires a .* host and this one is $TARGET_ARCH"; then
+  elif echo "$R" | grep -q "requires .* and this host is $TARGET_ARCH"; then
     echo "  ⛔ $nm REFUSED on $TARGET_ARCH — capability unavailable until an $TARGET_ARCH build ships (8.J)"
     GAPPED=$((GAPPED+1))
   else
@@ -189,17 +193,17 @@ echo "$TG2" | jq -e '.delivered==true' >/dev/null 2>&1 \
   && ok "architecture-neutral sprig still grafts on $TARGET_ARCH" || no "neutral graft on $TARGET_ARCH failed"
 [ "$GAPPED" -eq 0 ] \
   && ok "no capability gap on $TARGET_ARCH — every production dependency is graftable" \
-  || echo "  🚫 CAPABILITY GAP: $GAPPED production-critical capabilities are NOT graftable on $TARGET_ARCH."
+  || no "CAPABILITY GAP: $GAPPED production-critical capabilities are NOT graftable on $TARGET_ARCH"
 docker rm -f "${ROOT}-tgt" >/dev/null 2>&1 || true
 docker volume rm "${VOL}-tgt" >/dev/null 2>&1 || true
 
 echo ""
 echo "================  UPGRADE GATE: ${PASS} passed, ${FAIL} failed  ================"
 if [ "${GAPPED:-0}" -gt 0 ]; then
-  echo "  DEPLOY NOTE: on ${TARGET_ARCH}, $GAPPED capabilities the production data"
+  echo "  DEPLOY BLOCKER: on ${TARGET_ARCH}, $GAPPED capabilities the production data"
   echo "  depends on (document search / ingestion / export / embedding) cannot be"
-  echo "  restored by grafting until ${TARGET_ARCH} artifacts exist (roadmap 8.J),"
-  echo "  or an ${TARGET_ARCH} image variant bakes those deps back in. The gate"
-  echo "  PASSES (the arch guard behaves); this note is the go/no-go signal."
+  echo "  restored by grafting. The ${TARGET_ARCH} artifacts shipped with 8.J, so a"
+  echo "  refusal here means a missing/mismatched CATALOG pin or an unpublished"
+  echo "  tag — the gate FAILS until every production dependency grafts."
 fi
 [ "$FAIL" -eq 0 ]

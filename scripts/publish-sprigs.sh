@@ -13,8 +13,10 @@
 #   https://github.com/organizations/sage-is/settings/packages
 #   — ensure members may create PUBLIC packages so the flip is available.
 #
-# Requirements: oras (or the dockerized shim), gh (authed, write:packages),
-# jq, the local registry on sage-network. Idempotent; safe to re-run.
+# Requirements: docker, gh (authed, write:packages), jq, the local registry on
+# sage-network. oras runs DOCKERIZED (no host install) — the same shape as the
+# future in-cluster publisher: an oras container with creds mounted read-only.
+# Idempotent; safe to re-run.
 # FORCE=1 re-pushes tags that already exist remotely — required after
 # scripts/sign-sprigs.sh, because signing changes each manifest digest.
 set -uo pipefail
@@ -24,13 +26,23 @@ SRC_INTERNAL="${SRC_INTERNAL:-local-registry:5000}"  # name inside sage-network 
 DEST="${DEST:-ghcr.io/sage-is}"
 ORG="${ORG:-sage-is}"
 
-command -v oras >/dev/null || { echo "ERROR: oras not on PATH (use the dockerized shim or ask to brew install)"; exit 1; }
-command -v gh   >/dev/null || { echo "ERROR: gh not on PATH"; exit 1; }
-command -v jq   >/dev/null || { echo "ERROR: jq not on PATH"; exit 1; }
+command -v docker >/dev/null || { echo "ERROR: docker not on PATH"; exit 1; }
+command -v gh     >/dev/null || { echo "ERROR: gh not on PATH"; exit 1; }
+command -v jq     >/dev/null || { echo "ERROR: jq not on PATH"; exit 1; }
 
-# Login (idempotent) — same gh-token pattern as `make ghcr_login`.
-gh auth token | oras login "${DEST%%/*}" -u "$(gh api user -q .login)" --password-stdin >/dev/null || {
-  echo "ERROR: oras login to ${DEST%%/*} failed"; exit 1; }
+# Dockerized oras: no host oras, no login state. A throwaway docker-config is
+# minted from gh's token and mounted read-only (oras honors DOCKER_CONFIG).
+ORAS_IMG="${ORAS_IMG:-ghcr.io/oras-project/oras:v1.2.0}"
+NETWORK="${NETWORK:-sage-network}"
+AUTH_DIR="$(mktemp -d)"
+trap 'rm -rf "$AUTH_DIR"' EXIT
+printf '{"auths":{"%s":{"auth":"%s"}}}' "${DEST%%/*}" \
+  "$(printf '%s:%s' "$(gh api user -q .login)" "$(gh auth token)" | base64 | tr -d '\n')" \
+  > "$AUTH_DIR/config.json"
+oras() {
+  docker run --rm --network "$NETWORK" -v "$AUTH_DIR:/auth:ro" \
+    -e DOCKER_CONFIG=/auth "$ORAS_IMG" "$@"
+}
 
 FAIL=0
 NON_PUBLIC=()

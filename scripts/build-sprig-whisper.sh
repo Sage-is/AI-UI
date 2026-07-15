@@ -111,9 +111,9 @@ YAML
 
 # --- 4. SANITY GATE: boot + /health + transcription shape ------------------------
 echo "== sanity gate: whisper-server /health + /v1/audio/transcriptions =="
-python3 - <<'PY'
+python3 - <<PY
 import math, struct, wave
-with wave.open("/tmp/sprig-build/whisper/gate.wav", "w") as w:
+with wave.open("$WORK/gate.wav", "w") as w:
     w.setnchannels(1); w.setsampwidth(2); w.setframerate(16000)
     # 1s 440Hz tone — content irrelevant; the gate asserts the response SHAPE.
     w.writeframes(b"".join(struct.pack("<h", int(12000*math.sin(2*math.pi*440*t/16000))) for t in range(16000)))
