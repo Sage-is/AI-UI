@@ -4,6 +4,66 @@ All notable changes to [Sage.is AI-UI](https://github.com/Sage-is/AI-UI) are doc
 
 ---
 
+## [3.0.0] — 2026-07-15
+
+### Added
+
+**The Sprig™ grafting subsystem**
+Capabilities now arrive as OCI artifacts. The server pulls each one from a registry with a dockerized oras, verifies its sha256 against a pin baked into the image, and grafts it at runtime. The catalog in `sprigs/supervisor.py` is the allowlist. A route whose capability is not grafted returns 503 with a pointer to the graft, not a crash. Grafts survive full container recreation: state records on the data volume, boot reconciles, cached tars restore offline. The admin panel shows every catalog entry as a card with its compatibility and graft state.
+
+**A seventeen-entry catalog across twelve capabilities, zero external pulls**
+Embedding (ONNX and GGUF cultivars), vector store (chromadb), RAG loaders (langchain), PDF export (fpdf2 + CJK fonts), speech-to-text (whisper.cpp), reranker, workshop themes, pyodide code interpreter, in-browser ML wasm, media (ffmpeg), backup (rclone), and the Svelte dev toolchain. Every artifact ships from `ghcr.io/sage-is` — no HuggingFace, S3, or third-party pull at runtime.
+
+**Multi-arch catalog: amd64 joins arm64**
+The catalog schema gains per-arch overrides: `arches: {arch: {tag, binary_sha256}}`. amd64 artifacts shipped for vector-chroma, rag-loaders, export-document, and whisper; the ONNX embedding weights are arch-neutral and serve both. Every deploy-critical capability — document search, ingestion, PDF export, local embedding, STT — grafts on amd64 and arm64. New recipes (`scripts/build-sprig-*.sh`) build each closure inside a container for the target arch and sanity-gate it under QEMU before packing.
+
+**Fail-closed architecture guard**
+Every catalog entry must declare a host binding or neutrality through the `_sprig(spec, arch=...)` constructor. A forgotten declaration fails at import, in CI, not on a customer host. A mismatched host refuses the graft before any bytes move: the sprig wilts to a per-capability 503 and the rest of the server keeps serving. No more `Exec format error`.
+
+**Artifact signing with minisign**
+Artifacts carry a detached minisign signature as a second OCI layer, verified offline after the sha256 gate and before extraction. A present signature is always verified. `signed: True` per entry or `SPRIG_REQUIRE_SIGNED=1` globally makes it mandatory.
+
+**Upgrade gate**
+`make upgrade_gate` boots the new image on a copy of a production snapshot and proves the upgrade: migrations run, users and chats survive, legacy RAG config degrades cleanly, the vector store opens post-graft, and every production-critical capability grafts on the target arch. Any refusal fails the gate.
+
+**Release and catalog automation**
+One `REGISTRY` variable points the image and the catalog at the same host — swap to an in-house registry with a flag, no code edits. `make ship` releases the platform: multi-arch image push plus an idempotent catalog verify that rebuilds nothing. `make catalog_release` is the sprigs-changed path: build, sign, publish. The publish gate derives its repo list from the catalog and fails loudly on any package the world cannot pull anonymously. All oras use is containerized; nothing installs on the host.
+
+**Real embedding server with ONNX and sentence-transformers backends**
+Local embedding without torch on a slim image: the ONNX path rides the vector-chroma runtime. GGUF cultivars serve through an in-house static llama-server where parity gates pass.
+
+**Workshop themes as Sprigs**
+Bio (green) and Math (blue) design-token themes graft like any other capability. A theme is one self-contained `theme.css` — no process, no executable code. The CSS is validated at graft time and fails closed; the active theme serves at `/themes/active.css`. The last grafted theme wins; pruning the active one restores the default look. Built for workshops where two Spaces must not be mistaken for each other.
+
+**Provider logos for remote models**
+Remote models now show their provider's logo in the model list.
+
+**Cypress coverage for chat flow, settings, and the upgrade path**
+New specs exercise chat, settings, and the post-upgrade surface, with `data-cy` attributes across Sprigs, UserList, and AddUserModal for stable selectors.
+
+### Changed
+
+**Slim rootstock — BREAKING for operators**
+chromadb, langchain, pypdf, docx2txt, fpdf2, and the whisper and embedding runtimes left the base image. They return as Sprigs. After upgrading, an admin grafts the capabilities the deployment uses; until then those routes answer 503 with a graft pointer. Chat, auth, and all stored data are untouched. This is the change that makes this release 3.0.0.
+
+**Sprig registry is env-driven**
+`SPRIG_REGISTRY` (default `ghcr.io/sage-is`) replaces any hardcoded registry. `SPRIG_REGISTRY_INSECURE` gates plain HTTP and auto-enables only for loopback hosts. The registry is probed at boot — unreachable is one loud log line, not a per-graft surprise. The local dev registry moved to a named volume (`sprig-registry-data`) that `docker volume prune` cannot wipe.
+
+**Production builds no longer emit sourcemaps.**
+
+### Security
+
+**Zero runtime egress for capability delivery**
+Every capability byte comes from `ghcr.io/sage-is`, pinned by sha256 in the image. No HuggingFace, S3, or third-party download runs on an operator's machine. The pull happens once, at packaging time, on the build host.
+
+**CVE pins travel with the closures**
+The sprig recipes pin `langchain==0.3.30` (CVE-2026-45134), `langchain-community==0.3.27` (CVE-2025-6984), `pypdf==4.3.1`, and `pillow==12.2.0`. Dependency CVE response now means rebuilding one artifact and bumping one pin — not rebuilding the platform image.
+
+**Fail-closed everywhere in the graft path**
+A wrong sha256 refuses before extraction. A present-but-invalid signature refuses. An artifact with no declared architecture refuses rather than guessing. Each refusal wilts one capability to a 503; none of them can take the server down.
+
+---
+
 ## [2.3.4] — 2026-06-14
 
 ### Added

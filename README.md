@@ -1,6 +1,6 @@
 # Sage.is AI-UI
 
-## v2.3.4
+## v3.0.0
 
 An AI interface you run on your own hardware, with your own models, on your own terms.
 
