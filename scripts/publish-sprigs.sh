@@ -34,9 +34,27 @@ gh auth token | oras login "${DEST%%/*}" -u "$(gh api user -q .login)" --passwor
 
 FAIL=0
 NON_PUBLIC=()
+NOT_PULLABLE=()
+
+# The pull CONTRACT is the supervisor CATALOG, not whatever happens to be in the
+# local registry (a fresh named volume can be missing a just-built artifact and
+# skip it silently). Derive the required repo list from the catalog's repo pins
+# and fail loudly if any is absent locally — this is exactly the gap that let
+# the theme sprigs ship unpublished.
+SUP="$(cd "$(dirname "$0")/.." && pwd)/app/backend/sage_is_ai/sprigs/supervisor.py"
+REQUIRED=$(grep -oE 'sprig-[a-z0-9-]+"' "$SUP" | tr -d '"' | sort -u)
+LOCAL=$(curl -fsS "http://$SRC/v2/_catalog" | jq -r '.repositories[]' | sort -u)
+MISSING=$(comm -23 <(echo "$REQUIRED") <(echo "$LOCAL"))
+if [ -n "$MISSING" ]; then
+  echo "ERROR: catalog pins these repos but they are ABSENT from $SRC:"
+  echo "$MISSING" | sed 's/^/  - /'
+  echo "Build them (scripts/build-sprig-*.sh) before publishing, or the live"
+  echo "server will 503 on graft. Refusing to publish a partial catalog."
+  exit 1
+fi
 
 echo "== pushing every local tag to $DEST =="
-for r in $(curl -fsS "http://$SRC/v2/_catalog" | jq -r '.repositories[]'); do
+for r in $LOCAL; do
   for t in $(curl -fsS "http://$SRC/v2/$r/tags/list" | jq -r '.tags[]'); do
     if [ -z "${FORCE:-}" ] && oras manifest fetch "$DEST/$r:$t" >/dev/null 2>&1; then
       echo "  = $r:$t already published"
@@ -51,14 +69,21 @@ for r in $(curl -fsS "http://$SRC/v2/_catalog" | jq -r '.repositories[]'); do
   done
 done
 
-echo "== visibility gate: every package must be PUBLIC =="
-for r in $(curl -fsS "http://$SRC/v2/_catalog" | jq -r '.repositories[]'); do
+# The real contract is ANONYMOUS pullability, which is what a fresh live server
+# (no oras login) actually needs. Verify it directly via the ghcr token
+# endpoint instead of trusting gh-api visibility alone — a package can read
+# 'public' in one view and still deny anonymous pulls.
+echo "== pullability gate: every package must be ANONYMOUSLY pullable =="
+for r in $LOCAL; do
   vis=$(gh api "/orgs/$ORG/packages/container/$r" -q .visibility 2>/dev/null || echo "unknown")
-  if [ "$vis" = "public" ]; then
-    echo "  ✅ $r public"
+  code=$(curl -s -o /dev/null -w '%{http_code}' \
+    "https://ghcr.io/token?service=ghcr.io&scope=repository:$ORG/$r:pull")
+  if [ "$code" = "200" ]; then
+    echo "  ✅ $r anonymously pullable (visibility: $vis)"
   else
-    echo "  ❌ $r is '$vis'"
+    echo "  ❌ $r NOT anonymously pullable (token endpoint $code, visibility: $vis)"
     NON_PUBLIC+=("$r")
+    NOT_PULLABLE+=("$r")
     FAIL=1
   fi
 done

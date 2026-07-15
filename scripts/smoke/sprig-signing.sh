@@ -41,7 +41,7 @@ echo "== 2. boot with dev pubkey pinned + SPRIG_REQUIRE_SIGNED=1 =="
 docker volume rm "$VOL" >/dev/null 2>&1 || true
 docker rm -f "$ROOT" >/dev/null 2>&1 || true
 docker run -d --name "$ROOT" --network "$NET" -p "${PORT}:8080" \
-  -e ENABLE_SIGNUP=True -e WEBUI_AUTH=True \
+  -e SPRIG_REGISTRY=local-registry:5000 -e ENABLE_SIGNUP=True -e WEBUI_AUTH=True \
   -e SPRIG_MINISIGN_PUBKEY="$DEVPUB" -e SPRIG_REQUIRE_SIGNED=1 \
   -v "$VOL:/app/backend/data" "$IMG" >/dev/null
 for i in $(seq 1 120); do

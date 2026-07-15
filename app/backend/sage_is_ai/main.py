@@ -223,6 +223,7 @@ from sage_is_ai.config import (
     RAG_RERANKING_MODEL,
     RAG_EXTERNAL_RERANKER_URL,
     RAG_EXTERNAL_RERANKER_API_KEY,
+    SPRIG_ACTIVE_THEME,
     RAG_RERANKING_MODEL_AUTO_UPDATE,
     RAG_RERANKING_MODEL_TRUST_REMOTE_CODE,
     RAG_EMBEDDING_ENGINE,
@@ -1075,6 +1076,7 @@ app.state.config.RAG_RERANKING_ENGINE = RAG_RERANKING_ENGINE
 app.state.config.RAG_RERANKING_MODEL = RAG_RERANKING_MODEL
 app.state.config.RAG_EXTERNAL_RERANKER_URL = RAG_EXTERNAL_RERANKER_URL
 app.state.config.RAG_EXTERNAL_RERANKER_API_KEY = RAG_EXTERNAL_RERANKER_API_KEY
+app.state.config.SPRIG_ACTIVE_THEME = SPRIG_ACTIVE_THEME
 
 app.state.config.RAG_TEMPLATE = RAG_TEMPLATE
 
@@ -1116,12 +1118,12 @@ app.state.MODEL_DOWNLOAD_STATUS = {
     "embedding": "pending",
     "whisper": "pending",
     "tiktoken": "ready",
-    # `chromadb` is the trial mode's auto-installed vector backend.
-    # Lifespan sets this to "downloading" → "ready" / "error" via
-    # try_sage_engine_install.ensure_try_sage_vector_backend so admins
-    # see install progress in the trial banner instead of wondering
-    # why their KBs are empty on first boot.
-    "chromadb": "ready",
+    # `chromadb` is the vector backend. On the slim rootstock it is NOT in the
+    # base image — it arrives via the vector-chroma Sprig or the trial-mode
+    # bootstrap. Start "pending" (honest): the trial path sets "downloading" →
+    # "ready"/"error", and a vector-chroma graft flips it "ready". A literal
+    # "ready" here on a slim boot lied — the backend is absent until grafted.
+    "chromadb": "pending",
     "error": None,
 }
 
@@ -2273,6 +2275,30 @@ async def robots_txt():
         extra={"paths": [str(path) for path in search_paths]},
     )
     return Response("User-agent: *\nDisallow:\n", media_type="text/plain")
+
+
+# Theme Sprigs™: app.html loads this on every page. Serves the active grafted
+# theme's self-contained stylesheet from the DATA volume, or an empty sheet
+# when no theme is grafted. Unauthenticated by design — it styles the login
+# page too, and carries design tokens only (validated at graft time; see
+# sprigs/theme_dispatch.py). Registered before the SPA mount so it wins.
+@app.get("/themes/active.css")
+async def active_theme_css():
+    name = str(app.state.config.SPRIG_ACTIVE_THEME or "").strip()
+    if name:
+        from sage_is_ai.sprigs.theme_dispatch import theme_css_path
+
+        css = theme_css_path(name)
+        if css.is_file():
+            return FileResponse(
+                css, media_type="text/css", headers={"Cache-Control": "no-cache"}
+            )
+        log.warning("active theme '%s' has no css on the volume; serving default", name)
+    return Response(
+        "/* no theme grafted */\n",
+        media_type="text/css",
+        headers={"Cache-Control": "no-cache"},
+    )
 
 
 

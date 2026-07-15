@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 # build-sprig-whisper.sh — package the STT Sprig™ (whisper.cpp server + ggml base).
 #
-# Builds a static-PIE musl arm64 `whisper-server` (same 9-flag ggml recipe as
-# the in-house llama.cpp b9859 build), fetches ggml-base-q8_0.bin ONCE here (at
-# packaging time — never on the operator's box), SANITY-GATES the pair (boot,
-# /health readiness, multipart /v1/audio/transcriptions -> {"text":...}), then
-# packs a reproducible tar.zst and pushes it via oras.
+# Builds a static-PIE musl `whisper-server` for $ARCH (same 9-flag ggml recipe
+# as the in-house llama.cpp b9859 build; the alpine build container runs under
+# --platform linux/$ARCH, so ARCH=amd64 on Apple Silicon cross-builds via QEMU),
+# fetches ggml-base-q8_0.bin ONCE here (at packaging time — never on the
+# operator's box), SANITY-GATES the pair (boot, /health readiness, multipart
+# /v1/audio/transcriptions -> {"text":...}), then packs a reproducible tar.zst
+# and pushes it via oras. arm64 keeps the plain $TAG; amd64 pushes `${TAG}-amd64`
+# for the CATALOG arches["amd64"] override.
 #
 # Prints the tar.zst sha256 to pin in the supervisor CATALOG (binary_sha256).
 #
@@ -30,18 +33,31 @@ WHISPER_CPP_REF="${WHISPER_CPP_REF:-v1.9.1}"
 MODEL_FILE="ggml-base-q8_0.bin"   # multilingual base, q8_0 (~82MB)
 MODEL_URL="https://huggingface.co/ggerganov/whisper.cpp/resolve/main/${MODEL_FILE}"
 
-WORK="${WORK:-/tmp/sprig-build/whisper}"
+# Host arch this artifact serves. Default: the build host. amd64 gets a
+# `-amd64`-suffixed tag so it sits beside the arm64 artifact under one repo.
+_RAW_ARCH="$(uname -m)"
+case "${ARCH:-$_RAW_ARCH}" in
+  arm64|aarch64) ARCH=arm64 ;;
+  amd64|x86_64)  ARCH=amd64 ;;
+  *) echo "ERROR: unsupported ARCH='${ARCH:-$_RAW_ARCH}' (want arm64|amd64)" >&2; exit 1 ;;
+esac
+PLATFORM="${PLATFORM:-linux/$ARCH}"
+ARCHTAG="$TAG"; [ "$ARCH" = "amd64" ] && ARCHTAG="$TAG-amd64"
+
+WORK="${WORK:-/tmp/sprig-build/whisper-$ARCH}"
 OUT_DIR="${OUT_DIR:-$(pwd)}"
-OUT="$OUT_DIR/$NAME-$TAG.tar.zst"
+OUT="$OUT_DIR/$NAME-$ARCHTAG.tar.zst"
 
 sha256() { if command -v sha256sum >/dev/null; then sha256sum "$1" | cut -d' ' -f1; else shasum -a 256 "$1" | cut -d' ' -f1; fi; }
 
-for c in docker oras zstd tar curl jq python3; do command -v "$c" >/dev/null || { echo "ERROR: $c not on PATH" >&2; exit 1; }; done
+# oras runs DOCKERIZED (ORAS_IMG below) — no host install needed.
+for c in docker curl jq python3; do command -v "$c" >/dev/null || { echo "ERROR: $c not on PATH" >&2; exit 1; }; done
+ORAS_IMG="${ORAS_IMG:-ghcr.io/oras-project/oras:v1.2.0}"
 mkdir -p "$WORK/bin" "$WORK/stage"
 
 # --- 1. static whisper-server build (alpine/musl, mirrors build-llama.sh) -------
 if [ ! -f "$WORK/bin/whisper-server" ]; then
-  echo "== building static whisper-server @ $WHISPER_CPP_REF (docker/alpine) =="
+  echo "== building static whisper-server @ $WHISPER_CPP_REF (docker/alpine, $PLATFORM) =="
   cat > "$WORK/build-whisper.sh" <<BUILD
 #!/bin/sh
 set -e
@@ -60,7 +76,7 @@ ldd /out/whisper-server 2>&1 || echo "(no dynamic deps — static)"
 ls -lh /out/whisper-server
 BUILD
   chmod +x "$WORK/build-whisper.sh"
-  docker run --rm -v "$WORK/bin:/out" -v "$WORK/build-whisper.sh:/build.sh:ro" alpine sh /build.sh
+  docker run --rm --platform "$PLATFORM" -v "$WORK/bin:/out" -v "$WORK/build-whisper.sh:/build.sh:ro" alpine sh /build.sh
 fi
 ls -lh "$WORK/bin/whisper-server"
 
@@ -83,7 +99,7 @@ spec_version: v1
 delivery: oci-artifact
 capability: stt
 cultivar: whisper-base-ggml
-variety: linux-arm64-cpu
+variety: linux-$ARCH-cpu
 sprig_version: v1.0.0
 backend: whisper-binary
 model: whisper base multilingual (ggml q8_0)
@@ -103,7 +119,7 @@ with wave.open("/tmp/sprig-build/whisper/gate.wav", "w") as w:
     w.writeframes(b"".join(struct.pack("<h", int(12000*math.sin(2*math.pi*440*t/16000))) for t in range(16000)))
 PY
 GATE_NAME="sprig-whisper-gate-$$"
-docker run -d --rm --name "$GATE_NAME" -v "$STAGE:/s:ro" -p 18090:18090 alpine \
+docker run -d --rm --platform "$PLATFORM" --name "$GATE_NAME" -v "$STAGE:/s:ro" -p 18090:18090 alpine \
   /s/whisper-server -m /s/model.bin --host 0.0.0.0 --port 18090 \
   --inference-path /v1/audio/transcriptions -l auto >/dev/null
 HEALTH_OK=0
@@ -138,7 +154,7 @@ if [ "$MANAGE_REGISTRY" = "1" ]; then
   docker network inspect "$NETWORK" >/dev/null 2>&1 || docker network create "$NETWORK"
   if ! docker ps --format '{{.Names}}' | grep -qx local-registry; then
     docker rm -f local-registry >/dev/null 2>&1 || true
-    docker run -d --name local-registry --network "$NETWORK" -p 5000:5000 registry:2 >/dev/null
+    docker run -d --name local-registry --network "$NETWORK" -p 5000:5000 -v sprig-registry-data:/var/lib/registry registry:2 >/dev/null
   fi
   for _ in $(seq 1 30); do curl -fsS "http://localhost:5000/v2/" >/dev/null 2>&1 && break; sleep 0.5; done
 fi
@@ -152,13 +168,25 @@ if [ -n "${SIGN_KEY:-}" ]; then
   docker run --rm $MTTY -v "$OUT_DIR:/w" -v "$KEY_DIR:/keys:ro" alpine:3.20 sh -c \
     "apk add --no-cache minisign >/dev/null 2>&1 && minisign -S ${SIGN_NOPASS:+-W} \
      -s /keys/$(basename "$SIGN_KEY") -m /w/$(basename "$OUT") \
-     -t 'sage-is $NAME:$TAG sha256=$TAR_SHA'"
+     -t 'sage-is $NAME:$ARCHTAG sha256=$TAR_SHA'"
   SIG_LAYER=("$(basename "$OUT").minisig:application/vnd.sage-is.sprig.minisig")
 fi
-PUSH=(oras push "$REGISTRY/$NAME:$TAG" --artifact-type "$ARTIFACT_TYPE")
+# Dockerized oras push (no host oras). Inside the container localhost is the container itself, so a localhost registry is reached by its on-network name.
+
+# **Note** This may not be the right call for ASAP deployment initially.
+PUSH_REG="$REGISTRY"; ORAS_NET=()
+case "$REGISTRY" in localhost:*|127.0.0.1:*)
+  PUSH_REG="local-registry:${REGISTRY##*:}"; ORAS_NET=(--network "$NETWORK");;
+esac
+PUSH=(push "$PUSH_REG/$NAME:$ARCHTAG" --artifact-type "$ARTIFACT_TYPE")
 [ "$INSECURE" = "1" ] && PUSH+=(--plain-http)
-( cd "$OUT_DIR" && "${PUSH[@]}" "$(basename "$OUT"):$LAYER_TYPE" ${SIG_LAYER[@]+"${SIG_LAYER[@]}"} )
+docker run --rm ${ORAS_NET[@]+"${ORAS_NET[@]}"} -v "$OUT_DIR:/w" -w /w "$ORAS_IMG" \
+  "${PUSH[@]}" "$(basename "$OUT"):$LAYER_TYPE" ${SIG_LAYER[@]+"${SIG_LAYER[@]}"}
 
 echo
-echo "pushed: $REGISTRY/$NAME:$TAG"
-echo "catalog: binary_sha256: \"$TAR_SHA\"   repo: \"$REGISTRY/$NAME\"   tag: \"$TAG\""
+echo "pushed: $REGISTRY/$NAME:$ARCHTAG"
+if [ "$ARCH" = "amd64" ]; then
+  echo "catalog: arches[\"amd64\"] = {\"tag\": \"$ARCHTAG\", \"binary_sha256\": \"$TAR_SHA\"}"
+else
+  echo "catalog: binary_sha256: \"$TAR_SHA\"   repo: \"$REGISTRY/$NAME\"   tag: \"$ARCHTAG\""
+fi

@@ -17,6 +17,7 @@
 
 	let catalog: Record<string, any> = {};
 	let grafted: Record<string, any> = {};
+	let hostArch = '';
 
 	// Supervisor lifecycle state -> operator-facing label + badge colour.
 	const stateLabel: Record<string, string> = {
@@ -36,6 +37,7 @@
 			const res = await getSprigCatalog(localStorage.token);
 			catalog = res?.catalog ?? {};
 			grafted = res?.grafted ?? {};
+			hostArch = res?.host_arch ?? '';
 		} catch (e: any) {
 			// Surface the backend's reason (FastAPI throws {detail}) instead of a
 			// generic message — the detail carries the actual fix pointer.
@@ -81,6 +83,11 @@
 			if (res?.stt_reset) {
 				toast.info(
 					$i18n.t('Speech-to-text reset — graft an STT Sprig™ to restore local voice input.')
+				);
+			}
+			if (res?.theme_reset) {
+				toast.info(
+					$i18n.t('Theme reset — the interface returns to the default look on reload.')
 				);
 			}
 		} catch (e: any) {
@@ -150,6 +157,7 @@
 		{#each entries as [name, spec]}
 			{@const g = grafted[name]}
 			{@const isGrafted = g && (g.state === 'rooted' || g.state === 'delivered')}
+			{@const incompatible = spec.compatible === false}
 			<div
 				data-cy="sprig-card"
 				data-sprig={name}
@@ -171,6 +179,16 @@
 							? ` · ${spec.dim}d`
 							: ''}
 					</div>
+					{#if incompatible && !isGrafted}
+						<div
+							data-cy="sprig-incompatible"
+							class="text-xs text-amber-600 dark:text-amber-500 mt-1"
+						>
+							{$i18n.t('Not available on this server ({{arch}})', {
+								arch: hostArch || 'unknown'
+							})}
+						</div>
+					{/if}
 					{#if g}
 						<div class="text-xs text-gray-400 dark:text-gray-500 mt-1 font-mono break-all">
 							{g.base_url}{g.pid ? ` · pid ${g.pid}` : ''}
@@ -204,7 +222,10 @@
 							data-cy="sprig-graft"
 							class="text-xs px-3.5 py-1.5 rounded-full bg-black text-white dark:bg-white dark:text-black hover:opacity-90 disabled:opacity-50 flex items-center gap-1.5"
 							on:click={() => graft(name, spec.capability)}
-							disabled={busyName === name}
+							disabled={busyName === name || incompatible}
+							title={incompatible
+								? $i18n.t('This Sprig™ requires a different server architecture')
+								: ''}
 						>
 							{#if busyName === name}<Spinner className="size-3" />{/if}
 							{g && g.state === 'wilted' ? $i18n.t('Revive') : $i18n.t('Graft')}

@@ -60,8 +60,9 @@ cypress/reports
 
 
 # DB snapshots for upgrade testing (large binary files, synced via SyncThing/B2)
-tools/db_snapshots/*.sqlite
-tools/db_snapshots/*.db
+# Production data snapshots: real user chats/uploads/vectors. NEVER commit.
+# (The upgrade gate reads them read-only and works on volume copies.)
+tools/db_snapshots/
 
 # Outreach drafts (private — not for the public repo)
 # Keep README.md tracked so the folder's purpose is documented in git

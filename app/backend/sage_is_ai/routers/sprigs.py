@@ -32,7 +32,24 @@ router = APIRouter()
 @router.get("/catalog")
 async def get_sprig_catalog(request: Request, user=Depends(get_admin_user)):
     supervisor = request.app.state.sprig_supervisor
-    return {"catalog": supervisor.CATALOG, "grafted": supervisor.handles()}
+    from sage_is_ai.sprigs.supervisor import HOST_ARCH, _graft_refusal
+
+    # Annotate each entry with host compatibility so the admin UI can disable
+    # the Graft button for a sprig this host would refuse, instead of offering a
+    # click that 503s. Uses the SAME fail-closed rule graft() enforces, so the
+    # button and the guard can't drift: `compatible` is True only for an arch
+    # match or a positively-declared architecture-neutral entry.
+    catalog = {}
+    for name, spec in supervisor.CATALOG.items():
+        catalog[name] = {
+            **spec,
+            "compatible": _graft_refusal(spec, HOST_ARCH) is None,
+        }
+    return {
+        "catalog": catalog,
+        "grafted": supervisor.handles(),
+        "host_arch": HOST_ARCH,
+    }
 
 
 @router.post("/graft", response_model=GraftResponse)
@@ -99,6 +116,31 @@ async def graft_sprig(
             name=handle.name,
             capability=handle.capability,
             base_url=handle.base_url,
+            warning=entry.get("post_graft_note"),
+        )
+
+    # Theme sprig: validate the delivered css (fail-closed — a theme that
+    # imports, references external URLs, or looks executable never activates),
+    # then flip the one persisted pointer that /themes/active.css serves.
+    if handle.capability == "theme":
+        from sage_is_ai.sprigs.theme_dispatch import (
+            ThemeValidationError,
+            point_theme_at,
+        )
+
+        try:
+            point_theme_at(request.app, handle)
+        except ThemeValidationError as e:
+            await supervisor.prune(handle.name)
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=f"Graft failed: {e}",
+            )
+        return GraftResponse(
+            status=True,
+            name=handle.name,
+            capability=handle.capability,
+            delivered=True,
             warning=entry.get("post_graft_note"),
         )
 
@@ -174,6 +216,12 @@ async def prune_sprig(
         h.get("capability") == "stt"
         and h.get("base_url") == cfg.STT_OPENAI_API_BASE_URL
     )
+    # Themes have no process and no base_url; active = the config pointer
+    # names this sprig. First deliver-kind capability with a prune-time reset.
+    was_active_theme = (
+        h.get("capability") == "theme"
+        and form_data.name == str(cfg.SPRIG_ACTIVE_THEME or "")
+    )
 
     await supervisor.prune(form_data.name)
 
@@ -226,6 +274,12 @@ async def prune_sprig(
             )
         log.info("pruned active stt sprig '%s'; STT dispatch reset", form_data.name)
 
+    if was_active_theme:
+        # /themes/active.css falls back to the empty default sheet immediately;
+        # the volume copy is gone with the prune, the pointer must follow.
+        cfg.SPRIG_ACTIVE_THEME = ""
+        log.info("pruned active theme sprig '%s'; default look restored", form_data.name)
+
     return {
         "status": True,
         "name": form_data.name,
@@ -233,4 +287,5 @@ async def prune_sprig(
         "embedding_reset": was_active_embedding,
         "reranking_reset": was_active_reranker,
         "stt_reset": was_active_stt,
+        "theme_reset": was_active_theme,
     }

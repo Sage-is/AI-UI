@@ -21,7 +21,7 @@ echo "== fresh rootstock for e2e ($IMG) =="
 docker rm -f "$ROOT" >/dev/null 2>&1 || true
 docker volume rm "$VOL" >/dev/null 2>&1 || true
 docker run -d --name "$ROOT" --network "$NET" -p "$PORT:8080" \
-  -e ENABLE_SIGNUP=True -e WEBUI_AUTH=True \
+  -e SPRIG_REGISTRY=local-registry:5000 -e ENABLE_SIGNUP=True -e WEBUI_AUTH=True \
   -v "$VOL:/app/backend/data" "$IMG" >/dev/null
 for i in $(seq 1 120); do
   [ "$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:$PORT/health" 2>/dev/null)" = "200" ] && break

@@ -17,10 +17,22 @@ Rootstock™ restart, re-extracting deliver overlays from the volume-cached tar 
 re-spawning embedding cultivars offline. One worker owns the reconcile (flock).
 Revive is not a separate op — re-grafting a wilted name re-roots it through graft().
 
-DEFERRED: sigstore/cosign signing (sha256 pin is the current trust anchor),
-restart-with-backoff health-watch, full multi-worker support (one worker spawns
-children; the per-worker catalog view can still differ), structured child-log
-capture (server children are DEVNULL'd, so a failed graft's stderr is not surfaced).
+SHIPPED (2026-07-09..11): minisign artifact signing verified offline before
+extraction (artifact.py + minisign.py; sha256 pin remains the allowlist), theme
+capability (theme_dispatch.py), env-driven Sprig Store™ (SPRIG_REGISTRY below),
+and the host-architecture guard (arches field; refuse before bytes move).
+
+SHIPPED (2026-07-12): env-driven registry cutover, boot reachability + config
+checks, multi-arch catalog schema (`arches` dict with per-arch tag/sha
+overrides — an amd64 build drops in as one entry per artifact), and the amd64
+rootstock image (`make it_build_amd64`, boots + guards natively).
+
+DEFERRED: restart-with-backoff health-watch, full multi-worker support (one
+worker spawns children; the per-worker catalog view can still differ),
+structured child-log capture (server children are DEVNULL'd, so a failed
+graft's stderr is not surfaced), the amd64 ARTIFACT builds themselves (8.J —
+schema + image ready; per-artifact binary/wheel builds remain, see
+docs/deploy-sage-startr-cloud.md).
 """
 
 from __future__ import annotations
@@ -30,6 +42,7 @@ import fcntl
 import json
 import logging
 import os
+import platform
 import socket
 import sys
 import time
@@ -46,6 +59,138 @@ _MOCK_EMBEDDING_DIM = 384
 
 _HEALTH_TIMEOUT_S = 15.0
 _SHUTDOWN_GRACE_S = 5.0
+
+# ---------------------------------------------------------------------------
+# Sprig Store™ (registry) resolution — configuration, not contract.
+#
+# SPRIG_REGISTRY names the OCI registry every catalog artifact pulls from.
+# Default: ghcr.io/sage-is — the current public home, NOT the permanent one
+# (a Sage.is-hosted registry in the cluster is the aim, with GHCR as mirror;
+# point SPRIG_REGISTRY at it, or at a pull-through proxy of GHCR, and nothing
+# else changes: the sha256 pins guarantee the same bytes from any host).
+# Dev boxes and the smoke gates set SPRIG_REGISTRY=local-registry:5000.
+#
+# SPRIG_REGISTRY_INSECURE allows plain-HTTP pulls. It defaults ON only for
+# loopback/local-registry hosts and OFF for everything else: a public
+# registry over plain HTTP is a config mistake, refused unless forced.
+SPRIG_REGISTRY = os.environ.get("SPRIG_REGISTRY", "ghcr.io/sage-is").strip().rstrip("/")
+
+
+def _default_insecure(registry: str) -> bool:
+    host = registry.split("/")[0].split(":")[0].lower()
+    return host in ("localhost", "127.0.0.1", "local-registry", "host.docker.internal")
+
+
+_INSECURE_ENV = os.environ.get("SPRIG_REGISTRY_INSECURE", "").strip().lower()
+SPRIG_REGISTRY_INSECURE = (
+    _INSECURE_ENV in ("1", "true", "yes")
+    if _INSECURE_ENV
+    else _default_insecure(SPRIG_REGISTRY)
+)
+
+
+def _registry_config_error() -> str | None:
+    """Return a human message if SPRIG_REGISTRY is malformed, else None.
+
+    A scheme prefix (oras pull takes a bare host/path) or uppercase in the
+    org/path (OCI names are lowercase) breaks every graft with a confusing
+    downstream error. Catch it at boot instead.
+    """
+    if "://" in SPRIG_REGISTRY:
+        return (
+            f"SPRIG_REGISTRY='{SPRIG_REGISTRY}' has a scheme prefix; it must be "
+            f"a bare host[/path] (e.g. ghcr.io/sage-is). Set "
+            f"SPRIG_REGISTRY_INSECURE=1 for a plain-HTTP registry instead."
+        )
+    path = SPRIG_REGISTRY.split("/", 1)[1] if "/" in SPRIG_REGISTRY else ""
+    if path and path != path.lower():
+        return (
+            f"SPRIG_REGISTRY='{SPRIG_REGISTRY}' has uppercase in the path; OCI "
+            f"repository names are lowercase. Use '{SPRIG_REGISTRY.split('/')[0]}/"
+            f"{path.lower()}'."
+        )
+    return None
+
+# ---------------------------------------------------------------------------
+# Host-architecture guard. Binary sprigs are built per-arch; exec'ing an
+# aarch64 llama-server on an x86_64 host dies with "Exec format error", a
+# message nobody can act on. Refuse at graft time, BEFORE any bytes move.
+#
+# Catalog `arches` is a dict {arch: override} keyed by the host arches an entry
+# supports. Entries WITHOUT the field are architecture-neutral (css tokens,
+# wasm, fonts, pure python) and graft anywhere. Each override may carry a
+# per-arch `tag` and `binary_sha256` (the same repo serves both arches under
+# different tags, e.g. v1 / v1-amd64); an empty override {} means "use the
+# entry's top-level tag/sha" (the arm64 default). graft() overlays the
+# matching arch's override onto the spec before pulling. SPRIG_ARCH overrides
+# detection for tests.
+_ARCH_ALIASES = {"aarch64": "arm64", "arm64": "arm64", "x86_64": "amd64", "amd64": "amd64"}
+_raw_arch = (os.environ.get("SPRIG_ARCH", "").strip() or platform.machine()).lower()
+HOST_ARCH = _ARCH_ALIASES.get(_raw_arch, _raw_arch)
+
+# server selectors that exec a native binary child (not `python -m`): an
+# arch-mismatched one dies with "Exec format error", so these can NEVER be
+# architecture-neutral. Single home for the list (graft/_build_argv reuse it).
+_BINARY_SERVERS = ("llama-binary", "whisper-binary")
+_KNOWN_ARCHES = frozenset({"arm64", "amd64"})
+NEUTRAL = object()  # arch sentinel: grafts anywhere (wasm/css/fonts/pure-python)
+
+
+def _graft_refusal(spec: dict, host_arch: str) -> str | None:
+    """The ONE architecture rule. Returns a human reason this host must REFUSE
+    to graft ``spec``, else None. Shared by graft() (enforcement) and the
+    /catalog endpoint (UI Graft-button gating) so the two can't drift.
+
+    Fail-closed: anything that execs a binary or pulls an artifact must
+    POSITIVELY declare either a host binding (``arches``) or neutrality
+    (``arch_neutral``). Missing both is refused — never defaulted to
+    graft-anywhere, which would spawn a mismatched binary / arch-bound runtime.
+    """
+    arches = spec.get("arches")
+    if arches is not None:
+        return None if host_arch in arches else (
+            f"requires {'/'.join(sorted(arches))} and this host is {host_arch}"
+        )
+    if spec.get("arch_neutral"):
+        return None
+    if spec.get("server") in _BINARY_SERVERS:
+        return f"execs a native binary but declares no host architecture (host {host_arch})"
+    if spec.get("delivery") == "oci-artifact":
+        return f"delivers a pulled artifact but is not marked arch_neutral (host {host_arch})"
+    return None  # in-image, non-pulling (e.g. mock): genuinely graft-anywhere
+
+
+def _sprig(spec: dict, *, arch) -> dict:
+    """Build a CATALOG spec, FORCING an explicit host-architecture decision.
+
+    ``arch`` is keyword-only with NO default, so a shipped catalog entry cannot
+    be written without deciding — a forgotten arch is a TypeError at import, on
+    every host, before ship (caught by the fresh-container boot in the smoke
+    gate). Pass either:
+      * NEUTRAL — grafts anywhere; stamps a POSITIVE ``arch_neutral`` marker so
+        the runtime rule can tell "neutral" from "missing". Refused for binary
+        servers, which always exec native code.
+      * a non-empty ``{host_arch: override}`` dict — host-bound. Each override
+        may carry per-arch ``tag``/``binary_sha256``; ``{}`` means "use the
+        top-level tag/sha". Unknown arch keys (typos that would silently never
+        match HOST_ARCH) are refused.
+    """
+    server = spec.get("server")
+    if arch is NEUTRAL:
+        if server in _BINARY_SERVERS:
+            raise ValueError(
+                f"a {server} sprig (capability {spec.get('capability')!r}) execs a "
+                f"native binary and cannot be arch_neutral; pass arch={{'arm64': {{}}}}."
+            )
+        return {**spec, "arch_neutral": True}
+    if not isinstance(arch, dict) or not arch:
+        raise ValueError("arch must be NEUTRAL or a non-empty {host_arch: override} dict")
+    unknown = set(arch) - _KNOWN_ARCHES
+    if unknown:
+        raise ValueError(
+            f"unknown arch key(s) {sorted(unknown)}; known: {sorted(_KNOWN_ARCHES)}"
+        )
+    return {**spec, "arches": arch}
 
 
 def _reserve_loopback_port() -> int:
@@ -75,19 +220,19 @@ class SprigSupervisor:
     #   dim:    declared embedding width (the vector store binds this per collection)
     #   ready_timeout_s: per-cultivar health deadline (real models download weights)
     CATALOG: dict[str, dict] = {
-        "mock-embedding": {
+        "mock-embedding": _sprig({
             "capability": "embedding",
             "server": "mock",
             "model": "mock-embedding",
             "dim": _MOCK_EMBEDDING_DIM,
             "ready_timeout_s": 15.0,
-        },
+        }, arch=NEUTRAL),
         # all-MiniLM-onnx (live chroma-S3/HF pull) was RETIRED 2026-07-05: it
         # spawned the byte-identical child to minilm-onnx-inhoused below, and
         # after any inhoused graft it silently served from the seeded cache
         # anyway. The catalog is the allowlist — keeping it kept an
         # admin-clickable ~80MB third-party egress on a zero-egress deployment.
-        "minilm-onnx-inhoused": {
+        "minilm-onnx-inhoused": _sprig({
             "capability": "embedding",
             "server": "embedding",
             "backend": "onnx",
@@ -96,12 +241,12 @@ class SprigSupervisor:
             "ready_timeout_s": 60.0,  # weights pre-seeded by oras pull, no S3 download
             # --- graft #3: OCI-artifact offline delivery (in-housed weights) ---
             "delivery": "oci-artifact",
-            "repo": "local-registry:5000/sprig-embedding-minilm-onnx",
+            "repo": f"{SPRIG_REGISTRY}/sprig-embedding-minilm-onnx",
             "tag": "v1",
-            "insecure": True,  # localhost dev registry over HTTP. PROD: ghcr.io/sage-is + drop.
+            "insecure": SPRIG_REGISTRY_INSECURE,
             "binary_sha256": "14374a654078dea0b624b6cee6cadcefbcd714ef5964ffee1989fec578e6121d",
-        },
-        "multilingual-e5-large": {
+        }, arch={"arm64": {}}),
+        "multilingual-e5-large": _sprig({
             "capability": "embedding",
             "server": "embedding",
             # onnx-transformer: onnxruntime + tokenizers, NO torch. Slim rootstock.
@@ -112,12 +257,12 @@ class SprigSupervisor:
             "ready_timeout_s": 120.0,  # weights pre-seeded by oras pull, no HF download
             "delivery": "oci-artifact",
             "seed": "model-dir",
-            "repo": "local-registry:5000/sprig-embedding-e5-large-onnx",
+            "repo": f"{SPRIG_REGISTRY}/sprig-embedding-e5-large-onnx",
             "tag": "v1",
-            "insecure": True,
+            "insecure": SPRIG_REGISTRY_INSECURE,
             "binary_sha256": "8fbe2a95fd729deb50a6fa9df7e7d49c78199ca3fa506c08b4f97161fca08a17",
-        },
-        "bge-large-en-v1.5": {
+        }, arch={"arm64": {}}),
+        "bge-large-en-v1.5": _sprig({
             "capability": "embedding",
             "server": "embedding",
             "backend": "onnx-transformer",
@@ -127,16 +272,16 @@ class SprigSupervisor:
             "ready_timeout_s": 120.0,
             "delivery": "oci-artifact",
             "seed": "model-dir",
-            "repo": "local-registry:5000/sprig-embedding-bge-onnx",
+            "repo": f"{SPRIG_REGISTRY}/sprig-embedding-bge-onnx",
             "tag": "v1",
-            "insecure": True,
+            "insecure": SPRIG_REGISTRY_INSECURE,
             "binary_sha256": "df16cc5d077c5f9756b130e435e26629beea7bf07ea00c7551e2fc96f7f9a410",
-        },
+        }, arch={"arm64": {}}),
         # "deliver" sprig — NOT a running server. Pulls the Svelte dev/build
         # toolchain (node_modules, ~1.1GB) from OUR registry and extracts it into
         # /app on demand, so it lives OUTSIDE the base rootstock image (dev mode
         # grafts it; production never carries it). Decision #14 dev-svelte.
-        "dev-svelte": {
+        "dev-svelte": _sprig({
             "capability": "dev",
             "server": "deliver",
             "model": "svelte dev/build toolchain (node_modules + bun)",
@@ -146,16 +291,16 @@ class SprigSupervisor:
             "target": "/app",
             "sentinel": "node_modules",
             "ready_timeout_s": 120.0,
-            "repo": "local-registry:5000/sprig-dev-svelte",
+            "repo": f"{SPRIG_REGISTRY}/sprig-dev-svelte",
             "tag": "v2",
-            "insecure": True,
+            "insecure": SPRIG_REGISTRY_INSECURE,
             "binary_sha256": "c801539acd1373c2498c8f170eb4cba2643a0d48a15497d3446aafdbb418cb38",
-        },
+        }, arch={"arm64": {}}),
         # Vector DB substrate — the chromadb closure (~170MB: chromadb, onnxruntime,
         # kubernetes, grpc, hnswlib, posthog) extracted straight into site-packages.
         # factory.py boots with VECTOR_DB_CLIENT=None when absent; restart after
         # delivery to activate (import bindings are frozen at boot).
-        "vector-chroma": {
+        "vector-chroma": _sprig({
             "capability": "vector",
             "server": "deliver",
             "model": "chromadb vector DB + ML runtime (site-packages overlay)",
@@ -166,14 +311,14 @@ class SprigSupervisor:
             "sentinel": "chromadb",
             "post_graft_note": "Vector DB delivered. Restart the Rootstock™ to activate document search.",
             "ready_timeout_s": 180.0,
-            "repo": "local-registry:5000/sprig-vector-chroma",
+            "repo": f"{SPRIG_REGISTRY}/sprig-vector-chroma",
             # v2 (8.I.2): + numpy, tokenizers, huggingface_hub closure — these
             # left the base rootstock; the onnx embedding cultivars pre-check
             # for them and point here.
             "tag": "v2",
-            "insecure": True,
+            "insecure": SPRIG_REGISTRY_INSECURE,
             "binary_sha256": "382b37fd4e0bf4131a26163db075eb1e842f87443f0c9bd200cab2727b552553",
-        },
+        }, arch={"arm64": {}}),
         # GGUF cultivar (8.I.3, gates green 2026-07-02): e5-large Q8_0 served by
         # a static-PIE musl llama-server (llama.cpp b9859, built in-house) — ONE
         # binary + ONE model file, zero Python deps in the child, any libc.
@@ -182,7 +327,7 @@ class SprigSupervisor:
         # onnx CPU throughput. minilm/bge GGUF are HELD — llama.cpp's WPM
         # tokenizer diverges from HF on Hangul (22 vs 52 tokens); their onnx
         # cultivars remain canonical. Artifact is arm64; amd64 variety = 8.J.
-        "e5-large-gguf": {
+        "e5-large-gguf": _sprig({
             "capability": "embedding",
             "server": "llama-binary",
             "model": "intfloat/multilingual-e5-large (GGUF Q8_0)",
@@ -192,11 +337,11 @@ class SprigSupervisor:
             "seed": "model-dir",
             "sentinel": "model.gguf",
             "ready_timeout_s": 240.0,
-            "repo": "local-registry:5000/sprig-embedding-e5-gguf",
+            "repo": f"{SPRIG_REGISTRY}/sprig-embedding-e5-gguf",
             "tag": "v1",
-            "insecure": True,
+            "insecure": SPRIG_REGISTRY_INSECURE,
             "binary_sha256": "16f01a8d37e0e0ced47d0faef2b64de69d072f81399ac0c8b7065d72c459cdec",
-        },
+        }, arch={"arm64": {}}),
         # Reranker cultivar — cross-encoder relevance scoring for hybrid search.
         # Same static-PIE llama-server (b9859) as e5-large-gguf, in --rerank
         # mode: /v1/rerank speaks the Jina/Cohere contract the existing
@@ -204,7 +349,7 @@ class SprigSupervisor:
         # ONE binary + ONE model file, zero Python deps in the child. -ub/-c
         # 2048: each (query, doc) pair must fit one ubatch (non-causal encoder);
         # default CHUNK_SIZE chunks fit comfortably.
-        "bge-reranker-v2-m3-gguf": {
+        "bge-reranker-v2-m3-gguf": _sprig({
             "capability": "reranker",
             "server": "llama-binary",
             "model": "BAAI/bge-reranker-v2-m3 (GGUF Q8_0)",
@@ -215,16 +360,16 @@ class SprigSupervisor:
             "seed": "model-dir",
             "sentinel": "model.gguf",
             "ready_timeout_s": 240.0,
-            "repo": "local-registry:5000/sprig-reranker-bge-gguf",
+            "repo": f"{SPRIG_REGISTRY}/sprig-reranker-bge-gguf",
             "tag": "v1",
-            "insecure": True,
+            "insecure": SPRIG_REGISTRY_INSECURE,
             "binary_sha256": "7c84c1d90f3eb217bff7f414569dafcd8b129731d023d308559f115f6143056f",
-        },
+        }, arch={"arm64": {}}),
         # STT cultivar — static whisper.cpp whisper-server + ggml base
         # (multilingual, q8_0). Serves /v1/audio/transcriptions, which is
         # EXACTLY where audio.py's STT_ENGINE="openai" client already POSTs —
         # zero client changes. Kills the last local-STT HuggingFace pull.
-        "whisper-base-ggml": {
+        "whisper-base-ggml": _sprig({
             "capability": "stt",
             "server": "whisper-binary",
             "model": "whisper base multilingual (ggml q8_0)",
@@ -238,17 +383,53 @@ class SprigSupervisor:
                 "Local speech-to-text active. For browser voice notes "
                 "(webm/opus), also graft media-ffmpeg."
             ),
-            "repo": "local-registry:5000/sprig-stt-whisper-base",
+            "repo": f"{SPRIG_REGISTRY}/sprig-stt-whisper-base",
             "tag": "v1",
-            "insecure": True,
+            "insecure": SPRIG_REGISTRY_INSECURE,
             "binary_sha256": "5d570534a7f4524759ef1c9e4fa0fc5ea30652c0c7bd9008c732716582ebc641",
-        },
+        }, arch={"arm64": {}}),
+        # Interface themes — design tokens only (one self-contained theme.css),
+        # extracted onto the DATA volume (seed=model-dir) and served at
+        # /themes/active.css. No process, no executable code: the css is
+        # validated at graft time (sprigs/theme_dispatch.py, fail-closed).
+        # The last grafted theme wins the active pointer; pruning the active
+        # one restores the default look. Full source: scripts/themes/.
+        "theme-workshop-bio": _sprig({
+            "capability": "theme",
+            "server": "deliver",
+            "model": "Workshop theme — Bio (green)",
+            "dim": 0,
+            "delivery": "oci-artifact",
+            "seed": "model-dir",
+            "sentinel": "theme.css",
+            "ready_timeout_s": 60.0,
+            "post_graft_note": "Theme active. Reload the page to see it.",
+            "repo": f"{SPRIG_REGISTRY}/sprig-theme-workshop-bio",
+            "tag": "v1",
+            "insecure": SPRIG_REGISTRY_INSECURE,
+            "binary_sha256": "e2296b924d39576b462669741d87e1a85cda0cf8e720425cf019cbf6592bfc68",
+        }, arch=NEUTRAL),
+        "theme-workshop-math": _sprig({
+            "capability": "theme",
+            "server": "deliver",
+            "model": "Workshop theme — Math (blue)",
+            "dim": 0,
+            "delivery": "oci-artifact",
+            "seed": "model-dir",
+            "sentinel": "theme.css",
+            "ready_timeout_s": 60.0,
+            "post_graft_note": "Theme active. Reload the page to see it.",
+            "repo": f"{SPRIG_REGISTRY}/sprig-theme-workshop-math",
+            "tag": "v1",
+            "insecure": SPRIG_REGISTRY_INSECURE,
+            "binary_sha256": "5a26d18d5aeaeac6a87e253e21ed5da050bb4d527614d30f7dbcbb52c05c9c95",
+        }, arch=NEUTRAL),
         # RAG engines — langchain + langchain-community + numpy + format-loader
         # deps (pypdf, docx2txt, rank_bm25) as a site-packages overlay. The
         # overlay dir is on sys.path from boot, so document chunking/loading and
         # hybrid search work immediately after graft; ONLY web-page loading
         # needs a restart (web/utils.py subclasses loader bases at import).
-        "rag-loaders": {
+        "rag-loaders": _sprig({
             "capability": "rag",
             "server": "deliver",
             "model": "langchain RAG engines + document loaders (overlay)",
@@ -259,15 +440,15 @@ class SprigSupervisor:
             "sentinel": "langchain",
             "post_graft_note": "Document processing active. Web-page loading activates after a restart.",
             "ready_timeout_s": 180.0,
-            "repo": "local-registry:5000/sprig-rag-loaders",
+            "repo": f"{SPRIG_REGISTRY}/sprig-rag-loaders",
             "tag": "v1",
-            "insecure": True,
+            "insecure": SPRIG_REGISTRY_INSECURE,
             "binary_sha256": "f207537072f6c055fe94cef57c27bef8213199770290708e8871ce132cd96c5d",
-        },
+        }, arch={"arm64": {}}),
         # PDF chat export — fpdf2 + fontTools + pillow into the overlay dir plus
         # the CJK Noto fonts into /app/static/fonts (frontend pdf-style.css uses
         # them too). Root-anchored tar; no restart needed (fpdf import is lazy).
-        "export-document": {
+        "export-document": _sprig({
             "capability": "export",
             "server": "deliver",
             "model": "PDF export (fpdf2 + CJK fonts)",
@@ -277,14 +458,14 @@ class SprigSupervisor:
             "target": "/",
             "sentinel": "usr/local/lib/python3.11/site-packages/fpdf",
             "ready_timeout_s": 180.0,
-            "repo": "local-registry:5000/sprig-export-document",
+            "repo": f"{SPRIG_REGISTRY}/sprig-export-document",
             "tag": "v1",
-            "insecure": True,
+            "insecure": SPRIG_REGISTRY_INSECURE,
             "binary_sha256": "5139f34d07ccbff59ae29fd041c2f7492cef28cee74aa08b58bf4523321235d8",
-        },
+        }, arch={"arm64": {}}),
         # Pyodide (browser code interpreter) — served from /app/build/pyodide
         # (workers load indexURL '/pyodide/'). Serves immediately after graft.
-        "code-pyodide": {
+        "code-pyodide": _sprig({
             "capability": "code",
             "server": "deliver",
             "model": "pyodide browser code interpreter",
@@ -294,14 +475,14 @@ class SprigSupervisor:
             "target": "/app/build/pyodide",
             "sentinel": "pyodide.js",
             "ready_timeout_s": 180.0,
-            "repo": "local-registry:5000/sprig-code-pyodide",
+            "repo": f"{SPRIG_REGISTRY}/sprig-code-pyodide",
             "tag": "v1",
-            "insecure": True,
+            "insecure": SPRIG_REGISTRY_INSECURE,
             "binary_sha256": "d7683230a86a8874abce78889f06acfb40d3f1f545f4d85d089e862a88e9bf00",
-        },
+        }, arch=NEUTRAL),
         # onnxruntime-web wasm — in-browser ML (Evaluations leaderboard, kokoro
         # TTS worker); both consumers set wasmPaths='/wasm/'. Serves immediately.
-        "browser-ml": {
+        "browser-ml": _sprig({
             "capability": "browser-ml",
             "server": "deliver",
             "model": "onnxruntime-web wasm (in-browser ML)",
@@ -311,14 +492,14 @@ class SprigSupervisor:
             "target": "/app/build/wasm",
             "sentinel": "ort-wasm-simd-threaded.jsep.wasm",
             "ready_timeout_s": 120.0,
-            "repo": "local-registry:5000/sprig-browser-ml",
+            "repo": f"{SPRIG_REGISTRY}/sprig-browser-ml",
             "tag": "v1",
-            "insecure": True,
+            "insecure": SPRIG_REGISTRY_INSECURE,
             "binary_sha256": "b8b4617991ee2e1655dd9bee6a48f2e63d64ccacd578fe3301f3603a507e8b88",
-        },
+        }, arch=NEUTRAL),
         # Static ffmpeg + ffprobe (johnvansickle 7.0.2) — audio transcode for
         # pydub/whisper paths. Replaces the ~110MB apt ffmpeg codec stack.
-        "media-ffmpeg": {
+        "media-ffmpeg": _sprig({
             "capability": "media",
             "server": "deliver",
             "model": "static ffmpeg + ffprobe 7.0.2",
@@ -328,14 +509,14 @@ class SprigSupervisor:
             "target": "/usr/local/bin",
             "sentinel": "ffmpeg",
             "ready_timeout_s": 120.0,
-            "repo": "local-registry:5000/sprig-media-ffmpeg",
+            "repo": f"{SPRIG_REGISTRY}/sprig-media-ffmpeg",
             "tag": "v1",
-            "insecure": True,
+            "insecure": SPRIG_REGISTRY_INSECURE,
             "binary_sha256": "cfe4304c74ebcc04a8ee221968fdc783f46addbf5646c14971885bbb0e613bb2",
-        },
+        }, arch={"arm64": {}}),
         # rclone (static Go binary) — cloud backup/restore. restore_backup_start.sh
         # skips backups gracefully when absent.
-        "backup-rclone": {
+        "backup-rclone": _sprig({
             "capability": "backup",
             "server": "deliver",
             "model": "rclone (cloud backup)",
@@ -345,11 +526,11 @@ class SprigSupervisor:
             "target": "/usr/local/bin",
             "sentinel": "rclone",
             "ready_timeout_s": 120.0,
-            "repo": "local-registry:5000/sprig-backup-rclone",
+            "repo": f"{SPRIG_REGISTRY}/sprig-backup-rclone",
             "tag": "v1",
-            "insecure": True,
+            "insecure": SPRIG_REGISTRY_INSECURE,
             "binary_sha256": "df0f3c87f32c5ae4e9c71cb976bc25db870c53c8b5c5491d8cba8844a216a61f",
-        },
+        }, arch={"arm64": {}}),
     }
 
     def __init__(self, app):
@@ -361,6 +542,12 @@ class SprigSupervisor:
         # Suppresses state.json writes while reconcile is re-grafting, so a sprig
         # that fails to come up this boot stays in the desired-state for next boot.
         self._reconciling = False
+        # Desired-state entries that could NOT be re-grafted this boot for a
+        # host reason (arch mismatch, registry unreachable) — NOT a prune. Kept
+        # here so a later graft/prune of something else doesn't erode them out
+        # of state.json; if the volume moves back to a compatible host they
+        # restore. Cleared per-name on a successful graft or an explicit prune.
+        self._deferred: dict[str, dict] = {}
 
     async def start(self) -> None:
         """Restore grafts recorded on the data volume (state.json) so a grafted
@@ -381,8 +568,77 @@ class SprigSupervisor:
                 "Single-owner reconcile keeps the capability itself correct.",
                 workers,
             )
+        self._check_boot_config()
         await self._reconcile()
+        await self._check_registry_reachable()
         log.info("SprigSupervisor ready")
+
+    def _check_boot_config(self) -> None:
+        """Surface Sprig™ misconfiguration at boot, loudly, once — instead of as
+        a confusing per-graft failure later."""
+        # Architecture: log what we detected; warn on an unrecognized machine
+        # string (a typo in SPRIG_ARCH or an exotic uname disables every
+        # arch-bound graft, and a silent one is a debugging trap).
+        if HOST_ARCH in ("arm64", "amd64"):
+            # warning-level for operational visibility (the supervisor's logger
+            # filters info; this matches the file's "minisign OK"/"sha256 OK"
+            # convention). The host arch decides what can graft — worth a line.
+            log.warning("Sprig™ host architecture: %s", HOST_ARCH)
+        else:
+            log.warning(
+                "Sprig™ host architecture '%s' is unrecognized (from %s); every "
+                "architecture-bound sprig will refuse to graft. Set SPRIG_ARCH "
+                "to arm64 or amd64 if this host is actually one of those.",
+                HOST_ARCH,
+                "SPRIG_ARCH" if os.environ.get("SPRIG_ARCH") else "platform.machine()",
+            )
+        # Registry shape.
+        err = _registry_config_error()
+        if err:
+            log.error("Sprig™ registry misconfigured: %s", err)
+        # Signing ratchet with no key to verify against would brick every
+        # signature-required graft (including reconcile of previously-legal
+        # cached tars). Name it now.
+        require_signed = os.environ.get("SPRIG_REQUIRE_SIGNED", "").lower() in (
+            "1", "true", "yes",
+        )
+        from sage_is_ai.sprigs.artifact import _DEFAULT_PUBKEY
+
+        have_key = bool(
+            os.environ.get("SPRIG_MINISIGN_PUBKEY", "").strip() or _DEFAULT_PUBKEY
+        )
+        if require_signed and not have_key:
+            log.error(
+                "SPRIG_REQUIRE_SIGNED is set but no public key is configured "
+                "(SPRIG_MINISIGN_PUBKEY empty, no baked _DEFAULT_PUBKEY): EVERY "
+                "signature-required graft — including restoring existing grafts "
+                "on this boot — will be refused. Set SPRIG_MINISIGN_PUBKEY or "
+                "unset SPRIG_REQUIRE_SIGNED.",
+            )
+
+    async def _check_registry_reachable(self) -> None:
+        """Non-fatal boot probe of the Sprig Store™. Offline boots stay legal
+        (reconcile restores from the volume cache with no network); this only
+        makes an unreachable registry VISIBLE at boot instead of surfacing as
+        a confusing per-graft 503 later. Any HTTP status counts as reachable
+        (ghcr answers /v2/ with 401)."""
+        host = SPRIG_REGISTRY.split("/")[0]
+        scheme = "http" if SPRIG_REGISTRY_INSECURE else "https"
+        url = f"{scheme}://{host}/v2/"
+        try:
+            await asyncio.to_thread(requests.get, url, timeout=4)
+            self.registry_reachable = True
+            log.info("Sprig Store™ reachable: %s (%s)", SPRIG_REGISTRY, url)
+        except requests.RequestException as exc:
+            self.registry_reachable = False
+            log.warning(
+                "Sprig Store™ %s is UNREACHABLE from this host (%s). Existing "
+                "grafts keep serving from the volume cache; NEW grafts and tag "
+                "upgrades will fail until the registry is reachable or "
+                "SPRIG_REGISTRY points elsewhere.",
+                SPRIG_REGISTRY,
+                exc,
+            )
 
     async def shutdown(self) -> None:
         for name in list(self._sprigs):
@@ -432,6 +688,13 @@ class SprigSupervisor:
             }
             for name, h in self._sprigs.items()
         ]
+        # Preserve desired-state entries deferred this boot (host-incompatible,
+        # registry unreachable) so they are not silently dropped by an unrelated
+        # graft/prune. They restore if the volume returns to a compatible host.
+        live_names = set(self._sprigs)
+        for name, entry in self._deferred.items():
+            if name not in live_names:
+                entries.append(entry)
         path = self._state_path()
         try:
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -509,8 +772,17 @@ class SprigSupervisor:
 
                             point_stt_at(self.app, handle)
                     log.info("reconciled Sprig™ '%s'", name)
+                    self._deferred.pop(name, None)
                 except Exception as exc:  # noqa: BLE001 — best-effort restore
-                    log.warning("failed to reconcile Sprig™ '%s': %s", name, exc)
+                    # Keep the entry in the desired-state: this host cannot
+                    # graft it now (wrong arch, registry down), but the volume
+                    # may return to a host that can. Only an explicit prune,
+                    # or the entry leaving the catalog, removes it.
+                    self._deferred[name] = entry
+                    log.warning(
+                        "deferred Sprig™ '%s' (%s); kept in desired-state: %s",
+                        name, cap, exc,
+                    )
         finally:
             self._reconciling = False
 
@@ -692,6 +964,33 @@ class SprigSupervisor:
                 f"unknown sprig '{name}' or unsupported capability '{capability}'"
             )
 
+        # Architecture guard — fail CLOSED. Refuse a host-incompatible (or
+        # undeclared) artifact BEFORE any bytes move / any spawn — the alternative
+        # is "Exec format error" at spawn time (for binaries) or an onnxruntime
+        # import failure (for the weight cultivars, whose serving overlay is
+        # arch-bound). "requires", not "ships": some arch-bound entries are
+        # pure-data artifacts that still need an arm64 runtime to serve.
+        #
+        # Raising here wilts THIS sprig cleanly: the router turns it into a 503
+        # (routers/sprigs.py graft handler) and reconcile defers it — every other
+        # capability keeps serving. This is what protects a force-installed /
+        # dynamic / malformed spec from reaching the spawn that would crash.
+        reason = _graft_refusal(spec, HOST_ARCH)
+        if reason is not None:
+            raise ValueError(
+                f"'{name}' {reason}. Architecture-neutral sprigs (themes, "
+                f"code-pyodide, browser-ml) graft anywhere; a {HOST_ARCH} build of "
+                f"a host-bound sprig may not be published yet (roadmap 8.J). Catalog "
+                f"entries declare this via _sprig(arch=...); a dynamically added "
+                f"sprig must too."
+            )
+        # Overlay the per-arch tag/sha so the pull targets this host's build.
+        arches = spec.get("arches")
+        if arches:
+            override = arches[HOST_ARCH]  # refusal above ensured HOST_ARCH in arches
+            if override:
+                spec = {**spec, **override}
+
         # "deliver" sprigs (dev/build toolchain, assets) have no server — just
         # pull + extract the artifact into its target.
         if spec.get("server") == "deliver":
@@ -728,7 +1027,7 @@ class SprigSupervisor:
                 "HF_HUB_OFFLINE": "1",
                 "TRANSFORMERS_OFFLINE": "1",
             }
-            if spec.get("server") in ("llama-binary", "whisper-binary"):
+            if spec.get("server") in _BINARY_SERVERS:
                 # Binary+model cultivar: paths ride in argv, not env.
                 argv = [a.replace("{artifact_dir}", served) for a in argv]
             elif spec.get("backend") == "onnx-transformer":
@@ -757,7 +1056,7 @@ class SprigSupervisor:
         port = _reserve_loopback_port()
         # Binary sprigs exec the delivered static binary directly; python
         # cultivars run as `python -m <module>` children.
-        if spec.get("server") in ("llama-binary", "whisper-binary"):
+        if spec.get("server") in _BINARY_SERVERS:
             exec_argv = [a.format(port=port) for a in argv]
         else:
             exec_argv = [sys.executable, "-m", *[a.format(port=port) for a in argv]]
@@ -803,6 +1102,10 @@ class SprigSupervisor:
         name (graft()) re-roots a wilted/pruned cultivar through the normal path.
         """
         present = name in self._sprigs
+        # An explicit prune is the ONE way to drop a deferred (host-incompatible)
+        # entry from the desired-state; otherwise it would resurrect on a
+        # compatible host after the operator meant to remove it.
+        self._deferred.pop(name, None)
         await self._terminate(name)
         self._persist_state()
         return present

@@ -48,7 +48,17 @@ GIT_REPO_SLUG := $(shell git remote get-url origin 2>/dev/null | sed -E 's|\.git
 # current VOLUME_DATA (e.g. "sage-open-webui:/app/backend/data") while fresh
 # installs get the new default.
 IMAGE_NAME ?= $(GIT_REPO_SLUG)
-GHCR_IMAGE_NAME ?= ghcr.io/$(GIT_REPO_SLUG)
+# REGISTRY is the ONE knob for where the app image AND the Sprig™ catalog publish.
+# Default ghcr.io/sage-is (current public home). Point it at an in-cluster
+# registry later — `make ship REGISTRY=registry.example.com/sage-is` —
+# and nothing else changes: sha256 pins guarantee the same bytes from any host.
+REGISTRY ?= ghcr.io/sage-is
+# Image repo derives from REGISTRY so the image and catalog track the same host.
+# notdir(sage-is/ai-ui)=ai-ui, so the default stays byte-identical to the old
+# `ghcr.io/$(GIT_REPO_SLUG)`.
+GHCR_IMAGE_NAME ?= $(REGISTRY)/$(notdir $(GIT_REPO_SLUG))
+# Host architectures the catalog builds for. Both by default (all platforms).
+ARCHES ?= arm64 amd64
 GIT_TAG := $(shell git tag --sort=-v:refname | sed 's/^v//' | head -n 1)
 
 # Release version detection. Prefers release/X.Y.Z or hotfix/X.Y.Z branch name
@@ -177,6 +187,8 @@ setup: setup_env setup_siblings
 COMMON_RUN_ARGS := --rm -p $(PORT_MAPPING) \
 	--add-host=host.docker.internal:host-gateway \
 	-v $(ENV_FILE) \
+	$(if $(SPRIG_REGISTRY),-e SPRIG_REGISTRY=$(SPRIG_REGISTRY),) \
+	$(if $(SPRIG_REGISTRY_INSECURE),-e SPRIG_REGISTRY_INSECURE=$(SPRIG_REGISTRY_INSECURE),) \
 	--name $(CONTAINER_NAME)
 
 # Production run: COMMON + secret-key pass-through + prod volume.
@@ -338,9 +350,10 @@ wizard_smoke:
 sprig_registry:
 	@$(CONTAINER_RUNTIME) network inspect sage-network >/dev/null 2>&1 || $(CONTAINER_RUNTIME) network create sage-network >/dev/null
 	@$(CONTAINER_RUNTIME) ps --format '{{.Names}}' | grep -qx local-registry || { \
-		echo "== starting local-registry (sage-network) =="; \
+		echo "== starting local-registry (sage-network, NAMED volume sprig-registry-data) =="; \
 		$(CONTAINER_RUNTIME) rm -f local-registry >/dev/null 2>&1 || true; \
-		$(CONTAINER_RUNTIME) run -d --name local-registry --network sage-network -p 5000:5000 registry:2 >/dev/null; \
+		$(CONTAINER_RUNTIME) run -d --name local-registry --network sage-network -p 5000:5000 \
+			-v sprig-registry-data:/var/lib/registry registry:2 >/dev/null; \
 		for i in $$(seq 1 30); do curl -fsS http://localhost:5000/v2/ >/dev/null 2>&1 && break; sleep 0.5; done; \
 	}
 	@echo "local-registry: up ($$(curl -fsS http://localhost:5000/v2/_catalog 2>/dev/null || echo 'unreachable'))"
@@ -361,13 +374,88 @@ sprig_durability: sprig_registry
 ## has no API for the flip). Idempotent — run after any build-sprig-*.sh.
 ## After signing (sprig_sign), run with FORCE=1: manifests changed digest.
 sprig_publish: sprig_registry
-	@scripts/publish-sprigs.sh
+	@DEST=$(REGISTRY) ORG=$(notdir $(REGISTRY)) scripts/publish-sprigs.sh
 
 ## sprig_sign — minisign-sign every artifact tag in the local registry, in
 ## place (SIGN_KEY=<secret key> required; tar bytes unchanged so sha256 pins
 ## hold). Then: FORCE=1 make sprig_publish. Third parties verify: minisign -Vm.
 sprig_sign: sprig_registry
 	@scripts/sign-sprigs.sh
+
+# ---------------------------------------------------------------------------
+# Catalog orchestration — build + sign + publish the WHOLE Sprig™ catalog in
+# one command, multi-arch, to $(REGISTRY). The connective tissue over the
+# per-artifact build-sprig-*.sh recipes and the sprig_sign/sprig_publish gates.
+# ---------------------------------------------------------------------------
+
+## catalog_prep — one-time-ish prerequisites for catalog_build: the shared
+## Docker network + local registry (via sprig_registry). Cheap + idempotent.
+## The GGUF/whisper recipes also need their static server binaries staged first
+## — see each scripts/build-sprig-*.sh header (LLAMA_BIN, etc.).
+catalog_prep: sprig_registry
+	@echo "== catalog_prep: sage-network + local-registry:5000 up =="
+
+# Neutral artifacts build ONCE (arch-independent bytes); arch-bound artifacts
+# build per entry in $(ARCHES). As the recipe-less artifacts get their
+# build-sprig-*.sh (roadmap 8.J), add them to the matching list.
+CATALOG_NEUTRAL_RECIPES := build-sprig-minilm.sh
+CATALOG_ARCH_RECIPES    := build-sprig-vector-chroma.sh build-sprig-rag-loaders.sh \
+	build-sprig-export-document.sh build-sprig-reranker.sh build-sprig-whisper.sh
+
+## catalog_build — build EVERY Sprig™ artifact into the local registry
+## (localhost:5000), the staging area sign+publish read from. Idempotent — re-run
+## after editing a recipe. Heavy: pulls models + runs buildx per arch. ARCHES
+## selects host arches (default: arm64 amd64). Each recipe prints the tar.zst
+## sha256 to pin in the supervisor CATALOG (per-arch entries -> arches overrides).
+catalog_build: catalog_prep
+	@echo "== catalog_build -> local-registry:5000 (arches: $(ARCHES)) =="
+	@env REGISTRY=localhost:5000 INSECURE=1 NETWORK=sage-network THEME=workshop-bio  scripts/build-sprig-theme.sh
+	@env REGISTRY=localhost:5000 INSECURE=1 NETWORK=sage-network THEME=workshop-math scripts/build-sprig-theme.sh
+	@for r in $(CATALOG_NEUTRAL_RECIPES); do \
+	  echo "-- neutral: $$r --"; \
+	  env REGISTRY=localhost:5000 INSECURE=1 NETWORK=sage-network scripts/$$r || exit 1; \
+	done
+	@for a in $(ARCHES); do for r in $(CATALOG_ARCH_RECIPES); do \
+	  echo "-- $$a: $$r --"; \
+	  env REGISTRY=localhost:5000 INSECURE=1 NETWORK=sage-network ARCH=$$a PLATFORM=linux/$$a scripts/$$r || exit 1; \
+	done; done
+	@echo "== catalog_build complete; pins printed above -> app/backend/sage_is_ai/sprigs/supervisor.py CATALOG =="
+
+## catalog_release — build -> sign -> publish the whole Sprig™ catalog to
+## $(REGISTRY). This is the SPRIGS-CHANGED path (new sprig, tag bump, new
+## arch) — NOT part of a platform release: artifacts are immutable per tag and
+## the image ships sha256 pins, so redistributing the platform never rebuilds
+## sprigs (see `ship`). SIGN_KEY=<secret key> signs every artifact (else
+## publishes UNSIGNED). Reuses the sprig_sign + sprig_publish gates.
+catalog_release: catalog_build
+	@if [ -n "$(SIGN_KEY)" ]; then \
+	  $(MAKE) sprig_sign && FORCE=1 $(MAKE) sprig_publish; \
+	else \
+	  echo "NOTE: SIGN_KEY unset -> publishing UNSIGNED artifacts to $(REGISTRY)"; \
+	  $(MAKE) sprig_publish; \
+	fi
+	@echo "== catalog_release complete -> $(REGISTRY) =="
+
+## ship — the ONE button for a PLATFORM release: publish the app VERSION
+## (multi-arch image + gitflow finish) to $(REGISTRY), then VERIFY the Sprig™
+## catalog the image pins is published there (sprig_publish is idempotent —
+## copies only missing tags, gates anonymous pullability; already-published
+## artifacts are untouched, nothing is rebuilt). Cleanly modular: the image
+## and the catalog version independently — upgrading the deployment is `ship`;
+## changing a sprig is `catalog_release`. Run from a release/hotfix branch —
+## release_and_push_GHCR gates on release_smoke.
+ship: release_and_push_GHCR sprig_publish
+	@echo ""
+	@echo "=== ship complete: image published + catalog verified at $(REGISTRY) ==="
+
+## upgrade_gate — boot THIS image on a COPY of a production data snapshot
+## (default: newest tools/db_snapshots/*) and prove the upgrade path: DB
+## migrations, user/chat survival, legacy RAG config degrading cleanly,
+## chromadb opening the production vector store post-graft, themes, and the
+## amd64 arch-guard rehearsal. SNAPSHOT=path overrides; KEEP=1 leaves it up
+## for the Cypress half (cypress/e2e/upgrade/). Snapshots are read-only.
+upgrade_gate: sprig_registry
+	@scripts/smoke/upgrade-gate.sh $(IMAGE_NAME):$(IMAGE_TAG) $(SNAPSHOT)
 
 ## sprig_signing — the artifact-signing gate: signs two small artifacts with
 ## the committed DEV fixture key, boots with SPRIG_REQUIRE_SIGNED=1, and
@@ -841,7 +929,8 @@ lint:
 	install_dev scan scan_secrets scan_sast scan_deps scan_container scan_dast \
 	trivy_db_update lint test_db_upgrade test_db_fresh wizard_smoke \
 	it_build_amd64 cross_smoke release_smoke \
-	sprig_registry sprig_smoke sprig_durability sprig_sign sprig_signing sprig_publish parity_gate e2e e2e_watch e2e_heavy gauntlet gauntlet_full
+	sprig_registry sprig_smoke sprig_durability sprig_sign sprig_signing sprig_publish upgrade_gate parity_gate e2e e2e_watch e2e_heavy gauntlet gauntlet_full \
+	catalog_prep catalog_build catalog_release ship
 
 
 # Version Management with Git Flow

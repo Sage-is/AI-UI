@@ -1,0 +1,23 @@
+/* sprig-theme:workshop-bio v1 — Sage.is workshop preset (Bio / green) */
+/* Self-contained by contract: no imports, no external references; inline
+   data URIs only. Overrides the gray scale the interface reads via
+   var(--color-gray-N) (declared nowhere by default, so :root wins without
+   !important) and the startr.style semantic accents. Note: the oled-dark
+   theme sets four gray levels as inline styles at boot; those win. */
+:root {
+	--color-gray-50: #f4f8f4;
+	--color-gray-100: #e8f0e9;
+	--color-gray-200: #d3e2d6;
+	--color-gray-300: #b3c9b8;
+	--color-gray-400: #8aa892;
+	--color-gray-500: #5f7f68;
+	--color-gray-600: #47624f;
+	--color-gray-700: #374c3e;
+	--color-gray-800: #253528;
+	--color-gray-850: #1c2a20;
+	--color-gray-900: #142018;
+	--color-gray-950: #0c1510;
+	--primary: #2f7d4f;
+	--secondary: #7fb069;
+	--links: #2f7d4f;
+}

@@ -39,7 +39,9 @@ OUT="$OUT_DIR/$NAME-$TAG.tar.zst"
 sha256() { if command -v sha256sum >/dev/null; then sha256sum "$1" | cut -d' ' -f1; else shasum -a 256 "$1" | cut -d' ' -f1; fi; }
 
 # --- preflight ----------------------------------------------------------------
-for c in docker oras zstd tar; do command -v "$c" >/dev/null || { echo "ERROR: $c not on PATH" >&2; exit 1; }; done
+# oras runs DOCKERIZED (ORAS_IMG below) — no host install needed.
+for c in docker; do command -v "$c" >/dev/null || { echo "ERROR: $c not on PATH" >&2; exit 1; }; done
+ORAS_IMG="${ORAS_IMG:-ghcr.io/oras-project/oras:v1.2.0}"
 [ -f "$LLAMA_BIN" ] || { echo "ERROR: static llama-server not at $LLAMA_BIN (extract it from the sprig-embedding-e5-gguf artifact if /tmp was cleaned)" >&2; exit 1; }
 [ -f "$LLAMA_QUANTIZE" ] || { echo "ERROR: llama-quantize not at $LLAMA_QUANTIZE" >&2; exit 1; }
 mkdir -p "$WORK/gguf" "$WORK/stage"
@@ -139,7 +141,7 @@ if [ "$MANAGE_REGISTRY" = "1" ]; then
   docker network inspect "$NETWORK" >/dev/null 2>&1 || docker network create "$NETWORK"
   if ! docker ps --format '{{.Names}}' | grep -qx local-registry; then
     docker rm -f local-registry >/dev/null 2>&1 || true
-    docker run -d --name local-registry --network "$NETWORK" -p 5000:5000 registry:2 >/dev/null
+    docker run -d --name local-registry --network "$NETWORK" -p 5000:5000 -v sprig-registry-data:/var/lib/registry registry:2 >/dev/null
   fi
   for _ in $(seq 1 30); do curl -fsS "http://localhost:5000/v2/" >/dev/null 2>&1 && break; sleep 0.5; done
 fi
@@ -156,9 +158,17 @@ if [ -n "${SIGN_KEY:-}" ]; then
      -t 'sage-is $NAME:$TAG sha256=$TAR_SHA'"
   SIG_LAYER=("$(basename "$OUT").minisig:application/vnd.sage-is.sprig.minisig")
 fi
-PUSH=(oras push "$REGISTRY/$NAME:$TAG" --artifact-type "$ARTIFACT_TYPE")
+# Dockerized oras push (no host oras). Inside the container localhost is the container itself, so a localhost registry is reached by its on-network name.
+
+# **Note** This may not be the right call for ASAP deployment initially.
+PUSH_REG="$REGISTRY"; ORAS_NET=()
+case "$REGISTRY" in localhost:*|127.0.0.1:*)
+  PUSH_REG="local-registry:${REGISTRY##*:}"; ORAS_NET=(--network "$NETWORK");;
+esac
+PUSH=(push "$PUSH_REG/$NAME:$TAG" --artifact-type "$ARTIFACT_TYPE")
 [ "$INSECURE" = "1" ] && PUSH+=(--plain-http)
-( cd "$OUT_DIR" && "${PUSH[@]}" "$(basename "$OUT"):$LAYER_TYPE" ${SIG_LAYER[@]+"${SIG_LAYER[@]}"} )
+docker run --rm ${ORAS_NET[@]+"${ORAS_NET[@]}"} -v "$OUT_DIR:/w" -w /w "$ORAS_IMG" \
+  "${PUSH[@]}" "$(basename "$OUT"):$LAYER_TYPE" ${SIG_LAYER[@]+"${SIG_LAYER[@]}"}
 
 echo
 echo "pushed: $REGISTRY/$NAME:$TAG"
