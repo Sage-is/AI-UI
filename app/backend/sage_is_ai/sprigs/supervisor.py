@@ -297,11 +297,17 @@ class SprigSupervisor:
             "tag": "v2",
             "insecure": SPRIG_REGISTRY_INSECURE,
             "binary_sha256": "c801539acd1373c2498c8f170eb4cba2643a0d48a15497d3446aafdbb418cb38",
-        }, arch={"arm64": {}}),
+        }, arch={"arm64": {}, "amd64": {
+            "tag": "v2-amd64",
+            "binary_sha256": "d478f7a6dd05421f812a95049e9e8b496d17c7a62e836b285961851960ef29d5",
+        }}),
         # Vector DB substrate — the chromadb closure (~170MB: chromadb, onnxruntime,
         # kubernetes, grpc, hnswlib, posthog) extracted straight into site-packages.
-        # factory.py boots with VECTOR_DB_CLIENT=None when absent; restart after
-        # delivery to activate (import bindings are frozen at boot).
+        # factory.py boots with VECTOR_DB_CLIENT=None when absent; vector_bootstrap
+        # sets factory.VECTOR_DB_CLIENT live on graft, and every consumer reads it
+        # through the factory module (not a by-value import), so document search is
+        # active immediately — no restart. (Restore of prior collections still needs
+        # the data already on the volume; a fresh graft serves new writes at once.)
         "vector-chroma": _sprig({
             "capability": "vector",
             "server": "deliver",
@@ -311,7 +317,7 @@ class SprigSupervisor:
             "seed": "app-dir",
             "target": "/usr/local/lib/python3.11/site-packages",
             "sentinel": "chromadb",
-            "post_graft_note": "Vector DB delivered. Restart the Rootstock™ to activate document search.",
+            "post_graft_note": "Vector DB delivered. Document search is active now.",
             "ready_timeout_s": 180.0,
             "repo": f"{SPRIG_REGISTRY}/sprig-vector-chroma",
             # v2 (8.I.2): + numpy, tokenizers, huggingface_hub closure — these
@@ -346,7 +352,10 @@ class SprigSupervisor:
             "tag": "v1",
             "insecure": SPRIG_REGISTRY_INSECURE,
             "binary_sha256": "16f01a8d37e0e0ced47d0faef2b64de69d072f81399ac0c8b7065d72c459cdec",
-        }, arch={"arm64": {}}),
+        }, arch={"arm64": {}, "amd64": {
+            "tag": "v1-amd64",
+            "binary_sha256": "4def63135a10bd4adf7c9cefb9a96d40d76337247fa3d8a02dee9b4f1859c401",
+        }}),
         # Reranker cultivar — cross-encoder relevance scoring for hybrid search.
         # Same static-PIE llama-server (b9859) as e5-large-gguf, in --rerank
         # mode: /v1/rerank speaks the Jina/Cohere contract the existing
@@ -369,7 +378,10 @@ class SprigSupervisor:
             "tag": "v1",
             "insecure": SPRIG_REGISTRY_INSECURE,
             "binary_sha256": "7c84c1d90f3eb217bff7f414569dafcd8b129731d023d308559f115f6143056f",
-        }, arch={"arm64": {}}),
+        }, arch={"arm64": {}, "amd64": {
+            "tag": "v1-amd64",
+            "binary_sha256": "3dcbcd1f827e5c9c6b2e9bf63cd61cf6f5ac2b16ad66a1a9b8c35c9d7c9dee49",
+        }}),
         # STT cultivar — static whisper.cpp whisper-server + ggml base
         # (multilingual, q8_0). Serves /v1/audio/transcriptions, which is
         # EXACTLY where audio.py's STT_ENGINE="openai" client already POSTs —
@@ -527,7 +539,10 @@ class SprigSupervisor:
             "tag": "v1",
             "insecure": SPRIG_REGISTRY_INSECURE,
             "binary_sha256": "cfe4304c74ebcc04a8ee221968fdc783f46addbf5646c14971885bbb0e613bb2",
-        }, arch={"arm64": {}}),
+        }, arch={"arm64": {}, "amd64": {
+            "tag": "v1-amd64",
+            "binary_sha256": "d1f466fa7fb88d387781f873862f5f214d5e04e55050cd762e98e74a8bff380c",
+        }}),
         # rclone (static Go binary) — cloud backup/restore. restore_backup_start.sh
         # skips backups gracefully when absent.
         "backup-rclone": _sprig({
@@ -544,7 +559,10 @@ class SprigSupervisor:
             "tag": "v1",
             "insecure": SPRIG_REGISTRY_INSECURE,
             "binary_sha256": "df0f3c87f32c5ae4e9c71cb976bc25db870c53c8b5c5491d8cba8844a216a61f",
-        }, arch={"arm64": {}}),
+        }, arch={"arm64": {}, "amd64": {
+            "tag": "v1-amd64",
+            "binary_sha256": "088cc8bbcafb03521f027aced74cce7c772d64a9e8e6338ce6c3946a1e36f182",
+        }}),
     }
 
     def __init__(self, app):
@@ -882,8 +900,8 @@ class SprigSupervisor:
                 if missing:
                     # No restart needed for THIS retry — invalidate_caches above
                     # makes the overlay visible as soon as vector-chroma delivers.
-                    # (Document search / the vector DB client still needs its
-                    # restart; that contract is vector-chroma's post_graft_note.)
+                    # (The vector DB client is read live through the factory module
+                    # by every consumer, so document search activates at graft too.)
                     raise ValueError(
                         f"cultivar '{name}' needs {', '.join(missing)} — the ML "
                         f"runtime rides with the vector-chroma Sprig™. Graft "

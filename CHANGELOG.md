@@ -14,8 +14,8 @@ Capabilities now arrive as OCI artifacts. The server pulls each one from a regis
 **A seventeen-entry catalog across twelve capabilities, zero external pulls**
 Embedding (ONNX and GGUF cultivars), vector store (chromadb), RAG loaders (langchain), PDF export (fpdf2 + CJK fonts), speech-to-text (whisper.cpp), reranker, workshop themes, pyodide code interpreter, in-browser ML wasm, media (ffmpeg), backup (rclone), and the Svelte dev toolchain. Every artifact ships from `ghcr.io/sage-is` — no HuggingFace, S3, or third-party pull at runtime.
 
-**Multi-arch catalog: amd64 joins arm64**
-The catalog schema gains per-arch overrides: `arches: {arch: {tag, binary_sha256}}`. amd64 artifacts shipped for vector-chroma, rag-loaders, export-document, and whisper; the ONNX embedding weights are arch-neutral and serve both. Every deploy-critical capability — document search, ingestion, PDF export, local embedding, STT — grafts on amd64 and arm64. New recipes (`scripts/build-sprig-*.sh`) build each closure inside a container for the target arch and sanity-gate it under QEMU before packing.
+**Multi-arch catalog: the whole catalog runs on amd64 and arm64**
+The catalog schema gains per-arch overrides: `arches: {arch: {tag, binary_sha256}}`. Every one of the seventeen entries grafts on both architectures — document search, ingestion, PDF export, local embedding, STT, reranker, media transcode, backup, and the dev toolchain. The ONNX embedding weights are arch-neutral bytes; the python-wheel closures build per-arch; the static GGUF/whisper servers build headless in musl (any libc); the ffmpeg and rclone binaries come from pinned, checksum-verified upstream releases. Each recipe (`scripts/build-sprig-*.sh`) runs its sanity gate on the target arch under QEMU before packing — the ffmpeg recipe transcodes the real wav→webm/opus→wav voice-note path, the GGUF servers boot and answer a live embedding/rerank request. The headless llama-server (`LLAMA_BUILD_UI=OFF`+`LLAMA_USE_PREBUILT_UI=OFF`) drops the web UI that otherwise blocked the static amd64 cross-build.
 
 **Fail-closed architecture guard**
 Every catalog entry must declare a host binding or neutrality through the `_sprig(spec, arch=...)` constructor. A forgotten declaration fails at import, in CI, not on a customer host. A mismatched host refuses the graft before any bytes move: the sprig wilts to a per-capability 503 and the rest of the server keeps serving. No more `Exec format error`.
@@ -31,6 +31,9 @@ One `REGISTRY` variable points the image and the catalog at the same host — sw
 
 **Real embedding server with ONNX and sentence-transformers backends**
 Local embedding without torch on a slim image: the ONNX path rides the vector-chroma runtime. GGUF cultivars serve through an in-house static llama-server where parity gates pass.
+
+**Sprig™-first wizard**
+The AI Engine wizard now delivers the whole RAG story as Sprigs before falling back to the legacy install: the vector store (chromadb), the embedding model (a catalog cultivar matching the configured model — pre-seeded, sha256-pinned weights served by a supervised child), the document loaders (rag-loaders — without them every upload 503s), and STT (the static whisper-server). The wizard's HuggingFace downloads and its multi-gigabyte torch install now run only for models with no cultivar. This closed the last live HF pulls in the product.
 
 **Workshop themes as Sprigs**
 Bio (green) and Math (blue) design-token themes graft like any other capability. A theme is one self-contained `theme.css` — no process, no executable code. The CSS is validated at graft time and fails closed; the active theme serves at `/themes/active.css`. The last grafted theme wins; pruning the active one restores the default look. Built for workshops where two Spaces must not be mistaken for each other.
@@ -51,7 +54,10 @@ chromadb, langchain, pypdf, docx2txt, fpdf2, and the whisper and embedding runti
 
 **Production builds no longer emit sourcemaps.**
 
-### Security
+### Fixed
+
+**Document search activates the moment the vector-store Sprig grafts — no restart**
+Five modules imported the vector-DB client by value (`from factory import VECTOR_DB_CLIENT`), capturing `None` at boot on a slim image. After a runtime graft the shared client went live but those copies stayed `None`, so indexing and search raised `'NoneType' object has no attribute 'query'` until a restart — the "restart to activate document search" caveat. Every consumer now reads the client through the factory module, so a fresh graft serves reads and writes immediately. The wizard's own file-index step proves it end to end.
 
 **Zero runtime egress for capability delivery**
 Every capability byte comes from `ghcr.io/sage-is`, pinned by sha256 in the image. No HuggingFace, S3, or third-party download runs on an operator's machine. The pull happens once, at packaging time, on the build host.

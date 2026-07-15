@@ -153,13 +153,29 @@ done
 [ "$EMBEDDING" = "ready" ] || fail "embedding never reached ready (last: $EMBEDDING) within ${INSTALL_TIMEOUT_SEC}s"
 
 # 7. Import smoke — confirms the install closure is mutually compatible.
+#    Two contracts: on the Sprig™ path the embedding serves from a grafted
+#    child and torch is DELIBERATELY absent — assert the delivered overlay
+#    (chromadb/numpy) and bcrypt unshadowed. On the legacy path the full ML
+#    closure must import.
 echo "[smoke] running import smoke inside container"
-docker exec "$CONTAINER" python3 -c "
+if docker logs "$CONTAINER" 2>&1 | grep -q "Embedding served by Sprig"; then
+  docker exec "$CONTAINER" python3 -c "
+import numpy, chromadb, bcrypt
+# bcrypt is a SYSTEM package; the overlay must not shadow it with a copy on the
+# data volume (that's the real footgun — a stale/broken bcrypt breaking auth).
+# System site-packages is /usr/lib (Wolfi) or /usr/local/lib (older base), so
+# assert the negative: bcrypt is NOT served from the data-volume ml_packages.
+assert not bcrypt.__file__.startswith('/app/backend/data'), f'bcrypt shadowed by overlay: {bcrypt.__file__}'
+print(f'imports ok (Sprig path) | numpy {numpy.__version__} | chromadb {chromadb.__version__} | bcrypt {bcrypt.__file__}')
+" || fail "post-install import smoke threw (Sprig path)"
+else
+  docker exec "$CONTAINER" python3 -c "
 from sentence_transformers import SentenceTransformer
 import torch, numpy, chromadb, bcrypt
-assert bcrypt.__file__.startswith('/usr/local/lib'), f'bcrypt shadowed: {bcrypt.__file__}'
+assert not bcrypt.__file__.startswith('/app/backend/data'), f'bcrypt shadowed by overlay: {bcrypt.__file__}'
 print(f'imports ok | torch {torch.__version__} | numpy {numpy.__version__} | bcrypt {bcrypt.__file__}')
 " || fail "post-install import smoke threw"
+fi
 
 # 8. The regression target — file upload → add to KB.
 echo "[smoke] testing file upload + add-to-KB"

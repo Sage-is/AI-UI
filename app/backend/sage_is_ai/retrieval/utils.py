@@ -47,7 +47,7 @@ def _require_hybrid_retrievers():
         BM25Retriever = _bm
 
 from sage_is_ai.config import VECTOR_DB
-from sage_is_ai.retrieval.vector.factory import VECTOR_DB_CLIENT
+from sage_is_ai.retrieval.vector import factory
 
 from sage_is_ai.models.users import UserModel
 from sage_is_ai.models.files import Files
@@ -92,7 +92,7 @@ class VectorSearchRetriever(BaseRetriever):
         *,
         run_manager: CallbackManagerForRetrieverRun,
     ) -> list[Document]:
-        result = VECTOR_DB_CLIENT.search(
+        result = factory.VECTOR_DB_CLIENT.search(
             collection_name=self.collection_name,
             vectors=[self.embedding_function(query, RAG_EMBEDDING_QUERY_PREFIX)],
             limit=self.top_k,
@@ -118,7 +118,7 @@ def query_doc(
 ):
     try:
         log.debug(f"query_doc:doc {collection_name}")
-        result = VECTOR_DB_CLIENT.search(
+        result = factory.VECTOR_DB_CLIENT.search(
             collection_name=collection_name,
             vectors=[query_embedding],
             limit=k,
@@ -136,7 +136,7 @@ def query_doc(
 def get_doc(collection_name: str, user: UserModel = None):
     try:
         log.debug(f"get_doc:doc {collection_name}")
-        result = VECTOR_DB_CLIENT.get(collection_name=collection_name)
+        result = factory.VECTOR_DB_CLIENT.get(collection_name=collection_name)
 
         if result:
             log.info(f"query_doc:result {result.ids} {result.metadatas}")
@@ -376,9 +376,9 @@ def query_collection_with_hybrid_search(
     for collection_name in collection_names:
         try:
             log.debug(
-                f"query_collection_with_hybrid_search:VECTOR_DB_CLIENT.get:collection {collection_name}"
+                f"query_collection_with_hybrid_search:factory.VECTOR_DB_CLIENT.get:collection {collection_name}"
             )
-            collection_results[collection_name] = VECTOR_DB_CLIENT.get(
+            collection_results[collection_name] = factory.VECTOR_DB_CLIENT.get(
                 collection_name=collection_name
             )
         except Exception as e:

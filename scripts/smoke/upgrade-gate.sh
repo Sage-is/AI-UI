@@ -170,8 +170,9 @@ docker logs "${ROOT}-tgt" 2>&1 | grep -q "Sprig™ host architecture: $TARGET_AR
 # 8.J amd64 artifacts shipped (vector-chroma/rag-loaders/export-document
 # overlays + the arch-neutral ONNX embedding weights), every one MUST graft on
 # the target arch — a refusal is now a capability gap and FAILS the gate.
-# Embedding asserts the ONNX cultivar (the amd64 path); e5-large-gguf stays
-# arm64-gated until the llama.cpp amd64 build lands.
+# Embedding asserts the ONNX cultivar (the canonical amd64 path); the GGUF
+# cultivars (e5-large-gguf, reranker) also graft on amd64 now but are optional,
+# so they stay out of this deploy-critical assertion set.
 GAPPED=0
 for pair in "vector-chroma:vector" "rag-loaders:rag" "export-document:export" "multilingual-e5-large:embedding"; do
   nm="${pair%%:*}"; cap="${pair##*:}"
