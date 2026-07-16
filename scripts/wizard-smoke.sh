@@ -30,9 +30,18 @@ if [ -z "$IMAGE" ] || [ "${IMAGE#*:}" = "$IMAGE" ]; then
   echo "       The Makefile normally passes \$(IMAGE_NAME):\$(IMAGE_TAG)." >&2
   exit 2
 fi
-CONTAINER="sage-ai-wizard-smoke"
-VOLUME="sage-ai-wizard-smoke-data"
-PORT="${PORT:-8181}"  # non-default so we don't collide with a running dev container on :8080
+# Unique per-run identifiers so two smokes never collide. With a SHARED name,
+# the "clean slate" `docker rm -f "$CONTAINER"` below (step 1) nukes a
+# concurrently-running smoke's live container mid-request — the other run then
+# fails with curl exit 56 (connection reset). A PID suffix gives one identity
+# per invocation (a parallel arch run, a retry, a diagnostic session all get
+# their own); override any of these to pin a value.
+RUN_ID="${WIZARD_SMOKE_ID:-$$}"
+CONTAINER="${WIZARD_SMOKE_CONTAINER:-sage-ai-wizard-smoke-$RUN_ID}"
+VOLUME="${WIZARD_SMOKE_VOLUME:-sage-ai-wizard-smoke-data-$RUN_ID}"
+# A free ephemeral port unless pinned — two runs on one fixed port can't both
+# bind :8080. Each socket bound to 0 gets a distinct port from the OS.
+PORT="${PORT:-$(python3 -c 'import socket; s=socket.socket(); s.bind(("127.0.0.1",0)); print(s.getsockname()[1]); s.close()' 2>/dev/null || echo 8181)}"
 BASE="http://localhost:${PORT}"
 EMAIL="test@example.com"
 PASSWORD="zaq12wsx"
@@ -153,13 +162,29 @@ done
 [ "$EMBEDDING" = "ready" ] || fail "embedding never reached ready (last: $EMBEDDING) within ${INSTALL_TIMEOUT_SEC}s"
 
 # 7. Import smoke — confirms the install closure is mutually compatible.
+#    Two contracts: on the Sprig™ path the embedding serves from a grafted
+#    child and torch is DELIBERATELY absent — assert the delivered overlay
+#    (chromadb/numpy) and bcrypt unshadowed. On the legacy path the full ML
+#    closure must import.
 echo "[smoke] running import smoke inside container"
-docker exec "$CONTAINER" python3 -c "
+if docker logs "$CONTAINER" 2>&1 | grep -q "Embedding served by Sprig"; then
+  docker exec "$CONTAINER" python3 -c "
+import numpy, chromadb, bcrypt
+# bcrypt is a SYSTEM package; the overlay must not shadow it with a copy on the
+# data volume (that's the real footgun — a stale/broken bcrypt breaking auth).
+# System site-packages is /usr/lib (Wolfi) or /usr/local/lib (older base), so
+# assert the negative: bcrypt is NOT served from the data-volume ml_packages.
+assert not bcrypt.__file__.startswith('/app/backend/data'), f'bcrypt shadowed by overlay: {bcrypt.__file__}'
+print(f'imports ok (Sprig path) | numpy {numpy.__version__} | chromadb {chromadb.__version__} | bcrypt {bcrypt.__file__}')
+" || fail "post-install import smoke threw (Sprig path)"
+else
+  docker exec "$CONTAINER" python3 -c "
 from sentence_transformers import SentenceTransformer
 import torch, numpy, chromadb, bcrypt
-assert bcrypt.__file__.startswith('/usr/local/lib'), f'bcrypt shadowed: {bcrypt.__file__}'
+assert not bcrypt.__file__.startswith('/app/backend/data'), f'bcrypt shadowed by overlay: {bcrypt.__file__}'
 print(f'imports ok | torch {torch.__version__} | numpy {numpy.__version__} | bcrypt {bcrypt.__file__}')
 " || fail "post-install import smoke threw"
+fi
 
 # 8. The regression target — file upload → add to KB.
 echo "[smoke] testing file upload + add-to-KB"
@@ -177,10 +202,28 @@ FILE_ID=$(curl -s -X POST "${BASE}/api/v1/files/" \
   -H "$AUTH" -F "file=@${TMPFILE}" | jq -r '.id')
 [ -n "$FILE_ID" ] && [ "$FILE_ID" != "null" ] || fail "file upload failed"
 
-ADD_CODE=$(curl -s -o /dev/null -w '%{http_code}' \
-  -X POST "${BASE}/api/v1/knowledge/${KB_ID}/file/add" \
-  -H "$AUTH" -H 'Content-Type: application/json' \
-  -d "{\"file_id\":\"${FILE_ID}\"}")
+# Retry on the transient 400: add-to-KB needs the file's content EXTRACTED
+# (rag-loaders document processing) AND the embedding served. The wizard now
+# grafts rag-loaders BEFORE flipping embedding to "ready" (retrieval.py Step 2),
+# so by the time this poll starts the loaders overlay is in place — but the
+# upload's extraction is still async, so a "content not available" 400 right
+# after upload just means processing hasn't finished, not a regression. The
+# "requires the rag-loaders Sprig™" 503 stays retryable as a belt-and-suspenders
+# guard against any residual graft lag under QEMU. Poll up to ~60s; a persistent
+# non-200 is the real failure.
+ADD_CODE=000
+for _ in $(seq 1 20); do
+  ADD_CODE=$(curl -s -o /tmp/wsmoke-add -w '%{http_code}' \
+    -X POST "${BASE}/api/v1/knowledge/${KB_ID}/file/add" \
+    -H "$AUTH" -H 'Content-Type: application/json' \
+    -d "{\"file_id\":\"${FILE_ID}\"}")
+  [ "$ADD_CODE" = "200" ] && break
+  # Only the not-yet-extracted / processing / loaders-still-grafting races are
+  # retryable; anything else (auth, 500, missing KB) fails fast.
+  grep -qiE "not available|still processing|not been processed|being processed|requires the rag-loaders" /tmp/wsmoke-add 2>/dev/null || break
+  sleep 3
+done
+rm -f /tmp/wsmoke-add
 [ "$ADD_CODE" = "200" ] || fail "add-to-KB returned ${ADD_CODE} (expected 200) — this is the original regression"
 
 echo "[smoke] PASS — wizard install + embedding + file index all green for $IMAGE"

@@ -34,7 +34,6 @@ from aiocache import cached
 import aiohttp
 import anyio.to_thread
 import requests
-from redis import Redis
 
 
 from fastapi import (
@@ -80,6 +79,7 @@ from sage_is_ai.routers import (
     ollama,
     openai,
     retrieval,
+    sprigs,
     pipelines,
     tasks,
     auths,
@@ -223,6 +223,7 @@ from sage_is_ai.config import (
     RAG_RERANKING_MODEL,
     RAG_EXTERNAL_RERANKER_URL,
     RAG_EXTERNAL_RERANKER_API_KEY,
+    SPRIG_ACTIVE_THEME,
     RAG_RERANKING_MODEL_AUTO_UPDATE,
     RAG_RERANKING_MODEL_TRUST_REMOTE_CODE,
     RAG_EMBEDDING_ENGINE,
@@ -700,15 +701,12 @@ async def lifespan(app: FastAPI):
     #      install on PYTHONPATH via `start.sh`).
     from sage_is_ai.utils.try_sage_tool_servers import register_try_sage_tool_servers
     from sage_is_ai.utils.try_sage_hidden_connections import register_hidden_connections
-    from sage_is_ai.utils.try_sage_engine_install import (
-        ensure_try_sage_vector_backend,
-    )
     from sage_is_ai.utils.try_sage_seed import seed_try_sage
     await register_try_sage_tool_servers(app)
     register_hidden_connections(app)
     await seed_try_sage(app)
-    if ENABLE_TRY_SAGE:
-        asyncio.create_task(ensure_try_sage_vector_backend(app))
+    # NOTE: ensure_try_sage_vector_backend now fires AFTER the SprigSupervisor
+    # is up (below) — its bootstrap is Sprig™-first and needs the supervisor.
 
     # Phase 2c — seed the EndpointHealth registry with every configured
     # external URL before the first user request arrives. Fire-and-forget
@@ -754,11 +752,34 @@ async def lifespan(app: FastAPI):
     else:
         app.state.bridge_manager = None
 
+    # Initialize Sprig™ Supervisor — grafts capabilities at runtime as loopback
+    # child processes / overlays; start() reconciles durable grafts from the
+    # volume-resident state.json.
+    from sage_is_ai.sprigs.supervisor import SprigSupervisor
+
+    app.state.sprig_supervisor = SprigSupervisor(app)
+    await app.state.sprig_supervisor.start()
+
+    # try.sage vector backend — AFTER the supervisor so the Sprig™-first
+    # chromadb bootstrap (vector-chroma: volume tar → registry → pip fallback)
+    # can graft. Background task: lifespan returns immediately; on success the
+    # helper re-runs seed_try_sage so trial KBs ingest without operator action.
+    if ENABLE_TRY_SAGE:
+        from sage_is_ai.utils.try_sage_engine_install import (
+            ensure_try_sage_vector_backend,
+        )
+
+        asyncio.create_task(ensure_try_sage_vector_backend(app))
+
     yield
 
     # Shutdown Bridge Manager
     if getattr(app.state, "bridge_manager", None):
         await app.state.bridge_manager.shutdown()
+
+    # Shutdown Sprig™ Supervisor — SIGTERM (then SIGKILL) grafted child processes
+    if getattr(app.state, "sprig_supervisor", None):
+        await app.state.sprig_supervisor.shutdown()
 
     if hasattr(app.state, "redis_task_command_listener"):
         app.state.redis_task_command_listener.cancel()
@@ -1055,6 +1076,7 @@ app.state.config.RAG_RERANKING_ENGINE = RAG_RERANKING_ENGINE
 app.state.config.RAG_RERANKING_MODEL = RAG_RERANKING_MODEL
 app.state.config.RAG_EXTERNAL_RERANKER_URL = RAG_EXTERNAL_RERANKER_URL
 app.state.config.RAG_EXTERNAL_RERANKER_API_KEY = RAG_EXTERNAL_RERANKER_API_KEY
+app.state.config.SPRIG_ACTIVE_THEME = SPRIG_ACTIVE_THEME
 
 app.state.config.RAG_TEMPLATE = RAG_TEMPLATE
 
@@ -1096,12 +1118,12 @@ app.state.MODEL_DOWNLOAD_STATUS = {
     "embedding": "pending",
     "whisper": "pending",
     "tiktoken": "ready",
-    # `chromadb` is the trial mode's auto-installed vector backend.
-    # Lifespan sets this to "downloading" → "ready" / "error" via
-    # try_sage_engine_install.ensure_try_sage_vector_backend so admins
-    # see install progress in the trial banner instead of wondering
-    # why their KBs are empty on first boot.
-    "chromadb": "ready",
+    # `chromadb` is the vector backend. On the slim rootstock it is NOT in the
+    # base image — it arrives via the vector-chroma Sprig or the trial-mode
+    # bootstrap. Start "pending" (honest): the trial path sets "downloading" →
+    # "ready"/"error", and a vector-chroma graft flips it "ready". A literal
+    # "ready" here on a slim boot lied — the backend is absent until grafted.
+    "chromadb": "pending",
     "error": None,
 }
 
@@ -1159,6 +1181,35 @@ def _build_embedding_function(ef):
     )
 
 
+# Restart-safety BACKSTOP for grafted embedding Sprigs™. This runs at import,
+# BEFORE the lifespan's SprigSupervisor boot reconcile re-grafts from state.json
+# and re-points the config at a fresh loopback port (supervisor.py). A grafted
+# embedding Sprig™ persists RAG_EMBEDDING_ENGINE="openai" +
+# RAG_OPENAI_API_KEY="sprig-local" (sprigs/embedding_dispatch.py) pointing at a
+# loopback subprocess that does NOT survive a Rootstock™ restart. Without this,
+# the block below would rebuild the embedding function against the dead
+# 127.0.0.1 port and report embedding "ready" until reconcile runs — and stay
+# broken-but-"ready" if reconcile fails (worker without the flock, corrupt
+# state.json, missing artifact). The "sprig-local" sentinel is set only by a
+# graft, so this never touches a real user RAG endpoint. Reset the dispatch so
+# it fails clean and shows un-ready; reconcile (or a manual re-graft from
+# Admin → Sprigs) restores it.
+if (
+    app.state.config.RAG_EMBEDDING_ENGINE == "openai"
+    and app.state.config.RAG_OPENAI_API_KEY == "sprig-local"
+):
+    log.warning(
+        "Embedding was grafted to a Sprig™ that did not survive restart "
+        "(RAG_OPENAI_API_BASE_URL=%s is a dead loopback); resetting embedding "
+        "dispatch. Re-graft an embedding cultivar from Admin → Sprigs.",
+        app.state.config.RAG_OPENAI_API_BASE_URL,
+    )
+    app.state.config.RAG_EMBEDDING_ENGINE = ""
+    app.state.config.RAG_EMBEDDING_MODEL = ""
+    app.state.config.RAG_OPENAI_API_BASE_URL = ""
+    app.state.config.RAG_OPENAI_API_KEY = ""
+    app.state.ef = None
+
 if app.state.ef is not None:
     app.state.EMBEDDING_FUNCTION = _build_embedding_function(app.state.ef)
     app.state.MODEL_DOWNLOAD_STATUS["embedding"] = "ready"
@@ -1167,6 +1218,26 @@ elif app.state.config.RAG_EMBEDDING_ENGINE in ["openai", "ollama", "azure_openai
     # API-based embedding engines don't need local model downloads
     app.state.EMBEDDING_FUNCTION = _build_embedding_function(None)
     app.state.MODEL_DOWNLOAD_STATUS["embedding"] = "ready"
+
+# Restart-safety BACKSTOP for grafted reranker Sprigs™ — same reasoning as the
+# embedding backstop above: the graft persisted engine="external" + the
+# "sprig-local" key pointing at a loopback child that did not survive restart.
+# Reset so hybrid search degrades to "no rerank" honestly; the supervisor's
+# boot reconcile (or a manual re-graft) restores it.
+if (
+    app.state.config.RAG_RERANKING_ENGINE == "external"
+    and app.state.config.RAG_EXTERNAL_RERANKER_API_KEY == "sprig-local"
+):
+    log.warning(
+        "Reranking was grafted to a Sprig™ that did not survive restart "
+        "(RAG_EXTERNAL_RERANKER_URL=%s); resetting reranking dispatch.",
+        app.state.config.RAG_EXTERNAL_RERANKER_URL,
+    )
+    app.state.config.RAG_RERANKING_ENGINE = ""
+    app.state.config.RAG_RERANKING_MODEL = ""
+    app.state.config.RAG_EXTERNAL_RERANKER_URL = ""
+    app.state.config.RAG_EXTERNAL_RERANKER_API_KEY = ""
+    app.state.rf = None
 
 app.state.RERANKING_FUNCTION = get_reranking_function(
     app.state.config.RAG_RERANKING_ENGINE,
@@ -1283,6 +1354,26 @@ app.state.config.TTS_AZURE_SPEECH_OUTPUT_FORMAT = AUDIO_TTS_AZURE_SPEECH_OUTPUT_
 app.state.faster_whisper_model = None
 app.state.speech_synthesiser = None
 app.state.speech_speaker_embeddings_dataset = None
+
+# Restart-safety BACKSTOP for grafted STT Sprigs™ — same reasoning as the
+# embedding/reranker backstops: engine="openai" + the "sprig-local" key mark a
+# graft-owned config pointing at a whisper-server child that did not survive
+# restart. Reset so STT fails clean (engine "" = local path with a clear
+# ImportError on a slim rootstock) instead of POSTing a dead loopback; the
+# supervisor's boot reconcile (or a manual re-graft) restores it.
+if (
+    app.state.config.STT_ENGINE == "openai"
+    and app.state.config.STT_OPENAI_API_KEY == "sprig-local"
+):
+    log.warning(
+        "STT was grafted to a Sprig™ that did not survive restart "
+        "(STT_OPENAI_API_BASE_URL=%s); resetting STT dispatch.",
+        app.state.config.STT_OPENAI_API_BASE_URL,
+    )
+    app.state.config.STT_ENGINE = ""
+    app.state.config.STT_MODEL = ""
+    app.state.config.STT_OPENAI_API_BASE_URL = ""
+    app.state.config.STT_OPENAI_API_KEY = ""
 
 
 ########################################
@@ -1450,6 +1541,9 @@ app.include_router(tasks.router, prefix="/api/v1/tasks", tags=["tasks"])
 app.include_router(images.router, prefix="/api/v1/images", tags=["images"])
 
 app.include_router(audio.router, prefix="/api/v1/audio", tags=["audio"])
+app.include_router(
+    sprigs.router, prefix="/api/v1/retrieval/sprigs", tags=["sprigs"]
+)
 app.include_router(retrieval.router, prefix="/api/v1/retrieval", tags=["retrieval"])
 
 app.include_router(configs.router, prefix="/api/v1/configs", tags=["configs"])
@@ -2181,6 +2275,30 @@ async def robots_txt():
         extra={"paths": [str(path) for path in search_paths]},
     )
     return Response("User-agent: *\nDisallow:\n", media_type="text/plain")
+
+
+# Theme Sprigs™: app.html loads this on every page. Serves the active grafted
+# theme's self-contained stylesheet from the DATA volume, or an empty sheet
+# when no theme is grafted. Unauthenticated by design — it styles the login
+# page too, and carries design tokens only (validated at graft time; see
+# sprigs/theme_dispatch.py). Registered before the SPA mount so it wins.
+@app.get("/themes/active.css")
+async def active_theme_css():
+    name = str(app.state.config.SPRIG_ACTIVE_THEME or "").strip()
+    if name:
+        from sage_is_ai.sprigs.theme_dispatch import theme_css_path
+
+        css = theme_css_path(name)
+        if css.is_file():
+            return FileResponse(
+                css, media_type="text/css", headers={"Cache-Control": "no-cache"}
+            )
+        log.warning("active theme '%s' has no css on the volume; serving default", name)
+    return Response(
+        "/* no theme grafted */\n",
+        media_type="text/css",
+        headers={"Cache-Control": "no-cache"},
+    )
 
 
 

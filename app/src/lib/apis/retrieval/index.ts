@@ -89,6 +89,23 @@ type ModelDownloadForm = {
 export const triggerModelDownload = async (token: string, payload: ModelDownloadForm) =>
 	api('/models/download', 'POST', payload, token, 'triggerModelDownload');
 
+export const getSprigCatalog = async (token: string) =>
+	api('/sprigs/catalog', 'GET', undefined, token, 'getSprigCatalog');
+
+type GraftSprigForm = {
+	name: string;
+	capability: string;
+};
+
+// Graft a capability Sprig™ onto the Rootstock™ at runtime (Phase 8.0).
+// Also used to Revive a wilted Sprig™ — re-grafting re-roots it through the same path.
+export const graftSprig = async (token: string, payload: GraftSprigForm) =>
+	api('/sprigs/graft', 'POST', payload, token, 'graftSprig');
+
+// Prune (terminate + remove) a grafted Sprig™.
+export const pruneSprig = async (token: string, payload: { name: string }) =>
+	api('/sprigs/prune', 'POST', payload, token, 'pruneSprig');
+
 export const getRerankingConfig = async (token: string) =>
 	api('/reranking', 'GET', undefined, token);
 

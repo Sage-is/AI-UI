@@ -4,6 +4,96 @@
 
 *Updated on 2026-04-09 to preserve the v2.0.0 release snapshot and completed release follow-up tasks after the roadmap cleanup.*
 
+*Updated on 2026-07-03 to archive the `## Done` bug-fix and feature-ship entries accumulated since — try.sage.is env-gating bugs, the homebrew tap release, try.sage Phase A/B, four try.sage regression bugs, and the TodoScope alignment pass.*
+
+---
+
+## ✅ `## Done` section archived from TODO.md on 2026-07-03
+
+- [x] **try.sage Runtime `/llm-status` Endpoint Not Env-Gated**: With `ENABLE_TRY_SAGE=false`, `GET /api/v1/sage/runtime/llm-status` returns `403 {"detail":"Not authenticated"}` instead of 404. The route handler is registered unconditionally; auth is the only barrier. Sibling endpoints (`status`, `personas`, `limits`) correctly 404 when the env flag is off. #critical #bug
+  - [x] Locate the `llm-status` route handler in the trial runtime router
+  - [x] Confirm whether it sits outside the trial router or whether the router-level `enable_try_sage` check is missing for this handler specifically — root cause was **dependency order**: `_require_try_sage_enabled()` was called inline AFTER `Depends(get_admin_user)` had already evaluated, so auth's 401/403 fired before the env-gate's 404. Same defect class affected `/extend` and `/reset`.
+  - [x] Add the same gating that protects `status` / `personas` / `limits` so the route returns 404 when the env flag is false — fix at `app/backend/sage_is_ai/routers/sage_runtime.py:267-272`: lifted gate into `_gate: None = Depends(_require_try_sage_enabled)` parameter listed BEFORE `Depends(get_admin_user)`. Applied to `/llm-status`, `/extend`, `/reset`. Docstring of `_require_try_sage_enabled` now documents the ordering contract.
+  - [x] Re-run the trial smoke for-loop; confirm `404 /llm-status` — verified against fresh `sage-is/ai-ui:bug-verify` image; all seven trial endpoints (`status`, `personas`, `limits`, `llm-status`, `extend`, `clear`, `reset`) return 404.
+
+*(Surfaced 2026-05-10 during the regression sweep — caught by the `for ep in status personas limits llm-status extend clear` curl loop.)*
+
+- [x] **Unregistered `/api/*` Paths Return SPA HTML Instead of 404**: With `ENABLE_TRY_SAGE=false`, `GET /api/v1/sage/runtime/extend` and `GET /api/v1/sage/runtime/clear` return `200 text/html` (5463 bytes, identical etag) — the SvelteKit static catch-all serves `index.html` for unregistered backend paths. Breaks any curl-based smoke test that expects 404 for absent routes and masks future router-registration bugs. #bug
+  - [x] Locate where the SPA static catch-all is mounted in the FastAPI app — `SPAStaticFiles.get_response` in `app/backend/sage_is_ai/main.py`.
+  - [x] Add a guard so `/api/*` paths that don't match a registered router return JSON 404, not the SPA index — fix at `app/backend/sage_is_ai/main.py:498-510`: in `SPAStaticFiles.get_response`, paths equal to `api` or starting with `api/` now return `JSONResponse(status_code=404, content={"detail": "Not Found"})` instead of falling through to `index.html`.
+  - [x] Verify with a curl against any made-up `/api/v1/nonexistent` path — should return 404 with `application/json` — verified: `GET /api/v1/literally_made_up_path` returns `404 Not Found` with 22-byte JSON body. Non-api SPA paths still return `200 text/html` (frontend routing intact).
+  - [x] Re-run the trial smoke for-loop; `extend` and `clear` should report `404 /<endpoint>` — verified, plus `/reset` also 404 (which would have been a third leak without this fix).
+
+*(Surfaced 2026-05-10 during the same sweep.)*
+
+- [x] **Homebrew Tap Release**: Finish and verify the brew install path #critical
+  - [x] Test: `brew tap sage-is/apps && brew install ai-ui`
+  - [x] Fix homebrew-apps Makefile `release_finish`
+  - [x] git flow state got stuck on v0.1.2 release; manual merge required to complete
+  - [x] celebrate!!! :D
+
+- [x] **try.sage Runtime and Admin Controls**: (Alexander Somma + Izzy Plante) — Shipped Phase A 2026-04-27.
+  - [x] Gate try.sage.is ai behind env vars
+  - [x] Seed default try.sage agents: Sage Strawberry, Sage Startr.Style, AstroPi AI tutor (with KBs)
+  - [x] Register `https://tool-server.example.com` in `TOOL_SERVER_CONNECTIONS`
+  - [x] Add a dummy-tools server with placeholder endpoints (revisit later — see Production Decisions)
+  - [x] Trial helper endpoints: status, personas, limits, llm-status, extend, reset
+  - [x] Auto-reset every 24h via env-configurable settings; selective wipe preserves persona accounts and KBs
+  - [x] Admin-only extend (capped at one extension per window) and force-reset
+  - [x] RBAC via existing `get_admin_user` dependency on protected endpoints
+  - [x] Hidden OpenAI-compatible LLM connection (memory-only, never persisted, never echoed in any response)
+  - [x] Model allowlist via `TRY_SAGE_LLM_MODELS`
+  - [x] Document env vars, reset semantics, admin controls in `docs/try-sage-deployment.md`
+  - [x] Makefile targets `try_sage_start` / `try_sage_stop`
+
+- [x] **try.sage.is Experience and Insights**: (Alexander Somma + Izzy Plante) — Shipped Phase B 2026-04-27.
+  - [x] Persistent top-of-screen try.sage banner with live HH:MM:SS countdown
+  - [x] Admin extend/reset CTAs in the banner row (live next to the countdown they affect)
+  - [x] Non-admin info line directing to docs and admin
+  - [x] User-bar persona switcher: admin + facilitator + 3 trial users (configurable up to 5 trial users)
+  - [x] Tutorial overlay with config-driven steps (`TRY_SAGE_TUTORIAL_STEPS_JSON`); 6-step default with placeholder cards when unset
+  - [x] Setup wizard suppression in trial mode + admin escape hatch in Admin → Settings → Trial Mode
+  - [x] Per-step `dismissible` flag honored; localStorage seen-flag persists across sessions
+  - [x] Provider-agnostic analytics shim (Matomo + GA + Plausible) wired via `$config.analytics`
+  - [x] Pure-Svelte zero-dep QR encoder for persona magic-link sharing in workshops
+  - [x] Document the UX + analytics event map in `docs/try-sage-deployment.md`
+
+- [x] **try.sage Tutorial Step Cards Render Empty**: When the tutorial does open (via Admin → Trial Mode → Replay tutorial), the step cards are missing content — title, "Video coming soon" placeholder, and `description` paragraph all missing or partially missing. #bug
+  - [x] Reproduce: with `TRY_SAGE_TUTORIAL_STEPS_JSON` unset, open the tutorial via the admin replay button — confirm cards render without expected content
+  - [x] Inspect the default-step rendering branch in `app/src/lib/components/setup/TrySageTutorial.svelte` — specifically the placeholder card layout that fires when `step.video_url` is empty/missing
+  - [x] Confirm whether the `DEFAULT_STEPS` constant is reachable, the iteration is correct, and i18n wrapping isn't producing empty strings
+  - [x] Fix the missing-cards rendering so at minimum each step shows: title, "Video coming soon" placeholder, and the step's `description` paragraph
+
+*(Surfaced 2026-04-29 in the same regression session.)*
+
+- [x] **Trial Banner Overlapped by Left Sidebar**: Once a persona signed in, the left sidebar (admin / chat list) overlapped the trial banner. Banner was a full-width strip pushed into the layout flow; sidebar's z-index let it cut into the banner's edges. #bug
+  - [x] Float the banner above the app shell rather than reflowing it inline. Outer wrapper `position:fixed; top:0.5rem; left:0; right:0; z:40; pointer-events:none`. Inner pill `max-w:60ch; margin:0 auto; pointer-events:auto; rounded; subtle shadow`. Doesn't push navbar/content down on first paint and z-index keeps it above the sidebar.
+  - [x] Edited `app/src/lib/components/TrySageBanner.svelte` outer wrapper only — inner content (countdown row, persona-jump row, `<details>` block) untouched.
+  - [x] Banner now slides 280px right when the desktop sidebar opens so it stays centered over the chat content, not the full viewport. Driven off the existing `showSidebar` store with a 200ms ease transition. Mobile is unaffected (sidebar overlays there).
+
+*(Surfaced + fixed 2026-04-29 during regression testing.)*
+
+- [x] **Replace David / Sistine Chapel Art in Login Slideshow**: The login/onboarding/welcome slideshow ships a Michelangelo's David and a Sistine Chapel ceiling image — both are recognisable Renaissance pieces that don't fit the Sage.is brand and may carry licensing risk depending on the source photo. Swap for original or CC/public-domain imagery. #bug
+  - [x] Find the offending images under `app/static/` (likely `static/assets/images/` or wherever `SlideShow.svelte` reads from) and confirm the exact filenames + license source
+  - [x] Pick replacements: original Sage.is photography, or CC0 / public-domain alternatives that match the warm-workshop tone (libraries, classrooms, observatories, etc.)
+  - [x] Replace files in-tree, keep filenames stable so `SlideShow.svelte` keeps working without code change. Run the build and visually confirm new images render in the welcome slideshow + try.sage welcome page.
+  - [x] Cross-link with the existing **Codebase Cleanup → "Replace login slideshow images with original or CC/public-domain photos"** task — collapse if both are doing the same work.
+
+*(Surfaced 2026-04-29 reviewing the trial welcome page imagery.)*
+
+- [x] **try.sage Tutorial Does Not Auto-Open on First Persona Sign-In**: The TrySageTutorial modal is supposed to auto-open the first time a persona signs in (gated on `$config?.features?.enable_try_sage` + signed-in `$user` + missing `localStorage.try_sage_tutorial_seen_v1`). Manually triggering "Replay tutorial" from Admin → Trial Mode opens it correctly, so the modal itself works — only the auto-trigger fails. #bug
+  - [x] Reproduce: clear `localStorage.try_sage_tutorial_seen_v1`, sign in via a persona magic link, confirm modal does NOT appear
+  - [x] Inspect the `onMount`/reactive trigger condition in `app/src/lib/components/setup/TrySageTutorial.svelte` — likely the `$user` check fires before the user store hydrates after magic-link verify, OR the SvelteKit hard-navigation from `/auth#magic_token=...` lands before the layout has subscribed to `tutorialReopen`
+  - [x] Fix so the auto-show fires on first persona sign-in, not just from the admin "Replay tutorial" button
+  - [x] Add a Vitest spec that mounts the component with mocked `$config`, `$user`, and a clean `localStorage`, and asserts the modal opens
+
+*(Surfaced 2026-04-29 during manual regression of the persona sign-in flow.)*
+
+- [x] TodoScope Alignment
+  - [x] Restructure TODO.md to TodoScope conventions
+  - [x] Fix duplicate rows in `.todoscope-exclude.csv`
+  - [x] Run TodoScope scanner and verify kanban board matches expectations
+
 ---
 
 ## ✅ Roadmap History Snapshot (moved from TODO.md on 2026-04-09)

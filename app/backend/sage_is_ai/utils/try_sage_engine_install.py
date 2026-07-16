@@ -9,12 +9,12 @@ the wizard runs, and a workshop facilitator has no reason to know the
 wizard exists.
 
 This helper closes the gap. When ``ENABLE_TRY_SAGE`` is on and the
-configured ``VECTOR_DB`` is ``chroma`` and chromadb is not importable,
-it pip-installs chromadb into the data volume's ``ml_packages``
-directory (the same target the route handler at
-``routers/retrieval.py:trigger_model_download`` uses) and re-initializes
-``factory.VECTOR_DB_CLIENT`` so the seed pass that runs immediately
-after can ingest the seeded KB markdown.
+configured ``VECTOR_DB`` is ``chroma`` and the vector client is not live,
+it delegates to the shared Sprig™-first bootstrap
+(``sprigs/vector_bootstrap.ensure_chromadb``): the vector-chroma Sprig™
+(volume-cached tar → registry) first, the pinned-pip ``ml_packages``
+fallback second, then re-initializes ``factory.VECTOR_DB_CLIENT`` so the
+seed pass that runs immediately after can ingest the seeded KB markdown.
 
 Why not also handle torch / sentence-transformers / embedding-model
 download here: the chromadb-only install covers the most common case
@@ -29,11 +29,6 @@ logs a warning telling the operator to run the full wizard.
 """
 
 import logging
-import os
-import subprocess
-import sys
-
-from fastapi.concurrency import run_in_threadpool
 
 from sage_is_ai.env import ENABLE_TRY_SAGE, SRC_LOG_LEVELS
 
@@ -109,148 +104,20 @@ async def ensure_try_sage_vector_backend(app=None) -> bool:
             _set_status(app, "ready")
         return True
 
-    try:
-        import chromadb  # noqa: F401
+    # Delegate to the shared Sprig™-first bootstrap (sprigs/vector_bootstrap.py):
+    # volume-cached vector-chroma tar → registry → pinned-pip fallback. It owns
+    # the MODEL_DOWNLOAD_STATUS["chromadb"] transitions the trial banner reads,
+    # the ml_packages cleanup, and the factory re-init.
+    from sage_is_ai.sprigs.vector_bootstrap import ensure_chromadb
 
-        log.info(
-            "try.sage: chromadb imports but factory client is None — "
-            "likely missing transitive deps from a previous wrong-version "
-            "install. Re-installing the pyproject-pinned version."
-        )
-    except ImportError:
-        pass
-
-    # Surface install state to the trial banner. The banner reads
-    # `app.state.MODEL_DOWNLOAD_STATUS` via the public
-    # `/api/v1/sage/runtime/status` endpoint and renders a small
-    # "Setting up knowledge bases…" line while we work, so admins
-    # (and users) see why KBs aren't bound yet during the first-boot
-    # window. Skipped when no app handle was provided.
-    if app is not None:
-        _set_status(app, "downloading")
-
-    ml_target = os.path.join(
-        os.environ.get("DATA_DIR", "/app/backend/data"), "ml_packages"
-    )
-    os.makedirs(ml_target, exist_ok=True)
-
-    # Defensive cleanup: remove any pre-existing chromadb* directories
-    # in the target. A previous boot that ran `pip install chromadb`
-    # (no version pin) installed chromadb 1.5.x whose dist-info would
-    # confuse pip's resolver and whose .so files might still get picked
-    # up by Python's import cache. Wiping just the chromadb-shaped dirs
-    # keeps any other wizard-installed packages (torch, sentence-
-    # transformers) intact.
-    import shutil
-
-    for entry in os.listdir(ml_target):
-        if entry.startswith("chromadb"):
-            full = os.path.join(ml_target, entry)
-            try:
-                if os.path.isdir(full):
-                    shutil.rmtree(full)
-                else:
-                    os.remove(full)
-            except OSError as e:
-                log.warning(
-                    "try.sage: could not clean %s before install (%s); "
-                    "pip may complain.",
-                    full,
-                    e,
-                )
-
-    log.info(
-        "try.sage: chromadb missing — pip-installing into %s before seed runs. "
-        "First-boot delay: ~30s–2 min depending on network.",
-        ml_target,
-    )
-
-    # Pin to the version declared in pyproject.toml. Without a pin, pip
-    # grabs the latest (chromadb 1.5.x) whose opentelemetry deps don't
-    # match the base image and `import chromadb` then fails with
-    # `cannot import name 'OTEL_SPAN_PARENT_ORIGIN'`. The pyproject pin
-    # is the canonical version this app's tested against; track it
-    # there if a bump is needed.
-    chromadb_pin = "chromadb==0.6.3"
-
-    try:
-        await run_in_threadpool(
-            subprocess.run,
-            [
-                "pip",
-                "install",
-                chromadb_pin,
-                # `--force-reinstall` replaces a previously-installed wrong
-                # version (e.g. unpinned latest from an earlier boot) with
-                # the pinned 0.6.3. Without this, an earlier boot's
-                # chromadb 1.5.x lingers in --target and `import chromadb`
-                # keeps hitting its opentelemetry incompatibility. Costs
-                # nothing on a clean first install (~30s either way).
-                "--force-reinstall",
-                "--target",
-                ml_target,
-                "--break-system-packages",
-                "--root-user-action=ignore",
-            ],
-            check=True,
-        )
-    except subprocess.CalledProcessError as e:
+    if not await ensure_chromadb(app):
         log.warning(
-            "try.sage: chromadb auto-install failed (%s). Seed will skip KBs; "
-            "run the AI Engine wizard from admin settings to retry.",
-            e,
+            "try.sage: chromadb bootstrap failed on every path (sprig + pip). "
+            "Seed will skip KBs; run the AI Engine wizard from admin settings."
         )
-        if app is not None:
-            _set_status(app, "error", str(e))
-        return False
-    except FileNotFoundError as e:
-        # `pip` not on PATH — unusual but possible in stripped containers.
-        log.warning(
-            "try.sage: chromadb auto-install skipped — pip not found on PATH (%s). "
-            "Run the AI Engine wizard from admin settings instead.",
-            e,
-        )
-        if app is not None:
-            _set_status(app, "error", "pip not on PATH")
         return False
 
-    if ml_target not in sys.path:
-        sys.path.insert(0, ml_target)
-
-    # Verify the install is actually importable from this process.
-    try:
-        import chromadb  # noqa: F401
-    except ImportError as e:
-        log.warning(
-            "try.sage: chromadb pip-install reported success but import still "
-            "fails (%s). Seed will skip KBs.",
-            e,
-        )
-        if app is not None:
-            _set_status(app, "error", "import after install failed")
-        return False
-
-    # Re-initialize the factory singleton — without this the existing
-    # `factory.VECTOR_DB_CLIENT` reference (set to None at module-load
-    # time when the original chromadb import raised) stays None, and
-    # the seed's vector-DB precheck would still skip KB creation.
-    from sage_is_ai.retrieval.vector import factory
-
-    try:
-        factory.VECTOR_DB_CLIENT = factory.Vector.get_vector(VECTOR_DB)
-    except Exception as e:
-        log.warning(
-            "try.sage: chromadb installed but vector client init failed (%s). "
-            "Seed will skip KBs.",
-            e,
-        )
-        if app is not None:
-            _set_status(app, "error", "client init failed")
-        return False
-
-    log.info("try.sage: chromadb installed and vector client ready.")
-    if app is not None:
-        _set_status(app, "ready")
+    log.info("try.sage: vector client ready.")
 
     # Re-run the seed so KB markdown gets ingested *now* without waiting
     # for the next reset cycle or container restart. The seed is

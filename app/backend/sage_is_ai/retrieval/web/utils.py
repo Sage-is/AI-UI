@@ -20,10 +20,51 @@ from typing import (
 import aiohttp
 import certifi
 import validators
-from langchain_community.document_loaders import PlaywrightURLLoader, WebBaseLoader
-from langchain_community.document_loaders.firecrawl import FireCrawlLoader
-from langchain_community.document_loaders.base import BaseLoader
+# Web loaders ride the rag-loaders Sprig™. Unlike the lazy call-time imports
+# elsewhere, the Safe* classes below SUBCLASS these at module load, so a graft
+# after boot needs a restart to take effect here (see _require_web_loaders).
+try:
+    from langchain_community.document_loaders import (
+        PlaywrightURLLoader,
+        WebBaseLoader,
+    )
+    from langchain_community.document_loaders.firecrawl import FireCrawlLoader
+
+    WEB_LOADERS_AVAILABLE = True
+except ModuleNotFoundError:
+    WEB_LOADERS_AVAILABLE = False
+    FireCrawlLoader = None
+
+    class PlaywrightURLLoader:  # placeholder base — guarded before use
+        pass
+
+    class WebBaseLoader:  # placeholder base — guarded before use
+        pass
+
+
+# BaseLoader lives in langchain_core (community's .base re-exports it), and
+# langchain_core stays in the base rootstock.
+from langchain_core.document_loaders import BaseLoader
 from langchain_core.documents import Document
+
+
+def _require_web_loaders():
+    if WEB_LOADERS_AVAILABLE:
+        return
+    import importlib
+
+    importlib.invalidate_caches()
+    try:
+        import langchain_community.document_loaders  # noqa: F401
+    except ModuleNotFoundError:
+        raise RuntimeError(
+            "Web-page loading requires the rag-loaders Sprig™ — "
+            "graft it in Admin → Sprigs."
+        )
+    raise RuntimeError(
+        "rag-loaders Sprig™ grafted — restart the Rootstock™ to "
+        "activate web-page loading."
+    )
 from sage_is_ai.retrieval.loaders.tavily import TavilyLoader
 from sage_is_ai.retrieval.loaders.external_web import ExternalWebLoader
 from sage_is_ai.constants import ERROR_MESSAGES
@@ -599,6 +640,7 @@ def get_web_loader(
     requests_per_second: int = 2,
     trust_env: bool = False,
 ):
+    _require_web_loaders()
     # Check if the URLs are valid
     safe_urls = safe_validate_urls([urls] if isinstance(urls, str) else urls)
 

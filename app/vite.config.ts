@@ -43,7 +43,9 @@ export default defineConfig({
 		APP_BUILD_HASH: JSON.stringify(process.env.APP_BUILD_HASH || 'dev-build')
 	},
 	build: {
-		sourcemap: true
+		// No sourcemaps in shipped builds — 54MB of .js.map in the image (8.I.1).
+		// Flip to true locally when debugging a production bundle.
+		sourcemap: false
 	},
 	worker: {
 		format: 'es'

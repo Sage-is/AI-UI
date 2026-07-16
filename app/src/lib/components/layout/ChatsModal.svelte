@@ -304,7 +304,7 @@
 												<th scope="col" style="--px:0.6rem; --py:0.5rem; --ta:right" />
 											</tr>
 										</thead>
-										<tbody style="--d:table">
+										<tbody style="--w:100%">
 											{#each chats as chat, idx}
 												<tr
 													style="--bgc:transparent; --dark-bgc:var(--color-gray-900); --bc:var(--color-gray-50); --dark-bc:var(--color-gray-850); --size:0.6rem"

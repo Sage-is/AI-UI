@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { v4 as uuidv4 } from 'uuid';
 	import { toast } from 'svelte-sonner';
-	import mermaid from 'mermaid';
 	import { PaneGroup, Pane, PaneResizer } from 'paneforge';
 
 	import { getContext, onDestroy, onMount, tick } from 'svelte';
@@ -2070,9 +2069,9 @@
 />
 
 <div
-	style="--h:100vh; --maxh:100dvh; 
+	style="--h:100vh; --maxh:100dvh;
 		--tdn:200ms; --ttf:cubic-bezier(0.4, 0, 0.2, 1);
-		--w:100%; --maxw:100%; --d:flex; --fd:column; 
+		--w:100%; --maxw:100%; --d:flex; --fd:column;
 		--transition:width var(--tdn) var(--ttf); {$showSidebar ? '--maxw:calc(100% - 280px)' : ''}"
 	id="chat-container"
 >

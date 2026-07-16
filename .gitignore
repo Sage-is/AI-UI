@@ -8,6 +8,7 @@
 !/.gitignore
 !/.gitleaks.toml
 !/.pre-commit-config.yaml
+!/.trivyignore
 !.todoscope-exclude.csv
 !.obsidian/
 !.obsidian/**
@@ -51,16 +52,25 @@ yarn-error.log*
 coverage
 *.lcov
 
-# cypress artifacts
+# cypress artifacts (local-only run evidence — videos, failure screenshots,
+# optional REPORT=1 junit XML; no Cypress Cloud anywhere)
 cypress/videos
 cypress/screenshots
+cypress/reports
 
 
 # DB snapshots for upgrade testing (large binary files, synced via SyncThing/B2)
-tools/db_snapshots/*.sqlite
-tools/db_snapshots/*.db
+# Production data snapshots: real user chats/uploads/vectors. NEVER commit.
+# (The upgrade gate reads them read-only and works on volume copies.)
+tools/db_snapshots/
 
 # Outreach drafts (private — not for the public repo)
 # Keep README.md tracked so the folder's purpose is documented in git
 docs/outreach/*
 !docs/outreach/README.md
+
+# Cypress test artifacts (local-only run evidence — videos, failure screenshots,
+# optional REPORT=1 junit XML; no Cypress Cloud anywhere)
+app/cypress/videos
+app/cypress/screenshots
+

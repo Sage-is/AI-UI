@@ -112,6 +112,9 @@ async def download_chat_as_pdf(
             media_type="application/pdf",
             headers={"Content-Disposition": "attachment;filename=chat.pdf"},
         )
+    except RuntimeError as e:
+        # Capability not grafted (export-document Sprig™) — not a bad request.
+        raise HTTPException(status_code=503, detail=str(e))
     except Exception as e:
         log.exception(f"Error generating PDF: {e}")
         raise HTTPException(status_code=400, detail=str(e))

@@ -29,16 +29,57 @@ from pydantic import BaseModel
 import tiktoken
 
 
-from langchain.text_splitter import RecursiveCharacterTextSplitter, TokenTextSplitter
-from langchain_text_splitters import MarkdownHeaderTextSplitter
+# Text splitters ride the rag-loaders Sprig™ (langchain + langchain-community
+# leave the base rootstock; langchain_core stays — it is the interface layer
+# Document/BaseLoader/BaseRetriever that the rest of the codebase subclasses).
+try:
+    from langchain.text_splitter import (
+        RecursiveCharacterTextSplitter,
+        TokenTextSplitter,
+    )
+    from langchain_text_splitters import MarkdownHeaderTextSplitter
+except ModuleNotFoundError:
+    RecursiveCharacterTextSplitter = TokenTextSplitter = None
+    MarkdownHeaderTextSplitter = None
 from langchain_core.documents import Document
+
+
+def _require_text_splitters():
+    """Re-attempt the splitter imports at call time so a freshly grafted
+    rag-loaders Sprig™ works without a restart (overlay dir is on sys.path
+    from boot). invalidate_caches() is load-bearing: sprig tars are packed
+    with a fixed --mtime, so extraction leaves the overlay dir's mtime
+    unchanged and FileFinder would otherwise serve its stale boot-time
+    listing forever."""
+    global RecursiveCharacterTextSplitter, TokenTextSplitter
+    global MarkdownHeaderTextSplitter
+    if RecursiveCharacterTextSplitter is None:
+        import importlib
+
+        importlib.invalidate_caches()
+        try:
+            from langchain.text_splitter import (
+                RecursiveCharacterTextSplitter as _rc,
+                TokenTextSplitter as _tk,
+            )
+            from langchain_text_splitters import MarkdownHeaderTextSplitter as _md
+        except ModuleNotFoundError:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=(
+                    "Document chunking requires the rag-loaders Sprig™ — "
+                    "graft it in Admin → Sprigs."
+                ),
+            )
+        RecursiveCharacterTextSplitter, TokenTextSplitter = _rc, _tk
+        MarkdownHeaderTextSplitter = _md
 
 from sage_is_ai.models.files import FileModel, Files
 from sage_is_ai.models.knowledge import Knowledges
 from sage_is_ai.storage.provider import Storage
 
 
-from sage_is_ai.retrieval.vector.factory import VECTOR_DB_CLIENT
+from sage_is_ai.retrieval.vector import factory
 
 # Document loaders
 from sage_is_ai.retrieval.loaders.main import Loader
@@ -428,70 +469,141 @@ async def trigger_model_download(
 
     async def _download():
         try:
-            # Step 1: Install ML Python packages to data volume if not already available
-            ml_target = os.path.join(
-                os.environ.get("DATA_DIR", "/app/backend/data"), "ml_packages"
-            )
-            try:
-                import torch  # noqa: F401
-                import sentence_transformers  # noqa: F401
-            except ImportError:
-                print("[AI Engine] Installing ML packages from locked manifest...", flush=True)
-                # __file__ = sage_is_ai/routers/retrieval.py → 3 levels up to backend/
-                ml_lock = os.path.join(
-                    os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                    "requirements-ml.lock",
-                )
-                os.makedirs(ml_target, exist_ok=True)
-
-                # Single uv pip install pass against a hashed lockfile. The
-                # resolver caught any incompatible closure (torch/transformers/
-                # numpy) at lockfile-compile time on the dev host, so this
-                # install can only succeed or fail deterministically.
-                # CUDA is intentionally not supported in 2.3.1; the 2.4 bundle
-                # ships a per-arch × per-accel matrix.
-                await run_in_threadpool(
-                    subprocess.run,
-                    ["uv", "pip", "install",
-                     "-r", ml_lock,
-                     "--target", ml_target,
-                     "--break-system-packages"],
-                    check=True,
-                )
-
-                # Append to sys.path so imports work without shadowing
-                # system packages (bcrypt, uvicorn, click, anyio, pydantic).
-                # Transitional measure; the 2.4 bundle replaces runtime install.
-                import sys
-                if ml_target not in sys.path:
-                    sys.path.append(ml_target)
-                print("[AI Engine] ML packages installed", flush=True)
-
-            # Step 2: Install chromadb if VECTOR_DB is "chroma" and not yet available
+            # Step 1: chromadb if VECTOR_DB is "chroma" — Sprig™-first (the
+            # vector-chroma artifact: volume-cached tar → registry), pinned-pip
+            # fallback. ONE shared implementation with the try.sage boot path
+            # (sprigs/vector_bootstrap.py); it owns the cleanup, sys.path, and
+            # factory re-init this block used to hand-roll. Runs FIRST: it
+            # needs no torch, and the onnx embedding cultivars ride the
+            # onnxruntime this overlay delivers.
             if VECTOR_DB == "chroma":
+                from sage_is_ai.sprigs.vector_bootstrap import ensure_chromadb
+
+                if await ensure_chromadb(request.app):
+                    print("[AI Engine] chromadb ready", flush=True)
+                else:
+                    print("[AI Engine] chromadb bootstrap FAILED", flush=True)
+
+            # Step 2: document loaders — the ingestion half of RAG, grafted
+            # BEFORE embedding so the wizard's readiness signal stays truthful.
+            # The status endpoint flips to "ready" inside the embedding step
+            # below; if loaders grafted AFTER that, whoever uploads the instant
+            # "ready" appears (a user, or the release smoke) 503s on a
+            # still-missing overlay — the exact race this ordering closes.
+            # Loaders are a fast delivery-only overlay (no child); embedding is
+            # the slow weights pull, so front-loading loaders costs nothing. The
+            # wizard's "document search works now" promise needs all THREE:
+            # vector store, loaders, embedding. Best-effort: a failure leaves
+            # the clean per-upload 503 + graft pointer, never fails the wizard.
+            if "embedding" in form_data.components:
                 try:
-                    import chromadb  # noqa: F401
+                    import langchain  # noqa: F401 — baked or already delivered
                 except ImportError:
-                    print("[AI Engine] Installing chromadb...", flush=True)
+                    supervisor = getattr(request.app.state, "sprig_supervisor", None)
+                    if supervisor is not None:
+                        try:
+                            await supervisor.graft("rag-loaders", "rag")
+                            print("[AI Engine] Document loaders delivered by Sprig™", flush=True)
+                        except Exception as e:  # noqa: BLE001 — best-effort
+                            log.warning(
+                                "rag-loaders Sprig™ unavailable (%s); uploads "
+                                "will point at Admin → Sprigs until grafted.",
+                                e,
+                            )
+
+            # Step 3: embedding — Sprig™-first (sprigs/embedding_bootstrap.py):
+            # a catalog cultivar matching RAG_EMBEDDING_MODEL grafts pre-seeded,
+            # sha256-pinned weights served by a supervised loopback child — no
+            # HuggingFace pull, no torch, no event-loop-starving in-process
+            # model load. The legacy AI-Engine install below stays as the
+            # fallback for models with no cultivar. This flips the status to
+            # "ready"; loaders (Step 2) are already in place by now.
+            embedding_pending = (
+                "embedding" in form_data.components
+                and dl_status["embedding"] == "downloading"
+            )
+            if embedding_pending:
+                from sage_is_ai.sprigs.embedding_bootstrap import ensure_embedding
+
+                if await ensure_embedding(request.app):
+                    # point_embedding_at flipped the status to ready.
+                    embedding_pending = False
+                    print("[AI Engine] Embedding served by Sprig™", flush=True)
+
+            # Step 4: STT — Sprig™-first. whisper-base-ggml is a static
+            # whisper-server + ggml weights; point_stt_at wires the existing
+            # STT_ENGINE="openai" client at its loopback and flips the status.
+            # The faster-whisper HF download below stays as the fallback.
+            whisper_pending = (
+                "whisper" in form_data.components
+                and dl_status["whisper"] == "downloading"
+            )
+            if whisper_pending:
+                supervisor = getattr(request.app.state, "sprig_supervisor", None)
+                if supervisor is not None:
+                    try:
+                        handle = await supervisor.graft("whisper-base-ggml", "stt")
+                        if handle.process is not None:
+                            from sage_is_ai.sprigs.stt_dispatch import point_stt_at
+
+                            point_stt_at(request.app, handle)
+                            whisper_pending = False
+                            print("[AI Engine] STT served by Sprig™", flush=True)
+                    except Exception as e:  # noqa: BLE001 — arch/registry refusal
+                        log.info(
+                            "whisper Sprig™ unavailable (%s); falling back to "
+                            "the legacy faster-whisper download.",
+                            e,
+                        )
+
+            # Step 5: legacy ML packages — only the fallback paths below need
+            # torch/sentence-transformers/faster-whisper. A Sprig™-served
+            # embedding skips the whole multi-GB install.
+            if embedding_pending or whisper_pending:
+                ml_target = os.path.join(
+                    os.environ.get("DATA_DIR", "/app/backend/data"), "ml_packages"
+                )
+                try:
+                    import torch  # noqa: F401
+                    import sentence_transformers  # noqa: F401
+                except ImportError:
+                    print("[AI Engine] Installing ML packages from locked manifest...", flush=True)
+                    # __file__ = sage_is_ai/routers/retrieval.py → 3 levels up to backend/
+                    ml_lock = os.path.join(
+                        os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                        "requirements-ml.lock",
+                    )
+                    os.makedirs(ml_target, exist_ok=True)
+
+                    # Single uv pip install pass against a hashed lockfile. The
+                    # resolver caught any incompatible closure (torch/transformers/
+                    # numpy) at lockfile-compile time on the dev host, so this
+                    # install can only succeed or fail deterministically.
+                    # CUDA is intentionally not supported in 2.3.1; the 2.4 bundle
+                    # ships a per-arch × per-accel matrix.
                     await run_in_threadpool(
                         subprocess.run,
-                        ["uv", "pip", "install", "chromadb",
+                        ["uv", "pip", "install",
+                         "-r", ml_lock,
                          "--target", ml_target,
                          "--break-system-packages"],
                         check=True,
                     )
-                    # Append (not insert) for the same reason as the main ML
-                    # install above: system packages must keep priority.
-                    import sys
-                    if ml_target not in sys.path:
-                        sys.path.append(ml_target)
-                    # Re-initialize vector DB client now that chromadb is available
-                    from sage_is_ai.retrieval.vector import factory
-                    factory.VECTOR_DB_CLIENT = factory.Vector.get_vector(VECTOR_DB)
-                    print("[AI Engine] chromadb installed", flush=True)
 
-            # Embedding model
-            if "embedding" in form_data.components and dl_status["embedding"] == "downloading":
+                    # APPEND to sys.path so imports work without shadowing
+                    # system packages (bcrypt, uvicorn, click, anyio, pydantic).
+                    # Remove-then-append: the chroma pip fallback (step 1) may
+                    # have INSERTED this dir at position 0 — left there, the
+                    # 30+ old-pinned lock packages would shadow site-packages
+                    # for the life of the process.
+                    import sys
+                    if ml_target in sys.path:
+                        sys.path.remove(ml_target)
+                    sys.path.append(ml_target)
+                    print("[AI Engine] ML packages installed", flush=True)
+
+            # Embedding model (legacy fallback — no cultivar matched)
+            if embedding_pending:
                 print(f"[AI Engine] Downloading embedding model: {app_state.config.RAG_EMBEDDING_MODEL}", flush=True)
                 ef = await run_in_threadpool(
                     get_ef,
@@ -537,7 +649,7 @@ async def trigger_model_download(
                     dl_status["error"] = "Failed to load embedding model"
 
             # Whisper model
-            if "whisper" in form_data.components and dl_status["whisper"] == "downloading":
+            if whisper_pending:
                 print("[AI Engine] Downloading Whisper model...", flush=True)
                 await run_in_threadpool(
                     _download_whisper,
@@ -1112,7 +1224,7 @@ def save_docs_to_vector_db(
 
     # Check if entries with the same hash (metadata.hash) already exist
     if metadata and "hash" in metadata:
-        result = VECTOR_DB_CLIENT.query(
+        result = factory.VECTOR_DB_CLIENT.query(
             collection_name=collection_name,
             filter={"hash": metadata["hash"]},
         )
@@ -1124,6 +1236,7 @@ def save_docs_to_vector_db(
                 raise ValueError(ERROR_MESSAGES.DUPLICATE_CONTENT)
 
     if split:
+        _require_text_splitters()
         if request.app.state.config.TEXT_SPLITTER in ["", "character"]:
             text_splitter = RecursiveCharacterTextSplitter(
                 chunk_size=request.app.state.config.CHUNK_SIZE,
@@ -1223,11 +1336,11 @@ def save_docs_to_vector_db(
                 metadata[key] = str(value)
 
     try:
-        if VECTOR_DB_CLIENT.has_collection(collection_name=collection_name):
+        if factory.VECTOR_DB_CLIENT.has_collection(collection_name=collection_name):
             log.info(f"collection {collection_name} already exists")
 
             if overwrite:
-                VECTOR_DB_CLIENT.delete_collection(collection_name=collection_name)
+                factory.VECTOR_DB_CLIENT.delete_collection(collection_name=collection_name)
                 log.info(f"deleting existing collection {collection_name}")
             elif add is False:
                 log.info(
@@ -1282,7 +1395,7 @@ def save_docs_to_vector_db(
             for idx, text in enumerate(texts)
         ]
 
-        VECTOR_DB_CLIENT.insert(
+        factory.VECTOR_DB_CLIENT.insert(
             collection_name=collection_name,
             items=items,
         )
@@ -1322,7 +1435,7 @@ async def process_file(
 
             try:
                 # /files/{file_id}/data/content/update
-                VECTOR_DB_CLIENT.delete_collection(collection_name=f"file-{file.id}")
+                factory.VECTOR_DB_CLIENT.delete_collection(collection_name=f"file-{file.id}")
             except:
                 # Audio file upload pipeline
                 pass
@@ -1345,7 +1458,7 @@ async def process_file(
             # Check if the file has already been processed and save the content
             # Usage: /knowledge/{id}/file/add, /knowledge/{id}/file/update
 
-            result = VECTOR_DB_CLIENT.query(
+            result = factory.VECTOR_DB_CLIENT.query(
                 collection_name=f"file-{file.id}", filter={"file_id": file.id}
             )
 
@@ -1690,7 +1803,7 @@ def query_doc_handler(
     try:
         if request.app.state.config.ENABLE_RAG_HYBRID_SEARCH:
             collection_results = {}
-            collection_results[form_data.collection_name] = VECTOR_DB_CLIENT.get(
+            collection_results[form_data.collection_name] = factory.VECTOR_DB_CLIENT.get(
                 collection_name=form_data.collection_name
             )
             return query_doc_with_hybrid_search(
@@ -1821,11 +1934,11 @@ class DeleteForm(BaseModel):
 @router.post("/delete")
 def delete_entries_from_collection(form_data: DeleteForm, user=Depends(get_admin_user)):
     try:
-        if VECTOR_DB_CLIENT.has_collection(collection_name=form_data.collection_name):
+        if factory.VECTOR_DB_CLIENT.has_collection(collection_name=form_data.collection_name):
             file = Files.get_file_by_id(form_data.file_id)
             hash = file.hash
 
-            VECTOR_DB_CLIENT.delete(
+            factory.VECTOR_DB_CLIENT.delete(
                 collection_name=form_data.collection_name,
                 metadata={"hash": hash},
             )
@@ -1839,7 +1952,7 @@ def delete_entries_from_collection(form_data: DeleteForm, user=Depends(get_admin
 
 @router.post("/reset/db")
 def reset_vector_db(user=Depends(get_admin_user)):
-    VECTOR_DB_CLIENT.reset()
+    factory.VECTOR_DB_CLIENT.reset()
     Knowledges.delete_all_knowledge()
 
 

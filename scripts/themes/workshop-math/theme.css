@@ -1,0 +1,23 @@
+/* sprig-theme:workshop-math v1 — Sage.is workshop preset (Math / blue) */
+/* Self-contained by contract: no imports, no external references; inline
+   data URIs only. Overrides the gray scale the interface reads via
+   var(--color-gray-N) (declared nowhere by default, so :root wins without
+   !important) and the startr.style semantic accents. Note: the oled-dark
+   theme sets four gray levels as inline styles at boot; those win. */
+:root {
+	--color-gray-50: #f3f6fa;
+	--color-gray-100: #e6ecf5;
+	--color-gray-200: #d0dbeb;
+	--color-gray-300: #aec0d9;
+	--color-gray-400: #809cc0;
+	--color-gray-500: #5a76a0;
+	--color-gray-600: #445d85;
+	--color-gray-700: #35496a;
+	--color-gray-800: #233248;
+	--color-gray-850: #1b2739;
+	--color-gray-900: #131d2b;
+	--color-gray-950: #0b121d;
+	--primary: #2f5e9e;
+	--secondary: #6f9bd1;
+	--links: #2f5e9e;
+}

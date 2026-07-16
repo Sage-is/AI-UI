@@ -7,10 +7,39 @@ from html import escape
 from markdown import markdown
 
 import site
-from fpdf import FPDF
+
+# fpdf2 (+ fontTools, pillow, CJK fonts) rides the export-document Sprig™ —
+# imported lazily so the base rootstock boots without the ~115MB PDF stack.
+# The overlay dir is on sys.path from boot, so a graft takes effect on the
+# next export call with no restart.
+try:
+    from fpdf import FPDF
+except ModuleNotFoundError:
+    FPDF = None
 
 from sage_is_ai.env import STATIC_DIR, FONTS_DIR
 from sage_is_ai.models.chats import ChatTitleMessagesForm
+
+
+def _require_fpdf():
+    """Re-attempt the fpdf import at call time: a freshly grafted
+    export-document Sprig™ becomes usable without a restart."""
+    global FPDF
+    if FPDF is None:
+        import importlib
+
+        # Load-bearing: sprig tars pack a fixed --mtime — see retrieval.py.
+        importlib.invalidate_caches()
+        try:
+            from fpdf import FPDF as _FPDF
+
+            FPDF = _FPDF
+        except ModuleNotFoundError:
+            raise RuntimeError(
+                "PDF export requires the export-document Sprig™ — "
+                "graft it in Admin → Sprigs."
+            )
+    return FPDF
 
 
 class PDFGenerator:
@@ -101,7 +130,7 @@ class PDFGenerator:
         try:
             global FONTS_DIR
 
-            pdf = FPDF()
+            pdf = _require_fpdf()()
             pdf.add_page()
 
             # When running using `pip install` the static directory is in the site packages.

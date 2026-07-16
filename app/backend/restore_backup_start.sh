@@ -50,6 +50,10 @@ setup_rclone() {
 
 # Function to perform backup
 backup() {
+  if ! command -v rclone >/dev/null 2>&1; then
+    echo "$(date): rclone not installed — backup skipped. Graft the backup-rclone Sprig to enable backups."
+    return 0
+  fi
   echo "$(date): Starting backup of /app/backend/data/ to $RCLONE_REMOTE:/$BACKUP_PATH ..."
   echo "rclone copy /app/backend/data/ $RCLONE_REMOTE:/$BACKUP_PATH"
   rclone -vv copy /app/backend/data/ "$RCLONE_REMOTE:/$BACKUP_PATH"

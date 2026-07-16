@@ -1,0 +1,17 @@
+/* Sage.is branding override for noVNC's logo text — replaces the stock
+   yellow Orbitron with the AI-UI's own type (Archivo, falling back to
+   Vazirmatn like the app does) in black. */
+@font-face {
+	font-family: 'Archivo';
+	src: url('sage-archivo.ttf') format('truetype');
+	font-weight: 100 900;
+}
+
+.noVNC_logo {
+	color: #fff;
+	font-family: 'Archivo', 'Vazirmatn', sans-serif;
+	text-shadow: none;
+}
+.noVNC_logo span {
+	color: #fff;
+}

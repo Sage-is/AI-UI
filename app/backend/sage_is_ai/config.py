@@ -1171,6 +1171,15 @@ UI_CUSTOM_CSS = PersistentConfig(
     os.environ.get("UI_CUSTOM_CSS", ""),
 )
 
+# The active theme Sprig™ (catalog name, e.g. "theme-workshop-bio"). Set by
+# grafting a theme, cleared by pruning it; /themes/active.css serves the
+# pointed-at stylesheet from the DATA volume. Empty = default look.
+SPRIG_ACTIVE_THEME = PersistentConfig(
+    "SPRIG_ACTIVE_THEME",
+    "ui.sprig_active_theme",
+    os.environ.get("SPRIG_ACTIVE_THEME", ""),
+)
+
 
 USER_PERMISSIONS_WORKSHOP_MODELS_ACCESS = (
     os.environ.get("USER_PERMISSIONS_WORKSHOP_MODELS_ACCESS", "False").lower() == "true"
