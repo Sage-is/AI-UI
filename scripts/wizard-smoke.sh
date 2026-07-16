@@ -30,9 +30,18 @@ if [ -z "$IMAGE" ] || [ "${IMAGE#*:}" = "$IMAGE" ]; then
   echo "       The Makefile normally passes \$(IMAGE_NAME):\$(IMAGE_TAG)." >&2
   exit 2
 fi
-CONTAINER="sage-ai-wizard-smoke"
-VOLUME="sage-ai-wizard-smoke-data"
-PORT="${PORT:-8181}"  # non-default so we don't collide with a running dev container on :8080
+# Unique per-run identifiers so two smokes never collide. With a SHARED name,
+# the "clean slate" `docker rm -f "$CONTAINER"` below (step 1) nukes a
+# concurrently-running smoke's live container mid-request — the other run then
+# fails with curl exit 56 (connection reset). A PID suffix gives one identity
+# per invocation (a parallel arch run, a retry, a diagnostic session all get
+# their own); override any of these to pin a value.
+RUN_ID="${WIZARD_SMOKE_ID:-$$}"
+CONTAINER="${WIZARD_SMOKE_CONTAINER:-sage-ai-wizard-smoke-$RUN_ID}"
+VOLUME="${WIZARD_SMOKE_VOLUME:-sage-ai-wizard-smoke-data-$RUN_ID}"
+# A free ephemeral port unless pinned — two runs on one fixed port can't both
+# bind :8080. Each socket bound to 0 gets a distinct port from the OS.
+PORT="${PORT:-$(python3 -c 'import socket; s=socket.socket(); s.bind(("127.0.0.1",0)); print(s.getsockname()[1]); s.close()' 2>/dev/null || echo 8181)}"
 BASE="http://localhost:${PORT}"
 EMAIL="test@example.com"
 PASSWORD="zaq12wsx"
@@ -193,10 +202,25 @@ FILE_ID=$(curl -s -X POST "${BASE}/api/v1/files/" \
   -H "$AUTH" -F "file=@${TMPFILE}" | jq -r '.id')
 [ -n "$FILE_ID" ] && [ "$FILE_ID" != "null" ] || fail "file upload failed"
 
-ADD_CODE=$(curl -s -o /dev/null -w '%{http_code}' \
-  -X POST "${BASE}/api/v1/knowledge/${KB_ID}/file/add" \
-  -H "$AUTH" -H 'Content-Type: application/json' \
-  -d "{\"file_id\":\"${FILE_ID}\"}")
+# Retry on the transient 400: add-to-KB needs the file's content EXTRACTED
+# (rag-loaders document processing) AND the embedding served. The wizard grafts
+# embedding first and rag-loaders a beat later, and the upload's extraction is
+# async — so a "content not available" 400 right after upload just means
+# processing hasn't finished, not a regression. Under QEMU load that window is
+# wider. Poll up to ~60s; a persistent non-200 is the real failure.
+ADD_CODE=000
+for _ in $(seq 1 20); do
+  ADD_CODE=$(curl -s -o /tmp/wsmoke-add -w '%{http_code}' \
+    -X POST "${BASE}/api/v1/knowledge/${KB_ID}/file/add" \
+    -H "$AUTH" -H 'Content-Type: application/json' \
+    -d "{\"file_id\":\"${FILE_ID}\"}")
+  [ "$ADD_CODE" = "200" ] && break
+  # Only the not-yet-extracted / processing races are retryable; anything else
+  # (auth, 500, missing KB) fails fast.
+  grep -qiE "not available|still processing|not been processed|being processed" /tmp/wsmoke-add 2>/dev/null || break
+  sleep 3
+done
+rm -f /tmp/wsmoke-add
 [ "$ADD_CODE" = "200" ] || fail "add-to-KB returned ${ADD_CODE} (expected 200) — this is the original regression"
 
 echo "[smoke] PASS — wizard install + embedding + file index all green for $IMAGE"
