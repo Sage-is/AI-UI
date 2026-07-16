@@ -20,10 +20,12 @@ Those capabilities now arrive as Sprigs. The 8.J amd64 artifacts shipped
 | STT (voice notes) | `whisper-base-ggml` | GRAFTS (`v1-amd64`) |
 
 Embedding runs the ONNX path on amd64 (weights are arch-neutral; the
-onnxruntime rides `vector-chroma`). `e5-large-gguf` and the reranker stay
-arm64-only until the llama.cpp amd64 build lands — both optional. Known gap:
-browser voice notes (webm/opus) also need `media-ffmpeg`, which has no amd64
-build yet — recorded voice notes transcribe only from wav/mp3 until it ships.
+onnxruntime rides `vector-chroma`). `media-ffmpeg` and `backup-rclone` amd64
+shipped 2026-07-15 too (recipe-built static downloads), so browser voice
+notes (webm/opus) transcode as well. The GGUF cultivars (`e5-large-gguf`,
+`bge-reranker`) also graft on amd64 now (headless static llama-server,
+`LLAMA_BUILD_UI=OFF`+`LLAMA_USE_PREBUILT_UI=OFF`), boot-tested under QEMU —
+the whole catalog is both-arch.
 
 `make upgrade_gate` proves all five grafts on the real snapshot (section 6 now
 FAILS on any refusal — the gap is a blocker again, not a note). What always

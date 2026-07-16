@@ -21,7 +21,7 @@ from fastapi import (
 from fastapi.responses import FileResponse, StreamingResponse
 from sage_is_ai.constants import ERROR_MESSAGES
 from sage_is_ai.env import SRC_LOG_LEVELS
-from sage_is_ai.retrieval.vector.factory import VECTOR_DB_CLIENT
+from sage_is_ai.retrieval.vector import factory
 
 from sage_is_ai.models.users import Users
 from sage_is_ai.models.files import (
@@ -305,7 +305,7 @@ async def delete_all_files(user=Depends(get_admin_user)):
     if result:
         try:
             Storage.delete_all_files()
-            VECTOR_DB_CLIENT.reset()
+            factory.VECTOR_DB_CLIENT.reset()
         except Exception as e:
             log.exception(e)
             log.error("Error deleting files")
@@ -628,7 +628,7 @@ async def delete_file_by_id(id: str, user=Depends(get_verified_user)):
         if result:
             try:
                 Storage.delete_file(file.path)
-                VECTOR_DB_CLIENT.delete(collection_name=f"file-{id}")
+                factory.VECTOR_DB_CLIENT.delete(collection_name=f"file-{id}")
             except Exception as e:
                 log.exception(e)
                 log.error("Error deleting files")

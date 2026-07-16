@@ -4,7 +4,8 @@ import logging
 from typing import Optional
 
 from sage_is_ai.models.memories import Memories, MemoryModel
-from sage_is_ai.retrieval.vector.factory import VECTOR_DB_CLIENT, require_vector_db
+from sage_is_ai.retrieval.vector import factory
+from sage_is_ai.retrieval.vector.factory import require_vector_db
 from sage_is_ai.utils.auth import get_verified_user
 from sage_is_ai.env import SRC_LOG_LEVELS
 
@@ -52,7 +53,7 @@ async def add_memory(
     require_vector_db()
     memory = Memories.insert_new_memory(user.id, form_data.content)
 
-    VECTOR_DB_CLIENT.upsert(
+    factory.VECTOR_DB_CLIENT.upsert(
         collection_name=f"user-memory-{user.id}",
         items=[
             {
@@ -84,7 +85,7 @@ async def query_memory(
     request: Request, form_data: QueryMemoryForm, user=Depends(get_verified_user)
 ):
     require_vector_db()
-    results = VECTOR_DB_CLIENT.search(
+    results = factory.VECTOR_DB_CLIENT.search(
         collection_name=f"user-memory-{user.id}",
         vectors=[request.app.state.EMBEDDING_FUNCTION(form_data.content, user=user)],
         limit=form_data.k,
@@ -101,10 +102,10 @@ async def reset_memory_from_vector_db(
     request: Request, user=Depends(get_verified_user)
 ):
     require_vector_db()
-    VECTOR_DB_CLIENT.delete_collection(f"user-memory-{user.id}")
+    factory.VECTOR_DB_CLIENT.delete_collection(f"user-memory-{user.id}")
 
     memories = Memories.get_memories_by_user_id(user.id)
-    VECTOR_DB_CLIENT.upsert(
+    factory.VECTOR_DB_CLIENT.upsert(
         collection_name=f"user-memory-{user.id}",
         items=[
             {
@@ -137,7 +138,7 @@ async def delete_memory_by_user_id(user=Depends(get_verified_user)):
 
     if result:
         try:
-            VECTOR_DB_CLIENT.delete_collection(f"user-memory-{user.id}")
+            factory.VECTOR_DB_CLIENT.delete_collection(f"user-memory-{user.id}")
         except Exception as e:
             log.error(e)
         return True
@@ -165,7 +166,7 @@ async def update_memory_by_id(
         raise HTTPException(status_code=404, detail="Memory not found")
 
     if form_data.content is not None:
-        VECTOR_DB_CLIENT.upsert(
+        factory.VECTOR_DB_CLIENT.upsert(
             collection_name=f"user-memory-{user.id}",
             items=[
                 {
@@ -196,7 +197,7 @@ async def delete_memory_by_id(memory_id: str, user=Depends(get_verified_user)):
     result = Memories.delete_memory_by_id_and_user_id(memory_id, user.id)
 
     if result:
-        VECTOR_DB_CLIENT.delete(
+        factory.VECTOR_DB_CLIENT.delete(
             collection_name=f"user-memory-{user.id}", ids=[memory_id]
         )
         return True

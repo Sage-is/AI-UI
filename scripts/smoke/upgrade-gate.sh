@@ -1,12 +1,7 @@
 #!/usr/bin/env bash
-# Upgrade gate — boot THIS image on a COPY of a production data snapshot and
-# prove the upgrade path holds: migrations run, users/chats survive, the
-# legacy RAG config degrades cleanly on the slim rootstock, the pinned
-# chromadb opens the production vector store after a vector-chroma graft,
-# and the new surfaces (themes, arch guard, registry resolution) behave.
+# Upgrade gate — boot THIS image on a COPY of a production data snapshot and prove the upgrade path holds: migrations run, users/chats survive, the legacy RAG config degrades cleanly on the slim rootstock, the pinned chromadb opens the production vector store after a vector-chroma graft, and the new surfaces (themes, arch guard, registry resolution) behave.
 #
-# The snapshot is READ-ONLY here: every run copies it into a fresh docker
-# volume and injects a throwaway admin into the COPY.
+# The snapshot is READ-ONLY here: every run copies it into a fresh docker volume and injects a throwaway admin into the COPY.
 #
 # Usage: scripts/smoke/upgrade-gate.sh [image] [snapshot-dir]
 #   defaults: sage-is/ai-ui:develop  tools/db_snapshots/<newest>
@@ -23,8 +18,7 @@ ADMIN_EMAIL="upgrade-gate@sage.is"; ADMIN_PW="upgrade-gate-pw-1234"
 PASS=0; FAIL=0; ok(){ echo "  ✅ $1"; PASS=$((PASS+1)); }; no(){ echo "  ❌ $1"; FAIL=$((FAIL+1)); }
 X(){ docker exec "$ROOT" sh -lc "$1"; }
 
-# KEEP=1 leaves the booted container + volume up after the gate (for the
-# Cypress half, cypress/e2e/upgrade/, or manual inspection at $BASE).
+# KEEP=1 leaves the booted container + volume up after the gate (for the Cypress half, cypress/e2e/upgrade/, or manual inspection at $BASE).
 cleanup(){
   [ -n "${KEEP:-}" ] && { echo "KEEP=1: leaving $ROOT up at $BASE (admin: $ADMIN_EMAIL)"; return; }
   docker rm -f "$ROOT" >/dev/null 2>&1 || true
@@ -32,13 +26,17 @@ cleanup(){
 }
 trap cleanup EXIT
 
+echo ""
+echo "==============================================================="
 echo "== 0. copy snapshot -> fresh volume (pristine source: $SNAP) =="
 docker rm -f "$ROOT" >/dev/null 2>&1 || true
 docker volume rm "$VOL" >/dev/null 2>&1 || true
 docker volume create "$VOL" >/dev/null
+# Skip the ~2.4GB cache/ dir (HF embedding-model download cache from the fat image). The gate grafts sprigs that carry their own models and asserts on the DB + vector store, never the old cache — copying it just doubles the disk
+# footprint (this + the target-arch volume) and is what exhausted the VM.
 docker run --rm -v "$SNAP:/src:ro" -v "$VOL:/dst" alpine:3.20 \
-  sh -c "cp -a /src/. /dst/ && rm -f /dst/readme.txt && du -sm /dst | cut -f1" \
-  | { read MB; echo "  copied ${MB}MB"; }
+  sh -c "tar -C /src --exclude=./cache -cf - . | tar -C /dst -xf - && rm -f /dst/readme.txt && du -sm /dst | cut -f1" \
+  | { read MB; echo "  copied ${MB}MB (cache/ excluded)"; }
 docker run --rm -v "$VOL:/data" -v "$HERE/scripts/snapshots/inject-test-admin.py:/inject.py:ro" \
   -e WEBUI_SECRET_KEY=upgrade-gate --entrypoint python3 "$IMG" /inject.py /data/webui.db "$ADMIN_EMAIL" "$ADMIN_PW" \
   && ok "test admin injected into the COPY" || { no "admin injection failed"; exit 1; }
@@ -139,23 +137,41 @@ echo "$TG" | jq -e '.delivered==true' >/dev/null 2>&1 && curl -s "$BASE/themes/a
 
 echo "== 6. TARGET-ARCH capability reality on the production data =="
 # The load-bearing rehearsal: boot the SAME production volume as the real
-# deployment arch (SPRIG_ARCH, default amd64 = sage.startr.cloud) and assert,
-# capability by capability, whether the data's dependencies can be restored.
-# This is what turns the amd64 gap from a silent post-deploy surprise into a
-# counted, visible fact. A refusal is EXPECTED and PASSES here (the guard is
-# working); the section's job is to make the gap impossible to miss.
+# deployment arch (default amd64 = sage.startr.cloud) and assert, capability by
+# capability, whether the data's dependencies actually restore.
+#
+# PREFER a REAL target-arch container: boot the ${IMG}-<arch> image under
+# --platform (QEMU) so executable cultivars — the onnx embedding server, the
+# GGUF binaries — genuinely RUN, not just deliver. SPRIG_ARCH env-faking on the
+# native image is a fallback that ONLY validates the arch guard + delivery: it
+# runs native binaries, so a cross-arch executable cultivar can't load its .so
+# and would false-fail. In that fallback we assert delivery-only and skip the
+# executable embedding cultivar (with a loud note to build the real image).
 TARGET_ARCH="${TARGET_ARCH:-amd64}"
+HOST_ARCH_REAL=$(docker run --rm --entrypoint uname "$IMG" -m 2>/dev/null)
+case "$HOST_ARCH_REAL" in aarch64) HOST_ARCH_REAL=arm64;; x86_64) HOST_ARCH_REAL=amd64;; esac
+TGT_IMG="$IMG"; TGT_PLAT=(); TGT_ARCHENV=(-e SPRIG_ARCH="$TARGET_ARCH"); REAL_TARGET=0
+if [ "$TARGET_ARCH" = "$HOST_ARCH_REAL" ]; then
+  REAL_TARGET=1; TGT_ARCHENV=()                                   # native — already the target
+elif docker image inspect "${IMG}-${TARGET_ARCH}" >/dev/null 2>&1; then
+  TGT_IMG="${IMG}-${TARGET_ARCH}"; TGT_PLAT=(--platform "linux/${TARGET_ARCH}"); TGT_ARCHENV=(); REAL_TARGET=1
+  echo "  (real ${TARGET_ARCH} container via QEMU — executable cultivars run for real)"
+else
+  echo "  ⚠️  no ${IMG}-${TARGET_ARCH} image — env-faking arch for GUARD+DELIVERY only;"
+  echo "     executable cultivars can't run cross-arch this way. Build it"
+  echo "     (make it_build_amd64 / cross_smoke) for a full amd64 execution proof."
+fi
 docker rm -f "${ROOT}-tgt" >/dev/null 2>&1 || true
 docker volume rm "${VOL}-tgt" >/dev/null 2>&1 || true
 docker volume create "${VOL}-tgt" >/dev/null
 docker run --rm -v "$SNAP:/src:ro" -v "${VOL}-tgt:/dst" alpine:3.20 \
-  sh -c "cp -a /src/. /dst/ && rm -f /dst/readme.txt" >/dev/null
+  sh -c "tar -C /src --exclude=./cache -cf - . | tar -C /dst -xf - && rm -f /dst/readme.txt" >/dev/null
 docker run --rm -v "${VOL}-tgt:/data" -v "$HERE/scripts/snapshots/inject-test-admin.py:/inject.py:ro" \
   -e WEBUI_SECRET_KEY=upgrade-gate --entrypoint python3 "$IMG" /inject.py /data/webui.db "$ADMIN_EMAIL" "$ADMIN_PW" >/dev/null
-docker run -d --name "${ROOT}-tgt" --network "$NET" -p "$((PORT+1)):8080" \
-  -e SPRIG_REGISTRY=local-registry:5000 -e SPRIG_ARCH="$TARGET_ARCH" \
+docker run -d --name "${ROOT}-tgt" ${TGT_PLAT[@]+"${TGT_PLAT[@]}"} --network "$NET" -p "$((PORT+1)):8080" \
+  -e SPRIG_REGISTRY=local-registry:5000 ${TGT_ARCHENV[@]+"${TGT_ARCHENV[@]}"} \
   -e WEBUI_AUTH=True -e WEBUI_SECRET_KEY=upgrade-gate-secret \
-  -v "${VOL}-tgt:/app/backend/data" "$IMG" >/dev/null
+  -v "${VOL}-tgt:/app/backend/data" "$TGT_IMG" >/dev/null
 for i in $(seq 1 150); do
   [ "$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:$((PORT+1))/health" 2>/dev/null)" = "200" ] && break; sleep 2
 done
@@ -170,10 +186,20 @@ docker logs "${ROOT}-tgt" 2>&1 | grep -q "Sprig™ host architecture: $TARGET_AR
 # 8.J amd64 artifacts shipped (vector-chroma/rag-loaders/export-document
 # overlays + the arch-neutral ONNX embedding weights), every one MUST graft on
 # the target arch — a refusal is now a capability gap and FAILS the gate.
-# Embedding asserts the ONNX cultivar (the amd64 path); e5-large-gguf stays
-# arm64-gated until the llama.cpp amd64 build lands.
-GAPPED=0
-for pair in "vector-chroma:vector" "rag-loaders:rag" "export-document:export" "multilingual-e5-large:embedding"; do
+# Embedding asserts the ONNX cultivar (the canonical amd64 path); the GGUF
+# cultivars (e5-large-gguf, reranker) also graft on amd64 now but are optional,
+# so they stay out of this deploy-critical assertion set.
+GAPPED=0; BROKEN=0
+# Deliver cultivars (extract-only) are validated in either mode. The embedding
+# cultivar SPAWNS an onnx server child, so it only proves anything in a REAL
+# target-arch container — under env-faking it can't load its cross-arch .so.
+PAIRS=("vector-chroma:vector" "rag-loaders:rag" "export-document:export")
+if [ "$REAL_TARGET" = "1" ]; then
+  PAIRS+=("multilingual-e5-large:embedding")
+else
+  echo "  … skipping the embedding server cultivar (needs a real $TARGET_ARCH image to execute)"
+fi
+for pair in "${PAIRS[@]}"; do
   nm="${pair%%:*}"; cap="${pair##*:}"
   R=$(curl -s --max-time 60 -X POST "http://localhost:$((PORT+1))/api/v1/retrieval/sprigs/graft" \
     -H "$A2" -H 'Content-Type: application/json' -d "{\"name\":\"$nm\",\"capability\":\"$cap\"}")
@@ -183,7 +209,10 @@ for pair in "vector-chroma:vector" "rag-loaders:rag" "export-document:export" "m
     echo "  ⛔ $nm REFUSED on $TARGET_ARCH — capability unavailable until an $TARGET_ARCH build ships (8.J)"
     GAPPED=$((GAPPED+1))
   else
+    # A non-arch failure (disk, registry, extraction) — NOT a capability gap,
+    # but the capability is still not graftable, so it must fail the summary.
     no "$nm: unexpected graft result: $(echo "$R" | head -c 160)"
+    BROKEN=$((BROKEN+1))
   fi
 done
 # Neutral sprigs MUST still work on the target arch (the escape hatch).
@@ -191,9 +220,13 @@ TG2=$(curl -s --max-time 300 -X POST "http://localhost:$((PORT+1))/api/v1/retrie
   -H "$A2" -H 'Content-Type: application/json' -d '{"name":"theme-workshop-math","capability":"theme"}')
 echo "$TG2" | jq -e '.delivered==true' >/dev/null 2>&1 \
   && ok "architecture-neutral sprig still grafts on $TARGET_ARCH" || no "neutral graft on $TARGET_ARCH failed"
-[ "$GAPPED" -eq 0 ] \
-  && ok "no capability gap on $TARGET_ARCH — every production dependency is graftable" \
-  || no "CAPABILITY GAP: $GAPPED production-critical capabilities are NOT graftable on $TARGET_ARCH"
+if [ "$GAPPED" -eq 0 ] && [ "$BROKEN" -eq 0 ]; then
+  ok "no capability gap on $TARGET_ARCH — every production dependency is graftable"
+elif [ "$GAPPED" -gt 0 ]; then
+  no "CAPABILITY GAP: $GAPPED production-critical capabilities are NOT graftable on $TARGET_ARCH"
+else
+  no "$BROKEN production-critical graft(s) FAILED on $TARGET_ARCH for a non-arch reason (see above — disk/registry/extraction), NOT a capability gap"
+fi
 docker rm -f "${ROOT}-tgt" >/dev/null 2>&1 || true
 docker volume rm "${VOL}-tgt" >/dev/null 2>&1 || true
 
