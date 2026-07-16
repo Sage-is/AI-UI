@@ -32,6 +32,8 @@ cleanup(){
 }
 trap cleanup EXIT
 
+echo ""
+echo "==============================================================="
 echo "== 0. copy snapshot -> fresh volume (pristine source: $SNAP) =="
 docker rm -f "$ROOT" >/dev/null 2>&1 || true
 docker volume rm "$VOL" >/dev/null 2>&1 || true
