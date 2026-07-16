@@ -45,12 +45,6 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
 
 - [x] **try.sage Manual Regression Sign-off** (2026-04-27): Phase A backend + Phase B frontend shipped. All 12 smoke checks passed (container boot, persona magic-links, banner, switcher, tutorial, admin tab, hidden connection, model filter, env-gate disable). Reference left for future regression-pass authors.
 
-- [ ] **try.sage Production Decisions**: (Alexander Somma + Izzy Plante) — Surfaced by Docker exploration. Block CapRover one-click rollout.
-  - [x] Decide where `TRY_SAGE_LLM_API_KEY` lives in production: plain env, Docker secret mount, or external vault. Recommend Docker secret for try.sage.is itself, plain env for self-hosted workshops.
-    - [x] note:As we use cap rover and the system injects env vars we're leaning this way
-  - [ ] Add the dummy-tools server question to the same review: keep, remove, or replace with real preview capability (web search, sandboxed runner).
-
-
 
 ---
 
@@ -494,6 +488,11 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 
 > Completed items are moved to `docs/completed-todos.md` periodically.
 > Check off items with `- [x]` and leave them in place until the next cleanup.
+
+- [x] **try.sage Production Decisions**: (Alexander Somma + Izzy Plante) — Surfaced by Docker exploration. Block CapRover one-click rollout.
+  - [x] Decide where `TRY_SAGE_LLM_API_KEY` lives in production: plain env, Docker secret mount, or external vault. Recommend Docker secret for try.sage.is itself, plain env for self-hosted workshops.
+    - [x] note:As we use cap rover and the system injects env vars we're leaning this way
+
 
 - [x] **Cypress E2E revival — docker-only headless + interactive-watch infra, three new specs** (2026-07-02 to 2026-07-03): Pinned `cypress/included:15.18.0` (not the 13.x devDep major — Cypress 13 bundles a Chromium whose `ReadableStream` isn't async-iterable and the app's streaming path throws on it). `scripts/e2e/run-cypress.sh` runs the suite headless against a fresh rootstock + Caddy TLS sidecar, no npm/cypress on the host. `scripts/e2e/run-cypress-watch.sh` + `scripts/e2e/watch/` adds an interactive GUI variant: Xvfb + x11vnc + noVNC served at `localhost:6080/vnc.html`, Sage-branded (logo, favicons, Archivo type via a subsetted font — see the font-subsetting TODO above). New specs: `degradation.cy.ts`, `sprigs-panel.cy.ts`, `users.cy.ts`; `registration.cy.ts` moved to `cypress/e2e/upstream/`. Headless run verified green: 10/10 specs passed. Decided 2026-07-02 alongside the noVNC-transport backlog item below (WebRTC swap still pending). #tests
 

@@ -18,6 +18,16 @@ import sys
 import time
 import uuid
 
+# passlib 1.7.4 (final, unmaintained) reads bcrypt.__about__.__version__, which
+# bcrypt removed in 4.1+. On its own that logs a noisy "(trapped) error reading
+# bcrypt version" traceback (harmless — hashing still works). Restore the
+# attribute so passlib reads the real version and stays quiet. The app does the
+# equivalent in utils/auth.py; this standalone helper needs its own.
+import bcrypt as _bcrypt_mod
+
+if not hasattr(_bcrypt_mod, "__about__"):
+    _bcrypt_mod.__about__ = type("about", (), {"__version__": _bcrypt_mod.__version__})
+
 from passlib.hash import bcrypt
 
 
