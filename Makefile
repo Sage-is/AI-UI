@@ -455,7 +455,12 @@ ship: release_and_push_GHCR sprig_publish
 ## chromadb opening the production vector store post-graft, themes, and the
 ## amd64 arch-guard rehearsal. SNAPSHOT=path overrides; KEEP=1 leaves it up
 ## for the Cypress half (cypress/e2e/upgrade/). Snapshots are read-only.
+##
+## IMAGE_TAG is optional: on a release/hotfix branch it is inferred from the
+## branch name (release/3.0.0 -> 3.0.0), else the latest git tag, else latest.
+## Override with IMAGE_TAG=X.Y.Z to gate an arbitrary tag.
 upgrade_gate: sprig_registry
+	@echo "[upgrade_gate] gating $(IMAGE_NAME):$(IMAGE_TAG)  (IMAGE_TAG inferred from branch; override with IMAGE_TAG=X.Y.Z)"
 	@scripts/smoke/upgrade-gate.sh $(IMAGE_NAME):$(IMAGE_TAG) $(SNAPSHOT)
 
 ## sprig_signing — the artifact-signing gate: signs two small artifacts with
@@ -563,7 +568,9 @@ release_smoke:
 	@$(MAKE) cross_smoke IMAGE_TAG=$(RELEASE_VERSION)
 	@echo ""
 	@echo "=== $(RELEASE_VERSION) smoke-clean on native arch + linux/amd64 ==="
-	@echo "    Next: deploy to staging, verify, then 'make release_and_push_GHCR'."
+	@echo "    Next: prove the upgrade path on a copy of a production snapshot —"
+	@echo "            make upgrade_gate            # gates $(IMAGE_NAME):$(RELEASE_VERSION) (tag inferred; override with IMAGE_TAG=X.Y.Z)"
+	@echo "          then deploy to staging, verify, then 'make release_and_push_GHCR'."
 	@$(NOTIFY_DONE)
 
 test_db_fresh:
