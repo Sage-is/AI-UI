@@ -1,12 +1,7 @@
 #!/usr/bin/env bash
-# Upgrade gate — boot THIS image on a COPY of a production data snapshot and
-# prove the upgrade path holds: migrations run, users/chats survive, the
-# legacy RAG config degrades cleanly on the slim rootstock, the pinned
-# chromadb opens the production vector store after a vector-chroma graft,
-# and the new surfaces (themes, arch guard, registry resolution) behave.
+# Upgrade gate — boot THIS image on a COPY of a production data snapshot and prove the upgrade path holds: migrations run, users/chats survive, the legacy RAG config degrades cleanly on the slim rootstock, the pinned chromadb opens the production vector store after a vector-chroma graft, and the new surfaces (themes, arch guard, registry resolution) behave.
 #
-# The snapshot is READ-ONLY here: every run copies it into a fresh docker
-# volume and injects a throwaway admin into the COPY.
+# The snapshot is READ-ONLY here: every run copies it into a fresh docker volume and injects a throwaway admin into the COPY.
 #
 # Usage: scripts/smoke/upgrade-gate.sh [image] [snapshot-dir]
 #   defaults: sage-is/ai-ui:develop  tools/db_snapshots/<newest>
@@ -23,8 +18,7 @@ ADMIN_EMAIL="upgrade-gate@sage.is"; ADMIN_PW="upgrade-gate-pw-1234"
 PASS=0; FAIL=0; ok(){ echo "  ✅ $1"; PASS=$((PASS+1)); }; no(){ echo "  ❌ $1"; FAIL=$((FAIL+1)); }
 X(){ docker exec "$ROOT" sh -lc "$1"; }
 
-# KEEP=1 leaves the booted container + volume up after the gate (for the
-# Cypress half, cypress/e2e/upgrade/, or manual inspection at $BASE).
+# KEEP=1 leaves the booted container + volume up after the gate (for the Cypress half, cypress/e2e/upgrade/, or manual inspection at $BASE).
 cleanup(){
   [ -n "${KEEP:-}" ] && { echo "KEEP=1: leaving $ROOT up at $BASE (admin: $ADMIN_EMAIL)"; return; }
   docker rm -f "$ROOT" >/dev/null 2>&1 || true
@@ -38,9 +32,7 @@ echo "== 0. copy snapshot -> fresh volume (pristine source: $SNAP) =="
 docker rm -f "$ROOT" >/dev/null 2>&1 || true
 docker volume rm "$VOL" >/dev/null 2>&1 || true
 docker volume create "$VOL" >/dev/null
-# Skip the ~2.4GB cache/ dir (HF embedding-model download cache from the fat
-# image). The gate grafts sprigs that carry their own models and asserts on the
-# DB + vector store, never the old cache — copying it just doubles the disk
+# Skip the ~2.4GB cache/ dir (HF embedding-model download cache from the fat image). The gate grafts sprigs that carry their own models and asserts on the DB + vector store, never the old cache — copying it just doubles the disk
 # footprint (this + the target-arch volume) and is what exhausted the VM.
 docker run --rm -v "$SNAP:/src:ro" -v "$VOL:/dst" alpine:3.20 \
   sh -c "tar -C /src --exclude=./cache -cf - . | tar -C /dst -xf - && rm -f /dst/readme.txt && du -sm /dst | cut -f1" \
