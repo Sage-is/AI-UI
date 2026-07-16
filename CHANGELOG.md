@@ -4,6 +4,13 @@ All notable changes to [Sage.is AI-UI](https://github.com/Sage-is/AI-UI) are doc
 
 ---
 
+## [Unreleased]
+
+### Changed
+
+**Release finish runs on plain git, not git-flow-next**
+`make release_finish` and `make hotfix_finish` now merge the release branch into master and develop, tag it, and delete it with plain git. git-flow-next's finish stranded three releases: it committed a fast-forward as an empty merge, misread skipped pre-commit hooks as a failure, and ran a remote-branch sync check that died when the release branch was never pushed to origin. Each time the fix was to finish the merge by hand, so the Makefile does that by default now. `git flow release start` still opens branches. Every step is idempotent — an already-merged branch or an existing tag is skipped — so a merge conflict resolves and the finish resumes instead of wedging. The self-heal target that dropped git-flow's stale state files is gone; there are no state files left to clean.
+
 ## [3.0.0] — 2026-07-15
 
 ### Added
