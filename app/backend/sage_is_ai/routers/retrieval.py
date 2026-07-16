@@ -484,31 +484,17 @@ async def trigger_model_download(
                 else:
                     print("[AI Engine] chromadb bootstrap FAILED", flush=True)
 
-            # Step 2: embedding — Sprig™-first (sprigs/embedding_bootstrap.py):
-            # a catalog cultivar matching RAG_EMBEDDING_MODEL grafts pre-seeded,
-            # sha256-pinned weights served by a supervised loopback child — no
-            # HuggingFace pull, no torch, no event-loop-starving in-process
-            # model load. The legacy AI-Engine install below stays as the
-            # fallback for models with no cultivar.
-            embedding_pending = (
-                "embedding" in form_data.components
-                and dl_status["embedding"] == "downloading"
-            )
-            if embedding_pending:
-                from sage_is_ai.sprigs.embedding_bootstrap import ensure_embedding
-
-                if await ensure_embedding(request.app):
-                    # point_embedding_at flipped the status to ready.
-                    embedding_pending = False
-                    print("[AI Engine] Embedding served by Sprig™", flush=True)
-
-            # Step 2.5: document loaders — the ingestion half of RAG. Without
-            # them every upload 503s ("graft rag-loaders"), so the wizard's
-            # "document search works now" promise needs all THREE: vector
-            # store, embedding, loaders. Delivery-only overlay (no child);
-            # chunking works immediately, web loading after a restart.
-            # Best-effort: a failure leaves the clean per-upload 503 + graft
-            # pointer, never fails the wizard.
+            # Step 2: document loaders — the ingestion half of RAG, grafted
+            # BEFORE embedding so the wizard's readiness signal stays truthful.
+            # The status endpoint flips to "ready" inside the embedding step
+            # below; if loaders grafted AFTER that, whoever uploads the instant
+            # "ready" appears (a user, or the release smoke) 503s on a
+            # still-missing overlay — the exact race this ordering closes.
+            # Loaders are a fast delivery-only overlay (no child); embedding is
+            # the slow weights pull, so front-loading loaders costs nothing. The
+            # wizard's "document search works now" promise needs all THREE:
+            # vector store, loaders, embedding. Best-effort: a failure leaves
+            # the clean per-upload 503 + graft pointer, never fails the wizard.
             if "embedding" in form_data.components:
                 try:
                     import langchain  # noqa: F401 — baked or already delivered
@@ -525,7 +511,26 @@ async def trigger_model_download(
                                 e,
                             )
 
-            # Step 2.6: STT — Sprig™-first. whisper-base-ggml is a static
+            # Step 3: embedding — Sprig™-first (sprigs/embedding_bootstrap.py):
+            # a catalog cultivar matching RAG_EMBEDDING_MODEL grafts pre-seeded,
+            # sha256-pinned weights served by a supervised loopback child — no
+            # HuggingFace pull, no torch, no event-loop-starving in-process
+            # model load. The legacy AI-Engine install below stays as the
+            # fallback for models with no cultivar. This flips the status to
+            # "ready"; loaders (Step 2) are already in place by now.
+            embedding_pending = (
+                "embedding" in form_data.components
+                and dl_status["embedding"] == "downloading"
+            )
+            if embedding_pending:
+                from sage_is_ai.sprigs.embedding_bootstrap import ensure_embedding
+
+                if await ensure_embedding(request.app):
+                    # point_embedding_at flipped the status to ready.
+                    embedding_pending = False
+                    print("[AI Engine] Embedding served by Sprig™", flush=True)
+
+            # Step 4: STT — Sprig™-first. whisper-base-ggml is a static
             # whisper-server + ggml weights; point_stt_at wires the existing
             # STT_ENGINE="openai" client at its loopback and flips the status.
             # The faster-whisper HF download below stays as the fallback.
@@ -551,7 +556,7 @@ async def trigger_model_download(
                             e,
                         )
 
-            # Step 3: legacy ML packages — only the fallback paths below need
+            # Step 5: legacy ML packages — only the fallback paths below need
             # torch/sentence-transformers/faster-whisper. A Sprig™-served
             # embedding skips the whole multi-GB install.
             if embedding_pending or whisper_pending:

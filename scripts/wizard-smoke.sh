@@ -203,11 +203,14 @@ FILE_ID=$(curl -s -X POST "${BASE}/api/v1/files/" \
 [ -n "$FILE_ID" ] && [ "$FILE_ID" != "null" ] || fail "file upload failed"
 
 # Retry on the transient 400: add-to-KB needs the file's content EXTRACTED
-# (rag-loaders document processing) AND the embedding served. The wizard grafts
-# embedding first and rag-loaders a beat later, and the upload's extraction is
-# async — so a "content not available" 400 right after upload just means
-# processing hasn't finished, not a regression. Under QEMU load that window is
-# wider. Poll up to ~60s; a persistent non-200 is the real failure.
+# (rag-loaders document processing) AND the embedding served. The wizard now
+# grafts rag-loaders BEFORE flipping embedding to "ready" (retrieval.py Step 2),
+# so by the time this poll starts the loaders overlay is in place — but the
+# upload's extraction is still async, so a "content not available" 400 right
+# after upload just means processing hasn't finished, not a regression. The
+# "requires the rag-loaders Sprig™" 503 stays retryable as a belt-and-suspenders
+# guard against any residual graft lag under QEMU. Poll up to ~60s; a persistent
+# non-200 is the real failure.
 ADD_CODE=000
 for _ in $(seq 1 20); do
   ADD_CODE=$(curl -s -o /tmp/wsmoke-add -w '%{http_code}' \
@@ -215,9 +218,9 @@ for _ in $(seq 1 20); do
     -H "$AUTH" -H 'Content-Type: application/json' \
     -d "{\"file_id\":\"${FILE_ID}\"}")
   [ "$ADD_CODE" = "200" ] && break
-  # Only the not-yet-extracted / processing races are retryable; anything else
-  # (auth, 500, missing KB) fails fast.
-  grep -qiE "not available|still processing|not been processed|being processed" /tmp/wsmoke-add 2>/dev/null || break
+  # Only the not-yet-extracted / processing / loaders-still-grafting races are
+  # retryable; anything else (auth, 500, missing KB) fails fast.
+  grep -qiE "not available|still processing|not been processed|being processed|requires the rag-loaders" /tmp/wsmoke-add 2>/dev/null || break
   sleep 3
 done
 rm -f /tmp/wsmoke-add

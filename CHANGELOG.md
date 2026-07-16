@@ -59,6 +59,9 @@ chromadb, langchain, pypdf, docx2txt, fpdf2, and the whisper and embedding runti
 **Document search activates the moment the vector-store Sprig grafts — no restart**
 Five modules imported the vector-DB client by value (`from factory import VECTOR_DB_CLIENT`), capturing `None` at boot on a slim image. After a runtime graft the shared client went live but those copies stayed `None`, so indexing and search raised `'NoneType' object has no attribute 'query'` until a restart — the "restart to activate document search" caveat. Every consumer now reads the client through the factory module, so a fresh graft serves reads and writes immediately. The wizard's own file-index step proves it end to end.
 
+**The wizard's "ready" signal now means uploads work**
+The wizard grafted the document loaders after it flipped the embedding status to ready. A user who uploaded the instant the wizard reported ready hit a 503 — the loaders overlay had not landed. The wizard now grafts the loaders first, before it signals ready. Loaders are a fast overlay; the embedding weights are the slow pull. Front-loading the loaders costs nothing and closes the window.
+
 **Zero runtime egress for capability delivery**
 Every capability byte comes from `ghcr.io/sage-is`, pinned by sha256 in the image. No HuggingFace, S3, or third-party download runs on an operator's machine. The pull happens once, at packaging time, on the build host.
 
