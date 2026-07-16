@@ -761,6 +761,10 @@ class SprigSupervisor:
         entries = self._read_state()
         if not entries:
             return
+        # Dev-only capabilities (dev-svelte) are owned by `make dev_run` (dev.sh
+        # grafts them before Vite); a normal/prod run must not restore them.
+        from sage_is_ai.env import DEV_MODE
+
         log.info("reconciling %d grafted Sprig(s)™ from state.json", len(entries))
         self._reconciling = True
         try:
@@ -778,6 +782,21 @@ class SprigSupervisor:
                         "catalog no longer carries — skipping. Graft a current "
                         "%s cultivar from Admin → Sprigs.",
                         name, cap, cap,
+                    )
+                    continue
+                if self.CATALOG[name].get("capability") == "dev" and not DEV_MODE:
+                    # Dev-only toolchain (dev-svelte) belongs to `make dev_run`,
+                    # where dev.sh delivers it before Vite. A normal/prod run must
+                    # NOT restore it — that re-extracts the ~1.1GB node_modules
+                    # overlay into the ephemeral /app on every boot, unused (prod
+                    # serves the prebuilt static frontend). Kept in the desired-
+                    # state so a return to dev mode restores it; the catalog still
+                    # lists it and Admin → Sprigs can still graft it by hand.
+                    self._deferred[name] = entry
+                    log.info(
+                        "skipping dev-only Sprig™ '%s' on a non-dev run (DEV_MODE "
+                        "off); kept in desired-state for `make dev_run`.",
+                        name,
                     )
                     continue
                 try:

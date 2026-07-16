@@ -29,6 +29,17 @@ fi
 export CORS_ALLOW_ORIGIN=http://localhost:5173
 export SKIP_STATIC_CLEANUP=true
 
+# Vite's dev server (below) serves from /app/node_modules — the Svelte dev/build
+# toolchain (~1.1GB) that ships OUTSIDE the slim rootstock, delivered by the
+# dev-svelte Sprig™. Graft it here so `make dev_run` just works on a fresh --rm
+# container without a manual Admin → Sprigs step. Runs BEFORE uvicorn so it can't
+# race the app's own boot reconcile, and is idempotent: artifact.ensure()
+# short-circuits when node_modules is already on hand at the catalog tag, so this
+# is a no-op on warm runs and only pulls/extracts on first run or a dev-svelte bump.
+echo "🌱 Ensuring dev-svelte toolchain for Vite (node_modules)..."
+python3 -m sage_is_ai.sprigs.graft_cli dev-svelte \
+  || echo "⚠️  dev-svelte graft failed — 'vite dev' needs /app/node_modules. Graft it in Admin → Sprigs, or check registry reachability."
+
 WEBUI_SECRET_KEY="$WEBUI_SECRET_KEY" \
 uvicorn sage_is_ai.main:app \
     --port $PORT \
