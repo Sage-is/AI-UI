@@ -11,7 +11,9 @@
 	export let label: string = '';
 	export let record: any = {};
 	export let onProbe: ((url: string, capability: string) => Promise<void>) | null = null;
-	export let onFix: ((issueType: string) => void) | null = null;
+	export let onFix:
+		| ((issueType: string, sprig?: string, sprigCapability?: string) => void)
+		| null = null;
 	export let capability: string = '';
 	export let url: string = '';
 
@@ -91,7 +93,8 @@
 				<button
 					type="button"
 					class="text-xs px-2 py-1 rounded border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800"
-					on:click={() => onFix && onFix(record.issue_type)}
+					on:click={() =>
+						onFix && onFix(record.issue_type, record.sprig, record.sprig_capability)}
 					aria-label={$i18n.t('Show me how to fix this')}
 					title={$i18n.t('Show me how to fix this')}
 				>

@@ -4,7 +4,9 @@
 
 	import Modal from '$lib/components/common/Modal.svelte';
 	import Icon from '$lib/components/Icon.svelte';
+	import Spinner from '$lib/components/common/Spinner.svelte';
 	import { copyToClipboard } from '$lib/utils';
+	import { graftSprig } from '$lib/apis/retrieval';
 
 	import {
 		fixRegistry,
@@ -18,11 +20,16 @@
 
 	export let show: boolean = false;
 	export let issueType: string | null = null;
+	export let sprig: string | null = null;
+	export let sprigCapability: string | null = null;
+	export let onGrafted: (() => void) | null = null;
 	export let defaultShape: DeploymentShape = 'unknown';
 	export let shapeConfidence: 'high' | 'low' | 'unknown' = 'unknown';
 
 	let selectedShape: DeploymentShape = 'unknown';
 	let showOtherShapes: boolean = false;
+	let showManualFix: boolean = false;
+	let grafting: boolean = false;
 
 	$: entry = issueType ? fixRegistry[issueType] : undefined;
 	$: documented = hasFix(issueType);
@@ -36,6 +43,8 @@
 	$: if (!show) {
 		selectedShape = 'unknown';
 		showOtherShapes = false;
+		showManualFix = false;
+		grafting = false;
 	}
 
 	const shapeLabel = (shape: DeploymentShape): string => {
@@ -54,6 +63,27 @@
 	const handleCopy = async (text: string) => {
 		await copyToClipboard(text);
 		toast.success($i18n.t('Copied to clipboard'));
+	};
+
+	const handleGraft = async () => {
+		if (!sprig || grafting) return;
+		const name = sprig;
+		const capability = sprigCapability ?? '';
+		grafting = true;
+		try {
+			await graftSprig(localStorage.token, { name, capability });
+			toast.success($i18n.t('Grafted {{name}} — capability restored.', { name }));
+			show = false;
+			onGrafted?.();
+		} catch (e: any) {
+			toast.error(
+				e?.detail
+					? `${$i18n.t('Failed to graft {{name}}', { name })}: ${e.detail}`
+					: $i18n.t('Failed to graft {{name}}', { name })
+			);
+		} finally {
+			grafting = false;
+		}
 	};
 
 	const close = () => {
@@ -77,6 +107,49 @@
 			</button>
 		</div>
 
+		{#if sprig}
+			<!-- Primary remedy: one-click graft the Sprig™ that delivers this capability. -->
+			<div
+				class="rounded-lg border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950 p-4 mb-4"
+			>
+				<div class="text-sm text-emerald-900 dark:text-emerald-100 mb-3">
+					{$i18n.t(
+						'This capability is delivered by the {{sprig}} Sprig™. Graft it to restore the service — no model download, no restart.',
+						{ sprig }
+					)}
+				</div>
+				<button
+					type="button"
+					class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm disabled:opacity-60 disabled:cursor-not-allowed"
+					on:click={handleGraft}
+					disabled={grafting}
+				>
+					{#if grafting}
+						<Spinner className="size-4" />
+						<span>{$i18n.t('Grafting {{sprig}}…', { sprig })}</span>
+					{:else}
+						<span aria-hidden="true">🌱</span>
+						<span>{$i18n.t('Graft {{sprig}}', { sprig })}</span>
+					{/if}
+				</button>
+			</div>
+
+			{#if documented}
+				<button
+					type="button"
+					class="text-xs text-blue-700 dark:text-blue-300 hover:underline mb-3"
+					on:click={() => (showManualFix = !showManualFix)}
+				>
+					{showManualFix
+						? $i18n.t('Hide manual steps')
+						: $i18n.t('Other ways to fix this')}
+				</button>
+			{/if}
+		{/if}
+
+		<!-- Manual / deployment-shape steps: primary when there is no Sprig™ fix;
+		     tucked behind "Other ways to fix this" when a graft is offered. -->
+		{#if !sprig || showManualFix}
 		{#if !documented}
 			<div
 				class="rounded-lg border border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-950 p-3 text-sm text-yellow-900 dark:text-yellow-200"
@@ -208,6 +281,7 @@
 					{/if}
 				</div>
 			{/if}
+		{/if}
 		{/if}
 	</div>
 </Modal>

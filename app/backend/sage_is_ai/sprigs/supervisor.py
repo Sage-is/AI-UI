@@ -131,7 +131,7 @@ HOST_ARCH = _ARCH_ALIASES.get(_raw_arch, _raw_arch)
 # server selectors that exec a native binary child (not `python -m`): an
 # arch-mismatched one dies with "Exec format error", so these can NEVER be
 # architecture-neutral. Single home for the list (graft/_build_argv reuse it).
-_BINARY_SERVERS = ("llama-binary", "whisper-binary")
+_BINARY_SERVERS = ("llama-binary", "whisper-binary", "tika-jar", "docling-serve")
 _KNOWN_ARCHES = frozenset({"arm64", "amd64"})
 NEUTRAL = object()  # arch sentinel: grafts anywhere (wasm/css/fonts/pure-python)
 
@@ -407,6 +407,65 @@ class SprigSupervisor:
         }, arch={"arm64": {}, "amd64": {
             "tag": "v1-amd64",
             "binary_sha256": "ac30634805224c9272baf59edfffa933f63e38e12bbc569daf43f8ec23a7c013",
+        }}),
+        # Office/PDF extraction — Apache Tika Server, a fat jar run by a bundled
+        # jlink'd JRE (server: tika-jar). On graft, tika_dispatch points
+        # TIKA_SERVER_URL at the loopback AND flips CONTENT_EXTRACTION_ENGINE to
+        # "tika", so uploads route through Tika in-container — replaces the
+        # http://tika:9998 sidecar default. Health = GET /tika (Tika has no
+        # /health). Kills the "Tika unreachable" false alarm on non-sidecar hosts.
+        "tika": _sprig({
+            "capability": "tika",
+            "server": "tika-jar",
+            "model": "Apache Tika Server (standard)",
+            "dim": 0,
+            "jar": "tika-server-standard.jar",
+            "health_path": "/tika",
+            "delivery": "oci-artifact",
+            "seed": "model-dir",
+            "sentinel": "tika-server-standard.jar",
+            "ready_timeout_s": 180.0,
+            "post_graft_note": (
+                "Tika extraction active — Office/PDF uploads route through the "
+                "grafted server. No tika sidecar needed."
+            ),
+            "repo": f"{SPRIG_REGISTRY}/sprig-tika",
+            "tag": "v1",
+            "insecure": SPRIG_REGISTRY_INSECURE,
+            # TODO: pin after scripts/build-sprig-tika.sh (it prints the sha/arch).
+            "binary_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        }, arch={"arm64": {}, "amd64": {
+            "tag": "v1-amd64",
+            "binary_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        }}),
+        # Layout-aware extraction — IBM Docling served by docling-serve from a
+        # bundled relocatable venv (CPU torch + pre-seeded models; server:
+        # docling-serve). HEAVY (multi-GB) — the opt-in enhanced extractor. On
+        # graft, docling_dispatch points DOCLING_SERVER_URL at the loopback and
+        # flips CONTENT_EXTRACTION_ENGINE to "docling". Replaces the
+        # http://docling:5001 sidecar default. Health = GET /health.
+        "docling": _sprig({
+            "capability": "docling",
+            "server": "docling-serve",
+            "model": "IBM Docling (docling-serve, CPU)",
+            "dim": 0,
+            "health_path": "/health",
+            "delivery": "oci-artifact",
+            "seed": "model-dir",
+            "sentinel": "venv/bin/docling-serve",
+            "ready_timeout_s": 300.0,
+            "post_graft_note": (
+                "Docling layout-aware extraction active. The first conversion "
+                "warms the models; large uploads take longer than Tika."
+            ),
+            "repo": f"{SPRIG_REGISTRY}/sprig-docling",
+            "tag": "v1",
+            "insecure": SPRIG_REGISTRY_INSECURE,
+            # TODO: pin after scripts/build-sprig-docling.sh (it prints the sha/arch).
+            "binary_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        }, arch={"arm64": {}, "amd64": {
+            "tag": "v1-amd64",
+            "binary_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
         }}),
         # Interface themes — design tokens only (one self-contained theme.css),
         # extracted onto the DATA volume (seed=model-dir) and served at
@@ -822,6 +881,18 @@ class SprigSupervisor:
                             )
 
                             point_stt_at(self.app, handle)
+                        elif cap == "tika":
+                            from sage_is_ai.sprigs.tika_dispatch import (
+                                point_tika_at,
+                            )
+
+                            point_tika_at(self.app, handle)
+                        elif cap == "docling":
+                            from sage_is_ai.sprigs.docling_dispatch import (
+                                point_docling_at,
+                            )
+
+                            point_docling_at(self.app, handle)
                     log.info("reconciled Sprig™ '%s'", name)
                     self._deferred.pop(name, None)
                 except Exception as exc:  # noqa: BLE001 — best-effort restore
@@ -977,6 +1048,45 @@ class SprigSupervisor:
                 ready_timeout,
             )
 
+        if server == "tika-jar":
+            # Apache Tika Server — one fat jar run by a jlink'd JRE bundled in the
+            # artifact ({artifact_dir}/jre + the jar). Serves /tika, /rmeta etc.
+            # at the base (NO /v1), which is where retrieval/loaders/main.py's
+            # engine=="tika" client POSTs once tika_dispatch points
+            # TIKA_SERVER_URL at the loopback. Health = GET /tika -> 200 (catalog
+            # health_path); Tika has no /health. Bounded heap so the JVM can't
+            # balloon the Rootstock™ memory.
+            return (
+                [
+                    "{artifact_dir}/jre/bin/java",
+                    *spec.get("jvm_args", ["-XX:MaxRAMPercentage=50", "-XX:+UseSerialGC"]),
+                    "-jar",
+                    "{artifact_dir}/" + spec.get("jar", "tika-server-standard.jar"),
+                    "--host", "127.0.0.1",
+                    "--port", "{port}",
+                ],
+                ready_timeout,
+            )
+
+        if server == "docling-serve":
+            # docling-serve from a bundled relocatable venv (python + docling +
+            # CPU torch + pre-seeded models). The artifact ships a run-docling.sh
+            # launcher that sets HF_HOME to its own pre-seeded model cache
+            # (HF_HUB_OFFLINE=1 — no runtime egress) and execs the venv's
+            # docling-serve THROUGH the venv python (the build-host shebang is
+            # bypassed; the extract dir differs from the build dir). Serves the
+            # docling REST API at the base; docling_dispatch points
+            # DOCLING_SERVER_URL at the loopback. Health GET /health. server_args
+            # lets the recipe pin the exact CLI once verified against the packaged
+            # docling-serve version.
+            return (
+                [
+                    "{artifact_dir}/run-docling.sh",
+                    *spec.get("server_args", ["run", "--host", "127.0.0.1", "--port", "{port}"]),
+                ],
+                ready_timeout,
+            )
+
         raise ValueError(f"unknown sprig server '{server}' for '{name}'")
 
     async def _deliver(self, name: str, spec: dict) -> SprigHandle:
@@ -1116,7 +1226,7 @@ class SprigSupervisor:
             capability=capability,
             port=port,
             base_url=f"http://127.0.0.1:{port}/v1",
-            health_url=f"http://127.0.0.1:{port}/health",
+            health_url=f"http://127.0.0.1:{port}{spec.get('health_path', '/health')}",
             model=spec["model"],
             process=await asyncio.create_subprocess_exec(
                 *exec_argv,
@@ -1201,3 +1311,46 @@ class SprigSupervisor:
         except ProcessLookupError:
             pass
         log.info("pruned sprig '%s'", name)
+
+
+def recommended_cultivar(
+    capability: str, embedding_model: str | None = None
+) -> str | None:
+    """The catalog cultivar that grafts `capability`, for a one-click fix from
+    /admin/diagnostics. Embedding is resolved against the configured model (same
+    contract as embedding_bootstrap.ensure_embedding — prefer the onnx server
+    family); reranker / stt / vector / rag / export are 1:1. Returns None when the
+    capability is not sprig-backed here, or no cultivar matches (e.g. a custom
+    embedding model with no bundled weights) — the caller then omits the graft
+    button and falls back to the legacy fix steps.
+
+    Diagnostic capabilities are prefixed by domain/kind — "rag/tika",
+    "rag/reranker", "sprig:stt", "embedding/openai". The catalog keys on the bare
+    capability ("tika", "reranker", "stt", "embedding"), so match on the last
+    segment. (embedding/openai -> "openai" -> no cultivar, correctly: a dead
+    OpenAI endpoint is a config fix, not a graft.)"""
+    base = capability.rsplit("/", 1)[-1].rsplit(":", 1)[-1]
+    catalog = SprigSupervisor.CATALOG
+    if base == "embedding":
+        from sage_is_ai.sprigs.embedding_bootstrap import _matches
+
+        matches = [
+            name
+            for name, spec in catalog.items()
+            if spec.get("capability") == "embedding"
+            and spec.get("delivery") == "oci-artifact"
+            and _matches(spec.get("model", ""), embedding_model or "")
+        ]
+        # Prefer the onnx (server:embedding) cultivars, as ensure_embedding does.
+        matches.sort(key=lambda n: catalog[n].get("server") != "embedding")
+        return matches[0] if matches else None
+
+    # 1:1 capabilities: the single non-mock oci-artifact cultivar that serves it.
+    for name, spec in catalog.items():
+        if (
+            spec.get("capability") == base
+            and spec.get("delivery") == "oci-artifact"
+            and not name.startswith("mock")
+        ):
+            return name
+    return None

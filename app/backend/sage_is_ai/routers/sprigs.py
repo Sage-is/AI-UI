@@ -119,6 +119,33 @@ async def graft_sprig(
             warning=entry.get("post_graft_note"),
         )
 
+    # Tika / Docling server children: point the EXISTING content-extraction
+    # client at the grafted loopback and select the engine (shared with boot
+    # reconcile — no drift). Replaces the tika/docling sidecar containers.
+    if handle.capability == "tika":
+        from sage_is_ai.sprigs.tika_dispatch import point_tika_at
+
+        point_tika_at(request.app, handle)
+        return GraftResponse(
+            status=True,
+            name=handle.name,
+            capability=handle.capability,
+            base_url=handle.base_url,
+            warning=entry.get("post_graft_note"),
+        )
+
+    if handle.capability == "docling":
+        from sage_is_ai.sprigs.docling_dispatch import point_docling_at
+
+        point_docling_at(request.app, handle)
+        return GraftResponse(
+            status=True,
+            name=handle.name,
+            capability=handle.capability,
+            base_url=handle.base_url,
+            warning=entry.get("post_graft_note"),
+        )
+
     # Theme sprig: validate the delivered css (fail-closed — a theme that
     # imports, references external URLs, or looks executable never activates),
     # then flip the one persisted pointer that /themes/active.css serves.

@@ -31,6 +31,8 @@
 	// HowToFixModal state
 	let fixModalShow = false;
 	let fixModalIssueType: string | null = null;
+	let fixModalSprig: string | null = null;
+	let fixModalSprigCapability: string | null = null;
 
 	$: deploymentShape = (health?.deployment_shape?.shape ?? 'unknown') as DeploymentShape;
 	$: deploymentConfidence = (health?.deployment_shape?.confidence ?? 'unknown') as
@@ -38,8 +40,14 @@
 		| 'low'
 		| 'unknown';
 
-	const openFixModal = (issueType: string) => {
+	const openFixModal = (
+		issueType: string,
+		sprig: string | null = null,
+		sprigCapability: string | null = null
+	) => {
 		fixModalIssueType = issueType;
+		fixModalSprig = sprig;
+		fixModalSprigCapability = sprigCapability;
 		fixModalShow = true;
 	};
 
@@ -397,6 +405,9 @@
 <HowToFixModal
 	bind:show={fixModalShow}
 	issueType={fixModalIssueType}
+	sprig={fixModalSprig}
+	sprigCapability={fixModalSprigCapability}
 	defaultShape={deploymentShape}
 	shapeConfidence={deploymentConfidence}
+	onGrafted={loadHealth}
 />
