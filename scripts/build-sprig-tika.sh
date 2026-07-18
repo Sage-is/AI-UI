@@ -49,35 +49,48 @@ rm -rf "$WORK"; mkdir -p "$WORK/stage" "$OUT_DIR"
 
 sha256() { shasum -a 256 "$1" | awk '{print $1}'; }
 
-# --- 1. jlink a minimal JRE + fetch the Tika jar, on the TARGET arch -----------
-# jdeps computes the modules the jar references; we add the ones loaded
-# reflectively (crypto, charsets, localedata, naming, sql, management) that
-# jdeps can't see. jlink then builds just those into a compact JRE.
-echo "== jlink JRE + fetch Tika $TIKA_VERSION on $PLATFORM =="
+# --- 1. jlink a JRE + fetch the Tika jar, on the TARGET arch --------------------
+# NOTE: we do NOT run `jdeps --print-module-deps` on the jar. tika-server-standard
+# is a fat/shaded jar that re-bundles javax.xml / org.w3c.dom / org.xml.sax —
+# packages the JDK also owns — so jdeps emits "split package" warnings (mixed into
+# stdout) and fails to produce a clean module list. Bundle the full modular JRE
+# instead: reliable, ~60MB (vs a full JDK), and it already includes the modules
+# Tika loads reflectively that a curated jdeps list would miss.
+echo "== jlink JRE (ALL-MODULE-PATH) + fetch Tika $TIKA_VERSION on $PLATFORM =="
 docker run --rm --platform "$PLATFORM" -v "$WORK/stage:/w" "$JDK_IMAGE" bash -ec '
   cd /w
   curl -fsSL -o "'"$TIKA_JAR"'" "'"$TIKA_URL"'"
-  MODS="$(jdeps --print-module-deps --ignore-missing-deps --multi-release 21 "'"$TIKA_JAR"'" 2>/dev/null || echo java.base)"
-  MODS="$MODS,java.desktop,java.naming,java.management,java.sql,java.security.jgss,jdk.crypto.ec,jdk.crypto.cryptoki,jdk.localedata,jdk.charsets,jdk.unsupported,java.logging,java.xml,java.scripting"
   jlink --no-header-files --no-man-pages --strip-debug --compress=2 \
-        --include-locales=en --add-modules "$MODS" --output jre
+        --add-modules ALL-MODULE-PATH --output jre
   mv "'"$TIKA_JAR"'" tika-server-standard.jar
   ./jre/bin/java -version
   du -sh jre tika-server-standard.jar
 '
 
 # --- 2. SANITY GATE: start Tika on the TARGET arch, extract a doc ---------------
+# Each step hard-fails (and dumps the Tika log) — a `curl|grep && echo` is a
+# set -e blind spot (a failure on the LEFT of && does not abort), which once let
+# a 422 slip through and push a half-tested artifact.
 echo "== sanity gate: Tika server responds + extracts on $PLATFORM =="
 docker run --rm --platform "$PLATFORM" -v "$WORK/stage:/s:ro" "$JDK_IMAGE" bash -ec '
   cp -r /s/jre /tmp/jre && cp /s/tika-server-standard.jar /tmp/
   /tmp/jre/bin/java -jar /tmp/tika-server-standard.jar --host 127.0.0.1 --port 9998 >/tmp/tika.log 2>&1 &
   PID=$!
   for i in $(seq 1 60); do curl -fsS http://127.0.0.1:9998/tika >/dev/null 2>&1 && break; sleep 1; done
-  curl -fsS http://127.0.0.1:9998/tika | grep -qi "Tika" && echo "  GET /tika OK"
+  curl -fsS http://127.0.0.1:9998/tika | grep -qi "tika" \
+    || { echo "GET /tika failed"; cat /tmp/tika.log; exit 1; }
+  echo "  GET /tika OK"
   printf "hello sprig extraction" > /tmp/t.txt
-  curl -fsS -T /tmp/t.txt http://127.0.0.1:9998/tika | grep -qi "hello sprig extraction" && echo "  text extraction OK"
+  # Explicit text/plain so Tika neednt sniff a bare octet-stream (the 422 source).
+  OUT="$(curl -fsS -X PUT --data-binary @/tmp/t.txt \
+      -H "Content-Type: text/plain" -H "Accept: text/plain" \
+      http://127.0.0.1:9998/tika)" \
+    || { echo "extraction request failed"; cat /tmp/tika.log; exit 1; }
+  printf "%s" "$OUT" | grep -qi "hello sprig extraction" \
+    || { echo "extraction did not return the text; got: [$OUT]"; cat /tmp/tika.log; exit 1; }
+  echo "  text extraction OK"
   kill "$PID" 2>/dev/null || true
-' || { echo "SANITY GATE FAILED — Tika broken on $ARCH (see log)" >&2; exit 1; }
+' || { echo "SANITY GATE FAILED — Tika broken on $ARCH" >&2; exit 1; }
 
 # --- 3. reproducible pack {jre/, tika-server-standard.jar} ----------------------
 docker run --rm -v "$WORK/stage:/stage:ro" -v "$OUT_DIR:/out" alpine sh -c \

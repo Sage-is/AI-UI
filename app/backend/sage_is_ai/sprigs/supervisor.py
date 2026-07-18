@@ -432,11 +432,11 @@ class SprigSupervisor:
             "repo": f"{SPRIG_REGISTRY}/sprig-tika",
             "tag": "v1",
             "insecure": SPRIG_REGISTRY_INSECURE,
-            # TODO: pin after scripts/build-sprig-tika.sh (it prints the sha/arch).
-            "binary_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            # arm64 pinned from build-sprig-tika.sh (deterministic jlink + pack).
+            "binary_sha256": "0538419c28edc103b185d5041eebafd10a6ee21ebae165fcfc806538e2054222",
         }, arch={"arm64": {}, "amd64": {
             "tag": "v1-amd64",
-            "binary_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "binary_sha256": "5a977defce2fbb8a49e4e1b7e4b168c793c60645fe6ecf980c7c02a6e88fb263",
         }}),
         # Layout-aware extraction — IBM Docling served by docling-serve from a
         # bundled relocatable venv (CPU torch + pre-seeded models; server:
