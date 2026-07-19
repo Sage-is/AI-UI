@@ -461,11 +461,11 @@ class SprigSupervisor:
             "repo": f"{SPRIG_REGISTRY}/sprig-docling",
             "tag": "v1",
             "insecure": SPRIG_REGISTRY_INSECURE,
-            # TODO: pin after scripts/build-sprig-docling.sh (it prints the sha/arch).
-            "binary_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            # arm64 pinned from build-sprig-docling.sh (944MB tar.zst).
+            "binary_sha256": "7ee5670e9197b112f5685c6a8cccde79fb6673699c824b5195b00b1053927b83",
         }, arch={"arm64": {}, "amd64": {
             "tag": "v1-amd64",
-            "binary_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "binary_sha256": "6a1bb2e19721c33ff865223b0501e158d22e8755b7897bf06fdce6e314e3c49f",
         }}),
         # Interface themes — design tokens only (one self-contained theme.css),
         # extracted onto the DATA volume (seed=model-dir) and served at

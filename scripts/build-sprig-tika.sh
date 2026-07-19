@@ -15,6 +15,7 @@
 # Local dev (default): pushes to localhost:5000 via a DOCKERIZED oras (no host
 # install). Production publishing goes through publish-sprigs.sh (local -> ghcr).
 set -euo pipefail
+BUILD_T0="$(date +%s)"
 
 REGISTRY="${REGISTRY:-localhost:5000}"
 NAME="${NAME:-sprig-tika}"
@@ -134,3 +135,6 @@ docker run --rm ${ORAS_NET[@]+"${ORAS_NET[@]}"} -v "$OUT_DIR:/w" -w /w "$ORAS_IM
 
 echo
 echo "pushed: $REGISTRY/$NAME:$ARCHTAG"
+_EL=$(( $(date +%s) - BUILD_T0 ))
+printf "⏱  %s %s built in %dm%02ds (artifact %s)\n" \
+  "$NAME" "$ARCHTAG" $(( _EL/60 )) $(( _EL%60 )) "$(du -h "$OUT" | awk '{print $1}')"
