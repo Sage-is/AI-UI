@@ -657,6 +657,16 @@ it_build_multi_arch_push_GHCR: ghcr_login
 it_build_multi_arch_all: it_build_multi_arch_push_docker_hub it_build_multi_arch_push_GHCR
 	@echo "Completed all multi-arch builds and pushes for version $(IMAGE_TAG)"
 
+# Poka-yoke: after the push, prove the GHCR image is PRESENT (not a 404) and a
+# real multi-arch (amd64+arm64) index — so a missing/single-arch push fails the
+# release here, not later at CapRover. Verifies both pushed tags.
+verify_ghcr_manifest:  ## Assert the pushed GHCR image is a present, multi-arch (amd64+arm64) index
+	@scripts/verify-image-manifest.sh $(GHCR_IMAGE_NAME):$(IMAGE_TAG) $(GHCR_IMAGE_NAME):latest
+
+# Prove the manifest guard's logic against known public images (no push needed)
+manifest_verify_fixture:  ## Fixture: exercise verify-image-manifest.sh (good/single-arch/absent)
+	@scripts/smoke/manifest-verify-fixture.sh
+
 # Utility target to show current version
 show-version:
 	@echo "Current version: $(IMAGE_TAG)"
@@ -930,7 +940,7 @@ lint:
 .PHONY: release it_build it_build_no_cache dev_run it_run it_build_n_run it_build_n_run_no_cache \
 	ghcr_login \
 	it_build_multi_arch_push_docker_hub it_build_multi_arch_push_GHCR \
-	it_build_multi_arch_all show-version setup setup_env setup_env_auto setup_env_template setup_siblings \
+	it_build_multi_arch_all verify_ghcr_manifest manifest_verify_fixture show-version setup setup_env setup_env_auto setup_env_template setup_siblings \
 	require_gitflow_next bump_release_version release_and_push_GHCR hotfix_and_push_GHCR \
 	waha_start waha_stop waha_logs waha_status \
 	signal_start signal_stop signal_logs signal_status \
@@ -1072,6 +1082,9 @@ release_and_push_GHCR: release_smoke release_finish
 	@echo "=== Building and pushing to GHCR ==="
 	@make it_build_multi_arch_push_GHCR
 	@echo ""
+	@echo "=== Verifying the pushed manifest is present + multi-arch ==="
+	@make verify_ghcr_manifest
+	@echo ""
 	@echo "=== Pinning SERVER_TAG=$(IMAGE_TAG) in distribution.env ==="
 	@$(MAKE) _pin_server_tag IMAGE_TAG=$(IMAGE_TAG)
 	@echo ""
@@ -1083,6 +1096,9 @@ hotfix_and_push_GHCR: release_smoke hotfix_finish
 	@echo ""
 	@echo "=== Building and pushing to GHCR ==="
 	@make it_build_multi_arch_push_GHCR
+	@echo ""
+	@echo "=== Verifying the pushed manifest is present + multi-arch ==="
+	@make verify_ghcr_manifest
 	@echo ""
 	@echo "=== Pinning SERVER_TAG=$(IMAGE_TAG) in distribution.env ==="
 	@$(MAKE) _pin_server_tag IMAGE_TAG=$(IMAGE_TAG)
