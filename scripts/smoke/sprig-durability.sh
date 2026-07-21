@@ -16,7 +16,7 @@ set -uo pipefail
 IMG="${1:-sage-is/ai-ui:develop}"
 NET="${SPRIG_SMOKE_NET:-sage-network}"; ROOT="sage-durability"; VOL="${ROOT}-data"
 PORT="${SPRIG_DURABILITY_PORT:-8097}"; BASE="http://localhost:${PORT}"
-PASS=0; FAIL=0; ok(){ echo "  ✅ $1"; PASS=$((PASS+1)); }; no(){ echo "  ❌ $1"; FAIL=$((FAIL+1)); }
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/gate.sh"   # PASS/FAIL + ok/no/require
 X(){ docker exec "$ROOT" sh -lc "$1"; }
 
 REGISTRY_STOPPED=0

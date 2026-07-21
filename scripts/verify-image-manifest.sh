@@ -29,11 +29,8 @@ set -uo pipefail
 #   REQUIRE_ARCHES="linux/amd64" scripts/verify-image-manifest.sh ...
 REQUIRE_ARCHES="${REQUIRE_ARCHES:-linux/amd64 linux/arm64}"
 
-PASS=0; FAIL=0
-ok(){ echo "  ✅ $1"; PASS=$((PASS+1)); }
-no(){ echo "  ❌ $1"; FAIL=$((FAIL+1)); }
-
-require(){ command -v "$1" >/dev/null || { echo "Missing required tool: $1" >&2; exit 2; }; }
+# Shared PASS/FAIL + ok/no/require/gate_summary.
+. "$(dirname "${BASH_SOURCE[0]}")/lib/gate.sh"
 require docker
 require jq
 
@@ -96,6 +93,4 @@ for ref in "$@"; do
   done
 done
 
-echo ""
-echo "========== MANIFEST VERIFY: ${PASS} passed, ${FAIL} failed  =========="
-[ "$FAIL" -eq 0 ]
+gate_summary "MANIFEST VERIFY"

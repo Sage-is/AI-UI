@@ -19,10 +19,8 @@ HERE="$(cd "$(dirname "$0")/.." && pwd)"
 GUARD="$HERE/verify-image-manifest.sh"
 IMG="${FIXTURE_IMAGE:-alpine:3.20}"
 
-PASS=0; FAIL=0
-ok(){ echo "  ✅ $1"; PASS=$((PASS+1)); }
-no(){ echo "  ❌ $1"; FAIL=$((FAIL+1)); }
-require(){ command -v "$1" >/dev/null || { echo "Missing required tool: $1" >&2; exit 2; }; }
+# Shared PASS/FAIL + ok/no/require/gate_summary.
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/gate.sh"
 require docker
 require jq
 [ -x "$GUARD" ] || { echo "ERROR: guard not executable at $GUARD" >&2; exit 2; }
@@ -61,6 +59,4 @@ fi
 # 3. ABSENT — a tag that cannot exist; inspect 404s, guard must fail.
 assert_exit 1 "absent tag" "${IMG%%:*}:this-tag-does-not-exist-poka-yoke"
 
-echo ""
-echo "========== MANIFEST-VERIFY FIXTURE: ${PASS} passed, ${FAIL} failed  =========="
-[ "$FAIL" -eq 0 ]
+gate_summary "MANIFEST-VERIFY FIXTURE"

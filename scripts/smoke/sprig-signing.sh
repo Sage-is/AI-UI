@@ -22,7 +22,7 @@ PORT="${SPRIG_SIGNING_PORT:-8098}"; BASE="http://localhost:${PORT}"
 HERE="$(cd "$(dirname "$0")/../.." && pwd)"
 DEVKEY="$HERE/scripts/dev-keys/sprig-dev-TEST-ONLY.key"
 DEVPUB="$(sed -n 2p "$HERE/scripts/dev-keys/sprig-dev-TEST-ONLY.pub")"
-PASS=0; FAIL=0; ok(){ echo "  ✅ $1"; PASS=$((PASS+1)); }; no(){ echo "  ❌ $1"; FAIL=$((FAIL+1)); }
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/gate.sh"   # PASS/FAIL + ok/no/require
 
 cleanup(){
   # Leave the shared registry with CLEAN signatures even on an aborted run.

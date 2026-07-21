@@ -15,7 +15,7 @@ SNAP="${2:-$(ls -d "$HERE"/tools/db_snapshots/*/ 2>/dev/null | sort | tail -1)}"
 NET="${SPRIG_SMOKE_NET:-sage-network}"; ROOT="sage-upgrade"; VOL="${ROOT}-data"
 PORT="${UPGRADE_GATE_PORT:-8096}"; BASE="http://localhost:${PORT}"
 ADMIN_EMAIL="upgrade-gate@sage.is"; ADMIN_PW="upgrade-gate-pw-1234"
-PASS=0; FAIL=0; ok(){ echo "  ✅ $1"; PASS=$((PASS+1)); }; no(){ echo "  ❌ $1"; FAIL=$((FAIL+1)); }
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/gate.sh"   # PASS/FAIL + ok/no/require
 X(){ docker exec "$ROOT" sh -lc "$1"; }
 
 # KEEP=1 leaves the booted container + volume up after the gate (for the Cypress half, cypress/e2e/upgrade/, or manual inspection at $BASE).

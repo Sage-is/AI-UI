@@ -11,7 +11,7 @@ set -uo pipefail
 IMG="${1:-sage-is/ai-ui:develop}"
 NET="${SPRIG_SMOKE_NET:-sage-network}"; ROOT="${SPRIG_SMOKE_NAME:-sage-wolfi}"; VOL="${ROOT}-data"
 PORT="${SPRIG_SMOKE_PORT:-8099}"; BASE="http://localhost:${PORT}"
-PASS=0; FAIL=0; ok(){ echo "  ✅ $1"; PASS=$((PASS+1)); }; no(){ echo "  ❌ $1"; FAIL=$((FAIL+1)); }
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/gate.sh"   # PASS/FAIL + ok/no/require
 X(){ docker exec "$ROOT" sh -lc "$1"; }
 
 echo "== fresh 8.I.2 rootstock =="
