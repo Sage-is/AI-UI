@@ -15,17 +15,12 @@
 # Local dev (default): pushes to localhost:5000 via a DOCKERIZED oras (no host
 # install). Production publishing goes through publish-sprigs.sh (local -> ghcr).
 set -euo pipefail
-BUILD_T0="$(date +%s)"
 
-REGISTRY="${REGISTRY:-localhost:5000}"
+# Shared boilerplate: constants, arch-normalize, sha256, registry, push, timing.
+. "$(dirname "${BASH_SOURCE[0]}")/lib/sprig-build.sh"
 NAME="${NAME:-sprig-tika}"
-TAG="${TAG:-v1}"
-INSECURE="${INSECURE:-1}"
-MANAGE_REGISTRY="${MANAGE_REGISTRY:-0}"
-NETWORK="${NETWORK:-sage-network}"
-ARTIFACT_TYPE="application/vnd.sage-is.sprig.v1"
-LAYER_TYPE="application/vnd.sage-is.sprig.tar+zstd"
-ORAS_IMG="${ORAS_IMG:-ghcr.io/oras-project/oras:v1.2.0}"
+sprig_build_defaults
+sprig_timing_start
 
 # Tika 2.9.x is the last Java-11 line; 3.x needs Java 17+. JDK 21 LTS covers
 # either — bump TIKA_VERSION as needed. Source: Maven Central.
@@ -34,21 +29,12 @@ JDK_IMAGE="${JDK_IMAGE:-eclipse-temurin:21-jdk}"
 TIKA_JAR="tika-server-standard-${TIKA_VERSION}.jar"
 TIKA_URL="https://repo1.maven.org/maven2/org/apache/tika/tika-server-standard/${TIKA_VERSION}/${TIKA_JAR}"
 
-_RAW_ARCH="$(uname -m)"
-case "${ARCH:-$_RAW_ARCH}" in
-  arm64|aarch64) ARCH=arm64 ;;
-  amd64|x86_64)  ARCH=amd64 ;;
-  *) echo "ERROR: unsupported ARCH='${ARCH:-$_RAW_ARCH}' (want arm64|amd64)" >&2; exit 1 ;;
-esac
-PLATFORM="${PLATFORM:-linux/$ARCH}"
-ARCHTAG="$TAG"; [ "$ARCH" = "amd64" ] && ARCHTAG="$TAG-amd64"
+sprig_arch_normalize
 
 WORK="${WORK:-/tmp/sprig-build/tika-$ARCH}"
 OUT_DIR="$WORK/out"
 OUT="$OUT_DIR/${NAME}-${ARCHTAG}.tar.zst"
 rm -rf "$WORK"; mkdir -p "$WORK/stage" "$OUT_DIR"
-
-sha256() { shasum -a 256 "$1" | awk '{print $1}'; }
 
 # --- 1. jlink a JRE + fetch the Tika jar, on the TARGET arch --------------------
 # NOTE: we do NOT run `jdeps --print-module-deps` on the jar. tika-server-standard
@@ -113,28 +99,10 @@ else
 fi
 echo "=================================================================="
 
-# --- 4. optional local registry ------------------------------------------------
-if [ "$MANAGE_REGISTRY" = "1" ]; then
-  docker network inspect "$NETWORK" >/dev/null 2>&1 || docker network create "$NETWORK"
-  if ! docker ps --format '{{.Names}}' | grep -qx local-registry; then
-    docker rm -f local-registry >/dev/null 2>&1 || true
-    docker run -d --name local-registry --network "$NETWORK" -p 5000:5000 -v sprig-registry-data:/var/lib/registry registry:2 >/dev/null
-  fi
-  for _ in $(seq 1 30); do curl -fsS "http://localhost:5000/v2/" >/dev/null 2>&1 && break; sleep 0.5; done
-fi
-
-# --- 5. push (dockerized oras; no host install) --------------------------------
-PUSH_REG="$REGISTRY"; ORAS_NET=()
-case "$REGISTRY" in localhost:*|127.0.0.1:*)
-  PUSH_REG="local-registry:${REGISTRY##*:}"; ORAS_NET=(--network "$NETWORK");;
-esac
-PUSH=(push "$PUSH_REG/$NAME:$ARCHTAG" --artifact-type "$ARTIFACT_TYPE")
-[ "$INSECURE" = "1" ] && PUSH+=(--plain-http)
-docker run --rm ${ORAS_NET[@]+"${ORAS_NET[@]}"} -v "$OUT_DIR:/w" -w /w "$ORAS_IMG" \
-  "${PUSH[@]}" "$(basename "$OUT"):$LAYER_TYPE"
+# --- 4. optional local registry + 5. push (dockerized oras; no host install) ---
+sprig_ensure_registry
+sprig_push
 
 echo
 echo "pushed: $REGISTRY/$NAME:$ARCHTAG"
-_EL=$(( $(date +%s) - BUILD_T0 ))
-printf "⏱  %s %s built in %dm%02ds (artifact %s)\n" \
-  "$NAME" "$ARCHTAG" $(( _EL/60 )) $(( _EL%60 )) "$(du -h "$OUT" | awk '{print $1}')"
+sprig_timing_end
