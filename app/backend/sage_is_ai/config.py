@@ -3227,7 +3227,7 @@ TRY_SAGE_TOOL_SERVER_URL = PersistentConfig(
     "try_sage.tool_servers.real_url",
     os.environ.get(
         "TRY_SAGE_TOOL_SERVER_URL",
-        "https://tool-server.example.com",
+        "",  # env-only; empty skips markdown-search registration (see try_sage_tool_servers.py). Never ship an internal host in the public image.
     ),
 )
 

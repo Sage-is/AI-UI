@@ -38,3 +38,39 @@ title = "Sage-is-AI gitleaks config"
 
   # To allowlist specific known false-positive commits, add their SHAs here:
   # commits = ["abc1234"]
+
+# =============================================================================
+# Org-private data rules (added 2026-07-24 by the private-data audit)
+# =============================================================================
+# Generic gitleaks catches keys/tokens. These catch OUR private data that it
+# does not: internal infra hostnames, a developer's local paths, and populated
+# contact lists. RE2 syntax (Go regexp) — no lookaheads; per-rule allowlists
+# carve out the legitimate cases.
+
+# Internal infrastructure hostnames must not ship in a public repo — pass the
+# endpoint via an env var instead of hardcoding it.
+[[rules]]
+  id = "sage-internal-hostname"
+  description = "Internal infra hostname (production/staging/internal subdomain) — use an env var, not a literal."
+  regex = '''[a-z0-9][a-z0-9-]*\.(?:production|staging|internal)\.openco\.ca'''
+  tags = ["infra", "hostname"]
+
+# Absolute /Users or /home paths leak a developer's username and machine layout.
+[[rules]]
+  id = "local-user-path"
+  description = "Absolute /Users or /home path leaks a developer's username and local layout."
+  regex = '''/(?:Users|home)/[a-z][a-z0-9_.-]+/'''
+  tags = ["pii", "path"]
+  [rules.allowlist]
+    regexes = ['''/(?:Users|home)/(?:runner|user|you|username|example|node|app|server|www)/''']
+
+# A contact list / user-import file that actually contains emails = client or
+# user PII. Empty templates (header only, no email) pass untouched.
+[[rules]]
+  id = "populated-contact-list"
+  description = "Contact list / user-import file containing real emails — client or user PII. Empty templates pass."
+  path = '''(user-import\.csv|.*contacts.*\.csv|.*\.(vcf|mbox|eml))$'''
+  regex = '''[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}'''
+  tags = ["pii", "contacts"]
+  [rules.allowlist]
+    regexes = ['''@(example|test|localhost|yourdomain)\.''']

@@ -57,7 +57,7 @@ These are seeded from env vars but can also be edited via the admin config UI wi
 | `TRY_SAGE_ADMIN_EXTEND_HOURS` | `24` | How much one admin extension adds. One extension per window. |
 | `TRY_SAGE_PERSONA_LINK_TTL_DAYS` | `7` | Magic-link JWT lifetime in days. Decoupled from the reset interval — links stay stable across resets, only account contents get wiped. Restart the container to force fresh links. |
 | `TRY_SAGE_RESET_AT` | auto | ISO8601 timestamp for the next reset. Set automatically; safe to leave alone. |
-| `TRY_SAGE_TOOL_SERVER_URL` | `https://tool-server.example.com` | Real OpenAPI tool server registered at startup. |
+| `TRY_SAGE_TOOL_SERVER_URL` | `""` | OpenAPI tool server auto-registered at startup when set; empty skips registration. Point at your own host, e.g. `https://tool-server.example.com`. |
 | `TRY_SAGE_TOOL_SERVER_API_KEY` | `""` | Bearer token for the markdown-search server. **Secret, env-only.** When set, the registration shim writes `auth_type=bearer` and the key into the entry on every boot/reset, so admins never enter it manually. When empty, the entry registers as `auth_type=none` and an admin must populate the key by hand. |
 | `TRY_SAGE_DUMMY_TOOL_SERVER_URL` | derived from `WEBUI_URL` | Override only if you point at an external dummy. |
 | `TRY_SAGE_PERSONA_SEED_ENABLED` | `true` | Set `false` to skip persona/agent/KB seeding. Useful when you provision personas externally. |
@@ -265,13 +265,13 @@ Add a Persistent Directory in CapRover (App → Configs) mounted at **`/app/back
 
 ### Production deployment: try.sage.is
 
-The live trial runs on the `try-sage-is` CapRover app at `captain.example.com`. First-deploy steps that produced it (2026-05-01, image `ghcr.io/sage-is/ai-ui:2.3.0`):
+The live trial runs on the `try-sage-is` CapRover app at `captain.example.com` (substitute your CapRover captain host). First-deploy steps that produced it (2026-05-01, image `ghcr.io/sage-is/ai-ui:2.3.0`):
 
 1. **Build and push the image** from a `release/<X.Y.Z>` branch with `make release_and_push_GHCR`. That target runs `release_finish` (gitflow merge → tag `v<X.Y.Z>` → push) then `it_build_multi_arch_push_GHCR` (multi-arch buildx push of `:<X.Y.Z>` and `:latest` to GHCR). `IMAGE_TAG` auto-derives from the latest git tag, so the new tag must exist before the push step runs.
 2. **Create the app** in the CapRover dashboard with **Has Persistent Data: YES**. Add Persistent Directory `/app/backend/data` (label `try-sage-is-data`). Container HTTP Port `8080`. Instance Count `1` (SQLite does not tolerate multi-replica writes).
 3. **Bulk-paste env vars** (App Configs → Environmental Variables → Bulk Edit) using the block above. Leave `WEBUI_SECRET_KEY` unset — `app/backend/start.sh` auto-generates one on first boot and writes it to `/app/backend/data/.webui_secret_key`, so it stays stable across restarts as long as the persistent volume sticks around. Set `WEBUI_URL=https://try.sage.is` so persona magic links resolve to the public host.
 4. **Deploy by image name** via the Deployment tab → Method 6: paste `ghcr.io/sage-is/ai-ui:<X.Y.Z>`. No local `caprover deploy` config needed.
-5. **DNS + HTTPS**: Cloudflare CNAME `try` → `try-app.example.com` (DNS-only / gray cloud during cert issue). Connect the domain in CapRover → Enable HTTPS → Force HTTPS. Once the LE cert is in place, flip Cloudflare back to proxied (orange cloud) with SSL/TLS mode **Full (strict)**.
+5. **DNS + HTTPS**: Cloudflare CNAME `try` → `try-app.example.com` (your CapRover app host; DNS-only / gray cloud during cert issue). Connect the domain in CapRover → Enable HTTPS → Force HTTPS. Once the LE cert is in place, flip Cloudflare back to proxied (orange cloud) with SSL/TLS mode **Full (strict)**.
 6. **Restart** so `WEBUI_URL` populates the persona magic-link cache. Verify `GET /api/v1/sage/runtime/status` returns `enabled: true` and `/api/v1/sage/runtime/personas` lists `login_url`s rooted at the public host (not `localhost`).
 
 #### Recovery: `release_and_push_GHCR` failed mid-way (buildx OOM)

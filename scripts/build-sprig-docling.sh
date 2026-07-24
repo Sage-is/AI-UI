@@ -21,17 +21,12 @@
 #   * The model pre-seed populates $HF_HOME (tries docling's model_downloader,
 #     falls back to a convert-warm) so runtime is offline.
 set -euo pipefail
-BUILD_T0="$(date +%s)"
 
-REGISTRY="${REGISTRY:-localhost:5000}"
+# Shared boilerplate: constants, arch-normalize, sha256, registry, push, timing.
+. "$(dirname "${BASH_SOURCE[0]}")/lib/sprig-build.sh"
 NAME="${NAME:-sprig-docling}"
-TAG="${TAG:-v1}"
-INSECURE="${INSECURE:-1}"
-MANAGE_REGISTRY="${MANAGE_REGISTRY:-0}"
-NETWORK="${NETWORK:-sage-network}"
-ARTIFACT_TYPE="application/vnd.sage-is.sprig.v1"
-LAYER_TYPE="application/vnd.sage-is.sprig.tar+zstd"
-ORAS_IMG="${ORAS_IMG:-ghcr.io/oras-project/oras:v1.2.0}"
+sprig_build_defaults
+sprig_timing_start
 
 PY_IMAGE="${PY_IMAGE:-python:3.11-bookworm}"
 DOCLING_SERVE_SPEC="${DOCLING_SERVE_SPEC:-docling-serve}"   # pin e.g. docling-serve==0.x.y
@@ -44,14 +39,7 @@ CPU_INDEX="${CPU_INDEX:-https://download.pytorch.org/whl/cpu}"
 PYPI_INDEX="${PYPI_INDEX:-https://pypi.org/simple}"
 TORCH_SPEC="${TORCH_SPEC:-torch torchvision --extra-index-url $CPU_INDEX}"
 
-_RAW_ARCH="$(uname -m)"
-case "${ARCH:-$_RAW_ARCH}" in
-  arm64|aarch64) ARCH=arm64 ;;
-  amd64|x86_64)  ARCH=amd64 ;;
-  *) echo "ERROR: unsupported ARCH='${ARCH:-$_RAW_ARCH}' (want arm64|amd64)" >&2; exit 1 ;;
-esac
-PLATFORM="${PLATFORM:-linux/$ARCH}"
-ARCHTAG="$TAG"; [ "$ARCH" = "amd64" ] && ARCHTAG="$TAG-amd64"
+sprig_arch_normalize
 
 WORK="${WORK:-/tmp/sprig-build/docling-$ARCH}"
 OUT_DIR="$WORK/out"
@@ -63,8 +51,6 @@ OUT="$OUT_DIR/${NAME}-${ARCHTAG}.tar.zst"
 docker run --rm -v /tmp/sprig-build:/b alpine rm -rf "/b/docling-$ARCH" 2>/dev/null || true
 rm -rf "$WORK" 2>/dev/null || true
 mkdir -p "$OUT_DIR"
-
-sha256() { shasum -a 256 "$1" | awk '{print $1}'; }
 
 # --- ONE container: venv + torch + docling-serve + pre-seed + gate + pack -------
 echo "== building docling-serve (venv+torch+models), gating, packing on $PLATFORM =="
@@ -165,28 +151,10 @@ else
 fi
 echo "=================================================================="
 
-# --- optional local registry ---------------------------------------------------
-if [ "$MANAGE_REGISTRY" = "1" ]; then
-  docker network inspect "$NETWORK" >/dev/null 2>&1 || docker network create "$NETWORK"
-  if ! docker ps --format '{{.Names}}' | grep -qx local-registry; then
-    docker rm -f local-registry >/dev/null 2>&1 || true
-    docker run -d --name local-registry --network "$NETWORK" -p 5000:5000 -v sprig-registry-data:/var/lib/registry registry:2 >/dev/null
-  fi
-  for _ in $(seq 1 30); do curl -fsS "http://localhost:5000/v2/" >/dev/null 2>&1 && break; sleep 0.5; done
-fi
-
-# --- push (dockerized oras; no host install) -----------------------------------
-PUSH_REG="$REGISTRY"; ORAS_NET=()
-case "$REGISTRY" in localhost:*|127.0.0.1:*)
-  PUSH_REG="local-registry:${REGISTRY##*:}"; ORAS_NET=(--network "$NETWORK");;
-esac
-PUSH=(push "$PUSH_REG/$NAME:$ARCHTAG" --artifact-type "$ARTIFACT_TYPE")
-[ "$INSECURE" = "1" ] && PUSH+=(--plain-http)
-docker run --rm ${ORAS_NET[@]+"${ORAS_NET[@]}"} -v "$OUT_DIR:/w" -w /w "$ORAS_IMG" \
-  "${PUSH[@]}" "$(basename "$OUT"):$LAYER_TYPE"
+# --- optional local registry + push (dockerized oras; no host install) ---------
+sprig_ensure_registry
+sprig_push
 
 echo
 echo "pushed: $REGISTRY/$NAME:$ARCHTAG"
-_EL=$(( $(date +%s) - BUILD_T0 ))
-printf "⏱  %s %s built in %dm%02ds (artifact %s)\n" \
-  "$NAME" "$ARCHTAG" $(( _EL/60 )) $(( _EL%60 )) "$(du -h "$OUT" | awk '{print $1}')"
+sprig_timing_end

@@ -21,32 +21,19 @@
 # publish-sprigs.sh (local -> ghcr).
 set -euo pipefail
 
-REGISTRY="${REGISTRY:-localhost:5000}"
+# Shared boilerplate: constants, arch-normalize, sha256, registry, push, timing.
+. "$(dirname "${BASH_SOURCE[0]}")/lib/sprig-build.sh"
 NAME="${NAME:-sprig-rag-loaders}"
-TAG="${TAG:-v1}"
-INSECURE="${INSECURE:-1}"
-MANAGE_REGISTRY="${MANAGE_REGISTRY:-0}"
-NETWORK="${NETWORK:-sage-network}"
-ARTIFACT_TYPE="application/vnd.sage-is.sprig.v1"
-LAYER_TYPE="application/vnd.sage-is.sprig.tar+zstd"
-ORAS_IMG="${ORAS_IMG:-ghcr.io/oras-project/oras:v1.2.0}"
+sprig_build_defaults
+sprig_timing_start
 
-_RAW_ARCH="$(uname -m)"
-case "${ARCH:-$_RAW_ARCH}" in
-  arm64|aarch64) ARCH=arm64 ;;
-  amd64|x86_64)  ARCH=amd64 ;;
-  *) echo "ERROR: unsupported ARCH='${ARCH:-$_RAW_ARCH}' (want arm64|amd64)" >&2; exit 1 ;;
-esac
-PLATFORM="${PLATFORM:-linux/$ARCH}"
-ARCHTAG="$TAG"; [ "$ARCH" = "amd64" ] && ARCHTAG="$TAG-amd64"
+sprig_arch_normalize
 
 PIP_SPECS="'langchain==0.3.30' 'langchain-community==0.3.27' 'pypdf==4.3.1' 'docx2txt==0.8' 'rank_bm25' 'numpy<2'"
 
 WORK="${WORK:-/tmp/sprig-build/rag-loaders-$ARCH}"
 OUT_DIR="${OUT_DIR:-$(pwd)}"
 OUT="$OUT_DIR/$NAME-$ARCHTAG.tar.zst"
-
-sha256() { if command -v sha256sum >/dev/null; then sha256sum "$1" | cut -d' ' -f1; else shasum -a 256 "$1" | cut -d' ' -f1; fi; }
 
 # --- preflight ----------------------------------------------------------------
 command -v docker >/dev/null || { echo "ERROR: docker not on PATH" >&2; exit 1; }
@@ -110,14 +97,7 @@ fi
 echo "=================================================================="
 
 # --- 5. optional local registry ---------------------------------------------------
-if [ "$MANAGE_REGISTRY" = "1" ]; then
-  docker network inspect "$NETWORK" >/dev/null 2>&1 || docker network create "$NETWORK"
-  if ! docker ps --format '{{.Names}}' | grep -qx local-registry; then
-    docker rm -f local-registry >/dev/null 2>&1 || true
-    docker run -d --name local-registry --network "$NETWORK" -p 5000:5000 -v sprig-registry-data:/var/lib/registry registry:2 >/dev/null
-  fi
-  for _ in $(seq 1 30); do curl -fsS "http://localhost:5000/v2/" >/dev/null 2>&1 && break; sleep 0.5; done
-fi
+sprig_ensure_registry
 
 # --- 6. sign (optional) + push -----------------------------------------------------
 SIG_LAYER=()
@@ -130,17 +110,9 @@ if [ -n "${SIGN_KEY:-}" ]; then
      -t 'sage-is $NAME:$ARCHTAG sha256=$TAR_SHA'"
   SIG_LAYER=("$(basename "$OUT").minisig:application/vnd.sage-is.sprig.minisig")
 fi
-# Dockerized oras push (no host oras). Inside the container localhost is the container itself, so a localhost registry is reached by its on-network name.
-
-# **Note** This may not be the right call for ASAP deployment initially.
-PUSH_REG="$REGISTRY"; ORAS_NET=()
-case "$REGISTRY" in localhost:*|127.0.0.1:*)
-  PUSH_REG="local-registry:${REGISTRY##*:}"; ORAS_NET=(--network "$NETWORK");;
-esac
-PUSH=(push "$PUSH_REG/$NAME:$ARCHTAG" --artifact-type "$ARTIFACT_TYPE")
-[ "$INSECURE" = "1" ] && PUSH+=(--plain-http)
-docker run --rm ${ORAS_NET[@]+"${ORAS_NET[@]}"} -v "$OUT_DIR:/w" -w /w "$ORAS_IMG" \
-  "${PUSH[@]}" "$(basename "$OUT"):$LAYER_TYPE" ${SIG_LAYER[@]+"${SIG_LAYER[@]}"}
+# Dockerized oras push (no host oras); rides the optional SIG_LAYER set above.
+sprig_push
 
 echo
 echo "pushed: $REGISTRY/$NAME:$ARCHTAG"
+sprig_timing_end
