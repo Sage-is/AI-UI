@@ -14,8 +14,6 @@
 !.obsidian/**
 !/.semgrep/
 !/.semgrep/**
-!/.github/
-!/.github/**
 !/app/.eslintrc.cjs
 !/app/.prettierrc
 !/app/backend/.dockerignore

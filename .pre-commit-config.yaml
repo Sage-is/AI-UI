@@ -26,6 +26,22 @@ repos:
       - id: gitleaks
 
   # ---------------------------------------------------------------------------
+  # Private-data tree scan — pre-push backstop (whole tree, not just staged)
+  # ---------------------------------------------------------------------------
+  # The gitleaks hook above scans the STAGED diff at commit time. This runs the
+  # same rules (.gitleaks.toml) across the ENTIRE working tree at push time,
+  # catching anything a bypassed commit (--no-verify) let through before it
+  # leaves the machine. Local-first: same `make scan_tree` you can run by hand.
+  - repo: local
+    hooks:
+      - id: scan-tree
+        name: private-data scan (gitleaks --no-git, whole tree)
+        entry: make scan_tree
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+
+  # ---------------------------------------------------------------------------
   # Python Security — catch common security bugs in backend code
   # ---------------------------------------------------------------------------
   # Bandit checks Python AST for security anti-patterns.

@@ -836,6 +836,7 @@ install_dev:
 # Stages installed:
 #   pre-commit      gitleaks, bandit, codespell, hygiene, audit-deps,
 #                   distribution-chain-verify (refuse if hardlink chain broken)
+#   pre-push        scan-tree (whole-tree private-data gitleaks pass)
 #   post-checkout   distribution-chain-heal (silent re-link if chain broken
 #                   and content matches; warn if content diverges)
 #   post-merge      distribution-chain-heal
@@ -845,8 +846,9 @@ install_hooks:
 		echo "ERROR: pre-commit not installed. Run: make install_dev"; \
 		exit 1; \
 	}
-	@echo "Installing pre-commit hooks (commit + checkout + merge + rewrite stages)..."
+	@echo "Installing pre-commit hooks (commit + push + checkout + merge + rewrite stages)..."
 	pre-commit install
+	pre-commit install --hook-type pre-push
 	pre-commit install --hook-type post-checkout
 	pre-commit install --hook-type post-merge
 	pre-commit install --hook-type post-rewrite
@@ -868,6 +870,18 @@ scan_secrets:
 	$(call require_tool,GITLEAKS,gitleaks)
 	@echo "=== Secrets scan (gitleaks) ==="
 	$(GITLEAKS) detect --source . --config .gitleaks.toml --verbose
+
+# scan_tree: Private-data scan of the tracked tree at HEAD. Scans a `git archive`
+# (only tracked files — no node_modules to trudge through, no history noise), so
+# it is fast enough for the pre-push hook. Full-history auditing stays in
+# scan_secrets; the commit-stage gitleaks hook covers the staged diff.
+scan_tree:
+	$(call require_tool,GITLEAKS,gitleaks)
+	@echo "=== Private-data scan: tracked tree at HEAD (gitleaks) ==="
+	@tmp=$$(mktemp -d); \
+	git archive HEAD | tar -x -C "$$tmp"; \
+	$(GITLEAKS) detect --no-git --source "$$tmp" --config .gitleaks.toml --verbose; \
+	rc=$$?; rm -rf "$$tmp"; exit $$rc
 
 # scan_sast: Static Application Security Testing.
 # - semgrep/opengrep: JS/TS/Svelte frontend + Python backend (offline rules in .semgrep/)
