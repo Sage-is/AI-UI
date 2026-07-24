@@ -91,12 +91,15 @@ See [Startr.Style docs](https://startr.style) for the full property reference, r
 
 The Makefile IS the CI/CD framework. The same targets run on a developer laptop or a build server. Linux, macOS, and Windows (WSL) all work. GitHub Actions is not a dependency, but the targets compose with it if you want to call them from a hosted runner.
 
-**Security scanning:**
+**Security scanning** (local-first — git hooks run the same targets, no CI service):
 
 ```bash
-make install_dev          # Install gitleaks, semgrep, bandit, trivy via Homebrew
-make scan                 # Run all scans (secrets, SAST, dependency vulnerabilities)
+make install_dev          # Install gitleaks, semgrep, bandit, trivy + wire git hooks
+make scan                 # Full audit: secrets (history), SAST, dependency CVEs
+make scan_tree            # Fast private-data scan of the tracked tree (what pre-push runs)
 ```
+
+After `install_dev`, every commit scans the staged diff and every push scans the tree — secrets plus internal hostnames, developer paths, and contact lists. Details: [docs/development-workflow.md](docs/development-workflow.md).
 
 **Release process:**
 

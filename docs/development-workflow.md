@@ -338,6 +338,42 @@ Standard targets for common tasks:
 
 **Types:** Add, Update, Fix, Remove, Refactor, Document
 
+### Security & Private-Data Scanning
+
+Scanning is **local-first** — no CI service runs it. The same commands run in git hooks and by hand, all driven by one config, `.gitleaks.toml`.
+
+**What runs when:**
+
+| Stage | Runs | Catches |
+| --- | --- | --- |
+| `git commit` | gitleaks (staged diff), bandit, codespell, hygiene, outreach guard, dep audit | new secrets or private data in the change |
+| `git push` | `make scan_tree` — gitleaks over the tracked tree at HEAD | anything a bypassed commit let through |
+| manual | `make scan` — secrets (full history) + SAST + dependency CVEs | deep audit, e.g. before a release |
+
+**Scan targets:**
+
+- `make scan_tree` — gitleaks over a `git archive` of HEAD. Tracked files only, so it is fast (no `node_modules` to trudge through). This is what the pre-push hook runs.
+- `make scan_secrets` — gitleaks over **full git history**. The deep audit; it can surface benign historical matches, so it is not a blocking gate.
+- `make scan` — `scan_secrets` plus SAST (semgrep, bandit) and dependency CVEs (trivy).
+
+**Private-data rules** (in `.gitleaks.toml`, alongside the built-in secret rules):
+
+- `sage-internal-hostname` — internal infra hostnames like `*.production.openco.ca`. Pass endpoints through env vars; never hardcode them in source or docs.
+- `local-user-path` — absolute `/Users/…` or `/home/…` paths that leak a developer's machine layout.
+- `populated-contact-list` — a `user-import.csv`, `.vcf`, or `.mbox` that actually holds emails. Empty templates pass.
+
+A real finding fails the commit or push. Clear a false positive by adding a path or regex to `[allowlist]` in `.gitleaks.toml`; vendored and generated paths (`node_modules/`, Pyodide, lockfiles, i18n) are already allowlisted.
+
+**Setup:** `make install_dev` installs the tools (gitleaks, semgrep, bandit, trivy, pre-commit) and wires the hooks. Re-run `make install_hooks` after pulling hook changes to pick up new stages.
+
+**Escape hatches** (deliberate, visible):
+
+- `git commit --no-verify` — skip the commit-stage hooks.
+- `git push --no-verify` — skip the pre-push tree scan.
+- `SKIP_SCAN=1` / `SKIP_GAUNTLET=1` — skip the scan or the build under the optional `core.hooksPath .githooks` setup.
+
+**Never commit:** real `.env` values, `tools/db_snapshots/` (real user data), or `docs/outreach/` drafts (named prospects). All are git-ignored — keep them that way.
+
 ### Documentation Tools
 
 - Markdown for all documentation
