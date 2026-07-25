@@ -494,7 +494,7 @@ log.setLevel(SRC_LOG_LEVELS["MAIN"])
 class SPAStaticFiles(StaticFiles):
     async def get_response(self, path: str, scope):
         try:
-            return await super().get_response(path, scope)
+            response = await super().get_response(path, scope)
         except (HTTPException, StarletteHTTPException) as ex:
             if ex.status_code == 404:
                 if path.endswith(".js"):
@@ -513,6 +513,13 @@ class SPAStaticFiles(StaticFiles):
                 return await super().get_response("index.html", scope)
             else:
                 raise ex
+        # Assets under _app/immutable/ are content-hashed by SvelteKit — a new
+        # deploy changes the filename — so they are safe to cache forever. This
+        # ends the per-asset revalidation round-trips that inflate repeat-visit
+        # load. The SPA shell (index.html) is intentionally NOT cached here.
+        if path.startswith("_app/immutable/"):
+            response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        return response
 
 
 import os as _banner_os
