@@ -318,6 +318,54 @@ _Implementation precedes docs (2026-06-30 panel-push; Decision #19 in the Bonsai
   - [ ] Decide native vs custom file handling in notes (`NoteEditor/Chat.svelte:191`)
   - [ ] Investigate Kokoro worker issues (`kokoro.worker.ts:4`)
 
+### Frontend — no-build strangler migration (approved 2026-07-25)
+
+> Approved plan: move the AI-UI frontend off the SvelteKit build to
+> server-rendered HTML + vanilla/htmx islands, Svelte-as-biomes, strangler to
+> zero. Three evidenced legs — delete duplicated code (~50%), cut the
+> conversation load (172 req / 7.9 MB / ~19 s → near-instant), turn shared chats
+> into a crawlable distribution surface. Full plan:
+> `~/.claude/plans/we-got-to-gtm-stateful-teapot.md`.
+
+- [ ] **Phase Q0 — board hygiene**: TODO.md on TodoScope convention, this plan's tracked TODOs filed, board kept current every phase. #critical
+  - [x] Verify TODO.md structure + `.todoscope-exclude.csv` (both already on-convention)
+  - [x] File the migration epic + tracked TODOs into TODO.md
+  - [ ] Keep the board mirroring reality as each phase's steps land and ship
+
+- [ ] **Phase Q — clear the decks**: current-SPA drift fixes, cruft, and perf quick-wins (no migration needed).
+  - [ ] Enforce the 8-char password server-side (`auths.py`) — currently browser-only, direct API calls bypass it
+  - [ ] Fix `UserUpdateForm` / `SpaceForm` TS↔Pydantic drift
+  - [ ] Delete the dead `SUPPORTED_FILE_EXTENSIONS` copy in `constants.ts` (backend 50-entry list is live)
+  - [ ] Reconcile the drifted permission-tree defaults
+  - [ ] Cruft sweep: dead exports, unused deps (`chart.js`, `@mediapipe`), stale flags
+  - [ ] Strip hyperscript attribute forms (`_`, `script`, `data-script`) in the user-content sanitizer; verify DOMPurify config
+  - [ ] Perf: `Cache-Control: immutable` on `_app/immutable/*`
+  - [ ] Perf: stop fetching the 22 MB onnxruntime WASM on the conversation page (gate behind actual use); de-dup the two on-disk copies
+  - [ ] Perf: purge `/icons/` waste (5.5 MB `.xcf`, 3.4 MB favicon.svg, 6 duplicate logo PNGs)
+  - [ ] Perf: batch the serial boot waterfall into `Promise.all`; put HTTP/2 in front
+  - [ ] Guard-rail Cypress spec for every area before it's touched
+
+- [ ] **Phase S — streaming spike** (go/no-go on strangler-to-zero): vanilla fetch-stream island in an htmx shell over HTTP/2 (autoscroll, stop, streamed markdown); optional Datastar control build; one-page decision memo. Throwaway in `tools/spikes/`. [MANUALLY — Alexander calls it]
+  - [ ] Spike-prove the shared-runtime assumption — biomes share ONE Svelte runtime, not one each #critical
+
+- [ ] **Phase 0 — seam + Sprigs pilot**: explicit island mount in `main.py`; rebuild `Sprigs.svelte` as a no-build page on the existing JSON endpoints, zero Vite; its Cypress spec passes against old panel and new page.
+
+- [ ] **Phase 1 — ui-Sprig contract** (marketplace can't launch without it): `validate_ui_bundle` (fragments only), graft branch mirroring `theme`, cookie auth bridge, per-Sprig scripting grant (default off).
+  - [ ] Write "no framework sprigs" into the ui-Sprig spec — fragments + host runtime only; validator refuses bring-your-own-framework #sprigs #ui
+
+- [ ] **Phases 2–4 — surfaces inward, then biomes**: ripe surfaces (theme/branding, wizard, diagnostics) → medium surfaces + shell flip (users, evals, settings tabs, chat list, workshop) → prune biomes (Functions, then chat core last, gated on the spike memo).
+  - [ ] Count and pin the core biomes as a downward-only ratchet — chat core, rich-text editor, code editor, flow canvas, channels; the count only decreases #biomes #ratchet
+  - [ ] Reimplement the flow canvas (`@xyflow/svelte`) framework-free
+  - [ ] Slogan precision: "org-owned" not "user-owned"; keep yjs local-first for the editor #brand
+
+### Founder Bio & Provenance
+
+- [ ] **Etsy / islands provenance — firm up the sources**: make the "employee #4 / built the Etsy Mini / called them islands" bio citable. Public today: #4 (Fred Wilson/USV 2006, via zh.wikipedia); the Etsy Mini is a documented island-shaped widget. Detail in the `reference_etsy_islands_provenance` memory + the plan's provenance appendix. #brand #provenance
+  - [ ] Retrieve the archived Fred Wilson / USV 2006 post from archive.org (the usv.com URL now 404s) — locks the #4 primary source
+  - [ ] (Alexander) Confirm true hire order — recollection is possibly earlier than #4 (Stinchcomb joined later; came on ~after Forman, ~with Nuzzolillo)
+  - [ ] Find receipts for Etsy Mini authorship (publicly credited to Etsy collectively)
+  - [ ] Find evidence of internal "islands" vocabulary predating the 2019 public coinage
+
 ---
 
 ## Backlog
