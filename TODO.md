@@ -333,13 +333,13 @@ _Implementation precedes docs (2026-06-30 panel-push; Decision #19 in the Bonsai
   - [ ] Keep the board mirroring reality as each phase's steps land and ship
 
 - [ ] **Phase Q — clear the decks**: current-SPA drift fixes, cruft, and perf quick-wins (no migration needed).
-  - [ ] Enforce the 8-char password server-side (`auths.py`) — currently browser-only, direct API calls bypass it
-  - [ ] Fix `UserUpdateForm` / `SpaceForm` TS↔Pydantic drift
-  - [ ] Delete the dead `SUPPORTED_FILE_EXTENSIONS` copy in `constants.ts` (backend 50-entry list is live)
+  - [x] Enforce the 8-char password server-side (`auths.py`) — measure-twice e2e verified (200→bug, 400→fixed); committed
+  - [x] Fix `UserUpdateForm` / `SpaceForm` TS↔Pydantic drift — committed
+  - [x] Delete the dead `SUPPORTED_FILE_EXTENSIONS` copy in `constants.ts` (backend 50-entry list is live) — committed
   - [ ] Reconcile the drifted permission-tree defaults
   - [ ] Cruft sweep: dead exports, unused deps (`chart.js`, `@mediapipe`), stale flags
   - [ ] Strip hyperscript attribute forms (`_`, `script`, `data-script`) in the user-content sanitizer; verify DOMPurify config
-  - [ ] Perf: `Cache-Control: immutable` on `_app/immutable/*`
+  - [x] Perf: `Cache-Control: immutable` on `_app/immutable/*` — measure-twice e2e verified (empty header→immutable); committed
   - [ ] Perf: stop fetching the 22 MB onnxruntime WASM on the conversation page (gate behind actual use); de-dup the two on-disk copies
   - [ ] Perf: purge `/icons/` waste (5.5 MB `.xcf`, 3.4 MB favicon.svg, 6 duplicate logo PNGs)
   - [ ] Perf: batch the serial boot waterfall into `Promise.all`; put HTTP/2 in front

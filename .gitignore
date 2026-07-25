@@ -73,4 +73,6 @@ docs/outreach/*
 # optional REPORT=1 junit XML; no Cypress Cloud anywhere)
 app/cypress/videos
 app/cypress/screenshots
+app/cypress/reports
+app/cypress/perf-resources.json
 
