@@ -32,6 +32,7 @@ class ERROR_MESSAGES(str, Enum):
         "Uh-oh! This username is already registered. Please choose another username."
     )
     PASSWORD_TOO_LONG = "Uh-oh! The password you entered is too long. Please make sure your password is less than 72 bytes long."
+    PASSWORD_TOO_SHORT = "Uh-oh! The password you entered is too short. Please use at least 8 characters."
     COMMAND_TAKEN = "Uh-oh! This command is already registered. Please choose another command string."
     FILE_EXISTS = "Uh-oh! This file is already registered. Please choose another file."
 
