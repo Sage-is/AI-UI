@@ -344,6 +344,7 @@ _Implementation precedes docs (2026-06-30 panel-push; Decision #19 in the Bonsai
   - [ ] Perf: purge `/icons/` waste (5.5 MB `.xcf`, 3.4 MB favicon.svg, 6 duplicate logo PNGs)
   - [ ] Perf: batch the serial boot waterfall into `Promise.all`; put HTTP/2 in front
   - [ ] Guard-rail Cypress spec for every area before it's touched
+  - [ ] Modernize (or prune) the inherited upstream e2e specs — `registration/settings/chat/documents.cy.ts` now COMPILE (import depth `../support`→`../../support` fixed) but FAIL on stale open-webui UI: they assume OPEN signup (this fork hard-closes it after the first admin, so the "Sign up" toggle is hidden) and the old changelog dismiss `Okay, Let's Go!` (now the setup wizard's "Get Started"/Close, handled via API). Rewrite to the fork's actual flows or drop tests of removed behavior. Note: they're in a subdir so NOT in the default `make e2e` gate. #e2e #tech-debt
 
 - [ ] **Phase S — streaming spike** (go/no-go on strangler-to-zero): vanilla fetch-stream island in an htmx shell over HTTP/2 (autoscroll, stop, streamed markdown); optional Datastar control build; one-page decision memo. Throwaway in `tools/spikes/`. [MANUALLY — Alexander calls it]
   - [ ] Spike-prove the shared-runtime assumption — biomes share ONE Svelte runtime, not one each #critical
