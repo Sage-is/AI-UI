@@ -110,7 +110,8 @@ type UserUpdateForm = {
 	profile_image_url: string;
 	email: string;
 	name: string;
-	password: string;
+	password?: string;
+	info?: object;
 };
 
 export const updateUserById = async (token: string, userId: string, user: UserUpdateForm) =>
