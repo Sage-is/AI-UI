@@ -318,6 +318,12 @@ _Implementation precedes docs (2026-06-30 panel-push; Decision #19 in the Bonsai
   - [ ] Decide native vs custom file handling in notes (`NoteEditor/Chat.svelte:191`)
   - [ ] Investigate Kokoro worker issues (`kokoro.worker.ts:4`)
 
+- [ ] **Audio/TTS UX polish** (surfaced live in dev mode 2026-07-26; the last two ride with the Settings/Admin migration pass):
+  - [x] First-playback Kokoro load was silent for seconds → now a dismissible "Loading the Kokoro voice model (first use)…" toast (`ResponseMessage.svelte`)
+  - [x] Kokoro double-load in Settings (doubling progress %) → memoized load promise so `getVoices()` + the reactive share one download (`Settings/Audio.svelte`)
+  - [ ] Opening Settings → Audio RELOADS Kokoro even after playback already loaded it — the Settings main-thread loader and the playback Web Worker (`kokoro.worker.ts`) are separate contexts; share one loader/model so the model loads once per session
+  - [ ] Kokoro voice selector is janky (a type-in input + a list that only opens after you clear the field) → replace with a clean, DRY `<select>`/combobox
+
 ### Frontend — no-build strangler migration (approved 2026-07-25)
 
 > Approved plan: move the AI-UI frontend off the SvelteKit build to

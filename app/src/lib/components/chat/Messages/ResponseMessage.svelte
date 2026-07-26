@@ -291,13 +291,29 @@
 
 			if ($settings.audio?.tts?.engine === 'browser-kokoro') {
 				if (!$TTSWorker) {
-					await TTSWorker.set(
-						new KokoroWorker({
-							dtype: $settings.audio?.tts?.engineConfig?.dtype ?? 'fp32'
-						})
+					// First playback downloads + initializes the Kokoro model in the
+					// worker (~82 MB) — otherwise it's just seconds of silence. Show a
+					// clear, dismissible loading toast so the wait is legible; later
+					// playbacks reuse the worker and skip this.
+					const modelToast = toast.loading(
+						$i18n.t('Loading the Kokoro voice model (first use)…')
 					);
+					try {
+						await TTSWorker.set(
+							new KokoroWorker({
+								dtype: $settings.audio?.tts?.engineConfig?.dtype ?? 'fp32'
+							})
+						);
 
-					await $TTSWorker.init();
+						await $TTSWorker.init();
+					} catch (error) {
+						toast.error(`${error}`);
+						speaking = false;
+						loadingSpeech = false;
+						throw error;
+					} finally {
+						toast.dismiss(modelToast);
+					}
 				}
 
 				for (const [idx, sentence] of messageContentParts.entries()) {
