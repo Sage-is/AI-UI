@@ -1,4 +1,7 @@
-import katex from 'katex';
+// NOTE: katex itself is NOT imported here — this extension only *tokenizes*
+// math (finds the delimiters); the actual render happens in KatexRenderer.svelte
+// (lazily). A dead `import katex` here used to drag the whole library into the
+// eager utils chunk (this file is imported by utils/index.ts).
 
 const DELIMITER_LIST = [
 	{ left: '$$', right: '$$', display: true },

@@ -75,4 +75,5 @@ app/cypress/videos
 app/cypress/screenshots
 app/cypress/reports
 app/cypress/perf-resources.json
+app/cypress/perf-plain.json
 

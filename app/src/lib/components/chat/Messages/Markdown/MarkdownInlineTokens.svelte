@@ -11,7 +11,7 @@
 	import { copyToClipboard, unescapeHtml } from '$lib/utils';
 
 	import Image from '$lib/components/common/Image.svelte';
-	import KatexRenderer from './KatexRenderer.svelte';
+	import { loadKatexRenderer } from './lazy';
 	import Source from './Source.svelte';
 	import HtmlToken from './HTMLToken.svelte';
 	import TextToken from './MarkdownInlineTokens/TextToken.svelte';
@@ -50,7 +50,9 @@
 		<del><svelte:self id={`${id}-del`} tokens={token.tokens} {onSourceClick} /></del>
 	{:else if token.type === 'inlineKatex'}
 		{#if token.text}
-			<KatexRenderer content={token.text} displayMode={false} />
+			{#await loadKatexRenderer() then { default: KatexRenderer }}
+				<KatexRenderer content={token.text} displayMode={false} />
+			{/await}
 		{/if}
 	{:else if token.type === 'iframe'}
 		<iframe

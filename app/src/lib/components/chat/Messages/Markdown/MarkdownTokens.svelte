@@ -12,9 +12,8 @@
 
 	import { WEBUI_BASE_URL } from '$lib/constants';
 
-	import CodeBlock from '$lib/components/chat/Messages/CodeBlock.svelte';
 	import MarkdownInlineTokens from '$lib/components/chat/Messages/Markdown/MarkdownInlineTokens.svelte';
-	import KatexRenderer from './KatexRenderer.svelte';
+	import { loadCodeBlock, loadKatexRenderer } from './lazy';
 	import AlertRenderer, { alertComponent } from './AlertRenderer.svelte';
 	import Collapsible from '$lib/components/common/Collapsible.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
@@ -96,25 +95,27 @@
 		</svelte:element>
 	{:else if token.type === 'code'}
 		{#if token.raw.includes('```')}
-			<CodeBlock
-				id={`${id}-${tokenIdx}`}
-				collapsed={$settings?.collapseCodeBlocks ?? false}
-				{token}
-				lang={token?.lang ?? ''}
-				code={token?.text ?? ''}
-				{attributes}
-				{save}
-				{preview}
-				onSave={(value) => {
-					onSave({
-						raw: token.raw,
-						oldContent: token.text,
-						newContent: value
-					});
-				}}
-				{onUpdate}
-				{onPreview}
-			/>
+			{#await loadCodeBlock() then { default: CodeBlock }}
+				<CodeBlock
+					id={`${id}-${tokenIdx}`}
+					collapsed={$settings?.collapseCodeBlocks ?? false}
+					{token}
+					lang={token?.lang ?? ''}
+					code={token?.text ?? ''}
+					{attributes}
+					{save}
+					{preview}
+					onSave={(value) => {
+						onSave({
+							raw: token.raw,
+							oldContent: token.text,
+							newContent: value
+						});
+					}}
+					{onUpdate}
+					{onPreview}
+				/>
+			{/await}
 		{:else}
 			{token.text}
 		{/if}
@@ -346,11 +347,15 @@
 		{/if}
 	{:else if token.type === 'inlineKatex'}
 		{#if token.text}
-			<KatexRenderer content={token.text} displayMode={token?.displayMode ?? false} />
+			{#await loadKatexRenderer() then { default: KatexRenderer }}
+				<KatexRenderer content={token.text} displayMode={token?.displayMode ?? false} />
+			{/await}
 		{/if}
 	{:else if token.type === 'blockKatex'}
 		{#if token.text}
-			<KatexRenderer content={token.text} displayMode={token?.displayMode ?? false} />
+			{#await loadKatexRenderer() then { default: KatexRenderer }}
+				<KatexRenderer content={token.text} displayMode={token?.displayMode ?? false} />
+			{/await}
 		{/if}
 	{:else if token.type === 'space'}
 		<div style="--my:0.5rem" />

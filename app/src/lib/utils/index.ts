@@ -20,7 +20,8 @@ import { TTS_RESPONSE_SPLIT } from '$lib/types';
 import { marked } from 'marked';
 import markedExtension from '$lib/utils/marked/extension';
 import markedKatexExtension from '$lib/utils/marked/katex-extension';
-import hljs from 'highlight.js';
+// highlight.js is loaded lazily inside copyToClipboard (its only user) so it
+// stays out of the eager utils chunk that nearly every route imports.
 
 //////////////////////////
 // Helper functions
@@ -111,7 +112,7 @@ function processChineseContent(content: string): string {
 	const processedLines = lines.map((line) => {
 		if (/[\u4e00-\u9fa5]/.test(line)) {
 			// Problems caused by Chinese parentheses
-			/* Discription:
+			/* Description:
 			 *   When `*` has Chinese delimiters on the inside, markdown parser ignore bold or italic style.
 			 *   - e.g. `**中文名（English）**中文内容` will be parsed directly,
 			 *          instead of `<strong>中文名（English）</strong>中文内容`.
@@ -402,6 +403,7 @@ export const copyToClipboard = async (text: string, html: string | null = null, 
 	if (formatted) {
 		let styledHtml = '';
 		if (!html) {
+			const { default: hljs } = await import('highlight.js');
 			const options = {
 				throwOnError: false,
 				highlight: function (code: string, lang: string) {

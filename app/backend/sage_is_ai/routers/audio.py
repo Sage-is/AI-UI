@@ -3,6 +3,7 @@ import hashlib
 import json
 import logging
 import os
+import shutil
 import uuid
 from functools import lru_cache
 from pathlib import Path
@@ -125,7 +126,18 @@ def convert_audio_to_mp3(file_path):
 def set_faster_whisper_model(model: str, auto_update: bool = False):
     whisper_model = None
     if model:
-        from faster_whisper import WhisperModel
+        try:
+            from faster_whisper import WhisperModel
+        except ModuleNotFoundError:
+            # This build ships no in-process Whisper — the STT Sprig™ provides a
+            # whisper-server instead (see sprigs/stt_dispatch.py). Return None so
+            # boot and settings-save don't crash; the transcription path turns
+            # this into a graft-the-Sprig message the admin can act on.
+            log.info(
+                "faster-whisper not installed; local STT is unavailable until the "
+                "Whisper (STT) Sprig™ is grafted or an external STT engine is set."
+            )
+            return None
 
         faster_whisper_kwargs = {
             "model_size_or_path": model,
@@ -591,6 +603,17 @@ def transcription_handler(request, file_path, metadata):
             )
 
         model = request.app.state.faster_whisper_model
+        if model is None:
+            # No local Whisper and no external engine configured.
+            raise HTTPException(
+                status_code=status.HTTP_501_NOT_IMPLEMENTED,
+                detail=(
+                    "Speech-to-text isn't set up on this Rootstock™. Graft the "
+                    "Whisper (STT) Sprig™ in Admin → Sprigs to transcribe locally, "
+                    "or set an external STT engine (OpenAI, Deepgram, or Azure) in "
+                    "Admin → Settings → Audio."
+                ),
+            )
         segments, info = model.transcribe(
             file_path,
             beam_size=5,
@@ -644,6 +667,27 @@ def transcription_handler(request, file_path, metadata):
         except Exception as e:
             log.exception(e)
 
+            base = request.app.state.config.STT_OPENAI_API_BASE_URL or ""
+            is_local_whisper = any(
+                host in base for host in ("127.0.0.1", "localhost", "[::1]")
+            )
+
+            # The grafted Whisper Sprig™ (whisper.cpp) needs decoded audio; a
+            # browser voice note is webm/opus. pydub transcodes it, but only when
+            # the media-ffmpeg Sprig™ is grafted (it ships ffmpeg/ffprobe onto
+            # PATH). If the server answered with an error and ffmpeg is absent,
+            # that missing graft is the cause — say so, don't echo a bare 400.
+            if r is not None and is_local_whisper and shutil.which("ffmpeg") is None:
+                raise HTTPException(
+                    status_code=status.HTTP_501_NOT_IMPLEMENTED,
+                    detail=(
+                        "The grafted Whisper server can't read this recording — "
+                        "browser voice notes are webm/opus and need transcoding. "
+                        "Add the media-ffmpeg Sprig™ in Admin → Sprigs, then "
+                        "try again."
+                    ),
+                )
+
             detail = None
             if r is not None:
                 try:
@@ -651,9 +695,15 @@ def transcription_handler(request, file_path, metadata):
                     if "error" in res:
                         detail = f"External: {res['error'].get('message', '')}"
                 except Exception:
-                    detail = f"External: {e}"
+                    # whisper-server (whisper.cpp) returns a plain-text body, not
+                    # the OpenAI error JSON — surface it so the reason isn't opaque.
+                    body = (r.text or "").strip()
+                    detail = f"External: {body[:300]}" if body else f"External: {e}"
 
-            raise Exception(detail if detail else "Sage.is AI: Server Connection Error")
+            raise HTTPException(
+                status_code=status.HTTP_502_BAD_GATEWAY,
+                detail=detail or "Sage.is AI: STT server connection error",
+            )
 
     elif request.app.state.config.STT_ENGINE == "deepgram":
         try:
@@ -873,6 +923,11 @@ def transcribe(request: Request, file_path: str, metadata: Optional[dict] = None
             for future in futures:
                 try:
                     results.append(future.result())
+                except HTTPException:
+                    # Already an actionable message (graft-the-Sprig, WAV hint,
+                    # the server's real reason) — surface it, don't bury it in a
+                    # generic "Error transcribing chunk" 500.
+                    raise
                 except Exception as transcribe_exc:
                     raise HTTPException(
                         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -1008,6 +1063,9 @@ def transcription(
                 "filename": os.path.basename(file_path),
             }
 
+        except HTTPException:
+            # Preserve the actionable status + detail set downstream.
+            raise
         except Exception as e:
             log.exception(e)
 
@@ -1016,6 +1074,8 @@ def transcription(
                 detail=ERROR_MESSAGES.DEFAULT(e),
             )
 
+    except HTTPException:
+        raise
     except Exception as e:
         log.exception(e)
 
