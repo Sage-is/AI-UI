@@ -76,4 +76,5 @@ app/cypress/screenshots
 app/cypress/reports
 app/cypress/perf-resources.json
 app/cypress/perf-plain.json
+app/cypress/boot-waterfall-timing.json
 

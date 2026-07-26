@@ -114,15 +114,22 @@
 				settings.set(localStorageSettings);
 			}
 
-			models.set(
-				await getModels(
+			// One wave, not a ladder. These four depend on $settings (above) but not on
+			// each other, so awaiting them in sequence cost four serial round-trips of
+			// boot time for nothing.
+			const [modelList, bannerList, toolList, toolServerData] = await Promise.all([
+				getModels(
 					$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
-				)
-			);
+				),
+				getBanners(''),
+				getTools(''),
+				getToolServersData($i18n, $settings?.toolServers ?? [])
+			]);
 
-			banners.set(await getBanners(''));
-			tools.set(await getTools(''));
-			toolServers.set(await getToolServersData($i18n, $settings?.toolServers ?? []));
+			models.set(modelList);
+			banners.set(bannerList);
+			tools.set(toolList);
+			toolServers.set(toolServerData);
 
 			document.addEventListener('keydown', async function (event) {
 				const isCtrlPressed = event.ctrlKey || event.metaKey; // metaKey is for Cmd key on Mac
