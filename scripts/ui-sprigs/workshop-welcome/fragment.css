@@ -1,0 +1,25 @@
+/* ui-Sprig™ styles. Same self-containment rules as a theme stylesheet: no imports, no external url(), nothing executable. Scoped under one class so a fragment cannot restyle the page around it. */
+.sprig-welcome {
+  margin: 1.5rem 0 0;
+  padding: 1rem 1.15rem;
+  border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  border-radius: 0.75rem;
+}
+
+.sprig-welcome-title {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.sprig-welcome-lede {
+  margin: 0.35rem 0 0.75rem;
+  color: color-mix(in srgb, currentColor 65%, transparent);
+  font-size: 0.85rem;
+}
+
+.sprig-welcome-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}

@@ -364,6 +364,13 @@ sprig_registry:
 sprig_smoke: sprig_registry
 	@scripts/smoke/sprig-lifecycle.sh $(IMAGE_NAME):$(IMAGE_TAG)
 
+## ui_sprig_gate — what the ui-Sprig™ contract REFUSES: off-origin references,
+## framing, interpreted script attributes, script without an admin's per-Sprig
+## grant, and anything framework-sized. The Cypress spec walks the happy path;
+## this walks the side that matters for a marketplace.
+ui_sprig_gate:
+	@scripts/smoke/ui-sprig-validator.sh $(IMAGE_NAME):$(IMAGE_TAG)
+
 ## sprig_durability — grafts survive a FULL container recreation, restored
 ## offline from the data volume (state.json + boot reconcile + cached tar).
 ## Stops local-registry mid-test to prove no-network restore; restarts it after.
@@ -497,7 +504,7 @@ e2e_watch:
 ## activate with: git config core.hooksPath .githooks
 gauntlet: it_build sprig_smoke
 
-gauntlet_full: gauntlet sprig_durability sprig_signing parity_gate e2e
+gauntlet_full: gauntlet sprig_durability sprig_signing ui_sprig_gate parity_gate e2e
 
 ## it_build_amd64 — build an amd64 image via buildx + --load.
 ##
@@ -961,7 +968,7 @@ lint:
 	install_dev scan scan_secrets scan_sast scan_deps scan_container scan_dast \
 	trivy_db_update lint test_db_upgrade test_db_fresh wizard_smoke \
 	it_build_amd64 cross_smoke release_smoke \
-	sprig_registry sprig_smoke sprig_durability sprig_sign sprig_signing sprig_publish upgrade_gate parity_gate e2e e2e_watch e2e_heavy gauntlet gauntlet_full \
+	sprig_registry sprig_smoke sprig_durability sprig_sign sprig_signing ui_sprig_gate sprig_publish upgrade_gate parity_gate e2e e2e_watch e2e_heavy gauntlet gauntlet_full \
 	catalog_prep catalog_build catalog_release ship
 
 

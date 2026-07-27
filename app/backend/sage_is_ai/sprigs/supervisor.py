@@ -488,6 +488,26 @@ class SprigSupervisor:
             "insecure": SPRIG_REGISTRY_INSECURE,
             "binary_sha256": "e2296b924d39576b462669741d87e1a85cda0cf8e720425cf019cbf6592bfc68",
         }, arch=NEUTRAL),
+        # ui-Sprigs™ — the marketplace surface. Hypermedia only: a
+        # self-contained fragment.html plus an optional fragment.css, validated
+        # fail-closed at graft (sprigs/ui_dispatch.py) and rendered into the
+        # page shell's slot. Script is refused unless an admin grants it to
+        # this Sprig by name; pruning revokes the grant. Source: scripts/ui-sprigs/.
+        "ui-workshop-welcome": _sprig({
+            "capability": "ui",
+            "server": "deliver",
+            "model": "Workshop welcome card",
+            "dim": 0,
+            "delivery": "oci-artifact",
+            "seed": "model-dir",
+            "sentinel": "fragment.html",
+            "ready_timeout_s": 60.0,
+            "post_graft_note": "Fragment active. Reload the page to see it.",
+            "repo": f"{SPRIG_REGISTRY}/sprig-ui-workshop-welcome",
+            "tag": "v1",
+            "insecure": SPRIG_REGISTRY_INSECURE,
+            "binary_sha256": "3448d61043e10efa593824df51340948eb37dc1375e40800f47681606aaea2c6",
+        }, arch=NEUTRAL),
         "theme-workshop-math": _sprig({
             "capability": "theme",
             "server": "deliver",

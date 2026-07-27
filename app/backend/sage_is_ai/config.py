@@ -1186,6 +1186,30 @@ SPRIG_ACTIVE_THEME = PersistentConfig(
     os.environ.get("SPRIG_ACTIVE_THEME", ""),
 )
 
+# The active ui-Sprig™ (catalog name). Set by grafting a `ui` capability,
+# cleared by pruning it; /ui/active.html serves the pointed-at fragment from
+# the DATA volume. Empty = no fragment.
+SPRIG_ACTIVE_UI = PersistentConfig(
+    "SPRIG_ACTIVE_UI",
+    "ui.sprig_active_ui",
+    os.environ.get("SPRIG_ACTIVE_UI", ""),
+)
+
+# The one ui-Sprig™ an admin has granted scripting permission, by NAME. Empty =
+# nobody, which is the default and the state we want deployments to stay in.
+#
+# Modelled on how Apple gates unsigned apps: the fragment contract is markup
+# only, and an admin may deliberately widen it for one Sprig they have read.
+# Storing the NAME rather than a boolean is the poka-yoke — a grant follows the
+# Sprig it was made for and cannot be inherited by whatever is grafted next.
+# Pruning clears it, so revoking is what already happens when you remove the
+# thing you granted.
+SPRIG_UI_SCRIPTING_GRANT = PersistentConfig(
+    "SPRIG_UI_SCRIPTING_GRANT",
+    "ui.sprig_ui_scripting_grant",
+    os.environ.get("SPRIG_UI_SCRIPTING_GRANT", ""),
+)
+
 
 USER_PERMISSIONS_WORKSHOP_MODELS_ACCESS = (
     os.environ.get("USER_PERMISSIONS_WORKSHOP_MODELS_ACCESS", "False").lower() == "true"

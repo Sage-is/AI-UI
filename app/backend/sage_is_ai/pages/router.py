@@ -6,24 +6,26 @@ serves a second, independent implementation of the same panel at
 `/pages/admin/sprigs`. Both are live at once, which is the point: the guard-rail
 Cypress spec runs against either one and must pass against both.
 
-No authentication on the page itself, deliberately. The shell carries no
-privileged data — it is chrome and an empty list. The island reads the token
-the SPA already put in localStorage and calls the same authenticated JSON
-endpoints the Svelte panel calls, so an unauthenticated visitor gets a page
-that renders and then tells them to sign in. Serving fragments that DO carry
-privileged data needs the token as a cookie, and that bridge is Phase 1 work.
+Pages authenticate from the auth cookie (see auth.py). The island still reads
+the localStorage token for its own JSON calls, because the SPA put it there and
+both surfaces are live at once — but the page itself is now gated, so a
+signed-out visitor lands on the sign-in screen instead of on chrome wrapped
+around an empty list.
 """
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
 
+from sage_is_ai.pages.auth import require_admin_page
 from sage_is_ai.pages.shell import render_page
 
 router = APIRouter()
 
 
 @router.get("/admin/sprigs", response_class=HTMLResponse)
-async def sprigs_page() -> HTMLResponse:
+async def sprigs_page(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
     """The Sprigs™ admin panel, without a compiler.
 
     The Svelte version of this panel is 238 lines and reaches the backend
@@ -45,6 +47,7 @@ async def sprigs_page() -> HTMLResponse:
     """
     return HTMLResponse(
         render_page(
+            request=request,
             title="Sprigs — Sage.is AI",
             heading="Sprigs™",
             subheading=(

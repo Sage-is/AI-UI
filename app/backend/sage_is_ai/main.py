@@ -224,6 +224,8 @@ from sage_is_ai.config import (
     RAG_EXTERNAL_RERANKER_URL,
     RAG_EXTERNAL_RERANKER_API_KEY,
     SPRIG_ACTIVE_THEME,
+    SPRIG_ACTIVE_UI,
+    SPRIG_UI_SCRIPTING_GRANT,
     RAG_RERANKING_MODEL_AUTO_UPDATE,
     RAG_RERANKING_MODEL_TRUST_REMOTE_CODE,
     RAG_EMBEDDING_ENGINE,
@@ -1084,6 +1086,8 @@ app.state.config.RAG_RERANKING_MODEL = RAG_RERANKING_MODEL
 app.state.config.RAG_EXTERNAL_RERANKER_URL = RAG_EXTERNAL_RERANKER_URL
 app.state.config.RAG_EXTERNAL_RERANKER_API_KEY = RAG_EXTERNAL_RERANKER_API_KEY
 app.state.config.SPRIG_ACTIVE_THEME = SPRIG_ACTIVE_THEME
+app.state.config.SPRIG_ACTIVE_UI = SPRIG_ACTIVE_UI
+app.state.config.SPRIG_UI_SCRIPTING_GRANT = SPRIG_UI_SCRIPTING_GRANT
 
 app.state.config.RAG_TEMPLATE = RAG_TEMPLATE
 
@@ -2328,6 +2332,42 @@ async def active_theme_css():
         "/* no theme grafted */\n",
         media_type="text/css",
         headers={"Cache-Control": "no-cache"},
+    )
+
+
+# ui-Sprigs™: the marketplace surface. Serves the active grafted fragment from
+# the DATA volume, or nothing when none is grafted — the same shape as
+# /themes/active.css above, and registered before the SPA mount for the same
+# reason. Unauthenticated for the same reason too: it is interface, validated
+# fail-closed at graft (sprigs/ui_dispatch.py), carrying no request data.
+#
+# Revalidated on activation as well as at graft. The bytes on the volume are
+# the bytes we checked, but the SCRIPTING GRANT is a separate persisted value an
+# admin can change without regrafting — so a fragment approved while a grant was
+# live must not keep serving its script after the grant is gone.
+@app.get("/ui/active.html")
+async def active_ui_fragment():
+    name = str(app.state.config.SPRIG_ACTIVE_UI or "").strip()
+    if name:
+        from sage_is_ai.sprigs.ui_dispatch import (
+            UiValidationError,
+            ui_fragment_path,
+            validate_ui_bundle,
+        )
+
+        granted = str(app.state.config.SPRIG_UI_SCRIPTING_GRANT or "").strip()
+        try:
+            validate_ui_bundle(name, scripting_granted=granted == name)
+        except UiValidationError as e:
+            log.warning("ui sprig '%s' no longer passes the contract: %s", name, e)
+        else:
+            return FileResponse(
+                ui_fragment_path(name),
+                media_type="text/html",
+                headers={"Cache-Control": "no-cache"},
+            )
+    return Response(
+        "", media_type="text/html", headers={"Cache-Control": "no-cache"}
     )
 
 

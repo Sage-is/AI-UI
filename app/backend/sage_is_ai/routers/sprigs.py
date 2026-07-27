@@ -21,7 +21,12 @@ import logging
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 
 from sage_is_ai.retrieval.utils import get_embedding_function
-from sage_is_ai.sprigs.models import GraftRequest, GraftResponse, PruneRequest
+from sage_is_ai.sprigs.models import (
+    GraftRequest,
+    GraftResponse,
+    PruneRequest,
+    UiScriptingGrantRequest,
+)
 from sage_is_ai.utils.auth import get_admin_user
 
 log = logging.getLogger(__name__)
@@ -45,10 +50,15 @@ async def get_sprig_catalog(request: Request, user=Depends(get_admin_user)):
             **spec,
             "compatible": _graft_refusal(spec, HOST_ARCH) is None,
         }
+    cfg = request.app.state.config
     return {
         "catalog": catalog,
         "grafted": supervisor.handles(),
         "host_arch": HOST_ARCH,
+        "active_ui": str(cfg.SPRIG_ACTIVE_UI or ""),
+        # Surfaced so the panel can SHOW which Sprig holds scripting permission.
+        # A permission nobody can see is a permission nobody revokes.
+        "ui_scripting_grant": str(cfg.SPRIG_UI_SCRIPTING_GRANT or ""),
     }
 
 
@@ -171,6 +181,30 @@ async def graft_sprig(
             warning=entry.get("post_graft_note"),
         )
 
+    # ui-Sprig: validate the delivered fragment (fail-closed — a fragment that
+    # reaches off-origin, frames a document, or carries script without a grant
+    # never activates), then flip the pointer /ui/active.html serves. Mirrors
+    # the theme branch above, deliberately: same lifecycle, same failure, so an
+    # operator who has grafted a theme already knows how this behaves.
+    if handle.capability == "ui":
+        from sage_is_ai.sprigs.ui_dispatch import UiValidationError, point_ui_at
+
+        try:
+            point_ui_at(request.app, handle)
+        except UiValidationError as e:
+            await supervisor.prune(handle.name)
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=f"Graft failed: {e}",
+            )
+        return GraftResponse(
+            status=True,
+            name=handle.name,
+            capability=handle.capability,
+            delivered=True,
+            warning=entry.get("post_graft_note"),
+        )
+
     # Non-embedding sprigs ("deliver": dev/build toolchain, vector DB, binaries)
     # don't touch the embedding dispatch — report the delivery and return. A
     # catalog post_graft_note (e.g. "restart to activate") surfaces as a warning.
@@ -249,6 +283,13 @@ async def prune_sprig(
         h.get("capability") == "theme"
         and form_data.name == str(cfg.SPRIG_ACTIVE_THEME or "")
     )
+    was_active_ui = (
+        h.get("capability") == "ui"
+        and form_data.name == str(cfg.SPRIG_ACTIVE_UI or "")
+    )
+    # Independent of "active": an admin can grant scripting to a Sprig that was
+    # never activated, and removing it must still take the grant with it.
+    had_scripting_grant = form_data.name == str(cfg.SPRIG_UI_SCRIPTING_GRANT or "")
 
     await supervisor.prune(form_data.name)
 
@@ -307,6 +348,19 @@ async def prune_sprig(
         cfg.SPRIG_ACTIVE_THEME = ""
         log.info("pruned active theme sprig '%s'; default look restored", form_data.name)
 
+    if was_active_ui:
+        # Same shape as the theme reset: the bundle is gone, so the pointer goes
+        # with it and /ui/active.html serves nothing.
+        cfg.SPRIG_ACTIVE_UI = ""
+        log.info("pruned active ui sprig '%s'; fragment removed", form_data.name)
+
+    if had_scripting_grant:
+        # Revoking at prune is the plan's rule, and it is also the only way the
+        # grant cannot outlive what it was granted to: a name left behind here
+        # would silently re-arm if the same Sprig were ever grafted again.
+        cfg.SPRIG_UI_SCRIPTING_GRANT = ""
+        log.info("revoked scripting grant for pruned sprig '%s'", form_data.name)
+
     return {
         "status": True,
         "name": form_data.name,
@@ -315,4 +369,52 @@ async def prune_sprig(
         "reranking_reset": was_active_reranker,
         "stt_reset": was_active_stt,
         "theme_reset": was_active_theme,
+        "ui_reset": was_active_ui,
+        "scripting_grant_revoked": had_scripting_grant,
+    }
+
+
+@router.post("/ui/scripting")
+async def set_ui_scripting_grant(
+    request: Request,
+    form_data: UiScriptingGrantRequest,
+    user=Depends(get_admin_user),
+):
+    """Grant or revoke one ui-Sprig's permission to carry script.
+
+    Modelled on how Apple gates unsigned apps: the default contract is markup
+    only, a fragment carrying script is refused at graft, and an admin who has
+    read that fragment may deliberately widen the rule for that one Sprig.
+
+    Exactly one grant exists at a time, held by NAME. Granting to a second
+    Sprig moves it rather than adding to it, so "which fragment may run code"
+    always has one answer an operator can read off the panel.
+
+    Revoking takes effect on the next request without a regraft: /ui/active.html
+    revalidates against the current grant before serving, so a fragment that
+    only passed because of a grant stops being served the moment it is gone.
+    """
+    supervisor = request.app.state.sprig_supervisor
+    entry = supervisor.CATALOG.get(form_data.name)
+    # Same allowlist discipline as graft: a grant is only meaningful for a
+    # catalog entry that could actually become the active fragment.
+    if entry is None or entry.get("capability") != "ui":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"'{form_data.name}' is not a ui-Sprig in the catalog",
+        )
+
+    cfg = request.app.state.config
+    if form_data.allow:
+        cfg.SPRIG_UI_SCRIPTING_GRANT = form_data.name
+        log.info("scripting granted to ui sprig '%s' by %s", form_data.name, user.id)
+    else:
+        if str(cfg.SPRIG_UI_SCRIPTING_GRANT or "") == form_data.name:
+            cfg.SPRIG_UI_SCRIPTING_GRANT = ""
+            log.info("scripting revoked for ui sprig '%s' by %s", form_data.name, user.id)
+
+    return {
+        "status": True,
+        "name": form_data.name,
+        "ui_scripting_grant": str(cfg.SPRIG_UI_SCRIPTING_GRANT or ""),
     }
