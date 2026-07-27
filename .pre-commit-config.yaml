@@ -62,7 +62,10 @@ repos:
     rev: v2.4.1
     hooks:
       - id: codespell
-        exclude: '(\.svg|bun\.lock|\.lock|\.css|.*-bundle\.js|emoji-shortcodes.*\.json|i18n/locales/)'
+        # Vendored and minified third-party code is not ours to spell-check:
+        # a minifier's variable names (te, ue, Ot) read as typos forever, and
+        # "fixing" them would corrupt the dependency.
+        exclude: '(\.svg|bun\.lock|\.lock|\.css|.*-bundle\.js|\.min\.js|/vendor/|emoji-shortcodes.*\.json|i18n/locales/)'
         args: ["--ignore-words-list", "ans,whats"]
         additional_dependencies:
           - tomli  # needed for pyproject.toml config reading

@@ -1,0 +1,12 @@
+{
+	auto_https disable_redirects
+	admin off
+}
+# Both names: browsers reach it as localhost, the Cypress container
+# reaches it as spike-tls over the docker network. One cert, both SNIs.
+https://localhost:8443, https://spike-tls:8443 {
+	tls internal
+	reverse_proxy spike-app:8140 {
+		flush_interval -1
+	}
+}
