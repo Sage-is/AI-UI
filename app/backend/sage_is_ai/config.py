@@ -1308,6 +1308,16 @@ USER_PERMISSIONS_FEATURES_NOTES = (
     os.environ.get("USER_PERMISSIONS_FEATURES_NOTES", "True").lower() == "true"
 )
 
+# Defaults True to match what the admin permissions panel has always ADVERTISED
+# for this key. It was missing from the table below, so enforcement read it as
+# absent — i.e. denied — and non-admins never got the web-search button while
+# the panel said they had it. Exposure is still gated by the global
+# enable_web_search feature flag, so this does not switch web search on for
+# anyone who has not enabled it.
+USER_PERMISSIONS_FEATURES_WEB_SEARCH = (
+    os.environ.get("USER_PERMISSIONS_FEATURES_WEB_SEARCH", "True").lower() == "true"
+)
+
 
 DEFAULT_USER_PERMISSIONS = {
     "workshop": {
@@ -1339,6 +1349,7 @@ DEFAULT_USER_PERMISSIONS = {
     },
     "features": {
         "direct_tool_servers": USER_PERMISSIONS_FEATURES_DIRECT_TOOL_SERVERS,
+        "web_search": USER_PERMISSIONS_FEATURES_WEB_SEARCH,
         "image_generation": USER_PERMISSIONS_FEATURES_IMAGE_GENERATION,
         "code_interpreter": USER_PERMISSIONS_FEATURES_CODE_INTERPRETER,
         "notes": USER_PERMISSIONS_FEATURES_NOTES,

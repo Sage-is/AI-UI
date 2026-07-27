@@ -66,6 +66,13 @@ def get_permissions(
     # Ensure all fields from default_permissions are present and filled in
     permissions = fill_missing_permissions(permissions, default_permissions)
 
+    # ...then backfill anything the SAVED config predates. default_permissions
+    # is the persisted USER_PERMISSIONS dict, so on a deployment that upgraded
+    # from a release without a given key, that key would otherwise be absent
+    # here and read as denied — while has_permission(), which fills from
+    # DEFAULT_USER_PERMISSIONS, would allow it. Same source on both paths.
+    permissions = fill_missing_permissions(permissions, DEFAULT_USER_PERMISSIONS)
+
     return permissions
 
 
