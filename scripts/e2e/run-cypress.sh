@@ -24,6 +24,19 @@
 # local-registry (vector-chroma toast test). Videos land in app/cypress/videos.
 set -euo pipefail
 IMG="${1:-sage-is/ai-ui:develop}"
+
+# Any CYPRESS_* variable in the caller's environment reaches the spec as
+# Cypress.env(). Needed once a single spec has to run against two
+# implementations of the same surface — the migration's whole test contract:
+#   CYPRESS_SPRIGS_PANEL=/pages/admin/sprigs SPEC=cypress/e2e/sprigs-panel.cy.ts make e2e
+# Collected BEFORE the explicit -e flags below so those still win on a clash
+# (baseUrl in particular must stay the harness's, not the shell's).
+# The +"${...}" guard keeps an EMPTY array from tripping `set -u` on bash 3.2,
+# which is still what stock macOS ships as /bin/bash.
+CY_ENV=()
+while read -r name; do
+  [ -n "$name" ] && CY_ENV+=(-e "$name")
+done < <(env | sed -n 's/^\(CYPRESS_[A-Za-z0-9_]*\)=.*/\1/p' | sort -u)
 CYPRESS_IMG="cypress/included:15.18.0"   # 15.x — see watch/Dockerfile note
 NET="sage-network"; ROOT="sage-e2e"; VOL="sage-e2e-data"; PORT=8100
 REPO="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -40,6 +53,7 @@ if [ -n "${TARGET_URL:-}" ]; then
   set +e
   docker run --rm --network "$NET" \
     -v "$REPO/app:/e2e" -w /e2e \
+    ${CY_ENV[@]+"${CY_ENV[@]}"} \
     -e "CYPRESS_baseUrl=$TARGET_URL" \
     -e "CYPRESS_COMMERCIAL_RECOMMENDATIONS=0" \
     ${CYPRESS_ADMIN_EMAIL:+-e "CYPRESS_ADMIN_EMAIL=$CYPRESS_ADMIN_EMAIL"} \
@@ -84,6 +98,7 @@ REPORT_ARGS=()
 set +e
 docker run --rm --network "$NET" \
   -v "$REPO/app:/e2e" -w /e2e \
+  ${CY_ENV[@]+"${CY_ENV[@]}"} \
   -e "CYPRESS_baseUrl=https://sage-e2e-tls:8443" \
   -e "CYPRESS_COMMERCIAL_RECOMMENDATIONS=0" \
   "$CYPRESS_IMG" ${SPEC:+--config "specPattern=$SPEC"} "${REPORT_ARGS[@]}"

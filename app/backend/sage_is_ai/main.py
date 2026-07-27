@@ -2331,6 +2331,26 @@ async def active_theme_css():
     )
 
 
+# ── The no-build seam (Phase 0 of the frontend migration) ────────────────────
+#
+# Explicit routes registered BEFORE the SPA catch-all, so the compiled bundle
+# never sees them and both frontends coexist for the whole migration. This is
+# the same trick /themes/active.css above already relies on; naming it here
+# makes it a seam rather than a coincidence.
+#
+# Assets are cached for a week and cache-busted by ?v=VERSION (pages/shell.py),
+# because there is no build step to content-hash them — that being the point.
+from sage_is_ai.pages import ASSETS_DIR as PAGES_ASSETS_DIR  # noqa: E402
+from sage_is_ai.pages.router import router as pages_router  # noqa: E402
+
+app.include_router(pages_router, prefix="/pages", tags=["pages"])
+app.mount(
+    "/pages/_assets",
+    CachedStaticFiles(directory=PAGES_ASSETS_DIR),
+    name="pages-assets",
+)
+
+
 
 @app.get("/cache/{path:path}")
 async def serve_cache_file(

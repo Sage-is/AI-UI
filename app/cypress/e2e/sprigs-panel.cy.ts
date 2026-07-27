@@ -6,16 +6,41 @@
 // graft (mock cultivar: no artifact pull, fast), prune, and a deliver-sprig
 // graft whose post_graft_note must surface as a visible warning toast
 // (vector-chroma: requires the local sprig registry on the docker network).
-describe('Sprigs panel', () => {
+// One spec, two implementations. `/admin/sprigs` is the SvelteKit panel;
+// `/pages/admin/sprigs` is the no-build page that replaces it. The migration
+// rule is that this spec is green against BOTH — that is the proof users lost
+// nothing, and it is why every assertion below reads a data-cy attribute or a
+// message the backend itself supplies, never a class name or a phrase one
+// implementation happens to use.
+//
+//   SPRIGS_PANEL=/pages/admin/sprigs   (Cypress env, so: CYPRESS_SPRIGS_PANEL=…)
+const PANEL = Cypress.env('SPRIGS_PANEL') || '/admin/sprigs';
+
+describe(`Sprigs panel (${PANEL})`, () => {
 	beforeEach(() => {
 		cy.loginAdmin();
-		cy.visit('/admin/sprigs');
+		cy.visit(PANEL);
 	});
 
 	it('runs in a secure context (TLS sidecar) so gated APIs are testable', () => {
 		// clipboard, crypto.subtle, service workers, getUserMedia all require
 		// this — over plain http on a non-localhost origin they silently vanish.
 		cy.window().its('isSecureContext').should('be.true');
+	});
+
+	// Without this, the spec could pass against the SPA while believing it was
+	// testing the no-build page — a green run that proves nothing, which is the
+	// failure mode the streaming spike taught us to design against. It also
+	// encodes the plan's rule for every later surface: a migrated route passes
+	// its spec with the SvelteKit bundle absent.
+	it('the no-build page ships no SvelteKit bundle', function () {
+		if (PANEL === '/admin/sprigs') this.skip();
+		cy.document().then((doc) => {
+			const srcs = [...doc.querySelectorAll('script[src]')].map((s) => s.getAttribute('src') ?? '');
+			expect(srcs.filter((s) => s.includes('_app/immutable')), 'SvelteKit chunks').to.be.empty;
+			expect(srcs.some((s) => s.includes('/pages/_assets/sprigs.js')), 'the island is what runs')
+				.to.be.true;
+		});
 	});
 
 	it('renders the catalog with state badges', () => {
