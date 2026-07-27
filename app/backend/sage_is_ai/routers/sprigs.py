@@ -361,6 +361,27 @@ async def prune_sprig(
         cfg.SPRIG_UI_SCRIPTING_GRANT = ""
         log.info("revoked scripting grant for pruned sprig '%s'", form_data.name)
 
+    # Pruning a delivered capability silently changes what the rest of the
+    # product can do, so the response says which, in words. The booleans stay
+    # for callers that branch on them; the sentences exist so that every panel
+    # does not carry its own copy of them — the Svelte panel, the island and the
+    # fragment view all restated these independently, which is precisely the
+    # written-twice drift this codebase is trying to shed.
+    resets = [
+        (was_active_embedding,
+         "Embedding dispatch reset — graft a cultivar to restore document search."),
+        (was_active_reranker,
+         "Reranking reset — hybrid search runs without rerank until a reranker is grafted."),
+        (was_active_stt,
+         "Speech-to-text reset — graft an STT Sprig™ to restore local voice input."),
+        (was_active_theme,
+         "Theme reset — the interface returns to the default look on reload."),
+        (was_active_ui,
+         "Fragment removed — the page returns to its default layout on reload."),
+        (had_scripting_grant,
+         "Scripting permission revoked with the Sprig™ it was granted to."),
+    ]
+
     return {
         "status": True,
         "name": form_data.name,
@@ -371,6 +392,7 @@ async def prune_sprig(
         "theme_reset": was_active_theme,
         "ui_reset": was_active_ui,
         "scripting_grant_revoked": had_scripting_grant,
+        "messages": [text for fired, text in resets if fired],
     }
 
 

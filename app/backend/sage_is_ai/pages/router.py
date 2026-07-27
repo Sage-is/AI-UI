@@ -13,16 +13,14 @@ instead came out bigger than the Svelte component it replaced. This is the
 rebuild that measures the difference.
 """
 
-from fastapi import APIRouter, Depends, Form, Request
+from typing import Literal
+
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
 
 from sage_is_ai.pages.auth import require_admin_page
 from sage_is_ai.pages.shell import render_page
-from sage_is_ai.pages.sprigs_panel import (
-    graft_and_render,
-    prune_and_render,
-    render_panel,
-)
+from sage_is_ai.pages.sprigs_panel import render_panel, run_action
 
 router = APIRouter()
 
@@ -54,25 +52,21 @@ async def sprigs_page(
 
 # The three fragment endpoints. Each returns the panel, which is also the swap
 # target, so a mutation and a refresh are the same shape of response.
+#
+# The name travels in the PATH and nothing else does. `graft_sprig` checks it
+# against the catalog, which is the allowlist, so an unknown name is refused
+# before anything runs — and the capability is looked up there rather than sent,
+# because a value the browser cannot supply is a value it cannot get wrong.
 @router.get("/admin/sprigs/panel", response_class=HTMLResponse)
-async def sprigs_panel(
-    request: Request, user=Depends(require_admin_page)
-) -> HTMLResponse:
+async def sprigs_panel(request: Request, user=Depends(require_admin_page)) -> HTMLResponse:
     return HTMLResponse(await render_panel(request, user))
 
 
-@router.post("/admin/sprigs/graft", response_class=HTMLResponse)
-async def sprigs_graft(
+@router.post("/admin/sprigs/{verb}/{name}", response_class=HTMLResponse)
+async def sprigs_action(
+    verb: Literal["graft", "prune"],
+    name: str,
     request: Request,
-    name: str = Form(...),
-    capability: str = Form(...),
     user=Depends(require_admin_page),
 ) -> HTMLResponse:
-    return HTMLResponse(await graft_and_render(request, user, name, capability))
-
-
-@router.post("/admin/sprigs/prune", response_class=HTMLResponse)
-async def sprigs_prune(
-    request: Request, name: str = Form(...), user=Depends(require_admin_page)
-) -> HTMLResponse:
-    return HTMLResponse(await prune_and_render(request, user, name))
+    return HTMLResponse(await run_action(request, user, name, verb))

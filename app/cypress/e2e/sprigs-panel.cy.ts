@@ -55,6 +55,19 @@ describe(`Sprigs panel (${PANEL})`, () => {
 		});
 	});
 
+	// The action endpoint takes its verb from the path, so the set of reachable
+	// verbs has to be closed. It is a Literal type, which FastAPI refuses before
+	// the handler runs — this asserts that rather than trusting it, because a
+	// path param that reaches a dispatch is the shape of a nasty bug.
+	it('only graft and prune are reachable as actions', function () {
+		if (PANEL === '/admin/sprigs') this.skip();
+		cy.request({
+			method: 'POST',
+			url: `${PANEL}/destroy/mock-embedding`,
+			failOnStatusCode: false
+		}).then((res) => expect(res.status, 'unknown verb refused').to.eq(422));
+	});
+
 	it('renders the catalog with state badges', () => {
 		cy.get('[data-cy="sprig-card"]', { timeout: 20000 }).should('have.length.at.least', 5);
 		cy.get('[data-sprig="mock-embedding"]').should('exist');
