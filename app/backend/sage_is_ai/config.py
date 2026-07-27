@@ -991,10 +991,16 @@ OPENAI_API_BASE_URL = "https://api.openai.com/v1"
 # MODELS
 ####################################
 
+# On by default: the provider probe behind /api/models costs ~740ms per call
+# uncached and ~5ms cached (measured), and it is on the boot path for every
+# user. The cache is warmed at startup (main.py) and cleared by
+# invalidate_base_models_cache() whenever a provider connection changes, so the
+# staleness window that justified defaulting this off is closed. Set
+# ENABLE_BASE_MODELS_CACHE=False to opt back out.
 ENABLE_BASE_MODELS_CACHE = PersistentConfig(
     "ENABLE_BASE_MODELS_CACHE",
     "models.base_models_cache",
-    os.environ.get("ENABLE_BASE_MODELS_CACHE", "False").lower() == "true",
+    os.environ.get("ENABLE_BASE_MODELS_CACHE", "True").lower() == "true",
 )
 
 

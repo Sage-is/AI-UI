@@ -76,6 +76,18 @@ async def get_all_base_models(request: Request, user: UserModel = None):
     return function_models + openai_models + ollama_models
 
 
+def invalidate_base_models_cache(request) -> None:
+    """Drop the cached provider model list.
+
+    The BASE_MODELS cache has no TTL — it is filled once (at startup, or on the
+    first request) and then held. So anything that changes which providers exist,
+    or what they serve, has to clear it here or the model list stays stale until
+    the process restarts. Custom models do NOT need this: they are merged fresh
+    on every call, on top of the cached base list.
+    """
+    request.app.state.BASE_MODELS = []
+
+
 async def get_all_models(request, refresh: bool = False, user: UserModel = None):
     if (
         request.app.state.MODELS

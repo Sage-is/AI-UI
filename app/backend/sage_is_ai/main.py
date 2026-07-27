@@ -2245,7 +2245,30 @@ async def healthcheck_with_db():
 
 
 
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+class CachedStaticFiles(StaticFiles):
+    """StaticFiles that lets the browser keep the file instead of revalidating.
+
+    Starlette sends an ETag and Last-Modified but no Cache-Control, so every
+    repeat visit spends a round-trip per asset to be told 304 Not Modified.
+    These files are not content-hashed (unlike _app/immutable/), so the cache
+    is bounded rather than immutable: STATIC_DIR is re-synced from the build
+    output at startup, meaning a deploy is what changes them, and a week is the
+    worst-case staleness. Theme CSS is NOT affected — it is served by its own
+    route with an explicit no-cache header.
+    """
+
+    def __init__(self, *args, max_age: int = 604800, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cache_max_age = max_age
+
+    async def get_response(self, path: str, scope):
+        response = await super().get_response(path, scope)
+        if response.status_code in (200, 304):
+            response.headers["Cache-Control"] = f"public, max-age={self.cache_max_age}"
+        return response
+
+
+app.mount("/static", CachedStaticFiles(directory=STATIC_DIR), name="static")
 
 # SvelteKit-built HTML references SPA assets at root paths like /assets/loader.js.
 # The boot-time sync in config.py copies these from FRONTEND_BUILD_DIR/static/assets/
@@ -2256,7 +2279,7 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 if (STATIC_DIR / "assets").exists():
     app.mount(
         "/assets",
-        StaticFiles(directory=STATIC_DIR / "assets"),
+        CachedStaticFiles(directory=STATIC_DIR / "assets"),
         name="spa-assets",
     )
 

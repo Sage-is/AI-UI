@@ -352,6 +352,13 @@ async def update_config(
         if key in keys
     }
 
+    # The connection list just changed, so the cached provider models are wrong.
+    # Imported here, not at module scope: utils.models imports this router, so a
+    # top-level import would close the cycle.
+    from sage_is_ai.utils.models import invalidate_base_models_cache
+
+    invalidate_base_models_cache(request)
+
     return {
         "ENABLE_OLLAMA_API": request.app.state.config.ENABLE_OLLAMA_API,
         "OLLAMA_BASE_URLS": request.app.state.config.OLLAMA_BASE_URLS,
