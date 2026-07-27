@@ -100,6 +100,101 @@ Cypress.Commands.add('register', (name, email, password) => register(name, email
 Cypress.Commands.add('registerAdmin', () => registerAdmin());
 Cypress.Commands.add('loginAdmin', () => loginAdmin());
 
+// ── Poka-Yoke: a spec may not leak server config into the specs after it ──
+//
+// The harness boots ONE container for the whole run, so anything a spec writes
+// to server config silently changes the world for everything that follows.
+// That has already bitten twice: stt-misconfig left STT_ENGINE=openai behind
+// and stt-not-configured then asserted 502 where it expects 501 (it passes in
+// isolation — that is the tell), and a banner seeded by boot-waterfall sat on
+// top of every later spec's page.
+//
+// Fixing those one at a time relies on every future spec author remembering.
+// This restores instead: snapshot the admin-mutable config surface before a
+// spec runs, compare after, and put back only what actually changed. Specs
+// that touch nothing (the common case) trigger zero writes, so the guard
+// cannot itself become a source of drift. A leak is logged by NAME so the
+// culprit is visible rather than whichever spec runs next and fails.
+type ConfigSurface = {
+	name: string;
+	read: string;
+	write: string;
+	// Some endpoints read a bare value but write it wrapped.
+	wrap?: (body: unknown) => unknown;
+};
+
+const RESTORED_CONFIG: ConfigSurface[] = [
+	{ name: 'audio', read: '/api/v1/audio/config', write: '/api/v1/audio/config/update' },
+	{
+		name: 'banners',
+		read: '/api/v1/configs/banners',
+		write: '/api/v1/configs/banners',
+		wrap: (banners) => ({ banners })
+	},
+	{ name: 'ollama', read: '/ollama/config', write: '/ollama/config/update' },
+	{ name: 'openai', read: '/openai/config', write: '/openai/config/update' },
+	{
+		name: 'user-permissions',
+		read: '/api/v1/users/default/permissions',
+		write: '/api/v1/users/default/permissions'
+	}
+];
+
+let configSnapshot: Record<string, string> = {};
+let adminToken: string | null = null;
+
+const readSurface = (surface: ConfigSurface) =>
+	cy
+		.request({
+			url: surface.read,
+			headers: { Authorization: `Bearer ${adminToken}` },
+			failOnStatusCode: false
+		})
+		.then((res) => (res.status === 200 ? res.body : null));
+
 before(() => {
 	cy.registerAdmin();
+
+	// Sign in directly rather than via cy.session: this runs before any spec's
+	// own setup, and a failure here must not fail the spec — the guard is
+	// best-effort, never the reason a run goes red.
+	cy.request({
+		method: 'POST',
+		url: '/api/v1/auths/signin',
+		failOnStatusCode: false,
+		body: { email: adminUser.email, password: adminUser.password }
+	}).then((res) => {
+		adminToken = res.status === 200 ? res.body.token : null;
+		if (!adminToken) return;
+
+		configSnapshot = {};
+		RESTORED_CONFIG.forEach((surface) => {
+			readSurface(surface).then((body) => {
+				if (body !== null) configSnapshot[surface.name] = JSON.stringify(body);
+			});
+		});
+	});
+});
+
+after(() => {
+	if (!adminToken) return;
+
+	RESTORED_CONFIG.forEach((surface) => {
+		const before = configSnapshot[surface.name];
+		if (before === undefined) return;
+
+		readSurface(surface).then((body) => {
+			if (body === null || JSON.stringify(body) === before) return;
+
+			const original = JSON.parse(before);
+			cy.log(`**poka-yoke**: this spec modified \`${surface.name}\` config — restoring`);
+			cy.request({
+				method: 'POST',
+				url: surface.write,
+				headers: { Authorization: `Bearer ${adminToken}` },
+				failOnStatusCode: false,
+				body: surface.wrap ? surface.wrap(original) : original
+			});
+		});
+	});
 });

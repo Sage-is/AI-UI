@@ -68,17 +68,43 @@ describe('Sprigs panel', () => {
 		});
 	});
 
-	it('deliver-sprig graft surfaces the post-graft warning toast', () => {
-		cy.get('[data-sprig="vector-chroma"]', { timeout: 20000 }).within(() => {
-			cy.get('[data-cy="sprig-graft"]').click();
-			cy.get('[data-cy="sprig-state"]', { timeout: 180000 }).should(
-				'have.attr',
-				'data-state',
-				'delivered'
-			);
-		});
-		// The Poka-Yoke UX contract: the operator is TOLD what to do next.
-		cy.contains('Restart the Rootstock', { timeout: 10000 }).should('exist');
+	// retries:0 on purpose. This test grafts, so a retry does not re-run it — it
+	// runs a DIFFERENT test against already-delivered state, where the Graft
+	// button is a Prune button. That second failure ("sprig-graft never found")
+	// then masks the first, real one. Once burned: the real failure here was a
+	// missing toast, and the retry's error sent the diagnosis chasing an
+	// ordering bug that did not exist.
+	it('deliver-sprig graft surfaces the post-graft warning toast', { retries: 0 }, () => {
+		// Ask the backend what it will say, instead of hardcoding a copy of the
+		// copy. This assertion used to look for "Restart the Rootstock" — a phrase
+		// the product stopped emitting when grafting became restart-free — so a
+		// genuine UX improvement showed up as a failing graft test. Sourcing the
+		// text from the catalog means rewording the note can never break this,
+		// while the contract it guards (the operator is TOLD what happens next)
+		// is still enforced.
+		cy.window()
+			.then((win) =>
+				cy.request({
+					url: '/api/v1/retrieval/sprigs/catalog',
+					headers: { Authorization: `Bearer ${win.localStorage.getItem('token')}` }
+				})
+			)
+			.then((res) => {
+				const note = res.body?.catalog?.['vector-chroma']?.post_graft_note;
+				expect(note, 'vector-chroma declares a post_graft_note').to.be.a('string').and.not.be
+					.empty;
+
+				cy.get('[data-sprig="vector-chroma"]', { timeout: 20000 }).within(() => {
+					cy.get('[data-cy="sprig-graft"]').click();
+					cy.get('[data-cy="sprig-state"]', { timeout: 180000 }).should(
+						'have.attr',
+						'data-state',
+						'delivered'
+					);
+				});
+				// The Poka-Yoke UX contract: the operator is TOLD what happens next.
+				cy.contains(note, { timeout: 10000 }).should('exist');
+			});
 	});
 
 	// Regression: the header counter must include 'delivered' sprigs, matching the

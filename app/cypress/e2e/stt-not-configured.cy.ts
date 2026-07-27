@@ -51,6 +51,24 @@ describe('STT not configured — helpful graft message, not a raw ImportError', 
 			expect(login.status, 'admin signin').to.eq(200);
 			const token = login.body.token;
 
+			// Establish the precondition instead of inheriting it. "No STT engine
+			// configured" is this spec's whole subject, but the harness shares one
+			// container across specs, so an earlier spec (stt-misconfig sets
+			// STT_ENGINE=openai) could leave an engine behind and turn the expected
+			// 501 into a 502. Setting it here makes the spec true on its own terms
+			// and in any order.
+			cy.request({
+				url: '/api/v1/audio/config',
+				headers: { Authorization: `Bearer ${token}` }
+			}).then((conf) => {
+				cy.request({
+					method: 'POST',
+					url: '/api/v1/audio/config/update',
+					headers: { Authorization: `Bearer ${token}` },
+					body: { ...conf.body, stt: { ...conf.body.stt, ENGINE: '' } }
+				});
+			});
+
 			cy.request('/api/config').then((cfg) => {
 				const version = cfg.body.version;
 				cy.request({
