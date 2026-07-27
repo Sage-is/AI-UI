@@ -1,0 +1,27 @@
+<!doctype html>
+<!-- The page a server-rendered shell would emit: plain HTML, no SvelteKit, no
+     router, three biomes mounted as custom elements. THROWAWAY. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>biome probe — one build, three biomes</title>
+  <style>
+    /* An app-level rule, the kind our stylesheet is made of. Whether it reaches
+       inside a biome is a real question with a real answer; the probe records
+       it either way rather than assuming. */
+    .app-themed { color: rgb(0, 128, 0); }
+  </style>
+</head>
+<body>
+  <h1>shared build</h1>
+  <span data-control class="app-themed">control (light DOM)</span>
+
+  <biome-a></biome-a>
+  <biome-b></biome-b>
+  <biome-c></biome-c>
+
+  <script type="module" src="./dist/shared/biome-a.js"></script>
+  <script type="module" src="./dist/shared/biome-b.js"></script>
+  <script type="module" src="./dist/shared/biome-c.js"></script>
+</body>
+</html>

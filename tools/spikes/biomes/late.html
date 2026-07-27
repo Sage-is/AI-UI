@@ -1,0 +1,23 @@
+<!doctype html>
+<!-- Biome A came from the host build. Biome B was built separately, afterwards,
+     knowing nothing about A — the ui-Sprig case, and the strangler case. It
+     borrows the host's runtime and the host's stores by URL. THROWAWAY. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>biome probe — a biome that shipped later</title>
+  <style>
+    .app-themed { color: rgb(0, 128, 0); }
+  </style>
+</head>
+<body>
+  <h1>late build</h1>
+  <span data-control class="app-themed">control (light DOM)</span>
+
+  <biome-a></biome-a>
+  <biome-b></biome-b>
+
+  <script type="module" src="./dist/shared/biome-a.js"></script>
+  <script type="module" src="./dist/late/biome-b.js"></script>
+</body>
+</html>

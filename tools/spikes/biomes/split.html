@@ -1,0 +1,23 @@
+<!doctype html>
+<!-- The negative control. Identical page, but the two biomes came from two
+     independent builds. Everything the probe asserts on shared.html must fail
+     here — otherwise the probe is not measuring anything. THROWAWAY. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>biome probe — two builds, two runtimes</title>
+  <style>
+    .app-themed { color: rgb(0, 128, 0); }
+  </style>
+</head>
+<body>
+  <h1>split build</h1>
+  <span data-control class="app-themed">control (light DOM)</span>
+
+  <biome-a></biome-a>
+  <biome-b></biome-b>
+
+  <script type="module" src="./dist/split-a/biome-a.js"></script>
+  <script type="module" src="./dist/split-b/biome-b.js"></script>
+</body>
+</html>
