@@ -100,8 +100,13 @@ def render_page(
     the codebase rather than derived from user input. Everything else is
     escaped. Keep it that way.
     """
+    # Classic and deferred, not `type="module"`. A module is scoped, so a
+    # library that publishes itself by declaring a top-level `var` — htmx does
+    # exactly that — never reaches the global scope, and the failure is silent:
+    # the page loads, the script runs, and nothing is wired up. `defer` gives
+    # the same after-parse ordering without the scoping surprise.
     script_tags = "\n  ".join(
-        f'<script type="module" src="{escape(asset_url(s), quote=True)}"></script>'
+        f'<script defer src="{escape(asset_url(s), quote=True)}"></script>'
         for s in scripts
     )
     sub = (

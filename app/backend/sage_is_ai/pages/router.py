@@ -1,23 +1,28 @@
-"""No-build pages — Phase 0 of the frontend migration.
+"""No-build pages — the frontend migration's server-rendered surface.
 
 Every route here is explicit, so it resolves before the SPA catch-all and the
 compiled bundle never sees it. The SPA keeps its own `/admin/sprigs`; this
-serves a second, independent implementation of the same panel at
+serves an independent implementation of the same panel at
 `/pages/admin/sprigs`. Both are live at once, which is the point: the guard-rail
 Cypress spec runs against either one and must pass against both.
 
-Pages authenticate from the auth cookie (see auth.py). The island still reads
-the localStorage token for its own JSON calls, because the SPA put it there and
-both surfaces are live at once — but the page itself is now gated, so a
-signed-out visitor lands on the sign-in screen instead of on chrome wrapped
-around an empty list.
+Pages authenticate from the auth cookie (see auth.py), which is what lets the
+panel be rendered by the SERVER rather than assembled in the browser. Phase 0
+could not do that — the token lived in localStorage — and the island it built
+instead came out bigger than the Svelte component it replaced. This is the
+rebuild that measures the difference.
 """
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse
 
 from sage_is_ai.pages.auth import require_admin_page
 from sage_is_ai.pages.shell import render_page
+from sage_is_ai.pages.sprigs_panel import (
+    graft_and_render,
+    prune_and_render,
+    render_panel,
+)
 
 router = APIRouter()
 
@@ -28,22 +33,9 @@ async def sprigs_page(
 ) -> HTMLResponse:
     """The Sprigs™ admin panel, without a compiler.
 
-    The Svelte version of this panel is 238 lines and reaches the backend
-    through the generated API wrapper layer. This one talks to the same
-    endpoints directly. The list markup is built by the island rather than the
-    server because the catalog call needs the operator's token, which lives in
-    localStorage — so this page proves the no-build path and deletes wrapper
-    code, and it does NOT yet prove a first-paint win. Fragments that render
-    server-side arrive with the cookie bridge in Phase 1.
-    """
-    body = """
-    <div class="panel-bar">
-      <span class="page-count" data-cy="sprigs-grafted-count"></span>
-      <button type="button" data-cy="sprigs-refresh" class="btn">Refresh</button>
-    </div>
-    <div id="sprigs" class="sprig-list" aria-busy="true">
-      <p class="page-muted" data-cy="sprigs-loading">Loading the catalog…</p>
-    </div>
+    The panel arrives rendered. There is no loading state, no second request,
+    and no client-side copy of the catalog — the first paint IS the data, which
+    is the thing the island version could not do.
     """
     return HTMLResponse(
         render_page(
@@ -54,7 +46,33 @@ async def sprigs_page(
                 "Capabilities grafted onto the Rootstock™ at runtime — "
                 "no model download, no pip install."
             ),
-            scripts=["sprigs.js"],
-            body=body,
+            scripts=["vendor/htmx.min.js"],
+            body=await render_panel(request, user),
         )
     )
+
+
+# The three fragment endpoints. Each returns the panel, which is also the swap
+# target, so a mutation and a refresh are the same shape of response.
+@router.get("/admin/sprigs/panel", response_class=HTMLResponse)
+async def sprigs_panel(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
+    return HTMLResponse(await render_panel(request, user))
+
+
+@router.post("/admin/sprigs/graft", response_class=HTMLResponse)
+async def sprigs_graft(
+    request: Request,
+    name: str = Form(...),
+    capability: str = Form(...),
+    user=Depends(require_admin_page),
+) -> HTMLResponse:
+    return HTMLResponse(await graft_and_render(request, user, name, capability))
+
+
+@router.post("/admin/sprigs/prune", response_class=HTMLResponse)
+async def sprigs_prune(
+    request: Request, name: str = Form(...), user=Depends(require_admin_page)
+) -> HTMLResponse:
+    return HTMLResponse(await prune_and_render(request, user, name))

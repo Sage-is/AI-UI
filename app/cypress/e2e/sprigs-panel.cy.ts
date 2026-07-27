@@ -38,8 +38,20 @@ describe(`Sprigs panel (${PANEL})`, () => {
 		cy.document().then((doc) => {
 			const srcs = [...doc.querySelectorAll('script[src]')].map((s) => s.getAttribute('src') ?? '');
 			expect(srcs.filter((s) => s.includes('_app/immutable')), 'SvelteKit chunks').to.be.empty;
-			expect(srcs.some((s) => s.includes('/pages/_assets/sprigs.js')), 'the island is what runs')
+			expect(srcs.some((s) => s.includes('/pages/_assets/vendor/htmx.min.js')), 'htmx is all that runs')
 				.to.be.true;
+		});
+	});
+
+	// The first-paint claim, made falsifiable. The island could not do this: it
+	// shipped chrome and then fetched, so the catalog was absent from the HTML
+	// the server sent. Asserting on the RESPONSE BODY rather than the rendered
+	// page is the whole point — a browser would fill either one in.
+	it('the panel is in the HTML the server sends, not fetched afterwards', function () {
+		if (PANEL === '/admin/sprigs') this.skip();
+		cy.request(PANEL).then((res) => {
+			expect(res.body, 'catalog rendered server-side').to.contain('data-sprig="mock-embedding"');
+			expect(res.body).to.contain('data-cy="sprigs-grafted-count"');
 		});
 	});
 
