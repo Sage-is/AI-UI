@@ -659,6 +659,19 @@ class SprigSupervisor:
         # of state.json; if the volume moves back to a compatible host they
         # restore. Cleared per-name on a successful graft or an explicit prune.
         self._deferred: dict[str, dict] = {}
+        # Per-Sprig™ failure record, persisted beside the desired-state list.
+        #
+        # An operator asked for these to "stay until they are resolved", and a
+        # container restart does not resolve anything — the cultivar still needs
+        # numpy, the registry is still unreachable — so a failure that vanished
+        # on reboot would be telling a comfortable lie. Hence the volume, not
+        # app.state: this outlives the process, and it will outlive the move to
+        # multiple workers, where an in-memory dict would show one worker's
+        # errors and hide another's.
+        #
+        # Property of the SPRIG, not of whoever clicked. On a shared instance a
+        # failed graft is everyone's problem, so everyone sees it.
+        self._errors: dict[str, dict] = {}
 
     async def start(self) -> None:
         """Restore grafts recorded on the data volume (state.json) so a grafted
@@ -775,7 +788,14 @@ class SprigSupervisor:
             return []
         try:
             data = json.loads(path.read_text())
-            return data.get("grafted", []) if isinstance(data, dict) else []
+            if not isinstance(data, dict):
+                return []
+            errors = data.get("errors")
+            if isinstance(errors, dict):
+                self._errors = {
+                    k: v for k, v in errors.items() if isinstance(v, dict)
+                }
+            return data.get("grafted", [])
         except (OSError, ValueError) as exc:
             log.warning("could not read sprig state.json: %s", exc)
             return []
@@ -810,7 +830,9 @@ class SprigSupervisor:
         try:
             path.parent.mkdir(parents=True, exist_ok=True)
             tmp = path.with_suffix(".json.tmp")
-            tmp.write_text(json.dumps({"grafted": entries}, indent=2))
+            tmp.write_text(
+                json.dumps({"grafted": entries, "errors": self._errors}, indent=2)
+            )
             tmp.replace(path)  # atomic
         except OSError as exc:
             log.warning("could not persist sprig state.json: %s", exc)
@@ -927,6 +949,27 @@ class SprigSupervisor:
                     )
         finally:
             self._reconciling = False
+
+    def errors(self) -> dict[str, dict]:
+        """Unresolved per-Sprig™ failures, newest wins."""
+        return dict(self._errors)
+
+    def record_error(self, name: str, message: str, phase: str = "graft") -> None:
+        """Remember why a Sprig™ failed, until something resolves it.
+
+        Deliberately not timestamped-and-expired. "Resolved" means the operator
+        fixed the thing, and only a successful graft or a prune tells us that —
+        no elapsed time does.
+        """
+        self._errors[name] = {"message": str(message)[:600], "phase": phase}
+        self._persist_state()
+
+    def clear_error(self, name: str) -> bool:
+        """Resolve a Sprig's™ recorded failure. True if there was one."""
+        if self._errors.pop(name, None) is None:
+            return False
+        self._persist_state()
+        return True
 
     def handles(self) -> dict[str, dict]:
         """Serializable view of currently-grafted Sprigs™ for the catalog API."""

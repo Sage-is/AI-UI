@@ -364,6 +364,32 @@ sprig_registry:
 sprig_smoke: sprig_registry
 	@scripts/smoke/sprig-lifecycle.sh $(IMAGE_NAME):$(IMAGE_TAG)
 
+## e2e_both — run the suite against BOTH implementations of every migrated
+## surface: once with SURFACE_TARGET=legacy (the SvelteKit routes users reach
+## today) and once with =nobuild (the server-rendered replacements). The
+## migration's core rule is that a spec is green against both; running it twice
+## by hand is how that rule quietly becomes "green against whichever one was
+## checked last". Surfaces are registered in app/cypress/support/surfaces.ts.
+e2e_both:
+	@echo "===== SURFACE_TARGET=legacy ====="
+	@CYPRESS_SURFACE_TARGET=legacy scripts/e2e/run-cypress.sh $(IMAGE_NAME):$(IMAGE_TAG)
+	@echo ""
+	@echo "===== SURFACE_TARGET=nobuild ====="
+	@CYPRESS_SURFACE_TARGET=nobuild scripts/e2e/run-cypress.sh $(IMAGE_NAME):$(IMAGE_TAG)
+
+## pipefail_lint — refuse `docker logs|curl | grep -q` in scripts/. Under
+## `set -o pipefail` a MATCH returns 141 (grep exits, writer takes SIGPIPE), so
+## the assertion inverts. Cost two gates before it was chased; the mechanism is
+## proved both ways by scripts/smoke/pipefail-grep-fixture.sh.
+pipefail_lint:
+	@scripts/lint-pipefail-grep.sh
+
+## pipefail_fixture — proves BOTH that the trap is real and that gate.sh's
+## helpers fix it. A device that fixes nothing looks identical to one that works
+## unless the broken shape is asserted too.
+pipefail_fixture:
+	@scripts/smoke/pipefail-grep-fixture.sh
+
 ## ui_sprig_gate — what the ui-Sprig™ contract REFUSES: off-origin references,
 ## framing, interpreted script attributes, script without an admin's per-Sprig
 ## grant, and anything framework-sized. The Cypress spec walks the happy path;
@@ -504,7 +530,7 @@ e2e_watch:
 ## activate with: git config core.hooksPath .githooks
 gauntlet: it_build sprig_smoke
 
-gauntlet_full: gauntlet sprig_durability sprig_signing ui_sprig_gate parity_gate e2e
+gauntlet_full: pipefail_lint pipefail_fixture gauntlet sprig_durability sprig_signing ui_sprig_gate parity_gate e2e_both
 
 ## it_build_amd64 — build an amd64 image via buildx + --load.
 ##
@@ -947,7 +973,7 @@ trivy_db_update:
 # Complements (does not replace) the per-tool bun scripts.
 
 # lint: Run all linters — eslint, svelte-check, prettier, black.
-lint:
+lint: pipefail_lint
 	@echo "=== Frontend lint (eslint + svelte-check) ==="
 	cd app && bun run lint:frontend
 	cd app && bun run lint:types
@@ -968,7 +994,7 @@ lint:
 	install_dev scan scan_secrets scan_sast scan_deps scan_container scan_dast \
 	trivy_db_update lint test_db_upgrade test_db_fresh wizard_smoke \
 	it_build_amd64 cross_smoke release_smoke \
-	sprig_registry sprig_smoke sprig_durability sprig_sign sprig_signing ui_sprig_gate sprig_publish upgrade_gate parity_gate e2e e2e_watch e2e_heavy gauntlet gauntlet_full \
+	sprig_registry sprig_smoke sprig_durability sprig_sign sprig_signing ui_sprig_gate pipefail_lint pipefail_fixture e2e_both sprig_publish upgrade_gate parity_gate e2e e2e_watch e2e_heavy gauntlet gauntlet_full \
 	catalog_prep catalog_build catalog_release ship
 
 

@@ -6,15 +6,16 @@
 // graft (mock cultivar: no artifact pull, fast), prune, and a deliver-sprig
 // graft whose post_graft_note must surface as a visible warning toast
 // (vector-chroma: requires the local sprig registry on the docker network).
-// One spec, two implementations. `/admin/sprigs` is the SvelteKit panel;
-// `/pages/admin/sprigs` is the no-build page that replaces it. The migration
-// rule is that this spec is green against BOTH — that is the proof users lost
-// nothing, and it is why every assertion below reads a data-cy attribute or a
-// message the backend itself supplies, never a class name or a phrase one
-// implementation happens to use.
+// One spec, two implementations, chosen by the runner rather than by this
+// file. `make e2e_both` runs the whole suite once per target, so "green against
+// both" is what the gate means instead of what somebody remembered to check.
 //
-//   SPRIGS_PANEL=/pages/admin/sprigs   (Cypress env, so: CYPRESS_SPRIGS_PANEL=…)
-const PANEL = Cypress.env('SPRIGS_PANEL') || '/admin/sprigs';
+// Every assertion below reads a data-cy attribute or a message the backend
+// itself supplies — never a class name, never a phrase one implementation
+// happens to use. That is what lets one spec judge two implementations.
+import { surfacePath, isNoBuild } from '../support/surfaces';
+
+const PANEL = surfacePath('sprigs');
 
 describe(`Sprigs panel (${PANEL})`, () => {
 	beforeEach(() => {
@@ -34,7 +35,7 @@ describe(`Sprigs panel (${PANEL})`, () => {
 	// encodes the plan's rule for every later surface: a migrated route passes
 	// its spec with the SvelteKit bundle absent.
 	it('the no-build page ships no SvelteKit bundle', function () {
-		if (PANEL === '/admin/sprigs') this.skip();
+		if (!isNoBuild()) this.skip();
 		cy.document().then((doc) => {
 			const srcs = [...doc.querySelectorAll('script[src]')].map((s) => s.getAttribute('src') ?? '');
 			expect(srcs.filter((s) => s.includes('_app/immutable')), 'SvelteKit chunks').to.be.empty;
@@ -48,7 +49,7 @@ describe(`Sprigs panel (${PANEL})`, () => {
 	// the server sent. Asserting on the RESPONSE BODY rather than the rendered
 	// page is the whole point — a browser would fill either one in.
 	it('the panel is in the HTML the server sends, not fetched afterwards', function () {
-		if (PANEL === '/admin/sprigs') this.skip();
+		if (!isNoBuild()) this.skip();
 		cy.request(PANEL).then((res) => {
 			expect(res.body, 'catalog rendered server-side').to.contain('data-sprig="mock-embedding"');
 			expect(res.body).to.contain('data-cy="sprigs-grafted-count"');
@@ -60,7 +61,7 @@ describe(`Sprigs panel (${PANEL})`, () => {
 	// the handler runs — this asserts that rather than trusting it, because a
 	// path param that reaches a dispatch is the shape of a nasty bug.
 	it('only graft and prune are reachable as actions', function () {
-		if (PANEL === '/admin/sprigs') this.skip();
+		if (!isNoBuild()) this.skip();
 		cy.request({
 			method: 'POST',
 			url: `${PANEL}/destroy/mock-embedding`,
@@ -85,6 +86,19 @@ describe(`Sprigs panel (${PANEL})`, () => {
 		// The fix-pointer phrase exists ONLY in the backend's error detail — the
 		// bare string "vector-chroma" would also match that sprig's catalog card.
 		cy.contains('Graft vector-chroma first', { timeout: 30000 }).should('exist');
+	});
+
+	// The durable half of a failure, asked for by hand: the toast fades and the
+	// page gets reloaded, but the thing that broke has not been fixed. This runs
+	// straight after the failing-graft test above, so there IS an unresolved
+	// error to find — and it reloads first, which is the whole point.
+	it('a failed graft leaves an error on the card that survives a reload', () => {
+		cy.visit(PANEL);
+		cy.get('[data-sprig="multilingual-e5-large"] [data-cy="sprig-error"]', { timeout: 20000 })
+			.should('exist')
+			// The backend's fix pointer, not a generic word — the same contract the
+			// toast holds, now held by something that does not disappear.
+			.and('contain', 'vector-chroma');
 	});
 
 	it('grafts the mock embedding cultivar and shows it rooted', () => {

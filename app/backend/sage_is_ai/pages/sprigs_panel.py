@@ -40,7 +40,7 @@ _LABEL = {"rooted": "Grafted", "wilted": "Wilted", "delivered": "Delivered"}
 _GRAFTED = {"rooted", "delivered"}
 
 
-def _card(name: str, spec: dict, g: dict | None, host_arch: str) -> str:
+def _card(name: str, spec: dict, g: dict | None, host_arch: str, error: dict | None = None) -> str:
     state = (g or {}).get("state") or "sprouted"
     # One button, described rather than branched into. The two-branch version of
     # this was two near-identical blocks of markup that had to be kept in step.
@@ -63,6 +63,14 @@ def _card(name: str, spec: dict, g: dict | None, host_arch: str) -> str:
     if g and g.get("base_url"):
         pid = f" · pid {g['pid']}" if g.get("pid") else ""
         notes += f'<div class="sprig-where">{e(g["base_url"] + pid)}</div>'
+    if error:
+        # Stays on the card until a graft or a prune resolves it. The toast is
+        # the notification; this is the record, and it survives the reload that
+        # loses the toast — along with the restart, since it lives on the volume.
+        notes += (
+            f'<div class="sprig-error" data-cy="sprig-error" role="status">'
+            f'{e(str(error.get("message", "")))}</div>'
+        )
     health = ('<a class="btn" href="/admin/diagnostics">Health</a>'
               if state in _GRAFTED and (g or {}).get("base_url") else "")
 
@@ -92,11 +100,15 @@ async def render_panel(request: Request, user, *, message: str = "", kind: str =
 
     data = await get_sprig_catalog(request, user)
     catalog, grafted = data.get("catalog") or {}, data.get("grafted") or {}
+    errors = data.get("errors") or {}
     count = sum(1 for g in grafted.values() if (g or {}).get("state") in _GRAFTED)
     cards = "".join(
-        _card(n, s, grafted.get(n), data.get("host_arch") or "") for n, s in catalog.items()
+        _card(n, s, grafted.get(n), data.get("host_arch") or "", errors.get(n)) for n, s in catalog.items()
     )
-    note = (f'<p class="toast toast-{e(kind, quote=True)}" data-cy="panel-message">{e(message)}</p>'
+    # role=status so a screen reader announces it: the message is the only
+    # feedback a mutation gives, and it fades.
+    note = (f'<p class="toast toast-float toast-{e(kind, quote=True)}" role="status" '
+            f'data-cy="panel-message">{e(message)}</p>'
             if message else "")
 
     return f"""<div id="sprigs-panel">

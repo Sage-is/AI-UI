@@ -59,6 +59,8 @@ async def get_sprig_catalog(request: Request, user=Depends(get_admin_user)):
         # Surfaced so the panel can SHOW which Sprig holds scripting permission.
         # A permission nobody can see is a permission nobody revokes.
         "ui_scripting_grant": str(cfg.SPRIG_UI_SCRIPTING_GRANT or ""),
+        # Unresolved failures, per Sprig™, surviving reload and restart.
+        "errors": supervisor.errors(),
     }
 
 
@@ -93,10 +95,17 @@ async def graft_sprig(
         handle = await supervisor.graft(form_data.name, form_data.capability)
     except Exception as e:
         log.exception("graft failed: %s", e)
+        # Persist the reason on the Sprig™ itself. The toast fades and the page
+        # gets reloaded; the thing that broke does not, so the card keeps the
+        # error until a successful graft or a prune resolves it.
+        supervisor.record_error(form_data.name, str(e), phase="graft")
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=f"Graft failed: {e}",
         )
+
+    # Past the spawn: whatever was wrong before is not wrong now.
+    supervisor.clear_error(handle.name)
 
     # Reranker server child: point the EXISTING external-reranker dispatch at the
     # grafted loopback /v1/rerank (shared with boot reconcile — no drift).
@@ -169,6 +178,7 @@ async def graft_sprig(
             point_theme_at(request.app, handle)
         except ThemeValidationError as e:
             await supervisor.prune(handle.name)
+            supervisor.record_error(handle.name, str(e), phase="validate")
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail=f"Graft failed: {e}",
@@ -193,6 +203,7 @@ async def graft_sprig(
             point_ui_at(request.app, handle)
         except UiValidationError as e:
             await supervisor.prune(handle.name)
+            supervisor.record_error(handle.name, str(e), phase="validate")
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail=f"Graft failed: {e}",
@@ -292,6 +303,7 @@ async def prune_sprig(
     had_scripting_grant = form_data.name == str(cfg.SPRIG_UI_SCRIPTING_GRANT or "")
 
     await supervisor.prune(form_data.name)
+    error_cleared = supervisor.clear_error(form_data.name)
 
     if was_active_embedding:
         # Dispatch pointed at the pruned loopback; reset to "no embedding
@@ -392,6 +404,7 @@ async def prune_sprig(
         "theme_reset": was_active_theme,
         "ui_reset": was_active_ui,
         "scripting_grant_revoked": had_scripting_grant,
+        "error_cleared": error_cleared,
         "messages": [text for fired, text in resets if fired],
     }
 

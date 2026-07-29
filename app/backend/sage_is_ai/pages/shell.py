@@ -16,6 +16,23 @@ The one rule this file enforces: escape anything interpolated. A shell that
 concatenates strings is a cross-site-scripting engine unless escaping is the
 default path rather than the remembered one, so callers pass values and never
 markup.
+
+EGRESS
+------
+These pages load startr.style from its public URL, which is the one place this
+product reaches off-machine on a normal page load. Everything else about the
+Rootstock is built the other way: Sprigs are in-housed so no operator pulls from
+HuggingFace, theme and ui-Sprig bundles are refused at graft if they reference
+an external URL, and the pitch to a workshop is that nothing they type leaves
+the room.
+
+A stylesheet leaks far less than a script — no cookies are sent cross-origin for
+a CSS link, and it cannot read the page — but it does tell startr.style that
+someone opened an admin page, and an air-gapped deployment gets unstyled chrome.
+Both are deliberate for now (Alexander, 2026-07-28), and both stop being true
+when the versioned URL lands with SRI, or when a self-host flag serves a
+vendored copy instead. Until then, keep layout that must not break in
+pages.css: the local sheet is what survives the CDN being unreachable.
 """
 
 from html import escape
@@ -110,7 +127,9 @@ def render_page(
         for s in scripts
     )
     sub = (
-        f'<p class="page-sub">{escape(subheading)}</p>' if subheading else ""
+        f'<p style="--size:.8rem; --op:.65; --m:.25rem 0 0">{escape(subheading)}</p>'
+        if subheading
+        else ""
     )
     return f"""<!doctype html>
 <html lang="en">
@@ -118,12 +137,24 @@ def render_page(
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{escape(title)}</title>
+  <!-- First-party framework, loaded before our own sheet so page rules win.
+       Unversioned by decision (Alexander, 2026-07-28) with /v1/ + SRI coming.
+       Two things this costs, recorded rather than discovered:
+         * an unversioned URL is a single point of failure — when it 5xxs these
+           pages render with only the local sheet, which is why layout that must
+           not break lives in pages.css and not in props;
+         * it is a third-party request on every admin page load, which is a real
+           exception to the zero-egress line the rest of the product holds. An
+           air-gapped Rootstock gets unstyled chrome. See the EGRESS note in this module's docstring. -->
+  <link rel="stylesheet" href="https://startr.style/style.css" />
   <link rel="stylesheet" href="{escape(asset_url('pages.css'), quote=True)}" />
 </head>
-<body>
-  <main class="page">
-    <header class="page-head">
-      <h1>{escape(heading)}</h1>
+<!-- Authored mobile-first: base values are the phone case, and a suffix appears
+     only where the layout actually changes going up. -->
+<body style="--maxw:52rem; --m:0 auto; --p:1rem; --p-md:1.5rem; --lh:1.55">
+  <main>
+    <header>
+      <h1 style="--size:1.15rem; --m:0">{escape(heading)}</h1>
       {sub}
     </header>
     {body}
