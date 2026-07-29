@@ -15,9 +15,17 @@
  * URL, so when it 5xxs these pages render with only this sheet — which means
  * the layout that must not break belongs here, and props are for polish.
  *
- * The generated card and row markup deliberately does NOT use inline props: a
- * Python f-string emitting forty characters of style attribute per row reads
- * worse than a class and diffs worse too. Props are for authored markup.
+ * REVERSED 2026-07-29 (Alexander): props are the default everywhere, including
+ * generated markup, and this file is for what the prop vocabulary cannot
+ * express. The old rule above assumed a class was cheaper than props on
+ * generated rows; the branding surface measured it and it is not — a rule that
+ * appears on five generated fields is ONE string in the render module, so props
+ * cost the same source lines and delete the stylesheet. That surface went from
+ * an 8% cut to 31% by dropping its CSS.
+ *
+ * The card and row rules below predate that and still serve the Sprigs and
+ * diagnostics panels. Converting those is follow-up work; do not add NEW
+ * per-surface layout here.
  *
  * Written mobile-first: base rules are the phone case, media queries appear
  * only where the layout genuinely changes going up. */

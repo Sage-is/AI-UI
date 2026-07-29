@@ -20,6 +20,7 @@ from fastapi.responses import HTMLResponse
 
 from sage_is_ai.pages.auth import require_admin_page
 from sage_is_ai.pages.shell import render_page
+from sage_is_ai.pages.branding_panel import render_branding, save_branding
 from sage_is_ai.pages.diagnostics_panel import render_diagnostics
 from sage_is_ai.pages.sprigs_panel import render_panel, run_action
 
@@ -71,6 +72,45 @@ async def sprigs_action(
     user=Depends(require_admin_page),
 ) -> HTMLResponse:
     return HTMLResponse(await run_action(request, user, name, verb))
+
+
+@router.get("/admin/branding", response_class=HTMLResponse)
+async def branding_page(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
+    """Theme & branding — the first form-only surface.
+
+    The form arrives filled in. The Svelte version renders an empty form, boots,
+    fetches the config and then populates it, which is visible as a flash on a
+    slow connection and is the reason its spec has to wait for a value rather
+    than for the field.
+    """
+    return HTMLResponse(
+        render_page(
+            request=request,
+            title="Theme & Branding — Sage.is AI",
+            heading="Theme & Branding",
+            subheading="The name, the marks and the colours this instance wears.",
+            scripts=["vendor/htmx.min.js", "color-pair.js"],
+            body=render_branding(request),
+        )
+    )
+
+
+@router.post("/admin/branding/save", response_class=HTMLResponse)
+async def branding_save(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
+    """Save, then return the whole panel.
+
+    The form is read straight off the request rather than declared as `Form(...)`
+    parameters, because the field list already exists in one place
+    (`branding_panel.FIELDS`) and restating it here as seven arguments would be a
+    second copy to keep in step. `save_branding` takes only the names it knows,
+    so an extra posted value cannot reach the config.
+    """
+    form = await request.form()
+    return HTMLResponse(await save_branding(request, user, dict(form)))
 
 
 @router.get("/admin/diagnostics", response_class=HTMLResponse)
