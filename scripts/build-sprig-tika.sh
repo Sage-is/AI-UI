@@ -64,7 +64,7 @@ docker run --rm --platform "$PLATFORM" -v "$WORK/stage:/s:ro" "$JDK_IMAGE" bash 
   /tmp/jre/bin/java -jar /tmp/tika-server-standard.jar --host 127.0.0.1 --port 9998 >/tmp/tika.log 2>&1 &
   PID=$!
   for i in $(seq 1 60); do curl -fsS http://127.0.0.1:9998/tika >/dev/null 2>&1 && break; sleep 1; done
-  curl -fsS http://127.0.0.1:9998/tika | grep -qi "tika" \
+  TIKA_BODY="$(curl -fsS http://127.0.0.1:9998/tika || true)"; [[ "${TIKA_BODY,,}" == *tika* ]] \
     || { echo "GET /tika failed"; cat /tmp/tika.log; exit 1; }
   echo "  GET /tika OK"
   printf "hello sprig extraction" > /tmp/t.txt

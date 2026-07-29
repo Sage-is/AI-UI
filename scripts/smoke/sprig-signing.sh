@@ -58,7 +58,7 @@ G(){ curl -s --max-time 300 -X POST "$BASE/api/v1/retrieval/sprigs/graft" -H "$A
 echo "== 3. signed artifact grafts (signature verified) =="
 G backup-rclone backup | jq -e '.delivered==true' >/dev/null 2>&1 \
   && ok "backup-rclone (signed) grafted under REQUIRE_SIGNED" || no "signed graft failed"
-docker logs "$ROOT" 2>&1 | grep -q "minisign OK" \
+wait_for_log "$ROOT" "minisign OK" 15 \
   && ok "supervisor logged 'minisign OK'" || no "no minisign OK in logs"
 
 echo "== 4. unsigned artifact is REFUSED =="

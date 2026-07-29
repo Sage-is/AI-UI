@@ -128,20 +128,20 @@ done
   || no "whisper status not ready post-graft: $(echo "$WS" | jq -c '.models // .' 2>/dev/null | head -c 200)"
 
 echo "== 2f. theme cultivar: design tokens served at /themes/active.css =="
-curl -s "$BASE/themes/active.css" | grep -q 'no theme grafted' \
+fetch_has "$BASE/themes/active.css" "no theme grafted" \
   && ok "active.css serves the empty default pre-graft" || no "default theme sheet wrong"
 TB=$(G theme-workshop-bio theme)
 echo "$TB" | jq -e '.delivered==true' >/dev/null 2>&1 && ok "bio theme grafts (deliver, no process)" || no "theme graft: $(echo "$TB" | head -c 200)"
-curl -s "$BASE/themes/active.css" | grep -q 'sprig-theme:workshop-bio' \
+fetch_has "$BASE/themes/active.css" "sprig-theme:workshop-bio" \
   && ok "active.css serves the bio tokens" || no "bio tokens not served"
 G theme-workshop-math theme | jq -e '.delivered==true' >/dev/null 2>&1 \
   && ok "math theme grafts over bio" || no "math theme graft failed"
-curl -s "$BASE/themes/active.css" | grep -q 'sprig-theme:workshop-math' \
+fetch_has "$BASE/themes/active.css" "sprig-theme:workshop-math" \
   && ok "last grafted theme wins the active pointer" || no "active theme did not swap"
 PTM=$(curl -s -X POST "$BASE/api/v1/retrieval/sprigs/prune" -H "$AUTH" -H 'Content-Type: application/json' -d '{"name":"theme-workshop-math"}')
 echo "$PTM" | jq -e '.theme_reset==true' >/dev/null 2>&1 \
   && ok "pruning the active theme resets the pointer" || no "theme prune reset: $(echo "$PTM" | head -c 150)"
-curl -s "$BASE/themes/active.css" | grep -q 'no theme grafted' \
+fetch_has "$BASE/themes/active.css" "no theme grafted" \
   && ok "default look restored post-prune" || no "stale theme after prune"
 G theme-workshop-bio theme | jq -e '.delivered==true' >/dev/null 2>&1 \
   && ok "bio re-grafted for the restart check" || no "bio re-graft failed"
@@ -161,7 +161,7 @@ echo "$RCFG2" | jq -e '.RAG_RERANKING_ENGINE=="external"' >/dev/null 2>&1 \
 ACFG2=$(curl -s "$BASE/api/v1/audio/config" -H "$AUTH")
 echo "$ACFG2" | jq -e '.stt.ENGINE=="openai" and (.stt.OPENAI_API_BASE_URL|startswith("http://127.0.0.1"))' >/dev/null 2>&1 \
   && ok "stt re-pointed by boot reconcile" || no "stt config lost across restart: $(echo "$ACFG2" | jq -c '.stt' 2>/dev/null | head -c 150)"
-curl -s "$BASE/themes/active.css" | grep -q 'sprig-theme:workshop-bio' \
+fetch_has "$BASE/themes/active.css" "sprig-theme:workshop-bio" \
   && ok "active theme survives restart (volume css + persisted pointer)" || no "theme lost across restart"
 X 'python3 -c "import chromadb, numpy, tokenizers, huggingface_hub"' && ok "chromadb + numpy + tokenizers + hf via overlay" || no "overlay imports failed"
 
@@ -220,7 +220,7 @@ RC=$(G backup-rclone backup); echo "$RC" | jq -e '.delivered==true' >/dev/null 2
 DS=$(G dev-svelte dev); echo "$DS" | jq -e '.delivered==true' >/dev/null 2>&1 && ok "dev-svelte" || no "dev-svelte delivery: $(echo "$DS" | head -c 200)"
 
 echo "== 10. UI serves to a fresh admin =="
-curl -s "$BASE/" | grep -qi "html" && ok "/ serves SPA" || no "SPA broken"
+fetch_has "$BASE/" "[Hh][Tt][Mm][Ll]" && ok "/ serves SPA" || no "SPA broken"
 [ "$(curl -s -o /dev/null -w '%{http_code}' "$BASE/static/icons/favicon.svg")" = "200" ] && ok "favicon" || no "favicon broken"
 
 echo ""

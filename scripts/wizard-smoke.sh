@@ -167,7 +167,10 @@ done
 #    (chromadb/numpy) and bcrypt unshadowed. On the legacy path the full ML
 #    closure must import.
 echo "[smoke] running import smoke inside container"
-if docker logs "$CONTAINER" 2>&1 | grep -q "Embedding served by Sprig"; then
+# Captured, not piped: `| grep -q` under pipefail reports a MATCH as 141
+# when the writer still has output queued. See scripts/lint-pipefail-grep.sh.
+WIZ_LOGS="$(docker logs "$CONTAINER" 2>&1)" || true
+if [[ "$WIZ_LOGS" == *"Embedding served by Sprig"* ]]; then
   docker exec "$CONTAINER" python3 -c "
 import numpy, chromadb, bcrypt
 # bcrypt is a SYSTEM package; the overlay must not shadow it with a copy on the
