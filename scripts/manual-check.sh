@@ -14,6 +14,7 @@
 # Usage:
 #   scripts/manual-check.sh              # boot, seed, print the walkthrough
 #   scripts/manual-check.sh --graft-ui   # also graft the example ui-Sprig
+#   KEEP=1 scripts/manual-check.sh      # leave it running after the script exits
 #   PORT=9443 scripts/manual-check.sh    # different port
 #
 # Ctrl-C tears everything down.
@@ -34,7 +35,23 @@ cleanup(){
   docker volume rm "$VOL" >/dev/null 2>&1 || true
   rm -f /tmp/manual-Caddyfile
 }
-trap cleanup EXIT INT TERM
+# KEEP=1 leaves the instance running after this script exits.
+#
+# The default (tear down on exit) is right for an interactive look, but it makes
+# the instance a hostage of whatever shell launched it: close the terminal, drop
+# the SSH session, or have an agent's process tree cleaned up, and the review
+# instance you were halfway through vanishes. That happened, so this exists.
+#
+# With KEEP=1 the containers outlive the script and you tear them down when you
+# are actually finished — the command is printed at the end.
+if [ "${KEEP:-0}" != "1" ]; then
+  trap cleanup EXIT INT TERM
+else
+  # Still clean up a HALF-BUILT instance: a boot that fails partway should not
+  # leave a broken container behind wearing the name of a good one.
+  trap 'rc=$?; [ "$rc" = "0" ] || cleanup; exit $rc' EXIT
+  trap cleanup INT TERM
+fi
 
 docker network inspect "$NET" >/dev/null 2>&1 || docker network create "$NET" >/dev/null
 cleanup >/dev/null 2>&1
@@ -104,8 +121,14 @@ cat <<WALKTHROUGH
   Diagnostics
     old (SvelteKit)   https://localhost:$PORT/admin/diagnostics
     new (no build)    https://localhost:$PORT/pages/admin/diagnostics
-    ⚠️  the new one is PARTIAL — no how-to-fix modal, no command library,
-        no per-row re-probe, no technical-detail expander. Expected.
+    at parity — the how-to-fix remedy is a <details> disclosure rather than
+    a modal, and the timestamp is absolute rather than a live relative label.
+
+  Theme & Branding
+    old (SvelteKit)   https://localhost:$PORT/admin/settings/theme
+    new (no build)    https://localhost:$PORT/pages/admin/branding
+    the new one previews SAVED values; the old one previews as you type.
+    Deliberate — matching it would need a round-trip per keystroke.
 
   WHAT TO LOOK FOR
 
@@ -127,6 +150,12 @@ cat <<WALKTHROUGH
   5. The marketplace slot (re-run with --graft-ui). A grafted ui-Sprig's
      fragment renders inside the page, server-side.
 
+  6. The branding colour pickers. Both directions of the sync are tested
+     now, because a synthetic input event reaches the same code a human
+     does. What no driver can check is the part above that: the swatch
+     opening the OS dialog at all, and whether picking a colour there
+     feels immediate. That is what a human still adds here.
+
   TELL ME WHAT FEELS WRONG. The suite is green and that is exactly the
   evidence Phase S showed to be weakest — it passed a broken autoscroll.
 
@@ -135,5 +164,12 @@ cat <<WALKTHROUGH
 ────────────────────────────────────────────────────────────────────────────
 
 WALKTHROUGH
+
+if [ "${KEEP:-0}" = "1" ]; then
+  echo "  KEEP=1 — the instance stays up after this exits."
+  echo "  Tear it down with:  docker rm -f $ROOT $TLS && docker volume rm $VOL"
+  echo ""
+  exit 0
+fi
 
 while true; do sleep 3600; done
