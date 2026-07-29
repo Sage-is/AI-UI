@@ -50,25 +50,25 @@ COPY app/vite.config.ts /app/vite.config.ts
 COPY app/static/ /app/build/
 COPY app/src /app/src
 
-# Build frontend (Node.js runtime — bun's JSC OOMs on large Svelte builds)
+# Build frontend (Node.js runtime: bun's JSC OOMs on large Svelte builds)
 RUN NODE_OPTIONS="--max-old-space-size=4096" npx vite build
 
 # Copy custom.css after vite build (SvelteKit clears output dir during build)
 COPY app/static/assets/custom.css /app/build/assets/custom.css
 
 # Runtime static tree (8.I.1 dedup, claims verified against a live container):
-#   - /static/pyodide is dead weight — every worker loads with indexURL
+#   - /static/pyodide is dead weight: every worker loads with indexURL
 #     '/pyodide/', served from /app/build/pyodide (62MB saved).
-#   - The hashed ort-wasm copy in _app/immutable/assets is dead weight — both
+#   - The hashed ort-wasm copy in _app/immutable/assets is dead weight: both
 #     consumers (Leaderboard.svelte, kokoro.worker.ts) set
 #     env.backends.onnx.wasm.wasmPaths = '/wasm/', served from /app/build/wasm
 #     (22MB saved). Keep /app/build/wasm itself!
-#   8.I.2 — three payloads leave the image entirely, each returns as a Sprig™:
+#   8.I.2: three payloads leave the image entirely, each returning as a Sprig™:
 #   - /app/static-runtime/fonts (59MB CJK Noto): PDF-export only (backend
 #     pdf_generator.py + frontend pdf-style.css) → export-document Sprig™.
 #     UI fonts live in /app/static/assets/fonts, untouched.
 #   - /app/build/pyodide (62MB): code-interpreter feature → code-pyodide
-#     Sprig™; workers 404 gracefully until grafted.
+#     Sprig™; workers 404 until grafted.
 #   - /app/build/wasm (22MB): onnxruntime-web for Leaderboard + kokoro TTS →
 #     browser-ml Sprig™.
 COPY app/static/ /app/static-runtime/
@@ -102,9 +102,9 @@ RUN mkdir -p /app/backend/tiktoken_cache && \
 
 # =============================================================================
 # Stage 3: RUNTIME — Wolfi rootstock (Decision #20, 2026-07-01 research round)
-# glibc 2.43 base at ~15MB: every manylinux Sprig™ overlay (onnxruntime et al.)
-# runs unchanged, bash entrypoint keeps working, Python 3.11 pinned via apk.
-# Digest-pinned (rolling :latest) — treat every bump as a tested release:
+# glibc 2.43 base at ~15MB. Every manylinux Sprig™ overlay (onnxruntime et al.)
+# runs unchanged and the bash entrypoint keeps working. Python 3.11 via apk.
+# Digest-pinned against a rolling :latest, so treat every bump as a release:
 #   docker buildx imagetools inspect cgr.dev/chainguard/wolfi-base:latest
 # Pinned: latest as of 2026-07-02 (multi-arch index, amd64+arm64).
 # =============================================================================
@@ -124,12 +124,13 @@ ARG BUILD_HASH
 #     `tar --use-compress-program=zstd` (artifact.py) which busybox tar lacks.
 #   - libstdc++/tzdata: manylinux wheels may link system libstdc++; tzdata for
 #     Debian-parity time handling.
-#   - ffmpeg (~110MB of codec libs), rclone (51MB), cron are NOT baked into the
-#     base rootstock. Graft the `media-ffmpeg` / `backup-rclone` Sprigs™ to
+#   - ffmpeg (~110MB of codec libs), rclone (51MB), and cron are NOT baked into
+#     the base rootstock. Graft the `media-ffmpeg` / `backup-rclone` Sprigs™ to
 #     deliver static binaries on demand.
 RUN apk add --no-cache python-3.11 bash ca-certificates curl jq zstd gnutar libstdc++ tzdata && \
-    # Wolfi's own pip/setuptools out — the exact Debian-built closure from the
-    # python-build stage lands below; mixing the two corrupts dist metadata.
+    # Wolfi's own pip/setuptools out. The Debian-built closure from the
+    # python-build stage replaces it below; mixing the two corrupts dist
+    # metadata.
     rm -rf /usr/lib/python3.11/site-packages/* && \
     # wolfi-base ships no /usr/local tree
     mkdir -p /usr/local/bin /usr/local/lib && \
@@ -148,14 +149,14 @@ RUN apk add --no-cache python-3.11 bash ca-certificates curl jq zstd gnutar libs
     oras version
 
 # Copy Python packages from python-build stage. The wheels are built on Debian
-# glibc 2.36 (manylinux-compatible) and run on Wolfi's 2.43 — same rule as
+# glibc 2.36 (manylinux-compatible) and run on Wolfi's 2.43. Same rule as the
 # Sprig™ overlays: build on the older glibc, run on the newer.
 COPY --from=python-build /usr/local/lib/python3.11/site-packages/ /usr/lib/python3.11/site-packages/
 COPY --from=python-build /usr/local/bin/ /usr/local/bin/
 
-# The /usr/local/bin COPY above smuggles in Debian's python3.11 ELF + config —
-# an interpreter with no stdlib on this image (its /usr/local/lib/python3.11 is
-# absent) that would shadow Wolfi's python on PATH. Remove it and point every
+# The /usr/local/bin COPY above smuggles in Debian's python3.11 ELF + config.
+# That interpreter has no stdlib on this image (its /usr/local/lib/python3.11 is
+# absent) and would shadow Wolfi's python on PATH. Remove it and point every
 # console-script shebang (#!/usr/local/bin/python3.11: uvicorn, pip, ...) at
 # the real interpreter.
 RUN rm -f /usr/local/bin/python /usr/local/bin/python3 /usr/local/bin/python3.11 \
@@ -168,24 +169,24 @@ RUN rm -f /usr/local/bin/python /usr/local/bin/python3 /usr/local/bin/python3.11
     ln -s /usr/bin/python3.11 /usr/local/bin/python3.11
 
 # Two append-after-base sys.path extensions (base site-packages always wins):
-#   - /usr/local/lib/python3.11/site-packages — Sprig™ overlay dir. The
+#   - /usr/local/lib/python3.11/site-packages, the Sprig™ overlay dir. The
 #     vector-chroma CATALOG target keeps this exact path (supervisor.py), so
 #     existing signed artifacts extract unchanged; overlays live apart from the
 #     base closure and prune cleanly.
-#   - ml_packages (data-volume install via wizard) — transitional: the 2.4
+#   - ml_packages (data-volume install via wizard). Transitional: the 2.4
 #     bundle replaces this with a signed tarball pulled into the data volume.
 RUN printf 'import sys, os\nfor _p in ("/usr/local/lib/python3.11/site-packages", "/app/backend/data/ml_packages"):\n    if os.path.isdir(_p) and _p not in sys.path:\n        sys.path.append(_p)\n' \
     > /usr/lib/python3.11/sitecustomize.py && \
-    # Pre-create the overlay dir so sitecustomize ALWAYS puts it on sys.path:
-    # lazily-imported Sprig™ payloads (fpdf, langchain) then work immediately
-    # after graft — no restart. (vector-chroma still restarts: its import
-    # bindings freeze at boot in retrieval/vector/factory.py.)
+    # Pre-create the overlay dir so sitecustomize always puts it on sys.path.
+    # Lazily-imported Sprig™ payloads (fpdf, langchain) then work as soon as
+    # they are grafted, without a restart. vector-chroma still needs one: its
+    # import bindings freeze at boot in retrieval/vector/factory.py.
     mkdir -p /usr/local/lib/python3.11/site-packages
 
 # Install `uv` for the runtime ML wizard install. Pinned so a 0.x breaking
 # change cannot ship via the base image. The release artifact name uses the
-# same arch tokens as `uname -m` on Linux (x86_64, aarch64) — both Docker
-# buildx targets are covered. Bump UV_VERSION to the latest release that has
+# same arch tokens as `uname -m` on Linux (x86_64, aarch64), which covers both
+# Docker buildx targets. Bump UV_VERSION to the latest release that has
 # both x86_64 and aarch64 Linux gnu artifacts at edit time:
 #   curl -s https://api.github.com/repos/astral-sh/uv/releases/latest | jq -r .tag_name
 ARG UV_VERSION=0.5.18
@@ -198,7 +199,7 @@ RUN ARCH=$(uname -m) && \
 COPY --from=python-build --chown=${UID}:${GID} /app/backend/tiktoken_cache/ /app/backend/tiktoken_cache/
 
 # Dev toolchain (bun ~92MB + node_modules ~1.1GB) is NOT baked into the base
-# rootstock — the `dev-svelte` Sprig™ delivers both into /app on demand. The
+# rootstock. The `dev-svelte` Sprig™ delivers both into /app on demand, and the
 # dangling symlink keeps `bun` on PATH once the sprig lands at /app/bun.
 RUN ln -s /app/bun /usr/local/bin/bun
 
@@ -206,14 +207,34 @@ RUN ln -s /app/bun /usr/local/bin/bun
 # `chown -R /app` duplicates the whole tree into a new layer on non-root builds.
 COPY --from=frontend --chown=${UID}:${GID} /app/build/ /app/build/
 
-# Static tree, pre-pruned in the frontend stage (pyodide dedup — see the
+# Static tree, pre-pruned in the frontend stage (pyodide dedup: see the
 # static-runtime block there). /app/static must still EXIST at boot: the
-# StaticFiles mount requires it, and favicon/loader.js live ONLY here
-# (/app/build has no static/ subdir — config.py's sync source never exists).
+# StaticFiles mount requires it, and favicon/loader.js live ONLY here.
+# /app/build has no static/ subdir, so config.py's sync source never exists.
 COPY --from=frontend --chown=${UID}:${GID} /app/static-runtime/ /app/static/
 
 # Copy backend source
 COPY --chown=${UID}:${GID} app/backend/ /app/backend/
+
+# Translation catalogs for server-rendered pages.
+#
+# The backend emits translation keys rather than English (diagnostics.py is the
+# reference), which works fine while only the browser renders. A server-rendered
+# page has no i18next, so it reads the same catalog the SPA does instead of a
+# second set of English strings. See pages/i18n.py.
+#
+# en-US only for now. Migrated pages come out in English until locale
+# negotiation is solved. Nothing is switched over yet, so nothing regresses: the
+# SPA still serves every route a user reaches. Adding the other 55 needs a way
+# for the server to know the reader's language, which today lives in
+# localStorage where no server can see it.
+COPY --chown=${UID}:${GID} app/src/lib/i18n/locales/en-US/ /app/backend/locales/en-US/
+
+# The diagnostic fix registry: 9 issue types, 40 remediation steps, all of them
+# translation keys. Shipped as data rather than transcribed into Python so the
+# Svelte component and the server-rendered page read the same file.
+COPY --chown=${UID}:${GID} app/src/lib/components/admin/Diagnostics/fixRegistry.json /app/backend/data-registry/fixRegistry.json
+COPY --chown=${UID}:${GID} app/src/lib/components/admin/Diagnostics/commandLibrary.json /app/backend/data-registry/commandLibrary.json
 
 # Copy changelog and package.json (version string)
 COPY --chown=${UID}:${GID} CHANGELOG.md /app/CHANGELOG.md
@@ -278,29 +299,29 @@ RUN if [ $UID -ne 0 ]; then \
 
 # Persist chroma's local cache (telemetry id + ONNX embedding model bundle)
 # in the data volume. chromadb constructs paths via `Path.home() / ".cache"
-# / "chroma" / ...` — Python's `Path.home()` reads the HOME env var, not
+# / "chroma" / ...`, and Python's `Path.home()` reads the HOME env var, not
 # XDG_CACHE_HOME, so the only reliable redirect is at the filesystem layer.
 # Symlinking $HOME/.cache/chroma into the persisted /app/backend/data/cache
 # tree matches the existing convention for libraries that don't expose a
 # cache-path env var (sentence-transformers, HF, whisper, tiktoken all
 # point at /app/backend/data/cache via their respective env vars). Survives
-# fresh container starts AND CapRover redeploys as long as the volume is
-# mounted at /app/backend/data — which is the standard mount path in both
-# the Makefile workflow and the docs/try-sage-deployment.md CapRover guide.
+# fresh container starts and CapRover redeploys as long as the volume is
+# mounted at /app/backend/data, the standard mount path in both the Makefile
+# workflow and the docs/try-sage-deployment.md CapRover guide.
 RUN mkdir -p /app/backend/data/cache/chroma && \
     mkdir -p $HOME/.cache && \
     ln -s /app/backend/data/cache/chroma $HOME/.cache/chroma && \
     echo -n 00000000-0000-0000-0000-000000000000 > /app/backend/data/cache/chroma/telemetry_user_id
 
-# Fix ownership of RUN-created trees if not root. /app is NOT chowned here —
-# every /app COPY carries --chown; a recursive chown of copied trees would
+# Fix ownership of RUN-created trees if not root. /app is NOT chowned here.
+# Every /app COPY carries --chown, and a recursive chown of copied trees would
 # duplicate ~400MB into this layer.
 RUN if [ $UID -ne 0 ]; then \
     chown -R $UID:$GID $HOME; \
     fi
 
-# Conditional Ollama install (Debian-oriented installer; untested on the Wolfi
-# base — the supported path is a sidecar Ollama container or a future Sprig™)
+# Conditional Ollama install (Debian-oriented installer, untested on the Wolfi
+# base; the supported path is a sidecar Ollama container or a future Sprig™)
 RUN if [ "$USE_OLLAMA" = "true" ]; then \
     curl -fsSL https://ollama.com/install.sh | sh; \
     fi

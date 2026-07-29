@@ -1,13 +1,26 @@
 /* No-build pages — shared stylesheet.
  *
- * One file for every page, served once and cached for a week. Written
- * mobile-first: the base rules are the phone case and a media query appears
- * only where the layout genuinely changes going up.
+ * Loaded AFTER startr.style so these rules win. The split is deliberate:
  *
- * Deliberately plain CSS with no framework. Tailwind is the SPA's, and it
- * needs the compiler we are removing; startr.style is a candidate for these
- * pages but adopting it here would tangle the pilot's result with a second
- * decision. This is small enough to be obvious. */
+ *   startr.style props   one-off layout on markup we author by hand — the page
+ *                        shell, headings, spacing. Read well inline, and this
+ *                        is the framework's home ground.
+ *
+ *   this file            anything REPEATED across generated rows, anything the
+ *                        prop vocabulary cannot express (keyframes, media
+ *                        queries on generated markup, :focus-visible), and
+ *                        anything that must survive the CDN being down.
+ *
+ * That last clause is load-bearing. startr.style is served from an unversioned
+ * URL, so when it 5xxs these pages render with only this sheet — which means
+ * the layout that must not break belongs here, and props are for polish.
+ *
+ * The generated card and row markup deliberately does NOT use inline props: a
+ * Python f-string emitting forty characters of style attribute per row reads
+ * worse than a class and diffs worse too. Props are for authored markup.
+ *
+ * Written mobile-first: base rules are the phone case, media queries appear
+ * only where the layout genuinely changes going up. */
 
 :root {
   color-scheme: light dark;
@@ -15,30 +28,9 @@
   --muted: color-mix(in srgb, currentColor 60%, transparent);
 }
 
-body {
-  margin: 0;
-  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
-}
-
-.page {
-  max-width: 52rem;
-  margin: 0 auto;
-  padding: 1rem;
-}
-
-.page-head h1 {
-  margin: 0;
-  font-size: 1.15rem;
-}
-
-.page-sub,
 .page-muted {
   color: var(--muted);
   font-size: 0.8rem;
-}
-
-.page-sub {
-  margin: 0.25rem 0 0;
 }
 
 .panel-bar {
@@ -79,10 +71,6 @@ body {
 }
 
 @media (min-width: 40rem) {
-  .page {
-    padding: 1.5rem;
-  }
-
   .sprig-card {
     grid-template-columns: auto 1fr auto;
   }
@@ -204,4 +192,206 @@ body {
 
 .toast-warning {
   border-color: #d97706;
+}
+
+/* --- diagnostics ---------------------------------------------------------- */
+.diag-section {
+  margin: 1.25rem 0 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+}
+
+.diag-section h2 {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+}
+
+/* Stacked on a phone; the badge sits beside the label once there is room. */
+.diag-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.3rem 0.7rem;
+  align-items: start;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.diag-row:last-child {
+  border-bottom: 0;
+}
+
+.diag-actions {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 40rem) {
+  .diag-row {
+    grid-template-columns: auto 1fr auto;
+  }
+
+  .diag-actions {
+    grid-column: auto;
+  }
+}
+
+.diag-label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+
+.diag-summary {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.badge-ok {
+  border-color: #16a34a;
+  color: #16a34a;
+}
+
+.badge-degraded {
+  border-color: #d97706;
+  color: #d97706;
+}
+
+.badge-unreachable {
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+/* --- toasts, done in CSS --------------------------------------------------
+ *
+ * htmx swaps a whole panel, so a message arrives as a NEW element every time.
+ * That is the property that makes this work with no JavaScript at all: a fresh
+ * element restarts the animation by definition, so there is nothing to reset,
+ * no timer to cancel, and no state to hold between swaps.
+ *
+ * Fixed to the top rather than sitting inline, because a message rendered above
+ * a long list is invisible to anyone scrolled into it — which is exactly where
+ * you are when you click Prune on the fortieth card. */
+.toast-float {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  z-index: 30;
+  width: min(34rem, calc(100vw - 2rem));
+  margin: 0;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.18);
+  /* Both transform values must appear in every keyframe: the animation drives
+     the same property that does the centring, so omitting it in one frame
+     snaps the toast to the left edge mid-flight. */
+  animation: toast-life 6s ease forwards;
+}
+
+/* Errors outlive successes. "Pruned X" is an acknowledgement and can go; a
+   failure names the cause and the fix, and six seconds is not long enough to
+   read a sentence you did not expect. */
+.toast-float.toast-error {
+  animation-duration: 20s;
+}
+
+@keyframes toast-life {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -0.5rem);
+  }
+
+  5% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  85% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -0.5rem);
+    /* visibility, not just opacity: a fully transparent element still sits over
+       the page and swallows clicks aimed at whatever is underneath it. */
+    visibility: hidden;
+  }
+}
+
+/* Movement is the part that causes trouble for people who asked for less of
+   it. The fade still runs, so the toast still clears itself — a message that
+   never leaves is its own accessibility problem. */
+@media (prefers-reduced-motion: reduce) {
+  .toast-float {
+    transform: translateX(-50%);
+    animation: toast-fade 6s ease forwards;
+  }
+
+  .toast-float.toast-error {
+    animation-duration: 20s;
+  }
+
+  @keyframes toast-fade {
+    0%, 85% { opacity: 1; }
+    100% { opacity: 0; visibility: hidden; }
+  }
+}
+
+/* --- how-to-fix disclosure ------------------------------------------------
+ * A <details>, not a dialog: no focus trap, no escape handler, no JavaScript. */
+.fix {
+  grid-column: 1 / -1;
+  margin: 0.4rem 0 0;
+  font-size: 0.82rem;
+}
+
+.fix summary {
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.fix summary:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.fix-plain {
+  margin: 0.5rem 0;
+}
+
+.fix-steps {
+  margin: 0;
+  padding-left: 1.2rem;
+  line-height: 1.6;
+}
+
+.fix-path {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.fix-command {
+  margin: 0.3rem 0 0.5rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 0.4rem;
+  background: color-mix(in srgb, currentColor 8%, transparent);
+  font: 12px/1.5 ui-monospace, monospace;
+  overflow-x: auto;
+  /* Copy-only. Nothing here is ever executed for the operator. */
+  user-select: all;
+}
+
+/* The durable half of an error. The toast says something just happened; this
+   says something is still wrong, and it stays until a graft or prune resolves
+   it — across reloads and restarts. */
+.sprig-error {
+  margin-top: 0.3rem;
+  font-size: 0.78rem;
+  color: #dc2626;
+  overflow-wrap: anywhere;
+}
+
+.fix-warning {
+  margin: 0.3rem 0;
+  color: #b45309;
+  font-size: 0.8rem;
 }

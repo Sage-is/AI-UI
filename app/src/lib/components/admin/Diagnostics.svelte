@@ -198,6 +198,7 @@
 			<button
 				type="button"
 				class="text-sm px-3 py-1.5 rounded border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 flex items-center gap-2"
+				data-cy="diagnostics-refresh"
 				on:click={reprobeAll}
 				disabled={refreshing || !loaded}
 				aria-label={$i18n.t('Re-probe all endpoints')}
@@ -233,6 +234,7 @@
 			<button
 				type="button"
 				class="text-sm px-3 py-1.5 rounded border border-red-300 dark:border-red-700 hover:bg-red-100 dark:hover:bg-red-900 disabled:opacity-50 flex items-center gap-2"
+				data-cy="diagnostics-retry"
 				on:click={loadHealth}
 				disabled={refreshing}
 				aria-label={$i18n.t('Retry loading diagnostics')}
@@ -265,7 +267,7 @@
 
 		<!-- Issues banner -->
 		{#if issues.length > 0 && !bootInFlight}
-			<div class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-4">
+			<div class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-4" data-cy="diag-issues">
 				<h2 id="diagnostics-issues-heading" class="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">
 					{$i18n.t('Issues')}
 				</h2>
@@ -324,7 +326,7 @@
 		{/if}
 
 		<!-- Endpoints -->
-		<div class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-4">
+		<div class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-4" data-cy="diag-section" data-section="endpoints">
 			<h2 class="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">
 				{$i18n.t('Endpoints')}
 			</h2>
@@ -344,7 +346,9 @@
 
 				{#if ghostEndpoints.length > 0}
 					<div class="mt-3">
-						<Collapsible chevron={true} title={$i18n.t('Previously configured')}>
+						<!-- svelte-ignore a11y-no-static-element-interactions -->
+					<div data-cy="diag-ghost-endpoints">
+					<Collapsible chevron={true} title={$i18n.t('Previously configured')}>
 							<div slot="content" class="pt-2">
 								{#each ghostEndpoints as [url, row]}
 									<DiagnosticRow label={url} record={row} onFix={openFixModal} />
@@ -352,12 +356,13 @@
 							</div>
 						</Collapsible>
 					</div>
+					</div>
 				{/if}
 			{/if}
 		</div>
 
 		<!-- Boot status -->
-		<div class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-4">
+		<div class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-4" data-cy="diag-section" data-section="boot_status">
 			<h2 class="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">
 				{$i18n.t('Boot status')}
 			</h2>
@@ -369,7 +374,7 @@
 		</div>
 
 		<!-- Static assets -->
-		<div class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-4">
+		<div class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-4" data-cy="diag-section" data-section="static_assets">
 			<h2 class="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">
 				{$i18n.t('Static assets')}
 			</h2>
@@ -381,7 +386,7 @@
 		</div>
 
 		<!-- Browser headers -->
-		<div class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-4">
+		<div class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-4" data-cy="diag-section" data-section="browser_headers">
 			<h2 class="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">
 				{$i18n.t('Browser headers')}
 			</h2>
