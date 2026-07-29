@@ -30,7 +30,8 @@ export interface Surface {
 
 export const SURFACES = {
 	sprigs: { legacy: '/admin/sprigs', nobuild: '/pages/admin/sprigs' },
-	diagnostics: { legacy: '/admin/diagnostics', nobuild: '/pages/admin/diagnostics' }
+	diagnostics: { legacy: '/admin/diagnostics', nobuild: '/pages/admin/diagnostics' },
+	branding: { legacy: '/admin/settings/theme', nobuild: '/pages/admin/branding' }
 } satisfies Record<string, Surface>;
 
 export type SurfaceName = keyof typeof SURFACES;

@@ -131,6 +131,11 @@ const RESTORED_CONFIG: ConfigSurface[] = [
 		write: '/api/v1/configs/banners',
 		wrap: (banners) => ({ banners })
 	},
+	// Branding is the loudest surface on this list: it sets the app title, the
+	// logo and the --primary/--secondary the whole interface cascades from, so
+	// a spec that leaves test branding behind does not merely change a config
+	// value — it repaints every page every later spec looks at.
+	{ name: 'branding', read: '/api/v1/configs/branding', write: '/api/v1/configs/branding' },
 	{ name: 'ollama', read: '/ollama/config', write: '/ollama/config/update' },
 	{ name: 'openai', read: '/openai/config', write: '/openai/config/update' },
 	{
