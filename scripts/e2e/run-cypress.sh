@@ -66,8 +66,36 @@ if [ -n "${TARGET_URL:-}" ]; then
 fi
 
 echo "== fresh rootstock for e2e ($IMG) =="
+# "Fresh" has to be PROVEN, not attempted.
+#
+# This used to be `docker rm -f` followed by `docker volume rm … || true`, and
+# the `|| true` was the bug: a container that has not finished going away still
+# holds its volume, so the removal fails, and the run then boots on the PREVIOUS
+# run's data with no sign anything is wrong. Caught 2026-07-29 after two e2e
+# runs were killed mid-flight (SIGKILL skips the cleanup trap): the next run
+# came up with vector-chroma already delivered, and `sprigs-panel` failed
+# looking for a Graft button that was a Prune button. The suite reported a
+# normal-looking failure on an unrelated surface — the worst possible symptom,
+# because it sends you debugging the wrong thing.
+#
+# So: wait for the container to actually be gone, then insist the volume goes
+# with it. A gate that cannot guarantee its own starting state is not measuring
+# what it claims to, and must stop rather than carry on quietly.
 docker rm -f "$ROOT" >/dev/null 2>&1 || true
-docker volume rm "$VOL" >/dev/null 2>&1 || true
+for _ in $(seq 1 30); do
+  docker inspect "$ROOT" >/dev/null 2>&1 || break
+  sleep 1
+done
+for _ in $(seq 1 30); do
+  docker volume inspect "$VOL" >/dev/null 2>&1 || break
+  docker volume rm "$VOL" >/dev/null 2>&1 || sleep 1
+done
+if docker volume inspect "$VOL" >/dev/null 2>&1; then
+  echo "FATAL: volume '$VOL' survived removal — this run would inherit the last"
+  echo "       run's data and its results would be meaningless. Still holding it:"
+  docker ps -a --filter "volume=$VOL" --format '         {{.Names}} ({{.Status}})'
+  exit 1
+fi
 docker run -d --name "$ROOT" --network "$NET" -p "$PORT:8080" \
   -e SPRIG_REGISTRY=local-registry:5000 -e ENABLE_SIGNUP=True -e WEBUI_AUTH=True \
   -v "$VOL:/app/backend/data" "$IMG" >/dev/null
