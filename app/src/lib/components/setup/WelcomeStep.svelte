@@ -59,7 +59,7 @@
 	};
 </script>
 
-<div style="--px:1.2rem; --pt:1rem; --pb:1.5rem">
+<div data-cy="welcome-panel" style="--px:1.2rem; --pt:1rem; --pb:1.5rem">
 	{#if isFirstRun}
 		<div style="--size:1.4rem; --weight:600; --dark-c:#fff; --mb:0.2rem">
 			{$i18n.t('Welcome to {{name}}!', { name: $WEBUI_NAME })}
@@ -87,7 +87,7 @@
 			<label
 				style="--d:flex; --ai:center; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-amber-100); --dark-bc:var(--color-amber-900); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-amber-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			>
-				<input type="checkbox" bind:checked={includeAuth} style="--w:1rem; --h:1rem; --shrink:0" />
+				<input data-cy="welcome-auth" type="checkbox" bind:checked={includeAuth} style="--w:1rem; --h:1rem; --shrink:0" />
 				<div>
 					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('Authentication')}</span>
@@ -106,7 +106,7 @@
 			<label
 				style="--d:flex; --ai:center; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			>
-				<input type="checkbox" bind:checked={includeConnection} style="--w:1rem; --h:1rem; --shrink:0" />
+				<input data-cy="welcome-connection" type="checkbox" bind:checked={includeConnection} style="--w:1rem; --h:1rem; --shrink:0" />
 				<div>
 					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('Model Connections')}</span>
@@ -127,7 +127,7 @@
 			<label
 				style="--d:flex; --ai:center; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			>
-				<input type="checkbox" bind:checked={includeUsers} style="--w:1rem; --h:1rem; --shrink:0" />
+				<input data-cy="welcome-users" type="checkbox" bind:checked={includeUsers} style="--w:1rem; --h:1rem; --shrink:0" />
 				<div>
 					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('Users')}</span>
@@ -158,7 +158,7 @@
 			<label
 				style="--d:flex; --ai:center; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			>
-				<input type="checkbox" bind:checked={includeFeatures} style="--w:1rem; --h:1rem; --shrink:0" />
+				<input data-cy="welcome-features" type="checkbox" bind:checked={includeFeatures} style="--w:1rem; --h:1rem; --shrink:0" />
 				<div>
 					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('Features')}</span>
@@ -176,7 +176,7 @@
 			<label
 				style="--d:flex; --ai:center; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			>
-				<input type="checkbox" bind:checked={includeSearchAudio} style="--w:1rem; --h:1rem; --shrink:0" />
+				<input data-cy="welcome-search-audio" type="checkbox" bind:checked={includeSearchAudio} style="--w:1rem; --h:1rem; --shrink:0" />
 				<div>
 					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('AI Engine')}</span>
@@ -194,7 +194,7 @@
 			<label
 				style="--d:flex; --ai:center; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			>
-				<input type="checkbox" bind:checked={includeDeveloper} style="--w:1rem; --h:1rem; --shrink:0" />
+				<input data-cy="welcome-developer" type="checkbox" bind:checked={includeDeveloper} style="--w:1rem; --h:1rem; --shrink:0" />
 				<div>
 					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('Developer Mode')}</span>
@@ -220,6 +220,7 @@
 			{/if}
 
 			<button
+				data-cy="welcome-start"
 				on:click={handleStart}
 				disabled={!canStart}
 				style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --shrink:0; --bgc:{canStart ? '#000' : 'var(--color-gray-300)'}; --hvr-bgc:{canStart ? 'var(--color-gray-900)' : 'var(--color-gray-300)'}; --c:#fff; --dark-bgc:{canStart ? '#fff' : 'var(--color-gray-600)'}; --dark-c:{canStart ? '#000' : 'var(--color-gray-400)'}; --hvr-dark-bgc:{canStart ? 'var(--color-gray-100)' : 'var(--color-gray-600)'}; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"

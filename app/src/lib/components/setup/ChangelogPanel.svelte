@@ -19,6 +19,11 @@
 	});
 </script>
 
+<!-- The wrapper exists so the surface has a root the parity gate can scope to.
+	 This panel opens inside a modal, over an admin page that stays in the DOM,
+	 and without a root the gate would collect that page's controls and then
+	 demand the no-build route render them. -->
+<div data-cy="changelog-panel">
 <div style="--px:1.2rem; --pt:1rem; --dark-c:var(--color-gray-300); --c:var(--color-gray-700)">
 	<div style="--d:flex; --jc:space-between; --ai:flex-start">
 		<div style="--size:1.2rem; --weight:600">
@@ -32,7 +37,7 @@
 		<div
 			style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-700)"
 		/>
-		<div style="--size:0.8rem; --dark-c:var(--color-gray-200)">
+		<div data-app-version={WEBUI_VERSION} style="--size:0.8rem; --dark-c:var(--color-gray-200)">
 			v{WEBUI_VERSION}
 		</div>
 	</div>
@@ -42,10 +47,10 @@
 	style="--w:100%; --p:1rem; --px:1.2rem; --c:var(--color-gray-700); --dark-c:var(--color-gray-100)"
 >
 	<div style="--ofy:scroll; --maxh:24rem" class="scrollbar-hidden">
-		<div style="--mb:0.6rem">
+		<div data-cy="changelog-body" style="--mb:0.6rem">
 			{#if changelog}
 				{#each Object.keys(changelog) as version}
-					<div style="--mb:0.6rem; --pr:0.5rem">
+					<div data-version={version} style="--mb:0.6rem; --pr:0.5rem">
 						<div style="--weight:600; --size:1.2rem; --mb:0.2rem; --dark-c:#fff">
 							v{version} - {changelog[version].date}
 						</div>
@@ -54,6 +59,7 @@
 
 						{#each Object.keys(changelog[version]).filter((section) => section !== 'date') as section}
 							<div
+								data-section={section}
 								style="--weight:600; --tt:uppercase; --size:0.6rem; --w:fit-content; --px:0.6rem; --radius:9999px; --my:0.6rem"
 								class={section === 'added'
 									? 'text-white bg-blue-600'
@@ -88,6 +94,7 @@
 	</div>
 
 	<button
+		data-cy="changelog-continue"
 		on:click={onNext}
 		style="--ml:auto; --px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 	>
@@ -97,4 +104,5 @@
 			{$i18n.t('Continue')}
 		{/if}
 	</button>
+</div>
 </div>

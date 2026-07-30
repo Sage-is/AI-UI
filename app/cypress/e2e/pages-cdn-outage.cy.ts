@@ -39,7 +39,24 @@ import { SURFACES, isNoBuild, type SurfaceName } from '../support/surfaces';
 const STRUCTURE: Record<SurfaceName, { selector: string; display: string } | null> = {
 	sprigs: { selector: '[data-cy="sprig-card"]', display: 'grid' },
 	diagnostics: { selector: '[data-cy="diag-row"]', display: 'grid' },
-	branding: null
+	branding: null,
+	wizardChangelog: null,
+	wizardFeatures: null,
+	wizardDeveloper: null,
+	wizardComplete: null,
+	wizardSearchAudio: null
+};
+
+// How many hooks proves the content survived. Five suits a whole admin page;
+// a single wizard panel has fewer controls than that and always will, so
+// holding it to the page number would make this gate fail for being small
+// rather than for being broken.
+const MIN_HOOKS: Partial<Record<SurfaceName, number>> = {
+	wizardChangelog: 3,
+	wizardFeatures: 6,
+	wizardDeveloper: 3,
+	wizardComplete: 3,
+	wizardSearchAudio: 4
 };
 
 describe('No-build pages survive a startr.style outage', () => {
@@ -57,7 +74,10 @@ describe('No-build pages survive a startr.style outage', () => {
 			// Content is server-rendered, so a missing stylesheet cannot cost us
 			// any of it. If this drops, something moved into the framework that
 			// should not have.
-			cy.get('[data-cy]', { timeout: 30000 }).should('have.length.at.least', 5);
+			cy.get('[data-cy]', { timeout: 30000 }).should(
+				'have.length.at.least',
+				MIN_HOOKS[name] ?? 5
+			);
 
 			// Only for surfaces that promise to KEEP their layout. A
 			// props-styled surface has no such promise to check — see the note

@@ -21,6 +21,15 @@ from fastapi.responses import HTMLResponse
 from sage_is_ai.pages.auth import require_admin_page
 from sage_is_ai.pages.shell import render_page
 from sage_is_ai.pages.branding_panel import render_branding, save_branding
+from sage_is_ai.pages.changelog_panel import mark_changelog_read, render_changelog
+from sage_is_ai.pages.features_panel import render_features, save_features
+from sage_is_ai.pages.developer_panel import render_developer, save_developer
+from sage_is_ai.pages.complete_panel import finish_setup, render_complete
+from sage_is_ai.pages.search_audio_panel import (
+    download_components,
+    graft_components,
+    render_search_audio,
+)
 from sage_is_ai.pages.diagnostics_panel import render_diagnostics
 from sage_is_ai.pages.sprigs_panel import render_panel, run_action
 
@@ -111,6 +120,153 @@ async def branding_save(
     """
     form = await request.form()
     return HTMLResponse(await save_branding(request, user, dict(form)))
+
+
+_SETUP_PAGES = {
+    "changelog": ("What's New", "Everything that changed, newest first."),
+    "features": ("Features", "Enable or disable platform features for your users."),
+    "developer": ("Developer Mode", "Run this thing from source, with hot reload."),
+    "complete": ("You are all set", "What this instance has configured so far."),
+    "search-audio": ("AI Engine", "Document search and speech-to-text, installed locally."),
+}
+
+
+def _setup_page(request: Request, panel: str, body: str) -> HTMLResponse:
+    """One shell call for every setup panel.
+
+    The changelog route needed the same six arguments twice — once for the GET
+    and once for the response to its post — and nine panels would have made that
+    thirty-six. The titles live in one table instead.
+    """
+    heading, subheading = _SETUP_PAGES[panel]
+    return HTMLResponse(
+        render_page(
+            request=request,
+            title=f"{heading} — Sage.is AI",
+            heading=heading,
+            subheading=subheading,
+            body=body,
+        )
+    )
+
+
+@router.get("/admin/setup/changelog", response_class=HTMLResponse)
+async def setup_changelog_page(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
+    """What's new — the setup wizard's changelog branch, at an address.
+
+    The Svelte original has no URL at all: it is a branch of a modal, reached by
+    a button that sets a store. Giving it a route is what lets the guard-rail
+    spec and the parity gate judge it the same way they judge every other
+    surface, instead of the wizard migrating on weaker evidence than the pages
+    that came before it.
+
+    No scripts. The panel is text and one form post, so there is nothing for
+    htmx to swap.
+    """
+    return _setup_page(request, "changelog", render_changelog(request))
+
+
+@router.post("/admin/setup/changelog/seen", response_class=HTMLResponse)
+async def setup_changelog_seen(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
+    """Record the read, then re-render.
+
+    Same shape as every other mutation here: the response IS the panel, so
+    there is no client-side model that can fall out of step with the server's.
+    """
+    await mark_changelog_read(request, user)
+    return _setup_page(request, "changelog", render_changelog(request))
+
+
+@router.get("/admin/setup/features", response_class=HTMLResponse)
+async def setup_features_page(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
+    return _setup_page(request, "features", render_features(request))
+
+
+@router.post("/admin/setup/features/save", response_class=HTMLResponse)
+async def setup_features_save(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
+    """Save, then return the whole panel.
+
+    The form is read off the request rather than declared as `Form(...)`
+    parameters, because the field list already exists in `features_panel.FIELDS`
+    and restating it here would be a second copy to keep in step. `save_features`
+    reads only the names it knows, so an extra posted value cannot reach the
+    config.
+    """
+    form = await request.form()
+    return _setup_page(request, "features", await save_features(request, user, dict(form)))
+
+
+@router.get("/admin/setup/developer", response_class=HTMLResponse)
+async def setup_developer_page(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
+    return _setup_page(request, "developer", render_developer(request, user))
+
+
+@router.post("/admin/setup/developer/save", response_class=HTMLResponse)
+async def setup_developer_save(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
+    form = await request.form()
+    return _setup_page(
+        request, "developer", await save_developer(request, user, dict(form))
+    )
+
+
+@router.get("/admin/setup/complete", response_class=HTMLResponse)
+async def setup_complete_page(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
+    return _setup_page(request, "complete", render_complete(request, user))
+
+
+@router.post("/admin/setup/complete/finish", response_class=HTMLResponse)
+async def setup_complete_finish(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
+    await finish_setup(request, user)
+    return _setup_page(request, "complete", render_complete(request, user))
+
+
+@router.get("/admin/setup/search-audio", response_class=HTMLResponse)
+async def setup_search_audio_page(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
+    return _setup_page(request, "search-audio", render_search_audio(request))
+
+
+@router.post("/admin/setup/search-audio/graft", response_class=HTMLResponse)
+async def setup_search_audio_graft(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
+    """Graft the selected cultivars, then return the whole panel.
+
+    The component names travel in the form; the cultivar and its capability are
+    looked up from `COMPONENTS` and the catalog. The browser never names a
+    cultivar, so it cannot ask for one that is not on this panel.
+    """
+    form = await request.form()
+    return _setup_page(
+        request, "search-audio", await graft_components(request, user, dict(form))
+    )
+
+
+@router.post("/admin/setup/search-audio/download", response_class=HTMLResponse)
+async def setup_search_audio_download(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
+    form = await request.form()
+    return _setup_page(
+        request, "search-audio", await download_components(request, user, dict(form))
+    )
 
 
 @router.get("/admin/diagnostics", response_class=HTMLResponse)

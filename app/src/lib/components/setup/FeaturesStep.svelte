@@ -62,7 +62,7 @@
 	};
 </script>
 
-<div style="--px:1.2rem; --pt:1rem; --pb:1.5rem">
+<div data-cy="features-panel" style="--px:1.2rem; --pt:1rem; --pb:1.5rem">
 	<div style="--size:1.2rem; --weight:600; --dark-c:#fff; --mb:0.2rem">
 		{$i18n.t('Features')}
 	</div>
@@ -81,7 +81,7 @@
 			<label
 				style="--d:flex; --ai:center; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			>
-				<input type="checkbox" bind:checked={enableCommunitySharing} style="--w:1rem; --h:1rem; --shrink:0" />
+				<input data-cy="features-community-sharing" type="checkbox" bind:checked={enableCommunitySharing} style="--w:1rem; --h:1rem; --shrink:0" />
 				<div>
 					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('Community Sharing')}</span>
@@ -99,7 +99,7 @@
 			<label
 				style="--d:flex; --ai:center; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			>
-				<input type="checkbox" bind:checked={enableMessageRating} style="--w:1rem; --h:1rem; --shrink:0" />
+				<input data-cy="features-message-rating" type="checkbox" bind:checked={enableMessageRating} style="--w:1rem; --h:1rem; --shrink:0" />
 				<div>
 					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('Message Rating')}</span>
@@ -117,7 +117,7 @@
 			<label
 				style="--d:flex; --ai:center; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-amber-100); --dark-bc:var(--color-amber-900); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-amber-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			>
-				<input type="checkbox" bind:checked={enableNotes} style="--w:1rem; --h:1rem; --shrink:0" />
+				<input data-cy="features-notes" type="checkbox" bind:checked={enableNotes} style="--w:1rem; --h:1rem; --shrink:0" />
 				<div>
 					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('Notes')}</span>
@@ -136,7 +136,7 @@
 			<label
 				style="--d:flex; --ai:center; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-amber-100); --dark-bc:var(--color-amber-900); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-amber-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			>
-				<input type="checkbox" bind:checked={enableSpaces} style="--w:1rem; --h:1rem; --shrink:0" />
+				<input data-cy="features-spaces" type="checkbox" bind:checked={enableSpaces} style="--w:1rem; --h:1rem; --shrink:0" />
 				<div>
 					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('Spaces')}</span>
@@ -155,7 +155,7 @@
 			<label
 				style="--d:flex; --ai:center; --g:0.8rem; --p:0.8rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			>
-				<input type="checkbox" bind:checked={enableUserWebhooks} style="--w:1rem; --h:1rem; --shrink:0" />
+				<input data-cy="features-user-webhooks" type="checkbox" bind:checked={enableUserWebhooks} style="--w:1rem; --h:1rem; --shrink:0" />
 				<div>
 					<div style="--d:flex; --ai:center; --g:0.4rem">
 						<span style="--size:0.85rem; --weight:500">{$i18n.t('User Webhooks')}</span>
@@ -189,6 +189,7 @@
 			</button>
 
 			<button
+				data-cy="features-save"
 				on:click={saveAndNext}
 				disabled={loading || saving}
 				style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:{!loading && !saving ? '#000' : 'var(--color-gray-300)'}; --hvr-bgc:{!loading && !saving ? 'var(--color-gray-900)' : 'var(--color-gray-300)'}; --c:#fff; --dark-bgc:{!loading && !saving ? '#fff' : 'var(--color-gray-600)'}; --dark-c:{!loading && !saving ? '#000' : 'var(--color-gray-400)'}; --hvr-dark-bgc:{!loading && !saving ? 'var(--color-gray-100)' : 'var(--color-gray-600)'}; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"

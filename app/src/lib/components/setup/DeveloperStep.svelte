@@ -21,7 +21,7 @@
 	}
 </script>
 
-<div style="--px:1.2rem; --pt:1rem; --pb:1.5rem">
+<div data-cy="developer-panel" data-dev-mode={isDevMode} style="--px:1.2rem; --pt:1rem; --pb:1.5rem">
 	{#if isDevMode}
 		<!-- Dev Mode: Celebration -->
 		<div style="--ta:center; --mb:1rem">
@@ -127,7 +127,7 @@
 		<label
 			style="--d:flex; --ai:center; --g:0.8rem; --p:0.8rem; --mb:1.2rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; cursor:pointer; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 		>
-			<input type="checkbox" bind:checked={devMissionSignup} style="--w:1rem; --h:1rem; --shrink:0" />
+			<input data-cy="developer-mission-signup" type="checkbox" bind:checked={devMissionSignup} style="--w:1rem; --h:1rem; --shrink:0" />
 			<div>
 				<div style="--size:0.85rem; --weight:500">
 					{$i18n.t('Sign me up for the mission')}
@@ -178,6 +178,7 @@
 		</button>
 
 		<button
+			data-cy="developer-save"
 			on:click={handleNext}
 			style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 		>

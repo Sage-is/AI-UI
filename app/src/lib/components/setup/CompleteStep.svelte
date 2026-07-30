@@ -91,7 +91,7 @@
 	$: totalComponents = 2;
 </script>
 
-<div style="--px:1.2rem; --pt:1.5rem; --pb:1.5rem; --ta:center">
+<div data-cy="complete-panel" data-users={usersCount} data-features={featuresEnabled} data-ready={readyCount} style="--px:1.2rem; --pt:1.5rem; --pb:1.5rem; --ta:center">
 	<div style="--size:2rem; --mb:0.6rem">
 		&#10003;
 	</div>
@@ -109,14 +109,14 @@
 	{:else}
 		<div style="--d:flex; --fd:column; --g:0.5rem; --mb:1.5rem; --ta:left; --mx:auto; --w:fit-content">
 			{#if authMethods.length > 0}
-				<div style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
+				<div data-check="auth" style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
 					<span style="--c:var(--color-green-600)">&#10003;</span>
 					<span>{$i18n.t('Auth configured: {{methods}}', { methods: authMethods.join(', ') })}</span>
 				</div>
 			{/if}
 
 			{#if connectionAdded}
-				<div style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
+				<div data-check="connection" style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
 					<span style="--c:var(--color-green-600)">&#10003;</span>
 					<span>{$i18n.t('Model connection configured')}</span>
 				</div>
@@ -124,7 +124,7 @@
 
 
 			{#if usersCount > 0}
-				<div style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
+				<div data-check="users" style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
 					<span style="--c:var(--color-green-600)">&#10003;</span>
 					<span>
 						{usersCount === 1
@@ -135,31 +135,31 @@
 			{/if}
 
 			{#if workingAlone}
-				<div style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
+				<div data-check="working-alone" style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
 					<span style="--c:var(--color-green-600)">&#10003;</span>
 					<span>{$i18n.t('Working alone mode enabled')}</span>
 				</div>
 			{/if}
 
 			{#if readyCount === totalComponents}
-				<div style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
+				<div data-check="ai-engine" style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
 					<span style="--c:var(--color-green-600)">&#10003;</span>
 					<span>{$i18n.t('AI engine components installed')}</span>
 				</div>
 			{:else if downloadingCount > 0}
-				<div style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
+				<div data-check="ai-engine" style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
 					<span style="--c:var(--color-blue-600)">&#8635;</span>
 					<span>{$i18n.t('{{ready}} of {{total}} AI engine components ready...', { ready: readyCount, total: totalComponents })}</span>
 				</div>
 			{:else if readyCount > 0}
-				<div style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
+				<div data-check="ai-engine" style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
 					<span style="--c:var(--color-green-600)">&#10003;</span>
 					<span>{$i18n.t('{{ready}} of {{total}} AI engine components installed', { ready: readyCount, total: totalComponents })}</span>
 				</div>
 			{/if}
 
 			{#if $config?.dev_mode}
-				<div style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
+				<div data-check="dev-mode" style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
 					<span style="--c:var(--color-green-600)">&#10003;</span>
 					<span>{$i18n.t('Developer mode active')}</span>
 				</div>
@@ -172,7 +172,7 @@
 			{/if}
 
 
-			<div style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
+			<div data-check="features" style="--d:flex; --ai:center; --g:0.5rem; --size:0.8rem">
 				<span style="--c:var(--color-green-600)">&#10003;</span>
 				<span>
 					{featuresEnabled === 1
@@ -184,6 +184,7 @@
 	{/if}
 
 	<button
+		data-cy="complete-finish"
 		on:click={onFinish}
 		style="--px:1.2rem; --py:0.5rem; --size:0.9rem; --weight:500; --bgc:#000; --hvr-bgc:var(--color-gray-900); --c:#fff; --dark-bgc:#fff; --dark-c:#000; --hvr-dark-bgc:var(--color-gray-100); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"
 	>

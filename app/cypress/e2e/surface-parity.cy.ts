@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../support/index.d.ts" />
-import { SURFACES, type SurfaceName } from '../support/surfaces';
+import { SURFACES, openSurface, type SurfaceName } from '../support/surfaces';
 
 // Surface parity — the check that does not depend on my judgement.
 //
@@ -27,11 +27,19 @@ import { SURFACES, type SurfaceName } from '../support/surfaces';
 
 const SEEN: Record<string, Set<string>> = {};
 
-/** Every data-cy value the current document renders, shadow DOM included. */
-const collectHooks = () =>
+/**
+ * Every data-cy value the surface renders, shadow DOM included.
+ *
+ * `scope` narrows collection to the surface's own root. A surface that owns its
+ * whole page does not need it; one that opens as a modal does, because the page
+ * it opened over is still in the DOM and its controls are not part of the
+ * contract being compared.
+ */
+const collectHooks = (scope?: string) =>
 	cy.document().then((doc) => {
+		const root = scope ? doc.querySelector(scope) : doc;
 		const found = new Set<string>();
-		doc.querySelectorAll('[data-cy]').forEach((el) => {
+		(root ?? doc).querySelectorAll('[data-cy]').forEach((el) => {
 			const v = el.getAttribute('data-cy');
 			if (v) found.add(v);
 		});
@@ -42,24 +50,34 @@ describe('Surface parity: no-build renders every control the SvelteKit page does
 	beforeEach(() => cy.loginAdmin());
 
 	(Object.keys(SURFACES) as SurfaceName[]).forEach((name) => {
-		const { legacy, nobuild } = SURFACES[name];
+		const { legacy, nobuild, scope } = SURFACES[name] as {
+			legacy: string;
+			nobuild: string;
+			scope?: string;
+		};
+		// A scoped surface is a panel, so the floor is what one panel renders.
+		// Holding it to the whole-page floor would just make the gate flaky.
+		const floor = scope ? 1 : 3;
 
 		it(`${name}: collects the controls the SvelteKit page offers`, () => {
-			cy.visit(legacy);
+			openSurface(name, 'legacy');
 			// Wait for real content rather than a fixed pause — the SPA paints
 			// chrome first, and hooks collected mid-boot would understate it,
 			// which would make this check pass by measuring too little.
-			cy.get('[data-cy]', { timeout: 30000 }).should('have.length.at.least', 3);
-			collectHooks().then((hooks) => {
+			cy.get(`${scope ?? ''} [data-cy]`.trim(), { timeout: 30000 }).should(
+				'have.length.at.least',
+				floor
+			);
+			collectHooks(scope).then((hooks) => {
 				SEEN[`${name}:legacy`] = hooks;
 				cy.log(`${name} legacy hooks: ${[...hooks].sort().join(', ')}`);
 			});
 		});
 
 		it(`${name}: the no-build page is missing none of them`, () => {
-			cy.visit(nobuild);
+			openSurface(name, 'nobuild');
 			cy.get('[data-cy]', { timeout: 30000 }).should('have.length.at.least', 1);
-			collectHooks().then((hooks) => {
+			collectHooks(scope).then((hooks) => {
 				SEEN[`${name}:nobuild`] = hooks;
 				const legacyHooks = SEEN[`${name}:legacy`] ?? new Set<string>();
 				const missing = [...legacyHooks].filter((h) => !hooks.has(h)).sort();
