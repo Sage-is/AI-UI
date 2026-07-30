@@ -130,6 +130,30 @@ cat <<WALKTHROUGH
     the new one previews SAVED values; the old one previews as you type.
     Deliberate — matching it would need a round-trip per keystroke.
 
+  Setup wizard — five panels, and the old side has NO URL.
+    Reach the old ones from Admin → Settings → General:
+      "See what's new"     opens the changelog panel
+      "Run Setup Wizard"   opens on Welcome; the progress dots jump between
+                           panels once you are past it
+
+    changelog     new  https://localhost:$PORT/pages/admin/setup/changelog
+    features      new  https://localhost:$PORT/pages/admin/setup/features
+    developer     new  https://localhost:$PORT/pages/admin/setup/developer
+    complete      new  https://localhost:$PORT/pages/admin/setup/complete
+    search-audio  new  https://localhost:$PORT/pages/admin/setup/search-audio
+
+    Known and deliberate differences, so you can judge them rather than
+    report them:
+      * "Continue" and "Let's Go" close the modal on the old side. At a
+        route there is nothing to close, so they record the durable half —
+        changelog read, setup complete — and re-render.
+      * complete shows auth / connection / working-alone from the stored
+        configuration; the modal reads the browser's loaded model list and
+        what you clicked during that run. They disagree on a fresh
+        instance. This is the one to form an opinion about.
+      * the modal polls model status every 5s while a download runs; the
+        page renders status at request time and offers Refresh.
+
   WHAT TO LOOK FOR
 
   1. First paint. Reload each with the network throttled. The new pages
@@ -143,6 +167,21 @@ cat <<WALKTHROUGH
 
   3. Sign out, then hit a /pages/ URL directly. You should land on the
      sign-in screen, not a JSON error.
+
+  3b. The wizard's graft button, on BOTH sides. It used to graft
+     'mock-embedding' and say document search was ready — that mock seeds
+     its vectors from a sha256 of the input text, so search returned noise
+     while every message said success. Now: tick only Speech-to-Text and
+     graft, then check Admin → Sprigs shows whisper-base-ggml rooted.
+     Tick Document Search and it grafts vector-chroma first, because the
+     ONNX cultivar will not start without the runtime that rides with it.
+     That chain is a slow graft and there is no progress indicator yet —
+     worth judging how bad that feels.
+
+  3c. Untick a step on Welcome, then press Get Started. The wizard opens
+     on the step you unticked. That is a known defect, filed, NOT fixed
+     here — it self-corrects on the next click, which is why nobody
+     noticed. Included so you can tell it apart from anything new.
 
   4. Phone width. Both new pages are written mobile-first; the cards
      restack rather than squeeze. Worth a real device if you have one.
