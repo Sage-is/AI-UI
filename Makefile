@@ -103,6 +103,11 @@ VOLUME_DATA ?= $(or $(VOLUME),sage-ai-data):$(or $(DATA_MOUNT),/app/backend/data
 ENV_FILE := $$(pwd)/.env:/app/.env
 FRONTEND_SRC := $$(pwd)/app/src/:/app/src/
 STATIC_SRC := $$(pwd)/app/static/:/app/static/
+# The Python package, for the same reason app/src is mounted: dev.sh already
+# runs uvicorn with --reload, so without this a one-line change to a
+# server-rendered page costs a full image build. Only the package, not all of
+# app/backend, so the data volume mounted at /app/backend/data stays clear of it.
+BACKEND_SRC := $$(pwd)/app/backend/sage_is_ai/:/app/backend/sage_is_ai/
 BACKEND_SRC := $$(pwd)/app/backend/:/app/backend/
 
 # (RELEASE_VERSION defined above, near GIT_TAG, so IMAGE_TAG can read it.)
@@ -205,6 +210,7 @@ DEV_RUN_ARGS := --rm -p $(PORT_MAPPING) \
 	-v $(ENV_FILE) \
 	-v $(FRONTEND_SRC) \
 	-v $(STATIC_SRC) \
+	-v $(BACKEND_SRC) \
 	-v $$(pwd)/app/svelte.config.js:/app/svelte.config.js \
 	-v $$(pwd)/app/vite.config.ts:/app/vite.config.ts \
 	-v $$(pwd)/app/tsconfig.json:/app/tsconfig.json \
@@ -370,7 +376,7 @@ sprig_smoke: sprig_registry
 ## migration's core rule is that a spec is green against both; running it twice
 ## by hand is how that rule quietly becomes "green against whichever one was
 ## checked last". Surfaces are registered in app/cypress/support/surfaces.ts.
-e2e_both:
+e2e_both: sprig_registry
 	@echo "===== SURFACE_TARGET=legacy ====="
 	@CYPRESS_SURFACE_TARGET=legacy scripts/e2e/run-cypress.sh $(IMAGE_NAME):$(IMAGE_TAG)
 	@echo ""
@@ -511,7 +517,12 @@ parity_gate:
 ## e2e — headless Cypress from a pinned sibling container (no npm on host);
 ## videos land in app/cypress/videos. e2e_watch — same, but interactive GUI
 ## served at http://localhost:6080/vnc.html (noVNC; WebRTC alt backlogged).
-e2e:
+## Depends on sprig_registry for the same reason e2e_heavy does: run-cypress.sh
+## points the app at SPRIG_REGISTRY=local-registry:5000, so with that container
+## stopped the vector-chroma deliver test waits 180s and then reports
+## "expected 'sprouted' to equal 'delivered'" — a message that names everything
+## except the reason. The target is idempotent, so this costs a `docker ps`.
+e2e: sprig_registry
 	@scripts/e2e/run-cypress.sh $(IMAGE_NAME):$(IMAGE_TAG)
 
 ## e2e_heavy — opt-in heavy cultivar grafts through the real admin UI:
