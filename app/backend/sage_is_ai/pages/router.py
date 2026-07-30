@@ -13,10 +13,11 @@ instead came out bigger than the Svelte component it replaced. This rebuild is
 meant to measure that difference.
 """
 
+from html import escape
 from typing import Literal
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 
 from sage_is_ai.pages.auth import require_admin_page
 from sage_is_ai.pages.shell import render_page
@@ -131,7 +132,60 @@ _SETUP_PAGES = {
 }
 
 
-def _setup_page(request: Request, panel: str, body: str) -> HTMLResponse:
+# The order a reader walks the panels in, mirroring the modal's own sequence
+# (features, then the AI engine, then developer, then the summary). Panels not
+# migrated yet are simply absent, so this grows as they land rather than needing
+# a second list to keep in step.
+_SETUP_ORDER = ("changelog", "features", "search-audio", "developer", "complete")
+
+_NAV_S = "--d:flex; --jc:space-between; --ai:center; --g:1rem; --m:1.5rem 0 0"
+_STEP_S = "--size:.75rem; --op:.6"
+
+
+def _setup_nav(panel: str) -> str:
+    """Previous and next links between the setup routes.
+
+    A panel at its own address has no wizard around it, so without this each
+    route is a cul-de-sac — you land, you act, and there is nowhere to go. The
+    modal's sequence is Svelte state that nothing here can read, so the order
+    lives in `_SETUP_ORDER` and the links are plain anchors.
+
+    Not a replacement for the wizard's skip logic, which is the orchestrator's
+    job and still belongs to the modal. This is navigation, not a flow.
+    """
+    if panel not in _SETUP_ORDER:
+        return ""
+    i = _SETUP_ORDER.index(panel)
+    back = (
+        f'<a data-cy="setup-prev" href="/pages/admin/setup/{_SETUP_ORDER[i - 1]}">'
+        f"&larr; {escape(_SETUP_PAGES[_SETUP_ORDER[i - 1]][0])}</a>"
+        if i
+        else "<span></span>"
+    )
+    forward = (
+        f'<a data-cy="setup-next" href="/pages/admin/setup/{_SETUP_ORDER[i + 1]}">'
+        f"{escape(_SETUP_PAGES[_SETUP_ORDER[i + 1]][0])} &rarr;</a>"
+        if i + 1 < len(_SETUP_ORDER)
+        else "<span></span>"
+    )
+    return (
+        f'<nav style="{_NAV_S}">{back}'
+        f'<small data-cy="setup-step" data-step="{i + 1}" data-of="{len(_SETUP_ORDER)}"'
+        f' style="{_STEP_S}">{i + 1} of {len(_SETUP_ORDER)}</small>'
+        f"{forward}</nav>"
+    )
+
+
+def _next_setup_url(panel: str) -> str:
+    """Where "continue" goes from here; the last panel continues to itself."""
+    i = _SETUP_ORDER.index(panel)
+    nxt = _SETUP_ORDER[i + 1] if i + 1 < len(_SETUP_ORDER) else panel
+    return f"/pages/admin/setup/{nxt}"
+
+
+def _setup_page(
+    request: Request, panel: str, body: str, scripts: tuple[str, ...] = ()
+) -> HTMLResponse:
     """One shell call for every setup panel.
 
     The changelog route needed the same six arguments twice — once for the GET
@@ -145,7 +199,8 @@ def _setup_page(request: Request, panel: str, body: str) -> HTMLResponse:
             title=f"{heading} — Sage.is AI",
             heading=heading,
             subheading=subheading,
-            body=body,
+            scripts=scripts,
+            body=body + _setup_nav(panel),
         )
     )
 
@@ -165,20 +220,25 @@ async def setup_changelog_page(
     No scripts. The panel is text and one form post, so there is nothing for
     htmx to swap.
     """
-    return _setup_page(request, "changelog", render_changelog(request))
+    return _setup_page(
+        request, "changelog", render_changelog(request), scripts=("changelog-pager.js",)
+    )
 
 
 @router.post("/admin/setup/changelog/seen", response_class=HTMLResponse)
 async def setup_changelog_seen(
     request: Request, user=Depends(require_admin_page)
 ) -> HTMLResponse:
-    """Record the read, then re-render.
+    """Record the read, then move on.
 
-    Same shape as every other mutation here: the response IS the panel, so
-    there is no client-side model that can fall out of step with the server's.
+    The one mutation here that does NOT re-render its own panel. Everywhere else
+    the response is the panel, so no client-side model can drift from the
+    server's — but "Continue" means continue, and handing back the notes you
+    just finished reading would be a dead end. 303 rather than 302, so the
+    browser follows with GET and a reload does not re-post.
     """
     await mark_changelog_read(request, user)
-    return _setup_page(request, "changelog", render_changelog(request))
+    return RedirectResponse(_next_setup_url("changelog"), status_code=303)
 
 
 @router.get("/admin/setup/features", response_class=HTMLResponse)

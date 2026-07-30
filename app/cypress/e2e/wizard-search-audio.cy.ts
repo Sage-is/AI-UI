@@ -88,4 +88,28 @@ describe('Setup wizard: AI engine components', () => {
 		// And nothing grafted the mock on our behalf.
 		sprigState('mock-embedding').should('not.eq', 'rooted');
 	});
+
+	// Found in the manual pass: a graft started while a download is running gets
+	// SIGTERMed the moment the download's own sprig lands, because the supervisor
+	// keeps one cultivar per capability and prunes the incumbent. It then reports
+	// "exited on boot (rc=-15)" as though it had crashed. An installed or
+	// downloading component is therefore not selectable on either side.
+	it('will not offer a component that is already installed', () => {
+		openSurface('wizardSearchAudio');
+		cy.get('[data-cy="search-audio-whisper"]').uncheck({ force: true });
+		cy.get('[data-cy="search-audio-embedding"]').uncheck({ force: true });
+		cy.get('[data-cy="search-audio-whisper"]').check({ force: true });
+		cy.get('[data-cy="search-audio-graft"]').click();
+		expectRooted('whisper-base-ggml');
+
+		// Come back to a settled panel: whisper is installed, so its box is out
+		// of reach rather than sitting there inviting a second graft.
+		openSurface('wizardSearchAudio');
+		cy.get('[data-cy="search-audio-panel"]').should(
+			'have.attr',
+			'data-whisper-status',
+			'ready'
+		);
+		cy.get('[data-cy="search-audio-whisper"]').should('be.disabled');
+	});
 });

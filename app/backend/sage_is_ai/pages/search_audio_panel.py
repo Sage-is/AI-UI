@@ -63,12 +63,16 @@ def _status(request: Request) -> dict[str, str]:
 
 
 def _row(key: str, label: str, caption: str, state: str) -> str:
-    # A ready component cannot be selected, matching the Svelte panel — there is
-    # nothing to install, and offering the choice would invite a no-op graft.
-    ready = state == "ready"
-    attrs = ' checked' if not ready else " disabled"
+    # A busy component cannot be selected: ready means there is nothing to do,
+    # downloading means starting a graft would race the download and lose.
+    busy = state in _BUSY
+    attrs = " disabled" if busy else " checked"
+    # "installed" and "downloading" rather than the raw state word: a disabled
+    # checkbox beside a badge reading "ready" reads as a bug, because the reader
+    # has to infer that ready is WHY they cannot tick it.
+    said = {"ready": "already installed", "downloading": "downloading now"}.get(state, state)
     badge = (
-        f'<small data-state="{e(state, quote=True)}" style="{_STATE_S}">{e(state)}</small>'
+        f'<small data-state="{e(state, quote=True)}" style="{_STATE_S}">{e(said)}</small>'
         if state != "pending"
         else ""
     )
@@ -119,13 +123,40 @@ def render_search_audio(request: Request, message: str = "") -> str:
 """
 
 
+# A component is off-limits when it is already installed, and equally when its
+# weights are mid-download. Both mean "do not start work on this one".
+_BUSY = ("ready", "downloading")
+
+
 def _selected(request: Request, form: dict) -> list[tuple[str, tuple[str, ...]]]:
-    """The components the operator asked for that are not already installed."""
+    """The components the operator asked for that are free to be worked on.
+
+    `downloading` is excluded for a reason found in review, not in theory. The
+    supervisor allows exactly one cultivar per capability and prunes the
+    incumbent when a new one is grafted — so a graft started while a download is
+    still running gets SIGTERMed the moment the download's own sprig lands, and
+    reports "exited on boot (rc=-15)" as though it had crashed.
+
+    In the modal you could not hit this: both buttons advance out of the panel.
+    At a route the page re-renders and you stay on it, so pressing one and then
+    the other is the obvious thing to do. That is a failure mode this surface
+    introduced, so this surface refuses it.
+    """
     state = _status(request)
     return [
         (key, cultivars)
         for key, cultivars, _, _ in COMPONENTS
-        if key in form and state[key] != "ready"
+        if key in form and state[key] not in _BUSY
+    ]
+
+
+def _skipped(request: Request, form: dict) -> list[str]:
+    """Asked-for components that are busy, so the reply can say why."""
+    state = _status(request)
+    return [
+        f"{key} is {state[key]}"
+        for key, _, _, _ in COMPONENTS
+        if key in form and state[key] in _BUSY
     ]
 
 
@@ -145,8 +176,11 @@ async def graft_components(request: Request, user, form: dict) -> str:
     from sage_is_ai.sprigs.models import GraftRequest
 
     wanted = _selected(request, form)
+    skipped = _skipped(request, form)
     if not wanted:
-        return render_search_audio(request, "Nothing to install.")
+        return render_search_audio(
+            request, "Nothing to install" + (f" — {'; '.join(skipped)}." if skipped else ".")
+        )
 
     supervisor = request.app.state.sprig_supervisor
     done, failed = [], []
@@ -182,8 +216,11 @@ async def download_components(request: Request, user, form: dict) -> str:
     from sage_is_ai.routers.retrieval import ModelDownloadForm, trigger_model_download
 
     wanted = [key for key, _ in _selected(request, form)]
+    skipped = _skipped(request, form)
     if not wanted:
-        return render_search_audio(request, "Nothing to install.")
+        return render_search_audio(
+            request, "Nothing to install" + (f" — {'; '.join(skipped)}." if skipped else ".")
+        )
 
     try:
         await trigger_model_download(

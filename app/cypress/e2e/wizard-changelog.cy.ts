@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../support/index.d.ts" />
-import { openSurface } from '../support/surfaces';
+import { isNoBuild, openSurface } from '../support/surfaces';
 
 // The changelog panel — guard-rail, written against the SvelteKit modal before
 // any code moves, per docs/no-build-surface-convention.md.
@@ -165,8 +165,89 @@ describe('Setup wizard: changelog panel', () => {
 		readUiSettings().then((ui) => {
 			writeUiSettings({ ...ui, version: 'not-the-current-version' });
 			openSurface('wizardChangelog');
+			// The no-build button pages the notes before it advances, so get to
+			// the end first. Best-effort and forced, because on the legacy target
+			// this element is an inner div whose centre sits off-screen inside
+			// its own scroll container — Cypress refuses to trigger on it, and
+			// the legacy button submits on any click regardless.
+			cy.get('[data-cy="changelog-body"]').then(($el) => {
+				$el[0].scrollTop = $el[0].scrollHeight;
+			});
+			cy.get('[data-cy="changelog-body"]').trigger('scroll', { force: true });
 			cy.get('[data-cy="changelog-continue"]').click();
 			appVersion().then((version: string) => expectRecorded(version));
 		});
+	});
+});
+
+// The pager is no-build only: the legacy panel has no script and its Continue
+// submits on the first click. Asserted separately rather than folded into the
+// shared guard-rail, because a spec that judges both may only assert what both
+// do — and this is a capability only one of them has.
+describe('Setup wizard: changelog pager', () => {
+	beforeEach(function () {
+		if (!isNoBuild()) this.skip();
+		cy.loginAdmin();
+		openSurface('wizardChangelog');
+	});
+
+	it('starts as a pager, not an advance', () => {
+		cy.get('[data-pager-row]').should('have.attr', 'data-at-end', 'false');
+		cy.get('[data-cy="changelog-continue"]').should('contain.text', 'Next page');
+	});
+
+	it('pages down instead of leaving the notes', () => {
+		cy.get('[data-cy="changelog-body"]')
+			.invoke('prop', 'scrollTop')
+			.then((before: number) => {
+				cy.get('[data-cy="changelog-continue"]').click();
+				cy.get('[data-cy="changelog-body"]')
+					.invoke('prop', 'scrollTop')
+					.should('be.greaterThan', before);
+				// Still here. Advancing on the first click is the behaviour this
+				// replaced.
+				cy.location('pathname').should('eq', '/pages/admin/setup/changelog');
+			});
+	});
+
+	// Measure the BUTTON, not the row's CSS.
+	//
+	// The first version of this test asserted that justify-content flipped from
+	// flex-start to flex-end. It passed, and the button did not move a pixel —
+	// the row had no width, so it shrink-wrapped to the button and there was no
+	// free space for justify-content to distribute. A computed style is not a
+	// position, and only one of them is what a reader sees.
+	it('moves to the other side once the notes run out', () => {
+		cy.get('[data-cy="changelog-continue"]').then(($button) => {
+			const before = $button[0].getBoundingClientRect().left;
+
+			cy.get('[data-cy="changelog-body"]').then(($el) => {
+				$el[0].scrollTop = $el[0].scrollHeight;
+			});
+			cy.get('[data-cy="changelog-body"]').trigger('scroll', { force: true });
+			cy.get('[data-pager-row]').should('have.attr', 'data-at-end', 'true');
+			cy.get('[data-cy="changelog-continue"]').should('contain.text', 'Continue');
+
+			// Travelled most of the way across its own row, not nudged. Retried,
+			// because the move is a 350ms transition rather than a jump.
+			cy.get('[data-pager-row]').then(($row) => {
+				const width = $row[0].clientWidth;
+				cy.get('[data-cy="changelog-continue"]').should(($moved) => {
+					const after = $moved[0].getBoundingClientRect().left;
+					expect(after - before, 'button travelled across the row').to.be.greaterThan(
+						width / 2
+					);
+				});
+			});
+		});
+	});
+
+	it('advances to the next panel from the end', () => {
+		cy.get('[data-cy="changelog-body"]').then(($el) => {
+			$el[0].scrollTop = $el[0].scrollHeight;
+		});
+		cy.get('[data-cy="changelog-body"]').trigger('scroll');
+		cy.get('[data-cy="changelog-continue"]').click();
+		cy.location('pathname').should('eq', '/pages/admin/setup/features');
 	});
 });

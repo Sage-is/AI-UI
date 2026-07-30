@@ -15,6 +15,13 @@ changed since the process started. Reading the constant is the same rule the
 other panels follow (call the handler, never round-trip your own API), taken to
 its end: there is no handler to call, only data.
 
+**Continue pages the notes before it advances.** The release notes run to tens
+of thousands of words, and a Continue that advances on the first click means
+most readers never see past the first screen. `changelog-pager.js` scrolls one
+screen per click while there is more below, then moves the button to the other
+side of the row and lets it submit. Without the script the button is a plain
+submit rendered in its end position, so nothing lies about what it will do.
+
 **Continue is a form post, not a modal close.** In the modal, Continue closes it
 and, when the changelog is the only panel, records the version as read. At a
 route there is nothing to close, so what survives is the half that outlives the
@@ -96,11 +103,19 @@ def render_changelog(request: Request) -> str:
     Release Notes
     <span data-app-version="{e(VERSION, quote=True)}"> &middot; v{e(VERSION)}</span>
   </p>
-  <div data-cy="changelog-body" style="--maxh:24rem; --ofy:auto">{body}</div>
-  <form method="post" action="/pages/admin/setup/changelog/seen" style="--m:1rem 0 0">
+  <div data-cy="changelog-body" tabindex="0"
+       style="--maxh:24rem; --ofy:auto; --b:1px solid var(--line); --br:.5rem; --p:.75rem">{body}</div>
+  <!-- The button starts in its END position with its END label, so a reader
+       with no JavaScript gets a control that does what it says. The pager moves
+       it left and relabels it only once it has measured that there is more
+       below. `data-pager-row` is styled from pages.css because the side depends
+       on runtime state, which an inline prop cannot express. -->
+  <form method="post" action="/pages/admin/setup/changelog/seen" data-pager-row
+        style="--m:1rem 0 0">
     <button data-cy="changelog-continue" type="submit"
+            data-label-more="Next page &darr;" data-label-end="Continue &rarr;"
             style="--p:.45rem 1rem; --br:999px; --b:1px solid var(--line); --cur:pointer">
-      Continue
+      Continue &rarr;
     </button>
   </form>
 </section>
