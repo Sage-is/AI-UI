@@ -31,6 +31,8 @@ from html import escape as e
 
 from fastapi import Request
 
+from sage_is_ai.pages.i18n import lang_query, translator
+
 __all__ = ["render_connection", "verify_and_save", "PROVIDERS"]
 
 # key, label, url field, url placeholder, whether it takes an API key
@@ -73,7 +75,7 @@ def _has_key(request: Request) -> bool:
 
 
 def _card(request: Request, key: str, label: str, _f: str, placeholder: str,
-          takes_key: bool) -> str:
+          takes_key: bool, _, lang: str) -> str:
     url, state = _state(request, key)
     badge = (
         f'<small data-state="{e(state, quote=True)}" style="{_STATE_S}">{e(state)}</small>'
@@ -83,10 +85,10 @@ def _card(request: Request, key: str, label: str, _f: str, placeholder: str,
     # The key field is empty by design. Its placeholder is the only thing that
     # reports whether one is stored, and it reports existence, never the value.
     key_field = (
-        f'<label style="{_LABEL_S}">API Key</label>'
+        f'<label style="{_LABEL_S}">{e(_("API Key"))}</label>'
         f'<input data-cy="connection-openai-key" type="password" name="api_key" '
         f'autocomplete="off" placeholder="'
-        f'{"a key is stored — leave blank to keep it" if _has_key(request) else "sk-..."}" '
+        f'{_("a key is stored, leave blank to keep it") if _has_key(request) else "sk-..."}" '
         f'style="{_INPUT_S}" />'
         if takes_key
         else ""
@@ -94,22 +96,24 @@ def _card(request: Request, key: str, label: str, _f: str, placeholder: str,
     return f"""
 <article data-cy="connection-{e(key, quote=True)}" data-provider-state="{e(state or 'unset', quote=True)}"
          style="{_CARD_S}">
-  <form method="post" action="/pages/admin/setup/connection/{e(key, quote=True)}">
-    <strong style="{_NAME_S}">{e(label)}</strong>{badge}
-    <label style="{_LABEL_S}">API Base URL</label>
+  <form method="post" action="/pages/admin/setup/connection/{e(key, quote=True)}{lang}">
+    <strong style="{_NAME_S}">{e(_(label))}</strong>{badge}
+    <label style="{_LABEL_S}">{e(_("API Base URL"))}</label>
     <input data-cy="connection-{e(key, quote=True)}-url" type="text" name="url"
            value="{e(url, quote=True)}" placeholder="{e(placeholder, quote=True)}"
            style="{_INPUT_S}" />
     {key_field}
     <button data-cy="connection-{e(key, quote=True)}-verify" type="submit"
-            style="{_BUTTON_S}">Verify &amp; Save</button>
+            style="{_BUTTON_S}">{e(_("Verify & Save"))}</button>
   </form>
 </article>
 """
 
 
 def render_connection(request: Request, message: str = "") -> str:
-    cards = "".join(_card(request, *p) for p in PROVIDERS)
+    _ = translator(request)
+    lang = lang_query(request)
+    cards = "".join(_card(request, *p, _, lang) for p in PROVIDERS)
     note = (
         f'<output data-cy="connection-result" style="--size:.8rem; --op:.8">{e(message)}</output>'
         if message
@@ -117,7 +121,7 @@ def render_connection(request: Request, message: str = "") -> str:
     )
     return f"""
 <section data-cy="connection-panel">
-  <p style="--size:.85rem">Add at least one connection to start chatting with AI models.</p>
+  <p style="--size:.85rem">{e(_("Add at least one connection to start chatting with AI models."))}</p>
   {cards}
   {note}
 </section>

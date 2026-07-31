@@ -87,12 +87,33 @@ describe('Setup wizard: the chosen steps are durable', () => {
 		cy.location('pathname').should('eq', '/pages/admin/setup/developer');
 	});
 
-	// Choosing only steps that are still modal-only is a real answer, not an
-	// error. It must not strand the reader on a route that does not exist.
-	it('falls through to the summary when nothing chosen has a route yet', () => {
+	// This used to assert that choosing auth landed on the summary, because auth
+	// had no route. It has one now, so that assertion was describing a gap rather
+	// than a contract — the kind of test that quietly blocks the fix it was
+	// written beside. What survives is the property worth keeping: every step the
+	// panel offers must lead somewhere real.
+	it('sends every step it offers to a route that exists', () => {
+		const DESTINATIONS: Record<string, string> = {
+			'welcome-auth': 'auth',
+			'welcome-connection': 'connection',
+			'welcome-users': 'users',
+			'welcome-features': 'features',
+			'welcome-search-audio': 'search-audio',
+			'welcome-developer': 'developer'
+		};
+		Object.entries(DESTINATIONS).forEach(([hook, panel]) => {
+			openSurface('wizardWelcome');
+			STEPS.forEach((h) => cy.get(`[data-cy="${h}"]`).uncheck({ force: true }));
+			cy.get(`[data-cy="${hook}"]`).check({ force: true });
+			cy.get('[data-cy="welcome-start"]').click();
+			cy.location('pathname').should('eq', `/pages/admin/setup/${panel}`);
+		});
+	});
+
+	// Choosing nothing is still a real answer, and it must not strand the reader.
+	it('falls through to the summary when nothing is chosen', () => {
 		openSurface('wizardWelcome');
 		STEPS.forEach((hook) => cy.get(`[data-cy="${hook}"]`).uncheck({ force: true }));
-		cy.get('[data-cy="welcome-auth"]').check({ force: true });
 		cy.get('[data-cy="welcome-start"]').click();
 		cy.location('pathname').should('eq', '/pages/admin/setup/complete');
 	});

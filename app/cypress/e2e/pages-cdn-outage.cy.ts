@@ -47,6 +47,7 @@ const STRUCTURE: Record<SurfaceName, { selector: string; display: string } | nul
 	wizardSearchAudio: null,
 	wizardWelcome: null,
 	wizardConnection: null,
+	wizardAuth: null,
 	wizardUsers: null
 };
 
@@ -62,6 +63,7 @@ const MIN_HOOKS: Partial<Record<SurfaceName, number>> = {
 	wizardSearchAudio: 4,
 	wizardWelcome: 7,
 	wizardConnection: 5,
+	wizardAuth: 10,
 	wizardUsers: 7
 };
 

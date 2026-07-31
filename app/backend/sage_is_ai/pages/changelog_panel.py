@@ -36,6 +36,8 @@ from html import escape as e
 
 from fastapi import Request
 
+from sage_is_ai.pages.i18n import lang_query, translator
+
 __all__ = ["render_changelog", "mark_changelog_read"]
 
 # Written once, repeated by the loops below. A prop string that appears on every
@@ -85,17 +87,20 @@ def render_changelog(request: Request) -> str:
     """The panel. Arrives rendered, because the data was never remote."""
     from sage_is_ai.env import CHANGELOG, VERSION
 
+    _ = translator(request)
+    lang = lang_query(request)
+
     versions = "".join(
         _version(str(v), d) for v, d in CHANGELOG.items() if isinstance(d, dict)
     )
     # An empty changelog is a real state, meaning a build whose CHANGELOG.md
     # failed to parse. Rendering nothing at all would look like a broken page
     # rather than an empty one.
-    body = versions or '<p style="--op:.7">No release notes are available.</p>'
+    body = versions or f'<p style="--op:.7">{e(_("No release notes are available."))}</p>'
     return f"""
 <section data-cy="changelog-panel">
   <p style="--size:.8rem; --op:.7; --m:0 0 .5rem">
-    Release Notes
+    {e(_("Release Notes"))}
     <span data-app-version="{e(VERSION, quote=True)}"> &middot; v{e(VERSION)}</span>
   </p>
   <div data-cy="changelog-body" tabindex="0"
@@ -105,12 +110,12 @@ def render_changelog(request: Request) -> str:
        it left and relabels it only once it sees there is more below. The move
        itself is `margin-left` in pages.css: the side depends on runtime state,
        which an inline prop cannot express. -->
-  <form method="post" action="/pages/admin/setup/changelog/seen" data-pager-row
+  <form method="post" action="/pages/admin/setup/changelog/seen{lang}" data-pager-row
         style="--m:1rem 0 0">
     <button data-cy="changelog-continue" type="submit"
-            data-label-more="Next page &darr;" data-label-end="Continue &rarr;"
+            data-label-more="{e(_("Next page"), quote=True)} &darr;" data-label-end="{e(_("Continue"), quote=True)} &rarr;"
             style="--p:.45rem 1rem; --br:999px; --b:1px solid var(--line); --cur:pointer">
-      Continue &rarr;
+      {e(_("Continue"))} &rarr;
     </button>
   </form>
 </section>

@@ -132,6 +132,12 @@ export const SURFACES = {
 		nobuild: '/pages/admin/setup/welcome',
 		scope: '[data-cy="welcome-panel"]'
 	},
+	wizardAuth: {
+		legacy: '/admin/settings/general',
+		openLegacy: openWizardPanel('welcome-auth', 'auth'),
+		nobuild: '/pages/admin/setup/auth',
+		scope: '[data-cy="auth-panel"]'
+	},
 	wizardConnection: {
 		legacy: '/admin/settings/general',
 		openLegacy: openWizardPanel('welcome-connection', 'connection'),

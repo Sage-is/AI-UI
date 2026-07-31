@@ -16,6 +16,8 @@ from html import escape as e
 
 from fastapi import Request
 
+from sage_is_ai.pages.i18n import lang_query, translator
+
 __all__ = ["render_developer", "save_developer"]
 
 _CARD_S = ("--d:flex; --g:.75rem; --p:.7rem; --br:.6rem; "
@@ -51,21 +53,23 @@ _DEV_LINKS: tuple[tuple[str, str], ...] = (
 )
 
 
-def _links(items: tuple[tuple[str, str], ...]) -> str:
+def _links(items: tuple[tuple[str, str], ...], _) -> str:
     # rel="noopener" on every target=_blank link, same as the Svelte original.
     return "".join(
         f'<a href="{e(href, quote=True)}" target="_blank" rel="noopener" '
-        f'style="{_LINK_S}">{e(text)}</a>'
+        f'style="{_LINK_S}">{e(_(text))}</a>'
         for href, text in items
     )
 
 
-def _step(num: str, title: str, command: str, hint: str) -> str:
+def _step(num: str, title: str, command: str, hint: str, _) -> str:
+    # The command is NOT translated. It is a shell line to paste, and a catalog
+    # that ever gained an entry for it would break the reader's terminal.
     cmd = f'<code style="{_CODE_S}">{e(command)}</code>' if command else ""
     return (
         f'<li style="{_CARD_S}"><span style="{_NUM_S}">{e(num)}</span>'
-        f'<span><span style="{_STEP_S}">{e(title)}</span> {cmd}'
-        f'<small style="{_HINT_S}">{e(hint)}</small></span></li>'
+        f'<span><span style="{_STEP_S}">{e(_(title))}</span> {cmd}'
+        f'<small style="{_HINT_S}">{e(_(hint))}</small></span></li>'
     )
 
 
@@ -82,17 +86,20 @@ def _signed_up(request: Request, user) -> bool:
 def render_developer(request: Request, user, saved: bool = False) -> str:
     from sage_is_ai.env import DEV_MODE
 
+    _ = translator(request)
+    lang = lang_query(request)
+
     if DEV_MODE:
         # An <ul> of facts, not cards. Nothing here is a step to follow.
         body = (
-            '<p style="--size:.9rem">Live source mounted. Changes reload automatically.</p>'
-            '<ul style="--size:.8rem"><li>Source code mounted</li>'
-            "<li>Hot reload active</li></ul>" + _links(_DEV_LINKS)
+            f'<p style="--size:.9rem">{e(_("Live source mounted. Changes reload automatically."))}</p>'
+            f'<ul style="--size:.8rem"><li>{e(_("Source code mounted"))}</li>'
+            f'<li>{e(_("Hot reload active"))}</li></ul>' + _links(_DEV_LINKS, _)
         )
     else:
         checked = " checked" if _signed_up(request, user) else ""
         note = (
-            '<output data-cy="developer-saved" style="--size:.8rem; --op:.75">Saved.</output>'
+            f'<output data-cy="developer-saved" style="--size:.8rem; --op:.75">{e(_("Saved"))}</output>'
             if saved
             else ""
         )
@@ -100,21 +107,21 @@ def render_developer(request: Request, user, saved: bool = False) -> str:
         # is what <ol> means, and it renders the numbers without the three
         # hand-written digits the Svelte version carries.
         body = (
-            "<p>Two commands and you are hacking on AI UI with hot reload. "
-            "No PhD required.</p>"
+            f'<p>{e(_("Two commands and you are hacking on AI UI with hot reload. No PhD required."))}</p>'
             f'<ol style="--p:0; --list-style:none">'
-            f"{''.join(_step(*s) for s in _STEPS)}</ol>"
-            '<form method="post" action="/pages/admin/setup/developer/save">'
+            f"{''.join(_step(*s, _) for s in _STEPS)}</ol>"
+            f'<form method="post" action="/pages/admin/setup/developer/save{lang}">'
             f'<label style="{_CARD_S}; --cur:pointer">'
             f'<input data-cy="developer-mission-signup" type="checkbox" '
             f'name="devMissionSignup" value="1"{checked} />'
             '<span><span style="--size:.85rem; --weight:500">'
-            "Sign me up for the mission</span>"
-            f'<small style="{_HINT_S}">I solemnly swear I will open a terminal. '
-            "Remind me next time I log in until I do.</small></span></label>"
+            f'{e(_("Sign me up for the mission"))}</span>'
+            f'<small style="{_HINT_S}">'
+            f'{e(_("I solemnly swear I will open a terminal. Remind me next time I log in until I do."))}'
+            "</small></span></label>"
             '<button data-cy="developer-save" type="submit" '
             'style="--p:.45rem 1rem; --br:999px; --b:1px solid var(--line); --cur:pointer">'
-            f"Save</button>{note}</form>" + _links(_LINKS)
+            f'{e(_("Save"))}</button>{note}</form>' + _links(_LINKS, _)
         )
 
     return f'<section data-cy="developer-panel" data-dev-mode="{str(bool(DEV_MODE)).lower()}">{body}</section>'

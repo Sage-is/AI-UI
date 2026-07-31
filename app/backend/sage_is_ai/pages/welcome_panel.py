@@ -14,12 +14,10 @@ Whether a step is already done is read from the server here rather than from a
 store the browser filled in, which is the same substitution the complete panel
 makes and for the same reason. At a route there is no browser state to read.
 
-Starting goes to the first selected step that has a route. Only some panels are
-migrated, so the sequence here contains only the migrated ones. Auth,
-connections and users are still modal-only; selecting them stores the choice,
-and the eventual cut-over is what makes them reachable. Sending a reader to a
-route that does not exist yet would be worse than starting them at the next one
-that does.
+Starting goes to the first selected step that has a route. Every step now has
+one, so `_ROUTES` is a name map rather than a filter. It earns its place anyway:
+the stored keys use the modal's vocabulary, `search_audio` with an underscore,
+and the routes use hyphens.
 """
 
 from __future__ import annotations
@@ -27,6 +25,8 @@ from __future__ import annotations
 from html import escape as e
 
 from fastapi import Request
+
+from sage_is_ai.pages.i18n import lang_query, translator
 
 __all__ = ["render_welcome", "start_wizard", "STEPS", "selected_steps"]
 
@@ -46,9 +46,13 @@ STEPS: tuple[tuple[str, str, str], ...] = (
     ("developer", "Developer Mode", "Set up a local development environment"),
 )
 
-# Where a chosen step lands, for the ones that have an address. Absent means
-# modal-only for now.
+# Stored key to route segment. The two differ only where the modal's vocabulary
+# uses an underscore, so this exists to translate `search_audio` and to keep the
+# mapping in one place rather than in a string operation at the call site.
 _ROUTES: dict[str, str] = {
+    "auth": "auth",
+    "connection": "connection",
+    "users": "users",
     "features": "features",
     "search_audio": "search-audio",
     "developer": "developer",
@@ -111,35 +115,39 @@ def _defaults(request: Request, user) -> dict[str, bool]:
     }
 
 
-def _row(key: str, label: str, caption: str, on: bool, done: bool) -> str:
-    badge = f'<small style="{_DONE_S}">already configured</small>' if done else ""
+def _row(key: str, label: str, caption: str, on: bool, done: bool, _) -> str:
+    badge = (
+        f'<small style="{_DONE_S}">{e(_("already configured"))}</small>' if done else ""
+    )
     return (
         f'<label style="{_ROW_S}">'
         f'<input data-cy="welcome-{e(key.replace("_", "-"), quote=True)}" type="checkbox" '
         f'name="{e(key, quote=True)}" value="1"{" checked" if on else ""} />'
-        f'<span><span style="{_NAME_S}">{e(label)}</span>{badge}'
-        f'<small style="{_CAPTION_S}">{e(caption)}</small></span></label>'
+        f'<span><span style="{_NAME_S}">{e(_(label))}</span>{badge}'
+        f'<small style="{_CAPTION_S}">{e(_(caption))}</small></span></label>'
     )
 
 
 def render_welcome(request: Request, user) -> str:
+    _ = translator(request)
+    lang = lang_query(request)
     on = _defaults(request, user)
     done = {"connection": _has_models(request), "users": _has_other_users()}
     rows = "".join(
-        _row(k, lb, cp, on[k], done.get(k, False)) for k, lb, cp in STEPS
+        _row(k, lb, cp, on[k], done.get(k, False), _) for k, lb, cp in STEPS
     )
     return f"""
 <section data-cy="welcome-panel">
-  <form method="post" action="/pages/admin/setup/welcome/start">
+  <form method="post" action="/pages/admin/setup/welcome/start{lang}">
     <fieldset style="--b:0; --p:0; --m:0">
       <legend style="--size:.85rem; --weight:600; --p:0">
-        Choose what to set up. You can change any of it later in Admin settings.
+        {e(_("Choose what to set up. You can change any of it later in Admin settings."))}
       </legend>
       {rows}
     </fieldset>
     <button data-cy="welcome-start" type="submit"
             style="--p:.45rem 1rem; --br:999px; --b:1px solid var(--line); --cur:pointer">
-      Get Started
+      {e(_("Get Started"))}
     </button>
   </form>
 </section>
@@ -169,9 +177,9 @@ async def start_wizard(request: Request, user, form: dict) -> str:
         request, UserSettings(**{**settings, "ui": ui}), user
     )
 
-    # First chosen step that has somewhere to go. Choosing only modal-only steps
-    # is a real answer, so it lands on the summary rather than nowhere.
+    # First chosen step, in STEPS order. Choosing nothing is a real answer, so it
+    # lands on the summary rather than nowhere.
     for key in (k for k, _, _ in STEPS):
         if key in chosen and key in _ROUTES:
-            return f"/pages/admin/setup/{_ROUTES[key]}"
-    return "/pages/admin/setup/complete"
+            return f"/pages/admin/setup/{_ROUTES[key]}{lang_query(request)}"
+    return f"/pages/admin/setup/complete{lang_query(request)}"

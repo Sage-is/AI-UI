@@ -27,6 +27,8 @@ from html import escape as e
 
 from fastapi import Request
 
+from sage_is_ai.pages.i18n import lang_query, translator
+
 __all__ = [
     "render_users",
     "add_one_user",
@@ -82,6 +84,8 @@ def _working_alone(user) -> bool:
 
 
 def render_users(request: Request, user, message: str = "") -> str:
+    _ = translator(request)
+    lang = lang_query(request)
     people = _people(request)
     alone = _working_alone(user)
     options = "".join(
@@ -101,47 +105,47 @@ def render_users(request: Request, user, message: str = "") -> str:
     return f"""
 <section data-cy="users-panel" data-user-count="{len(people)}"
          data-working-alone="{str(alone).lower()}">
-  <form method="post" action="/pages/admin/setup/users/alone" style="--m:0 0 1rem">
+  <form method="post" action="/pages/admin/setup/users/alone{lang}" style="--m:0 0 1rem">
     <button data-cy="users-working-alone" type="submit" style="{_BUTTON_S}">
-      I&rsquo;m working alone
+      {e(_("I am working alone"))}
     </button>
     <small style="--size:.7rem; --op:.7; --d:block; --m:.25rem 0 0">
-      Skip user setup. You can add people later from Admin settings.
+      {e(_("Skip user setup. You can add people later from Admin settings."))}
     </small>
   </form>
 
-  <form method="post" action="/pages/admin/setup/users/add">
+  <form method="post" action="/pages/admin/setup/users/add{lang}">
     <fieldset style="--b:0; --p:0; --m:0">
-      <legend style="--size:.85rem; --weight:600; --p:0">Add a team member</legend>
-      <label style="{_LABEL_S}">Name</label>
+      <legend style="--size:.85rem; --weight:600; --p:0">{e(_("Add a team member"))}</legend>
+      <label style="{_LABEL_S}">{e(_("Name"))}</label>
       <input data-cy="users-name" type="text" name="name" style="{_INPUT_S}" />
-      <label style="{_LABEL_S}">Email</label>
+      <label style="{_LABEL_S}">{e(_("Email"))}</label>
       <input data-cy="users-email" type="email" name="email" style="{_INPUT_S}" />
-      <label style="{_LABEL_S}">Password</label>
+      <label style="{_LABEL_S}">{e(_("Password"))}</label>
       <input data-cy="users-password" type="password" name="password"
              autocomplete="new-password" style="{_INPUT_S}" />
-      <label style="{_LABEL_S}">Role</label>
+      <label style="{_LABEL_S}">{e(_("Role"))}</label>
       <select data-cy="users-role" name="role" style="{_INPUT_S}">{options}</select>
     </fieldset>
-    <button data-cy="users-add" type="submit" style="{_BUTTON_S}; --m:.6rem 0 0">Add</button>
+    <button data-cy="users-add" type="submit" style="{_BUTTON_S}; --m:.6rem 0 0">{e(_("Add"))}</button>
   </form>
 
   <!-- A real file input posting multipart. The Svelte panel hides its input
        behind a styled button and drives it with getElementById; the browser
        already renders a file picker, so this uses the one it has. -->
-  <form method="post" action="/pages/admin/setup/users/import"
+  <form method="post" action="/pages/admin/setup/users/import{lang}"
         enctype="multipart/form-data" style="--m:1rem 0 0">
-    <label style="{_LABEL_S}">Import a CSV: {", ".join(CSV_COLUMNS)}</label>
+    <label style="{_LABEL_S}">{e(_("Import a CSV"))}: {", ".join(CSV_COLUMNS)}</label>
     <input data-cy="users-csv" type="file" name="csv" accept=".csv,text/csv"
            style="--size:.75rem" />
     <button data-cy="users-import" type="submit" style="{_BUTTON_S}; --m:.5rem 0 0">
-      Import
+      {e(_("Import"))}
     </button>
-    <a href="/static/user-import.csv" style="--size:.7rem; --ml:.5rem">Download template</a>
+    <a href="/static/user-import.csv" style="--size:.7rem; --ml:.5rem">{e(_("Download template"))}</a>
   </form>
 
   <h2 style="--size:.8rem; --weight:600; --m:1.25rem 0 .4rem">
-    People ({len(people)})
+    {e(_("People"))} ({len(people)})
   </h2>
   <ul data-cy="users-list" style="--p:0; --list-style:none; --maxh:10rem; --ofy:auto">{listing}</ul>
   {note}

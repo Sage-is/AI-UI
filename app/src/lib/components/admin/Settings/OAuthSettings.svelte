@@ -172,6 +172,7 @@
 	<div style="--d:flex; --fd:column; --g:0.8rem">
 		<!-- Google OAuth -->
 		<details
+			data-cy="auth-google-card"
 			style="--radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; --p:0"
 		>
 			<summary
@@ -217,6 +218,7 @@
 				<div style="--d:flex; --fd:column; --g:0.4rem">
 					<label style="--size:0.75rem; --weight:500">{$i18n.t('Client ID')}</label>
 					<input
+						data-cy="auth-google-client-id"
 						type="text"
 						bind:value={googleClientId}
 						placeholder="123456789.apps.googleusercontent.com"
@@ -225,7 +227,10 @@
 				</div>
 				<div style="--d:flex; --fd:column; --g:0.4rem">
 					<label style="--size:0.75rem; --weight:500">{$i18n.t('Client Secret')}</label>
+					<!-- The hook sits on the wrapper because SensitiveInput takes no
+					     data-cy prop, and adding one would touch every other caller. -->
 					<div
+						data-cy="auth-google-client-secret"
 						style="--d:flex; --ai:center; --radius:0.5rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-600); --bw:1px; --bs:solid; --px:0.5rem"
 					>
 						<SensitiveInput
@@ -240,6 +245,7 @@
 
 		<!-- GitHub OAuth -->
 		<details
+			data-cy="auth-github-card"
 			style="--radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; --p:0"
 		>
 			<summary
@@ -281,6 +287,7 @@
 				<div style="--d:flex; --fd:column; --g:0.4rem">
 					<label style="--size:0.75rem; --weight:500">{$i18n.t('Client ID')}</label>
 					<input
+						data-cy="auth-github-client-id"
 						type="text"
 						bind:value={githubClientId}
 						placeholder="Iv1.abc123..."
@@ -290,6 +297,7 @@
 				<div style="--d:flex; --fd:column; --g:0.4rem">
 					<label style="--size:0.75rem; --weight:500">{$i18n.t('Client Secret')}</label>
 					<div
+						data-cy="auth-github-client-secret"
 						style="--d:flex; --ai:center; --radius:0.5rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-600); --bw:1px; --bs:solid; --px:0.5rem"
 					>
 						<SensitiveInput
@@ -304,6 +312,7 @@
 
 		<!-- Email Magic Link Login (Beta) -->
 		<details
+			data-cy="auth-magic-link-card"
 			style="--radius:0.75rem; --bc:var(--color-amber-100); --dark-bc:var(--color-amber-900); --bw:1px; --bs:solid; --p:0"
 		>
 			<summary
@@ -336,6 +345,7 @@
 				<!-- Enable toggle -->
 				<label style="--d:flex; --ai:center; --g:0.6rem; cursor:pointer">
 					<input
+						data-cy="auth-enable-magic-link-login"
 						type="checkbox"
 						bind:checked={enableMagicLinkLogin}
 						style="--w:1rem; --h:1rem; --shrink:0"
@@ -350,6 +360,7 @@
 							<div style="--d:flex; --fd:column; --g:0.3rem; --fx:1 1 0%">
 								<label style="--size:0.75rem; --weight:500">{$i18n.t('SMTP Host')}</label>
 								<input
+									data-cy="auth-magic-link-smtp-host"
 									type="text"
 									bind:value={magicLinkSmtpHost}
 									placeholder="smtp.gmail.com"
@@ -359,6 +370,7 @@
 							<div style="--d:flex; --fd:column; --g:0.3rem; --w:5rem">
 								<label style="--size:0.75rem; --weight:500">{$i18n.t('Port')}</label>
 								<input
+									data-cy="auth-magic-link-smtp-port"
 									type="number"
 									bind:value={magicLinkSmtpPort}
 									placeholder="587"
@@ -369,6 +381,7 @@
 						<div style="--d:flex; --fd:column; --g:0.3rem">
 							<label style="--size:0.75rem; --weight:500">{$i18n.t('Username')}</label>
 							<input
+								data-cy="auth-magic-link-smtp-user"
 								type="text"
 								bind:value={magicLinkSmtpUser}
 								placeholder="you@gmail.com"
@@ -378,6 +391,7 @@
 						<div style="--d:flex; --fd:column; --g:0.3rem">
 							<label style="--size:0.75rem; --weight:500">{$i18n.t('Password')}</label>
 							<div
+								data-cy="auth-magic-link-smtp-password"
 								style="--d:flex; --ai:center; --radius:0.5rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-600); --bw:1px; --bs:solid; --px:0.5rem"
 							>
 								<SensitiveInput
@@ -390,6 +404,7 @@
 						<div style="--d:flex; --fd:column; --g:0.3rem">
 							<label style="--size:0.75rem; --weight:500">{$i18n.t('From Address')}</label>
 							<input
+								data-cy="auth-magic-link-smtp-from"
 								type="email"
 								bind:value={magicLinkSmtpFrom}
 								placeholder="noreply@yourdomain.com"
@@ -433,6 +448,7 @@
 			<div style="--d:flex; --fd:column; --g:0.5rem; --mb:0.4rem">
 				<label style="--d:flex; --ai:center; --g:0.6rem; cursor:pointer">
 					<input
+						data-cy="auth-oauth-merge-accounts-by-email"
 						type="checkbox"
 						bind:checked={mergeAccountsByEmail}
 						style="--w:1rem; --h:1rem; --shrink:0"
@@ -470,7 +486,10 @@
 								{$i18n.t('Open registration: remember to review new accounts regularly.')}
 							</span>
 						{/if}
-						<Switch bind:state={adminConfig.ENABLE_SIGNUP} />
+						<!-- Wrapper carries the hook; Switch takes no data-cy prop. -->
+						<span data-cy="auth-enable-signup">
+							<Switch bind:state={adminConfig.ENABLE_SIGNUP} />
+						</span>
 					</div>
 				</div>
 
@@ -487,6 +506,7 @@
 							</div>
 						{/if}
 						<input
+							data-cy="auth-enable-oauth-signup"
 							type="checkbox"
 							bind:checked={enableOAuthSignup}
 							style="--w:1rem; --h:1rem; --shrink:0"

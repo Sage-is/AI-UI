@@ -22,7 +22,7 @@
 	};
 </script>
 
-<div style="--px:1.2rem; --pt:1rem; --pb:1.5rem">
+<div data-cy="auth-panel" style="--px:1.2rem; --pt:1rem; --pb:1.5rem">
 	<div style="--d:flex; --ai:center; --g:0.5rem; --mb:0.2rem">
 		<div style="--size:1.2rem; --weight:600; --dark-c:#fff">
 			{$i18n.t('Authentication')}
@@ -54,6 +54,7 @@
 			</button>
 
 			<button
+				data-cy="auth-save"
 				on:click={saveAndNext}
 				disabled={saving}
 				style="--px:0.8rem; --py:0.4rem; --size:0.8rem; --weight:500; --bgc:{!saving ? '#000' : 'var(--color-gray-300)'}; --hvr-bgc:{!saving ? 'var(--color-gray-900)' : 'var(--color-gray-300)'}; --c:#fff; --dark-bgc:{!saving ? '#fff' : 'var(--color-gray-600)'}; --dark-c:{!saving ? '#000' : 'var(--color-gray-400)'}; --hvr-dark-bgc:{!saving ? 'var(--color-gray-100)' : 'var(--color-gray-600)'}; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:9999px"

@@ -20,6 +20,7 @@ from fastapi import APIRouter, Depends, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from sage_is_ai.pages.auth import require_admin_page
+from sage_is_ai.pages.i18n import lang_query, supported
 from sage_is_ai.pages.shell import render_page
 from sage_is_ai.pages.branding_panel import render_branding, save_branding
 from sage_is_ai.pages.changelog_panel import mark_changelog_read, render_changelog
@@ -28,6 +29,7 @@ from sage_is_ai.pages.developer_panel import render_developer, save_developer
 from sage_is_ai.pages.complete_panel import finish_setup, render_complete
 from sage_is_ai.pages.welcome_panel import render_welcome, start_wizard
 from sage_is_ai.pages.connection_panel import render_connection, verify_and_save
+from sage_is_ai.pages.auth_panel import render_auth, save_auth
 from sage_is_ai.pages.users_panel import (
     add_one_user,
     import_csv,
@@ -134,6 +136,7 @@ async def branding_save(
 _SETUP_PAGES = {
     "changelog": ("What's New", "Everything that changed, newest first."),
     "welcome": ("Setup Wizard", "Pick what to configure. Nothing here is permanent."),
+    "auth": ("Authentication", "Let people sign in with Google, GitHub, or an emailed link."),
     "connection": ("Model Connections", "Point this instance at a model provider."),
     "users": ("Users", "Invite your team, or say you are working alone."),
     "features": ("Features", "Enable or disable platform features for your users."),
@@ -143,13 +146,15 @@ _SETUP_PAGES = {
 }
 
 
-# The order a reader walks the panels in, mirroring the modal's own sequence
-# (features, then the AI engine, then developer, then the summary). Panels not
-# migrated yet are simply absent, so this grows as they land rather than needing
-# a second list to keep in step.
+# The order a reader walks the panels in, mirroring `allSteps` in
+# `ChangesAndSetupModal.svelte`: authentication first, then connections, users,
+# features, the AI engine, developer, and the summary last. Panels not migrated
+# yet are simply absent, so this grows as they land rather than needing a second
+# list to keep in step.
 _SETUP_ORDER = (
     "changelog",
     "welcome",
+    "auth",
     "connection",
     "users",
     "features",
@@ -162,7 +167,26 @@ _NAV_S = "--d:flex; --jc:space-between; --ai:center; --g:1rem; --m:1.5rem 0 0"
 _STEP_S = "--size:.75rem; --op:.6"
 
 
-def _setup_nav(panel: str) -> str:
+def _page_headers(request: Request) -> dict[str, str]:
+    """Cache-correctness headers for a rendered page.
+
+    `Vary: Accept-Language` only when the header decided the locale, which is a
+    cold entry with no `?lang=`. Once the reader is inside, every link carries the
+    parameter and the URL alone identifies the representation.
+
+    Never `Vary: Cookie`. See `i18n.locale_for`.
+
+    The approved plan called for redirecting cold entries to the canonical URL
+    instead. This costs one fewer round trip and behaves better when a link is
+    passed between people: a redirect bakes the SHARER's language into the address
+    they copy, and the recipient's own `Accept-Language` is then ignored.
+    """
+    if request.query_params.get("lang") in supported():
+        return {}
+    return {"Vary": "Accept-Language"}
+
+
+def _setup_nav(panel: str, lang: str = "") -> str:
     """Previous and next links between the setup routes.
 
     A panel at its own address has no wizard around it, so without this each
@@ -177,13 +201,13 @@ def _setup_nav(panel: str) -> str:
         return ""
     i = _SETUP_ORDER.index(panel)
     back = (
-        f'<a data-cy="setup-prev" href="/pages/admin/setup/{_SETUP_ORDER[i - 1]}">'
+        f'<a data-cy="setup-prev" href="/pages/admin/setup/{_SETUP_ORDER[i - 1]}{lang}">'
         f"&larr; {escape(_SETUP_PAGES[_SETUP_ORDER[i - 1]][0])}</a>"
         if i
         else "<span></span>"
     )
     forward = (
-        f'<a data-cy="setup-next" href="/pages/admin/setup/{_SETUP_ORDER[i + 1]}">'
+        f'<a data-cy="setup-next" href="/pages/admin/setup/{_SETUP_ORDER[i + 1]}{lang}">'
         f"{escape(_SETUP_PAGES[_SETUP_ORDER[i + 1]][0])} &rarr;</a>"
         if i + 1 < len(_SETUP_ORDER)
         else "<span></span>"
@@ -196,11 +220,11 @@ def _setup_nav(panel: str) -> str:
     )
 
 
-def _next_setup_url(panel: str) -> str:
+def _next_setup_url(panel: str, lang: str = "") -> str:
     """Where "continue" goes from here; the last panel continues to itself."""
     i = _SETUP_ORDER.index(panel)
     nxt = _SETUP_ORDER[i + 1] if i + 1 < len(_SETUP_ORDER) else panel
-    return f"/pages/admin/setup/{nxt}"
+    return f"/pages/admin/setup/{nxt}{lang}"
 
 
 def _setup_page(
@@ -220,8 +244,9 @@ def _setup_page(
             heading=heading,
             subheading=subheading,
             scripts=scripts,
-            body=body + _setup_nav(panel),
-        )
+            body=body + _setup_nav(panel, lang_query(request)),
+        ),
+        headers=_page_headers(request),
     )
 
 
@@ -258,7 +283,9 @@ async def setup_changelog_seen(
     browser follows with GET and a reload does not re-post.
     """
     await mark_changelog_read(request, user)
-    return RedirectResponse(_next_setup_url("changelog"), status_code=303)
+    return RedirectResponse(
+        _next_setup_url("changelog", lang_query(request)), status_code=303
+    )
 
 
 @router.get("/admin/setup/welcome", response_class=HTMLResponse)
@@ -351,6 +378,21 @@ async def setup_users_alone(
     return _setup_page(
         request, "users", render_users(request, user, "Recorded: working alone.")
     )
+
+
+@router.get("/admin/setup/auth", response_class=HTMLResponse)
+async def setup_auth_page(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
+    return _setup_page(request, "auth", await render_auth(request, user))
+
+
+@router.post("/admin/setup/auth/save", response_class=HTMLResponse)
+async def setup_auth_save(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
+    form = await request.form()
+    return _setup_page(request, "auth", await save_auth(request, user, dict(form)))
 
 
 @router.get("/admin/setup/features", response_class=HTMLResponse)

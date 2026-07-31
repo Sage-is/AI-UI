@@ -30,6 +30,8 @@ from html import escape as e
 
 from fastapi import Request
 
+from sage_is_ai.pages.i18n import lang_query, translator
+
 __all__ = ["render_search_audio", "graft_components", "download_components", "COMPONENTS"]
 
 # form field, cultivars to graft IN ORDER, label, caption. One row per
@@ -62,7 +64,7 @@ def _status(request: Request) -> dict[str, str]:
     return {key: str(status.get(key, "pending")) for key, _, _, _ in COMPONENTS}
 
 
-def _row(key: str, label: str, caption: str, state: str) -> str:
+def _row(key: str, label: str, caption: str, state: str, _) -> str:
     # A busy component cannot be selected: ready means there is nothing to do,
     # downloading means starting a graft would race the download and lose.
     busy = state in _BUSY
@@ -70,7 +72,10 @@ def _row(key: str, label: str, caption: str, state: str) -> str:
     # "installed" and "downloading" rather than the raw state word: a disabled
     # checkbox beside a badge reading "ready" reads as a bug, because the reader
     # has to infer that ready is WHY they cannot tick it.
-    said = {"ready": "already installed", "downloading": "downloading now"}.get(state, state)
+    said = {
+        "ready": _("already installed"),
+        "downloading": _("downloading now"),
+    }.get(state, state)
     badge = (
         f'<small data-state="{e(state, quote=True)}" style="{_STATE_S}">{e(said)}</small>'
         if state != "pending"
@@ -80,14 +85,20 @@ def _row(key: str, label: str, caption: str, state: str) -> str:
         f'<label style="{_ROW_S}">'
         f'<input data-cy="search-audio-{e(key, quote=True)}" type="checkbox" '
         f'name="{e(key, quote=True)}" value="1"{attrs} />'
-        f'<span><span style="{_NAME_S}">{e(label)}</span>{badge}'
-        f'<small style="{_CAPTION_S}">{e(caption)}</small></span></label>'
+        f'<span><span style="{_NAME_S}">{e(_(label))}</span>{badge}'
+        f'<small style="{_CAPTION_S}">{e(_(caption))}</small></span></label>'
     )
 
 
 def render_search_audio(request: Request, message: str = "") -> str:
+    _ = translator(request)
+    lang = lang_query(request)
     state = _status(request)
-    rows = "".join(_row(k, lb, cp, state[k]) for k, _, lb, cp in COMPONENTS)
+    rows = "".join(
+        # `cultivars` rather than `_` for the discarded column. `_` is the
+        # translator here, and unpacking over it would shadow it mid-loop.
+        _row(k, lb, cp, state[k], _) for k, cultivars, lb, cp in COMPONENTS
+    )
     note = (
         f'<output data-cy="search-audio-result" style="--size:.8rem; --op:.75">{e(message)}</output>'
         if message
@@ -101,21 +112,21 @@ def render_search_audio(request: Request, message: str = "") -> str:
     # that already means that, so there is no second copy of the checkboxes.
     return f"""
 <section data-cy="search-audio-panel" {attrs}>
-  <form method="post" action="/pages/admin/setup/search-audio/graft">
+  <form method="post" action="/pages/admin/setup/search-audio/graft{lang}">
     <fieldset style="--b:0; --p:0; --m:0">
       <legend style="--size:.85rem; --weight:600; --p:0">
-        Install local AI components for document search and audio transcription.
+        {e(_("Install local AI components for document search and audio transcription."))}
       </legend>
       {rows}
     </fieldset>
     <button data-cy="search-audio-graft" type="submit"
             style="--p:.45rem 1rem; --br:999px; --b:1px solid var(--line); --cur:pointer">
-      Graft Sprigs&trade; for me
+      {e(_("Graft Sprigs"))}&trade; {e(_("for me"))}
     </button>
     <button data-cy="search-audio-download" type="submit"
-            formaction="/pages/admin/setup/search-audio/download"
+            formaction="/pages/admin/setup/search-audio/download{lang}"
             style="--p:.45rem 1rem; --br:999px; --b:1px solid var(--line); --cur:pointer; --ml:.5rem">
-      Download weights
+      {e(_("Download weights"))}
     </button>
     {note}
   </form>

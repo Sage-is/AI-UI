@@ -39,6 +39,8 @@ from html import escape as e
 
 from fastapi import Request
 
+from sage_is_ai.pages.i18n import lang_query, translator
+
 __all__ = ["render_complete", "finish_setup"]
 
 _LINE_S = "--d:flex; --ai:center; --g:.5rem; --size:.85rem; --m:0 0 .35rem"
@@ -64,6 +66,7 @@ def _facts(request: Request, user) -> tuple[list[str], dict[str, int]]:
     from sage_is_ai.models.users import Users
     from sage_is_ai.pages.features_panel import FIELDS
 
+    _ = translator(request)
     cfg = request.app.state.config
     lines: list[str] = []
 
@@ -76,7 +79,7 @@ def _facts(request: Request, user) -> tuple[list[str], dict[str, int]]:
     if getattr(cfg, "ENABLE_MAGIC_LINK_LOGIN", False):
         methods.append("Email Link")
     if methods:
-        lines.append(_line("auth", f"Auth configured: {', '.join(methods)}"))
+        lines.append(_line("auth", _("Auth configured: {{methods}}", {"methods": ", ".join(methods)})))
 
     # A model connection exists if either provider is switched on with a URL.
     connected = bool(
@@ -84,59 +87,65 @@ def _facts(request: Request, user) -> tuple[list[str], dict[str, int]]:
         or (getattr(cfg, "ENABLE_OLLAMA_API", False) and getattr(cfg, "OLLAMA_BASE_URLS", []))
     )
     if connected:
-        lines.append(_line("connection", "Model connection configured"))
+        lines.append(_line("connection", _("Model connection configured")))
 
     users = Users.get_users()
     rows = users["users"] if isinstance(users, dict) else users
     others = len([u for u in rows if getattr(u, "role", "") != "admin"])
     if others:
-        lines.append(_line("users", f"{others} user{'' if others == 1 else 's'} configured"))
+        lines.append(_line("users", _("{{count}} users configured", {"count": others})))
 
     settings = (Users.get_user_by_id(user.id).settings if user else None) or {}
     if hasattr(settings, "model_dump"):
         settings = settings.model_dump()
     if (settings.get("ui") or {}).get("workingAlone"):
-        lines.append(_line("working-alone", "Working alone mode enabled"))
+        lines.append(_line("working-alone", _("Working alone mode enabled")))
 
     status = getattr(request.app.state, "MODEL_DOWNLOAD_STATUS", {}) or {}
     parts = [status.get("embedding", "pending"), status.get("whisper", "pending")]
     ready = len([s for s in parts if s == "ready"])
     downloading = len([s for s in parts if s == "downloading"])
     if ready == len(parts):
-        lines.append(_line("ai-engine", "AI engine components installed"))
+        lines.append(_line("ai-engine", _("AI engine components installed")))
     elif downloading:
         lines.append(
-            _line("ai-engine", f"{ready} of {len(parts)} AI engine components ready...", ok=False)
+            _line("ai-engine",
+                  _("{{ready}} of {{total}} AI engine components ready...",
+                    {"ready": ready, "total": len(parts)}), ok=False)
         )
     elif ready:
-        lines.append(_line("ai-engine", f"{ready} of {len(parts)} AI engine components installed"))
+        lines.append(_line("ai-engine",
+            _("{{ready}} of {{total}} AI engine components installed",
+              {"ready": ready, "total": len(parts)})))
 
     if DEV_MODE:
-        lines.append(_line("dev-mode", "Developer mode active"))
+        lines.append(_line("dev-mode", _("Developer mode active")))
 
     enabled = len([k for k, _, _, _ in FIELDS if getattr(cfg, k, False)])
     lines.append(
-        _line("features", f"{enabled} feature{'' if enabled == 1 else 's'} enabled")
+        _line("features", _("{{count}} features enabled", {"count": enabled}))
     )
 
     return lines, {"users": others, "features": enabled, "ready": ready}
 
 
 def render_complete(request: Request, user) -> str:
+    _ = translator(request)
+    lang = lang_query(request)
     lines, counts = _facts(request, user)
     # A <ul> of what is done, not a stack of divs. The list is the meaning.
     return f"""
 <section data-cy="complete-panel" data-users="{counts['users']}"
          data-features="{counts['features']}" data-ready="{counts['ready']}">
-  <p style="--size:.9rem">This instance is ready to use.</p>
+  <p style="--size:.9rem">{e(_("This instance is ready to use."))}</p>
   <ul style="--p:0; --list-style:none; --m:1rem 0">{''.join(lines)}</ul>
-  <form method="post" action="/pages/admin/setup/complete/finish">
+  <form method="post" action="/pages/admin/setup/complete/finish{lang}">
     <button data-cy="complete-finish" type="submit"
             style="--p:.5rem 1.2rem; --br:999px; --b:1px solid var(--line); --cur:pointer">
-      Let&rsquo;s Go
+      {e(_("Let's Go"))}
     </button>
-    <a data-cy="complete-refresh" href="/pages/admin/setup/complete"
-       style="--size:.75rem; --ml:.75rem">Refresh</a>
+    <a data-cy="complete-refresh" href="/pages/admin/setup/complete{lang}"
+       style="--size:.75rem; --ml:.75rem">{e(_("Refresh"))}</a>
   </form>
 </section>
 """

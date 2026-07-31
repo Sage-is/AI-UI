@@ -24,6 +24,8 @@ from html import escape as e
 
 from fastapi import Request
 
+from sage_is_ai.pages.i18n import lang_query, translator
+
 __all__ = ["render_features", "save_features", "FIELDS"]
 
 # key, label, caption, beta. Order is render order; adding a feature is one row.
@@ -54,20 +56,25 @@ _BETA_S = ("--size:.55rem; --weight:600; --tt:uppercase; --p:.1rem .3rem; "
            "--br:.25rem; --b:1px solid var(--line); --ml:.35rem")
 
 
-def _row(key: str, label: str, caption: str, beta: bool, on: bool) -> str:
+def _row(key: str, label: str, caption: str, beta: bool, on: bool, _) -> str:
     """One toggle.
 
     A `<label>` wrapping its own `<input>` needs no `for`/`id` pair and no ARIA:
     the association is the nesting, and the whole row is already the click
     target that the Svelte version reproduces with a cursor prop.
+
+    `_` is this request's translator. Translate where the table is READ, not where
+    it is declared. `FIELDS` keeps holding plain English, which is also the
+    catalog key, so the table needs no second column and no edit when a language
+    lands. One call here covers every row.
     """
-    badge = f'<small style="{_BETA_S}">Beta</small>' if beta else ""
+    badge = f'<small style="{_BETA_S}">{e(_("Beta"))}</small>' if beta else ""
     return (
         f'<label style="{_ROW_S}">'
         f'<input data-cy="{_hook(key)}" type="checkbox" name="{e(key, quote=True)}" '
         f'value="1"{" checked" if on else ""} />'
-        f"<span><span style=\"{_NAME_S}\">{e(label)}</span>{badge}"
-        f'<small style="{_CAPTION_S}">{e(caption)}</small></span>'
+        f"<span><span style=\"{_NAME_S}\">{e(_(label))}</span>{badge}"
+        f'<small style="{_CAPTION_S}">{e(_(caption))}</small></span>'
         f"</label>"
     )
 
@@ -78,27 +85,32 @@ def _current(request: Request) -> dict:
 
 
 def render_features(request: Request, saved: bool = False) -> str:
+    _ = translator(request)
+    lang = lang_query(request)
     on = _current(request)
-    rows = "".join(_row(k, lb, cp, bt, on[k]) for k, lb, cp, bt in FIELDS)
+    rows = "".join(_row(k, lb, cp, bt, on[k], _) for k, lb, cp, bt in FIELDS)
     # `<output>` carries an implicit status role, so the save confirmation
     # announces itself with no ARIA attribute written by hand.
     note = (
-        '<output data-cy="features-saved" style="--size:.8rem; --op:.75">Features saved.</output>'
+        f'<output data-cy="features-saved" style="--size:.8rem; --op:.75">'
+        f'{e(_("Features saved."))}</output>'
         if saved
         else ""
     )
+    # `lang` rides on the action. A form that dropped it would answer a Spanish
+    # reader in English the moment they pressed Save.
     return f"""
 <section data-cy="features-panel">
-  <form method="post" action="/pages/admin/setup/features/save">
+  <form method="post" action="/pages/admin/setup/features/save{lang}">
     <fieldset style="--b:0; --p:0; --m:0">
       <legend style="--size:.85rem; --weight:600; --p:0">
-        Enable or disable platform features for your users.
+        {e(_("Enable or disable platform features for your users."))}
       </legend>
       {rows}
     </fieldset>
     <button data-cy="features-save" type="submit"
             style="--p:.45rem 1rem; --br:999px; --b:1px solid var(--line); --cur:pointer">
-      Save
+      {e(_("Save"))}
     </button>
     {note}
   </form>

@@ -130,17 +130,21 @@ cat <<WALKTHROUGH
     the new one previews SAVED values; the old one previews as you type.
     Deliberate — matching it would need a round-trip per keystroke.
 
-  Setup wizard — five panels, and the old side has NO URL.
+  Setup wizard — nine panels, and the old side has NO URL.
     Reach the old ones from Admin → Settings → General:
       "See what's new"     opens the changelog panel
       "Run Setup Wizard"   opens on Welcome; the progress dots jump between
                            panels once you are past it
 
     changelog     new  https://localhost:$PORT/pages/admin/setup/changelog
+    welcome       new  https://localhost:$PORT/pages/admin/setup/welcome
+    auth          new  https://localhost:$PORT/pages/admin/setup/auth
+    connection    new  https://localhost:$PORT/pages/admin/setup/connection
+    users         new  https://localhost:$PORT/pages/admin/setup/users
     features      new  https://localhost:$PORT/pages/admin/setup/features
+    search-audio  new  https://localhost:$PORT/pages/admin/setup/search-audio
     developer     new  https://localhost:$PORT/pages/admin/setup/developer
     complete      new  https://localhost:$PORT/pages/admin/setup/complete
-    search-audio  new  https://localhost:$PORT/pages/admin/setup/search-audio
 
     Known and deliberate differences, so you can judge them rather than
     report them:
@@ -153,6 +157,15 @@ cat <<WALKTHROUGH
         instance. This is the one to form an opinion about.
       * the modal polls model status every 5s while a download runs; the
         page renders status at request time and offers Refresh.
+      * connection and auth never render a stored secret back. The old side
+        loads the API key, both OAuth client secrets and the SMTP password
+        into its inputs, so they sit in the DOM; the new pages render those
+        fields empty and say a secret is stored. Leave one blank and Save,
+        and the stored value survives.
+      * auth shows every checkbox every time. The old side hides "Allow
+        OAuth Signup" until sign-ups are on and a provider is configured.
+        A hidden checkbox posts nothing, and this form reads absence as
+        off, so hiding one would silently clear it on the next Save.
 
   WHAT TO LOOK FOR
 
