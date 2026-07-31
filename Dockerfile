@@ -223,12 +223,12 @@ COPY --chown=${UID}:${GID} app/backend/ /app/backend/
 # page has no i18next, so it reads the same catalog the SPA does instead of a
 # second set of English strings. See pages/i18n.py.
 #
-# en-US only for now. Migrated pages come out in English until locale
-# negotiation is solved. Nothing is switched over yet, so nothing regresses: the
-# SPA still serves every route a user reaches. Adding the other 55 needs a way
-# for the server to know the reader's language, which today lives in
-# localStorage where no server can see it.
-COPY --chown=${UID}:${GID} app/src/lib/i18n/locales/en-US/ /app/backend/locales/en-US/
+# Every catalog, because a rendered page has to answer in the reader's language
+# before it can take over a route from the SPA. 5 MB against a 604 MB image.
+# `pages/i18n.py` reads this directory to learn which locales exist, so what is
+# copied here IS the supported set — there is no second list to keep in step, and
+# a locale absent from this COPY is refused rather than half-supported.
+COPY --chown=${UID}:${GID} app/src/lib/i18n/locales/ /app/backend/locales/
 
 # The diagnostic fix registry: 9 issue types, 40 remediation steps, all of them
 # translation keys. Shipped as data rather than transcribed into Python so the
