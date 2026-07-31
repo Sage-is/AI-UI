@@ -2,18 +2,18 @@
 /// <reference path="../support/index.d.ts" />
 import { openSurface } from '../support/surfaces';
 
-// Feature toggles — guard-rail, written against the SvelteKit panel before any
+// Feature toggles. Guard-rail, written against the SvelteKit panel before any
 // code moves, per docs/no-build-surface-convention.md.
 //
 // The whole contract is: what the server holds is what the form shows, and what
 // you tick is what the server ends up holding. So every assertion goes through
-// `/api/v1/auths/admin/config` rather than through the other checkbox, which
+// `/api/v1/auths/admin/config` rather than through the rendered checkbox, which
 // means neither implementation can satisfy this by agreeing with itself.
 //
 // The case worth writing a test for is turning something OFF. An unchecked HTML
 // checkbox posts nothing at all, so a server that reads only what arrived treats
 // "off" as "unmentioned" and leaves the old value in place. That failure looks
-// exactly like a save that worked until you reload — which is why "turns a
+// exactly like a save that worked until you reload, which is why "turns a
 // feature off" is a separate test below and not folded into the round trip.
 
 const FLAGS = {
@@ -66,7 +66,7 @@ const ALL_OFF = Object.fromEntries(Object.values(FLAGS).map((f) => [f, false]));
 describe('Setup wizard: feature toggles', () => {
 	beforeEach(() => cy.loginAdmin());
 
-	// Leave the instance as it was found. These are real platform flags — a
+	// Leave the instance as it was found. These are real platform flags. A
 	// leftover ENABLE_SPACES changes what later specs see in the sidebar.
 	afterEach(() => writeConfig(ALL_OFF));
 
@@ -94,7 +94,7 @@ describe('Setup wizard: feature toggles', () => {
 
 	// The one that catches the unchecked-box bug. An unticked checkbox sends
 	// nothing, so a save that only reads the posted names cannot turn anything
-	// off — and it passes every "turn it on" test while doing so.
+	// off, and it passes every "turn it on" test while doing so.
 	it('turns a feature off and the server keeps it off', () => {
 		writeConfig({ ...ALL_OFF, ENABLE_SPACES: true });
 		openSurface('wizardFeatures');
@@ -112,7 +112,7 @@ describe('Setup wizard: feature toggles', () => {
 		expectFlag('ENABLE_MESSAGE_RATING', true);
 	});
 
-	// Not a feature flag — proof the save did not post a five-key body and reset
+	// Not a feature flag. This proves the save did not post a five-key body and reset
 	// everything else in AdminConfig to its model defaults.
 	it('does not disturb admin config values it does not own', () => {
 		readConfig().then((before: Record<string, unknown>) => {

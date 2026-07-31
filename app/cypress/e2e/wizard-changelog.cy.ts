@@ -2,7 +2,7 @@
 /// <reference path="../support/index.d.ts" />
 import { isNoBuild, openSurface } from '../support/surfaces';
 
-// The changelog panel — guard-rail, written against the SvelteKit modal before
+// The changelog panel. Guard-rail, written against the SvelteKit modal before
 // any code moves, per docs/no-build-surface-convention.md.
 //
 // First wizard surface, and the first surface anywhere in this migration whose
@@ -14,14 +14,14 @@ import { isNoBuild, openSurface } from '../support/surfaces';
 // What this may assert is limited to what BOTH implementations must do, and one
 // difference is worth naming rather than hiding. In the modal, "Continue"
 // closes the modal; at a route there is nothing to close. So what is checked is
-// the durable half both share — the server records that this version's changelog
+// the durable half both share: the server records that this version's changelog
 // has been read. That is the part an operator would notice going missing,
 // because it is what stops the changelog reappearing on every page load.
 //
 // Everything reads data attributes and API state, never rendered English, so
 // translating the panel cannot turn this red.
 
-/** The changelog as the server holds it — the only authority either side renders. */
+/** The changelog as the server holds it, the only authority either side renders. */
 const serverChangelog = () => cy.request('/api/changelog').its('body');
 
 const appVersion = () => cy.request('/api/config').its('body.version');
@@ -60,8 +60,8 @@ const writeUiSettings = (ui: Record<string, unknown>) =>
  * Wait for the server to record the read, without caring who told it.
  *
  * `cy.request` does not retry, and the two implementations report the read by
- * different routes — the SPA through its settings store, the no-build page
- * through a form post — so intercepting a specific URL would tie this spec to
+ * different routes: the SPA through its settings store, the no-build page
+ * through a form post, so intercepting a specific URL would tie this spec to
  * one of them. Polling the resulting STATE is the assertion both can satisfy.
  */
 const expectRecorded = (version: string, attempt = 0) => {
@@ -84,7 +84,7 @@ describe('Setup wizard: changelog panel', () => {
 	});
 
 	// Put the read marker back. `cy.loginAdmin` is a cached session, so it will
-	// not re-run its setup for later specs in this run — a test that died after
+	// not re-run its setup for later specs in this run. A test that died after
 	// clearing the marker would leave the wizard auto-opening over every page
 	// the rest of the suite tries to click. That is the shared-container leak
 	// this suite has already been bitten by three times.
@@ -120,7 +120,7 @@ describe('Setup wizard: changelog panel', () => {
 	it('labels each change section the server publishes', () => {
 		// Derived from the server, not from a list written here. A hardcoded set
 		// of section names would have to be edited every time CHANGELOG.md grows
-		// one — and the first draft of this test did exactly that, then failed on
+		// one, and the first draft of this test did exactly that, then failed on
 		// the "docs" section that already exists.
 		serverChangelog().then((changelog: Record<string, Record<string, unknown>>) => {
 			const [version, data] = Object.entries(changelog)[0];
@@ -168,7 +168,7 @@ describe('Setup wizard: changelog panel', () => {
 			// The no-build button pages the notes before it advances, so get to
 			// the end first. Best-effort and forced, because on the legacy target
 			// this element is an inner div whose centre sits off-screen inside
-			// its own scroll container — Cypress refuses to trigger on it, and
+			// its own scroll container. Cypress refuses to trigger on it, and
 			// the legacy button submits on any click regardless.
 			cy.get('[data-cy="changelog-body"]').then(($el) => {
 				$el[0].scrollTop = $el[0].scrollHeight;
@@ -183,7 +183,7 @@ describe('Setup wizard: changelog panel', () => {
 // The pager is no-build only: the legacy panel has no script and its Continue
 // submits on the first click. Asserted separately rather than folded into the
 // shared guard-rail, because a spec that judges both may only assert what both
-// do — and this is a capability only one of them has.
+// do, and this is a capability only one of them has.
 describe('Setup wizard: changelog pager', () => {
 	beforeEach(function () {
 		if (!isNoBuild()) this.skip();
@@ -248,6 +248,7 @@ describe('Setup wizard: changelog pager', () => {
 		});
 		cy.get('[data-cy="changelog-body"]').trigger('scroll');
 		cy.get('[data-cy="changelog-continue"]').click();
-		cy.location('pathname').should('eq', '/pages/admin/setup/features');
+		// The panel after the changelog, per _SETUP_ORDER in pages/router.py.
+		cy.location('pathname').should('eq', '/pages/admin/setup/welcome');
 	});
 });

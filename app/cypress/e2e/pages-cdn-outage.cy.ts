@@ -44,7 +44,10 @@ const STRUCTURE: Record<SurfaceName, { selector: string; display: string } | nul
 	wizardFeatures: null,
 	wizardDeveloper: null,
 	wizardComplete: null,
-	wizardSearchAudio: null
+	wizardSearchAudio: null,
+	wizardWelcome: null,
+	wizardConnection: null,
+	wizardUsers: null
 };
 
 // How many hooks proves the content survived. Five suits a whole admin page;
@@ -56,7 +59,10 @@ const MIN_HOOKS: Partial<Record<SurfaceName, number>> = {
 	wizardFeatures: 6,
 	wizardDeveloper: 3,
 	wizardComplete: 3,
-	wizardSearchAudio: 4
+	wizardSearchAudio: 4,
+	wizardWelcome: 7,
+	wizardConnection: 5,
+	wizardUsers: 7
 };
 
 describe('No-build pages survive a startr.style outage', () => {

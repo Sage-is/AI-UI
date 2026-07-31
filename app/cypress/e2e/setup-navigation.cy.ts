@@ -4,7 +4,7 @@ import { isNoBuild } from '../support/surfaces';
 
 // Navigation between the setup routes.
 //
-// No-build only, and not because the legacy side is exempt — because it has
+// No-build only, and not because the legacy side is exempt. It has
 // nowhere to navigate. The wizard's sequence is Svelte state inside a modal;
 // these are five addresses that a reader can land on cold. Without links each
 // one is a cul-de-sac, which is what the manual review pass reported first.
@@ -13,7 +13,16 @@ import { isNoBuild } from '../support/surfaces';
 // so adding a sixth panel to `_SETUP_ORDER` cannot leave this spec describing a
 // sequence that no longer exists.
 
-const ORDER = ['changelog', 'features', 'search-audio', 'developer', 'complete'];
+const ORDER = [
+	'changelog',
+	'welcome',
+	'connection',
+	'users',
+	'features',
+	'search-audio',
+	'developer',
+	'complete'
+];
 
 describe('Setup routes link to each other', () => {
 	beforeEach(function () {

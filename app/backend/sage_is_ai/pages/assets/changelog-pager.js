@@ -1,6 +1,6 @@
 // Page through the changelog with the Continue button.
 //
-// The release notes are long — tens of thousands of words on a mature install —
+// The release notes are long: tens of thousands of words on a mature install,
 // and a Continue button that advances on the first click means most readers
 // never see past the first screen. So while there is more below, the button
 // pages down. When the end is reached it moves to the other side of the row and
@@ -10,7 +10,7 @@
 //
 // Progressive enhancement, deliberately. Without this file the button is a
 // plain submit that records the read and moves on, and the server renders it in
-// its end position with its end label — so no-JS and pre-hydration both get a
+// its end position with its end label, so no-JS and pre-hydration both get a
 // working control rather than one that lies about what it will do.
 //
 // A file rather than inline handlers because the diagnostics page tells
@@ -36,15 +36,10 @@
 		var row = document.querySelector(ROW);
 		if (!body || !button || !row) return;
 		var done = atEnd(body);
-		// How far the button has to travel to reach the far side. Measured, not
-		// assumed: the row is full-width and the button is content-width, so the
-		// difference is the free space. Recomputed on every sync so a resize or
-		// a font swap cannot leave the button overshooting its own row.
-		var shift = Math.max(row.clientWidth - button.offsetWidth, 0);
-		row.style.setProperty('--pager-shift', shift + 'px');
-		// The row's data attribute drives the side switch from pages.css. It
-		// cannot be an inline prop, because the value depends on state that only
-		// exists at runtime.
+		// One attribute. pages.css does the moving with `margin-left: auto`, so
+		// there is nothing here to measure and nothing to compute wrong. The
+		// previous version measured the row and drove a transform, and moved
+		// nothing in a real browser while passing headless.
 		row.setAttribute('data-at-end', done ? 'true' : 'false');
 		button.textContent = done
 			? button.getAttribute('data-label-end')
@@ -86,8 +81,6 @@
 		},
 		true
 	);
-
-	window.addEventListener('resize', sync);
 
 	if (document.readyState === 'loading') {
 		document.addEventListener('DOMContentLoaded', sync);

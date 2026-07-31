@@ -26,6 +26,14 @@ from sage_is_ai.pages.changelog_panel import mark_changelog_read, render_changel
 from sage_is_ai.pages.features_panel import render_features, save_features
 from sage_is_ai.pages.developer_panel import render_developer, save_developer
 from sage_is_ai.pages.complete_panel import finish_setup, render_complete
+from sage_is_ai.pages.welcome_panel import render_welcome, start_wizard
+from sage_is_ai.pages.connection_panel import render_connection, verify_and_save
+from sage_is_ai.pages.users_panel import (
+    add_one_user,
+    import_csv,
+    render_users,
+    set_working_alone,
+)
 from sage_is_ai.pages.search_audio_panel import (
     download_components,
     graft_components,
@@ -125,6 +133,9 @@ async def branding_save(
 
 _SETUP_PAGES = {
     "changelog": ("What's New", "Everything that changed, newest first."),
+    "welcome": ("Setup Wizard", "Pick what to configure. Nothing here is permanent."),
+    "connection": ("Model Connections", "Point this instance at a model provider."),
+    "users": ("Users", "Invite your team, or say you are working alone."),
     "features": ("Features", "Enable or disable platform features for your users."),
     "developer": ("Developer Mode", "Run this thing from source, with hot reload."),
     "complete": ("You are all set", "What this instance has configured so far."),
@@ -136,7 +147,16 @@ _SETUP_PAGES = {
 # (features, then the AI engine, then developer, then the summary). Panels not
 # migrated yet are simply absent, so this grows as they land rather than needing
 # a second list to keep in step.
-_SETUP_ORDER = ("changelog", "features", "search-audio", "developer", "complete")
+_SETUP_ORDER = (
+    "changelog",
+    "welcome",
+    "connection",
+    "users",
+    "features",
+    "search-audio",
+    "developer",
+    "complete",
+)
 
 _NAV_S = "--d:flex; --jc:space-between; --ai:center; --g:1rem; --m:1.5rem 0 0"
 _STEP_S = "--size:.75rem; --op:.6"
@@ -239,6 +259,98 @@ async def setup_changelog_seen(
     """
     await mark_changelog_read(request, user)
     return RedirectResponse(_next_setup_url("changelog"), status_code=303)
+
+
+@router.get("/admin/setup/welcome", response_class=HTMLResponse)
+async def setup_welcome_page(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
+    return _setup_page(request, "welcome", render_welcome(request, user))
+
+
+@router.post("/admin/setup/welcome/start", response_class=HTMLResponse)
+async def setup_welcome_start(
+    request: Request, user=Depends(require_admin_page)
+) -> RedirectResponse:
+    """Store the chosen steps, then go to the first one that has an address.
+
+    303 rather than a re-render: "Get Started" means start, and handing back the
+    same list of choices would be the dead end the changelog post already
+    avoids.
+    """
+    form = await request.form()
+    return RedirectResponse(
+        await start_wizard(request, user, dict(form)), status_code=303
+    )
+
+
+@router.get("/admin/setup/connection", response_class=HTMLResponse)
+async def setup_connection_page(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
+    return _setup_page(request, "connection", render_connection(request))
+
+
+@router.post("/admin/setup/connection/{provider}", response_class=HTMLResponse)
+async def setup_connection_save(
+    provider: Literal["openai", "ollama"],
+    request: Request,
+    user=Depends(require_admin_page),
+) -> HTMLResponse:
+    """Verify one provider, then save it.
+
+    The provider travels in the path and is constrained to the two this panel
+    knows, so an unknown value is refused by FastAPI before any handler runs.
+    """
+    form = await request.form()
+    return _setup_page(
+        request, "connection", await verify_and_save(request, user, provider, dict(form))
+    )
+
+
+@router.get("/admin/setup/users", response_class=HTMLResponse)
+async def setup_users_page(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
+    return _setup_page(request, "users", render_users(request, user))
+
+
+@router.post("/admin/setup/users/add", response_class=HTMLResponse)
+async def setup_users_add(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
+    form = await request.form()
+    return _setup_page(request, "users", await add_one_user(request, user, dict(form)))
+
+
+@router.post("/admin/setup/users/import", response_class=HTMLResponse)
+async def setup_users_import(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
+    """Import a CSV in one request.
+
+    The whole file is read here rather than streamed, because it is a list of
+    people an admin typed and the row loop has to hold the parse anyway. A file
+    large enough for that to matter is not a wizard step.
+    """
+    form = await request.form()
+    upload = form.get("csv")
+    raw = await upload.read() if hasattr(upload, "read") else b""
+    if not raw:
+        return _setup_page(
+            request, "users", render_users(request, user, "Choose a CSV file first.")
+        )
+    return _setup_page(request, "users", await import_csv(request, user, raw))
+
+
+@router.post("/admin/setup/users/alone", response_class=HTMLResponse)
+async def setup_users_alone(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
+    await set_working_alone(request, user)
+    return _setup_page(
+        request, "users", render_users(request, user, "Recorded: working alone.")
+    )
 
 
 @router.get("/admin/setup/features", response_class=HTMLResponse)

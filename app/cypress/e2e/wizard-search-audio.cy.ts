@@ -2,12 +2,12 @@
 /// <reference path="../support/index.d.ts" />
 import { openSurface } from '../support/surfaces';
 
-// AI engine components — guard-rail for the one wizard panel that grafts.
+// AI engine components. Guard-rail for the one wizard panel that grafts.
 //
 // This panel used to graft `mock-embedding` and report "Document search is
 // ready". The mock seeds its vectors from a sha256 of the input text, so uploads
-// succeeded, queries returned results, and the results were noise — every
-// surface reporting success while retrieval was meaningless. Both
+// succeeded, queries returned results, and the results were noise. Every
+// surface reported success while retrieval was meaningless. Both
 // implementations now graft the in-housed cultivars instead, which is why this
 // spec asserts what ended up ROOTED rather than that a button was clicked.
 //
@@ -15,8 +15,8 @@ import { openSurface } from '../support/surfaces';
 // Embedding is a chain: `minilm-onnx-inhoused` refuses to start without
 // chromadb, onnxruntime and numpy, which ride the vector-chroma overlay. That
 // full chain is a multi-minute graft, and `sprigs-panel.cy.ts` already drives
-// vector-chroma end to end — repeating it here would add several minutes per run
-// for no signal this spec does not already get.
+// vector-chroma end to end. Repeating it here would add several minutes per run
+// and tell us nothing this spec has not already established.
 
 const auth = () => cy.window().then((win) => win.localStorage.getItem('token'));
 
@@ -27,7 +27,7 @@ const sprigState = (name: string) =>
 				url: '/api/v1/retrieval/sprigs/catalog',
 				headers: { Authorization: `Bearer ${token}` }
 			})
-			// State lives under `grafted`, not under `catalog` — the catalog is the
+			// State lives under `grafted`, not under `catalog`. The catalog is the
 			// declaration and `grafted` is what is actually running. Reading the
 			// wrong one returns undefined for everything, which looks like a clean
 			// instance rather than a bad query.

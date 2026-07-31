@@ -83,7 +83,11 @@
 				const columns = row.split(',').map((col) => col.trim());
 
 				if (idx > 0 && columns.length === 4 && columns[0]) {
-					if (['admin', 'user', 'pending'].includes(columns[3].toLowerCase())) {
+					// Roles a CSV may carry. `facilitator` used to be missing here while the
+					// picker below offered it, so a role you could choose by hand was
+					// refused from a file. `pending` stays: removing it would break files
+					// that import correctly today.
+					if (['admin', 'user', 'facilitator', 'pending'].includes(columns[3].toLowerCase())) {
 						const res = await addUser(
 							localStorage.token,
 							columns[0],
@@ -122,7 +126,7 @@
 	};
 </script>
 
-<div style="--px:1.2rem; --pt:1rem; --pb:1.5rem">
+<div data-cy="users-panel" data-user-count={addedUsers.length} style="--px:1.2rem; --pt:1rem; --pb:1.5rem">
 	<div style="--size:1.2rem; --weight:600; --dark-c:#fff; --mb:0.2rem">
 		{$i18n.t('Add Users')}
 	</div>
@@ -139,6 +143,7 @@
 	{:else}
 		<!-- Working Alone Option -->
 		<button
+			data-cy="users-working-alone"
 			on:click={onWorkingAlone}
 			style="--w:100%; --p:0.8rem; --mb:1rem; --radius:0.75rem; --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --bw:1px; --bs:solid; --bgc:transparent; --hvr-bgc:var(--color-gray-50); --dark-hvr-bgc:var(--color-gray-850); --ta:left; --tn:background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 		>
@@ -170,6 +175,7 @@
 					</div>
 					<input
 						style="--w:100%; --radius:0.5rem; --py:0.4rem; --px:0.6rem; --size:0.75rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-300); --oe:none"
+						data-cy="users-name"
 						type="text"
 						placeholder={$i18n.t('John Doe')}
 						bind:value={name}
@@ -183,6 +189,7 @@
 					</div>
 					<input
 						style="--w:100%; --radius:0.5rem; --py:0.4rem; --px:0.6rem; --size:0.75rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-300); --oe:none"
+						data-cy="users-email"
 						type="email"
 						placeholder="john@example.com"
 						bind:value={email}
@@ -198,6 +205,7 @@
 					</div>
 					<input
 						style="--w:100%; --radius:0.5rem; --py:0.4rem; --px:0.6rem; --size:0.75rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-300); --oe:none"
+						data-cy="users-password"
 						type="password"
 						placeholder={$i18n.t('Password')}
 						bind:value={password}
@@ -211,6 +219,7 @@
 					</div>
 					<select
 						style="--w:100%; --radius:0.5rem; --py:0.4rem; --px:0.4rem; --size:0.75rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-300); --oe:none"
+						data-cy="users-role"
 						bind:value={role}
 					>
 						<option value="user">{$i18n.t('user')}</option>
@@ -219,6 +228,7 @@
 					</select>
 				</div>
 				<button
+					data-cy="users-add"
 					on:click={handleAddUser}
 					style="--as:flex-end; --px:0.6rem; --py:0.4rem; --size:0.7rem; --weight:500; --bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --radius:0.5rem; --shrink:0; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				>
@@ -239,7 +249,7 @@
 		</div>
 
 		<div style="--mb:1rem">
-			<input id="wizard-upload-user-csv" hidden bind:files={inputFiles} type="file" accept=".csv" />
+			<input data-cy="users-csv" id="wizard-upload-user-csv" hidden bind:files={inputFiles} type="file" accept=".csv" />
 
 			<div style="--d:flex; --g:0.5rem; --ai:center">
 				<button
@@ -258,6 +268,7 @@
 
 				{#if inputFiles && inputFiles.length > 0}
 					<button
+						data-cy="users-import"
 						on:click={handleCsvImport}
 						disabled={csvImporting}
 						style="--px:0.6rem; --py:0.4rem; --size:0.7rem; --weight:500; --bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --radius:0.5rem; --shrink:0; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"

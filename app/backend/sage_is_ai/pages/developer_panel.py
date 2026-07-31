@@ -1,4 +1,4 @@
-"""Developer mode — informational in production, a welcome in dev.
+"""Developer mode. Informational in production, a welcome in dev.
 
 Two branches over one flag. In production it explains how to get a dev loop
 running; under `DEV_MODE` it confirms the loop is already live. The Svelte
@@ -6,9 +6,8 @@ version writes both branches out longhand, including three numbered setup cards
 and six links that differ only in href and text, which is the same repeated-row
 shape `features_panel` collapses.
 
-The only thing here that outlives the page is one checkbox: "sign me up for the
-mission" is stored in the reader's own `ui` settings, the same blob the
-changelog read marker lives in.
+One value here outlives the page. "Sign me up for the mission" is stored in the
+reader's own `ui` settings, the same blob the changelog read marker lives in.
 """
 
 from __future__ import annotations
@@ -97,7 +96,7 @@ def render_developer(request: Request, user, saved: bool = False) -> str:
             if saved
             else ""
         )
-        # An ordered list, because these are numbered steps in sequence — which
+        # An ordered list, because these are numbered steps in sequence. That
         # is what <ol> means, and it renders the numbers without the three
         # hand-written digits the Svelte version carries.
         body = (

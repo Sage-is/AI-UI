@@ -2,7 +2,7 @@
 /// <reference path="../support/index.d.ts" />
 import { openSurface } from '../support/surfaces';
 
-// Developer mode — guard-rail, written against the SvelteKit panel first.
+// Developer mode. Guard-rail, written against the SvelteKit panel first.
 //
 // The panel has two branches over one flag, and the e2e image runs with
 // DEV_MODE unset, so what is exercised here is the production branch. The
@@ -93,7 +93,7 @@ describe('Setup wizard: developer mode', () => {
 		expectSignup(true);
 	});
 
-	// The unticked-box case again — the one that a save reading only posted
+	// The unticked-box case again, the one that a save reading only posted
 	// names cannot pass.
 	it('withdraws the signup and the server keeps it off', () => {
 		setSignup(true);

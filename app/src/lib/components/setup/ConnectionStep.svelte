@@ -156,7 +156,7 @@
 	};
 </script>
 
-<div style="--px:1.2rem; --pt:1rem; --pb:1.5rem">
+<div data-cy="connection-panel" style="--px:1.2rem; --pt:1rem; --pb:1.5rem">
 	<div style="--size:1.2rem; --weight:600; --dark-c:#fff; --mb:0.2rem">
 		{$i18n.t('Connect a Model Provider')}
 	</div>
@@ -186,6 +186,7 @@
 					<input
 						style="--w:100%; --radius:0.5rem; --py:0.4rem; --px:0.6rem; --size:0.75rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-300); --oe:none"
 						type="text"
+						data-cy="connection-openai-url"
 						placeholder="https://api.openai.com/v1"
 						bind:value={openaiUrl}
 					/>
@@ -196,12 +197,14 @@
 					</div>
 					<input
 						style="--w:100%; --radius:0.5rem; --py:0.4rem; --px:0.6rem; --size:0.75rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-300); --oe:none"
+						data-cy="connection-openai-key"
 						type="password"
 						placeholder="sk-..."
 						bind:value={openaiKey}
 					/>
 				</div>
 				<button
+					data-cy="connection-openai-verify"
 					on:click={verifyOpenAI}
 					disabled={openaiVerifying}
 					style="--as:flex-end; --px:0.6rem; --py:0.3rem; --size:0.7rem; --weight:500; --bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --radius:0.5rem; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"
@@ -232,11 +235,13 @@
 					<input
 						style="--w:100%; --radius:0.5rem; --py:0.4rem; --px:0.6rem; --size:0.75rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850); --dark-c:var(--color-gray-300); --oe:none"
 						type="text"
+						data-cy="connection-ollama-url"
 						placeholder="http://host.docker.internal:11434"
 						bind:value={ollamaUrl}
 					/>
 				</div>
 				<button
+					data-cy="connection-ollama-verify"
 					on:click={verifyOllama}
 					disabled={ollamaVerifying}
 					style="--as:flex-end; --px:0.6rem; --py:0.3rem; --size:0.7rem; --weight:500; --bgc:var(--color-gray-100); --hvr-bgc:var(--color-gray-200); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --radius:0.5rem; --tn:color, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)"

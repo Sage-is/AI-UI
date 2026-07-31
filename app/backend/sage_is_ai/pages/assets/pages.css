@@ -404,46 +404,27 @@
   font-size: 0.8rem;
 }
 
-/* Changelog pager — the Continue button's side depends on whether the reader
-   has reached the end of the notes, which is runtime state. An inline prop
-   cannot express "style me by my own attribute", so this is one of the cases
-   pages.css is reserved for.
+/* Changelog pager. The button sits left while there is more to read and moves
+   right when the notes run out.
 
-   The default (no data-at-end attribute yet, or no JavaScript at all) is the
-   end position, matching what the server renders and what the button will
-   actually do. */
-/* width:100% is load-bearing, not decoration. Without it the row shrink-wraps
-   to the button the moment any ancestor becomes a flex container, and then
-   justify-content has no free space to distribute — the property flips, the
-   computed style changes, and the button does not move by a single pixel. That
-   is exactly what shipped: a passing assertion on justify-content over a
-   control that visibly did nothing. The spec now measures the button's own
-   position for the same reason. */
+   The move is `margin-left: auto`, which is what pushes a flex item to the far
+   edge. An earlier version measured the row, measured the button, and drove a
+   transform by the difference. It moved nothing in a real browser while its
+   spec passed headless, because a measurement can come back zero and a
+   transform of zero looks exactly like no rule at all. `auto` has nothing to
+   measure and nothing to get wrong.
+
+   No data-at-end attribute means the script has not run, or there is no script.
+   Sit at the far edge, which is where a plain submit belongs. */
 [data-pager-row] {
 	display: flex;
 	width: 100%;
-	/* No data-at-end attribute means the script has not run, or there is no
-	   script. Sit in the end position, which is where a plain submit belongs. */
-	justify-content: flex-end;
-}
-
-/* Once the script is driving, the row anchors left and the button travels by
-   transform — justify-content cannot be animated, and a control that teleports
-   across the row is a worse signal than one you can watch move. */
-[data-pager-row][data-at-end] {
-	justify-content: flex-start;
 }
 
 [data-pager-row] > button {
-	transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+	margin-left: auto;
 }
 
-[data-pager-row][data-at-end='true'] > button {
-	transform: translateX(var(--pager-shift, 0px));
-}
-
-@media (prefers-reduced-motion: reduce) {
-	[data-pager-row] > button {
-		transition: none;
-	}
+[data-pager-row][data-at-end='false'] > button {
+	margin-left: 0;
 }

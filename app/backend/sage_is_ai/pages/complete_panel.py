@@ -1,38 +1,36 @@
-"""The wizard's closing summary — what got configured, and one button.
+"""The wizard's closing summary: what got configured, and one button.
 
-Nothing here is new information. It is five things the server already knows,
-which the Svelte panel gathers with four API calls after boot and then keeps
-re-asking: it polls `/api/v1/retrieval/models/status` every five seconds while a
-model is downloading. On this side all five are read in the same request that
-renders them.
+Nothing here is new information. The summary is five things the server already
+knows. The Svelte panel gathers them with four API calls after boot and then
+keeps re-asking: it polls `/api/v1/retrieval/models/status` every five seconds
+while a model is downloading. On this side all five are read in the same request
+that renders them.
 
-**One real behaviour difference, and it is not hidden.** The Svelte panel
-updates the AI-engine line while a download runs; a server-rendered page cannot,
-because nothing is listening. So this panel renders the status at the moment you
-asked and offers a refresh, and the guard-rail spec asserts only the contract
-both can honour — that the line reflects the server's status when the page was
-produced. Losing the live count is the cost of not shipping a poller, and it is
-recorded rather than discovered.
+One behaviour difference, stated rather than hidden. The Svelte panel updates
+the AI-engine line while a download runs. A server-rendered page cannot, because
+nothing is listening. So this panel renders the status at the moment you asked
+and offers a refresh, and the guard-rail spec asserts only the contract both can
+honour: that the line reflects the server's status when the page was produced.
+Losing the live count is what not shipping a poller costs.
 
-That difference is also the fix for a leak: the Svelte timer has no `onDestroy`,
-so closing the wizard mid-download leaves it running for the session. Filed in
-TODO.md against the original. A page that does not poll cannot leak a poller.
+That difference also fixes a leak. The Svelte timer has no `onDestroy`, so
+closing the wizard mid-download leaves the timer running for the session. Filed
+in TODO.md against the original. A page that does not poll cannot leak a poller.
 
-**The feature count is imported, not restated.** `features_panel.FIELDS` is the
-one list of what a feature flag is, so this counts through it — otherwise the
-two would drift the first time a flag is added and the summary would quietly
-undercount.
+The feature count is imported. `features_panel.FIELDS` is the one list of what a
+feature flag is, so this counts through it. Restating the list here would drift
+the first time a flag was added, and the summary would quietly undercount.
 
-**Three lines are derived differently here than in the modal, on purpose.**
-The Svelte panel decides "model connection configured" from `$models.length`,
-which is the list the browser has finished loading; this reads whether a
-provider is enabled with a URL, which is the configuration itself. It decides
-"working alone" from a prop the modal sets during this run of the wizard; this
-reads the stored setting, which is the only thing a standalone page could know.
-Either can be right, but they are not the same question, so the guard-rail spec
-asserts only the counts both derive identically — users and features — and
-leaves those three to the human review pass. Asserting agreement we did not
-build would be a spec that quietly stopped checking.
+Three lines are derived differently here than in the modal, on purpose. The
+Svelte panel decides "model connection configured" from `$models.length`, which
+is the list the browser has finished loading; this panel reads whether a provider
+is enabled with a URL, which is the configuration itself. The Svelte panel
+decides "working alone" from a prop the modal sets during this run of the wizard;
+this panel reads the stored setting, which is the only thing a standalone page
+could know. Either can be right, but they are not the same question, so the
+guard-rail spec asserts only the counts both derive identically (users and
+features) and leaves those three to the human review pass. Asserting agreement
+we did not build would be a spec that quietly stopped checking.
 """
 
 from __future__ import annotations

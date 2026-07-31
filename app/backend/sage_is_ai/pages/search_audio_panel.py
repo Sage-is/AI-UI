@@ -1,27 +1,27 @@
-"""AI engine components — the one wizard panel that grafts.
+"""AI engine components. The one wizard panel that grafts.
 
 Two capabilities, two ways to get them: download the model weights, or graft the
-in-housed Sprig™ that carries them. The Svelte panel offers both and this does
-the same.
+in-housed Sprig™ that carries them. The Svelte panel offers both and so does
+this.
 
-**The graft targets real cultivars.** It used to graft `mock-embedding`, whose
-vectors are seeded from a sha256 of the input text, and then tell the operator
-"Document search is ready" — so uploads succeeded, queries returned results, and
-the results were noise. Every surface reported success. `minilm-onnx-inhoused`
-is deliberately the same 384-dim width as the mock, so the swap needs no
-reindex, and both cultivars are delivered as OCI artifacts from the configured
-registry, so this stays zero-egress. Fixed on both implementations at once,
-because one guard-rail spec judges both.
+The graft targets real cultivars. This panel used to graft `mock-embedding`,
+whose vectors are seeded from a sha256 of the input text, and then tell the
+operator "Document search is ready". Uploads succeeded, queries returned
+results, and the results were noise, with every surface reporting success.
+`minilm-onnx-inhoused` is deliberately the same 384-dim width as the mock, so
+the swap needs no reindex. Both cultivars arrive as OCI artifacts from the
+configured registry, so this stays zero-egress. Fixed on both implementations at
+once, because one guard-rail spec judges both.
 
-**The checkboxes decide what happens.** The old graft path read neither, so
+The checkboxes decide what happens. The old graft path read neither of them, so
 ticking or unticking either changed nothing about what was grafted. Here the
-form is the input, and an unticked box posts nothing — so absence means "not
-this one", the same rule the features panel follows.
+form is the input, and an unticked box posts nothing, so absence means "not this
+one". That is the same rule the features panel follows.
 
-**The capability is looked up, never posted.** The browser sends which
-components it wants; the catalog says what capability each cultivar provides.
-A value the client cannot send is a value it cannot get wrong, and `graft_sprig`
-checks the name against the catalog, which doubles as the allowlist.
+The capability is looked up, never posted. The browser sends which components it
+wants; the catalog says what capability each cultivar provides. A value the
+client cannot send is a value it cannot get wrong, and `graft_sprig` checks the
+name against the catalog, which doubles as the allowlist.
 """
 
 from __future__ import annotations
@@ -38,7 +38,7 @@ __all__ = ["render_search_audio", "graft_components", "download_components", "CO
 #
 # Embedding is a chain, not one graft. `minilm-onnx-inhoused` refuses to start
 # without chromadb, onnxruntime and numpy, which left the base rootstock and now
-# ride the vector-chroma overlay — the supervisor fails fast and says so rather
+# ride the vector-chroma overlay. The supervisor fails fast and says so rather
 # than spawning a child that dies on import. That prerequisite is enforced at
 # graft time and not declared in the catalog, so it is spelled out here. Nothing
 # else knows it, which is exactly why the old one-shot graft of `mock-embedding`

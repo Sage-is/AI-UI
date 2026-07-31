@@ -1,4 +1,4 @@
-"""The changelog panel — first wizard surface, and the first with no legacy URL.
+"""The changelog panel. First wizard surface, and the first with no legacy URL.
 
 Every surface before this one replaced a page. This one replaces a branch of a
 modal that `(app)/+layout.svelte` mounts and a store decides to show, so there
@@ -6,33 +6,28 @@ was no address to point a spec at. The registry grew an open step for that
 (`cypress/support/surfaces.ts`), which is what lets the parity gate compare a
 panel you cannot visit.
 
-Two things this panel does differently from the Svelte one, both deliberate.
+Three things differ from the Svelte panel, all deliberate.
 
-**The changelog is a module constant, not a fetch.** `env.CHANGELOG` is parsed
-from CHANGELOG.md once at import. The Svelte panel boots, then calls
-`/api/changelog`, then renders — three steps to display something that has not
-changed since the process started. Reading the constant is the same rule the
-other panels follow (call the handler, never round-trip your own API), taken to
-its end: there is no handler to call, only data.
+The changelog comes from a module constant. `env.CHANGELOG` is parsed from
+CHANGELOG.md once at import. The Svelte panel boots, calls `/api/changelog`,
+then renders: three steps to show something that has not changed since the
+process started. Reading the constant follows the same rule as the other panels
+(call the handler, never round-trip your own API).
 
-**Continue pages the notes before it advances.** The release notes run to tens
-of thousands of words, and a Continue that advances on the first click means
-most readers never see past the first screen. `changelog-pager.js` scrolls one
-screen per click while there is more below, then moves the button to the other
-side of the row and lets it submit. Without the script the button is a plain
-submit rendered in its end position, so nothing lies about what it will do.
+Continue pages the notes before it advances. The release notes run to tens of
+thousands of words, and a Continue that advances on the first click means most
+readers never see past the first screen. `changelog-pager.js` scrolls one screen
+per click while there is more below, then moves the button to the other side of
+the row and lets it submit.
 
-**Continue is a form post, not a modal close.** In the modal, Continue closes it
-and, when the changelog is the only panel, records the version as read. At a
-route there is nothing to close, so what survives is the half that outlives the
-click — the server records the read. That is the property that stops the
-changelog reappearing on every page load, and it is what the guard-rail spec
-asserts on both implementations.
+Continue is a form post. In the modal it closes the modal and, when the
+changelog is the only panel, records the version as read. At a route there is
+nothing to close, so what survives is the durable half: the server records the
+read.
 
-No confetti. The Svelte panel fires `svelte-confetti` on the title, and it is
-not reproduced here — a component whose entire job is an animation is not worth
-a script tag on a server-rendered page. Recorded rather than dropped silently,
-because an unremarked disappearance is indistinguishable from a bug.
+No confetti. The Svelte panel fires `svelte-confetti` on the title and this does
+not, because a component whose whole job is an animation is not worth a script
+tag on a server-rendered page.
 """
 
 from __future__ import annotations
@@ -93,9 +88,9 @@ def render_changelog(request: Request) -> str:
     versions = "".join(
         _version(str(v), d) for v, d in CHANGELOG.items() if isinstance(d, dict)
     )
-    # An empty changelog is a real state — a build whose CHANGELOG.md failed to
-    # parse — and rendering nothing at all would look like a broken page rather
-    # than an empty one.
+    # An empty changelog is a real state, meaning a build whose CHANGELOG.md
+    # failed to parse. Rendering nothing at all would look like a broken page
+    # rather than an empty one.
     body = versions or '<p style="--op:.7">No release notes are available.</p>'
     return f"""
 <section data-cy="changelog-panel">
@@ -107,9 +102,9 @@ def render_changelog(request: Request) -> str:
        style="--maxh:24rem; --ofy:auto; --b:1px solid var(--line); --br:.5rem; --p:.75rem">{body}</div>
   <!-- The button starts in its END position with its END label, so a reader
        with no JavaScript gets a control that does what it says. The pager moves
-       it left and relabels it only once it has measured that there is more
-       below. `data-pager-row` is styled from pages.css because the side depends
-       on runtime state, which an inline prop cannot express. -->
+       it left and relabels it only once it sees there is more below. The move
+       itself is `margin-left` in pages.css: the side depends on runtime state,
+       which an inline prop cannot express. -->
   <form method="post" action="/pages/admin/setup/changelog/seen" data-pager-row
         style="--m:1rem 0 0">
     <button data-cy="changelog-continue" type="submit"

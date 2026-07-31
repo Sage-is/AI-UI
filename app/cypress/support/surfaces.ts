@@ -1,11 +1,11 @@
 /// <reference types="cypress" />
 
-// The surface registry — one place that knows a surface's two addresses.
+// The surface registry. One place that knows a surface's two addresses.
 //
 // Every migrated surface exists twice for as long as the strangler runs: the
 // SvelteKit route users reach today, and the no-build route that will replace
 // it. A spec should not care which one it is pointed at, and it certainly
-// should not invent its own environment variable for the choice — the first two
+// should not invent its own environment variable for the choice. The first two
 // specs did exactly that (CYPRESS_SPRIGS_PANEL, CYPRESS_DIAGNOSTICS_PANEL), so
 // running "both" meant remembering two different names and running each spec
 // twice by hand.
@@ -30,14 +30,14 @@ export interface Surface {
 	 * How to drive the SPA to this surface after loading `legacy`, for a surface
 	 * that has no URL of its own.
 	 *
-	 * The setup wizard is a modal — `(app)/+layout.svelte` mounts it and a store
+	 * The setup wizard is a modal: `(app)/+layout.svelte` mounts it and a store
 	 * decides whether it shows, so there is no address to visit. Without this,
 	 * the whole wizard would migrate with no parity gate at all, which is the one
 	 * check that does not depend on the spec author's judgement.
 	 *
 	 * A callback rather than a selector, because reaching a panel part-way into
 	 * a wizard is not one click. Features sits behind Welcome, and the steps
-	 * before it must be deselected to get there — with `.uncheck()`, not
+	 * before it must be deselected to get there, with `.uncheck()`, not
 	 * `.click()`, since WelcomeStep's boxes start checked or unchecked depending
 	 * on whether the instance already has models and users. A click would toggle
 	 * whatever it found and land on a different panel on a different instance.
@@ -54,24 +54,7 @@ export interface Surface {
 	scope?: string;
 }
 
-/**
- * Open the setup wizard from admin general settings, then jump to one panel.
- *
- * Two hazards this exists to absorb, both found the hard way.
- *
- * A modal can already be open when we arrive, and it covers the trigger button.
- * Two separate things open one: the wizard's own auto-trigger, and the dev
- * mission reminder, which `(app)/+layout.svelte` shows whenever the reader has
- * `devMissionSignup` set — which is precisely what the developer-panel spec
- * turns on. Both are correct product behaviour, so the gate closes what it
- * finds rather than pretending neither happens.
- *
- * And the jump is by progress dot rather than through Welcome's own step
- * selection, because selecting a step and pressing Get Started lands on the
- * WRONG panel — `handleWelcomeStart` skips against a stale `panels` value. That
- * bug is filed in TODO.md; driving the gates through it would make every wizard
- * spec depend on a defect.
- */
+/** Dismiss whatever modal is on screen, innermost first. */
 const closeAnyModal = (attempt = 0) => {
 	// Recursive rather than a single check, because more than one modal can be
 	// stacked and each close reveals the next. Bounded so a modal that refuses
@@ -85,6 +68,24 @@ const closeAnyModal = (attempt = 0) => {
 	});
 };
 
+/**
+ * Open the setup wizard from admin general settings, then jump to one panel.
+ *
+ * Two hazards this exists to absorb, both found the hard way.
+ *
+ * A modal can already be open when we arrive, and it covers the trigger button.
+ * Two separate things open one: the wizard's own auto-trigger, and the dev
+ * mission reminder, which `(app)/+layout.svelte` shows whenever the reader has
+ * `devMissionSignup` set, which is precisely what the developer-panel spec
+ * turns on. Both are correct product behaviour, so the gate closes what it
+ * finds rather than pretending neither happens.
+ *
+ * And the jump is by progress dot rather than through Welcome's own step
+ * selection, because selecting a step and pressing Get Started lands on the
+ * WRONG panel. `handleWelcomeStart` skips against a stale `panels` value. That
+ * bug is filed in TODO.md; driving the gates through it would make every wizard
+ * spec depend on a defect.
+ */
 const openWizardPanel = (welcomeHook: string, panel: string) => () => {
 	// Settle before closing. Both auto-opening modals mount after the layout has
 	// fetched config and settings, so a close that runs the moment the DOM
@@ -117,6 +118,31 @@ export const SURFACES = {
 		},
 		nobuild: '/pages/admin/setup/changelog',
 		scope: '[data-cy="changelog-panel"]'
+	},
+	// Welcome is where the wizard opens, so it needs no dot-jump, just the
+	// trigger, after clearing whatever auto-opened over it.
+	wizardWelcome: {
+		legacy: '/admin/settings/general',
+		openLegacy: () => {
+			cy.get('[data-cy="run-setup-wizard"]', { timeout: 30000 }).should('exist');
+			cy.wait(1200);
+			closeAnyModal();
+			cy.get('[data-cy="run-setup-wizard"]').click();
+		},
+		nobuild: '/pages/admin/setup/welcome',
+		scope: '[data-cy="welcome-panel"]'
+	},
+	wizardConnection: {
+		legacy: '/admin/settings/general',
+		openLegacy: openWizardPanel('welcome-connection', 'connection'),
+		nobuild: '/pages/admin/setup/connection',
+		scope: '[data-cy="connection-panel"]'
+	},
+	wizardUsers: {
+		legacy: '/admin/settings/general',
+		openLegacy: openWizardPanel('welcome-users', 'users'),
+		nobuild: '/pages/admin/setup/users',
+		scope: '[data-cy="users-panel"]'
 	},
 	wizardFeatures: {
 		legacy: '/admin/settings/general',

@@ -2,16 +2,16 @@
 /// <reference path="../support/index.d.ts" />
 import { openSurface } from '../support/surfaces';
 
-// The wizard's closing summary — guard-rail, written against the SvelteKit
+// The wizard's closing summary. Guard-rail, written against the SvelteKit
 // panel first.
 //
 // This panel reports rather than configures, so what is checkable is that the
 // numbers it reports are the server's numbers. They are read off data
 // attributes rather than the sentences, which means a pluralisation change or a
-// translation cannot turn this red — and a wrong count still can.
+// translation cannot turn this red, and a wrong count still can.
 //
 // Deliberately NOT asserted: the auth, connection and working-alone lines. The
-// two implementations derive those from different questions — the modal asks
+// two implementations derive those from different questions. The modal asks
 // whether the browser finished loading a model list and what the user clicked
 // during this run; the page asks what the configuration and the stored settings
 // say. Both are defensible and they disagree on a fresh instance, so pinning
@@ -88,7 +88,7 @@ const expectSetupCompleted = (attempt = 0) => {
  *
  * The Svelte panel renders its summary inside an `{#if loading}` else-branch,
  * so the root element exists well before the four fetches behind it resolve.
- * Asserting on the root alone reads zeros and an empty list — which looks like
+ * Asserting on the root alone reads zeros and an empty list, which looks like
  * a correct empty instance, not a race. The features line is the settle signal
  * because it is the one line that always renders, even at a count of zero.
  */

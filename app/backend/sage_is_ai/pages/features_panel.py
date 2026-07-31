@@ -1,18 +1,18 @@
-"""Platform feature toggles — the wizard's first real form.
+"""Platform feature toggles. The wizard's first real form.
 
 Five checkboxes over `/api/v1/auths/admin/config`. The Svelte panel writes each
 row out longhand: five near-identical seventeen-line blocks differing only in a
 label, a caption, a tooltip and a beta badge. Here that is one table and one
 loop, which is the whole argument for generated markup over hand-written rows.
 
-**Unchecked boxes do not post.** An HTML checkbox sends nothing when it is off,
-so a form that only reads what arrived would silently treat "turned it off" as
-"did not mention it". `FIELDS` is the authority on what exists, and every name
-in it is resolved to True or False from the submitted form, so switching a
-feature off is a value rather than an absence. Getting this wrong is the classic
-way a settings form quietly refuses to turn anything off.
+Unchecked boxes do not post. An HTML checkbox sends nothing when it is off, so a
+form that only reads what arrived would silently treat "turned it off" as "did
+not mention it". `FIELDS` is the authority on what exists, and every name in it
+is resolved to True or False from the submitted form, so switching a feature off
+is a value in its own right. Getting this wrong is the classic way a settings
+form quietly refuses to turn anything off.
 
-**The current config is read, merged, and written back whole.** `AdminConfig`
+The current config is read, merged, and written back whole. `AdminConfig`
 carries far more than these five values, and posting only the five would reset
 everything else to the model's defaults. So the handler is called with the
 existing config plus the five changes.
@@ -38,6 +38,7 @@ FIELDS: tuple[tuple[str, str, str, bool], ...] = (
     ("ENABLE_USER_WEBHOOKS", "User Webhooks",
      "Allow users to configure webhook integrations", False),
 )
+
 
 # The hook is derived from the key so the two cannot drift: a renamed field
 # renames its test hook, and the parity gate says so.
@@ -116,7 +117,7 @@ async def save_features(request: Request, user, form: dict) -> str:
 
     current = await get_admin_config(request, user)
     merged = dict(current)
-    # Absence means False. See the module docstring — reading only what was
+    # Absence means False. See the module docstring: reading only what was
     # posted is how a checkbox form loses the ability to turn anything off.
     for key, _, _, _ in FIELDS:
         merged[key] = key in form
