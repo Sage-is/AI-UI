@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../support/index.d.ts" />
-import { openSurface } from '../support/surfaces';
+import { openSetupPanel } from '../support/surfaces';
 
 // The wizard's closing summary. Guard-rail, written against the SvelteKit
 // panel first.
@@ -93,7 +93,7 @@ const expectSetupCompleted = (attempt = 0) => {
  * because it is the one line that always renders, even at a count of zero.
  */
 const openComplete = () => {
-	openSurface('wizardComplete');
+	openSetupPanel('complete');
 	cy.get('[data-check="features"]', { timeout: 30000 }).should('exist');
 };
 

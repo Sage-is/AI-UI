@@ -83,8 +83,15 @@ def _version(version: str, data: dict) -> str:
     )
 
 
-def render_changelog(request: Request) -> str:
-    """The panel. Arrives rendered, because the data was never remote."""
+def render_changelog(request: Request, *, base: str = "/pages/admin/setup/changelog") -> str:
+    """The panel. Arrives rendered, because the data was never remote.
+
+    `base` is where Continue posts. Two routes render this panel: the wizard's
+    admin-only one, and `/pages/changelog`, which any signed-in reader reaches
+    from Settings, About, "See what's new". The markup is identical and only the
+    action differs, so the action is the parameter — a second copy of the panel
+    would drift on the first change to either.
+    """
     from sage_is_ai.env import CHANGELOG, VERSION
 
     _ = translator(request)
@@ -110,7 +117,7 @@ def render_changelog(request: Request) -> str:
        it left and relabels it only once it sees there is more below. The move
        itself is `margin-left` in pages.css: the side depends on runtime state,
        which an inline prop cannot express. -->
-  <form method="post" action="/pages/admin/setup/changelog/seen{lang}" data-pager-row
+  <form method="post" action="{e(base, quote=True)}/seen{lang}" data-pager-row
         style="--m:1rem 0 0">
     <button data-cy="changelog-continue" type="submit"
             data-label-more="{e(_("Next page"), quote=True)} &darr;" data-label-end="{e(_("Continue"), quote=True)} &rarr;"

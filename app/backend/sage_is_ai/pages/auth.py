@@ -31,15 +31,15 @@ from fastapi import BackgroundTasks, HTTPException, Request, Response, status
 from sage_is_ai.models.users import UserModel
 from sage_is_ai.utils.auth import get_current_user
 
-__all__ = ["require_admin_page"]
+__all__ = ["require_admin_page", "require_page_user"]
 
 
-def require_admin_page(
+def _signed_in(
     request: Request,
     response: Response,
     background_tasks: BackgroundTasks,
 ) -> UserModel:
-    """Admin-only render route. Sends a person to sign in, not to a 403 body.
+    """Identity for a render route, or a redirect to sign in.
 
     `auth_token=None` is passed on purpose: this is the render path, so identity
     comes from the cookie. A render route reached with a bearer header is a
@@ -53,9 +53,7 @@ def require_admin_page(
     origin.
     """
     try:
-        user = get_current_user(
-            request, response, background_tasks, auth_token=None
-        )
+        return get_current_user(request, response, background_tasks, auth_token=None)
     except HTTPException:
         target = request.url.path
         if request.url.query:
@@ -65,6 +63,34 @@ def require_admin_page(
             headers={"Location": f"/auth?next={target}"},
             detail="Not authenticated",
         ) from None
+
+
+def require_page_user(
+    request: Request,
+    response: Response,
+    background_tasks: BackgroundTasks,
+) -> UserModel:
+    """Any signed-in reader. The narrow exception to admin-only pages.
+
+    Used by exactly one route, `/pages/changelog`. The release notes are not
+    admin material — every reader can open Settings, About, "See what's new" —
+    and until the wizard moved here that path was a Svelte component with no
+    role check at all. Serving it from the admin tree would have made a
+    non-admin's first click a 403.
+
+    Keep this rare, and keep it out of `/admin/`. A route under that prefix that
+    does not require an admin is a trap for whoever audits by path next.
+    """
+    return _signed_in(request, response, background_tasks)
+
+
+def require_admin_page(
+    request: Request,
+    response: Response,
+    background_tasks: BackgroundTasks,
+) -> UserModel:
+    """Admin-only render route. Sends a person to sign in, not to a 403 body."""
+    user = _signed_in(request, response, background_tasks)
 
     if user.role != "admin":
         # A signed-in non-admin is not a sign-in problem, so it is not a

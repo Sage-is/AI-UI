@@ -1,13 +1,11 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../support/index.d.ts" />
-import { isNoBuild } from '../support/surfaces';
-
 // Navigation between the setup routes.
 //
-// No-build only, and not because the legacy side is exempt. It has nowhere to
-// navigate. The wizard's sequence is Svelte state inside a modal; these are
-// addresses a reader can land on cold. Without links each one is a cul-de-sac,
-// which is what the manual review pass reported first.
+// The wizard's sequence used to be Svelte state inside a modal, so there was
+// nothing to navigate and nowhere to land. These are addresses a reader can
+// reach cold, and without links each one is a cul-de-sac — which is what the
+// manual review pass reported first.
 //
 // The order is DISCOVERED by walking `setup-next`, not restated here. An earlier
 // version of this file claimed exactly that in a comment while keeping a
@@ -45,10 +43,7 @@ const walkForward = (seen: string[] = []): Cypress.Chainable<string[]> =>
 	});
 
 describe('Setup routes link to each other', () => {
-	beforeEach(function () {
-		if (!isNoBuild()) this.skip();
-		cy.loginAdmin();
-	});
+	beforeEach(() => cy.loginAdmin());
 
 	it('offers no way back from the first panel and no way on from the last', () => {
 		cy.visit(path(FIRST));

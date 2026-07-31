@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../support/index.d.ts" />
-import { openSurface } from '../support/surfaces';
+import { openSetupPanel } from '../support/surfaces';
 
 // Developer mode. Guard-rail, written against the SvelteKit panel first.
 //
@@ -61,14 +61,14 @@ describe('Setup wizard: developer mode', () => {
 	beforeEach(() => cy.loginAdmin());
 
 	it('reports which branch it rendered', () => {
-		openSurface('wizardDeveloper');
+		openSetupPanel('developer');
 		cy.get('[data-cy="developer-panel"]')
 			.should('have.attr', 'data-dev-mode')
 			.and('match', /^(true|false)$/);
 	});
 
 	it('offers the mission signup in the production branch', () => {
-		openSurface('wizardDeveloper');
+		openSetupPanel('developer');
 		cy.get('[data-cy="developer-panel"]').then(($p) => {
 			if ($p.attr('data-dev-mode') === 'true') {
 				cy.log('DEV_MODE branch — no signup control by design');
@@ -81,13 +81,13 @@ describe('Setup wizard: developer mode', () => {
 
 	it('shows the signup in the state the server holds', () => {
 		setSignup(true);
-		openSurface('wizardDeveloper');
+		openSetupPanel('developer');
 		cy.get('[data-cy="developer-mission-signup"]').should('be.checked');
 	});
 
 	it('signs up and the server keeps it', () => {
 		setSignup(false);
-		openSurface('wizardDeveloper');
+		openSetupPanel('developer');
 		cy.get('[data-cy="developer-mission-signup"]').check({ force: true });
 		cy.get('[data-cy="developer-save"]').click();
 		expectSignup(true);
@@ -97,7 +97,7 @@ describe('Setup wizard: developer mode', () => {
 	// names cannot pass.
 	it('withdraws the signup and the server keeps it off', () => {
 		setSignup(true);
-		openSurface('wizardDeveloper');
+		openSetupPanel('developer');
 		cy.get('[data-cy="developer-mission-signup"]').should('be.checked').uncheck({ force: true });
 		cy.get('[data-cy="developer-save"]').click();
 		expectSignup(false);
@@ -105,7 +105,7 @@ describe('Setup wizard: developer mode', () => {
 
 	it('leaves the reader other ui settings alone', () => {
 		readUi().then((before) => {
-			openSurface('wizardDeveloper');
+			openSetupPanel('developer');
 			cy.get('[data-cy="developer-save"]').click();
 			cy.wait(500);
 			readUi().then((after: Record<string, unknown>) => {

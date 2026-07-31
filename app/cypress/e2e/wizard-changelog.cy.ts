@@ -1,22 +1,21 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../support/index.d.ts" />
-import { isNoBuild, openSurface } from '../support/surfaces';
+import { openSetupPanel } from '../support/surfaces';
 
 // The changelog panel. Guard-rail, written against the SvelteKit modal before
 // any code moves, per docs/no-build-surface-convention.md.
 //
-// First wizard surface, and the first surface anywhere in this migration whose
-// legacy side has no URL. `openSurface` handles that: on the legacy target it
-// loads admin general settings and clicks "See what's new", which is what puts
-// the modal on this panel. On the no-build target it just loads the route. A
-// spec should not know which of those happened.
+// First wizard surface, and the first anywhere in this migration whose original
+// had no URL at all — it was a branch of a modal, reached by a button that set a
+// store. That is why the surface registry grew an open callback, and why the
+// registry lost it again once the modal was deleted: the panel is an address
+// now, so reaching it is a visit.
 //
-// What this may assert is limited to what BOTH implementations must do, and one
-// difference is worth naming rather than hiding. In the modal, "Continue"
-// closes the modal; at a route there is nothing to close. So what is checked is
-// the durable half both share: the server records that this version's changelog
-// has been read. That is the part an operator would notice going missing,
-// because it is what stops the changelog reappearing on every page load.
+// What is checked is the durable half: the server records that this version's
+// changelog has been read. That is the part an operator would notice going
+// missing, because it is what stops the changelog reappearing on every page
+// load. "Continue" closing something is the dialog host's business, and it is
+// judged in setup-dialog.cy.ts.
 //
 // Everything reads data attributes and API state, never rendered English, so
 // translating the panel cannot turn this red.
@@ -80,7 +79,7 @@ const expectRecorded = (version: string, attempt = 0) => {
 describe('Setup wizard: changelog panel', () => {
 	beforeEach(() => {
 		cy.loginAdmin();
-		openSurface('wizardChangelog');
+		openSetupPanel('changelog');
 	});
 
 	// Put the read marker back. `cy.loginAdmin` is a cached session, so it will
@@ -164,9 +163,9 @@ describe('Setup wizard: changelog panel', () => {
 		// first would pass whether or not the button did anything.
 		readUiSettings().then((ui) => {
 			writeUiSettings({ ...ui, version: 'not-the-current-version' });
-			openSurface('wizardChangelog');
+			openSetupPanel('changelog');
 			// The no-build button pages the notes before it advances, so get to
-			// the end first. Best-effort and forced, because on the legacy target
+			// the end first. Best-effort and forced, because the pager only lets
 			// this element is an inner div whose centre sits off-screen inside
 			// its own scroll container. Cypress refuses to trigger on it, and
 			// the legacy button submits on any click regardless.
@@ -180,15 +179,14 @@ describe('Setup wizard: changelog panel', () => {
 	});
 });
 
-// The pager is no-build only: the legacy panel has no script and its Continue
-// submits on the first click. Asserted separately rather than folded into the
-// shared guard-rail, because a spec that judges both may only assert what both
-// do, and this is a capability only one of them has.
+// The pager. The deleted panel had no script: its Continue submitted on the
+// first click, so a reader who never scrolled never saw past the first screen.
+// Kept in its own describe because it is behaviour the route added, not a
+// contract carried over.
 describe('Setup wizard: changelog pager', () => {
-	beforeEach(function () {
-		if (!isNoBuild()) this.skip();
+	beforeEach(() => {
 		cy.loginAdmin();
-		openSurface('wizardChangelog');
+		openSetupPanel('changelog');
 	});
 
 	it('starts as a pager, not an advance', () => {

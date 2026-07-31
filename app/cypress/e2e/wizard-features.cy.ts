@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../support/index.d.ts" />
-import { openSurface } from '../support/surfaces';
+import { openSetupPanel } from '../support/surfaces';
 
 // Feature toggles. Guard-rail, written against the SvelteKit panel before any
 // code moves, per docs/no-build-surface-convention.md.
@@ -71,7 +71,7 @@ describe('Setup wizard: feature toggles', () => {
 	afterEach(() => writeConfig(ALL_OFF));
 
 	it('renders a control for every feature flag', () => {
-		openSurface('wizardFeatures');
+		openSetupPanel('features');
 		Object.keys(FLAGS).forEach((hook) => {
 			cy.get(`[data-cy="features-panel"] [data-cy="${hook}"]`).should('exist');
 		});
@@ -79,14 +79,14 @@ describe('Setup wizard: feature toggles', () => {
 
 	it('shows each toggle in the state the server holds', () => {
 		writeConfig({ ...ALL_OFF, ENABLE_NOTES: true });
-		openSurface('wizardFeatures');
+		openSetupPanel('features');
 		cy.get('[data-cy="features-notes"]').should('be.checked');
 		cy.get('[data-cy="features-spaces"]').should('not.be.checked');
 	});
 
 	it('turns a feature on and the server keeps it', () => {
 		writeConfig(ALL_OFF);
-		openSurface('wizardFeatures');
+		openSetupPanel('features');
 		cy.get('[data-cy="features-spaces"]').check({ force: true });
 		cy.get('[data-cy="features-save"]').click();
 		expectFlag('ENABLE_SPACES', true);
@@ -97,7 +97,7 @@ describe('Setup wizard: feature toggles', () => {
 	// off, and it passes every "turn it on" test while doing so.
 	it('turns a feature off and the server keeps it off', () => {
 		writeConfig({ ...ALL_OFF, ENABLE_SPACES: true });
-		openSurface('wizardFeatures');
+		openSetupPanel('features');
 		cy.get('[data-cy="features-spaces"]').should('be.checked').uncheck({ force: true });
 		cy.get('[data-cy="features-save"]').click();
 		expectFlag('ENABLE_SPACES', false);
@@ -105,7 +105,7 @@ describe('Setup wizard: feature toggles', () => {
 
 	it('leaves the other flags alone when one changes', () => {
 		writeConfig({ ...ALL_OFF, ENABLE_MESSAGE_RATING: true });
-		openSurface('wizardFeatures');
+		openSetupPanel('features');
 		cy.get('[data-cy="features-notes"]').check({ force: true });
 		cy.get('[data-cy="features-save"]').click();
 		expectFlag('ENABLE_NOTES', true);
@@ -118,7 +118,7 @@ describe('Setup wizard: feature toggles', () => {
 		readConfig().then((before: Record<string, unknown>) => {
 			const witness = 'ENABLE_SIGNUP';
 			expect(before, `${witness} exists to be a witness`).to.have.property(witness);
-			openSurface('wizardFeatures');
+			openSetupPanel('features');
 			cy.get('[data-cy="features-save"]').click();
 			cy.wait(500);
 			readConfig().then((after: Record<string, unknown>) => {

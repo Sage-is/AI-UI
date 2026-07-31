@@ -47,7 +47,7 @@
 
 	import Sidebar from '$lib/components/layout/Sidebar.svelte';
 	import SettingsModal from '$lib/components/chat/SettingsModal.svelte';
-	import ChangesAndSetupModal from '$lib/components/ChangesAndSetupModal.svelte';
+	import SetupDialog from '$lib/components/SetupDialog.svelte';
 	import DevMissionReminderModal from '$lib/components/DevMissionReminderModal.svelte';
 	import TrySageTutorial from '$lib/components/setup/TrySageTutorial.svelte';
 	import AccountPending from '$lib/components/layout/Overlay/AccountPending.svelte';
@@ -385,7 +385,7 @@
 </script>
 
 <SettingsModal bind:show={$showSettings} />
-<ChangesAndSetupModal bind:show={$showChangesAndSetup} />
+<SetupDialog bind:show={$showChangesAndSetup} />
 <DevMissionReminderModal bind:show={$showDevMissionReminder} />
 <TrySageTutorial />
 

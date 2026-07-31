@@ -1,10 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../support/index.d.ts" />
-import { isNoBuild, openSurface } from '../support/surfaces';
+import { openSetupPanel } from '../support/surfaces';
 
 // Sign-in providers. Guard-rail, written against the SvelteKit panel first.
 //
-// The contract both implementations owe: a client ID and a secret per provider,
+// The contract this panel owes: a client ID and a secret per provider,
 // and the sign-up toggles. That much is shape, and the parity gate covers most
 // of it.
 //
@@ -59,7 +59,7 @@ describe('Setup wizard: authentication', () => {
 	beforeEach(() => cy.loginAdmin());
 
 	it('offers a client ID and a secret for each provider', () => {
-		openSurface('wizardAuth');
+		openSetupPanel('auth');
 		PROVIDERS.forEach((provider) => {
 			cy.get(`[data-cy="auth-${provider}-client-id"]`).should('exist');
 			cy.get(`[data-cy="auth-${provider}-client-secret"]`).should('exist');
@@ -67,7 +67,7 @@ describe('Setup wizard: authentication', () => {
 	});
 
 	it('offers the sign-up controls and a way to save', () => {
-		openSurface('wizardAuth');
+		openSetupPanel('auth');
 		cy.get('[data-cy="auth-enable-signup"]').should('exist');
 		cy.get('[data-cy="auth-oauth-merge-accounts-by-email"]').should('exist');
 		cy.get('[data-cy="auth-enable-magic-link-login"]').should('exist');
@@ -75,17 +75,15 @@ describe('Setup wizard: authentication', () => {
 	});
 });
 
-// No-build only. The modal reads all three secrets into its inputs on mount, so
-// they are in the DOM by construction; asserting otherwise of the modal would be
-// asserting it had already been migrated.
+// The exposure the migration closed. The deleted modal read all three secrets
+// into its inputs on mount, so they were in the DOM by construction and sat in
+// the reader's browser memory. This asserts the replacement never sends them,
+// and it is the reason this panel cost more lines than it replaced.
 describe('Setup wizard: auth secrets are never rendered back', () => {
-	beforeEach(function () {
-		if (!isNoBuild()) this.skip();
-		cy.loginAdmin();
-	});
+	beforeEach(() => cy.loginAdmin());
 
 	it('renders every secret field empty', () => {
-		openSurface('wizardAuth');
+		openSetupPanel('auth');
 		PROVIDERS.forEach((provider) =>
 			cy.get(`[data-cy="auth-${provider}-client-secret"]`).should('have.value', '')
 		);
@@ -114,7 +112,7 @@ describe('Setup wizard: auth secrets are never rendered back', () => {
 	});
 
 	it('says a secret is stored without showing it', () => {
-		openSurface('wizardAuth');
+		openSetupPanel('auth');
 		cy.get('[data-cy="auth-google-client-secret"]')
 			.should('have.attr', 'data-stored')
 			.and('match', /true|false/);
@@ -129,10 +127,7 @@ describe('Setup wizard: saving auth without edits changes nothing', () => {
 	let storedOAuth: Record<string, unknown>;
 	let storedAdmin: Record<string, unknown>;
 
-	beforeEach(function () {
-		if (!isNoBuild()) this.skip();
-		cy.loginAdmin();
-	});
+	beforeEach(() => cy.loginAdmin());
 
 	// A secret the panel will render blank, so pressing Save is a real test of
 	// "blank keeps what is stored" rather than a test of an empty field staying
@@ -157,7 +152,7 @@ describe('Setup wizard: saving auth without edits changes nothing', () => {
 	});
 
 	it('keeps the stored secret when the field is submitted blank', () => {
-		openSurface('wizardAuth');
+		openSetupPanel('auth');
 		cy.get('[data-cy="auth-magic-link-smtp-password"]').should('have.value', '');
 		cy.get('[data-cy="auth-save"]').click();
 		cy.get('[data-cy="auth-saved"]', { timeout: 30000 }).should('exist');
@@ -169,7 +164,7 @@ describe('Setup wizard: saving auth without edits changes nothing', () => {
 	});
 
 	it('leaves every admin-config field it does not show alone', () => {
-		openSurface('wizardAuth');
+		openSetupPanel('auth');
 		cy.get('[data-cy="auth-save"]').click();
 		cy.get('[data-cy="auth-saved"]', { timeout: 30000 }).should('exist');
 		readAdmin().should((cfg) => {
@@ -186,10 +181,7 @@ describe('Setup wizard: saving auth without edits changes nothing', () => {
 describe('Setup wizard: an auth toggle can be turned off', () => {
 	let storedOAuth: Record<string, unknown>;
 
-	beforeEach(function () {
-		if (!isNoBuild()) this.skip();
-		cy.loginAdmin();
-	});
+	beforeEach(() => cy.loginAdmin());
 
 	before(() => {
 		cy.loginAdmin();
@@ -205,7 +197,7 @@ describe('Setup wizard: an auth toggle can be turned off', () => {
 	});
 
 	it('clears merge-accounts-by-email and it stays cleared', () => {
-		openSurface('wizardAuth');
+		openSetupPanel('auth');
 		cy.get('[data-cy="auth-oauth-merge-accounts-by-email"]').should('be.checked').uncheck();
 		cy.get('[data-cy="auth-save"]').click();
 		cy.get('[data-cy="auth-saved"]', { timeout: 30000 }).should('exist');

@@ -82,6 +82,12 @@
 		true
 	);
 
+	// The dialog host injects a panel without a page load, so there is no second
+	// DOMContentLoaded to hang the first sync on. Everything else here is
+	// delegated from `document` and survives the swap by itself; only the
+	// starting label and side have to be recomputed, and this is that signal.
+	document.addEventListener('pages:panel', sync);
+
 	if (document.readyState === 'loading') {
 		document.addEventListener('DOMContentLoaded', sync);
 	} else {

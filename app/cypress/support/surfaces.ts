@@ -18,6 +18,15 @@
 // Adding a surface here is the first step of migrating it, before any code
 // moves. That ordering is the point: it forces the question "what does the old
 // one actually do?" while the old one is still the only one there is.
+//
+// Removing one is the LAST step. A surface stays here only while both
+// implementations exist; once the SvelteKit side is deleted there is nothing to
+// compare against, and leaving the entry would give `surface-parity` a route to
+// judge against itself. That is a gate whose failure is indistinguishable from
+// success, which is the shape this repo keeps finding — so retiring the entry
+// belongs in the same commit as the deletion, and whatever the surface still
+// needs covered gets its own spec. The setup wizard is the worked example: nine
+// entries out, `setup-dialog.cy.ts` in.
 
 export type SurfaceTarget = 'legacy' | 'nobuild';
 
@@ -26,41 +35,32 @@ export interface Surface {
 	legacy: string;
 	/** The server-rendered route replacing it. */
 	nobuild: string;
-	/**
-	 * How to drive the SPA to this surface after loading `legacy`, for a surface
-	 * that has no URL of its own.
-	 *
-	 * The setup wizard is a modal: `(app)/+layout.svelte` mounts it and a store
-	 * decides whether it shows, so there is no address to visit. Without this,
-	 * the whole wizard would migrate with no parity gate at all, which is the one
-	 * check that does not depend on the spec author's judgement.
-	 *
-	 * A callback rather than a selector, because reaching a panel part-way into
-	 * a wizard is not one click. Features sits behind Welcome, and the steps
-	 * before it must be deselected to get there, with `.uncheck()`, not
-	 * `.click()`, since WelcomeStep's boxes start checked or unchecked depending
-	 * on whether the instance already has models and users. A click would toggle
-	 * whatever it found and land on a different panel on a different instance.
-	 */
-	openLegacy?: () => void;
-	/**
-	 * Confine hook collection to this selector, on BOTH sides.
-	 *
-	 * Only meaningful alongside `openLegacy`, and required by it: a modal opens
-	 * on top of a page that is still in the DOM, so collecting the whole document
-	 * would sweep up the host page's controls and then demand the no-build route
-	 * render them too. The surface is the panel, not the page it opened over.
-	 */
-	scope?: string;
 }
 
-/** Dismiss whatever modal is on screen, innermost first. */
-const closeAnyModal = (attempt = 0) => {
+// `openLegacy` and `scope` used to live here: a callback that drove the SPA to a
+// surface with no URL of its own, and a selector confining hook collection to
+// the panel rather than the page it opened over. The setup wizard was the only
+// user of either, because it was a modal. It is nine routes now, so both fields
+// went with it — an optional field nothing sets is scaffolding that reads like a
+// contract. Restore them from git if a modal-only surface ever needs migrating.
+
+/** Dismiss whatever modal is on screen, topmost first. */
+export const closeAnyModal = (attempt = 0) => {
 	// Recursive rather than a single check, because more than one modal can be
 	// stacked and each close reveals the next. Bounded so a modal that refuses
 	// to close fails the test instead of hanging it.
 	if (attempt > 4) return;
 	cy.get('body').then(($body) => {
+		// The setup dialog first: it is a native `<dialog>`, so it sits in the top
+		// layer and covers any `modal-element` underneath regardless of z-index.
+		// Closing in painted order is the only order that can actually reach the
+		// control it means to press.
+		if ($body.find('dialog[open]').length > 0) {
+			cy.get('dialog[open] [data-cy="setup-close"]').first().click({ force: true });
+			cy.wait(250);
+			closeAnyModal(attempt + 1);
+			return;
+		}
 		if ($body.find('modal-element').length === 0) return;
 		cy.get('modal-element [aria-label="Close"]').first().click({ force: true });
 		cy.wait(250);
@@ -69,113 +69,29 @@ const closeAnyModal = (attempt = 0) => {
 };
 
 /**
- * Open the setup wizard from admin general settings, then jump to one panel.
+ * Open one setup panel at its own address.
  *
- * Two hazards this exists to absorb, both found the hard way.
- *
- * A modal can already be open when we arrive, and it covers the trigger button.
- * Two separate things open one: the wizard's own auto-trigger, and the dev
- * mission reminder, which `(app)/+layout.svelte` shows whenever the reader has
- * `devMissionSignup` set, which is precisely what the developer-panel spec
- * turns on. Both are correct product behaviour, so the gate closes what it
- * finds rather than pretending neither happens.
- *
- * And the jump is by progress dot rather than through Welcome's own step
- * selection, because selecting a step and pressing Get Started lands on the
- * WRONG panel. `handleWelcomeStart` skips against a stale `panels` value. That
- * bug is filed in TODO.md; driving the gates through it would make every wizard
- * spec depend on a defect.
+ * The wizard used to be a modal with no URL, which is why the registry below
+ * grew an `openLegacy` step. It is now nine routes, so reaching a panel is a
+ * visit — and the dialog that shows the same panels to a reader is tested as
+ * its own surface in `setup-dialog.cy.ts` rather than nine times over here.
  */
-const openWizardPanel = (welcomeHook: string, panel: string) => () => {
-	// Settle before closing. Both auto-opening modals mount after the layout has
-	// fetched config and settings, so a close that runs the moment the DOM
-	// exists finds nothing and the modal appears immediately afterwards, on top
-	// of the button we are about to click. Wait for the trigger to render, give
-	// the async modals their turn, THEN clear whatever showed up.
-	cy.get('[data-cy="run-setup-wizard"]', { timeout: 30000 }).should('exist');
-	cy.wait(1200);
-	closeAnyModal();
-	cy.get('[data-cy="run-setup-wizard"]').click();
-	cy.get(`[data-cy="${welcomeHook}"]`, { timeout: 30000 }).check({ force: true });
-	cy.get('[data-cy="welcome-start"]').click();
-	cy.get(`[aria-label="${panel}"]`, { timeout: 30000 }).click();
+export const openSetupPanel = (panel: string) => {
+	cy.visit(`/pages/admin/setup/${panel}`);
+	cy.get(`[data-cy="${panel}-panel"]`, { timeout: 30000 }).should('be.visible');
 };
 
 export const SURFACES = {
 	sprigs: { legacy: '/admin/sprigs', nobuild: '/pages/admin/sprigs' },
 	diagnostics: { legacy: '/admin/diagnostics', nobuild: '/pages/admin/diagnostics' },
-	branding: { legacy: '/admin/settings/theme', nobuild: '/pages/admin/branding' },
-	// The changelog branch of the setup modal. `openLegacy` is the "See what's
-	// new" button on admin general settings, which sets hasChangelog and opens
-	// the modal on this panel.
-	wizardChangelog: {
-		legacy: '/admin/settings/general',
-		openLegacy: () => {
-			cy.get('[data-cy="see-whats-new"]', { timeout: 30000 }).should('exist');
-			cy.wait(1200);
-			closeAnyModal();
-			cy.get('[data-cy="see-whats-new"]').click();
-		},
-		nobuild: '/pages/admin/setup/changelog',
-		scope: '[data-cy="changelog-panel"]'
-	},
-	// Welcome is where the wizard opens, so it needs no dot-jump, just the
-	// trigger, after clearing whatever auto-opened over it.
-	wizardWelcome: {
-		legacy: '/admin/settings/general',
-		openLegacy: () => {
-			cy.get('[data-cy="run-setup-wizard"]', { timeout: 30000 }).should('exist');
-			cy.wait(1200);
-			closeAnyModal();
-			cy.get('[data-cy="run-setup-wizard"]').click();
-		},
-		nobuild: '/pages/admin/setup/welcome',
-		scope: '[data-cy="welcome-panel"]'
-	},
-	wizardAuth: {
-		legacy: '/admin/settings/general',
-		openLegacy: openWizardPanel('welcome-auth', 'auth'),
-		nobuild: '/pages/admin/setup/auth',
-		scope: '[data-cy="auth-panel"]'
-	},
-	wizardConnection: {
-		legacy: '/admin/settings/general',
-		openLegacy: openWizardPanel('welcome-connection', 'connection'),
-		nobuild: '/pages/admin/setup/connection',
-		scope: '[data-cy="connection-panel"]'
-	},
-	wizardUsers: {
-		legacy: '/admin/settings/general',
-		openLegacy: openWizardPanel('welcome-users', 'users'),
-		nobuild: '/pages/admin/setup/users',
-		scope: '[data-cy="users-panel"]'
-	},
-	wizardFeatures: {
-		legacy: '/admin/settings/general',
-		openLegacy: openWizardPanel('welcome-features', 'features'),
-		nobuild: '/pages/admin/setup/features',
-		scope: '[data-cy="features-panel"]'
-	},
-	wizardDeveloper: {
-		legacy: '/admin/settings/general',
-		openLegacy: openWizardPanel('welcome-developer', 'developer'),
-		nobuild: '/pages/admin/setup/developer',
-		scope: '[data-cy="developer-panel"]'
-	},
-	// Complete is not one of the selectable steps, so its progress dot is never
-	// dimmed and any welcome selection reaches it.
-	wizardComplete: {
-		legacy: '/admin/settings/general',
-		openLegacy: openWizardPanel('welcome-features', 'complete'),
-		nobuild: '/pages/admin/setup/complete',
-		scope: '[data-cy="complete-panel"]'
-	},
-	wizardSearchAudio: {
-		legacy: '/admin/settings/general',
-		openLegacy: openWizardPanel('welcome-search-audio', 'search_audio'),
-		nobuild: '/pages/admin/setup/search-audio',
-		scope: '[data-cy="search-audio-panel"]'
-	}
+	branding: { legacy: '/admin/settings/theme', nobuild: '/pages/admin/branding' }
+	// The nine wizard surfaces used to be listed here, each with an `openLegacy`
+	// step that opened the modal and jumped to a panel. They were removed when the
+	// modal was deleted: the panels now have exactly one implementation, so this
+	// gate would have been comparing a route against itself and passing for the
+	// wrong reason. What replaced that coverage is `setup-dialog.cy.ts`, which
+	// judges the one thing the cut-over actually added — the host that fetches a
+	// route and shows it in a `<dialog>`.
 } satisfies Record<string, Surface>;
 
 export type SurfaceName = keyof typeof SURFACES;
@@ -199,13 +115,7 @@ export function surfacePath(name: SurfaceName): string {
  * get "fixed" with a longer timeout.
  */
 export function openSurface(name: SurfaceName, target: SurfaceTarget = surfaceTarget()) {
-	const surface: Surface = SURFACES[name];
-	cy.visit(surface[target]);
-	if (target === 'legacy' && surface.openLegacy) surface.openLegacy();
-	// Anchor on the surface's own root when it declares one. The modal animates
-	// in, so a spec that started asserting the moment the click returned would
-	// race the panel it is judging.
-	if (surface.scope) cy.get(surface.scope, { timeout: 30000 }).should('be.visible');
+	cy.visit(SURFACES[name][target]);
 }
 
 /** True when this run is judging the no-build implementation. */

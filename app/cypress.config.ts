@@ -13,6 +13,16 @@ export default defineConfig({
 		// Grafts pull artifacts and flip UI state asynchronously; one retry
 		// absorbs timing flakes without hiding real regressions.
 		retries: { runMode: 1, openMode: 0 },
+		// NOT set here on purpose: `experimentalMemoryManagement` and
+		// `numTestsKeptInMemory`. On 2026-07-31 a run failed its last three specs
+		// with "Electron Renderer process just crashed" and no assertion, and
+		// Cypress's own advice for that message is exactly those two options. They
+		// were tried and changed NOTHING — the next run failed at the identical
+		// spec, identical test, identical counts. Deterministic is the tell: a
+		// memory ceiling wanders, and this did not. The Docker VM disk was 100%
+		// full, so the renderer could not write video or screenshots; reclaiming
+		// 17 GB fixed it. Check `docker run --rm --entrypoint sh alpine -c 'df -h /'`
+		// before believing the message.
 		// Desktop layout: below the desktop breakpoint the sidebar (and its
 		// #chat-search login anchor) is not rendered at all.
 		viewportWidth: 1440,

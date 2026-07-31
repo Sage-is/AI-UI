@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../support/index.d.ts" />
-import { openSurface } from '../support/surfaces';
+import { openSetupPanel } from '../support/surfaces';
 
 // AI engine components. Guard-rail for the one wizard panel that grafts.
 //
@@ -61,7 +61,7 @@ describe('Setup wizard: AI engine components', () => {
 	beforeEach(() => cy.loginAdmin());
 
 	it('offers a control for each component', () => {
-		openSurface('wizardSearchAudio');
+		openSetupPanel('search-audio');
 		cy.get('[data-cy="search-audio-embedding"]').should('exist');
 		cy.get('[data-cy="search-audio-whisper"]').should('exist');
 		cy.get('[data-cy="search-audio-graft"]').should('exist');
@@ -70,7 +70,7 @@ describe('Setup wizard: AI engine components', () => {
 
 	it('reflects the install status the server reports', () => {
 		modelStatus().then((models: Record<string, string>) => {
-			openSurface('wizardSearchAudio');
+			openSetupPanel('search-audio');
 			cy.get('[data-cy="search-audio-panel"]')
 				.should('have.attr', 'data-embedding-status', models.embedding ?? 'pending')
 				.and('have.attr', 'data-whisper-status', models.whisper ?? 'pending');
@@ -80,7 +80,7 @@ describe('Setup wizard: AI engine components', () => {
 	// The assertion the mock made impossible to write honestly: after grafting,
 	// the thing that is running is the real cultivar, named.
 	it('grafts the in-housed speech-to-text cultivar, not a mock', () => {
-		openSurface('wizardSearchAudio');
+		openSetupPanel('search-audio');
 		cy.get('[data-cy="search-audio-embedding"]').uncheck({ force: true });
 		cy.get('[data-cy="search-audio-whisper"]').check({ force: true });
 		cy.get('[data-cy="search-audio-graft"]').click();
@@ -95,7 +95,7 @@ describe('Setup wizard: AI engine components', () => {
 	// "exited on boot (rc=-15)" as though it had crashed. An installed or
 	// downloading component is therefore not selectable on either side.
 	it('will not offer a component that is already installed', () => {
-		openSurface('wizardSearchAudio');
+		openSetupPanel('search-audio');
 		cy.get('[data-cy="search-audio-whisper"]').uncheck({ force: true });
 		cy.get('[data-cy="search-audio-embedding"]').uncheck({ force: true });
 		cy.get('[data-cy="search-audio-whisper"]').check({ force: true });
@@ -104,7 +104,7 @@ describe('Setup wizard: AI engine components', () => {
 
 		// Come back to a settled panel: whisper is installed, so its box is out
 		// of reach rather than sitting there inviting a second graft.
-		openSurface('wizardSearchAudio');
+		openSetupPanel('search-audio');
 		cy.get('[data-cy="search-audio-panel"]').should(
 			'have.attr',
 			'data-whisper-status',

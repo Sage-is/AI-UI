@@ -1,19 +1,12 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../support/index.d.ts" />
-import { isNoBuild, openSurface } from '../support/surfaces';
+import { openSetupPanel } from '../support/surfaces';
 
 // The wizard's opening choice, guard-rail, written against the SvelteKit panel
 // first.
 //
-// What both implementations owe the reader is the same: a control for every
-// step, and a start button that takes you somewhere. What happens to the ANSWER
-// differs, and the difference is the point of this panel's migration. The modal
-// keeps it in a component variable that dies with the modal; the route writes it
-// to `ui.selectedSteps`, which is what lets a panel at its own URL know whether
-// it was meant to be part of this run.
-//
-// So durability is asserted no-build only, below. Requiring it of the modal
-// would be requiring it to have already been migrated.
+// What this panel owes the reader: a control for every step, and a start button
+// that takes you somewhere.
 
 const STEPS = [
 	'welcome-auth',
@@ -40,7 +33,7 @@ describe('Setup wizard: choosing steps', () => {
 	beforeEach(() => cy.loginAdmin());
 
 	it('offers a control for every step', () => {
-		openSurface('wizardWelcome');
+		openSetupPanel('welcome');
 		STEPS.forEach((hook) => {
 			cy.get(`[data-cy="welcome-panel"] [data-cy="${hook}"]`).should('exist');
 		});
@@ -48,25 +41,28 @@ describe('Setup wizard: choosing steps', () => {
 	});
 
 	it('leaves the choice behind when you start', () => {
-		openSurface('wizardWelcome');
+		openSetupPanel('welcome');
 		cy.get('[data-cy="welcome-features"]').check({ force: true });
 		cy.get('[data-cy="welcome-start"]').click();
-		// Somewhere else, which panel differs, and on the legacy side it is
-		// currently the WRONG one (filed: handleWelcomeStart skips against a
-		// stale reactive value). Both agree you should not still be here.
+		// Somewhere else. Which panel depends on what was ticked, and the next
+		// describe pins that down; here the only claim is that pressing start
+		// leaves this panel.
 		cy.get('[data-cy="welcome-panel"]').should('not.exist');
 	});
 });
 
-// The migration's actual gain on this panel: the answer outlives the page.
+// The migration's actual gain on this panel: the answer outlives the page. The
+// deleted modal kept it in a component variable that died with the modal; the
+// route writes `ui.selectedSteps`, which is what lets a panel at its own URL
+// know whether it was meant to be part of this run.
+//
+// This is also what makes the dialog host possible. It holds no wizard state of
+// its own — it fetches whichever panel the server sends it to next.
 describe('Setup wizard: the chosen steps are durable', () => {
-	beforeEach(function () {
-		if (!isNoBuild()) this.skip();
-		cy.loginAdmin();
-	});
+	beforeEach(() => cy.loginAdmin());
 
 	it('records exactly what was ticked', () => {
-		openSurface('wizardWelcome');
+		openSetupPanel('welcome');
 		STEPS.forEach((hook) => cy.get(`[data-cy="${hook}"]`).uncheck({ force: true }));
 		cy.get('[data-cy="welcome-features"]').check({ force: true });
 		cy.get('[data-cy="welcome-developer"]').check({ force: true });
@@ -80,7 +76,7 @@ describe('Setup wizard: the chosen steps are durable', () => {
 	});
 
 	it('starts at the first chosen step that has a route', () => {
-		openSurface('wizardWelcome');
+		openSetupPanel('welcome');
 		STEPS.forEach((hook) => cy.get(`[data-cy="${hook}"]`).uncheck({ force: true }));
 		cy.get('[data-cy="welcome-developer"]').check({ force: true });
 		cy.get('[data-cy="welcome-start"]').click();
@@ -102,7 +98,7 @@ describe('Setup wizard: the chosen steps are durable', () => {
 			'welcome-developer': 'developer'
 		};
 		Object.entries(DESTINATIONS).forEach(([hook, panel]) => {
-			openSurface('wizardWelcome');
+			openSetupPanel('welcome');
 			STEPS.forEach((h) => cy.get(`[data-cy="${h}"]`).uncheck({ force: true }));
 			cy.get(`[data-cy="${hook}"]`).check({ force: true });
 			cy.get('[data-cy="welcome-start"]').click();
@@ -112,18 +108,18 @@ describe('Setup wizard: the chosen steps are durable', () => {
 
 	// Choosing nothing is still a real answer, and it must not strand the reader.
 	it('falls through to the summary when nothing is chosen', () => {
-		openSurface('wizardWelcome');
+		openSetupPanel('welcome');
 		STEPS.forEach((hook) => cy.get(`[data-cy="${hook}"]`).uncheck({ force: true }));
 		cy.get('[data-cy="welcome-start"]').click();
 		cy.location('pathname').should('eq', '/pages/admin/setup/complete');
 	});
 
 	it('remembers the choice when you come back', () => {
-		openSurface('wizardWelcome');
+		openSetupPanel('welcome');
 		STEPS.forEach((hook) => cy.get(`[data-cy="${hook}"]`).uncheck({ force: true }));
 		cy.get('[data-cy="welcome-features"]').check({ force: true });
 		cy.get('[data-cy="welcome-start"]').click();
-		openSurface('wizardWelcome');
+		openSetupPanel('welcome');
 		cy.get('[data-cy="welcome-features"]').should('be.checked');
 		cy.get('[data-cy="welcome-auth"]').should('not.be.checked');
 	});

@@ -7,7 +7,7 @@
 	 *
 	 * Provides three escape hatches the operator might need:
 	 *   - Reopen setup wizard: the wizard is suppressed for try-mode
-	 *     sessions (see needsWizard guard in ChangesAndSetupModal). This
+	 *     sessions (see needsWizard guard in SetupDialog). This
 	 *     button re-opens it imperatively for diagnostic use.
 	 *   - Replay tutorial: clears the seen flag and bumps the
 	 *     tutorialReopen store so <TrySageTutorial> reopens.
@@ -31,7 +31,7 @@
 		// Force the wizard's manualTrigger path so needsWizard returns
 		// true even when there's nothing pending. The needsWizard guard
 		// for try_sage.enabled is bypassed by the manualTrigger flag —
-		// see ChangesAndSetupModal.svelte.
+		// see SetupDialog.svelte.
 		setupTriggerReason.set({
 			hasChangelog: false,
 			needsModels: false,

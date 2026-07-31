@@ -19,7 +19,7 @@ from typing import Literal
 from fastapi import APIRouter, Depends, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
-from sage_is_ai.pages.auth import require_admin_page
+from sage_is_ai.pages.auth import require_admin_page, require_page_user
 from sage_is_ai.pages.i18n import lang_query, supported
 from sage_is_ai.pages.shell import render_page
 from sage_is_ai.pages.branding_panel import render_branding, save_branding
@@ -146,11 +146,13 @@ _SETUP_PAGES = {
 }
 
 
-# The order a reader walks the panels in, mirroring `allSteps` in
-# `ChangesAndSetupModal.svelte`: authentication first, then connections, users,
-# features, the AI engine, developer, and the summary last. Panels not migrated
-# yet are simply absent, so this grows as they land rather than needing a second
-# list to keep in step.
+# The order a reader walks the panels in: authentication first, then
+# connections, users, features, the AI engine, developer, and the summary last.
+#
+# The only copy. It began as a mirror of `allSteps` in the Svelte orchestrator,
+# which is deleted; the sequence is not restated in the dialog host, which asks
+# the server where to go next, nor in `setup-navigation.cy.ts`, which discovers
+# it by walking `setup-next`.
 _SETUP_ORDER = (
     "changelog",
     "welcome",
@@ -286,6 +288,47 @@ async def setup_changelog_seen(
     return RedirectResponse(
         _next_setup_url("changelog", lang_query(request)), status_code=303
     )
+
+
+# The one route here that is not admin-only, and the reason it exists is the
+# cut-over: Settings, About, "See what's new" is a control every reader has, and
+# before the wizard moved to the server it opened a Svelte panel with no role
+# check. Serving those notes only from `/admin/` would have turned a working
+# button into a 403 for everyone who is not an admin.
+#
+# Same renderer as the wizard panel, different post target and no wizard
+# navigation — a reader who is not configuring the instance has no next step.
+@router.get("/changelog", response_class=HTMLResponse)
+async def changelog_page(
+    request: Request, user=Depends(require_page_user)
+) -> HTMLResponse:
+    heading, subheading = _SETUP_PAGES["changelog"]
+    return HTMLResponse(
+        render_page(
+            request=request,
+            title=f"{heading} — Sage.is AI",
+            heading=heading,
+            subheading=subheading,
+            scripts=("changelog-pager.js",),
+            body=render_changelog(request, base="/pages/changelog"),
+        ),
+        headers=_page_headers(request),
+    )
+
+
+@router.post("/changelog/seen", response_class=HTMLResponse)
+async def changelog_seen(
+    request: Request, user=Depends(require_page_user)
+) -> RedirectResponse:
+    """Record the read, then leave the pages surface.
+
+    Back to the app rather than to another panel, because for this reader the
+    notes were the whole errand. That is also what closes the dialog: the host
+    in `SetupDialog.svelte` closes when a response lands outside `/pages/`, so
+    the same redirect serves the reader with JavaScript and the one without.
+    """
+    await mark_changelog_read(request, user)
+    return RedirectResponse("/", status_code=303)
 
 
 @router.get("/admin/setup/welcome", response_class=HTMLResponse)
@@ -445,9 +488,17 @@ async def setup_complete_page(
 @router.post("/admin/setup/complete/finish", response_class=HTMLResponse)
 async def setup_complete_finish(
     request: Request, user=Depends(require_admin_page)
-) -> HTMLResponse:
+) -> RedirectResponse:
+    """Record that setup is done, then hand the reader back to the app.
+
+    This used to re-render the summary, which was a dead end: you press "Let's
+    Go" and get the same page you were already looking at. The modal closed
+    instead, and closing is what the button means. Leaving `/pages/` is now how
+    that is said — the dialog host closes on it, and a reader without JavaScript
+    lands in the app rather than back on the summary.
+    """
     await finish_setup(request, user)
-    return _setup_page(request, "complete", render_complete(request, user))
+    return RedirectResponse("/", status_code=303)
 
 
 @router.get("/admin/setup/search-audio", response_class=HTMLResponse)

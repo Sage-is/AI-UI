@@ -31,7 +31,7 @@ const login = (email: string, password: string) => {
 			// (#chat-search only renders with the sidebar open).
 			cy.get('#chat-input', { timeout: 20000 }).should('exist');
 			// Mark setup complete + changelog seen in SERVER-side user settings —
-			// the ChangesAndSetupModal triggers off $settings.version /
+			// the setup dialog triggers off $settings.version /
 			// $settings.setupCompleted (not localStorage), and would otherwise
 			// cover the UI on every restored-session visit.
 			cy.window().then((win) => {

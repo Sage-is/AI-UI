@@ -36,36 +36,57 @@ import { SURFACES, isNoBuild, type SurfaceName } from '../support/surfaces';
 // what it no longer proves is that branding looks right during an outage. What
 // it still proves is that branding remains USABLE during one, which is the
 // property that actually matters to an operator on an air-gapped Rootstock.
+interface Outage {
+	name: string;
+	url: string;
+	/** How many hooks proves the content survived. */
+	minHooks: number;
+	structure: { selector: string; display: string } | null;
+}
+
+// The nine setup panels are checked from their own addresses rather than from
+// the surface registry. They used to be listed there, alongside a callback that
+// opened the modal they lived in; the modal is deleted and the entries went with
+// it, but these are the surfaces MOST worth checking here — every one of them is
+// authored in startr.style props, so an outage is exactly the condition they are
+// least prepared for. Naming the routes keeps that coverage.
+//
+// Hook counts are per panel and deliberately below what a whole admin page
+// renders: a wizard step has fewer controls than a page and always will, so
+// holding it to the page number would make this gate fail for being small
+// rather than for being broken.
+const SETUP: ReadonlyArray<readonly [string, number]> = [
+	['changelog', 3],
+	['welcome', 7],
+	['auth', 10],
+	['connection', 5],
+	['users', 7],
+	['features', 6],
+	['search-audio', 4],
+	['developer', 3],
+	['complete', 3]
+];
+
 const STRUCTURE: Record<SurfaceName, { selector: string; display: string } | null> = {
 	sprigs: { selector: '[data-cy="sprig-card"]', display: 'grid' },
 	diagnostics: { selector: '[data-cy="diag-row"]', display: 'grid' },
-	branding: null,
-	wizardChangelog: null,
-	wizardFeatures: null,
-	wizardDeveloper: null,
-	wizardComplete: null,
-	wizardSearchAudio: null,
-	wizardWelcome: null,
-	wizardConnection: null,
-	wizardAuth: null,
-	wizardUsers: null
+	branding: null
 };
 
-// How many hooks proves the content survived. Five suits a whole admin page;
-// a single wizard panel has fewer controls than that and always will, so
-// holding it to the page number would make this gate fail for being small
-// rather than for being broken.
-const MIN_HOOKS: Partial<Record<SurfaceName, number>> = {
-	wizardChangelog: 3,
-	wizardFeatures: 6,
-	wizardDeveloper: 3,
-	wizardComplete: 3,
-	wizardSearchAudio: 4,
-	wizardWelcome: 7,
-	wizardConnection: 5,
-	wizardAuth: 10,
-	wizardUsers: 7
-};
+const TARGETS: Outage[] = [
+	...(Object.keys(SURFACES) as SurfaceName[]).map((name) => ({
+		name,
+		url: SURFACES[name].nobuild,
+		minHooks: 5,
+		structure: STRUCTURE[name]
+	})),
+	...SETUP.map(([panel, minHooks]) => ({
+		name: `setup/${panel}`,
+		url: `/pages/admin/setup/${panel}`,
+		minHooks,
+		structure: null
+	}))
+];
 
 describe('No-build pages survive a startr.style outage', () => {
 	beforeEach(function () {
@@ -75,23 +96,19 @@ describe('No-build pages survive a startr.style outage', () => {
 		cy.intercept({ url: /startr\.style/ }, { forceNetworkError: true }).as('cdn');
 	});
 
-	(Object.keys(SURFACES) as SurfaceName[]).forEach((name) => {
+	TARGETS.forEach(({ name, url, minHooks, structure }) => {
 		it(`${name}: stays usable without the framework`, () => {
-			cy.visit(SURFACES[name].nobuild);
+			cy.visit(url);
 
 			// Content is server-rendered, so a missing stylesheet cannot cost us
 			// any of it. If this drops, something moved into the framework that
 			// should not have.
-			cy.get('[data-cy]', { timeout: 30000 }).should(
-				'have.length.at.least',
-				MIN_HOOKS[name] ?? 5
-			);
+			cy.get('[data-cy]', { timeout: 30000 }).should('have.length.at.least', minHooks);
 
 			// Only for surfaces that promise to KEEP their layout. A
 			// props-styled surface has no such promise to check — see the note
 			// on STRUCTURE — and asserting one anyway would be asserting
 			// something we deliberately chose not to build.
-			const structure = STRUCTURE[name];
 			if (structure) {
 				cy.get(structure.selector).first().should('have.css', 'display', structure.display);
 			}

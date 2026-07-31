@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../support/index.d.ts" />
-import { isNoBuild, openSurface } from '../support/surfaces';
+import { openSetupPanel } from '../support/surfaces';
 
 // Add users. Guard-rail, written against the SvelteKit panel first.
 //
@@ -46,7 +46,7 @@ describe('Setup wizard: users', () => {
 	beforeEach(() => cy.loginAdmin());
 
 	it('offers a field for each part of a user, and a role picker', () => {
-		openSurface('wizardUsers');
+		openSetupPanel('users');
 		['name', 'email', 'password', 'role'].forEach((field) => {
 			cy.get(`[data-cy="users-${field}"]`).should('exist');
 		});
@@ -55,13 +55,13 @@ describe('Setup wizard: users', () => {
 	});
 
 	it('offers facilitator as a role', () => {
-		openSurface('wizardUsers');
+		openSetupPanel('users');
 		cy.get('[data-cy="users-role"] option[value="facilitator"]').should('exist');
 	});
 
 	it('adds a user the server then reports', () => {
 		const email = unique('added');
-		openSurface('wizardUsers');
+		openSetupPanel('users');
 		cy.get('[data-cy="users-name"]').type('Added Person');
 		cy.get('[data-cy="users-email"]').type(email);
 		cy.get('[data-cy="users-password"]').type('hunter2hunter');
@@ -71,7 +71,7 @@ describe('Setup wizard: users', () => {
 	});
 
 	it('records working alone', () => {
-		openSurface('wizardUsers');
+		openSetupPanel('users');
 		cy.get('[data-cy="users-working-alone"]').click();
 		auth().then((token) =>
 			cy
@@ -86,20 +86,16 @@ describe('Setup wizard: users', () => {
 	});
 });
 
-// No-build only: the modal parses the CSV in the browser with FileReader and
-// posts one row at a time. The route uploads the file and parses it once. Both
-// import users, but only one of them can be driven by attaching a file to a
-// form, so this asserts the route's behaviour rather than a shared contract.
+// CSV import. The deleted modal parsed the file in the browser with FileReader
+// and posted one row at a time; the route uploads it and parses it once, which
+// is what makes it drivable by attaching a file to a form.
 describe('Setup wizard: CSV import', () => {
-	beforeEach(function () {
-		if (!isNoBuild()) this.skip();
-		cy.loginAdmin();
-	});
+	beforeEach(() => cy.loginAdmin());
 
 	it('imports a facilitator, which the old allowlist refused', () => {
 		const email = unique('facil');
 		const csv = `Name,Email,Password,Role\nFacil Person,${email},hunter2hunter,facilitator\n`;
-		openSurface('wizardUsers');
+		openSetupPanel('users');
 		cy.get('[data-cy="users-csv"]').selectFile(
 			{ contents: Cypress.Buffer.from(csv), fileName: 'users.csv', mimeType: 'text/csv' },
 			{ force: true }
@@ -112,7 +108,7 @@ describe('Setup wizard: CSV import', () => {
 	it('keeps a comma inside a quoted field', () => {
 		const email = unique('quoted');
 		const csv = `Name,Email,Password,Role\n"Doe, Jane",${email},hunter2hunter,user\n`;
-		openSurface('wizardUsers');
+		openSetupPanel('users');
 		cy.get('[data-cy="users-csv"]').selectFile(
 			{ contents: Cypress.Buffer.from(csv), fileName: 'users.csv', mimeType: 'text/csv' },
 			{ force: true }
@@ -131,7 +127,7 @@ describe('Setup wizard: CSV import', () => {
 			`Name,Email,Password,Role\n` +
 			`Good Person,${good},hunter2hunter,user\n` +
 			`Bad Role,${unique('bad')},hunter2hunter,wizard\n`;
-		openSurface('wizardUsers');
+		openSetupPanel('users');
 		cy.get('[data-cy="users-csv"]').selectFile(
 			{ contents: Cypress.Buffer.from(csv), fileName: 'users.csv', mimeType: 'text/csv' },
 			{ force: true }

@@ -120,6 +120,20 @@ TRUSTED_SIGNATURE_KEY = os.environ.get("TRUSTED_SIGNATURE_KEY", "")
 ENV = os.environ.get("ENV", "dev")
 DEV_MODE = os.environ.get("DEV_MODE", "false").lower() == "true"
 
+# Directories uvicorn watches for a development restart, space separated.
+#
+# The PRESENCE of a value is the enable — there is no companion boolean, so this
+# cannot be set to on-while-watching-nothing. `start.sh` reads the same variable
+# to decide between `--reload` and `--workers` (uvicorn refuses both), and the
+# pages shell reads it to decide whether to serve the browser-refresh island.
+# One switch for both halves, so the reloader and the thing that tells the
+# browser about it cannot drift apart.
+#
+# Set by `LIVE=1 scripts/manual-check.sh` / `make review_live`. Never in
+# production: it pins the app to one worker and runs a file watcher, which is
+# why `/admin/diagnostics` reports it as degraded when it is on.
+PAGES_RELOAD_DIRS = os.environ.get("PAGES_RELOAD_DIRS", "").strip()
+
 FROM_INIT_PY = os.environ.get("FROM_INIT_PY", "False").lower() == "true"
 
 if FROM_INIT_PY:
