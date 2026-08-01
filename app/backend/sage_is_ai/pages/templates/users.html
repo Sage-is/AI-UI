@@ -6,8 +6,9 @@
    one it has. #}
 {% from "_macros.html" import saved %}
 {% set label_s = "--size:.7rem; --weight:500; --d:block; --m:.4rem 0 .15rem" %}
-{% set input_s = "--w:100%; --bxs:border-box; --p:.4rem .6rem; --size:.78rem; --br:.4rem; --b:1px solid var(--line); --bgc:transparent; --c:inherit" %}
-{% set button_s = "--p:.4rem .9rem; --size:.78rem; --br:.4rem; --b:1px solid var(--line); --cur:pointer" %}
+{% set input_s = "--w:100%; --bxs:border-box; --p:.4rem .6rem; --size:.78rem; --br:.4rem; outline:1px solid var(--line); --bgc:transparent; --c:inherit" %}
+{% set button_s = "--p:.4rem .9rem; --size:.78rem; --br:.4rem; outline:1px solid var(--line); --cur:pointer" %}
+{% set group_s = " --p:0; --m:1.25rem 0" %}
 <section data-cy="users-panel" data-user-count="{{ people | length }}"
          data-working-alone="{{ 'true' if alone else 'false' }}">
   <form method="post" action="/pages/admin/setup/users/alone{{ lang }}" style="--m:0 0 1rem">
@@ -16,7 +17,7 @@
   </form>
 
   <form method="post" action="/pages/admin/setup/users/add{{ lang }}">
-    <fieldset style="--b:0; --p:0; --m:0">
+    <fieldset>
       <legend style="--size:.85rem; --weight:600; --p:0">{{ add_legend }}</legend>
       <label style="{{ label_s }}">{{ name_label }}</label>
       <input data-cy="users-name" type="text" name="name" style="{{ input_s }}" />
@@ -45,7 +46,7 @@
   <h2 style="--size:.8rem; --weight:600; --m:1.25rem 0 .4rem">{{ people_label }} ({{ people | length }})</h2>
   <ul data-cy="users-list" style="--p:0; --list-style:none; --maxh:10rem; --ofy:auto">
     {% for person in people %}
-    <li data-cy="users-row" style="--d:flex; --jc:space-between; --ai:center; --p:.3rem .5rem; --br:.35rem; --b:1px solid var(--line); --m:0 0 .25rem; --size:.75rem">
+    <li data-cy="users-row" style="--d:flex; --jc:space-between; --ai:center; --p:.3rem .5rem; --br:.35rem; outline:1px solid var(--line); --m:0 0 .25rem; --size:.75rem">
       <span>{{ person.name }} <span style="--op:.65">{{ person.email }}</span></span>
       <span data-role="{{ person.role }}" style="--op:.65">{{ person.role }}</span>
     </li>

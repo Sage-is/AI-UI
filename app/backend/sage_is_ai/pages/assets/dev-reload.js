@@ -6,13 +6,18 @@
 // page never sees it.
 //
 // THE PYTHON HALF NEEDS NO FILE WATCHER. Uvicorn's reloader restarts the whole
-// process when a `.py` file under the watched directories changes. That kills
-// every open connection, including this one, and `EventSource` reconnects by
-// itself — three seconds by default, per the HTML spec. So the restart IS the
-// signal: a reconnect means the server went away and came back, which means the
-// code changed. Nothing here watches anything.
+// process when a `.py` file under the watched directories changes, which kills
+// this connection, and `EventSource` reconnects by itself. What the reconnect
+// carries is the point: every stream opens with a `hello` naming the process
+// that answered, and this reloads only when that name CHANGES.
 //
-// The FIRST open is skipped, because that one is just this page loading.
+// It used to reload on any reconnect. That was a proxy for "the server
+// restarted", and it broke the moment the stream began ending itself every
+// minute to stop it blocking shutdown — the browser reconnected on a timer and
+// the page reloaded on a timer with it. Reported within minutes of shipping it.
+// The token is the fact rather than a stand-in for it, and it is also right for
+// the case the proxy never handled: a dropped connection that comes back to the
+// same process should do nothing at all.
 //
 // THE ASSET HALF DOES need a watcher, and the server has it: `pages/assets/*`
 // is served straight from disk by a StaticFiles mount, so changing a stylesheet
@@ -26,7 +31,7 @@
 // and inline handlers are the first thing that breaks.
 (function () {
 	var SOURCE = '/pages/_dev/reload';
-	var seenOpen = false;
+	var serving = null;
 
 	function restamp() {
 		var links = document.querySelectorAll('link[rel="stylesheet"]');
@@ -49,12 +54,12 @@
 
 	var source = new EventSource(SOURCE);
 
-	source.addEventListener('open', function () {
-		if (!seenOpen) {
-			seenOpen = true;
+	source.addEventListener('hello', function (event) {
+		if (serving === null) {
+			serving = event.data;
 			return;
 		}
-		location.reload();
+		if (event.data !== serving) location.reload();
 	});
 
 	source.addEventListener('assets', function () {

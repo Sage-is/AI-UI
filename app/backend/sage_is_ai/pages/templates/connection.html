@@ -9,7 +9,7 @@
   <p style="--size:.85rem">{{ intro }}</p>
   {% for card in cards %}
   <article data-cy="connection-{{ card.key }}" data-provider-state="{{ card.state or 'unset' }}"
-           style="--p:.85rem; --br:.6rem; --b:1px solid var(--line); --m:0 0 .75rem">
+           style="--p:.85rem; --br:.6rem; outline:1px solid var(--line); --m:0 0 .75rem">
     <form method="post" action="/pages/admin/setup/connection/{{ card.key }}{{ lang }}">
       <strong style="--size:.85rem; --weight:600">{{ card.label }}</strong>
       {% if card.state %}
@@ -18,15 +18,15 @@
       <label style="--size:.7rem; --weight:500; --d:block; --m:.5rem 0 .15rem">{{ url_label }}</label>
       <input data-cy="connection-{{ card.key }}-url" type="text" name="url"
              value="{{ card.url }}" placeholder="{{ card.placeholder }}"
-             style="--w:100%; --bxs:border-box; --p:.4rem .6rem; --size:.78rem; --br:.4rem; --b:1px solid var(--line); --bgc:transparent; --c:inherit" />
+             style="--w:100%; --bxs:border-box; --p:.4rem .6rem; --size:.78rem; --br:.4rem; outline:1px solid var(--line); --bgc:transparent; --c:inherit" />
       {% if card.takes_key %}
       <label style="--size:.7rem; --weight:500; --d:block; --m:.5rem 0 .15rem">{{ key_label }}</label>
       <input data-cy="connection-openai-key" type="password" name="api_key" autocomplete="off"
              placeholder="{{ card.key_placeholder }}"
-             style="--w:100%; --bxs:border-box; --p:.4rem .6rem; --size:.78rem; --br:.4rem; --b:1px solid var(--line); --bgc:transparent; --c:inherit" />
+             style="--w:100%; --bxs:border-box; --p:.4rem .6rem; --size:.78rem; --br:.4rem; outline:1px solid var(--line); --bgc:transparent; --c:inherit" />
       {% endif %}
       <button data-cy="connection-{{ card.key }}-verify" type="submit"
-              style="--p:.35rem .8rem; --size:.75rem; --br:.4rem; --b:1px solid var(--line); --cur:pointer; --m:.6rem 0 0">{{ verify_label }}</button>
+              style="--p:.35rem .8rem; --size:.75rem; --br:.4rem; outline:1px solid var(--line); --cur:pointer; --m:.6rem 0 0">{{ verify_label }}</button>
     </form>
   </article>
   {% endfor %}

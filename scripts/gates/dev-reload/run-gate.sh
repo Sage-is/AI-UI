@@ -19,7 +19,8 @@
 #   3. the SSE endpoint exists and speaks text/event-stream
 #   4. the page carries the reload island
 #   5. a reload still completes while a stream is OPEN
-#   6. diagnostics reports the reloader as degraded
+#   6. the stream names its process, so a bare reconnect reloads nothing
+#   7. diagnostics reports the reloader as degraded
 #
 # Every edit is made to a COPY under a temp mount, never to the working tree, so
 # a failed run cannot leave a modified panel behind.
@@ -217,7 +218,48 @@ else
 fi
 
 echo ""
-echo "== 6. diagnostics reports it =="
+echo "== 6. the stream identifies the process, so a reconnect alone reloads nothing =="
+# The mechanism has been wrong twice, so it gets its own check.
+#
+# v1 reloaded on any RECONNECT. That was a proxy for "the server restarted", and
+# it broke the moment the stream began ending itself every minute to stop it
+# blocking shutdown — the browser reconnected on a timer and the page reloaded
+# with it, every 60 seconds, reported within minutes of shipping.
+#
+# The fact, not the proxy: each stream opens with `event: hello` naming the
+# process. Two streams from the SAME process must agree, or the client reloads
+# for no reason; a stream after a restart must differ, or it never reloads at
+# all. Both halves, because either one alone passes on a constant.
+TOKEN_A="$(curl -s --max-time 6 --cookie "token=$TOK" -N "$BASE/pages/_dev/reload" 2>/dev/null | grep -m1 -A1 '^event: hello' | tail -1 | sed 's/^data: //')"
+TOKEN_B="$(curl -s --max-time 6 --cookie "token=$TOK" -N "$BASE/pages/_dev/reload" 2>/dev/null | grep -m1 -A1 '^event: hello' | tail -1 | sed 's/^data: //')"
+if [ -z "$TOKEN_A" ]; then
+  fail "the stream sent no hello — the client has nothing to compare"
+elif [ "$TOKEN_A" != "$TOKEN_B" ]; then
+  fail "two streams from one process disagreed ($TOKEN_A vs $TOKEN_B) — every reconnect would reload"
+else
+  pass "two streams from one process agree ($TOKEN_A)"
+fi
+
+# And it must CHANGE across a reload, or nothing ever reloads.
+MARK3="RELOAD-GATE-TOKEN-$$"
+python3 - "$WORK/pages/router.py" "$MARK3" <<'EDIT'
+import sys, pathlib
+p, mark = pathlib.Path(sys.argv[1]), sys.argv[2]
+s = p.read_text()
+old = '"auth": ("Authentication"'
+assert old in s, "_SETUP_PAGES['auth'] moved; this gate needs updating"
+p.write_text(s.replace(old, f'"auth": ("Authentication {mark}"', 1))
+EDIT
+wait_for "/pages/admin/setup/auth" "$MARK3" 45 >/dev/null
+TOKEN_C="$(curl -s --max-time 6 --cookie "token=$TOK" -N "$BASE/pages/_dev/reload" 2>/dev/null | grep -m1 -A1 '^event: hello' | tail -1 | sed 's/^data: //')"
+if [ -n "$TOKEN_C" ] && [ "$TOKEN_C" != "$TOKEN_A" ]; then
+  pass "and it changed after a reload"
+else
+  fail "the token did not change across a reload — a real restart would go unnoticed"
+fi
+
+echo ""
+echo "== 7. diagnostics reports it =="
 STATUS="$(curl -s --max-time 10 -H "Authorization: Bearer $TOK" "$BASE/api/v1/diagnostics/health" \
   | python3 -c 'import sys,json; print(json.load(sys.stdin).get("boot_status",{}).get("dev_reloader",{}).get("status",""))' 2>/dev/null)"
 if [ "$STATUS" = "degraded" ]; then

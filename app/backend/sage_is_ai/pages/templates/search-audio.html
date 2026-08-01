@@ -7,13 +7,16 @@
    A busy component cannot be selected — `ready` means there is nothing to do,
    `downloading` means a graft would race the download and lose. #}
 {% from "_macros.html" import saved %}
+
+{% set group_s = " --p:0; --m:1.25rem 0" %}
+
 <section data-cy="search-audio-panel"
   {%- for key, value in states.items() %} data-{{ key }}-status="{{ value }}"{% endfor %}>
   <form method="post" action="/pages/admin/setup/search-audio/graft{{ lang }}">
-    <fieldset style="--b:0; --p:0; --m:0">
+    <fieldset>
       <legend style="--size:.85rem; --weight:600; --p:0">{{ legend }}</legend>
       {% for row in rows %}
-      <label style="--d:flex; --ai:center; --g:.75rem; --p:.7rem; --br:.6rem; --b:1px solid var(--line); --m:0 0 .5rem; --cur:pointer">
+      <label style="--d:flex; --ai:center; --g:.75rem; --p:.7rem; --br:.6rem; outline:1px solid var(--line); --m:0 0 .5rem; --cur:pointer">
         <input data-cy="search-audio-{{ row.key }}" type="checkbox" name="{{ row.key }}" value="1"{% if row.busy %} disabled{% else %} checked{% endif %} />
         <span>
           <span style="--size:.85rem; --weight:500">{{ row.label }}</span>
@@ -29,10 +32,10 @@
       {% endfor %}
     </fieldset>
     <button data-cy="search-audio-graft" type="submit"
-            style="--p:.45rem 1rem; --br:999px; --b:1px solid var(--line); --cur:pointer">{{ graft_label }}&trade; {{ for_me_label }}</button>
+            style="--p:.45rem 1rem; --br:999px; outline:1px solid var(--line); --cur:pointer">{{ graft_label }}&trade; {{ for_me_label }}</button>
     <button data-cy="search-audio-download" type="submit"
             formaction="/pages/admin/setup/search-audio/download{{ lang }}"
-            style="--p:.45rem 1rem; --br:999px; --b:1px solid var(--line); --cur:pointer; --ml:.5rem">{{ download_label }}</button>
+            style="--p:.45rem 1rem; --br:999px; outline:1px solid var(--line); --cur:pointer; --ml:.5rem">{{ download_label }}</button>
     {% if message %}
     {{ saved("search-audio-result", message) }}
     {% endif %}

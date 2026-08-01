@@ -14,6 +14,7 @@ meant to measure that difference.
 """
 
 from html import escape
+from uuid import uuid4
 from typing import AsyncIterator, Literal
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Request
@@ -48,6 +49,20 @@ from sage_is_ai.pages.diagnostics_panel import render_diagnostics
 from sage_is_ai.pages.sprigs_panel import render_panel, run_action
 
 router = APIRouter()
+
+# Identifies this process, and nothing else.
+#
+# The dev-reload client used to treat any RECONNECT as "the server restarted".
+# That was only ever a proxy, and it broke the moment the stream started ending
+# itself on a timer to stop it blocking shutdown: the browser reconnected every
+# 60 seconds and dutifully reloaded the page. It was also wrong for a transient
+# network blip.
+#
+# A token regenerated at import is the actual signal. Same token means the same
+# process, whatever happened to the connection; a different one means the code
+# was reloaded. Deliberately NOT `env.INSTANCE_ID`, which an operator can pin
+# through the environment — pinning it would silently disable reloading.
+_BOOT_TOKEN = uuid4().hex
 
 
 # ── The development reloader's endpoint ──────────────────────────────────────
@@ -89,10 +104,13 @@ if PAGES_RELOAD_DIRS:
         async def stream() -> AsyncIterator[str]:
             from watchfiles import awatch
 
-            # One second, not the three the spec defaults to. The reconnect IS
-            # the reload here, so this is the delay between saving a panel and
-            # seeing it, and there is no network worth being polite to.
+            # One second, not the three the spec defaults to. This is the delay
+            # between saving a panel and seeing it, and there is no network
+            # worth being polite to.
             yield "retry: 1000\n\n"
+            # Who is answering. The client reloads when this CHANGES, not when
+            # the connection reopens.
+            yield f"event: hello\ndata: {_BOOT_TOKEN}\n\n"
 
             # `yield_on_timeout` gives the keep-alive for free: the watcher
             # hands back an empty change set every 15s instead of blocking, so

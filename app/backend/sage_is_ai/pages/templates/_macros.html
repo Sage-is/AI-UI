@@ -17,7 +17,7 @@
    "Beta" on features, "already configured" on welcome. The macro does not care
    which, only that it renders after the name. #}
 {% macro checkbox_row(row) -%}
-<label style="--d:flex; --ai:center; --g:.75rem; --p:.7rem; --br:.6rem; --b:1px solid var(--line); --m:0 0 .5rem; --cur:pointer">
+<label style="--d:flex; --ai:center; --g:.75rem; --p:.7rem; --br:.6rem; outline:1px solid var(--line); --m:0 0 .5rem; --cur:pointer">
   <input data-cy="{{ row.hook }}" type="checkbox" name="{{ row.key }}" value="1"{% if row.on %} checked{% endif %} />
   <span>
     <span style="--size:.85rem; --weight:500">{{ row.label }}</span>
@@ -32,7 +32,7 @@
 {# The submit every form-shaped panel ends with. #}
 {% macro submit(hook, label) -%}
 <button data-cy="{{ hook }}" type="submit"
-        style="--p:.45rem 1rem; --br:999px; --b:1px solid var(--line); --cur:pointer">{{ label }}</button>
+        style="--p:.45rem 1rem; --br:999px; outline:1px solid var(--line); --cur:pointer">{{ label }}</button>
 {%- endmacro %}
 
 {# A saved-confirmation. `<output>` carries an implicit status role, so it

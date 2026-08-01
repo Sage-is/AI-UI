@@ -10,14 +10,15 @@
    posts nothing — which this form reads as off. Hiding one would silently clear
    it on the next Save. #}
 {% from "_macros.html" import submit, saved %}
-{% set card_s = "--b:1px solid var(--line); --br:.6rem; --m:0 0 .6rem; --p:0" %}
+{% set card_s = "outline:1px solid var(--line); --br:.6rem; --m:0 0 .6rem; --p:0" %}
 {% set summary_s = "--p:.7rem .8rem; --cur:pointer; --size:.85rem; --weight:500" %}
 {% set inner_s = "--p:0 .8rem .8rem" %}
 {% set label_s = "--size:.72rem; --weight:500; --d:block; --m:.5rem 0 .15rem" %}
-{% set input_s = "--w:100%; --bxs:border-box; --p:.4rem .6rem; --size:.78rem; --br:.4rem; --b:1px solid var(--line); --bgc:transparent; --c:inherit" %}
+{% set input_s = "--w:100%; --bxs:border-box; --p:.4rem .6rem; --size:.78rem; --br:.4rem; outline:1px solid var(--line); --bgc:transparent; --c:inherit" %}
 {% set help_s = "--size:.7rem; --op:.7; --lh:1.5; --m:.35rem 0 0" %}
-{% set row_s = "--d:flex; --ai:start; --g:.6rem; --p:.6rem; --br:.5rem; --b:1px solid var(--line); --m:0 0 .4rem; --cur:pointer" %}
-{% set badge_s = "--size:.6rem; --weight:600; --tt:uppercase; --ml:.4rem; --p:.1rem .3rem; --br:.25rem; --b:1px solid var(--line)" %}
+{% set row_s = "--d:flex; --ai:start; --g:.6rem; --p:.6rem; --br:.5rem; outline:1px solid var(--line); --m:0 0 .4rem; --cur:pointer" %}
+{% set badge_s = "--size:.6rem; --weight:600; --tt:uppercase; --ml:.4rem; --p:.1rem .3rem; --br:.25rem; outline:1px solid var(--line)" %}
+{% set group_s = " --p:0; --m:1.25rem 0; --border:0" %}
 
 {% macro field(f) -%}
 {% if f.secret %}
@@ -40,7 +41,7 @@
           <a href="{{ card.url }}" target="_blank" rel="noopener">{{ card.link }} &#8599;</a>
           &mdash; {{ card.how }}
           {% if card.callback %}
-          {{ callback_label }} <code style="--size:.68rem; --p:.1rem .3rem; --br:.25rem; --b:1px solid var(--line); --wb:break-all">{{ card.callback }}</code>
+          {{ callback_label }} <code style="--size:.68rem; --p:.1rem .3rem; --br:.25rem; outline:1px solid var(--line); --wb:break-all">{{ card.callback }}</code>
           {% endif %}
         </p>
         <label style="{{ label_s }}">{{ client_id_label }}</label>
@@ -66,7 +67,7 @@
       </div>
     </details>
 
-    <fieldset style="--b:0; --p:0; --m:1rem 0 0">
+    <fieldset>
       <legend style="--size:.85rem; --weight:600; --p:0">{{ legend }}</legend>
       {% for t in toggles %}
       <label style="{{ row_s }}">

@@ -11,8 +11,8 @@
 {% set label_s = "--size:0.8rem; --weight:500" %}
 {% set help_s = "--size:0.7rem; --c:var(--muted)" %}
 {% set field_s = "--d:grid; --g:0.25rem; --m:0 0 0.85rem" %}
-{% set input_s = "--w:100%; --bxs:border-box; --p:0.5rem 0.75rem; --size:0.85rem; --br:0.5rem; --b:1px solid var(--line); --bgc:transparent; --c:inherit" %}
-{% set group_s = "--b:0; --p:0; --m:1.25rem 0" %}
+{% set input_s = "--w:100%; --bxs:border-box; --p:0.5rem 0.75rem; --size:0.85rem; --br:0.5rem; outline:1px solid var(--line); --bgc:transparent; --c:inherit" %}
+{% set group_s = " --p:0; --m:1.25rem 0" %}
 {% set legend_s = "--size:0.85rem; --weight:600; --p:0" %}
 
 <div id="branding-panel">
@@ -25,7 +25,7 @@
   {% endif %}
   <form hx-post="/pages/admin/branding/save" hx-target="#branding-panel" hx-swap="outerHTML">
     {% for group in groups %}
-    <fieldset style="{{ group_s }}">
+    <fieldset>
       <legend style="{{ legend_s }}">{{ group.name }}</legend>
       {% for f in group.fields %}
       <p style="{{ field_s }}">
@@ -38,7 +38,7 @@
     </fieldset>
     {% endfor %}
 
-    <fieldset style="{{ group_s }}">
+    <fieldset >
       <legend style="{{ legend_s }}">Color Settings</legend>
       <p style="{{ help_s }}">Overrides the theme colours. Leave empty to use the defaults.</p>
       {% for f in colors %}
@@ -46,7 +46,7 @@
         <label for="{{ f.name }}" style="{{ label_s }}">{{ f.label }}</label>
         <span style="--d:flex; --ai:center; --g:0.5rem">
           <input type="color" data-cy="branding-{{ f.hook }}" data-syncs="{{ f.name }}"
-                 style="--fx:0 0 auto; --w:3rem; --h:2.25rem; --p:0; --br:0.35rem; --b:1px solid var(--line); --bgc:transparent; --cur:pointer"
+                 style="--fx:0 0 auto; --w:3rem; --h:2.25rem; --p:0; --br:0.35rem; outline:1px solid var(--line); --bgc:transparent; --cur:pointer"
                  value="{{ f.picker_value }}" aria-label="{{ f.label }} picker" />
           <input id="{{ f.name }}" name="{{ f.name }}" type="text" data-cy="branding-{{ f.hook }}-text"
                  style="--fx:1 1 auto; {{ input_s }}" placeholder="{{ f.placeholder }}" value="{{ f.value }}" />
@@ -56,7 +56,7 @@
       {% endfor %}
     </fieldset>
 
-    <fieldset style="{{ group_s }}">
+    <fieldset>
       <legend style="{{ legend_s }}">Preview</legend>
       {# Every part is conditional on its value, matching the Svelte page: an
          empty accent renders no accent swatch. The parity gate compares both
@@ -66,7 +66,7 @@
 
          Spans, not divs: `<output>`'s content model is phrase content, and
          `--d:block` gets the line break without the invalid nesting. #}
-      <output data-cy="branding-preview" style="--d:grid; --g:0.6rem; --p:1rem; --br:0.5rem; --b:1px solid var(--line)">
+      <output data-cy="branding-preview" style="--d:grid; --g:0.6rem; --p:1rem; --br:0.5rem; outline:1px solid var(--line)">
         <span style="--d:flex; --ai:center; --g:0.6rem">
           {% if preview.logo_url %}<img src="{{ preview.logo_url }}" alt="Logo" style="--h:2rem; --w:auto" />{% endif %}
           <span>
@@ -90,7 +90,7 @@
 
     <div style="--d:flex; --jc:flex-end; --pt:0.5rem">
       <button type="submit" data-cy="branding-save"
-              style="--p:0.45rem 1.1rem; --size:0.85rem; --weight:500; --br:999px; --b:1px solid var(--line); --cur:pointer">Save</button>
+              style="--p:0.45rem 1.1rem; --size:0.85rem; --weight:500; --br:999px; outline:1px solid var(--line); --cur:pointer">Save</button>
     </div>
   </form>
 </div>

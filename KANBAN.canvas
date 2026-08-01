@@ -14,13 +14,13 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "4d49aa1f860c5035",
-      "line_num": 528,
+      "id": "cc17edc04ffa2dbf",
+      "line_num": 534,
       "source": "todo_md",
       "tags": [
         "#onboarding"
       ],
-      "text": "**One-click GUI installer for non-CLI users + code signing (captured 2026-07-17): a double-click installer for Sage.is AI-UI (+ its Rootstock\u2122/Sprig\u2122 runtime) for people who won't touch a terminal \u2014 not just the `ai-ui` brew CLI. Load-bearing prerequisite: software signing, or the flow dies at the OS \"unidentified developer / can't be opened\" warning (exactly the audience that bails). macOS: Apple Developer ID + notarization (+ stapling) of the `.app`/`.dmg`/`.pkg`. Windows: Authenticode (ideally EV) to clear SmartScreen. Relates to the `ai-ui` brew formula + Developer-Mode onboarding; prior art to mine is Osmantic ODS (item below).**\n`#onboarding`\n`TODO.md:L528`",
+      "text": "**One-click GUI installer for non-CLI users + code signing (captured 2026-07-17): a double-click installer for Sage.is AI-UI (+ its Rootstock\u2122/Sprig\u2122 runtime) for people who won't touch a terminal \u2014 not just the `ai-ui` brew CLI. Load-bearing prerequisite: software signing, or the flow dies at the OS \"unidentified developer / can't be opened\" warning (exactly the audience that bails). macOS: Apple Developer ID + notarization (+ stapling) of the `.app`/`.dmg`/`.pkg`. Windows: Authenticode (ideally EV) to clear SmartScreen. Relates to the `ai-ui` brew formula + Developer-Mode onboarding; prior art to mine is Osmantic ODS (item below).**\n`#onboarding`\n`TODO.md:L534`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -29,13 +29,13 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "6233cb19aee3b6e3",
-      "line_num": 530,
+      "id": "3ce744e705ef5ecd",
+      "line_num": 536,
       "source": "todo_md",
       "tags": [
         "#onboarding"
       ],
-      "text": "**Review Osmantic ODS for onboarding ideas (captured 2026-07-17): [github.com/Osmantic/ODS](https://github.com/Osmantic/ODS) \u2014 \"Osmantic Deployment System.\" NOT just a wizard: a full local-AI-server orchestrator that bundles Open WebUI (same lineage as us) + llama-server + LiteLLM + n8n + Whisper + Kokoro + Qdrant + SearXNG + ComfyUI as Docker containers. Adjacent competitor; onboarding is their strength. Mine: single-command zero-prereq installers (bash + PowerShell) with GPU auto-detect \u2192 model selection; a bootstrap \"first chat in <2 min\" mode (vs. our wizard's up-front model downloads); a management dashboard; and plug-and-play service folders that rhyme with Sprigs\u2122. Our edge stays the slim Rootstock\u2122 + zero-egress Sprig\u2122 runtime + marketplace. Feeds the one-click-installer item above.**\n`#onboarding`\n`TODO.md:L530`",
+      "text": "**Review Osmantic ODS for onboarding ideas (captured 2026-07-17): [github.com/Osmantic/ODS](https://github.com/Osmantic/ODS) \u2014 \"Osmantic Deployment System.\" NOT just a wizard: a full local-AI-server orchestrator that bundles Open WebUI (same lineage as us) + llama-server + LiteLLM + n8n + Whisper + Kokoro + Qdrant + SearXNG + ComfyUI as Docker containers. Adjacent competitor; onboarding is their strength. Mine: single-command zero-prereq installers (bash + PowerShell) with GPU auto-detect \u2192 model selection; a bootstrap \"first chat in <2 min\" mode (vs. our wizard's up-front model downloads); a management dashboard; and plug-and-play service folders that rhyme with Sprigs\u2122. Our edge stays the slim Rootstock\u2122 + zero-egress Sprig\u2122 runtime + marketplace. Feeds the one-click-installer item above.**\n`#onboarding`\n`TODO.md:L536`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -44,13 +44,13 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "f48d891571c43072",
-      "line_num": 532,
+      "id": "5cfa414e1135b990",
+      "line_num": 538,
       "source": "todo_md",
       "tags": [
         "#bonsai"
       ],
-      "text": "**Configurable sprigs + sidecar-sprig variant (captured 2026-07-18): sprigs should carry SETTINGS (per-entry schema \u2014 e.g. a service `url`), and there should be a sidecar sprig kind that points at an operator-run external service instead of shipping an artifact. Concrete driver: the Docling *standard* sprig is ~5GB (docling-serve hard-pulls `docling-jobkit[ray,rq,vlm]` \u2192 ray/codeflare/kubernetes); a sidecar variant (operator runs docling-serve, the sprig just sets `DOCLING_SERVER_URL` from a settings field) is the pragmatic path. Offer BOTH standard (in-container, zero-egress) + sidecar for tika/docling. This is the spec's currently-unimplemented `delivery: service-endpoint` shape. Work: (a) per-sprig settings schema + Admin UI field + persistence + dispatch read; (b) service-endpoint/sidecar delivery that skips the pull and points capability config at the URL (sidecar \"graft\" = \"save URL\"); (c) standard + sidecar catalog entries.**\n`#bonsai`\n`TODO.md:L532`",
+      "text": "**Configurable sprigs + sidecar-sprig variant (captured 2026-07-18): sprigs should carry SETTINGS (per-entry schema \u2014 e.g. a service `url`), and there should be a sidecar sprig kind that points at an operator-run external service instead of shipping an artifact. Concrete driver: the Docling *standard* sprig is ~5GB (docling-serve hard-pulls `docling-jobkit[ray,rq,vlm]` \u2192 ray/codeflare/kubernetes); a sidecar variant (operator runs docling-serve, the sprig just sets `DOCLING_SERVER_URL` from a settings field) is the pragmatic path. Offer BOTH standard (in-container, zero-egress) + sidecar for tika/docling. This is the spec's currently-unimplemented `delivery: service-endpoint` shape. Work: (a) per-sprig settings schema + Admin UI field + persistence + dispatch read; (b) service-endpoint/sidecar delivery that skips the pull and points capability config at the URL (sidecar \"graft\" = \"save URL\"); (c) standard + sidecar catalog entries.**\n`#bonsai`\n`TODO.md:L538`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -59,11 +59,11 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "2928f41581725ab9",
-      "line_num": 534,
+      "id": "0a61bd3925d5459a",
+      "line_num": 540,
       "source": "todo_md",
       "tags": [],
-      "text": "**Tighten the Vite build \u2014 it eats ~half the image build (captured 2026-07-15 during the 3.0.0 release): full image build measured 3m37s with the Vite frontend stage taking roughly half. The cost doubles in `release_smoke` (native + amd64 builds) and the amd64 side pays QEMU tax on top. Levers, roughly in order of payoff: (1) the frontend build output is arch-neutral JS/CSS/wasm \u2014 build it ONCE and COPY the same `build/` into both arch images instead of re-running Vite under emulation; (2) buildx cache mounts for `node_modules` + `.svelte-kit` + Vite's cache dir so unchanged frontends skip the work; (3) Dockerfile layer ordering so backend-only changes never bust the frontend layer. Sourcemaps are already off in production builds (6c393d9). #perf NOTE: vite specific solutions may exist or svelte upgrades**\n`TODO.md:L534`",
+      "text": "**Tighten the Vite build \u2014 it eats ~half the image build (captured 2026-07-15 during the 3.0.0 release): full image build measured 3m37s with the Vite frontend stage taking roughly half. The cost doubles in `release_smoke` (native + amd64 builds) and the amd64 side pays QEMU tax on top. Levers, roughly in order of payoff: (1) the frontend build output is arch-neutral JS/CSS/wasm \u2014 build it ONCE and COPY the same `build/` into both arch images instead of re-running Vite under emulation; (2) buildx cache mounts for `node_modules` + `.svelte-kit` + Vite's cache dir so unchanged frontends skip the work; (3) Dockerfile layer ordering so backend-only changes never bust the frontend layer. Sourcemaps are already off in production builds (6c393d9). #perf NOTE: vite specific solutions may exist or svelte upgrades**\n`TODO.md:L540`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -72,11 +72,11 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "be83d5c7adf9c71d",
-      "line_num": 536,
+      "id": "fbea9c849654e44e",
+      "line_num": 542,
       "source": "todo_md",
       "tags": [],
-      "text": "**Job queue for long-running processes (idea captured 2026-07-06): knowledge-base population/reindex, image generation, model downloads, bulk transcription, and big uploads all run today as synchronous requests or fire-and-forget threads with ad-hoc status (`MODEL_DOWNLOAD_STATUS` dict, per-request `ThreadPoolExecutor` in audio.py) \u2014 no unified queue, no retry, no concurrency caps, no user-visible progress once the request returns. Sketch: a job table (id/type/owner/state/progress/error) + a bounded worker pool + one status endpoint (poll or SSE) + a small \"running jobs\" surface in both admin diagnostics and the requesting user's UI. Prior art in-repo to fold in: the download-watchdog TODO (stalled-download detection) and the upload/download UX memories (progress bars, time estimates). Design question to settle first: DB-backed queue in-process (single-container fit, Bonsai\u2122-friendly) vs. redis-backed (already a dep) \u2014 lean DB-backed until multi-worker is real. Sequenced as unlock #4 (last) for the real-estate engagement 2026-07-30: the demo's proactive beats are staged-and-labelled and the November commitment needs no software, so nothing forces a real scheduler until the configs and features land. Promote when a staged beat has to become a real one.**\n`TODO.md:L536`",
+      "text": "**Job queue for long-running processes (idea captured 2026-07-06): knowledge-base population/reindex, image generation, model downloads, bulk transcription, and big uploads all run today as synchronous requests or fire-and-forget threads with ad-hoc status (`MODEL_DOWNLOAD_STATUS` dict, per-request `ThreadPoolExecutor` in audio.py) \u2014 no unified queue, no retry, no concurrency caps, no user-visible progress once the request returns. Sketch: a job table (id/type/owner/state/progress/error) + a bounded worker pool + one status endpoint (poll or SSE) + a small \"running jobs\" surface in both admin diagnostics and the requesting user's UI. Prior art in-repo to fold in: the download-watchdog TODO (stalled-download detection) and the upload/download UX memories (progress bars, time estimates). Design question to settle first: DB-backed queue in-process (single-container fit, Bonsai\u2122-friendly) vs. redis-backed (already a dep) \u2014 lean DB-backed until multi-worker is real. Sequenced as unlock #4 (last) for the real-estate engagement 2026-07-30: the demo's proactive beats are staged-and-labelled and the November commitment needs no software, so nothing forces a real scheduler until the configs and features land. Promote when a staged beat has to become a real one.**\n`TODO.md:L542`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -85,11 +85,11 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "fb72a8bb55ff319e",
-      "line_num": 537,
+      "id": "ac78a452bc3cb609",
+      "line_num": 543,
       "source": "todo_md",
       "tags": [],
-      "text": "**Spend/usage budgets per user AND per API key (idea captured 2026-07-06): users can generate API keys and hand them to developers or embed them in apps \u2014 today a shared key spends indistinguishably from its owner, with no caps. Two ledgers needed: per-user and per-key (a key is the accounting unit when shared), tracking request counts + token usage + upstream cost estimates per model/connection. Then budget enforcement: soft cap (warn banner / email) and hard cap (429 with a clear \"budget exhausted\" body), admin-settable defaults + per-user overrides, monthly reset or rolling window. Admin UI: usage table sortable by user/key/model; user UI: own usage + remaining budget, per-key breakdown so a leaked/greedy shared key is visible and revocable. Load-bearing for workshops (cost containment on shared instances) and for the try.sage trial (hidden Groq connection is currently uncapped per user). Ties into Spaces multi-tenancy \u2014 a Space-level budget is the natural third ledger later. Sequenced as unlock #2 for the real-estate engagement 2026-07-30: the uncapped-Groq note above stops being hypothetical the moment a paying customer's instance goes live with hosted models and three people sharing it.**\n`TODO.md:L537`",
+      "text": "**Spend/usage budgets per user AND per API key (idea captured 2026-07-06): users can generate API keys and hand them to developers or embed them in apps \u2014 today a shared key spends indistinguishably from its owner, with no caps. Two ledgers needed: per-user and per-key (a key is the accounting unit when shared), tracking request counts + token usage + upstream cost estimates per model/connection. Then budget enforcement: soft cap (warn banner / email) and hard cap (429 with a clear \"budget exhausted\" body), admin-settable defaults + per-user overrides, monthly reset or rolling window. Admin UI: usage table sortable by user/key/model; user UI: own usage + remaining budget, per-key breakdown so a leaked/greedy shared key is visible and revocable. Load-bearing for workshops (cost containment on shared instances) and for the try.sage trial (hidden Groq connection is currently uncapped per user). Ties into Spaces multi-tenancy \u2014 a Space-level budget is the natural third ledger later. Sequenced as unlock #2 for the real-estate engagement 2026-07-30: the uncapped-Groq note above stops being hypothetical the moment a paying customer's instance goes live with hosted models and three people sharing it.**\n`TODO.md:L543`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -98,11 +98,11 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "0f3f9818f7106488",
-      "line_num": 539,
+      "id": "b1ff9dfbc65722d5",
+      "line_num": 545,
       "source": "todo_md",
       "tags": [],
-      "text": "**`e2e_watch` transport: replace noVNC with the WebRTC alternative #tests: `make e2e_watch` serves the interactive Cypress GUI via Xvfb \u2192 x11vnc \u2192 noVNC (`scripts/e2e/watch/`). Swap the VNC hop for a WebRTC stream (lower latency, no websockify middleman, plays nicer through tunnels). Same wrapper-image shape; only the transport layers in `scripts/e2e/watch/Dockerfile` + `entrypoint.sh` change. Decided 2026-07-02 with the P0/P1 Cypress revival.**\n`TODO.md:L539`",
+      "text": "**`e2e_watch` transport: replace noVNC with the WebRTC alternative #tests: `make e2e_watch` serves the interactive Cypress GUI via Xvfb \u2192 x11vnc \u2192 noVNC (`scripts/e2e/watch/`). Swap the VNC hop for a WebRTC stream (lower latency, no websockify middleman, plays nicer through tunnels). Same wrapper-image shape; only the transport layers in `scripts/e2e/watch/Dockerfile` + `entrypoint.sh` change. Decided 2026-07-02 with the P0/P1 Cypress revival.**\n`TODO.md:L545`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -111,11 +111,11 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "2e64d446eacf7040",
-      "line_num": 540,
+      "id": "447714576e0a4a12",
+      "line_num": 546,
       "source": "todo_md",
       "tags": [],
-      "text": "**`sprig-test-cypress` self-test graft prototype gate #tests #bonsai: one-shot `transport: none` dev-family Sprig\u2122 that runs the e2e suites against its own rootstock loopback and reports into Admin \u2192 Diagnostics (\"Self-test: N/N \u2705\"). Prototype gate first: Electron/Chromium headless closure on the Wolfi base (X11/GTK libs, ~500MB\u20131GB artifact, per-arch). Kills the Cypress-binary CDN pull (north star). Greenlight pending after 8.I.4/8.I.5.**\n`TODO.md:L540`",
+      "text": "**`sprig-test-cypress` self-test graft prototype gate #tests #bonsai: one-shot `transport: none` dev-family Sprig\u2122 that runs the e2e suites against its own rootstock loopback and reports into Admin \u2192 Diagnostics (\"Self-test: N/N \u2705\"). Prototype gate first: Electron/Chromium headless closure on the Wolfi base (X11/GTK libs, ~500MB\u20131GB artifact, per-arch). Kills the Cypress-binary CDN pull (north star). Greenlight pending after 8.I.4/8.I.5.**\n`TODO.md:L546`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -125,54 +125,54 @@
       "children": [
         {
           "checked": false,
-          "line_num": 543,
+          "line_num": 549,
           "tags": [],
           "text": "Spike: confirm authlib's `StarletteOAuth2App.client_secret` is mutable per-request (1-2h). If authlib caches it into a pre-built request object, switch to a `compliance_fix` hook that injects the Authorization header just-in-time."
         },
         {
           "checked": false,
-          "line_num": 544,
+          "line_num": 550,
           "tags": [],
           "text": "Backend: `apple_oauth.py` with JWT generator + P8 parser + config validator that signs a throwaway JWT at save-time so a bad key is caught before it can break sign-in."
         },
         {
           "checked": false,
-          "line_num": 545,
+          "line_num": 551,
           "tags": [],
           "text": "Wire into `OAuthManager.handle_login`/`handle_callback`: regenerate JWT, swap into `client.client_secret`, then call authlib as normal."
         },
         {
           "checked": false,
-          "line_num": 546,
+          "line_num": 552,
           "tags": [],
           "text": "Handle Apple's `response_mode=form_post` callback (Apple POSTs back; other providers GET) and first-time-only name/email capture (returning users get only `sub`)."
         },
         {
           "checked": false,
-          "line_num": 547,
+          "line_num": 553,
           "tags": [],
           "text": "Admin UI: Team ID + Key ID + P8 textarea (masked) in `OAuthSettings.svelte`, with the save-time signing validation surfaced as an inline error."
         },
         {
           "checked": false,
-          "line_num": 548,
+          "line_num": 554,
           "tags": [],
           "text": "Frontend: Apple button + icon in the login provider selector."
         },
         {
           "checked": false,
-          "line_num": 549,
+          "line_num": 555,
           "tags": [],
           "text": "Test loop: cloudflared / ngrok tunnel (Apple requires HTTPS, no localhost) + Apple Developer sandbox app."
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "03af24b965908ba7",
-      "line_num": 542,
+      "id": "95b0d33df179602d",
+      "line_num": 548,
       "source": "todo_md",
       "tags": [],
-      "text": "**Apple Sign-In with lazy-JWT client_secret rotation: Add Apple as a fourth OAuth provider alongside Google/Microsoft/GitHub. The 6-month Apple `client_secret` JWT expiry is the operator footgun \u2014 design it out by regenerating the JWT on every `handle_login`/`handle_callback` call instead of scheduling rotation. ES256 signing with the `.p8` EC key is sub-millisecond, so the cost is invisible inside an already-interactive HTTP flow; no APScheduler / cron / persisted JWT state. Apple Developer Program membership ($99/year) is the only hard prerequisite \u2014 without it, this stays blocked.**\n- [ ] Spike: confirm authlib's `StarletteOAuth2App.client_secret` is mutable per-request (1-2h). If authlib caches it into a pre-built request object, switch to a `compliance_fix` hook that injects the Authorization header just-in-time.\n- [ ] Backend: `apple_oauth.py` with JWT generator + P8 parser + config validator that signs a throwaway JWT at save-time so a bad key is caught before it can break sign-in.\n- [ ] Wire into `OAuthManager.handle_login`/`handle_callback`: regenerate JWT, swap into `client.client_secret`, then call authlib as normal.\n- [ ] Handle Apple's `response_mode=form_post` callback (Apple POSTs back; other providers GET) and first-time-only name/email capture (returning users get only `sub`).\n- [ ] Admin UI: Team ID + Key ID + P8 textarea (masked) in `OAuthSettings.svelte`, with the save-time signing validation surfaced as an inline error.\n- [ ] Frontend: Apple button + icon in the login provider selector.\n- [ ] Test loop: cloudflared / ngrok tunnel (Apple requires HTTPS, no localhost) + Apple Developer sandbox app.\n\n`TODO.md:L542`",
+      "text": "**Apple Sign-In with lazy-JWT client_secret rotation: Add Apple as a fourth OAuth provider alongside Google/Microsoft/GitHub. The 6-month Apple `client_secret` JWT expiry is the operator footgun \u2014 design it out by regenerating the JWT on every `handle_login`/`handle_callback` call instead of scheduling rotation. ES256 signing with the `.p8` EC key is sub-millisecond, so the cost is invisible inside an already-interactive HTTP flow; no APScheduler / cron / persisted JWT state. Apple Developer Program membership ($99/year) is the only hard prerequisite \u2014 without it, this stays blocked.**\n- [ ] Spike: confirm authlib's `StarletteOAuth2App.client_secret` is mutable per-request (1-2h). If authlib caches it into a pre-built request object, switch to a `compliance_fix` hook that injects the Authorization header just-in-time.\n- [ ] Backend: `apple_oauth.py` with JWT generator + P8 parser + config validator that signs a throwaway JWT at save-time so a bad key is caught before it can break sign-in.\n- [ ] Wire into `OAuthManager.handle_login`/`handle_callback`: regenerate JWT, swap into `client.client_secret`, then call authlib as normal.\n- [ ] Handle Apple's `response_mode=form_post` callback (Apple POSTs back; other providers GET) and first-time-only name/email capture (returning users get only `sub`).\n- [ ] Admin UI: Team ID + Key ID + P8 textarea (masked) in `OAuthSettings.svelte`, with the save-time signing validation surfaced as an inline error.\n- [ ] Frontend: Apple button + icon in the login provider selector.\n- [ ] Test loop: cloudflared / ngrok tunnel (Apple requires HTTPS, no localhost) + Apple Developer sandbox app.\n\n`TODO.md:L548`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -182,42 +182,42 @@
       "children": [
         {
           "checked": false,
-          "line_num": 552,
+          "line_num": 558,
           "tags": [],
           "text": "**Admin invites by email**: Admin \u2192 Users \u2192 \"Invite\" creates a user record with a chosen role (e.g. `user`) and a flag like `oauth_only=True` + `linked_provider=null`. When that email signs in via any OAuth provider for the first time, the callback links the `oauth_sub` to that pre-created record (same code path as merge-by-email, but gated on the invite flag rather than the global merge toggle). Closes the \"raw 403 because admin didn't know they needed to do something\" path."
         },
         {
           "checked": false,
-          "line_num": 553,
+          "line_num": 559,
           "tags": [],
           "text": "**Org-level bulk linking**: Admin uploads a CSV (or pulls from Google Workspace / Microsoft Entra via SCIM) with `email,role,group` rows. All those users are pre-provisioned. Same callback linking path. Useful for workshop cohorts and school deployments."
         },
         {
           "checked": false,
-          "line_num": 554,
+          "line_num": 560,
           "tags": [],
           "text": "**Invite expiry + revocation**: pre-created invites without a linked oauth_sub after N days surface in admin UI for cleanup."
         },
         {
           "checked": false,
-          "line_num": 555,
+          "line_num": 561,
           "tags": [],
           "text": "**Audit log entry** on link event so admins can see \"Alice's Google account (sub: google@...) was linked to her invited record on 2026-06-01\"."
         },
         {
           "checked": false,
-          "line_num": 556,
+          "line_num": 562,
           "tags": [],
           "text": "Depends on the first-time-OAuth UX TODO ([above](#oauth-ux)) landing first so the user-facing experience around \"your invite has been received\" is coherent."
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "5d6d8282b6b6dbb8",
-      "line_num": 551,
+      "id": "b448115e56a37bdd",
+      "line_num": 557,
       "source": "todo_md",
       "tags": [],
-      "text": "**Admin-driven OAuth user pre-link / org-wide provisioning: Today the only ways to admit an OAuth user are `OAUTH_MERGE_ACCOUNTS_BY_EMAIL` (implicit email-match against any existing account) or `ENABLE_OAUTH_SIGNUP` (open auto-create \u2014 every first-time login gets a `role=pending` user the admin then has to promote). Neither matches the \"I want to invite Alice to my workshop and have her sign in with Google\" workflow. Two layers, smallest first:**\n- [ ] **Admin invites by email**: Admin \u2192 Users \u2192 \"Invite\" creates a user record with a chosen role (e.g. `user`) and a flag like `oauth_only=True` + `linked_provider=null`. When that email signs in via any OAuth provider for the first time, the callback links the `oauth_sub` to that pre-created record (same code path as merge-by-email, but gated on the invite flag rather than the global merge toggle). Closes the \"raw 403 because admin didn't know they needed to do something\" path.\n- [ ] **Org-level bulk linking**: Admin uploads a CSV (or pulls from Google Workspace / Microsoft Entra via SCIM) with `email,role,group` rows. All those users are pre-provisioned. Same callback linking path. Useful for workshop cohorts and school deployments.\n- [ ] **Invite expiry + revocation**: pre-created invites without a linked oauth_sub after N days surface in admin UI for cleanup.\n- [ ] **Audit log entry** on link event so admins can see \"Alice's Google account (sub: google@...) was linked to her invited record on 2026-06-01\".\n- [ ] Depends on the first-time-OAuth UX TODO ([above](#oauth-ux)) landing first so the user-facing experience around \"your invite has been received\" is coherent.\n\n`TODO.md:L551`",
+      "text": "**Admin-driven OAuth user pre-link / org-wide provisioning: Today the only ways to admit an OAuth user are `OAUTH_MERGE_ACCOUNTS_BY_EMAIL` (implicit email-match against any existing account) or `ENABLE_OAUTH_SIGNUP` (open auto-create \u2014 every first-time login gets a `role=pending` user the admin then has to promote). Neither matches the \"I want to invite Alice to my workshop and have her sign in with Google\" workflow. Two layers, smallest first:**\n- [ ] **Admin invites by email**: Admin \u2192 Users \u2192 \"Invite\" creates a user record with a chosen role (e.g. `user`) and a flag like `oauth_only=True` + `linked_provider=null`. When that email signs in via any OAuth provider for the first time, the callback links the `oauth_sub` to that pre-created record (same code path as merge-by-email, but gated on the invite flag rather than the global merge toggle). Closes the \"raw 403 because admin didn't know they needed to do something\" path.\n- [ ] **Org-level bulk linking**: Admin uploads a CSV (or pulls from Google Workspace / Microsoft Entra via SCIM) with `email,role,group` rows. All those users are pre-provisioned. Same callback linking path. Useful for workshop cohorts and school deployments.\n- [ ] **Invite expiry + revocation**: pre-created invites without a linked oauth_sub after N days surface in admin UI for cleanup.\n- [ ] **Audit log entry** on link event so admins can see \"Alice's Google account (sub: google@...) was linked to her invited record on 2026-06-01\".\n- [ ] Depends on the first-time-OAuth UX TODO ([above](#oauth-ux)) landing first so the user-facing experience around \"your invite has been received\" is coherent.\n\n`TODO.md:L557`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -227,30 +227,30 @@
       "children": [
         {
           "checked": false,
-          "line_num": 559,
+          "line_num": 565,
           "tags": [],
           "text": "Confirm which previously committed hidden artifacts must be purged from history"
         },
         {
           "checked": false,
-          "line_num": 560,
+          "line_num": 566,
           "tags": [],
           "text": "Prepare the team runbook for rewrite, force-push, and clone remediation"
         },
         {
           "checked": false,
-          "line_num": 561,
+          "line_num": 567,
           "tags": [],
           "text": "Rotate any credentials exposed by now-excluded hidden artifacts"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "ee878237e508d885",
-      "line_num": 558,
+      "id": "2b2ad1843bc620f1",
+      "line_num": 564,
       "source": "todo_md",
       "tags": [],
-      "text": "**History purge for excluded hidden artifacts: After the root hidden-artifact allowlist lands and the team reviews scope, run BFG Repo-Cleaner or `git filter-repo`, rotate any exposed secrets, and coordinate clone remediation for anyone with an existing copy of the repo.**\n- [ ] Confirm which previously committed hidden artifacts must be purged from history\n- [ ] Prepare the team runbook for rewrite, force-push, and clone remediation\n- [ ] Rotate any credentials exposed by now-excluded hidden artifacts\n\n`TODO.md:L558`",
+      "text": "**History purge for excluded hidden artifacts: After the root hidden-artifact allowlist lands and the team reviews scope, run BFG Repo-Cleaner or `git filter-repo`, rotate any exposed secrets, and coordinate clone remediation for anyone with an existing copy of the repo.**\n- [ ] Confirm which previously committed hidden artifacts must be purged from history\n- [ ] Prepare the team runbook for rewrite, force-push, and clone remediation\n- [ ] Rotate any credentials exposed by now-excluded hidden artifacts\n\n`TODO.md:L564`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -260,36 +260,36 @@
       "children": [
         {
           "checked": false,
-          "line_num": 564,
+          "line_num": 570,
           "tags": [],
           "text": "Pick individual videos from the [working playlist](https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u) for each of the 6 default tutorial steps."
         },
         {
           "checked": false,
-          "line_num": 565,
+          "line_num": 571,
           "tags": [],
           "text": "Populate `TRY_SAGE_TUTORIAL_STEPS_JSON` per workshop deployment with the chosen URLs and step descriptions."
         },
         {
           "checked": false,
-          "line_num": 566,
+          "line_num": 572,
           "tags": [],
           "text": "Publish the Custom Sage tutorial content package: three short videos plus a follow-up email with system prompts."
         },
         {
           "checked": false,
-          "line_num": 567,
+          "line_num": 573,
           "tags": [],
           "text": "Keep system-prompt disclosure only in the dedicated system-prompt video. Swap that one video per team session without a codebase release."
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "61338e91161215e6",
-      "line_num": 563,
+      "id": "09ffef0dd34db211",
+      "line_num": 569,
       "source": "todo_md",
       "tags": [],
-      "text": "**try.sage Tutorial Video Production: (Alexander Somma + Izzy Plante) \u2014 Content work, not code.**\n- [ ] Pick individual videos from the [working playlist](https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u) for each of the 6 default tutorial steps.\n- [ ] Populate `TRY_SAGE_TUTORIAL_STEPS_JSON` per workshop deployment with the chosen URLs and step descriptions.\n- [ ] Publish the Custom Sage tutorial content package: three short videos plus a follow-up email with system prompts.\n- [ ] Keep system-prompt disclosure only in the dedicated system-prompt video. Swap that one video per team session without a codebase release.\n\n`TODO.md:L563`",
+      "text": "**try.sage Tutorial Video Production: (Alexander Somma + Izzy Plante) \u2014 Content work, not code.**\n- [ ] Pick individual videos from the [working playlist](https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u) for each of the 6 default tutorial steps.\n- [ ] Populate `TRY_SAGE_TUTORIAL_STEPS_JSON` per workshop deployment with the chosen URLs and step descriptions.\n- [ ] Publish the Custom Sage tutorial content package: three short videos plus a follow-up email with system prompts.\n- [ ] Keep system-prompt disclosure only in the dedicated system-prompt video. Swap that one video per team session without a codebase release.\n\n`TODO.md:L569`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -299,54 +299,54 @@
       "children": [
         {
           "checked": false,
-          "line_num": 570,
+          "line_num": 576,
           "tags": [],
           "text": "Audit what `try.sage` welcome ships today (`TrySage*` components in `app/src/lib/components/`): copy, imagery, tutorial-step cards, layout, animations."
         },
         {
           "checked": false,
-          "line_num": 571,
+          "line_num": 577,
           "tags": [],
           "text": "Identify which pieces are *trial-only* (banner countdown, persona switcher, magic-link QR) vs. *generally useful for any first-run* (welcome card, \"what to try first\" buttons, tutorial overlay, branded slideshow continuity)."
         },
         {
           "checked": false,
-          "line_num": 572,
+          "line_num": 578,
           "tags": [],
           "text": "Design the default landing \u2014 what does a new admin see *immediately* after completing the setup wizard? Empty home with the chat composer is too thin. Suggested shape: a one-card welcome with \"Start a chat\", \"Set up Ollama\", \"Create a Space\", \"Invite users\" CTAs that link into the actual flows."
         },
         {
           "checked": false,
-          "line_num": 573,
+          "line_num": 579,
           "tags": [],
           "text": "Add a default tutorial overlay (same component as `TrySageTutorial`, different content). Steps focus on the *self-hosted* admin journey: where chats go, where data lives, how to add a model, how to invite users."
         },
         {
           "checked": false,
-          "line_num": 574,
+          "line_num": 580,
           "tags": [],
           "text": "Localize copy via i18n."
         },
         {
           "checked": false,
-          "line_num": 575,
+          "line_num": 581,
           "tags": [],
           "text": "Vitest spec covering the auto-show + dismiss + replay flow (parallel to the try.sage tutorial spec)."
         },
         {
           "checked": false,
-          "line_num": 576,
+          "line_num": 582,
           "tags": [],
           "text": "Make the \"Replay welcome\" admin escape hatch available outside trial mode \u2014 sibling to the existing Trial Mode tab."
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "48caf8d8faf96f27",
-      "line_num": 569,
+      "id": "46435c7af666b1c4",
+      "line_num": 575,
       "source": "todo_md",
       "tags": [],
-      "text": "**Buff Out the Default First-Run Landing Page \u2014 try.sage already has a polished welcome page (persona picker, banner, branded imagery, tutorial overlay). The default first-run landing for a fresh self-hosted install is much thinner. Port the relevant pieces \u2014 minus the trial-only bits \u2014 so a fresh install feels like a finished product, not an empty room.**\n- [ ] Audit what `try.sage` welcome ships today (`TrySage*` components in `app/src/lib/components/`): copy, imagery, tutorial-step cards, layout, animations.\n- [ ] Identify which pieces are *trial-only* (banner countdown, persona switcher, magic-link QR) vs. *generally useful for any first-run* (welcome card, \"what to try first\" buttons, tutorial overlay, branded slideshow continuity).\n- [ ] Design the default landing \u2014 what does a new admin see *immediately* after completing the setup wizard? Empty home with the chat composer is too thin. Suggested shape: a one-card welcome with \"Start a chat\", \"Set up Ollama\", \"Create a Space\", \"Invite users\" CTAs that link into the actual flows.\n- [ ] Add a default tutorial overlay (same component as `TrySageTutorial`, different content). Steps focus on the *self-hosted* admin journey: where chats go, where data lives, how to add a model, how to invite users.\n- [ ] Localize copy via i18n.\n- [ ] Vitest spec covering the auto-show + dismiss + replay flow (parallel to the try.sage tutorial spec).\n- [ ] Make the \"Replay welcome\" admin escape hatch available outside trial mode \u2014 sibling to the existing Trial Mode tab.\n\n`TODO.md:L569`",
+      "text": "**Buff Out the Default First-Run Landing Page \u2014 try.sage already has a polished welcome page (persona picker, banner, branded imagery, tutorial overlay). The default first-run landing for a fresh self-hosted install is much thinner. Port the relevant pieces \u2014 minus the trial-only bits \u2014 so a fresh install feels like a finished product, not an empty room.**\n- [ ] Audit what `try.sage` welcome ships today (`TrySage*` components in `app/src/lib/components/`): copy, imagery, tutorial-step cards, layout, animations.\n- [ ] Identify which pieces are *trial-only* (banner countdown, persona switcher, magic-link QR) vs. *generally useful for any first-run* (welcome card, \"what to try first\" buttons, tutorial overlay, branded slideshow continuity).\n- [ ] Design the default landing \u2014 what does a new admin see *immediately* after completing the setup wizard? Empty home with the chat composer is too thin. Suggested shape: a one-card welcome with \"Start a chat\", \"Set up Ollama\", \"Create a Space\", \"Invite users\" CTAs that link into the actual flows.\n- [ ] Add a default tutorial overlay (same component as `TrySageTutorial`, different content). Steps focus on the *self-hosted* admin journey: where chats go, where data lives, how to add a model, how to invite users.\n- [ ] Localize copy via i18n.\n- [ ] Vitest spec covering the auto-show + dismiss + replay flow (parallel to the try.sage tutorial spec).\n- [ ] Make the \"Replay welcome\" admin escape hatch available outside trial mode \u2014 sibling to the existing Trial Mode tab.\n\n`TODO.md:L575`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -356,36 +356,36 @@
       "children": [
         {
           "checked": false,
-          "line_num": 579,
+          "line_num": 585,
           "tags": [],
           "text": "Map `provider_label` \u2192 logo asset; ship a known-provider icon set (Anthropic, OpenAI, Google, Mistral, Meta, Ollama) plus a neutral fallback for unknown providers."
         },
         {
           "checked": false,
-          "line_num": 580,
+          "line_num": 586,
           "tags": [],
           "text": "Render the logo in the model selector, response bubbles, and Space agent messages \u2014 same surfaces PK-1 badges the Local/External state."
         },
         {
           "checked": false,
-          "line_num": 581,
+          "line_num": 587,
           "tags": [],
           "text": "Icon-only display option for agents that have no avatar set, so a remote-backed agent still carries a brand mark."
         },
         {
           "checked": false,
-          "line_num": 582,
+          "line_num": 588,
           "tags": [],
           "text": "Use license-clean marks (official brand assets where the brand permits, or simple-icons / public-domain equivalents); document the source per logo to avoid trademark/licensing risk. Cross-check with the slideshow image-licensing discipline already applied in Codebase Cleanup."
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "03044a34b72453a5",
-      "line_num": 578,
+      "id": "3d545dd82c04b4ab",
+      "line_num": 584,
       "source": "todo_md",
       "tags": [],
-      "text": "**Provider logos for remote models: Agents and remote models show no brand icon today \u2014 only a name, and sometimes only an icon with no provider mark. Ship recognizable logos for hosted providers (Claude/Anthropic, ChatGPT/OpenAI, Gemini/Google, etc.) so users can tell at a glance which service a model calls. Builds on PK-1 (Local/External badge) above \u2014 PK-1 adds `is_external` + `provider_label` to the model API; this is the visual layer that turns `provider_label` into a logo. Bundle local engines (Ollama, etc.) into the same icon set so the treatment is consistent across local and remote.**\n- [ ] Map `provider_label` \u2192 logo asset; ship a known-provider icon set (Anthropic, OpenAI, Google, Mistral, Meta, Ollama) plus a neutral fallback for unknown providers.\n- [ ] Render the logo in the model selector, response bubbles, and Space agent messages \u2014 same surfaces PK-1 badges the Local/External state.\n- [ ] Icon-only display option for agents that have no avatar set, so a remote-backed agent still carries a brand mark.\n- [ ] Use license-clean marks (official brand assets where the brand permits, or simple-icons / public-domain equivalents); document the source per logo to avoid trademark/licensing risk. Cross-check with the slideshow image-licensing discipline already applied in Codebase Cleanup.\n\n`TODO.md:L578`",
+      "text": "**Provider logos for remote models: Agents and remote models show no brand icon today \u2014 only a name, and sometimes only an icon with no provider mark. Ship recognizable logos for hosted providers (Claude/Anthropic, ChatGPT/OpenAI, Gemini/Google, etc.) so users can tell at a glance which service a model calls. Builds on PK-1 (Local/External badge) above \u2014 PK-1 adds `is_external` + `provider_label` to the model API; this is the visual layer that turns `provider_label` into a logo. Bundle local engines (Ollama, etc.) into the same icon set so the treatment is consistent across local and remote.**\n- [ ] Map `provider_label` \u2192 logo asset; ship a known-provider icon set (Anthropic, OpenAI, Google, Mistral, Meta, Ollama) plus a neutral fallback for unknown providers.\n- [ ] Render the logo in the model selector, response bubbles, and Space agent messages \u2014 same surfaces PK-1 badges the Local/External state.\n- [ ] Icon-only display option for agents that have no avatar set, so a remote-backed agent still carries a brand mark.\n- [ ] Use license-clean marks (official brand assets where the brand permits, or simple-icons / public-domain equivalents); document the source per logo to avoid trademark/licensing risk. Cross-check with the slideshow image-licensing discipline already applied in Codebase Cleanup.\n\n`TODO.md:L584`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -394,11 +394,11 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "49f4e9f3e8a4127b",
-      "line_num": 584,
+      "id": "d78ab75b5741c27a",
+      "line_num": 590,
       "source": "todo_md",
       "tags": [],
-      "text": "**Learning Visibility Dashboard: Mentioned in `the-arsonists-smoke-detector.md`. We need to build this as we are publishing the article soon to the sage.education resource page.**\n`TODO.md:L584`",
+      "text": "**Learning Visibility Dashboard: Mentioned in `the-arsonists-smoke-detector.md`. We need to build this as we are publishing the article soon to the sage.education resource page.**\n`TODO.md:L590`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -407,11 +407,11 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "aa913e1ea73bc396",
-      "line_num": 587,
+      "id": "7dfc51241666d1dc",
+      "line_num": 593,
       "source": "todo_md",
       "tags": [],
-      "text": "**Alex bio update (Alexander Somma): Add Alex's background to the sage.is/about and sage.education pages \u2014 currently only Izzy's story appears. Should include Etsy backend, teaching career, and CTO role.**\n`TODO.md:L587`",
+      "text": "**Alex bio update (Alexander Somma): Add Alex's background to the sage.is/about and sage.education pages \u2014 currently only Izzy's story appears. Should include Etsy backend, teaching career, and CTO role.**\n`TODO.md:L593`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -421,24 +421,24 @@
       "children": [
         {
           "checked": true,
-          "line_num": 590,
+          "line_num": 596,
           "tags": [],
           "text": "Hit the ~2.5GB target (down from 9.7GB)"
         },
         {
           "checked": false,
-          "line_num": 591,
+          "line_num": 597,
           "tags": [],
           "text": "Hit the ~1.5GB base-image target after trimming heavy transitive deps"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "5753f2563284fa2b",
-      "line_num": 589,
+      "id": "a82d845ab94848b1",
+      "line_num": 595,
       "source": "todo_md",
       "tags": [],
-      "text": "**Docker Image Slimming (Pinned / Paused): (Alexander Somma)**\n- [x] Hit the ~2.5GB target (down from 9.7GB)\n- [ ] Hit the ~1.5GB base-image target after trimming heavy transitive deps\n\n`TODO.md:L589`",
+      "text": "**Docker Image Slimming (Pinned / Paused): (Alexander Somma)**\n- [x] Hit the ~2.5GB target (down from 9.7GB)\n- [ ] Hit the ~1.5GB base-image target after trimming heavy transitive deps\n\n`TODO.md:L595`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -447,11 +447,11 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "c03d5b72d7156e3e",
-      "line_num": 593,
+      "id": "cb243588b63ce0e2",
+      "line_num": 599,
       "source": "todo_md",
       "tags": [],
-      "text": "**Dockerfile: stop running pip as root: Every `make it_build` prints `WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager` from the runtime stage. Fix by switching pip installs into a venv (`python -m venv /opt/venv` then `pip install \u2026` against that venv) or by adding a non-root build user before the pip step. Bundled with the broader \"non-root container\" hardening if/when that lands; standalone fix is small.**\n`TODO.md:L593`",
+      "text": "**Dockerfile: stop running pip as root: Every `make it_build` prints `WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager` from the runtime stage. Fix by switching pip installs into a venv (`python -m venv /opt/venv` then `pip install \u2026` against that venv) or by adding a non-root build user before the pip step. Bundled with the broader \"non-root container\" hardening if/when that lands; standalone fix is small.**\n`TODO.md:L599`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -461,60 +461,60 @@
       "children": [
         {
           "checked": false,
-          "line_num": 596,
+          "line_num": 602,
           "tags": [],
           "text": "`make install_dev` \u2014 auto-install dev tools via Homebrew"
         },
         {
           "checked": false,
-          "line_num": 597,
+          "line_num": 603,
           "tags": [],
           "text": "`make scan_container` \u2014 trivy image scanning (post-build)"
         },
         {
           "checked": false,
-          "line_num": 598,
+          "line_num": 604,
           "tags": [],
           "text": "`make lint` \u2014 eslint + prettier + black rollup"
         },
         {
           "checked": false,
-          "line_num": 599,
+          "line_num": 605,
           "tags": [],
           "text": "Gate release finish on passing DB tests and scans"
         },
         {
           "checked": false,
-          "line_num": 600,
+          "line_num": 606,
           "tags": [],
           "text": "Support the same gated release flow locally or on CI"
         },
         {
           "checked": false,
-          "line_num": 601,
+          "line_num": 607,
           "tags": [],
           "text": "Staging CapRover instance for pre-prod testing"
         },
         {
           "checked": false,
-          "line_num": 603,
+          "line_num": 609,
           "tags": [],
           "text": "Selenium-driven browser regression tests"
         },
         {
           "checked": false,
-          "line_num": 604,
+          "line_num": 610,
           "tags": [],
           "text": "OWASP ZAP DAST via `make scan_dast`"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "9a8a6a0da472ad24",
-      "line_num": 595,
+      "id": "9063d145c673c30c",
+      "line_num": 601,
       "source": "todo_md",
       "tags": [],
-      "text": "**CI/CD Pipeline: Gated releases, scanning, and regression tests**\n- [ ] `make install_dev` \u2014 auto-install dev tools via Homebrew\n- [ ] `make scan_container` \u2014 trivy image scanning (post-build)\n- [ ] `make lint` \u2014 eslint + prettier + black rollup\n- [ ] Gate release finish on passing DB tests and scans\n- [ ] Support the same gated release flow locally or on CI\n- [ ] Staging CapRover instance for pre-prod testing\n- [ ] Selenium-driven browser regression tests\n- [ ] OWASP ZAP DAST via `make scan_dast`\n\n`TODO.md:L595`",
+      "text": "**CI/CD Pipeline: Gated releases, scanning, and regression tests**\n- [ ] `make install_dev` \u2014 auto-install dev tools via Homebrew\n- [ ] `make scan_container` \u2014 trivy image scanning (post-build)\n- [ ] `make lint` \u2014 eslint + prettier + black rollup\n- [ ] Gate release finish on passing DB tests and scans\n- [ ] Support the same gated release flow locally or on CI\n- [ ] Staging CapRover instance for pre-prod testing\n- [ ] Selenium-driven browser regression tests\n- [ ] OWASP ZAP DAST via `make scan_dast`\n\n`TODO.md:L601`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -524,18 +524,18 @@
       "children": [
         {
           "checked": false,
-          "line_num": 607,
+          "line_num": 613,
           "tags": [],
           "text": "Evaluate migrating Makefile to a cleaner build tool (Rake, Invoke, or Just)"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "5a70ffddd5959d28",
-      "line_num": 606,
+      "id": "0e7fd0f53db6a433",
+      "line_num": 612,
       "source": "todo_md",
       "tags": [],
-      "text": "**Build System Evaluation: Consider alternatives to Make**\n- [ ] Evaluate migrating Makefile to a cleaner build tool (Rake, Invoke, or Just)\n\n`TODO.md:L606`",
+      "text": "**Build System Evaluation: Consider alternatives to Make**\n- [ ] Evaluate migrating Makefile to a cleaner build tool (Rake, Invoke, or Just)\n\n`TODO.md:L612`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -545,48 +545,48 @@
       "children": [
         {
           "checked": true,
-          "line_num": 610,
+          "line_num": 616,
           "tags": [],
           "text": "Env vars for reset enablement and interval \u2014 `ENABLE_TRY_SAGE`, `TRY_SAGE_RESET_INTERVAL_HOURS`"
         },
         {
           "checked": true,
-          "line_num": 611,
+          "line_num": 617,
           "tags": [],
           "text": "Lifespan task fires the reset selectively (chats + files only; KBs and accounts persist)"
         },
         {
           "checked": true,
-          "line_num": 612,
+          "line_num": 618,
           "tags": [],
           "text": "Banner countdown + pre-reset warning state (blue \u2192 amber when `hours_until_reset < 1`)"
         },
         {
           "checked": true,
-          "line_num": 613,
+          "line_num": 619,
           "tags": [],
           "text": "Admin extend/reset endpoints with audit log lines"
         },
         {
           "checked": false,
-          "line_num": 614,
+          "line_num": 620,
           "tags": [],
           "text": "**Post-reset confirmation messaging** \u2014 when the auto-reset fires, signed-in users currently see no signal. Add a one-shot toast or banner state: \"Trial reset complete \u2014 chats and uploads cleared.\" Drive it from a `try_sage.last_reset_at` timestamp the frontend compares against `localStorage.try_sage_last_seen_reset`."
         },
         {
           "checked": false,
-          "line_num": 615,
+          "line_num": 621,
           "tags": [],
           "text": "**Tests for reset timing and message visibility** \u2014 pytest spec for `periodic_try_sage_reset` (mock the clock, assert selective wipe runs at the right tick); Vitest spec for `TrySageBanner` countdown formatting and color-shift threshold."
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "1d4dacbc9d6d8750",
-      "line_num": 609,
+      "id": "953d6411f82eb977",
+      "line_num": 615,
       "source": "todo_md",
       "tags": [],
-      "text": "**Auto Reset Mode (Trial Environments): Mostly delivered by try.sage. Two gaps remain \u2014 see subitems. Reference: `docs/try-sage-deployment.md`.**\n- [x] Env vars for reset enablement and interval \u2014 `ENABLE_TRY_SAGE`, `TRY_SAGE_RESET_INTERVAL_HOURS`\n- [x] Lifespan task fires the reset selectively (chats + files only; KBs and accounts persist)\n- [x] Banner countdown + pre-reset warning state (blue \u2192 amber when `hours_until_reset < 1`)\n- [x] Admin extend/reset endpoints with audit log lines\n- [ ] **Post-reset confirmation messaging** \u2014 when the auto-reset fires, signed-in users currently see no signal. Add a one-shot toast or banner state: \"Trial reset complete \u2014 chats and uploads cleared.\" Drive it from a `try_sage.last_reset_at` timestamp the frontend compares against `localStorage.try_sage_last_seen_reset`.\n- [ ] **Tests for reset timing and message visibility** \u2014 pytest spec for `periodic_try_sage_reset` (mock the clock, assert selective wipe runs at the right tick); Vitest spec for `TrySageBanner` countdown formatting and color-shift threshold.\n\n`TODO.md:L609`",
+      "text": "**Auto Reset Mode (Trial Environments): Mostly delivered by try.sage. Two gaps remain \u2014 see subitems. Reference: `docs/try-sage-deployment.md`.**\n- [x] Env vars for reset enablement and interval \u2014 `ENABLE_TRY_SAGE`, `TRY_SAGE_RESET_INTERVAL_HOURS`\n- [x] Lifespan task fires the reset selectively (chats + files only; KBs and accounts persist)\n- [x] Banner countdown + pre-reset warning state (blue \u2192 amber when `hours_until_reset < 1`)\n- [x] Admin extend/reset endpoints with audit log lines\n- [ ] **Post-reset confirmation messaging** \u2014 when the auto-reset fires, signed-in users currently see no signal. Add a one-shot toast or banner state: \"Trial reset complete \u2014 chats and uploads cleared.\" Drive it from a `try_sage.last_reset_at` timestamp the frontend compares against `localStorage.try_sage_last_seen_reset`.\n- [ ] **Tests for reset timing and message visibility** \u2014 pytest spec for `periodic_try_sage_reset` (mock the clock, assert selective wipe runs at the right tick); Vitest spec for `TrySageBanner` countdown formatting and color-shift threshold.\n\n`TODO.md:L615`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -596,60 +596,60 @@
       "children": [
         {
           "checked": false,
-          "line_num": 618,
+          "line_num": 624,
           "tags": [],
           "text": "Standardize Svelte unit/integration tests on Vitest, matching current Svelte guidance"
         },
         {
           "checked": false,
-          "line_num": 619,
+          "line_num": 625,
           "tags": [],
           "text": "Add jsdom plus `@testing-library/svelte` for component regression coverage where DOM interaction matters"
         },
         {
           "checked": false,
-          "line_num": 620,
+          "line_num": 626,
           "tags": [],
           "text": "Cover high-risk Svelte components first: chat composer, microphone/transcription flow, auth forms, settings, and uploads"
         },
         {
           "checked": false,
-          "line_num": 621,
+          "line_num": 627,
           "tags": [],
           "text": "Expand the existing Cypress E2E suite to cover the core happy-path and failure-path user journeys"
         },
         {
           "checked": false,
-          "line_num": 622,
+          "line_num": 628,
           "tags": [],
           "text": "Define a deterministic test-data strategy for local and CI runs: seeded state where needed, stubs where faster and safer"
         },
         {
           "checked": false,
-          "line_num": 623,
+          "line_num": 629,
           "tags": [],
           "text": "Evaluate Playwright for cross-browser smoke coverage and trace-based CI debugging before deciding on dual-stack vs migration"
         },
         {
           "checked": false,
-          "line_num": 624,
+          "line_num": 630,
           "tags": [],
           "text": "Gate releases on a tiered regression pipeline: fast Vitest checks first, browser regressions after, smoke coverage on release builds"
         },
         {
           "checked": false,
-          "line_num": 625,
+          "line_num": 631,
           "tags": [],
           "text": "Document how to run each regression layer locally and in deployment pipelines"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "129e3cb7d87547f4",
-      "line_num": 617,
+      "id": "565b44fc8fec6562",
+      "line_num": 623,
       "source": "todo_md",
       "tags": [],
-      "text": "**Full Regression Testing Suite: End-to-end coverage for core user flows, integrations, and release confidence**\n- [ ] Standardize Svelte unit/integration tests on Vitest, matching current Svelte guidance\n- [ ] Add jsdom plus `@testing-library/svelte` for component regression coverage where DOM interaction matters\n- [ ] Cover high-risk Svelte components first: chat composer, microphone/transcription flow, auth forms, settings, and uploads\n- [ ] Expand the existing Cypress E2E suite to cover the core happy-path and failure-path user journeys\n- [ ] Define a deterministic test-data strategy for local and CI runs: seeded state where needed, stubs where faster and safer\n- [ ] Evaluate Playwright for cross-browser smoke coverage and trace-based CI debugging before deciding on dual-stack vs migration\n- [ ] Gate releases on a tiered regression pipeline: fast Vitest checks first, browser regressions after, smoke coverage on release builds\n- [ ] Document how to run each regression layer locally and in deployment pipelines\n\n`TODO.md:L617`",
+      "text": "**Full Regression Testing Suite: End-to-end coverage for core user flows, integrations, and release confidence**\n- [ ] Standardize Svelte unit/integration tests on Vitest, matching current Svelte guidance\n- [ ] Add jsdom plus `@testing-library/svelte` for component regression coverage where DOM interaction matters\n- [ ] Cover high-risk Svelte components first: chat composer, microphone/transcription flow, auth forms, settings, and uploads\n- [ ] Expand the existing Cypress E2E suite to cover the core happy-path and failure-path user journeys\n- [ ] Define a deterministic test-data strategy for local and CI runs: seeded state where needed, stubs where faster and safer\n- [ ] Evaluate Playwright for cross-browser smoke coverage and trace-based CI debugging before deciding on dual-stack vs migration\n- [ ] Gate releases on a tiered regression pipeline: fast Vitest checks first, browser regressions after, smoke coverage on release builds\n- [ ] Document how to run each regression layer locally and in deployment pipelines\n\n`TODO.md:L623`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -659,72 +659,72 @@
       "children": [
         {
           "checked": false,
-          "line_num": 628,
+          "line_num": 634,
           "tags": [],
           "text": "Define the audio test pyramid: unit logic, component behavior, browser E2E, and limited real-device smoke coverage"
         },
         {
           "checked": false,
-          "line_num": 629,
+          "line_num": 635,
           "tags": [],
           "text": "Build a golden audio corpus for regression runs: clean speech, silence, noisy input, clipped speech, accented speech, and low-volume samples"
         },
         {
           "checked": false,
-          "line_num": 630,
+          "line_num": 636,
           "tags": [],
           "text": "Add deterministic browser audio tests that feed known audio files as fake microphone input instead of relying on a live human mic in CI"
         },
         {
           "checked": false,
-          "line_num": 631,
+          "line_num": 637,
           "tags": [],
           "text": "Auto-grant microphone permissions in browser test runs and verify recording state transitions, processing UI, and transcript insertion into chat input"
         },
         {
           "checked": false,
-          "line_num": 632,
+          "line_num": 638,
           "tags": [],
           "text": "Cover failure paths explicitly: permission denied, empty transcript, transcription failure, canceled recording, and timeout handling"
         },
         {
           "checked": false,
-          "line_num": 633,
+          "line_num": 639,
           "tags": [],
           "text": "Add transcript assertions using normalized text matching where exact punctuation is not stable"
         },
         {
           "checked": false,
-          "line_num": 634,
+          "line_num": 640,
           "tags": [],
           "text": "Decide which audio paths run full end-to-end against the real backend transcription flow versus mocked/stubbed transcription responses"
         },
         {
           "checked": false,
-          "line_num": 635,
+          "line_num": 641,
           "tags": [],
           "text": "Evaluate Playwright specifically for browser-level media permission control, fake microphone input, cross-browser smoke tests, and trace debugging"
         },
         {
           "checked": false,
-          "line_num": 636,
+          "line_num": 642,
           "tags": [],
           "text": "Keep a small manual or staged real-microphone smoke suite for supported devices instead of making live microphone capture a required CI gate"
         },
         {
           "checked": false,
-          "line_num": 637,
+          "line_num": 643,
           "tags": [],
           "text": "Document how to run audio regression tests locally, in CI, and on staging with the required browser flags, fixtures, and expected assertions"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "c0f271eb6d7712fe",
-      "line_num": 627,
+      "id": "c41539df8e0ecdee",
+      "line_num": 633,
       "source": "todo_md",
       "tags": [],
-      "text": "**Audio Regression Testing Suite: Deterministic voice-input coverage across recorder, transcription, and chat-input handoff**\n- [ ] Define the audio test pyramid: unit logic, component behavior, browser E2E, and limited real-device smoke coverage\n- [ ] Build a golden audio corpus for regression runs: clean speech, silence, noisy input, clipped speech, accented speech, and low-volume samples\n- [ ] Add deterministic browser audio tests that feed known audio files as fake microphone input instead of relying on a live human mic in CI\n- [ ] Auto-grant microphone permissions in browser test runs and verify recording state transitions, processing UI, and transcript insertion into chat input\n- [ ] Cover failure paths explicitly: permission denied, empty transcript, transcription failure, canceled recording, and timeout handling\n- [ ] Add transcript assertions using normalized text matching where exact punctuation is not stable\n- [ ] Decide which audio paths run full end-to-end against the real backend transcription flow versus mocked/stubbed transcription responses\n- [ ] Evaluate Playwright specifically for browser-level media permission control, fake microphone input, cross-browser smoke tests, and trace debugging\n- [ ] Keep a small manual or staged real-microphone smoke suite for supported devices instead of making live microphone capture a required CI gate\n- [ ] Document how to run audio regression tests locally, in CI, and on staging with the required browser flags, fixtures, and expected assertions\n\n`TODO.md:L627`",
+      "text": "**Audio Regression Testing Suite: Deterministic voice-input coverage across recorder, transcription, and chat-input handoff**\n- [ ] Define the audio test pyramid: unit logic, component behavior, browser E2E, and limited real-device smoke coverage\n- [ ] Build a golden audio corpus for regression runs: clean speech, silence, noisy input, clipped speech, accented speech, and low-volume samples\n- [ ] Add deterministic browser audio tests that feed known audio files as fake microphone input instead of relying on a live human mic in CI\n- [ ] Auto-grant microphone permissions in browser test runs and verify recording state transitions, processing UI, and transcript insertion into chat input\n- [ ] Cover failure paths explicitly: permission denied, empty transcript, transcription failure, canceled recording, and timeout handling\n- [ ] Add transcript assertions using normalized text matching where exact punctuation is not stable\n- [ ] Decide which audio paths run full end-to-end against the real backend transcription flow versus mocked/stubbed transcription responses\n- [ ] Evaluate Playwright specifically for browser-level media permission control, fake microphone input, cross-browser smoke tests, and trace debugging\n- [ ] Keep a small manual or staged real-microphone smoke suite for supported devices instead of making live microphone capture a required CI gate\n- [ ] Document how to run audio regression tests locally, in CI, and on staging with the required browser flags, fixtures, and expected assertions\n\n`TODO.md:L633`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -734,36 +734,36 @@
       "children": [
         {
           "checked": false,
-          "line_num": 640,
+          "line_num": 646,
           "tags": [],
           "text": "Review `docs/backend-rewrite-research.md` with team"
         },
         {
           "checked": false,
-          "line_num": 641,
+          "line_num": 647,
           "tags": [],
           "text": "Phase -1: Generate contract test suite from OpenAPI spec (private submodule)"
         },
         {
           "checked": false,
-          "line_num": 642,
+          "line_num": 648,
           "tags": [],
           "text": "Phase 0 spike: chosen framework + streaming Ollama proxy"
         },
         {
           "checked": false,
-          "line_num": 643,
+          "line_num": 649,
           "tags": [],
           "text": "Team decision: Go + PocketBase, Rust + Loco, or Python + Django?"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "a87068bc3319ae35",
-      "line_num": 639,
+      "id": "9995d66fc2c8d1a2",
+      "line_num": 645,
       "source": "todo_md",
       "tags": [],
-      "text": "**Backend Rewrite Research: Evaluate framework options and build contract tests**\n- [ ] Review `docs/backend-rewrite-research.md` with team\n- [ ] Phase -1: Generate contract test suite from OpenAPI spec (private submodule)\n- [ ] Phase 0 spike: chosen framework + streaming Ollama proxy\n- [ ] Team decision: Go + PocketBase, Rust + Loco, or Python + Django?\n\n`TODO.md:L639`",
+      "text": "**Backend Rewrite Research: Evaluate framework options and build contract tests**\n- [ ] Review `docs/backend-rewrite-research.md` with team\n- [ ] Phase -1: Generate contract test suite from OpenAPI spec (private submodule)\n- [ ] Phase 0 spike: chosen framework + streaming Ollama proxy\n- [ ] Team decision: Go + PocketBase, Rust + Loco, or Python + Django?\n\n`TODO.md:L645`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -773,72 +773,72 @@
       "children": [
         {
           "checked": false,
-          "line_num": 646,
+          "line_num": 652,
           "tags": [],
           "text": "Review the shortlist with the team and prioritize who to contact first"
         },
         {
           "checked": false,
-          "line_num": 647,
+          "line_num": 653,
           "tags": [],
           "text": "Draft a generic outreach template plus per-fork customization for the top three"
         },
         {
           "checked": false,
-          "line_num": 648,
+          "line_num": 654,
           "tags": [],
           "text": "Contact `blascerecer/open-webui` (101 stars, BSD-3, MCP bridge) \u2014 direct technical overlap with Sage.is AI's MCP work"
         },
         {
           "checked": false,
-          "line_num": 649,
+          "line_num": 655,
           "tags": [],
           "text": "Contact Public AI Movement (`forpublicai`) at hello@publicai.network \u2014 strongest mission match, \"AI as public infrastructure\""
         },
         {
           "checked": false,
-          "line_num": 650,
+          "line_num": 656,
           "tags": [],
           "text": "Contact AMD-affiliated `aigdat/raux` via the GAIA team on LinkedIn \u2014 Tier-1 silicon vendor signal"
         },
         {
           "checked": false,
-          "line_num": 651,
+          "line_num": 657,
           "tags": [],
           "text": "Contact `AI3clauseBSD/claused-webai` (francoisp / headgasket) \u2014 most ideologically aligned, building a federation of \"former-open\" projects"
         },
         {
           "checked": false,
-          "line_num": 652,
+          "line_num": 658,
           "tags": [],
           "text": "Contact `BochaAI/open-webui-Bocha` at info@bochaai.com \u2014 vendor MCP integration angle, geographic diversity"
         },
         {
           "checked": false,
-          "line_num": 653,
+          "line_num": 659,
           "tags": [],
           "text": "Contact `hasanraiyan/open-webui` (Raiyan Hasan) \u2014 indie BSD-3 maintainer with public email"
         },
         {
           "checked": false,
-          "line_num": 654,
+          "line_num": 660,
           "tags": [],
           "text": "Decide whether to stand up a Matrix room or Discord for the BSD-3 Open WebUI cohort"
         },
         {
           "checked": false,
-          "line_num": 655,
+          "line_num": 661,
           "tags": [],
           "text": "Refresh the CSV (`docs/outreach/open-webui-forks.csv`) every ~6 months as forks evolve and as the license conversation matures"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "032c8691b0cd868c",
-      "line_num": 645,
+      "id": "9c6fa942084f41c9",
+      "line_num": 651,
       "source": "todo_md",
       "tags": [],
-      "text": "**Open WebUI Fork Maintainer Outreach: Reach out to the BSD-3 / MIT fork cohort identified in `docs/outreach/open-webui-forks.md`. Six maintainers were shortlisted as potential allies after evaluating 32 forks. No fork has stood up its own community channel \u2014 every README still points at the upstream Open WebUI Discord \u2014 so there is a clear opening for Sage.is AI to consolidate the cohort.**\n- [ ] Review the shortlist with the team and prioritize who to contact first\n- [ ] Draft a generic outreach template plus per-fork customization for the top three\n- [ ] Contact `blascerecer/open-webui` (101 stars, BSD-3, MCP bridge) \u2014 direct technical overlap with Sage.is AI's MCP work\n- [ ] Contact Public AI Movement (`forpublicai`) at hello@publicai.network \u2014 strongest mission match, \"AI as public infrastructure\"\n- [ ] Contact AMD-affiliated `aigdat/raux` via the GAIA team on LinkedIn \u2014 Tier-1 silicon vendor signal\n- [ ] Contact `AI3clauseBSD/claused-webai` (francoisp / headgasket) \u2014 most ideologically aligned, building a federation of \"former-open\" projects\n- [ ] Contact `BochaAI/open-webui-Bocha` at info@bochaai.com \u2014 vendor MCP integration angle, geographic diversity\n- [ ] Contact `hasanraiyan/open-webui` (Raiyan Hasan) \u2014 indie BSD-3 maintainer with public email\n- [ ] Decide whether to stand up a Matrix room or Discord for the BSD-3 Open WebUI cohort\n- [ ] Refresh the CSV (`docs/outreach/open-webui-forks.csv`) every ~6 months as forks evolve and as the license conversation matures\n\n`TODO.md:L645`",
+      "text": "**Open WebUI Fork Maintainer Outreach: Reach out to the BSD-3 / MIT fork cohort identified in `docs/outreach/open-webui-forks.md`. Six maintainers were shortlisted as potential allies after evaluating 32 forks. No fork has stood up its own community channel \u2014 every README still points at the upstream Open WebUI Discord \u2014 so there is a clear opening for Sage.is AI to consolidate the cohort.**\n- [ ] Review the shortlist with the team and prioritize who to contact first\n- [ ] Draft a generic outreach template plus per-fork customization for the top three\n- [ ] Contact `blascerecer/open-webui` (101 stars, BSD-3, MCP bridge) \u2014 direct technical overlap with Sage.is AI's MCP work\n- [ ] Contact Public AI Movement (`forpublicai`) at hello@publicai.network \u2014 strongest mission match, \"AI as public infrastructure\"\n- [ ] Contact AMD-affiliated `aigdat/raux` via the GAIA team on LinkedIn \u2014 Tier-1 silicon vendor signal\n- [ ] Contact `AI3clauseBSD/claused-webai` (francoisp / headgasket) \u2014 most ideologically aligned, building a federation of \"former-open\" projects\n- [ ] Contact `BochaAI/open-webui-Bocha` at info@bochaai.com \u2014 vendor MCP integration angle, geographic diversity\n- [ ] Contact `hasanraiyan/open-webui` (Raiyan Hasan) \u2014 indie BSD-3 maintainer with public email\n- [ ] Decide whether to stand up a Matrix room or Discord for the BSD-3 Open WebUI cohort\n- [ ] Refresh the CSV (`docs/outreach/open-webui-forks.csv`) every ~6 months as forks evolve and as the license conversation matures\n\n`TODO.md:L651`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -848,48 +848,48 @@
       "children": [
         {
           "checked": false,
-          "line_num": 658,
+          "line_num": 664,
           "tags": [],
           "text": "Tier B `home` from admin shell \u2014 `sudo offload --target-home /Users/somma move home --apply`. Music symlink needs reconciling first (currently points at `/Volumes/Somma 01 Dock Drive/Music`, offload expects `/MovedHome/somma/Music`). Same-volume `mv` + re-symlink solves it in three commands."
         },
         {
           "checked": false,
-          "line_num": 659,
+          "line_num": 665,
           "tags": [],
           "text": "Tier B `app` (Signal, Obsidian, Steam, Keybase, VSCode, Cursor, Epic, Minecraft) \u2014 quit each before firing"
         },
         {
           "checked": false,
-          "line_num": 660,
+          "line_num": 666,
           "tags": [],
           "text": "Tier B `dev` (CoreSimulator 5.8 GiB)"
         },
         {
           "checked": false,
-          "line_num": 661,
+          "line_num": 667,
           "tags": [],
           "text": "Docker Desktop disk image relocation via native UI (~14 GiB, biggest single win remaining)"
         },
         {
           "checked": false,
-          "line_num": 662,
+          "line_num": 668,
           "tags": [],
           "text": "iMovie Library + Music Library + Photos Library native-UI moves (per `offload relocations`)"
         },
         {
           "checked": false,
-          "line_num": 663,
+          "line_num": 669,
           "tags": [],
           "text": "Track upstream fix on [`Sage-is/homebrew-apps#1`](https://github.com/Sage-is/homebrew-apps/issues/1) \u2014 `du -sk` \u2192 `stat -f %z` verification swap that unblocks one-shot `offload move home --apply` for APFS-clone-heavy targets like `~/Movies`. Until then, the manual rsync+stat-verify+symlink dance from the 2.3.4 ship session is the workaround."
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "c1278724afce50a4",
-      "line_num": 657,
+      "id": "437709bd3b9dacee",
+      "line_num": 663,
       "source": "todo_md",
       "tags": [],
-      "text": "**Finish offload Tier B + native-UI relocations (2026-06-26): host disk freed from 12% to ~50% available after Tier A (cache purge + BuildCruft sweep) and Movies symlinked manually. Remaining work, none of it blocks Bonsai\u2122:**\n- [ ] Tier B `home` from admin shell \u2014 `sudo offload --target-home /Users/somma move home --apply`. Music symlink needs reconciling first (currently points at `/Volumes/Somma 01 Dock Drive/Music`, offload expects `/MovedHome/somma/Music`). Same-volume `mv` + re-symlink solves it in three commands.\n- [ ] Tier B `app` (Signal, Obsidian, Steam, Keybase, VSCode, Cursor, Epic, Minecraft) \u2014 quit each before firing\n- [ ] Tier B `dev` (CoreSimulator 5.8 GiB)\n- [ ] Docker Desktop disk image relocation via native UI (~14 GiB, biggest single win remaining)\n- [ ] iMovie Library + Music Library + Photos Library native-UI moves (per `offload relocations`)\n- [ ] Track upstream fix on [`Sage-is/homebrew-apps#1`](https://github.com/Sage-is/homebrew-apps/issues/1) \u2014 `du -sk` \u2192 `stat -f %z` verification swap that unblocks one-shot `offload move home --apply` for APFS-clone-heavy targets like `~/Movies`. Until then, the manual rsync+stat-verify+symlink dance from the 2.3.4 ship session is the workaround.\n\n`TODO.md:L657`",
+      "text": "**Finish offload Tier B + native-UI relocations (2026-06-26): host disk freed from 12% to ~50% available after Tier A (cache purge + BuildCruft sweep) and Movies symlinked manually. Remaining work, none of it blocks Bonsai\u2122:**\n- [ ] Tier B `home` from admin shell \u2014 `sudo offload --target-home /Users/somma move home --apply`. Music symlink needs reconciling first (currently points at `/Volumes/Somma 01 Dock Drive/Music`, offload expects `/MovedHome/somma/Music`). Same-volume `mv` + re-symlink solves it in three commands.\n- [ ] Tier B `app` (Signal, Obsidian, Steam, Keybase, VSCode, Cursor, Epic, Minecraft) \u2014 quit each before firing\n- [ ] Tier B `dev` (CoreSimulator 5.8 GiB)\n- [ ] Docker Desktop disk image relocation via native UI (~14 GiB, biggest single win remaining)\n- [ ] iMovie Library + Music Library + Photos Library native-UI moves (per `offload relocations`)\n- [ ] Track upstream fix on [`Sage-is/homebrew-apps#1`](https://github.com/Sage-is/homebrew-apps/issues/1) \u2014 `du -sk` \u2192 `stat -f %z` verification swap that unblocks one-shot `offload move home --apply` for APFS-clone-heavy targets like `~/Movies`. Until then, the manual rsync+stat-verify+symlink dance from the 2.3.4 ship session is the workaround.\n\n`TODO.md:L663`",
       "type": "text",
       "width": 280,
       "x": 10,
@@ -2882,7 +2882,7 @@
       "children": [
         {
           "checked": false,
-          "line_num": 509,
+          "line_num": 515,
           "tags": [
             "#biomes",
             "#ratchet"
@@ -2891,7 +2891,7 @@
         },
         {
           "checked": false,
-          "line_num": 510,
+          "line_num": 516,
           "tags": [
             "#frontend"
           ],
@@ -2899,13 +2899,13 @@
         },
         {
           "checked": false,
-          "line_num": 511,
+          "line_num": 517,
           "tags": [],
           "text": "Reimplement the flow canvas (`@xyflow/svelte`) framework-free"
         },
         {
           "checked": false,
-          "line_num": 512,
+          "line_num": 518,
           "tags": [
             "#brand"
           ],
@@ -2914,11 +2914,11 @@
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "c4be2a32e1248445",
-      "line_num": 508,
+      "id": "43129a062069b985",
+      "line_num": 514,
       "source": "todo_md",
       "tags": [],
-      "text": "**Phases 3\u20134 \u2014 medium surfaces, shell flip, then biomes: users, evals, settings tabs, chat list, workshop \u2192 prune biomes (Functions, then chat core last, gated on the spike memo).**\n- [ ] Count and pin the core biomes as a downward-only ratchet \u2014 chat core, rich-text editor, code editor, flow canvas, channels; the count only decreases #biomes #ratchet\n- [ ] **Mid-term: rebuild the chat core as an htmx flow, not a ported island** (Alexander, 2026-07-27). The plan currently treats the chat core as the worst-value surface \u2014 17,591 lines for a 15\u201330% cut \u2014 on the assumption it gets ported to islands, where app-shaped code changes dialect rather than disappearing. An htmx-first rebuild is a different bet: the server owns the conversation and sends fragments, and only the token stream stays vanilla (Phase S already proved that half in ~260 lines, abort semantics included). Two Phase 0 findings point the same way \u2014 the island path did NOT shrink a form surface while the fragment path is the one the estimates assumed, and the runtime probe showed a biome is a real boundary to work across, not a free wrapper. Prerequisites before this is more than a direction: the Phase 1 cookie bridge (fragments need the token off localStorage), the non-proxying browser driver Phase S made a condition, and a fragment surface actually measured. Do NOT re-plan the phase order on this yet \u2014 it is a hypothesis with two supporting datapoints, and the thing that would settle it is one migrated fragment surface. #frontend\n- [ ] Reimplement the flow canvas (`@xyflow/svelte`) framework-free\n- [ ] Slogan precision: \"org-owned\" not \"user-owned\"; keep yjs local-first for the editor #brand\n\n`TODO.md:L508`",
+      "text": "**Phases 3\u20134 \u2014 medium surfaces, shell flip, then biomes: users, evals, settings tabs, chat list, workshop \u2192 prune biomes (Functions, then chat core last, gated on the spike memo).**\n- [ ] Count and pin the core biomes as a downward-only ratchet \u2014 chat core, rich-text editor, code editor, flow canvas, channels; the count only decreases #biomes #ratchet\n- [ ] **Mid-term: rebuild the chat core as an htmx flow, not a ported island** (Alexander, 2026-07-27). The plan currently treats the chat core as the worst-value surface \u2014 17,591 lines for a 15\u201330% cut \u2014 on the assumption it gets ported to islands, where app-shaped code changes dialect rather than disappearing. An htmx-first rebuild is a different bet: the server owns the conversation and sends fragments, and only the token stream stays vanilla (Phase S already proved that half in ~260 lines, abort semantics included). Two Phase 0 findings point the same way \u2014 the island path did NOT shrink a form surface while the fragment path is the one the estimates assumed, and the runtime probe showed a biome is a real boundary to work across, not a free wrapper. Prerequisites before this is more than a direction: the Phase 1 cookie bridge (fragments need the token off localStorage), the non-proxying browser driver Phase S made a condition, and a fragment surface actually measured. Do NOT re-plan the phase order on this yet \u2014 it is a hypothesis with two supporting datapoints, and the thing that would settle it is one migrated fragment surface. #frontend\n- [ ] Reimplement the flow canvas (`@xyflow/svelte`) framework-free\n- [ ] Slogan precision: \"org-owned\" not \"user-owned\"; keep yjs local-first for the editor #brand\n\n`TODO.md:L514`",
       "type": "text",
       "width": 280,
       "x": 360,
@@ -2928,39 +2928,39 @@
       "children": [
         {
           "checked": false,
-          "line_num": 517,
+          "line_num": 523,
           "tags": [],
           "text": "Retrieve the archived Fred Wilson / USV 2006 post from archive.org (the usv.com URL now 404s) \u2014 locks the #4 primary source"
         },
         {
           "checked": false,
-          "line_num": 518,
+          "line_num": 524,
           "tags": [],
           "text": "(Alexander) Confirm true hire order \u2014 recollection is possibly earlier than #4 (Stinchcomb joined later; came on ~after Forman, ~with Nuzzolillo)"
         },
         {
           "checked": false,
-          "line_num": 519,
+          "line_num": 525,
           "tags": [],
           "text": "Find receipts for Etsy Mini authorship (publicly credited to Etsy collectively)"
         },
         {
           "checked": false,
-          "line_num": 520,
+          "line_num": 526,
           "tags": [],
           "text": "Find evidence of internal \"islands\" vocabulary predating the 2019 public coinage"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "61f3e02159f9f5e4",
-      "line_num": 516,
+      "id": "2b482aa0d8f2eb35",
+      "line_num": 522,
       "source": "todo_md",
       "tags": [
         "#brand",
         "#provenance"
       ],
-      "text": "**Etsy / islands provenance \u2014 firm up the sources: make the \"employee #4 / built the Etsy Mini / called them islands\" bio citable. Public today: #4 (Fred Wilson/USV 2006, via zh.wikipedia); the Etsy Mini is a documented island-shaped widget. Detail in the `reference_etsy_islands_provenance` memory + the plan's provenance appendix.**\n- [ ] Retrieve the archived Fred Wilson / USV 2006 post from archive.org (the usv.com URL now 404s) \u2014 locks the #4 primary source\n- [ ] (Alexander) Confirm true hire order \u2014 recollection is possibly earlier than #4 (Stinchcomb joined later; came on ~after Forman, ~with Nuzzolillo)\n- [ ] Find receipts for Etsy Mini authorship (publicly credited to Etsy collectively)\n- [ ] Find evidence of internal \"islands\" vocabulary predating the 2019 public coinage\n\n`#brand` `#provenance`\n`TODO.md:L516`",
+      "text": "**Etsy / islands provenance \u2014 firm up the sources: make the \"employee #4 / built the Etsy Mini / called them islands\" bio citable. Public today: #4 (Fred Wilson/USV 2006, via zh.wikipedia); the Etsy Mini is a documented island-shaped widget. Detail in the `reference_etsy_islands_provenance` memory + the plan's provenance appendix.**\n- [ ] Retrieve the archived Fred Wilson / USV 2006 post from archive.org (the usv.com URL now 404s) \u2014 locks the #4 primary source\n- [ ] (Alexander) Confirm true hire order \u2014 recollection is possibly earlier than #4 (Stinchcomb joined later; came on ~after Forman, ~with Nuzzolillo)\n- [ ] Find receipts for Etsy Mini authorship (publicly credited to Etsy collectively)\n- [ ] Find evidence of internal \"islands\" vocabulary predating the 2019 public coinage\n\n`#brand` `#provenance`\n`TODO.md:L522`",
       "type": "text",
       "width": 280,
       "x": 360,
@@ -3312,7 +3312,7 @@
     },
     {
       "color": "1",
-      "height": 880,
+      "height": 1150,
       "id": "col-bugs",
       "label": "Bugs",
       "type": "group",
@@ -3324,45 +3324,45 @@
       "children": [
         {
           "checked": false,
-          "line_num": 688,
+          "line_num": 694,
           "tags": [],
           "text": "**Fix the silent-failure footgun**: replace `return None` in all three `generate_*_batch_embeddings` functions with `raise EndpointUnreachable(url, underlying)` so callers see the real cause. This IS Phase 2 of the 2.3.3 hardening plan, applied one layer deeper than originally scoped. See `~/.claude/plans/due-to-the-many-silly-ladybug.md`."
         },
         {
           "checked": false,
-          "line_num": 689,
+          "line_num": 695,
           "tags": [],
           "text": "**Map `EndpointUnreachable` \u2192 `503` with `{detail, url, fix}`** in a FastAPI exception handler so the UI gets a structured fix-pointer instead of a misleading TypeError."
         },
         {
           "checked": false,
-          "line_num": 690,
+          "line_num": 696,
           "tags": [],
           "text": "**Boot probe the embedding URL** so `/admin/diagnostics` lights up red BEFORE the next upload, not at first failure."
         },
         {
           "checked": false,
-          "line_num": 691,
+          "line_num": 697,
           "tags": [],
           "text": "**Diagnose sage.startr.cloud specifically**: read the container log for the `log.exception` block preceding a TypeError. Determine which engine is configured (openai? chroma? bare?) and what URL it points at. Compare to try.sage.is's working config."
         },
         {
           "checked": false,
-          "line_num": 692,
+          "line_num": 698,
           "tags": [],
           "text": "**Refresh the bug's surface footprint**: the same `Exception \u2192 None` swallow exists in `generate_ollama_batch_embeddings`, `generate_azure_openai_batch_embeddings`, and likely the reranker \u2014 audit them as a class, fix them together."
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "d504a0be20216d7b",
-      "line_num": 687,
+      "id": "ee9c6ae3b35ea052",
+      "line_num": 693,
       "source": "todo_md",
       "tags": [
         "#critical",
         "#bug"
       ],
-      "text": "**Knowledge file upload fails with misleading `'NoneType' object is not iterable`: Hit on sage.startr.cloud 2026-06-05 running 2.3.2; try.sage.is on 2.3.2 does NOT exhibit this. The user-visible error is `400: 'NoneType' object is not iterable`. Root cause is downstream of the actual failure: `generate_openai_batch_embeddings` at [retrieval/utils.py:803-805](app/backend/sage_is_ai/retrieval/utils.py#L803-L805) (and the ollama/azure_openai siblings) catches every exception, logs it via `log.exception`, and returns `None`. The caller `generate_multiple` at [retrieval/utils.py:462](app/backend/sage_is_ai/retrieval/utils.py#L462) calls `embeddings.extend(func(...))` \u2014 `None` is not iterable, so the user sees the TypeError instead of the real cause (DNS failure, 401, model not loaded, endpoint not listening, etc.). The real error is in the container logs as the `log.exception` block immediately preceding the TypeError traceback. The try.sage.is vs sage.startr.cloud divergence is most likely (a) different `RAG_EMBEDDING_ENGINE` value (try.sage may be on `chroma` or local sentence-transformer, bypassing this path entirely), or (b) stale URL/key in the sage.startr.cloud DB from the inherited 2-month-old volume.**\n- [ ] **Fix the silent-failure footgun**: replace `return None` in all three `generate_*_batch_embeddings` functions with `raise EndpointUnreachable(url, underlying)` so callers see the real cause. This IS Phase 2 of the 2.3.3 hardening plan, applied one layer deeper than originally scoped. See `~/.claude/plans/due-to-the-many-silly-ladybug.md`.\n- [ ] **Map `EndpointUnreachable` \u2192 `503` with `{detail, url, fix}`** in a FastAPI exception handler so the UI gets a structured fix-pointer instead of a misleading TypeError.\n- [ ] **Boot probe the embedding URL** so `/admin/diagnostics` lights up red BEFORE the next upload, not at first failure.\n- [ ] **Diagnose sage.startr.cloud specifically**: read the container log for the `log.exception` block preceding a TypeError. Determine which engine is configured (openai? chroma? bare?) and what URL it points at. Compare to try.sage.is's working config.\n- [ ] **Refresh the bug's surface footprint**: the same `Exception \u2192 None` swallow exists in `generate_ollama_batch_embeddings`, `generate_azure_openai_batch_embeddings`, and likely the reranker \u2014 audit them as a class, fix them together.\n\n`#critical` `#bug`\n`TODO.md:L687`",
+      "text": "**Knowledge file upload fails with misleading `'NoneType' object is not iterable`: Hit on sage.startr.cloud 2026-06-05 running 2.3.2; try.sage.is on 2.3.2 does NOT exhibit this. The user-visible error is `400: 'NoneType' object is not iterable`. Root cause is downstream of the actual failure: `generate_openai_batch_embeddings` at [retrieval/utils.py:803-805](app/backend/sage_is_ai/retrieval/utils.py#L803-L805) (and the ollama/azure_openai siblings) catches every exception, logs it via `log.exception`, and returns `None`. The caller `generate_multiple` at [retrieval/utils.py:462](app/backend/sage_is_ai/retrieval/utils.py#L462) calls `embeddings.extend(func(...))` \u2014 `None` is not iterable, so the user sees the TypeError instead of the real cause (DNS failure, 401, model not loaded, endpoint not listening, etc.). The real error is in the container logs as the `log.exception` block immediately preceding the TypeError traceback. The try.sage.is vs sage.startr.cloud divergence is most likely (a) different `RAG_EMBEDDING_ENGINE` value (try.sage may be on `chroma` or local sentence-transformer, bypassing this path entirely), or (b) stale URL/key in the sage.startr.cloud DB from the inherited 2-month-old volume.**\n- [ ] **Fix the silent-failure footgun**: replace `return None` in all three `generate_*_batch_embeddings` functions with `raise EndpointUnreachable(url, underlying)` so callers see the real cause. This IS Phase 2 of the 2.3.3 hardening plan, applied one layer deeper than originally scoped. See `~/.claude/plans/due-to-the-many-silly-ladybug.md`.\n- [ ] **Map `EndpointUnreachable` \u2192 `503` with `{detail, url, fix}`** in a FastAPI exception handler so the UI gets a structured fix-pointer instead of a misleading TypeError.\n- [ ] **Boot probe the embedding URL** so `/admin/diagnostics` lights up red BEFORE the next upload, not at first failure.\n- [ ] **Diagnose sage.startr.cloud specifically**: read the container log for the `log.exception` block preceding a TypeError. Determine which engine is configured (openai? chroma? bare?) and what URL it points at. Compare to try.sage.is's working config.\n- [ ] **Refresh the bug's surface footprint**: the same `Exception \u2192 None` swallow exists in `generate_ollama_batch_embeddings`, `generate_azure_openai_batch_embeddings`, and likely the reranker \u2014 audit them as a class, fix them together.\n\n`#critical` `#bug`\n`TODO.md:L693`",
       "type": "text",
       "width": 280,
       "x": 1060,
@@ -3372,39 +3372,39 @@
       "children": [
         {
           "checked": false,
-          "line_num": 706,
+          "line_num": 712,
           "tags": [],
           "text": "Reproduce the issue in the chat interface and confirm whether capture, transcription, or input binding is failing"
         },
         {
           "checked": false,
-          "line_num": 707,
+          "line_num": 713,
           "tags": [],
           "text": "Trace the microphone/transcription flow from recorder output into the chat composer state"
         },
         {
           "checked": false,
-          "line_num": 708,
+          "line_num": 714,
           "tags": [],
           "text": "Fix the handoff so completed recordings populate the message input field"
         },
         {
           "checked": false,
-          "line_num": 709,
+          "line_num": 715,
           "tags": [],
           "text": "Add regression coverage for microphone-to-input behavior in chat"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "3fd738fe98641005",
-      "line_num": 705,
+      "id": "f8e1d8af4557bca5",
+      "line_num": 711,
       "source": "todo_md",
       "tags": [
         "#critical",
         "#bug"
       ],
-      "text": "**Chat Microphone Recording Does Not Populate Message Input: Recording from the microphone icon in chat does not process speech into the text field used to send messages**\n- [ ] Reproduce the issue in the chat interface and confirm whether capture, transcription, or input binding is failing\n- [ ] Trace the microphone/transcription flow from recorder output into the chat composer state\n- [ ] Fix the handoff so completed recordings populate the message input field\n- [ ] Add regression coverage for microphone-to-input behavior in chat\n\n`#critical` `#bug`\n`TODO.md:L705`",
+      "text": "**Chat Microphone Recording Does Not Populate Message Input: Recording from the microphone icon in chat does not process speech into the text field used to send messages**\n- [ ] Reproduce the issue in the chat interface and confirm whether capture, transcription, or input binding is failing\n- [ ] Trace the microphone/transcription flow from recorder output into the chat composer state\n- [ ] Fix the handoff so completed recordings populate the message input field\n- [ ] Add regression coverage for microphone-to-input behavior in chat\n\n`#critical` `#bug`\n`TODO.md:L711`",
       "type": "text",
       "width": 280,
       "x": 1060,
@@ -3413,13 +3413,14 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "3c51ad70801e15a6",
-      "line_num": 671,
+      "id": "1f34dffa2547da5c",
+      "line_num": 459,
       "source": "todo_md",
       "tags": [
-        "#bug"
+        "#bug",
+        "#frontend"
       ],
-      "text": "**The changelog pager spec passes whether the button moves or not `#critical-gate`: `wizard-changelog.cy.ts` \u2192 \"moves to the other side once the notes run out\" measures `getBoundingClientRect().left` and requires travel greater than half the row. It was green against the transform version, which a human could see was broken, and it is green against the `margin-left` version, which works. A test that reports the same result in both states measured neither. This is the \"failure indistinguishable from success\" shape the repo keeps finding, and it is the fourth instance. The assertion is not obviously wrong \u2014 forcing the shift to 0 did make it RED (`expected 0 to be above 367.5`), so it has teeth against _that_ input. What it did not catch is a transform that applied under the driver and not in the operator's browser, which means the gap is the environment, not the assertion. Decide which: make the check discriminate in a real engine, or drop the claim and say the spec covers paging and the label only. Related: SikuliX is on the roadmap for exactly this class.**\n`#bug`\n`TODO.md:L671`",
+      "text": "**Inline code in the release notes stopped rendering as code \u2014 fixed at the parser (2026-08-01; `e2e_both` exit 0 both targets \u2014 legacy 166 tests/131 passing/35 pending, nobuild 166/166 \u2014 plus `reload_gate` and `wizard_smoke` PASS; uncommitted, user commits). Alexander, from the live wizard: a note reading ``Each recipe (`scripts/build-sprig-*.sh`) runs its sanity gate`` arrived as `Each recipe ( scripts/build-sprig-*.sh ) runs its sanity gate` \u2014 no monospace, and stray spaces inside the brackets. Not caused by the Jinja conversion: `env.py` renders CHANGELOG.md to HTML and then flattens each entry by walking its children, calling `get_text(strip=True)` on each, and joining with a space \u2014 so every inline element was replaced by its bare text with padding either side. It had been that way for as long as the parser has existed, and it also affected `/api/changelog`. Fixed at the source rather than per-consumer: the prose branch now clones the paragraph, drops the `<strong>` title, and takes the rest as ONE string. Measured against the shipped CHANGELOG.md before changing it \u2014 40 of the 71 entries carrying inline code lose padding, none gains a double space, and none runs two words together. `changelog_panel.py` then rebuilds the `<code>` elements from the `raw` HTML the parser already kept, as runs rather than HTML, so the template stays autoescaped and there is no `| safe` anywhere in that path. New gate `changelog-code-spans.cy.ts`, three assertions because any one alone can pass while the bug is present: `<code>` elements exist, no code span carries padding and no bracket is followed by whitespace-then-code, and the entry title is still stripped from its own body. Proved able to fail by restoring the flattening \u2014 two of the three go red. The wizard-changelog guard-rail caught the half-fix, which is the useful part: it asserts the page contains the API's own `content` verbatim, so fixing only the render made the page MORE correct than the API and the spec went red naming exactly that gap. Fixing the parser made both agree.**\n`#bug` `#frontend`\n`TODO.md:L459`",
       "type": "text",
       "width": 280,
       "x": 1060,
@@ -3428,13 +3429,13 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "d04df1f1c2ad7996",
-      "line_num": 673,
+      "id": "3cdbc2c8b705d105",
+      "line_num": 461,
       "source": "todo_md",
       "tags": [
         "#bug"
       ],
-      "text": "**The diagnostics page still renders English for every reader: every other no-build panel now binds `translator(request)` and answers in the reader's language, but `diagnostics_panel.py` calls `t(key, {})` with the default locale at [line 81](app/backend/sage_is_ai/pages/diagnostics_panel.py#L81), [88](app/backend/sage_is_ai/pages/diagnostics_panel.py#L88), [89](app/backend/sage_is_ai/pages/diagnostics_panel.py#L89) and [144](app/backend/sage_is_ai/pages/diagnostics_panel.py#L144). Its keys are the nested `diagnostics.fix.*` ones whose values are real sentences, so this is a genuine loss for a Spanish operator rather than a no-op. Fixing it means threading a locale through `_library_block` \u2192 `_fix_steps` \u2192 `_row` \u2192 `_ghost_block`, four signatures deep, which is why it was not done alongside the wizard panels. The mechanism is already there; only the plumbing is missing.**\n`#bug`\n`TODO.md:L673`",
+      "text": "**The page reloaded itself every 60 seconds \u2014 the reconnect was a proxy, not the fact (2026-08-01; Alexander: _\"Why does the page refresh every so often now?\"_). Caused by the fix directly above. Bounding the stream to stop it blocking shutdown meant the browser reconnected every minute, and the client reloaded on ANY reconnect \u2014 so it reloaded on a timer. The client's rule was only ever a proxy for \"the server restarted\", and it was already wrong for a dropped connection that comes back to the same process; bounding the stream just made the wrongness visible every minute instead of never. Replaced with the fact: every stream now opens with `event: hello` carrying a token generated at module import, and the client reloads only when that token CHANGES. Same token means the same process whatever happened to the connection. Deliberately not `env.INSTANCE_ID`, which an operator can pin through the environment \u2014 pinning it would silently disable reloading altogether. `reload_gate` grew check 6, both halves, because either alone passes on a constant: two streams from one process must AGREE, and the token must DIFFER after a reload. Proved able to fail by making the token per-connection \u2014 the gate goes red naming the symptom, _\"every reconnect would reload\"_.**\n`#bug`\n`TODO.md:L461`",
       "type": "text",
       "width": 280,
       "x": 1060,
@@ -3443,14 +3444,14 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "b336d62404f3ed82",
-      "line_num": 675,
+      "id": "f2ad184cb9a539cd",
+      "line_num": 463,
       "source": "todo_md",
       "tags": [
         "#bug",
-        "#a11y"
+        "#critical-gate"
       ],
-      "text": "**`SensitiveInput` hardcodes `id=\"password-input\"`, so a page with two of them mislabels every field but the first: [SensitiveInput.svelte:27](app/src/lib/components/common/SensitiveInput.svelte#L27) sets a literal `id`, and line 23 pairs it with `<label class=\"sr-only\" for=\"password-input\">`. `OAuthSettings.svelte` mounts five of them \u2014 Google secret, GitHub secret, Microsoft secret, magic-link SMTP password, LDAP password \u2014 so one page carries five elements with the same `id`. Duplicate IDs are invalid HTML, and `for` resolves to the first match, so every screen reader announces \"Client Secret\" for all five and clicking any label focuses the Google field. Fix by defaulting `id` to a generated value and letting callers override, the same shape `Switch.svelte` already uses (`export let id = ''`). Found while hooking the panel for the no-build migration, not introduced by it.**\n`#bug` `#a11y`\n`TODO.md:L675`",
+      "text": "**An open dev-reload stream blocked the reload it exists to announce (2026-08-01, found by live test). Left a tab open on a `/pages/` route, edited a panel, and the log said `WatchFiles detected changes\u2026 Reloading\u2026` and then nothing \u2014 forever, with the original worker still alive twenty minutes later. The SSE endpoint is a long-lived response and uvicorn waits indefinitely for in-flight responses before a reload completes, so the dev-reload connection wedged the dev reload. Two halves to the fix: the stream now ends itself after about a minute (the browser reconnects anyway \u2014 `retry: 1000`), and the reload branch passes `--timeout-graceful-shutdown 3` as the backstop for anything else that streams. `reload_gate` grew check 5 \u2014 open a stream, THEN edit a panel, and require the edit to land \u2014 because the gate ran its stream check and its reload check in an order that never overlapped them, and stayed green through the whole defect. The first version of that check was itself the bug it was written for: it only required the edit to land eventually, and with the defect reinstated it landed in 45.3s and PASSED, because the client's own `--max-time` finally closed the stream. It asserts the elapsed time now \u2014 healthy is ~5s, broken is ~45s \u2014 and goes red naming the cause.**\n`#bug` `#critical-gate`\n`TODO.md:L463`",
       "type": "text",
       "width": 280,
       "x": 1060,
@@ -3459,13 +3460,13 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "34bbab99d8a928fd",
+      "id": "1838d9bfb31980c1",
       "line_num": 677,
       "source": "todo_md",
       "tags": [
         "#bug"
       ],
-      "text": "**An evicted Sprig\u2122 is reported as \"exited on boot\", which is not what happened: graft two cultivars of the same capability close together and the second one's arrival prunes the first \u2014 `SprigSupervisor.graft` ([supervisor.py:1271-1278](app/backend/sage_is_ai/sprigs/supervisor.py#L1271-L1278)) deliberately keeps one cultivar per capability. The victim is SIGTERMed mid-boot and surfaces as `sprig 'minilm-onnx-inhoused' exited on boot (rc=-15)`, which reads as a crash in the cultivar. `rc=-15` IS SIGTERM, and the supervisor sent it. Hit during the 2026-07-30 manual review by grafting from the wizard while a weight download was still running. Two fixes worth making together: (1) say what happened \u2014 \"pruned while booting: 'multilingual-e5-large' took over the embedding capability\" \u2014 since a message that names everything except the reason is the defect shape this repo keeps finding; (2) child `stderr` is `DEVNULL` ([supervisor.py:1299](app/backend/sage_is_ai/sprigs/supervisor.py#L1299)) with a comment saying logs are not captured yet, so a cultivar that dies for any *other* reason leaves no evidence at all. The wizard panel now refuses to graft a component whose download is in flight, which closes the path that triggered it \u2014 it does not fix the message.**\n`#bug`\n`TODO.md:L677`",
+      "text": "**The changelog pager spec passes whether the button moves or not `#critical-gate`: `wizard-changelog.cy.ts` \u2192 \"moves to the other side once the notes run out\" measures `getBoundingClientRect().left` and requires travel greater than half the row. It was green against the transform version, which a human could see was broken, and it is green against the `margin-left` version, which works. A test that reports the same result in both states measured neither. This is the \"failure indistinguishable from success\" shape the repo keeps finding, and it is the fourth instance. The assertion is not obviously wrong \u2014 forcing the shift to 0 did make it RED (`expected 0 to be above 367.5`), so it has teeth against _that_ input. What it did not catch is a transform that applied under the driver and not in the operator's browser, which means the gap is the environment, not the assertion. Decide which: make the check discriminate in a real engine, or drop the claim and say the spec covers paging and the label only. Related: SikuliX is on the roadmap for exactly this class.**\n`#bug`\n`TODO.md:L677`",
       "type": "text",
       "width": 280,
       "x": 1060,
@@ -3474,85 +3475,131 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "03d1ec897f7af06e",
-      "line_num": 696,
+      "id": "bc6cedad01c3c135",
+      "line_num": 679,
       "source": "todo_md",
       "tags": [
         "#bug"
       ],
-      "text": "**AI Engine Wizard Embedding Download Has No Stall Watchdog: When the embedding model fetch from HuggingFace stalls (network drop, HF outage, slow link), the wizard sits in `embedding=downloading` indefinitely. No timeout, no retry, no resumable state surfaced to the admin. `wizard-smoke.sh` catches this externally via `INSTALL_TIMEOUT_SEC`, but a real user has no signal except an idle spinner.**\n`#bug`\n`TODO.md:L696`",
+      "text": "**The diagnostics page still renders English for every reader: every other no-build panel now binds `translator(request)` and answers in the reader's language, but `diagnostics_panel.py` calls `t(key, {})` with the default locale at [line 81](app/backend/sage_is_ai/pages/diagnostics_panel.py#L81), [88](app/backend/sage_is_ai/pages/diagnostics_panel.py#L88), [89](app/backend/sage_is_ai/pages/diagnostics_panel.py#L89) and [144](app/backend/sage_is_ai/pages/diagnostics_panel.py#L144). Its keys are the nested `diagnostics.fix.*` ones whose values are real sentences, so this is a genuine loss for a Spanish operator rather than a no-op. Fixing it means threading a locale through `_library_block` \u2192 `_fix_steps` \u2192 `_row` \u2192 `_ghost_block`, four signatures deep, which is why it was not done alongside the wizard panels. The mechanism is already there; only the plumbing is missing.**\n`#bug`\n`TODO.md:L679`",
       "type": "text",
       "width": 280,
       "x": 1060,
       "y": 600
     },
     {
-      "children": [
-        {
-          "checked": false,
-          "line_num": 699,
-          "tags": [],
-          "text": "Surface HF download progress (bytes, last-byte timestamp) to `request.app.state.MODEL_DOWNLOAD_STATUS` so the status endpoint exposes liveness."
-        },
-        {
-          "checked": false,
-          "line_num": 700,
-          "tags": [],
-          "text": "Watchdog in `_download` (`retrieval.py`): if cache size hasn't grown in N minutes (configurable, default 5), mark status=`stalled`, capture the error, allow retry via a re-POST to `/api/v1/retrieval/models/download`."
-        },
-        {
-          "checked": false,
-          "line_num": 701,
-          "tags": [],
-          "text": "Surface stalled state in the wizard UI with a retry button + \"check your connection\" hint."
-        }
-      ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "112e1e2b259e3a57",
-      "line_num": 698,
+      "id": "df5d7bb3fc51524f",
+      "line_num": 681,
       "source": "todo_md",
       "tags": [
-        "#bug"
+        "#bug",
+        "#a11y"
       ],
-      "text": "**Wizard `whisper` status stuck at `pending` after a whisper Sprig\u2122 graft (cosmetic \u2014 STT works): On the slim rootstock, grafting `whisper-base-ggml` serves STT correctly (`/api/v1/audio/transcriptions` \u2192 200 through the sprig), but `GET /api/v1/retrieval/models/status` keeps `models.whisper != \"ready\"`. `point_stt_at` ([sprigs/stt_dispatch.py:40](app/backend/sage_is_ai/sprigs/stt_dispatch.py#L40)) flips it \"ready\" and IS called by the graft route ([routers/sprigs.py:113](app/backend/sage_is_ai/routers/sprigs.py#L113)); single worker (`UVICORN_WORKERS=1`), the status dict is seeded with a `whisper` key ([main.py:1119](app/backend/sage_is_ai/main.py#L1119)), and the endpoint returns that dict raw ([retrieval.py:439](app/backend/sage_is_ai/routers/retrieval.py#L439)) \u2014 so static analysis says it SHOULD read ready. Needs LIVE inspection: `KEEP=1 make sprig_smoke`, then `curl \u2026/models/status` right after the whisper graft, plus a temp log in `point_stt_at`. Surfaced 2026-07-22 by `sprig_smoke` (which now self-heals auth + dumps the real status object on failure). Low severity \u2014 this is the wizard's HF-download-skippable optimization, not the STT capability itself.**\n- [ ] Surface HF download progress (bytes, last-byte timestamp) to `request.app.state.MODEL_DOWNLOAD_STATUS` so the status endpoint exposes liveness.\n- [ ] Watchdog in `_download` (`retrieval.py`): if cache size hasn't grown in N minutes (configurable, default 5), mark status=`stalled`, capture the error, allow retry via a re-POST to `/api/v1/retrieval/models/download`.\n- [ ] Surface stalled state in the wizard UI with a retry button + \"check your connection\" hint.\n\n`#bug`\n`TODO.md:L698`",
+      "text": "**`SensitiveInput` hardcodes `id=\"password-input\"`, so a page with two of them mislabels every field but the first: [SensitiveInput.svelte:27](app/src/lib/components/common/SensitiveInput.svelte#L27) sets a literal `id`, and line 23 pairs it with `<label class=\"sr-only\" for=\"password-input\">`. `OAuthSettings.svelte` mounts five of them \u2014 Google secret, GitHub secret, Microsoft secret, magic-link SMTP password, LDAP password \u2014 so one page carries five elements with the same `id`. Duplicate IDs are invalid HTML, and `for` resolves to the first match, so every screen reader announces \"Client Secret\" for all five and clicking any label focuses the Google field. Fix by defaulting `id` to a generated value and letting callers override, the same shape `Switch.svelte` already uses (`export let id = ''`). Found while hooking the panel for the no-build migration, not introduced by it.**\n`#bug` `#a11y`\n`TODO.md:L681`",
       "type": "text",
       "width": 280,
       "x": 1060,
       "y": 690
     },
     {
+      "file_path": "TODO.md",
+      "height": 80,
+      "id": "c5f96d90b20a3858",
+      "line_num": 683,
+      "source": "todo_md",
+      "tags": [
+        "#bug"
+      ],
+      "text": "**An evicted Sprig\u2122 is reported as \"exited on boot\", which is not what happened: graft two cultivars of the same capability close together and the second one's arrival prunes the first \u2014 `SprigSupervisor.graft` ([supervisor.py:1271-1278](app/backend/sage_is_ai/sprigs/supervisor.py#L1271-L1278)) deliberately keeps one cultivar per capability. The victim is SIGTERMed mid-boot and surfaces as `sprig 'minilm-onnx-inhoused' exited on boot (rc=-15)`, which reads as a crash in the cultivar. `rc=-15` IS SIGTERM, and the supervisor sent it. Hit during the 2026-07-30 manual review by grafting from the wizard while a weight download was still running. Two fixes worth making together: (1) say what happened \u2014 \"pruned while booting: 'multilingual-e5-large' took over the embedding capability\" \u2014 since a message that names everything except the reason is the defect shape this repo keeps finding; (2) child `stderr` is `DEVNULL` ([supervisor.py:1299](app/backend/sage_is_ai/sprigs/supervisor.py#L1299)) with a comment saying logs are not captured yet, so a cultivar that dies for any *other* reason leaves no evidence at all. The wizard panel now refuses to graft a component whose download is in flight, which closes the path that triggered it \u2014 it does not fix the message.**\n`#bug`\n`TODO.md:L683`",
+      "type": "text",
+      "width": 280,
+      "x": 1060,
+      "y": 780
+    },
+    {
+      "file_path": "TODO.md",
+      "height": 80,
+      "id": "f415b7881106bbb4",
+      "line_num": 702,
+      "source": "todo_md",
+      "tags": [
+        "#bug"
+      ],
+      "text": "**AI Engine Wizard Embedding Download Has No Stall Watchdog: When the embedding model fetch from HuggingFace stalls (network drop, HF outage, slow link), the wizard sits in `embedding=downloading` indefinitely. No timeout, no retry, no resumable state surfaced to the admin. `wizard-smoke.sh` catches this externally via `INSTALL_TIMEOUT_SEC`, but a real user has no signal except an idle spinner.**\n`#bug`\n`TODO.md:L702`",
+      "type": "text",
+      "width": 280,
+      "x": 1060,
+      "y": 870
+    },
+    {
       "children": [
         {
           "checked": false,
-          "line_num": 714,
+          "line_num": 705,
+          "tags": [],
+          "text": "Surface HF download progress (bytes, last-byte timestamp) to `request.app.state.MODEL_DOWNLOAD_STATUS` so the status endpoint exposes liveness."
+        },
+        {
+          "checked": false,
+          "line_num": 706,
+          "tags": [],
+          "text": "Watchdog in `_download` (`retrieval.py`): if cache size hasn't grown in N minutes (configurable, default 5), mark status=`stalled`, capture the error, allow retry via a re-POST to `/api/v1/retrieval/models/download`."
+        },
+        {
+          "checked": false,
+          "line_num": 707,
+          "tags": [],
+          "text": "Surface stalled state in the wizard UI with a retry button + \"check your connection\" hint."
+        }
+      ],
+      "file_path": "TODO.md",
+      "height": 80,
+      "id": "0568d5f9d03337ce",
+      "line_num": 704,
+      "source": "todo_md",
+      "tags": [
+        "#bug"
+      ],
+      "text": "**Wizard `whisper` status stuck at `pending` after a whisper Sprig\u2122 graft (cosmetic \u2014 STT works): On the slim rootstock, grafting `whisper-base-ggml` serves STT correctly (`/api/v1/audio/transcriptions` \u2192 200 through the sprig), but `GET /api/v1/retrieval/models/status` keeps `models.whisper != \"ready\"`. `point_stt_at` ([sprigs/stt_dispatch.py:40](app/backend/sage_is_ai/sprigs/stt_dispatch.py#L40)) flips it \"ready\" and IS called by the graft route ([routers/sprigs.py:113](app/backend/sage_is_ai/routers/sprigs.py#L113)); single worker (`UVICORN_WORKERS=1`), the status dict is seeded with a `whisper` key ([main.py:1119](app/backend/sage_is_ai/main.py#L1119)), and the endpoint returns that dict raw ([retrieval.py:439](app/backend/sage_is_ai/routers/retrieval.py#L439)) \u2014 so static analysis says it SHOULD read ready. Needs LIVE inspection: `KEEP=1 make sprig_smoke`, then `curl \u2026/models/status` right after the whisper graft, plus a temp log in `point_stt_at`. Surfaced 2026-07-22 by `sprig_smoke` (which now self-heals auth + dumps the real status object on failure). Low severity \u2014 this is the wizard's HF-download-skippable optimization, not the STT capability itself.**\n- [ ] Surface HF download progress (bytes, last-byte timestamp) to `request.app.state.MODEL_DOWNLOAD_STATUS` so the status endpoint exposes liveness.\n- [ ] Watchdog in `_download` (`retrieval.py`): if cache size hasn't grown in N minutes (configurable, default 5), mark status=`stalled`, capture the error, allow retry via a re-POST to `/api/v1/retrieval/models/download`.\n- [ ] Surface stalled state in the wizard UI with a retry button + \"check your connection\" hint.\n\n`#bug`\n`TODO.md:L704`",
+      "type": "text",
+      "width": 280,
+      "x": 1060,
+      "y": 960
+    },
+    {
+      "children": [
+        {
+          "checked": false,
+          "line_num": 720,
           "tags": [],
           "text": "to reproduce start new chat, use backticks and click space key to open codefence ux. Type words."
         },
         {
           "checked": false,
-          "line_num": 715,
+          "line_num": 721,
           "tags": [],
           "text": "Depending on text entered various colors visible. Take note of low contrast combinations."
         },
         {
           "checked": false,
-          "line_num": 716,
+          "line_num": 722,
           "tags": [],
           "text": "Locate cause of color issue and fix"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "24d2b917241aafd9",
-      "line_num": 713,
+      "id": "4942af2c9232f653",
+      "line_num": 719,
       "source": "todo_md",
       "tags": [],
-      "text": "**Code Fence in chat renders near invisible: when inputting text in chat and using codefence the typed or pasted text in the codefence is white on light grey.**\n- [ ] to reproduce start new chat, use backticks and click space key to open codefence ux. Type words.\n- [ ] Depending on text entered various colors visible. Take note of low contrast combinations.\n- [ ] Locate cause of color issue and fix\n\n`TODO.md:L713`",
+      "text": "**Code Fence in chat renders near invisible: when inputting text in chat and using codefence the typed or pasted text in the codefence is white on light grey.**\n- [ ] to reproduce start new chat, use backticks and click space key to open codefence ux. Type words.\n- [ ] Depending on text entered various colors visible. Take note of low contrast combinations.\n- [ ] Locate cause of color issue and fix\n\n`TODO.md:L719`",
       "type": "text",
       "width": 280,
       "x": 1060,
-      "y": 780
+      "y": 1050
     },
     {
       "color": "6",
@@ -4050,11 +4097,11 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "d77194dbbd2ec1cc",
-      "line_num": 459,
+      "id": "20835818cb1bd1bd",
+      "line_num": 465,
       "source": "todo_md",
       "tags": [],
-      "text": "**All twelve panels converted to Jinja2 (2026-08-01; `e2e_both` exit 0 both targets \u2014 legacy 163 tests/131 passing/32 pending, nobuild 163/163 \u2014 plus `reload_gate` and `wizard_smoke` PASS; uncommitted, user commits). The spike's recommendation, carried out. Not one guard-rail spec was touched \u2014 that was the contract and it held for all twelve.**\n`TODO.md:L459`",
+      "text": "**All twelve panels converted to Jinja2 (2026-08-01; `e2e_both` exit 0 both targets \u2014 legacy 163 tests/131 passing/32 pending, nobuild 163/163 \u2014 plus `reload_gate` and `wizard_smoke` PASS; uncommitted, user commits). The spike's recommendation, carried out. Not one guard-rail spec was touched \u2014 that was the contract and it held for all twelve.**\n`TODO.md:L465`",
       "type": "text",
       "width": 280,
       "x": 1410,
@@ -4063,11 +4110,11 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "bb3073211928c50f",
-      "line_num": 473,
+      "id": "e2148a5688456aca",
+      "line_num": 479,
       "source": "todo_md",
       "tags": [],
-      "text": "**Templating spike \u2014 Jinja2 on one panel, and the dev-loop claim holds (2026-07-31; `e2e_both` exit 0 both targets \u2014 legacy 163 tests/131 passing/32 pending, nobuild 163/163 \u2014 plus `reload_gate` and `wizard_smoke` PASS; uncommitted, user commits). Templating was rejected once on line count and reopened on Alexander's _\"We may lower this bar. as engines often come with other benefits.\"_ One panel converted, `welcome_panel.py`, so the decision on the other eleven rests on numbers.**\n`TODO.md:L473`",
+      "text": "**Templating spike \u2014 Jinja2 on one panel, and the dev-loop claim holds (2026-07-31; `e2e_both` exit 0 both targets \u2014 legacy 163 tests/131 passing/32 pending, nobuild 163/163 \u2014 plus `reload_gate` and `wizard_smoke` PASS; uncommitted, user commits). Templating was rejected once on line count and reopened on Alexander's _\"We may lower this bar. as engines often come with other benefits.\"_ One panel converted, `welcome_panel.py`, so the decision on the other eleven rests on numbers.**\n`TODO.md:L479`",
       "type": "text",
       "width": 280,
       "x": 1410,
@@ -4076,13 +4123,13 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "3eb47ba51db18b6f",
-      "line_num": 496,
+      "id": "932d22e720515e49",
+      "line_num": 502,
       "source": "todo_md",
       "tags": [
         "#frontend"
       ],
-      "text": "**`/pages/` is a route index now, not the chat window (2026-07-31; `e2e_both` exit 0 both targets \u2014 legacy 163 tests/131 passing/32 pending, nobuild 163/163 \u2014 plus `reload_gate` and `wizard_smoke` PASS; uncommitted, user commits). Asked for as a dev affordance; built always-on and admin-only instead, on the argument that an index existing only in a review container is one you cannot open on the instance you are actually debugging \u2014 and nothing is disclosed by it, since an admin can already reach all thirteen pages and until now had to know the URLs. It also closes a real confusion: `/pages/` used to answer with the SPA shell, because the app is mounted at `/` with an index.html fallback, so asking for a pages route silently gave you the chat window. Registered as BOTH `\"\"` and `\"/\"` rather than leaning on redirect-on-missing-slash, for exactly that reason \u2014 an unclaimed path here is answered by the app rather than redirected, so the difference between `/pages` and `/pages/` would have been \"a list\" versus \"the app\". Killed a duplication on the way in: the three whole-page surfaces carried their heading, subheading and browser title as literals inside each route body, and the index needed them a fourth time. They live once in `_PAGES` now, read by both the routes (through a new `_whole_page`, the counterpart to `_setup_page`) and the index. The nine setup panels come from `_SETUP_ORDER`, so the list is in wizard order because the sequence is the meaning. A dev banner appears only when `PAGES_RELOAD_DIRS` is on, naming what is watched \u2014 the same fact `/admin/diagnostics` reports as degraded, said where somebody editing these pages is actually looking. Fragment endpoints and the reloader's event stream are left off deliberately: one returns markup with no shell, the other never finishes, and both are traps in a list you click through. The gate's real assertion is that every entry GOES somewhere, because an index is a promise about other pages and a dead link on it is worse than no index. Proved able to fail by pointing the setup links at a typo \u2014 and the useful half was NOT the status check: a dead `/pages/` link still returns 200, because the SPA shell answers, so what catches it is asserting a server-rendered page came back. First version of that assertion used `.to.contain` on the body and Chai printed the entire SPA document on failure, several screens of markup burying the one useful word; asserted as a boolean it now reads `\"/pages/admin/setup/changelog-typo?lang=en-US returned the SPA shell, not a server-rendered page\"`. Built and verified without a single rebuild \u2014 the reloader picked up a brand-new route from a live edit, which is the feature from the entry below proving itself.**\n`#frontend`\n`TODO.md:L496`",
+      "text": "**`/pages/` is a route index now, not the chat window (2026-07-31; `e2e_both` exit 0 both targets \u2014 legacy 163 tests/131 passing/32 pending, nobuild 163/163 \u2014 plus `reload_gate` and `wizard_smoke` PASS; uncommitted, user commits). Asked for as a dev affordance; built always-on and admin-only instead, on the argument that an index existing only in a review container is one you cannot open on the instance you are actually debugging \u2014 and nothing is disclosed by it, since an admin can already reach all thirteen pages and until now had to know the URLs. It also closes a real confusion: `/pages/` used to answer with the SPA shell, because the app is mounted at `/` with an index.html fallback, so asking for a pages route silently gave you the chat window. Registered as BOTH `\"\"` and `\"/\"` rather than leaning on redirect-on-missing-slash, for exactly that reason \u2014 an unclaimed path here is answered by the app rather than redirected, so the difference between `/pages` and `/pages/` would have been \"a list\" versus \"the app\". Killed a duplication on the way in: the three whole-page surfaces carried their heading, subheading and browser title as literals inside each route body, and the index needed them a fourth time. They live once in `_PAGES` now, read by both the routes (through a new `_whole_page`, the counterpart to `_setup_page`) and the index. The nine setup panels come from `_SETUP_ORDER`, so the list is in wizard order because the sequence is the meaning. A dev banner appears only when `PAGES_RELOAD_DIRS` is on, naming what is watched \u2014 the same fact `/admin/diagnostics` reports as degraded, said where somebody editing these pages is actually looking. Fragment endpoints and the reloader's event stream are left off deliberately: one returns markup with no shell, the other never finishes, and both are traps in a list you click through. The gate's real assertion is that every entry GOES somewhere, because an index is a promise about other pages and a dead link on it is worse than no index. Proved able to fail by pointing the setup links at a typo \u2014 and the useful half was NOT the status check: a dead `/pages/` link still returns 200, because the SPA shell answers, so what catches it is asserting a server-rendered page came back. First version of that assertion used `.to.contain` on the body and Chai printed the entire SPA document on failure, several screens of markup burying the one useful word; asserted as a boolean it now reads `\"/pages/admin/setup/changelog-typo?lang=en-US returned the SPA shell, not a server-rendered page\"`. Built and verified without a single rebuild \u2014 the reloader picked up a brand-new route from a live edit, which is the feature from the entry below proving itself.**\n`#frontend`\n`TODO.md:L502`",
       "type": "text",
       "width": 280,
       "x": 1410,
@@ -4091,14 +4138,14 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "83ddb682a57eade8",
-      "line_num": 498,
+      "id": "3ccb16571cff5796",
+      "line_num": 504,
       "source": "todo_md",
       "tags": [
         "#frontend",
         "#dx"
       ],
-      "text": "**The no-build pages reload themselves, and the browser follows (2026-07-31; `e2e_both` exit 0 both targets \u2014 legacy 159 tests/131 passing/28 pending, nobuild 159/159 \u2014 plus `wizard_smoke` PASS and the new `make reload_gate` PASS; uncommitted, user commits). Alexander, after `LIVE=1` landed: _\"I think we can go better than that... Things restart on changes to the Python files.\"_ Right, and for the third time the capability already existed and was missing from the one place a human works: `dev.sh` has run `uvicorn --reload` for years, and `manual-check.sh` boots `start.sh`, which did not. `PAGES_RELOAD_DIRS` is now the one switch for both halves \u2014 `start.sh` branches on it (a branch, not extra flags, because uvicorn refuses `--reload` with `--workers`), and the pages shell reads the same value to decide whether to serve the browser-refresh island, so the reloader and the thing that tells the browser about it cannot drift apart. The presence of a VALUE is the enable; there is no companion boolean to be set to on-while-watching-nothing. `--log-level info`, not `warning`, and that is load-bearing: the reloader announces a restart at INFO, so at `warning` it restarts in total silence, which reads as \"my edit did nothing\" \u2014 the exact failure the feature exists to remove. The browser half costs no dependency, because of one fact worth keeping: a uvicorn restart drops every open connection and `EventSource` reconnects by itself, so THE RESTART IS THE SIGNAL. Nothing watches `.py` twice \u2014 a reconnect means the server went away and came back. The first `open` is skipped, since that one is just the page loading. Assets are the opposite case and do need a watcher, because `/pages/_assets` is served from disk and a stylesheet edit restarts nothing: `watchfiles.awatch` (already present via `uvicorn[standard]`) pushes an `assets` event and the island re-stamps same-origin stylesheet hrefs without reloading, so you can restyle a panel without losing your scroll or closing the dialog you are looking at. `yield_on_timeout=True` gives the keep-alive in the same loop rather than racing `wait_for` against the watcher and cancelling it mid-poll. Measured, finally, after a whole session of saying \"~3s\": a panel edit is served 2.8 seconds after saving, with no manual restart; a mode switch is 7 seconds; a fresh boot with seeding is 8. Switching is `make review` / `review_live` / `review_rebuild`, and the friction was never typing the flag \u2014 a bind mount cannot be added to a running container, and teardown deleted the data volume, so every flip cost a re-seeded admin and a re-grafted ui-Sprig. `REUSE_DATA=1` keeps it. The gates deliberately have no such switch, said in the Makefile beside the targets that do: a guard-rail run against a working tree tests something we do not ship. Two gates, because one could not reach both states. `pages-dev-reload.cy.ts` covers the OFF state, which is what every shipped instance runs; `scripts/gates/dev-reload/run-gate.sh` (`make reload_gate`) boots its own container with the flag and edits a COPY of `pages/`, never the working tree. Three things this turned up, all of them the gates doing their job. (1) The off-state spec first asserted a 404 and went red at 200 \u2014 nothing under `/pages/` can 404, because `SPAStaticFiles` is mounted at `/` with an index.html fallback, so the shell answers. The route genuinely is not registered; the assertion now checks the observable fact (no `text/event-stream`) and says why the obvious version is wrong. (2) Proving the gate could fail by widening the reloader's include filter to `'*'` put the app in a RESTART LOOP rather than making it wrong, and the gate hung for ten minutes instead of reporting \u2014 a gate that hangs on a broken product has the same defect as one that passes on it, so every curl now carries `--max-time`. (3) `diagnostics-panel.cy.ts` went red because `Diagnostics.svelte` hardcoded its three `boot_status` keys while the no-build page loops over whatever arrives: a new check rendered on one side and silently nowhere on the other, since the `{#if}` turns a missing key into nothing rather than an error. Fixed by enumerating from the response, which kills the class rather than the instance. Proved able to fail, each break discriminating: drop `--reload` and only check 1 goes red; widen the include filter and only the no-restart check does; drop either guard and the off-state spec names it.**\n`#frontend` `#dx`\n`TODO.md:L498`",
+      "text": "**The no-build pages reload themselves, and the browser follows (2026-07-31; `e2e_both` exit 0 both targets \u2014 legacy 159 tests/131 passing/28 pending, nobuild 159/159 \u2014 plus `wizard_smoke` PASS and the new `make reload_gate` PASS; uncommitted, user commits). Alexander, after `LIVE=1` landed: _\"I think we can go better than that... Things restart on changes to the Python files.\"_ Right, and for the third time the capability already existed and was missing from the one place a human works: `dev.sh` has run `uvicorn --reload` for years, and `manual-check.sh` boots `start.sh`, which did not. `PAGES_RELOAD_DIRS` is now the one switch for both halves \u2014 `start.sh` branches on it (a branch, not extra flags, because uvicorn refuses `--reload` with `--workers`), and the pages shell reads the same value to decide whether to serve the browser-refresh island, so the reloader and the thing that tells the browser about it cannot drift apart. The presence of a VALUE is the enable; there is no companion boolean to be set to on-while-watching-nothing. `--log-level info`, not `warning`, and that is load-bearing: the reloader announces a restart at INFO, so at `warning` it restarts in total silence, which reads as \"my edit did nothing\" \u2014 the exact failure the feature exists to remove. The browser half costs no dependency, because of one fact worth keeping: a uvicorn restart drops every open connection and `EventSource` reconnects by itself, so THE RESTART IS THE SIGNAL. Nothing watches `.py` twice \u2014 a reconnect means the server went away and came back. The first `open` is skipped, since that one is just the page loading. Assets are the opposite case and do need a watcher, because `/pages/_assets` is served from disk and a stylesheet edit restarts nothing: `watchfiles.awatch` (already present via `uvicorn[standard]`) pushes an `assets` event and the island re-stamps same-origin stylesheet hrefs without reloading, so you can restyle a panel without losing your scroll or closing the dialog you are looking at. `yield_on_timeout=True` gives the keep-alive in the same loop rather than racing `wait_for` against the watcher and cancelling it mid-poll. Measured, finally, after a whole session of saying \"~3s\": a panel edit is served 2.8 seconds after saving, with no manual restart; a mode switch is 7 seconds; a fresh boot with seeding is 8. Switching is `make review` / `review_live` / `review_rebuild`, and the friction was never typing the flag \u2014 a bind mount cannot be added to a running container, and teardown deleted the data volume, so every flip cost a re-seeded admin and a re-grafted ui-Sprig. `REUSE_DATA=1` keeps it. The gates deliberately have no such switch, said in the Makefile beside the targets that do: a guard-rail run against a working tree tests something we do not ship. Two gates, because one could not reach both states. `pages-dev-reload.cy.ts` covers the OFF state, which is what every shipped instance runs; `scripts/gates/dev-reload/run-gate.sh` (`make reload_gate`) boots its own container with the flag and edits a COPY of `pages/`, never the working tree. Three things this turned up, all of them the gates doing their job. (1) The off-state spec first asserted a 404 and went red at 200 \u2014 nothing under `/pages/` can 404, because `SPAStaticFiles` is mounted at `/` with an index.html fallback, so the shell answers. The route genuinely is not registered; the assertion now checks the observable fact (no `text/event-stream`) and says why the obvious version is wrong. (2) Proving the gate could fail by widening the reloader's include filter to `'*'` put the app in a RESTART LOOP rather than making it wrong, and the gate hung for ten minutes instead of reporting \u2014 a gate that hangs on a broken product has the same defect as one that passes on it, so every curl now carries `--max-time`. (3) `diagnostics-panel.cy.ts` went red because `Diagnostics.svelte` hardcoded its three `boot_status` keys while the no-build page loops over whatever arrives: a new check rendered on one side and silently nowhere on the other, since the `{#if}` turns a missing key into nothing rather than an error. Fixed by enumerating from the response, which kills the class rather than the instance. Proved able to fail, each break discriminating: drop `--reload` and only check 1 goes red; widen the include filter and only the no-restart check does; drop either guard and the off-state spec names it.**\n`#frontend` `#dx`\n`TODO.md:L504`",
       "type": "text",
       "width": 280,
       "x": 1410,
@@ -4107,11 +4154,11 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "868fcf67ef0a81b0",
-      "line_num": 500,
+      "id": "8fc736e88e7a9293",
+      "line_num": 506,
       "source": "todo_md",
       "tags": [],
-      "text": "**`manual-check.sh` grew `LIVE=1` \u2014 looking at a no-build page no longer costs a build (2026-07-31; Alexander: _\"Souldn't we work in such a way the no build is needed for our no build changes???\"_). Fair, and the gap was narrower than it looked: `dev_run` already bind-mounts `app/backend/`, so the capability existed \u2014 it was missing from the ONE script whose entire job is letting a human look at these surfaces. `manual-check.sh` booted the baked image with no source mount, so a one-line style tweak on a server-rendered page meant rebuilding a 619 MB image, against surfaces whose whole selling point is that there is no build step. `LIVE=1` now mounts `sage_is_ai/pages/` over the image's copy. Both halves measured rather than assumed, because they reload differently and guessing wrong reads as \"my edit did nothing\": `pages/assets/*.css` and `*.js` need only a REFRESH (the `/pages/_assets` `StaticFiles` mount reads from disk per request \u2014 proved by appending a marker and serving it with no rebuild); `pages/*.py` needs `docker restart sage-manual`, about 3 seconds, because the panel modules are imported once at boot and that start path has no `--reload` (proved 0 before the restart, 1 after). Both are printed in the walkthrough so nobody has to find out. OFF by default and that is deliberate: Phase S made the human pass a standing condition because a green suite is the weakest evidence on an interactive surface, and a review of your working tree is not a review of the artifact you ship. Default when deciding whether it ships; `LIVE=1` while still changing it. Narrower than `dev_run`'s whole-backend mount on purpose \u2014 only `pages/` is shadowed, so everything the panels call into is still baked. #frontend #dx <!-- codespell:ignore -->**\n`TODO.md:L500`",
+      "text": "**`manual-check.sh` grew `LIVE=1` \u2014 looking at a no-build page no longer costs a build (2026-07-31; Alexander: _\"Souldn't we work in such a way the no build is needed for our no build changes???\"_). Fair, and the gap was narrower than it looked: `dev_run` already bind-mounts `app/backend/`, so the capability existed \u2014 it was missing from the ONE script whose entire job is letting a human look at these surfaces. `manual-check.sh` booted the baked image with no source mount, so a one-line style tweak on a server-rendered page meant rebuilding a 619 MB image, against surfaces whose whole selling point is that there is no build step. `LIVE=1` now mounts `sage_is_ai/pages/` over the image's copy. Both halves measured rather than assumed, because they reload differently and guessing wrong reads as \"my edit did nothing\": `pages/assets/*.css` and `*.js` need only a REFRESH (the `/pages/_assets` `StaticFiles` mount reads from disk per request \u2014 proved by appending a marker and serving it with no rebuild); `pages/*.py` needs `docker restart sage-manual`, about 3 seconds, because the panel modules are imported once at boot and that start path has no `--reload` (proved 0 before the restart, 1 after). Both are printed in the walkthrough so nobody has to find out. OFF by default and that is deliberate: Phase S made the human pass a standing condition because a green suite is the weakest evidence on an interactive surface, and a review of your working tree is not a review of the artifact you ship. Default when deciding whether it ships; `LIVE=1` while still changing it. Narrower than `dev_run`'s whole-backend mount on purpose \u2014 only `pages/` is shadowed, so everything the panels call into is still baked. #frontend #dx <!-- codespell:ignore -->**\n`TODO.md:L506`",
       "type": "text",
       "width": 280,
       "x": 1410,
@@ -4121,7 +4168,7 @@
       "children": [
         {
           "checked": true,
-          "line_num": 503,
+          "line_num": 509,
           "tags": [
             "#frontend"
           ],
@@ -4129,7 +4176,7 @@
         },
         {
           "checked": true,
-          "line_num": 504,
+          "line_num": 510,
           "tags": [
             "#frontend"
           ],
@@ -4137,7 +4184,7 @@
         },
         {
           "checked": true,
-          "line_num": 505,
+          "line_num": 511,
           "tags": [
             "#frontend"
           ],
@@ -4145,7 +4192,7 @@
         },
         {
           "checked": false,
-          "line_num": 506,
+          "line_num": 512,
           "tags": [
             "#frontend",
             "#i18n",
@@ -4156,11 +4203,11 @@
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "d2c01451ac84a05f",
-      "line_num": 502,
+      "id": "90159e012dddb5d3",
+      "line_num": 508,
       "source": "todo_md",
       "tags": [],
-      "text": "**Phase 2 \u2014 ripe surfaces COMPLETE: theme/branding, wizard, diagnostics. All three migrated, and the wizard is the first surface where the SvelteKit side was actually DELETED rather than left running beside it \u2014 which is what turns the migration's line saving from a projection into a fact.**\n- [x] **Diagnostics migrated \u2014 813 \u2192 273 lines, 67% at parity** (2026-07-28, commit `9a2bae5`). The second fragment surface, and the one that made the convention worth writing down: it more than doubled the Sprigs panel's 32% cut, and the difference is almost entirely **native HTML over custom widgets** \u2014 `<details>` replaced the Svelte `Collapsible` and deleted the 267-line how-to-fix modal outright. `fixRegistry.json` and `commandLibrary.json` are now data BOTH implementations read, so the 40 remediation steps exist once instead of being transcribed into Python. Per-row re-probe posts to a fragment route that calls `probe_endpoint` directly \u2014 that handler refuses any URL not currently configured, so reimplementing it to save lines would have routed around the SSRF defence. Detail and the parity-gate story in the two entries above. #frontend\n- [x] **Theme/branding migrated \u2014 288 \u2192 200 lines, 31%, with ZERO new CSS** (2026-07-29; `e2e_both` green both targets, legacy 67 tests/60 passing/7 nobuild-only pending, nobuild 67/67; uncommitted, user commits). The third fragment surface and the FIRST that is only a form, which is the shape the plan claimed htmx deletes the most code on. `/pages/admin/branding` renders the seven fields filled in, saves through `routers/configs.set_branding` directly, and swaps the whole panel back. **The measurement, after a course correction that is the real lesson here: 288 \u2192 200 non-comment lines, a 31% cut, and NOT ONE new line of CSS.** The first version of this surface hand-wrote 99 lines in `pages.css` and landed at 288 \u2192 265, an 8% cut \u2014 reported honestly as weak, with the diagnosis that the Svelte page's inline props cost zero lines while the fragment's stylesheet cost 99. Alexander read that and made the call the number was pointing at: _\"we should be using the inline props costing zero lines across the board \u2014 startr.style IS more flexible and quick to edit; don't go reinventing the wheel\"_, followed by _\"avoid custom classes when possible and avoid almost all custom elements, HTML has our back\"_. Converting to props deleted the stylesheet outright and took the cut from **8% to 31%**, in line with Sprigs' 32%. **The old rule was wrong on its own terms**: `pages.css`'s header claimed a class beats props on GENERATED markup because an f-string emitting forty characters of style per row reads worse. It does not, because the props are written ONCE in the render helper and repeated by the generator \u2014 five fields share one `_INPUT_S` string. So props cost the same source lines as a class and delete the stylesheet, which is the entire 23-line difference. That header comment is now corrected in place rather than left to mislead the next person. **Second correction, same direction**: the markup was div-and-class scaffolding and is now the elements that already mean what we needed \u2014 `<fieldset>`/`<legend>` for the field groups (grouping and accessible name, free), `<p>`/`<label>`/`<small>` for each row, `<output>` for the preview (implicit status role, so it announces after a save with no ARIA attribute written). The rendered page contains **zero class attributes and zero ARIA attributes**. The one class left in the source is the self-fading toast, because `@keyframes` is a thing the prop vocabulary genuinely cannot express \u2014 that is the test for when a class is still right. **One script was added, deliberately**: `pages/assets/color-pair.js`, 19 lines. `<input type=\"color\">` cannot express \"unset\" and unset is meaningful here (empty means \"use the theme's own colours\"), so the hex field is the authority and the island mirrors the picker to it. It is a FILE and not two `oninput` attributes because the diagnostics page tells operators to set a Content-Security-Policy, and inline handlers are the first thing a CSP stops \u2014 shipping markup that breaks when an operator follows our own advice is not a trade worth ten characters. It is also delegated from the document, so it survives htmx swapping the form out from under it. **A behaviour difference that is deliberate, not a regression**: the Svelte preview updates on every keystroke because the values are bound to a client-side model; the fragment's preview reflects SAVED branding. Reproducing live typing would mean a round-trip per keystroke or a client-side copy of the form state \u2014 the second being the duplication this migration exists to delete. Written into the spec, this entry, and the UX-review item rather than left to be discovered. **Process, in the convention's order**: registered in `surfaces.ts` first; `branding` added to the `RESTORED_CONFIG` leak guard BEFORE writing a spec that mutates it (it sets the title, logo and the `--primary` the whole UI cascades from, so a leak here repaints every later spec's page); guard-rail proven GREEN against Svelte before any code moved; then the fragment. **The parity gate passed on the first run, which is when it deserves the least trust** \u2014 the diagnostics one went red \u2014 so it was proved able to fail by deleting the save hook, rebuilding, and confirming it went red naming `branding-save` exactly. Also covered: the colour-pair island has a cross-implementation test (both implementations sync hex \u2192 picker), because an island nothing asserts is precisely how the \"Show me how to fix this\" button shipped rendering and doing nothing; only that direction is testable, since Cypress cannot open a native colour dialog, so picker \u2192 hex stays a human-pass item. `pages-cdn-outage.cy.ts` gained a per-surface structural selector instead of one hardcoded to the first two surfaces, and the swatch colours travel in custom properties `pages.css` reads rather than framework props \u2014 a colour swatch is the one element here that cannot degrade to plain. #frontend\n- [x] **Setup wizard CUT OVER \u2014 1,816 \u2192 1,294 lines, 29%, and the modal is deleted** (2026-07-31; `e2e_both` exit 0 both targets \u2014 legacy 155 tests/131 passing/24 pending, nobuild 155/155 \u2014 and `wizard_smoke` PASS; uncommitted, user commits). The last Phase 2 surface and the only one that was never fragment-shaped: nine panels with real client state between them. `ChangesAndSetupModal.svelte` and its nine step components \u2014 **2,132 raw lines, 1,816 of code** \u2014 are GONE. What shows those panels to a reader now is `SetupDialog.svelte`, **168 lines**, which fetches one of the nine routes, lifts the panel out of the response and puts it in a native `<dialog>`. Nothing in it renders a panel; markup, defaults, validation and every save path live on the server, in one language, judged by the specs that already point at those routes. **A native `<dialog>` rather than `Modal.svelte`, because the element already does four things that component hand-rolls**: Escape to close, focus trapped inside, everything behind it inert, and a `::backdrop` that needs no fixed-position overlay. Those are four behaviours we no longer maintain. **Extracted, not framed.** The panel is lifted into the app's own document rather than shown in an iframe, so the nine wizard specs keep reaching their `data-cy` hooks with a plain `cy.get`, and so an operator's Content-Security-Policy has no say in whether the wizard works. **The cost of sharing a document is a stylesheet, and it was measured rather than assumed**: `app.html` already loads startr.style, and the nine panels contain **zero `class` attributes** \u2014 they are inline props end to end \u2014 so what `pages.css` still owned for them is exactly `var(--line)` and the three pager rules. Four rules scoped to the dialog cover it. Loading the sheet itself would have imported its `:root { color-scheme: light dark }` and handed every form control in the app to the OS theme instead of the app's. **How a flow ENDS is a redirect, not a flag**: `/pages/changelog/seen` and `/pages/admin/setup/complete/finish` now 303 to `/`, and the host closes when a response lands outside `/pages/`. One mechanism serves both readers \u2014 with JavaScript the dialog closes, without it the browser lands back in the app instead of on the summary it just dismissed. The route used to re-render that summary, which was a dead end nobody had noticed because the modal closed instead. **A regression this nearly shipped, caught by reading rather than by a gate**: Settings \u2192 About \u2192 \"See what's new\" is a control EVERY user has, and the old changelog panel had no role check at all. Pointing it at `/pages/admin/setup/changelog` would have turned a working button into a 403 for everyone who is not an admin. Fixed with `require_page_user` and `/pages/changelog` \u2014 the one non-admin page route, deliberately outside `/admin/`, sharing the renderer through a `base` parameter so a second copy cannot drift. **The parity gate found a real defect in this work, which is the point of it existing.** The first version left the `<dialog>` mounted and closed on every page; a closed dialog still renders its children, so `setup-dialog`, `setup-close` and `setup-content` appeared on EVERY SvelteKit page in the app, and `surface-parity` went red naming all three. Fixed by rendering it only while open, which is what the deleted modal did. **Test estate, changed deliberately rather than left to rot**: the nine wizard entries are OUT of `surfaces.ts`, because with one implementation left that gate would have compared a route against itself and passed for the wrong reason; `openLegacy` and `scope` went with them, since the wizard was their only user and an optional field nothing sets reads like a contract; `openSetupPanel()` replaces them; every `isNoBuild()` skip in the wizard specs is gone, because a guard that never skips hides the only implementation from half the runs. `pages-cdn-outage.cy.ts` re-lists the nine routes explicitly \u2014 it iterated the registry, so retiring those entries would have silently dropped from that gate the nine surfaces MOST exposed to a startr.style outage. **`setup-dialog.cy.ts` is what took their place**, nine tests on the only code the cut-over added: the panel arriving, delivery losing nothing, a link and a form followed without a page load, a panel's script running, the flow ending, and the changelog reaching a non-admin. **All four new gates proved able to fail before being trusted** \u2014 extract only the panel root and the delivery gate goes red naming `setup-next, setup-prev, setup-step`; drop the script adoption and the pager gate goes red; re-render the summary instead of redirecting and the dialog is \"continuously found\"; make the changelog admin-only and the last one reports 403 where it wants 200. Escape is deliberately NOT asserted: Cypress dispatches synthetic key events a browser does not treat as real, so a test of it would pass or fail for reasons unrelated to this code \u2014 the close button, which is ours, is asserted instead. **Three filed bugs closed by deletion**: `handleWelcomeStart` skipping against a stale reactive value (the server answers now), `CompleteStep`'s unclearable 5s interval, and the orchestrator's stale panel-order comment. #frontend\n- [ ] **Locale negotiation \u2014 BLOCKS any migrated page taking over a real route** (surfaced 2026-07-28 building `pages/i18n.py`). Server-rendered pages read `en-US` and nothing else, because the reader's language lives in `localStorage` where no server can see it. Today that costs nothing: `/pages/*` are additional URLs an operator opts into, and the SvelteKit page still owns the route. The moment one of them BECOMES `/admin/diagnostics`, every non-English operator silently loses their language. Needs a real decision \u2014 `Accept-Language`, a cookie written at sign-in, or a persisted user preference \u2014 and the last is probably right, since it is the only one that survives a new browser. #frontend #i18n #critical\n\n`TODO.md:L502`",
+      "text": "**Phase 2 \u2014 ripe surfaces COMPLETE: theme/branding, wizard, diagnostics. All three migrated, and the wizard is the first surface where the SvelteKit side was actually DELETED rather than left running beside it \u2014 which is what turns the migration's line saving from a projection into a fact.**\n- [x] **Diagnostics migrated \u2014 813 \u2192 273 lines, 67% at parity** (2026-07-28, commit `9a2bae5`). The second fragment surface, and the one that made the convention worth writing down: it more than doubled the Sprigs panel's 32% cut, and the difference is almost entirely **native HTML over custom widgets** \u2014 `<details>` replaced the Svelte `Collapsible` and deleted the 267-line how-to-fix modal outright. `fixRegistry.json` and `commandLibrary.json` are now data BOTH implementations read, so the 40 remediation steps exist once instead of being transcribed into Python. Per-row re-probe posts to a fragment route that calls `probe_endpoint` directly \u2014 that handler refuses any URL not currently configured, so reimplementing it to save lines would have routed around the SSRF defence. Detail and the parity-gate story in the two entries above. #frontend\n- [x] **Theme/branding migrated \u2014 288 \u2192 200 lines, 31%, with ZERO new CSS** (2026-07-29; `e2e_both` green both targets, legacy 67 tests/60 passing/7 nobuild-only pending, nobuild 67/67; uncommitted, user commits). The third fragment surface and the FIRST that is only a form, which is the shape the plan claimed htmx deletes the most code on. `/pages/admin/branding` renders the seven fields filled in, saves through `routers/configs.set_branding` directly, and swaps the whole panel back. **The measurement, after a course correction that is the real lesson here: 288 \u2192 200 non-comment lines, a 31% cut, and NOT ONE new line of CSS.** The first version of this surface hand-wrote 99 lines in `pages.css` and landed at 288 \u2192 265, an 8% cut \u2014 reported honestly as weak, with the diagnosis that the Svelte page's inline props cost zero lines while the fragment's stylesheet cost 99. Alexander read that and made the call the number was pointing at: _\"we should be using the inline props costing zero lines across the board \u2014 startr.style IS more flexible and quick to edit; don't go reinventing the wheel\"_, followed by _\"avoid custom classes when possible and avoid almost all custom elements, HTML has our back\"_. Converting to props deleted the stylesheet outright and took the cut from **8% to 31%**, in line with Sprigs' 32%. **The old rule was wrong on its own terms**: `pages.css`'s header claimed a class beats props on GENERATED markup because an f-string emitting forty characters of style per row reads worse. It does not, because the props are written ONCE in the render helper and repeated by the generator \u2014 five fields share one `_INPUT_S` string. So props cost the same source lines as a class and delete the stylesheet, which is the entire 23-line difference. That header comment is now corrected in place rather than left to mislead the next person. **Second correction, same direction**: the markup was div-and-class scaffolding and is now the elements that already mean what we needed \u2014 `<fieldset>`/`<legend>` for the field groups (grouping and accessible name, free), `<p>`/`<label>`/`<small>` for each row, `<output>` for the preview (implicit status role, so it announces after a save with no ARIA attribute written). The rendered page contains **zero class attributes and zero ARIA attributes**. The one class left in the source is the self-fading toast, because `@keyframes` is a thing the prop vocabulary genuinely cannot express \u2014 that is the test for when a class is still right. **One script was added, deliberately**: `pages/assets/color-pair.js`, 19 lines. `<input type=\"color\">` cannot express \"unset\" and unset is meaningful here (empty means \"use the theme's own colours\"), so the hex field is the authority and the island mirrors the picker to it. It is a FILE and not two `oninput` attributes because the diagnostics page tells operators to set a Content-Security-Policy, and inline handlers are the first thing a CSP stops \u2014 shipping markup that breaks when an operator follows our own advice is not a trade worth ten characters. It is also delegated from the document, so it survives htmx swapping the form out from under it. **A behaviour difference that is deliberate, not a regression**: the Svelte preview updates on every keystroke because the values are bound to a client-side model; the fragment's preview reflects SAVED branding. Reproducing live typing would mean a round-trip per keystroke or a client-side copy of the form state \u2014 the second being the duplication this migration exists to delete. Written into the spec, this entry, and the UX-review item rather than left to be discovered. **Process, in the convention's order**: registered in `surfaces.ts` first; `branding` added to the `RESTORED_CONFIG` leak guard BEFORE writing a spec that mutates it (it sets the title, logo and the `--primary` the whole UI cascades from, so a leak here repaints every later spec's page); guard-rail proven GREEN against Svelte before any code moved; then the fragment. **The parity gate passed on the first run, which is when it deserves the least trust** \u2014 the diagnostics one went red \u2014 so it was proved able to fail by deleting the save hook, rebuilding, and confirming it went red naming `branding-save` exactly. Also covered: the colour-pair island has a cross-implementation test (both implementations sync hex \u2192 picker), because an island nothing asserts is precisely how the \"Show me how to fix this\" button shipped rendering and doing nothing; only that direction is testable, since Cypress cannot open a native colour dialog, so picker \u2192 hex stays a human-pass item. `pages-cdn-outage.cy.ts` gained a per-surface structural selector instead of one hardcoded to the first two surfaces, and the swatch colours travel in custom properties `pages.css` reads rather than framework props \u2014 a colour swatch is the one element here that cannot degrade to plain. #frontend\n- [x] **Setup wizard CUT OVER \u2014 1,816 \u2192 1,294 lines, 29%, and the modal is deleted** (2026-07-31; `e2e_both` exit 0 both targets \u2014 legacy 155 tests/131 passing/24 pending, nobuild 155/155 \u2014 and `wizard_smoke` PASS; uncommitted, user commits). The last Phase 2 surface and the only one that was never fragment-shaped: nine panels with real client state between them. `ChangesAndSetupModal.svelte` and its nine step components \u2014 **2,132 raw lines, 1,816 of code** \u2014 are GONE. What shows those panels to a reader now is `SetupDialog.svelte`, **168 lines**, which fetches one of the nine routes, lifts the panel out of the response and puts it in a native `<dialog>`. Nothing in it renders a panel; markup, defaults, validation and every save path live on the server, in one language, judged by the specs that already point at those routes. **A native `<dialog>` rather than `Modal.svelte`, because the element already does four things that component hand-rolls**: Escape to close, focus trapped inside, everything behind it inert, and a `::backdrop` that needs no fixed-position overlay. Those are four behaviours we no longer maintain. **Extracted, not framed.** The panel is lifted into the app's own document rather than shown in an iframe, so the nine wizard specs keep reaching their `data-cy` hooks with a plain `cy.get`, and so an operator's Content-Security-Policy has no say in whether the wizard works. **The cost of sharing a document is a stylesheet, and it was measured rather than assumed**: `app.html` already loads startr.style, and the nine panels contain **zero `class` attributes** \u2014 they are inline props end to end \u2014 so what `pages.css` still owned for them is exactly `var(--line)` and the three pager rules. Four rules scoped to the dialog cover it. Loading the sheet itself would have imported its `:root { color-scheme: light dark }` and handed every form control in the app to the OS theme instead of the app's. **How a flow ENDS is a redirect, not a flag**: `/pages/changelog/seen` and `/pages/admin/setup/complete/finish` now 303 to `/`, and the host closes when a response lands outside `/pages/`. One mechanism serves both readers \u2014 with JavaScript the dialog closes, without it the browser lands back in the app instead of on the summary it just dismissed. The route used to re-render that summary, which was a dead end nobody had noticed because the modal closed instead. **A regression this nearly shipped, caught by reading rather than by a gate**: Settings \u2192 About \u2192 \"See what's new\" is a control EVERY user has, and the old changelog panel had no role check at all. Pointing it at `/pages/admin/setup/changelog` would have turned a working button into a 403 for everyone who is not an admin. Fixed with `require_page_user` and `/pages/changelog` \u2014 the one non-admin page route, deliberately outside `/admin/`, sharing the renderer through a `base` parameter so a second copy cannot drift. **The parity gate found a real defect in this work, which is the point of it existing.** The first version left the `<dialog>` mounted and closed on every page; a closed dialog still renders its children, so `setup-dialog`, `setup-close` and `setup-content` appeared on EVERY SvelteKit page in the app, and `surface-parity` went red naming all three. Fixed by rendering it only while open, which is what the deleted modal did. **Test estate, changed deliberately rather than left to rot**: the nine wizard entries are OUT of `surfaces.ts`, because with one implementation left that gate would have compared a route against itself and passed for the wrong reason; `openLegacy` and `scope` went with them, since the wizard was their only user and an optional field nothing sets reads like a contract; `openSetupPanel()` replaces them; every `isNoBuild()` skip in the wizard specs is gone, because a guard that never skips hides the only implementation from half the runs. `pages-cdn-outage.cy.ts` re-lists the nine routes explicitly \u2014 it iterated the registry, so retiring those entries would have silently dropped from that gate the nine surfaces MOST exposed to a startr.style outage. **`setup-dialog.cy.ts` is what took their place**, nine tests on the only code the cut-over added: the panel arriving, delivery losing nothing, a link and a form followed without a page load, a panel's script running, the flow ending, and the changelog reaching a non-admin. **All four new gates proved able to fail before being trusted** \u2014 extract only the panel root and the delivery gate goes red naming `setup-next, setup-prev, setup-step`; drop the script adoption and the pager gate goes red; re-render the summary instead of redirecting and the dialog is \"continuously found\"; make the changelog admin-only and the last one reports 403 where it wants 200. Escape is deliberately NOT asserted: Cypress dispatches synthetic key events a browser does not treat as real, so a test of it would pass or fail for reasons unrelated to this code \u2014 the close button, which is ours, is asserted instead. **Three filed bugs closed by deletion**: `handleWelcomeStart` skipping against a stale reactive value (the server answers now), `CompleteStep`'s unclearable 5s interval, and the orchestrator's stale panel-order comment. #frontend\n- [ ] **Locale negotiation \u2014 BLOCKS any migrated page taking over a real route** (surfaced 2026-07-28 building `pages/i18n.py`). Server-rendered pages read `en-US` and nothing else, because the reader's language lives in `localStorage` where no server can see it. Today that costs nothing: `/pages/*` are additional URLs an operator opts into, and the SvelteKit page still owns the route. The moment one of them BECOMES `/admin/diagnostics`, every non-English operator silently loses their language. Needs a real decision \u2014 `Accept-Language`, a cookie written at sign-in, or a persisted user preference \u2014 and the last is probably right, since it is the only one that survives a new browser. #frontend #i18n #critical\n\n`TODO.md:L508`",
       "type": "text",
       "width": 280,
       "x": 1410,
@@ -4169,11 +4216,11 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "3c43cca9d5c2879d",
-      "line_num": 669,
+      "id": "773d7321d4634458",
+      "line_num": 675,
       "source": "todo_md",
       "tags": [],
-      "text": "**Changelog pager button does not move sides in a real browser (fixed 2026-07-31): the Continue button on `/pages/admin/setup/changelog` paged and relabelled correctly but never travelled to the other side of the row, confirmed twice by Alexander in a real browser on 2026-07-30. Fixed by deleting the mechanism rather than debugging it. The button used to travel by `transform: translateX(var(--pager-shift))`, with `changelog-pager.js` measuring `row.clientWidth - button.offsetWidth` on every sync and on every resize. It now travels by `margin-left: auto`, flipped to `margin-left: 0` by a `[data-at-end='false']` attribute the script sets \u2014 one attribute, no measurement, nothing to compute wrong. `changelog-pager.js` lost the measuring and the resize listener with it. Verified working by Alexander in a real browser 2026-07-31. Neither suspect on the old entry (a startr.style `--t` collision, a first-paint measurement race) was ever confirmed, and both describe code that no longer exists.**\n`TODO.md:L669`",
+      "text": "**Changelog pager button does not move sides in a real browser (fixed 2026-07-31): the Continue button on `/pages/admin/setup/changelog` paged and relabelled correctly but never travelled to the other side of the row, confirmed twice by Alexander in a real browser on 2026-07-30. Fixed by deleting the mechanism rather than debugging it. The button used to travel by `transform: translateX(var(--pager-shift))`, with `changelog-pager.js` measuring `row.clientWidth - button.offsetWidth` on every sync and on every resize. It now travels by `margin-left: auto`, flipped to `margin-left: 0` by a `[data-at-end='false']` attribute the script sets \u2014 one attribute, no measurement, nothing to compute wrong. `changelog-pager.js` lost the measuring and the resize listener with it. Verified working by Alexander in a real browser 2026-07-31. Neither suspect on the old entry (a startr.style `--t` collision, a first-paint measurement race) was ever confirmed, and both describe code that no longer exists.**\n`TODO.md:L675`",
       "type": "text",
       "width": 280,
       "x": 1410,
@@ -4182,11 +4229,11 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "126385aa49e6115a",
-      "line_num": 679,
+      "id": "17828a5b28e059a4",
+      "line_num": 685,
       "source": "todo_md",
       "tags": [],
-      "text": "**Setup wizard shows a step the admin explicitly unchecked (fixed 2026-07-31): deselecting Authentication on Welcome and pressing \"Get Started\" opened the Authentication panel anyway. `handleWelcomeStart` assigned `dynamicPanels` and called `skipIfNeeded()` in the same synchronous block, against a `panels` value Svelte had not recomputed \u2014 so the skip loop ran on a stale one-entry array and skipped nothing. Fixed by deletion: the orchestrator is gone, and `welcome_panel.start_wizard` now stores the choice and returns the first chosen step's route, with no reactive value to be stale. `wizard-welcome.cy.ts` asserts every step lands on its own route.**\n`TODO.md:L679`",
+      "text": "**Setup wizard shows a step the admin explicitly unchecked (fixed 2026-07-31): deselecting Authentication on Welcome and pressing \"Get Started\" opened the Authentication panel anyway. `handleWelcomeStart` assigned `dynamicPanels` and called `skipIfNeeded()` in the same synchronous block, against a `panels` value Svelte had not recomputed \u2014 so the skip loop ran on a stale one-entry array and skipped nothing. Fixed by deletion: the orchestrator is gone, and `welcome_panel.start_wizard` now stores the choice and returns the first chosen step's route, with no reactive value to be stale. `wizard-welcome.cy.ts` asserts every step lands on its own route.**\n`TODO.md:L685`",
       "type": "text",
       "width": 280,
       "x": 1410,
@@ -4195,11 +4242,11 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "c1eeed23f3b0de4e",
-      "line_num": 681,
+      "id": "5e1f324ff8786ab3",
+      "line_num": 687,
       "source": "todo_md",
       "tags": [],
-      "text": "**`CompleteStep` leaks a 5s interval when the wizard is closed mid-download (fixed 2026-07-31): the component started a `setInterval` polling `/api/v1/retrieval/models/status` with no `onDestroy`, so closing the modal mid-download left the poll running for the rest of the session. Fixed by deletion \u2014 the panel is now `pages/complete_panel.py`, which reports what the server holds at render time and starts no timer.**\n`TODO.md:L681`",
+      "text": "**`CompleteStep` leaks a 5s interval when the wizard is closed mid-download (fixed 2026-07-31): the component started a `setInterval` polling `/api/v1/retrieval/models/status` with no `onDestroy`, so closing the modal mid-download left the poll running for the rest of the session. Fixed by deletion \u2014 the panel is now `pages/complete_panel.py`, which reports what the server holds at render time and starts no timer.**\n`TODO.md:L687`",
       "type": "text",
       "width": 280,
       "x": 1410,
@@ -4208,11 +4255,11 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "d975c313c7985c4c",
-      "line_num": 683,
+      "id": "03c0d5cb214dc6c3",
+      "line_num": 689,
       "source": "todo_md",
       "tags": [],
-      "text": "**`UsersStep` offers a role its own CSV importer rejects (fixed 2026-07-30): both the Svelte importer and `pages/users_panel.CSV_ROLES` now accept `facilitator`. `pending` was kept, because removing it would break CSV files that import correctly today. Asserted in `wizard-users.cy.ts`.**\n`TODO.md:L683`",
+      "text": "**`UsersStep` offers a role its own CSV importer rejects (fixed 2026-07-30): both the Svelte importer and `pages/users_panel.CSV_ROLES` now accept `facilitator`. `pending` was kept, because removing it would break CSV files that import correctly today. Asserted in `wizard-users.cy.ts`.**\n`TODO.md:L689`",
       "type": "text",
       "width": 280,
       "x": 1410,
@@ -4221,11 +4268,11 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "3d73336928132067",
-      "line_num": 685,
+      "id": "bb2731b03a14d813",
+      "line_num": 691,
       "source": "todo_md",
       "tags": [],
-      "text": "**`ChangesAndSetupModal` comment states a stale panel order (fixed 2026-07-31): the file is deleted. The order it described now lives once, in `_SETUP_ORDER` in `pages/router.py`, and `setup-navigation.cy.ts` discovers it by walking `setup-next` rather than restating it.**\n`TODO.md:L685`",
+      "text": "**`ChangesAndSetupModal` comment states a stale panel order (fixed 2026-07-31): the file is deleted. The order it described now lives once, in `_SETUP_ORDER` in `pages/router.py`, and `setup-navigation.cy.ts` discovers it by walking `setup-next` rather than restating it.**\n`TODO.md:L691`",
       "type": "text",
       "width": 280,
       "x": 1410,
@@ -4235,24 +4282,24 @@
       "children": [
         {
           "checked": true,
-          "line_num": 727,
+          "line_num": 733,
           "tags": [],
           "text": "Decide where `TRY_SAGE_LLM_API_KEY` lives in production: plain env, Docker secret mount, or external vault. Recommend Docker secret for try.sage.is itself, plain env for self-hosted workshops."
         },
         {
           "checked": true,
-          "line_num": 728,
+          "line_num": 734,
           "tags": [],
           "text": "note:As we use cap rover and the system injects env vars we're leaning this way"
         }
       ],
       "file_path": "TODO.md",
       "height": 80,
-      "id": "59bc4f2b23d60335",
-      "line_num": 726,
+      "id": "f2bb0b7854af3d94",
+      "line_num": 732,
       "source": "todo_md",
       "tags": [],
-      "text": "**try.sage Production Decisions: (Alexander Somma + Izzy Plante) \u2014 Surfaced by Docker exploration. Block CapRover one-click rollout.**\n- [x] Decide where `TRY_SAGE_LLM_API_KEY` lives in production: plain env, Docker secret mount, or external vault. Recommend Docker secret for try.sage.is itself, plain env for self-hosted workshops.\n- [x] note:As we use cap rover and the system injects env vars we're leaning this way\n\n`TODO.md:L726`",
+      "text": "**try.sage Production Decisions: (Alexander Somma + Izzy Plante) \u2014 Surfaced by Docker exploration. Block CapRover one-click rollout.**\n- [x] Decide where `TRY_SAGE_LLM_API_KEY` lives in production: plain env, Docker secret mount, or external vault. Recommend Docker secret for try.sage.is itself, plain env for self-hosted workshops.\n- [x] note:As we use cap rover and the system injects env vars we're leaning this way\n\n`TODO.md:L732`",
       "type": "text",
       "width": 280,
       "x": 1410,
@@ -4261,13 +4308,13 @@
     {
       "file_path": "TODO.md",
       "height": 80,
-      "id": "1fb0a7b937a963d4",
-      "line_num": 731,
+      "id": "b907aaa747498e2a",
+      "line_num": 737,
       "source": "todo_md",
       "tags": [
         "#tests"
       ],
-      "text": "**Cypress E2E revival \u2014 docker-only headless + interactive-watch infra, three new specs (2026-07-02 to 2026-07-03): Pinned `cypress/included:15.18.0` (not the 13.x devDep major \u2014 Cypress 13 bundles a Chromium whose `ReadableStream` isn't async-iterable and the app's streaming path throws on it). `scripts/e2e/run-cypress.sh` runs the suite headless against a fresh rootstock + Caddy TLS sidecar, no npm/cypress on the host. `scripts/e2e/run-cypress-watch.sh` + `scripts/e2e/watch/` adds an interactive GUI variant: Xvfb + x11vnc + noVNC served at `localhost:6080/vnc.html`, Sage-branded (logo, favicons, Archivo type via a subsetted font \u2014 see the font-subsetting TODO above). New specs: `degradation.cy.ts`, `sprigs-panel.cy.ts`, `users.cy.ts`; `registration.cy.ts` moved to `cypress/e2e/upstream/`. Headless run verified green: 10/10 specs passed. Decided 2026-07-02 alongside the noVNC-transport backlog item below (WebRTC swap still pending).**\n`#tests`\n`TODO.md:L731`",
+      "text": "**Cypress E2E revival \u2014 docker-only headless + interactive-watch infra, three new specs (2026-07-02 to 2026-07-03): Pinned `cypress/included:15.18.0` (not the 13.x devDep major \u2014 Cypress 13 bundles a Chromium whose `ReadableStream` isn't async-iterable and the app's streaming path throws on it). `scripts/e2e/run-cypress.sh` runs the suite headless against a fresh rootstock + Caddy TLS sidecar, no npm/cypress on the host. `scripts/e2e/run-cypress-watch.sh` + `scripts/e2e/watch/` adds an interactive GUI variant: Xvfb + x11vnc + noVNC served at `localhost:6080/vnc.html`, Sage-branded (logo, favicons, Archivo type via a subsetted font \u2014 see the font-subsetting TODO above). New specs: `degradation.cy.ts`, `sprigs-panel.cy.ts`, `users.cy.ts`; `registration.cy.ts` moved to `cypress/e2e/upstream/`. Headless run verified green: 10/10 specs passed. Decided 2026-07-02 alongside the noVNC-transport backlog item below (WebRTC swap still pending).**\n`#tests`\n`TODO.md:L737`",
       "type": "text",
       "width": 280,
       "x": 1410,

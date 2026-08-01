@@ -13,7 +13,7 @@
     <span data-app-version="{{ version }}"> &middot; v{{ version }}</span>
   </p>
   <div data-cy="changelog-body" tabindex="0"
-       style="--maxh:24rem; --ofy:auto; --b:1px solid var(--line); --br:.5rem; --p:.75rem">
+       style="--maxh:24rem; --ofy:auto; outline:1px solid var(--line); --br:.5rem; --p:.75rem">
     {% for entry in versions %}
     <article data-version="{{ entry.version }}">
       <h2 style="--size:1.05rem; --weight:600; --m:1.25rem 0 .35rem">v{{ entry.version }} - {{ entry.date }}</h2>
@@ -26,7 +26,7 @@
         <dt style="--weight:600; --tt:uppercase; --size:.72rem; --ls:.02em">{{ row.title }}</dt>
         <dd style="--m:.15rem 0 .6rem; --size:.85rem">
           {%- for run in row.runs -%}
-          {%- if run.code %}<code style="--size:.85em; --p:.05rem .25rem; --br:.25rem; --b:1px solid var(--line); --wb:break-word">{{ run.text }}</code>{% else %}{{ run.text }}{% endif -%}
+          {%- if run.code %}<code style="--size:.85em; --p:.05rem .25rem; --br:.25rem; outline:1px solid var(--line); --wb:break-word">{{ run.text }}</code>{% else %}{{ run.text }}{% endif -%}
           {%- endfor -%}
         </dd>
         {% endfor %}
@@ -43,6 +43,6 @@
   <form method="post" action="{{ base }}/seen{{ lang }}" data-pager-row style="--m:1rem 0 0">
     <button data-cy="changelog-continue" type="submit"
             data-label-more="{{ more_label }} &darr;" data-label-end="{{ end_label }} &rarr;"
-            style="--p:.45rem 1rem; --br:999px; --b:1px solid var(--line); --cur:pointer">{{ end_label }} &rarr;</button>
+            style="--p:.45rem 1rem; --br:999px; outline:1px solid var(--line); --cur:pointer">{{ end_label }} &rarr;</button>
   </form>
 </section>

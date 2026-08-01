@@ -27,12 +27,12 @@
   <p>{{ intro }}</p>
   <ol style="--p:0; --list-style:none">
     {% for step in steps %}
-    <li style="--d:flex; --g:.75rem; --p:.7rem; --br:.6rem; --b:1px solid var(--line); --m:0 0 .6rem">
+    <li style="--d:flex; --g:.75rem; --p:.7rem; --br:.6rem; outline:1px solid var(--line); --m:0 0 .6rem">
       <span style="--size:1.1rem; --weight:600; --op:.45; --w:1.5rem; --ta:center; --fs:0">{{ step.num }}</span>
       <span>
         <span style="--size:.85rem; --weight:500">{{ step.title }}</span>
         {% if step.command %}
-        <code style="--size:.7rem; --p:.2rem .4rem; --br:.25rem; --b:1px solid var(--line)">{{ step.command }}</code>
+        <code style="--size:.7rem; --p:.2rem .4rem; --br:.25rem; outline:1px solid var(--line)">{{ step.command }}</code>
         {% endif %}
         <small style="--size:.68rem; --op:.7; --d:block; --m:.2rem 0 0">{{ step.hint }}</small>
       </span>
@@ -40,7 +40,7 @@
     {% endfor %}
   </ol>
   <form method="post" action="/pages/admin/setup/developer/save{{ lang }}">
-    <label style="--d:flex; --g:.75rem; --p:.7rem; --br:.6rem; --b:1px solid var(--line); --m:0 0 .6rem; --cur:pointer">
+    <label style="--d:flex; --g:.75rem; --p:.7rem; --br:.6rem; outline:1px solid var(--line); --m:0 0 .6rem; --cur:pointer">
       <input data-cy="developer-mission-signup" type="checkbox" name="devMissionSignup" value="1"{% if signed_up %} checked{% endif %} />
       <span>
         <span style="--size:.85rem; --weight:500">{{ signup_label }}</span>
