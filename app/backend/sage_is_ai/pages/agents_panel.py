@@ -165,6 +165,32 @@ def _visible(user, agent_id: str = ""):
     return get_models(user=user)
 
 
+# Rows per page. Twenty-four divides evenly by 1, 2 and 3, so a page never ends
+# with a half-empty row at any of the column counts the list uses.
+PAGE_SIZE = 24
+
+
+def _url(base: str, locale: str, *, q: str = "", tag: str = "", page: int = 1) -> str:
+    """Every internal link on this page, built in one place.
+
+    The template used to concatenate query strings itself, which meant escaping
+    `&` by hand in five places and getting the order right each time. One helper
+    is one thing to be wrong, and it is also what guarantees a reader keeps their
+    locale, their search AND their tag when they press Next — losing any of the
+    three is the bug this page is otherwise wide open to.
+    """
+    from urllib.parse import urlencode
+
+    params = {"lang": locale}
+    if q:
+        params["q"] = q
+    if tag:
+        params["tag"] = tag
+    if page > 1:
+        params["page"] = str(page)
+    return f"{base}?{urlencode(params)}"
+
+
 async def render_agents(
     request: Request,
     user,
@@ -172,11 +198,13 @@ async def render_agents(
     base: str = "/pages/workshop/agents",
     query: str = "",
     tag: str = "",
+    page: int = 1,
     message: str = "",
 ) -> str:
     """Build the context; `templates/agents.html` decides how it looks."""
     _ = translator(request)
     lang = lang_query(request)
+    locale = lang.split("=", 1)[1]
 
     models = await _visible(user)
     all_tags = sorted(
@@ -220,6 +248,19 @@ async def render_agents(
             }
         )
 
+    # Page AFTER filtering, so the count and the pager describe what the reader
+    # is actually looking at. Paging before filtering would show "page 2 of 3"
+    # over a search that matched two things.
+    total = len(rows)
+    pages = max(1, -(-total // PAGE_SIZE))  # ceiling division
+    # Clamp rather than 404. A stale bookmark to page 9 of a list that shrank
+    # should show the last page, not an error — the reader did nothing wrong.
+    page = min(max(1, page), pages)
+    visible = rows[(page - 1) * PAGE_SIZE : page * PAGE_SIZE]
+
+    def url(**kw):
+        return _url(base, locale, q=query, tag=tag, **kw)
+
     return render(
         "agents.html",
         base=base,
@@ -228,8 +269,30 @@ async def render_agents(
         query=query,
         tag=tag,
         tags=all_tags,
-        agents=rows,
-        count=len(rows),
+        tag_urls={t: _url(base, locale, q=query, tag=t) for t in all_tags},
+        all_tags_url=_url(base, locale, q=query),
+        clear_url=_url(base, locale, tag=tag),
+        agents=visible,
+        count=total,
+        # The pager. Rendered only when there is more than one page, so a small
+        # instance never sees paging machinery it does not need.
+        page=page,
+        pages=pages,
+        pager=[{"n": n, "href": url(page=n), "current": n == page} for n in range(1, pages + 1)]
+        if pages > 1
+        else [],
+        prev_url=url(page=page - 1) if page > 1 else "",
+        next_url=url(page=page + 1) if page < pages else "",
+        prev_label=_("Previous"),
+        next_label=_("Next"),
+        showing_label=_(
+            "Showing {{from}}-{{to}} of {{count}}",
+            {
+                "from": (page - 1) * PAGE_SIZE + 1 if total else 0,
+                "to": (page - 1) * PAGE_SIZE + len(visible),
+                "count": total,
+            },
+        ),
         is_admin=user.role == "admin",
         # The community links render only when the instance has the feature on,
         # matching the legacy page. Read from app config rather than assumed,

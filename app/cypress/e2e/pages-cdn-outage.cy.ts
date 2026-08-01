@@ -70,7 +70,13 @@ const SETUP: ReadonlyArray<readonly [string, number]> = [
 const STRUCTURE: Record<SurfaceName, { selector: string; display: string } | null> = {
 	sprigs: { selector: '[data-cy="sprig-card"]', display: 'grid' },
 	diagnostics: { selector: '[data-cy="diag-row"]', display: 'grid' },
-	branding: null
+	branding: null,
+	// Props-styled, so no layout promise: with the framework blocked the list
+	// degrades to plain flow — one long column of readable rows — and only
+	// promises to stay usable. The alternative would be holding the grid in
+	// `pages.css`, which is the parallel stylesheet the branding surface proved
+	// costs more than it buys.
+	agents: null
 };
 
 const TARGETS: Outage[] = [

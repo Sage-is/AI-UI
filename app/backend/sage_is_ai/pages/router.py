@@ -17,7 +17,17 @@ from html import escape
 from uuid import uuid4
 from typing import AsyncIterator, Literal
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, Response, UploadFile
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    Query,
+    Request,
+    Response,
+    UploadFile,
+)
 from fastapi.responses import (
     HTMLResponse,
     JSONResponse,
@@ -411,6 +421,11 @@ async def agents_page(
     request: Request,
     q: str = "",
     tag: str = "",
+    # `int` so FastAPI rejects `?page=abc` with a 422 before the handler runs;
+    # `ge=1` so a negative page cannot index backwards into the list. The panel
+    # clamps the upper end, because a stale bookmark past the last page should
+    # land on the last page rather than an error.
+    page: int = Query(1, ge=1),
     user=Depends(require_page_user),
 ) -> HTMLResponse:
     """The agent list, rendered. No script on the page at all.
@@ -422,7 +437,9 @@ async def agents_page(
     """
     _require_agents_reader(request, user)
     return _whole_page(
-        request, "workshop/agents", await render_agents(request, user, query=q, tag=tag)
+        request,
+        "workshop/agents",
+        await render_agents(request, user, query=q, tag=tag, page=page),
     )
 
 

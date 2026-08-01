@@ -177,7 +177,7 @@ def render_page(
 </head>
 <!-- Authored mobile-first: base values are the phone case, and a suffix appears
      only where the layout actually changes going up. -->
-<body style="--maxw:52rem; --m:0 auto; --p:1rem; --p-md:1.5rem; --lh:1.55">
+<body style="--m:0 auto; --p:1rem">
   <main>
     <header>
       <h1 style="--size:1.15rem; --m:0">{escape(heading)}</h1>
