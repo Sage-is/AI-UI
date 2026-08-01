@@ -18,13 +18,21 @@ Output does not earn a hook. Preview text, computed labels, rendered values. The
 
 **3. Write the guard-rail spec against the legacy surface and prove it green.** Read data attributes, never translated words or class names. Use `data-status` rather than the badge's text, `data-section="boot_status"` rather than the heading "Boot status". That is what lets one spec judge two implementations.
 
-**4. Build the fragment.** The design rules below are where the line count comes from.
+**4. Build the fragment as plain HTML, and get it reviewed before you style it.** Alexander, 1 August 2026: *"before adding any style or start.style get things working as pure html and then I'll review (this is for all new pages as we move forward) or use the same style and classes from the svelte. Don't go reinventing things."*
 
-**5. Let the parity gate find what you missed.** `surface-parity.cy.ts` visits both implementations, collects the `data-cy` hooks each one renders, and fails naming the ones the no-build page does not. It never reads your spec, so a narrower spec cannot satisfy it. On diagnostics it went red with `diag-command-library, diag-ghost-endpoints, diag-reprobe, diag-technical`, four controls a human had already found broken by clicking.
+Two acceptable paths, then. Ship it unstyled and hand it over for a look, or lift the styling the Svelte surface already has. What is not acceptable is inventing a third visual language on the way past, which is how a migration turns into a redesign nobody asked for and how a regression gets argued about as a taste question.
 
-**6. Run `make e2e_both`.** It runs the suite once per target. "Green against both" is the migration's core rule, and running it twice by hand is how that rule quietly becomes "green against whichever one was checked last".
+The order is the point. Structure is the thing a review can judge — whether the right elements are there, whether the controls are all present, whether the page works with no CSS at all. Styling on top of a wrong structure hides the wrongness, and a reviewer then spends their attention on the paint. It also keeps the two failure modes separable: a plain page that behaves correctly and a styled page that does not are different bugs, and finding out which you have is free if you built them in that order.
 
-**7. Measure, and report the number you actually got.** The first Sprigs fragment was 208 lines and only reached 157 after someone asked whether it could be cleaner. A first draft is not a measurement.
+Branding is the cautionary tale in the other direction, at [the props rule](#startrstyle-props-not-a-parallel-stylesheet): 99 lines of hand-written CSS went in before anyone asked whether they were needed, and deleting them took the cut from 8% to 31%. Unstyled first would have caught that before it was written.
+
+**5. Style it, once the structure has been looked at.** The design rules below are where the line count comes from, and the props rule is the reason the answer is usually that no stylesheet is needed at all.
+
+**6. Let the parity gate find what you missed.** `surface-parity.cy.ts` visits both implementations, collects the `data-cy` hooks each one renders, and fails naming the ones the no-build page does not. It never reads your spec, so a narrower spec cannot satisfy it. On diagnostics it went red with `diag-command-library, diag-ghost-endpoints, diag-reprobe, diag-technical`, four controls a human had already found broken by clicking.
+
+**7. Run `make e2e_both`.** It runs the suite once per target. "Green against both" is the migration's core rule, and running it twice by hand is how that rule quietly becomes "green against whichever one was checked last".
+
+**8. Measure, and report the number you actually got.** The first Sprigs fragment was 208 lines and only reached 157 after someone asked whether it could be cleaner. A first draft is not a measurement.
 
 ## The dev loop
 
@@ -111,6 +119,5 @@ Be careful about the opposite mistake, though, because we made it on branding. T
 - The history, because the reasoning mattered more than the verdict: this entry said "no engine" on 28 July, on the measurement that markup is only 20–33% of each panel and an engine relocates rather than deletes it. That measurement was never wrong and still is not. What changed on 31 July is that the case stopped resting on line count — the dev loop and structural escaping are worth paying +9% for, and neither is something the original argument had weighed.
 
 - `shell.py` stays an f-string, and that is a decision rather than an omission. Its markup does not change, so `auto_reload` buys nothing; and it interpolates three escaped values against four RAW ones, so a template would need four `| safe` markers — the escape hatch that undoes what autoescape is for. Revisit if that ratio flips or a second layout appears.
-
 
 - Locale is solved. `pages/i18n.py` resolves a locale per request from `?lang=` or `Accept-Language`, the image ships all 56 catalogs, and every link and form carries the parameter onward. It travels in the URL rather than a cookie so each rendering stays cacheable on its own address — a cookie would force `Vary: Cookie`, and the auth cookie rides in the same header, so nothing would share. The keys *are* the English text, so an untranslated key renders as English rather than as a blank, which is what made it safe to apply at 67 call sites. `diagnostics_panel.py` is the one surface still English-only; it needs a locale threaded four signatures deep and is filed in TODO.md.
