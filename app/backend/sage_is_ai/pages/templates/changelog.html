@@ -1,0 +1,48 @@
+{# Release notes. The whole changelog, rendered from a module constant that was
+   parsed once at import — the data was never remote, so there is no loading
+   state to build.
+
+   The Continue button starts in its END position with its END label, so a
+   reader with no JavaScript gets a control that does what it says.
+   `changelog-pager.js` moves it left and relabels it only once it sees there is
+   more below. The move itself is `margin-left` in pages.css: the side depends
+   on runtime state, which an inline prop cannot express. #}
+<section data-cy="changelog-panel">
+  <p style="--size:.8rem; --op:.7; --m:0 0 .5rem">
+    {{ release_notes }}
+    <span data-app-version="{{ version }}"> &middot; v{{ version }}</span>
+  </p>
+  <div data-cy="changelog-body" tabindex="0"
+       style="--maxh:24rem; --ofy:auto; --b:1px solid var(--line); --br:.5rem; --p:.75rem">
+    {% for entry in versions %}
+    <article data-version="{{ entry.version }}">
+      <h2 style="--size:1.05rem; --weight:600; --m:1.25rem 0 .35rem">v{{ entry.version }} - {{ entry.date }}</h2>
+      <hr />
+      {% for section in entry.sections %}
+      <h3 data-section="{{ section.name }}" style="--size:.7rem; --weight:600; --tt:uppercase; --ls:.04em; --op:.7; --m:.75rem 0 .25rem">{{ section.name }}</h3>
+      {% if section.rows %}
+      <dl style="--m:0">
+        {% for row in section.rows %}
+        <dt style="--weight:600; --tt:uppercase; --size:.72rem; --ls:.02em">{{ row.title }}</dt>
+        <dd style="--m:.15rem 0 .6rem; --size:.85rem">
+          {%- for run in row.runs -%}
+          {%- if run.code %}<code style="--size:.85em; --p:.05rem .25rem; --br:.25rem; --b:1px solid var(--line); --wb:break-word">{{ run.text }}</code>{% else %}{{ run.text }}{% endif -%}
+          {%- endfor -%}
+        </dd>
+        {% endfor %}
+      </dl>
+      {% endif %}
+      {% endfor %}
+    </article>
+    {% else %}
+    {# A build whose CHANGELOG.md failed to parse is a real state. Rendering
+       nothing at all would look broken rather than empty. #}
+    <p style="--op:.7">{{ empty }}</p>
+    {% endfor %}
+  </div>
+  <form method="post" action="{{ base }}/seen{{ lang }}" data-pager-row style="--m:1rem 0 0">
+    <button data-cy="changelog-continue" type="submit"
+            data-label-more="{{ more_label }} &darr;" data-label-end="{{ end_label }} &rarr;"
+            style="--p:.45rem 1rem; --br:999px; --b:1px solid var(--line); --cur:pointer">{{ end_label }} &rarr;</button>
+  </form>
+</section>

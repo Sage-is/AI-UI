@@ -208,5 +208,35 @@
 				"description_key": "diagnostics.fix.csp_missing.universal.1"
 			}
 		]
+	},
+	"dev_reloader_active": {
+		"plain_english_key": "diagnostics.fix.dev_reloader_active.plain",
+		"caprover_steps": [
+			{
+				"description_key": "diagnostics.fix.dev_reloader_active.caprover.0",
+				"ui_path": "Apps → App Configs → Environmental Variables"
+			},
+			{
+				"description_key": "diagnostics.fix.dev_reloader_active.caprover.1"
+			}
+		],
+		"docker_compose_steps": [
+			{
+				"description_key": "diagnostics.fix.dev_reloader_active.docker_compose.0",
+				"command": "docker inspect -f '{{range .Config.Env}}{{println .}}{{end}}' <container> | grep PAGES_RELOAD_DIRS"
+			},
+			{
+				"description_key": "diagnostics.fix.dev_reloader_active.docker_compose.1"
+			}
+		],
+		"homebrew_steps": [
+			{
+				"description_key": "diagnostics.fix.dev_reloader_active.homebrew.0",
+				"command": "unset PAGES_RELOAD_DIRS"
+			},
+			{
+				"description_key": "diagnostics.fix.dev_reloader_active.homebrew.1"
+			}
+		]
 	}
 }

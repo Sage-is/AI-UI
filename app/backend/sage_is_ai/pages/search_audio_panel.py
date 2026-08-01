@@ -26,11 +26,11 @@ name against the catalog, which doubles as the allowlist.
 
 from __future__ import annotations
 
-from html import escape as e
 
 from fastapi import Request
 
 from sage_is_ai.pages.i18n import lang_query, translator
+from sage_is_ai.pages.templates import render
 
 __all__ = ["render_search_audio", "graft_components", "download_components", "COMPONENTS"]
 
@@ -52,11 +52,6 @@ COMPONENTS: tuple[tuple[str, tuple[str, ...], str, str], ...] = (
      "Transcribes audio files and voice input into text."),
 )
 
-_ROW_S = ("--d:flex; --ai:center; --g:.75rem; --p:.7rem; --br:.6rem; "
-          "--b:1px solid var(--line); --m:0 0 .5rem; --cur:pointer")
-_NAME_S = "--size:.85rem; --weight:500"
-_CAPTION_S = "--size:.7rem; --op:.7; --d:block"
-_STATE_S = "--size:.6rem; --weight:500; --tt:uppercase; --ml:.35rem"
 
 
 def _status(request: Request) -> dict[str, str]:
@@ -64,75 +59,34 @@ def _status(request: Request) -> dict[str, str]:
     return {key: str(status.get(key, "pending")) for key, _, _, _ in COMPONENTS}
 
 
-def _row(key: str, label: str, caption: str, state: str, _) -> str:
-    # A busy component cannot be selected: ready means there is nothing to do,
-    # downloading means starting a graft would race the download and lose.
-    busy = state in _BUSY
-    attrs = " disabled" if busy else " checked"
-    # "installed" and "downloading" rather than the raw state word: a disabled
-    # checkbox beside a badge reading "ready" reads as a bug, because the reader
-    # has to infer that ready is WHY they cannot tick it.
-    said = {
-        "ready": _("already installed"),
-        "downloading": _("downloading now"),
-    }.get(state, state)
-    badge = (
-        f'<small data-state="{e(state, quote=True)}" style="{_STATE_S}">{e(said)}</small>'
-        if state != "pending"
-        else ""
-    )
-    return (
-        f'<label style="{_ROW_S}">'
-        f'<input data-cy="search-audio-{e(key, quote=True)}" type="checkbox" '
-        f'name="{e(key, quote=True)}" value="1"{attrs} />'
-        f'<span><span style="{_NAME_S}">{e(_(label))}</span>{badge}'
-        f'<small style="{_CAPTION_S}">{e(_(caption))}</small></span></label>'
-    )
-
-
 def render_search_audio(request: Request, message: str = "") -> str:
+    """Build the context; `templates/search-audio.html` decides how it looks."""
     _ = translator(request)
-    lang = lang_query(request)
     state = _status(request)
-    rows = "".join(
-        # `cultivars` rather than `_` for the discarded column. `_` is the
-        # translator here, and unpacking over it would shadow it mid-loop.
-        _row(k, lb, cp, state[k], _) for k, cultivars, lb, cp in COMPONENTS
+    said = {"ready": _("already installed"), "downloading": _("downloading now")}
+    return render(
+        "search-audio.html",
+        lang=lang_query(request),
+        states=state,
+        message=message,
+        legend=_("Install local AI components for document search and audio transcription."),
+        graft_label=_("Graft Sprigs"),
+        for_me_label=_("for me"),
+        download_label=_("Download weights"),
+        rows=[
+            {
+                "key": key,
+                "label": _(label),
+                "caption": _(caption),
+                "state": state[key],
+                "busy": state[key] in _BUSY,
+                "badge": said.get(state[key], state[key]) if state[key] != "pending" else "",
+            }
+            # `cultivars` rather than `_` for the discarded column. `_` is the
+            # translator here, and unpacking over it would shadow it mid-loop.
+            for key, cultivars, label, caption in COMPONENTS
+        ],
     )
-    note = (
-        f'<output data-cy="search-audio-result" style="--size:.8rem; --op:.75">{e(message)}</output>'
-        if message
-        else ""
-    )
-    attrs = " ".join(
-        f'data-{k}-status="{e(v, quote=True)}"' for k, v in state.items()
-    )
-    # Two submit buttons, one form: the operator's choice of components is the
-    # same either way, and only the verb differs. `formaction` is the element
-    # that already means that, so there is no second copy of the checkboxes.
-    return f"""
-<section data-cy="search-audio-panel" {attrs}>
-  <form method="post" action="/pages/admin/setup/search-audio/graft{lang}">
-    <fieldset style="--b:0; --p:0; --m:0">
-      <legend style="--size:.85rem; --weight:600; --p:0">
-        {e(_("Install local AI components for document search and audio transcription."))}
-      </legend>
-      {rows}
-    </fieldset>
-    <button data-cy="search-audio-graft" type="submit"
-            style="--p:.45rem 1rem; --br:999px; --b:1px solid var(--line); --cur:pointer">
-      {e(_("Graft Sprigs"))}&trade; {e(_("for me"))}
-    </button>
-    <button data-cy="search-audio-download" type="submit"
-            formaction="/pages/admin/setup/search-audio/download{lang}"
-            style="--p:.45rem 1rem; --br:999px; --b:1px solid var(--line); --cur:pointer; --ml:.5rem">
-      {e(_("Download weights"))}
-    </button>
-    {note}
-  </form>
-</section>
-"""
-
 
 # A component is off-limits when it is already installed, and equally when its
 # weights are mid-download. Both mean "do not start work on this one".

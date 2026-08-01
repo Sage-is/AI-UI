@@ -14,14 +14,17 @@ meant to measure that difference.
 """
 
 from html import escape
-from typing import Literal
+from typing import AsyncIterator, Literal
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 
+from sage_is_ai.env import PAGES_RELOAD_DIRS
+from sage_is_ai.pages import ASSETS_DIR
 from sage_is_ai.pages.auth import require_admin_page, require_page_user
-from sage_is_ai.pages.i18n import lang_query, supported
+from sage_is_ai.pages.i18n import lang_query, supported, translator
 from sage_is_ai.pages.shell import render_page
+from sage_is_ai.pages.templates import TEMPLATES_DIR, render
 from sage_is_ai.pages.branding_panel import render_branding, save_branding
 from sage_is_ai.pages.changelog_panel import mark_changelog_read, render_changelog
 from sage_is_ai.pages.features_panel import render_features, save_features
@@ -47,6 +50,234 @@ from sage_is_ai.pages.sprigs_panel import render_panel, run_action
 router = APIRouter()
 
 
+# ── The development reloader's endpoint ──────────────────────────────────────
+#
+# Registered INSIDE an `if`, so when the flag is unset this route does not exist
+# — a 404 rather than a route that exists and refuses. "It is not registered" is
+# the kind of claim that rots into "it is registered but guarded", so the gate
+# asserts the 404 rather than trusting this comment.
+#
+# What it streams, and why the two halves are different shapes:
+#
+#   Python changes  Nothing here reports them. Uvicorn's reloader restarts the
+#                   process, this connection dies with it, and the browser's
+#                   EventSource reconnects on its own. The DEATH of this stream
+#                   is the signal, which is why there is no `.py` watcher — one
+#                   would be a second source of truth for a fact the process
+#                   already announces by ending.
+#
+#   Asset changes   Do need reporting. `pages/assets/*` is served from disk by a
+#                   StaticFiles mount, so a stylesheet edit restarts nothing and
+#                   there is no dropped connection to notice. `awatch` reports
+#                   it and the island swaps the stylesheet without reloading.
+#
+#   Template edits  The same shape, and the reason `TEMPLATES_DIR` is watched
+#                   alongside the assets. Jinja re-reads a changed template on
+#                   the next request (0.48 s, measured) and restarts nothing, so
+#                   without this the server would be serving new markup that no
+#                   open tab had any reason to ask for.
+#
+# `watchfiles` is already in the image via `uvicorn[standard]`, so this costs no
+# dependency. One watcher per connected tab, which is fine for the one or two a
+# person has open and is not a shape to reuse for anything user-facing.
+if PAGES_RELOAD_DIRS:
+
+    @router.get("/_dev/reload")
+    async def dev_reload(
+        request: Request, user=Depends(require_page_user)
+    ) -> StreamingResponse:
+        async def stream() -> AsyncIterator[str]:
+            from watchfiles import awatch
+
+            # One second, not the three the spec defaults to. The reconnect IS
+            # the reload here, so this is the delay between saving a panel and
+            # seeing it, and there is no network worth being polite to.
+            yield "retry: 1000\n\n"
+
+            # `yield_on_timeout` gives the keep-alive for free: the watcher
+            # hands back an empty change set every 15s instead of blocking, so
+            # one loop covers both jobs. Racing a timeout against the watcher
+            # with `wait_for` would cancel it mid-poll, which is a good way to
+            # end up debugging the debugger.
+            #
+            # BOUNDED, and this is not tidiness. A stream that never ends blocks
+            # uvicorn's graceful shutdown, and uvicorn shutting down is exactly
+            # what a reload IS — so an open dev-reload connection wedged the very
+            # reload it exists to announce. Found by leaving a tab open and
+            # editing a panel: "WatchFiles detected changes… Reloading…" and then
+            # nothing, forever, with the old worker still alive. Ending every
+            # minute costs one reconnect the browser makes anyway (retry: 1000)
+            # and caps how long a shutdown can wait on us.
+            deadline = 0
+            async for changes in awatch(
+                ASSETS_DIR, TEMPLATES_DIR, rust_timeout=15_000, yield_on_timeout=True
+            ):
+                if not changes:
+                    deadline += 1
+                    if deadline >= 4:
+                        return
+                    yield ": keep-alive\n\n"
+                    continue
+                deadline = 0
+                # A stylesheet can be swapped in place; markup cannot. Which
+                # event the browser gets decides whether it keeps your scroll
+                # position or starts the page over, so the distinction is worth
+                # the two lines it costs.
+                paths = {str(path) for _kind, path in changes}
+                if any(str(TEMPLATES_DIR) in path for path in paths):
+                    yield "event: markup\ndata: changed\n\n"
+                else:
+                    yield "event: assets\ndata: changed\n\n"
+
+        return StreamingResponse(
+            stream(),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-store",
+                # Proxies that buffer would hold the events until the buffer
+                # fills, which for a stream this quiet is forever.
+                "X-Accel-Buffering": "no",
+            },
+        )
+
+
+def _whole_page(
+    request: Request, key: str, body: str, scripts: tuple[str, ...] = ()
+) -> HTMLResponse:
+    """Shell a surface that owns its whole page, from the `_PAGES` table.
+
+    The counterpart to `_setup_page`. Same reason it exists: the heading, the
+    subheading and the browser title were three literals per route, restated at
+    every call, and the index needed them a fourth time.
+    """
+    heading, subheading = _PAGES[key]
+    return HTMLResponse(
+        render_page(
+            request=request,
+            title=f"{heading} — Sage.is AI",
+            heading=heading,
+            subheading=subheading,
+            scripts=scripts,
+            body=body,
+        ),
+        headers=_page_headers(request),
+    )
+
+
+_INDEX_GROUP_S = "--size:.7rem; --weight:600; --tt:uppercase; --ls:.04em; --op:.7; --m:1.5rem 0 .5rem"
+_INDEX_LIST_S = "--m:0; --p:0; --d:flex; --fd:column; --g:.5rem"
+_INDEX_ITEM_S = "--d:block; --p:.7rem; --br:.6rem; --b:1px solid var(--line)"
+_INDEX_NAME_S = "--size:.9rem; --weight:500"
+_INDEX_SUB_S = "--size:.72rem; --op:.7; --d:block; --m:.15rem 0 0"
+_INDEX_PATH_S = "--size:.68rem; --op:.55; --d:block; --ff:ui-monospace, monospace"
+
+
+def _index_item(path: str, title: str, subtitle: str, lang: str) -> str:
+    return (
+        f'<li><a data-cy="index-link" href="{escape(path + lang, quote=True)}"'
+        f' style="{_INDEX_ITEM_S}">'
+        f'<span style="{_INDEX_NAME_S}">{escape(title)}</span>'
+        f'<small style="{_INDEX_SUB_S}">{escape(subtitle)}</small>'
+        f'<small style="{_INDEX_PATH_S}">{escape(path)}</small>'
+        f"</a></li>"
+    )
+
+
+def _index_group(label: str, items: str) -> str:
+    return f'<h2 style="{_INDEX_GROUP_S}">{escape(label)}</h2><ul style="{_INDEX_LIST_S}">{items}</ul>'
+
+
+@router.get("", response_class=HTMLResponse)
+@router.get("/", response_class=HTMLResponse)
+async def pages_index(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
+    """The front door. Every server-rendered page, in one list.
+
+    Both `""` and `"/"` are registered rather than leaning on FastAPI's
+    redirect-on-missing-slash, because the SPA is mounted at `/` with an
+    index.html fallback — so a path this router does not claim is answered by
+    the app rather than redirected, and the difference between `/pages` and
+    `/pages/` would have been "a list" versus "the chat window".
+
+    Admin-only, like every page it links to bar one. Nothing is disclosed by it:
+    an admin can already reach all of these, and until now had to know the URLs.
+
+    Not gated to development. An index that exists only in a review container is
+    an index you cannot use on the instance you are actually debugging.
+    """
+    _ = translator(request)
+    lang = lang_query(request)
+
+    admin_pages = "".join(
+        _index_item(f"/pages/{key}", _(title), _(subtitle), lang)
+        for key, (title, subtitle) in _PAGES.items()
+    )
+    # In wizard order, not dict order — the sequence is the meaning here, and
+    # `_SETUP_ORDER` is the one place that knows it.
+    setup_pages = "".join(
+        _index_item(
+            f"/pages/admin/setup/{panel}",
+            _(_SETUP_PAGES[panel][0]),
+            _(_SETUP_PAGES[panel][1]),
+            lang,
+        )
+        for panel in _SETUP_ORDER
+    )
+    everyone = _index_item(
+        "/pages/changelog",
+        _("What's New"),
+        _("The release notes, open to every signed-in reader."),
+        lang,
+    )
+
+    # Fragment endpoints (`…/panel`) and the reloader's event stream are left
+    # out deliberately: one returns markup with no shell and the other never
+    # finishes, so both are traps in a list you click through.
+    body = (
+        '<section data-cy="pages-index">'
+        + _dev_banner(_)
+        + _index_group(_("Admin pages"), admin_pages)
+        + _index_group(_("Setup wizard"), setup_pages)
+        + _index_group(_("Open to everyone"), everyone)
+        + "</section>"
+    )
+    return HTMLResponse(
+        render_page(
+            request=request,
+            title="Pages — Sage.is AI",
+            heading=_("Server-rendered pages"),
+            subheading=_("Every page this instance renders without a build step."),
+            body=body,
+        ),
+        headers=_page_headers(request),
+    )
+
+
+def _dev_banner(_) -> str:
+    """Say so, loudly, when this instance is running the development reloader.
+
+    The same fact `/admin/diagnostics` reports as degraded, said where somebody
+    working on these pages will actually be looking. Absent in production, which
+    is every instance that does not set the variable.
+    """
+    if not PAGES_RELOAD_DIRS:
+        return ""
+    return (
+        '<p data-cy="index-dev-banner" style="--p:.7rem; --br:.6rem; '
+        '--b:1px solid var(--line); --size:.78rem; --m:0 0 .5rem">'
+        f'<strong>{escape(_("Development reloader is on."))}</strong> '
+        + escape(
+            _(
+                "Saving a panel restarts the app and reloads this tab; saving a "
+                "stylesheet swaps it in place. Watching: {{paths}}",
+                {"paths": PAGES_RELOAD_DIRS},
+            )
+        )
+        + "</p>"
+    )
+
+
 @router.get("/admin/sprigs", response_class=HTMLResponse)
 async def sprigs_page(
     request: Request, user=Depends(require_admin_page)
@@ -57,18 +288,8 @@ async def sprigs_page(
     request for the catalog. The first paint is the data, which is what the
     island version could not manage.
     """
-    return HTMLResponse(
-        render_page(
-            request=request,
-            title="Sprigs — Sage.is AI",
-            heading="Sprigs™",
-            subheading=(
-                "Capabilities grafted onto the Rootstock™ at runtime — "
-                "no model download, no pip install."
-            ),
-            scripts=["vendor/htmx.min.js"],
-            body=await render_panel(request, user),
-        )
+    return _whole_page(
+        request, "admin/sprigs", await render_panel(request, user), ("vendor/htmx.min.js",)
     )
 
 
@@ -105,15 +326,11 @@ async def branding_page(
     slow connection and is the reason its spec has to wait for a value rather
     than for the field.
     """
-    return HTMLResponse(
-        render_page(
-            request=request,
-            title="Theme & Branding — Sage.is AI",
-            heading="Theme & Branding",
-            subheading="The name, the marks and the colours this instance wears.",
-            scripts=["vendor/htmx.min.js", "color-pair.js"],
-            body=render_branding(request),
-        )
+    return _whole_page(
+        request,
+        "admin/branding",
+        render_branding(request),
+        ("vendor/htmx.min.js", "color-pair.js"),
     )
 
 
@@ -131,6 +348,29 @@ async def branding_save(
     """
     form = await request.form()
     return HTMLResponse(await save_branding(request, user, dict(form)))
+
+
+# The whole-page surfaces, the way `_SETUP_PAGES` does it for the wizard.
+#
+# These headings used to be literals inside each route body, which was fine
+# while nothing else needed them. The index below needs them too, and a second
+# copy of a heading is a heading that drifts — so they live here once and both
+# the route and the index read them.
+_PAGES: dict[str, tuple[str, str]] = {
+    "admin/sprigs": (
+        "Sprigs™",
+        "Capabilities grafted onto the Rootstock™ at runtime — "
+        "no model download, no pip install.",
+    ),
+    "admin/diagnostics": (
+        "Diagnostics",
+        "What this Rootstock™ can reach, and what it cannot.",
+    ),
+    "admin/branding": (
+        "Theme & Branding",
+        "The name, the marks and the colours this instance wears.",
+    ),
+}
 
 
 _SETUP_PAGES = {
@@ -544,15 +784,11 @@ async def diagnostics_page(
     ask what is broken. When the thing that is broken is the frontend, that
     ordering matters more than it usually does.
     """
-    return HTMLResponse(
-        render_page(
-            request=request,
-            title="Diagnostics — Sage.is AI",
-            heading="Diagnostics",
-            subheading="What this Rootstock™ can reach, and what it cannot.",
-            scripts=["vendor/htmx.min.js"],
-            body=await render_diagnostics(request, user),
-        )
+    return _whole_page(
+        request,
+        "admin/diagnostics",
+        await render_diagnostics(request, user),
+        ("vendor/htmx.min.js",),
     )
 
 

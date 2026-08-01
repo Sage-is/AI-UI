@@ -12,21 +12,12 @@ reader's own `ui` settings, the same blob the changelog read marker lives in.
 
 from __future__ import annotations
 
-from html import escape as e
-
 from fastapi import Request
 
 from sage_is_ai.pages.i18n import lang_query, translator
+from sage_is_ai.pages.templates import render
 
 __all__ = ["render_developer", "save_developer"]
-
-_CARD_S = ("--d:flex; --g:.75rem; --p:.7rem; --br:.6rem; "
-           "--b:1px solid var(--line); --m:0 0 .6rem")
-_NUM_S = "--size:1.1rem; --weight:600; --op:.45; --w:1.5rem; --ta:center; --fs:0"
-_STEP_S = "--size:.85rem; --weight:500"
-_HINT_S = "--size:.68rem; --op:.7; --d:block; --m:.2rem 0 0"
-_LINK_S = "--size:.75rem; --d:block; --m:0 0 .3rem"
-_CODE_S = "--size:.7rem; --p:.2rem .4rem; --br:.25rem; --b:1px solid var(--line)"
 
 # number, title, command (or empty), hint
 _STEPS: tuple[tuple[str, str, str, str], ...] = (
@@ -53,26 +44,6 @@ _DEV_LINKS: tuple[tuple[str, str], ...] = (
 )
 
 
-def _links(items: tuple[tuple[str, str], ...], _) -> str:
-    # rel="noopener" on every target=_blank link, same as the Svelte original.
-    return "".join(
-        f'<a href="{e(href, quote=True)}" target="_blank" rel="noopener" '
-        f'style="{_LINK_S}">{e(_(text))}</a>'
-        for href, text in items
-    )
-
-
-def _step(num: str, title: str, command: str, hint: str, _) -> str:
-    # The command is NOT translated. It is a shell line to paste, and a catalog
-    # that ever gained an entry for it would break the reader's terminal.
-    cmd = f'<code style="{_CODE_S}">{e(command)}</code>' if command else ""
-    return (
-        f'<li style="{_CARD_S}"><span style="{_NUM_S}">{e(num)}</span>'
-        f'<span><span style="{_STEP_S}">{e(_(title))}</span> {cmd}'
-        f'<small style="{_HINT_S}">{e(_(hint))}</small></span></li>'
-    )
-
-
 def _signed_up(request: Request, user) -> bool:
     from sage_is_ai.models.users import Users
 
@@ -84,47 +55,36 @@ def _signed_up(request: Request, user) -> bool:
 
 
 def render_developer(request: Request, user, saved: bool = False) -> str:
+    """Build the context; `templates/developer.html` decides how it looks.
+
+    Two shapes, chosen here rather than in the template only because DEV_MODE is
+    the one fact the markup cannot look up for itself.
+    """
     from sage_is_ai.env import DEV_MODE
 
     _ = translator(request)
-    lang = lang_query(request)
-
-    if DEV_MODE:
-        # An <ul> of facts, not cards. Nothing here is a step to follow.
-        body = (
-            f'<p style="--size:.9rem">{e(_("Live source mounted. Changes reload automatically."))}</p>'
-            f'<ul style="--size:.8rem"><li>{e(_("Source code mounted"))}</li>'
-            f'<li>{e(_("Hot reload active"))}</li></ul>' + _links(_DEV_LINKS, _)
-        )
-    else:
-        checked = " checked" if _signed_up(request, user) else ""
-        note = (
-            f'<output data-cy="developer-saved" style="--size:.8rem; --op:.75">{e(_("Saved"))}</output>'
-            if saved
-            else ""
-        )
-        # An ordered list, because these are numbered steps in sequence. That
-        # is what <ol> means, and it renders the numbers without the three
-        # hand-written digits the Svelte version carries.
-        body = (
-            f'<p>{e(_("Two commands and you are hacking on AI UI with hot reload. No PhD required."))}</p>'
-            f'<ol style="--p:0; --list-style:none">'
-            f"{''.join(_step(*s, _) for s in _STEPS)}</ol>"
-            f'<form method="post" action="/pages/admin/setup/developer/save{lang}">'
-            f'<label style="{_CARD_S}; --cur:pointer">'
-            f'<input data-cy="developer-mission-signup" type="checkbox" '
-            f'name="devMissionSignup" value="1"{checked} />'
-            '<span><span style="--size:.85rem; --weight:500">'
-            f'{e(_("Sign me up for the mission"))}</span>'
-            f'<small style="{_HINT_S}">'
-            f'{e(_("I solemnly swear I will open a terminal. Remind me next time I log in until I do."))}'
-            "</small></span></label>"
-            '<button data-cy="developer-save" type="submit" '
-            'style="--p:.45rem 1rem; --br:999px; --b:1px solid var(--line); --cur:pointer">'
-            f'{e(_("Save"))}</button>{note}</form>' + _links(_LINKS, _)
-        )
-
-    return f'<section data-cy="developer-panel" data-dev-mode="{str(bool(DEV_MODE)).lower()}">{body}</section>'
+    return render(
+        "developer.html",
+        lang=lang_query(request),
+        dev_mode=bool(DEV_MODE),
+        signed_up=_signed_up(request, user),
+        note=_("Saved") if saved else "",
+        save_label=_("Save"),
+        live_source=_("Live source mounted. Changes reload automatically."),
+        mounted=_("Source code mounted"),
+        hot_reload=_("Hot reload active"),
+        intro=_("Two commands and you are hacking on AI UI with hot reload. No PhD required."),
+        signup_label=_("Sign me up for the mission"),
+        signup_hint=_(
+            "I solemnly swear I will open a terminal. Remind me next time I log in until I do."
+        ),
+        steps=[
+            {"num": num, "title": _(title), "command": command, "hint": _(hint)}
+            for num, title, command, hint in _STEPS
+        ],
+        links_=[{"href": href, "text": _(text)} for href, text in _LINKS],
+        dev_links=[{"href": href, "text": _(text)} for href, text in _DEV_LINKS],
+    )
 
 
 async def save_developer(request: Request, user, form: dict) -> str:

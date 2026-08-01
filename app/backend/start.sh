@@ -230,4 +230,49 @@ fi
 # ============================================================
 # Launch
 # ============================================================
+
+# PAGES_RELOAD_DIRS — the development reloader, opt-in and off by default.
+#
+# The no-build pages have no build step, and until this existed that promise
+# stopped at the container wall: editing a panel meant restarting the container
+# by hand. `dev.sh` has run `uvicorn --reload` for years; this is the same
+# capability on the path `manual-check.sh` actually boots.
+#
+# Three things about this branch are deliberate:
+#
+#   * It is a BRANCH, not extra flags. Uvicorn refuses `--reload` together with
+#     `--workers`, so the two launches cannot be merged into one line.
+#   * `--log-level info`, not `warning`. The reloader announces a restart at
+#     INFO, and at `warning` it restarts in total silence — which reads as "my
+#     edit did nothing", the exact failure this feature exists to remove.
+#   * The presence of a VALUE is the enable. There is no companion boolean, so
+#     it cannot be switched on while watching nothing.
+#
+# Only `*.py` triggers a restart (uvicorn's reloader filters to that by
+# default), so `pages/assets/*.css` and `*.js` keep being served straight from
+# disk with no restart at all. That split is the point: styling stays instant.
+if [ -n "${PAGES_RELOAD_DIRS:-}" ]; then
+  RELOAD_ARGS=""
+  for _dir in $PAGES_RELOAD_DIRS; do
+    RELOAD_ARGS="$RELOAD_ARGS --reload-dir $_dir"
+  done
+
+  echo ""
+  echo "!! ============================================================"
+  echo "!!  DEVELOPMENT RELOADER ACTIVE — this is not a production run"
+  echo "!!  watching: $PAGES_RELOAD_DIRS"
+  echo "!!  workers pinned to 1 (uvicorn cannot reload multi-worker)"
+  echo "!!  /admin/diagnostics reports this as degraded while it is on"
+  echo "!! ============================================================"
+  echo ""
+
+  # `--timeout-graceful-shutdown` belongs to the reload branch and nowhere else.
+  # Uvicorn waits FOREVER by default for in-flight responses to finish, and the
+  # dev-reload endpoint is a long-lived stream — so an open tab could hold the
+  # old worker alive and the reload never completed. The stream is bounded on
+  # its own side too; this is the backstop for anything else that streams.
+  # shellcheck disable=SC2086  # RELOAD_ARGS is a built flag list, must word-split
+  WEBUI_SECRET_KEY="$WEBUI_SECRET_KEY" exec uvicorn sage_is_ai.main:app --host "$HOST" --port "$PORT" --forwarded-allow-ips '*' --reload $RELOAD_ARGS --timeout-graceful-shutdown 3 --log-level info
+fi
+
 WEBUI_SECRET_KEY="$WEBUI_SECRET_KEY" exec uvicorn sage_is_ai.main:app --host "$HOST" --port "$PORT" --forwarded-allow-ips '*' --workers "${UVICORN_WORKERS:-1}" --log-level warning

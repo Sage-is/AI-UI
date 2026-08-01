@@ -487,6 +487,10 @@
 			"content_security_policy": {
 				"ok": "Content-Security-Policy header is set.",
 				"degraded": "No Content-Security-Policy configured. Set CONTENT_SECURITY_POLICY env."
+			},
+			"dev_reloader": {
+				"ok": "Running normally.",
+				"degraded": "Development reloader is active, watching {{paths}}. One worker only — not a production configuration."
 			}
 		},
 		"fix": {
@@ -597,6 +601,21 @@
 				"universal": {
 					"0": "Set CONTENT_SECURITY_POLICY in the application's environment. A reasonable starting policy for a self-hosted deployment is in the documentation.",
 					"1": "Restart the container so the new policy is applied to every response."
+				}
+			},
+			"dev_reloader_active": {
+				"plain": "PAGES_RELOAD_DIRS is set, so this instance restarts itself when a file changes and is pinned to a single worker. That is correct while editing the server-rendered pages and wrong for anything serving users. Unset it and restart.",
+				"caprover": {
+					"0": "In CapRover, open Apps → <your-app> → App Configs → Environmental Variables and delete PAGES_RELOAD_DIRS.",
+					"1": "Save and Update App. The reloader banner stops appearing in the container logs once it restarts without it."
+				},
+				"docker_compose": {
+					"0": "Confirm which environment sets it — a compose file, an .env, or a docker run flag.",
+					"1": "Remove PAGES_RELOAD_DIRS from that file and recreate the container."
+				},
+				"homebrew": {
+					"0": "Clear it from the shell that starts the app.",
+					"1": "Restart the app. It will launch with UVICORN_WORKERS instead of the reloader."
 				}
 			}
 		},

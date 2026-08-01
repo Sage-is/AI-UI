@@ -32,101 +32,122 @@ tag on a server-rendered page.
 
 from __future__ import annotations
 
-from html import escape as e
-
 from fastapi import Request
 
 from sage_is_ai.pages.i18n import lang_query, translator
+from sage_is_ai.pages.templates import render
 
 __all__ = ["render_changelog", "mark_changelog_read"]
 
-# Written once, repeated by the loops below. A prop string that appears on every
-# generated row costs one source line here, which is the whole argument for
-# props over a parallel stylesheet.
-_VERSION_S = "--size:1.05rem; --weight:600; --m:1.25rem 0 .35rem"
-_SECTION_S = "--size:.7rem; --weight:600; --tt:uppercase; --ls:.04em; --op:.7; --m:.75rem 0 .25rem"
-_TITLE_S = "--weight:600; --tt:uppercase; --size:.72rem; --ls:.02em"
-_BODY_S = "--m:.15rem 0 .6rem; --size:.85rem"
+def _runs(raw: str, flat: str) -> list[dict]:
+    """One entry's content as inline runs, so `<code>` survives.
 
+    The parser in `env.py` flattens each entry with
+    `get_text(separator=" ", strip=True)`, which throws the `<code>` tags away
+    AND inserts a space where each one was — so a release note reading
+    "Each recipe (`scripts/build-sprig-*.sh`) runs its gate" arrived as
+    "Each recipe ( scripts/build-sprig-*.sh ) runs its gate": no monospace, and
+    stray spaces inside the brackets. Reported by Alexander on the live wizard.
 
-def _entries(items: object) -> str:
-    """One section's entries as a description list.
+    Fixed HERE rather than in the parser because `env.py` also feeds
+    `/api/changelog`, and because the entry it produces already carries `raw` —
+    the untouched `<li>`/`<p>` HTML — so nothing needed to change at the source.
 
-    `<dl>` is the element that already means "terms and what they mean", which
-    is exactly a changelog entry: a short title and the sentence explaining it.
-    It replaces the nested div-in-div the Svelte panel uses and needs no class
-    to say what it is.
+    Returns runs, not HTML, so the template stays autoescaped and there is no
+    `| safe` anywhere in this path. Only `<code>` is preserved; other inline
+    markup still flattens to text, the same as it did before.
     """
-    if not isinstance(items, (list, tuple)):
-        return ""
-    rows = "".join(
-        f'<dt style="{_TITLE_S}">{e(str(row.get("title", "")))}</dt>'
-        f'<dd style="{_BODY_S}">{e(str(row.get("content", "")))}</dd>'
-        for row in items
-        if isinstance(row, dict)
-    )
-    return f'<dl style="--m:0">{rows}</dl>' if rows else ""
+    from bs4 import BeautifulSoup
 
+    root = BeautifulSoup(raw or "", "html.parser").find(["li", "p"])
+    if root is None:
+        return [{"text": flat, "code": False}] if flat else []
 
-def _version(version: str, data: dict) -> str:
-    sections = "".join(
-        f'<h3 data-section="{e(str(name), quote=True)}" style="{_SECTION_S}">{e(str(name))}</h3>'
-        + _entries(items)
-        for name, items in data.items()
-        if name != "date"
-    )
-    date = e(str(data.get("date", "")))
-    return (
-        f'<article data-version="{e(version, quote=True)}">'
-        f'<h2 style="{_VERSION_S}">v{e(version)} - {date}</h2>'
-        f"<hr />{sections}</article>"
-    )
+    runs: list[dict] = []
+    for node in root.children:
+        name = getattr(node, "name", None)
+        # The prose format puts the entry's title in a <strong>; the parser
+        # drops it from `content` and so must this.
+        if name == "strong":
+            continue
+        if name == "code":
+            runs.append({"text": node.get_text(), "code": True})
+        else:
+            runs.append(
+                {
+                    "text": node.get_text() if hasattr(node, "get_text") else str(node),
+                    "code": False,
+                }
+            )
+
+    # The list format is "Title: content", split on the FIRST ": " — mirroring
+    # `parse_section` exactly, so the two cannot disagree about where the title
+    # ends.
+    if root.name == "li":
+        for i, run in enumerate(runs):
+            if not run["code"] and ": " in run["text"]:
+                tail = run["text"].split(": ", 1)[1]
+                runs = ([{"text": tail, "code": False}] if tail else []) + runs[i + 1 :]
+                break
+
+    if runs:
+        runs[0]["text"] = runs[0]["text"].lstrip()
+        runs[-1]["text"] = runs[-1]["text"].rstrip()
+    return [r for r in runs if r["text"]]
 
 
 def render_changelog(request: Request, *, base: str = "/pages/admin/setup/changelog") -> str:
-    """The panel. Arrives rendered, because the data was never remote.
+    """Build the context; `templates/changelog.html` decides how it looks.
 
     `base` is where Continue posts. Two routes render this panel: the wizard's
     admin-only one, and `/pages/changelog`, which any signed-in reader reaches
     from Settings, About, "See what's new". The markup is identical and only the
     action differs, so the action is the parameter — a second copy of the panel
     would drift on the first change to either.
+
+    `<dl>` in the template rather than nested divs, because a changelog entry IS
+    a term and what it means: a short title and the sentence explaining it.
     """
     from sage_is_ai.env import CHANGELOG, VERSION
 
     _ = translator(request)
-    lang = lang_query(request)
-
-    versions = "".join(
-        _version(str(v), d) for v, d in CHANGELOG.items() if isinstance(d, dict)
+    return render(
+        "changelog.html",
+        base=base,
+        lang=lang_query(request),
+        version=VERSION,
+        release_notes=_("Release Notes"),
+        more_label=_("Next page"),
+        end_label=_("Continue"),
+        empty=_("No release notes are available."),
+        versions=[
+            {
+                "version": str(version),
+                "date": str(data.get("date", "")),
+                "sections": [
+                    {
+                        "name": str(name),
+                        "rows": [
+                            {
+                                "title": str(row.get("title", "")),
+                                "runs": _runs(
+                                    str(row.get("raw", "")), str(row.get("content", ""))
+                                ),
+                            }
+                            for row in items
+                            if isinstance(row, dict)
+                        ]
+                        if isinstance(items, (list, tuple))
+                        else [],
+                    }
+                    for name, items in data.items()
+                    if name != "date"
+                ],
+            }
+            for version, data in CHANGELOG.items()
+            if isinstance(data, dict)
+        ],
     )
-    # An empty changelog is a real state, meaning a build whose CHANGELOG.md
-    # failed to parse. Rendering nothing at all would look like a broken page
-    # rather than an empty one.
-    body = versions or f'<p style="--op:.7">{e(_("No release notes are available."))}</p>'
-    return f"""
-<section data-cy="changelog-panel">
-  <p style="--size:.8rem; --op:.7; --m:0 0 .5rem">
-    {e(_("Release Notes"))}
-    <span data-app-version="{e(VERSION, quote=True)}"> &middot; v{e(VERSION)}</span>
-  </p>
-  <div data-cy="changelog-body" tabindex="0"
-       style="--maxh:24rem; --ofy:auto; --b:1px solid var(--line); --br:.5rem; --p:.75rem">{body}</div>
-  <!-- The button starts in its END position with its END label, so a reader
-       with no JavaScript gets a control that does what it says. The pager moves
-       it left and relabels it only once it sees there is more below. The move
-       itself is `margin-left` in pages.css: the side depends on runtime state,
-       which an inline prop cannot express. -->
-  <form method="post" action="{e(base, quote=True)}/seen{lang}" data-pager-row
-        style="--m:1rem 0 0">
-    <button data-cy="changelog-continue" type="submit"
-            data-label-more="{e(_("Next page"), quote=True)} &darr;" data-label-end="{e(_("Continue"), quote=True)} &rarr;"
-            style="--p:.45rem 1rem; --br:999px; --b:1px solid var(--line); --cur:pointer">
-      {e(_("Continue"))} &rarr;
-    </button>
-  </form>
-</section>
-"""
 
 
 async def mark_changelog_read(request: Request, user) -> None:

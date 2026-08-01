@@ -366,7 +366,15 @@
 			<h2 class="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">
 				{$i18n.t('Boot status')}
 			</h2>
-			{#each ['data_dir_writable', 'secret_key_persisted', 'alembic_head'] as key}
+			<!-- Enumerated from the response, not hardcoded.
+			     This used to list the three keys it knew about, so adding a
+			     fourth check to `_boot_status_section()` rendered it on the
+			     no-build page — which loops over whatever arrives — and silently
+			     nowhere here, because the `{#if}` below turns a missing key into
+			     nothing rather than into an error. `diagnostics-panel.cy.ts`
+			     caught it by asking the API which keys exist and demanding a row
+			     for each. Looping over the response is what stops that recurring. -->
+			{#each Object.keys(health?.boot_status ?? {}) as key}
 				{#if health?.boot_status?.[key]}
 					<DiagnosticRow label={key} record={health.boot_status[key]} onFix={openFixModal} />
 				{/if}

@@ -1,0 +1,57 @@
+{# Add users. Three forms and a listing.
+
+   The CSV import uses a real `<input type="file">` posting multipart. The
+   Svelte panel hid its input behind a styled button and drove it with
+   getElementById; the browser already renders a file picker, so this uses the
+   one it has. #}
+{% from "_macros.html" import saved %}
+{% set label_s = "--size:.7rem; --weight:500; --d:block; --m:.4rem 0 .15rem" %}
+{% set input_s = "--w:100%; --bxs:border-box; --p:.4rem .6rem; --size:.78rem; --br:.4rem; --b:1px solid var(--line); --bgc:transparent; --c:inherit" %}
+{% set button_s = "--p:.4rem .9rem; --size:.78rem; --br:.4rem; --b:1px solid var(--line); --cur:pointer" %}
+<section data-cy="users-panel" data-user-count="{{ people | length }}"
+         data-working-alone="{{ 'true' if alone else 'false' }}">
+  <form method="post" action="/pages/admin/setup/users/alone{{ lang }}" style="--m:0 0 1rem">
+    <button data-cy="users-working-alone" type="submit" style="{{ button_s }}">{{ alone_label }}</button>
+    <small style="--size:.7rem; --op:.7; --d:block; --m:.25rem 0 0">{{ alone_hint }}</small>
+  </form>
+
+  <form method="post" action="/pages/admin/setup/users/add{{ lang }}">
+    <fieldset style="--b:0; --p:0; --m:0">
+      <legend style="--size:.85rem; --weight:600; --p:0">{{ add_legend }}</legend>
+      <label style="{{ label_s }}">{{ name_label }}</label>
+      <input data-cy="users-name" type="text" name="name" style="{{ input_s }}" />
+      <label style="{{ label_s }}">{{ email_label }}</label>
+      <input data-cy="users-email" type="email" name="email" style="{{ input_s }}" />
+      <label style="{{ label_s }}">{{ password_label }}</label>
+      <input data-cy="users-password" type="password" name="password" autocomplete="new-password" style="{{ input_s }}" />
+      <label style="{{ label_s }}">{{ role_label }}</label>
+      <select data-cy="users-role" name="role" style="{{ input_s }}">
+        {% for role in roles %}
+        <option value="{{ role }}">{{ role }}</option>
+        {% endfor %}
+      </select>
+    </fieldset>
+    <button data-cy="users-add" type="submit" style="{{ button_s }}; --m:.6rem 0 0">{{ add_label }}</button>
+  </form>
+
+  <form method="post" action="/pages/admin/setup/users/import{{ lang }}"
+        enctype="multipart/form-data" style="--m:1rem 0 0">
+    <label style="{{ label_s }}">{{ import_label }}: {{ csv_columns }}</label>
+    <input data-cy="users-csv" type="file" name="csv" accept=".csv,text/csv" style="--size:.75rem" />
+    <button data-cy="users-import" type="submit" style="{{ button_s }}; --m:.5rem 0 0">{{ import_button }}</button>
+    <a href="/static/user-import.csv" style="--size:.7rem; --ml:.5rem">{{ template_label }}</a>
+  </form>
+
+  <h2 style="--size:.8rem; --weight:600; --m:1.25rem 0 .4rem">{{ people_label }} ({{ people | length }})</h2>
+  <ul data-cy="users-list" style="--p:0; --list-style:none; --maxh:10rem; --ofy:auto">
+    {% for person in people %}
+    <li data-cy="users-row" style="--d:flex; --jc:space-between; --ai:center; --p:.3rem .5rem; --br:.35rem; --b:1px solid var(--line); --m:0 0 .25rem; --size:.75rem">
+      <span>{{ person.name }} <span style="--op:.65">{{ person.email }}</span></span>
+      <span data-role="{{ person.role }}" style="--op:.65">{{ person.role }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  {% if message %}
+  {{ saved("users-result", message) }}
+  {% endif %}
+</section>

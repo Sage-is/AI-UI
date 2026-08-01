@@ -26,9 +26,10 @@ inventing a way for them to be wrong.
 
 from __future__ import annotations
 
-from html import escape as e
 
 from fastapi import HTTPException, Request
+
+from sage_is_ai.pages.templates import render
 
 from sage_is_ai.sprigs.models import GraftRequest, PruneRequest
 
@@ -40,10 +41,9 @@ _LABEL = {"rooted": "Grafted", "wilted": "Wilted", "delivered": "Delivered"}
 _GRAFTED = {"rooted", "delivered"}
 
 
-def _card(name: str, spec: dict, g: dict | None, host_arch: str, error: dict | None = None) -> str:
+def _card(name: str, spec: dict, g: dict | None, host_arch: str, error: dict | None = None) -> dict:
+    """One catalog row as data. `templates/sprigs.html` decides how it looks."""
     state = (g or {}).get("state") or "sprouted"
-    # One button, described rather than branched into. The two-branch version of
-    # this was two near-identical blocks of markup that had to be kept in step.
     if state in _GRAFTED:
         verb, label, cls, blocked = "prune", "Prune", "btn-danger", False
     else:
@@ -51,50 +51,37 @@ def _card(name: str, spec: dict, g: dict | None, host_arch: str, error: dict | N
         label = "Revive" if state == "wilted" else "Graft"
         cls, blocked = "btn-primary", spec.get("compatible") is False
 
-    n = e(name, quote=True)
-    meta = " · ".join(
-        str(p) for p in (spec.get("capability"), spec.get("model"),
-                         spec.get("dim") and f"{spec['dim']}d") if p
-    )
-    notes = ""
-    if blocked:
-        notes += (f'<div class="sprig-warn" data-cy="sprig-incompatible">Not available on '
-                  f"this server ({e(host_arch or 'unknown')})</div>")
-    if g and g.get("base_url"):
-        pid = f" · pid {g['pid']}" if g.get("pid") else ""
-        notes += f'<div class="sprig-where">{e(g["base_url"] + pid)}</div>'
-    if error:
-        # Stays on the card until a graft or a prune resolves it. The toast is
-        # the notification; this is the record, and it survives the reload that
-        # loses the toast — along with the restart, since it lives on the volume.
-        notes += (
-            f'<div class="sprig-error" data-cy="sprig-error" role="status">'
-            f'{e(str(error.get("message", "")))}</div>'
-        )
-    health = ('<a class="btn" href="/admin/diagnostics">Health</a>'
-              if state in _GRAFTED and (g or {}).get("base_url") else "")
-
-    return f"""<div class="sprig-card" data-cy="sprig-card" data-sprig="{n}">
-  <span class="badge badge-{e(state, quote=True)}" data-cy="sprig-state"
-        data-state="{e(state, quote=True)}">{e(_LABEL.get(state, "Sprouted"))}</span>
-  <div class="sprig-main">
-    <div class="sprig-name">{e(name)}</div>
-    <div class="sprig-meta">{e(meta)}</div>{notes}
-  </div>
-  <div class="sprig-actions">{health}
-    <button type="button" class="btn {cls}" data-cy="sprig-{verb}"{" disabled" if blocked else ""}
-            hx-post="/pages/admin/sprigs/{verb}/{n}"
-            hx-target="#sprigs-panel" hx-swap="outerHTML">{label}</button>
-  </div>
-</div>"""
+    base_url = (g or {}).get("base_url") or ""
+    pid = f" · pid {g['pid']}" if g and g.get("pid") else ""
+    return {
+        "name": name,
+        "state": state,
+        "state_label": _LABEL.get(state, "Sprouted"),
+        "meta": " · ".join(
+            str(p)
+            for p in (
+                spec.get("capability"),
+                spec.get("model"),
+                spec.get("dim") and f"{spec['dim']}d",
+            )
+            if p
+        ),
+        "blocked": blocked,
+        "host_arch": host_arch or "unknown",
+        "where": (base_url + pid) if base_url else "",
+        "error": str(error.get("message", "")) if error else "",
+        "health": bool(state in _GRAFTED and base_url),
+        "verb": verb,
+        "button_label": label,
+        "button_class": cls,
+    }
 
 
 async def render_panel(request: Request, user, *, message: str = "", kind: str = "info") -> str:
-    """The whole panel, which is also the whole swap target.
+    """Build the context; `templates/sprigs.html` decides how it looks.
 
-    Returning everything rather than patching is what removes the client-side
-    model. It costs a few hundred bytes on a mutation and buys the absence of an
-    entire bug class.
+    The whole panel is also the whole swap target. Returning everything rather
+    than patching is what removes the client-side model.
     """
     from sage_is_ai.routers.sprigs import get_sprig_catalog
 
@@ -102,26 +89,16 @@ async def render_panel(request: Request, user, *, message: str = "", kind: str =
     catalog, grafted = data.get("catalog") or {}, data.get("grafted") or {}
     errors = data.get("errors") or {}
     count = sum(1 for g in grafted.values() if (g or {}).get("state") in _GRAFTED)
-    cards = "".join(
-        _card(n, s, grafted.get(n), data.get("host_arch") or "", errors.get(n)) for n, s in catalog.items()
+    return render(
+        "sprigs.html",
+        message=message,
+        kind=kind,
+        count_text=f"{count} of {len(catalog)} grafted" if catalog else "",
+        cards=[
+            _card(n, spec, grafted.get(n), data.get("host_arch") or "", errors.get(n))
+            for n, spec in catalog.items()
+        ],
     )
-    # role=status so a screen reader announces it: the message is the only
-    # feedback a mutation gives, and it fades.
-    note = (f'<p class="toast toast-float toast-{e(kind, quote=True)}" role="status" '
-            f'data-cy="panel-message">{e(message)}</p>'
-            if message else "")
-
-    return f"""<div id="sprigs-panel">
-  <div class="panel-bar">
-    <span class="page-count" data-cy="sprigs-grafted-count">{
-        f"{count} of {len(catalog)} grafted" if catalog else ""}</span>
-    <button type="button" class="btn" data-cy="sprigs-refresh"
-            hx-get="/pages/admin/sprigs/panel" hx-target="#sprigs-panel"
-            hx-swap="outerHTML">Refresh</button>
-  </div>{note}
-  <div class="sprig-list">{cards or '<p class="page-muted">No Sprigs in the catalog.</p>'}</div>
-</div>"""
-
 
 async def run_action(request: Request, user, name: str, verb: str) -> str:
     """Run a lifecycle action through the API handler, then re-render.

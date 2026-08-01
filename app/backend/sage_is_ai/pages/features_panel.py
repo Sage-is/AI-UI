@@ -20,11 +20,10 @@ existing config plus the five changes.
 
 from __future__ import annotations
 
-from html import escape as e
-
 from fastapi import Request
 
 from sage_is_ai.pages.i18n import lang_query, translator
+from sage_is_ai.pages.templates import render
 
 __all__ = ["render_features", "save_features", "FIELDS"]
 
@@ -48,74 +47,45 @@ def _hook(key: str) -> str:
     return "features-" + key.removeprefix("ENABLE_").lower().replace("_", "-")
 
 
-_ROW_S = ("--d:flex; --ai:center; --g:.75rem; --p:.7rem; --br:.6rem; "
-          "--b:1px solid var(--line); --m:0 0 .5rem; --cur:pointer")
-_NAME_S = "--size:.85rem; --weight:500"
-_CAPTION_S = "--size:.7rem; --op:.7; --d:block"
-_BETA_S = ("--size:.55rem; --weight:600; --tt:uppercase; --p:.1rem .3rem; "
-           "--br:.25rem; --b:1px solid var(--line); --ml:.35rem")
-
-
-def _row(key: str, label: str, caption: str, beta: bool, on: bool, _) -> str:
-    """One toggle.
-
-    A `<label>` wrapping its own `<input>` needs no `for`/`id` pair and no ARIA:
-    the association is the nesting, and the whole row is already the click
-    target that the Svelte version reproduces with a cursor prop.
-
-    `_` is this request's translator. Translate where the table is READ, not where
-    it is declared. `FIELDS` keeps holding plain English, which is also the
-    catalog key, so the table needs no second column and no edit when a language
-    lands. One call here covers every row.
-    """
-    badge = f'<small style="{_BETA_S}">{e(_("Beta"))}</small>' if beta else ""
-    return (
-        f'<label style="{_ROW_S}">'
-        f'<input data-cy="{_hook(key)}" type="checkbox" name="{e(key, quote=True)}" '
-        f'value="1"{" checked" if on else ""} />'
-        f"<span><span style=\"{_NAME_S}\">{e(_(label))}</span>{badge}"
-        f'<small style="{_CAPTION_S}">{e(_(caption))}</small></span>'
-        f"</label>"
-    )
-
-
 def _current(request: Request) -> dict:
     cfg = request.app.state.config
     return {key: bool(getattr(cfg, key, False)) for key, _, _, _ in FIELDS}
 
 
 def render_features(request: Request, saved: bool = False) -> str:
+    """Build the context; `templates/features.html` decides how it looks.
+
+    Translate where the table is READ, not where it is declared. `FIELDS` keeps
+    holding plain English, which is also the catalog key, so the table needs no
+    second column and no edit when a language lands.
+
+    `lang` rides on the form action. One that dropped it would answer a Spanish
+    reader in English the moment they pressed Save.
+    """
     _ = translator(request)
-    lang = lang_query(request)
     on = _current(request)
-    rows = "".join(_row(k, lb, cp, bt, on[k], _) for k, lb, cp, bt in FIELDS)
-    # `<output>` carries an implicit status role, so the save confirmation
-    # announces itself with no ARIA attribute written by hand.
-    note = (
-        f'<output data-cy="features-saved" style="--size:.8rem; --op:.75">'
-        f'{e(_("Features saved."))}</output>'
-        if saved
-        else ""
+    return render(
+        "features.html",
+        lang=lang_query(request),
+        legend=_("Enable or disable platform features for your users."),
+        save_label=_("Save"),
+        note=_("Features saved.") if saved else "",
+        rows=[
+            {
+                "key": key,
+                "hook": _hook(key),
+                "label": _(label),
+                "caption": _(caption),
+                "on": on[key],
+                "badge": _("Beta") if beta else "",
+                "badge_style": (
+                    "--size:.55rem; --weight:600; --tt:uppercase; --p:.1rem .3rem; "
+                    "--br:.25rem; --b:1px solid var(--line); --ml:.35rem"
+                ),
+            }
+            for key, label, caption, beta in FIELDS
+        ],
     )
-    # `lang` rides on the action. A form that dropped it would answer a Spanish
-    # reader in English the moment they pressed Save.
-    return f"""
-<section data-cy="features-panel">
-  <form method="post" action="/pages/admin/setup/features/save{lang}">
-    <fieldset style="--b:0; --p:0; --m:0">
-      <legend style="--size:.85rem; --weight:600; --p:0">
-        {e(_("Enable or disable platform features for your users."))}
-      </legend>
-      {rows}
-    </fieldset>
-    <button data-cy="features-save" type="submit"
-            style="--p:.45rem 1rem; --br:999px; --b:1px solid var(--line); --cur:pointer">
-      {e(_("Save"))}
-    </button>
-    {note}
-  </form>
-</section>
-"""
 
 
 async def save_features(request: Request, user, form: dict) -> str:

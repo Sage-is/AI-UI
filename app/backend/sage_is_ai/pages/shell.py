@@ -7,10 +7,25 @@ that is not already a real route. `/themes/active.css` already proves an
 explicit route wins against that catch-all, so no-build pages can live beside
 the SPA for the whole migration without either one knowing about the other.
 
-There is no template engine here on purpose. Adding one is a dependency
-decision that deserves its own argument, and the pilot needs exactly one
-layout. When the second and third pages arrive and this starts to strain,
-that is the signal to bring a real engine in — not before.
+STILL AN F-STRING, AND DELIBERATELY SO. Every one of the twelve panels moved to
+Jinja2 on 2026-08-01, for two reasons: a template is data read from disk, so a
+markup edit costs a refresh instead of an app restart; and autoescape makes
+escaping structural instead of remembered. Neither argument reaches this file.
+
+The dev-loop half does not apply because the shell's markup does not change —
+you restyle a panel, not the chrome around it — so `auto_reload` buys nothing
+here.
+
+The escaping half actually points the other way. Counted: this file interpolates
+three ESCAPED values and four RAW ones (the body, the script tags, the subhead,
+and the ui-Sprig slot). In an f-string, raw is the default and `escape()` marks
+the exception; in a template, escaped is the default and `| safe` marks it. With
+raw in the majority, moving here would mean four `| safe` markers — and `| safe`
+is precisely the escape hatch that undoes what autoescape is for. The one rule
+below stays easier to hold in an f-string than the inversion of it would be in a
+template.
+
+Revisit if that ratio flips, or if a second layout appears.
 
 The one rule this file enforces: escape anything interpolated. A shell that
 concatenates strings is a cross-site-scripting engine unless escaping is the
@@ -117,6 +132,17 @@ def render_page(
     the codebase rather than derived from user input. Everything else is
     escaped. Keep it that way.
     """
+    # The development reloader's island, on every page or on none.
+    #
+    # Read at call time rather than at import, because a module-level read here
+    # would bake the answer in at boot and the reloader's whole job is that boot
+    # happens again. Appended in ONE place so a new page cannot be added that
+    # forgets it — the failure would be the page that silently stops refreshing,
+    # which is indistinguishable from the reloader being broken.
+    from sage_is_ai.env import PAGES_RELOAD_DIRS
+
+    scripts = (*scripts, "dev-reload.js") if PAGES_RELOAD_DIRS else scripts
+
     # Classic and deferred, not `type="module"`. A module is scoped, so a
     # library that publishes itself by declaring a top-level `var` — htmx does
     # exactly that — never reaches the global scope, and the failure is silent:

@@ -514,6 +514,46 @@ sprig_signing: sprig_registry
 parity_gate:
 	@scripts/gates/embedding-parity/run-gate.sh
 
+## reload_gate — proves the development reloader's ON state.
+## `pages-dev-reload.cy.ts` covers the OFF state in the normal suite; the ON
+## state needs a container booted with PAGES_RELOAD_DIRS and a tree mounted over
+## the image, which no browser driver can arrange. Boots its own throwaway
+## container and edits a COPY of pages/, never the working tree.
+reload_gate:
+	@scripts/gates/dev-reload/run-gate.sh
+
+## review / review_live / review_rebuild — bring up a Rootstock™ for a HUMAN.
+##
+## Phase S made the human pass a standing condition: a green suite is the
+## weakest evidence on an interactive surface. These three are the same script
+## in three modes, and which one you want depends on what you are doing:
+##
+##   review          the BAKED image, nothing mounted. This is the pass that
+##                   decides whether something ships, because a review of your
+##                   working tree is not a review of the artifact.
+##   review_live     pages/ mounted AND watched. Save a .css and the stylesheet
+##                   swaps in place; save a .py and the app restarts itself and
+##                   the tab reloads. No rebuild, no manual restart.
+##   review_rebuild  it_build first — the escape hatch for the one thing a mount
+##                   cannot cover, which is the SPA bundle.
+##
+## Both non-rebuild targets keep the data volume (REUSE_DATA=1), so flipping
+## between them costs a boot rather than a boot plus re-seeding an admin and
+## re-grafting the ui-Sprig.
+##
+## THE GATES DELIBERATELY HAVE NO SUCH SWITCH. `e2e`, `e2e_both` and
+## `wizard_smoke` always boot the baked image with nothing mounted, because a
+## guard-rail that ran against a working tree would be testing something we do
+## not ship. Do not add a live mode to them.
+review:
+	@KEEP=1 REUSE_DATA=1 scripts/manual-check.sh --graft-ui
+
+review_live:
+	@KEEP=1 REUSE_DATA=1 LIVE=1 scripts/manual-check.sh --graft-ui
+
+review_rebuild: it_build
+	@KEEP=1 REUSE_DATA=1 scripts/manual-check.sh --graft-ui
+
 ## e2e — headless Cypress from a pinned sibling container (no npm on host);
 ## videos land in app/cypress/videos. e2e_watch — same, but interactive GUI
 ## served at http://localhost:6080/vnc.html (noVNC; WebRTC alt backlogged).

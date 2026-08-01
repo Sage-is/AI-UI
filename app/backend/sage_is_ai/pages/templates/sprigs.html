@@ -1,0 +1,56 @@
+{# The Sprigs™ catalog. The whole panel is also the whole htmx swap target —
+   returning everything rather than patching is what removes the client-side
+   model, and it costs a few hundred bytes on a mutation to buy the absence of
+   an entire bug class.
+
+   One button per card, DESCRIBED rather than branched into. The two-branch
+   version of this was two near-identical blocks of markup that had to be kept
+   in step.
+
+   This surface still uses classes rather than props — it predates that split
+   and its CSS is already written and paid for. Converting it is follow-up work
+   worth doing for consistency, not for line count. #}
+<div id="sprigs-panel">
+  <div class="panel-bar">
+    <span class="page-count" data-cy="sprigs-grafted-count">{{ count_text }}</span>
+    <button type="button" class="btn" data-cy="sprigs-refresh"
+            hx-get="/pages/admin/sprigs/panel" hx-target="#sprigs-panel" hx-swap="outerHTML">Refresh</button>
+  </div>
+  {% if message %}
+  {# role=status so a screen reader announces it: the message is the only
+     feedback a mutation gives, and it fades. #}
+  <p class="toast toast-float toast-{{ kind }}" role="status" data-cy="panel-message">{{ message }}</p>
+  {% endif %}
+  <div class="sprig-list">
+    {% for card in cards %}
+    <div class="sprig-card" data-cy="sprig-card" data-sprig="{{ card.name }}">
+      <span class="badge badge-{{ card.state }}" data-cy="sprig-state" data-state="{{ card.state }}">{{ card.state_label }}</span>
+      <div class="sprig-main">
+        <div class="sprig-name">{{ card.name }}</div>
+        <div class="sprig-meta">{{ card.meta }}</div>
+        {% if card.blocked %}
+        <div class="sprig-warn" data-cy="sprig-incompatible">Not available on this server ({{ card.host_arch }})</div>
+        {% endif %}
+        {% if card.where %}
+        <div class="sprig-where">{{ card.where }}</div>
+        {% endif %}
+        {% if card.error %}
+        {# Stays on the card until a graft or a prune resolves it. The toast is
+           the notification; this is the record, and it survives the reload that
+           loses the toast — along with the restart, since it lives on the
+           volume. #}
+        <div class="sprig-error" data-cy="sprig-error" role="status">{{ card.error }}</div>
+        {% endif %}
+      </div>
+      <div class="sprig-actions">
+        {% if card.health %}<a class="btn" href="/admin/diagnostics">Health</a>{% endif %}
+        <button type="button" class="btn {{ card.button_class }}" data-cy="sprig-{{ card.verb }}"{% if card.blocked %} disabled{% endif %}
+                hx-post="/pages/admin/sprigs/{{ card.verb }}/{{ card.name }}"
+                hx-target="#sprigs-panel" hx-swap="outerHTML">{{ card.button_label }}</button>
+      </div>
+    </div>
+    {% else %}
+    <p class="page-muted">No Sprigs in the catalog.</p>
+    {% endfor %}
+  </div>
+</div>

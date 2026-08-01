@@ -27,9 +27,10 @@ Content-Security-Policy would break them.
 
 from __future__ import annotations
 
-from html import escape as e
 
 from fastapi import Request
+
+from sage_is_ai.pages.templates import render
 
 __all__ = ["render_branding", "save_branding", "FIELDS"]
 
@@ -69,100 +70,10 @@ _GROUPS = (
 # Mobile-first, per the framework's own contract: base values are the phone
 # case and a suffix appears only where the layout genuinely changes going up.
 # Nothing here changes going up, so nothing carries a suffix.
-_LABEL_S = "--size:0.8rem; --weight:500"
-_HELP_S = "--size:0.7rem; --c:var(--muted)"
-_FIELD_S = "--d:grid; --g:0.25rem; --m:0 0 0.85rem"
-_INPUT_S = (
-    "--w:100%; --bxs:border-box; --p:0.5rem 0.75rem; --size:0.85rem; "
-    "--br:0.5rem; --b:1px solid var(--line); --bgc:transparent; --c:inherit"
-)
 # A fieldset IS a group of related form controls and a legend IS its caption,
 # so the browser gives us the grouping and the accessible name for free — no
 # section/h2 pair, no class, nothing to keep in step. The three props only undo
 # the UA's default chrome; the semantics are what we came for.
-_GROUP_S = "--b:0; --p:0; --m:1.25rem 0"
-_LEGEND_S = "--size:0.85rem; --weight:600; --p:0"
-
-
-def _text_field(name: str, label: str, placeholder: str, help_text: str, value: str) -> str:
-    """One form row: caption, control, fine print.
-
-    `<p>` is the element the HTML spec itself uses to wrap a form row, and
-    `<small>` is fine print rather than a div pretending to be some. Both come
-    with sensible defaults, so the props here are adjustments and not a
-    reimplementation.
-    """
-    n = e(name, quote=True)
-    return f"""<p style="{_FIELD_S}">
-  <label for="{n}" style="{_LABEL_S}">{e(label)}</label>
-  <input id="{n}" name="{n}" type="text" data-cy="branding-{n.replace('_', '-')}"
-         style="{_INPUT_S}"
-         placeholder="{e(placeholder, quote=True)}" value="{e(value, quote=True)}" />
-  <small style="{_HELP_S}">{e(help_text)}</small>
-</p>"""
-
-
-def _color_field(name: str, label: str, placeholder: str, help_text: str, value: str) -> str:
-    """A hex field with a picker beside it.
-
-    The picker carries no `name`, so it never submits: it exists to set the text
-    field, which is the one the server reads. That is what keeps "empty" a
-    reachable value.
-    """
-    n = e(name, quote=True)
-    cy = n.replace("_", "-")
-    return f"""<p style="{_FIELD_S}">
-  <label for="{n}" style="{_LABEL_S}">{e(label)}</label>
-  <span style="--d:flex; --ai:center; --g:0.5rem">
-    <input type="color" data-cy="branding-{cy}" data-syncs="{n}"
-           style="--fx:0 0 auto; --w:3rem; --h:2.25rem; --p:0; --br:0.35rem;
-                  --b:1px solid var(--line); --bgc:transparent; --cur:pointer"
-           value="{e(value or '#000000', quote=True)}" aria-label="{e(label)} picker" />
-    <input id="{n}" name="{n}" type="text" data-cy="branding-{cy}-text"
-           style="--fx:1 1 auto; {_INPUT_S}"
-           placeholder="{e(placeholder, quote=True)}" value="{e(value, quote=True)}" />
-  </span>
-  <small style="{_HELP_S}">{e(help_text)}</small>
-</p>"""
-
-
-def _preview(b: dict) -> str:
-    """What the saved branding looks like.
-
-    Every part is conditional on its value, matching the Svelte page: an empty
-    accent renders no accent swatch. The parity gate compares both pages against
-    the same server state, so these conditions have to agree — a page that
-    always renders every swatch would pass a "swatch exists" assertion while
-    being wrong.
-    """
-    logo = (f'<img src="{e(b.get("logo_url") or "", quote=True)}" alt="Logo" '
-            f'style="--h:2rem; --w:auto" />' if b.get("logo_url") else "")
-    # Spans, not divs: the preview is an <output>, whose content model is
-    # phrase content. `--d:block` gets the line break without the invalid
-    # nesting a div would produce.
-    title = (f'<span style="--d:block; --weight:600; '
-             f'--c:{e(b.get("primary_color") or "inherit", quote=True)}">'
-             f'{e(b.get("title") or "")}</span>' if b.get("title") else "")
-    subtitle = (f'<span style="--d:block; --size:0.75rem; --c:var(--muted)">'
-                f'{e(b.get("subtitle") or "")}</span>' if b.get("subtitle") else "")
-    # The operator picks these colours, so a swatch can land at any contrast
-    # against white. The text shadow keeps a pale one legible without
-    # second-guessing their choice.
-    swatches = "".join(
-        f'<span data-cy="branding-swatch-{kind}" '
-        f'style="--p:0.4rem 0.6rem; --br:0.25rem; --size:0.7rem; --c:#fff; '
-        f'--bgc:{e(b[key], quote=True)}; --ts:0 1px 2px rgba(0,0,0,0.55)">{kind.title()}</span>'
-        for kind, key in (("primary", "primary_color"), ("accent", "accent_color"))
-        if b.get(key)
-    )
-    # <output> is the element for "result derived from the form", which is
-    # exactly what this is, and it carries an implicit status role — so the
-    # preview announces itself after a save without a single aria attribute.
-    return f"""<output data-cy="branding-preview"
-     style="--d:grid; --g:0.6rem; --p:1rem; --br:0.5rem; --b:1px solid var(--line)">
-  <span style="--d:flex; --ai:center; --g:0.6rem">{logo}<span>{title}{subtitle}</span></span>
-  {f'<span style="--d:flex; --fw:wrap; --g:0.5rem">{swatches}</span>' if swatches else ""}
-</output>"""
 
 
 def _current(request: Request) -> dict:
@@ -189,42 +100,48 @@ def _current(request: Request) -> dict:
 
 
 def render_branding(request: Request, *, message: str = "", kind: str = "info") -> str:
-    """The whole panel, which is also the whole swap target."""
+    """Build the context; `templates/branding.html` decides how it looks.
+
+    The whole panel is also the whole htmx swap target, so what comes back from
+    a save is the same shape as what came back from the GET.
+    """
     b = _current(request)
-    groups = "".join(
-        f'<fieldset style="{_GROUP_S}"><legend style="{_LEGEND_S}">{e(name)}</legend>'
-        + "".join(_text_field(f, l, p, h, str(b.get(f) or "")) for f, l, p, h in fields)
-        + "</fieldset>"
-        for name, fields in _GROUPS
+
+    def field(name: str, label: str, placeholder: str, help_text: str) -> dict:
+        value = str(b.get(name) or "")
+        return {
+            "name": name,
+            "hook": name.replace("_", "-"),
+            "label": label,
+            "placeholder": placeholder,
+            "help": help_text,
+            "value": value,
+            # The picker cannot express "unset", so it falls back to black while
+            # the text field beside it stays genuinely empty.
+            "picker_value": value or "#000000",
+        }
+
+    return render(
+        "branding.html",
+        message=message,
+        kind=kind,
+        groups=[
+            {"name": name, "fields": [field(*f) for f in fields]}
+            for name, fields in _GROUPS
+        ],
+        colors=[field(*f) for f in _COLORS],
+        preview={
+            "logo_url": b.get("logo_url") or "",
+            "title": b.get("title") or "",
+            "subtitle": b.get("subtitle") or "",
+            "primary_color": b.get("primary_color") or "",
+            "swatches": [
+                {"kind": kind_, "color": b[key]}
+                for kind_, key in (("primary", "primary_color"), ("accent", "accent_color"))
+                if b.get(key)
+            ],
+        },
     )
-    colors = "".join(_color_field(f, l, p, h, str(b.get(f) or "")) for f, l, p, h in _COLORS)
-    # The one class left on this surface, and the reason is structural rather
-    # than habit: the toast fades itself out with @keyframes, and a keyframe is
-    # not something the prop vocabulary can express. It is also shared with the
-    # Sprigs panel, so it is a real shared rule and not a private one.
-    note = (f'<p class="toast toast-float toast-{e(kind, quote=True)}" role="status" '
-            f'data-cy="panel-message">{e(message)}</p>' if message else "")
-
-    return f"""<div id="branding-panel">{note}
-  <form hx-post="/pages/admin/branding/save" hx-target="#branding-panel" hx-swap="outerHTML">
-    {groups}
-    <fieldset style="{_GROUP_S}">
-      <legend style="{_LEGEND_S}">Color Settings</legend>
-      <p style="{_HELP_S}">Overrides the theme colours. Leave empty to use the defaults.</p>
-      {colors}
-    </fieldset>
-    <fieldset style="{_GROUP_S}">
-      <legend style="{_LEGEND_S}">Preview</legend>
-      {_preview(b)}
-    </fieldset>
-    <div style="--d:flex; --jc:flex-end; --pt:0.5rem">
-      <button type="submit" data-cy="branding-save"
-              style="--p:0.45rem 1.1rem; --size:0.85rem; --weight:500; --br:999px;
-                     --b:1px solid var(--line); --cur:pointer">Save</button>
-    </div>
-  </form>
-</div>"""
-
 
 async def save_branding(request: Request, user, form: dict) -> str:
     """Persist through the API handler, then re-render.

@@ -22,7 +22,7 @@
        markdown typography of streamed output. Inline props are flat — no
        :focus-visible, which keyboard users need (footgun #8). */
     #jump { box-shadow: 0 2px 8px rgb(0 0 0 / .18); }
-    #jump:focus-visible { outline: 2px solid var(--links, currentColor); outline-offset: 2px; }
+    #jump:focus-visible { --p: 2px solid var(--links, currentColor); --p-offset: 2px; }
     /* No [hidden] rule here on purpose: startr.style's
        `display: var(--d) !important` outranks it. The island toggles --d. */
     #output pre { background: color-mix(in srgb, currentColor 8%, transparent);

@@ -1,0 +1,96 @@
+{# Theme and branding. The whole panel is also the whole htmx swap target.
+
+   Semantics first, props second: `<fieldset>`/`<legend>` for the groups, `<p>`
+   wrapping label/control/fine-print for each row, `<small>` for the fine print,
+   `<output>` for the preview. The props only adjust the UA's defaults — the
+   elements are what we came for, and none of them needs a class.
+
+   The colour picker carries NO `name`, so it never submits: it exists to set
+   the text field beside it, which is the one the server reads. That is what
+   keeps "empty" a reachable value, and empty means "use the theme's colours". #}
+{% set label_s = "--size:0.8rem; --weight:500" %}
+{% set help_s = "--size:0.7rem; --c:var(--muted)" %}
+{% set field_s = "--d:grid; --g:0.25rem; --m:0 0 0.85rem" %}
+{% set input_s = "--w:100%; --bxs:border-box; --p:0.5rem 0.75rem; --size:0.85rem; --br:0.5rem; --b:1px solid var(--line); --bgc:transparent; --c:inherit" %}
+{% set group_s = "--b:0; --p:0; --m:1.25rem 0" %}
+{% set legend_s = "--size:0.85rem; --weight:600; --p:0" %}
+
+<div id="branding-panel">
+  {% if message %}
+  {# The one class left on this surface, and the reason is structural rather
+     than habit: the toast fades itself out with @keyframes, which the prop
+     vocabulary cannot express. It is shared with the Sprigs panel, so it is a
+     real shared rule and not a private one. #}
+  <p class="toast toast-float toast-{{ kind }}" role="status" data-cy="panel-message">{{ message }}</p>
+  {% endif %}
+  <form hx-post="/pages/admin/branding/save" hx-target="#branding-panel" hx-swap="outerHTML">
+    {% for group in groups %}
+    <fieldset style="{{ group_s }}">
+      <legend style="{{ legend_s }}">{{ group.name }}</legend>
+      {% for f in group.fields %}
+      <p style="{{ field_s }}">
+        <label for="{{ f.name }}" style="{{ label_s }}">{{ f.label }}</label>
+        <input id="{{ f.name }}" name="{{ f.name }}" type="text" data-cy="branding-{{ f.hook }}"
+               style="{{ input_s }}" placeholder="{{ f.placeholder }}" value="{{ f.value }}" />
+        <small style="{{ help_s }}">{{ f.help }}</small>
+      </p>
+      {% endfor %}
+    </fieldset>
+    {% endfor %}
+
+    <fieldset style="{{ group_s }}">
+      <legend style="{{ legend_s }}">Color Settings</legend>
+      <p style="{{ help_s }}">Overrides the theme colours. Leave empty to use the defaults.</p>
+      {% for f in colors %}
+      <p style="{{ field_s }}">
+        <label for="{{ f.name }}" style="{{ label_s }}">{{ f.label }}</label>
+        <span style="--d:flex; --ai:center; --g:0.5rem">
+          <input type="color" data-cy="branding-{{ f.hook }}" data-syncs="{{ f.name }}"
+                 style="--fx:0 0 auto; --w:3rem; --h:2.25rem; --p:0; --br:0.35rem; --b:1px solid var(--line); --bgc:transparent; --cur:pointer"
+                 value="{{ f.picker_value }}" aria-label="{{ f.label }} picker" />
+          <input id="{{ f.name }}" name="{{ f.name }}" type="text" data-cy="branding-{{ f.hook }}-text"
+                 style="--fx:1 1 auto; {{ input_s }}" placeholder="{{ f.placeholder }}" value="{{ f.value }}" />
+        </span>
+        <small style="{{ help_s }}">{{ f.help }}</small>
+      </p>
+      {% endfor %}
+    </fieldset>
+
+    <fieldset style="{{ group_s }}">
+      <legend style="{{ legend_s }}">Preview</legend>
+      {# Every part is conditional on its value, matching the Svelte page: an
+         empty accent renders no accent swatch. The parity gate compares both
+         pages against the same server state, so these conditions have to agree
+         — a page that always rendered every swatch would pass a "swatch exists"
+         assertion while being wrong.
+
+         Spans, not divs: `<output>`'s content model is phrase content, and
+         `--d:block` gets the line break without the invalid nesting. #}
+      <output data-cy="branding-preview" style="--d:grid; --g:0.6rem; --p:1rem; --br:0.5rem; --b:1px solid var(--line)">
+        <span style="--d:flex; --ai:center; --g:0.6rem">
+          {% if preview.logo_url %}<img src="{{ preview.logo_url }}" alt="Logo" style="--h:2rem; --w:auto" />{% endif %}
+          <span>
+            {% if preview.title %}<span style="--d:block; --weight:600; --c:{{ preview.primary_color or 'inherit' }}">{{ preview.title }}</span>{% endif %}
+            {% if preview.subtitle %}<span style="--d:block; --size:0.75rem; --c:var(--muted)">{{ preview.subtitle }}</span>{% endif %}
+          </span>
+        </span>
+        {% if preview.swatches %}
+        <span style="--d:flex; --fw:wrap; --g:0.5rem">
+          {# The operator picks these colours, so a swatch can land at any
+             contrast against white. The text shadow keeps a pale one legible
+             without second-guessing their choice. #}
+          {% for sw in preview.swatches %}
+          <span data-cy="branding-swatch-{{ sw.kind }}"
+                style="--p:0.4rem 0.6rem; --br:0.25rem; --size:0.7rem; --c:#fff; --bgc:{{ sw.color }}; --ts:0 1px 2px rgba(0,0,0,0.55)">{{ sw.kind | title }}</span>
+          {% endfor %}
+        </span>
+        {% endif %}
+      </output>
+    </fieldset>
+
+    <div style="--d:flex; --jc:flex-end; --pt:0.5rem">
+      <button type="submit" data-cy="branding-save"
+              style="--p:0.45rem 1.1rem; --size:0.85rem; --weight:500; --br:999px; --b:1px solid var(--line); --cur:pointer">Save</button>
+    </div>
+  </form>
+</div>

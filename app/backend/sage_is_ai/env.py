@@ -183,16 +183,24 @@ def parse_section(h3_tag):
             strong = current.find("strong")
             if strong:
                 title = strong.get_text(strip=True)
-                # Content is the rest of this <p> plus any following <p> before next <strong>
-                # Remove the strong tag text from the paragraph
-                content_parts = []
-                for child in current.children:
-                    if child.name == "strong":
-                        continue
-                    text = child.get_text(strip=True) if hasattr(child, "get_text") else str(child).strip()
-                    if text:
-                        content_parts.append(text)
-                content_text = " ".join(content_parts).strip()
+                # Content is the rest of this <p> plus any following <p> before
+                # next <strong>. Take it as ONE string rather than per-child.
+                #
+                # This used to walk the children, `get_text(strip=True)` each,
+                # and join with a space — which put a space either side of every
+                # inline element. A note reading "Each recipe
+                # (`scripts/build-sprig-*.sh`) runs its gate" came out as
+                # "Each recipe ( scripts/build-sprig-*.sh ) runs its gate".
+                # Reported on the live wizard; it affected `/api/changelog` too,
+                # so it is fixed here at the source rather than per-consumer.
+                # Measured against the shipped CHANGELOG.md: 40 of 71 entries
+                # carrying inline code lose padding, and none gains a double
+                # space or runs two words together.
+                clone = BeautifulSoup(str(current), "html.parser").find("p")
+                strong_tag = clone.find("strong") if clone else None
+                if strong_tag:
+                    strong_tag.decompose()
+                content_text = clone.get_text().strip() if clone else ""
 
                 # Check if next sibling is a plain <p> (continuation of this entry)
                 nxt = current.find_next_sibling()

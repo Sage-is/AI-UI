@@ -26,12 +26,12 @@ from __future__ import annotations
 import json
 from datetime import datetime, timezone
 from functools import lru_cache
-from html import escape as e
 from pathlib import Path
 
 from fastapi import Request
 
 from sage_is_ai.pages.i18n import t
+from sage_is_ai.pages.templates import render
 
 __all__ = ["render_diagnostics"]
 
@@ -63,58 +63,37 @@ def _command_library() -> list:
         return []
 
 
-def _library_block() -> str:
-    """Six recovery snippets, copy-only.
-
-    The library never runs anything on the operator's behalf, by design — an
-    earlier generation of this page had an arbitrary-shell surface and it was
-    rejected as anti-Poka-Yoke. These get pasted into the operator's own
-    terminal, under their own audit trail. Server rendering does not change
-    that: there is no execution path here to add.
-    """
-    entries = _command_library()
-    if not entries:
-        return ""
-    items = ""
-    for entry in entries:
-        warning = (
-            f'<p class="fix-warning">{e(t(entry["warning_key"], {}))}</p>'
-            if entry.get("warning_key")
-            else ""
-        )
-        items += (
-            f'<details class="fix" data-cy="diag-command" '
-            f'data-command-id="{e(str(entry.get("id", "")), quote=True)}">'
-            f'<summary>{e(t(entry.get("title_key", ""), {}))}</summary>'
-            f'<p class="fix-plain">{e(t(entry.get("description_key", ""), {}))}</p>'
-            f"{warning}"
-            f'<pre class="fix-command">{e(str(entry.get("command", "")))}</pre>'
-            f"</details>"
-        )
-    return (
-        '<section class="diag-section" data-cy="diag-command-library">'
-        "<h2>Recovery commands</h2>"
-        '<p class="page-muted">Copy these into your own terminal. Nothing here runs itself.</p>'
-        f"{items}</section>"
-    )
+def _library_entries() -> list[dict]:
+    """The recovery snippets as data. Copy-only, and there is no execution path
+    here to add — an earlier generation of this page had an arbitrary-shell
+    surface and it was rejected as anti-Poka-Yoke."""
+    return [
+        {
+            "id": str(entry.get("id", "")),
+            "title": t(entry.get("title_key", ""), {}),
+            "description": t(entry.get("description_key", ""), {}),
+            "warning": t(entry["warning_key"], {}) if entry.get("warning_key") else "",
+            "command": str(entry.get("command", "")),
+        }
+        for entry in _command_library()
+    ]
 
 
-def _fix_steps(issue_type: str, shape: str) -> str:
-    """The remedy for one issue, for THIS deployment.
+def _fix_steps(issue_type: str, shape: str) -> dict | None:
+    """The remedy for one issue, for THIS deployment, as data.
 
     The server knows the deployment shape, so it renders the steps that apply
     instead of offering a chooser — one of the few places where moving the
     render server-side removes an interaction rather than reproducing it.
 
-    A <details> element, not a modal. The plan calls for native HTML over custom
-    widgets, and a disclosure needs no JavaScript, no focus trap, no escape-key
-    handler, and no second round-trip. It differs from the Svelte version, which
-    opens a dialog; the guard-rail asserts the operator is OFFERED a fix, not
-    the shape of the container it arrives in.
+    A `<details>` in the template, not a modal: the plan calls for native HTML
+    over custom widgets, and a disclosure needs no JavaScript, no focus trap, no
+    escape-key handler and no second round-trip. The guard-rail asserts the
+    operator is OFFERED a fix, not the shape of the container it arrives in.
     """
     entry = _fix_registry().get(issue_type)
     if not entry:
-        return ""
+        return None
 
     steps = entry.get(f"{shape}_steps") or entry.get("universal_steps") or []
     if not steps:
@@ -127,31 +106,23 @@ def _fix_steps(issue_type: str, shape: str) -> str:
             for st in value
         ]
     if not steps:
-        return ""
+        return None
 
-    items = ""
-    for step in steps:
-        text = t(step.get("description_key", ""), {})
-        prefix = f'<em>{e(step["_shape"])}</em> — ' if step.get("_shape") else ""
-        extra = ""
-        if step.get("ui_path"):
-            extra += f'<div class="fix-path">{e(str(step["ui_path"]))}</div>'
-        if step.get("command"):
-            # Copy-only, never executed — same contract the Svelte modal holds.
-            extra += f'<pre class="fix-command">{e(str(step["command"]))}</pre>'
-        items += f"<li>{prefix}{e(text)}{extra}</li>"
+    return {
+        "issue_type": issue_type,
+        "plain": t(entry.get("plain_english_key", ""), {}),
+        "steps": [
+            {
+                "shape": step.get("_shape", ""),
+                "text": t(step.get("description_key", ""), {}),
+                "ui_path": str(step["ui_path"]) if step.get("ui_path") else "",
+                "command": str(step["command"]) if step.get("command") else "",
+            }
+            for step in steps
+        ],
+    }
 
-    plain = t(entry.get("plain_english_key", ""), {})
-    return (
-        f'<details class="fix" data-cy="diag-fix" data-issue-type="{e(issue_type, quote=True)}">'
-        f"<summary>Show me how to fix this</summary>"
-        f'<p class="fix-plain">{e(plain)}</p>'
-        f"<ol class=\"fix-steps\">{items}</ol>"
-        f"</details>"
-    )
 
-# Worst first. An operator scanning this page wants to know what is broken, so
-# the broken things go at the top.
 _RANK = {"unreachable": 0, "degraded": 1, "unknown": 2, "ok": 3}
 _STATUS_LABEL = {
     "ok": "OK",
@@ -167,59 +138,35 @@ _SECTIONS = [
 ]
 
 
-def _row(label: str, record: dict, shape: str = "unknown") -> str:
-    """One diagnostic row.
+def _row(label: str, record: dict, shape: str = "unknown") -> dict:
+    """One diagnostic row as data. `templates/diagnostics.html` renders it.
 
-    `data-status` and `data-label` are the guard-rail contract. They are
-    attributes rather than rendered words on purpose: the spec reads the
-    attributes, so it judges this page and the Svelte one by the same rule, and
-    rewording or translating a label does not break it.
+    `data-status` and `data-label` are the guard-rail contract — attributes
+    rather than rendered words, so the spec judges this page and the Svelte one
+    by the same rule and a reworded label cannot break it.
     """
     status = record.get("status") or "unknown"
-    summary = (
-        t(record["summary_key"], record.get("summary_params") or {})
-        if record.get("summary_key")
-        else ""
-    )
-    fix = _fix_steps(str(record["issue_type"]), shape) if record.get("issue_type") else ""
-
-    technical = ""
-    if record.get("technical"):
-        # <details> instead of the Svelte Collapsible: the plan's "native HTML
-        # over custom widgets", and it is the whole component here.
-        technical = (
-            f'<details class="fix" data-cy="diag-technical">'
-            f"<summary>Technical detail</summary>"
-            f'<pre class="fix-command">'
-            f'{e(json.dumps(record["technical"], indent=2, default=str))}</pre>'
-            f"</details>"
-        )
-
-    # Re-probe only where the Svelte page offers it: an endpoints row, whose
-    # label IS the URL and whose capability sits inside `technical`. Sourced the
-    # same way rather than from invented fields, so the two pages cannot offer
-    # the button in different places.
     capability = str((record.get("technical") or {}).get("capability") or "")
-    reprobe = ""
-    if capability and label.startswith(("http://", "https://")):
-        reprobe = (
-            f'<button type="button" class="btn" data-cy="diag-reprobe"'
-            f' hx-post="/pages/admin/diagnostics/probe"'
-            f' hx-vals=\'{{"url": "{e(label, quote=True)}",'
-            f' "capability": "{e(capability, quote=True)}"}}\''
-            f' hx-target="#diagnostics-panel" hx-swap="outerHTML">Re-probe</button>'
-        )
-    return f"""<div class="diag-row" data-cy="diag-row" data-label="{e(label, quote=True)}"
-     data-status="{e(status, quote=True)}">
-  <span class="badge badge-{e(status, quote=True)}">{e(_STATUS_LABEL.get(status, "Unknown"))}</span>
-  <div class="diag-main">
-    <div class="diag-label">{e(label)}</div>
-    <div class="diag-summary">{e(summary)}</div>
-  </div>
-  <div class="diag-actions">{reprobe}</div>
-</div>
-{fix}{technical}"""
-
+    return {
+        "label": label,
+        "status": status,
+        "status_label": _STATUS_LABEL.get(status, "Unknown"),
+        "summary": (
+            t(record["summary_key"], record.get("summary_params") or {})
+            if record.get("summary_key")
+            else ""
+        ),
+        "fix": _fix_steps(str(record["issue_type"]), shape) if record.get("issue_type") else None,
+        "technical": (
+            json.dumps(record["technical"], indent=2, default=str)
+            if record.get("technical")
+            else ""
+        ),
+        # Re-probe only where the Svelte page offers it: an endpoints row, whose
+        # label IS the URL and whose capability sits inside `technical`.
+        "capability": capability,
+        "reprobe": bool(capability and label.startswith(("http://", "https://"))),
+    }
 
 def _rows_of(health: dict, section: str) -> list[tuple[str, dict]]:
     """Normalise a section into (label, record) pairs.
@@ -236,26 +183,6 @@ def _rows_of(health: dict, section: str) -> list[tuple[str, dict]]:
     return out
 
 
-def _ghost_block(health: dict, shape: str) -> str:
-    """Endpoints the config no longer names, kept because they still have state.
-
-    A <details>, closed by default, matching the Svelte page's collapsible —
-    these are history, and history should not push the live rows down the page.
-    """
-    ghosts = [
-        (label, rec)
-        for label, rec in _rows_of(health, "endpoints")
-        if rec.get("in_config") is False
-    ]
-    if not ghosts:
-        return ""
-    rows = "".join(_row(label, rec, shape) for label, rec in ghosts)
-    return (
-        '<details class="fix" data-cy="diag-ghost-endpoints">'
-        f"<summary>Previously configured ({len(ghosts)})</summary>{rows}</details>"
-    )
-
-
 def _issues(health: dict) -> list[tuple[str, dict]]:
     found = [
         (label, rec)
@@ -268,7 +195,13 @@ def _issues(health: dict) -> list[tuple[str, dict]]:
 
 
 async def render_diagnostics(request: Request, user) -> str:
-    """Render the whole panel, which is also the htmx swap target."""
+    """Build the context; `templates/diagnostics.html` decides how it looks.
+
+    No try/except wrapper, deliberately. Rule R8 says this page must never 500,
+    and every helper it calls already fails soft on its own — a blanket catch
+    here would hide a real fault behind an empty page, which is worse than the
+    error for the one person who opens this page when things are broken.
+    """
     from sage_is_ai.routers.diagnostics import get_diagnostics_health
 
     health = await get_diagnostics_health(request, user)
@@ -276,46 +209,36 @@ async def render_diagnostics(request: Request, user) -> str:
         health = dict(health)
 
     boot = health.get("boot_probes") or {}
-    banner = ""
-    if (boot.get("in_flight") or 0) > 0:
-        banner = (
-            f'<p class="toast" data-cy="diag-boot-probes">Boot probes still running — '
-            f'{boot.get("completed", 0)} of {boot.get("total", 0)} complete.</p>'
-        )
-
+    banner = (
+        {"completed": boot.get("completed", 0), "total": boot.get("total", 0)}
+        if (boot.get("in_flight") or 0) > 0
+        else None
+    )
     shape = str((health.get("deployment_shape") or {}).get("shape") or "unknown")
-    issues = _issues(health)
-    issues_block = (
-        '<section class="diag-section" data-cy="diag-issues"><h2>Issues</h2>'
-        + "".join(_row(label, rec, shape) for label, rec in issues)
-        + "</section>"
-        if issues and not banner
-        else ""
+
+    sections = []
+    for key, title in _SECTIONS:
+        rows = _rows_of(health, key)
+        live = [
+            _row(label, rec, shape)
+            for label, rec in rows
+            if not (key == "endpoints" and rec.get("in_config") is False)
+        ]
+        # History, and history should not push the live rows down the page.
+        ghosts = (
+            [_row(label, rec, shape) for label, rec in rows if rec.get("in_config") is False]
+            if key == "endpoints"
+            else []
+        )
+        sections.append({"key": key, "title": title, "rows": live, "ghosts": ghosts})
+
+    return render(
+        "diagnostics.html",
+        # Absolute and server-rendered, so nothing has to keep it accurate. The
+        # Svelte page holds a relative label open with a 30-second timer.
+        stamp=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+        banner=banner,
+        issues=[_row(label, rec, shape) for label, rec in _issues(health)],
+        sections=sections,
+        library=_library_entries(),
     )
-
-    sections = "".join(
-        f'<section class="diag-section" data-cy="diag-section" data-section="{key}">'
-        f"<h2>{e(title)}</h2>"
-        + ("".join(
-               _row(label, rec, shape)
-               for label, rec in rows
-               if not (key == "endpoints" and rec.get("in_config") is False)
-           ) or '<p class="page-muted">Nothing reported.</p>')
-        + (_ghost_block(health, shape) if key == "endpoints" else "")
-        + "</section>"
-        for key, title in _SECTIONS
-        for rows in [_rows_of(health, key)]
-    )
-
-    # Absolute and server-rendered, so nothing has to keep it accurate. The
-    # Svelte page holds a relative label open with a 30-second timer.
-    stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-
-    return f"""<div id="diagnostics-panel">
-  <div class="panel-bar">
-    <span class="page-count">Last refreshed {e(stamp)}</span>
-    <button type="button" class="btn" data-cy="diagnostics-refresh"
-            hx-get="/pages/admin/diagnostics/panel" hx-target="#diagnostics-panel"
-            hx-swap="outerHTML">Re-probe all</button>
-  </div>{banner}{issues_block}{sections}{_library_block()}
-</div>"""

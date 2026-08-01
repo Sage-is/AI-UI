@@ -23,11 +23,11 @@ from __future__ import annotations
 
 import csv
 import io
-from html import escape as e
 
 from fastapi import Request
 
 from sage_is_ai.pages.i18n import lang_query, translator
+from sage_is_ai.pages.templates import render
 
 __all__ = [
     "render_users",
@@ -51,13 +51,6 @@ CSV_ROLES: tuple[str, ...] = ROLES + ("pending",)
 # CSV column order, which is also what static/user-import.csv ships.
 CSV_COLUMNS = ("name", "email", "password", "role")
 
-_ROW_S = ("--d:flex; --jc:space-between; --ai:center; --p:.3rem .5rem; "
-          "--br:.35rem; --b:1px solid var(--line); --m:0 0 .25rem; --size:.75rem")
-_LABEL_S = "--size:.7rem; --weight:500; --d:block; --m:.4rem 0 .15rem"
-_INPUT_S = ("--w:100%; --bxs:border-box; --p:.4rem .6rem; --size:.78rem; "
-            "--br:.4rem; --b:1px solid var(--line); --bgc:transparent; --c:inherit")
-_BUTTON_S = ("--p:.4rem .9rem; --size:.78rem; --br:.4rem; "
-             "--b:1px solid var(--line); --cur:pointer")
 
 
 def _people(request: Request) -> list[tuple[str, str, str]]:
@@ -84,74 +77,29 @@ def _working_alone(user) -> bool:
 
 
 def render_users(request: Request, user, message: str = "") -> str:
+    """Build the context; `templates/users.html` decides how it looks."""
     _ = translator(request)
-    lang = lang_query(request)
-    people = _people(request)
-    alone = _working_alone(user)
-    options = "".join(
-        f'<option value="{e(r, quote=True)}">{e(r)}</option>' for r in ROLES
+    return render(
+        "users.html",
+        lang=lang_query(request),
+        people=[{"name": n, "email": em, "role": r} for n, em, r in _people(request)],
+        alone=_working_alone(user),
+        roles=list(ROLES),
+        csv_columns=", ".join(CSV_COLUMNS),
+        message=message,
+        alone_label=_("I am working alone"),
+        alone_hint=_("Skip user setup. You can add people later from Admin settings."),
+        add_legend=_("Add a team member"),
+        name_label=_("Name"),
+        email_label=_("Email"),
+        password_label=_("Password"),
+        role_label=_("Role"),
+        add_label=_("Add"),
+        import_label=_("Import a CSV"),
+        import_button=_("Import"),
+        template_label=_("Download template"),
+        people_label=_("People"),
     )
-    listing = "".join(
-        f'<li data-cy="users-row" style="{_ROW_S}">'
-        f"<span>{e(name)} <span style=\"--op:.65\">{e(email)}</span></span>"
-        f'<span data-role="{e(role, quote=True)}" style="--op:.65">{e(role)}</span></li>'
-        for name, email, role in people
-    )
-    note = (
-        f'<output data-cy="users-result" style="--size:.8rem; --op:.8">{e(message)}</output>'
-        if message
-        else ""
-    )
-    return f"""
-<section data-cy="users-panel" data-user-count="{len(people)}"
-         data-working-alone="{str(alone).lower()}">
-  <form method="post" action="/pages/admin/setup/users/alone{lang}" style="--m:0 0 1rem">
-    <button data-cy="users-working-alone" type="submit" style="{_BUTTON_S}">
-      {e(_("I am working alone"))}
-    </button>
-    <small style="--size:.7rem; --op:.7; --d:block; --m:.25rem 0 0">
-      {e(_("Skip user setup. You can add people later from Admin settings."))}
-    </small>
-  </form>
-
-  <form method="post" action="/pages/admin/setup/users/add{lang}">
-    <fieldset style="--b:0; --p:0; --m:0">
-      <legend style="--size:.85rem; --weight:600; --p:0">{e(_("Add a team member"))}</legend>
-      <label style="{_LABEL_S}">{e(_("Name"))}</label>
-      <input data-cy="users-name" type="text" name="name" style="{_INPUT_S}" />
-      <label style="{_LABEL_S}">{e(_("Email"))}</label>
-      <input data-cy="users-email" type="email" name="email" style="{_INPUT_S}" />
-      <label style="{_LABEL_S}">{e(_("Password"))}</label>
-      <input data-cy="users-password" type="password" name="password"
-             autocomplete="new-password" style="{_INPUT_S}" />
-      <label style="{_LABEL_S}">{e(_("Role"))}</label>
-      <select data-cy="users-role" name="role" style="{_INPUT_S}">{options}</select>
-    </fieldset>
-    <button data-cy="users-add" type="submit" style="{_BUTTON_S}; --m:.6rem 0 0">{e(_("Add"))}</button>
-  </form>
-
-  <!-- A real file input posting multipart. The Svelte panel hides its input
-       behind a styled button and drives it with getElementById; the browser
-       already renders a file picker, so this uses the one it has. -->
-  <form method="post" action="/pages/admin/setup/users/import{lang}"
-        enctype="multipart/form-data" style="--m:1rem 0 0">
-    <label style="{_LABEL_S}">{e(_("Import a CSV"))}: {", ".join(CSV_COLUMNS)}</label>
-    <input data-cy="users-csv" type="file" name="csv" accept=".csv,text/csv"
-           style="--size:.75rem" />
-    <button data-cy="users-import" type="submit" style="{_BUTTON_S}; --m:.5rem 0 0">
-      {e(_("Import"))}
-    </button>
-    <a href="/static/user-import.csv" style="--size:.7rem; --ml:.5rem">{e(_("Download template"))}</a>
-  </form>
-
-  <h2 style="--size:.8rem; --weight:600; --m:1.25rem 0 .4rem">
-    {e(_("People"))} ({len(people)})
-  </h2>
-  <ul data-cy="users-list" style="--p:0; --list-style:none; --maxh:10rem; --ofy:auto">{listing}</ul>
-  {note}
-</section>
-"""
-
 
 async def _create(request: Request, user, name: str, email: str, password: str,
                   role: str) -> str:

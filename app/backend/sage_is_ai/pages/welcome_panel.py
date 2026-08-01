@@ -22,11 +22,10 @@ and the routes use hyphens.
 
 from __future__ import annotations
 
-from html import escape as e
-
 from fastapi import Request
 
 from sage_is_ai.pages.i18n import lang_query, translator
+from sage_is_ai.pages.templates import render
 
 __all__ = ["render_welcome", "start_wizard", "STEPS", "selected_steps"]
 
@@ -57,13 +56,6 @@ _ROUTES: dict[str, str] = {
     "search_audio": "search-audio",
     "developer": "developer",
 }
-
-_ROW_S = ("--d:flex; --ai:center; --g:.75rem; --p:.7rem; --br:.6rem; "
-          "--b:1px solid var(--line); --m:0 0 .5rem; --cur:pointer")
-_NAME_S = "--size:.85rem; --weight:500"
-_CAPTION_S = "--size:.7rem; --op:.7; --d:block"
-_DONE_S = "--size:.6rem; --weight:500; --tt:uppercase; --ml:.35rem; --op:.75"
-
 
 def _has_models(request: Request) -> bool:
     cfg = request.app.state.config
@@ -115,43 +107,39 @@ def _defaults(request: Request, user) -> dict[str, bool]:
     }
 
 
-def _row(key: str, label: str, caption: str, on: bool, done: bool, _) -> str:
-    badge = (
-        f'<small style="{_DONE_S}">{e(_("already configured"))}</small>' if done else ""
-    )
-    return (
-        f'<label style="{_ROW_S}">'
-        f'<input data-cy="welcome-{e(key.replace("_", "-"), quote=True)}" type="checkbox" '
-        f'name="{e(key, quote=True)}" value="1"{" checked" if on else ""} />'
-        f'<span><span style="{_NAME_S}">{e(_(label))}</span>{badge}'
-        f'<small style="{_CAPTION_S}">{e(_(caption))}</small></span></label>'
-    )
-
-
 def render_welcome(request: Request, user) -> str:
+    """Build the context; `templates/welcome.html` decides how it looks.
+
+    Nothing here writes markup or calls `escape`. The template is autoescaped,
+    so escaping is structural rather than remembered at seven interpolations —
+    and it is read from disk, so changing how this panel LOOKS costs a refresh
+    instead of an app restart.
+
+    Every string is translated here rather than in the template. A `_()` inside
+    the markup would be a second place deciding what language a page is in.
+    """
     _ = translator(request)
-    lang = lang_query(request)
     on = _defaults(request, user)
     done = {"connection": _has_models(request), "users": _has_other_users()}
-    rows = "".join(
-        _row(k, lb, cp, on[k], done.get(k, False), _) for k, lb, cp in STEPS
+    return render(
+        "welcome.html",
+        lang=lang_query(request),
+        legend=_("Choose what to set up. You can change any of it later in Admin settings."),
+        start=_("Get Started"),
+        rows=[
+            {
+                # The stored key uses the modal's vocabulary; the hook uses
+                # hyphens. Both are needed and they differ only here.
+                "key": key,
+                "hook": f"welcome-{key.replace('_', '-')}",
+                "label": _(label),
+                "caption": _(caption),
+                "on": on[key],
+                "badge": _("already configured") if done.get(key, False) else "",
+            }
+            for key, label, caption in STEPS
+        ],
     )
-    return f"""
-<section data-cy="welcome-panel">
-  <form method="post" action="/pages/admin/setup/welcome/start{lang}">
-    <fieldset style="--b:0; --p:0; --m:0">
-      <legend style="--size:.85rem; --weight:600; --p:0">
-        {e(_("Choose what to set up. You can change any of it later in Admin settings."))}
-      </legend>
-      {rows}
-    </fieldset>
-    <button data-cy="welcome-start" type="submit"
-            style="--p:.45rem 1rem; --br:999px; --b:1px solid var(--line); --cur:pointer">
-      {e(_("Get Started"))}
-    </button>
-  </form>
-</section>
-"""
 
 
 async def start_wizard(request: Request, user, form: dict) -> str:

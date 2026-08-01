@@ -1,0 +1,57 @@
+{# Developer mode. Two shapes depending on whether the instance is running from
+   source: a short list of facts when it is, the setup steps when it is not.
+
+   `<ol>` for the steps, because they are numbered instructions in sequence and
+   that is what the element means — it renders the numbers, so the three
+   hand-written digits the Svelte version carried are gone. `<ul>` for the
+   dev-mode block, because nothing there is a step to follow.
+
+   Commands are NOT translated anywhere in this file. They are shell lines to
+   paste, and a catalog that ever gained an entry for one would break the
+   reader's terminal. #}
+{% from "_macros.html" import submit, saved %}
+{% macro links(items) -%}
+  {% for link in items %}
+  <a href="{{ link.href }}" target="_blank" rel="noopener" style="--size:.75rem; --d:block; --m:0 0 .3rem">{{ link.text }}</a>
+  {% endfor %}
+{%- endmacro %}
+<section data-cy="developer-panel" data-dev-mode="{{ 'true' if dev_mode else 'false' }}">
+  {% if dev_mode %}
+  <p style="--size:.9rem">{{ live_source }}</p>
+  <ul style="--size:.8rem">
+    <li>{{ mounted }}</li>
+    <li>{{ hot_reload }}</li>
+  </ul>
+  {{ links(dev_links) }}
+  {% else %}
+  <p>{{ intro }}</p>
+  <ol style="--p:0; --list-style:none">
+    {% for step in steps %}
+    <li style="--d:flex; --g:.75rem; --p:.7rem; --br:.6rem; --b:1px solid var(--line); --m:0 0 .6rem">
+      <span style="--size:1.1rem; --weight:600; --op:.45; --w:1.5rem; --ta:center; --fs:0">{{ step.num }}</span>
+      <span>
+        <span style="--size:.85rem; --weight:500">{{ step.title }}</span>
+        {% if step.command %}
+        <code style="--size:.7rem; --p:.2rem .4rem; --br:.25rem; --b:1px solid var(--line)">{{ step.command }}</code>
+        {% endif %}
+        <small style="--size:.68rem; --op:.7; --d:block; --m:.2rem 0 0">{{ step.hint }}</small>
+      </span>
+    </li>
+    {% endfor %}
+  </ol>
+  <form method="post" action="/pages/admin/setup/developer/save{{ lang }}">
+    <label style="--d:flex; --g:.75rem; --p:.7rem; --br:.6rem; --b:1px solid var(--line); --m:0 0 .6rem; --cur:pointer">
+      <input data-cy="developer-mission-signup" type="checkbox" name="devMissionSignup" value="1"{% if signed_up %} checked{% endif %} />
+      <span>
+        <span style="--size:.85rem; --weight:500">{{ signup_label }}</span>
+        <small style="--size:.68rem; --op:.7; --d:block; --m:.2rem 0 0">{{ signup_hint }}</small>
+      </span>
+    </label>
+    {{ submit("developer-save", save_label) }}
+    {% if note %}
+    {{ saved("developer-saved", note) }}
+    {% endif %}
+  </form>
+  {{ links(links_) }}
+  {% endif %}
+</section>

@@ -35,30 +35,24 @@ we did not build would be a spec that quietly stopped checking.
 
 from __future__ import annotations
 
-from html import escape as e
-
 from fastapi import Request
 
 from sage_is_ai.pages.i18n import lang_query, translator
+from sage_is_ai.pages.templates import render
 
 __all__ = ["render_complete", "finish_setup"]
 
-_LINE_S = "--d:flex; --ai:center; --g:.5rem; --size:.85rem; --m:0 0 .35rem"
-_MARK_S = "--fs:0"
 
 
-def _line(key: str, text: str, ok: bool = True) -> str:
-    return (
-        f'<li data-check="{e(key, quote=True)}" style="{_LINE_S}">'
-        f'<span style="{_MARK_S}" aria-hidden="true">{"&check;" if ok else "&circlearrowright;"}</span>'
-        f"<span>{e(text)}</span></li>"
-    )
+def _line(key: str, text: str, ok: bool = True) -> dict:
+    """One summary row, as data. `templates/complete.html` decides how it looks."""
+    return {"key": key, "text": text, "ok": ok}
 
 
-def _facts(request: Request, user) -> tuple[list[str], dict[str, int]]:
+def _facts(request: Request, user) -> tuple[list[dict], dict[str, int]]:
     """Everything the summary reports, gathered once.
 
-    Returns the rendered lines and the counts, so the counts can also go on the
+    Returns the lines and the counts, so the counts can also go on the
     root element as data attributes. A spec asserting "2 users" through the
     attribute cannot be fooled by a pluralisation change.
     """
@@ -68,7 +62,7 @@ def _facts(request: Request, user) -> tuple[list[str], dict[str, int]]:
 
     _ = translator(request)
     cfg = request.app.state.config
-    lines: list[str] = []
+    lines: list[dict] = []
 
     # Auth methods, same three the Svelte panel checks and in the same order.
     methods = []
@@ -130,25 +124,18 @@ def _facts(request: Request, user) -> tuple[list[str], dict[str, int]]:
 
 
 def render_complete(request: Request, user) -> str:
+    """Build the context; `templates/complete.html` decides how it looks."""
     _ = translator(request)
-    lang = lang_query(request)
     lines, counts = _facts(request, user)
-    # A <ul> of what is done, not a stack of divs. The list is the meaning.
-    return f"""
-<section data-cy="complete-panel" data-users="{counts['users']}"
-         data-features="{counts['features']}" data-ready="{counts['ready']}">
-  <p style="--size:.9rem">{e(_("This instance is ready to use."))}</p>
-  <ul style="--p:0; --list-style:none; --m:1rem 0">{''.join(lines)}</ul>
-  <form method="post" action="/pages/admin/setup/complete/finish{lang}">
-    <button data-cy="complete-finish" type="submit"
-            style="--p:.5rem 1.2rem; --br:999px; --b:1px solid var(--line); --cur:pointer">
-      {e(_("Let's Go"))}
-    </button>
-    <a data-cy="complete-refresh" href="/pages/admin/setup/complete{lang}"
-       style="--size:.75rem; --ml:.75rem">{e(_("Refresh"))}</a>
-  </form>
-</section>
-"""
+    return render(
+        "complete.html",
+        lang=lang_query(request),
+        lines=lines,
+        counts=counts,
+        ready_text=_("This instance is ready to use."),
+        go_label=_("Let's Go"),
+        refresh_label=_("Refresh"),
+    )
 
 
 async def finish_setup(request: Request, user) -> None:

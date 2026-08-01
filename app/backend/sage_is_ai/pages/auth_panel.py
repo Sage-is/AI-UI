@@ -34,11 +34,11 @@ already native HTML and needed no translation.
 
 from __future__ import annotations
 
-from html import escape as e
 
 from fastapi import Request
 
 from sage_is_ai.pages.i18n import lang_query, translator
+from sage_is_ai.pages.templates import render
 
 __all__ = ["render_auth", "save_auth", "PROVIDERS", "SECRETS", "TOGGLES"]
 
@@ -94,107 +94,11 @@ SMTP_FIELDS: tuple[tuple[str, str, str, str], ...] = (
     ("MAGIC_LINK_SMTP_FROM", "From address", "email", "noreply@yourdomain.com"),
 )
 
-_CARD_S = "--b:1px solid var(--line); --br:.6rem; --m:0 0 .6rem; --p:0"
-_SUMMARY_S = "--p:.7rem .8rem; --cur:pointer; --size:.85rem; --weight:500"
-_INNER_S = "--p:0 .8rem .8rem"
-_LABEL_S = "--size:.72rem; --weight:500; --d:block; --m:.5rem 0 .15rem"
-_INPUT_S = ("--w:100%; --bxs:border-box; --p:.4rem .6rem; --size:.78rem; "
-            "--br:.4rem; --b:1px solid var(--line); --bgc:transparent; --c:inherit")
-_HELP_S = "--size:.7rem; --op:.7; --lh:1.5; --m:.35rem 0 0"
-_CODE_S = "--size:.68rem; --p:.1rem .3rem; --br:.25rem; --b:1px solid var(--line); --wb:break-all"
-_ROW_S = ("--d:flex; --ai:start; --g:.6rem; --p:.6rem; --br:.5rem; "
-          "--b:1px solid var(--line); --m:0 0 .4rem; --cur:pointer")
-_CAPTION_S = "--size:.7rem; --op:.7; --d:block"
-_BADGE_S = ("--size:.6rem; --weight:600; --tt:uppercase; --ml:.4rem; --p:.1rem .3rem; "
-            "--br:.25rem; --b:1px solid var(--line)")
 
 
 def _hook(key: str) -> str:
     """A test hook derived from the config key, so the two cannot drift apart."""
     return "auth-" + key.lower().replace("_", "-")
-
-
-def _text_input(name: str, kind: str, placeholder: str, value: str, _) -> str:
-    """One input. Secret fields render empty and say why."""
-    if name in SECRETS:
-        stored = bool(value)
-        hint = _("A secret is stored. Leave blank to keep it.") if stored else placeholder
-        return (
-            f'<input data-cy="{_hook(name)}" type="password" name="{e(name, quote=True)}" '
-            f'value="" autocomplete="new-password" data-stored="{str(stored).lower()}" '
-            f'placeholder="{e(hint, quote=True)}" style="{_INPUT_S}" />'
-        )
-    return (
-        f'<input data-cy="{_hook(name)}" type="{kind}" name="{e(name, quote=True)}" '
-        f'value="{e(value, quote=True)}" placeholder="{e(placeholder, quote=True)}" '
-        f'style="{_INPUT_S}" />'
-    )
-
-
-def _provider(row: tuple[str, ...], cfg: dict, base_url: str, _) -> str:
-    id_key, secret_key, label, url, link, how, path, id_ph, secret_ph = row
-    client_id = str(cfg.get(id_key) or "")
-    configured = bool(client_id and cfg.get(secret_key))
-    badge = f'<small style="{_BADGE_S}">{e(_("configured"))}</small>' if configured else ""
-    callback = (
-        f"{e(_('Set the redirect URI to:'))} <code style=\"{_CODE_S}\">{e(base_url + path)}</code>"
-        if base_url
-        else ""
-    )
-    return f"""
-<details data-cy="{_hook(id_key).removesuffix('-client-id')}-card" style="{_CARD_S}"{" open" if configured else ""}>
-  <summary style="{_SUMMARY_S}">{e(_(label))}{badge}</summary>
-  <div style="{_INNER_S}">
-    <p style="{_HELP_S}">
-      <a href="{e(url, quote=True)}" target="_blank" rel="noopener">{e(_(link))} &#8599;</a>
-      &mdash; {e(_(how))} {callback}
-    </p>
-    <label style="{_LABEL_S}">{e(_("Client ID"))}</label>
-    {_text_input(id_key, "text", id_ph, client_id, _)}
-    <label style="{_LABEL_S}">{e(_("Client secret"))}</label>
-    {_text_input(secret_key, "password", secret_ph, str(cfg.get(secret_key) or ""), _)}
-  </div>
-</details>
-"""
-
-
-def _toggle(key: str, label: str, caption: str, on: bool, _) -> str:
-    """One checkbox, always rendered. See the module docstring on why always."""
-    return (
-        f'<label style="{_ROW_S}">'
-        f'<input data-cy="{_hook(key)}" type="checkbox" name="{e(key, quote=True)}" '
-        f'value="1"{" checked" if on else ""} />'
-        f'<span><span style="--size:.82rem; --weight:500">{e(_(label))}</span>'
-        f'<small style="{_CAPTION_S}">{e(_(caption))}</small></span>'
-        f"</label>"
-    )
-
-
-def _magic_link(cfg: dict, _) -> str:
-    on = bool(cfg.get("ENABLE_MAGIC_LINK_LOGIN"))
-    configured = on and bool(cfg.get("MAGIC_LINK_SMTP_HOST"))
-    badge = f'<small style="{_BADGE_S}">{e(_("configured"))}</small>' if configured else ""
-    fields = "".join(
-        f'<label style="{_LABEL_S}">{e(_(label))}</label>'
-        + _text_input(name, kind, placeholder, str(cfg.get(name) or ""), _)
-        for name, label, kind, placeholder in SMTP_FIELDS
-    )
-    return f"""
-<details data-cy="auth-magic-link-card" style="{_CARD_S}"{" open" if on else ""}>
-  <summary style="{_SUMMARY_S}">{e(_("Email Magic Link"))}<small style="{_BADGE_S}">{e(_("Beta"))}</small>{badge}</summary>
-  <div style="{_INNER_S}">
-    <p style="{_HELP_S}">
-      {e(_("Users with existing accounts can sign in by clicking a link sent to their email. No password needed. Requires SMTP."))}
-    </p>
-    <label style="{_ROW_S}">
-      <input data-cy="{_hook('ENABLE_MAGIC_LINK_LOGIN')}" type="checkbox"
-             name="ENABLE_MAGIC_LINK_LOGIN" value="1"{" checked" if on else ""} />
-      <span><span style="--size:.82rem; --weight:500">{e(_("Enable Email Magic Link Login"))}</span></span>
-    </label>
-    {fields}
-  </div>
-</details>
-"""
 
 
 async def _config(request: Request, user) -> tuple[dict, dict]:
@@ -207,43 +111,90 @@ async def _config(request: Request, user) -> tuple[dict, dict]:
 
 
 async def render_auth(request: Request, user, saved: bool = False) -> str:
+    """Build the context; `templates/auth.html` decides how it looks."""
     _ = translator(request)
-    lang = lang_query(request)
     oauth, admin = await _config(request, user)
     base_url = str(admin.get("WEBUI_URL") or "").rstrip("/")
     merged = {**oauth, **admin}
 
-    cards = "".join(_provider(row, oauth, base_url, _) for row in PROVIDERS)
-    # `home` rather than `_` for the discarded column. `_` is the translator here,
-    # and unpacking over it would shadow it for the rest of the comprehension.
-    toggles = "".join(
-        _toggle(key, label, caption, bool(merged.get(key)), _)
-        for key, home, label, caption in TOGGLES
-    )
-    note = (
-        f'<output data-cy="auth-saved" style="--size:.8rem; --op:.75">'
-        f'{e(_("Auth settings saved"))}</output>'
-        if saved
-        else ""
-    )
-    return f"""
-<section data-cy="auth-panel">
-  <form method="post" action="/pages/admin/setup/auth/save{lang}">
-    {cards}
-    {_magic_link(oauth, _)}
-    <fieldset style="--b:0; --p:0; --m:1rem 0 0">
-      <legend style="--size:.85rem; --weight:600; --p:0">{e(_("Authentication"))}</legend>
-      {toggles}
-    </fieldset>
-    <button data-cy="auth-save" type="submit"
-            style="--p:.45rem 1rem; --br:999px; --b:1px solid var(--line); --cur:pointer">
-      {e(_("Save"))}
-    </button>
-    {note}
-  </form>
-</section>
-"""
+    def field(name: str, kind: str, placeholder: str, value: str) -> dict:
+        """One input as data. Secret fields carry existence, never the value."""
+        secret = name in SECRETS
+        stored = secret and bool(value)
+        return {
+            "hook": _hook(name),
+            "name": name,
+            "kind": kind,
+            "secret": secret,
+            "stored": stored,
+            "value": "" if secret else value,
+            "placeholder": (
+                _("A secret is stored. Leave blank to keep it.")
+                if stored
+                else placeholder
+            ),
+        }
 
+    providers = []
+    for id_key, secret_key, label, url, link, how, path, id_ph, secret_ph in PROVIDERS:
+        client_id = str(oauth.get(id_key) or "")
+        providers.append(
+            {
+                "hook": _hook(id_key).removesuffix("-client-id") + "-card",
+                "label": _(label),
+                "configured": bool(client_id and oauth.get(secret_key)),
+                "url": url,
+                "link": _(link),
+                "how": _(how),
+                "callback": (base_url + path) if base_url else "",
+                "id_field": field(id_key, "text", id_ph, client_id),
+                "secret_field": field(
+                    secret_key, "password", secret_ph, str(oauth.get(secret_key) or "")
+                ),
+            }
+        )
+
+    magic_on = bool(oauth.get("ENABLE_MAGIC_LINK_LOGIN"))
+    return render(
+        "auth.html",
+        lang=lang_query(request),
+        providers=providers,
+        magic={
+            "on": magic_on,
+            "configured": magic_on and bool(oauth.get("MAGIC_LINK_SMTP_HOST")),
+            "hook": _hook("ENABLE_MAGIC_LINK_LOGIN"),
+            "title": _("Email Magic Link"),
+            "enable_label": _("Enable Email Magic Link Login"),
+            "help": _(
+                "Users with existing accounts can sign in by clicking a link sent to "
+                "their email. No password needed. Requires SMTP."
+            ),
+            "fields": [
+                {**field(name, kind, placeholder, str(oauth.get(name) or "")), "label": _(label)}
+                for name, label, kind, placeholder in SMTP_FIELDS
+            ],
+        },
+        # `home` rather than `_` for the discarded column. `_` is the translator
+        # here, and unpacking over it would shadow it for the rest of the loop.
+        toggles=[
+            {
+                "hook": _hook(key),
+                "key": key,
+                "label": _(label),
+                "caption": _(caption),
+                "on": bool(merged.get(key)),
+            }
+            for key, home, label, caption in TOGGLES
+        ],
+        legend=_("Authentication"),
+        configured_label=_("configured"),
+        beta_label=_("Beta"),
+        callback_label=_("Set the redirect URI to:"),
+        client_id_label=_("Client ID"),
+        client_secret_label=_("Client secret"),
+        save_label=_("Save"),
+        note=_("Auth settings saved") if saved else "",
+    )
 
 def _port(raw: object, fallback: int) -> int:
     """A port the model will accept. `MAGIC_LINK_SMTP_PORT` is typed `int`, and

@@ -1,0 +1,40 @@
+{# Local AI components. Document search and speech-to-text.
+
+   Two submit buttons, ONE form: the operator's choice of components is the same
+   either way and only the verb differs. `formaction` is the element that
+   already means that, so there is no second copy of the checkboxes.
+
+   A busy component cannot be selected — `ready` means there is nothing to do,
+   `downloading` means a graft would race the download and lose. #}
+{% from "_macros.html" import saved %}
+<section data-cy="search-audio-panel"
+  {%- for key, value in states.items() %} data-{{ key }}-status="{{ value }}"{% endfor %}>
+  <form method="post" action="/pages/admin/setup/search-audio/graft{{ lang }}">
+    <fieldset style="--b:0; --p:0; --m:0">
+      <legend style="--size:.85rem; --weight:600; --p:0">{{ legend }}</legend>
+      {% for row in rows %}
+      <label style="--d:flex; --ai:center; --g:.75rem; --p:.7rem; --br:.6rem; --b:1px solid var(--line); --m:0 0 .5rem; --cur:pointer">
+        <input data-cy="search-audio-{{ row.key }}" type="checkbox" name="{{ row.key }}" value="1"{% if row.busy %} disabled{% else %} checked{% endif %} />
+        <span>
+          <span style="--size:.85rem; --weight:500">{{ row.label }}</span>
+          {% if row.badge %}
+          {# The word says "already installed", not the raw state: a disabled
+             checkbox beside a badge reading "ready" reads as a bug, because the
+             reader has to infer that ready is WHY they cannot tick it. #}
+          <small data-state="{{ row.state }}" style="--size:.6rem; --weight:500; --tt:uppercase; --ml:.35rem">{{ row.badge }}</small>
+          {% endif %}
+          <small style="--size:.7rem; --op:.7; --d:block">{{ row.caption }}</small>
+        </span>
+      </label>
+      {% endfor %}
+    </fieldset>
+    <button data-cy="search-audio-graft" type="submit"
+            style="--p:.45rem 1rem; --br:999px; --b:1px solid var(--line); --cur:pointer">{{ graft_label }}&trade; {{ for_me_label }}</button>
+    <button data-cy="search-audio-download" type="submit"
+            formaction="/pages/admin/setup/search-audio/download{{ lang }}"
+            style="--p:.45rem 1rem; --br:999px; --b:1px solid var(--line); --cur:pointer; --ml:.5rem">{{ download_label }}</button>
+    {% if message %}
+    {{ saved("search-audio-result", message) }}
+    {% endif %}
+  </form>
+</section>

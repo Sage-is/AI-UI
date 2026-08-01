@@ -18,6 +18,12 @@ async-timeout
 aiocache
 aiofiles
 starlette-compress==1.6.0
+# Templating for the no-build pages (SPIKE, welcome panel only — 2026-07-31).
+# Adopted for two things line count does not measure: a template is data read
+# from disk, so `auto_reload` takes a markup edit from an app restart to a
+# refresh; and autoescape makes escaping structural instead of remembered at
+# every interpolation. BSD-3-Clause, compatible with the AGPL-3.0 in LICENSE.
+jinja2==3.1.6
 beautifulsoup4
 # Extras trimmed (8.I.1): zstd/cli/brotli silently re-installed zstandard,
 # Brotli, rich, and pygments — keeping any future dep cut from sticking.

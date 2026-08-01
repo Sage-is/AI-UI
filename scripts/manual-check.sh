@@ -15,8 +15,14 @@
 #   scripts/manual-check.sh              # boot, seed, print the walkthrough
 #   scripts/manual-check.sh --graft-ui   # also graft the example ui-Sprig
 #   KEEP=1 scripts/manual-check.sh      # leave it running after the script exits
-#   LIVE=1 scripts/manual-check.sh       # mount pages/ — edit and refresh, no rebuild
+#   LIVE=1 scripts/manual-check.sh       # mount + watch pages/ — no rebuild, no restart
+#   REUSE_DATA=1 scripts/manual-check.sh # keep the volume, so a mode switch skips seeding
 #   PORT=9443 scripts/manual-check.sh    # different port
+#
+# Most of the time you want the Make targets instead, which set these for you:
+#   make review        baked image        — the pass that decides whether it ships
+#   make review_live   mounted + watched  — while you are still changing it
+#   make review_rebuild                   — after touching anything Svelte
 #
 # Ctrl-C tears everything down.
 set -uo pipefail
@@ -29,11 +35,27 @@ EMAIL="${EMAIL:-admin@example.com}"; PASSWORD="${PASSWORD:-password}"
 HERE="$(cd "$(dirname "$0")/.." && pwd)"
 BASE="http://localhost:8101"
 
+# REUSE_DATA=1 keeps the data volume across a teardown.
+#
+# Switching between the baked image and LIVE=1 means RECREATING the container —
+# a bind mount cannot be added to a running one — and deleting the volume with
+# it made every flip cost a re-seeded admin and a re-grafted ui-Sprig on top of
+# the boot. That is the friction, not typing the flag.
+#
+# Signup hard-closes once an admin exists, so booting onto an existing volume
+# skips seeding entirely and the ui-Sprig is already there. The volume is still
+# a dedicated throwaway that touches nothing real; the DEFAULT stays
+# delete-on-exit so a plain run is a genuinely clean instance and the
+# first-run-experience surfaces are still reviewable.
 cleanup(){
   echo ""
   echo "tearing down…"
   docker rm -f "$ROOT" "$TLS" >/dev/null 2>&1 || true
-  docker volume rm "$VOL" >/dev/null 2>&1 || true
+  if [ "${REUSE_DATA:-0}" = "1" ]; then
+    echo "  keeping volume $VOL (REUSE_DATA=1) — remove it with: docker volume rm $VOL"
+  else
+    docker volume rm "$VOL" >/dev/null 2>&1 || true
+  fi
   rm -f /tmp/manual-Caddyfile
 }
 # KEEP=1 leaves the instance running after this script exits.
@@ -76,19 +98,25 @@ cleanup >/dev/null 2>&1
 # the baked code.
 PAGES_SRC="$HERE/app/backend/sage_is_ai/pages"
 LIVE_MOUNT=""
+LIVE_ENV=""
 if [ "${LIVE:-0}" = "1" ]; then
   [ -d "$PAGES_SRC" ] || { echo "LIVE=1 but $PAGES_SRC is missing"; exit 1; }
   LIVE_MOUNT="-v $PAGES_SRC:/app/backend/sage_is_ai/pages"
+  # The SAME path the mount uses. Passing it twice from one variable is what
+  # keeps the watched set and the mounted set from drifting — a reloader
+  # watching a directory nothing writes to is a feature that silently does
+  # nothing, which is the failure shape this repo keeps finding.
+  LIVE_ENV="-e PAGES_RELOAD_DIRS=/app/backend/sage_is_ai/pages"
 fi
 
 echo "== booting $IMG on a throwaway volume =="
 # SPRIG_REGISTRY points at the local registry so grafting works like it does in
 # the gates. ENABLE_SIGNUP is on only long enough to seed the first admin —
 # this fork hard-closes signup once one exists.
-# shellcheck disable=SC2086  # LIVE_MOUNT is either empty or one -v pair
+# shellcheck disable=SC2086  # LIVE_MOUNT/LIVE_ENV are empty or one flag pair each
 docker run -d --name "$ROOT" --network "$NET" -p 8101:8080 \
   -e SPRIG_REGISTRY=local-registry:5000 -e ENABLE_SIGNUP=True -e WEBUI_AUTH=True \
-  $LIVE_MOUNT \
+  $LIVE_MOUNT $LIVE_ENV \
   -v "$VOL:/app/backend/data" "$IMG" >/dev/null
 
 for _ in $(seq 1 120); do
@@ -103,7 +131,16 @@ echo "== seeding admin =="
 TOK="$(curl -s -X POST "$BASE/api/v1/auths/signup" -H 'Content-Type: application/json' \
   -d "{\"name\":\"Admin\",\"email\":\"$EMAIL\",\"password\":\"$PASSWORD\"}" \
   | python3 -c 'import sys,json; print(json.load(sys.stdin).get("token",""))' 2>/dev/null)"
-[ -n "$TOK" ] && echo "  ✅ $EMAIL / $PASSWORD" || echo "  ⚠️  signup returned no token (an admin may already exist)"
+# An empty token is EXPECTED on a reused volume — signup hard-closes once an
+# admin exists — and is a real problem on a fresh one. Saying which costs a
+# branch and saves someone chasing a warning that means "it worked".
+if [ -n "$TOK" ]; then
+  echo "  ✅ $EMAIL / $PASSWORD"
+elif [ "${REUSE_DATA:-0}" = "1" ]; then
+  echo "  ✅ $EMAIL / $PASSWORD  (already seeded on the kept volume)"
+else
+  echo "  ⚠️  signup returned no token (an admin may already exist)"
+fi
 
 if [ "${1:-}" = "--graft-ui" ] && [ -n "$TOK" ]; then
   echo "== grafting the example ui-Sprig so the marketplace slot is visible =="
@@ -134,21 +171,24 @@ for _ in $(seq 1 30); do
 done
 echo "  ✅ https://localhost:$PORT  (self-signed — accept the warning once)"
 
-# What LIVE=1 buys you, said where you will read it. The two halves reload
-# differently and guessing wrong reads as "my edit did nothing":
-#   assets  StaticFiles reads from disk per request  -> refresh
-#   panels  Python, imported once at boot            -> restart the container
+# What LIVE=1 buys you, said where you will read it. Nothing here needs a hand
+# any more — the two halves just take different amounts of time, and knowing
+# which is which is the difference between waiting and thinking it is broken.
 if [ "${LIVE:-0}" = "1" ]; then
   LIVE_NOTE="
-  LIVE — app/backend/sage_is_ai/pages/ is mounted, so no rebuild.
-    pages/assets/*.css, *.js   edit, then just refresh the page
-    pages/*.py                 edit, then: docker restart $ROOT   (~3s)
-  You are looking at your WORKING TREE, not the image. Re-run without LIVE=1
-  for the review pass that decides whether this ships."
+  LIVE — app/backend/sage_is_ai/pages/ is mounted and watched. No rebuild, and
+  nothing to restart by hand:
+    pages/assets/*.css, *.js   saved -> the stylesheet swaps IN PLACE, so the
+                               page keeps its scroll and any open dialog
+    pages/*.py                 saved -> the app restarts itself and the tab
+                               reloads when it comes back
+  You are looking at your WORKING TREE, not the image, and /admin/diagnostics
+  reports the reloader as degraded on purpose. Re-run without LIVE=1 — or
+  \`make review\` — for the pass that decides whether this ships."
 else
   LIVE_NOTE="
-  Editing these pages? LIVE=1 scripts/manual-check.sh mounts pages/ so a
-  change costs a refresh instead of a rebuild. This run is the baked image."
+  Editing these pages? \`make review_live\` mounts and watches pages/, so a
+  change lands by itself. This run is the baked image."
 fi
 
 cat <<WALKTHROUGH

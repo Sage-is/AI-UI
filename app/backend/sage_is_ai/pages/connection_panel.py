@@ -27,11 +27,10 @@ rest of the list is read, preserved, and written back untouched.
 
 from __future__ import annotations
 
-from html import escape as e
-
 from fastapi import Request
 
 from sage_is_ai.pages.i18n import lang_query, translator
+from sage_is_ai.pages.templates import render
 
 __all__ = ["render_connection", "verify_and_save", "PROVIDERS"]
 
@@ -40,16 +39,6 @@ PROVIDERS: tuple[tuple[str, str, str, str, bool], ...] = (
     ("openai", "OpenAI API", "url", "https://api.openai.com/v1", True),
     ("ollama", "Ollama", "url", "http://host.docker.internal:11434", False),
 )
-
-_CARD_S = ("--p:.85rem; --br:.6rem; --b:1px solid var(--line); --m:0 0 .75rem")
-_NAME_S = "--size:.85rem; --weight:600"
-_STATE_S = "--size:.6rem; --weight:500; --tt:uppercase; --ml:.4rem; --op:.75"
-_LABEL_S = "--size:.7rem; --weight:500; --d:block; --m:.5rem 0 .15rem"
-_INPUT_S = ("--w:100%; --bxs:border-box; --p:.4rem .6rem; --size:.78rem; "
-            "--br:.4rem; --b:1px solid var(--line); --bgc:transparent; --c:inherit")
-_BUTTON_S = ("--p:.35rem .8rem; --size:.75rem; --br:.4rem; "
-             "--b:1px solid var(--line); --cur:pointer; --m:.6rem 0 0")
-
 
 def _state(request: Request, provider: str) -> tuple[str, str]:
     """Current URL and whether this provider is switched on.
@@ -74,58 +63,38 @@ def _has_key(request: Request) -> bool:
     return bool(keys and keys[0])
 
 
-def _card(request: Request, key: str, label: str, _f: str, placeholder: str,
-          takes_key: bool, _, lang: str) -> str:
-    url, state = _state(request, key)
-    badge = (
-        f'<small data-state="{e(state, quote=True)}" style="{_STATE_S}">{e(state)}</small>'
-        if state
-        else ""
-    )
-    # The key field is empty by design. Its placeholder is the only thing that
-    # reports whether one is stored, and it reports existence, never the value.
-    key_field = (
-        f'<label style="{_LABEL_S}">{e(_("API Key"))}</label>'
-        f'<input data-cy="connection-openai-key" type="password" name="api_key" '
-        f'autocomplete="off" placeholder="'
-        f'{_("a key is stored, leave blank to keep it") if _has_key(request) else "sk-..."}" '
-        f'style="{_INPUT_S}" />'
-        if takes_key
-        else ""
-    )
-    return f"""
-<article data-cy="connection-{e(key, quote=True)}" data-provider-state="{e(state or 'unset', quote=True)}"
-         style="{_CARD_S}">
-  <form method="post" action="/pages/admin/setup/connection/{e(key, quote=True)}{lang}">
-    <strong style="{_NAME_S}">{e(_(label))}</strong>{badge}
-    <label style="{_LABEL_S}">{e(_("API Base URL"))}</label>
-    <input data-cy="connection-{e(key, quote=True)}-url" type="text" name="url"
-           value="{e(url, quote=True)}" placeholder="{e(placeholder, quote=True)}"
-           style="{_INPUT_S}" />
-    {key_field}
-    <button data-cy="connection-{e(key, quote=True)}-verify" type="submit"
-            style="{_BUTTON_S}">{e(_("Verify & Save"))}</button>
-  </form>
-</article>
-"""
-
-
 def render_connection(request: Request, message: str = "") -> str:
+    """Build the context; `templates/connection.html` decides how it looks."""
     _ = translator(request)
-    lang = lang_query(request)
-    cards = "".join(_card(request, *p, _, lang) for p in PROVIDERS)
-    note = (
-        f'<output data-cy="connection-result" style="--size:.8rem; --op:.8">{e(message)}</output>'
-        if message
-        else ""
+    cards = []
+    for key, label, _field, placeholder, takes_key in PROVIDERS:
+        url, state = _state(request, key)
+        cards.append(
+            {
+                "key": key,
+                "label": _(label),
+                "url": url,
+                "state": state,
+                "placeholder": placeholder,
+                "takes_key": takes_key,
+                # Reports EXISTENCE, never the value.
+                "key_placeholder": (
+                    _("a key is stored, leave blank to keep it")
+                    if takes_key and _has_key(request)
+                    else "sk-..."
+                ),
+            }
+        )
+    return render(
+        "connection.html",
+        lang=lang_query(request),
+        cards=cards,
+        message=message,
+        intro=_("Add at least one connection to start chatting with AI models."),
+        url_label=_("API Base URL"),
+        key_label=_("API Key"),
+        verify_label=_("Verify & Save"),
     )
-    return f"""
-<section data-cy="connection-panel">
-  <p style="--size:.85rem">{e(_("Add at least one connection to start chatting with AI models."))}</p>
-  {cards}
-  {note}
-</section>
-"""
 
 
 async def verify_and_save(request: Request, user, provider: str, form: dict) -> str:

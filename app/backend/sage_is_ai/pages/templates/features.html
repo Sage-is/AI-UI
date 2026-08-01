@@ -1,0 +1,16 @@
+{# Platform feature toggles. Five checkboxes over the admin config. #}
+{% from "_macros.html" import checkbox_row, submit, saved %}
+<section data-cy="features-panel">
+  <form method="post" action="/pages/admin/setup/features/save{{ lang }}">
+    <fieldset style="--b:0; --p:0; --m:0">
+      <legend style="--size:.85rem; --weight:600; --p:0">{{ legend }}</legend>
+      {% for row in rows %}
+      {{ checkbox_row(row) }}
+      {% endfor %}
+    </fieldset>
+    {{ submit("features-save", save_label) }}
+    {% if note %}
+    {{ saved("features-saved", note) }}
+    {% endif %}
+  </form>
+</section>

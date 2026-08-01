@@ -477,11 +477,40 @@ def _check_alembic_head() -> dict:
         )
 
 
+def _check_dev_reloader() -> dict:
+    """Report the development reloader, because it changes how the app runs.
+
+    `PAGES_RELOAD_DIRS` pins the app to a single worker — uvicorn cannot reload
+    multi-worker — and runs a filesystem watcher. This is for a editing panels and wrong for anything serving users, and neither is visible
+    from the outside.
+
+    An operator looking at an instance that is oddly slow under load should not
+    have to read boot logs to find that out. `degraded` rather than
+    `unreachable`: everything works, it is just running a configuration nobody
+    would choose on purpose for production.
+
+    Read from the environment rather than the imported constant, so a value set
+    after import is still reported. This has to be true about the process as it
+    is running, not as it started.
+    """
+    watching = os.environ.get("PAGES_RELOAD_DIRS", "").strip()
+    if not watching:
+        return _row("ok", "diagnostics.summary.dev_reloader.ok")
+    return _row(
+        "degraded",
+        "diagnostics.summary.dev_reloader.degraded",
+        {"paths": watching},
+        issue_type="dev_reloader_active",
+        technical={"watching": watching, "workers": 1},
+    )
+
+
 def _boot_status_section() -> dict:
     return {
         "data_dir_writable": _check_data_dir_writable(),
         "secret_key_persisted": _check_webui_secret_key(),
         "alembic_head": _check_alembic_head(),
+        "dev_reloader": _check_dev_reloader(),
     }
 
 

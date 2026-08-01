@@ -26,6 +26,32 @@ Output does not earn a hook. Preview text, computed labels, rendered values. The
 
 **7. Measure, and report the number you actually got.** The first Sprigs fragment was 208 lines and only reached 157 after someone asked whether it could be cleaner. A first draft is not a measurement.
 
+## The dev loop
+
+Never run `make it_build` to look at something. These pages have no build step, and until 31 July 2026 that promise stopped at the container wall — every one-line style tweak meant rebuilding a 619 MB image. It does not any more.
+
+| you want to | run |
+| --- | --- |
+| change a page and watch it | `make review_live` |
+| judge whether it ships | `make review` |
+| change anything Svelte | `make review_rebuild` |
+
+Under `review_live` the pages package is mounted and watched, and **nothing needs a hand**:
+
+- **Save a `.css` or `.js` under `pages/assets/`** and the stylesheet swaps in place. No reload, so the page keeps its scroll position and any open dialog. That matters more than it sounds: styling a wizard panel used to mean reopening the wizard after every save.
+- **Save a `.py`** and the app restarts itself in about 2.8 seconds, then the tab reloads when it comes back.
+- **Switching between `review_live` and `review`** takes about 7 seconds, because the data volume is kept and the admin is already seeded.
+
+Open `/pages/` for an index of every server-rendered page. It carries a banner naming what is watched whenever the reloader is on.
+
+One environment variable drives both halves, `PAGES_RELOAD_DIRS`, so the reloader and the thing that tells the browser about it cannot drift apart. It is off in production and `/admin/diagnostics` reports it as degraded whenever it is on.
+
+**Two things about this are worth knowing rather than rediscovering.**
+
+The Python half needs no file watcher. A uvicorn restart drops every open connection, and `EventSource` reconnects by itself, so the restart *is* the signal — a reconnect means the server went away and came back. Only assets need watching, because they are served from disk and restart nothing.
+
+The gates deliberately have no live mode. `make e2e`, `e2e_both` and `wizard_smoke` always boot the baked image with nothing mounted, because a guard-rail run against a working tree tests something we do not ship. Do not add one.
+
 ## Design rules that produced the numbers
 
 ### Call the API handler, never round-trip your own API
@@ -72,7 +98,7 @@ The prune response returns `messages` rather than booleans, because the Svelte p
 
 The parity gate is a coverage floor. Identical hooks do not mean identical behaviour, since a button that renders and does nothing carries the same `data-cy` as one that works. That is the bug it was built after. Behaviour stays each surface spec's job.
 
-A green suite is the weakest evidence on an interactive surface. Phase S shipped an autoscroll that passed 13/13 under a real browser driver and was broken on a real trackpad. Phase 2 shipped a fix button that rendered and did nothing while every assertion passed. So every migrated surface gets a human pass before it takes over a route, and `scripts/manual-check.sh` boots a seeded instance with both implementations live for exactly that. Run it with `KEEP=1` if the review will outlast the terminal you started it from.
+A green suite is the weakest evidence on an interactive surface. Phase S shipped an autoscroll that passed 13/13 under a real browser driver and was broken on a real trackpad. Phase 2 shipped a fix button that rendered and did nothing while every assertion passed. So every migrated surface gets a human pass before it takes over a route, and `make review` boots a seeded instance for exactly that. Use `make review`, not `review_live`, for the pass that decides: a review of your working tree is not a review of the artifact you ship.
 
 Be careful about the opposite mistake, though, because we made it on branding. The colour picker looked like a human-only control, since no driver can open an OS colour dialog. But that dialog is the browser's code. Ours is the handler underneath, and a synthetic `input` event reaches it exactly as a real one does, so both directions of the picker and its hex field are tested now. Before filing something as human-only, work out whether the part you care about is your code or the browser's.
 
@@ -80,5 +106,11 @@ Be careful about the opposite mistake, though, because we made it on branding. T
 
 - Styling is decided and the split has moved. `startr.style` loads before `pages.css` so page rules still win, but props are the default now and `pages.css` is reserved for what props cannot express. The URL is unversioned by decision, with `/v1/` and SRI coming.
 - Sprigs and diagnostics still use classes. They were built under the old split and their generated rows carry `.sprig-card` and `.diag-row`. Converting them is follow-up work rather than a rewrite, and it is worth doing for consistency rather than line count, since their CSS is already written and paid for.
-- Templating is decided: no engine, keep the f-strings. This entry used to say roughly half of each panel's Python was hand-built HTML strings, and that a template engine was the only thing that would delete it. Measured against the three call sites, markup is 20% of the code in sprigs, 20% in diagnostics and 33% in branding. An engine does not delete those lines, it moves them into a second file type and adds a loader and a dependency to read them back. The two things that actually moved the numbers were native HTML, which bought diagnostics its 67%, and props instead of a stylesheet, which took branding from 8% to 31%. Neither is something templating touches. Revisit only if a surface appears whose markup share is genuinely near half.
-- Locale is unsolved. Server-rendered pages read `en-US` only, because the reader's language lives in `localStorage` where no server can see it. Solve this before any migrated page takes over a real route. One option would be client side i18e, another would be a LocaleMiddleware.
+- Templating is DONE. All twelve panels are Jinja2 as of 1 August 2026. The measurements that decided it, taken on one panel before the other eleven: a **template edit applies in 0.48 s with no app restart**, against **2.89 s and a restart** for the equivalent Python edit — because a template is data read from disk and Jinja's `auto_reload` re-reads it, while uvicorn's reloader watches `*.py` only. Across all twelve: **1,543 → 1,164 Python code lines (−379)**, plus 490 lines of template and a 16-line helper, so **+9% overall**. The 2026-07-28 measurement was right and still is: an engine RELOCATES markup rather than deleting it, and anyone arguing this on line count is arguing the wrong case. What it bought is the dev loop and **zero hand-written escape calls left in any panel** — escaping is structural now instead of remembered at every interpolation. Not one guard-rail spec was touched.
+
+- The history, because the reasoning mattered more than the verdict: this entry said "no engine" on 28 July, on the measurement that markup is only 20–33% of each panel and an engine relocates rather than deletes it. That measurement was never wrong and still is not. What changed on 31 July is that the case stopped resting on line count — the dev loop and structural escaping are worth paying +9% for, and neither is something the original argument had weighed.
+
+- `shell.py` stays an f-string, and that is a decision rather than an omission. Its markup does not change, so `auto_reload` buys nothing; and it interpolates three escaped values against four RAW ones, so a template would need four `| safe` markers — the escape hatch that undoes what autoescape is for. Revisit if that ratio flips or a second layout appears.
+
+
+- Locale is solved. `pages/i18n.py` resolves a locale per request from `?lang=` or `Accept-Language`, the image ships all 56 catalogs, and every link and form carries the parameter onward. It travels in the URL rather than a cookie so each rendering stays cacheable on its own address — a cookie would force `Vary: Cookie`, and the auth cookie rides in the same header, so nothing would share. The keys *are* the English text, so an untranslated key renders as English rather than as a blank, which is what made it safe to apply at 67 call sites. `diagnostics_panel.py` is the one surface still English-only; it needs a locale threaded four signatures deep and is filed in TODO.md.
