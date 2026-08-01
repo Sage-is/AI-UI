@@ -17,8 +17,13 @@ from html import escape
 from uuid import uuid4
 from typing import AsyncIterator, Literal
 
-from fastapi import APIRouter, Depends, Form, HTTPException, Request
-from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, Response, UploadFile
+from fastapi.responses import (
+    HTMLResponse,
+    JSONResponse,
+    RedirectResponse,
+    StreamingResponse,
+)
 
 from sage_is_ai.env import PAGES_RELOAD_DIRS
 from sage_is_ai.pages import ASSETS_DIR
@@ -47,6 +52,16 @@ from sage_is_ai.pages.search_audio_panel import (
 )
 from sage_is_ai.pages.diagnostics_panel import render_diagnostics
 from sage_is_ai.pages.sprigs_panel import render_panel, run_action
+from sage_is_ai.pages.agents_panel import (
+    AVATAR_CACHE,
+    avatar_bytes,
+    export_agents,
+    import_agents,
+    render_agents,
+    # Aliased: `sprigs_panel` exports a `run_action` too, and two callables
+    # with one name in one module is how the wrong one gets called.
+    run_action as run_agent_action,
+)
 
 router = APIRouter()
 
@@ -368,6 +383,110 @@ async def branding_save(
     return HTMLResponse(await save_branding(request, user, dict(form)))
 
 
+# ── The Agents surface ────────────────────────────────────────────────────────
+#
+# Permission-gated, NOT admin-only, so it does not use `require_admin_page`. The
+# check below reuses `has_permission` against the same key the JSON API checks
+# (`workshop.models`) rather than restating the rule — the SPA layout guards on
+# `$user?.permissions?.workshop?.models` and a second copy here would be the
+# 143rd restatement in an audit that already counted 142.
+def _require_agents_reader(request: Request, user):
+    from sage_is_ai.utils.access_control import has_permission
+
+    if user.role == "admin":
+        return user
+    # `request.app.state.config.USER_PERMISSIONS`, NOT `DEFAULT_USER_PERMISSIONS`
+    # — the same table `create_new_model` reads. The defaults are what ships;
+    # this is what the operator saved, and reading the wrong one would let this
+    # page ignore a policy the JSON API enforces.
+    if not has_permission(
+        user.id, "workshop.models", request.app.state.config.USER_PERMISSIONS
+    ):
+        raise HTTPException(status_code=403, detail="Workshop access required")
+    return user
+
+
+@router.get("/workshop/agents", response_class=HTMLResponse)
+async def agents_page(
+    request: Request,
+    q: str = "",
+    tag: str = "",
+    user=Depends(require_page_user),
+) -> HTMLResponse:
+    """The agent list, rendered. No script on the page at all.
+
+    Search and the tag filter are a GET form and links, so their state is in the
+    URL: shareable, back-button-correct, and cacheable per query. The Svelte
+    page holds them in component state and ships `marked`, `sortablejs` and
+    `file-saver` to draw the same list.
+    """
+    _require_agents_reader(request, user)
+    return _whole_page(
+        request, "workshop/agents", await render_agents(request, user, query=q, tag=tag)
+    )
+
+
+@router.post("/workshop/agents/{verb}/{agent_id:path}", response_class=HTMLResponse)
+async def agents_action(
+    verb: Literal["toggle", "hide", "clone", "delete"],
+    agent_id: str,
+    request: Request,
+    user=Depends(require_page_user),
+) -> HTMLResponse:
+    """One row action, then the whole page back.
+
+    `Literal` so FastAPI refuses an unknown verb with a 422 before the handler
+    runs, the same shape the Sprigs routes use. `agent_id:path` because a model
+    id may contain a slash (`ollama/llama3`), and the default converter would
+    split it into a 404.
+    """
+    _require_agents_reader(request, user)
+    return HTMLResponse(await run_agent_action(request, user, agent_id, verb))
+
+
+@router.get("/workshop/agents/export")
+@router.get("/workshop/agents/export/{agent_id:path}")
+async def agents_export(
+    request: Request, agent_id: str = "", user=Depends(require_page_user)
+) -> JSONResponse:
+    """Download one agent or all of them as JSON.
+
+    A link with `download`, not a Blob assembled in the browser — the server
+    already holds the data, and building it client-side was the only thing
+    `file-saver` did on this surface.
+    """
+    _require_agents_reader(request, user)
+    name = f"{agent_id or 'agents'}-export.json"
+    return JSONResponse(
+        await export_agents(user, agent_id),
+        headers={"Content-Disposition": f'attachment; filename="{name}"'},
+    )
+
+
+@router.post("/workshop/agents/import", response_class=HTMLResponse)
+async def agents_import(
+    request: Request, file: UploadFile = File(...), user=Depends(require_page_user)
+) -> HTMLResponse:
+    _require_agents_reader(request, user)
+    return HTMLResponse(await import_agents(request, user, await file.read()))
+
+
+@router.get("/workshop/agents/avatar/{agent_id:path}")
+async def agents_avatar(
+    request: Request, agent_id: str, user=Depends(require_page_user)
+) -> Response:
+    """An agent's picture as bytes, cached hard.
+
+    The version token in the query is the content hash, so this URL changes when
+    the image does and `immutable` is safe. That is the difference between an
+    avatar costing its bytes once per browser and once per page load — which is
+    what it costs today, inlined as base64 in every list response.
+    """
+    _require_agents_reader(request, user)
+    data, media = await avatar_bytes(user, agent_id)
+    return Response(content=data, media_type=media, headers={"Cache-Control": AVATAR_CACHE})
+
+
 # The whole-page surfaces, the way `_SETUP_PAGES` does it for the wizard.
 #
 # These headings used to be literals inside each route body, which was fine
@@ -387,6 +506,13 @@ _PAGES: dict[str, tuple[str, str]] = {
     "admin/branding": (
         "Theme & Branding",
         "The name, the marks and the colours this instance wears.",
+    ),
+    # Not under `admin/`, and that is the point: this surface is permission-gated
+    # rather than admin-only, so putting it in the admin tree would be a trap for
+    # whoever audits by path next. Same reasoning as `/pages/changelog`.
+    "workshop/agents": (
+        "Agents",
+        "A model, a system prompt, the knowledge and tools it may reach.",
     ),
 }
 

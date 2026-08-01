@@ -84,7 +84,11 @@ export const openSetupPanel = (panel: string) => {
 export const SURFACES = {
 	sprigs: { legacy: '/admin/sprigs', nobuild: '/pages/admin/sprigs' },
 	diagnostics: { legacy: '/admin/diagnostics', nobuild: '/pages/admin/diagnostics' },
-	branding: { legacy: '/admin/settings/theme', nobuild: '/pages/admin/branding' }
+	branding: { legacy: '/admin/settings/theme', nobuild: '/pages/admin/branding' },
+	// The route says `models` and the interface says Agents — the heading, the
+	// page title and both import/export buttons already read `t('Agents')`. The
+	// no-build path takes the name the product uses, and the old route redirects.
+	agents: { legacy: '/workshop/models', nobuild: '/pages/workshop/agents' }
 	// The nine wizard surfaces used to be listed here, each with an `openLegacy`
 	// step that opened the modal and jumped to a panel. They were removed when the
 	// modal was deleted: the panels now have exactly one implementation, so this

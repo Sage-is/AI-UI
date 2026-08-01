@@ -1,0 +1,120 @@
+{# The Agents list. PLAIN HTML, on instruction, and it is a deliberate stage
+   rather than an unfinished one.
+
+   Alexander, 2026-08-01: "before adding any style or start.style get things
+   working as pure html and then I'll review... Don't go reinventing things."
+
+   So: no style attributes, no classes, no framework props, and no macros from
+   `_macros.html` — those carry startr.style props, which is the next stage and
+   not this one. What is here is the elements that already mean what the page
+   needs, which is the same rule that took diagnostics from 32% to 67%.
+
+   NO SCRIPT AT ALL. Search and the tag filter are a GET form and links, so the
+   state lives in the URL and the back button works. The toggle is a POST form.
+   The row menu is `<details>`. That is the whole interactive surface of this
+   page, and none of it needed JavaScript — worth noting against a Svelte
+   component that shipped `marked`, `sortablejs` and `file-saver` to draw it. #}
+
+{% if message %}
+<p data-cy="agents-message" role="status">{{ message }}</p>
+{% endif %}
+
+<p>{{ heading_count }}</p>
+
+{# One form, method GET, so a search lands on its own address. `tag` rides as a
+   hidden field: searching inside a tag should not silently drop the tag. #}
+<form method="get" action="{{ base }}">
+  <label for="agents-q">{{ search_label }}</label>
+  <input data-cy="agents-search" id="agents-q" type="search" name="q" value="{{ query }}" />
+  {% if tag %}<input type="hidden" name="tag" value="{{ tag }}" />{% endif %}
+  <button type="submit">{{ search_action }}</button>
+  {% if query %}
+  {# A link, not a button, because clearing a search IS going to another
+     address. It renders only when there is something to clear, matching the
+     legacy page. #}
+  <a data-cy="agents-search-clear" href="{{ base }}{{ lang }}{% if tag %}&amp;tag={{ tag }}{% endif %}">{{ clear_label }}</a>
+  {% endif %}
+</form>
+
+<p><a data-cy="agents-create" href="/workshop/models/create">{{ create_label }}</a></p>
+
+{% if tags %}
+{# `<nav>` because this is a set of links to other views of the same list. The
+   current one is marked with aria-current rather than a class, so the state is
+   in the accessibility tree before it is anywhere else. #}
+<nav>
+  <a data-cy="agents-tag-all" href="{{ base }}{{ lang }}"{% if not tag %} aria-current="page"{% endif %}>{{ all_label }}</a>
+  {% for t in tags %}
+  <a data-cy="agents-tag" href="{{ base }}{{ lang }}&amp;tag={{ t | urlencode }}"{% if t == tag %} aria-current="page"{% endif %}>{{ t }}</a>
+  {% endfor %}
+</nav>
+{% endif %}
+
+{% if agents %}
+<ul data-cy="agents-list">
+  {% for a in agents %}
+  <li data-cy="agents-row" data-agent-id="{{ a.id }}">
+    {# width and height as attributes, not CSS, so the row reserves its space
+       before the image arrives and the list does not jump while it loads. #}
+    {% if a.avatar %}<img src="{{ a.avatar }}" alt="" width="44" height="44" />{% endif %}
+
+    <h3><a data-cy="agents-open" href="{{ a.open_url }}">{{ a.name }}</a></h3>
+    <p>{{ a.description }}</p>
+    <p><small>{{ a.author }}</small></p>
+
+    {% if a.can_edit %}
+    <a data-cy="agents-edit" href="{{ a.edit_url }}">{{ edit_label }}</a>
+    {% endif %}
+
+    {# A form, so the toggle works without JavaScript and the server stays the
+       authority on what "active" means. The button says what will HAPPEN, not
+       what the current state is — a control labelled with its own state reads
+       as a status and gets clicked by accident. #}
+    <form data-cy="agents-toggle" method="post" action="{{ base }}/toggle/{{ a.id | urlencode }}{{ lang }}">
+      <button type="submit">{{ a.toggle_label }}</button>
+    </form>
+
+    {# `<details>` rather than a dropdown component: it opens, closes, takes
+       focus and works with the keyboard without a line of script, which is the
+       convention's "native HTML before custom widgets" rule. The hook is on the
+       summary because that is the control — clicking a `<details>` does
+       nothing, clicking its `<summary>` opens it. #}
+    <details>
+      <summary data-cy="agents-menu">{{ actions_label }}</summary>
+      <ul>
+        <li><form method="post" action="{{ base }}/hide/{{ a.id | urlencode }}{{ lang }}"><button data-cy="agents-menu-hide" type="submit">{{ a.hide_label }}</button></form></li>
+        <li><a data-cy="agents-menu-copy-link" href="{{ a.open_url }}">{{ copy_link_label }}</a></li>
+        {% if community %}
+        <li><a data-cy="agents-menu-share" href="{{ community_url }}" target="_blank" rel="noopener">{{ share_label }}</a></li>
+        {% endif %}
+        <li><form method="post" action="{{ base }}/clone/{{ a.id | urlencode }}{{ lang }}"><button data-cy="agents-menu-clone" type="submit">{{ clone_label }}</button></form></li>
+        <li><a data-cy="agents-menu-export" href="{{ base }}/export/{{ a.id | urlencode }}" download>{{ export_label }}</a></li>
+        <li><form method="post" action="{{ base }}/delete/{{ a.id | urlencode }}{{ lang }}"><button data-cy="agents-menu-delete" type="submit">{{ delete_label }}</button></form></li>
+      </ul>
+    </details>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p data-cy="agents-empty">{{ empty_label }}</p>
+{% endif %}
+
+{% if is_admin %}
+<form method="post" action="{{ base }}/import{{ lang }}" enctype="multipart/form-data">
+  <label for="agents-import-file">{{ import_label }}</label>
+  <input id="agents-import-file" type="file" name="file" accept=".json" />
+  <button data-cy="agents-import" type="submit">{{ import_label }}</button>
+</form>
+
+{% if agents %}
+{# A link with `download`, not a button that builds a Blob in the browser. The
+   server already has the data; assembling it client-side was the only reason
+   `file-saver` was a dependency of this surface. #}
+<p><a data-cy="agents-export" href="{{ base }}/export" download>{{ export_all_label }} ({{ count }})</a></p>
+{% endif %}
+{% endif %}
+
+{% if community %}
+<h2>{{ community_heading }}</h2>
+<p><a data-cy="agents-community" href="{{ community_url }}" target="_blank" rel="noopener">{{ community_label }}</a></p>
+{% endif %}
