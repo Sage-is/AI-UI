@@ -300,9 +300,10 @@
 					<th scope="col" style="--px:0.6rem; --py:0.4rem; --ta:right; --cur:pointer; --us:none; --w:0"> </th>
 				</tr>
 			</thead>
-			<tbody style="--w:100%">
+			<tbody data-cy="evaluations-list" style="--w:100%">
 				{#each paginatedFeedbacks as feedback (feedback.id)}
 					<tr
+						data-cy="evaluations-row"
 						style="--bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-bc:var(--color-gray-850); --size:0.6rem; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:rgb(38 38 38 / 0.5); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={() => openFeedbackModal(feedback)}
 					>

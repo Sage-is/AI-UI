@@ -144,7 +144,13 @@ echo "== 2. an asset edit does NOT restart the app =="
 WORKERS_BEFORE="$(workers)"
 printf '\n/* %s */\n' "$MARK" >> "$WORK/pages/assets/pages.css"
 sleep 3
-if curl -s --max-time 5 "$BASE/pages/_assets/pages.css" | grep -q "$MARK"; then
+# Not `curl … | grep -q`: pages.css is far larger than a pipe buffer, so grep
+# would exit on the match while curl still had bytes queued, curl would take
+# SIGPIPE, and pipefail would report the MATCH as a failure. Same shape as
+# `fetch_has` in scripts/lib/gate.sh, inlined because this gate keeps its own
+# pass/fail counters.
+CSS_BODY="$(curl -s --max-time 5 "$BASE/pages/_assets/pages.css")" || true
+if [[ "$CSS_BODY" == *"$MARK"* ]]; then
   pass "asset edit served"
 else
   fail "asset edit not served"

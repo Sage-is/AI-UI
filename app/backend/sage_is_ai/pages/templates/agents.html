@@ -83,11 +83,18 @@
 </nav>
 {% endif %}
 
-{% if agents %}
 {# Flex-wrap, no stretch. Cards hold an 18rem basis and do not grow, so the
    count follows the width and a partial last row keeps column width rather than
    one card ballooning across the row. The ragged right edge is the accepted
-   cost of that — chosen over grid because it needs no breakpoints. #}
+   cost of that — chosen over grid because it needs no breakpoints.
+
+   The list renders even when it is EMPTY, and the empty message goes inside it.
+   This used to be an if/else that swapped the whole `<ul>` for a `<p>`, which
+   the parity gate caught on the first run against a fresh instance: the
+   SvelteKit page keeps its container and the no-build page dropped it, so
+   `agents-list` existed on one side and not the other. Any spec waiting on the
+   list — the Agents guard-rail does, in `beforeEach` — would have hung on an
+   instance with no agents. One container, always. #}
 <ul data-cy="agents-list"
     style="--d:flex; --fw:wrap; --g:.5rem; --lis:none; --p:0; --m:0 0 1rem">
   {% for a in agents %}
@@ -133,6 +140,9 @@
     </div>
   </li>
   {% endfor %}
+  {% if not agents %}
+  <li data-cy="agents-empty" style="--fb:100%; --c:var(--muted); --p:2rem 0; --ta:center">{{ empty_label }}</li>
+  {% endif %}
 </ul>
 {# The pager renders only when there is more than one page, so a small instance
    never sees machinery it does not need. Links, not buttons and not script: the
@@ -151,9 +161,6 @@
   {% if next_url %}<a class="btn" data-cy="agents-page-next" rel="next" href="{{ next_url }}">{{ next_label }}</a>{% endif %}
   <small style="--size:.75rem; --c:var(--muted); --ml:auto">{{ showing_label }}</small>
 </nav>
-{% endif %}
-{% else %}
-<p data-cy="agents-empty" style="--c:var(--muted); --p:2rem 0; --ta:center">{{ empty_label }}</p>
 {% endif %}
 
 {% if is_admin %}

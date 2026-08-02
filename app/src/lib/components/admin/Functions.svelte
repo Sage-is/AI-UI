@@ -316,9 +316,10 @@
 	</div>
 </div>
 
-<div style="--mb:1.2rem">
+<div data-cy="functions-list" style="--mb:1.2rem">
 	{#each filteredItems as func (func.id)}
 		<div
+			data-cy="functions-row"
 			style="--d:flex; --g:1rem; --cur:pointer; --w:100%; --px:0.5rem; --py:0.5rem; --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-bgc:rgb(0 0 0 / 0.05); --radius:0.6rem"
 		>
 			<a

@@ -4,7 +4,22 @@ How we move an admin surface off SvelteKit onto server-rendered fragments. Every
 
 Five surfaces have been through it: Sprigs (231 to 157 lines, 32%), diagnostics (813 to 273, 67%), theme and branding (288 to 200, 31%), the setup wizard (1,816 to 1,294, 29% — and the only one where the Svelte was deleted outright rather than left running beside it), and Agents. The spread between those numbers is most of what this document is about.
 
-Agents is the first one chosen for a measured user cost rather than for being ripe: `/workshop/models` was 144 requests, 20,520 kB and 32 seconds on production — a list of agents loading slower than a conversation. Measured on a restored production snapshot at 54 agents, the SPA fetches 2,233 kB of JSON across two endpoints to draw that list; the server-rendered page is 86 kB including its markup, 5.5 kB gzipped. It is also the first surface to need **no client library at all** — plain forms, links and `<details>` — which is a better result than either htmx or an island.
+Agents is the first one chosen for a measured user cost rather than for being ripe: `/workshop/models` was 144 requests, 20,520 kB and 32 seconds on production — a list of agents loading slower than a conversation. It is also the first surface to need **no client library at all** — plain forms, links and `<details>` — which is a better result than either htmx or an island.
+
+The payload figures quoted here used to be JSON-against-markup, which is the number that flatters us. Measured in a real browser instead, on a restored production snapshot with 51 agents (`cypress/e2e/upgrade/workshop-payload.cy.ts`):
+
+| | requests | wire | decoded | to first row | rows |
+| --- | --- | --- | --- | --- | --- |
+| SvelteKit `/workshop/models`, cold | 126 | 3,604 kB | 9,174 kB | 5,442 ms | 51 |
+| the same route inside a booted app | 10 | 919 kB | 1,770 kB | **1,504 ms** | 51 |
+| `/pages/workshop/agents`, cold | 11 | 234 kB | 472 kB | 152 ms | 24 |
+| the same page, repeat visit | 11 | 7 kB | 472 kB | 44 ms | 24 |
+
+Read the third row against the second, not the first: charging a whole session's bundle to one page would be arithmetic rather than a result. Page 1 is 24 rows against the SPA's 51, so the honest like-for-like is both pages — 22 requests and about 477 kB, still 7.6× less over the wire.
+
+Time is measured **inside the browser**, from navigation start for a document load and from the click instant for an in-app one, until the first row is in the DOM. That is deliberate and it was learned the hard way: `Date.now()` read in a Cypress test body is stamped when the commands are queued rather than when they run, which made the in-app figure include the app's entire boot. Never time a Cypress step from the test body.
+
+Two findings from that measurement belong in this document rather than only on the board. `/api/models` and `/api/v1/models/` together are **41% of the SPA page load** — two endpoints carrying the same base64 avatars for one list, which is why "prune, don't port" is a rule here. And the server-rendered page carries **zero** `data:` URIs against 66 in the JSON, because avatars became content-hashed URLs the browser can cache; that is what turns a repeat visit into 7 kB.
 
 ## The order of work
 

@@ -405,21 +405,23 @@ make gauntlet_full  # everything a robot would do, runnable on this machine
 make upgrade_gate   # boots this image on a copy of a production snapshot
 ```
 
-**Python tests exist but nothing runs them.** There are seven files under
-`app/backend/sage_is_ai/test/` — `test_chats.py`, `test_prompts.py`,
-`test_users.py`, `test_models.py`, `test_auths.py`, `test_provider.py`,
-`test_redis.py` — inherited at the fork point. **They cannot run as things
-stand, and that is partly deliberate.** `requirements.txt` carries the comment
-*"Test packages (pytest, docker) — install separately for testing, not in
-production image"*, and pytest is confirmed absent from the built image. On top
-of that, every router test subclasses `AbstractPostgresTest`, so reviving them
-needs pytest, the docker package, and a Postgres fixture container.
+**There are no Python tests, and that is now on purpose.** Seven files under
+`app/backend/sage_is_ai/test/` came with the fork and nothing ever ran them — no
+Make target, no script, no CI — so their pass/fail state was unknown and they
+were not coverage. They were retired on 2026-08-02 rather than revived.
 
-So the honest state is: deliberately excluded from the image, and also never run
-anywhere else — no Make target, no script, no CI. Their pass/fail state is
-unknown and they are **not coverage**. Reviving them is a project, not a wiring
-task. Either commit to that project or retire the files; what should not happen
-is leaving seven files that look like a safety net and are not one.
+Reviving them would have been a project, not a wiring task. `requirements.txt`
+carries the comment *"Test packages (pytest, docker) — install separately for
+testing, not in production image"*, pytest is absent from the built image by that
+decision, five of the seven subclass `AbstractPostgresTest` and so need a
+Postgres fixture container, and `test_provider.py` needs `moto`,
+`gcp_storage_emulator`, `google-cloud-storage` and `azure-storage-blob` besides.
+
+`test_redis.py` was the one file that would have run today if anything ran it —
+pytest and mocks, nothing else. It went with the rest anyway: one unit-test file
+with no runner is not coverage either, and bringing Redis-mock tests back is a
+decision to make on its own merits. `git log -- app/backend/sage_is_ai/test/`
+has all of it if that day comes.
 
 **The standing rule about evidence.** A green suite is the weakest evidence on
 an interactive surface — this project has shipped an autoscroll that passed
