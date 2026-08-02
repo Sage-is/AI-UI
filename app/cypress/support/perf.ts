@@ -107,3 +107,59 @@ export const SNAPSHOT_ADMIN = {
 	email: () => Cypress.env('ADMIN_EMAIL') || 'upgrade-gate@sage.is',
 	password: () => Cypress.env('ADMIN_PASSWORD') || 'upgrade-gate-pw-1234'
 };
+
+/**
+ * How many times each measurement is repeated.
+ *
+ * Alexander, reading the first survey: "Measure at least twice for each count."
+ * Three rather than two, because with two samples there is no way to tell which
+ * one is the outlier — and the survey needed that badly. Decoded bytes repeated
+ * to within 0.1 kB across runs, but `/workshop/knowledge` timed 1,425 ms once
+ * and 3,241 ms the next time. Publishing either alone would have been fiction.
+ */
+export const SAMPLES = 3;
+
+export type Stat = { median: number; min: number; max: number; spread: number; samples: number[] };
+
+/** Median, range, and spread of one column across the repeats. */
+export const stat = (values: number[]): Stat => {
+	const sorted = [...values].sort((a, b) => a - b);
+	const mid = Math.floor(sorted.length / 2);
+	const median =
+		sorted.length % 2 ? sorted[mid] : +((sorted[mid - 1] + sorted[mid]) / 2).toFixed(1);
+	const min = sorted[0];
+	const max = sorted[sorted.length - 1];
+	return { median, min, max, spread: +(max - min).toFixed(1), samples: values };
+};
+
+export type Rolled = {
+	note: string;
+	rows: number;
+	requests: number;
+	transferKB: Stat;
+	decodedKB: Stat;
+	toContentMs: Stat;
+	modelsEndpointCalls: string[];
+	top: Res[];
+};
+
+/**
+ * Roll repeated `collect()` results into one row of the ledger.
+ *
+ * `top` and `modelsEndpointCalls` come from the LAST sample rather than being
+ * averaged — they are a breakdown, not a measurement, and a mean of URLs is
+ * meaningless. The numbers people act on are the three stats.
+ */
+export const roll = (runs: Section[]): Rolled => {
+	const last = runs[runs.length - 1];
+	return {
+		note: last.note,
+		rows: last.rows,
+		requests: last.requests,
+		transferKB: stat(runs.map((r) => r.transferKB)),
+		decodedKB: stat(runs.map((r) => r.decodedKB)),
+		toContentMs: stat(runs.map((r) => r.toContentMs)),
+		modelsEndpointCalls: last.modelsEndpointCalls,
+		top: last.top
+	};
+};

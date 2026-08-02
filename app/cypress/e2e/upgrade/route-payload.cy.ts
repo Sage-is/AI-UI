@@ -1,33 +1,32 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../../support/index.d.ts" />
 
-// MEASUREMENT, not a gate. Never wire it into `make e2e` — living under
-// `upgrade/` keeps it out, because the default spec glob takes the top level.
+// THE PAYLOAD LEDGER. A measurement, not a gate — it asserts almost nothing, and
+// living under `upgrade/` keeps it out of `make e2e`, whose spec glob takes the
+// top level only. `make surface_budget` is the gate that reads its output; the
+// separation is deliberate, because a measurement that can fail its own run has
+// a reason to report a number that passes.
 //
 // WHY. The board's migration order — "workshop FIRST, then users, evals,
-// settings tabs, chat list" — has never been measured. It is the same kind of
-// claim as three that fell this week: the avatar theory (868 kB, not 20 MB),
-// the double-fetch wording, and a timing I could not stand behind. Alexander,
-// after the Agents pass: "let's think about what other routes would benefit."
+// settings tabs, chat list" — had never been measured, and the first run of this
+// file showed it sorted on 2–6% of the cost. It also measures every migrated
+// surface before and after, so a migration's claim comes from the same
+// instrument as its promise.
 //
-// So this measures every candidate on one booted snapshot and lets the numbers
-// pick the order, on the four things he asked to rank by — time to first
-// content, bytes over the wire, lines deleted, and how often a route is opened.
-// The first two are here. Lines are counted statically. **How often a route is
-// opened is not measured anywhere, because this product has no telemetry** —
-// that column is left blank for a human rather than filled with a proxy.
+// THREE THINGS IT DOES DELIBERATELY, each because the obvious version misleads:
 //
-// THE HYPOTHESIS THIS IS BUILT TO KILL. `/workshop/knowledge` was reported at
-// 18,203 kB on production, yet its 17 rows hold 5 kB of data between them, and
-// all 8 prompts hold 6 kB. Meanwhile every route under `(app)` pays the same
-// toll before rendering anything of its own: `getModels` in the boot wave
-// (2,304 kB on this snapshot), ~2,505 kB of chunks, a 636 kB unsubsetted font
-// and 332 kB of full-resolution icons. If that fixed cost dominates, list size
-// is the wrong sorting key and the board's order is wrong.
-//
-// `prompts` is the CONTROL. Six kilobytes of data. If it still costs megabytes,
-// the fixed-cost thesis holds. If it comes in cheap, list size really does drive
-// cost. Both outcomes are readable from the output; neither is assumed.
+// 1. **Three samples of everything.** Alexander: "Measure at least twice for
+//    each count." Two cannot identify an outlier; three can. Decoded bytes
+//    repeat to within 0.1 kB, but one route timed 1,425 ms and then 3,241 ms.
+//    A delta smaller than the spread is not a result and must not be published
+//    as one.
+// 2. **It reads `SURFACES` rather than restating paths.** That registry's own
+//    comment says adding a surface to it is the first step of migrating one; so
+//    registering a surface enrols it here too, and no one has to remember to
+//    measure. Routes with no server-rendered twin yet live in CANDIDATES below.
+// 3. **The navigation entry counts.** For a server-rendered page the HTML *is*
+//    the payload, so measuring only subresources would score its main cost as
+//    zero — a bias in the migration's favour, inside the check on the migration.
 //
 // Run it against the container `KEEP=1 make upgrade_gate` leaves up:
 //
@@ -38,72 +37,74 @@
 //
 // NEVER point it at production: it signs in as an administrator.
 
-import { collect, SNAPSHOT_ADMIN, type Section } from '../../support/perf';
+import {
+	collect,
+	roll,
+	SAMPLES,
+	SNAPSHOT_ADMIN,
+	type Rolled,
+	type Section
+} from '../../support/perf';
+import { SURFACES, type SurfaceName } from '../../support/surfaces';
 
-type Route = { key: string; path: string; ready: string; note: string };
+type Entry = { key: string; path: string; content: string; note: string };
 
-// Every entry's `ready` selector must match something ONLY that route renders.
-// The guard below enforces it. Routes with no such selector are omitted and
-// said so out loud rather than measured against the shell — `/home` is the one
-// currently missing, since Spaces has no list hook yet.
-const ROUTES: Route[] = [
+// Routes with no server-rendered counterpart yet. Migrated surfaces are NOT
+// listed here — they come from SURFACES, both sides, automatically.
+//
+// `/home` is deliberately absent: Spaces has no content hook, and measuring it
+// against a shell selector would produce a confident number for the wrong thing.
+const CANDIDATES: Entry[] = [
 	{
 		key: 'chat',
 		path: '/',
-		ready: '#chat-input',
+		content: '#chat-input',
 		note: 'the baseline this migration exists to beat'
-	},
-	{
-		key: 'agents',
-		path: '/workshop/models',
-		ready: '[data-cy="agents-row"]',
-		note: 'already migrated — the reference point'
-	},
-	{
-		key: 'nobuild-agents',
-		path: '/pages/workshop/agents',
-		ready: '[data-cy="agents-row"]',
-		note: 'the server-rendered answer to the row above'
 	},
 	{
 		key: 'knowledge',
 		path: '/workshop/knowledge',
-		ready: '[data-cy="knowledge-row"]',
+		content: '[data-cy="knowledge-row"]',
 		note: 'reported 18,203 kB on production; 5 kB of row data here'
-	},
-	{
-		key: 'prompts',
-		path: '/workshop/prompts',
-		ready: '[data-cy="prompts-row"]',
-		note: 'THE CONTROL — 6 kB of data across 8 rows'
 	},
 	{
 		key: 'users',
 		path: '/admin/users',
-		ready: '[data-cy="users-row"]',
-		note: '32 users, 21 carrying base64 avatars; the biggest component at 3,126 lines'
+		content: '[data-cy="users-row"]',
+		note: '32 users, 21 carrying base64 avatars; 3,126 component lines'
 	},
 	{
 		key: 'evaluations',
 		path: '/admin/evaluations/feedbacks',
-		ready: '[data-cy="evaluations-row"]',
+		content: '[data-cy="evaluations-row"]',
 		note: 'the bare /admin/evaluations redirects to the leaderboard, which has no rows'
 	},
 	{
 		key: 'functions',
 		path: '/admin/functions',
-		ready: '[data-cy="functions-row"]',
+		content: '[data-cy="functions-row"]',
 		note: 'ONE function in the snapshot — near-zero data, 1,249 lines'
 	},
 	{
 		key: 'notes-empty',
 		path: '/notes',
-		ready: '[data-cy="notes-empty"]',
-		note: "THE FLOOR — an SPA route with NO data of its own. `Notes.get_notes_by_user_id` scopes notes per user and the snapshot's 14 belong to six other people, so the throwaway admin sees none. That makes this the purest reading of what the shell costs before a route adds anything."
+		content: '[data-cy="notes-empty"]',
+		note: "THE FLOOR — an SPA route with NO data of its own. Notes are scoped per user and the snapshot's 14 belong to six other people, so the throwaway admin sees none. This is the gauge the app-wide font/icon/api-models work is measured against."
 	}
 ];
 
-const REPORT: Record<string, Section | unknown> = {};
+/** Both sides of every registered surface, so before and after share an instrument. */
+const registered: Entry[] = (Object.keys(SURFACES) as SurfaceName[]).flatMap((name) => {
+	const s = SURFACES[name];
+	return [
+		{ key: `${name}-legacy`, path: s.legacy, content: s.content, note: 'SvelteKit' },
+		{ key: `${name}-nobuild`, path: s.nobuild, content: s.content, note: 'server-rendered' }
+	];
+});
+
+const ENTRIES: Entry[] = [...CANDIDATES, ...registered];
+
+const REPORT: Record<string, Rolled | unknown> = {};
 
 let token = '';
 let version = '';
@@ -115,7 +116,7 @@ const seeded = (win: Window) => {
 	win.localStorage.setItem('version', version);
 };
 
-describe('route payload survey — every migration candidate on one snapshot', () => {
+describe('payload ledger — every route and both sides of every surface', () => {
 	before(() => {
 		cy.request({
 			method: 'POST',
@@ -146,58 +147,68 @@ describe('route payload survey — every migration candidate on one snapshot', (
 		cy.writeFile('cypress/perf-routes.json', REPORT);
 	});
 
-	// THE GUARD, and the reason this survey is trustworthy at all.
+	// THE GUARD, and the reason any of these numbers can be trusted.
 	//
-	// A `ready` selector that also matches on the chat page is measuring the app
-	// SHELL, not the route. The run would then report plausible-looking numbers
-	// for eight routes while measuring the same thing eight times, and every one
-	// of them would pass. That is a failure indistinguishable from success —
-	// the shape this repo keeps finding, and the reason the diagnostics page
-	// once shipped a button that rendered and did nothing.
+	// A content selector that also matches on the chat page measures the app
+	// SHELL, not the route. The run then reports plausible numbers for every
+	// entry while measuring the same thing repeatedly, and every test passes.
+	// That is a failure indistinguishable from success.
 	//
-	// So: load the chat page and prove that no other route's content is on it.
-	it('no route reports on a selector the app shell already renders', () => {
+	// Proved, not assumed: planting `button` as one route's selector made it
+	// report 152 ms instead of 1,840 ms — a twelvefold "improvement" that was
+	// pure measurement error — while nine other tests stayed green. This caught
+	// it and named the offender.
+	it('no entry reports on a selector the app shell already renders', () => {
 		cy.visit('/', { onBeforeLoad: seeded });
 		cy.get('#chat-input', { timeout: 60000 }).should('exist');
 		// eslint-disable-next-line cypress/no-unnecessary-waiting
 		cy.wait(3000); // give the shell every chance to render its own furniture
 
 		cy.document().then((doc) => {
-			const leaked = ROUTES.filter((r) => r.key !== 'chat').filter(
-				(r) => doc.querySelectorAll(r.ready).length > 0
+			const leaked = ENTRIES.filter((e) => e.key !== 'chat').filter(
+				(e) => doc.querySelectorAll(e.content).length > 0
 			);
 			// Assert on a STRING so the failure names the offender. An array
 			// comparison renders as "expected [ Array(2) ] to deeply equal []",
-			// which tells you something is wrong and not what.
+			// which says something is wrong and not what.
 			expect(
-				leaked.map((r) => `${r.key} (${r.ready})`).join(', ') || 'none',
-				'route selectors that also match on the chat page, so they measure the shell'
+				leaked.map((e) => `${e.key} (${e.content})`).join(', ') || 'none',
+				'selectors that also match on the chat page, so they measure the shell'
 			).to.eq('none');
 		});
 	});
 
-	ROUTES.forEach((route) => {
-		it(`${route.key}: ${route.path}`, () => {
-			cy.visit(route.path, { onBeforeLoad: seeded });
-			cy.get(route.ready, { timeout: 60000 }).should('have.length.at.least', 1);
-			cy.get(route.ready).then(($rows) => {
-				cy.window().then((win) => {
-					// `performance.now()` on a freshly loaded document counts from the
-					// navigation start, so this is time-to-first-content with none of
-					// Cypress's queue in it. Never time a Cypress step from the test
-					// body — that mistake cost a published number once already.
-					REPORT[route.key] = collect(
-						win,
-						route.note,
-						Math.round(win.performance.now()),
-						$rows.length,
-						0
-					);
-					const s = REPORT[route.key] as Section;
-					cy.log(
-						`${route.key}: ${s.requests} req  ${s.transferKB} kB wire  ${s.decodedKB} kB decoded  ${s.rows} rows  ${s.toContentMs} ms`
-					);
+	ENTRIES.forEach((entry) => {
+		it(`${entry.key}: ${entry.path}`, () => {
+			const runs: Section[] = [];
+
+			// A plain loop, not a recursive helper: Cypress queues all three
+			// visits in order and each `cy.visit` is a fresh document, so every
+			// sample starts from its own navigation timing.
+			for (let i = 0; i < SAMPLES; i++) {
+				cy.visit(entry.path, { onBeforeLoad: seeded });
+				cy.get(entry.content, { timeout: 60000 }).should('have.length.at.least', 1);
+				cy.get(entry.content).then(($found) => {
+					cy.window().then((win) => {
+						// `performance.now()` on a freshly loaded document counts from
+						// the navigation start, so this is time-to-content with none of
+						// Cypress's queue in it. Never time a Cypress step from the test
+						// body — that mistake cost a published number once already.
+						runs.push(
+							collect(win, entry.note, Math.round(win.performance.now()), $found.length, 0)
+						);
+					});
 				});
+			}
+
+			cy.then(() => {
+				REPORT[entry.key] = roll(runs);
+				const r = REPORT[entry.key] as Rolled;
+				cy.log(
+					`${entry.key}: ${r.decodedKB.median} kB decoded (±${r.decodedKB.spread})  ` +
+						`${r.transferKB.median} kB wire  ${r.toContentMs.median} ms (±${r.toContentMs.spread})  ` +
+						`${r.rows} rows`
+				);
 			});
 		});
 	});

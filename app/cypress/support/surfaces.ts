@@ -35,6 +35,19 @@ export interface Surface {
 	legacy: string;
 	/** The server-rendered route replacing it. */
 	nobuild: string;
+	/**
+	 * A selector for content ONLY this surface renders, in both implementations.
+	 *
+	 * This is what makes registering a surface enrol it in the payload ledger
+	 * (`cypress/e2e/upgrade/route-payload.cy.ts`) as well as the parity gate — the
+	 * before-and-after measurement then costs a line rather than a spec.
+	 *
+	 * It must not match anything the app SHELL renders. A selector that also
+	 * appears on the chat page measures the shell, reports a plausible number, and
+	 * passes: planting `button` here once made a route report 152 ms instead of
+	 * 1,840 ms while every other test stayed green. The ledger asserts this.
+	 */
+	content: string;
 }
 
 // `openLegacy` and `scope` used to live here: a callback that drove the SPA to a
@@ -82,13 +95,34 @@ export const openSetupPanel = (panel: string) => {
 };
 
 export const SURFACES = {
-	sprigs: { legacy: '/admin/sprigs', nobuild: '/pages/admin/sprigs' },
-	diagnostics: { legacy: '/admin/diagnostics', nobuild: '/pages/admin/diagnostics' },
-	branding: { legacy: '/admin/settings/theme', nobuild: '/pages/admin/branding' },
+	sprigs: {
+		legacy: '/admin/sprigs',
+		nobuild: '/pages/admin/sprigs',
+		content: '[data-cy="sprig-card"]'
+	},
+	diagnostics: {
+		legacy: '/admin/diagnostics',
+		nobuild: '/pages/admin/diagnostics',
+		content: '[data-cy="diag-issues"]'
+	},
+	branding: {
+		legacy: '/admin/settings/theme',
+		nobuild: '/pages/admin/branding',
+		content: '[data-cy="branding-preview"]'
+	},
 	// The route says `models` and the interface says Agents — the heading, the
 	// page title and both import/export buttons already read `t('Agents')`. The
 	// no-build path takes the name the product uses, and the old route redirects.
-	agents: { legacy: '/workshop/models', nobuild: '/pages/workshop/agents' }
+	agents: {
+		legacy: '/workshop/models',
+		nobuild: '/pages/workshop/agents',
+		content: '[data-cy="agents-row"]'
+	},
+	prompts: {
+		legacy: '/workshop/prompts',
+		nobuild: '/pages/workshop/prompts',
+		content: '[data-cy="prompts-row"]'
+	}
 	// The nine wizard surfaces used to be listed here, each with an `openLegacy`
 	// step that opened the modal and jumped to a panel. They were removed when the
 	// modal was deleted: the panels now have exactly one implementation, so this

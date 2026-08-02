@@ -77,6 +77,16 @@ from sage_is_ai.pages.agents_panel import (
     # with one name in one module is how the wrong one gets called.
     run_action as run_agent_action,
 )
+from sage_is_ai.pages.prompts_panel import (
+    PromptVerb,
+    export_prompts,
+    import_prompts,
+    render_prompts,
+    # Aliased for the same reason the agents one is: three modules now export a
+    # `run_action`, and three callables with one name is how the wrong one gets
+    # called.
+    run_action as run_prompt_action,
+)
 
 router = APIRouter()
 
@@ -483,6 +493,72 @@ async def agents_avatar(
     return Response(content=data, media_type=media, headers={"Cache-Control": AVATAR_CACHE})
 
 
+# ── The Prompts surface ───────────────────────────────────────────────────────
+#
+@router.get("/workshop/prompts", response_class=HTMLResponse)
+async def prompts_page(
+    request: Request,
+    q: str = "",
+    page: int = Query(1, ge=1),
+    user=Depends(require_agents_reader),
+) -> HTMLResponse:
+    """The prompt list, rendered. No script on the page at all.
+
+    Guarded by `require_agents_reader` on purpose: the workshop is one
+    permission (`workshop.models`) in `USER_PERMISSIONS`, and inventing a second
+    one for prompts would let the two drift and would be a policy this page
+    made up rather than one the operator set.
+    """
+    return _whole_page(
+        request,
+        "workshop/prompts",
+        await render_prompts(request, user, query=q, page=page),
+    )
+
+
+@router.post("/workshop/prompts/{verb}/{command:path}", response_class=HTMLResponse)
+async def prompts_action(
+    verb: PromptVerb,
+    command: str,
+    request: Request,
+    confirm: int = 0,
+    user=Depends(require_agents_reader),
+) -> HTMLResponse:
+    """One row action, then the panel back.
+
+    `command:path` because a prompt command is user-chosen text that may contain
+    a slash; the default converter would split it into a 404.
+
+    `confirm` is the second step of a destructive action, and it is a QUERY
+    parameter rather than a hidden field so the difference between "asked" and
+    "did it" is visible in the log and in the browser's own history. A delete
+    without it re-renders the row asking; with it, the row goes.
+    """
+    return HTMLResponse(
+        await run_prompt_action(request, user, command, verb, confirmed=bool(confirm))
+    )
+
+
+@router.get("/workshop/prompts/export")
+@router.get("/workshop/prompts/export/{command:path}")
+async def prompts_export(
+    command: str = "", user=Depends(require_agents_reader)
+) -> JSONResponse:
+    """Download one prompt or all of them as JSON."""
+    name = f"{command or 'prompts'}-export.json"
+    return JSONResponse(
+        await export_prompts(user, command),
+        headers={"Content-Disposition": f'attachment; filename="{name}"'},
+    )
+
+
+@router.post("/workshop/prompts/import", response_class=HTMLResponse)
+async def prompts_import(
+    request: Request, file: UploadFile = File(...), user=Depends(require_agents_reader)
+) -> HTMLResponse:
+    return HTMLResponse(await import_prompts(request, user, await file.read()))
+
+
 # The whole-page surfaces, the way `_SETUP_PAGES` does it for the wizard.
 #
 # These headings used to be literals inside each route body, which was fine
@@ -509,6 +585,10 @@ _PAGES: dict[str, tuple[str, str]] = {
     "workshop/agents": (
         "Agents",
         "A model, a system prompt, the knowledge and tools it may reach.",
+    ),
+    "workshop/prompts": (
+        "Prompts",
+        "Reusable snippets your team can call by name in any conversation.",
     ),
 }
 

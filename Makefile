@@ -526,6 +526,20 @@ parity_gate:
 reload_gate:
 	@scripts/gates/dev-reload/run-gate.sh
 
+## surface_budget — a migrated surface must weigh LESS than the one it replaces,
+## and the app-wide floor must not grow. Boots this image on a COPY of a
+## production snapshot (~3 min), measures every route three times via
+## cypress/e2e/upgrade/route-payload.cy.ts, then judges the medians.
+##
+## BYTES ONLY, on purpose: decoded bytes repeat to within 0.1 kB, while times
+## swing 2x on the same route. Gating a noisy quantity produces a flaky gate, and
+## a flaky gate gets disabled — taking the real check with it.
+##
+## Registering a surface in cypress/support/surfaces.ts is what enrols it here.
+## There is no second list to keep in step.
+surface_budget:
+	@scripts/gates/surface-budget/run-gate.sh $(IMAGE_NAME):$(IMAGE_TAG)
+
 ## review / review_live / review_rebuild — bring up a Rootstock™ for a HUMAN.
 ##
 ## Phase S made the human pass a standing condition: a green suite is the
@@ -585,7 +599,11 @@ e2e_watch:
 ## activate with: git config core.hooksPath .githooks
 gauntlet: it_build sprig_smoke
 
-gauntlet_full: pipefail_lint pipefail_fixture gauntlet sprig_durability sprig_signing ui_sprig_gate parity_gate e2e_both
+# surface_budget is last and costs ~3 minutes for its snapshot boot. It earns the
+# place: it is the only member that judges what the migration CLAIMS — that a
+# server-rendered surface is lighter than the SvelteKit one it replaces — rather
+# than whether the code runs.
+gauntlet_full: pipefail_lint pipefail_fixture gauntlet sprig_durability sprig_signing ui_sprig_gate parity_gate e2e_both surface_budget
 
 ## it_build_amd64 — build an amd64 image via buildx + --load.
 ##

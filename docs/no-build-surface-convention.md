@@ -25,7 +25,20 @@ Two findings from that measurement belong in this document rather than only on t
 
 Order matters more than any single step. Most of what follows exists because someone did it backwards once and paid for it.
 
-**1. Register the surface** in `app/cypress/support/surfaces.ts`, mapping its name to the legacy path and the no-build path. Do this before any code moves. It is a one-line change whose real job is forcing step 2.
+**0. Measure the surface before you touch it — twice, and three times each.** This step was added on 2 August 2026, after the Agents surface was built before anyone knew what it would save and the board's migration order turned out to be sorted on 2–6% of the cost. Alexander: *"measure twice, then build server side, then measure again."*
+
+Two different measurements, because they disagree and the disagreement is the point:
+
+- **the data** — query `tools/db_snapshots/*` for what the surface actually holds. Cheap, and it sets the expectation the next measurement will test.
+- **the document** — boot that snapshot (`KEEP=1 make upgrade_gate`) and load the page in a browser, reading its own resource timings via `cypress/e2e/upgrade/route-payload.cy.ts`.
+
+The data query once said the workshop list cost ~1.5 MB. The browser said 9,174 kB. Acting on the first alone would have shipped a fix for the wrong thing, which is exactly what the refuted avatar theory was.
+
+**And never one sample.** The ledger takes three of everything and reports median with spread. Decoded bytes repeat to within 0.1 kB; times have swung 2× on the same route in the same run. **A delta smaller than the spread is not a result** — say so rather than claim it. This is also why the budget gate judges bytes and never times.
+
+**1. Register the surface** in `app/cypress/support/surfaces.ts`, mapping its name to the legacy path, the no-build path, and a `content` selector for something only that surface renders. Do this before any code moves. It is a few lines whose real job is forcing step 2 — and it also enrols the surface in the payload ledger and in `make surface_budget`, so the before-and-after costs nothing extra to remember.
+
+The `content` selector must not match anything the app shell renders. A selector that also appears on the chat page measures the shell, produces a plausible number, and passes. Planting `button` there once made a route report 152 ms instead of 1,840 ms while every other test stayed green; the ledger now asserts against that specifically.
 
 **2. Hook every interactive control on the LEGACY surface** with `data-cy`. Buttons, disclosures, list rows, empty states, error states. This is the step that gets skipped, and skipping it is how a migration ends up 40% done with a green suite. You are writing down what the old page can do while the old page is still the only page.
 
@@ -49,7 +62,22 @@ Branding is the cautionary tale in the other direction, at [the props rule](#sta
 
 **7. Run `make e2e_both`.** It runs the suite once per target. "Green against both" is the migration's core rule, and running it twice by hand is how that rule quietly becomes "green against whichever one was checked last".
 
-**8. Measure, and report the number you actually got.** The first Sprigs fragment was 208 lines and only reached 157 after someone asked whether it could be cleaner. A first draft is not a measurement.
+**8. Measure the LINES, and report the number you actually got.** The first Sprigs fragment was 208 lines and only reached 157 after someone asked whether it could be cleaner. A first draft is not a measurement.
+
+**9. Measure the payload again — the same spec, not a different method.** Re-run the ledger from step 0 and publish the delta against the spread. Using the identical instrument for the before and the after is the whole reason it is one file: a before and an after taken different ways is not a delta, it is two numbers.
+
+Then let `make surface_budget` hold the result. It reads the ledger and fails if a server-rendered surface is not lighter than the one it replaces by more than the observed spread, or if the app-wide floor has grown. It is in `gauntlet_full`, costs about three minutes for its snapshot boot, and it is the only gate that judges what this migration *claims* rather than whether the code runs.
+
+What the four migrated surfaces cost, measured this way on a production snapshot:
+
+| surface | SvelteKit | server-rendered |
+| --- | --- | --- |
+| sprigs | 6,626 kB | **76 kB** |
+| diagnostics | 6,676 kB | **98 kB** |
+| branding | 7,415 kB | **71 kB** |
+| agents | 8,235 kB | **350 kB** |
+
+Most of the SvelteKit column is not the surface. A route with *no data of its own* costs 6,642 kB decoded — that is the floor every SvelteKit route pays before rendering anything, and `notes-empty` in the ledger is the gauge for it. Which is why a surface's own list size is a poor guide to whether migrating it is worth doing, and why the order of work here is about lines and usage rather than payload.
 
 ## The dev loop
 

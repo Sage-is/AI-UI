@@ -6,9 +6,18 @@ src: url('/static/assets/fonts/Inter-Variable.ttf');
 font-display: swap;
 }
 
+/* WOFF2, not TTF. Measured 2026-08-02 on a production snapshot: this face was
+   636 kB on every route in the product, second only to /api/models. TTF ships
+   uncompressed glyph outlines; woff2 is the same font repackaged — 652 kB to
+   187 kB, a 71% cut with NOT ONE GLYPH LOST. Mona-Sans.woff2 below had been
+   sitting there the whole time proving the toolchain could do it.
+
+   Deliberately NOT subsetted. Subsetting drops glyphs, and a missing glyph
+   fails silently as a fallback face — the failure mode this repo keeps paying
+   for. Format conversion cannot lose anything, so it needs no locale audit. */
 @font-face {
 font-family: 'Archivo';
-src: url('/static/assets/fonts/Archivo-Variable.ttf');
+src: url('/static/assets/fonts/Archivo-Variable.woff2') format('woff2');
 font-display: swap;
 }
 
@@ -24,10 +33,28 @@ src: url('/static/assets/fonts/InstrumentSerif-Regular.ttf');
 font-display: swap;
 }
 
+/* Vazirmatn is the Persian/Arabic face, and it sits in the body stack as
+   Archivo's fallback — so every reader in every locale was downloading 235 kB
+   of Arabic glyphs to render Latin text. Two fixes, both lossless:
+
+   woff2 (241 kB -> 111 kB), and a `unicode-range` so the browser fetches it
+   ONLY when a character in these blocks is actually on the page. Persian
+   readers get exactly what they got before; everyone else stops paying for it.
+
+   The ranges, and why each is here: U+0600-06FF Arabic (Persian digits live at
+   U+06F0), U+0750-077F Supplement, U+08A0-08FF Extended-A, U+FB50-FDFF and
+   U+FE70-FEFF the presentation forms Arabic shaping needs, and U+200C-200D the
+   zero-width non-joiner and joiner — load-bearing in Persian, where ZWNJ
+   separates morphemes and dropping it changes words.
+
+   This is the one change in this pass that can break silently, so it is the one
+   with an RTL locale check in the verification list. */
 @font-face {
 font-family: 'Vazirmatn';
-src: url('/static/assets/fonts/Vazirmatn-Variable.ttf');
+src: url('/static/assets/fonts/Vazirmatn-Variable.woff2') format('woff2');
 font-display: swap;
+unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF,
+  U+200C-200D;
 }
 
 html {
@@ -659,11 +686,11 @@ white-space: nowrap;
 	[data-bits-dropdown-menu-item],
 	[data-bits-dropdown-menu-sub-trigger],
 	/* Overlays */
-	.fixed.inset-0, 
-	.fixed.z-40, 
+	.fixed.inset-0,
+	.fixed.z-40,
 	.bg-black\/60,
 	/* Layout Resizers */
-	.PaneResizer, 
+	.PaneResizer,
 	[class*="PaneResizer"] {
 		display: none !important;
 	}
