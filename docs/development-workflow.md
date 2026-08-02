@@ -383,30 +383,49 @@ A real finding fails the commit or push. Clear a false positive by adding a path
 
 ### Testing Standards
 
-**Test Framework:**
-- pytest with pytest-django for Django integration
-- pytest-cov for coverage reporting
-- All tests in `tests.py` files within app directories
+> **Rewritten 2 August 2026.** Everything previously in this section described a
+> Django project. Verified against this repo: **zero** Django in
+> `requirements.txt` (it is FastAPI), no `pytest.ini`, no `conftest.py`, no
+> `tests.py` anywhere, and none of the five `make test_*` commands it listed
+> existed. A developer following it got "No rule to make target" at best and a
+> wrong mental model at worst.
 
-**Test Configuration:**
-- `pytest.ini` - Main pytest configuration
-- `conftest.py` - Shared fixtures and Django setup
-- Tests run with `--nomigrations` and `--reuse-db` for speed
+**What actually guards this repo: Cypress and 22 gate targets.** Not unit tests.
+That is a deliberate consequence of the architecture — most behaviour here is a
+container talking to a browser, and the migration's standing rule is that a
+surface's guard-rail spec is green before a change and green after.
 
-**Testing Commands:**
+Start with `make help`, and see `docs/no-build-surface-convention.md` for how the
+guard-rails are written. The heavy hitters:
+
 ```bash
-make test                 # Run all tests
-make test_verbose         # Run with verbose output
-make test_coverage        # Run with coverage report
-make test_experiences     # Run only experiences app tests
-make test_quick          # Run excluding slow tests
+make e2e            # the Cypress suite against a fresh baked container
+make e2e_both       # the same suite once per implementation (legacy + no-build)
+make gauntlet_full  # everything a robot would do, runnable on this machine
+make upgrade_gate   # boots this image on a copy of a production snapshot
 ```
 
-**Test Categories (using markers):**
-- `@pytest.mark.unit` - Unit tests (isolated, fast)
-- `@pytest.mark.integration` - Integration tests
-- `@pytest.mark.slow` - Slow tests (can be excluded)
-- `@pytest.mark.django_db` - Tests requiring database
+**Python tests exist but nothing runs them.** There are seven files under
+`app/backend/sage_is_ai/test/` — `test_chats.py`, `test_prompts.py`,
+`test_users.py`, `test_models.py`, `test_auths.py`, `test_provider.py`,
+`test_redis.py` — inherited at the fork point. **They cannot run as things
+stand, and that is partly deliberate.** `requirements.txt` carries the comment
+*"Test packages (pytest, docker) — install separately for testing, not in
+production image"*, and pytest is confirmed absent from the built image. On top
+of that, every router test subclasses `AbstractPostgresTest`, so reviving them
+needs pytest, the docker package, and a Postgres fixture container.
+
+So the honest state is: deliberately excluded from the image, and also never run
+anywhere else — no Make target, no script, no CI. Their pass/fail state is
+unknown and they are **not coverage**. Reviving them is a project, not a wiring
+task. Either commit to that project or retire the files; what should not happen
+is leaving seven files that look like a safety net and are not one.
+
+**The standing rule about evidence.** A green suite is the weakest evidence on
+an interactive surface — this project has shipped an autoscroll that passed
+13/13 under a real browser driver and was broken on a trackpad, and a button
+that rendered and did nothing while every assertion passed. Every migrated
+surface gets a human pass via `make review` before it takes over a route.
 
 **Writing Tests:**
 - One test file per app (`app/tests.py`)

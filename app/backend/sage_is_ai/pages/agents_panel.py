@@ -62,6 +62,7 @@ from __future__ import annotations
 import base64
 import binascii
 import hashlib
+from typing import Literal, get_args
 from urllib.parse import quote
 
 from fastapi import HTTPException, Request, status
@@ -70,6 +71,7 @@ from sage_is_ai.pages.i18n import lang_query, translator
 from sage_is_ai.pages.templates import render
 
 __all__ = [
+    "AgentVerb",
     "render_agents",
     "run_action",
     "export_agents",
@@ -168,6 +170,29 @@ def _visible(user, agent_id: str = ""):
 # Rows per page. Twenty-four divides evenly by 1, 2 and 3, so a page never ends
 # with a half-empty row at any of the column counts the list uses.
 PAGE_SIZE = 24
+
+# The row actions, declared ONCE. The route annotates its path parameter with
+# this, so FastAPI refuses an off-list verb with a 422 before any handler runs,
+# and `run_action` builds its dispatch table against the same tuple.
+AgentVerb = Literal["toggle", "hide", "clone", "delete"]
+
+
+def _check_verbs(handlers: dict) -> None:
+    """Refuse to serve a verb table that disagrees with `AgentVerb`.
+
+    Two lists that must agree is a defect waiting for whoever adds the fifth
+    verb. This makes the disagreement impossible to ship: a verb in the type
+    with no handler, or a handler for a verb the type will never deliver, raises
+    here — on the first request, in the logs, naming both sides — rather than
+    doing the wrong thing quietly.
+    """
+    declared, implemented = set(get_args(AgentVerb)), set(handlers)
+    if declared != implemented:
+        raise RuntimeError(
+            "agents verb table disagrees with AgentVerb: "
+            f"declared-not-implemented={sorted(declared - implemented)}, "
+            f"implemented-not-declared={sorted(implemented - declared)}"
+        )
 
 
 def _url(base: str, locale: str, *, q: str = "", tag: str = "", page: int = 1) -> str:
@@ -344,30 +369,52 @@ async def run_action(request: Request, user, agent_id: str, verb: str) -> str:
     )
 
     _ = translator(request)
-    message = ""
+
+    async def _toggle():
+        await toggle_model_by_id(id=agent_id, user=user)
+        return ""
+
+    async def _delete():
+        await delete_model_by_id(id=agent_id, user=user)
+        return _("Deleted {{name}}", {"name": agent_id})
+
+    async def _form():
+        model = await _find(user, agent_id)
+        return ModelForm(**model.model_dump(exclude={"user", "updated_at", "created_at"}))
+
+    async def _hide():
+        form = await _form()
+        meta = form.meta.model_dump()
+        meta["hidden"] = not bool(meta.get("hidden"))
+        form.meta = type(form.meta)(**meta)
+        await update_model_by_id(request=request, id=agent_id, form_data=form, user=user)
+        return ""
+
+    async def _clone():
+        form = await _form()
+        # A copy needs a free id, and the suffix is the simplest thing that
+        # cannot collide with the original. `create_new_model` refuses a taken
+        # id, so a second clone is refused rather than overwriting the first.
+        form.id = f"{form.id}-copy"
+        form.name = f"{form.name} (copy)"
+        await create_new_model(request=request, form_data=form, user=user)
+        return _("Cloned {{name}}", {"name": agent_id})
+
+    # A table, not a chain. The previous version ended in a bare `else: # clone`,
+    # so adding a fifth verb to AGENT_VERBS would have silently CLONED the agent
+    # rather than failing — a wrong mutation, not a skipped one. Looking one up
+    # cannot do that: an unhandled verb raises KeyError, and `_check_verbs()`
+    # below turns even that into a boot failure.
+    handlers = {
+        "toggle": _toggle,
+        "delete": _delete,
+        "hide": _hide,
+        "clone": _clone,
+    }
+    _check_verbs(handlers)
+
     try:
-        if verb == "toggle":
-            await toggle_model_by_id(id=agent_id, user=user)
-        elif verb == "delete":
-            await delete_model_by_id(id=agent_id, user=user)
-            message = _("Deleted {{name}}", {"name": agent_id})
-        else:
-            model = await _find(user, agent_id)
-            form = ModelForm(**model.model_dump(exclude={"user", "updated_at", "created_at"}))
-            if verb == "hide":
-                meta = form.meta.model_dump()
-                meta["hidden"] = not bool(meta.get("hidden"))
-                form.meta = type(form.meta)(**meta)
-                await update_model_by_id(request=request, id=agent_id, form_data=form, user=user)
-            else:  # clone
-                # A copy needs a free id, and the suffix is the simplest thing
-                # that cannot collide with the original. `create_new_model`
-                # refuses a taken id, so a second clone of the same agent is
-                # refused rather than silently overwriting the first.
-                form.id = f"{form.id}-copy"
-                form.name = f"{form.name} (copy)"
-                await create_new_model(request=request, form_data=form, user=user)
-                message = _("Cloned {{name}}", {"name": agent_id})
+        message = await handlers[verb]()
     except HTTPException as exc:
         message = str(exc.detail)
     return await render_agents(request, user, message=message)

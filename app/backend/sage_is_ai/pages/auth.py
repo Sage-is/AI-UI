@@ -31,7 +31,7 @@ from fastapi import BackgroundTasks, HTTPException, Request, Response, status
 from sage_is_ai.models.users import UserModel
 from sage_is_ai.utils.auth import get_current_user
 
-__all__ = ["require_admin_page", "require_page_user"]
+__all__ = ["require_admin_page", "require_agents_reader", "require_page_user"]
 
 
 def _signed_in(
@@ -82,6 +82,40 @@ def require_page_user(
     does not require an admin is a trap for whoever audits by path next.
     """
     return _signed_in(request, response, background_tasks)
+
+
+def require_agents_reader(
+    request: Request,
+    response: Response,
+    background_tasks: BackgroundTasks,
+) -> UserModel:
+    """Signed in AND permitted to use the workshop.
+
+    A DEPENDENCY rather than a call at the top of each route body, and that is
+    the whole point. It was five manual `_require_agents_reader(request, user)`
+    lines, one per route — five chances for the sixth route to omit it, with
+    nothing to catch the omission: not a type, not a test, not a lint. In the
+    signature it cannot be forgotten without also forgetting the user.
+
+    Reads `request.app.state.config.USER_PERMISSIONS`, NOT
+    `DEFAULT_USER_PERMISSIONS` — the same table `create_new_model` consults. The
+    defaults are what ships; this is what the operator saved, and reading the
+    wrong one would let these pages ignore a policy the JSON API enforces.
+    """
+    user = _signed_in(request, response, background_tasks)
+    if user.role == "admin":
+        return user
+
+    from sage_is_ai.utils.access_control import has_permission
+
+    if not has_permission(
+        user.id, "workshop.models", request.app.state.config.USER_PERMISSIONS
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Workshop access required",
+        )
+    return user
 
 
 def require_admin_page(

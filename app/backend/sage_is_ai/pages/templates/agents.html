@@ -9,12 +9,13 @@
    MOBILE-FIRST, which is the framework's rule and not a preference: the
    suffixes are `min-width` queries, so a base value written for a desktop and
    patched downward produces a broken phone layout. Base values here are the
-   phone. Only three props earn a suffix — the toolbar direction at `-sm` and
-   the grid columns at `-lg`/`-xl`. Everything else looks the same at every size,
-   so repeating it in a suffix would be noise.
+   phone. Only two props earn a suffix now — the toolbar direction at `-sm` and
+   the description height at `-sm`. Everything else looks the same at every
+   size, so repeating it in a suffix would be noise.
 
-   The column counts are lifted from `Models.svelte` rather than re-decided.
-   Don't reinvent what already works and what people already recognise.
+   The list itself has NO breakpoints at all: flex-wrap with a fixed basis lets
+   the column count flow with the width instead of jumping at three fixed
+   points, and a landscape phone gets two columns without anyone naming 640px.
 
    TWO CLASSES, both shared and both structural. `.btn` carries `:focus-visible`
    and `:hover`, which the prop vocabulary cannot express and without which
@@ -31,10 +32,19 @@
 {% set card_s = "--fb:18rem; --fg:0; --fs:1; --d:flex; --fd:column; --g:.4rem; --p:.65rem .7rem; --br:.6rem; outline:1px solid var(--line)" %}
 {% set head_s = "--d:flex; --g:.7rem; --ai:center" %}
 {% set name_s = "--size:.9rem; --weight:600; --m:0" %}
-{% set desc_s = "--size:.75rem; --c:var(--muted); --m:0" %}
+{# Fixed height from 640px up, so cards in a row line up instead of stepping
+   with the length of each description. Left free below that: on a phone the
+   cards are one per row, nothing needs to align, and a fixed height would only
+   crop text or leave a gap.
+
+   `--of:hidden` is not in the instruction and is here because without it a long
+   description spills out of its 5rem and lands on top of the buttons below —
+   a fixed height with no overflow rule is a visual bug waiting for the first
+   verbose agent. Say the word and it comes out. #}
+{% set desc_s = "--size:.75rem; --c:var(--muted); --m:0; --h-sm:5rem; --of:hidden" %}
 {% set by_s   = "--size:.7rem; --c:var(--muted); --m:0" %}
 {% set act_s  = "--d:flex; --fw:wrap; --ai:center; --g:.35rem; --mt:auto; --pt:.35rem" %}
-{% set menu_s = "--d:flex; --fd:column; --g:.25rem; --m:.35rem 0 0; --p:.4rem; --lis:none; --br:.5rem; outline:1px solid var(--line)" %}
+{% set menu_s = "--pos:absolute; --top:100%; --right:0; --z:10; --minw:11rem; --d:flex; --fd:column; --g:.25rem; --m:.2rem 0 0; --p:.4rem; --lis:none; --br:.5rem; --bgc:var(--background); outline:1px solid var(--line)" %}
 
 {% if message %}
 <p class="toast toast-float toast-info" role="status" data-cy="agents-message">{{ message }}</p>
@@ -74,9 +84,10 @@
 {% endif %}
 
 {% if agents %}
-{# One column on a phone, two from 1024, three from 1280 — the same ladder the
-   Svelte page uses. `minmax(0,1fr)` rather than `1fr` so a long agent name
-   cannot push a column wider than its share. #}
+{# Flex-wrap, no stretch. Cards hold an 18rem basis and do not grow, so the
+   count follows the width and a partial last row keeps column width rather than
+   one card ballooning across the row. The ragged right edge is the accepted
+   cost of that — chosen over grid because it needs no breakpoints. #}
 <ul data-cy="agents-list"
     style="--d:flex; --fw:wrap; --g:.5rem; --lis:none; --p:0; --m:0 0 1rem">
   {% for a in agents %}
@@ -106,17 +117,17 @@
         <button class="btn{% if not a.is_active %} btn-primary{% endif %}" type="submit">{{ a.toggle_label }}</button>
       </form>
 
-      <details style="--ml:auto">
+      <details name="agent-menu" style="--ml:auto; --pos:relative">
         <summary class="btn" data-cy="agents-menu" style="--lis:none">{{ actions_label }}</summary>
         <ul style="{{ menu_s }}">
-          <li><form method="post" action="{{ base }}/hide/{{ a.id | urlencode }}{{ lang }}"><button class="btn" data-cy="agents-menu-hide" type="submit">{{ a.hide_label }}</button></form></li>
-          <li><a class="btn" data-cy="agents-menu-copy-link" href="{{ a.open_url }}">{{ copy_link_label }}</a></li>
+          <li><form method="post" action="{{ base }}/hide/{{ a.id | urlencode }}{{ lang }}"><button data-cy="agents-menu-hide" type="submit" style="--bg:none; --p:0; --c:inherit; --td:underline; --c-hover:inherit; --bgc-hover:transparent">{{ a.hide_label }}</button></form></li>
+          <li><a data-cy="agents-menu-copy-link" href="{{ a.open_url }}" style="--c:inherit; --td:underline">{{ copy_link_label }}</a></li>
           {% if community %}
-          <li><a class="btn" data-cy="agents-menu-share" href="{{ community_url }}" target="_blank" rel="noopener">{{ share_label }}</a></li>
+          <li><a data-cy="agents-menu-share" href="{{ community_url }}" target="_blank" rel="noopener" style="--c:inherit; --td:underline">{{ share_label }}</a></li>
           {% endif %}
-          <li><form method="post" action="{{ base }}/clone/{{ a.id | urlencode }}{{ lang }}"><button class="btn" data-cy="agents-menu-clone" type="submit">{{ clone_label }}</button></form></li>
-          <li><a class="btn" data-cy="agents-menu-export" href="{{ base }}/export/{{ a.id | urlencode }}" download>{{ export_label }}</a></li>
-          <li><form method="post" action="{{ base }}/delete/{{ a.id | urlencode }}{{ lang }}"><button class="btn btn-danger" data-cy="agents-menu-delete" type="submit">{{ delete_label }}</button></form></li>
+          <li><form method="post" action="{{ base }}/clone/{{ a.id | urlencode }}{{ lang }}"><button data-cy="agents-menu-clone" type="submit" style="--bg:none; --p:0; --c:inherit; --td:underline; --c-hover:inherit; --bgc-hover:transparent">{{ clone_label }}</button></form></li>
+          <li><a data-cy="agents-menu-export" href="{{ base }}/export/{{ a.id | urlencode }}" download style="--c:inherit; --td:underline">{{ export_label }}</a></li>
+          <li><form method="post" action="{{ base }}/delete/{{ a.id | urlencode }}{{ lang }}"><button data-cy="agents-menu-delete" type="submit" style="--bg:none; --p:0; --c:inherit; --td:underline; --c-hover:inherit; --bgc-hover:transparent">{{ delete_label }}</button></form></li>
         </ul>
       </details>
     </div>

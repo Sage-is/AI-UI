@@ -2,7 +2,9 @@
 
 How we move an admin surface off SvelteKit onto server-rendered fragments. Every rule here earned its place on a real surface, and the evidence is named so you can argue with it.
 
-Three surfaces have been through it: Sprigs (231 to 157 lines, 32%), diagnostics (813 to 273, 67%), and theme and branding (288 to 200, 31%). The spread between those numbers is most of what this document is about.
+Five surfaces have been through it: Sprigs (231 to 157 lines, 32%), diagnostics (813 to 273, 67%), theme and branding (288 to 200, 31%), the setup wizard (1,816 to 1,294, 29% — and the only one where the Svelte was deleted outright rather than left running beside it), and Agents. The spread between those numbers is most of what this document is about.
+
+Agents is the first one chosen for a measured user cost rather than for being ripe: `/workshop/models` was 144 requests, 20,520 kB and 32 seconds on production — a list of agents loading slower than a conversation. Measured on a restored production snapshot at 54 agents, the SPA fetches 2,233 kB of JSON across two endpoints to draw that list; the server-rendered page is 86 kB including its markup, 5.5 kB gzipped. It is also the first surface to need **no client library at all** — plain forms, links and `<details>` — which is a better result than either htmx or an island.
 
 ## The order of work
 
@@ -41,8 +43,17 @@ Never run `make it_build` to look at something. These pages have no build step, 
 | you want to | run |
 | --- | --- |
 | change a page and watch it | `make review_live` |
+| **change Svelte AND server-side, without tearing down** | **`make dev_run`** |
 | judge whether it ships | `make review` |
-| change anything Svelte | `make review_rebuild` |
+| change Svelte, then judge the artifact | `make review_rebuild` |
+
+**`dev_run` is the one to reach for when work spans both halves**, and it is the mode people miss. It publishes 5173, mounts the frontend source, the static dir, the whole backend and every Vite/Svelte config, then runs `uvicorn --reload` and `vite dev` side by side in one container. Svelte hot-reloads, Python reloads, and neither needs a rebuild or a teardown.
+
+Until 2 August 2026 it was missing one thing: `PAGES_RELOAD_DIRS`. The backend was already reloading, but the pages shell reads that variable to decide whether to serve the browser-refresh island, and `/pages/_dev/reload` is not registered without it — so a template edit reloaded the server and no open tab had any reason to ask for it. One environment variable, and the two dev modes stopped disagreeing.
+
+`review_live` still exists and is still the right tool for judging a page, because it boots the seeded review instance with the ui-Sprig grafted and the walkthrough printed. The split is honest: `dev_run` is for building, `review_live` is for looking.
+
+**`review_live` does NOT rebuild Svelte, and nothing warns you.** It mounts `sage_is_ai/pages/` and nothing else; the bundle is baked into the image at `/app/build`. Edit a Svelte file under `review_live` and you will be looking at whatever `it_build` last produced, silently. That only bites on surfaces the SPA still owns — `SetupDialog.svelte` is the live example — but it bites without a message.
 
 Under `review_live` the pages package is mounted and watched, and **nothing needs a hand**:
 

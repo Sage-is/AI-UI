@@ -7,7 +7,7 @@ This doc explores how to ship try.sage as a single Docker image an operator can 
 - Ship one image — the existing production image. Gate try mode behind `ENABLE_TRY_SAGE=true` at runtime. This is approach 2 below.
 - Add a thin `docker-compose.try-sage.yaml` next to the existing `docker-compose.yaml` for operators who prefer compose. This is approach 3, and it composes on top of approach 2 — no conflict.
 - Skip the build-time variant (approach 1). It doubles registry footprint and CI cost for zero runtime benefit.
-- Add `make try_sage_start` and `make try_sage_stop` as the canonical operator UX. They already exist in the Makefile. This doc explains why those targets are enough and what the next steps look like.
+- Add `make try_sage_start` and `make try_sage_stop` as the canonical operator UX. **Correction, verified 2026-08-02: only `try_sage_start` exists.** The Makefile has `try_sage_start`, `try_sage_reset` and `try_sage_links`; there is no `try_sage_stop`, so the sentence that followed — "They already exist" — was true of one of the two. This doc explains why those targets are enough and what the next steps look like.
 - The hidden LLM secrets stay env-only — never bake `TRY_SAGE_LLM_API_KEY` into an image layer.
 
 ## Three approaches considered
@@ -63,7 +63,7 @@ docker run -d -p 8080:8080 \
 **What changes**
 
 - Nothing in the Dockerfile. Trial mode is already env-driven per Phase A1.
-- New Makefile targets `try_sage_start` and `try_sage_stop` (already added).
+- New Makefile targets `try_sage_start` and `try_sage_stop` (`try_sage_start` added; **`try_sage_stop` was never written** — verified 2026-08-02).
 - Documentation says "the same image you already run, with these env vars".
 
 **Operator UX**
@@ -143,7 +143,7 @@ Ship this alongside approach 2. It is free.
 
 If we go with approach 2 plus the compose wrapper from approach 3, here are the PRs.
 
-1. **PR 1 — Makefile targets.** `try_sage_start` and `try_sage_stop`. Already in this branch. Verifies the three required env vars before running. Defaults `TRY_SAGE_USER_SEAT_COUNT=3` and `TRY_SAGE_RESET_INTERVAL_HOURS=24`. Reuses `DOCKER_RUN_ARGS`.
+1. **PR 1 — Makefile targets.** `try_sage_start` and `try_sage_stop`. Only `try_sage_start` landed; **`try_sage_stop` is still unwritten** (verified 2026-08-02). Verifies the three required env vars before running. Defaults `TRY_SAGE_USER_SEAT_COUNT=3` and `TRY_SAGE_RESET_INTERVAL_HOURS=24`. Reuses `DOCKER_RUN_ARGS`.
 
 2. **PR 2 — Compose wrapper.** Add `docker-compose.try-sage.yaml`. Document `docker compose -f docker-compose.try-sage.yaml up -d` in `docs/try-sage-deployment.md` under a new "Compose deployment" subsection.
 

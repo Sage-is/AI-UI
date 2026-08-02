@@ -150,6 +150,15 @@ help:
 	@echo "  1) Build:          make it_build"
 	@echo "  2) Run:            make it_run"
 	@echo ""
+	@echo "  Working on the frontend? Pick by what you are changing:"
+	@echo "    Svelte AND server-side   make dev_run       # both live, no teardown"
+	@echo "    a no-build page          make review_live   # pages/ watched, tab follows"
+	@echo "    judging whether it ships make review        # baked image, no mounts"
+	@echo "    Svelte, then judge it    make review_rebuild"
+	@echo ""
+	@echo "  NOTE: review_live does NOT rebuild Svelte. It mounts pages/ only,"
+	@echo "        so the bundle stays at whatever it_build last produced."
+	@echo ""
 	@echo "Available make commands:"
 	@echo ""
 	@LC_ALL=C $(MAKE) -pRrq -f $(firstword $(MAKEFILE_LIST)) : 2>/dev/null \
@@ -217,6 +226,7 @@ DEV_RUN_ARGS := --rm -p $(PORT_MAPPING) \
 	-v $$(pwd)/app/postcss.config.js:/app/postcss.config.js \
 	-v $$(pwd)/app/tailwind.config.js:/app/tailwind.config.js \
 	-v $$(pwd)/app/package.json:/app/package.json \
+	-e PAGES_RELOAD_DIRS=/app/backend/sage_is_ai/pages \
 	--name $(CONTAINER_NAME)
 
 it_stop:
@@ -272,17 +282,11 @@ it_run_ghcr:
 	$(CONTAINER_RUNTIME) run $(DOCKER_RUN_ARGS) $(GHCR_IMAGE_NAME):$(IMAGE_TAG)
 
 # Combine build and dev run targets
-it_build_n_dev_run: it_build
-	@$(NOTIFY_DONE)
-	@echo ""
-	@make dev_run
 
 # Combined build and run targets
 it_build_n_run: it_build
 	@make it_run
 
-it_build_n_run_no_cache: it_build_no_cache
-	@make it_run
 
 # Build and run with a throwaway volume (fresh-install test)
 # Cleans up the test volume on exit so it's ready for the next run.
@@ -1024,7 +1028,15 @@ trivy_db_update:
 # Complements (does not replace) the per-tool bun scripts.
 
 # lint: Run all linters — eslint, svelte-check, prettier, black.
-lint: pipefail_lint
+## docs_gate — a doc that names a make target which does not exist fails here.
+## Added 2026-08-02 after a scripted diff found in seconds what months of reading
+## had missed: five phantom `make test_*` commands in a Testing Standards section
+## describing a DJANGO project (this is FastAPI), and three claims that
+## `try_sage_stop` already existed. It never did.
+docs_gate:
+	@scripts/gates/docs-targets.sh
+
+lint: docs_gate pipefail_lint
 	@echo "=== Frontend lint (eslint + svelte-check) ==="
 	cd app && bun run lint:frontend
 	cd app && bun run lint:types
@@ -1035,18 +1047,9 @@ lint: pipefail_lint
 
 # ===========================================================================
 
-.PHONY: release it_build it_build_no_cache dev_run it_run it_build_n_run it_build_n_run_no_cache \
-	ghcr_login \
-	it_build_multi_arch_push_docker_hub it_build_multi_arch_push_GHCR \
-	it_build_multi_arch_all verify_ghcr_manifest manifest_verify_fixture show-version setup setup_env setup_env_auto setup_env_template setup_siblings \
-	require_gitflow_next bump_release_version release_and_push_GHCR hotfix_and_push_GHCR \
-	waha_start waha_stop waha_logs waha_status \
-	signal_start signal_stop signal_logs signal_status \
-	install_dev scan scan_secrets scan_sast scan_deps scan_container scan_dast \
-	trivy_db_update lint test_db_upgrade test_db_fresh wizard_smoke \
-	it_build_amd64 cross_smoke release_smoke \
-	sprig_registry sprig_smoke sprig_durability sprig_sign sprig_signing ui_sprig_gate pipefail_lint pipefail_fixture e2e_both sprig_publish upgrade_gate parity_gate e2e e2e_watch e2e_heavy gauntlet gauntlet_full \
-	catalog_prep catalog_build catalog_release ship
+.PHONY: $(shell grep -hoE '^[a-zA-Z_][a-zA-Z0-9_-]*:' $(MAKEFILE_LIST) | tr -d ':')
+## Derived, not hand-listed. There were 104 targets and 14 declarations, so
+## 90 were one same-named file away from silently not running.
 
 
 # Version Management with Git Flow
