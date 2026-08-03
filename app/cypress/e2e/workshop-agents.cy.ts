@@ -190,6 +190,22 @@ describe('Workshop: Agents', () => {
 	});
 
 	it('offers the row menu, with every action it carries today', () => {
+		// CLOSED FIRST, and this line exists because its absence shipped a defect.
+		// The menu is a `<details>`; startr.style applies `display !important`,
+		// which beats the user-agent rule that hides a closed details' content, so
+		// `--d:flex` on the menu left EVERY row's menu permanently rendered —
+		// floating over whatever sat below it while the element still reported
+		// `open=false`. The rest of this test passed throughout, because asserting
+		// that menu items EXIST is satisfied perfectly by a menu that never closes.
+		//
+		// Counted rather than selected: on the Svelte page the items are not in the
+		// DOM until the menu opens, and on the server-rendered page they are in the
+		// DOM but hidden. Both are correct, and both count zero.
+		cy.get('body').then(($b) => {
+			const open = $b.find('[data-cy="agents-menu-delete"]:visible');
+			expect(open.length, 'no row menu is showing before anything is clicked').to.eq(0);
+		});
+
 		row('cy-agent-alpha').find('[data-cy="agents-menu"]').click();
 		['hide', 'copy-link', 'clone', 'export', 'delete'].forEach((action) =>
 			cy.get(`[data-cy="agents-menu-${action}"]`).should('exist')

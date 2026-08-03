@@ -1,0 +1,110 @@
+{# The workshop surfaces' shared style vocabulary. ONE copy, imported.
+
+   Agents defined these inline and shipped well. Prompts was about to copy them,
+   and Knowledge, Users and Evaluations after that — at which point five
+   surfaces would each hold their own 18rem and drift apart one considered
+   tweak at a time. A card that is 18rem on one workshop page and 17rem on the
+   next is not a decision anybody made; it is what copy-paste does over months.
+
+   Use it with `{% import "_workshop.html" as ws %}` and then `{{ ws.card_s }}`.
+
+   ── THE RULES THESE FOLLOW, and why ──────────────────────────────────────────
+
+   PROPS, NOT A STYLESHEET. Agents added ZERO lines to `pages.css`. That came
+   from Branding, where 99 hand-written CSS lines were written before anyone
+   asked whether they were needed, and deleting them took the surface's cut from
+   8% to 31%. If a rule can be a prop, it is a prop.
+
+   TWO CLASSES ONLY, both shared and both structural. `.btn` carries
+   `:focus-visible` and `:hover`, which the prop vocabulary cannot express and
+   without which keyboard users get no feedback at all. `.toast` fades itself
+   with `@keyframes`. Everything else is props.
+
+   `outline`, NOT `--b`. `--b` collides with the framework's border shorthand.
+   `var(--line)` is defined in `pages.css`, so the border survives the
+   startr.style CDN being unreachable even when the layout does not.
+
+   `--lis`, NOT `--list-style`. The second is not a prop the framework reads; it
+   fails silently, which cost an afternoon once.
+
+   MOBILE FIRST. Base values are the phone; suffixed values only where the
+   layout actually changes going up. Never repeat a base value in a suffix. #}
+
+{# The card. Flex-wrap rather than grid, and `--fg:0` so cards do NOT grow:
+   the count follows the width, and a partial last row keeps its column width
+   instead of one card ballooning across the row. The ragged right edge is the
+   accepted cost, chosen over grid because it needs no breakpoints — and because
+   startr.style's two grid systems each lack tiers the other has, which is filed
+   rather than patched. #}
+{% set card_s = "--fb:18rem; --fg:0; --fs:1; --d:flex; --fd:column; --g:.4rem; --p:.65rem .7rem; --br:.6rem; outline:1px solid var(--line)" %}
+
+{# The list that holds the cards. #}
+{% set list_s = "--d:flex; --fw:wrap; --g:.5rem; --lis:none; --p:0; --m:0 0 1rem" %}
+
+{# A card's top line: picture or icon beside the name. #}
+{% set head_s = "--d:flex; --g:.7rem; --ai:center" %}
+{% set name_s = "--size:.9rem; --weight:600; --m:0" %}
+{% set by_s = "--size:.7rem; --c:var(--muted); --m:0" %}
+
+{# Body text. Fixed height from 640px up so cards in a row line up instead of
+   stepping with the length of each description; free below that, where cards
+   are one per row and a fixed height would only crop text or leave a gap.
+
+   `--of:hidden` is load-bearing: without it a long description spills out of its
+   5rem and lands on top of the buttons below. A fixed height with no overflow
+   rule is a visual bug waiting for the first verbose entry. #}
+{% set body_s = "--size:.75rem; --c:var(--muted); --m:0; --h-sm:5rem; --of:hidden" %}
+
+{# The action row, pushed to the bottom of the card so buttons line up across a
+   row whatever the body above them does. #}
+{% set act_s = "--d:flex; --fw:wrap; --ai:center; --g:.35rem; --mt:auto; --pt:.35rem" %}
+
+{# The row menu. `--pos:absolute` against a `--pos:relative` <details> so opening
+   it OVERLAYS rather than shoving its neighbours down — Alexander, on the
+   Agents menu: "they should stay in place and not deform on things when they
+   are opened."
+
+   Worth knowing: this makes BEHAVIOUR depend on the CDN, not just appearance.
+   With startr.style blocked the menu falls back into flow and shoves the row
+   below again — the exact bug the positioning fixed, reappearing offline. That
+   is reason four on the board's "version and vendor startr.style" item. #}
+{# `--z` on the WRAPPER, not only on the menu inside it. A positioned element
+   with a z-index creates a stacking context, and the open menu paints within it
+   — so the whole subtree sits above later content instead of the menu competing
+   in the root context on its own.
+
+   Correct by construction, NOT by measurement, and the difference is worth
+   writing down. This started as a fix for Cypress reporting the last card's
+   Delete as "covered by INPUT#prompts-import-file" — the menu drops over the
+   import form when three cards fill a row. It was not the fix; the coverage
+   error came from the spec, on a retry (see `workshop-prompts.cy.ts`). The
+   wrapper is still the right place for the z-index, so it stays, but nobody has
+   yet seen this line prevent anything. #}
+{% set menu_wrap_s = "--ml:auto; --pos:relative; --z:20" %}
+{# NO `--d:` HERE, and that is the whole point of this comment.
+
+   startr.style applies `display: var(--d) !important`, and `!important` beats
+   the user-agent rule that hides a closed <details>'s content. So `--d:flex` on
+   this menu left it PERMANENTLY RENDERED — open or shut — floating under every
+   card and swallowing clicks on whatever sat beneath it. Measured, not guessed:
+   with the details reporting `open=false`, the menu still had a box of 165x153.
+
+   That shipped on Agents too, unnoticed, because its guard-rail only asserts the
+   menu ITEMS EXIST — it never clicks one, and a menu that is always open passes
+   that check perfectly.
+
+   A `<ul>` with `--lis:none` stacks vertically on its own. The gap comes from
+   `--g`, which applies to block containers as row-gap. Nothing here needed
+   `display` in the first place. #}
+{% set menu_s = "--pos:absolute; --top:100%; --right:0; --z:10; --minw:11rem; --g:.25rem; --m:.2rem 0 0; --p:.4rem; --lis:none; --br:.5rem; --bgc:var(--background); outline:1px solid var(--line)" %}
+
+{# A menu entry that posts. Looks like the links beside it; it is a button
+   because it changes something, and that difference should be in the markup
+   rather than in the paint. #}
+{% set menu_item_s = "--bg:none; --p:0; --c:inherit; --td:underline" %}
+
+{# The confirmation. Centred by the browser's own `inset:0; margin:auto` once
+   `showModal()` raises it, so this adds only the things the UA does not: a
+   readable width, breathing room, and the same border as everything else. #}
+{% set dialog_s = "--maxw:26rem; --p:1rem 1.1rem; --br:.6rem; --bgc:var(--background); outline:1px solid var(--line)" %}
+{% set dialog_actions_s = "--d:flex; --ai:center; --g:.5rem; --mt:.8rem" %}

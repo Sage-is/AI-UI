@@ -223,7 +223,7 @@ def _whole_page(
 
 
 _INDEX_GROUP_S = "--size:.7rem; --weight:600; --tt:uppercase; --ls:.04em; --op:.7; --m:1.5rem 0 .5rem"
-_INDEX_LIST_S = "--m:0; --p:0; --d:flex; --fd:column; --g:.5rem"
+_INDEX_LIST_S = "--m:0; --p:0; --d:flex; --fd:column; --g:.5rem; --lis:none"
 _INDEX_ITEM_S = "--d:block; --p:.7rem; --br:.6rem; --b:1px solid var(--line)"
 _INDEX_NAME_S = "--size:.9rem; --weight:500"
 _INDEX_SUB_S = "--size:.72rem; --op:.7; --d:block; --m:.15rem 0 0"
@@ -450,7 +450,16 @@ async def agents_action(
     id may contain a slash (`ollama/llama3`), and the default converter would
     split it into a 404.
     """
-    return HTMLResponse(await run_agent_action(request, user, agent_id, verb))
+    # The WHOLE page, not the fragment. A fragment is right for a surface whose
+    # response is swapped into a live document — that is why `/admin/sprigs`
+    # returns one, and htmx puts it where it belongs. This surface has no
+    # swapper: the form does an ordinary POST, so the browser NAVIGATES to
+    # whatever comes back. Returning a bare panel meant navigating to a document
+    # with no <head> and no stylesheet, and every action — toggle, hide, clone,
+    # delete — dropped the reader onto an unstyled page. Shipped that way, and
+    # invisible to every gate, because they all assert server state and hook
+    # presence and none of them asks whether a document is still a document.
+    return _whole_page(request, "workshop/agents", await run_agent_action(request, user, agent_id, verb))
 
 
 @router.get("/workshop/agents/export")
@@ -475,7 +484,7 @@ async def agents_export(
 async def agents_import(
     request: Request, file: UploadFile = File(...), user=Depends(require_agents_reader)
 ) -> HTMLResponse:
-    return HTMLResponse(await import_agents(request, user, await file.read()))
+    return _whole_page(request, "workshop/agents", await import_agents(request, user, await file.read()))
 
 
 @router.get("/workshop/agents/avatar/{agent_id:path}")
@@ -534,8 +543,11 @@ async def prompts_action(
     "did it" is visible in the log and in the browser's own history. A delete
     without it re-renders the row asking; with it, the row goes.
     """
-    return HTMLResponse(
-        await run_prompt_action(request, user, command, verb, confirmed=bool(confirm))
+    # The whole page — see the note on `agents_action`. Same reason, same trap.
+    return _whole_page(
+        request,
+        "workshop/prompts",
+        await run_prompt_action(request, user, command, verb, confirmed=bool(confirm)),
     )
 
 
@@ -556,7 +568,7 @@ async def prompts_export(
 async def prompts_import(
     request: Request, file: UploadFile = File(...), user=Depends(require_agents_reader)
 ) -> HTMLResponse:
-    return HTMLResponse(await import_prompts(request, user, await file.read()))
+    return _whole_page(request, "workshop/prompts", await import_prompts(request, user, await file.read()))
 
 
 # The whole-page surfaces, the way `_SETUP_PAGES` does it for the wizard.

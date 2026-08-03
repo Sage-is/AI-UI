@@ -2382,8 +2382,14 @@ async def active_ui_fragment():
 # because there is no build step to content-hash them — that being the point.
 from sage_is_ai.pages import ASSETS_DIR as PAGES_ASSETS_DIR  # noqa: E402
 from sage_is_ai.pages.router import router as pages_router  # noqa: E402
+from sage_is_ai.pages.slashes import PagesSlashMiddleware  # noqa: E402
 
 app.include_router(pages_router, prefix="/pages", tags=["pages"])
+# Trailing slashes, before the SPA mount can swallow them. `SPAStaticFiles` is
+# mounted at `/` with html=True, so an unmatched `/pages/...` returns the shell
+# with a 200 rather than a 404 — a wrong page that no status code reveals. This
+# canonicalises instead. See pages/slashes.py for why it is not a rewrite.
+app.add_middleware(PagesSlashMiddleware)
 app.mount(
     "/pages/_assets",
     CachedStaticFiles(directory=PAGES_ASSETS_DIR),

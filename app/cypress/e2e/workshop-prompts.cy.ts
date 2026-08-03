@@ -19,11 +19,12 @@ import { surfacePath } from '../support/surfaces';
 // 2. Delete is asserted on the SERVER, not on the row disappearing. A control
 //    that looks like it worked and persisted nothing is exactly the failure this
 //    migration has already shipped once, in a "Show me how to fix this" button
-//    that rendered and did nothing. The confirm step is handled tolerantly
-//    because the two implementations reach it differently — the Svelte page
-//    opens a dialog, a server-rendered page posts a form — and which of those a
-//    surface uses is an implementation choice, while "the prompt is gone
-//    afterwards" is the contract.
+//    that rendered and did nothing. A confirmation is REQUIRED but its SHAPE is
+//    not: the Svelte page opens a dialog and the server-rendered page posts a
+//    form, and which of those a surface uses is an implementation choice, while
+//    "it asked, and afterwards the prompt is gone" is the contract. Tolerating
+//    a MISSING confirmation, as this spec first did, is not neutrality — it is
+//    a check that cannot fail.
 //
 // 3. The owner line is asserted as TEXT, never as an avatar. `/api/v1/prompts/list`
 //    returns `PromptUserResponse`, which nests the whole `UserResponse` — on the
@@ -89,6 +90,21 @@ const serverCommands = () =>
 			// detail in one place instead of four.
 			.then((res) => (res.body as { command: string }[]).map((p) => p.command.replace(/^\//, '')))
 	);
+
+/**
+ * Whatever this implementation uses to ask "are you sure?".
+ *
+ * Two hooks because the two surfaces ask differently and BOTH are legitimate:
+ * the Svelte page opens the shared `ConfirmDialog`, and the server-rendered page
+ * expands the row into a confirm/cancel pair with no script at all. A spec that
+ * named only one would be voting for an implementation it exists to judge
+ * neutrally — and would have failed the no-build page for asking properly.
+ *
+ * One of these must be found. Proved by planting `[data-cy="no-such-confirmation"]`
+ * here and watching the test go red, per the standing rule that a gate whose
+ * failure has never been seen is decoration.
+ */
+const CONFIRM = '[data-cy="confirm-dialog-confirm"], [data-cy="prompts-confirm-delete"]';
 
 const rows = () => cy.get('[data-cy="prompts-row"]');
 const row = (command: string) => cy.get('[data-cy="prompts-row"]').filter(`:contains(${command})`);
@@ -168,10 +184,45 @@ describe('Workshop: Prompts', () => {
 	});
 
 	it('offers the row menu, with every action it carries today', () => {
+		// CLOSED FIRST — see the twin of this block in `workshop-agents.cy.ts` for
+		// what it caught. Counted rather than selected, because the Svelte page
+		// omits the items until the menu opens and the server-rendered page hides
+		// them; both are correct, and both count zero.
+		cy.get('body').then(($b) => {
+			const open = $b.find('[data-cy="prompts-menu-delete"]:visible');
+			expect(open.length, 'no row menu is showing before anything is clicked').to.eq(0);
+		});
+
 		row('cy-prompt-alpha').find('[data-cy="prompts-menu"]').click();
-		['share', 'clone', 'export', 'delete'].forEach((action) =>
+		// Unconditional actions first.
+		['clone', 'export', 'delete'].forEach((action) =>
 			cy.get(`[data-cy="prompts-menu-${action}"]`).should('exist')
 		);
+
+		// Share is FEATURE-GATED on both implementations — the Svelte menu reads
+		// `$config.features.enable_community_sharing` and the server-rendered one
+		// reads `ENABLE_COMMUNITY_SHARING`. Asserting it unconditionally made this
+		// spec pass alone and fail in suite order: the harness boots ONE container
+		// for the whole run, `wizard-features.cy.ts` sorts before this file and
+		// toggles platform features, so by the time prompts ran the flag was off
+		// and a correct page was reported broken.
+		//
+		// Reading the flag is also a STRONGER contract than skipping the control:
+		// it asserts the menu follows the setting in both directions, so a surface
+		// that ignored the flag entirely would now be caught.
+		cy.request('/api/config').then((cfg) => {
+			const on = Boolean(
+				(cfg.body as { features?: { enable_community_sharing?: boolean } }).features
+					?.enable_community_sharing
+			);
+			cy.get('body').then(($b) => {
+				const present = $b.find('[data-cy="prompts-menu-share"]').length > 0;
+				expect(
+					present ? 'offered' : 'absent',
+					`community sharing is ${on ? 'ON' : 'OFF'}, so Share must be ${on ? 'offered' : 'absent'}`
+				).to.eq(on ? 'offered' : 'absent');
+			});
+		});
 	});
 
 	it('offers import and export to an admin', () => {
@@ -198,37 +249,34 @@ describe('Workshop: Prompts', () => {
 		row('cy-prompt-gamma').find('[data-cy="prompts-menu"]').click();
 		cy.get('[data-cy="prompts-menu-delete"]').filter(':visible').first().click();
 
-		// Confirm ONLY if a confirmation appears. The Svelte page opens a dialog;
-		// a server-rendered page may post the form straight through. Requiring one
-		// shape would make this spec a vote for an implementation it is meant to
-		// judge neutrally; requiring neither would let a no-op delete pass.
+		// A confirmation is REQUIRED — tolerantly as to shape, strictly as to
+		// existence. `CONFIRM` names both hooks, so this is not a vote for either
+		// implementation; it is the contract that destroying something asks first.
 		//
-		// It WAITS for the dialog rather than looking once. Looking once is what
-		// the first draft did, and a Svelte dialog opens on a state change a tick
-		// later — so the check ran against a document that did not have it yet,
-		// skipped the confirm, and the test failed on "the prompt is still there"
-		// with no hint that the confirm had never been clicked. Bounded, and it
-		// costs nothing on an implementation that has no dialog at all.
-		cy.document().then(
-			(doc) =>
-				new Cypress.Promise<void>((resolve) => {
-					const deadline = Date.now() + 4000;
-					const tick = () => {
-						if (doc.querySelector('[data-cy="confirm-dialog-confirm"]') || Date.now() > deadline) {
-							resolve();
-						} else {
-							setTimeout(tick, 100);
-						}
-					};
-					tick();
-				})
-		);
-		cy.get('body').then(($body) => {
-			const confirm = $body.find('[data-cy="confirm-dialog-confirm"]');
-			if (confirm.length) cy.wrap(confirm.first()).click({ force: true });
-		});
+		// THE LOOK MUST RETRY, and that is the whole of this fix. Two earlier
+		// versions of these three lines both looked exactly once and both reported
+		// a working page as broken:
+		//
+		//   - the first held a `document` captured before the click and polled it,
+		//     which a form POST detaches by navigating;
+		//   - the second used `cy.get('body').then(...)`, which resolves the moment
+		//     a body exists and never looks again.
+		//
+		// Neither could survive the no-build page's actual timing: the delete posts
+		// into a hidden iframe and the panel is swapped back asynchronously through
+		// a view transition, so at the instant of the look there is no dialog yet.
+		// Finding none, both skipped the confirm and let the run fail one line
+		// later on "the prompt is still there" — pointing at the product for a
+		// defect in the spec. `cy.get` with a timeout retries until it appears, and
+		// a confirmation that never comes now fails by name.
+		cy.get(CONFIRM, { timeout: 20000 }).filter(':visible').first().click();
 
-		// The row vanishing is not the assertion. The server is.
+		// Wait for the row to go, THEN ask the server. The row vanishing is not
+		// the assertion — it is the signal that the action finished. The no-build
+		// page never navigates on a swap, so a `cy.request` fired straight after
+		// the click would race the POST it exists to observe and could read the
+		// list before the delete landed.
+		row('cy-prompt-gamma').should('not.exist');
 		cy.then(() => serverCommands().should('not.include', 'cy-prompt-gamma'));
 	});
 });

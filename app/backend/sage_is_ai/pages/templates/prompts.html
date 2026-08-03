@@ -1,79 +1,110 @@
-{# The Prompts surface, PLAIN. Not one style attribute, not one class.
+{# The Prompts surface.
 
-   Standing rule from Alexander: structure first, review, then paint. What a
-   reviewer should be able to judge from this file is whether the right elements
-   are here and whether the page works with no CSS at all — not how it looks.
+   Built plain first and reviewed, then styled — the standing order. The styling
+   is entirely IMPORTED: `_workshop.html` holds one vocabulary for every workshop
+   surface, so Prompts, Agents and whatever follows share a card size rather than
+   drifting apart one considered tweak at a time. This file adds no style strings
+   of its own and no lines to `pages.css`.
 
-   No script either. Search is a GET form, the row actions are POST forms, and
-   the menu is a native <details>. That is the whole interaction model. #}
-
-{# `#prompts-panel` is the swap target. Every POST route returns this fragment,
-   so a swapper replaces exactly what changed and the reader keeps their scroll
-   position. Without a swapper the same response is a normal full-page render —
-   the id costs nothing when nothing reads it. #}
-<div id="prompts-panel">
-
-{% if message %}
-<p data-cy="panel-message">{{ message }}</p>
-{% endif %}
+   The interaction model is still almost nothing: search is a GET form, the row
+   actions are POST forms, the menu is a native <details>, and the confirmation
+   is a server-rendered <dialog open> that a few lines raise to a real modal. #}
+{% import "_workshop.html" as ws %}
 
 <form method="get" action="{{ base }}">
   <input type="hidden" name="lang" value="{{ lang[6:] }}" />
   <label for="prompts-q">{{ search_label }}</label>
   <input data-cy="prompts-search" id="prompts-q" type="search" name="q" value="{{ query }}" />
-  <button type="submit">{{ search_submit_label }}</button>
+  <button class="btn" type="submit">{{ search_submit_label }}</button>
   {% if query %}
-  <a data-cy="prompts-search-clear" href="{{ clear_url }}">{{ clear_label }}</a>
+  <a class="btn" data-cy="prompts-search-clear" href="{{ clear_url }}">{{ clear_label }}</a>
   {% endif %}
 </form>
 
-<p><a data-cy="prompts-create" href="{{ create_url }}">{{ create_label }}</a></p>
+<p><a class="btn btn-primary" data-cy="prompts-create" href="{{ create_url }}">{{ create_label }}</a></p>
+
+{# The swap target — the same shape Agents uses, and for the same reasons.
+   The SEARCH FORM STAYS OUTSIDE: replacing it would replace the input, and a
+   replaced input loses focus and cursor position. Everything a row action can
+   change is inside; nothing it cannot is. #}
+<div id="prompts-results">
+
+{% if message %}
+<p data-cy="panel-message">{{ message }}</p>
+{% endif %}
+
 
 {# The list renders even when EMPTY, with the empty message inside it. The
    Agents page learned this from the parity gate: an if/else that swapped the
    whole <ul> for a <p> meant `agents-list` existed on one implementation and not
    the other, and every behavioural spec was blind to it because they all seed
    rows first. One container, always. #}
-<ul data-cy="prompts-list">
+<ul data-cy="prompts-list" style="{{ ws.list_s }}">
   {% for p in prompts %}
-  <li data-cy="prompts-row">
-    <h3><a data-cy="prompts-title" href="{{ p.edit_url }}">{{ p.title }}</a></h3>
-    <p>{{ p.command }}</p>
+  <li data-cy="prompts-row" style="{{ ws.card_s }}">
+    <h3 style="{{ ws.name_s }}"><a data-cy="prompts-title" href="{{ p.edit_url }}" style="--c:inherit; --td:none">{{ p.title }}</a></h3>
+    {# `by_s`, not `body_s`. The shared body style reserves 5rem for a
+       description, and a prompt has none — the legacy row shows title, command
+       and owner, nothing else. Borrowing the taller style would be reserving
+       height for text that does not exist, and inventing a description to fill
+       it would be redesigning a surface I was asked to migrate. Cards in a
+       wrapped row still line up: flex stretches them to the tallest by
+       default. #}
+    <p style="{{ ws.by_s }}"><code>{{ p.command }}</code></p>
     {# Text, never a picture. The list endpoint nests the owner's whole record
        including a base64 avatar; rendering it would port the defect. #}
-    <p>{{ p.author }}</p>
+    <p style="{{ ws.by_s }}">{{ p.author }}</p>
 
-    <a data-cy="prompts-edit" href="{{ p.edit_url }}">{{ edit_label }}</a>
+    <div style="{{ ws.act_s }}">
+    <a class="btn" data-cy="prompts-edit" href="{{ p.edit_url }}">{{ edit_label }}</a>
 
     {% if p.confirming %}
-    {# Asked, not assumed. The row expands in place instead of a modal: no focus
-       trap, no escape-key handling, and it survives with JavaScript disabled. #}
-    <p data-cy="prompts-confirm">{{ confirm_delete_label }} <strong>{{ p.command }}</strong></p>
-    <form method="post" action="{{ base }}/delete/{{ p.slug | urlencode }}{{ lang }}&confirm=1">
-      <button data-cy="prompts-confirm-delete" type="submit">{{ confirm_label }}</button>
-    </form>
-    <a data-cy="prompts-confirm-cancel" href="{{ cancel_url }}">{{ cancel_label }}</a>
+    {# Asked, not assumed — and asked by the SERVER, so the question exists
+       before any script runs.
+
+       `<dialog open>` renders visible and usable with scripting off: the
+       browser's own styles centre it horizontally and draw its border, Confirm
+       is a form and Cancel is a link. Three lines of script then raise it with
+       `showModal()`, which is the part no declarative markup can give — the top
+       layer, a `::backdrop`, Escape to dismiss, a focus trap, and an inert
+       background. That is real modality; a popover offers Escape and
+       light-dismiss with no script at all but leaves the page behind it live,
+       which for a destructive action is the wrong trade.
+
+       `showModal()` also centres it VERTICALLY with no CSS of ours, via the UA's
+       `inset:0; margin:auto` — which is why this survives the plain-HTML phase
+       looking like something rather than nothing. #}
+    <dialog open data-cy="prompts-confirm" data-cancel="{{ cancel_url }}" style="{{ ws.dialog_s }}">
+      <p>{{ confirm_delete_label }} <strong>{{ p.command }}</strong></p>
+      <div style="{{ ws.dialog_actions_s }}">
+        <form method="post" action="{{ base }}/delete/{{ p.slug | urlencode }}{{ lang }}&confirm=1">
+          <button class="btn btn-primary" data-cy="prompts-confirm-delete" type="submit">{{ confirm_label }}</button>
+        </form>
+        <a class="btn" data-cy="prompts-confirm-cancel" href="{{ cancel_url }}">{{ cancel_label }}</a>
+      </div>
+    </dialog>
     {% else %}
-    <details name="prompt-menu">
-      <summary data-cy="prompts-menu">{{ actions_label }}</summary>
-      <ul>
+    <details name="prompt-menu" style="{{ ws.menu_wrap_s }}">
+      <summary class="btn" data-cy="prompts-menu" style="--lis:none">{{ actions_label }}</summary>
+      <ul style="{{ ws.menu_s }}">
         {% if community %}
         <li><a data-cy="prompts-menu-share" href="{{ share_url }}" target="_blank" rel="noopener">{{ share_label }}</a></li>
         {% endif %}
         <li>
           <form method="post" action="{{ base }}/clone/{{ p.slug | urlencode }}{{ lang }}">
-            <button data-cy="prompts-menu-clone" type="submit">{{ clone_label }}</button>
+            <button data-cy="prompts-menu-clone" type="submit" style="{{ ws.menu_item_s }}">{{ clone_label }}</button>
           </form>
         </li>
         <li><a data-cy="prompts-menu-export" href="{{ p.export_url }}">{{ export_label }}</a></li>
         <li>
           <form method="post" action="{{ base }}/delete/{{ p.slug | urlencode }}{{ lang }}">
-            <button data-cy="prompts-menu-delete" type="submit">{{ delete_label }}</button>
+            <button data-cy="prompts-menu-delete" type="submit" style="{{ ws.menu_item_s }}">{{ delete_label }}</button>
           </form>
         </li>
       </ul>
     </details>
     {% endif %}
+    </div>
   </li>
   {% endfor %}
   {% if not prompts %}
@@ -96,14 +127,16 @@
 </nav>
 {% endif %}
 
+</div>{# /prompts-results #}
+
 {% if is_admin %}
 <form method="post" action="{{ base }}/import{{ lang }}" enctype="multipart/form-data">
   <label for="prompts-import-file">{{ import_label }}</label>
   <input id="prompts-import-file" type="file" name="file" accept=".json" required />
-  <button data-cy="prompts-import" type="submit">{{ import_label }}</button>
+  <button class="btn" data-cy="prompts-import" type="submit">{{ import_label }}</button>
 </form>
 {% if prompts %}
-<p><a data-cy="prompts-export" href="{{ export_all_url }}">{{ export_all_label }} ({{ count }})</a></p>
+<p><a class="btn" data-cy="prompts-export" href="{{ export_all_url }}">{{ export_all_label }} ({{ count }})</a></p>
 {% endif %}
 {% endif %}
 
@@ -116,8 +149,6 @@
 </p>
 <p>{{ community_sub }}</p>
 {% endif %}
-
-</div>
 
 {# ── PROTOTYPE, and it must not ship in this form ──────────────────────────────
    Startr Swap: the htmz hidden-iframe trick (MIT, (c) Lean Rada) wrapped in a
@@ -146,12 +177,30 @@
 <iframe hidden name="startr-swap" id="startr-swap"></iframe>
 <script>
   (function () {
-    var TARGET = '#prompts-panel';
+    var TARGET = '#prompts-results';
     function enhance() {
-      document.querySelectorAll('#prompts-panel form[method="post"]').forEach(function (f) {
+      document.querySelectorAll('#prompts-results form[method="post"]').forEach(function (f) {
         if (f.enctype === 'multipart/form-data') return;
         f.target = 'startr-swap';
         if (f.action.indexOf('#') === -1) f.action += TARGET;
+      });
+      raise();
+    }
+
+    // Raise a server-rendered confirmation into a real modal. Everything below
+    // is an UPGRADE: with this script removed the dialog is still open, still
+    // centred by the UA, and both of its controls still work.
+    function raise() {
+      var d = document.querySelector('#prompts-results dialog[open]');
+      if (!d || !d.showModal || d.matches(':modal')) return;
+      d.close(); // showModal() on an already-open dialog throws InvalidStateError
+      d.showModal();
+      // Escape fires `cancel`. Without this the dialog would vanish while the
+      // server still considers the row pending — the picture and the state would
+      // disagree, and the next render would contradict what the reader just saw.
+      d.addEventListener('cancel', function (e) {
+        e.preventDefault();
+        window.location.href = d.dataset.cancel;
       });
     }
     var frame = document.getElementById('startr-swap');
@@ -160,7 +209,13 @@
       if (!hash) return;
       var swap = function () {
         var host = document.querySelector(hash);
-        if (host) host.replaceWith.apply(host, frame.contentDocument.body.childNodes);
+        // EXTRACT the matching element from the response document. htmz takes
+        // `body.childNodes` because it expects a fragment; these routes return a
+        // full page, because a form POST navigates to whatever comes back and a
+        // fragment leaves the reader on an unstyled document. Taking the whole
+        // body would graft a second copy of the shell inside the first.
+        var next = frame.contentDocument.querySelector(hash);
+        if (host && next) host.replaceWith(next);
         enhance();
       };
       (document.startViewTransition

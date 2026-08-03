@@ -44,11 +44,7 @@
 {% set desc_s = "--size:.75rem; --c:var(--muted); --m:0; --h-sm:5rem; --of:hidden" %}
 {% set by_s   = "--size:.7rem; --c:var(--muted); --m:0" %}
 {% set act_s  = "--d:flex; --fw:wrap; --ai:center; --g:.35rem; --mt:auto; --pt:.35rem" %}
-{% set menu_s = "--pos:absolute; --top:100%; --right:0; --z:10; --minw:11rem; --d:flex; --fd:column; --g:.25rem; --m:.2rem 0 0; --p:.4rem; --lis:none; --br:.5rem; --bgc:var(--background); outline:1px solid var(--line)" %}
-
-{% if message %}
-<p class="toast toast-float toast-info" role="status" data-cy="agents-message">{{ message }}</p>
-{% endif %}
+{% set menu_s = "--pos:absolute; --top:100%; --right:0; --z:10; --minw:11rem; --g:.25rem; --m:.2rem 0 0; --p:.4rem; --lis:none; --br:.5rem; --bgc:var(--background); outline:1px solid var(--line)" %}
 
 {# Search, the create link and the count on one bar. Stacked on a phone, one
    row from 640px up — the only place the toolbar's shape changes. #}
@@ -69,6 +65,33 @@
     <a class="btn btn-primary" data-cy="agents-create" href="/workshop/models/create">{{ create_label }}</a>
   </span>
 </div>
+
+{# ── The swap target ──────────────────────────────────────────────────────────
+   Everything a row action can change, and nothing it cannot.
+
+   The SEARCH FORM IS DELIBERATELY OUTSIDE. Replacing it would replace the input,
+   and a replaced input loses focus and cursor position. Keeping it out is what
+   makes as-you-type search possible later without restructuring the page — the
+   thing that looked like a shape change when the whole panel was one target.
+
+   The three regions inside all change together and none of them can be left
+   behind: the tag row carries `aria-current`, the pager carries the page number
+   and the count of what is shown, and the list is what changed. Swapping the
+   list alone would leave a pager describing a list that no longer exists.
+
+   The message is in here because it is the RESULT of the action. It is
+   `position: fixed`, so its place in the markup costs nothing — but outside this
+   element it would never update and "Cloned X" would never be seen.
+
+   STILL OUTSIDE, and it goes stale: the `{{ heading_count }}` in the toolbar
+   above. It sits with the create link, and a delete leaves it one too high until
+   the next full load. Moving it in here is the fix; that is a visible change to
+   a reviewed toolbar, so it is flagged rather than done. #}
+<div id="agents-results">
+
+{% if message %}
+<p class="toast toast-float toast-info" role="status" data-cy="agents-message">{{ message }}</p>
+{% endif %}
 
 {% if tags %}
 {# Wraps rather than scrolls sideways. The Svelte row scrolls horizontally and
@@ -162,6 +185,8 @@
   <small style="--size:.75rem; --c:var(--muted); --ml:auto">{{ showing_label }}</small>
 </nav>
 {% endif %}
+
+</div>{# /agents-results #}
 
 {% if is_admin %}
 <div style="--d:flex; --fw:wrap; --ai:center; --g:.5rem; --m:1rem 0; --pt:1rem">

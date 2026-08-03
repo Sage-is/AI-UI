@@ -180,7 +180,13 @@ def render_page(
 <body style="--m:0 auto; --p:1rem">
   <main>
     <header>
-      <h1 style="--size:1.15rem; --m:0">{escape(heading)}</h1>
+      <!-- `page-heading` is the one marker that proves a SERVER-RENDERED page
+           answered. It matters because nothing under /pages/ can 404: the SPA is
+           mounted at / with html=True, so an unmatched path returns the app
+           shell with a 200 and the wrong page is indistinguishable from the
+           right one by status. Every gate that needs to know "did a real page
+           come back?" reads this instead of the status code. -->
+      <h1 data-cy="page-heading" style="--size:1.15rem; --m:0">{escape(heading)}</h1>
       {sub}
     </header>
     {body}
