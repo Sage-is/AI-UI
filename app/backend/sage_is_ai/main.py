@@ -51,7 +51,12 @@ from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
 from fastapi.openapi.utils import get_openapi
 
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
+from fastapi.responses import (
+    FileResponse,
+    HTMLResponse,
+    JSONResponse,
+    RedirectResponse,
+)
 from fastapi.staticfiles import StaticFiles
 
 from starlette_compress import CompressMiddleware
@@ -2396,6 +2401,46 @@ app.mount(
     name="pages-assets",
 )
 
+
+# ── The try.sage welcome, server-rendered ────────────────────────────────────
+#
+# Registered only when the trial subsystem exists at all, so a normal deploy
+# keeps its `/` exactly as the SPA mount serves it and these routes cannot be
+# reached, guessed, or misconfigured into existence.
+#
+# `/` wins against the SPA mount because explicit routes resolve first — the
+# same seam every /pages/ route rides. Anonymous visitors get the welcome page
+# in the first response, no bundle; a signed-in reader gets the SPA index the
+# mount would have served. Identity comes from the auth cookie, which every
+# sign-in path sets and signout deletes, so there is no loop between this and
+# the SPA's own anonymous redirect to /auth.
+if ENABLE_TRY_SAGE:
+    from sage_is_ai.pages.try_sage_panel import render_try_sage  # noqa: E402
+
+    @app.get("/welcome", response_class=HTMLResponse)
+    async def try_sage_welcome(request: Request) -> HTMLResponse:
+        """The welcome page at its own address — linkable, and what `/` serves
+        an anonymous visitor. Kept even for signed-in readers: a facilitator
+        projecting this page for a room is signed in themselves."""
+        return HTMLResponse(
+            render_try_sage(request), headers={"Cache-Control": "no-cache"}
+        )
+
+    @app.get("/", response_class=HTMLResponse)
+    async def try_sage_root(
+        request: Request, response: Response, background_tasks: BackgroundTasks
+    ):
+        from sage_is_ai.utils.auth import get_current_user
+
+        try:
+            get_current_user(request, response, background_tasks, auth_token=None)
+        except HTTPException:
+            return HTMLResponse(
+                render_try_sage(request), headers={"Cache-Control": "no-cache"}
+            )
+        return FileResponse(
+            os.path.join(FRONTEND_BUILD_DIR, "index.html"), media_type="text/html"
+        )
 
 
 @app.get("/cache/{path:path}")

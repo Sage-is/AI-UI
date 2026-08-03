@@ -96,8 +96,12 @@ if docker volume inspect "$VOL" >/dev/null 2>&1; then
   docker ps -a --filter "volume=$VOL" --format '         {{.Names}} ({{.Status}})'
   exit 1
 fi
+# ENABLE_TRY_SAGE passes through when set, off otherwise — the trial replaces
+# the whole anonymous surface, so it must never be on for the default suite.
+# Usage: ENABLE_TRY_SAGE=true SPEC=try-sage-welcome.cy.ts make e2e
 docker run -d --name "$ROOT" --network "$NET" -p "$PORT:8080" \
   -e SPRIG_REGISTRY=local-registry:5000 -e ENABLE_SIGNUP=True -e WEBUI_AUTH=True \
+  ${ENABLE_TRY_SAGE:+-e "ENABLE_TRY_SAGE=$ENABLE_TRY_SAGE"} \
   -v "$VOL:/app/backend/data" "$IMG" >/dev/null
 for i in $(seq 1 120); do
   [ "$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:$PORT/health" 2>/dev/null)" = "200" ] && break

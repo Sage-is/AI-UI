@@ -29,7 +29,6 @@
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 	import OnBoarding from '$lib/components/OnBoarding.svelte';
-	import TrySageWelcome from '$lib/components/TrySageWelcome.svelte';
 	import BrandIcon from '$lib/components/BrandIcon.svelte';
 
 	const i18n = getContext('i18n');
@@ -278,6 +277,17 @@
 			goto(redirectPath);
 		}
 
+		// try.sage trial mode: the welcome surface is server-rendered
+		// (no-build migration; replaces TrySageWelcome.svelte). An anonymous
+		// visitor on /auth without a magic token belongs there. `/welcome`,
+		// not `/` — the root route serves by cookie, and bouncing a
+		// signed-out SPA against a cookie check is how a redirect loop
+		// starts. `/welcome` answers unconditionally, so it terminates.
+		if ($config?.features?.enable_try_sage && !$user) {
+			window.location.replace('/welcome');
+			return;
+		}
+
 		// Load branding
 		try {
 			branding = await getBranding();
@@ -331,15 +341,13 @@
 />
 
 <!--
-	try.sage trial mode: strictly invite-only. Replace the entire
-	signin/signup surface with a welcome page directing visitors to
-	their facilitator's email/QR. A magic-link arrival is handled by
-	`checkOauthCallback` in onMount above and navigates away before
-	this branch ever paints, so anyone who lands here in trial mode
-	is by definition someone WITHOUT an invite link.
+	try.sage trial mode: strictly invite-only. The welcome surface that
+	used to render here (TrySageWelcome.svelte) is server-rendered at `/`
+	now; onMount above navigates there. This branch only bridges the
+	moment before that navigation lands, so it paints nothing.
 -->
 {#if $config?.features?.enable_try_sage}
-	<TrySageWelcome />
+	<div style="--w:100%; --h:100dvh; --bgc:#000"></div>
 {:else}
 <div style="--w:100%; --h:100vh; --maxh:100dvh; --c:#fff; --pos:relative">
 	<div

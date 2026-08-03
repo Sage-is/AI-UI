@@ -116,6 +116,7 @@ echo "== booting $IMG on a throwaway volume =="
 # shellcheck disable=SC2086  # LIVE_MOUNT/LIVE_ENV are empty or one flag pair each
 docker run -d --name "$ROOT" --network "$NET" -p 8101:8080 \
   -e SPRIG_REGISTRY=local-registry:5000 -e ENABLE_SIGNUP=True -e WEBUI_AUTH=True \
+  ${ENABLE_TRY_SAGE:+-e "ENABLE_TRY_SAGE=$ENABLE_TRY_SAGE"} \
   $LIVE_MOUNT $LIVE_ENV \
   -v "$VOL:/app/backend/data" "$IMG" >/dev/null
 

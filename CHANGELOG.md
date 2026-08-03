@@ -6,6 +6,11 @@ All notable changes to [Sage.is AI-UI](https://github.com/Sage-is/AI-UI) are doc
 
 ## [Unreleased]
 
+### Fixed
+
+**The try.sage welcome page scrolls on phones**
+The welcome page pinned a full-screen layer at 100vh and centered its content with flexbox. On a phone, 100vh includes the strip behind the browser chrome, so the bottom of the page hid behind the toolbar. Centered overflow was cut off both ends with no way to scroll to it. The page is now server-rendered as a normal document: it scrolls whenever it is taller than the screen, full height means the height you can see (dvh), and the safe-area inset keeps the footer clear of the home indicator. First response is the whole page — 4.6 KB, no JavaScript bundle. The Svelte component is deleted; `/auth` sends anonymous trial visitors to `/`, which the server now answers directly. Signed-in readers get the app exactly as before. Deploys without `ENABLE_TRY_SAGE` are untouched: the routes are only registered when the trial subsystem is on.
+
 ### Changed
 
 **Release finish runs on plain git, not git-flow-next**

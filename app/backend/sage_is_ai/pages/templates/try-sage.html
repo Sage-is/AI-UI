@@ -1,0 +1,153 @@
+{# The try.sage welcome page. A whole document, not a shell panel — this is a
+   branded full-bleed surface, not admin chrome.
+
+   THE LAYOUT IS THE BUG FIX, so it lives in the <style> block below and not in
+   startr.style props: the local rules are what survive the CDN being
+   unreachable, and this page is the first thing a demo visitor sees.
+
+   The Svelte original pinned a position:fixed 100vh layer and flex-centered
+   the stack inside it. Two defects on a phone: 100vh includes the strip behind
+   the browser chrome, so the bottom of the page hid behind the toolbar with
+   nothing to scroll; and align-items centering pushes overflow off BOTH ends,
+   and the top overflow is unreachable by scrolling. Here the document flows
+   normally (it scrolls whenever it is taller than the screen), min-height uses
+   dvh so "full height" means the height you can actually see, and margin:auto
+   does the vertical centering because it collapses to zero instead of pushing
+   content out of reach when space runs out. #}
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>{{ title }}</title>
+  <link rel="stylesheet" href="https://startr.style/style.css" />
+  <style>
+    * { box-sizing: border-box; }
+    html { background: #000; }
+    body {
+      margin: 0;
+      color: #fff;
+      min-height: 100vh;  /* fallback for engines without dvh */
+      min-height: 100dvh; /* the height that is actually visible on a phone */
+      display: flex;
+      flex-direction: column;
+    }
+    /* The cycling backdrop, SlideShow.svelte's job before the migration.
+       position:fixed is CORRECT here and was the bug for content: a fixed
+       BACKGROUND at z-index -1 never holds anything a reader must scroll
+       to, so it can pin to the viewport while the document above scrolls. */
+    .bg { position: fixed; inset: 0; z-index: -1; }
+    .bg [data-slide] {
+      position: absolute; inset: 0;
+      background-size: cover; background-position: center;
+      opacity: 0; transition: opacity 1s ease-in-out;
+    }
+    .bg [data-slide].on { opacity: 1; }
+    /* The Svelte page's two overlays in one layer: bottom-up black gradient
+       from 20%, then the 55% dim with a light blur. */
+    .bg .dim {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(0deg, #000 20%, transparent),
+        rgb(0 0 0 / 0.55);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    main {
+      width: 100%;
+      max-width: 36rem;
+      /* Overflow-safe centering: auto margins center a short page and collapse
+         to zero on a long one, so the top is always reachable. */
+      margin: auto;
+      padding: 2rem 1.25rem calc(2rem + env(safe-area-inset-bottom, 0px));
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body class="font-primary">
+  <div class="bg" aria-hidden="true">
+    {% for slide in slides %}
+    <div data-slide {% if loop.first %}class="on" {% endif %}style="background-image: url('{{ slide }}')"></div>
+    {% endfor %}
+    <div class="dim"></div>
+  </div>
+  <main data-cy="try-sage-welcome">
+    <div style="--d:flex; --fd:column; --ai:center; gap:1rem">
+      <picture>
+        {% if logo_dark %}
+        <source media="(prefers-color-scheme: dark)" srcset="{{ logo_dark }}" />
+        {% endif %}
+        <img src="{{ logo }}" alt="logo"
+             style="--w:4.5rem; --h:4.5rem; --radius:9999px" />
+      </picture>
+
+      <h1 data-cy="page-heading" class="font-secondary"
+          style="--size:2.25rem; --size-lg:3rem; --weight:600; --m:0; --lh:1.15">
+        {{ title }}
+      </h1>
+
+      <p style="--size:1rem; --opacity:0.85; --maxw:30rem; --lh:1.5; --m:0">
+        {{ tagline }}
+      </p>
+    </div>
+
+    {# Roles available — informational, NOT clickable. The link to each persona
+       ships via email or in-person QR, not from this public surface. #}
+    <section data-cy="try-sage-roles"
+             style="--d:flex; --fd:column; gap:0.75rem; --ta:left; --bgc:rgb(255 255 255 / 0.08); --p:1.25rem; --radius:0.75rem">
+      <h2 style="--size:0.85rem; --weight:600; --opacity:0.8; --tt:uppercase; --ls:0.05em; --m:0">
+        {{ roles_heading }}
+      </h2>
+      {% for role in roles %}
+      <div style="--d:flex; --fd:column; gap:0.2rem">
+        <div style="--size:0.95rem; --weight:600">{{ role.title }}</div>
+        <div style="--size:0.85rem; --opacity:0.8; --lh:1.45">{{ role.detail }}</div>
+      </div>
+      {% endfor %}
+    </section>
+
+    {# Two-path sign-in instructions. The actual handoff happens via QR or
+       email — not from a button on this page — so the copy is descriptive. #}
+    <section data-cy="try-sage-signin"
+             style="--d:flex; --fd:column; gap:0.85rem; --ta:left; --p:1.25rem; --radius:0.75rem; --bgc:rgb(255 255 255 / 0.08)">
+      <h2 style="--size:0.85rem; --weight:600; --opacity:0.8; --tt:uppercase; --ls:0.05em; --m:0">
+        {{ signin_heading }}
+      </h2>
+
+      <div style="--d:flex; gap:0.6rem; --ai:flex-start">
+        <span style="--size:1rem">&#128205;</span>
+        <div>
+          <div style="--size:0.9rem; --weight:600">{{ in_person_title }}</div>
+          <div style="--size:0.85rem; --opacity:0.8; --lh:1.45">{{ in_person_detail }}</div>
+        </div>
+      </div>
+
+      <div style="--d:flex; gap:0.6rem; --ai:flex-start">
+        <span style="--size:1rem">&#9993;&#65039;</span>
+        <div>
+          <div style="--size:0.9rem; --weight:600">{{ remote_title }}</div>
+          <div style="--size:0.85rem; --opacity:0.8; --lh:1.45">{{ remote_detail }}</div>
+        </div>
+      </div>
+    </section>
+
+    {# Friendly recovery line — points back to the facilitator, no self-serve
+       resend per the trial's invite-only contract. #}
+    <footer data-cy="try-sage-footer"
+            style="--size:0.8rem; --opacity:0.65; --lh:1.45; --maxw:30rem; --m:0 auto">
+      {{ lost_link }}
+    </footer>
+
+    {% if banner_text %}
+    <div style="--size:0.75rem; --opacity:0.55">{{ banner_text }}</div>
+    {% endif %}
+  </main>
+  <script defer src="{{ slideshow_src }}"></script>
+  {% if dev_reload_src %}
+  <script defer src="{{ dev_reload_src }}"></script>
+  {% endif %}
+</body>
+</html>
