@@ -20,6 +20,41 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>{{ title }}</title>
+
+  {# Social graph tags live HERE and not in the SPA shell. `app/src/app.html` is
+     one file serving every deployment, so branding it Sage.is would brand every
+     self-hosted instance too. This page is per-deployment, and it is what a
+     pasted link actually resolves to: `/` serves it to any caller without an
+     auth cookie.
+
+     Every URL is absolute against WEBUI_URL, because crawlers do not resolve
+     relative og:image paths. When WEBUI_URL is unset the whole block is
+     omitted rather than emitted with broken paths — a share card pointing at
+     nothing looks worse than no card. #}
+  <meta name="description" content="{{ social_description }}" />
+  {%- if base_url %}
+  <link rel="canonical" href="{{ base_url }}/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="{{ site_name }}" />
+  <meta property="og:url" content="{{ base_url }}/" />
+  <meta property="og:title" content="{{ title }}" />
+  <meta property="og:description" content="{{ social_description }}" />
+  <meta property="og:image" content="{{ base_url }}{{ social_image }}" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="{{ site_name }}" />
+  <meta property="og:locale" content="{{ lang }}" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="{{ title }}" />
+  <meta name="twitter:description" content="{{ social_description }}" />
+  <meta name="twitter:image" content="{{ base_url }}{{ social_image }}" />
+  <meta name="twitter:image:alt" content="{{ site_name }}" />
+  {%- endif %}
+
+  <link rel="icon" type="image/png" sizes="96x96" href="/static/icons/favicon-96x96.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/static/icons/apple-touch-icon.png" />
+
   <link rel="stylesheet" href="https://startr.style/style.css" />
   <style>
     * { box-sizing: border-box; }
@@ -53,6 +88,22 @@
       backdrop-filter: blur(4px);
       -webkit-backdrop-filter: blur(4px);
     }
+    /* Marquee.svelte's rotating heading. All phrases share one grid cell so
+       the heading holds the height of its tallest phrase and the page never
+       jumps when the words change. The fly-in matches the Svelte transition:
+       up from 30%, one second. */
+    .marquee { display: grid; }
+    .marquee [data-marquee-item] {
+      grid-area: 1 / 1; opacity: 0; visibility: hidden;
+    }
+    .marquee [data-marquee-item].on {
+      opacity: 1; visibility: visible;
+      animation: marquee-in 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    @keyframes marquee-in {
+      from { opacity: 0; transform: translateY(30%); }
+      to   { opacity: 1; transform: none; }
+    }
     main {
       width: 100%;
       max-width: 36rem;
@@ -84,9 +135,11 @@
              style="--w:4.5rem; --h:4.5rem; --radius:9999px" />
       </picture>
 
-      <h1 data-cy="page-heading" class="font-secondary"
+      <h1 data-cy="page-heading" class="font-secondary marquee"
           style="--size:2.25rem; --size-lg:3rem; --weight:600; --m:0; --lh:1.15">
-        {{ title }}
+        {% for phrase in marquee %}
+        <span style="--ff:serif" data-marquee-item{% if loop.first %} class="on"{% endif %}>{{ phrase }}</span>
+        {% endfor %}
       </h1>
 
       <p style="--size:1rem; --opacity:0.85; --maxw:30rem; --lh:1.5; --m:0">

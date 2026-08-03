@@ -54,6 +54,82 @@ describe('try.sage welcome surface', () => {
 		});
 	});
 
+	// Social graph tags. The failure this guards against is not "the tags are
+	// missing" — it is the tags being PRESENT and wrong, which nothing on the
+	// page reveals: a crawler fetches og:image, gets a 404, and renders a bare
+	// card. Nobody sees that until a link is already pasted somewhere public.
+	//
+	// The assertion is written as an invariant that holds in BOTH config
+	// branches, because `WEBUI_URL` is optional and the template omits the whole
+	// block when it is unset (a share card pointing at localhost is worse than
+	// no share card). Either there are no tags, or every URL in them is
+	// absolute AND og:image really resolves to an image.
+	it('flag on: social tags are absent or absolutely correct, never half-right', function () {
+		trySageOn().then((on) => {
+			if (!on) this.skip();
+			cy.clearCookies();
+			cy.request('/').then((res) => {
+				const html: string = res.body;
+				const og = [...html.matchAll(/<meta property="og:([\w:]+)" content="([^"]*)"/g)];
+				const tw = [...html.matchAll(/<meta name="twitter:([\w:]+)" content="([^"]*)"/g)];
+
+				// The description is unconditional — it does not need a base URL.
+				expect(html, 'description is always emitted').to.match(
+					/<meta name="description" content="[^"]+"/
+				);
+
+				if (og.length === 0) {
+					// WEBUI_URL unset. Nothing may be half-emitted.
+					expect(tw, 'no twitter tags without og tags').to.have.length(0);
+					expect(html).to.not.contain('rel="canonical"');
+					return;
+				}
+
+				const byName = Object.fromEntries(og.map((m) => [m[1], m[2]]));
+				expect(byName, 'og:image is declared').to.have.property('image');
+				expect(byName.type).to.eq('website');
+				expect(
+					tw.find((m) => m[1] === 'card')?.[2],
+					'a 1200x630 card needs summary_large_image, not summary'
+				).to.eq('summary_large_image');
+
+				// Every URL-bearing tag must be absolute. A relative og:image is
+				// the single most common way this ships broken.
+				for (const key of ['url', 'image']) {
+					expect(byName[key], `og:${key} is absolute`).to.match(/^https?:\/\//);
+				}
+
+				// The teeth: fetch what we told the crawler to fetch.
+				cy.request(byName.image).then((img) => {
+					expect(img.status, 'og:image resolves').to.eq(200);
+					expect(
+						img.headers['content-type'] as string,
+						'og:image is an image'
+					).to.match(/^image\//);
+				});
+
+				// Declared dimensions must match the card the crawler crops to.
+				expect(byName['image:width']).to.eq('1200');
+				expect(byName['image:height']).to.eq('630');
+			});
+		});
+	});
+
+	it('flag off: the SPA shell stays unbranded', function () {
+		trySageOn().then((on) => {
+			if (on) this.skip();
+			// Scope decision, 2026-08-03: social tags live on the server-rendered
+			// page and NOT in `app/src/app.html`, which is one file serving every
+			// deployment. A self-hosted instance must not advertise itself as
+			// Sage.is when someone pastes its URL.
+			cy.request('/').then((res) => {
+				expect(res.body, 'no og tags in the shared SPA shell').to.not.contain(
+					'property="og:'
+				);
+			});
+		});
+	});
+
 	it('flag on: the page scrolls on a phone and the footer is reachable', function () {
 		trySageOn().then((on) => {
 			if (!on) this.skip();
@@ -79,6 +155,59 @@ describe('try.sage welcome surface', () => {
 				);
 				expect(doc.scrollTop, 'the scroll actually happened').to.be.greaterThan(0);
 			});
+		});
+	});
+
+	// The chrome, and its MOTION. Both were dropped in the port and neither was
+	// caught, because the spec asserted structure: the page rendered, the
+	// hooks existed, and the suite was green while a human saw a static page
+	// with no backdrop. Real waits, not a stubbed clock — this repo has already
+	// shipped one animation that a driver reported working and a person could
+	// see was broken.
+	it('flag on: the backdrop and the heading both rotate', function () {
+		trySageOn().then((on) => {
+			if (!on) this.skip();
+			cy.clearCookies();
+			cy.visit('/welcome');
+
+			// Every backdrop image is present, exactly one showing.
+			cy.get('[data-slide]').should('have.length', 4);
+			cy.get('[data-slide].on').should('have.length', 1);
+			// All three phrases are IN the document — the first response is the
+			// whole page, so a reader who never runs the script still gets one.
+			cy.get('[data-marquee-item]').should('have.length', 3);
+			cy.get('[data-marquee-item].on').should('have.length', 1);
+
+			cy.get('[data-marquee-item].on')
+				.invoke('text')
+				.then((firstPhrase) => {
+					cy.get('[data-slide].on')
+						.invoke('attr', 'style')
+						.then((firstImage) => {
+							// One tick of the five-second cycle, plus margin.
+							cy.wait(6000);
+							cy.get('[data-marquee-item].on')
+								.invoke('text')
+								.should('not.eq', firstPhrase);
+							cy.get('[data-slide].on')
+								.invoke('attr', 'style')
+								.should('not.eq', firstImage);
+						});
+				});
+		});
+	});
+
+	it('flag on: bare /auth goes to the welcome; an explicit ?next= gets the form', function () {
+		trySageOn().then((on) => {
+			if (!on) this.skip();
+			cy.clearCookies();
+			// The sign-in intent the pages auth bridge emits: form, not welcome.
+			cy.visit('/auth?next=/pages');
+			cy.get('input[autocomplete="email"]').should('be.visible');
+			// A lost anonymous visitor: no form exists for them.
+			cy.visit('/auth');
+			cy.location('pathname').should('eq', '/welcome');
+			cy.get('[data-cy="try-sage-welcome"]').should('exist');
 		});
 	});
 

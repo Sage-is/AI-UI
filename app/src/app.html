@@ -11,8 +11,13 @@
 	     1dfc08a3b1e1, 75,512 bytes each), so the switch it existed for changed
 	     nothing. Browsers prefer the SVG link over the PNG one, so every page load
 	     in the product fetched 203 kB of raster to draw a 16-pixel tab icon.
-	     favicon-96x96.png above is 13.6 kB and already declared. The file is left
-	     on disk; if a real vector mark is ever drawn, link it here. -->
+	     favicon-96x96.png above is 13.6 kB and already declared.
+
+	     UPDATE 2026-08-03: the file is no longer on disk either. Leaving it cost
+	     203 kB in every image for a link nothing emitted, and the live 3.0.0
+	     instance was still serving 198.2 kB of it to every visitor. Deleted with
+	     the 3.1.0 scope; `git show <rev>:app/static/icons/favicon.svg` brings it
+	     back. If a real vector mark is ever drawn, link it here. -->
 	<link rel="shortcut icon" href="/static/icons/favicon.ico" />
 	<link rel="apple-touch-icon" sizes="180x180" href="/static/icons/apple-touch-icon.png" />
 	<meta name="apple-mobile-web-app-title" content="Sage.is AI" />

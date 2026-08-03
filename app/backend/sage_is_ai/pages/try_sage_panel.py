@@ -62,10 +62,33 @@ def render_try_sage(request: Request) -> str:
 
     from sage_is_ai.env import PAGES_RELOAD_DIRS
 
+    # Absolute URLs for the social graph tags. WEBUI_URL is the same value the
+    # magic-link mailer builds sign-in URLs from, so it is already correct on
+    # any deployment that sends links at all; an operator who never configured
+    # it gets no tags rather than tags pointing at nothing.
+    base_url = str(cfg.WEBUI_URL or "").rstrip("/")
+
     return render(
         "try-sage.html",
         lang=locale_for(request),
         title=_("Welcome to try.sage.is AI"),
+        base_url=base_url,
+        site_name=branding.get("name") or "Sage.is AI",
+        social_image="/static/assets/images/og-image.jpg",
+        # Deliberately not the on-page tagline. That one speaks to a visitor
+        # who already has the link; a share card is read by someone who does
+        # not, so it says what the thing IS before it says how to get in.
+        social_description=_(
+            "A hosted trial of Sage.is AI, the open-source AI platform for "
+            "workshops and teams. By invitation only."
+        ),
+        # Marquee.svelte's word list, same order, first phrase doubling as the
+        # browser title above.
+        marquee=[
+            _("Welcome to try.sage.is AI"),
+            _("A trial of Sage.is AI"),
+            _("Built for workshops"),
+        ],
         tagline=_(
             "This trial is by invitation only. Your Sage.is AI workshop "
             "facilitator will share the link you need to sign in."

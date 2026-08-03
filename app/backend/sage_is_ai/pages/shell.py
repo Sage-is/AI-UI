@@ -50,25 +50,56 @@ vendored copy instead. Until then, keep layout that must not break in
 pages.css: the local sheet is what survives the CDN being unreachable.
 """
 
+from functools import lru_cache
+from hashlib import sha256
 from html import escape
 from typing import Iterable
 
 from fastapi import Request
 
-from sage_is_ai.env import VERSION
+from sage_is_ai.env import PAGES_RELOAD_DIRS, VERSION
 
 __all__ = ["render_page", "asset_url"]
 
 
 def asset_url(filename: str) -> str:
-    """Cache-bust by release.
+    """Cache-bust by CONTENT, not by release.
 
     The assets are served with a week-long Cache-Control, which is only safe if
-    an upgrade changes the URL. They are not content-hashed — there is no build
-    step to hash them, which is the whole point — so the release version stands
-    in. It changes exactly when the file could have changed.
+    the URL changes whenever the bytes do. The release version used to stand in
+    for that, on the reasoning that it "changes exactly when the file could have
+    changed". That was wrong, and it cost a debugging session: a file edited
+    twice inside one release keeps one URL, so a browser that loaded the first
+    version runs it for a week while the server serves the second. The operator
+    ships a fix and watches the old behaviour — the failure-indistinguishable-
+    from-success shape this repo keeps finding.
+
+    Hashing needs no build step: read the file, take eight hex characters, cache
+    the answer. Sixteen small files, once per process. A missing file falls back
+    to the version rather than raising, because a stale URL is a nuisance and a
+    500 on the diagnostics page is an outage.
+
+    NOT cached when the dev reloader is on. There the whole point is that the
+    file changes under a running process, so the cost of a stat-and-hash per
+    render buys the thing you started the reloader for.
     """
-    return f"/pages/_assets/{filename}?v={escape(VERSION, quote=True)}"
+    token = _asset_token(filename) if PAGES_RELOAD_DIRS else _asset_token_cached(filename)
+    return f"/pages/_assets/{filename}?v={escape(token, quote=True)}"
+
+
+def _asset_token(filename: str) -> str:
+    from sage_is_ai.pages import ASSETS_DIR
+
+    try:
+        data = (ASSETS_DIR / filename).read_bytes()
+    except OSError:
+        return VERSION
+    return sha256(data).hexdigest()[:8]
+
+
+@lru_cache(maxsize=64)
+def _asset_token_cached(filename: str) -> str:
+    return _asset_token(filename)
 
 
 def _ui_sprig_slot(request: Request) -> str:
