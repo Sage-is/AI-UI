@@ -773,6 +773,15 @@ verify_ghcr_manifest:  ## Assert the pushed GHCR image is a present, multi-arch 
 manifest_verify_fixture:  ## Fixture: exercise verify-image-manifest.sh (good/single-arch/absent)
 	@scripts/smoke/manifest-verify-fixture.sh
 
+# Reproduce the reasoning-tag defects that swallow or leak the model's answer.
+#
+# DELIBERATELY NOT in gauntlet or gauntlet_full. It fails today, by design —
+# it is the reproduction for an open bug, not a gate. Wire it into gauntlet_full
+# in the same commit that fixes the bug, and not before, or every run goes red
+# for a reason nobody is acting on.
+reasoning_tag_fixture:  ## Fixture: reasoning blocks that swallow or leak the answer (FAILS until fixed)
+	@python3 scripts/smoke/reasoning-tag-fixture.py
+
 # Utility target to show current version
 show-version:
 	@echo "Current version: $(IMAGE_TAG)"

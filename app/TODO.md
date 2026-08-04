@@ -18,9 +18,11 @@ the cut is recorded as numbers, with no surface behaving differently afterwards.
 promised image size. That is void: the runtime image carries no `node_modules`
 at all, only the compiled bundle. The measures that remain real are dependency
 count, `node_modules` size, builder install time, the `dev-svelte` sprig
-artifact (~1.0 GB, which must be built, signed, pushed and pulled), and
-`/app/build` bytes where a removal was genuinely imported. Image size belongs
-to the 267 MB Python layer and is a different effort.
+artifact (297 MB compressed as published, which must be built, signed, pushed
+and pulled), and `/app/build` bytes where a removal was genuinely imported.
+Image size belongs to the 267 MB Python layer and is a different effort.
+Baseline for all of these is recorded in the
+[baseline record](../docs/decisions/2026-08-03-treeshake-baseline.md).
 
 ## Notes
 
@@ -66,21 +68,16 @@ _Empty. All four research cards resolved 2026-08-03; the frontier is in TODO._
 
 ## TODO
 
-- [ ] **The baseline nobody has taken**: record dependency count, `node_modules`
-  size (1.0 GB today), builder install time, `dev-svelte` sprig artifact size,
-  and `/app/build` bytes (31.1 MB today) BEFORE anything is removed. #task
-  Constraint 3 is unmeetable without it, and it cannot be reconstructed after
-  the fact. Image size is deliberately NOT on this list — see Destination.
-
 - [ ] **The five proven removals**: `prosemirror-example-setup`, `async`,
   `@pyscript/core`, `@tiptap/extension-drag-handle`,
   `@tiptap/extension-youtube`. #task
   Every one is evidenced in a decision record: no import, no dependent, no
   registry or peer path. `@pyscript/core` is the only one carrying real weight.
-  Blocked by [The baseline nobody has taken] — removing them first forfeits the
-  only numbers this effort has earned. Afterwards re-run `bun install` and diff
-  `bun.lock`: the prosemirror record flags that dropping entries relaxes version
-  floors for `prosemirror-tables` and `-schema-list`.
+  **Unblocked 2026-08-03** — the baseline is recorded. Afterwards re-run
+  `bun install` and diff `bun.lock`: the prosemirror record flags that dropping
+  entries relaxes version floors for `prosemirror-tables` and `-schema-list`.
+  Watch `/app/build`: it should NOT move. If it does, the package was imported
+  after all and the removal was wrong.
 
 - [ ] **The declaration-only tidy — worth it or not?**: seven redundant-transitive
   `prosemirror-*` entries, plus `@floating-ui/dom` and `@tiptap/extension-link`.
@@ -149,6 +146,14 @@ _Empty. All four research cards resolved 2026-08-03; the frontier is in TODO._
 ## Done
 
 <!-- one line per resolved card: gist plus link to its record -->
+
+- [x] **The baseline nobody has taken**: recorded before any removal — 84 runtime
+  plus 27 dev dependencies, `bun.lock` 2,463 lines, `node_modules` 1.0 GB across
+  688 top-level entries, `/app/build` 29.6 MB in 476 files, `/app/static`
+  11.2 MB, the `dev-svelte` sprig artifact 297 MB compressed, image 622 MB. The
+  method is written down so the "after" compares; builder install time was
+  deliberately NOT taken, because a warm run measures the cache —
+  [decision](../docs/decisions/2026-08-03-treeshake-baseline.md)
 
 - [x] **The stragglers**: four removable with no runtime effect — `async`,
   `@pyscript/core` (the only one carrying real weight, ~100 KB),
