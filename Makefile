@@ -603,7 +603,7 @@ gauntlet: it_build sprig_smoke
 # place: it is the only member that judges what the migration CLAIMS — that a
 # server-rendered surface is lighter than the SvelteKit one it replaces — rather
 # than whether the code runs.
-gauntlet_full: pipefail_lint pipefail_fixture reasoning_finalizer_fixture gauntlet sprig_durability sprig_signing ui_sprig_gate parity_gate e2e_both surface_budget
+gauntlet_full: pipefail_lint pipefail_fixture reasoning_finalizer_fixture chat_response_oracle gauntlet sprig_durability sprig_signing ui_sprig_gate parity_gate e2e_both surface_budget
 
 ## it_build_amd64 — build an amd64 image via buildx + --load.
 ##
@@ -791,6 +791,41 @@ reasoning_finalizer_fixture:  ## Fixture: no content block left open at end of s
 	  -v "$$(pwd)/app/backend/sage_is_ai:/app/backend/sage_is_ai:ro" \
 	  -v "$$(pwd)/scripts:/scripts:ro" --entrypoint python3 \
 	  $(IMAGE_NAME):$(IMAGE_TAG) /scripts/smoke/reasoning-finalizer-fixture.py
+
+# Gate: the chat path emits what it emitted yesterday.
+#
+# Replays recorded upstream SSE streams through the real process_chat_response
+# and diffs the whole ordered transcript — every socket event and every DB write,
+# in call order — against a golden file. This is the oracle the chat-path chart's
+# behaviour freeze depends on: without it, "the same bytes on the wire" is a
+# promise nobody can check.
+#
+# A red run means the chat path changed. If the change was deliberate, re-record
+# with `make chat_response_oracle_update` and READ the golden diff before
+# committing it — that diff is the behaviour change, stated in full.
+chat_response_oracle:  ## Gate: replayed chat streams emit byte-identical transcripts
+	@$(CONTAINER_RUNTIME) run --rm -e WEBUI_SECRET_KEY=fixture \
+	  -v "$$(pwd)/app/backend/sage_is_ai:/app/backend/sage_is_ai:ro" \
+	  -v "$$(pwd)/scripts:/scripts:ro" --entrypoint python3 \
+	  $(IMAGE_NAME):$(IMAGE_TAG) /scripts/smoke/chat-response-oracle.py
+
+# Re-record the goldens. Only after an INTENTIONAL behaviour change, and the
+# resulting diff belongs in the commit message.
+chat_response_oracle_update:  ## Re-record the chat-path goldens (intentional changes only)
+	@$(CONTAINER_RUNTIME) run --rm -e WEBUI_SECRET_KEY=fixture \
+	  -v "$$(pwd)/app/backend/sage_is_ai:/app/backend/sage_is_ai:ro" \
+	  -v "$$(pwd)/scripts:/scripts:rw" --entrypoint python3 \
+	  $(IMAGE_NAME):$(IMAGE_TAG) /scripts/smoke/chat-response-oracle.py --update
+
+# Prove the gate can fail. Disables finalize_content_blocks in memory and
+# asserts the transcript moves, then asserts it moves back. A gate nobody has
+# seen fail is a gate nobody should trust.
+chat_response_oracle_teeth:  ## Prove the chat-path oracle fails when behaviour changes
+	@$(CONTAINER_RUNTIME) run --rm -e WEBUI_SECRET_KEY=fixture \
+	  -v "$$(pwd)/app/backend/sage_is_ai:/app/backend/sage_is_ai:ro" \
+	  -v "$$(pwd)/scripts:/scripts:ro" --entrypoint python3 \
+	  $(IMAGE_NAME):$(IMAGE_TAG) /scripts/smoke/chat-response-oracle.py \
+	  --self-test --case reasoning-field-never-closed
 
 # Park a finished or dormant chart: move it under charts/_archive/ (excluded in
 # .todoscope-exclude.csv, so its cards leave the kanban board) and prepend a
