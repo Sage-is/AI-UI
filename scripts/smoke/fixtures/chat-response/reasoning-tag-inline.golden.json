@@ -1,0 +1,108 @@
+[
+  {
+    "channel": "db",
+    "chat_id": "chat-fixture",
+    "message_id": "msg-fixture",
+    "patch": {
+      "model": "fixture-model"
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "content": "<thin"
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "content": "<details type=\"reasoning\" done=\"false\">\n<summary>Thinking…</summary>\n> Compare \n</details>"
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "content": "<details type=\"reasoning\" done=\"false\">\n<summary>Thinking…</summary>\n> Compare the two methods.\n</details>"
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "content": "<details type=\"reasoning\" done=\"false\">\n<summary>Thinking…</summary>\n> Compare the two methods.</think\n</details>"
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "content": "<details type=\"reasoning\" done=\"true\" duration=\"1\">\n<summary>Thought for 1 seconds</summary>\n> Compare the two methods.\n</details>\nRAD and Agile"
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "content": "<details type=\"reasoning\" done=\"true\" duration=\"1\">\n<summary>Thought for 1 seconds</summary>\n> Compare the two methods.\n</details>\nRAD and Agileare both iterative."
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "choices": [
+          {
+            "delta": {},
+            "finish_reason": "stop",
+            "index": 0
+          }
+        ],
+        "id": "chatcmpl-fixture-4",
+        "model": "fixture-model",
+        "object": "chat.completion.chunk"
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "db",
+    "chat_id": "chat-fixture",
+    "message_id": "msg-fixture",
+    "patch": {
+      "content": "<details type=\"reasoning\" done=\"true\" duration=\"1\">\n<summary>Thought for 1 seconds</summary>\n> Compare the two methods.\n</details>\nRAD and Agileare both iterative."
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "content": "<details type=\"reasoning\" done=\"true\" duration=\"1\">\n<summary>Thought for 1 seconds</summary>\n> Compare the two methods.\n</details>\nRAD and Agileare both iterative.",
+        "done": true,
+        "title": "Fixture chat"
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "return",
+    "value": {
+      "status": true,
+      "task_id": "fixture-task-id"
+    }
+  }
+]

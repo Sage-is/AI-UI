@@ -1,0 +1,6 @@
+data: {"id":"chatcmpl-fixture-2","object":"chat.completion.chunk","model":"deepseek-r1-distill-llama-70b","choices":[{"index":0,"delta":{"role":"assistant","reasoning_content":"The user asks about "},"finish_reason":null}]}
+data: {"id":"chatcmpl-fixture-2","object":"chat.completion.chunk","model":"deepseek-r1-distill-llama-70b","choices":[{"index":0,"delta":{"reasoning_content":"two methodologies. Compare them."},"finish_reason":null}]}
+data: {"id":"chatcmpl-fixture-2","object":"chat.completion.chunk","model":"deepseek-r1-distill-llama-70b","choices":[{"index":0,"delta":{"content":"RAD and Agile "},"finish_reason":null}]}
+data: {"id":"chatcmpl-fixture-2","object":"chat.completion.chunk","model":"deepseek-r1-distill-llama-70b","choices":[{"index":0,"delta":{"content":"are both iterative."},"finish_reason":null}]}
+data: {"id":"chatcmpl-fixture-2","object":"chat.completion.chunk","model":"deepseek-r1-distill-llama-70b","choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}
+data: [DONE]

@@ -1,0 +1,5 @@
+data: {"selected_model_id":"fixture-model-actually-served"}
+data: {"id":"chatcmpl-fixture-6","object":"chat.completion.chunk","model":"fixture-model-actually-served","choices":[{"index":0,"delta":{"role":"assistant","content":"Answered by the "},"finish_reason":null}]}
+data: {"id":"chatcmpl-fixture-6","object":"chat.completion.chunk","model":"fixture-model-actually-served","choices":[{"index":0,"delta":{"content":"model the router picked."},"finish_reason":null}]}
+data: {"id":"chatcmpl-fixture-6","object":"chat.completion.chunk","model":"fixture-model-actually-served","choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}
+data: [DONE]

@@ -1,0 +1,89 @@
+[
+  {
+    "channel": "db",
+    "chat_id": "chat-fixture",
+    "message_id": "msg-fixture",
+    "patch": {
+      "model": "fixture-model"
+    }
+  },
+  {
+    "channel": "db",
+    "chat_id": "chat-fixture",
+    "message_id": "msg-fixture",
+    "patch": {
+      "selectedModelId": "fixture-model-actually-served"
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "selected_model_id": "fixture-model-actually-served"
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "content": "Answered by the"
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "content": "Answered by the model the router picked."
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "choices": [
+          {
+            "delta": {},
+            "finish_reason": "stop",
+            "index": 0
+          }
+        ],
+        "id": "chatcmpl-fixture-6",
+        "model": "fixture-model-actually-served",
+        "object": "chat.completion.chunk"
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "db",
+    "chat_id": "chat-fixture",
+    "message_id": "msg-fixture",
+    "patch": {
+      "content": "Answered by the model the router picked."
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "content": "Answered by the model the router picked.",
+        "done": true,
+        "title": "Fixture chat"
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "return",
+    "value": {
+      "status": true,
+      "task_id": "fixture-task-id"
+    }
+  }
+]

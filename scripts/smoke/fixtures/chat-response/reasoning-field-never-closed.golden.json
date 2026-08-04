@@ -1,0 +1,81 @@
+[
+  {
+    "channel": "db",
+    "chat_id": "chat-fixture",
+    "message_id": "msg-fixture",
+    "patch": {
+      "model": "fixture-model"
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "content": "<details type=\"reasoning\" done=\"false\">\n<summary>Thinking…</summary>\n> The user wants a comparison. \n</details>"
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "content": "<details type=\"reasoning\" done=\"false\">\n<summary>Thinking…</summary>\n> The user wants a comparison. I will keep it short.</thinking> \n</details>"
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "content": "<details type=\"reasoning\" done=\"false\">\n<summary>Thinking…</summary>\n> The user wants a comparison. I will keep it short.</thinking> RAD and Agile are both iterative.\n</details>"
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "choices": [
+          {
+            "delta": {},
+            "finish_reason": "stop",
+            "index": 0
+          }
+        ],
+        "id": "chatcmpl-fixture-3",
+        "model": "deepseek-r1-distill-llama-70b",
+        "object": "chat.completion.chunk"
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "db",
+    "chat_id": "chat-fixture",
+    "message_id": "msg-fixture",
+    "patch": {
+      "content": "<details type=\"reasoning\" done=\"true\" duration=\"1\">\n<summary>Thought for 1 seconds</summary>\n> The user wants a comparison. I will keep it short.\n</details>\nRAD and Agile are both iterative."
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "content": "<details type=\"reasoning\" done=\"true\" duration=\"1\">\n<summary>Thought for 1 seconds</summary>\n> The user wants a comparison. I will keep it short.\n</details>\nRAD and Agile are both iterative.",
+        "done": true,
+        "title": "Fixture chat"
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "return",
+    "value": {
+      "status": true,
+      "task_id": "fixture-task-id"
+    }
+  }
+]

@@ -1,0 +1,4 @@
+data: {"id":"chatcmpl-fixture-5","object":"chat.completion.chunk","model":"fixture-model","choices":[{"index":0,"delta":{"role":"assistant","content":"Partial answer."},"finish_reason":null}]}
+data: {"id":"chatcmpl-fixture-5","object":"chat.completion.chunk","model":"fixture-model","choices":[],"usage":{"prompt_tokens":31,"completion_tokens":7,"total_tokens":38}}
+data: {"id":"chatcmpl-fixture-5","object":"chat.completion.chunk","model":"fixture-model","choices":[],"error":{"message":"upstream rate limit reached","type":"rate_limit_error","code":429}}
+data: [DONE]
