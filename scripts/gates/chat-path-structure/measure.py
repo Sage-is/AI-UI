@@ -338,7 +338,11 @@ def relocate() -> int:
     moved, lost, held = [], [], []
     for name, spec in fences.items():
         want, old = spec["must_contain"], spec["line"]
-        found = [i for i, ln in enumerate(source, 1) if want in ln]
+        # An exact line beats a substring hit. `nonlocal content` is a substring
+        # of `nonlocal content_blocks`, and `create_task` appears in the imports;
+        # without this both fences relocate ambiguously.
+        exact = [i for i, ln in enumerate(source, 1) if ln.strip() == want.strip()]
+        found = exact or [i for i, ln in enumerate(source, 1) if want in ln]
         if not found:
             lost.append((name, old, want))
         elif old in found:
@@ -431,10 +435,18 @@ def main() -> int:
     ap.add_argument("--tighten", action="store_true", help="lower ceilings to today's numbers")
     ap.add_argument("--self-test", action="store_true", help="prove the assertions can fail")
     ap.add_argument("--report", action="store_true", help="print the measurements and exit")
+    ap.add_argument(
+        "--relocate",
+        action="store_true",
+        help="report where each fence moved to, so stale citations are a lookup not a hunt",
+    )
     args = ap.parse_args()
 
     if args.self_test:
         return self_test()
+
+    if args.relocate:
+        return relocate()
 
     if args.report:
         actual = measure_structure()
