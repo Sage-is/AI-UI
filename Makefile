@@ -603,7 +603,7 @@ gauntlet: it_build sprig_smoke
 # place: it is the only member that judges what the migration CLAIMS — that a
 # server-rendered surface is lighter than the SvelteKit one it replaces — rather
 # than whether the code runs.
-gauntlet_full: pipefail_lint pipefail_fixture reasoning_finalizer_fixture chat_response_oracle gauntlet sprig_durability sprig_signing ui_sprig_gate parity_gate e2e_both surface_budget
+gauntlet_full: pipefail_lint pipefail_fixture chat_path_structure reasoning_finalizer_fixture chat_response_oracle gauntlet sprig_durability sprig_signing ui_sprig_gate parity_gate e2e_both surface_budget
 
 ## it_build_amd64 — build an amd64 image via buildx + --load.
 ##
@@ -791,6 +791,33 @@ reasoning_finalizer_fixture:  ## Fixture: no content block left open at end of s
 	  -v "$$(pwd)/app/backend/sage_is_ai:/app/backend/sage_is_ai:ro" \
 	  -v "$$(pwd)/scripts:/scripts:ro" --entrypoint python3 \
 	  $(IMAGE_NAME):$(IMAGE_TAG) /scripts/smoke/reasoning-finalizer-fixture.py
+
+# Gate: the chat path may get simpler, never more tangled.
+#
+# Asserts six structural ceilings that only ratchet DOWN — largest function,
+# nesting depth, lines at 6+ levels, `nonlocal` count, commented-out code, and
+# silent `except: pass` — plus zero citation rot in the charts and bug ledger.
+# Baseline recorded 2026-08-04, before any restructuring commit, so the effort
+# has a number to beat rather than a memory to argue with.
+#
+# Runs on the host: no image, no container. A gate that needs a build gets
+# skipped locally and only fails in CI, long after the commit that broke it.
+chat_path_structure:  ## Gate: chat-path structure ceilings + citation rot
+	@scripts/gates/chat-path-structure/run-gate.sh
+
+# Lower the ceilings to what the code achieves right now. Run this in the same
+# commit as the refactor that earned it, never on its own.
+chat_path_structure_tighten:  ## Ratchet the chat-path ceilings down to today's numbers
+	@scripts/gates/chat-path-structure/run-gate.sh --tighten
+
+# Where did the fences move to? Report only, nothing is rewritten. Turns a stale
+# citation from an afternoon of line-hunting into a lookup table.
+chat_path_structure_relocate:  ## Report where each chat-path fence moved to
+	@scripts/gates/chat-path-structure/run-gate.sh --relocate
+
+# Prove every detector fires on a sample built to trip it.
+chat_path_structure_teeth:  ## Prove the structure ratchet can fail
+	@scripts/gates/chat-path-structure/run-gate.sh --self-test
 
 # Gate: the chat path emits what it emitted yesterday.
 #
