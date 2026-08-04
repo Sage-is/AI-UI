@@ -147,7 +147,7 @@
         <button class="btn{% if not a.is_active %} btn-primary{% endif %}" type="submit">{{ a.toggle_label }}</button>
       </form>
 
-      <details name="agent-menu" style="--ml:auto; --pos:relative">
+      <details name="agent-menu" style="--ml:auto; --pos:relative; --b:none">
         <summary class="btn" data-cy="agents-menu" style="--lis:none">{{ actions_label }}</summary>
         <ul style="{{ menu_s }}">
           <li><form method="post" action="{{ base }}/hide/{{ a.id | urlencode }}{{ lang }}"><button data-cy="agents-menu-hide" type="submit" style="--bg:none; --p:0; --c:inherit; --td:underline; --c-hover:inherit; --bgc-hover:transparent">{{ a.hide_label }}</button></form></li>
