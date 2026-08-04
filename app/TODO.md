@@ -12,8 +12,15 @@ until it ships.
 ## Destination
 
 The 84 runtime dependencies are cut to those that reach a live code path, and
-the cut is recorded as numbers — dependency count, install size, image size,
-bundle bytes — with no surface behaving differently afterwards.
+the cut is recorded as numbers, with no surface behaving differently afterwards.
+
+**Revised 2026-08-03, first day, on the image research.** The original wording
+promised image size. That is void: the runtime image carries no `node_modules`
+at all, only the compiled bundle. The measures that remain real are dependency
+count, `node_modules` size, builder install time, the `dev-svelte` sprig
+artifact (~1.0 GB, which must be built, signed, pushed and pulled), and
+`/app/build` bytes where a removal was genuinely imported. Image size belongs
+to the 267 MB Python layer and is a different effort.
 
 ## Notes
 
@@ -22,10 +29,19 @@ that consumes both. Frontend only.
 
 **The finding that shapes every card.** A scan for import statements across
 `app/src/**/*.{svelte,ts,js}` says 21 of 84 runtime dependencies are never
-imported. That is a list of QUESTIONS, not a delete list: `@tiptap/pm` is
-tiptap's peer requirement, `@codemirror/language-data` may load language
-packages at runtime, and two entries are build tools filed in the wrong
-section. Each cluster is its own decision.
+imported. That is a list of QUESTIONS, not a delete list. **Proven by the first
+card resolved:** both CodeMirror language packages came back REQUIRED — loaded
+by a dynamic `import()` inside another dependency, where grep cannot reach.
+
+**So the standing test before any removal is:**
+
+```bash
+grep -l '"<pkg>"' app/node_modules/*/package.json app/node_modules/@*/*/package.json
+```
+
+A package another installed package imports is alive, however dead it looks
+from `src/`. Registries, dynamic imports, Vite/PostCSS/Tailwind config and
+string-keyed loaders all hide call sites this way.
 
 **Constraints, set 2026-08-03 (Alexander).** (1) Must not stall the no-build
 strangler, which is mid Phases 3–4 — anything belonging to a surface the
@@ -46,40 +62,33 @@ turns into a gate.
 All four research cards were fired together on 2026-08-03 by the charting
 session — research is the one type a chart may resolve while drawing itself.
 
-- [ ] **What the image actually installs**: does the runtime image carry
-  `node_modules`, or only the built bundle? (Sage.is AI) #research
-  The answer decides what this whole effort can claim. If the image ships only
-  the compiled output, pruning moves build time and bundle bytes but not image
-  size, and several cards below shrink to cosmetics.
-
-- [ ] **The prosemirror cluster**: eight `prosemirror-*` packages plus
-  `@tiptap/pm` are declared and never imported. (Sage.is AI) #research
-  Peer requirement of tiptap 3, or residue of the editor that came before it?
-  Nine of the twenty-one unimported entries sit here, so this is the largest
-  single answer available.
-
-- [ ] **The two unimported CodeMirror languages**: `@codemirror/lang-javascript`
-  and `@codemirror/lang-python` have no import, while `lang-data` and four other
-  CodeMirror packages do. (Sage.is AI) #research
-  `@codemirror/language-data` loads languages dynamically, which would make
-  these required and invisible to a grep. Prove which, because guessing wrong
-  breaks syntax highlighting in the code editor.
-
-- [ ] **The stragglers**: `async`, `undici`, `@pyscript/core`,
-  `@floating-ui/dom`, `y-protocols`, and three unimported `@tiptap/extension-*`
-  entries. (Sage.is AI) #research
-  One pass, one verdict each: reaches a live path, or does not.
+_Empty. All four research cards resolved 2026-08-03; the frontier is in TODO._
 
 ## TODO
 
 - [ ] **The baseline nobody has taken**: record dependency count, `node_modules`
-  size, image size and cold-load bundle bytes BEFORE anything is removed. #task
+  size (1.0 GB today), builder install time, `dev-svelte` sprig artifact size,
+  and `/app/build` bytes (31.1 MB today) BEFORE anything is removed. #task
   Constraint 3 is unmeetable without it, and it cannot be reconstructed after
-  the fact.
+  the fact. Image size is deliberately NOT on this list — see Destination.
 
-- [ ] **Build tools filed as runtime dependencies**: `@sveltejs/adapter-node`
-  and `vite-plugin-static-copy` are build-time and sit in `dependencies`. #task
-  Blocked by [What the image actually installs].
+- [ ] **The five proven removals**: `prosemirror-example-setup`, `async`,
+  `@pyscript/core`, `@tiptap/extension-drag-handle`,
+  `@tiptap/extension-youtube`. #task
+  Every one is evidenced in a decision record: no import, no dependent, no
+  registry or peer path. `@pyscript/core` is the only one carrying real weight.
+  Blocked by [The baseline nobody has taken] — removing them first forfeits the
+  only numbers this effort has earned. Afterwards re-run `bun install` and diff
+  `bun.lock`: the prosemirror record flags that dropping entries relaxes version
+  floors for `prosemirror-tables` and `-schema-list`.
+
+- [ ] **The declaration-only tidy — worth it or not?**: seven redundant-transitive
+  `prosemirror-*` entries, plus `@floating-ui/dom` and `@tiptap/extension-link`.
+  #interview
+  Nine manifest lines, zero install bytes, and a real cost: each line pins a
+  version floor the app would otherwise inherit from its parent package. A
+  judgement about what the manifest is FOR, not a measurement — which is why it
+  is not folded into [The five proven removals].
 
 - [ ] **Duplicated capability — which one stays**: `jspdf` against
   `pdfjs-dist`; two emoji pickers; `marked` now that the server renders
@@ -91,7 +100,14 @@ session — research is the one type a chart may resolve while drawing itself.
 <!-- the fog: in-scope, not yet sharp enough to card -->
 
 - Whether a check can keep a removed dependency from coming back, and whether
-  that check belongs to this effort or to the pre-commit hooks.
+  that check belongs to this effort or to the pre-commit hooks. Sharpened by
+  the research: any such check must survive the CodeMirror lesson, so a naive
+  `depcheck` run would report required packages as dead and be worse than
+  nothing.
+- `y-protocols` will surface as a zero-import straggler in every future scan
+  and is answered. Whether the answer belongs somewhere a future scan can read
+  it — a comment in `package.json` is impossible, so perhaps a scan script with
+  a known-good list — is not yet sharp.
 - The 27 `devDependencies` are unexamined — the same scan has not been run on
   them, and their blast radius is different.
 - Version-range hygiene: every entry is a caret range. Whether pinning belongs
@@ -117,7 +133,49 @@ session — research is the one type a chart may resolve while drawing itself.
   `requirements.txt` has its own CVE-driven review cadence.
 - **Shipping less to the browser** — the bundle-size destination was considered
   and not chosen. It is a sibling effort, not a step on this route.
+- **Moving build tools from `dependencies` to `devDependencies`** —
+  `@sveltejs/adapter-node`, `vite-plugin-static-copy` and `undici` (which the
+  pyodide prefetch script needs at build time) are filed in the wrong list, and
+  it does not matter: the build installs both lists in full and the
+  runtime image carries neither. Zero bytes move, so the card cannot produce
+  the number constraint 3 demands. Ruled out 2026-08-03 on the image research,
+  not resolved. Manifest hygiene if anyone wants it, filed as such, never under
+  a size or supply-chain heading.
+- **Image size** — the original destination named it; the runtime image carries
+  no `node_modules`, so no dependency change can move it. The 267 MB Python
+  `site-packages` layer is where that work lives, and it is a different effort
+  with a different toolchain.
 
 ## Done
 
 <!-- one line per resolved card: gist plus link to its record -->
+
+- [x] **The stragglers**: four removable with no runtime effect — `async`,
+  `@pyscript/core` (the only one carrying real weight, ~100 KB),
+  `@tiptap/extension-drag-handle`, `@tiptap/extension-youtube`. `undici` is USED
+  by the pyodide prefetch script that gates every build; `y-protocols` is a
+  build-time peer of `y-prosemirror` that ships no bytes; `@tiptap/extension-link`
+  arrives inside StarterKit and is live in the notes editor; `@floating-ui/dom`
+  is declaration-only —
+  [decision](../docs/decisions/2026-08-03-treeshake-stragglers.md)
+
+- [x] **What the image actually installs**: only the built bundle — no
+  `node_modules`, no node/npm/bun in the runtime image; `bun install` lives and
+  dies in the builder stage, and devDependencies install in full. **Image size
+  is off the table**; the payoff is builder time, CI cache, the ~1.0 GB
+  `dev-svelte` sprig, and local installs —
+  [decision](../docs/decisions/2026-08-03-treeshake-image-node-modules.md)
+
+- [x] **The prosemirror cluster**: `@tiptap/pm` REQUIRED (peer dependency of
+  `@tiptap/core` and twelve extensions); seven of eight `prosemirror-*` entries
+  redundant-transitive via `@tiptap/pm@3.0.7`; **`prosemirror-example-setup` is
+  the only true residue** and the only removal that shrinks the install. Do not
+  touch `-model`/`-state`/`-view`/`-keymap`, imported directly by
+  `RichTextInput` —
+  [decision](../docs/decisions/2026-08-03-treeshake-prosemirror-cluster.md)
+
+- [x] **The two unimported CodeMirror languages**: both REQUIRED — `language-data`
+  loads them by dynamic `import()` from inside `node_modules`, so grep cannot see
+  the call site; removing them breaks JS/TS/JSX/TSX and Python highlighting. The
+  `package.json` lines are transitively redundant but worth zero bytes, so they
+  stay — [decision](../docs/decisions/2026-08-03-treeshake-codemirror-languages.md)

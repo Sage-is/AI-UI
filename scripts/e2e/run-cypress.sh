@@ -99,9 +99,16 @@ fi
 # ENABLE_TRY_SAGE passes through when set, off otherwise — the trial replaces
 # the whole anonymous surface, so it must never be on for the default suite.
 # Usage: ENABLE_TRY_SAGE=true SPEC=try-sage-welcome.cy.ts make e2e
+#
+# WEBUI_URL likewise. The welcome page emits its social-graph block ONLY when
+# that value is set, so without this the og:image assertions take the
+# "absent" branch and never fetch anything. Set it to the TLS sidecar's
+# address to exercise the branch a crawler actually sees:
+#   ENABLE_TRY_SAGE=true WEBUI_URL=https://sage-e2e-tls:8443 make e2e
 docker run -d --name "$ROOT" --network "$NET" -p "$PORT:8080" \
   -e SPRIG_REGISTRY=local-registry:5000 -e ENABLE_SIGNUP=True -e WEBUI_AUTH=True \
   ${ENABLE_TRY_SAGE:+-e "ENABLE_TRY_SAGE=$ENABLE_TRY_SAGE"} \
+  ${WEBUI_URL:+-e "WEBUI_URL=$WEBUI_URL"} \
   -v "$VOL:/app/backend/data" "$IMG" >/dev/null
 for i in $(seq 1 120); do
   [ "$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:$PORT/health" 2>/dev/null)" = "200" ] && break

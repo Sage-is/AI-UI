@@ -34,8 +34,24 @@ JPEG, not PNG or WebP, for two reasons. The same card as PNG measures 271 kB aga
 55 kB. And the static mount serves `.webp` as `text/plain` — harmless for the
 slideshow, fatal for a crawler fetching `og:image`.
 
+## Size the card for the thumbnail, not for the file
+
+A feed renders a 1200×630 card near 500px wide. Judge every size at that scale, not at
+full size. Downscale before you accept a change:
+
+```sh
+magick /tmp/og-card.png -resize 500x /tmp/og-thumb.png
+```
+
+The mark and the heading look oversized in the full-size file. That is correct. Full
+size is not where anyone reads this.
+
 ## Status
 
 The current image is a **rough card**, not final art: the mark is `favicon.png` scaled up
 and the type is Georgia. Real art replaces the image without touching the tags, since
 `social_image` in `try_sage_panel.py` is the only reference.
+
+Sizes were raised 2026-08-03 for thumbnail legibility: mark 132 → 180px, heading
+3.5 → 4.5rem, body 1.6 → 2.1rem, host line 1.15 → 1.4rem. The file grew 55 kB → 66 kB.
+The heading still fits on one line at 1104px of usable width.
