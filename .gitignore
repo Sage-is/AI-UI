@@ -22,8 +22,9 @@
 # Large backup tgz
 *.tgz
 
-# Synced outside git — these trees carry private working notes and are
-# mirrored by other means. They stay on disk; git never sees them.
+# Tracked outside git. These trees carry private working notes and are
+# mirrored by other means — they are durable records, not scratch. Git is
+# simply not the system of record for them.
 # (.claude/ is already denied by the `.*` rule at the top of this file.)
 /docs/decisions/
 /charts/

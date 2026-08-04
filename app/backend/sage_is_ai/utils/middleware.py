@@ -106,6 +106,73 @@ log = logging.getLogger(__name__)
 log.setLevel(SRC_LOG_LEVELS["MAIN"])
 
 
+# Every end tag a model might emit to close its own reasoning, matched
+# case-insensitively and tolerant of stray whitespace inside the tag. Kept here
+# rather than inside the streaming closure because `finalize_content_blocks`
+# below is module-level so a fixture can import and drive it directly.
+REASONING_END_TAG_RE = re.compile(
+    r"<\s*/\s*(?:think|thinking|reason|reasoning|thought)\s*>"
+    r"|<\|end_of_thought\|>"
+    r"|◁/think▷",
+    re.IGNORECASE,
+)
+
+
+def finalize_content_blocks(content_blocks):
+    """Close every block left open when a stream ends, and free trapped text.
+
+    A block is closed by stamping `ended_at`/`duration`; `serialize_content_blocks`
+    reads `duration` to decide whether a reasoning block renders as "Thought for
+    N seconds" or as a perpetual "Thinking…". Nothing else in the streaming loop
+    does this: the only close path for a field-opened reasoning block is guarded
+    on a content delta arriving, so a provider that streams an entire answer
+    through the `reasoning` field never triggers it. The block then stays open
+    forever and the answer is sealed inside it.
+
+    Stamping alone is not enough, and this is the part worth reading twice. When
+    the provider puts everything in the reasoning stream, the ANSWER is inside
+    the block too — closing it would only render the answer collapsed behind a
+    disclosure triangle. So when an unclosed reasoning block contains a stray end
+    tag the model wrote itself, split there: what precedes it was reasoning, what
+    follows is the answer, and the answer is moved out into a text block.
+
+    Idempotent by construction. It only touches blocks that have `started_at` and
+    lack `ended_at`, so calling it twice on the same list is a no-op the second
+    time. That matters because it is called from two places — the normal
+    completion path and the cancellation handler — and those can both run.
+
+    Walks the WHOLE list rather than the tail. Every other close path in this
+    module tests `content_blocks[-1]`, which is why a `tool_calls` block pushed
+    on top of an open reasoning block orphans it permanently.
+    """
+    if not content_blocks:
+        return content_blocks
+
+    finalized = []
+    for block in content_blocks:
+        finalized.append(block)
+
+        if block.get("ended_at") is not None or block.get("started_at") is None:
+            continue
+
+        if block.get("type") == "reasoning":
+            text = block.get("content") or ""
+            match = REASONING_END_TAG_RE.search(text)
+            if match:
+                # The model closed its own thought inside the reasoning stream.
+                # Everything after that tag is the answer, not the thinking.
+                block["content"] = text[: match.start()].strip()
+                leftover = text[match.end() :].strip()
+                if leftover:
+                    finalized.append({"type": "text", "content": leftover})
+
+        block["ended_at"] = time.time()
+        block["duration"] = int(block["ended_at"] - block["started_at"])
+
+    content_blocks[:] = finalized
+    return content_blocks
+
+
 async def chat_completion_tools_handler(
     request: Request, body: dict, extra_params: dict, user: UserModel, models, tools
 ) -> tuple[dict, dict]:
@@ -2434,6 +2501,12 @@ async def process_chat_response(
                             log.debug(e)
                             break
 
+                # The stream is over. Close anything still open BEFORE the last
+                # serialize, or a block the provider never closed is persisted
+                # mid-flight and renders as "Thinking…" forever, with the answer
+                # sealed inside it.
+                finalize_content_blocks(content_blocks)
+
                 title = Chats.get_chat_title_by_id(metadata["chat_id"])
                 data = {
                     "done": True,
@@ -2478,6 +2551,13 @@ async def process_chat_response(
             except asyncio.CancelledError:
                 log.warning("Task was cancelled!")
                 await event_emitter({"type": "task-cancelled"})
+
+                # Same reason as the normal path, and it has to happen HERE
+                # rather than in a `finally`: this handler saves, and a `finally`
+                # would run after that save. A cancelled stream is the case most
+                # likely to leave a block open, so it is the last one to leave
+                # unfinalized. Safe to run twice — the finalizer is idempotent.
+                finalize_content_blocks(content_blocks)
 
                 if not ENABLE_REALTIME_CHAT_SAVE:
                     # Save message in the database

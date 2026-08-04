@@ -603,7 +603,7 @@ gauntlet: it_build sprig_smoke
 # place: it is the only member that judges what the migration CLAIMS — that a
 # server-rendered surface is lighter than the SvelteKit one it replaces — rather
 # than whether the code runs.
-gauntlet_full: pipefail_lint pipefail_fixture gauntlet sprig_durability sprig_signing ui_sprig_gate parity_gate e2e_both surface_budget
+gauntlet_full: pipefail_lint pipefail_fixture reasoning_finalizer_fixture gauntlet sprig_durability sprig_signing ui_sprig_gate parity_gate e2e_both surface_budget
 
 ## it_build_amd64 — build an amd64 image via buildx + --load.
 ##
@@ -781,6 +781,37 @@ manifest_verify_fixture:  ## Fixture: exercise verify-image-manifest.sh (good/si
 # for a reason nobody is acting on.
 reasoning_tag_fixture:  ## Fixture: reasoning blocks that swallow or leak the answer (FAILS until fixed)
 	@python3 scripts/smoke/reasoning-tag-fixture.py
+
+# Gate: a stream may never end with a content block left open, and the answer
+# may never be sealed inside one. Drives the shipped finalize_content_blocks
+# against block lists shaped as the streaming loop leaves them. Deterministic on
+# purpose — the trigger in the wild is model compliance variance.
+reasoning_finalizer_fixture:  ## Fixture: no content block left open at end of stream
+	@$(CONTAINER_RUNTIME) run --rm -e WEBUI_SECRET_KEY=fixture \
+	  -v "$$(pwd)/app/backend/sage_is_ai:/app/backend/sage_is_ai:ro" \
+	  -v "$$(pwd)/scripts:/scripts:ro" --entrypoint python3 \
+	  $(IMAGE_NAME):$(IMAGE_TAG) /scripts/smoke/reasoning-finalizer-fixture.py
+
+# Park a finished or dormant chart: move it under charts/_archive/ (excluded in
+# .todoscope-exclude.csv, so its cards leave the kanban board) and prepend a
+# stub the operator fills in. Refuses to clobber an existing archive entry.
+#
+# The stub is the point. An archived chart that does not say why it stopped
+# cannot be told apart from an abandoned one, and the next reader either redoes
+# settled work or trusts something that was never finished.
+chart_archive:  ## Archive a chart: make chart_archive CHART=<name>
+	@test -n "$(CHART)" || { echo "usage: make chart_archive CHART=<name>"; \
+	  echo "available:"; find charts -mindepth 2 -maxdepth 2 -name TODO.md -not -path 'charts/_archive/*' \
+	    | sed 's|charts/||; s|/TODO.md||; s|^|  |'; exit 1; }
+	@test -d "charts/$(CHART)" || { echo "no such chart: charts/$(CHART)"; exit 1; }
+	@test ! -e "charts/_archive/$(CHART)" || { echo "already archived: charts/_archive/$(CHART)"; exit 1; }
+	@mkdir -p charts/_archive
+	@mv "charts/$(CHART)" "charts/_archive/$(CHART)"
+	@printf '> **Archived %s.** Finished or parked: FILL IN.\n> Shipped: FILL IN (commit or decision record).\n> Left open: FILL IN, and whether anyone should care.\n\n' "$$(date +%Y-%m-%d)" \
+	  | cat - "charts/_archive/$(CHART)/TODO.md" > "charts/_archive/$(CHART)/TODO.md.tmp"
+	@mv "charts/_archive/$(CHART)/TODO.md.tmp" "charts/_archive/$(CHART)/TODO.md"
+	@echo "archived -> charts/_archive/$(CHART)/TODO.md"
+	@echo "NOW: fill in the three FILL IN lines at the top, or the archive says nothing."
 
 # Utility target to show current version
 show-version:
