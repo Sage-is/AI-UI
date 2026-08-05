@@ -126,9 +126,12 @@ class Transcript:
 class FakeChats:
     """Stands in for the Chats model. Records writes, answers reads flatly."""
 
-    def __init__(self, transcript: Transcript, title="Fixture chat"):
+    def __init__(self, transcript: Transcript, title="Fixture chat", messages=None):
         self._t = transcript
         self._title = title
+        # Empty by default so background_tasks_handler exits early. A case that
+        # wants the task path supplies a map keyed by message id.
+        self._messages = messages or {}
 
     def upsert_message_to_chat_by_id_and_message_id(self, chat_id, message_id, patch):
         self._t.save(chat_id, message_id, patch)
@@ -138,10 +141,16 @@ class FakeChats:
         return None
 
     def get_messages_by_chat_id(self, chat_id):
-        return {}
+        return self._messages
 
     def get_chat_title_by_id(self, chat_id):
         return self._title
+
+    def update_chat_tags_by_id(self, chat_id, tags, user):
+        self._t.entries.append({"channel": "tags", "chat_id": chat_id, "tags": tags})
+
+    def update_chat_title_by_id(self, chat_id, title):
+        self._t.entries.append({"channel": "title", "chat_id": chat_id, "title": title})
 
 
 class FrozenClock:
@@ -160,7 +169,13 @@ class FrozenClock:
 # --------------------------------------------------------------------------
 
 
-def install_stubs(transcript: Transcript, realtime_save: bool):
+TASK_MESSAGES = {
+    "msg-user": {"id": "msg-user", "role": "user", "content": "compare them", "parentId": None, "childrenIds": ["msg-fixture"]},
+    "msg-fixture": {"id": "msg-fixture", "role": "assistant", "content": "RAD and Agile are both iterative.", "model": "fixture-model", "parentId": "msg-user", "childrenIds": []},
+}
+
+
+def install_stubs(transcript: Transcript, realtime_save: bool, task_messages=None):
     """Replace only the names that perform I/O. Returns the saved originals."""
     clock = FrozenClock()
 
@@ -189,7 +204,21 @@ def install_stubs(transcript: Transcript, realtime_save: bool):
         originals[name] = getattr(mw, name)
         setattr(mw, name, value)
 
-    patch("Chats", FakeChats(transcript))
+    # The three background-task generators. Each returns the OpenAI-ish envelope
+    # the handler digs a JSON string out of, so the extraction code is real.
+    async def gen_follow_ups(request, form_data, user):
+        return {"choices": [{"message": {"content": '{"follow_ups": ["What about waterfall?", "Which is cheaper?"]}'}}]}
+
+    async def gen_title(request, form_data, user):
+        return {"choices": [{"message": {"content": '{"title": "RAD versus Agile"}'}}]}
+
+    async def gen_tags(request, form_data, user):
+        return {"choices": [{"message": {"content": '{"tags": ["methodology", "comparison"]}'}}]}
+
+    patch("Chats", FakeChats(transcript, messages=task_messages))
+    patch("generate_follow_ups", gen_follow_ups)
+    patch("generate_title", gen_title)
+    patch("generate_chat_tags", gen_tags)
     patch("get_event_emitter", lambda metadata: event_emitter)
     patch("get_event_call", lambda metadata: event_caller)
     patch("get_active_status_by_user_id", lambda user_id: True)  # no webhook
@@ -224,6 +253,10 @@ def upstream_from(sse_text: str) -> StreamingResponse:
 
     async def body():
         for line in lines:
+            if line.strip() == "<<CANCEL>>":
+                # The user hit stop. Everything emitted so far stands; the
+                # cancellation handler must close blocks and save.
+                raise asyncio.CancelledError()
             yield (line + "\n\n").encode("utf-8")
 
     return StreamingResponse(
@@ -251,7 +284,11 @@ def fake_request():
 async def run_case(case: dict) -> str:
     """Replay one case and return its transcript as canonical JSON."""
     transcript = Transcript()
-    originals = install_stubs(transcript, case.get("realtime_save", False))
+    originals = install_stubs(
+        transcript,
+        case.get("realtime_save", False),
+        task_messages=TASK_MESSAGES if case.get("tasks") else None,
+    )
     try:
         metadata = {
             "chat_id": "chat-fixture",
@@ -267,9 +304,18 @@ async def run_case(case: dict) -> str:
         }
         user = types.SimpleNamespace(id="user-fixture")
 
+        # The non-streaming leg is reached by handing the function a plain dict
+        # instead of a StreamingResponse — that is the only difference, and it
+        # is the branch at `if not isinstance(response, StreamingResponse)`.
+        upstream = (
+            case["response"]
+            if "response" in case
+            else upstream_from(read_stream(case["stream"]))
+        )
+
         result = await mw.process_chat_response(
             fake_request(),
-            upstream_from(read_stream(case["stream"])),
+            upstream,
             form_data,
             user,
             metadata,
@@ -346,6 +392,48 @@ CASES = [
         "realtime_save": True,
         "why": "The same stream with ENABLE_REALTIME_CHAT_SAVE flipped. Pins "
         "the dual save path the feature census has to rule on.",
+    },
+    {
+        "name": "background-tasks",
+        "stream": "plain-text.sse",
+        "tasks": {
+            "follow_up_generation": True,
+            "title_generation": True,
+            "tags_generation": True,
+        },
+        "why": "All three background tasks. Covers the per-task skeleton The "
+        "task table wants to fold — check the flag, generate, dig the result "
+        "out under a try, persist, emit — plus its four emit sites and the "
+        "chat:tags/chat:title/follow_ups payload shapes.",
+    },
+    {
+        "name": "cancelled-mid-stream",
+        "stream": "cancelled-mid-stream.sse",
+        "why": "The user hits stop while a reasoning block is open. Covers the "
+        "asyncio.CancelledError handler: the task-cancelled event, the second "
+        "finalize call, and the save that must happen there rather than in a "
+        "finally. The case most likely to leave a block open.",
+    },
+    {
+        "name": "non-streaming",
+        "response": {
+            "id": "chatcmpl-fixture-8",
+            "object": "chat.completion",
+            "model": "fixture-model",
+            "choices": [
+                {
+                    "index": 0,
+                    "message": {"role": "assistant", "content": "RAD and Agile are both iterative."},
+                    "finish_reason": "stop",
+                }
+            ],
+            "usage": {"prompt_tokens": 12, "completion_tokens": 8, "total_tokens": 20},
+        },
+        "events": [{"sources": [{"source": {"name": "handbook.pdf"}, "document": ["chapter 4"]}]}],
+        "why": "The whole non-streaming leg, which hand-reimplements the "
+        "streaming leg's semantics in ~105 lines. Carries a `sources` event so "
+        "the citation splicing the feature census fenced is under test — "
+        "one-pipeline-N-feeds must keep this working.",
     },
 ]
 

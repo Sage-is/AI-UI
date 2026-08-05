@@ -1,0 +1,155 @@
+[
+  {
+    "channel": "db",
+    "chat_id": "chat-fixture",
+    "message_id": "msg-fixture",
+    "patch": {
+      "model": "fixture-model"
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "choices": [
+          {
+            "delta": {
+              "content": "",
+              "role": "assistant"
+            },
+            "finish_reason": null,
+            "index": 0
+          }
+        ],
+        "id": "chatcmpl-fixture-1",
+        "model": "fixture-model",
+        "object": "chat.completion.chunk"
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "content": "RAD"
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "content": "RAD and Agile"
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "content": "RAD and Agile are both iterative."
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "choices": [
+          {
+            "delta": {},
+            "finish_reason": "stop",
+            "index": 0
+          }
+        ],
+        "id": "chatcmpl-fixture-1",
+        "model": "fixture-model",
+        "object": "chat.completion.chunk"
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "db",
+    "chat_id": "chat-fixture",
+    "message_id": "msg-fixture",
+    "patch": {
+      "content": "RAD and Agile are both iterative."
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "content": "RAD and Agile are both iterative.",
+        "done": true,
+        "title": "Fixture chat"
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "db",
+    "chat_id": "chat-fixture",
+    "message_id": "msg-fixture",
+    "patch": {
+      "followUps": [
+        "What about waterfall?",
+        "Which is cheaper?"
+      ]
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "follow_ups": [
+          "What about waterfall?",
+          "Which is cheaper?"
+        ]
+      },
+      "type": "chat:message:follow_ups"
+    }
+  },
+  {
+    "channel": "title",
+    "chat_id": "chat-fixture",
+    "title": "RAD versus Agile"
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": "RAD versus Agile",
+      "type": "chat:title"
+    }
+  },
+  {
+    "channel": "tags",
+    "chat_id": "chat-fixture",
+    "tags": [
+      "methodology",
+      "comparison"
+    ]
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": [
+        "methodology",
+        "comparison"
+      ],
+      "type": "chat:tags"
+    }
+  },
+  {
+    "channel": "return",
+    "value": {
+      "status": true,
+      "task_id": "fixture-task-id"
+    }
+  }
+]

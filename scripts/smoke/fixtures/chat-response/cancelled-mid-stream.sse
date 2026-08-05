@@ -1,0 +1,4 @@
+data: {"id":"chatcmpl-fixture-9","object":"chat.completion.chunk","model":"deepseek-r1-distill-llama-70b","choices":[{"index":0,"delta":{"role":"assistant","reasoning_content":"The user wants a comparison. "},"finish_reason":null}]}
+data: {"id":"chatcmpl-fixture-9","object":"chat.completion.chunk","model":"deepseek-r1-distill-llama-70b","choices":[{"index":0,"delta":{"reasoning_content":"Let me weigh both up carefully"},"finish_reason":null}]}
+<<CANCEL>>
+data: {"id":"chatcmpl-fixture-9","object":"chat.completion.chunk","model":"deepseek-r1-distill-llama-70b","choices":[{"index":0,"delta":{"content":"never delivered"},"finish_reason":null}]}

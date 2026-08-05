@@ -802,22 +802,26 @@ reasoning_finalizer_fixture:  ## Fixture: no content block left open at end of s
 #
 # Runs on the host: no image, no container. A gate that needs a build gets
 # skipped locally and only fails in CI, long after the commit that broke it.
+# These call measure.py directly rather than through run-gate.sh. The wrapper is
+# a convenience for running the gate by path from any directory; make already
+# runs from the repo root, so depending on it here would only add a second file
+# that must exist for gauntlet_full to work.
 chat_path_structure:  ## Gate: chat-path structure ceilings + citation rot
-	@scripts/gates/chat-path-structure/run-gate.sh
+	@python3 scripts/gates/chat-path-structure/measure.py
 
 # Lower the ceilings to what the code achieves right now. Run this in the same
 # commit as the refactor that earned it, never on its own.
 chat_path_structure_tighten:  ## Ratchet the chat-path ceilings down to today's numbers
-	@scripts/gates/chat-path-structure/run-gate.sh --tighten
+	@python3 scripts/gates/chat-path-structure/measure.py --tighten
 
 # Where did the fences move to? Report only, nothing is rewritten. Turns a stale
 # citation from an afternoon of line-hunting into a lookup table.
 chat_path_structure_relocate:  ## Report where each chat-path fence moved to
-	@scripts/gates/chat-path-structure/run-gate.sh --relocate
+	@python3 scripts/gates/chat-path-structure/measure.py --relocate
 
 # Prove every detector fires on a sample built to trip it.
 chat_path_structure_teeth:  ## Prove the structure ratchet can fail
-	@scripts/gates/chat-path-structure/run-gate.sh --self-test
+	@python3 scripts/gates/chat-path-structure/measure.py --self-test
 
 # Gate: the chat path emits what it emitted yesterday.
 #
