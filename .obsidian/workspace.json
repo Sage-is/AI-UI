@@ -88,8 +88,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "right": {
     "id": "ce1771fb9791e223",
@@ -180,6 +179,12 @@
   },
   "active": "efc1d269b4782aff",
   "lastOpenFiles": [
+    "docs/decisions/README.md",
+    "scripts/smoke/fixtures/chat-response/background-tasks.golden.json",
+    "scripts/smoke/fixtures/chat-response/non-streaming.golden.json",
+    "scripts/smoke/fixtures/chat-response/cancelled-mid-stream.golden.json",
+    "docs/decisions/2026-08-05-chat-path-oracle-coverage.md",
+    "scripts/smoke/fixtures/chat-response/cancelled-mid-stream.sse",
     "docs/decisions/2026-08-04-chat-path-feature-census.md",
     "charts/friday-demo/TODO.md",
     "docs/decisions/Rs_list.md",
@@ -192,10 +197,6 @@
     "docs/decisions/2026-08-04-chat-path-behaviour-oracle.md",
     "scripts/smoke/fixtures/chat-response/reasoning-field-never-closed.golden.json",
     "scripts/smoke/fixtures/chat-response/selected-model-id.golden.json",
-    "scripts/smoke/fixtures/chat-response/reasoning-tag-inline.golden.json",
-    "scripts/smoke/fixtures/chat-response/plain-text.golden.json",
-    "scripts/smoke/fixtures/chat-response/reasoning-field-then-content.golden.json",
-    "scripts/smoke/fixtures/chat-response/realtime-save-on.golden.json",
     "docs/elevator-pitch.md",
     "docs/development-workflow.md",
     "docs/contributing.md",
@@ -223,8 +224,6 @@
     "app_backup_channel_to_space/src/lib/data/license-table.md",
     "app_backup_channel_to_space/CHANGELOG.md",
     "app_backup_channels_rename/src/lib/data/license-table.md",
-    "app_backup_channels_rename/CHANGELOG.md",
-    "app_backup_workspace_rename/src/lib/data/license-table.md",
-    "app_backup_workspace_rename/CHANGELOG.md"
+    "app_backup_channels_rename/CHANGELOG.md"
   ]
 }
