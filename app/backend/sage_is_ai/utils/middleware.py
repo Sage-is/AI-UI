@@ -106,31 +106,28 @@ REASONING_END_TAG_RE = re.compile(
 
 
 def finalize_content_blocks(content_blocks):
-    """Close every block left open when a stream ends, and free trapped text.
+    """Close every block left open when a stream ends. Free trapped text.
 
-    A block is closed by stamping `ended_at`/`duration`; `serialize_content_blocks`
-    reads `duration` to decide whether a reasoning block renders as "Thought for
-    N seconds" or as a perpetual "Thinking…". Nothing else in the streaming loop
-    does this: the only close path for a field-opened reasoning block is guarded
-    on a content delta arriving, so a provider that streams an entire answer
-    through the `reasoning` field never triggers it. The block then stays open
-    forever and the answer is sealed inside it.
+    Closing stamps `ended_at`/`duration`. `serialize_content_blocks` reads
+    `duration` to render "Thought for N seconds" instead of a perpetual
+    "Thinking…". Nothing else in the streaming loop stamps it. The only close
+    path for a field-opened reasoning block waits on a content delta, so a
+    provider that streams the whole answer through the `reasoning` field never
+    trips it: the block stays open and the answer is sealed inside.
 
-    Stamping alone is not enough, and this is the part worth reading twice. When
-    the provider puts everything in the reasoning stream, the ANSWER is inside
-    the block too — closing it would only render the answer collapsed behind a
-    disclosure triangle. So when an unclosed reasoning block contains a stray end
-    tag the model wrote itself, split there: what precedes it was reasoning, what
-    follows is the answer, and the answer is moved out into a text block.
+    Stamping alone is not enough. When everything arrives through the reasoning
+    field, the ANSWER is inside the block, and closing it collapses the answer
+    behind a disclosure triangle. So when an unclosed reasoning block holds a
+    stray end tag the model wrote itself, split there. Text before it is
+    reasoning. Text after it is the answer, and it moves out to a text block.
 
-    Idempotent by construction. It only touches blocks that have `started_at` and
-    lack `ended_at`, so calling it twice on the same list is a no-op the second
-    time. That matters because it is called from two places — the normal
-    completion path and the cancellation handler — and those can both run.
+    Idempotent. It touches only blocks with `started_at` and no `ended_at`, so
+    a second call is a no-op. Both callers can run: the normal completion path
+    and the cancellation handler.
 
-    Walks the WHOLE list rather than the tail. Every other close path in this
-    module tests `content_blocks[-1]`, which is why a `tool_calls` block pushed
-    on top of an open reasoning block orphans it permanently.
+    Walks the WHOLE list, not the tail. Every other close path in this module
+    tests `content_blocks[-1]`, which is why a `tool_calls` block pushed on top
+    of an open reasoning block orphans it permanently.
     """
     if not content_blocks:
         return content_blocks
@@ -326,7 +323,7 @@ def tag_content_handler(content_type, tags, content, content_blocks):
     end_flag = False
 
     def extract_attributes(tag_content):
-        """Extract attributes from a tag if they exist."""
+        """Extract a tag's attributes, if present."""
         attributes = {}
         if not tag_content:  # Ensure tag_content is not None
             return attributes
@@ -490,7 +487,7 @@ async def emit_completion(event_emitter, data):
 
 
 async def emit_content(event_emitter, content_blocks):
-    """Publish the blocks rendered as they stand right now."""
+    """Publish the blocks as they render right now."""
     await emit_completion(
         event_emitter, {"content": serialize_content_blocks(content_blocks)}
     )
