@@ -6,6 +6,30 @@ All notable changes to [Sage.is AI-UI](https://github.com/Sage-is/AI-UI) are doc
 
 ## [Unreleased]
 
+### Added
+
+**The Sprig™ capability reference is generated from the code, never written by hand**
+`docs/sprigs/capabilities.md` describes every capability the catalog ships: what each one delivers, whether it runs a process, what it writes into the running configuration, and what a prune reverses. The document is emitted by reading the catalog and the three dispatch fan-outs with a parser, so it cannot drift from the code that defines it. `make sprig_capabilities_check` runs inside `gauntlet_full` and fails with a diff when a capability is added, a dispatch changes what it writes, or a prune reset is forgotten. The gate has its own self-test, which perturbs the committed document three ways and asserts the check notices each one — a gate nobody has watched fail is a gate nobody should trust.
+
+The reference reports what the code does rather than what it should do, and the first run said so: pruning the Tika or Docling Sprig leaves `CONTENT_EXTRACTION_ENGINE` pointing at a released port. That was not known before the document existed. It is logged, not fixed.
+
+`make sprig_capabilities_publish` folds a vocabulary view into the Sprig specification next door — which reserved prefixes ship, which shipped names have no reservation, which reservations are still empty. A view, not a copy: the specification states a contract, and prune gaps are implementation status that stays on this side. Both halves of the comparison are derived, the reserved list from the specification's own prose, so a reservation added there corrects the delta on the next publish with nothing to maintain by hand.
+
+### Changed
+
+**The chat path's largest function lost a third of its lines, with the behaviour frozen**
+`process_chat_response` fell from 1,511 lines to 1,108, and the file's deeply nested lines fell from 1,009 to 773 — from half the code to two fifths. Three mechanical passes did it: thirteen dead imports dropped, five pure functions lifted out of the closure to module level, and eleven hand-spelled `chat:completion` payloads collapsed onto two helpers. Four of those eleven were identical character for character.
+
+Nothing about the behaviour changed, and the replay oracle proves it: every recorded stream emits a byte-identical transcript before and after each pass. The structure ratchet's ceilings were lowered to what the passes earned, so they cannot drift back.
+
+The lift needed no design decision. A symbol-table pass showed the five functions close over nothing but each other, so they could leave the closure without disturbing the two `nonlocal` accumulators that the rest of the restructure still waits on. `CACHE_DIR` went with the dead imports, and with it the chat path's only edge to the configuration module — which runs database migrations when imported. That edge is what stood between these functions and a test that could drive them directly.
+
+**The reasoning-block replay net gained a case, recorded from a live failure**
+A model can close a thinking tag that the reader never saw open. The provider routes the model's opening tag into its reasoning field, so the content stream never carries one, and the block opens and closes correctly through that path; the model then closes the tag the only way it can, in the content stream, and the orphan renders as text beside a perfectly good reasoning block. The oracle now replays that shape and pins it. The golden records the leak as it stands, not as it should be, and its job is to fail the day someone treats an unpaired closing tag as an implicit opening — which here would open a second reasoning block and seal the answer inside it, turning a cosmetic leak into the one that swallows the answer.
+
+**Release finish runs on plain git, not git-flow-next**
+`make release_finish` and `make hotfix_finish` now merge the release branch into master and develop, tag it, and delete it with plain git. git-flow-next's finish stranded three releases: it committed a fast-forward as an empty merge, misread skipped pre-commit hooks as a failure, and ran a remote-branch sync check that died when the release branch was never pushed to origin. Each time the fix was to finish the merge by hand, so the Makefile does that by default now. `git flow release start` still opens branches. Every step is idempotent — an already-merged branch or an existing tag is skipped — so a merge conflict resolves and the finish resumes instead of wedging. The self-heal target that dropped git-flow's stale state files is gone; there are no state files left to clean.
+
 ### Fixed
 
 **The try.sage welcome page scrolls on phones**
@@ -17,11 +41,6 @@ Signed-in readers get the app exactly as before. A visitor who lands on `/auth` 
 
 **Server-rendered pages pick up an edited stylesheet or script within a release**
 Assets under `/pages/_assets/` ship with a week-long cache and used to carry the release version in their URL, on the reasoning that the version changes whenever the file could have. It does not: a file edited twice inside one release keeps one URL, so a browser that loaded the first version runs it for a week while the server serves the second. The operator ships a fix and watches the old behaviour. The URL now carries eight characters of the file's own hash, read at first use — no build step, sixteen small files, once per process — so it changes when and only when the bytes do. Found the hard way: a fixed page kept rendering the broken script.
-
-### Changed
-
-**Release finish runs on plain git, not git-flow-next**
-`make release_finish` and `make hotfix_finish` now merge the release branch into master and develop, tag it, and delete it with plain git. git-flow-next's finish stranded three releases: it committed a fast-forward as an empty merge, misread skipped pre-commit hooks as a failure, and ran a remote-branch sync check that died when the release branch was never pushed to origin. Each time the fix was to finish the merge by hand, so the Makefile does that by default now. `git flow release start` still opens branches. Every step is idempotent — an already-merged branch or an existing tag is skipped — so a merge conflict resolves and the finish resumes instead of wedging. The self-heal target that dropped git-flow's stale state files is gone; there are no state files left to clean.
 
 ## [3.0.0] — 2026-07-15
 

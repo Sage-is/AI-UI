@@ -368,6 +368,21 @@ CASES = [
         "split across chunk boundaries so the partial-tag buffering is exercised.",
     },
     {
+        "name": "reasoning-field-closed-then-orphan",
+        "stream": "reasoning-field-closed-then-orphan.sse",
+        "why": "Witnessed in the wild 2026-08-06 (qwen3.5:9b via Ollama, chat "
+        "aafdddab). The two paths disagree: the provider routes the model's "
+        "<think> into the reasoning FIELD, so `content` never sees an opener, "
+        "and the field block opens and closes correctly. The model then closes "
+        "the tag the only way it can — in `content` — and the orphan renders as "
+        "text beside a perfectly good reasoning block. Logged at TODO.md:617 as "
+        "the third variant, and FROZEN: this golden records the leak as it is, "
+        "not as it should be. It exists to fail the day someone implements the "
+        "ledger's fix (2), promoting an unpaired close to an implicit open — "
+        "which here would mint a SECOND reasoning block and swallow the answer, "
+        "turning a cosmetic leak into the demo-blocking one.",
+    },
+    {
         "name": "usage-and-error-chunks",
         "stream": "usage-and-error-chunks.sse",
         "why": "Chunks with no `choices`: a usage report and an error object. "

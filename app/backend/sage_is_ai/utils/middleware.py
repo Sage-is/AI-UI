@@ -1,16 +1,11 @@
 import time
 import logging
 import sys
-import os
-import base64
 
 import asyncio
-from aiocache import cached
-from typing import Any, Optional
-import random
+from typing import Optional
 import json
 import html
-import inspect
 import re
 import ast
 
@@ -18,8 +13,8 @@ from uuid import uuid4
 from concurrent.futures import ThreadPoolExecutor
 
 
-from fastapi import Request, HTTPException
-from starlette.responses import Response, StreamingResponse
+from fastapi import Request
+from starlette.responses import StreamingResponse
 
 
 from sage_is_ai.models.chats import Chats
@@ -44,10 +39,7 @@ from sage_is_ai.routers.images import (
     GenerateImageForm,
     upload_image,
 )
-from sage_is_ai.routers.pipelines import (
-    process_pipeline_inlet_filter,
-    process_pipeline_outlet_filter,
-)
+from sage_is_ai.routers.pipelines import process_pipeline_inlet_filter
 from sage_is_ai.routers.memories import query_memory, QueryMemoryForm
 
 from sage_is_ai.utils.webhook import post_webhook
@@ -55,7 +47,6 @@ from sage_is_ai.utils.webhook import post_webhook
 
 from sage_is_ai.models.users import UserModel
 from sage_is_ai.models.functions import Functions
-from sage_is_ai.models.models import Models
 
 from sage_is_ai.retrieval.utils import get_sources_from_items
 
@@ -77,7 +68,6 @@ from sage_is_ai.utils.misc import (
     convert_logit_bias_input_to_json,
 )
 from sage_is_ai.utils.tools import get_tools
-from sage_is_ai.utils.plugin import load_function_module_by_id
 from sage_is_ai.utils.filter import (
     get_sorted_filter_ids,
     process_filter_functions,
@@ -87,14 +77,12 @@ from sage_is_ai.utils.code_interpreter import execute_code_jupyter
 from sage_is_ai.tasks import create_task
 
 from sage_is_ai.config import (
-    CACHE_DIR,
     DEFAULT_TOOLS_FUNCTION_CALLING_PROMPT_TEMPLATE,
     DEFAULT_CODE_INTERPRETER_PROMPT,
 )
 from sage_is_ai.env import (
     SRC_LOG_LEVELS,
     GLOBAL_LOG_LEVEL,
-    BYPASS_MODEL_ACCESS_CONTROL,
     ENABLE_REALTIME_CHAT_SAVE,
 )
 from sage_is_ai.constants import TASKS
@@ -170,6 +158,342 @@ def finalize_content_blocks(content_blocks):
 
     content_blocks[:] = finalized
     return content_blocks
+
+
+# Pure block helpers, lifted out of `process_chat_response` on 2026-08-06.
+# Each one closes over nothing but the others, so module level costs nothing
+# and buys a name a unit test can import. They sit here beside
+# `finalize_content_blocks`, which was lifted first for the same reason.
+def split_content_and_whitespace(content):
+    content_stripped = content.rstrip()
+    original_whitespace = (
+        content[len(content_stripped) :] if len(content) > len(content_stripped) else ""
+    )
+    return content_stripped, original_whitespace
+
+
+def is_opening_code_block(content):
+    backtick_segments = content.split("```")
+    # Even number of segments means the last backticks are opening a new block
+    return len(backtick_segments) > 1 and len(backtick_segments) % 2 == 0
+
+
+def serialize_content_blocks(content_blocks, raw=False):
+    content = ""
+
+    for block in content_blocks:
+        if block["type"] == "text":
+            content = f"{content}{block['content'].strip()}\n"
+        elif block["type"] == "tool_calls":
+            attributes = block.get("attributes", {})
+
+            tool_calls = block.get("content", [])
+            results = block.get("results", [])
+
+            if results:
+
+                tool_calls_display_content = ""
+                for tool_call in tool_calls:
+
+                    tool_call_id = tool_call.get("id", "")
+                    tool_name = tool_call.get("function", {}).get("name", "")
+                    tool_arguments = tool_call.get("function", {}).get("arguments", "")
+
+                    tool_result = None
+                    tool_result_files = None
+                    for result in results:
+                        if tool_call_id == result.get("tool_call_id", ""):
+                            tool_result = result.get("content", None)
+                            tool_result_files = result.get("files", None)
+                            break
+
+                    if tool_result:
+                        tool_calls_display_content = f'{tool_calls_display_content}\n<details type="tool_calls" done="true" id="{tool_call_id}" name="{tool_name}" arguments="{html.escape(json.dumps(tool_arguments))}" result="{html.escape(json.dumps(tool_result, ensure_ascii=False))}" files="{html.escape(json.dumps(tool_result_files)) if tool_result_files else ""}">\n<summary>Tool Executed</summary>\n</details>\n'
+                    else:
+                        tool_calls_display_content = f'{tool_calls_display_content}\n<details type="tool_calls" done="false" id="{tool_call_id}" name="{tool_name}" arguments="{html.escape(json.dumps(tool_arguments))}">\n<summary>Executing...</summary>\n</details>'
+
+                if not raw:
+                    content = f"{content}\n{tool_calls_display_content}\n\n"
+            else:
+                tool_calls_display_content = ""
+
+                for tool_call in tool_calls:
+                    tool_call_id = tool_call.get("id", "")
+                    tool_name = tool_call.get("function", {}).get("name", "")
+                    tool_arguments = tool_call.get("function", {}).get("arguments", "")
+
+                    tool_calls_display_content = f'{tool_calls_display_content}\n<details type="tool_calls" done="false" id="{tool_call_id}" name="{tool_name}" arguments="{html.escape(json.dumps(tool_arguments))}">\n<summary>Executing...</summary>\n</details>'
+
+                if not raw:
+                    content = f"{content}\n{tool_calls_display_content}\n\n"
+
+        elif block["type"] == "reasoning":
+            reasoning_display_content = "\n".join(
+                (f"> {line}" if not line.startswith(">") else line)
+                for line in block["content"].splitlines()
+            )
+
+            reasoning_duration = block.get("duration", None)
+
+            if reasoning_duration is not None:
+                if raw:
+                    content = f'{content}\n{block["start_tag"]}{block["content"]}{block["end_tag"]}\n'
+                else:
+                    content = f'{content}\n<details type="reasoning" done="true" duration="{reasoning_duration}">\n<summary>Thought for {reasoning_duration} seconds</summary>\n{reasoning_display_content}\n</details>\n'
+            else:
+                if raw:
+                    content = f'{content}\n{block["start_tag"]}{block["content"]}{block["end_tag"]}\n'
+                else:
+                    content = f'{content}\n<details type="reasoning" done="false">\n<summary>Thinking…</summary>\n{reasoning_display_content}\n</details>\n'
+
+        elif block["type"] == "code_interpreter":
+            attributes = block.get("attributes", {})
+            output = block.get("output", None)
+            lang = attributes.get("lang", "")
+
+            content_stripped, original_whitespace = split_content_and_whitespace(
+                content
+            )
+            if is_opening_code_block(content_stripped):
+                # Remove trailing backticks that would open a new block
+                content = content_stripped.rstrip("`").rstrip() + original_whitespace
+            else:
+                # Keep content as is - either closing backticks or no backticks
+                content = content_stripped + original_whitespace
+
+            if output:
+                output = html.escape(json.dumps(output))
+
+                if raw:
+                    content = f'{content}\n<code_interpreter type="code" lang="{lang}">\n{block["content"]}\n</code_interpreter>\n```output\n{output}\n```\n'
+                else:
+                    content = f'{content}\n<details type="code_interpreter" done="true" output="{output}">\n<summary>Analyzed</summary>\n```{lang}\n{block["content"]}\n```\n</details>\n'
+            else:
+                if raw:
+                    content = f'{content}\n<code_interpreter type="code" lang="{lang}">\n{block["content"]}\n</code_interpreter>\n'
+                else:
+                    content = f'{content}\n<details type="code_interpreter" done="false">\n<summary>Analyzing...</summary>\n```{lang}\n{block["content"]}\n```\n</details>\n'
+
+        else:
+            block_content = str(block["content"]).strip()
+            content = f"{content}{block['type']}: {block_content}\n"
+
+    return content.strip()
+
+
+def convert_content_blocks_to_messages(content_blocks):
+    messages = []
+
+    temp_blocks = []
+    for idx, block in enumerate(content_blocks):
+        if block["type"] == "tool_calls":
+            messages.append(
+                {
+                    "role": "assistant",
+                    "content": serialize_content_blocks(temp_blocks),
+                    "tool_calls": block.get("content"),
+                }
+            )
+
+            results = block.get("results", [])
+
+            for result in results:
+                messages.append(
+                    {
+                        "role": "tool",
+                        "tool_call_id": result["tool_call_id"],
+                        "content": result["content"],
+                    }
+                )
+            temp_blocks = []
+        else:
+            temp_blocks.append(block)
+
+    if temp_blocks:
+        content = serialize_content_blocks(temp_blocks)
+        if content:
+            messages.append(
+                {
+                    "role": "assistant",
+                    "content": content,
+                }
+            )
+
+    return messages
+
+
+def tag_content_handler(content_type, tags, content, content_blocks):
+    end_flag = False
+
+    def extract_attributes(tag_content):
+        """Extract attributes from a tag if they exist."""
+        attributes = {}
+        if not tag_content:  # Ensure tag_content is not None
+            return attributes
+        # Match attributes in the format: key="value" (ignores single quotes for simplicity)
+        matches = re.findall(r'(\w+)\s*=\s*"([^"]+)"', tag_content)
+        for key, value in matches:
+            attributes[key] = value
+        return attributes
+
+    if content_blocks[-1]["type"] == "text":
+        for start_tag, end_tag in tags:
+
+            start_tag_pattern = rf"{re.escape(start_tag)}"
+            if start_tag.startswith("<") and start_tag.endswith(">"):
+                # Match start tag e.g., <tag> or <tag attr="value">
+                # remove both '<' and '>' from start_tag
+                # Match start tag with attributes
+                start_tag_pattern = rf"<{re.escape(start_tag[1:-1])}(\s.*?)?>"
+
+            match = re.search(start_tag_pattern, content)
+            if match:
+                attr_content = (
+                    match.group(1) if match.group(1) else ""
+                )  # Ensure it's not None
+                attributes = extract_attributes(
+                    attr_content
+                )  # Extract attributes safely
+
+                # Capture everything before and after the matched tag
+                before_tag = content[: match.start()]  # Content before opening tag
+                after_tag = content[match.end() :]  # Content after opening tag
+
+                # Remove the start tag and after from the currently handling text block
+                content_blocks[-1]["content"] = content_blocks[-1]["content"].replace(
+                    match.group(0) + after_tag, ""
+                )
+
+                if before_tag:
+                    content_blocks[-1]["content"] = before_tag
+
+                if not content_blocks[-1]["content"]:
+                    content_blocks.pop()
+
+                # Append the new block
+                content_blocks.append(
+                    {
+                        "type": content_type,
+                        "start_tag": start_tag,
+                        "end_tag": end_tag,
+                        "attributes": attributes,
+                        "content": "",
+                        "started_at": time.time(),
+                    }
+                )
+
+                if after_tag:
+                    content_blocks[-1]["content"] = after_tag
+                    tag_content_handler(content_type, tags, after_tag, content_blocks)
+
+                break
+    elif content_blocks[-1]["type"] == content_type:
+        start_tag = content_blocks[-1]["start_tag"]
+        end_tag = content_blocks[-1]["end_tag"]
+
+        if end_tag.startswith("<") and end_tag.endswith(">"):
+            # Match end tag e.g., </tag>
+            end_tag_pattern = rf"{re.escape(end_tag)}"
+        else:
+            # Handle cases where end_tag is just a tag name
+            end_tag_pattern = rf"{re.escape(end_tag)}"
+
+        # Check if the content has the end tag
+        if re.search(end_tag_pattern, content):
+            end_flag = True
+
+            block_content = content_blocks[-1]["content"]
+            # Strip start and end tags from the content
+            start_tag_pattern = rf"<{re.escape(start_tag)}(.*?)>"
+            block_content = re.sub(start_tag_pattern, "", block_content).strip()
+
+            end_tag_regex = re.compile(end_tag_pattern, re.DOTALL)
+            split_content = end_tag_regex.split(block_content, maxsplit=1)
+
+            # Content inside the tag
+            block_content = split_content[0].strip() if split_content else ""
+
+            # Leftover content (everything after `</tag>`)
+            leftover_content = (
+                split_content[1].strip() if len(split_content) > 1 else ""
+            )
+
+            if block_content:
+                content_blocks[-1]["content"] = block_content
+                content_blocks[-1]["ended_at"] = time.time()
+                content_blocks[-1]["duration"] = int(
+                    content_blocks[-1]["ended_at"] - content_blocks[-1]["started_at"]
+                )
+
+                # Reset the content_blocks by appending a new text block
+                if content_type != "code_interpreter":
+                    if leftover_content:
+
+                        content_blocks.append(
+                            {
+                                "type": "text",
+                                "content": leftover_content,
+                            }
+                        )
+                    else:
+                        content_blocks.append(
+                            {
+                                "type": "text",
+                                "content": "",
+                            }
+                        )
+
+            else:
+                # Remove the block if content is empty
+                content_blocks.pop()
+
+                if leftover_content:
+                    content_blocks.append(
+                        {
+                            "type": "text",
+                            "content": leftover_content,
+                        }
+                    )
+                else:
+                    content_blocks.append(
+                        {
+                            "type": "text",
+                            "content": "",
+                        }
+                    )
+
+            # Clean processed content
+            start_tag_pattern = rf"{re.escape(start_tag)}"
+            if start_tag.startswith("<") and start_tag.endswith(">"):
+                # Match start tag e.g., <tag> or <tag attr="value">
+                # remove both '<' and '>' from start_tag
+                # Match start tag with attributes
+                start_tag_pattern = rf"<{re.escape(start_tag[1:-1])}(\s.*?)?>"
+
+            content = re.sub(
+                rf"{start_tag_pattern}(.|\n)*?{re.escape(end_tag)}",
+                "",
+                content,
+                flags=re.DOTALL,
+            )
+
+    return content, content_blocks, end_flag
+
+
+# Every `chat:completion` event goes out through these two. Eleven call sites
+# spelled the envelope by hand, four of them character for character; the
+# oracle pins the payload, so the only thing standardising them can change is
+# how much of this file is punctuation. The emitter is passed in rather than
+# captured — these are module level so a test can drive them with a stub.
+async def emit_completion(event_emitter, data):
+    await event_emitter({"type": "chat:completion", "data": data})
+
+
+async def emit_content(event_emitter, content_blocks):
+    """Publish the blocks rendered as they stand right now."""
+    await emit_completion(
+        event_emitter, {"content": serialize_content_blocks(content_blocks)}
+    )
 
 
 async def chat_completion_tools_handler(
@@ -1184,24 +1508,13 @@ async def process_chat_response(
 
                 if content:
 
-                    await event_emitter(
-                        {
-                            "type": "chat:completion",
-                            "data": response,
-                        }
-                    )
+                    await emit_completion(event_emitter, response)
 
                     title = Chats.get_chat_title_by_id(metadata["chat_id"])
 
-                    await event_emitter(
-                        {
-                            "type": "chat:completion",
-                            "data": {
-                                "done": True,
-                                "content": content,
-                                "title": title,
-                            },
-                        }
+                    await emit_completion(
+                        event_emitter,
+                        {"done": True, "content": content, "title": title},
                     )
 
                     # Save message in the database
@@ -1297,347 +1610,8 @@ async def process_chat_response(
             },
         )
 
-        def split_content_and_whitespace(content):
-            content_stripped = content.rstrip()
-            original_whitespace = (
-                content[len(content_stripped) :]
-                if len(content) > len(content_stripped)
-                else ""
-            )
-            return content_stripped, original_whitespace
-
-        def is_opening_code_block(content):
-            backtick_segments = content.split("```")
-            # Even number of segments means the last backticks are opening a new block
-            return len(backtick_segments) > 1 and len(backtick_segments) % 2 == 0
-
         # Handle as a background task
         async def response_handler(response, events):
-            def serialize_content_blocks(content_blocks, raw=False):
-                content = ""
-
-                for block in content_blocks:
-                    if block["type"] == "text":
-                        content = f"{content}{block['content'].strip()}\n"
-                    elif block["type"] == "tool_calls":
-                        attributes = block.get("attributes", {})
-
-                        tool_calls = block.get("content", [])
-                        results = block.get("results", [])
-
-                        if results:
-
-                            tool_calls_display_content = ""
-                            for tool_call in tool_calls:
-
-                                tool_call_id = tool_call.get("id", "")
-                                tool_name = tool_call.get("function", {}).get(
-                                    "name", ""
-                                )
-                                tool_arguments = tool_call.get("function", {}).get(
-                                    "arguments", ""
-                                )
-
-                                tool_result = None
-                                tool_result_files = None
-                                for result in results:
-                                    if tool_call_id == result.get("tool_call_id", ""):
-                                        tool_result = result.get("content", None)
-                                        tool_result_files = result.get("files", None)
-                                        break
-
-                                if tool_result:
-                                    tool_calls_display_content = f'{tool_calls_display_content}\n<details type="tool_calls" done="true" id="{tool_call_id}" name="{tool_name}" arguments="{html.escape(json.dumps(tool_arguments))}" result="{html.escape(json.dumps(tool_result, ensure_ascii=False))}" files="{html.escape(json.dumps(tool_result_files)) if tool_result_files else ""}">\n<summary>Tool Executed</summary>\n</details>\n'
-                                else:
-                                    tool_calls_display_content = f'{tool_calls_display_content}\n<details type="tool_calls" done="false" id="{tool_call_id}" name="{tool_name}" arguments="{html.escape(json.dumps(tool_arguments))}">\n<summary>Executing...</summary>\n</details>'
-
-                            if not raw:
-                                content = f"{content}\n{tool_calls_display_content}\n\n"
-                        else:
-                            tool_calls_display_content = ""
-
-                            for tool_call in tool_calls:
-                                tool_call_id = tool_call.get("id", "")
-                                tool_name = tool_call.get("function", {}).get(
-                                    "name", ""
-                                )
-                                tool_arguments = tool_call.get("function", {}).get(
-                                    "arguments", ""
-                                )
-
-                                tool_calls_display_content = f'{tool_calls_display_content}\n<details type="tool_calls" done="false" id="{tool_call_id}" name="{tool_name}" arguments="{html.escape(json.dumps(tool_arguments))}">\n<summary>Executing...</summary>\n</details>'
-
-                            if not raw:
-                                content = f"{content}\n{tool_calls_display_content}\n\n"
-
-                    elif block["type"] == "reasoning":
-                        reasoning_display_content = "\n".join(
-                            (f"> {line}" if not line.startswith(">") else line)
-                            for line in block["content"].splitlines()
-                        )
-
-                        reasoning_duration = block.get("duration", None)
-
-                        if reasoning_duration is not None:
-                            if raw:
-                                content = f'{content}\n{block["start_tag"]}{block["content"]}{block["end_tag"]}\n'
-                            else:
-                                content = f'{content}\n<details type="reasoning" done="true" duration="{reasoning_duration}">\n<summary>Thought for {reasoning_duration} seconds</summary>\n{reasoning_display_content}\n</details>\n'
-                        else:
-                            if raw:
-                                content = f'{content}\n{block["start_tag"]}{block["content"]}{block["end_tag"]}\n'
-                            else:
-                                content = f'{content}\n<details type="reasoning" done="false">\n<summary>Thinking…</summary>\n{reasoning_display_content}\n</details>\n'
-
-                    elif block["type"] == "code_interpreter":
-                        attributes = block.get("attributes", {})
-                        output = block.get("output", None)
-                        lang = attributes.get("lang", "")
-
-                        content_stripped, original_whitespace = (
-                            split_content_and_whitespace(content)
-                        )
-                        if is_opening_code_block(content_stripped):
-                            # Remove trailing backticks that would open a new block
-                            content = (
-                                content_stripped.rstrip("`").rstrip()
-                                + original_whitespace
-                            )
-                        else:
-                            # Keep content as is - either closing backticks or no backticks
-                            content = content_stripped + original_whitespace
-
-                        if output:
-                            output = html.escape(json.dumps(output))
-
-                            if raw:
-                                content = f'{content}\n<code_interpreter type="code" lang="{lang}">\n{block["content"]}\n</code_interpreter>\n```output\n{output}\n```\n'
-                            else:
-                                content = f'{content}\n<details type="code_interpreter" done="true" output="{output}">\n<summary>Analyzed</summary>\n```{lang}\n{block["content"]}\n```\n</details>\n'
-                        else:
-                            if raw:
-                                content = f'{content}\n<code_interpreter type="code" lang="{lang}">\n{block["content"]}\n</code_interpreter>\n'
-                            else:
-                                content = f'{content}\n<details type="code_interpreter" done="false">\n<summary>Analyzing...</summary>\n```{lang}\n{block["content"]}\n```\n</details>\n'
-
-                    else:
-                        block_content = str(block["content"]).strip()
-                        content = f"{content}{block['type']}: {block_content}\n"
-
-                return content.strip()
-
-            def convert_content_blocks_to_messages(content_blocks):
-                messages = []
-
-                temp_blocks = []
-                for idx, block in enumerate(content_blocks):
-                    if block["type"] == "tool_calls":
-                        messages.append(
-                            {
-                                "role": "assistant",
-                                "content": serialize_content_blocks(temp_blocks),
-                                "tool_calls": block.get("content"),
-                            }
-                        )
-
-                        results = block.get("results", [])
-
-                        for result in results:
-                            messages.append(
-                                {
-                                    "role": "tool",
-                                    "tool_call_id": result["tool_call_id"],
-                                    "content": result["content"],
-                                }
-                            )
-                        temp_blocks = []
-                    else:
-                        temp_blocks.append(block)
-
-                if temp_blocks:
-                    content = serialize_content_blocks(temp_blocks)
-                    if content:
-                        messages.append(
-                            {
-                                "role": "assistant",
-                                "content": content,
-                            }
-                        )
-
-                return messages
-
-            def tag_content_handler(content_type, tags, content, content_blocks):
-                end_flag = False
-
-                def extract_attributes(tag_content):
-                    """Extract attributes from a tag if they exist."""
-                    attributes = {}
-                    if not tag_content:  # Ensure tag_content is not None
-                        return attributes
-                    # Match attributes in the format: key="value" (ignores single quotes for simplicity)
-                    matches = re.findall(r'(\w+)\s*=\s*"([^"]+)"', tag_content)
-                    for key, value in matches:
-                        attributes[key] = value
-                    return attributes
-
-                if content_blocks[-1]["type"] == "text":
-                    for start_tag, end_tag in tags:
-
-                        start_tag_pattern = rf"{re.escape(start_tag)}"
-                        if start_tag.startswith("<") and start_tag.endswith(">"):
-                            # Match start tag e.g., <tag> or <tag attr="value">
-                            # remove both '<' and '>' from start_tag
-                            # Match start tag with attributes
-                            start_tag_pattern = (
-                                rf"<{re.escape(start_tag[1:-1])}(\s.*?)?>"
-                            )
-
-                        match = re.search(start_tag_pattern, content)
-                        if match:
-                            attr_content = (
-                                match.group(1) if match.group(1) else ""
-                            )  # Ensure it's not None
-                            attributes = extract_attributes(
-                                attr_content
-                            )  # Extract attributes safely
-
-                            # Capture everything before and after the matched tag
-                            before_tag = content[
-                                : match.start()
-                            ]  # Content before opening tag
-                            after_tag = content[
-                                match.end() :
-                            ]  # Content after opening tag
-
-                            # Remove the start tag and after from the currently handling text block
-                            content_blocks[-1]["content"] = content_blocks[-1][
-                                "content"
-                            ].replace(match.group(0) + after_tag, "")
-
-                            if before_tag:
-                                content_blocks[-1]["content"] = before_tag
-
-                            if not content_blocks[-1]["content"]:
-                                content_blocks.pop()
-
-                            # Append the new block
-                            content_blocks.append(
-                                {
-                                    "type": content_type,
-                                    "start_tag": start_tag,
-                                    "end_tag": end_tag,
-                                    "attributes": attributes,
-                                    "content": "",
-                                    "started_at": time.time(),
-                                }
-                            )
-
-                            if after_tag:
-                                content_blocks[-1]["content"] = after_tag
-                                tag_content_handler(
-                                    content_type, tags, after_tag, content_blocks
-                                )
-
-                            break
-                elif content_blocks[-1]["type"] == content_type:
-                    start_tag = content_blocks[-1]["start_tag"]
-                    end_tag = content_blocks[-1]["end_tag"]
-
-                    if end_tag.startswith("<") and end_tag.endswith(">"):
-                        # Match end tag e.g., </tag>
-                        end_tag_pattern = rf"{re.escape(end_tag)}"
-                    else:
-                        # Handle cases where end_tag is just a tag name
-                        end_tag_pattern = rf"{re.escape(end_tag)}"
-
-                    # Check if the content has the end tag
-                    if re.search(end_tag_pattern, content):
-                        end_flag = True
-
-                        block_content = content_blocks[-1]["content"]
-                        # Strip start and end tags from the content
-                        start_tag_pattern = rf"<{re.escape(start_tag)}(.*?)>"
-                        block_content = re.sub(
-                            start_tag_pattern, "", block_content
-                        ).strip()
-
-                        end_tag_regex = re.compile(end_tag_pattern, re.DOTALL)
-                        split_content = end_tag_regex.split(block_content, maxsplit=1)
-
-                        # Content inside the tag
-                        block_content = (
-                            split_content[0].strip() if split_content else ""
-                        )
-
-                        # Leftover content (everything after `</tag>`)
-                        leftover_content = (
-                            split_content[1].strip() if len(split_content) > 1 else ""
-                        )
-
-                        if block_content:
-                            content_blocks[-1]["content"] = block_content
-                            content_blocks[-1]["ended_at"] = time.time()
-                            content_blocks[-1]["duration"] = int(
-                                content_blocks[-1]["ended_at"]
-                                - content_blocks[-1]["started_at"]
-                            )
-
-                            # Reset the content_blocks by appending a new text block
-                            if content_type != "code_interpreter":
-                                if leftover_content:
-
-                                    content_blocks.append(
-                                        {
-                                            "type": "text",
-                                            "content": leftover_content,
-                                        }
-                                    )
-                                else:
-                                    content_blocks.append(
-                                        {
-                                            "type": "text",
-                                            "content": "",
-                                        }
-                                    )
-
-                        else:
-                            # Remove the block if content is empty
-                            content_blocks.pop()
-
-                            if leftover_content:
-                                content_blocks.append(
-                                    {
-                                        "type": "text",
-                                        "content": leftover_content,
-                                    }
-                                )
-                            else:
-                                content_blocks.append(
-                                    {
-                                        "type": "text",
-                                        "content": "",
-                                    }
-                                )
-
-                        # Clean processed content
-                        start_tag_pattern = rf"{re.escape(start_tag)}"
-                        if start_tag.startswith("<") and start_tag.endswith(">"):
-                            # Match start tag e.g., <tag> or <tag attr="value">
-                            # remove both '<' and '>' from start_tag
-                            # Match start tag with attributes
-                            start_tag_pattern = (
-                                rf"<{re.escape(start_tag[1:-1])}(\s.*?)?>"
-                            )
-
-                        content = re.sub(
-                            rf"{start_tag_pattern}(.|\n)*?{re.escape(end_tag)}",
-                            "",
-                            content,
-                            flags=re.DOTALL,
-                        )
-
-                return content, content_blocks, end_flag
-
             message = Chats.get_message_by_id_and_message_id(
                 metadata["chat_id"], metadata["message_id"]
             )
@@ -1690,12 +1664,7 @@ async def process_chat_response(
 
             try:
                 for event in events:
-                    await event_emitter(
-                        {
-                            "type": "chat:completion",
-                            "data": event,
-                        }
-                    )
+                    await emit_completion(event_emitter, event)
 
                     # Save message in the database
                     Chats.upsert_message_to_chat_by_id_and_message_id(
@@ -1756,23 +1725,13 @@ async def process_chat_response(
                                     if not choices:
                                         error = data.get("error", {})
                                         if error:
-                                            await event_emitter(
-                                                {
-                                                    "type": "chat:completion",
-                                                    "data": {
-                                                        "error": error,
-                                                    },
-                                                }
+                                            await emit_completion(
+                                                event_emitter, {"error": error}
                                             )
                                         usage = data.get("usage", {})
                                         if usage:
-                                            await event_emitter(
-                                                {
-                                                    "type": "chat:completion",
-                                                    "data": {
-                                                        "usage": usage,
-                                                    },
-                                                }
+                                            await emit_completion(
+                                                event_emitter, {"usage": usage}
                                             )
                                         continue
 
@@ -1959,12 +1918,7 @@ async def process_chat_response(
                                                 ),
                                             }
 
-                                await event_emitter(
-                                    {
-                                        "type": "chat:completion",
-                                        "data": data,
-                                    }
-                                )
+                                await emit_completion(event_emitter, data)
                         except Exception as e:
                             done = "data: [DONE]" in line
                             if done:
@@ -2014,14 +1968,7 @@ async def process_chat_response(
                         }
                     )
 
-                    await event_emitter(
-                        {
-                            "type": "chat:completion",
-                            "data": {
-                                "content": serialize_content_blocks(content_blocks),
-                            },
-                        }
-                    )
+                    await emit_content(event_emitter, content_blocks)
 
                     tools = metadata.get("tools", {})
 
@@ -2138,14 +2085,7 @@ async def process_chat_response(
                         }
                     )
 
-                    await event_emitter(
-                        {
-                            "type": "chat:completion",
-                            "data": {
-                                "content": serialize_content_blocks(content_blocks),
-                            },
-                        }
-                    )
+                    await emit_content(event_emitter, content_blocks)
 
                     try:
                         new_form_data = {
@@ -2181,14 +2121,7 @@ async def process_chat_response(
                         and retries < MAX_RETRIES
                     ):
 
-                        await event_emitter(
-                            {
-                                "type": "chat:completion",
-                                "data": {
-                                    "content": serialize_content_blocks(content_blocks),
-                                },
-                            }
-                        )
+                        await emit_content(event_emitter, content_blocks)
 
                         retries += 1
                         log.debug(f"Attempt count: {retries}")
@@ -2303,14 +2236,7 @@ async def process_chat_response(
                             }
                         )
 
-                        await event_emitter(
-                            {
-                                "type": "chat:completion",
-                                "data": {
-                                    "content": serialize_content_blocks(content_blocks),
-                                },
-                            }
-                        )
+                        await emit_content(event_emitter, content_blocks)
 
                         try:
                             new_form_data = {
@@ -2380,12 +2306,7 @@ async def process_chat_response(
                             },
                         )
 
-                await event_emitter(
-                    {
-                        "type": "chat:completion",
-                        "data": data,
-                    }
-                )
+                await emit_completion(event_emitter, data)
 
                 await background_tasks_handler()
             except asyncio.CancelledError:

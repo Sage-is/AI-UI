@@ -603,7 +603,7 @@ gauntlet: it_build sprig_smoke
 # place: it is the only member that judges what the migration CLAIMS — that a
 # server-rendered surface is lighter than the SvelteKit one it replaces — rather
 # than whether the code runs.
-gauntlet_full: pipefail_lint pipefail_fixture chat_path_structure reasoning_finalizer_fixture chat_response_oracle gauntlet sprig_durability sprig_signing ui_sprig_gate parity_gate e2e_both surface_budget
+gauntlet_full: pipefail_lint pipefail_fixture chat_path_structure sprig_capabilities_check reasoning_finalizer_fixture chat_response_oracle gauntlet sprig_durability sprig_signing ui_sprig_gate parity_gate e2e_both surface_budget
 
 ## it_build_amd64 — build an amd64 image via buildx + --load.
 ##
@@ -822,6 +822,57 @@ chat_path_structure_relocate:  ## Report where each chat-path fence moved to
 # Prove every detector fires on a sample built to trip it.
 chat_path_structure_teeth:  ## Prove the structure ratchet can fail
 	@python3 scripts/gates/chat-path-structure/measure.py --self-test
+
+# Markdown prose hygiene: authored .md must be one line per paragraph, no stray
+# unicode spaces. The checker is the machine-local ~/bin/mdprose, so this target
+# skips (does not fail) when it is absent — e.g. inside Docker or CI. To make it
+# a hard gate in gauntlet_full, vendor the script into scripts/gates/ first.
+md_prose:  ## Gate: authored markdown is normalized (skips if mdprose absent)
+	@if command -v mdprose >/dev/null 2>&1; then \
+		mdprose check . ; \
+	else \
+		echo "md_prose: mdprose not on PATH — skipped (install ~/bin/mdprose)" ; \
+	fi
+
+md_prose_fix:  ## Fold hard-wrapped paragraphs in authored markdown (writes files)
+	@mdprose fix .
+
+# The Sprig capability reference is emitted from the catalog and the three
+# dispatch fan-outs, never hand-written. Same host-only discipline as the
+# ratchet above: it parses source with ast and imports nothing, because
+# importing the supervisor pulls config.py, and config.py runs migrations.
+sprig_capabilities:  ## Rewrite docs/sprigs/capabilities.md from the code
+	@python3 scripts/gates/sprig-capabilities/generate.py
+
+# Gate: the reference still describes the code. Fails with a diff when a
+# capability is added, a dispatch changes what it writes, or a prune reset is
+# forgotten — the last of which is otherwise silent until a user hits it.
+sprig_capabilities_check:  ## Gate: capability reference matches the code
+	@python3 scripts/gates/sprig-capabilities/generate.py --check
+
+sprig_capabilities_teeth:  ## Prove the capability gate can fail
+	@python3 scripts/gates/sprig-capabilities/generate.py --self-test
+
+# Release-time only. The reference is generated and gated HERE, where it can see
+# the catalog it describes. The spec gets a FOLD, not a copy: a vocabulary view
+# spliced into v1.md's reserved-prefix section, listing which reservations ship,
+# which shipped names are unreserved, and which reservations are still empty.
+#
+# Deliberately not the whole reference. The spec states a contract; prune gaps
+# and config field names are implementation status and stay on this side. Both
+# halves of the comparison are derived — the reserved prefixes are read out of
+# v1.md itself — so adding a reservation there corrects the delta on the next
+# publish, with nothing to maintain by hand in either repo.
+SPRIG_SPEC_DIR ?= ../BONSAI/sprig-spec
+sprig_capabilities_publish:  ## Fold the capability vocabulary into the Sprig spec
+	@test -f "$(SPRIG_SPEC_DIR)/v1.md" || { \
+	  echo "sprig-capabilities: $(SPRIG_SPEC_DIR)/v1.md not found."; \
+	  echo "Set SPRIG_SPEC_DIR=<path> or check the spec repo out beside this one."; \
+	  exit 1; }
+	@python3 scripts/gates/sprig-capabilities/generate.py
+	@python3 scripts/gates/sprig-capabilities/generate.py --check
+	@python3 scripts/gates/sprig-capabilities/generate.py \
+	  --publish-spec "$(SPRIG_SPEC_DIR)/v1.md"
 
 # Gate: the chat path emits what it emitted yesterday.
 #
