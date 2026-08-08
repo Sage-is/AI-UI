@@ -392,7 +392,7 @@ export const executeToolServer = async (
 			Authorization: `Bearer ${token}`
 		};
 
-		let requestOptions: RequestInit = {
+		const requestOptions: RequestInit = {
 			method: httpMethod.toUpperCase(),
 			headers
 		};

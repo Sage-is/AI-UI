@@ -207,12 +207,56 @@ def _render_text(content, block, raw):
     return f"{content}{block['content'].strip()}\n"
 
 
+def _json_or_verbatim(value):
+    """Parse a JSON string, or hand back whatever came in.
+
+    Accumulated tool-call deltas hold arguments as a JSON string; the raw
+    renderer emits the object for legibility. An unparsable string — or a
+    value that is already parsed — stays verbatim.
+    """
+    try:
+        return json.loads(value)
+    except (json.JSONDecodeError, TypeError):
+        return value
+
+
+def _render_tool_calls_raw(content, block):
+    # Hermes-style tags — the format Qwen/Hermes tool templates train on, so
+    # the model reads its own call back in a shape it already knows. NOT the
+    # <details> UI form: feeding that back teaches the model to emit markup
+    # the UI renders as a trusted "Tool Executed" card. The pairing is
+    # positional (call, then its response), so no ids are emitted. See
+    # docs/decisions/2026-08-08-raw-tool-call-form.md.
+    results = block.get("results", [])
+    parts = []
+    for tool_call in block.get("content", []):
+        tool_call_id = tool_call.get("id", "")
+        tool_name = tool_call.get("function", {}).get("name", "")
+        arguments = _json_or_verbatim(
+            tool_call.get("function", {}).get("arguments", "")
+        )
+        call = json.dumps(
+            {"name": tool_name, "arguments": arguments}, ensure_ascii=False
+        )
+        parts.append(f"<tool_call>\n{call}\n</tool_call>")
+        result = next(
+            (r for r in results if r.get("tool_call_id", "") == tool_call_id),
+            None,
+        )
+        # Same discipline as the display arm: first match wins, and falsy
+        # content means the call is still pending — no response tag.
+        if result and result.get("content"):
+            parts.append(f"<tool_response>\n{result['content']}\n</tool_response>")
+    body = "\n".join(parts)
+    return f"{content}\n{body}\n"
+
+
 def _render_tool_calls(content, block, raw):
+    if raw:
+        return _render_tool_calls_raw(content, block)
+
     # Both arms of the old if/else emitted the same string when no result matched, so
     # an empty `results` list needs no branch of its own.
-    if raw:
-        return content
-
     results = block.get("results", [])
     display = ""
     for tool_call in block.get("content", []):

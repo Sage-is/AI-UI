@@ -8,17 +8,18 @@ so the single `raw=True` call site (the code-interpreter continuation) never
 runs — the entire raw axis is dark. This fixture is the only cover either
 region has ever had.
 
-It also pins two behaviours a tidy-up would silently change, and one bug:
+It also pins behaviours a tidy-up would silently change:
 
   • Duplicate `tool_call_id` in results: the FIRST match wins (linear scan
     with break). A dict-keyed lookup would keep the last.
   • A result whose content is falsy ("" or None) renders as "Executing..." —
-    the guard is truthiness, not `is not None`.
-  • Under raw=True a tool_calls block renders as NOTHING — `_render_tool_calls`
-    returns the accumulator untouched before building anything (historically:
-    both arms guarded their append with `if not raw:`). This is the raw
-    tool-call hole in the bug ledger. The golden freezes the hole ON PURPOSE:
-    it goes red the day the fix lands, which is how we know the fix worked.
+    the guard is truthiness, not `is not None`. The raw arm mirrors it: falsy
+    content emits no <tool_response>.
+  • Under raw=True a tool_calls block emits Hermes-style tags — <tool_call>
+    wrapping {"name", "arguments"} JSON, <tool_response> wrapping the result
+    content verbatim, paired positionally with no ids. This CLOSED the raw
+    tool-call hole (fixed 2026-08-08; the golden froze the hole until then).
+    See docs/decisions/2026-08-08-raw-tool-call-form.md.
   • An unrecognised block type — even an unhashable one — renders via the
     fallback branch, never raises.
 

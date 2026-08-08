@@ -22,7 +22,7 @@ self.onmessage = async (event: MessageEvent) => {
 		try {
 			tts = await KokoroTTS.from_pretrained(model_id, {
 				dtype,
-				device: !!(navigator as any)?.gpu ? 'webgpu' : 'wasm' // Detect WebGPU
+				device: (navigator as any)?.gpu ? 'webgpu' : 'wasm' // Detect WebGPU
 			});
 			isInitialized = true; // Mark as initialized after successful loading
 			self.postMessage({ status: 'init:complete' });
