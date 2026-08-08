@@ -84,15 +84,27 @@ def invalidate_base_models_cache(request) -> None:
     or what they serve, has to clear it here or the model list stays stale until
     the process restarts. Custom models do NOT need this: they are merged fresh
     on every call, on top of the cached base list.
+
+    None, not []. See the guard below.
     """
-    request.app.state.BASE_MODELS = []
+    request.app.state.BASE_MODELS = None
 
 
 async def get_all_models(request, refresh: bool = False, user: UserModel = None):
+    # `is not None`, because [] is a legitimate answer: it means every provider
+    # was probed and none of them offered a model. Treating that as "not cached
+    # yet" re-probes on EVERY request, and an unreachable provider answers with
+    # nothing only after a full connection timeout — so the one case that makes
+    # the request slow was the one case the cache could never hold. Measured at
+    # 880ms-10.4s per call against a dead endpoint, 5ms against a live one.
+    #
+    # app.state.MODELS used to be in this guard. It never belonged: it is a
+    # lookup index built at the END of this function, and the empty path returns
+    # before that, so it stayed falsy forever. That was the bug, not the symptom.
     if (
-        request.app.state.MODELS
-        and request.app.state.BASE_MODELS
-        and (request.app.state.config.ENABLE_BASE_MODELS_CACHE and not refresh)
+        request.app.state.BASE_MODELS is not None
+        and request.app.state.config.ENABLE_BASE_MODELS_CACHE
+        and not refresh
     ):
         base_models = request.app.state.BASE_MODELS
     else:

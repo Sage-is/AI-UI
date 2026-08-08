@@ -133,9 +133,6 @@ from sage_is_ai.config import (
     OLLAMA_API_CONFIGS,
     # OpenAI
     ENABLE_OPENAI_API,
-    ONEDRIVE_CLIENT_ID,
-    ONEDRIVE_SHAREPOINT_URL,
-    ONEDRIVE_SHAREPOINT_TENANT_ID,
     OPENAI_API_BASE_URLS,
     OPENAI_API_KEYS,
     OPENAI_API_CONFIGS,
@@ -884,7 +881,10 @@ app.state.config.ENABLE_DIRECT_CONNECTIONS = ENABLE_DIRECT_CONNECTIONS
 ########################################
 
 app.state.config.ENABLE_BASE_MODELS_CACHE = ENABLE_BASE_MODELS_CACHE
-app.state.BASE_MODELS = []
+# None = never fetched. [] = fetched, and every provider offered nothing. The two
+# are not the same, and conflating them made the cache unable to hold the only
+# result worth holding. See get_all_models() in utils/models.py.
+app.state.BASE_MODELS = None
 
 ########################################
 #
@@ -2125,7 +2125,7 @@ async def get_app_version():
 async def get_app_latest_release_version(user=Depends(get_verified_user)):
     if not ENABLE_VERSION_UPDATE_CHECK:
         log.debug(
-            f"Version update check is disabled, returning current version as latest version"
+            "Version update check is disabled, returning current version as latest version"
         )
         return {"current": VERSION, "latest": VERSION}
     try:

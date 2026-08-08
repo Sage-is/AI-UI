@@ -72,11 +72,24 @@
 		saveAs(blob, `models-export-${Date.now()}.json`);
 	};
 
-	const init = async () => {
-		models = null;
+	// `blank` nulls the list, and the whole panel sits inside `{#if models !==
+	// null}` — so blanking unmounts everything, including whatever control was
+	// just clicked, and swaps in a page-level spinner. Right on first load, wrong
+	// for a refresh: there the list should stay put and only the button should
+	// show progress. Caught by models-refresh.cy.ts, which could never observe a
+	// disabled button because the button was not on the page while it was
+	// disabled.
+	const init = async (blank = true) => {
+		if (blank) {
+			models = null;
+		}
 
 		workshopModels = await getBaseModels(localStorage.token);
-		baseModels = await getModels(localStorage.token, null, true);
+		// getModels is (connections, base, refresh) — no token parameter. Passing
+		// localStorage.token as arg 1 makes `connections` a string, which is
+		// harmless here only because `for (const idx in undefined)` iterates
+		// nothing. 33 call sites still do it; see the ledger.
+		baseModels = await getModels(null, false, true);
 
 		models = baseModels.map((m) => {
 			const workshopModel = workshopModels.find((wm) => wm.id === m.id);
@@ -96,6 +109,33 @@
 				};
 			}
 		});
+	};
+
+	// Re-probe every provider and rebuild the base-model list.
+	//
+	// Why it exists: the backend holds BASE_MODELS with no TTL, so a provider
+	// that was down when the list was built stays invisible until something
+	// invalidates the cache. Changing a connection does that; a provider quietly
+	// coming back does not. This is the control for that case.
+	//
+	// NO-BUILD NOTE — where this goes when the page is strangled. It does not
+	// become JavaScript. It becomes ONE attribute on a server-rendered button:
+	//
+	//   <button hx-post="/pages/admin/models/refresh" hx-target="#models-panel">
+	//
+	// That is the idiom pages/sprigs_panel.py already uses — the panel holds no
+	// state, a mutation returns the WHOLE panel, and htmx swaps it. htmx 2.0.4 is
+	// vendored at pages/assets/vendor/htmx.min.js and already loaded on
+	// /admin/sprigs, /admin/branding and /admin/diagnostics. This page is not in
+	// the no-build set yet, which is the only reason the logic below exists.
+	// Delete this handler and the `refreshing` flag when it is.
+	let refreshing = false;
+
+	const refreshModelsHandler = async () => {
+		refreshing = true;
+		await init(false);
+		refreshing = false;
+		toast.success($i18n.t('Refresh'));
 	};
 
 	const upsertModelHandler = async (model) => {
@@ -261,6 +301,24 @@
 				</div>
 
 				<div style="--d:flex; --ai:center; --g:0.4rem">
+					<!-- Becomes an hx-post on the no-build models panel. See
+					     refreshModelsHandler in the script block. -->
+					<Tooltip content={$i18n.t('Refresh')}>
+						<button
+							data-cy="models-refresh"
+							style="--p:0.2rem; --radius:9999px; --d:flex; --g:0.2rem; --ai:center"
+							type="button"
+							disabled={refreshing}
+							on:click={refreshModelsHandler}
+						>
+							{#if refreshing}
+								<Spinner className="size-4" />
+							{:else}
+								<Icon name="arrow-path" />
+							{/if}
+						</button>
+					</Tooltip>
+
 					<Tooltip content={$i18n.t('Manage Models')}>
 						<button
 							style="--p:0.2rem; --radius:9999px; --d:flex; --g:0.2rem; --ai:center"
@@ -350,7 +408,7 @@
 	class="{(model?.is_active ?? true) ? '' : 'text-gray-500'}">
 								<Tooltip
 									content={marked.parse(
-										!!model?.meta?.description
+										model?.meta?.description
 											? model?.meta?.description
 											: model?.ollama?.digest
 												? `${model?.ollama?.digest} **(${model?.ollama?.modified_at})**`
@@ -363,7 +421,7 @@
 								</Tooltip>
 								<div style="--size:0.6rem; --of:hidden; text-overflow:ellipsis; --line-clamp:1; --c:var(--color-gray-500)">
 									<span style="--line-clamp:1">
-										{!!model?.meta?.description
+										{model?.meta?.description
 											? model?.meta?.description
 											: model?.ollama?.digest
 												? `${model.id} (${model?.ollama?.digest})`
