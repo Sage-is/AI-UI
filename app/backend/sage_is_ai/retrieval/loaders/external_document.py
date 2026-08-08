@@ -1,5 +1,6 @@
 import requests
-import logging, os
+import logging
+import os
 from typing import Iterator, List, Union
 
 from langchain_core.document_loaders import BaseLoader
@@ -38,7 +39,7 @@ class ExternalDocumentLoader(BaseLoader):
 
         try:
             headers["X-Filename"] = os.path.basename(self.file_path)
-        except:
+        except:  # noqa: E722
             pass
 
         url = self.url
@@ -46,7 +47,9 @@ class ExternalDocumentLoader(BaseLoader):
             url = url[:-1]
 
         try:
-            response = requests.put(f"{url}/process", data=data, headers=headers)
+            response = requests.put(
+                f"{url}/process", data=data, headers=headers, timeout=120
+            )
         except Exception as e:
             log.error(f"Error connecting to endpoint: {e}")
             raise Exception(f"Error connecting to endpoint: {e}")

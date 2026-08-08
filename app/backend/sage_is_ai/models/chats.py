@@ -756,7 +756,7 @@ class ChatTable:
             # SQLite JSON1 querying for tags within the meta JSON field
             query = query.filter(
                 text(
-                    f"EXISTS (SELECT 1 FROM json_each(Chat.meta, '$.tags') WHERE json_each.value = :tag_id)"
+                    "EXISTS (SELECT 1 FROM json_each(Chat.meta, '$.tags') WHERE json_each.value = :tag_id)"
                 )
             ).params(tag_id=tag_id)
 
@@ -797,7 +797,7 @@ class ChatTable:
             # SQLite JSON1 support for querying the tags inside the `meta` JSON field
             query = query.filter(
                 text(
-                    f"EXISTS (SELECT 1 FROM json_each(Chat.meta, '$.tags') WHERE json_each.value = :tag_id)"
+                    "EXISTS (SELECT 1 FROM json_each(Chat.meta, '$.tags') WHERE json_each.value = :tag_id)"
                 )
             ).params(tag_id=tag_id)
 

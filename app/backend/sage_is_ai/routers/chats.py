@@ -551,7 +551,7 @@ async def send_chat_message_event_by_id(
         else:
             return False
         return True
-    except:
+    except:  # noqa: E722
         return False
 
 
@@ -766,7 +766,7 @@ async def delete_shared_chat_by_id(id: str, user=Depends(get_verified_user)):
         result = Chats.delete_shared_chat_by_chat_id(id)
         update_result = Chats.update_chat_share_id_by_id(id, None)
 
-        return result and update_result != None
+        return result and update_result != None  # noqa: E711
     else:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

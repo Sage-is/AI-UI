@@ -2,7 +2,7 @@ import logging
 from contextvars import ContextVar
 
 from sage_is_ai.env import SRC_LOG_LEVELS
-from peewee import *
+from peewee import *  # noqa: F403
 from peewee import InterfaceError as PeeWeeInterfaceError
 from playhouse.db_url import connect
 from playhouse.shortcuts import ReconnectMixin
@@ -35,7 +35,7 @@ class CustomReconnectMixin(ReconnectMixin):
 
 def register_connection(db_url):
     db = connect(db_url, unquote_user=True, unquote_password=True)
-    if isinstance(db, SqliteDatabase):
+    if isinstance(db, SqliteDatabase):  # noqa: F405
         db.autoconnect = True
         db.reuse_if_open = True
         log.info("Connected to SQLite database")

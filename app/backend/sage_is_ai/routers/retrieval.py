@@ -1436,7 +1436,7 @@ async def process_file(
             try:
                 # /files/{file_id}/data/content/update
                 factory.VECTOR_DB_CLIENT.delete_collection(collection_name=f"file-{file.id}")
-            except:
+            except:  # noqa: E722
                 # Audio file upload pipeline
                 pass
 

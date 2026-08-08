@@ -314,7 +314,7 @@ async def claim_account(
 ############################
 @router.post("/ldap", response_model=SessionUserResponse)
 async def ldap_auth(request: Request, response: Response, form_data: LdapForm):
-    ENABLE_LDAP = request.app.state.config.ENABLE_LDAP
+    ENABLE_LDAP = request.app.state.config.ENABLE_LDAP  # noqa: F811
     LDAP_SERVER_LABEL = request.app.state.config.LDAP_SERVER_LABEL
     LDAP_SERVER_HOST = request.app.state.config.LDAP_SERVER_HOST
     LDAP_SERVER_PORT = request.app.state.config.LDAP_SERVER_PORT
@@ -621,7 +621,7 @@ async def signin(request: Request, response: Response, form_data: SigninForm):
             if group_names:
                 Groups.sync_groups_by_group_names(user.id, group_names)
 
-    elif WEBUI_AUTH == False:
+    elif WEBUI_AUTH == False:  # noqa: E712
         admin_email = "admin@localhost"
         admin_password = "admin"
 

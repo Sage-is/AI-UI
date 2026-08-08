@@ -76,7 +76,6 @@ SPEECH_CACHE_DIR.mkdir(parents=True, exist_ok=True)
 #
 ##########################################
 
-from pydub import AudioSegment
 from pydub.utils import mediainfo
 
 
@@ -398,7 +397,7 @@ async def speech(request: Request, user=Depends(get_verified_user)):
             detail = None
 
             status_code = 500
-            detail = f"Sage.is AI: Server Connection Error"
+            detail = "Sage.is AI: Server Connection Error"
 
             if r is not None:
                 status_code = r.status
