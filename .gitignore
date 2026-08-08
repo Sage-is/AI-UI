@@ -28,6 +28,7 @@
 # (.claude/ is already denied by the `.*` rule at the top of this file.)
 /docs/decisions/
 /charts/
+/scripts/gates/*/baseline.json
 
 node_modules
 /app/.svelte-kit
@@ -40,8 +41,8 @@ __pycache__/
 
 # complexipy drops this beside the cwd when run by hand. The gate writes it to a
 # temp directory instead — the baseline it ratchets against is
-# scripts/gates/cognitive-complexity/baseline.json, which IS tracked. Two
-# snapshots disagreeing about the same tree is worse than one.
+# scripts/gates/cognitive-complexity/baseline.json, kept outside git like the
+# other gate baselines (see the block above).
 # (.complexipy_cache/ and .ruff_cache/ are already denied by the `.*` rule above.)
 complexipy-snapshot.json
 complexipy-results.json

@@ -13,16 +13,30 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/decisions/Rs_list.md",
+                "file": "charts/central-intelligence/TODO.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Rs_list"
+              "title": "TODO"
             }
           },
           {
-            "id": "9fdb839e5cc4a926",
+            "id": "b31bea7a3c6236df",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "charts/friday-demo/TODO.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "TODO"
+            }
+          },
+          {
+            "id": "f3f8749adee1c0ab",
             "type": "leaf",
             "state": {
               "type": "empty",
@@ -51,7 +65,9 @@
               "type": "file-explorer",
               "state": {
                 "sortOrder": "alphabetical",
-                "autoReveal": false
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
               },
               "icon": "lucide-folder-closed",
               "title": "Files"
@@ -179,51 +195,53 @@
   },
   "active": "efc1d269b4782aff",
   "lastOpenFiles": [
+    "scripts/gates/cognitive-complexity/baseline.json",
+    "scripts/gates/chat-path-structure/baseline.json",
+    "docs/decisions/2026-08-08-raw-tool-call-form.md",
+    "docs/decisions/2026-08-08-chat-path-weight-passes.md",
+    "scripts/smoke/tool-call-accumulator-fixture.py",
+    "scripts/smoke/fixtures/serialize-blocks/cases.golden.json",
+    "scripts/smoke/fixtures/serialize-blocks",
+    "scripts/smoke/serialize-blocks-fixture.py",
+    "docs/decisions/2026-08-08-central-intelligence-telegram-toggle.md",
+    "docs/decisions/Ss_list.md",
+    "charts/central-intelligence/TODO.md",
+    "docs/decisions/2026-08-08-central-intelligence-agent-write-path.md",
+    "charts/central-intelligence",
+    "charts/friday-demo/TODO.md",
+    "charts/friday-demo/friday-demo.canvas",
+    "docs/decisions/Rs_list original.md",
+    "docs/decisions/Rs_list.md",
+    "charts/friday-demo/friday-demo copy.canvas",
+    "docs/decisions/Rs_list copy.md",
+    "docs/decisions/2026-08-07-base-models-cache.md",
     "docs/decisions/2026-08-06-chat-path-tighten.md",
+    "app/cypress/screenshots/workshop-agents.cy.ts/Workshop Agents -- offers the row menu, with every action it carries today (failed).png",
+    "TODO.md",
+    "app/cypress/screenshots/workshop-agents.cy.ts/Workshop Agents -- offers the row menu, with every action it carries today (failed) (attempt 2).png",
+    "app/cypress/screenshots/workshop-prompts.cy.ts/Workshop Prompts -- deleting a prompt removes it ON THE SERVER (failed) (attempt 2).png",
+    "app/cypress/screenshots/workshop-prompts.cy.ts/Workshop Prompts -- offers the row menu, with every action it carries today (failed) (attempt 2).png",
+    "app/cypress/screenshots/workshop-prompts.cy.ts/Workshop Prompts -- offers the row menu, with every action it carries today (failed).png",
+    "app/cypress/screenshots/workshop-prompts.cy.ts/Workshop Prompts -- deleting a prompt removes it ON THE SERVER (failed).png",
+    "app/cypress/screenshots/workshop-prompts.cy.ts",
+    "app/cypress/screenshots/workshop-agents.cy.ts",
+    "app/cypress/e2e/models-refresh.cy.ts",
+    "app/cypress/videos/models-refresh.cy.ts-compressed.mp4",
+    "docs/decisions/2026-08-06-python-quality-gates.md",
     "charts/chat-path-restructure/TODO.md",
-    "scripts/gates/sprig-capabilities/generate.py",
-    "scripts/gates/sprig-capabilities",
     "docs/sprigs/capabilities.md",
-    "docs/sprigs",
     "docs/decisions/2026-08-05-aiml-responder-capability-slot.md",
     "docs/decisions/2026-08-05-aiml-responder-aiml-question.md",
     "charts/aiml-responder/TODO.md",
-    "charts/aiml-responder",
     "docs/decisions/2026-08-05-chat-path-restructure-payload-cover.md",
     "docs/decisions/2026-08-05-chat-path-restructure-oracle-blind-spots.md",
     "docs/decisions/2026-08-05-chat-path-restructure-comment-census.md",
     "docs/decisions/2026-08-05-chat-path-restructure-import-seam.md",
-    "charts/chat-path-restructure",
     "docs/decisions/README.md",
-    "scripts/smoke/fixtures/chat-response/background-tasks.golden.json",
-    "scripts/smoke/fixtures/chat-response/non-streaming.golden.json",
-    "scripts/smoke/fixtures/chat-response/cancelled-mid-stream.golden.json",
     "docs/decisions/2026-08-05-chat-path-oracle-coverage.md",
-    "scripts/smoke/fixtures/chat-response/cancelled-mid-stream.sse",
-    "docs/decisions/2026-08-04-chat-path-feature-census.md",
-    "charts/friday-demo/TODO.md",
-    "docs/decisions/Rs_list.md",
-    "scripts/gates/chat-path-structure/run-gate.sh",
-    "docs/decisions/2026-08-04-chat-path-structure-ratchet.md",
-    "Rs_list.md",
-    "docs/decisions/2026-08-04-chat-path-behaviour-oracle.md",
-    "docs/elevator-pitch.md",
-    "docs/development-workflow.md",
-    "docs/contributing.md",
-    "docs/API_REFACTORING_PLAN.md",
-    "docs/apache.md",
-    "docs/prompts/Sage_x.7.md",
-    "docs/prompts/Guide.md",
-    "API/examples.md",
     "app/static/user.png",
     "app/static/icons/user.png",
     "app/static/static/web-app-manifest-512x512.png",
-    "app/static/static/web-app-manifest-192x192.png",
-    "app/static/static/splash-dark.png",
-    "app/static/static/favicon.svg",
-    "app/static/static/favicon-dark.png",
-    "app/static/static/favicon-96x96.png",
-    "app/static/static/apple-touch-icon.png",
-    "app/static/logo.png"
+    "app/static/static/web-app-manifest-192x192.png"
   ]
 }
