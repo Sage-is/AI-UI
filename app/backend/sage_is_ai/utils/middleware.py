@@ -42,6 +42,7 @@ from sage_is_ai.routers.images import (
 from sage_is_ai.routers.pipelines import process_pipeline_inlet_filter
 from sage_is_ai.routers.memories import query_memory, QueryMemoryForm
 
+from sage_is_ai.utils.payload import merge_custom_params
 from sage_is_ai.utils.webhook import post_webhook
 
 
@@ -53,12 +54,12 @@ from sage_is_ai.retrieval.utils import get_sources_from_items
 
 from sage_is_ai.utils.chat import generate_chat_completion
 from sage_is_ai.utils.task import (
-    get_task_model_id,
+    resolve_task_model_id,
     rag_template,
     tools_function_calling_generation_template,
 )
 from sage_is_ai.utils.misc import (
-    deep_update,
+    get_available_models,
     get_message_list,
     add_or_update_system_message,
     add_or_update_user_message,
@@ -175,106 +176,119 @@ def is_opening_code_block(content):
     return len(backtick_segments) > 1 and len(backtick_segments) % 2 == 0
 
 
+def slice_json_object(text):
+    """text[first '{' : last '}' + 1] — the historical JSON scrape, verbatim.
+
+    Extracted from six duplicated call sites; quirks preserved on purpose,
+    including the -1 slice when no '{' is present. It merges neighbouring
+    objects and trusts the model not to restate the format — the ledger bug
+    names the real fix (response_format on the task calls). This helper only
+    removes the duplication.
+    """
+    return text[text.find("{") : text.rfind("}") + 1]
+
+
+def _tool_call_details(tool_call, result):
+    """One <details> element for a single tool call. `result` may be None."""
+    tool_call_id = tool_call.get("id", "")
+    tool_name = tool_call.get("function", {}).get("name", "")
+    tool_arguments = tool_call.get("function", {}).get("arguments", "")
+
+    # Truthiness, not `is not None`: a result with empty content renders as Executing...
+    tool_result = result.get("content", None) if result else None
+    tool_result_files = result.get("files", None) if result else None
+
+    if tool_result:
+        return f'\n<details type="tool_calls" done="true" id="{tool_call_id}" name="{tool_name}" arguments="{html.escape(json.dumps(tool_arguments))}" result="{html.escape(json.dumps(tool_result, ensure_ascii=False))}" files="{html.escape(json.dumps(tool_result_files)) if tool_result_files else ""}">\n<summary>Tool Executed</summary>\n</details>\n'
+    return f'\n<details type="tool_calls" done="false" id="{tool_call_id}" name="{tool_name}" arguments="{html.escape(json.dumps(tool_arguments))}">\n<summary>Executing...</summary>\n</details>'
+
+
+def _render_text(content, block, raw):
+    return f"{content}{block['content'].strip()}\n"
+
+
+def _render_tool_calls(content, block, raw):
+    # Both arms of the old if/else emitted the same string when no result matched, so
+    # an empty `results` list needs no branch of its own.
+    if raw:
+        return content
+
+    results = block.get("results", [])
+    display = ""
+    for tool_call in block.get("content", []):
+        tool_call_id = tool_call.get("id", "")
+        # Linear scan semantics: the FIRST match wins. A dict would keep the last.
+        result = next(
+            (r for r in results if r.get("tool_call_id", "") == tool_call_id), None
+        )
+        display = f"{display}{_tool_call_details(tool_call, result)}"
+
+    return f"{content}\n{display}\n\n"
+
+
+def _render_reasoning(content, block, raw):
+    if raw:
+        return f'{content}\n{block["start_tag"]}{block["content"]}{block["end_tag"]}\n'
+
+    body = "\n".join(
+        (f"> {line}" if not line.startswith(">") else line)
+        for line in block["content"].splitlines()
+    )
+    duration = block.get("duration", None)
+    if duration is not None:
+        return f'{content}\n<details type="reasoning" done="true" duration="{duration}">\n<summary>Thought for {duration} seconds</summary>\n{body}\n</details>\n'
+    return f'{content}\n<details type="reasoning" done="false">\n<summary>Thinking\u2026</summary>\n{body}\n</details>\n'
+
+
+def _render_code_interpreter(content, block, raw):
+    lang = block.get("attributes", {}).get("lang", "")
+    output = block.get("output", None)
+
+    content_stripped, original_whitespace = split_content_and_whitespace(content)
+    if is_opening_code_block(content_stripped):
+        # Remove trailing backticks that would open a new block
+        content = content_stripped.rstrip("`").rstrip() + original_whitespace
+    else:
+        # Keep content as is - either closing backticks or no backticks
+        content = content_stripped + original_whitespace
+
+    code = block["content"]
+    if output:
+        output = html.escape(json.dumps(output))
+        if raw:
+            return f'{content}\n<code_interpreter type="code" lang="{lang}">\n{code}\n</code_interpreter>\n```output\n{output}\n```\n'
+        return f'{content}\n<details type="code_interpreter" done="true" output="{output}">\n<summary>Analyzed</summary>\n```{lang}\n{code}\n```\n</details>\n'
+    if raw:
+        return f'{content}\n<code_interpreter type="code" lang="{lang}">\n{code}\n</code_interpreter>\n'
+    return f'{content}\n<details type="code_interpreter" done="false">\n<summary>Analyzing...</summary>\n```{lang}\n{code}\n```\n</details>\n'
+
+
+def _render_fallback(content, block, raw):
+    return f"{content}{block['type']}: {str(block['content']).strip()}\n"
+
+
+BLOCK_RENDERERS = {
+    "text": _render_text,
+    "tool_calls": _render_tool_calls,
+    "reasoning": _render_reasoning,
+    "code_interpreter": _render_code_interpreter,
+}
+
+
 def serialize_content_blocks(content_blocks, raw=False):
     content = ""
-
     for block in content_blocks:
-        if block["type"] == "text":
-            content = f"{content}{block['content'].strip()}\n"
-        elif block["type"] == "tool_calls":
-            attributes = block.get("attributes", {})
-
-            tool_calls = block.get("content", [])
-            results = block.get("results", [])
-
-            if results:
-
-                tool_calls_display_content = ""
-                for tool_call in tool_calls:
-
-                    tool_call_id = tool_call.get("id", "")
-                    tool_name = tool_call.get("function", {}).get("name", "")
-                    tool_arguments = tool_call.get("function", {}).get("arguments", "")
-
-                    tool_result = None
-                    tool_result_files = None
-                    for result in results:
-                        if tool_call_id == result.get("tool_call_id", ""):
-                            tool_result = result.get("content", None)
-                            tool_result_files = result.get("files", None)
-                            break
-
-                    if tool_result:
-                        tool_calls_display_content = f'{tool_calls_display_content}\n<details type="tool_calls" done="true" id="{tool_call_id}" name="{tool_name}" arguments="{html.escape(json.dumps(tool_arguments))}" result="{html.escape(json.dumps(tool_result, ensure_ascii=False))}" files="{html.escape(json.dumps(tool_result_files)) if tool_result_files else ""}">\n<summary>Tool Executed</summary>\n</details>\n'
-                    else:
-                        tool_calls_display_content = f'{tool_calls_display_content}\n<details type="tool_calls" done="false" id="{tool_call_id}" name="{tool_name}" arguments="{html.escape(json.dumps(tool_arguments))}">\n<summary>Executing...</summary>\n</details>'
-
-                if not raw:
-                    content = f"{content}\n{tool_calls_display_content}\n\n"
-            else:
-                tool_calls_display_content = ""
-
-                for tool_call in tool_calls:
-                    tool_call_id = tool_call.get("id", "")
-                    tool_name = tool_call.get("function", {}).get("name", "")
-                    tool_arguments = tool_call.get("function", {}).get("arguments", "")
-
-                    tool_calls_display_content = f'{tool_calls_display_content}\n<details type="tool_calls" done="false" id="{tool_call_id}" name="{tool_name}" arguments="{html.escape(json.dumps(tool_arguments))}">\n<summary>Executing...</summary>\n</details>'
-
-                if not raw:
-                    content = f"{content}\n{tool_calls_display_content}\n\n"
-
-        elif block["type"] == "reasoning":
-            reasoning_display_content = "\n".join(
-                (f"> {line}" if not line.startswith(">") else line)
-                for line in block["content"].splitlines()
-            )
-
-            reasoning_duration = block.get("duration", None)
-
-            if reasoning_duration is not None:
-                if raw:
-                    content = f'{content}\n{block["start_tag"]}{block["content"]}{block["end_tag"]}\n'
-                else:
-                    content = f'{content}\n<details type="reasoning" done="true" duration="{reasoning_duration}">\n<summary>Thought for {reasoning_duration} seconds</summary>\n{reasoning_display_content}\n</details>\n'
-            else:
-                if raw:
-                    content = f'{content}\n{block["start_tag"]}{block["content"]}{block["end_tag"]}\n'
-                else:
-                    content = f'{content}\n<details type="reasoning" done="false">\n<summary>Thinking…</summary>\n{reasoning_display_content}\n</details>\n'
-
-        elif block["type"] == "code_interpreter":
-            attributes = block.get("attributes", {})
-            output = block.get("output", None)
-            lang = attributes.get("lang", "")
-
-            content_stripped, original_whitespace = split_content_and_whitespace(
-                content
-            )
-            if is_opening_code_block(content_stripped):
-                # Remove trailing backticks that would open a new block
-                content = content_stripped.rstrip("`").rstrip() + original_whitespace
-            else:
-                # Keep content as is - either closing backticks or no backticks
-                content = content_stripped + original_whitespace
-
-            if output:
-                output = html.escape(json.dumps(output))
-
-                if raw:
-                    content = f'{content}\n<code_interpreter type="code" lang="{lang}">\n{block["content"]}\n</code_interpreter>\n```output\n{output}\n```\n'
-                else:
-                    content = f'{content}\n<details type="code_interpreter" done="true" output="{output}">\n<summary>Analyzed</summary>\n```{lang}\n{block["content"]}\n```\n</details>\n'
-            else:
-                if raw:
-                    content = f'{content}\n<code_interpreter type="code" lang="{lang}">\n{block["content"]}\n</code_interpreter>\n'
-                else:
-                    content = f'{content}\n<details type="code_interpreter" done="false">\n<summary>Analyzing...</summary>\n```{lang}\n{block["content"]}\n```\n</details>\n'
-
-        else:
-            block_content = str(block["content"]).strip()
-            content = f"{content}{block['type']}: {block_content}\n"
-
+        # isinstance guard: the old if/elif chain routed ANY unrecognised type —
+        # including unhashable ones — to the fallback. dict.get alone would raise
+        # TypeError on an unhashable key, and plugins can hand this helper
+        # arbitrary blocks.
+        block_type = block["type"]
+        render = (
+            BLOCK_RENDERERS.get(block_type, _render_fallback)
+            if isinstance(block_type, str)
+            else _render_fallback
+        )
+        content = render(content, block, raw)
     return content.strip()
 
 
@@ -400,7 +414,11 @@ def tag_content_handler(content_type, tags, content, content_blocks):
             end_flag = True
 
             block_content = content_blocks[-1]["content"]
-            # Strip start and end tags from the content
+            # Strip start and end tags from the content. NOT dead code: with a
+            # bracketed start_tag this builds e.g. `<<think>(.*?)>`, which never
+            # matches the tag itself but DOES eat any literal `<<think>…>` span
+            # inside the body — silently deleting text. Frozen bug, see the
+            # ledger; proven live by the 2026-08-08 verify pass.
             start_tag_pattern = rf"<{re.escape(start_tag)}(.*?)>"
             block_content = re.sub(start_tag_pattern, "", block_content).strip()
 
@@ -422,42 +440,26 @@ def tag_content_handler(content_type, tags, content, content_blocks):
                     content_blocks[-1]["ended_at"] - content_blocks[-1]["started_at"]
                 )
 
-                # Reset the content_blocks by appending a new text block
+                # Reset the content_blocks by appending a new text block.
+                # `leftover_content` is already "" when nothing followed the tag.
                 if content_type != "code_interpreter":
-                    if leftover_content:
-
-                        content_blocks.append(
-                            {
-                                "type": "text",
-                                "content": leftover_content,
-                            }
-                        )
-                    else:
-                        content_blocks.append(
-                            {
-                                "type": "text",
-                                "content": "",
-                            }
-                        )
-
-            else:
-                # Remove the block if content is empty
-                content_blocks.pop()
-
-                if leftover_content:
                     content_blocks.append(
                         {
                             "type": "text",
                             "content": leftover_content,
                         }
                     )
-                else:
-                    content_blocks.append(
-                        {
-                            "type": "text",
-                            "content": "",
-                        }
-                    )
+
+            else:
+                # Remove the block if content is empty
+                content_blocks.pop()
+
+                content_blocks.append(
+                    {
+                        "type": "text",
+                        "content": leftover_content,
+                    }
+                )
 
             # Clean processed content
             start_tag_pattern = rf"{re.escape(start_tag)}"
@@ -482,8 +484,195 @@ def tag_content_handler(content_type, tags, content, content_blocks):
 # oracle pins the payload, so the only thing standardising them can change is
 # how much of this file is punctuation. The emitter is passed in rather than
 # captured — these are module level so a test can drive them with a stub.
+async def emit_event(event_emitter, event_type, data):
+    """One {type, data} socket envelope. Ten sites spelled the dict by hand."""
+    await event_emitter({"type": event_type, "data": data})
+
+
 async def emit_completion(event_emitter, data):
     await event_emitter({"type": "chat:completion", "data": data})
+
+
+async def execute_tool_call(
+    tool, tool_name, tool_function_params, event_caller, metadata, ensure_ascii
+):
+    """Filter params to the spec, dispatch direct or local, normalize the result.
+
+    Shared by the prompt-based path (chat_completion_tools_handler) and the
+    native streaming path. Returns (tool_result, tool_result_files,
+    filtered_params). The two callers historically disagreed on `ensure_ascii`
+    for the JSON dump — the difference is preserved as an argument, not
+    silently unified.
+    """
+    try:
+        spec = tool.get("spec", {})
+        allowed_params = spec.get("parameters", {}).get("properties", {}).keys()
+        tool_function_params = {
+            k: v for k, v in tool_function_params.items() if k in allowed_params
+        }
+
+        if tool.get("direct", False):
+            tool_result = await event_caller(
+                {
+                    "type": "execute:tool",
+                    "data": {
+                        "id": str(uuid4()),
+                        "name": tool_name,
+                        "params": tool_function_params,
+                        "server": tool.get("server", {}),
+                        "session_id": metadata.get("session_id", None),
+                    },
+                }
+            )
+        else:
+            tool_function = tool["callable"]
+            tool_result = await tool_function(**tool_function_params)
+
+    except Exception as e:
+        tool_result = str(e)
+
+    tool_result_files = []
+    if isinstance(tool_result, list):
+        for item in tool_result:
+            # check if string
+            if isinstance(item, str) and item.startswith("data:"):
+                tool_result_files.append(item)
+                tool_result.remove(item)
+
+    if isinstance(tool_result, dict) or isinstance(tool_result, list):
+        tool_result = json.dumps(tool_result, indent=2, ensure_ascii=ensure_ascii)
+
+    return tool_result, tool_result_files, tool_function_params
+
+
+def accumulate_tool_call_deltas(response_tool_calls, delta_tool_calls):
+    """Merge streamed tool-call deltas into the accumulator, in place.
+
+    A delta with a known `index` extends that call's name and arguments; an
+    unseen `index` starts a new call. NOTE: `setdefault` mutates the delta dict
+    itself, and that same object is appended to the accumulator — the parsed
+    chunk the reader receives under ENABLE_REALTIME_CHAT_SAVE shares it. Do not
+    "tidy" this with a copy.
+    """
+    for delta_tool_call in delta_tool_calls:
+        tool_call_index = delta_tool_call.get("index")
+
+        if tool_call_index is not None:
+            # Check if the tool call already exists
+            current_response_tool_call = None
+            for response_tool_call in response_tool_calls:
+                if response_tool_call.get("index") == tool_call_index:
+                    current_response_tool_call = response_tool_call
+                    break
+
+            if current_response_tool_call is None:
+                # Add the new tool call
+                delta_tool_call.setdefault("function", {})
+                delta_tool_call["function"].setdefault("name", "")
+                delta_tool_call["function"].setdefault("arguments", "")
+                response_tool_calls.append(delta_tool_call)
+            else:
+                # Update the existing tool call
+                delta_name = delta_tool_call.get("function", {}).get("name")
+                delta_arguments = delta_tool_call.get("function", {}).get("arguments")
+
+                if delta_name:
+                    current_response_tool_call["function"]["name"] += delta_name
+
+                if delta_arguments:
+                    current_response_tool_call["function"][
+                        "arguments"
+                    ] += delta_arguments
+
+
+def build_extra_params(request, model, metadata, user, event_emitter, event_call):
+    """The six keys every filter and tool invocation receives."""
+    return {
+        "__event_emitter__": event_emitter,
+        "__event_call__": event_call,
+        "__user__": user.model_dump() if isinstance(user, UserModel) else {},
+        "__metadata__": metadata,
+        "__request__": request,
+        "__model__": model,
+    }
+
+
+def get_filter_functions(request, model, metadata):
+    """The model's filter functions, in execution order."""
+    return [
+        Functions.get_function_by_id(filter_id)
+        for filter_id in get_sorted_filter_ids(
+            request, model, metadata.get("filter_ids", [])
+        )
+    ]
+
+
+def append_empty_text_block(content_blocks):
+    """Start a fresh text block so later deltas land after a closed block.
+
+    NOTE: two structurally identical pushes live INSIDE tag_content_handler and
+    must stay inline — scripts/smoke/reasoning-tag-fixture.py executes that
+    function standalone with only `re` and `time` in scope, so any new free
+    variable breaks it silently.
+    """
+    content_blocks.append(
+        {
+            "type": "text",
+            "content": "",
+        }
+    )
+
+
+def upload_b64_images_in_text(request, text, metadata, user):
+    """Replace each data:image/png;base64 line with an uploaded-image link."""
+    lines = text.split("\n")
+    for idx, line in enumerate(lines):
+        if "data:image/png;base64" in line:
+            image_url = ""
+            # Extract base64 image data from the line
+            image_data, content_type = load_b64_image_data(line)
+            if image_data is not None:
+                image_url = upload_image(
+                    request,
+                    image_data,
+                    content_type,
+                    metadata,
+                    user,
+                )
+            lines[idx] = f"![Output Image]({image_url})"
+    return "\n".join(lines)
+
+
+def persist_message(metadata, payload):
+    """Upsert `payload` onto this request's chat message. Ten sites spelled the
+    chat-id/message-id pair by hand; the pair travels in `metadata`."""
+    Chats.upsert_message_to_chat_by_id_and_message_id(
+        metadata["chat_id"],
+        metadata["message_id"],
+        payload,
+    )
+
+
+def notify_webhook_if_offline(request, user, metadata, title, content):
+    """Send a webhook notification if the user has no active session.
+
+    `content` is whatever the caller shows the user — the streaming path
+    deliberately passes the raw accumulator rather than the serialized blocks.
+    """
+    if not get_active_status_by_user_id(user.id):
+        webhook_url = Users.get_user_webhook_url_by_id(user.id)
+        if webhook_url:
+            post_webhook(
+                request.app.state.WEBUI_NAME,
+                webhook_url,
+                f"{title} - {request.app.state.config.WEBUI_URL}/c/{metadata['chat_id']}\n\n{content}",
+                {
+                    "action": "chat",
+                    "message": content,
+                    "title": title,
+                    "url": f"{request.app.state.config.WEBUI_URL}/c/{metadata['chat_id']}",
+                },
+            )
 
 
 async def emit_content(event_emitter, content_blocks):
@@ -494,8 +683,7 @@ async def emit_content(event_emitter, content_blocks):
 
 
 async def chat_completion_tools_handler(
-    request: Request, body: dict, extra_params: dict, user: UserModel, models, tools
-) -> tuple[dict, dict]:
+    request: Request, body: dict, extra_params: dict, user: UserModel, models, tools) -> tuple[dict, dict]:
     async def get_content_from_response(response) -> Optional[str]:
         content = None
         if hasattr(response, "body_iterator"):
@@ -532,12 +720,7 @@ async def chat_completion_tools_handler(
     event_caller = extra_params["__event_call__"]
     metadata = extra_params["__metadata__"]
 
-    task_model_id = get_task_model_id(
-        body["model"],
-        request.app.state.config.TASK_MODEL,
-        request.app.state.config.TASK_MODEL_EXTERNAL,
-        models,
-    )
+    task_model_id = resolve_task_model_id(request, body["model"], models)
 
     skip_files = False
     sources = []
@@ -567,7 +750,7 @@ async def chat_completion_tools_handler(
             return body, {}
 
         try:
-            content = content[content.find("{") : content.rfind("}") + 1]
+            content = slice_json_object(content)
             if not content:
                 raise Exception("No JSON object found in the response")
 
@@ -584,49 +767,14 @@ async def chat_completion_tools_handler(
 
                 tool_function_params = tool_call.get("parameters", {})
 
-                try:
-                    tool = tools[tool_function_name]
-
-                    spec = tool.get("spec", {})
-                    allowed_params = (
-                        spec.get("parameters", {}).get("properties", {}).keys()
-                    )
-                    tool_function_params = {
-                        k: v
-                        for k, v in tool_function_params.items()
-                        if k in allowed_params
-                    }
-
-                    if tool.get("direct", False):
-                        tool_result = await event_caller(
-                            {
-                                "type": "execute:tool",
-                                "data": {
-                                    "id": str(uuid4()),
-                                    "name": tool_function_name,
-                                    "params": tool_function_params,
-                                    "server": tool.get("server", {}),
-                                    "session_id": metadata.get("session_id", None),
-                                },
-                            }
-                        )
-                    else:
-                        tool_function = tool["callable"]
-                        tool_result = await tool_function(**tool_function_params)
-
-                except Exception as e:
-                    tool_result = str(e)
-
-                tool_result_files = []
-                if isinstance(tool_result, list):
-                    for item in tool_result:
-                        # check if string
-                        if isinstance(item, str) and item.startswith("data:"):
-                            tool_result_files.append(item)
-                            tool_result.remove(item)
-
-                if isinstance(tool_result, dict) or isinstance(tool_result, list):
-                    tool_result = json.dumps(tool_result, indent=2)
+                tool_result, _, tool_function_params = await execute_tool_call(
+                    tools[tool_function_name],
+                    tool_function_name,
+                    tool_function_params,
+                    event_caller,
+                    metadata,
+                    ensure_ascii=True,
+                )
 
                 if isinstance(tool_result, str):
                     tool = tools[tool_function_name]
@@ -732,11 +880,10 @@ async def chat_image_generation_handler(
     request: Request, form_data: dict, extra_params: dict, user
 ):
     __event_emitter__ = extra_params["__event_emitter__"]
-    await __event_emitter__(
-        {
-            "type": "status",
-            "data": {"description": "Generating an image", "done": False},
-        }
+    await emit_event(
+        __event_emitter__,
+        "status",
+        {"description": "Generating an image", "done": False},
     )
 
     messages = form_data["messages"]
@@ -759,13 +906,12 @@ async def chat_image_generation_handler(
             response = res["choices"][0]["message"]["content"]
 
             try:
-                bracket_start = response.find("{")
-                bracket_end = response.rfind("}") + 1
-
-                if bracket_start == -1 or bracket_end == -1:
+                # `rfind + 1` can never be -1, so only the missing-'{' half of
+                # the old guard was live.
+                if "{" not in response:
                     raise Exception("No JSON object found in the response")
 
-                response = response[bracket_start:bracket_end]
+                response = slice_json_object(response)
                 response = json.loads(response)
                 prompt = response.get("prompt", [])
             except Exception as e:
@@ -784,39 +930,36 @@ async def chat_image_generation_handler(
             user=user,
         )
 
-        await __event_emitter__(
-            {
-                "type": "status",
-                "data": {"description": "Generated an image", "done": True},
-            }
+        await emit_event(
+            __event_emitter__,
+            "status",
+            {"description": "Generated an image", "done": True},
         )
 
-        await __event_emitter__(
+        await emit_event(
+            __event_emitter__,
+            "files",
             {
-                "type": "files",
-                "data": {
-                    "files": [
-                        {
-                            "type": "image",
-                            "url": image["url"],
-                        }
-                        for image in images
-                    ]
-                },
-            }
+                "files": [
+                    {
+                        "type": "image",
+                        "url": image["url"],
+                    }
+                    for image in images
+                ]
+            },
         )
 
         system_message_content = "<context>User is shown the generated image, tell the user that the image has been generated</context>"
     except Exception as e:
         log.exception(e)
-        await __event_emitter__(
+        await emit_event(
+            __event_emitter__,
+            "status",
             {
-                "type": "status",
-                "data": {
-                    "description": f"An error occurred while generating an image",
-                    "done": True,
-                },
-            }
+                "description": "An error occurred while generating an image",
+                "done": True,
+            },
         )
 
         system_message_content = "<context>Unable to generate an image, tell the user that an error occurred</context>"
@@ -849,19 +992,19 @@ async def chat_completion_files_handler(
             queries_response = queries_response["choices"][0]["message"]["content"]
 
             try:
-                bracket_start = queries_response.find("{")
-                bracket_end = queries_response.rfind("}") + 1
-
-                if bracket_start == -1 or bracket_end == -1:
+                # Guard before the rebind: the fallback below wraps whatever
+                # this name holds — the ORIGINAL reply when no '{' exists, the
+                # sliced span when the parse itself fails.
+                if "{" not in queries_response:
                     raise Exception("No JSON object found in the response")
 
-                queries_response = queries_response[bracket_start:bracket_end]
+                queries_response = slice_json_object(queries_response)
                 queries_response = json.loads(queries_response)
             except Exception as e:
                 queries_response = {"queries": [queries_response]}
 
             queries = queries_response.get("queries", [])
-        except:
+        except:  # noqa: E722
             pass
 
         if len(queries) == 0:
@@ -908,7 +1051,6 @@ async def chat_completion_files_handler(
 
 def apply_params_to_form_data(form_data, model):
     params = form_data.pop("params", {})
-    custom_params = params.pop("custom_params", {})
 
     open_webui_params = {
         "stream_response": bool,
@@ -920,19 +1062,7 @@ def apply_params_to_form_data(form_data, model):
         if key in open_webui_params:
             del params[key]
 
-    if custom_params:
-        # Attempt to parse custom_params if they are strings
-        for key, value in custom_params.items():
-            if isinstance(value, str):
-                try:
-                    # Attempt to parse the string as JSON
-                    custom_params[key] = json.loads(value)
-                except json.JSONDecodeError:
-                    # If it fails, keep the original string
-                    pass
-
-        # If custom_params are provided, merge them into params
-        params = deep_update(params, custom_params)
+    params = merge_custom_params(params)
 
     if model.get("owned_by") == "ollama":
         # Ollama specific parameters
@@ -965,30 +1095,15 @@ async def process_chat_payload(request, form_data, user, metadata, model):
     event_emitter = get_event_emitter(metadata)
     event_call = get_event_call(metadata)
 
-    extra_params = {
-        "__event_emitter__": event_emitter,
-        "__event_call__": event_call,
-        "__user__": user.model_dump() if isinstance(user, UserModel) else {},
-        "__metadata__": metadata,
-        "__request__": request,
-        "__model__": model,
-    }
+    extra_params = build_extra_params(
+        request, model, metadata, user, event_emitter, event_call
+    )
 
     # Initialize events to store additional event to be sent to the client
     # Initialize contexts and citation
-    if getattr(request.state, "direct", False) and hasattr(request.state, "model"):
-        models = {
-            request.state.model["id"]: request.state.model,
-        }
-    else:
-        models = request.app.state.MODELS
+    models = get_available_models(request)
 
-    task_model_id = get_task_model_id(
-        form_data["model"],
-        request.app.state.config.TASK_MODEL,
-        request.app.state.config.TASK_MODEL_EXTERNAL,
-        models,
-    )
+    task_model_id = resolve_task_model_id(request, form_data["model"], models)
 
     events = []
     sources = []
@@ -1017,15 +1132,14 @@ async def process_chat_payload(request, form_data, user, metadata, model):
     model_knowledge = model.get("info", {}).get("meta", {}).get("knowledge", False)
 
     if model_knowledge:
-        await event_emitter(
+        await emit_event(
+            event_emitter,
+            "status",
             {
-                "type": "status",
-                "data": {
-                    "action": "knowledge_search",
-                    "query": user_message,
-                    "done": False,
-                },
-            }
+                "action": "knowledge_search",
+                "query": user_message,
+                "done": False,
+            },
         )
 
         knowledge_files = []
@@ -1065,12 +1179,7 @@ async def process_chat_payload(request, form_data, user, metadata, model):
         raise e
 
     try:
-        filter_functions = [
-            Functions.get_function_by_id(filter_id)
-            for filter_id in get_sorted_filter_ids(
-                request, model, metadata.get("filter_ids", [])
-            )
-        ]
+        filter_functions = get_filter_functions(request, model, metadata)
 
         form_data, flags = await process_filter_functions(
             request=request,
@@ -1090,7 +1199,7 @@ async def process_chat_payload(request, form_data, user, metadata, model):
             )
 
         if "web_search" in features and features["web_search"]:
-            form_data = await chat_web_search_handler(
+            form_data = await chat_web_search_handler(  # noqa: F821 — grandfathered, not absolved: frozen NameError, TODO.md:601
                 request, form_data, extra_params, user
             )
 
@@ -1218,7 +1327,7 @@ async def process_chat_payload(request, form_data, user, metadata, model):
         if context_string == "":
             if request.app.state.config.RELEVANCE_THRESHOLD == 0:
                 log.debug(
-                    f"With a 0 relevancy threshold for RAG, the context cannot be empty"
+                    "With a 0 relevancy threshold for RAG, the context cannot be empty"
                 )
         else:
             # Workaround for Ollama 2.0+ system prompt issue
@@ -1250,16 +1359,15 @@ async def process_chat_payload(request, form_data, user, metadata, model):
         events.append({"sources": sources})
 
     if model_knowledge:
-        await event_emitter(
+        await emit_event(
+            event_emitter,
+            "status",
             {
-                "type": "status",
-                "data": {
-                    "action": "knowledge_search",
-                    "query": user_message,
-                    "done": True,
-                    "hidden": True,
-                },
-            }
+                "action": "knowledge_search",
+                "query": user_message,
+                "done": True,
+                "hidden": True,
+            },
         )
 
     return form_data, metadata, events
@@ -1306,60 +1414,58 @@ async def process_chat_response(
                     }
                 )
 
+            async def run_json_task(task_fn, payload, key, persist, make_event):
+                """Follow-ups and tags share this envelope character for
+                character; only the key, persist call and event shape differ.
+                The title task does NOT fit — its fallback chain persists and
+                emits even on parse failure, and it has a no-LLM arm.
+
+                persist and emit stay INSIDE the try: a DB or emitter error is
+                swallowed exactly as the inline copies swallowed it.
+                """
+                res = await task_fn(request, payload, user)
+
+                if res and isinstance(res, dict):
+                    if len(res.get("choices", [])) == 1:
+                        value_string = (
+                            res.get("choices", [])[0]
+                            .get("message", {})
+                            .get("content", "")
+                        )
+                    else:
+                        value_string = ""
+
+                    value_string = slice_json_object(value_string)
+
+                    try:
+                        value = json.loads(value_string).get(key, [])
+
+                        persist(value)
+
+                        await event_emitter(make_event(value))
+                    except Exception as e:
+                        pass
+
             if tasks and messages:
                 if (
                     TASKS.FOLLOW_UP_GENERATION in tasks
                     and tasks[TASKS.FOLLOW_UP_GENERATION]
                 ):
-                    res = await generate_follow_ups(
-                        request,
+                    await run_json_task(
+                        generate_follow_ups,
                         {
                             "model": message["model"],
                             "messages": messages,
                             "message_id": metadata["message_id"],
                             "chat_id": metadata["chat_id"],
                         },
-                        user,
+                        "follow_ups",
+                        lambda v: persist_message(metadata, {"followUps": v}),
+                        lambda v: {
+                            "type": "chat:message:follow_ups",
+                            "data": {"follow_ups": v},
+                        },
                     )
-
-                    if res and isinstance(res, dict):
-                        if len(res.get("choices", [])) == 1:
-                            follow_ups_string = (
-                                res.get("choices", [])[0]
-                                .get("message", {})
-                                .get("content", "")
-                            )
-                        else:
-                            follow_ups_string = ""
-
-                        follow_ups_string = follow_ups_string[
-                            follow_ups_string.find("{") : follow_ups_string.rfind("}")
-                            + 1
-                        ]
-
-                        try:
-                            follow_ups = json.loads(follow_ups_string).get(
-                                "follow_ups", []
-                            )
-
-                            Chats.upsert_message_to_chat_by_id_and_message_id(
-                                metadata["chat_id"],
-                                metadata["message_id"],
-                                {
-                                    "followUps": follow_ups,
-                                },
-                            )
-
-                            await event_emitter(
-                                {
-                                    "type": "chat:message:follow_ups",
-                                    "data": {
-                                        "follow_ups": follow_ups,
-                                    },
-                                }
-                            )
-                        except Exception as e:
-                            pass
 
                 if TASKS.TITLE_GENERATION in tasks:
                     user_message = get_last_user_message(messages)
@@ -1390,9 +1496,7 @@ async def process_chat_response(
                             else:
                                 title_string = ""
 
-                            title_string = title_string[
-                                title_string.find("{") : title_string.rfind("}") + 1
-                            ]
+                            title_string = slice_json_object(title_string)
 
                             try:
                                 title = json.loads(title_string).get(
@@ -1406,63 +1510,34 @@ async def process_chat_response(
 
                             Chats.update_chat_title_by_id(metadata["chat_id"], title)
 
-                            await event_emitter(
-                                {
-                                    "type": "chat:title",
-                                    "data": title,
-                                }
-                            )
+                            await emit_event(event_emitter, "chat:title", title)
                     elif len(messages) == 2:
                         title = messages[0].get("content", user_message)
 
                         Chats.update_chat_title_by_id(metadata["chat_id"], title)
 
-                        await event_emitter(
-                            {
-                                "type": "chat:title",
-                                "data": message.get("content", user_message),
-                            }
+                        # NOT `title` — the two-message arm emits the last
+                        # message while persisting the first. Frozen bug.
+                        await emit_event(
+                            event_emitter,
+                            "chat:title",
+                            message.get("content", user_message),
                         )
 
                 if TASKS.TAGS_GENERATION in tasks and tasks[TASKS.TAGS_GENERATION]:
-                    res = await generate_chat_tags(
-                        request,
+                    await run_json_task(
+                        generate_chat_tags,
                         {
                             "model": message["model"],
                             "messages": messages,
                             "chat_id": metadata["chat_id"],
                         },
-                        user,
+                        "tags",
+                        lambda v: Chats.update_chat_tags_by_id(
+                            metadata["chat_id"], v, user
+                        ),
+                        lambda v: {"type": "chat:tags", "data": v},
                     )
-
-                    if res and isinstance(res, dict):
-                        if len(res.get("choices", [])) == 1:
-                            tags_string = (
-                                res.get("choices", [])[0]
-                                .get("message", {})
-                                .get("content", "")
-                            )
-                        else:
-                            tags_string = ""
-
-                        tags_string = tags_string[
-                            tags_string.find("{") : tags_string.rfind("}") + 1
-                        ]
-
-                        try:
-                            tags = json.loads(tags_string).get("tags", [])
-                            Chats.update_chat_tags_by_id(
-                                metadata["chat_id"], tags, user
-                            )
-
-                            await event_emitter(
-                                {
-                                    "type": "chat:tags",
-                                    "data": tags,
-                                }
-                            )
-                        except Exception as e:
-                            pass
 
     event_emitter = None
     event_caller = None
@@ -1482,18 +1557,16 @@ async def process_chat_response(
         if event_emitter:
             if "error" in response:
                 error = response["error"].get("detail", response["error"])
-                Chats.upsert_message_to_chat_by_id_and_message_id(
-                    metadata["chat_id"],
-                    metadata["message_id"],
+                persist_message(
+                    metadata,
                     {
                         "error": {"content": error},
                     },
                 )
 
             if "selected_model_id" in response:
-                Chats.upsert_message_to_chat_by_id_and_message_id(
-                    metadata["chat_id"],
-                    metadata["message_id"],
+                persist_message(
+                    metadata,
                     {
                         "selectedModelId": response["selected_model_id"],
                     },
@@ -1515,62 +1588,34 @@ async def process_chat_response(
                     )
 
                     # Save message in the database
-                    Chats.upsert_message_to_chat_by_id_and_message_id(
-                        metadata["chat_id"],
-                        metadata["message_id"],
+                    persist_message(
+                        metadata,
                         {
                             "role": "assistant",
                             "content": content,
                         },
                     )
 
-                    # Send a webhook notification if the user is not active
-                    if not get_active_status_by_user_id(user.id):
-                        webhook_url = Users.get_user_webhook_url_by_id(user.id)
-                        if webhook_url:
-                            post_webhook(
-                                request.app.state.WEBUI_NAME,
-                                webhook_url,
-                                f"{title} - {request.app.state.config.WEBUI_URL}/c/{metadata['chat_id']}\n\n{content}",
-                                {
-                                    "action": "chat",
-                                    "message": content,
-                                    "title": title,
-                                    "url": f"{request.app.state.config.WEBUI_URL}/c/{metadata['chat_id']}",
-                                },
-                            )
+                    notify_webhook_if_offline(request, user, metadata, title, content)
 
                     await background_tasks_handler()
 
-            if events and isinstance(events, list) and isinstance(response, dict):
-                extra_response = {}
-                for event in events:
-                    if isinstance(event, dict):
-                        extra_response.update(event)
-                    else:
-                        extra_response[event] = True
+        # Identical for the emitter and no-emitter paths: fold the precomputed
+        # events into the response body.
+        if events and isinstance(events, list) and isinstance(response, dict):
+            extra_response = {}
+            for event in events:
+                if isinstance(event, dict):
+                    extra_response.update(event)
+                else:
+                    extra_response[event] = True
 
-                response = {
-                    **extra_response,
-                    **response,
-                }
+            response = {
+                **extra_response,
+                **response,
+            }
 
-            return response
-        else:
-            if events and isinstance(events, list) and isinstance(response, dict):
-                extra_response = {}
-                for event in events:
-                    if isinstance(event, dict):
-                        extra_response.update(event)
-                    else:
-                        extra_response[event] = True
-
-                response = {
-                    **extra_response,
-                    **response,
-                }
-
-            return response
+        return response
 
     # Non standard response
     if not any(
@@ -1579,29 +1624,17 @@ async def process_chat_response(
     ):
         return response
 
-    extra_params = {
-        "__event_emitter__": event_emitter,
-        "__event_call__": event_caller,
-        "__user__": user.model_dump() if isinstance(user, UserModel) else {},
-        "__metadata__": metadata,
-        "__request__": request,
-        "__model__": model,
-    }
-    filter_functions = [
-        Functions.get_function_by_id(filter_id)
-        for filter_id in get_sorted_filter_ids(
-            request, model, metadata.get("filter_ids", [])
-        )
-    ]
+    extra_params = build_extra_params(
+        request, model, metadata, user, event_emitter, event_caller
+    )
+    filter_functions = get_filter_functions(request, model, metadata)
 
     # Streaming response
     if event_emitter and event_caller:
-        task_id = str(uuid4())  # Create a unique task ID.
         model_id = form_data.get("model", "")
 
-        Chats.upsert_message_to_chat_by_id_and_message_id(
-            metadata["chat_id"],
-            metadata["message_id"],
+        persist_message(
+            metadata,
             {
                 "model": model_id,
             },
@@ -1637,9 +1670,6 @@ async def process_chat_response(
                 }
             ]
 
-            # We might want to disable this by default
-            DETECT_REASONING = True
-            DETECT_SOLUTION = True
             DETECT_CODE_INTERPRETER = metadata.get("features", {}).get(
                 "code_interpreter", False
             )
@@ -1664,9 +1694,8 @@ async def process_chat_response(
                     await emit_completion(event_emitter, event)
 
                     # Save message in the database
-                    Chats.upsert_message_to_chat_by_id_and_message_id(
-                        metadata["chat_id"],
-                        metadata["message_id"],
+                    persist_message(
+                        metadata,
                         {
                             **event,
                         },
@@ -1710,9 +1739,8 @@ async def process_chat_response(
 
                                 if "selected_model_id" in data:
                                     model_id = data["selected_model_id"]
-                                    Chats.upsert_message_to_chat_by_id_and_message_id(
-                                        metadata["chat_id"],
-                                        metadata["message_id"],
+                                    persist_message(
+                                        metadata,
                                         {
                                             "selectedModelId": model_id,
                                         },
@@ -1736,62 +1764,9 @@ async def process_chat_response(
                                     delta_tool_calls = delta.get("tool_calls", None)
 
                                     if delta_tool_calls:
-                                        for delta_tool_call in delta_tool_calls:
-                                            tool_call_index = delta_tool_call.get(
-                                                "index"
-                                            )
-
-                                            if tool_call_index is not None:
-                                                # Check if the tool call already exists
-                                                current_response_tool_call = None
-                                                for (
-                                                    response_tool_call
-                                                ) in response_tool_calls:
-                                                    if (
-                                                        response_tool_call.get("index")
-                                                        == tool_call_index
-                                                    ):
-                                                        current_response_tool_call = (
-                                                            response_tool_call
-                                                        )
-                                                        break
-
-                                                if current_response_tool_call is None:
-                                                    # Add the new tool call
-                                                    delta_tool_call.setdefault(
-                                                        "function", {}
-                                                    )
-                                                    delta_tool_call[
-                                                        "function"
-                                                    ].setdefault("name", "")
-                                                    delta_tool_call[
-                                                        "function"
-                                                    ].setdefault("arguments", "")
-                                                    response_tool_calls.append(
-                                                        delta_tool_call
-                                                    )
-                                                else:
-                                                    # Update the existing tool call
-                                                    delta_name = delta_tool_call.get(
-                                                        "function", {}
-                                                    ).get("name")
-                                                    delta_arguments = (
-                                                        delta_tool_call.get(
-                                                            "function", {}
-                                                        ).get("arguments")
-                                                    )
-
-                                                    if delta_name:
-                                                        current_response_tool_call[
-                                                            "function"
-                                                        ]["name"] += delta_name
-
-                                                    if delta_arguments:
-                                                        current_response_tool_call[
-                                                            "function"
-                                                        ][
-                                                            "arguments"
-                                                        ] += delta_arguments
+                                        accumulate_tool_call_deltas(
+                                            response_tool_calls, delta_tool_calls
+                                        )
 
                                     value = delta.get("content")
 
@@ -1844,35 +1819,24 @@ async def process_chat_response(
                                                 - reasoning_block["started_at"]
                                             )
 
-                                            content_blocks.append(
-                                                {
-                                                    "type": "text",
-                                                    "content": "",
-                                                }
-                                            )
+                                            append_empty_text_block(content_blocks)
 
                                         content = f"{content}{value}"
                                         if not content_blocks:
-                                            content_blocks.append(
-                                                {
-                                                    "type": "text",
-                                                    "content": "",
-                                                }
-                                            )
+                                            append_empty_text_block(content_blocks)
 
                                         content_blocks[-1]["content"] = (
                                             content_blocks[-1]["content"] + value
                                         )
 
-                                        if DETECT_REASONING:
-                                            content, content_blocks, _ = (
-                                                tag_content_handler(
-                                                    "reasoning",
-                                                    reasoning_tags,
-                                                    content,
-                                                    content_blocks,
-                                                )
+                                        content, content_blocks, _ = (
+                                            tag_content_handler(
+                                                "reasoning",
+                                                reasoning_tags,
+                                                content,
+                                                content_blocks,
                                             )
+                                        )
 
                                         if DETECT_CODE_INTERPRETER:
                                             content, content_blocks, end = (
@@ -1887,21 +1851,19 @@ async def process_chat_response(
                                             if end:
                                                 break
 
-                                        if DETECT_SOLUTION:
-                                            content, content_blocks, _ = (
-                                                tag_content_handler(
-                                                    "solution",
-                                                    solution_tags,
-                                                    content,
-                                                    content_blocks,
-                                                )
+                                        content, content_blocks, _ = (
+                                            tag_content_handler(
+                                                "solution",
+                                                solution_tags,
+                                                content,
+                                                content_blocks,
                                             )
+                                        )
 
                                         if ENABLE_REALTIME_CHAT_SAVE:
                                             # Save message in the database
-                                            Chats.upsert_message_to_chat_by_id_and_message_id(
-                                                metadata["chat_id"],
-                                                metadata["message_id"],
+                                            persist_message(
+                                                metadata,
                                                 {
                                                     "content": serialize_content_blocks(
                                                         content_blocks
@@ -1917,12 +1879,12 @@ async def process_chat_response(
 
                                 await emit_completion(event_emitter, data)
                         except Exception as e:
-                            done = "data: [DONE]" in line
-                            if done:
-                                pass
-                            else:
+                            # `data: [DONE]` fails json.loads by design; anything
+                            # else is a real parse error worth logging. Neither
+                            # ends the loop — content after the sentinel is still
+                            # processed (frozen bug, see the ledger).
+                            if "data: [DONE]" not in line:
                                 log.debug(f"Error: {e}")
-                                continue
 
                     if content_blocks:
                         # Clean up the last text block
@@ -1935,18 +1897,44 @@ async def process_chat_response(
                                 content_blocks.pop()
 
                                 if not content_blocks:
-                                    content_blocks.append(
-                                        {
-                                            "type": "text",
-                                            "content": "",
-                                        }
-                                    )
+                                    append_empty_text_block(content_blocks)
 
                     if response_tool_calls:
                         tool_calls.append(response_tool_calls)
 
                     if response.background:
                         await response.background()
+
+                async def continue_stream_round(build_new_form_data):
+                    """One continuation round: emit the blocks, request the next
+                    stream, drain it. Returns False when the caller must break.
+
+                    Nested on purpose: it closes over stream_body_handler and
+                    the fenced state. `build_new_form_data` is a thunk so
+                    payload construction stays INSIDE the try — a KeyError
+                    there is a logged break, not a task crash.
+                    """
+                    append_empty_text_block(content_blocks)
+
+                    await emit_content(event_emitter, content_blocks)
+
+                    try:
+                        new_form_data = build_new_form_data()
+
+                        res = await generate_chat_completion(
+                            request,
+                            new_form_data,
+                            user,
+                        )
+
+                        if isinstance(res, StreamingResponse):
+                            await stream_body_handler(res, new_form_data)
+                        else:
+                            return False
+                    except Exception as e:
+                        log.debug(e)
+                        return False
+                    return True
 
                 await stream_body_handler(response, form_data)
 
@@ -2003,62 +1991,18 @@ async def process_chat_response(
                         )
 
                         tool_result = None
+                        tool_result_files = []
 
                         if tool_name in tools:
-                            tool = tools[tool_name]
-                            spec = tool.get("spec", {})
-
-                            try:
-                                allowed_params = (
-                                    spec.get("parameters", {})
-                                    .get("properties", {})
-                                    .keys()
+                            tool_result, tool_result_files, tool_function_params = (
+                                await execute_tool_call(
+                                    tools[tool_name],
+                                    tool_name,
+                                    tool_function_params,
+                                    event_caller,
+                                    metadata,
+                                    ensure_ascii=False,
                                 )
-
-                                tool_function_params = {
-                                    k: v
-                                    for k, v in tool_function_params.items()
-                                    if k in allowed_params
-                                }
-
-                                if tool.get("direct", False):
-                                    tool_result = await event_caller(
-                                        {
-                                            "type": "execute:tool",
-                                            "data": {
-                                                "id": str(uuid4()),
-                                                "name": tool_name,
-                                                "params": tool_function_params,
-                                                "server": tool.get("server", {}),
-                                                "session_id": metadata.get(
-                                                    "session_id", None
-                                                ),
-                                            },
-                                        }
-                                    )
-
-                                else:
-                                    tool_function = tool["callable"]
-                                    tool_result = await tool_function(
-                                        **tool_function_params
-                                    )
-
-                            except Exception as e:
-                                tool_result = str(e)
-
-                        tool_result_files = []
-                        if isinstance(tool_result, list):
-                            for item in tool_result:
-                                # check if string
-                                if isinstance(item, str) and item.startswith("data:"):
-                                    tool_result_files.append(item)
-                                    tool_result.remove(item)
-
-                        if isinstance(tool_result, dict) or isinstance(
-                            tool_result, list
-                        ):
-                            tool_result = json.dumps(
-                                tool_result, indent=2, ensure_ascii=False
                             )
 
                         results.append(
@@ -2075,17 +2019,8 @@ async def process_chat_response(
 
                     content_blocks[-1]["results"] = results
 
-                    content_blocks.append(
-                        {
-                            "type": "text",
-                            "content": "",
-                        }
-                    )
-
-                    await emit_content(event_emitter, content_blocks)
-
-                    try:
-                        new_form_data = {
+                    if not await continue_stream_round(
+                        lambda: {
                             "model": model_id,
                             "stream": True,
                             "tools": form_data["tools"],
@@ -2094,19 +2029,7 @@ async def process_chat_response(
                                 *convert_content_blocks_to_messages(content_blocks),
                             ],
                         }
-
-                        res = await generate_chat_completion(
-                            request,
-                            new_form_data,
-                            user,
-                        )
-
-                        if isinstance(res, StreamingResponse):
-                            await stream_body_handler(res, new_form_data)
-                        else:
-                            break
-                    except Exception as e:
-                        log.debug(e)
+                    ):
                         break
 
                 if DETECT_CODE_INTERPRETER:
@@ -2176,67 +2099,23 @@ async def process_chat_response(
                                     stdout = output.get("stdout", "")
 
                                     if isinstance(stdout, str):
-                                        stdoutLines = stdout.split("\n")
-                                        for idx, line in enumerate(stdoutLines):
-                                            if "data:image/png;base64" in line:
-                                                image_url = ""
-                                                # Extract base64 image data from the line
-                                                image_data, content_type = (
-                                                    load_b64_image_data(line)
-                                                )
-                                                if image_data is not None:
-                                                    image_url = upload_image(
-                                                        request,
-                                                        image_data,
-                                                        content_type,
-                                                        metadata,
-                                                        user,
-                                                    )
-                                                stdoutLines[idx] = (
-                                                    f"![Output Image]({image_url})"
-                                                )
-
-                                        output["stdout"] = "\n".join(stdoutLines)
+                                        output["stdout"] = upload_b64_images_in_text(
+                                            request, stdout, metadata, user
+                                        )
 
                                     result = output.get("result", "")
 
                                     if isinstance(result, str):
-                                        resultLines = result.split("\n")
-                                        for idx, line in enumerate(resultLines):
-                                            if "data:image/png;base64" in line:
-                                                image_url = ""
-                                                # Extract base64 image data from the line
-                                                image_data, content_type = (
-                                                    load_b64_image_data(line)
-                                                )
-                                                if image_data is not None:
-                                                    image_url = upload_image(
-                                                        request,
-                                                        image_data,
-                                                        content_type,
-                                                        metadata,
-                                                        user,
-                                                    )
-                                                resultLines[idx] = (
-                                                    f"![Output Image]({image_url})"
-                                                )
-                                        output["result"] = "\n".join(resultLines)
+                                        output["result"] = upload_b64_images_in_text(
+                                            request, result, metadata, user
+                                        )
                         except Exception as e:
                             output = str(e)
 
                         content_blocks[-1]["output"] = output
 
-                        content_blocks.append(
-                            {
-                                "type": "text",
-                                "content": "",
-                            }
-                        )
-
-                        await emit_content(event_emitter, content_blocks)
-
-                        try:
-                            new_form_data = {
+                        if not await continue_stream_round(
+                            lambda: {
                                 "model": model_id,
                                 "stream": True,
                                 "messages": [
@@ -2249,19 +2128,7 @@ async def process_chat_response(
                                     },
                                 ],
                             }
-
-                            res = await generate_chat_completion(
-                                request,
-                                new_form_data,
-                                user,
-                            )
-
-                            if isinstance(res, StreamingResponse):
-                                await stream_body_handler(res, new_form_data)
-                            else:
-                                break
-                        except Exception as e:
-                            log.debug(e)
+                        ):
                             break
 
                 # The stream is over. Close anything still open BEFORE the last
@@ -2279,29 +2146,15 @@ async def process_chat_response(
 
                 if not ENABLE_REALTIME_CHAT_SAVE:
                     # Save message in the database
-                    Chats.upsert_message_to_chat_by_id_and_message_id(
-                        metadata["chat_id"],
-                        metadata["message_id"],
+                    persist_message(
+                        metadata,
                         {
                             "content": serialize_content_blocks(content_blocks),
                         },
                     )
 
-                # Send a webhook notification if the user is not active
-                if not get_active_status_by_user_id(user.id):
-                    webhook_url = Users.get_user_webhook_url_by_id(user.id)
-                    if webhook_url:
-                        post_webhook(
-                            request.app.state.WEBUI_NAME,
-                            webhook_url,
-                            f"{title} - {request.app.state.config.WEBUI_URL}/c/{metadata['chat_id']}\n\n{content}",
-                            {
-                                "action": "chat",
-                                "message": content,
-                                "title": title,
-                                "url": f"{request.app.state.config.WEBUI_URL}/c/{metadata['chat_id']}",
-                            },
-                        )
+                # The raw accumulator, not the serialized blocks — deliberate.
+                notify_webhook_if_offline(request, user, metadata, title, content)
 
                 await emit_completion(event_emitter, data)
 
@@ -2319,9 +2172,8 @@ async def process_chat_response(
 
                 if not ENABLE_REALTIME_CHAT_SAVE:
                     # Save message in the database
-                    Chats.upsert_message_to_chat_by_id_and_message_id(
-                        metadata["chat_id"],
-                        metadata["message_id"],
+                    persist_message(
+                        metadata,
                         {
                             "content": serialize_content_blocks(content_blocks),
                         },

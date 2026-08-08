@@ -603,7 +603,7 @@ gauntlet: it_build sprig_smoke
 # place: it is the only member that judges what the migration CLAIMS — that a
 # server-rendered surface is lighter than the SvelteKit one it replaces — rather
 # than whether the code runs.
-gauntlet_full: pipefail_lint pipefail_fixture chat_path_structure sprig_capabilities_check reasoning_finalizer_fixture chat_response_oracle gauntlet sprig_durability sprig_signing ui_sprig_gate parity_gate e2e_both surface_budget
+gauntlet_full: pipefail_lint pipefail_fixture ruff_gate cognitive_complexity chat_path_structure sprig_capabilities_check reasoning_finalizer_fixture serialize_blocks_fixture tool_call_accumulator_fixture chat_response_oracle gauntlet sprig_durability sprig_signing ui_sprig_gate parity_gate e2e_both surface_budget
 
 ## it_build_amd64 — build an amd64 image via buildx + --load.
 ##
@@ -791,6 +791,37 @@ reasoning_finalizer_fixture:  ## Fixture: no content block left open at end of s
 	  -v "$$(pwd)/app/backend/sage_is_ai:/app/backend/sage_is_ai:ro" \
 	  -v "$$(pwd)/scripts:/scripts:ro" --entrypoint python3 \
 	  $(IMAGE_NAME):$(IMAGE_TAG) /scripts/smoke/reasoning-finalizer-fixture.py
+
+# First test of tool-call accumulation anywhere in the tree — no oracle golden
+# carries a tool_calls delta.
+tool_call_accumulator_fixture:  ## Fixture: streamed tool-call deltas merge by index
+	@$(CONTAINER_RUNTIME) run --rm -e WEBUI_SECRET_KEY=fixture \
+	  -v "$$(pwd)/app/backend/sage_is_ai:/app/backend/sage_is_ai:ro" \
+	  -v "$$(pwd)/scripts:/scripts:ro" --entrypoint python3 \
+	  $(IMAGE_NAME):$(IMAGE_TAG) /scripts/smoke/tool-call-accumulator-fixture.py
+
+# Covers the two regions the oracle goldens never execute: the tool_calls branch
+# (no golden carries a tool_calls delta) and the whole raw=True axis (no golden
+# sets features.code_interpreter, and the code-interpreter continuation is the
+# only raw=True call site). The golden deliberately freezes the raw tool-call
+# hole from the bug ledger; it goes red the day that fix lands.
+serialize_blocks_fixture:  ## Fixture: block renderer byte-identical across every block shape
+	@$(CONTAINER_RUNTIME) run --rm -e WEBUI_SECRET_KEY=fixture \
+	  -v "$$(pwd)/app/backend/sage_is_ai:/app/backend/sage_is_ai:ro" \
+	  -v "$$(pwd)/scripts:/scripts:ro" --entrypoint python3 \
+	  $(IMAGE_NAME):$(IMAGE_TAG) /scripts/smoke/serialize-blocks-fixture.py
+
+serialize_blocks_fixture_update:  ## Re-record the block-renderer golden (intentional changes only)
+	@$(CONTAINER_RUNTIME) run --rm -e WEBUI_SECRET_KEY=fixture \
+	  -v "$$(pwd)/app/backend/sage_is_ai:/app/backend/sage_is_ai:ro" \
+	  -v "$$(pwd)/scripts:/scripts" --entrypoint python3 \
+	  $(IMAGE_NAME):$(IMAGE_TAG) /scripts/smoke/serialize-blocks-fixture.py --update
+
+serialize_blocks_fixture_teeth:  ## Prove the block-renderer fixture can fail
+	@$(CONTAINER_RUNTIME) run --rm -e WEBUI_SECRET_KEY=fixture \
+	  -v "$$(pwd)/app/backend/sage_is_ai:/app/backend/sage_is_ai:ro" \
+	  -v "$$(pwd)/scripts:/scripts:ro" --entrypoint python3 \
+	  $(IMAGE_NAME):$(IMAGE_TAG) /scripts/smoke/serialize-blocks-fixture.py --teeth
 
 # Gate: the chat path may get simpler, never more tangled.
 #
@@ -1211,7 +1242,44 @@ trivy_db_update:
 docs_gate:
 	@scripts/gates/docs-targets.sh
 
-lint: docs_gate pipefail_lint
+## ruff_gate — the Python linter. Nothing else in this repo reads Python
+## semantics: bandit reads security, black reads formatting, and the chat-path
+## ratchet reads six shapes of one file. Ruff read all 218 backend files in 40ms
+## and found the one undefined name in the tree — the frozen NameError at
+## middleware.py:1209. Config and the reasoning behind every ignored rule live in
+## app/pyproject.toml under [tool.ruff].
+ruff_gate:
+	@scripts/gates/ruff/run-gate.sh check
+
+## ruff_format_check — reports formatter drift. NOT wired into lint yet: 83 of
+## 218 backend files are unformatted, and one of them is middleware.py, whose
+## line numbers are anchored by nine fences and 64 chart citations. Reformatting
+## it is a sequenced job, not a side effect of turning a gate on.
+ruff_format_check:
+	@scripts/gates/ruff/run-gate.sh format-check
+
+## ruff_format_fix — applies the formatter. Run it deliberately, then re-point
+## the chat-path fences and citations before committing.
+ruff_format_fix:
+	@scripts/gates/ruff/run-gate.sh format-fix
+
+## cognitive_complexity — the depth ratchet for the whole backend. Cyclomatic
+## complexity sat flat at F (58) across the three passes that cut
+## process_chat_response by 30%; radon's maintainability index moved the WRONG
+## way on a commit that changed no code at all. Cognitive complexity was the only
+## measure of the five benched that registered the work: 826 to 578.
+cognitive_complexity:
+	@scripts/gates/cognitive-complexity/run-gate.sh
+
+## cognitive_complexity_tighten — lower the baseline to what the tree earns today.
+cognitive_complexity_tighten:
+	@scripts/gates/cognitive-complexity/run-gate.sh --tighten
+
+## cognitive_complexity_teeth — prove the ratchet still fails a worsened tree.
+cognitive_complexity_teeth:
+	@scripts/gates/cognitive-complexity/run-gate.sh --self-test
+
+lint: docs_gate pipefail_lint ruff_gate cognitive_complexity
 	@echo "=== Frontend lint (eslint + svelte-check) ==="
 	cd app && bun run lint:frontend
 	cd app && bun run lint:types

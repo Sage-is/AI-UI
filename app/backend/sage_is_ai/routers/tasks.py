@@ -22,7 +22,8 @@ from sage_is_ai.constants import TASKS
 
 from sage_is_ai.routers.pipelines import process_pipeline_inlet_filter
 
-from sage_is_ai.utils.task import get_task_model_id
+from sage_is_ai.utils.task import resolve_task_model_id
+from sage_is_ai.utils.misc import get_available_models
 
 from sage_is_ai.config import (
     DEFAULT_TITLE_GENERATION_PROMPT_TEMPLATE,
@@ -166,12 +167,7 @@ async def generate_title(
             content={"detail": "Title generation is disabled"},
         )
 
-    if getattr(request.state, "direct", False) and hasattr(request.state, "model"):
-        models = {
-            request.state.model["id"]: request.state.model,
-        }
-    else:
-        models = request.app.state.MODELS
+    models = get_available_models(request)
 
     model_id = form_data["model"]
     if model_id not in models:
@@ -182,12 +178,7 @@ async def generate_title(
 
     # Check if the user has a custom task model
     # If the user has a custom task model, use that model
-    task_model_id = get_task_model_id(
-        model_id,
-        request.app.state.config.TASK_MODEL,
-        request.app.state.config.TASK_MODEL_EXTERNAL,
-        models,
-    )
+    task_model_id = resolve_task_model_id(request, model_id, models)
 
     log.debug(
         f"generating chat title using model {task_model_id} for user {user.email} "
@@ -257,12 +248,7 @@ async def generate_follow_ups(
             content={"detail": "Follow-up generation is disabled"},
         )
 
-    if getattr(request.state, "direct", False) and hasattr(request.state, "model"):
-        models = {
-            request.state.model["id"]: request.state.model,
-        }
-    else:
-        models = request.app.state.MODELS
+    models = get_available_models(request)
 
     model_id = form_data["model"]
     if model_id not in models:
@@ -273,12 +259,7 @@ async def generate_follow_ups(
 
     # Check if the user has a custom task model
     # If the user has a custom task model, use that model
-    task_model_id = get_task_model_id(
-        model_id,
-        request.app.state.config.TASK_MODEL,
-        request.app.state.config.TASK_MODEL_EXTERNAL,
-        models,
-    )
+    task_model_id = resolve_task_model_id(request, model_id, models)
 
     log.debug(
         f"generating chat title using model {task_model_id} for user {user.email} "
@@ -337,12 +318,7 @@ async def generate_chat_tags(
             content={"detail": "Tags generation is disabled"},
         )
 
-    if getattr(request.state, "direct", False) and hasattr(request.state, "model"):
-        models = {
-            request.state.model["id"]: request.state.model,
-        }
-    else:
-        models = request.app.state.MODELS
+    models = get_available_models(request)
 
     model_id = form_data["model"]
     if model_id not in models:
@@ -353,12 +329,7 @@ async def generate_chat_tags(
 
     # Check if the user has a custom task model
     # If the user has a custom task model, use that model
-    task_model_id = get_task_model_id(
-        model_id,
-        request.app.state.config.TASK_MODEL,
-        request.app.state.config.TASK_MODEL_EXTERNAL,
-        models,
-    )
+    task_model_id = resolve_task_model_id(request, model_id, models)
 
     log.debug(
         f"generating chat tags using model {task_model_id} for user {user.email} "
@@ -405,12 +376,7 @@ async def generate_chat_tags(
 async def generate_image_prompt(
     request: Request, form_data: dict, user=Depends(get_verified_user)
 ):
-    if getattr(request.state, "direct", False) and hasattr(request.state, "model"):
-        models = {
-            request.state.model["id"]: request.state.model,
-        }
-    else:
-        models = request.app.state.MODELS
+    models = get_available_models(request)
 
     model_id = form_data["model"]
     if model_id not in models:
@@ -421,12 +387,7 @@ async def generate_image_prompt(
 
     # Check if the user has a custom task model
     # If the user has a custom task model, use that model
-    task_model_id = get_task_model_id(
-        model_id,
-        request.app.state.config.TASK_MODEL,
-        request.app.state.config.TASK_MODEL_EXTERNAL,
-        models,
-    )
+    task_model_id = resolve_task_model_id(request, model_id, models)
 
     log.debug(
         f"generating image prompt using model {task_model_id} for user {user.email} "
@@ -483,21 +444,16 @@ async def generate_queries(
         if not request.app.state.config.ENABLE_SEARCH_QUERY_GENERATION:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Search query generation is disabled",
+                detail="Search query generation is disabled",
             )
     elif type == "retrieval":
         if not request.app.state.config.ENABLE_RETRIEVAL_QUERY_GENERATION:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Query generation is disabled",
+                detail="Query generation is disabled",
             )
 
-    if getattr(request.state, "direct", False) and hasattr(request.state, "model"):
-        models = {
-            request.state.model["id"]: request.state.model,
-        }
-    else:
-        models = request.app.state.MODELS
+    models = get_available_models(request)
 
     model_id = form_data["model"]
     if model_id not in models:
@@ -508,12 +464,7 @@ async def generate_queries(
 
     # Check if the user has a custom task model
     # If the user has a custom task model, use that model
-    task_model_id = get_task_model_id(
-        model_id,
-        request.app.state.config.TASK_MODEL,
-        request.app.state.config.TASK_MODEL_EXTERNAL,
-        models,
-    )
+    task_model_id = resolve_task_model_id(request, model_id, models)
 
     log.debug(
         f"generating {type} queries using model {task_model_id} for user {user.email}"
@@ -562,7 +513,7 @@ async def generate_autocompletion(
     if not request.app.state.config.ENABLE_AUTOCOMPLETE_GENERATION:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Autocompletion generation is disabled",
+            detail="Autocompletion generation is disabled",
         )
 
     type = form_data.get("type")
@@ -579,12 +530,7 @@ async def generate_autocompletion(
                 detail=f"Input prompt exceeds maximum length of {request.app.state.config.AUTOCOMPLETE_GENERATION_INPUT_MAX_LENGTH}",
             )
 
-    if getattr(request.state, "direct", False) and hasattr(request.state, "model"):
-        models = {
-            request.state.model["id"]: request.state.model,
-        }
-    else:
-        models = request.app.state.MODELS
+    models = get_available_models(request)
 
     model_id = form_data["model"]
     if model_id not in models:
@@ -595,12 +541,7 @@ async def generate_autocompletion(
 
     # Check if the user has a custom task model
     # If the user has a custom task model, use that model
-    task_model_id = get_task_model_id(
-        model_id,
-        request.app.state.config.TASK_MODEL,
-        request.app.state.config.TASK_MODEL_EXTERNAL,
-        models,
-    )
+    task_model_id = resolve_task_model_id(request, model_id, models)
 
     log.debug(
         f"generating autocompletion using model {task_model_id} for user {user.email}"
@@ -648,12 +589,7 @@ async def generate_emoji(
     request: Request, form_data: dict, user=Depends(get_verified_user)
 ):
 
-    if getattr(request.state, "direct", False) and hasattr(request.state, "model"):
-        models = {
-            request.state.model["id"]: request.state.model,
-        }
-    else:
-        models = request.app.state.MODELS
+    models = get_available_models(request)
 
     model_id = form_data["model"]
     if model_id not in models:
@@ -664,12 +600,7 @@ async def generate_emoji(
 
     # Check if the user has a custom task model
     # If the user has a custom task model, use that model
-    task_model_id = get_task_model_id(
-        model_id,
-        request.app.state.config.TASK_MODEL,
-        request.app.state.config.TASK_MODEL_EXTERNAL,
-        models,
-    )
+    task_model_id = resolve_task_model_id(request, model_id, models)
 
     log.debug(f"generating emoji using model {task_model_id} for user {user.email} ")
 
@@ -723,12 +654,7 @@ async def generate_moa_response(
     request: Request, form_data: dict, user=Depends(get_verified_user)
 ):
 
-    if getattr(request.state, "direct", False) and hasattr(request.state, "model"):
-        models = {
-            request.state.model["id"]: request.state.model,
-        }
-    else:
-        models = request.app.state.MODELS
+    models = get_available_models(request)
 
     model_id = form_data["model"]
 

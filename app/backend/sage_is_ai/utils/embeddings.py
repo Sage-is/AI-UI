@@ -4,6 +4,7 @@ import sys
 
 from fastapi import Request
 from sage_is_ai.models.users import UserModel
+from sage_is_ai.utils.misc import get_available_models
 from sage_is_ai.models.models import Models
 from sage_is_ai.utils.models import check_model_access
 from sage_is_ai.env import SRC_LOG_LEVELS, GLOBAL_LOG_LEVEL, BYPASS_MODEL_ACCESS_CONTROL
@@ -55,12 +56,7 @@ async def generate_embeddings(
             }
 
     # If "direct" flag present, use only that model
-    if getattr(request.state, "direct", False) and hasattr(request.state, "model"):
-        models = {
-            request.state.model["id"]: request.state.model,
-        }
-    else:
-        models = request.app.state.MODELS
+    models = get_available_models(request)
 
     model_id = form_data.get("model")
     if model_id not in models:

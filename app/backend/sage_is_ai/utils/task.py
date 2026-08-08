@@ -32,6 +32,20 @@ def get_task_model_id(
     return task_model_id
 
 
+def resolve_task_model_id(request, model_id, models):
+    """get_task_model_id with the two task-model settings read off the request.
+
+    Nine call sites spelled the four-argument form; the two config values are
+    derivable, so they are derived here.
+    """
+    return get_task_model_id(
+        model_id,
+        request.app.state.config.TASK_MODEL,
+        request.app.state.config.TASK_MODEL_EXTERNAL,
+        models,
+    )
+
+
 def prompt_variables_template(template: str, variables: dict[str, str]) -> str:
     for variable, value in variables.items():
         template = template.replace(variable, value)

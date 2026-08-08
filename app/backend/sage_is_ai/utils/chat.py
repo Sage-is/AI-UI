@@ -14,6 +14,7 @@ from fastapi import Request, status
 from starlette.responses import Response, StreamingResponse, JSONResponse
 
 
+from sage_is_ai.utils.misc import get_available_models
 from sage_is_ai.models.users import UserModel
 
 from sage_is_ai.socket.main import (
@@ -226,7 +227,7 @@ async def generate_chat_completion(
 
             form_data["model"] = selected_model_id
 
-            if form_data.get("stream") == True:
+            if form_data.get("stream") == True:  # noqa: E712
 
                 async def stream_wrapper(stream):
                     yield f"data: {json.dumps({'selected_model_id': selected_model_id})}\n\n"
@@ -290,12 +291,7 @@ async def chat_completed(request: Request, form_data: dict, user: Any):
     if not request.app.state.MODELS:
         await get_all_models(request, user=user)
 
-    if getattr(request.state, "direct", False) and hasattr(request.state, "model"):
-        models = {
-            request.state.model["id"]: request.state.model,
-        }
-    else:
-        models = request.app.state.MODELS
+    models = get_available_models(request)
 
     data = form_data
     model_id = data["model"]
@@ -359,12 +355,7 @@ async def chat_action(request: Request, action_id: str, form_data: dict, user: A
     if not request.app.state.MODELS:
         await get_all_models(request, user=user)
 
-    if getattr(request.state, "direct", False) and hasattr(request.state, "model"):
-        models = {
-            request.state.model["id"]: request.state.model,
-        }
-    else:
-        models = request.app.state.MODELS
+    models = get_available_models(request)
 
     data = form_data
     model_id = data["model"]
