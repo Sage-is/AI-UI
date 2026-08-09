@@ -74,3 +74,10 @@ docs/outreach/*
 app/cypress/videos
 app/cypress/screenshots
 
+# Decision records (not public - only for internal team use)
+!docs/decisions/README.md
+docs/decisions/*
+
+# Chart artifacts (not public - only for internal team use)
+!docs/charts/README.md
+docs/charts/*
