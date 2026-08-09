@@ -1,0 +1,26 @@
+{
+  "settings": {
+    "start": 1366.8,
+    "end": 1397.3
+  },
+  "wave": [
+    {
+      "path": "/api/models",
+      "start": 1475.4,
+      "end": 1492.2
+    },
+    {
+      "path": "/api/v1/configs/banners",
+      "start": 1475.7,
+      "end": 1494.4
+    },
+    {
+      "path": "/api/v1/tools/",
+      "start": 1476,
+      "end": 1494.7
+    }
+  ],
+  "waveSpanMs": 19.3,
+  "bootSpanMs": 127.9,
+  "overlaps": true
+}

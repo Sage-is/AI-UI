@@ -1,0 +1,416 @@
+{
+  "snapshot": {
+    "agentsInList": 51,
+    "listPayloadKB": 1502.4
+  },
+  "legacy-cold": {
+    "note": "first visit — pays the whole SvelteKit bundle",
+    "requests": 126,
+    "transferKB": 3604.1,
+    "decodedKB": 9173.4,
+    "documentDecodedKB": 7.5,
+    "rows": 51,
+    "toRowsMs": 5442,
+    "lastByteMs": 5258,
+    "modelsEndpointCalls": [
+      "/api/models?  2303.4 kB",
+      "/api/v1/models/  1503.2 kB"
+    ],
+    "top": [
+      {
+        "url": "/api/models?",
+        "transfer": 759289,
+        "decoded": 2358689
+      },
+      {
+        "url": "/api/v1/models/",
+        "transfer": 936006,
+        "decoded": 1539300
+      },
+      {
+        "url": "/_app/immutable/chunks/BB1ZkuH6.js",
+        "transfer": 226286,
+        "decoded": 763693
+      },
+      {
+        "url": "/static/assets/fonts/Archivo-Variable.ttf",
+        "transfer": 253408,
+        "decoded": 652084
+      },
+      {
+        "url": "/_app/immutable/chunks/m5lhJ-ds.js",
+        "transfer": 200384,
+        "decoded": 605889
+      },
+      {
+        "url": "/_app/immutable/nodes/2.BRT7uCKb.js",
+        "transfer": 161548,
+        "decoded": 542569
+      },
+      {
+        "url": "/_app/immutable/chunks/B22NShiX.js",
+        "transfer": 151980,
+        "decoded": 411412
+      },
+      {
+        "url": "/_app/immutable/assets/0.DJDlW4fn.css",
+        "transfer": 37110,
+        "decoded": 289411
+      },
+      {
+        "url": "/_app/immutable/chunks/DfHg-OaK.js",
+        "transfer": 72953,
+        "decoded": 245693
+      },
+      {
+        "url": "/static/icons/splash.png",
+        "transfer": 171061,
+        "decoded": 170761
+      },
+      {
+        "url": "/static/icons/favicon.png",
+        "transfer": 171061,
+        "decoded": 170761
+      },
+      {
+        "url": "/static/icons/favicon.png",
+        "transfer": 300,
+        "decoded": 170761
+      },
+      {
+        "url": "/_app/immutable/chunks/j1eltvli.js",
+        "transfer": 38809,
+        "decoded": 127857
+      },
+      {
+        "url": "/static/sprites/icons.svg#menu-lines",
+        "transfer": 27811,
+        "decoded": 122533
+      },
+      {
+        "url": "/_app/immutable/nodes/0.CQQzjRem.js",
+        "transfer": 35428,
+        "decoded": 98637
+      },
+      {
+        "url": "/_app/immutable/chunks/Do44W7pB.js",
+        "transfer": 26400,
+        "decoded": 70393
+      },
+      {
+        "url": "/_app/immutable/chunks/DNQVmNA6.js",
+        "transfer": 23452,
+        "decoded": 67073
+      },
+      {
+        "url": "/_app/immutable/chunks/BtsE4PAk.js",
+        "transfer": 25889,
+        "decoded": 66223
+      },
+      {
+        "url": "/_app/immutable/chunks/BtgbJx5P.js",
+        "transfer": 19061,
+        "decoded": 63232
+      },
+      {
+        "url": "/_app/immutable/chunks/BCRYQOY7.js",
+        "transfer": 20687,
+        "decoded": 62593
+      },
+      {
+        "url": "/_app/immutable/chunks/C3LSid07.js",
+        "transfer": 22465,
+        "decoded": 59229
+      },
+      {
+        "url": "/_app/immutable/chunks/CgJYKt7F.js",
+        "transfer": 16501,
+        "decoded": 50733
+      },
+      {
+        "url": "/_app/immutable/chunks/X_ucrKb_.js",
+        "transfer": 18176,
+        "decoded": 48974
+      },
+      {
+        "url": "/_app/immutable/nodes/31.CSdZ4q83.js",
+        "transfer": 14967,
+        "decoded": 47259
+      },
+      {
+        "url": "/_app/immutable/chunks/BP3SRhG9.js",
+        "transfer": 15684,
+        "decoded": 44547
+      }
+    ]
+  },
+  "legacy-warm-route": {
+    "note": "already-booted app, client-side navigation",
+    "requests": 10,
+    "transferKB": 918.7,
+    "decodedKB": 1769.6,
+    "documentDecodedKB": 0,
+    "rows": 51,
+    "toRowsMs": 1504,
+    "lastByteMs": 1350,
+    "modelsEndpointCalls": [
+      "/api/v1/models/  1503.2 kB"
+    ],
+    "top": [
+      {
+        "url": "/api/v1/models/",
+        "transfer": 936006,
+        "decoded": 1539300
+      },
+      {
+        "url": "/static/icons/favicon.png",
+        "transfer": 300,
+        "decoded": 170761
+      },
+      {
+        "url": "/_app/immutable/nodes/31.CSdZ4q83.js",
+        "transfer": 0,
+        "decoded": 47259
+      },
+      {
+        "url": "/_app/immutable/chunks/C83syoBY.js",
+        "transfer": 0,
+        "decoded": 36684
+      },
+      {
+        "url": "/_app/immutable/nodes/6.CMGTryjS.js",
+        "transfer": 0,
+        "decoded": 8718
+      },
+      {
+        "url": "/api/config",
+        "transfer": 1789,
+        "decoded": 3548
+      },
+      {
+        "url": "/api/v1/groups/",
+        "transfer": 1385,
+        "decoded": 3369
+      },
+      {
+        "url": "/_app/immutable/chunks/aNGCbwNZ.js",
+        "transfer": 0,
+        "decoded": 1278
+      },
+      {
+        "url": "/api/v1/auths/",
+        "transfer": 875,
+        "decoded": 1011
+      },
+      {
+        "url": "/api/v1/configs/branding",
+        "transfer": 402,
+        "decoded": 132
+      }
+    ]
+  },
+  "nobuild-cold-page1": {
+    "note": "first visit — its own document, no SvelteKit bundle",
+    "requests": 11,
+    "transferKB": 233.7,
+    "decodedKB": 471.8,
+    "documentDecodedKB": 74.3,
+    "rows": 24,
+    "toRowsMs": 152,
+    "lastByteMs": 148,
+    "modelsEndpointCalls": [],
+    "top": [
+      {
+        "url": "/static/icons/favicon.png",
+        "transfer": 300,
+        "decoded": 170761
+      },
+      {
+        "url": "/pages/workshop/agents/avatar/talk-to-wolfram?v=d92e88dc",
+        "transfer": 97570,
+        "decoded": 97270
+      },
+      {
+        "url": "/pages/workshop/agents  (document)",
+        "transfer": 7015,
+        "decoded": 76086
+      },
+      {
+        "url": "/pages/workshop/agents/avatar/astro-pi-ai?v=4bda7296",
+        "transfer": 45805,
+        "decoded": 45505
+      },
+      {
+        "url": "/pages/workshop/agents/avatar/heuristic-expert?v=1112b32c",
+        "transfer": 38807,
+        "decoded": 38507
+      },
+      {
+        "url": "/pages/workshop/agents/avatar/hemingway-in-a-bottle?v=29b2a2ca",
+        "transfer": 17905,
+        "decoded": 17605
+      },
+      {
+        "url": "/pages/workshop/agents/avatar/izzy-voice?v=29b2a2ca",
+        "transfer": 17905,
+        "decoded": 17605
+      },
+      {
+        "url": "/pages/_assets/pages.css?v=3.0.0",
+        "transfer": 4020,
+        "decoded": 10094
+      },
+      {
+        "url": "/pages/workshop/agents/avatar/snap-ai?v=df496091",
+        "transfer": 9946,
+        "decoded": 9646
+      },
+      {
+        "url": "https://startr.style/style.css",
+        "transfer": 0,
+        "decoded": 0
+      },
+      {
+        "url": "https://startr.style/fonts/Nunito-Sans.css",
+        "transfer": 0,
+        "decoded": 0
+      }
+    ]
+  },
+  "nobuild-page2": {
+    "note": "the second page of the same list",
+    "requests": 11,
+    "transferKB": 242.9,
+    "decodedKB": 485.9,
+    "documentDecodedKB": 75.3,
+    "rows": 24,
+    "toRowsMs": 389,
+    "lastByteMs": 386,
+    "modelsEndpointCalls": [],
+    "top": [
+      {
+        "url": "/static/icons/favicon.png",
+        "transfer": 300,
+        "decoded": 170761
+      },
+      {
+        "url": "/pages/workshop/agents/avatar/ifix-it-music-helper?v=bd1685d2",
+        "transfer": 109154,
+        "decoded": 108854
+      },
+      {
+        "url": "/pages/workshop/agents/avatar/animal-farm?v=b452e13b",
+        "transfer": 88986,
+        "decoded": 88686
+      },
+      {
+        "url": "/pages/workshop/agents?page=2  (document)",
+        "transfer": 7378,
+        "decoded": 77144
+      },
+      {
+        "url": "/pages/workshop/agents/avatar/business-coach?v=4912c4a2",
+        "transfer": 19633,
+        "decoded": 19333
+      },
+      {
+        "url": "/pages/workshop/agents/avatar/bialik-demo?v=076d519c",
+        "transfer": 13345,
+        "decoded": 13045
+      },
+      {
+        "url": "/pages/_assets/pages.css?v=3.0.0",
+        "transfer": 0,
+        "decoded": 10094
+      },
+      {
+        "url": "/pages/workshop/agents/avatar/snap?v=df496091",
+        "transfer": 9946,
+        "decoded": 9646
+      },
+      {
+        "url": "https://startr.style/style.css",
+        "transfer": 0,
+        "decoded": 0
+      },
+      {
+        "url": "https://startr.style/fonts/Nunito-Sans.css",
+        "transfer": 0,
+        "decoded": 0
+      },
+      {
+        "url": "https://startr.style/fonts/Nunito-Sans-normal-200-1000-latin.woff2",
+        "transfer": 0,
+        "decoded": 0
+      }
+    ]
+  },
+  "nobuild-warm-cache": {
+    "note": "second visit — stylesheets and assets already cached",
+    "requests": 11,
+    "transferKB": 7.1,
+    "decodedKB": 471.8,
+    "documentDecodedKB": 74.3,
+    "rows": 24,
+    "toRowsMs": 44,
+    "lastByteMs": 14,
+    "modelsEndpointCalls": [],
+    "top": [
+      {
+        "url": "/static/icons/favicon.png",
+        "transfer": 300,
+        "decoded": 170761
+      },
+      {
+        "url": "/pages/workshop/agents/avatar/talk-to-wolfram?v=d92e88dc",
+        "transfer": 0,
+        "decoded": 97270
+      },
+      {
+        "url": "/pages/workshop/agents  (document)",
+        "transfer": 7015,
+        "decoded": 76086
+      },
+      {
+        "url": "/pages/workshop/agents/avatar/astro-pi-ai?v=4bda7296",
+        "transfer": 0,
+        "decoded": 45505
+      },
+      {
+        "url": "/pages/workshop/agents/avatar/heuristic-expert?v=1112b32c",
+        "transfer": 0,
+        "decoded": 38507
+      },
+      {
+        "url": "/pages/workshop/agents/avatar/hemingway-in-a-bottle?v=29b2a2ca",
+        "transfer": 0,
+        "decoded": 17605
+      },
+      {
+        "url": "/pages/workshop/agents/avatar/izzy-voice?v=29b2a2ca",
+        "transfer": 0,
+        "decoded": 17605
+      },
+      {
+        "url": "/pages/_assets/pages.css?v=3.0.0",
+        "transfer": 0,
+        "decoded": 10094
+      },
+      {
+        "url": "/pages/workshop/agents/avatar/snap-ai?v=df496091",
+        "transfer": 0,
+        "decoded": 9646
+      },
+      {
+        "url": "https://startr.style/style.css",
+        "transfer": 0,
+        "decoded": 0
+      },
+      {
+        "url": "https://startr.style/fonts/Nunito-Sans.css",
+        "transfer": 0,
+        "decoded": 0
+      }
+    ]
+  }
+}

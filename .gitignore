@@ -79,5 +79,5 @@ app/cypress/screenshots
 docs/decisions/*
 
 # Chart artifacts (not public - only for internal team use)
-!docs/charts/README.md
-docs/charts/*
+!charts/README.md
+charts/*

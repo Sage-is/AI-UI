@@ -1,0 +1,107 @@
+{
+  "count": 144,
+  "totalTransferMB": 3.67,
+  "totalDecodedMB": 9.39,
+  "top": [
+    {
+      "url": "/_app/immutable/chunks/BfxygJYf.js",
+      "transfer": 661881,
+      "decoded": 1755736
+    },
+    {
+      "url": "/_app/immutable/chunks/0CJ5KK_n.js",
+      "transfer": 601111,
+      "decoded": 1476464
+    },
+    {
+      "url": "/_app/immutable/chunks/1nZRDWt3.js",
+      "transfer": 481495,
+      "decoded": 1416786
+    },
+    {
+      "url": "/_app/immutable/chunks/5wNr7eJa.js",
+      "transfer": 272331,
+      "decoded": 763693
+    },
+    {
+      "url": "/_app/immutable/chunks/m5lhJ-ds.js",
+      "transfer": 218852,
+      "decoded": 605889
+    },
+    {
+      "url": "/_app/immutable/nodes/2.p0LDE6aG.js",
+      "transfer": 194231,
+      "decoded": 542568
+    },
+    {
+      "url": "/_app/immutable/chunks/AvGO_dA_.js",
+      "transfer": 164563,
+      "decoded": 433645
+    },
+    {
+      "url": "/_app/immutable/chunks/DhGSMN0b.js",
+      "transfer": 172172,
+      "decoded": 411412
+    },
+    {
+      "url": "/_app/immutable/assets/0.Blr3qMmi.css",
+      "transfer": 32498,
+      "decoded": 288833
+    },
+    {
+      "url": "/_app/immutable/chunks/COgB3wJf.js",
+      "transfer": 89349,
+      "decoded": 245693
+    },
+    {
+      "url": "/static/assets/fonts/Archivo-Variable.woff2",
+      "transfer": 187417,
+      "decoded": 187112
+    },
+    {
+      "url": "/_app/immutable/chunks/DkJ0_yAk.js",
+      "transfer": 59456,
+      "decoded": 151294
+    },
+    {
+      "url": "/_app/immutable/chunks/j1eltvli.js",
+      "transfer": 44939,
+      "decoded": 127857
+    },
+    {
+      "url": "/static/sprites/icons.svg#menu-lines",
+      "transfer": 25433,
+      "decoded": 122533
+    },
+    {
+      "url": "/_app/immutable/nodes/0.BzoOl3SV.js",
+      "transfer": 39928,
+      "decoded": 98638
+    },
+    {
+      "url": "/_app/immutable/chunks/Do44W7pB.js",
+      "transfer": 29993,
+      "decoded": 70393
+    },
+    {
+      "url": "/_app/immutable/chunks/CV6hgP5h.js",
+      "transfer": 27045,
+      "decoded": 67069
+    },
+    {
+      "url": "/_app/immutable/chunks/CtaU0x7m.js",
+      "transfer": 28417,
+      "decoded": 66223
+    },
+    {
+      "url": "/_app/immutable/chunks/BS0dyDia.js",
+      "transfer": 24190,
+      "decoded": 63232
+    },
+    {
+      "url": "/_app/immutable/chunks/BDzhim96.js",
+      "transfer": 23514,
+      "decoded": 62562
+    }
+  ]
+}
