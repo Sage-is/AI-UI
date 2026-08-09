@@ -221,7 +221,21 @@ DS=$(G dev-svelte dev); echo "$DS" | jq -e '.delivered==true' >/dev/null 2>&1 &&
 
 echo "== 10. UI serves to a fresh admin =="
 fetch_has "$BASE/" "[Hh][Tt][Mm][Ll]" && ok "/ serves SPA" || no "SPA broken"
-[ "$(curl -s -o /dev/null -w '%{http_code}' "$BASE/static/icons/favicon.svg")" = "200" ] && ok "favicon" || no "favicon broken"
+# Assert the icons `app/src/app.html` DECLARES, not one somebody remembers.
+#
+# This asked for `favicon.svg` until 2026-08-09, and that file was deleted on
+# 2026-08-02 — deliberately, because it was 203 kB of two 2036x2040 PNGs
+# base64-embedded in an SVG wrapper, fetched to draw a 16-pixel tab icon. So the
+# gate spent a week failing on the absence of something nobody wanted, which is
+# the worst kind: it blocks every push while checking nothing true.
+#
+# Keep this list in step with the `<link rel="icon">` tags in app.html. An icon
+# that is linked and missing is a broken tab; an icon that is neither is not
+# this gate's business.
+for ICON in favicon-96x96.png favicon.ico apple-touch-icon.png; do
+  [ "$(curl -s -o /dev/null -w '%{http_code}' "$BASE/static/icons/$ICON")" = "200" ] \
+    && ok "favicon $ICON" || no "favicon $ICON missing — app.html links it"
+done
 
 echo ""
 echo "================  8.I.2 RESULT: ${PASS} passed, ${FAIL} failed  ================"
