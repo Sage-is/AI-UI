@@ -38,6 +38,12 @@ const walkForward = (seen: string[] = []): Cypress.Chainable<string[]> =>
 		return cy.get('body').then(($body) => {
 			if ($body.find('[data-cy="setup-next"]').length === 0) return cy.wrap(next);
 			cy.get('[data-cy="setup-next"]').click();
+			// Wait for the address to MOVE before recursing. These panels swap in
+			// place as of 2026-08-09, so the click resolves before the next panel
+			// arrives — there is no page load for Cypress to block on any more.
+			// Without this the walk reads the panel it has just left, records it a
+			// second time, and stops short.
+			cy.location('pathname').should('not.eq', p);
 			return walkForward(next);
 		});
 	});

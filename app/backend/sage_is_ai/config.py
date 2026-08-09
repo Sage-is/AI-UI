@@ -1210,6 +1210,42 @@ SPRIG_UI_SCRIPTING_GRANT = PersistentConfig(
     os.environ.get("SPRIG_UI_SCRIPTING_GRANT", ""),
 )
 
+# Wired Sprigs™ — operator-supplied settings per grafted Sprig, as
+# {sprig_name: {wire_name: value}}. Empty = nothing wired.
+#
+# One config key rather than a table, matching SPRIG_ACTIVE_UI above. Pruning a
+# Sprig discards its wires, so revoking a setting is what already happens when
+# you remove the thing it configured.
+#
+# SECRET WIRES LIVE HERE IN CLEAR. That is a real limitation and it bounds what
+# may be a secret wire: a token for a third-party service the operator can
+# rotate, never a credential to this instance. `sprigs/wiring.py` is what stops
+# a secret being RENDERED; nothing here stops it being read by whoever can read
+# the config store.
+SPRIG_WIRES = PersistentConfig(
+    "SPRIG_WIRES",
+    "ui.sprig_wires",
+    {},
+)
+
+# An iCalendar (.ics) feed for the Calendar card on /pages/home. Empty = the
+# card shows its own "not configured" state and NOTHING IS FETCHED.
+#
+# This is the one setting in the no-build pages that makes the server reach off
+# the machine, so it is empty by default and stays that way until an operator
+# names a host. Nextcloud is the case it was built for — a shared calendar there
+# publishes a read-only ICS URL needing no credentials — but it is a plain feed
+# URL and any calendar that publishes one will do.
+#
+# Scaffold today, a wire tomorrow: the eventual home is a Wired Sprig™ with
+# `delivery: service-endpoint`, because a ui-Sprig fragment may not reach an
+# external URL at all and the fetch has to stay server-side.
+HOME_CALENDAR_ICS_URL = PersistentConfig(
+    "HOME_CALENDAR_ICS_URL",
+    "ui.home_calendar_ics_url",
+    os.environ.get("HOME_CALENDAR_ICS_URL", ""),
+)
+
 
 USER_PERMISSIONS_WORKSHOP_MODELS_ACCESS = (
     os.environ.get("USER_PERMISSIONS_WORKSHOP_MODELS_ACCESS", "False").lower() == "true"

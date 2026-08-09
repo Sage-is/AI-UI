@@ -277,8 +277,13 @@ def mark(present: bool) -> str:
 
 
 def runs_no_process(entries: list[dict]) -> bool:
-    """Every entry is a deliver Sprig — verified bytes, no child process."""
-    return all(e["spec"].get("server") == "deliver" for e in entries)
+    """Every entry runs no child process.
+
+    Two shapes qualify: `deliver` (pull + extract an artifact, then nothing) and
+    `none` (nothing is pulled either — the code already ships in the image, and
+    grafting only makes the capability available so it can be wired).
+    """
+    return all(e["spec"].get("server") in ("deliver", "none") for e in entries)
 
 
 def render(entries: list[dict], regions: dict[str, set[str]], dispatch: dict[str, dict]) -> str:
@@ -310,7 +315,11 @@ def render(entries: list[dict], regions: dict[str, set[str]], dispatch: dict[str
         elif cap in regions["graft"]:
             changed = "dispatches, no config write found"
         else:
-            changed = "nothing — delivery only"
+            changed = (
+                "nothing — the capability is enabled, then wired"
+                if all(e["spec"].get("server") == "none" for e in by_cap[cap])
+                else "nothing — delivery only"
+            )
         writes_config = bool(d and d["fields"])
         restart = "n/a — no process" if runs_no_process(by_cap[cap]) \
             else mark(cap in regions["restart"])
@@ -369,7 +378,14 @@ def render(entries: list[dict], regions: dict[str, set[str]], dispatch: dict[str
                 for f in d["fields"]:
                     w(f"- `{f}`")
         else:
-            w("No dispatch module. Grafting delivers bytes and changes no configuration.")
+            # by_cap[cap], NOT `entries` — the latter is every Sprig in the
+            # catalog, so this branch could never fire.
+            if all(e["spec"].get("server") == "none" for e in by_cap[cap]):
+                w("No dispatch module and nothing to deliver. The code ships in "
+                  "the image; grafting makes the capability available so it can "
+                  "be wired.")
+            else:
+                w("No dispatch module. Grafting delivers bytes and changes no configuration.")
         w("")
         w("| Entry | Server | Delivery | Arch | Model | Health |")
         w("|---|---|---|---|---|---|")
@@ -380,7 +396,7 @@ def render(entries: list[dict], regions: dict[str, set[str]], dispatch: dict[str
               f"| {s.get('delivery', 'built in')} "
               f"| {s.get('_arch', '?')} "
               f"| `{s.get('model', '—')}` "
-              f"| `{s.get('health_path', '/health')}` |")
+              f"| {'n/a — nothing runs' if s.get('server') == 'none' else chr(96) + s.get('health_path', '/health') + chr(96)} |")
         w("")
 
     w(END)

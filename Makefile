@@ -150,14 +150,20 @@ help:
 	@echo "  1) Build:          make it_build"
 	@echo "  2) Run:            make it_run"
 	@echo ""
-	@echo "  Working on the frontend? Pick by what you are changing:"
-	@echo "    Svelte AND server-side   make dev_run       # both live, no teardown"
-	@echo "    a no-build page          make review_live   # pages/ watched, tab follows"
-	@echo "    judging whether it ships make review        # baked image, no mounts"
-	@echo "    Svelte, then judge it    make review_rebuild"
+	@echo "  Working on the frontend? Two commands:"
+	@echo "    building        make dev      # everything live: Svelte, Python, pages/"
+	@echo "    judging it      make review   # the BAKED image, nothing mounted"
 	@echo ""
-	@echo "  NOTE: review_live does NOT rebuild Svelte. It mounts pages/ only,"
-	@echo "        so the bundle stays at whatever it_build last produced."
+	@echo "    make review LIVE=1     # + pages/ mounted and watched"
+	@echo "    make review REBUILD=1  # + it_build first, for Svelte changes"
+	@echo ""
+	@echo "  A review of your working tree is not a review of the artifact you"
+	@echo "  ship, so plain 'make review' is the pass that decides."
+	@echo ""
+	@echo "  'make dev' seeds admin@example.com / password on its OWN volume"
+	@echo "  (sage-ai-dev-data). Use another with: DEV_VOLUME=<name> make dev"
+	@echo "  It does NOT graft the example ui-Sprig: one unnamed slot means the"
+	@echo "  fragment lands on every page. Working on it? DEV_GRAFT_UI=1 make dev"
 	@echo ""
 	@echo "Available make commands:"
 	@echo ""
@@ -211,12 +217,32 @@ DOCKER_RUN_ARGS := $(COMMON_RUN_ARGS) \
 	$(if $(WEBUI_SECRET_KEY),-e WEBUI_SECRET_KEY=$(WEBUI_SECRET_KEY),) \
 	-v $(VOLUME_DATA)
 
-DEV_RUN_ARGS := --rm -p $(PORT_MAPPING) \
-	--add-host=host.docker.internal:host-gateway \
+# The dev loop gets its OWN volume, and that is load-bearing rather than tidy.
+# `make dev` seeds an administrator, and a user is only made admin when they are
+# the FIRST to sign up — every later one lands on DEFAULT_USER_ROLE, which is
+# `pending`. Sharing sage-ai-data with `it_run` meant the seed silently produced
+# a pending account on any volume that had ever been used, and the ui-Sprig graft
+# was then refused with a permissions error.
+#
+# Overridden by DEV_VOLUME, deliberately NOT by VOLUME: that one is set project
+# wide in distribution.env, so reusing it here would silently point dev back at
+# the shared volume — which is the bug this variable exists to prevent.
+# Reach a specific one when you mean to:  DEV_VOLUME=sage-open-webui make dev
+VOLUME_DEV_DATA ?= $(or $(DEV_VOLUME),sage-ai-dev-data):$(or $(DATA_MOUNT),/app/backend/data)
+
+# EXTENDS COMMON_RUN_ARGS, like DOCKER_RUN_ARGS does. It used to restate those
+# flags by hand, and it had drifted: SPRIG_REGISTRY was added to COMMON and
+# never copied here, so `make dev` reached for ghcr.io and every graft was
+# denied. That is the cost of a near-duplicate, and it is why this now extends.
+#
+# The network and the registry match what e2e and manual-check.sh already do —
+# `local-registry` is a container name, so it only resolves on sage-network.
+DEV_RUN_ARGS := $(COMMON_RUN_ARGS) \
+	--network sage-network \
+	-e SPRIG_REGISTRY=$(or $(SPRIG_REGISTRY),local-registry:5000) \
 	-p 5173:5173 \
 	$(if $(WEBUI_SECRET_KEY),-e WEBUI_SECRET_KEY=$(WEBUI_SECRET_KEY),) \
-	-v $(VOLUME_DATA) \
-	-v $(ENV_FILE) \
+	-v $(VOLUME_DEV_DATA) \
 	-v $(FRONTEND_SRC) \
 	-v $(STATIC_SRC) \
 	-v $(BACKEND_SRC) \
@@ -226,8 +252,7 @@ DEV_RUN_ARGS := --rm -p $(PORT_MAPPING) \
 	-v $$(pwd)/app/postcss.config.js:/app/postcss.config.js \
 	-v $$(pwd)/app/tailwind.config.js:/app/tailwind.config.js \
 	-v $$(pwd)/app/package.json:/app/package.json \
-	-e PAGES_RELOAD_DIRS=/app/backend/sage_is_ai/pages \
-	--name $(CONTAINER_NAME)
+	-e PAGES_RELOAD_DIRS=/app/backend/sage_is_ai/pages
 
 it_stop:
 	$(CONTAINER_RUNTIME) rm -f $(CONTAINER_NAME)
@@ -271,8 +296,14 @@ it_build_no_cache:
 	@$(NOTIFY_DONE)
 	@echo ""
 
-dev_run:
+## dev — the one dev loop. Svelte HMR on 5173, uvicorn --reload on 8080,
+## pages/ mounted and watched, an admin seeded and the example ui-Sprig™
+## grafted, so the instance is usable with no follow-up step. Everything is
+## live; nothing needs a rebuild or a teardown.
+dev: sprig_registry
 	$(CONTAINER_RUNTIME) run $(DEV_RUN_ARGS) $(IMAGE_NAME):$(IMAGE_TAG) bash -c "/app/backend/restore_backup_start.sh dev"
+
+dev_run: dev
 
 # Run targets
 it_run:
@@ -564,13 +595,18 @@ surface_budget:
 ## guard-rail that ran against a working tree would be testing something we do
 ## not ship. Do not add a live mode to them.
 review:
-	@KEEP=1 REUSE_DATA=1 scripts/manual-check.sh --graft-ui
+	@if [ "$(REBUILD)" = "1" ]; then $(MAKE) it_build; fi
+	@KEEP=1 REUSE_DATA=1 $(if $(LIVE),LIVE=1,) scripts/manual-check.sh --graft-ui
 
+# Aliases. The three targets above were three preset calls to one script that
+# already reads LIVE/KEEP/REUSE_DATA from the environment, so they collapsed
+# into `review` plus two flags. These stay because six docs and a month of
+# muscle memory point at them, and an alias costs one line.
 review_live:
-	@KEEP=1 REUSE_DATA=1 LIVE=1 scripts/manual-check.sh --graft-ui
+	@$(MAKE) review LIVE=1
 
-review_rebuild: it_build
-	@KEEP=1 REUSE_DATA=1 scripts/manual-check.sh --graft-ui
+review_rebuild:
+	@$(MAKE) review REBUILD=1
 
 ## e2e — headless Cypress from a pinned sibling container (no npm on host);
 ## videos land in app/cypress/videos. e2e_watch — same, but interactive GUI
@@ -603,7 +639,7 @@ gauntlet: it_build sprig_smoke
 # place: it is the only member that judges what the migration CLAIMS — that a
 # server-rendered surface is lighter than the SvelteKit one it replaces — rather
 # than whether the code runs.
-gauntlet_full: pipefail_lint pipefail_fixture ruff_gate cognitive_complexity chat_path_structure sprig_capabilities_check reasoning_finalizer_fixture serialize_blocks_fixture tool_call_accumulator_fixture chat_response_oracle gauntlet sprig_durability sprig_signing ui_sprig_gate parity_gate e2e_both surface_budget
+gauntlet_full: pipefail_lint pipefail_fixture ruff_gate cognitive_complexity chat_path_structure sprig_capabilities_check startr_swap_check reasoning_finalizer_fixture serialize_blocks_fixture tool_call_accumulator_fixture chat_response_oracle gauntlet sprig_durability sprig_signing ui_sprig_gate parity_gate e2e_both surface_budget
 
 ## it_build_amd64 — build an amd64 image via buildx + --load.
 ##
@@ -883,6 +919,15 @@ sprig_capabilities_check:  ## Gate: capability reference matches the code
 
 sprig_capabilities_teeth:  ## Prove the capability gate can fail
 	@python3 scripts/gates/sprig-capabilities/generate.py --self-test
+
+# Startr Swap is written to be published for other projects, including static
+# sites. That claim decays the first time somebody reaches for `/pages/` to fix
+# a bug: it still works here and silently stops working anywhere else.
+startr_swap_check:  ## Gate: the swap library names nothing in this application
+	@python3 scripts/gates/startr-swap/check.py --check
+
+startr_swap_teeth:  ## Prove the swap-library gate can fail
+	@python3 scripts/gates/startr-swap/check.py --self-test
 
 # Release-time only. The reference is generated and gated HERE, where it can see
 # the catalog it describes. The spec gets a FOLD, not a copy: a vocabulary view

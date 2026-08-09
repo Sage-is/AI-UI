@@ -27,6 +27,10 @@
 # Ctrl-C tears everything down.
 set -uo pipefail
 
+# One runtime, resolved the same way the Makefile resolves it. Hardcoding
+# `docker` here meant `make dev` and `make review` would use different
+# runtimes the day podman is installed.
+RUNTIME="${CONTAINER_RUNTIME:-$(command -v podman >/dev/null 2>&1 && echo podman || echo docker)}"
 IMG="${IMG:-sage-is/ai-ui:develop}"
 PORT="${PORT:-9443}"
 NET="${NET:-sage-network}"
@@ -50,11 +54,11 @@ BASE="http://localhost:8101"
 cleanup(){
   echo ""
   echo "tearing down…"
-  docker rm -f "$ROOT" "$TLS" >/dev/null 2>&1 || true
+  $RUNTIME rm -f "$ROOT" "$TLS" >/dev/null 2>&1 || true
   if [ "${REUSE_DATA:-0}" = "1" ]; then
-    echo "  keeping volume $VOL (REUSE_DATA=1) — remove it with: docker volume rm $VOL"
+    echo "  keeping volume $VOL (REUSE_DATA=1) — remove it with: $RUNTIME volume rm $VOL"
   else
-    docker volume rm "$VOL" >/dev/null 2>&1 || true
+    $RUNTIME volume rm "$VOL" >/dev/null 2>&1 || true
   fi
   rm -f /tmp/manual-Caddyfile
 }
@@ -76,7 +80,7 @@ else
   trap cleanup INT TERM
 fi
 
-docker network inspect "$NET" >/dev/null 2>&1 || docker network create "$NET" >/dev/null
+$RUNTIME network inspect "$NET" >/dev/null 2>&1 || $RUNTIME network create "$NET" >/dev/null
 cleanup >/dev/null 2>&1
 
 # LIVE=1 mounts the no-build pages package over the image's copy, so editing a
@@ -114,7 +118,7 @@ echo "== booting $IMG on a throwaway volume =="
 # the gates. ENABLE_SIGNUP is on only long enough to seed the first admin —
 # this fork hard-closes signup once one exists.
 # shellcheck disable=SC2086  # LIVE_MOUNT/LIVE_ENV are empty or one flag pair each
-docker run -d --name "$ROOT" --network "$NET" -p 8101:8080 \
+$RUNTIME run -d --name "$ROOT" --network "$NET" -p 8101:8080 \
   -e SPRIG_REGISTRY=local-registry:5000 -e ENABLE_SIGNUP=True -e WEBUI_AUTH=True \
   ${ENABLE_TRY_SAGE:+-e "ENABLE_TRY_SAGE=$ENABLE_TRY_SAGE"} \
   $LIVE_MOUNT $LIVE_ENV \
@@ -125,7 +129,7 @@ for _ in $(seq 1 120); do
   sleep 2
 done
 [ "$(curl -s -o /dev/null -w '%{http_code}' "$BASE/health")" = "200" ] || {
-  echo "failed to boot"; docker logs --tail 30 "$ROOT"; exit 1; }
+  echo "failed to boot"; $RUNTIME logs --tail 30 "$ROOT"; exit 1; }
 echo "  ✅ booted"
 
 echo "== seeding admin =="
@@ -165,7 +169,7 @@ https://localhost:$PORT {
 	reverse_proxy $ROOT:8080
 }
 CADDY
-docker run -d --name "$TLS" --network "$NET" -p "$PORT:$PORT" \
+$RUNTIME run -d --name "$TLS" --network "$NET" -p "$PORT:$PORT" \
   -v /tmp/manual-Caddyfile:/etc/caddy/Caddyfile:ro caddy:2-alpine >/dev/null
 for _ in $(seq 1 30); do
   curl -sk -o /dev/null "https://localhost:$PORT/health" 2>/dev/null && break; sleep 1
@@ -314,7 +318,7 @@ cat <<WALKTHROUGH
   TELL ME WHAT FEELS WRONG. The suite is green and that is exactly the
   evidence Phase S showed to be weakest — it passed a broken autoscroll.
 ${LIVE_NOTE}
-  Logs:  docker logs -f $ROOT
+  Logs:  $RUNTIME logs -f $ROOT
   Ctrl-C to tear down.
 ────────────────────────────────────────────────────────────────────────────
 
@@ -322,7 +326,7 @@ WALKTHROUGH
 
 if [ "${KEEP:-0}" = "1" ]; then
   echo "  KEEP=1 — the instance stays up after this exits."
-  echo "  Tear it down with:  docker rm -f $ROOT $TLS && docker volume rm $VOL"
+  echo "  Tear it down with:  $RUNTIME rm -f $ROOT $TLS && $RUNTIME volume rm $VOL"
   echo ""
   exit 0
 fi

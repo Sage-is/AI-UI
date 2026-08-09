@@ -31,14 +31,24 @@ from fastapi import HTTPException, Request
 
 from sage_is_ai.pages.templates import render
 
-from sage_is_ai.sprigs.models import GraftRequest, PruneRequest
+from sage_is_ai.sprigs.models import GraftRequest, PruneRequest, WireRequest
 
-__all__ = ["render_panel", "run_action"]
+__all__ = ["render_panel", "run_action", "save_wires"]
 
 # Supervisor lifecycle state -> operator label. The guard-rail spec reads the
 # data-state attribute rather than the word, so these stay free to be reworded.
-_LABEL = {"rooted": "Grafted", "wilted": "Wilted", "delivered": "Delivered"}
-_GRAFTED = {"rooted", "delivered"}
+# "enabled" is a Sprig™ that runs NOTHING and pulls nothing — its code already
+# ships in the image, so grafting only makes the capability available to be
+# wired (calendar is the first). Distinct from "delivered", which promises an
+# extracted artifact: a state whose name stops being true is worse than one
+# more state.
+_LABEL = {
+    "rooted": "Grafted",
+    "wilted": "Wilted",
+    "delivered": "Delivered",
+    "enabled": "Enabled",
+}
+_GRAFTED = {"rooted", "delivered", "enabled"}
 
 
 def _card(name: str, spec: dict, g: dict | None, host_arch: str, error: dict | None = None) -> dict:
@@ -74,6 +84,20 @@ def _card(name: str, spec: dict, g: dict | None, host_arch: str, error: dict | N
         "verb": verb,
         "button_label": label,
         "button_class": cls,
+        # WIRES. Rendered only for a grafted Sprig that declares them —
+        # configuring something not attached is an errand with no result.
+        #
+        # `wire_values` comes from the catalog endpoint, which already ran it
+        # through `public_values`, so a SECRET arrives as a set-or-not marker
+        # and never as its value. This panel does not re-derive that, because a
+        # second implementation of "may this be rendered" is how one of them
+        # ends up permissive.
+        "wires": [
+            {**w, "value": (spec.get("wire_values") or {}).get(w["name"], "")}
+            for w in (spec.get("wires") or [])
+        ] if state in _GRAFTED else [],
+        "unwired": bool(spec.get("unwired")) and state in _GRAFTED,
+        "missing_wires": ", ".join(spec.get("missing_wires") or []),
     }
 
 
@@ -135,3 +159,23 @@ async def run_action(request: Request, user, name: str, verb: str) -> str:
     return await render_panel(
         request, user, message=f"{done} {name}." + (f" {extra}" if extra else ""), kind="success"
     )
+
+
+async def save_wires(request: Request, user, name: str, form: dict) -> str:
+    """Store an admin's wires for one Sprig™, then re-render the whole panel.
+
+    A partial submission is a merge and an empty `secret` keeps what is stored —
+    both decided in `sprigs/wiring`, so this only has to hand the form over.
+    Re-rendering everything rather than patching one row is the same choice the
+    graft and prune actions make: no client-side model, nothing to fall out of
+    step.
+    """
+    from sage_is_ai.routers.sprigs import wire_sprig
+
+    try:
+        await wire_sprig(request, WireRequest(name=name, values=form), user)
+    except HTTPException as exc:
+        return await render_panel(
+            request, user, message=f"Could not wire {name}: {exc.detail}", kind="error"
+        )
+    return await render_panel(request, user, message=f"Wired {name}.")

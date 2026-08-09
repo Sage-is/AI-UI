@@ -48,6 +48,12 @@ from sage_is_ai.pages.templates import TEMPLATES_DIR, render
 from sage_is_ai.pages.branding_panel import render_branding, save_branding
 from sage_is_ai.pages.changelog_panel import mark_changelog_read, render_changelog
 from sage_is_ai.pages.features_panel import render_features, save_features
+from sage_is_ai.pages.calendar_panel import render_calendar
+from sage_is_ai.pages.settings_calendar_panel import (
+    render_settings_calendar,
+    save_settings_calendar,
+)
+from sage_is_ai.pages.home_panel import render_home
 from sage_is_ai.pages.developer_panel import render_developer, save_developer
 from sage_is_ai.pages.complete_panel import finish_setup, render_complete
 from sage_is_ai.pages.welcome_panel import render_welcome, start_wizard
@@ -65,7 +71,7 @@ from sage_is_ai.pages.search_audio_panel import (
     render_search_audio,
 )
 from sage_is_ai.pages.diagnostics_panel import render_diagnostics
-from sage_is_ai.pages.sprigs_panel import render_panel, run_action
+from sage_is_ai.pages.sprigs_panel import render_panel, run_action, save_wires
 from sage_is_ai.pages.agents_panel import (
     AVATAR_CACHE,
     AgentVerb,
@@ -283,6 +289,16 @@ async def pages_index(
         for panel in _SETUP_ORDER
     )
     everyone = _index_item(
+        "/pages/home",
+        _("Home"),
+        _("Your recent work, and whatever this instance has grafted."),
+        lang,
+    ) + _index_item(
+        "/pages/calendar",
+        _("Calendar"),
+        _("What is coming up, from the feeds this instance is pointed at."),
+        lang,
+    ) + _index_item(
         "/pages/changelog",
         _("What's New"),
         _("The release notes, open to every signed-in reader."),
@@ -358,6 +374,23 @@ async def sprigs_page(
 # against the catalog, which doubles as the allowlist, so an unknown name is
 # refused before anything runs. The capability is looked up there rather than
 # sent by the browser, so the browser has no chance to get it wrong.
+@router.post("/admin/sprigs/wire/{name}", response_class=HTMLResponse)
+async def sprigs_wire(
+    request: Request, name: str, user=Depends(require_admin_page)
+) -> HTMLResponse:
+    """Store an admin's wires for one Sprig™ and swap the whole panel back.
+
+    The form posts every declared wire, so this hands the raw form over and lets
+    `sprigs/wiring.validate` refuse anything undeclared — the catalog is the
+    authority, and a second opinion here would be a second thing to keep true.
+    """
+    form = await request.form()
+    return HTMLResponse(
+        await save_wires(request, user, name, dict(form)),
+        headers=_page_headers(request),
+    )
+
+
 @router.get("/admin/sprigs/panel", response_class=HTMLResponse)
 async def sprigs_panel(request: Request, user=Depends(require_admin_page)) -> HTMLResponse:
     return HTMLResponse(await render_panel(request, user))
@@ -783,6 +816,115 @@ async def changelog_page(
             subheading=subheading,
             scripts=("changelog-pager.js",),
             body=render_changelog(request, base="/pages/changelog"),
+        ),
+        headers=_page_headers(request),
+    )
+
+
+# ── The home dashboard ────────────────────────────────────────────────────────
+#
+# Open to every signed-in reader, like `/pages/changelog` and for the same
+# reason: a dashboard of your own chats is not admin material.
+#
+# It exists so a grafted ui-Sprig™ has a home screen to land on. `render_page`
+# emits `#sprig-ui-slot` and only `pages/` calls `render_page`, so the Svelte
+# `/home` cannot show a marketplace fragment. This surface can. See
+# `home_panel.py` for why it is a NEW page rather than a conversion of `/`.
+_HOME_PAGE = (
+    "Home",
+    "Your recent work, and whatever this instance has grafted.",
+)
+
+
+@router.get("/home", response_class=HTMLResponse)
+async def home_page(
+    request: Request, user=Depends(require_page_user)
+) -> HTMLResponse:
+    heading, subheading = _HOME_PAGE
+    return HTMLResponse(
+        render_page(
+            request=request,
+            title=f"{heading} — Sage.is AI",
+            heading=heading,
+            subheading=subheading,
+            # The only script on the page, and it swaps one word. See
+            # `assets/home-greeting.js`.
+            scripts=("home-greeting.js",),
+            body=render_home(request, user),
+        ),
+        headers=_page_headers(request),
+    )
+
+
+# ── The calendar ──────────────────────────────────────────────────────────────
+#
+# Open to every signed-in reader, like /pages/home. The month lives in the URL
+# so navigation is three links and the page needs no script.
+_CALENDAR_PAGE = (
+    "Calendar",
+    "What is coming up, from the feeds this instance is pointed at.",
+)
+
+
+@router.get("/calendar", response_class=HTMLResponse)
+async def calendar_page(
+    request: Request, month: str = "", user=Depends(require_page_user)
+) -> HTMLResponse:
+    heading, subheading = _CALENDAR_PAGE
+    return HTMLResponse(
+        render_page(
+            request=request,
+            title=f"{heading} — Sage.is AI",
+            heading=heading,
+            subheading=subheading,
+            body=render_calendar(request, user, month),
+        ),
+        headers=_page_headers(request),
+    )
+
+
+# ── A person's own calendar feeds ─────────────────────────────────────────────
+#
+# The FIRST per-user page on this stack. Every other `/pages/*` surface is
+# admin-gated or read-only, so `require_page_user` here means each person edits
+# their own settings and nobody else's — the row is keyed by `user.id`, never by
+# anything the request can name.
+_SETTINGS_CALENDAR_PAGE = (
+    "Your calendars",
+    "Calendar feeds only you see.",
+)
+
+
+@router.get("/settings/calendar", response_class=HTMLResponse)
+async def settings_calendar_page(
+    request: Request, user=Depends(require_page_user)
+) -> HTMLResponse:
+    heading, subheading = _SETTINGS_CALENDAR_PAGE
+    return HTMLResponse(
+        render_page(
+            request=request,
+            title=f"{heading} — Sage.is AI",
+            heading=heading,
+            subheading=subheading,
+            body=render_settings_calendar(request, user),
+        ),
+        headers=_page_headers(request),
+    )
+
+
+@router.post("/settings/calendar", response_class=HTMLResponse)
+async def settings_calendar_save(
+    request: Request, user=Depends(require_page_user)
+) -> HTMLResponse:
+    heading, subheading = _SETTINGS_CALENDAR_PAGE
+    form = await request.form()
+    return HTMLResponse(
+        render_page(
+            request=request,
+            title=f"{heading} — Sage.is AI",
+            heading=heading,
+            subheading=subheading,
+            body=await save_settings_calendar(request, user, dict(form)),
         ),
         headers=_page_headers(request),
     )

@@ -151,6 +151,63 @@ went red against correct code.
 - **startr.style is first-party** (`~/Documents/Projects/GitHub/WEB-Startr.Style/`).
   When a footgun bites, name both the consumer workaround and the upstream fix.
   Never edit that repo silently — surface the trade-off and ask.
+- **Two classes of agent, and they are not interchangeable.** See below.
+
+### Base Agents and Resident Agents™
+
+Settled 2026-08-08. Capitalise both when they name the class, and use ™ on
+Resident Agent™ at first use in a document.
+
+| Class | What it is | What it can write |
+| --- | --- | --- |
+| **Base Agent** | A model and a prompt in a conversation. It has no place of its own. | Only its replies, which reach our interface or an API caller. To write anywhere else it needs an OpenAPI tool server as a shim — every tool a Base Agent can call is an admin-configured tool server, and this codebase ships no in-app tool authoring. |
+| **Resident Agent™** | It gets a VM or workspace, and its own file vault or repo. It lives on a machine and keeps its things there. | Files, directly. No shim needed. It also carries tools from the harness that runs it, which are not tools we installed. |
+
+Keep four names apart. **Resident Agent™** is the class. **Resident Agent
+Daemon**, or **RAD** (Alexander, 2026-08-09), is the process that hosts one —
+what runs on a machine and answers over HTTP; a **RAD server** is the box or
+container it runs on, and **RAD services** are what a fleet of them offers.
+**Pullbot** (`Sage-is/pullbot9000`) is one implementation of a RAD. **The
+Central Intelligence Resident Agent™** is the first one we are building.
+
+The distinction earns its keep the moment there is more than one: the endpoints
+are numbered — `pullbot9000.sage.is` and `pullbot9001.sage.is` — because R and S
+each want their own agents, so "which Resident Agent" and "which daemon serves
+it" stop being the same question.
+
+A Resident Agent™ reaches a Space as a **model connection**, not as a tool
+server — Pullbot already serves an OpenAI-compatible API with SSE streaming, and
+Spaces already call it. A tool server gives a Base Agent a tool. A model
+connection makes the Resident Agent™ the thing you talk to.
+
+### Wires or settings? The rule
+
+A **wire** is what the operator must decide. A **setting** is what a person must
+decide. If two people on one instance would answer differently, it is a setting;
+if answering it twice makes no sense, it is a wire.
+
+That rule exists because it was got wrong once: the calendar feed shipped as an
+instance-wide config, so everyone on an instance saw the same calendar. Personal
+things live in `users.settings`; shared things are wires.
+
+### Wired Sprigs™
+
+A Sprig™ that carries operator-supplied settings is a **Wired Sprig™**. The
+settings are **wires**. You graft it, then you wire it. A Sprig with unsupplied
+required wires is **unwired** and does not run. Pruning discards the wires.
+
+**Wiring shipped 2026-08-09** — `sprigs/wiring.py`, `SPRIG_WIRES`, and
+`POST /sprigs/wire`, with the form on `/pages/admin/sprigs`. Three rules carry
+the risk, and all three live in that one module rather than in each surface:
+
+- **The catalog is the authority.** An undeclared wire is refused, not dropped.
+- **A secret wire is never rendered back.** It reports as set-or-not, and an
+  empty submission KEEPS the stored value rather than erasing it.
+- **Wires are stored in clear.** That bounds a secret wire to a rotatable
+  third-party token, never a credential to this instance.
+
+First customer: the `calendar` Sprig. See
+`docs/decisions/2026-08-09-wired-sprigs-and-two-layers.md`.
 
 ## 6. The gates, and what each proves
 
@@ -222,10 +279,19 @@ before touching one. Check size and mtime after any run that used them.
   deleted**, and the UI's import path strips the slash. Every imported prompt is
   undeletable and nothing reports it. Fix at the write point, not the three read
   points.
-- **htmx is 49.7 kB and 51–70% of each panel that loads it**, for three
-  attributes a 956-byte iframe covers. Whether to retire it is open.
-- **Where the swap enhancer lives** is undecided; the prototype is an inline
-  `<script>` that cannot ship under a Content-Security-Policy.
+- **htmx is 50,917 bytes (16,367 gzipped) and 51–70% of each panel that loads
+  it**, for three attributes Startr Swap now covers. Retiring it is the next
+  step, held back deliberately until the swapper has proven itself rather than
+  moving three load-bearing admin surfaces on an untested mechanism.
+- **Where the swap enhancer lives was settled on 2026-08-09.**
+  `pages/assets/startr-swap.js`, appended to every page by `shell.py` beside
+  `dev-reload.js`, so no route opts in and none can forget. The inline prototype
+  is deleted and the Content-Security-Policy problem with it. The engine changed
+  from the htmz iframe to `fetch` + `DOMParser`: an iframe navigates for real, so
+  a response's scripts run inside it and its stylesheets are re-fetched every
+  swap. Written as a publishable library — nothing in it names this application,
+  and `make startr_swap_check` keeps it that way. See
+  `docs/decisions/2026-08-09-startr-swap-link-swapping.md`.
 - **How often each route is opened** is the one input nobody has. There is no
   telemetry. It is a judgement call, and it is the input most likely to reorder
   the work.

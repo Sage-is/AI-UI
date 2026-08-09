@@ -4,6 +4,6 @@
 	import DashboardShell from '$lib/components/layout/DashboardShell.svelte';
 </script>
 
-<DashboardShell title="Home">
+<DashboardShell title="Calendar">
 	<slot />
 </DashboardShell>

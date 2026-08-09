@@ -21,6 +21,24 @@ Time is measured **inside the browser**, from navigation start for a document lo
 
 Two findings from that measurement belong in this document rather than only on the board. `/api/models` and `/api/v1/models/` together are **41% of the SPA page load** — two endpoints carrying the same base64 avatars for one list, which is why "prune, don't port" is a rule here. And the server-rendered page carries **zero** `data:` URIs against 66 in the JSON, because avatars became content-hashed URLs the browser can cache; that is what turns a repeat visit into 7 kB.
 
+## Two modes: replace, or hollow
+
+Decided 8 August 2026. Choose before step 0, because it changes what "done" means.
+
+The migration had one mode — **replace**: the server-rendered page takes the address, the Svelte file is deleted. That is right for a surface a reader reaches directly. The try.sage welcome page is the worked example.
+
+It is wrong for a surface that lives **inside the app chrome**. `/home` sits in the `(app)` route group — sidebar, chat list, navigation. Replace it and the reader loses all of that. try.sage welcome could be replaced outright precisely because an anonymous visitor had no chrome to lose.
+
+So there is a second mode. **Hollow** the route: it keeps its address and its chrome, gives up its own content, and hosts the server-rendered page inside itself. One implementation of the view, at the address people already use. `app/src/lib/utils/pageHost.ts` is the mechanism; `/home` is the first one.
+
+**Choosing is one question: does the reader lose anything if the SPA shell goes away?** If yes, hollow it.
+
+A hollow tree is alive — only the cambium under the bark carries sap, and old trees are routinely hollow and healthy. The name carries the warning too: **a hollow tree eventually comes down.** A hollowed route is a Svelte file kept past its content, so record what has to be true before it is deleted, or it becomes permanent.
+
+**Hollowing costs bytes.** The route boots the SPA floor and then fetches a page on top — more than either alone. It buys reach and a single implementation, never payload. Do not cite it as a payload win.
+
+Full reasoning, the names considered and rejected, and what it does to the parity gate: [`docs/decisions/2026-08-08-hollowing-a-svelte-route.md`](decisions/2026-08-08-hollowing-a-svelte-route.md).
+
 ## The order of work
 
 Order matters more than any single step. Most of what follows exists because someone did it backwards once and paid for it.
@@ -85,24 +103,30 @@ Never run `make it_build` to look at something. These pages have no build step, 
 
 | you want to | run |
 | --- | --- |
-| change a page and watch it | `make review_live` |
-| **change Svelte AND server-side, without tearing down** | **`make dev_run`** |
+| **build anything** | **`make dev`** |
 | judge whether it ships | `make review` |
-| change Svelte, then judge the artifact | `make review_rebuild` |
+| judge a page without rebuilding | `make review LIVE=1` |
+| judge Svelte changes | `make review REBUILD=1` |
 
-**`dev_run` is the one to reach for when work spans both halves**, and it is the mode people miss. It publishes 5173, mounts the frontend source, the static dir, the whole backend and every Vite/Svelte config, then runs `uvicorn --reload` and `vite dev` side by side in one container. Svelte hot-reloads, Python reloads, and neither needs a rebuild or a teardown.
+**Two commands, as of 9 August 2026.** There were four, and they differed by two booleans that `scripts/manual-check.sh` already read from the environment, so three of them were preset calls to one script. `dev_run`, `review_live` and `review_rebuild` survive as aliases.
+
+**`make dev` is the one to reach for whenever you are building.** It publishes 5173, mounts the frontend source, the static dir, the whole backend and every Vite/Svelte config, then runs `uvicorn --reload` and `vite dev` side by side in one container. Svelte hot-reloads, Python reloads, and neither needs a rebuild or a teardown.
+
+It also seeds `admin@example.com` / `password` and grafts the example ui-Sprig™, so the instance is usable with no follow-up step. **That is why dev has its own volume, `sage-ai-dev-data`.** A user is only made an administrator when they are the *first* to sign up; every later one lands on `DEFAULT_USER_ROLE`, which is `pending`. Sharing the volume with `it_run` meant the seed quietly produced a pending account on any volume that had been used before, and the ui-Sprig graft was then refused. Reach a specific volume when you mean to: `DEV_VOLUME=sage-open-webui make dev`.
+
+**The Vite dev proxy is an allowlist, and it is the one thing that can make a working page 404.** `vite.config.ts` forwards a fixed list of prefixes to the backend on 8080; anything not on it never leaves Vite. `/pages` was missing until 9 August 2026, so every no-build surface 404'd under `make dev` while working perfectly in the image. Add a backend route with a new top-level prefix and add it to the `BACKEND` array in that file — one line, and the comment there says the same.
 
 Until 2 August 2026 it was missing one thing: `PAGES_RELOAD_DIRS`. The backend was already reloading, but the pages shell reads that variable to decide whether to serve the browser-refresh island, and `/pages/_dev/reload` is not registered without it — so a template edit reloaded the server and no open tab had any reason to ask for it. One environment variable, and the two dev modes stopped disagreeing.
 
-`review_live` still exists and is still the right tool for judging a page, because it boots the seeded review instance with the ui-Sprig grafted and the walkthrough printed. The split is honest: `dev_run` is for building, `review_live` is for looking.
+`make review LIVE=1` is still the right tool for judging a page, because it boots the seeded review instance against the BAKED bundle with the walkthrough printed. The split is honest: `dev` is for building, `review` is for looking.
 
-**`review_live` does NOT rebuild Svelte, and nothing warns you.** It mounts `sage_is_ai/pages/` and nothing else; the bundle is baked into the image at `/app/build`. Edit a Svelte file under `review_live` and you will be looking at whatever `it_build` last produced, silently. That only bites on surfaces the SPA still owns — `SetupDialog.svelte` is the live example — but it bites without a message.
+**`review LIVE=1` does NOT rebuild Svelte, and nothing warns you.** It mounts `sage_is_ai/pages/` and nothing else; the bundle is baked into the image at `/app/build`. Edit a Svelte file under `review LIVE=1` and you will be looking at whatever `it_build` last produced, silently. That only bites on surfaces the SPA still owns — `SetupDialog.svelte` is the live example — but it bites without a message.
 
-Under `review_live` the pages package is mounted and watched, and **nothing needs a hand**:
+Under `review LIVE=1` the pages package is mounted and watched, and **nothing needs a hand**:
 
 - **Save a `.css` or `.js` under `pages/assets/`** and the stylesheet swaps in place. No reload, so the page keeps its scroll position and any open dialog. That matters more than it sounds: styling a wizard panel used to mean reopening the wizard after every save.
 - **Save a `.py`** and the app restarts itself in about 2.8 seconds, then the tab reloads when it comes back.
-- **Switching between `review_live` and `review`** takes about 7 seconds, because the data volume is kept and the admin is already seeded.
+- **Switching between `review LIVE=1` and `review`** takes about 7 seconds, because the data volume is kept and the admin is already seeded.
 
 Open `/pages/` for an index of every server-rendered page. It carries a banner naming what is watched whenever the reloader is on.
 
@@ -148,6 +172,20 @@ The client posts a Sprig name to a path and nothing else. Not the capability, no
 
 A mutation returns the entire fragment and htmx replaces it. There is no client-side model to fall out of step with the server's, so the class of bug where the two disagree cannot occur. It costs a few hundred bytes per mutation. It also buys something nobody designed for: every swap is a new element, so a CSS animation on a message restarts by itself, with no script.
 
+### Links swap themselves, and a page usually declares nothing
+
+`shell.py` puts `data-swap="/pages/"` on `<main>` and appends `startr-swap.js` to every page, so links and forms inside `/pages/` swap in place instead of reloading. A new page inherits this and declares nothing.
+
+Three cases need a word, and only three:
+
+- **A region that updates on its own** — a results list under a pager — gets `data-swap` *and an `id`*. The id is not decoration: it is how the response names the piece coming back. `#prompts-results` is the worked example.
+- **A control outside the region it updates** — a search form above its own results — names it with `data-swap-target="#that-id"`. Controls *inside* a region need nothing; the nearest region above a control is the one it updates.
+- **A form whose endpoint answers with a fragment** gets `data-swap-off`. The swapper expects a document it can find a region in, and without the opt-out the fallback is a real navigation to a bare panel with no stylesheet — the bug `pages-action-response.cy.ts` exists for.
+
+Everything still works with JavaScript off: the server emits no attribute the swapper needs, so a link is a link and a form is a full-page POST. That is why the routes above must keep answering with whole documents.
+
+The library itself knows nothing about this application, because it is meant to be published for other projects. `make startr_swap_check` fails if a token from this repo appears in it.
+
 ### Sentences belong in the backend
 
 The prune response returns `messages` rather than booleans, because the Svelte panel, the island and the fragment each carried their own copy of the same six strings. `post_graft_note` already worked this way.
@@ -160,7 +198,19 @@ The prune response returns `messages` rather than booleans, because the Svelte p
 
 The parity gate is a coverage floor. Identical hooks do not mean identical behaviour, since a button that renders and does nothing carries the same `data-cy` as one that works. That is the bug it was built after. Behaviour stays each surface spec's job.
 
-A green suite is the weakest evidence on an interactive surface. Phase S shipped an autoscroll that passed 13/13 under a real browser driver and was broken on a real trackpad. Phase 2 shipped a fix button that rendered and did nothing while every assertion passed. So every migrated surface gets a human pass before it takes over a route, and `make review` boots a seeded instance for exactly that. Use `make review`, not `review_live`, for the pass that decides: a review of your working tree is not a review of the artifact you ship.
+**A surface has three states, not two.** The registry used to be binary — registered means compared, removed means gone. Hollowing added a middle one.
+
+| State | Implementations | Addresses | Parity |
+| --- | --- | --- | --- |
+| **Registered** | two | two | compared every run |
+| **Hollowed** | one | two | **exempt** — a host spec replaces it |
+| **Deleted** | one | one | entry removed, same commit as the deletion |
+
+**The exemption is triggered by hollowing or deletion — a structural fact — never by "parity achieved", which is a judgement.** Parity reached once does not mean parity holds. The gate's value is catching what an author did not think to test *later*, when somebody edits the no-build page and quietly drops a control. Stopping the comparison the moment parity is reached would remove the guard exactly when editing starts.
+
+A hollowed surface is different in kind: both addresses serve the same bytes, so comparison is a route judged against itself — the mirror that `surfaces.ts` warns about, whose failure is indistinguishable from success. What replaces it judges the host: that the fetch happened, that server-rendered markup arrived, that the marketplace slot came with it, and that a failure says so instead of showing an empty box. `home-hollow.cy.ts` is the worked example.
+
+A green suite is the weakest evidence on an interactive surface. Phase S shipped an autoscroll that passed 13/13 under a real browser driver and was broken on a real trackpad. Phase 2 shipped a fix button that rendered and did nothing while every assertion passed. So every migrated surface gets a human pass before it takes over a route, and `make review` boots a seeded instance for exactly that. Use plain `make review`, not `LIVE=1`, for the pass that decides: a review of your working tree is not a review of the artifact you ship.
 
 Be careful about the opposite mistake, though, because we made it on branding. The colour picker looked like a human-only control, since no driver can open an OS colour dialog. But that dialog is the browser's code. Ours is the handler underneath, and a synthetic `input` event reaches it exactly as a real one does, so both directions of the picker and its hex field are tested now. Before filing something as human-only, work out whether the part you care about is your code or the browser's.
 

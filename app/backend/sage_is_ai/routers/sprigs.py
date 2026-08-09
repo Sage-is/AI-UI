@@ -26,6 +26,17 @@ from sage_is_ai.sprigs.models import (
     GraftResponse,
     PruneRequest,
     UiScriptingGrantRequest,
+    WireRequest,
+)
+from sage_is_ai.sprigs.wiring import (
+    WireError,
+    clear_wires,
+    declared_wires,
+    missing_required,
+    public_values,
+    read_wires,
+    validate as validate_wires,
+    write_wires,
 )
 from sage_is_ai.utils.auth import get_admin_user
 
@@ -44,13 +55,20 @@ async def get_sprig_catalog(request: Request, user=Depends(get_admin_user)):
     # click that 503s. Uses the SAME fail-closed rule graft() enforces, so the
     # button and the guard can't drift: `compatible` is True only for an arch
     # match or a positively-declared architecture-neutral entry.
+    cfg = request.app.state.config
     catalog = {}
     for name, spec in supervisor.CATALOG.items():
+        stored = read_wires(cfg, name)
         catalog[name] = {
             **spec,
             "compatible": _graft_refusal(spec, HOST_ARCH) is None,
+            # Wires go out as PUBLIC values only. A secret reports set-or-not,
+            # never its value — this endpoint is read by a panel, and a panel is
+            # a browser.
+            "wire_values": public_values(spec, stored),
+            "unwired": bool(missing_required(spec, stored)),
+            "missing_wires": missing_required(spec, stored),
         }
-    cfg = request.app.state.config
     return {
         "catalog": catalog,
         "grafted": supervisor.handles(),
@@ -366,6 +384,8 @@ async def prune_sprig(
         cfg.SPRIG_ACTIVE_UI = ""
         log.info("pruned active ui sprig '%s'; fragment removed", form_data.name)
 
+    had_wires = clear_wires(cfg, form_data.name)
+
     if had_scripting_grant:
         # Revoking at prune is the plan's rule, and it is also the only way the
         # grant cannot outlive what it was granted to: a name left behind here
@@ -392,6 +412,8 @@ async def prune_sprig(
          "Fragment removed — the page returns to its default layout on reload."),
         (had_scripting_grant,
          "Scripting permission revoked with the Sprig™ it was granted to."),
+        (had_wires,
+         "Wires discarded with the Sprig™ they configured, secrets included."),
     ]
 
     return {
@@ -404,6 +426,7 @@ async def prune_sprig(
         "theme_reset": was_active_theme,
         "ui_reset": was_active_ui,
         "scripting_grant_revoked": had_scripting_grant,
+        "wires_cleared": had_wires,
         "error_cleared": error_cleared,
         "messages": [text for fired, text in resets if fired],
     }
@@ -452,4 +475,75 @@ async def set_ui_scripting_grant(
         "status": True,
         "name": form_data.name,
         "ui_scripting_grant": str(cfg.SPRIG_UI_SCRIPTING_GRANT or ""),
+    }
+
+
+@router.post("/wire")
+async def wire_sprig(
+    request: Request,
+    form_data: WireRequest,
+    user=Depends(get_admin_user),
+):
+    """Supply the settings a grafted Sprig™ needs — its wires.
+
+    You graft a Sprig, then you wire it. A Sprig with an unsupplied required
+    wire is UNWIRED and does not run; pruning discards the wires with the thing
+    they configured, so revoking a setting is not a second errand.
+
+    FAIL-CLOSED ON THE DECLARATION. The CATALOG says which wires exist, exactly
+    as it says which capabilities exist, and an undeclared name is refused
+    rather than dropped. Silently ignoring a wire somebody typed is how an
+    operator ends up certain they configured something they did not.
+
+    THE RESPONSE NEVER CARRIES A SECRET. It returns `public_values`, which
+    reports a secret as set-or-not. A value that has reached a browser once has
+    reached a cache, a screenshot and a bug report.
+    """
+    supervisor = request.app.state.sprig_supervisor
+    spec = supervisor.CATALOG.get(form_data.name)
+    if spec is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"'{form_data.name}' is not in the catalog",
+        )
+    if not declared_wires(spec):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"'{form_data.name}' declares no wires",
+        )
+
+    try:
+        checked = validate_wires(spec, form_data.values)
+    except WireError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
+        ) from exc
+
+    cfg = request.app.state.config
+    stored = write_wires(cfg, form_data.name, checked)
+    still_missing = missing_required(spec, stored)
+
+    # A changed wire must take effect on the next page, not in five minutes.
+    # Anything a wire points at may be cached, and an operator who fixes a
+    # setting and sees no change concludes the feature is broken.
+    try:
+        from sage_is_ai.pages.calendar_card import forget
+
+        forget()
+    except Exception:  # noqa: BLE001 — a cache flush must never fail a save
+        pass
+
+    log.info(
+        "wired '%s' (%d value(s)); %s",
+        form_data.name,
+        len(checked),
+        f"still unwired: {still_missing}" if still_missing else "fully wired",
+    )
+
+    return {
+        "status": True,
+        "name": form_data.name,
+        "values": public_values(spec, stored),
+        "unwired": bool(still_missing),
+        "missing": still_missing,
     }

@@ -123,6 +123,21 @@ export const SURFACES = {
 		nobuild: '/pages/workshop/prompts',
 		content: '[data-cy="prompts-row"]'
 	}
+	// `home` was registered here on 2026-08-08 and retired the same day, because
+	// the route was HOLLOWED rather than replaced: `/home` now hosts
+	// `/pages/home` inside the app chrome, so there is one implementation behind
+	// two addresses. Comparing them would be this file's own warning come true —
+	// a route judged against itself, passing for the wrong reason.
+	//
+	// A hollowed surface is EXEMPT from parity, and the trigger for that
+	// exemption is hollowing or deletion — a structural fact — never "parity
+	// achieved", which is a judgement. Parity reached once does not mean parity
+	// holds; the gate exists to catch what an author did not think to test
+	// later. `home-hollow.cy.ts` judges the host instead: that the fetch
+	// happened, that server-rendered markup arrived, that the marketplace slot
+	// came with it, and that a failure says so.
+	//
+	// See `docs/decisions/2026-08-08-hollowing-a-svelte-route.md`.
 	// The nine wizard surfaces used to be listed here, each with an `openLegacy`
 	// step that opened the modal and jumped to a panel. They were removed when the
 	// modal was deleted: the panels now have exactly one implementation, so this

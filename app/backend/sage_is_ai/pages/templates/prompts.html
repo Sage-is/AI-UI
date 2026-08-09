@@ -11,7 +11,11 @@
    is a server-rendered <dialog open> that a few lines raise to a real modal. #}
 {% import "_workshop.html" as ws %}
 
-<form method="get" action="{{ base }}">
+{# `data-swap-target` because this form lives OUTSIDE the region it updates, so
+   Startr Swap cannot infer the region from where the control sits. It is the one
+   case the nearest-ancestor rule cannot reach — and the reason the attribute
+   exists at all. #}
+<form method="get" action="{{ base }}" data-swap-target="#prompts-results">
   <input type="hidden" name="lang" value="{{ lang[6:] }}" />
   <label for="prompts-q">{{ search_label }}</label>
   <input data-cy="prompts-search" id="prompts-q" type="search" name="q" value="{{ query }}" />
@@ -23,11 +27,16 @@
 
 <p><a class="btn btn-primary" data-cy="prompts-create" href="{{ create_url }}">{{ create_label }}</a></p>
 
-{# The swap target — the same shape Agents uses, and for the same reasons.
+{# The swap region — the same shape Agents uses, and for the same reasons.
    The SEARCH FORM STAYS OUTSIDE: replacing it would replace the input, and a
    replaced input loses focus and cursor position. Everything a row action can
-   change is inside; nothing it cannot is. #}
-<div id="prompts-results">
+   change is inside; nothing it cannot is.
+
+   `data-swap` marks it, and the `id` is what lets the response name it — a
+   sub-swap region needs one, because a selector has to find the same piece in a
+   document that has never met this page. Controls INSIDE it need no attribute
+   at all: the nearest region above a control is the one it updates. #}
+<div id="prompts-results" data-swap>
 
 {% if message %}
 <p data-cy="panel-message">{{ message }}</p>
@@ -149,79 +158,3 @@
 </p>
 <p>{{ community_sub }}</p>
 {% endif %}
-
-{# ── PROTOTYPE, and it must not ship in this form ──────────────────────────────
-   Startr Swap: the htmz hidden-iframe trick (MIT, (c) Lean Rada) wrapped in a
-   CSS View Transition. A form targets the iframe, the response lands there, and
-   the element named by the URL hash is replaced — so a row action swaps the
-   panel instead of reloading the page.
-
-   WHY IT CANNOT SHIP LIKE THIS: an inline <script> is blocked by any
-   Content-Security-Policy without `unsafe-inline`, and /admin/diagnostics tells
-   operators to set one — `csp_missing` is a check we ship. `dev-reload.js` is a
-   file for exactly this reason. The shippable form is a file in pages/assets;
-   the difference is +1 request, cacheable across pages. This inline version
-   exists to MEASURE the interaction before choosing where it lives.
-
-   PROGRESSIVE ENHANCEMENT, on purpose. The server never emits `target`. With
-   JavaScript off, every form is an ordinary full-page POST and the page behaves
-   exactly as it does today — which is more than the htmx panels can say, since
-   `hx-post` does nothing at all without script.
-
-   RE-ENHANCEMENT IS THE POINT, not a detail. After a swap the DOM holds NEW
-   forms with no target, so the second action would quietly fall back to a full
-   page load. The page would still work, just stop being smooth, and nobody
-   would file it — the same silent-degradation shape as the agents menu losing
-   its positioning when the CDN was blocked. htmx re-processes swapped content
-   for you; that is part of what its 49.7 kB buys. Here it is one call. #}
-<iframe hidden name="startr-swap" id="startr-swap"></iframe>
-<script>
-  (function () {
-    var TARGET = '#prompts-results';
-    function enhance() {
-      document.querySelectorAll('#prompts-results form[method="post"]').forEach(function (f) {
-        if (f.enctype === 'multipart/form-data') return;
-        f.target = 'startr-swap';
-        if (f.action.indexOf('#') === -1) f.action += TARGET;
-      });
-      raise();
-    }
-
-    // Raise a server-rendered confirmation into a real modal. Everything below
-    // is an UPGRADE: with this script removed the dialog is still open, still
-    // centred by the UA, and both of its controls still work.
-    function raise() {
-      var d = document.querySelector('#prompts-results dialog[open]');
-      if (!d || !d.showModal || d.matches(':modal')) return;
-      d.close(); // showModal() on an already-open dialog throws InvalidStateError
-      d.showModal();
-      // Escape fires `cancel`. Without this the dialog would vanish while the
-      // server still considers the row pending — the picture and the state would
-      // disagree, and the next render would contradict what the reader just saw.
-      d.addEventListener('cancel', function (e) {
-        e.preventDefault();
-        window.location.href = d.dataset.cancel;
-      });
-    }
-    var frame = document.getElementById('startr-swap');
-    frame.addEventListener('load', function () {
-      var hash = frame.contentWindow.location.hash;
-      if (!hash) return;
-      var swap = function () {
-        var host = document.querySelector(hash);
-        // EXTRACT the matching element from the response document. htmz takes
-        // `body.childNodes` because it expects a fragment; these routes return a
-        // full page, because a form POST navigates to whatever comes back and a
-        // fragment leaves the reader on an unstyled document. Taking the whole
-        // body would graft a second copy of the shell inside the first.
-        var next = frame.contentDocument.querySelector(hash);
-        if (host && next) host.replaceWith(next);
-        enhance();
-      };
-      (document.startViewTransition
-        ? document.startViewTransition.bind(document)
-        : function (c) { c(); })(swap);
-    });
-    enhance();
-  })();
-</script>

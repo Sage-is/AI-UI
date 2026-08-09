@@ -52,8 +52,9 @@ type Entry = { key: string; path: string; content: string; note: string };
 // Routes with no server-rendered counterpart yet. Migrated surfaces are NOT
 // listed here — they come from SURFACES, both sides, automatically.
 //
-// `/home` is deliberately absent: Spaces has no content hook, and measuring it
-// against a shell selector would produce a confident number for the wrong thing.
+// `/home` used to be deliberately absent because it carried no content hook and
+// a shell selector would have measured the wrong thing. It is hooked and
+// registered in SURFACES now (2026-08-08), so it arrives here automatically.
 const CANDIDATES: Entry[] = [
 	{
 		key: 'chat',

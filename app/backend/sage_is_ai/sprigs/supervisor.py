@@ -227,6 +227,44 @@ class SprigSupervisor:
             "dim": _MOCK_EMBEDDING_DIM,
             "ready_timeout_s": 15.0,
         }, arch=NEUTRAL),
+        # --- calendar: the first WIRED Sprig™, and it delivers nothing ---
+        #
+        # No `delivery` key, following mock-embedding above: the fetching code
+        # ships in the image (`pages/calendar_card.py`), so grafting this makes
+        # the capability AVAILABLE rather than pulling an artifact. It exists so
+        # Calendar is optional, and so its shared feeds have an operator-scoped
+        # home.
+        #
+        # WIRES ARE THE OPERATOR'S HALF ONLY. `shared_feeds` is what everyone on
+        # the instance sees — term dates, company holidays. A person's own
+        # calendars are NOT here: they live in `users.settings.calendar`, because
+        # a wire is set once by an admin and two people would answer differently.
+        # That rule is what decides which side of the line a setting falls on.
+        #
+        # No secret wire yet, deliberately. Public ICS feeds need no credential,
+        # and SPRIG_WIRES stores values in clear — so a secret here would have to
+        # be a rotatable third-party token, never a credential to this instance.
+        "calendar": _sprig({
+            "capability": "calendar",
+            "server": "none",
+            "model": "iCalendar feeds",
+            "dim": 0,
+            "wires": [
+                {
+                    "name": "shared_feeds",
+                    "label": "Shared calendar feeds",
+                    "type": "url",
+                    "required": False,
+                    "default": "",
+                    "help": (
+                        "iCalendar (.ics) URLs everyone on this instance sees, "
+                        "one per line. A shared Nextcloud calendar publishes a "
+                        "read-only link needing no credentials. People add their "
+                        "own calendars in their settings."
+                    ),
+                },
+            ],
+        }, arch=NEUTRAL),
         # all-MiniLM-onnx (live chroma-S3/HF pull) was RETIRED 2026-07-05: it
         # spawned the byte-identical child to minilm-onnx-inhoused below, and
         # after any inhoused graft it silently served from the seeded cache
@@ -1181,6 +1219,26 @@ class SprigSupervisor:
         log.info("delivered sprig '%s' -> %s", name, target)
         return handle
 
+    def _enable(self, name: str, spec: dict) -> SprigHandle:
+        """A 'none' sprig has no server and no artifact — grafting only marks the
+        capability available so it can be wired. Idempotent by construction."""
+        handle = SprigHandle(
+            name=name,
+            capability=spec["capability"],
+            port=0,
+            base_url="",
+            health_url="",
+            model=spec.get("model", ""),
+            # NOT "delivered": that state promises an extracted artifact, and
+            # this one promises the opposite. NOT "rooted" either, which means a
+            # live child process. `pages/sprigs_panel` renders it as "Enabled".
+            state="enabled",
+        )
+        self._sprigs[name] = handle
+        self._persist_state()
+        log.info("enabled sprig '%s' (%s); nothing to run", name, spec["capability"])
+        return handle
+
     async def graft(self, name: str, capability: str) -> SprigHandle:
         spec = self.CATALOG.get(name)
         if spec is None or spec["capability"] != capability:
@@ -1219,6 +1277,18 @@ class SprigSupervisor:
         # pull + extract the artifact into its target.
         if spec.get("server") == "deliver":
             return await self._deliver(name, spec)
+
+        # "none" sprigs run NOTHING and pull nothing: the code already ships in
+        # the image, and grafting makes the capability available so it can be
+        # wired. Calendar is the first — its fetching lives in
+        # `pages/calendar_card.py`, and what the graft buys is that the feature
+        # is optional and its shared feeds have an operator-scoped home.
+        #
+        # A separate branch rather than a "deliver" with no artifact, because
+        # `_deliver` promises an extracted target and this promises the opposite.
+        # A function whose name stops being true is worse than one more branch.
+        if spec.get("server") == "none":
+            return self._enable(name, spec)
 
         # Idempotency: a live graft of the same name returns the existing handle.
         existing = self._sprigs.get(name)

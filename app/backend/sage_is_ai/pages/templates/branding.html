@@ -23,7 +23,12 @@
      real shared rule and not a private one. #}
   <p class="toast toast-float toast-{{ kind }}" role="status" data-cy="panel-message">{{ message }}</p>
   {% endif %}
-  <form hx-post="/pages/admin/branding/save" hx-target="#branding-panel" hx-swap="outerHTML">
+  {# `data-swap-off` for the same reason as the Sprigs wiring form: this endpoint
+     answers with a FRAGMENT, and the form carries no `action`, so an unclaimed
+     submit would resolve to this page and re-render it — throwing away whatever
+     the operator had just typed. htmx claims the submit today; this does not
+     depend on it still doing so. #}
+  <form data-swap-off hx-post="/pages/admin/branding/save" hx-target="#branding-panel" hx-swap="outerHTML">
     {% for group in groups %}
     <fieldset>
       <legend style="{{ legend_s }}">{{ group.name }}</legend>

@@ -29,7 +29,7 @@ the next publish with nothing to maintain by hand in either repo.
 
 Derived from `app/backend/sage_is_ai/sprigs/supervisor.py`, `app/backend/sage_is_ai/routers/sprigs.py`, and `sprigs/*_dispatch.py`.
 
-**15 capabilities, 20 catalog entries.**
+**16 capabilities, 21 catalog entries.**
 
 ## What each capability does
 
@@ -37,6 +37,7 @@ Derived from `app/backend/sage_is_ai/sprigs/supervisor.py`, `app/backend/sage_is
 |---|---|---|---|---|
 | `backup` | 1 | nothing — delivery only | n/a — no process | n/a — nothing to reverse |
 | `browser-ml` | 1 | nothing — delivery only | n/a — no process | n/a — nothing to reverse |
+| `calendar` | 1 | nothing — the capability is enabled, then wired | n/a — no process | n/a — nothing to reverse |
 | `code` | 1 | nothing — delivery only | n/a — no process | n/a — nothing to reverse |
 | `dev` | 1 | nothing — delivery only | n/a — no process | n/a — nothing to reverse |
 | `docling` | 1 | `CONTENT_EXTRACTION_ENGINE`, `DOCLING_SERVER_URL` | yes | **no** |
@@ -77,6 +78,14 @@ No dispatch module. Grafting delivers bytes and changes no configuration.
 | Entry | Server | Delivery | Arch | Model | Health |
 |---|---|---|---|---|---|
 | `browser-ml` | `deliver` | oci-artifact | neutral | `onnxruntime-web wasm (in-browser ML)` | `/health` |
+
+### `calendar`
+
+No dispatch module and nothing to deliver. The code ships in the image; grafting makes the capability available so it can be wired.
+
+| Entry | Server | Delivery | Arch | Model | Health |
+|---|---|---|---|---|---|
+| `calendar` | `none` | built in | neutral | `iCalendar feeds` | n/a — nothing runs |
 
 ### `code`
 

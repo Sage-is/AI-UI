@@ -172,6 +172,17 @@ def render_page(
     # which is indistinguishable from the reloader being broken.
     from sage_is_ai.env import PAGES_RELOAD_DIRS
 
+    # Startr Swap, on every page, appended here for the same reason as the
+    # reloader below: no route opts in, so no route can forget. A page that
+    # quietly stopped swapping would still work — it would just navigate — and
+    # that is the failure nobody reports.
+    #
+    # It knows nothing about this application. The `data-swap` value on <main>
+    # is what confines it to `/pages/`; everything else it needs arrives as an
+    # attribute or an event. Upstream home and the publishing rules are in the
+    # file's own header.
+    scripts = ("startr-swap.js", *scripts)
+
     scripts = (*scripts, "dev-reload.js") if PAGES_RELOAD_DIRS else scripts
 
     # Classic and deferred, not `type="module"`. A module is scoped, so a
@@ -209,7 +220,10 @@ def render_page(
 <!-- Authored mobile-first: base values are the phone case, and a suffix appears
      only where the layout actually changes going up. -->
 <body style="--m:0 auto; --p:1rem">
-  <main>
+  <!-- `data-swap` marks this the swap region AND confines Startr Swap to
+       `/pages/`. Without the value it would take over every same-origin link in
+       here, including the ones that deliberately leave for the SPA. -->
+  <main data-swap="/pages/">
     <header>
       <!-- `page-heading` is the one marker that proves a SERVER-RENDERED page
            answered. It matters because nothing under /pages/ can 404: the SPA is
