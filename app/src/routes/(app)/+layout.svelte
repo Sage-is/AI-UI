@@ -47,7 +47,7 @@
 
 	import Sidebar from '$lib/components/layout/Sidebar.svelte';
 	import SettingsModal from '$lib/components/chat/SettingsModal.svelte';
-	import ChangesAndSetupModal from '$lib/components/ChangesAndSetupModal.svelte';
+	import SetupDialog from '$lib/components/SetupDialog.svelte';
 	import DevMissionReminderModal from '$lib/components/DevMissionReminderModal.svelte';
 	import TrySageTutorial from '$lib/components/setup/TrySageTutorial.svelte';
 	import AccountPending from '$lib/components/layout/Overlay/AccountPending.svelte';
@@ -114,15 +114,22 @@
 				settings.set(localStorageSettings);
 			}
 
-			models.set(
-				await getModels(
+			// One wave, not a ladder. These four depend on $settings (above) but not on
+			// each other, so awaiting them in sequence cost four serial round-trips of
+			// boot time for nothing.
+			const [modelList, bannerList, toolList, toolServerData] = await Promise.all([
+				getModels(
 					$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
-				)
-			);
+				),
+				getBanners(''),
+				getTools(''),
+				getToolServersData($i18n, $settings?.toolServers ?? [])
+			]);
 
-			banners.set(await getBanners(''));
-			tools.set(await getTools(''));
-			toolServers.set(await getToolServersData($i18n, $settings?.toolServers ?? []));
+			models.set(modelList);
+			banners.set(bannerList);
+			tools.set(toolList);
+			toolServers.set(toolServerData);
 
 			document.addEventListener('keydown', async function (event) {
 				const isCtrlPressed = event.ctrlKey || event.metaKey; // metaKey is for Cmd key on Mac
@@ -378,7 +385,7 @@
 </script>
 
 <SettingsModal bind:show={$showSettings} />
-<ChangesAndSetupModal bind:show={$showChangesAndSetup} />
+<SetupDialog bind:show={$showChangesAndSetup} />
 <DevMissionReminderModal bind:show={$showDevMissionReminder} />
 <TrySageTutorial />
 

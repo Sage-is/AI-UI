@@ -1,0 +1,5 @@
+data: {"id":"chatcmpl-fixture-3","object":"chat.completion.chunk","model":"deepseek-r1-distill-llama-70b","choices":[{"index":0,"delta":{"role":"assistant","reasoning_content":"The user wants a comparison. "},"finish_reason":null}]}
+data: {"id":"chatcmpl-fixture-3","object":"chat.completion.chunk","model":"deepseek-r1-distill-llama-70b","choices":[{"index":0,"delta":{"reasoning_content":"I will keep it short.</thinking> "},"finish_reason":null}]}
+data: {"id":"chatcmpl-fixture-3","object":"chat.completion.chunk","model":"deepseek-r1-distill-llama-70b","choices":[{"index":0,"delta":{"reasoning_content":"RAD and Agile are both iterative."},"finish_reason":null}]}
+data: {"id":"chatcmpl-fixture-3","object":"chat.completion.chunk","model":"deepseek-r1-distill-llama-70b","choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}
+data: [DONE]

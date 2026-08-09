@@ -6,7 +6,7 @@
 	import Icon from '$lib/components/Icon.svelte';
 
 	import Dropdown from '$lib/components/common/Dropdown.svelte';
-			import Tooltip from '$lib/components/common/Tooltip.svelte';
+	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import Tags from '$lib/components/chat/Tags.svelte';
 
 	const i18n = getContext('i18n');
@@ -42,6 +42,7 @@
 		>
 			{#if $config.features.enable_community_sharing}
 				<DropdownMenu.Item
+					data-cy="prompts-menu-share"
 					style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem"
 					on:click={() => {
 						shareHandler();
@@ -53,6 +54,7 @@
 			{/if}
 
 			<DropdownMenu.Item
+				data-cy="prompts-menu-clone"
 				style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem"
 				on:click={() => {
 					cloneHandler();
@@ -64,6 +66,7 @@
 			</DropdownMenu.Item>
 
 			<DropdownMenu.Item
+				data-cy="prompts-menu-export"
 				style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem"
 				on:click={() => {
 					exportHandler();
@@ -77,6 +80,7 @@
 			<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.2rem" />
 
 			<DropdownMenu.Item
+				data-cy="prompts-menu-delete"
 				style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem"
 				on:click={() => {
 					deleteHandler();

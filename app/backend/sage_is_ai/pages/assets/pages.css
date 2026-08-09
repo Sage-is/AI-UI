@@ -1,0 +1,430 @@
+/* No-build pages — shared stylesheet.
+ *
+ * Loaded AFTER startr.style so these rules win. The split is deliberate:
+ *
+ *   startr.style props   one-off layout on markup we author by hand — the page
+ *                        shell, headings, spacing. Read well inline, and this
+ *                        is the framework's home ground.
+ *
+ *   this file            anything REPEATED across generated rows, anything the
+ *                        prop vocabulary cannot express (keyframes, media
+ *                        queries on generated markup, :focus-visible), and
+ *                        anything that must survive the CDN being down.
+ *
+ * That last clause is load-bearing. startr.style is served from an unversioned
+ * URL, so when it 5xxs these pages render with only this sheet — which means
+ * the layout that must not break belongs here, and props are for polish.
+ *
+ * REVERSED 2026-07-29 (Alexander): props are the default everywhere, including
+ * generated markup, and this file is for what the prop vocabulary cannot
+ * express. The old rule above assumed a class was cheaper than props on
+ * generated rows; the branding surface measured it and it is not — a rule that
+ * appears on five generated fields is ONE string in the render module, so props
+ * cost the same source lines and delete the stylesheet. That surface went from
+ * an 8% cut to 31% by dropping its CSS.
+ *
+ * The card and row rules below predate that and still serve the Sprigs and
+ * diagnostics panels. Converting those is follow-up work; do not add NEW
+ * per-surface layout here.
+ *
+ * Written mobile-first: base rules are the phone case, media queries appear
+ * only where the layout genuinely changes going up. */
+
+:root {
+  color-scheme: light dark;
+  --line: color-mix(in srgb, currentColor 18%, transparent);
+  --muted: color-mix(in srgb, currentColor 60%, transparent);
+}
+
+.page-muted {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.panel-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 1rem 0 0.5rem;
+}
+
+.page-count {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.sprig-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Stacked on a phone: the actions belong under the name, not squeezed beside
+   it. Side by side once there is room. */
+.sprig-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.35rem 0.75rem;
+  align-items: start;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+}
+
+.sprig-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 0.5rem;
+}
+
+@media (min-width: 40rem) {
+  .sprig-card {
+    grid-template-columns: auto 1fr auto;
+  }
+
+  .sprig-actions {
+    grid-column: auto;
+    justify-content: flex-end;
+  }
+}
+
+.sprig-name {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.sprig-meta,
+.sprig-where,
+.sprig-warn {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.sprig-where {
+  font-family: ui-monospace, monospace;
+  overflow-wrap: anywhere;
+}
+
+.sprig-warn {
+  color: #b45309;
+}
+
+.badge {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.badge-rooted,
+.badge-delivered {
+  border-color: #16a34a;
+  color: #16a34a;
+}
+
+.badge-wilted {
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+.btn {
+  font: inherit;
+  font-size: 0.78rem;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Paired with the hover states below, because inline hover styling without a
+   matching :focus-visible leaves keyboard users with no feedback at all. */
+.btn:hover:not(:disabled) {
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+
+.btn:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  background: Canvas;
+  border-color: currentColor;
+  font-weight: 600;
+}
+
+.btn-danger {
+  color: #dc2626;
+  border-color: #dc2626;
+}
+
+#toasts {
+  position: fixed;
+  left: 50%;
+  bottom: 1rem;
+  transform: translateX(-50%);
+  width: min(30rem, calc(100vw - 2rem));
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.toast {
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--line);
+  background: Canvas;
+  font-size: 0.82rem;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.15);
+}
+
+.toast-error {
+  border-color: #dc2626;
+}
+
+.toast-success {
+  border-color: #16a34a;
+}
+
+.toast-warning {
+  border-color: #d97706;
+}
+
+/* --- diagnostics ---------------------------------------------------------- */
+.diag-section {
+  margin: 1.25rem 0 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+}
+
+.diag-section h2 {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+}
+
+/* Stacked on a phone; the badge sits beside the label once there is room. */
+.diag-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.3rem 0.7rem;
+  align-items: start;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.diag-row:last-child {
+  border-bottom: 0;
+}
+
+.diag-actions {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 40rem) {
+  .diag-row {
+    grid-template-columns: auto 1fr auto;
+  }
+
+  .diag-actions {
+    grid-column: auto;
+  }
+}
+
+.diag-label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+
+.diag-summary {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.badge-ok {
+  border-color: #16a34a;
+  color: #16a34a;
+}
+
+.badge-degraded {
+  border-color: #d97706;
+  color: #d97706;
+}
+
+.badge-unreachable {
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+/* --- toasts, done in CSS --------------------------------------------------
+ *
+ * htmx swaps a whole panel, so a message arrives as a NEW element every time.
+ * That is the property that makes this work with no JavaScript at all: a fresh
+ * element restarts the animation by definition, so there is nothing to reset,
+ * no timer to cancel, and no state to hold between swaps.
+ *
+ * Fixed to the top rather than sitting inline, because a message rendered above
+ * a long list is invisible to anyone scrolled into it — which is exactly where
+ * you are when you click Prune on the fortieth card. */
+.toast-float {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  z-index: 30;
+  width: min(34rem, calc(100vw - 2rem));
+  margin: 0;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.18);
+  /* Both transform values must appear in every keyframe: the animation drives
+     the same property that does the centring, so omitting it in one frame
+     snaps the toast to the left edge mid-flight. */
+  animation: toast-life 6s ease forwards;
+}
+
+/* Errors outlive successes. "Pruned X" is an acknowledgement and can go; a
+   failure names the cause and the fix, and six seconds is not long enough to
+   read a sentence you did not expect. */
+.toast-float.toast-error {
+  animation-duration: 20s;
+}
+
+@keyframes toast-life {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -0.5rem);
+  }
+
+  5% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  85% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -0.5rem);
+    /* visibility, not just opacity: a fully transparent element still sits over
+       the page and swallows clicks aimed at whatever is underneath it. */
+    visibility: hidden;
+  }
+}
+
+/* Movement is the part that causes trouble for people who asked for less of
+   it. The fade still runs, so the toast still clears itself — a message that
+   never leaves is its own accessibility problem. */
+@media (prefers-reduced-motion: reduce) {
+  .toast-float {
+    transform: translateX(-50%);
+    animation: toast-fade 6s ease forwards;
+  }
+
+  .toast-float.toast-error {
+    animation-duration: 20s;
+  }
+
+  @keyframes toast-fade {
+    0%, 85% { opacity: 1; }
+    100% { opacity: 0; visibility: hidden; }
+  }
+}
+
+/* --- how-to-fix disclosure ------------------------------------------------
+ * A <details>, not a dialog: no focus trap, no escape handler, no JavaScript. */
+.fix {
+  grid-column: 1 / -1;
+  margin: 0.4rem 0 0;
+  font-size: 0.82rem;
+}
+
+.fix summary {
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.fix summary:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.fix-plain {
+  margin: 0.5rem 0;
+}
+
+.fix-steps {
+  margin: 0;
+  padding-left: 1.2rem;
+  line-height: 1.6;
+}
+
+.fix-path {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.fix-command {
+  margin: 0.3rem 0 0.5rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 0.4rem;
+  background: color-mix(in srgb, currentColor 8%, transparent);
+  font: 12px/1.5 ui-monospace, monospace;
+  overflow-x: auto;
+  /* Copy-only. Nothing here is ever executed for the operator. */
+  user-select: all;
+}
+
+/* The durable half of an error. The toast says something just happened; this
+   says something is still wrong, and it stays until a graft or prune resolves
+   it — across reloads and restarts. */
+.sprig-error {
+  margin-top: 0.3rem;
+  font-size: 0.78rem;
+  color: #dc2626;
+  overflow-wrap: anywhere;
+}
+
+.fix-warning {
+  margin: 0.3rem 0;
+  color: #b45309;
+  font-size: 0.8rem;
+}
+
+/* Changelog pager. The button sits left while there is more to read and moves
+   right when the notes run out.
+
+   The move is `margin-left: auto`, which is what pushes a flex item to the far
+   edge. An earlier version measured the row, measured the button, and drove a
+   transform by the difference. It moved nothing in a real browser while its
+   spec passed headless, because a measurement can come back zero and a
+   transform of zero looks exactly like no rule at all. `auto` has nothing to
+   measure and nothing to get wrong.
+
+   No data-at-end attribute means the script has not run, or there is no script.
+   Sit at the far edge, which is where a plain submit belongs. */
+[data-pager-row] {
+	display: flex;
+	width: 100%;
+}
+
+[data-pager-row] > button {
+	margin-left: auto;
+}
+
+[data-pager-row][data-at-end='false'] > button {
+	margin-left: 0;
+}

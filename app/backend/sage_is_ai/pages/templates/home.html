@@ -1,0 +1,205 @@
+{# The home dashboard.
+
+   Styling is entirely IMPORTED from `_workshop.html` — one vocabulary for every
+   no-build surface, so this page shares a card size with Agents and Prompts
+   rather than drifting apart one considered tweak at a time. This file adds no
+   style strings of its own and no lines to `pages.css`.
+
+   ONE SCRIPT, and it is an enhancement. Chat rows are links and dates are
+   absolute, so nothing here needs a runtime to work. `home-greeting.js` only
+   swaps the greeting word for the reader's own clock — the server cannot know
+   what time it is where they are. Every word it can write is already in the
+   markup below, translated, so with script off the page is complete and merely
+   occasionally greets you for the wrong half of the day.
+
+   The fourth card is NOT here. A grafted ui-Sprig™ renders into
+   `#sprig-ui-slot`, which `render_page` emits after this body. That slot is the
+   reason this page exists — see `home_panel.py`. #}
+{% import "_workshop.html" as ws %}
+
+{# The three candidates ride on the element, already translated. The script
+   picks one; it never composes a sentence of its own. #}
+<p data-cy="home-greeting" style="{{ ws.name_s }}">
+  <span data-cy="home-greeting-word"
+        data-morning="{{ greetings.morning }}"
+        data-afternoon="{{ greetings.afternoon }}"
+        data-evening="{{ greetings.evening }}">{{ greetings.now }}</span>{% if greeted_name %}, {{ greeted_name }}{% endif %}
+</p>
+
+{# THE STARTER. Type here and you land in a live conversation with the message
+   already sent — the box expands into the real chat rather than pretending to
+   be one.
+
+   A PLAIN GET FORM, and that is the whole implementation. The chat already
+   reads `?q=` and submits it unless `submit=false` (Chat.svelte:861), so the
+   handoff needed no new route, no island and no script. A starter that tried to
+   stream here would be a second chat implementation, and the migration keeps
+   the chat core for last on purpose.
+
+   `action="/"` is the SPA root. From the hollowed /home the reader is already
+   inside the app, so this is an ordinary navigation.
+
+   The locale rides as a HIDDEN INPUT, the same way the Prompts search does. A
+   GET form discards whatever query string the action carried and replaces it
+   with its own fields, so `action="/?lang=es"` would silently drop the locale
+   the moment somebody typed. #}
+<form data-cy="home-starter" method="get" action="/"
+      style="--d:flex; --g:.4rem; --ai:center; --m:.6rem 0 1rem">
+  <input type="hidden" name="lang" value="{{ lang[6:] }}" />
+  <label for="home-starter-q" style="{{ ws.by_s }}">{{ starter_label }}</label>
+  <input data-cy="home-starter-input" id="home-starter-q" name="q" type="text"
+         placeholder="{{ starter_placeholder }}" autocomplete="off"
+         style="--fg:1; --p:.5rem .7rem; --br:.6rem; --bgc:transparent; outline:1px solid var(--line)" />
+  <button data-cy="home-starter-submit" class="btn btn-primary" type="submit">{{ starter_submit }}</button>
+</form>
+
+<ul data-cy="home-cards" style="{{ ws.list_s }}">
+
+  {# The list renders even when EMPTY, with the empty message inside it. The
+     Agents page learned this from the parity gate: an if/else that swapped the
+     whole container for a <p> meant the hook existed on one implementation and
+     not the other, and every behavioural spec was blind to it. One container,
+     always. #}
+  <li data-cy="home-recent" style="{{ ws.card_s }}">
+    <div style="{{ ws.head_s }}">
+      <h2 style="{{ ws.name_s }}">{{ recent_title }}</h2>
+      <a data-cy="home-recent-all" href="{{ recent_all_url }}" style="{{ ws.by_s }}; --ml:auto">{{ recent_all_label }}</a>
+    </div>
+    <ul data-cy="home-recent-list" style="--lis:none; --p:0; --m:0; --d:flex; --fd:column; --g:.2rem">
+      {% for chat in recent %}
+      <li data-cy="home-recent-row">
+        <a href="{{ chat.url }}" style="--d:flex; --jc:space-between; --g:.5rem; --c:inherit; --td:none">
+          <span data-cy="home-recent-title">{{ chat.title }}</span>
+          <span style="{{ ws.by_s }}">{{ chat.date }}</span>
+        </a>
+      </li>
+      {% else %}
+      <li data-cy="home-recent-empty" style="{{ ws.by_s }}">{{ recent_empty }}</li>
+      {% endfor %}
+    </ul>
+  </li>
+
+  <li data-cy="home-pinned" style="{{ ws.card_s }}">
+    <div style="{{ ws.head_s }}">
+      <h2 style="{{ ws.name_s }}">{{ pinned_title }}</h2>
+    </div>
+    <ul data-cy="home-pinned-list" style="--lis:none; --p:0; --m:0; --d:flex; --fd:column; --g:.2rem">
+      {% for chat in pinned %}
+      <li data-cy="home-pinned-row">
+        <a href="{{ chat.url }}" style="--d:flex; --jc:space-between; --g:.5rem; --c:inherit; --td:none">
+          <span data-cy="home-pinned-title">{{ chat.title }}</span>
+          <span style="{{ ws.by_s }}">{{ chat.date }}</span>
+        </a>
+      </li>
+      {% else %}
+      <li data-cy="home-pinned-empty" style="{{ ws.by_s }}">{{ pinned_empty }}</li>
+      {% endfor %}
+    </ul>
+  </li>
+
+  {# The Calendar card — NOT faded. It was a placeholder at 55% opacity while it
+     was "coming soon"; it is live now, and an unconfigured card that looks
+     half-dead reads as broken rather than idle. The copy carries the meaning
+     instead.
+
+     Two views in one card: what is coming up, and a dot grid of the next five
+     weeks so the shape of the month is visible without reading anything. The
+     events were fetched SERVER-side; nothing here reaches out, and nothing can,
+     since this markup is destined for a ui-Sprig™ fragment and a fragment may
+     not carry an external reference. #}
+  <li data-cy="home-calendar" style="{{ ws.card_s }}">
+    <div style="{{ ws.head_s }}">
+      <span aria-hidden="true">📅</span>
+      <h2 style="{{ ws.name_s }}">{{ calendar_title }}</h2>
+      <a data-cy="home-calendar-all" href="{{ calendar_url }}" style="{{ ws.by_s }}; --ml:auto">{{ calendar_all_label }}</a>
+    </div>
+
+    {# The EXAMPLE state. Not an empty card and not a fake schedule: real events
+       from a real .ics stub, parsed by the shipping parser, so the preview
+       demonstrates repeats, spans and all-day exactly as a live feed would.
+       Two signals that it is not yours — a line saying so, and reduced opacity
+       on the rows — and titles no glance could read as a commitment. #}
+    {% if calendar_example %}
+    <p data-cy="home-calendar-example" style="{{ ws.by_s }}; --m:0 0 .3rem">{{ calendar_example_note }}</p>
+    <p data-cy="home-calendar-unset" style="{{ ws.body_s }}; --h-sm:auto; --m:0 0 .4rem">{{ calendar_unset }}
+      <a data-cy="home-calendar-settings" href="{{ calendar_settings_url }}">{{ calendar_settings_label }}</a></p>
+    {% endif %}
+
+    <ul data-cy="home-calendar-list"
+        style="--lis:none; --p:0; --m:0; --d:flex; --fd:column; --g:.2rem{% if calendar_example %}; --op:.5{% endif %}">
+      {% for event in calendar_events %}
+      <li data-cy="home-calendar-row">
+        <span style="--d:flex; --jc:space-between; --g:.5rem">
+          <span data-cy="home-calendar-title">{{ event.title }}</span>
+          <span style="{{ ws.by_s }}">{{ event.when }}</span>
+        </span>
+      </li>
+      {% else %}
+      <li data-cy="home-calendar-empty" style="{{ ws.by_s }}">{{ calendar_empty }}</li>
+      {% endfor %}
+    </ul>
+
+    {# The dot grid. Five weeks from this Monday, one cell a day, a dot where
+       something falls. No event text — this is density at a glance, and the
+       list above is for detail. `data-today` lets the greeting script's sibling
+       mark today from the READER's clock rather than the server's. #}
+    <div data-cy="home-calendar-grid" data-today
+         style="--d:grid; --gtc:repeat(7, 1fr); --g:.15rem; --mt:.5rem{% if calendar_example %}; --op:.5{% endif %}">
+      {# Column letters. `<abbr>` rather than a bare letter because S M T W T F S
+         has two S and two T in it — the full name is what a screen reader
+         announces, and the title shows it on hover for anyone squinting. #}
+      {% for day in calendar_weekdays %}
+      <abbr data-cy="home-calendar-weekday" title="{{ day.name }}"
+            style="{{ ws.by_s }}; --ta:center; --td:none; --size:.55rem">{{ day.letter }}</abbr>
+      {% endfor %}
+
+      {% for row in calendar_grid %}{% for cell in row %}
+      <span data-cy="home-calendar-day" data-date="{{ cell.iso }}"
+            title="{{ cell.iso }}"
+            style="--d:flex; --fd:column; --ai:center; --g:.1rem; --size:.6rem; --c:var(--muted)">
+        <span>{{ cell.num }}</span>
+        <span aria-hidden="true"
+              style="--w:.25rem; --h:.25rem; --br:50%; {% if cell.marked %}--bgc:currentColor{% else %}--bgc:transparent{% endif %}"></span>
+      </span>
+      {% endfor %}{% endfor %}
+    </div>
+  </li>
+
+  {# The Notes card is a plain link, same as the Svelte page. #}
+  <li style="{{ ws.card_s }}">
+    <a data-cy="home-notes" href="{{ notes_url }}" style="--d:flex; --fd:column; --g:.4rem; --c:inherit; --td:none">
+      <div style="{{ ws.head_s }}">
+        <span aria-hidden="true">📝</span>
+        <h2 style="{{ ws.name_s }}">{{ notes_title }}</h2>
+      </div>
+      <p style="{{ ws.body_s }}">{{ notes_detail }}</p>
+    </a>
+  </li>
+
+</ul>
+
+<h2 data-cy="home-soon-title" style="{{ ws.by_s }}; --m:1rem 0 .5rem">{{ soon_title }}</h2>
+
+{# Placeholders, carried across from the Svelte page at the same reduced opacity.
+   They stay placeholders on purpose: the real card arrives in the slot below. #}
+<ul data-cy="home-soon" style="{{ ws.list_s }}">
+  {% for w in soon %}
+  <li data-cy="home-soon-card" style="{{ ws.card_s }}; --op:.55">
+    <div style="{{ ws.head_s }}">
+      <span aria-hidden="true">{{ w.icon }}</span>
+      <h3 style="{{ ws.name_s }}">{{ w.title }}</h3>
+    </div>
+    <p style="{{ ws.body_s }}">{{ w.detail }}</p>
+  </li>
+  {% endfor %}
+</ul>
+
+{# The Svelte page closes on three paragraphs of promise. The last one is
+   different here, because on this page the promise has a mechanism: the
+   ui-Sprig™ slot renders directly after this body. #}
+<section data-cy="home-vision" style="{{ ws.card_s }}; --maxw:none">
+  <h2 style="{{ ws.name_s }}">{{ vision_title }}</h2>
+  {% for p in vision_paragraphs %}
+  <p style="{{ ws.body_s }}; --h-sm:auto">{{ p }}</p>
+  {% endfor %}
+</section>

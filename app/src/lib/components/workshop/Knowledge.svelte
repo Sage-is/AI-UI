@@ -140,9 +140,10 @@
 		</div>
 	</div>
 
-	<div style="--mb:1.2rem; --d:grid; --gtc:repeat(1, minmax(0, 1fr)); --gtc-lg:repeat(2, minmax(0, 1fr)); --gtc-xl:repeat(3, minmax(0, 1fr)); --g:0.5rem">
+	<div data-cy="knowledge-list" style="--mb:1.2rem; --d:grid; --gtc:repeat(1, minmax(0, 1fr)); --gtc-lg:repeat(2, minmax(0, 1fr)); --gtc-xl:repeat(3, minmax(0, 1fr)); --g:0.5rem">
 		{#each filteredItems as item}
 			<button
+				data-cy="knowledge-row"
 				style="--d:flex; --g:1rem; --cur:pointer; --ta:left; --w:100%; --px:0.6rem; --py:0.5rem; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --radius:0.6rem"
 				on:click={() => {
 					if (item?.meta?.document) {

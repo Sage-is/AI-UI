@@ -1,0 +1,34 @@
+{# A person's own calendar feeds.
+
+   Styling is IMPORTED from `_workshop.html`. No script: a textarea and a POST.
+
+   The first per-user page on this stack — every other `/pages/*` surface is
+   admin-gated or read-only — so it is deliberately plain. It is the shape every
+   settings tab will need when they migrate. #}
+{% import "_workshop.html" as ws %}
+
+{% if message %}
+<p data-cy="panel-message" style="{{ ws.by_s }}">{{ message }}</p>
+{% endif %}
+
+<p data-cy="settings-calendar-intro" style="{{ ws.body_s }}; --h-sm:auto">{{ intro }}</p>
+
+<form data-cy="settings-calendar-form" method="post" action="{{ action }}"
+      style="--d:flex; --fd:column; --g:.5rem; --maxw:34rem">
+  <label for="calendar-feeds" style="{{ ws.by_s }}">{{ feeds_label }}</label>
+  <textarea data-cy="settings-calendar-feeds" id="calendar-feeds" name="feeds" rows="5"
+            placeholder="https://…/personal.ics"
+            style="--p:.5rem .7rem; --br:.6rem; --bgc:transparent; outline:1px solid var(--line)">{{ feeds }}</textarea>
+  <div style="--d:flex; --ai:center; --g:.5rem">
+    <button data-cy="settings-calendar-save" class="btn btn-primary" type="submit">{{ save_label }}</button>
+    <a data-cy="settings-calendar-back" href="{{ back_url }}" style="{{ ws.by_s }}">{{ back_label }}</a>
+  </div>
+</form>
+
+{# Says plainly whose these are. The defect this page exists to fix was that
+   everyone shared one calendar, so the page should not leave anyone wondering. #}
+<p data-cy="settings-calendar-privacy" style="{{ ws.by_s }}; --m:1rem 0 0; --maxw:34rem">{{ privacy_note }}</p>
+
+{# And says where it stops. Offering a password field with nowhere safe to keep
+   the password would be worse than not offering one. #}
+<p data-cy="settings-calendar-secret" style="{{ ws.by_s }}; --m:.4rem 0 0; --maxw:34rem">{{ secret_note }}</p>

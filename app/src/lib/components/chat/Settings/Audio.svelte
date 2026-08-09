@@ -1,13 +1,11 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
 	import { createEventDispatcher, onMount, getContext } from 'svelte';
-	import { KokoroTTS } from 'kokoro-js';
 
 	import { user, settings, config } from '$lib/stores';
 	import { getVoices as _getVoices } from '$lib/apis/audio';
 
 	import Switch from '$lib/components/common/Switch.svelte';
-	import { round } from '@huggingface/transformers';
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	const dispatch = createEventDispatcher();
@@ -117,39 +115,50 @@
 		}
 	};
 
+	// Memoized so the two mount-time callers — getVoices() and the reactive
+	// onTTSEngineChange() — share ONE load instead of racing two concurrent
+	// from_pretrained downloads (which made the progress bar read double). A real
+	// dtype change invalidates the memo so it reloads.
+	let kokoroLoadPromise = null;
+	let kokoroLoadedDtype = null;
+
 	const loadKokoro = async () => {
-		if (TTSEngine === 'browser-kokoro') {
+		if (TTSEngine !== 'browser-kokoro' || !TTSEngineConfig?.dtype) return;
+
+		const dtype = TTSEngineConfig.dtype; // "fp32", "fp16", "q8", "q4", "q4f16"
+		if (kokoroLoadPromise && kokoroLoadedDtype === dtype) {
+			return kokoroLoadPromise;
+		}
+
+		kokoroLoadedDtype = dtype;
+		kokoroLoadPromise = (async () => {
 			voices = [];
+			TTSModel = null;
+			TTSModelProgress = null;
+			TTSModelLoading = true;
 
-			if (TTSEngineConfig?.dtype) {
-				TTSModel = null;
-				TTSModelProgress = null;
-				TTSModelLoading = true;
-
+			try {
 				const model_id = 'onnx-community/Kokoro-82M-v1.0-ONNX';
 
+				// Lazy: keep kokoro-js (and its onnxruntime/transformers deps) out of
+				// the eager conversation chunk — fetched only when browser-kokoro TTS
+				// is actually loaded.
+				const { KokoroTTS } = await import('kokoro-js');
 				TTSModel = await KokoroTTS.from_pretrained(model_id, {
-					dtype: TTSEngineConfig.dtype, // Options: "fp32", "fp16", "q8", "q4", "q4f16"
-					device: !!navigator?.gpu ? 'webgpu' : 'wasm', // Detect WebGPU
+					dtype,
+					device: navigator?.gpu ? 'webgpu' : 'wasm', // Detect WebGPU
 					progress_callback: (e) => {
 						TTSModelProgress = e;
-						console.log(e);
 					}
 				});
 
 				await getVoices();
-
-				// const rawAudio = await tts.generate(inputText, {
-				// 	// Use `tts.list_voices()` to list all available voices
-				// 	voice: voice
-				// });
-
-				// const blobUrl = URL.createObjectURL(await rawAudio.toBlob());
-				// const audio = new Audio(blobUrl);
-
-				// audio.play();
+			} finally {
+				TTSModelLoading = false;
 			}
-		}
+		})();
+
+		return kokoroLoadPromise;
 	};
 </script>
 

@@ -1,0 +1,211 @@
+{# The Agents list.
+
+   Built plain first and reviewed that way, per step 4 of
+   `docs/no-build-surface-convention.md`. This is step 5: startr.style props on
+   top of the structure, not instead of it. Every element below was already
+   there unstyled — nothing was added to hang a style on, and no `<div>` was
+   introduced to hold a look.
+
+   MOBILE-FIRST, which is the framework's rule and not a preference: the
+   suffixes are `min-width` queries, so a base value written for a desktop and
+   patched downward produces a broken phone layout. Base values here are the
+   phone. Only two props earn a suffix now — the toolbar direction at `-sm` and
+   the description height at `-sm`. Everything else looks the same at every
+   size, so repeating it in a suffix would be noise.
+
+   The list itself has NO breakpoints at all: flex-wrap with a fixed basis lets
+   the column count flow with the width instead of jumping at three fixed
+   points, and a landscape phone gets two columns without anyone naming 640px.
+
+   TWO CLASSES, both shared and both structural. `.btn` carries `:focus-visible`
+   and `:hover`, which the prop vocabulary cannot express and without which
+   keyboard users get no feedback at all. `.toast` fades itself with
+   `@keyframes`, same reason. Everything else is props, so this surface adds
+   ZERO lines to `pages.css` — the branding lesson, where 99 hand-written lines
+   took a 31% cut down to 8%.
+
+   Borders are `outline:1px solid var(--line)` rather than `--b`, matching the
+   other panels: `--b` collides with the framework's border shorthand, and
+   `var(--line)` is defined in `pages.css` so the outline survives the CDN being
+   unreachable even when the layout does not. #}
+
+{% set card_s = "--fb:18rem; --fg:0; --fs:1; --d:flex; --fd:column; --g:.4rem; --p:.65rem .7rem; --br:.6rem; outline:1px solid var(--line)" %}
+{% set head_s = "--d:flex; --g:.7rem; --ai:center" %}
+{% set name_s = "--size:.9rem; --weight:600; --m:0" %}
+{# Fixed height from 640px up, so cards in a row line up instead of stepping
+   with the length of each description. Left free below that: on a phone the
+   cards are one per row, nothing needs to align, and a fixed height would only
+   crop text or leave a gap.
+
+   `--of:hidden` is not in the instruction and is here because without it a long
+   description spills out of its 5rem and lands on top of the buttons below —
+   a fixed height with no overflow rule is a visual bug waiting for the first
+   verbose agent. Say the word and it comes out. #}
+{% set desc_s = "--size:.75rem; --c:var(--muted); --m:0; --h-sm:5rem; --of:hidden" %}
+{% set by_s   = "--size:.7rem; --c:var(--muted); --m:0" %}
+{% set act_s  = "--d:flex; --fw:wrap; --ai:center; --g:.35rem; --mt:auto; --pt:.35rem" %}
+{% set menu_s = "--pos:absolute; --top:100%; --right:0; --z:10; --minw:11rem; --g:.25rem; --m:.2rem 0 0; --p:.4rem; --lis:none; --br:.5rem; --bgc:var(--background); outline:1px solid var(--line)" %}
+
+{# Search, the create link and the count on one bar. Stacked on a phone, one
+   row from 640px up — the only place the toolbar's shape changes. #}
+<div style="--d:flex; --fd:column; --g:.5rem; --fd-sm:row; --ai-sm:center; --jc-sm:space-between; --m:0 0 .75rem">
+  <form method="get" action="{{ base }}" style="--d:flex; --g:.35rem; --ai:center; --fx-sm:1 1 auto; --maxw-sm:26rem">
+    <label for="agents-q" style="--size:.75rem; --c:var(--muted)">{{ search_label }}</label>
+    <input data-cy="agents-search" id="agents-q" type="search" name="q" value="{{ query }}"
+           style="--fx:1 1 auto; --minw:0; --bxs:border-box; --p:.4rem .65rem; --size:.8rem; --br:.5rem; outline:1px solid var(--line); --bgc:transparent; --c:inherit" />
+    {% if tag %}<input type="hidden" name="tag" value="{{ tag }}" />{% endif %}
+    <button class="btn" type="submit">{{ search_action }}</button>
+    {% if query %}
+    <a class="btn" data-cy="agents-search-clear" href="{{ clear_url }}">{{ clear_label }}</a>
+    {% endif %}
+  </form>
+
+  <span style="--d:flex; --ai:center; --g:.5rem; --fs:0">
+    <small style="--size:.75rem; --c:var(--muted)">{{ heading_count }}</small>
+    <a class="btn btn-primary" data-cy="agents-create" href="/workshop/models/create">{{ create_label }}</a>
+  </span>
+</div>
+
+{# ── The swap target ──────────────────────────────────────────────────────────
+   Everything a row action can change, and nothing it cannot.
+
+   The SEARCH FORM IS DELIBERATELY OUTSIDE. Replacing it would replace the input,
+   and a replaced input loses focus and cursor position. Keeping it out is what
+   makes as-you-type search possible later without restructuring the page — the
+   thing that looked like a shape change when the whole panel was one target.
+
+   The three regions inside all change together and none of them can be left
+   behind: the tag row carries `aria-current`, the pager carries the page number
+   and the count of what is shown, and the list is what changed. Swapping the
+   list alone would leave a pager describing a list that no longer exists.
+
+   The message is in here because it is the RESULT of the action. It is
+   `position: fixed`, so its place in the markup costs nothing — but outside this
+   element it would never update and "Cloned X" would never be seen.
+
+   STILL OUTSIDE, and it goes stale: the `{{ heading_count }}` in the toolbar
+   above. It sits with the create link, and a delete leaves it one too high until
+   the next full load. Moving it in here is the fix; that is a visible change to
+   a reviewed toolbar, so it is flagged rather than done. #}
+<div id="agents-results">
+
+{% if message %}
+<p class="toast toast-float toast-info" role="status" data-cy="agents-message">{{ message }}</p>
+{% endif %}
+
+{% if tags %}
+{# Wraps rather than scrolls sideways. The Svelte row scrolls horizontally and
+   hijacks the wheel to do it, which is a thing to opt into deliberately rather
+   than inherit — on a phone a wrapped set of tags is reachable and a
+   horizontally-scrolling one hides its own overflow. #}
+<nav style="--d:flex; --fw:wrap; --g:.3rem; --m:0 0 .75rem">
+  <a class="btn" data-cy="agents-tag-all" href="{{ all_tags_url }}"{% if not tag %} aria-current="page" style="--weight:600; border-color:currentColor"{% endif %}>{{ all_label }}</a>
+  {% for t in tags %}
+  <a class="btn" data-cy="agents-tag" href="{{ tag_urls[t] }}"{% if t == tag %} aria-current="page" style="--weight:600; border-color:currentColor"{% endif %}>{{ t }}</a>
+  {% endfor %}
+</nav>
+{% endif %}
+
+{# Flex-wrap, no stretch. Cards hold an 18rem basis and do not grow, so the
+   count follows the width and a partial last row keeps column width rather than
+   one card ballooning across the row. The ragged right edge is the accepted
+   cost of that — chosen over grid because it needs no breakpoints.
+
+   The list renders even when it is EMPTY, and the empty message goes inside it.
+   This used to be an if/else that swapped the whole `<ul>` for a `<p>`, which
+   the parity gate caught on the first run against a fresh instance: the
+   SvelteKit page keeps its container and the no-build page dropped it, so
+   `agents-list` existed on one side and not the other. Any spec waiting on the
+   list — the Agents guard-rail does, in `beforeEach` — would have hung on an
+   instance with no agents. One container, always. #}
+<ul data-cy="agents-list"
+    style="--d:flex; --fw:wrap; --g:.5rem; --lis:none; --p:0; --m:0 0 1rem">
+  {% for a in agents %}
+  <li data-cy="agents-row" data-agent-id="{{ a.id }}" style="{{ card_s }}">
+    <div style="{{ head_s }}">
+      {% if a.avatar %}
+      {# width/height as attributes as well as props, so the row reserves its
+         space before the image lands and a 54-row list does not reflow while
+         twelve avatars arrive. #}
+      <img src="{{ a.avatar }}" alt="" width="44" height="44"
+           style="--w:44px; --h:44px; --fs:0; --br:9999px; --objf:cover" />
+      {% endif %}
+      <span style="--minw:0">
+        <h3 style="{{ name_s }}"><a data-cy="agents-open" href="{{ a.open_url }}" style="--c:inherit; --td:none">{{ a.name }}</a></h3>
+        <p style="{{ by_s }}">{{ a.author }}</p>
+      </span>
+    </div>
+
+    <p style="{{ desc_s }}">{{ a.description }}</p>
+
+    <div style="{{ act_s }}">
+      {% if a.can_edit %}
+      <a class="btn" data-cy="agents-edit" href="{{ a.edit_url }}">{{ edit_label }}</a>
+      {% endif %}
+
+      <form data-cy="agents-toggle" method="post" action="{{ base }}/toggle/{{ a.id | urlencode }}{{ lang }}" style="--d:inline-flex">
+        <button class="btn{% if not a.is_active %} btn-primary{% endif %}" type="submit">{{ a.toggle_label }}</button>
+      </form>
+
+      <details name="agent-menu" style="--ml:auto; --pos:relative; --b:none">
+        <summary class="btn" data-cy="agents-menu" style="--lis:none">{{ actions_label }}</summary>
+        <ul style="{{ menu_s }}">
+          <li><form method="post" action="{{ base }}/hide/{{ a.id | urlencode }}{{ lang }}"><button data-cy="agents-menu-hide" type="submit" style="--bg:none; --p:0; --c:inherit; --td:underline; --c-hover:inherit; --bgc-hover:transparent">{{ a.hide_label }}</button></form></li>
+          <li><a data-cy="agents-menu-copy-link" href="{{ a.open_url }}" style="--c:inherit; --td:underline">{{ copy_link_label }}</a></li>
+          {% if community %}
+          <li><a data-cy="agents-menu-share" href="{{ community_url }}" target="_blank" rel="noopener" style="--c:inherit; --td:underline">{{ share_label }}</a></li>
+          {% endif %}
+          <li><form method="post" action="{{ base }}/clone/{{ a.id | urlencode }}{{ lang }}"><button data-cy="agents-menu-clone" type="submit" style="--bg:none; --p:0; --c:inherit; --td:underline; --c-hover:inherit; --bgc-hover:transparent">{{ clone_label }}</button></form></li>
+          <li><a data-cy="agents-menu-export" href="{{ base }}/export/{{ a.id | urlencode }}" download style="--c:inherit; --td:underline">{{ export_label }}</a></li>
+          <li><form method="post" action="{{ base }}/delete/{{ a.id | urlencode }}{{ lang }}"><button data-cy="agents-menu-delete" type="submit" style="--bg:none; --p:0; --c:inherit; --td:underline; --c-hover:inherit; --bgc-hover:transparent">{{ delete_label }}</button></form></li>
+        </ul>
+      </details>
+    </div>
+  </li>
+  {% endfor %}
+  {% if not agents %}
+  <li data-cy="agents-empty" style="--fb:100%; --c:var(--muted); --p:2rem 0; --ta:center">{{ empty_label }}</li>
+  {% endif %}
+</ul>
+{# The pager renders only when there is more than one page, so a small instance
+   never sees machinery it does not need. Links, not buttons and not script: the
+   page number lives in the URL beside the search and the tag, so a reader can
+   bookmark page 3 of a filtered list and the back button walks it backwards.
+
+   `aria-current="page"` marks the current one — the same attribute the tag row
+   uses, so the state is in the accessibility tree and not only in the weight. #}
+{% if pager %}
+<nav data-cy="agents-pager" aria-label="Pages"
+     style="--d:flex; --fw:wrap; --ai:center; --g:.3rem; --m:0 0 1.25rem">
+  {% if prev_url %}<a class="btn" data-cy="agents-page-prev" rel="prev" href="{{ prev_url }}">{{ prev_label }}</a>{% endif %}
+  {% for p in pager %}
+  <a class="btn" data-cy="agents-page" href="{{ p.href }}"{% if p.current %} aria-current="page" style="--weight:600; border-color:currentColor"{% endif %}>{{ p.n }}</a>
+  {% endfor %}
+  {% if next_url %}<a class="btn" data-cy="agents-page-next" rel="next" href="{{ next_url }}">{{ next_label }}</a>{% endif %}
+  <small style="--size:.75rem; --c:var(--muted); --ml:auto">{{ showing_label }}</small>
+</nav>
+{% endif %}
+
+</div>{# /agents-results #}
+
+{% if is_admin %}
+<div style="--d:flex; --fw:wrap; --ai:center; --g:.5rem; --m:1rem 0; --pt:1rem">
+  <form method="post" action="{{ base }}/import{{ lang }}" enctype="multipart/form-data"
+        style="--d:flex; --fw:wrap; --ai:center; --g:.4rem">
+    <label for="agents-import-file" style="--size:.75rem; --c:var(--muted)">{{ import_label }}</label>
+    <input id="agents-import-file" type="file" name="file" accept=".json" style="--size:.75rem; --maxw:14rem" />
+    <button class="btn" data-cy="agents-import" type="submit">{{ import_label }}</button>
+  </form>
+
+  {% if agents %}
+  <a class="btn" data-cy="agents-export" href="{{ base }}/export" download style="--ml-sm:auto">{{ export_all_label }} ({{ count }})</a>
+  {% endif %}
+</div>
+{% endif %}
+
+{% if community %}
+<section style="--m:2rem 0 0; --pt:1rem">
+  <h2 style="--size:1rem; --weight:600; --m:0 0 .35rem">{{ community_heading }}</h2>
+  <a class="btn" data-cy="agents-community" href="{{ community_url }}" target="_blank" rel="noopener">{{ community_label }}</a>
+</section>
+{% endif %}

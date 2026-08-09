@@ -17,6 +17,10 @@
 
 	let catalog: Record<string, any> = {};
 	let grafted: Record<string, any> = {};
+	// Unresolved per-Sprig failures, from the backend. Persisted on the data
+	// volume, so these outlive the toast, the reload and the restart — they
+	// clear when a graft or prune actually resolves them.
+	let errors: Record<string, any> = {};
 	let hostArch = '';
 
 	// Supervisor lifecycle state -> operator-facing label + badge colour.
@@ -37,6 +41,7 @@
 			const res = await getSprigCatalog(localStorage.token);
 			catalog = res?.catalog ?? {};
 			grafted = res?.grafted ?? {};
+			errors = res?.errors ?? {};
 			hostArch = res?.host_arch ?? '';
 		} catch (e: any) {
 			// Surface the backend's reason (FastAPI throws {detail}) instead of a
@@ -192,6 +197,15 @@
 					{#if g}
 						<div class="text-xs text-gray-400 dark:text-gray-500 mt-1 font-mono break-all">
 							{g.base_url}{g.pid ? ` · pid ${g.pid}` : ''}
+						</div>
+					{/if}
+					{#if errors[name]}
+						<div
+							data-cy="sprig-error"
+							role="status"
+							class="text-xs text-red-600 dark:text-red-400 mt-1 break-words"
+						>
+							{errors[name].message}
 						</div>
 					{/if}
 				</div>

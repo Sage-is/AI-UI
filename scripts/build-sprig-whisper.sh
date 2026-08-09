@@ -18,14 +18,11 @@
 # Requirements: docker, oras, zstd, tar, curl, jq, python3, sha256sum|shasum.
 set -euo pipefail
 
-REGISTRY="${REGISTRY:-localhost:5000}"
+# Shared boilerplate: constants, arch-normalize, sha256, registry, push, timing.
+. "$(dirname "${BASH_SOURCE[0]}")/lib/sprig-build.sh"
 NAME="${NAME:-sprig-stt-whisper-base}"
-TAG="${TAG:-v1}"
-INSECURE="${INSECURE:-1}"
-MANAGE_REGISTRY="${MANAGE_REGISTRY:-0}"
-NETWORK="${NETWORK:-sage-network}"
-ARTIFACT_TYPE="application/vnd.sage-is.sprig.v1"
-LAYER_TYPE="application/vnd.sage-is.sprig.tar+zstd"
+sprig_build_defaults
+sprig_timing_start
 
 # v1.9.1: newest release; /health (load-gated 503→200, needed by the supervisor
 # poller) exists from v1.7.5 on — v1.7.4 and earlier have NO health endpoint.
@@ -35,24 +32,15 @@ MODEL_URL="https://huggingface.co/ggerganov/whisper.cpp/resolve/main/${MODEL_FIL
 
 # Host arch this artifact serves. Default: the build host. amd64 gets a
 # `-amd64`-suffixed tag so it sits beside the arm64 artifact under one repo.
-_RAW_ARCH="$(uname -m)"
-case "${ARCH:-$_RAW_ARCH}" in
-  arm64|aarch64) ARCH=arm64 ;;
-  amd64|x86_64)  ARCH=amd64 ;;
-  *) echo "ERROR: unsupported ARCH='${ARCH:-$_RAW_ARCH}' (want arm64|amd64)" >&2; exit 1 ;;
-esac
-PLATFORM="${PLATFORM:-linux/$ARCH}"
-ARCHTAG="$TAG"; [ "$ARCH" = "amd64" ] && ARCHTAG="$TAG-amd64"
+sprig_arch_normalize
 
 WORK="${WORK:-/tmp/sprig-build/whisper-$ARCH}"
 OUT_DIR="${OUT_DIR:-$(pwd)}"
 OUT="$OUT_DIR/$NAME-$ARCHTAG.tar.zst"
 
-sha256() { if command -v sha256sum >/dev/null; then sha256sum "$1" | cut -d' ' -f1; else shasum -a 256 "$1" | cut -d' ' -f1; fi; }
 
-# oras runs DOCKERIZED (ORAS_IMG below) — no host install needed.
+# oras runs DOCKERIZED (ORAS_IMG from sprig-build.sh) — no host install needed.
 for c in docker curl jq python3; do command -v "$c" >/dev/null || { echo "ERROR: $c not on PATH" >&2; exit 1; }; done
-ORAS_IMG="${ORAS_IMG:-ghcr.io/oras-project/oras:v1.2.0}"
 mkdir -p "$WORK/bin" "$WORK/stage"
 
 # --- 1. static whisper-server build (alpine/musl, mirrors build-llama.sh) -------
@@ -150,14 +138,7 @@ echo "    $TAR_SHA"
 echo "  model.bin sha256: $MODEL_SHA"
 echo "=================================================================="
 
-if [ "$MANAGE_REGISTRY" = "1" ]; then
-  docker network inspect "$NETWORK" >/dev/null 2>&1 || docker network create "$NETWORK"
-  if ! docker ps --format '{{.Names}}' | grep -qx local-registry; then
-    docker rm -f local-registry >/dev/null 2>&1 || true
-    docker run -d --name local-registry --network "$NETWORK" -p 5000:5000 -v sprig-registry-data:/var/lib/registry registry:2 >/dev/null
-  fi
-  for _ in $(seq 1 30); do curl -fsS "http://localhost:5000/v2/" >/dev/null 2>&1 && break; sleep 0.5; done
-fi
+sprig_ensure_registry
 
 # SIGN_KEY=<minisign secret key> signs the tar before push (SIGN_NOPASS=1 for
 # the committed dev fixture; real keys prompt). Verify side: sprigs/minisign.py.
@@ -174,17 +155,11 @@ fi
 # Dockerized oras push (no host oras). Inside the container localhost is the container itself, so a localhost registry is reached by its on-network name.
 
 # **Note** This may not be the right call for ASAP deployment initially.
-PUSH_REG="$REGISTRY"; ORAS_NET=()
-case "$REGISTRY" in localhost:*|127.0.0.1:*)
-  PUSH_REG="local-registry:${REGISTRY##*:}"; ORAS_NET=(--network "$NETWORK");;
-esac
-PUSH=(push "$PUSH_REG/$NAME:$ARCHTAG" --artifact-type "$ARTIFACT_TYPE")
-[ "$INSECURE" = "1" ] && PUSH+=(--plain-http)
-docker run --rm ${ORAS_NET[@]+"${ORAS_NET[@]}"} -v "$OUT_DIR:/w" -w /w "$ORAS_IMG" \
-  "${PUSH[@]}" "$(basename "$OUT"):$LAYER_TYPE" ${SIG_LAYER[@]+"${SIG_LAYER[@]}"}
+sprig_push
 
 echo
 echo "pushed: $REGISTRY/$NAME:$ARCHTAG"
+sprig_timing_end
 if [ "$ARCH" = "amd64" ]; then
   echo "catalog: arches[\"amd64\"] = {\"tag\": \"$ARCHTAG\", \"binary_sha256\": \"$TAR_SHA\"}"
 else

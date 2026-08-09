@@ -1,0 +1,118 @@
+{# What this Rootstock™ can reach, and what it cannot. The whole panel is the
+   htmx swap target.
+
+   `data-status` and `data-label` are the guard-rail contract, and they are
+   ATTRIBUTES rather than rendered words on purpose: the spec reads them, so it
+   judges this page and the Svelte one by the same rule, and rewording or
+   translating a label cannot break it.
+
+   `<details>` everywhere a disclosure is wanted — for the technical detail, the
+   remedy, the ghost endpoints and the command library. That one element
+   replaced the Svelte `Collapsible` AND a 267-line how-to-fix modal: no
+   JavaScript, no focus trap, no escape-key handler, no second round-trip.
+
+   This surface still uses classes rather than props. It predates that split and
+   its CSS is written and paid for; converting it is follow-up work worth doing
+   for consistency, not for line count. #}
+
+{% macro row(r) -%}
+<div class="diag-row" data-cy="diag-row" data-label="{{ r.label }}" data-status="{{ r.status }}">
+  <span class="badge badge-{{ r.status }}">{{ r.status_label }}</span>
+  <div class="diag-main">
+    <div class="diag-label">{{ r.label }}</div>
+    <div class="diag-summary">{{ r.summary }}</div>
+  </div>
+  <div class="diag-actions">
+    {% if r.reprobe %}
+    {# Offered only where the Svelte page offers it: an endpoints row, whose
+       label IS the URL and whose capability sits inside `technical`. Sourced
+       the same way rather than from invented fields, so the two pages cannot
+       offer the button in different places. #}
+    <button type="button" class="btn" data-cy="diag-reprobe"
+            hx-post="/pages/admin/diagnostics/probe"
+            hx-vals='{"url": "{{ r.label }}", "capability": "{{ r.capability }}"}'
+            hx-target="#diagnostics-panel" hx-swap="outerHTML">Re-probe</button>
+    {% endif %}
+  </div>
+</div>
+{% if r.fix %}
+<details class="fix" data-cy="diag-fix" data-issue-type="{{ r.fix.issue_type }}">
+  <summary>Show me how to fix this</summary>
+  <p class="fix-plain">{{ r.fix.plain }}</p>
+  <ol class="fix-steps">
+    {% for step in r.fix.steps %}
+    <li>
+      {% if step.shape %}<em>{{ step.shape }}</em> — {% endif %}{{ step.text }}
+      {% if step.ui_path %}<div class="fix-path">{{ step.ui_path }}</div>{% endif %}
+      {# Copy-only, never executed — the same contract the Svelte modal held. #}
+      {% if step.command %}<pre class="fix-command">{{ step.command }}</pre>{% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+</details>
+{% endif %}
+{% if r.technical %}
+<details class="fix" data-cy="diag-technical">
+  <summary>Technical detail</summary>
+  <pre class="fix-command">{{ r.technical }}</pre>
+</details>
+{% endif %}
+{%- endmacro %}
+
+<div id="diagnostics-panel">
+  <div class="panel-bar">
+    {# Absolute and server-rendered, so nothing has to keep it accurate. The
+       Svelte page holds a relative label open with a 30-second timer. #}
+    <span class="page-count">Last refreshed {{ stamp }}</span>
+    <button type="button" class="btn" data-cy="diagnostics-refresh"
+            hx-get="/pages/admin/diagnostics/panel" hx-target="#diagnostics-panel"
+            hx-swap="outerHTML">Re-probe all</button>
+  </div>
+
+  {% if banner %}
+  <p class="toast" data-cy="diag-boot-probes">Boot probes still running — {{ banner.completed }} of {{ banner.total }} complete.</p>
+  {% endif %}
+
+  {% if issues and not banner %}
+  <section class="diag-section" data-cy="diag-issues">
+    <h2>Issues</h2>
+    {% for r in issues %}{{ row(r) }}{% endfor %}
+  </section>
+  {% endif %}
+
+  {% for section in sections %}
+  <section class="diag-section" data-cy="diag-section" data-section="{{ section.key }}">
+    <h2>{{ section.title }}</h2>
+    {% for r in section.rows %}{{ row(r) }}{% else %}
+    <p class="page-muted">Nothing reported.</p>
+    {% endfor %}
+    {% if section.ghosts %}
+    {# History, closed by default: it should not push the live rows down. #}
+    <details class="fix" data-cy="diag-ghost-endpoints">
+      <summary>Previously configured ({{ section.ghosts | length }})</summary>
+      {% for r in section.ghosts %}{{ row(r) }}{% endfor %}
+    </details>
+    {% endif %}
+  </section>
+  {% endfor %}
+
+  {% if library %}
+  {# Copy-only, by design. An earlier generation of this page had an
+     arbitrary-shell surface and it was rejected as anti-Poka-Yoke. These get
+     pasted into the operator's own terminal, under their own audit trail —
+     server rendering does not change that, because there is no execution path
+     here to add. #}
+  <section class="diag-section" data-cy="diag-command-library">
+    <h2>Recovery commands</h2>
+    <p class="page-muted">Copy these into your own terminal. Nothing here runs itself.</p>
+    {% for entry in library %}
+    <details class="fix" data-cy="diag-command" data-command-id="{{ entry.id }}">
+      <summary>{{ entry.title }}</summary>
+      <p class="fix-plain">{{ entry.description }}</p>
+      {% if entry.warning %}<p class="fix-warning">{{ entry.warning }}</p>{% endif %}
+      <pre class="fix-command">{{ entry.command }}</pre>
+    </details>
+    {% endfor %}
+  </section>
+  {% endif %}
+</div>

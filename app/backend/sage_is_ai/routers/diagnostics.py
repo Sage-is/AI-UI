@@ -167,12 +167,19 @@ def _summary_key_for(capability: Optional[str], status_str: str) -> str:
     return "diagnostics.summary.unknown." + status_str
 
 
-def _summarize_endpoint(record: dict, in_config: bool) -> dict:
+def _summarize_endpoint(
+    record: dict, in_config: bool, embedding_model: Optional[str] = None
+) -> dict:
     """Render one EndpointRecord (dict form) as a section row.
 
     Returns the same dict shape `_row` produces but with extra
     `in_config` and `technical` fields; the endpoints section uses
     this so per-row ghost-marking works.
+
+    When the endpoint is a down/degraded Sprig™-backed capability, `sprig` +
+    `sprig_capability` are added so the "how to fix" modal can offer a one-click
+    graft as the primary remedy. External services (openai/ollama/tika/docling)
+    and infra rows carry no `sprig`.
     """
     last_status = record.get("last_status")
     if last_status in ("ok", "degraded", "unreachable"):
@@ -189,7 +196,7 @@ def _summarize_endpoint(record: dict, in_config: bool) -> dict:
     elif status_str == "degraded":
         issue_type = "endpoint_degraded"
 
-    return {
+    result = {
         "status": status_str,
         "summary_key": _summary_key_for(capability, status_str),
         "summary_params": {
@@ -200,6 +207,16 @@ def _summarize_endpoint(record: dict, in_config: bool) -> dict:
         "in_config": in_config,
         "technical": record,
     }
+
+    if issue_type and capability:
+        from sage_is_ai.sprigs.supervisor import recommended_cultivar
+
+        cultivar = recommended_cultivar(capability, embedding_model)
+        if cultivar:
+            result["sprig"] = cultivar
+            result["sprig_capability"] = capability
+
+    return result
 
 
 def _endpoints_section(app) -> dict:
@@ -241,9 +258,16 @@ def _endpoints_section(app) -> dict:
 
     rows.sort(key=lambda r: r[0])
 
+    try:
+        embedding_model = app.state.config.RAG_EMBEDDING_MODEL
+    except Exception:  # noqa: BLE001 — best-effort; sprig hint just goes absent
+        embedding_model = None
+
     out: dict = {}
     for _sort_key, url, record in rows:
-        out[url] = _summarize_endpoint(record, in_config=(url in active))
+        out[url] = _summarize_endpoint(
+            record, in_config=(url in active), embedding_model=embedding_model
+        )
     return out
 
 
@@ -453,11 +477,40 @@ def _check_alembic_head() -> dict:
         )
 
 
+def _check_dev_reloader() -> dict:
+    """Report the development reloader, because it changes how the app runs.
+
+    `PAGES_RELOAD_DIRS` pins the app to a single worker — uvicorn cannot reload
+    multi-worker — and runs a filesystem watcher. This is for a editing panels and wrong for anything serving users, and neither is visible
+    from the outside.
+
+    An operator looking at an instance that is oddly slow under load should not
+    have to read boot logs to find that out. `degraded` rather than
+    `unreachable`: everything works, it is just running a configuration nobody
+    would choose on purpose for production.
+
+    Read from the environment rather than the imported constant, so a value set
+    after import is still reported. This has to be true about the process as it
+    is running, not as it started.
+    """
+    watching = os.environ.get("PAGES_RELOAD_DIRS", "").strip()
+    if not watching:
+        return _row("ok", "diagnostics.summary.dev_reloader.ok")
+    return _row(
+        "degraded",
+        "diagnostics.summary.dev_reloader.degraded",
+        {"paths": watching},
+        issue_type="dev_reloader_active",
+        technical={"watching": watching, "workers": 1},
+    )
+
+
 def _boot_status_section() -> dict:
     return {
         "data_dir_writable": _check_data_dir_writable(),
         "secret_key_persisted": _check_webui_secret_key(),
         "alembic_head": _check_alembic_head(),
+        "dev_reloader": _check_dev_reloader(),
     }
 
 
@@ -694,4 +747,8 @@ async def probe_endpoint(
         "capability": body.capability,
         "last_status": "unknown",
     }
-    return _summarize_endpoint(record, in_config=True)
+    try:
+        embedding_model = app.state.config.RAG_EMBEDDING_MODEL
+    except Exception:  # noqa: BLE001 — best-effort; sprig hint just goes absent
+        embedding_model = None
+    return _summarize_endpoint(record, in_config=True, embedding_model=embedding_model)

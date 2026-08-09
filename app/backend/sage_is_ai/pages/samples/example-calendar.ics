@@ -1,0 +1,38 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Sage.is//Example Calendar//EN
+CALSCALE:GREGORIAN
+X-WR-CALNAME:Example
+BEGIN:VEVENT
+UID:example-standup@sage.is
+SUMMARY:← a repeating event appears every time it recurs
+DTSTART:20260105T093000Z
+DTEND:20260105T094500Z
+RRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;COUNT=15
+END:VEVENT
+BEGIN:VEVENT
+UID:example-oneoff@sage.is
+SUMMARY:← a one-off meeting looks like this
+DTSTART:20260106T140000Z
+DTEND:20260106T150000Z
+END:VEVENT
+BEGIN:VEVENT
+UID:example-span@sage.is
+SUMMARY:← a multi-day event marks every day it covers
+DTSTART;VALUE=DATE:20260114
+DTEND;VALUE=DATE:20260117
+END:VEVENT
+BEGIN:VEVENT
+UID:example-allday@sage.is
+SUMMARY:← an all-day event has no clock time
+DTSTART;VALUE=DATE:20260109
+DTEND;VALUE=DATE:20260110
+END:VEVENT
+BEGIN:VEVENT
+UID:example-monthly@sage.is
+SUMMARY:← a monthly event, so the grid has something further out
+DTSTART:20260120T110000Z
+DTEND:20260120T120000Z
+RRULE:FREQ=MONTHLY;COUNT=3
+END:VEVENT
+END:VCALENDAR

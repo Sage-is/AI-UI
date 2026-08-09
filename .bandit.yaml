@@ -30,8 +30,9 @@ skips:
   - B608
 
 exclude_dirs:
-  # Test code — test fixtures may intentionally contain "bad" patterns
-  - app/backend/sage_is_ai/test
+  # `app/backend/sage_is_ai/test` was excluded here until 2026-08-02, when the
+  # tree was retired — nothing had ever run it. A rule about a directory that
+  # does not exist is a rule about nothing, so it went with the files.
 
   # Alembic migrations — auto-generated SQL, not hand-written
   - app/backend/sage_is_ai/migrations

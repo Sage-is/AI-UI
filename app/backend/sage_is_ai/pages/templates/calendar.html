@@ -1,0 +1,77 @@
+{# The Calendar page — a month grid and an agenda, from one set of events.
+
+   Styling is IMPORTED from `_workshop.html`. This file adds no style strings of
+   its own beyond the grid's column count, and no lines to `pages.css`.
+
+   NO SCRIPT. Month navigation is three links, because the month lives in the
+   URL. Nothing here needs a runtime, which is also what lets the page be
+   cached, shared and read on a phone with a bad connection. #}
+{% import "_workshop.html" as ws %}
+
+{# The EXAMPLE state renders the WHOLE page rather than a placeholder, because a
+   month grid with nothing in it teaches nothing about a month grid. The events
+   come from a real .ics stub through the shipping parser, so repeats, spans and
+   all-day behave exactly as a live feed would. Reduced opacity plus a line above
+   say it is not yours; the titles could not be mistaken for commitments. #}
+{% if example %}
+<p data-cy="calendar-example" style="{{ ws.by_s }}; --m:0 0 .3rem">{{ example_note }}</p>
+<p data-cy="calendar-unset" style="{{ ws.body_s }}; --h-sm:auto; --m:0 0 1rem">{{ unset }}
+  <a data-cy="calendar-settings-unset" href="{{ settings_url }}">{{ settings_label }}</a></p>
+{% endif %}
+
+<div{% if example %} style="--op:.55"{% endif %}>
+
+<nav data-cy="calendar-nav" style="--d:flex; --ai:center; --g:.5rem; --m:0 0 .8rem">
+  <a class="btn" data-cy="calendar-prev" href="{{ prev_url }}">{{ prev_label }}</a>
+  <strong data-cy="calendar-month" style="{{ ws.name_s }}">{{ month_label }}</strong>
+  <a class="btn" data-cy="calendar-next" href="{{ next_url }}">{{ next_label }}</a>
+  <a data-cy="calendar-today" href="{{ today_url }}" style="{{ ws.by_s }}; --ml:auto">{{ today_label }}</a>
+  <a data-cy="calendar-settings" href="{{ settings_url }}" style="{{ ws.by_s }}">{{ settings_label }}</a>
+</nav>
+
+{# The month grid. Seven columns, Monday first, six rows so every month fits
+   without the layout changing height between months. Days outside the month are
+   dimmed rather than blank, so the week shape stays readable at the edges. #}
+<div data-cy="calendar-grid" role="table"
+     style="--d:grid; --gtc:repeat(7, 1fr); --g:.2rem; --m:0 0 1.5rem">
+  {% for name in weekday_names %}
+  <span style="{{ ws.by_s }}; --ta:center">{{ name }}</span>
+  {% endfor %}
+
+  {% for row in grid %}{% for cell in row %}
+  <span data-cy="calendar-day" data-date="{{ cell.iso }}"
+        style="--d:flex; --fd:column; --ai:center; --g:.15rem; --p:.3rem .1rem; --br:.4rem; --size:.7rem; outline:1px solid var(--line){% if cell.outside %}; --op:.4{% endif %}">
+    <span>{{ cell.num }}</span>
+    <span aria-hidden="true"
+          style="--w:.3rem; --h:.3rem; --br:50%; {% if cell.marked %}--bgc:currentColor{% else %}--bgc:transparent{% endif %}"></span>
+  </span>
+  {% endfor %}{% endfor %}
+</div>
+
+<h2 data-cy="calendar-agenda-title" style="{{ ws.name_s }}; --m:0 0 .5rem">{{ agenda_title }}</h2>
+
+{# One container always, empty message inside it. The Agents page learned this
+   from the parity gate: an if/else that swapped the whole list for a paragraph
+   meant the hook existed on one implementation and not the other. #}
+<ul data-cy="calendar-agenda" style="--lis:none; --p:0; --m:0; --d:flex; --fd:column; --g:.8rem">
+  {% for day in agenda %}
+  <li data-cy="calendar-agenda-day">
+    <h3 data-cy="calendar-agenda-heading" style="{{ ws.by_s }}; --m:0 0 .2rem">{{ day.heading }}</h3>
+    <ul style="--lis:none; --p:0; --m:0; --d:flex; --fd:column; --g:.15rem">
+      {% for event in day.events %}
+      <li data-cy="calendar-agenda-row" style="--d:flex; --g:.6rem">
+        <span style="{{ ws.by_s }}; --minw:3.5rem">{{ event.when }}</span>
+        <span data-cy="calendar-agenda-title-text">{{ event.title }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </li>
+  {% else %}
+  <li data-cy="calendar-agenda-empty" style="{{ ws.by_s }}">{{ agenda_empty }}</li>
+  {% endfor %}
+</ul>
+
+{# The page says where its own parser stops. A calendar that is quietly wrong is
+   worse than one that tells you what it does not handle. #}
+<p data-cy="calendar-limits" style="{{ ws.by_s }}; --m:1.5rem 0 0">{{ limits_note }}</p>
+</div>

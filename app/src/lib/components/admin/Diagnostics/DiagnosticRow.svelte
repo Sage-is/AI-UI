@@ -11,7 +11,9 @@
 	export let label: string = '';
 	export let record: any = {};
 	export let onProbe: ((url: string, capability: string) => Promise<void>) | null = null;
-	export let onFix: ((issueType: string) => void) | null = null;
+	export let onFix:
+		| ((issueType: string, sprig?: string, sprigCapability?: string) => void)
+		| null = null;
 	export let capability: string = '';
 	export let url: string = '';
 
@@ -49,7 +51,16 @@
 	};
 </script>
 
-<div class="py-2 border-b border-gray-100 dark:border-gray-800 last:border-b-0">
+<!-- data-cy/data-status/data-label form the guard-rail contract. The spec
+     reads the attributes, never the badge's translated word, so the test
+     survives both a rewording and a locale change — and so one spec can
+     guard this component and the server-rendered page that replaces it. -->
+<div
+	class="py-2 border-b border-gray-100 dark:border-gray-800 last:border-b-0"
+	data-cy="diag-row"
+	data-label={label}
+	data-status={record?.status ?? 'unknown'}
+>
 	<div class="flex items-start gap-3 flex-wrap">
 		<div class="flex-none pt-1">
 			<Badge
@@ -73,6 +84,7 @@
 				<button
 					type="button"
 					class="text-xs px-2 py-1 rounded border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 flex items-center gap-1"
+					data-cy="diag-reprobe"
 					on:click={handleProbe}
 					disabled={probing}
 					aria-label={$i18n.t('Re-probe')}
@@ -91,7 +103,9 @@
 				<button
 					type="button"
 					class="text-xs px-2 py-1 rounded border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800"
-					on:click={() => onFix && onFix(record.issue_type)}
+					data-cy="diag-fix"
+					on:click={() =>
+						onFix && onFix(record.issue_type, record.sprig, record.sprig_capability)}
 					aria-label={$i18n.t('Show me how to fix this')}
 					title={$i18n.t('Show me how to fix this')}
 				>
@@ -102,7 +116,7 @@
 	</div>
 
 	{#if record?.technical}
-		<div class="mt-2">
+		<div class="mt-2" data-cy="diag-technical">
 			<Collapsible bind:open={detailsOpen} chevron={true} title={$i18n.t('Technical detail')}>
 				<div slot="content">
 					<pre

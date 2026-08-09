@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<style>
+  /* Lifted from try-sage.html so the card and the page it previews share one
+     look: the first slide as backdrop, the same two-layer dim, the same
+     circular mark, the same serif heading. No startr.style here on purpose —
+     this renders once at build time and must not depend on a CDN. */
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1200px; height: 630px; }
+  body {
+    background: #000; color: #fff; overflow: hidden;
+    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .bg { position: fixed; inset: 0; z-index: -1; }
+  .bg .shot {
+    position: absolute; inset: 0;
+    background-image: url('../../app/static/assets/images/library.webp');
+    background-size: cover; background-position: center;
+  }
+  /* try-sage.html's `.dim`, verbatim in intent: bottom-up black from 20%,
+     then a 55% flat dim. The blur is baked here rather than applied live. */
+  .bg .dim {
+    position: absolute; inset: 0;
+    background: linear-gradient(0deg, #000 20%, transparent), rgb(0 0 0 / 0.55);
+    backdrop-filter: blur(4px);
+  }
+  main {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 1.5rem; text-align: center; padding: 0 3rem; max-width: 68rem;
+  }
+  /* Sized for the THUMBNAIL, not for the 1200px original. A feed renders this
+     card near 500px wide, so every size here is set by what survives a ~40%
+     downscale. That is why the mark and the heading look oversized when the
+     file is viewed at full size — the full size is not where anyone reads it. */
+  img.mark { width: 180px; height: 180px; border-radius: 9999px; }
+  h1 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 4.5rem; font-weight: 600; line-height: 1.15;
+    white-space: nowrap;
+    text-shadow: 0 2px 24px rgb(0 0 0 / 0.6);
+  }
+  p { font-size: 2.1rem; opacity: 0.88; line-height: 1.45; max-width: 46rem; }
+  .host {
+    font-size: 1.4rem; letter-spacing: 0.18em; text-transform: uppercase;
+    opacity: 0.75; font-weight: 600;
+  }
+</style>
+</head>
+<body>
+  <div class="bg"><div class="shot"></div><div class="dim"></div></div>
+  <main>
+    <img class="mark" src="../../app/static/icons/favicon.png" alt="" />
+    <h1>Welcome to try.sage.is AI</h1>
+    <p>A hosted trial of Sage.is AI, the open-source AI platform for workshops and teams.</p>
+    <div class="host">try.sage.is</div>
+  </main>
+</body>
+</html>

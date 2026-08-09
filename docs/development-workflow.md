@@ -338,6 +338,42 @@ Standard targets for common tasks:
 
 **Types:** Add, Update, Fix, Remove, Refactor, Document
 
+### Security & Private-Data Scanning
+
+Scanning is **local-first** — no CI service runs it. The same commands run in git hooks and by hand, all driven by one config, `.gitleaks.toml`.
+
+**What runs when:**
+
+| Stage | Runs | Catches |
+| --- | --- | --- |
+| `git commit` | gitleaks (staged diff), bandit, codespell, hygiene, outreach guard, dep audit | new secrets or private data in the change |
+| `git push` | `make scan_tree` — gitleaks over the tracked tree at HEAD | anything a bypassed commit let through |
+| manual | `make scan` — secrets (full history) + SAST + dependency CVEs | deep audit, e.g. before a release |
+
+**Scan targets:**
+
+- `make scan_tree` — gitleaks over a `git archive` of HEAD. Tracked files only, so it is fast (no `node_modules` to trudge through). This is what the pre-push hook runs.
+- `make scan_secrets` — gitleaks over **full git history**. The deep audit; it can surface benign historical matches, so it is not a blocking gate.
+- `make scan` — `scan_secrets` plus SAST (semgrep, bandit) and dependency CVEs (trivy).
+
+**Private-data rules** (in `.gitleaks.toml`, alongside the built-in secret rules):
+
+- `sage-internal-hostname` — internal infra hostnames like `*.production.openco.ca`. Pass endpoints through env vars; never hardcode them in source or docs.
+- `local-user-path` — absolute `/Users/…` or `/home/…` paths that leak a developer's machine layout.
+- `populated-contact-list` — a `user-import.csv`, `.vcf`, or `.mbox` that actually holds emails. Empty templates pass.
+
+A real finding fails the commit or push. Clear a false positive by adding a path or regex to `[allowlist]` in `.gitleaks.toml`; vendored and generated paths (`node_modules/`, Pyodide, lockfiles, i18n) are already allowlisted.
+
+**Setup:** `make install_dev` installs the tools (gitleaks, semgrep, bandit, trivy, pre-commit) and wires the hooks. Re-run `make install_hooks` after pulling hook changes to pick up new stages.
+
+**Escape hatches** (deliberate, visible):
+
+- `git commit --no-verify` — skip the commit-stage hooks.
+- `git push --no-verify` — skip the pre-push tree scan.
+- `SKIP_SCAN=1` / `SKIP_GAUNTLET=1` — skip the scan or the build under the optional `core.hooksPath .githooks` setup.
+
+**Never commit:** real `.env` values, `tools/db_snapshots/` (real user data), or `docs/outreach/` drafts (named prospects). All are git-ignored — keep them that way.
+
 ### Documentation Tools
 
 - Markdown for all documentation
@@ -347,30 +383,51 @@ Standard targets for common tasks:
 
 ### Testing Standards
 
-**Test Framework:**
-- pytest with pytest-django for Django integration
-- pytest-cov for coverage reporting
-- All tests in `tests.py` files within app directories
+> **Rewritten 2 August 2026.** Everything previously in this section described a
+> Django project. Verified against this repo: **zero** Django in
+> `requirements.txt` (it is FastAPI), no `pytest.ini`, no `conftest.py`, no
+> `tests.py` anywhere, and none of the five `make test_*` commands it listed
+> existed. A developer following it got "No rule to make target" at best and a
+> wrong mental model at worst.
 
-**Test Configuration:**
-- `pytest.ini` - Main pytest configuration
-- `conftest.py` - Shared fixtures and Django setup
-- Tests run with `--nomigrations` and `--reuse-db` for speed
+**What actually guards this repo: Cypress and 22 gate targets.** Not unit tests.
+That is a deliberate consequence of the architecture — most behaviour here is a
+container talking to a browser, and the migration's standing rule is that a
+surface's guard-rail spec is green before a change and green after.
 
-**Testing Commands:**
+Start with `make help`, and see `docs/no-build-surface-convention.md` for how the
+guard-rails are written. The heavy hitters:
+
 ```bash
-make test                 # Run all tests
-make test_verbose         # Run with verbose output
-make test_coverage        # Run with coverage report
-make test_experiences     # Run only experiences app tests
-make test_quick          # Run excluding slow tests
+make e2e            # the Cypress suite against a fresh baked container
+make e2e_both       # the same suite once per implementation (legacy + no-build)
+make gauntlet_full  # everything a robot would do, runnable on this machine
+make upgrade_gate   # boots this image on a copy of a production snapshot
 ```
 
-**Test Categories (using markers):**
-- `@pytest.mark.unit` - Unit tests (isolated, fast)
-- `@pytest.mark.integration` - Integration tests
-- `@pytest.mark.slow` - Slow tests (can be excluded)
-- `@pytest.mark.django_db` - Tests requiring database
+**There are no Python tests, and that is now on purpose.** Seven files under
+`app/backend/sage_is_ai/test/` came with the fork and nothing ever ran them — no
+Make target, no script, no CI — so their pass/fail state was unknown and they
+were not coverage. They were retired on 2026-08-02 rather than revived.
+
+Reviving them would have been a project, not a wiring task. `requirements.txt`
+carries the comment *"Test packages (pytest, docker) — install separately for
+testing, not in production image"*, pytest is absent from the built image by that
+decision, five of the seven subclass `AbstractPostgresTest` and so need a
+Postgres fixture container, and `test_provider.py` needs `moto`,
+`gcp_storage_emulator`, `google-cloud-storage` and `azure-storage-blob` besides.
+
+`test_redis.py` was the one file that would have run today if anything ran it —
+pytest and mocks, nothing else. It went with the rest anyway: one unit-test file
+with no runner is not coverage either, and bringing Redis-mock tests back is a
+decision to make on its own merits. `git log -- app/backend/sage_is_ai/test/`
+has all of it if that day comes.
+
+**The standing rule about evidence.** A green suite is the weakest evidence on
+an interactive surface — this project has shipped an autoscroll that passed
+13/13 under a real browser driver and was broken on a trackpad, and a button
+that rendered and did nothing while every assertion passed. Every migrated
+surface gets a human pass via `make review` before it takes over a route.
 
 **Writing Tests:**
 - One test file per app (`app/tests.py`)

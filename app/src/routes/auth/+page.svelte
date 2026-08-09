@@ -29,12 +29,16 @@
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 	import OnBoarding from '$lib/components/OnBoarding.svelte';
-	import TrySageWelcome from '$lib/components/TrySageWelcome.svelte';
 	import BrandIcon from '$lib/components/BrandIcon.svelte';
 
 	const i18n = getContext('i18n');
 
 	let loaded = false;
+	// Trial mode: a bare anonymous /auth belongs on the server-rendered
+	// welcome page, but an EXPLICIT sign-in intent — the `?next=` the pages
+	// auth bridge emits, or a `?redirect=` — gets the real form. Without
+	// this the trial has no sign-in path at all for an admin.
+	let trialSignInForm = false;
 	let branding = {};
 
 	let mode = $config?.features.enable_ldap ? 'ldap' : 'signin';
@@ -278,6 +282,29 @@
 			goto(redirectPath);
 		}
 
+		// try.sage trial mode: the welcome surface is server-rendered
+		// (no-build migration; replaces TrySageWelcome.svelte). An anonymous
+		// visitor on /auth without a magic token belongs there. `/welcome`,
+		// not `/` — the root route serves by cookie, and bouncing a
+		// signed-out SPA against a cookie check is how a redirect loop
+		// starts. `/welcome` answers unconditionally, so it terminates.
+		// An explicit `?next=`/`?redirect=` stays here and gets the form.
+		//
+		// A visit that CARRIED a magic token also stays, even though it failed
+		// — `checkOauthCallback` has already raised "Invalid or expired link"
+		// and navigating away would take that message with it. Expired persona
+		// links are ordinary in a workshop, and a facilitator debugging one
+		// needs to read why rather than watch the welcome page reappear.
+		const hadMagicToken = window.location.hash.includes('magic_token');
+		if ($config?.features?.enable_try_sage && !$user) {
+			if (querystringValue('next') || querystringValue('redirect') || hadMagicToken) {
+				trialSignInForm = true;
+			} else {
+				window.location.replace('/welcome');
+				return;
+			}
+		}
+
 		// Load branding
 		try {
 			branding = await getBranding();
@@ -331,15 +358,15 @@
 />
 
 <!--
-	try.sage trial mode: strictly invite-only. Replace the entire
-	signin/signup surface with a welcome page directing visitors to
-	their facilitator's email/QR. A magic-link arrival is handled by
-	`checkOauthCallback` in onMount above and navigates away before
-	this branch ever paints, so anyone who lands here in trial mode
-	is by definition someone WITHOUT an invite link.
+	try.sage trial mode: strictly invite-only. The welcome surface that
+	used to render here (TrySageWelcome.svelte) is server-rendered at
+	/welcome now; onMount above navigates there. This branch only bridges
+	the moment before that navigation lands, so it paints nothing — except
+	when the visit carries an explicit `?next=`/`?redirect=`, which is a
+	sign-in intent and falls through to the real form.
 -->
-{#if $config?.features?.enable_try_sage}
-	<TrySageWelcome />
+{#if $config?.features?.enable_try_sage && !trialSignInForm}
+	<div style="--w:100%; --h:100dvh; --bgc:#000"></div>
 {:else}
 <div style="--w:100%; --h:100vh; --maxh:100dvh; --c:#fff; --pos:relative">
 	<div

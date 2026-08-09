@@ -15,7 +15,7 @@ SNAP="${2:-$(ls -d "$HERE"/tools/db_snapshots/*/ 2>/dev/null | sort | tail -1)}"
 NET="${SPRIG_SMOKE_NET:-sage-network}"; ROOT="sage-upgrade"; VOL="${ROOT}-data"
 PORT="${UPGRADE_GATE_PORT:-8096}"; BASE="http://localhost:${PORT}"
 ADMIN_EMAIL="upgrade-gate@sage.is"; ADMIN_PW="upgrade-gate-pw-1234"
-PASS=0; FAIL=0; ok(){ echo "  ✅ $1"; PASS=$((PASS+1)); }; no(){ echo "  ❌ $1"; FAIL=$((FAIL+1)); }
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/gate.sh"   # PASS/FAIL + ok/no/require
 X(){ docker exec "$ROOT" sh -lc "$1"; }
 
 # KEEP=1 leaves the booted container + volume up after the gate (for the Cypress half, cypress/e2e/upgrade/, or manual inspection at $BASE).
@@ -52,7 +52,7 @@ for i in $(seq 1 150); do
 done
 [ "$BOOTED" = "1" ] && ok "boots + migrates a real 176MB production DB" \
   || { no "boot failed on production data"; docker logs --tail 40 "$ROOT"; exit 1; }
-docker logs "$ROOT" 2>&1 | grep -qiE "traceback|migration.*(fail|error)" \
+log_has_i "$ROOT" "traceback|migration.*(fail|error)" \
   && no "boot log shows tracebacks/migration errors" || ok "no tracebacks in boot log"
 
 echo "== 2. auth + data survival =="
@@ -128,11 +128,11 @@ if [ "${NDIRS:-0}" -gt "${EXPECT:-0}" ]; then
 fi
 
 echo "== 5. theme surface on legacy data =="
-curl -s "$BASE/themes/active.css" | grep -q 'no theme grafted' \
+fetch_has "$BASE/themes/active.css" "no theme grafted" \
   && ok "themes route serves the empty default (legacy config has no theme)" || no "themes route wrong"
 TG=$(curl -s --max-time 300 -X POST "$BASE/api/v1/retrieval/sprigs/graft" -H "$AUTH" -H 'Content-Type: application/json' \
   -d '{"name":"theme-workshop-bio","capability":"theme"}')
-echo "$TG" | jq -e '.delivered==true' >/dev/null 2>&1 && curl -s "$BASE/themes/active.css" | grep -q 'workshop-bio' \
+echo "$TG" | jq -e '.delivered==true' >/dev/null 2>&1 && fetch_has "$BASE/themes/active.css" "workshop-bio" \
   && ok "theme grafts + serves on production data" || no "theme graft on legacy data failed"
 
 echo "== 6. TARGET-ARCH capability reality on the production data =="
@@ -179,7 +179,7 @@ T2=$(curl -s -X POST "http://localhost:$((PORT+1))/api/v1/auths/signin" -H 'Cont
   -d "{\"email\":\"$ADMIN_EMAIL\",\"password\":\"$ADMIN_PW\"}" | jq -r '.token // empty')
 A2="Authorization: Bearer $T2"
 [ -n "$T2" ] && ok "target-arch ($TARGET_ARCH) boots the production volume" || no "target-arch boot failed"
-docker logs "${ROOT}-tgt" 2>&1 | grep -q "Sprig™ host architecture: $TARGET_ARCH" \
+wait_for_log "${ROOT}-tgt" "Sprig™ host architecture: $TARGET_ARCH" 15 \
   && ok "boot logs the detected host arch ($TARGET_ARCH)" || no "arch not logged at boot"
 
 # The four capabilities the production data actually depends on. Since the

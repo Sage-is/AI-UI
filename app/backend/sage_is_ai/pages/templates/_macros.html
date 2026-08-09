@@ -1,0 +1,42 @@
+{# Shared markup. Imported, never rendered on its own.
+
+   Several panels are the same shape — a fieldset of labelled checkboxes over a
+   submit — and were five near-identical row builders in five Python files. A
+   macro is the thing f-strings could not give us: the row exists once, and a
+   panel that wants a different page structure around it still gets the same row.
+
+   Every value is already translated by the panel. The templates do presentation
+   only. #}
+
+{# One checkbox row.
+
+   A `<label>` wrapping its own `<input>` needs no `for`/`id` pair and no ARIA —
+   the association is the nesting, and the whole row becomes the click target.
+
+   `row.badge` is optional and each panel means something different by it:
+   "Beta" on features, "already configured" on welcome. The macro does not care
+   which, only that it renders after the name. #}
+{% macro checkbox_row(row) -%}
+<label style="--d:flex; --ai:center; --g:.75rem; --p:.7rem; --br:.6rem; outline:1px solid var(--line); --m:0 0 .5rem; --cur:pointer">
+  <input data-cy="{{ row.hook }}" type="checkbox" name="{{ row.key }}" value="1"{% if row.on %} checked{% endif %} />
+  <span>
+    <span style="--size:.85rem; --weight:500">{{ row.label }}</span>
+    {% if row.badge %}
+    <small style="{{ row.badge_style or '--size:.6rem; --weight:500; --tt:uppercase; --ml:.35rem; --op:.75' }}">{{ row.badge }}</small>
+    {% endif %}
+    <small style="--size:.7rem; --op:.7; --d:block">{{ row.caption }}</small>
+  </span>
+</label>
+{%- endmacro %}
+
+{# The submit every form-shaped panel ends with. #}
+{% macro submit(hook, label) -%}
+<button data-cy="{{ hook }}" type="submit"
+        style="--p:.45rem 1rem; --br:999px; outline:1px solid var(--line); --cur:pointer">{{ label }}</button>
+{%- endmacro %}
+
+{# A saved-confirmation. `<output>` carries an implicit status role, so it
+   announces itself after a save with no ARIA attribute written by hand. #}
+{% macro saved(hook, text) -%}
+<output data-cy="{{ hook }}" style="--size:.8rem; --op:.75">{{ text }}</output>
+{%- endmacro %}

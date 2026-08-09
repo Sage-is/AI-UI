@@ -19,7 +19,7 @@
 	};
 </script>
 
-<div class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-4">
+<div class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-4" data-cy="diag-command-library">
 	<h2 class="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
 		{$i18n.t('Command library')}
 	</h2>

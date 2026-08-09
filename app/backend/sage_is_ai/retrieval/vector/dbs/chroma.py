@@ -118,7 +118,7 @@ class ChromaClient(VectorDBBase):
                     }
                 )
             return None
-        except:
+        except:  # noqa: E722
             return None
 
     def get(self, collection_name: str) -> Optional[GetResult]:

@@ -123,7 +123,12 @@
 									{/if}
 								</div>
 
+								<!-- These two open the wizard modal, which has no URL of its
+									 own. The hooks are how `surfaces.ts` reaches each branch of
+									 it, so the parity gate can compare a panel that cannot be
+									 visited. -->
 								<button
+									data-cy="see-whats-new"
 									style="--td:underline; --d:flex; --ai:center; --g:0.2rem; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500)"
 									type="button"
 									on:click={() => {
@@ -135,6 +140,7 @@
 								</button>
 
 								<button
+									data-cy="run-setup-wizard"
 									style="--td:underline; --d:flex; --ai:center; --g:0.2rem; --size:0.6rem; --c:var(--color-gray-500); --dark-c:var(--color-gray-500)"
 									type="button"
 									on:click={() => {

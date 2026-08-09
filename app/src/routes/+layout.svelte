@@ -39,8 +39,10 @@
 	import 'tippy.js/dist/tippy.css';
 
 	import { WEBUI_BASE_URL, WEBUI_HOSTNAME } from '$lib/constants';
+	import { browser } from '$app/environment';
 	import i18n, { initI18n, getLanguages, changeLanguage } from '$lib/i18n';
 	import { bestMatchingLanguage } from '$lib/utils';
+	import { configureSanitizer } from '$lib/utils/sanitize';
 	import { getAllTags, getChatList } from '$lib/apis/chats';
 	import { getBranding } from '$lib/apis/configs';
 	import NotificationToast from '$lib/components/NotificationToast.svelte';
@@ -58,6 +60,14 @@
 	});
 
 	setContext('i18n', i18n);
+
+	// Install the app-wide DOMPurify hook before any content is sanitized/rendered
+	// (strips hyperscript's _, script, data-script attribute forms everywhere).
+	// Browser-only: DOMPurify needs a DOM, and this runs at client init before any
+	// child component renders.
+	if (browser) {
+		configureSanitizer();
+	}
 
 	const bc = new BroadcastChannel('active-tab-channel');
 

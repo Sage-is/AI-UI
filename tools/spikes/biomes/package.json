@@ -1,0 +1,6 @@
+{
+  "name": "biomes-spike",
+  "private": true,
+  "type": "module",
+  "description": "Phase 4 gate probe: do Svelte biomes share ONE runtime, or one each? Throwaway."
+}

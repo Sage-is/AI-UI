@@ -181,7 +181,7 @@ async def send_post_request(
                 log.error(f"Failed to parse error response: {e}")
                 raise HTTPException(
                     status_code=r.status,
-                    detail=f"Sage.is AI: Server Connection Error",
+                    detail="Sage.is AI: Server Connection Error",
                 )
 
         r.raise_for_status()  # Raises an error for bad responses (4xx, 5xx)
@@ -351,6 +351,13 @@ async def update_config(
         for key, value in request.app.state.config.OLLAMA_API_CONFIGS.items()
         if key in keys
     }
+
+    # The connection list just changed, so the cached provider models are wrong.
+    # Imported here, not at module scope: utils.models imports this router, so a
+    # top-level import would close the cycle.
+    from sage_is_ai.utils.models import invalidate_base_models_cache
+
+    invalidate_base_models_cache(request)
 
     return {
         "ENABLE_OLLAMA_API": request.app.state.config.ENABLE_OLLAMA_API,
@@ -1835,7 +1842,7 @@ async def upload_model(
                 response = requests.post(url, data=f, timeout=240)  # TODO: make timeout configurable for large uploads
 
             if response.ok:
-                log.info(f"Uploaded to /api/blobs")  # DEBUG
+                log.info("Uploaded to /api/blobs")  # DEBUG
                 # Remove local file
                 os.remove(file_path)
 
@@ -1860,7 +1867,7 @@ async def upload_model(
                 )
 
                 if create_resp.ok:
-                    log.info(f"API SUCCESS!")  # DEBUG
+                    log.info("API SUCCESS!")  # DEBUG
                     done_msg = {
                         "done": True,
                         "blob": f"sha256:{file_hash}",

@@ -362,9 +362,9 @@
 					<th scope="col" style="--px:0.6rem; --py:0.5rem; --ta:right" />
 				</tr>
 			</thead>
-			<tbody>
+			<tbody data-cy="users-list">
 				{#each users as user, userIdx}
-					<tr style="--bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-bc:var(--color-gray-850); --size:0.6rem">
+					<tr data-cy="users-row" style="--bgc:#fff; --dark-bgc:var(--color-gray-900); --dark-bc:var(--color-gray-850); --size:0.6rem">
 						<td style="--px:0.6rem; --py:0.2rem; --minw:7rem; --w:7rem">
 							<button
 								style="--translatey:0.125rem"

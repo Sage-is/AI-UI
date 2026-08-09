@@ -1,6 +1,6 @@
 # Sage.is AI-UI
 
-## v3.0.0
+## v3.1.0
 
 An AI interface you run on your own hardware, with your own models, on your own terms.
 
@@ -91,12 +91,15 @@ See [Startr.Style docs](https://startr.style) for the full property reference, r
 
 The Makefile IS the CI/CD framework. The same targets run on a developer laptop or a build server. Linux, macOS, and Windows (WSL) all work. GitHub Actions is not a dependency, but the targets compose with it if you want to call them from a hosted runner.
 
-**Security scanning:**
+**Security scanning** (local-first — git hooks run the same targets, no CI service):
 
 ```bash
-make install_dev          # Install gitleaks, semgrep, bandit, trivy via Homebrew
-make scan                 # Run all scans (secrets, SAST, dependency vulnerabilities)
+make install_dev          # Install gitleaks, semgrep, bandit, trivy + wire git hooks
+make scan                 # Full audit: secrets (history), SAST, dependency CVEs
+make scan_tree            # Fast private-data scan of the tracked tree (what pre-push runs)
 ```
+
+After `install_dev`, every commit scans the staged diff and every push scans the tree — secrets plus internal hostnames, developer paths, and contact lists. Details: [docs/development-workflow.md](docs/development-workflow.md).
 
 **Release process:**
 
@@ -120,11 +123,11 @@ DB snapshots for upgrade testing live in `tools/db_snapshots/` (gitignored, sync
 - [Documentation Index](./docs/README.md)
 - [Messaging Bridges (WhatsApp, etc.)](./docs/bridges.md)
 - [try.sage Trial Deployment](./docs/try-sage-deployment.md)
-- [API Examples](./docs/api-examples.md)
+- [API Examples](./docs/API-examples.md)
 - [Development Workflow](./docs/development-workflow.md)
 - [API Refactoring Plan](./docs/api-refactoring-plan.md)
 - [Community Hub Integration](./docs/community-hub.md)
-- [Contributing](./docs/contributing.md)
+- [Contributing](./docs/CONTRIBUTING.md)
 - [Documentation Archive](./docs/archive/README.md)
 - [Kokoro.js TTS Fix (July 28, 2025)](./docs/archive/fixes/kokoro-tts-fix-2025-07-28.md)
 

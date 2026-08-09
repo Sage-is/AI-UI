@@ -1,0 +1,72 @@
+[
+  {
+    "channel": "db",
+    "chat_id": "chat-fixture",
+    "message_id": "msg-fixture",
+    "patch": {
+      "model": "fixture-model"
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "content": "Answer survives the noise."
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "choices": [
+          {
+            "delta": {},
+            "finish_reason": "stop",
+            "index": 0
+          }
+        ],
+        "id": "chatcmpl-fixture-7",
+        "model": "fixture-model",
+        "object": "chat.completion.chunk"
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "content": "Answer survives the noise. trailing after DONE"
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "db",
+    "chat_id": "chat-fixture",
+    "message_id": "msg-fixture",
+    "patch": {
+      "content": "Answer survives the noise. trailing after DONE"
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "content": "Answer survives the noise. trailing after DONE",
+        "done": true,
+        "title": "Fixture chat"
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "return",
+    "value": {
+      "status": true,
+      "task_id": "fixture-task-id"
+    }
+  }
+]

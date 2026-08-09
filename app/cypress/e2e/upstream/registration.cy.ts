@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
-/// <reference path="../support/index.d.ts" />
-import { adminUser } from '../support/e2e';
+/// <reference path="../../support/index.d.ts" />
+import { adminUser } from '../../support/e2e';
 
 // These tests assume the following defaults:
 // 1. No users exist in the database or that the test admin user is an admin

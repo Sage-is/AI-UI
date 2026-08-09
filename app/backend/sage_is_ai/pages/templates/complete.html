@@ -1,0 +1,25 @@
+{# The wizard's closing summary. What this instance has configured so far.
+
+   A `<ul>` of what is done, not a stack of divs — the list IS the meaning.
+
+   The counts repeat on the root as data attributes on purpose: a spec asserting
+   "2 users" through an attribute cannot be fooled by a pluralisation change or
+   a translation. #}
+<section data-cy="complete-panel" data-users="{{ counts.users }}"
+         data-features="{{ counts.features }}" data-ready="{{ counts.ready }}">
+  <p style="--size:.9rem">{{ ready_text }}</p>
+  <ul style="--p:0; --list-style:none; --m:1rem 0">
+    {% for line in lines %}
+    <li data-check="{{ line.key }}" style="--d:flex; --ai:center; --g:.5rem; --size:.85rem; --m:0 0 .35rem">
+      <span style="--fs:0" aria-hidden="true">{% if line.ok %}&check;{% else %}&circlearrowright;{% endif %}</span>
+      <span>{{ line.text }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  <form method="post" action="/pages/admin/setup/complete/finish{{ lang }}">
+    <button data-cy="complete-finish" type="submit"
+            style="--p:.5rem 1.2rem; --br:999px; outline:1px solid var(--line); --cur:pointer">{{ go_label }}</button>
+    <a data-cy="complete-refresh" href="/pages/admin/setup/complete{{ lang }}"
+       style="--size:.75rem; --ml:.75rem">{{ refresh_label }}</a>
+  </form>
+</section>

@@ -1,0 +1,106 @@
+{# The Sprigs™ catalog. The whole panel is also the whole htmx swap target —
+   returning everything rather than patching is what removes the client-side
+   model, and it costs a few hundred bytes on a mutation to buy the absence of
+   an entire bug class.
+
+   One button per card, DESCRIBED rather than branched into. The two-branch
+   version of this was two near-identical blocks of markup that had to be kept
+   in step.
+
+   This surface still uses classes rather than props — it predates that split
+   and its CSS is already written and paid for. Converting it is follow-up work
+   worth doing for consistency, not for line count. #}
+<div id="sprigs-panel">
+  <div class="panel-bar">
+    <span class="page-count" data-cy="sprigs-grafted-count">{{ count_text }}</span>
+    <button type="button" class="btn" data-cy="sprigs-refresh"
+            hx-get="/pages/admin/sprigs/panel" hx-target="#sprigs-panel" hx-swap="outerHTML">Refresh</button>
+  </div>
+  {% if message %}
+  {# role=status so a screen reader announces it: the message is the only
+     feedback a mutation gives, and it fades. #}
+  <p class="toast toast-float toast-{{ kind }}" role="status" data-cy="panel-message">{{ message }}</p>
+  {% endif %}
+  <div class="sprig-list">
+    {% for card in cards %}
+    <div class="sprig-card" data-cy="sprig-card" data-sprig="{{ card.name }}">
+      <span class="badge badge-{{ card.state }}" data-cy="sprig-state" data-state="{{ card.state }}">{{ card.state_label }}</span>
+      <div class="sprig-main">
+        <div class="sprig-name">{{ card.name }}</div>
+        <div class="sprig-meta">{{ card.meta }}</div>
+        {% if card.blocked %}
+        <div class="sprig-warn" data-cy="sprig-incompatible">Not available on this server ({{ card.host_arch }})</div>
+        {% endif %}
+        {% if card.where %}
+        <div class="sprig-where">{{ card.where }}</div>
+        {% endif %}
+        {% if card.error %}
+        {# Stays on the card until a graft or a prune resolves it. The toast is
+           the notification; this is the record, and it survives the reload that
+           loses the toast — along with the restart, since it lives on the
+           volume. #}
+        <div class="sprig-error" data-cy="sprig-error" role="status">{{ card.error }}</div>
+        {% endif %}
+
+        {# WIRING. Shown only for a grafted Sprig™ that declares wires —
+           configuring something not attached is an errand with no result.
+
+           A plain POST form inside the htmx swap target, so it works with no
+           script at all and the whole panel comes back on save. Values arrive
+           already public: a SECRET is a set-or-not marker, never its value, and
+           this template does not decide that — `sprigs/wiring.public_values`
+           does, once, for every surface. #}
+        {% if card.wires %}
+        <details class="sprig-wiring" data-cy="sprig-wiring">
+          <summary data-cy="sprig-wiring-toggle">Wiring{% if card.unwired %} — unwired{% endif %}</summary>
+          {% if card.unwired %}
+          <p class="sprig-warn" data-cy="sprig-unwired">Needs {{ card.missing_wires }} before it runs.</p>
+          {% endif %}
+          {# `data-swap-off` because this endpoint answers with a FRAGMENT, and
+             Startr Swap expects a document it can find a region in. htmx claims
+             the submit first and would keep it away, but that depends on
+             listener order between a library and an element handler — and the
+             failure if it ever slipped is the one `pages-action-response.cy.ts`
+             was written for: the browser navigating to a bare panel with no
+             stylesheet. Saying so is a byte; finding it again is a day. #}
+          <form method="post" action="/pages/admin/sprigs/wire/{{ card.name }}" data-swap-off
+                hx-post="/pages/admin/sprigs/wire/{{ card.name }}"
+                hx-target="#sprigs-panel" hx-swap="outerHTML">
+            {% for wire in card.wires %}
+            <p>
+              <label for="wire-{{ card.name }}-{{ wire.name }}">{{ wire.label or wire.name }}</label>
+              {% if wire.type == 'bool' %}
+              <input type="checkbox" id="wire-{{ card.name }}-{{ wire.name }}"
+                     name="{{ wire.name }}" data-cy="wire-{{ wire.name }}"{% if wire.value %} checked{% endif %} />
+              {% elif wire.type == 'secret' %}
+              {# The stored value NEVER reaches this field. Blank means "keep
+                 what is there", which is why an empty secret is a no-op on
+                 save rather than an erase. #}
+              <input type="password" id="wire-{{ card.name }}-{{ wire.name }}"
+                     name="{{ wire.name }}" data-cy="wire-{{ wire.name }}"
+                     autocomplete="new-password"
+                     placeholder="{% if wire.value %}stored — type to replace{% else %}not set{% endif %}" />
+              {% else %}
+              <textarea id="wire-{{ card.name }}-{{ wire.name }}" name="{{ wire.name }}"
+                        data-cy="wire-{{ wire.name }}" rows="2">{{ wire.value }}</textarea>
+              {% endif %}
+              {% if wire.help %}<span class="page-muted">{{ wire.help }}</span>{% endif %}
+            </p>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary" data-cy="sprig-wire-save">Save wiring</button>
+          </form>
+        </details>
+        {% endif %}
+      </div>
+      <div class="sprig-actions">
+        {% if card.health %}<a class="btn" href="/admin/diagnostics">Health</a>{% endif %}
+        <button type="button" class="btn {{ card.button_class }}" data-cy="sprig-{{ card.verb }}"{% if card.blocked %} disabled{% endif %}
+                hx-post="/pages/admin/sprigs/{{ card.verb }}/{{ card.name }}"
+                hx-target="#sprigs-panel" hx-swap="outerHTML">{{ card.button_label }}</button>
+      </div>
+    </div>
+    {% else %}
+    <p class="page-muted">No Sprigs in the catalog.</p>
+    {% endfor %}
+  </div>
+</div>

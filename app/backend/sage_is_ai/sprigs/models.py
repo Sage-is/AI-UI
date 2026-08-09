@@ -34,6 +34,18 @@ class PruneRequest(BaseModel):
     name: str
 
 
+class UiScriptingGrantRequest(BaseModel):
+    """An admin's per-Sprig decision to let one ui-Sprig™ carry script.
+
+    `name` is required even when revoking. Revoking by name means an admin
+    cannot clear a grant they were not looking at, and it keeps the request
+    honest about which Sprig it concerns.
+    """
+
+    name: str
+    allow: bool
+
+
 class GraftResponse(BaseModel):
     status: bool
     name: str
@@ -45,3 +57,17 @@ class GraftResponse(BaseModel):
     reranking_model: Optional[str] = None
     warning: Optional[str] = None
     delivered: Optional[bool] = None
+
+
+class WireRequest(BaseModel):
+    """An admin supplying wires for one grafted Sprig™.
+
+    `values` is free-form on the wire and validated against the catalog
+    declaration in `sprigs/wiring.validate` — the CATALOG is the authority, so
+    an undeclared name is refused rather than stored. A partial submission is a
+    merge, and an empty `secret` means "keep what is stored" rather than "erase
+    it", so a form that cannot render a secret cannot destroy one either.
+    """
+
+    name: str
+    values: dict = {}

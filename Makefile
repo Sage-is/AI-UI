@@ -103,6 +103,11 @@ VOLUME_DATA ?= $(or $(VOLUME),sage-ai-data):$(or $(DATA_MOUNT),/app/backend/data
 ENV_FILE := $$(pwd)/.env:/app/.env
 FRONTEND_SRC := $$(pwd)/app/src/:/app/src/
 STATIC_SRC := $$(pwd)/app/static/:/app/static/
+# The Python package, for the same reason app/src is mounted: dev.sh already
+# runs uvicorn with --reload, so without this a one-line change to a
+# server-rendered page costs a full image build. Only the package, not all of
+# app/backend, so the data volume mounted at /app/backend/data stays clear of it.
+BACKEND_SRC := $$(pwd)/app/backend/sage_is_ai/:/app/backend/sage_is_ai/
 BACKEND_SRC := $$(pwd)/app/backend/:/app/backend/
 
 # (RELEASE_VERSION defined above, near GIT_TAG, so IMAGE_TAG can read it.)
@@ -144,6 +149,21 @@ help:
 	@echo "  0b) .env only:     make setup_env"
 	@echo "  1) Build:          make it_build"
 	@echo "  2) Run:            make it_run"
+	@echo ""
+	@echo "  Working on the frontend? Two commands:"
+	@echo "    building        make dev      # everything live: Svelte, Python, pages/"
+	@echo "    judging it      make review   # the BAKED image, nothing mounted"
+	@echo ""
+	@echo "    make review LIVE=1     # + pages/ mounted and watched"
+	@echo "    make review REBUILD=1  # + it_build first, for Svelte changes"
+	@echo ""
+	@echo "  A review of your working tree is not a review of the artifact you"
+	@echo "  ship, so plain 'make review' is the pass that decides."
+	@echo ""
+	@echo "  'make dev' seeds admin@example.com / password on its OWN volume"
+	@echo "  (sage-ai-dev-data). Use another with: DEV_VOLUME=<name> make dev"
+	@echo "  It does NOT graft the example ui-Sprig: one unnamed slot means the"
+	@echo "  fragment lands on every page. Working on it? DEV_GRAFT_UI=1 make dev"
 	@echo ""
 	@echo "Available make commands:"
 	@echo ""
@@ -197,21 +217,42 @@ DOCKER_RUN_ARGS := $(COMMON_RUN_ARGS) \
 	$(if $(WEBUI_SECRET_KEY),-e WEBUI_SECRET_KEY=$(WEBUI_SECRET_KEY),) \
 	-v $(VOLUME_DATA)
 
-DEV_RUN_ARGS := --rm -p $(PORT_MAPPING) \
-	--add-host=host.docker.internal:host-gateway \
+# The dev loop gets its OWN volume, and that is load-bearing rather than tidy.
+# `make dev` seeds an administrator, and a user is only made admin when they are
+# the FIRST to sign up — every later one lands on DEFAULT_USER_ROLE, which is
+# `pending`. Sharing sage-ai-data with `it_run` meant the seed silently produced
+# a pending account on any volume that had ever been used, and the ui-Sprig graft
+# was then refused with a permissions error.
+#
+# Overridden by DEV_VOLUME, deliberately NOT by VOLUME: that one is set project
+# wide in distribution.env, so reusing it here would silently point dev back at
+# the shared volume — which is the bug this variable exists to prevent.
+# Reach a specific one when you mean to:  DEV_VOLUME=sage-open-webui make dev
+VOLUME_DEV_DATA ?= $(or $(DEV_VOLUME),sage-ai-dev-data):$(or $(DATA_MOUNT),/app/backend/data)
+
+# EXTENDS COMMON_RUN_ARGS, like DOCKER_RUN_ARGS does. It used to restate those
+# flags by hand, and it had drifted: SPRIG_REGISTRY was added to COMMON and
+# never copied here, so `make dev` reached for ghcr.io and every graft was
+# denied. That is the cost of a near-duplicate, and it is why this now extends.
+#
+# The network and the registry match what e2e and manual-check.sh already do —
+# `local-registry` is a container name, so it only resolves on sage-network.
+DEV_RUN_ARGS := $(COMMON_RUN_ARGS) \
+	--network sage-network \
+	-e SPRIG_REGISTRY=$(or $(SPRIG_REGISTRY),local-registry:5000) \
 	-p 5173:5173 \
 	$(if $(WEBUI_SECRET_KEY),-e WEBUI_SECRET_KEY=$(WEBUI_SECRET_KEY),) \
-	-v $(VOLUME_DATA) \
-	-v $(ENV_FILE) \
+	-v $(VOLUME_DEV_DATA) \
 	-v $(FRONTEND_SRC) \
 	-v $(STATIC_SRC) \
+	-v $(BACKEND_SRC) \
 	-v $$(pwd)/app/svelte.config.js:/app/svelte.config.js \
 	-v $$(pwd)/app/vite.config.ts:/app/vite.config.ts \
 	-v $$(pwd)/app/tsconfig.json:/app/tsconfig.json \
 	-v $$(pwd)/app/postcss.config.js:/app/postcss.config.js \
 	-v $$(pwd)/app/tailwind.config.js:/app/tailwind.config.js \
 	-v $$(pwd)/app/package.json:/app/package.json \
-	--name $(CONTAINER_NAME)
+	-e PAGES_RELOAD_DIRS=/app/backend/sage_is_ai/pages
 
 it_stop:
 	$(CONTAINER_RUNTIME) rm -f $(CONTAINER_NAME)
@@ -255,8 +296,14 @@ it_build_no_cache:
 	@$(NOTIFY_DONE)
 	@echo ""
 
-dev_run:
+## dev — the one dev loop. Svelte HMR on 5173, uvicorn --reload on 8080,
+## pages/ mounted and watched, an admin seeded and the example ui-Sprig™
+## grafted, so the instance is usable with no follow-up step. Everything is
+## live; nothing needs a rebuild or a teardown.
+dev: sprig_registry
 	$(CONTAINER_RUNTIME) run $(DEV_RUN_ARGS) $(IMAGE_NAME):$(IMAGE_TAG) bash -c "/app/backend/restore_backup_start.sh dev"
+
+dev_run: dev
 
 # Run targets
 it_run:
@@ -266,17 +313,11 @@ it_run_ghcr:
 	$(CONTAINER_RUNTIME) run $(DOCKER_RUN_ARGS) $(GHCR_IMAGE_NAME):$(IMAGE_TAG)
 
 # Combine build and dev run targets
-it_build_n_dev_run: it_build
-	@$(NOTIFY_DONE)
-	@echo ""
-	@make dev_run
 
 # Combined build and run targets
 it_build_n_run: it_build
 	@make it_run
 
-it_build_n_run_no_cache: it_build_no_cache
-	@make it_run
 
 # Build and run with a throwaway volume (fresh-install test)
 # Cleans up the test volume on exit so it's ready for the next run.
@@ -363,6 +404,39 @@ sprig_registry:
 ## pointers, every capability grafts back (fresh container each run).
 sprig_smoke: sprig_registry
 	@scripts/smoke/sprig-lifecycle.sh $(IMAGE_NAME):$(IMAGE_TAG)
+
+## e2e_both — run the suite against BOTH implementations of every migrated
+## surface: once with SURFACE_TARGET=legacy (the SvelteKit routes users reach
+## today) and once with =nobuild (the server-rendered replacements). The
+## migration's core rule is that a spec is green against both; running it twice
+## by hand is how that rule quietly becomes "green against whichever one was
+## checked last". Surfaces are registered in app/cypress/support/surfaces.ts.
+e2e_both: sprig_registry
+	@echo "===== SURFACE_TARGET=legacy ====="
+	@CYPRESS_SURFACE_TARGET=legacy scripts/e2e/run-cypress.sh $(IMAGE_NAME):$(IMAGE_TAG)
+	@echo ""
+	@echo "===== SURFACE_TARGET=nobuild ====="
+	@CYPRESS_SURFACE_TARGET=nobuild scripts/e2e/run-cypress.sh $(IMAGE_NAME):$(IMAGE_TAG)
+
+## pipefail_lint — refuse `docker logs|curl | grep -q` in scripts/. Under
+## `set -o pipefail` a MATCH returns 141 (grep exits, writer takes SIGPIPE), so
+## the assertion inverts. Cost two gates before it was chased; the mechanism is
+## proved both ways by scripts/smoke/pipefail-grep-fixture.sh.
+pipefail_lint:
+	@scripts/lint-pipefail-grep.sh
+
+## pipefail_fixture — proves BOTH that the trap is real and that gate.sh's
+## helpers fix it. A device that fixes nothing looks identical to one that works
+## unless the broken shape is asserted too.
+pipefail_fixture:
+	@scripts/smoke/pipefail-grep-fixture.sh
+
+## ui_sprig_gate — what the ui-Sprig™ contract REFUSES: off-origin references,
+## framing, interpreted script attributes, script without an admin's per-Sprig
+## grant, and anything framework-sized. The Cypress spec walks the happy path;
+## this walks the side that matters for a marketplace.
+ui_sprig_gate:
+	@scripts/smoke/ui-sprig-validator.sh $(IMAGE_NAME):$(IMAGE_TAG)
 
 ## sprig_durability — grafts survive a FULL container recreation, restored
 ## offline from the data volume (state.json + boot reconcile + cached tar).
@@ -475,10 +549,74 @@ sprig_signing: sprig_registry
 parity_gate:
 	@scripts/gates/embedding-parity/run-gate.sh
 
+## reload_gate — proves the development reloader's ON state.
+## `pages-dev-reload.cy.ts` covers the OFF state in the normal suite; the ON
+## state needs a container booted with PAGES_RELOAD_DIRS and a tree mounted over
+## the image, which no browser driver can arrange. Boots its own throwaway
+## container and edits a COPY of pages/, never the working tree.
+reload_gate:
+	@scripts/gates/dev-reload/run-gate.sh
+
+## surface_budget — a migrated surface must weigh LESS than the one it replaces,
+## and the app-wide floor must not grow. Boots this image on a COPY of a
+## production snapshot (~3 min), measures every route three times via
+## cypress/e2e/upgrade/route-payload.cy.ts, then judges the medians.
+##
+## BYTES ONLY, on purpose: decoded bytes repeat to within 0.1 kB, while times
+## swing 2x on the same route. Gating a noisy quantity produces a flaky gate, and
+## a flaky gate gets disabled — taking the real check with it.
+##
+## Registering a surface in cypress/support/surfaces.ts is what enrols it here.
+## There is no second list to keep in step.
+surface_budget:
+	@scripts/gates/surface-budget/run-gate.sh $(IMAGE_NAME):$(IMAGE_TAG)
+
+## review / review_live / review_rebuild — bring up a Rootstock™ for a HUMAN.
+##
+## Phase S made the human pass a standing condition: a green suite is the
+## weakest evidence on an interactive surface. These three are the same script
+## in three modes, and which one you want depends on what you are doing:
+##
+##   review          the BAKED image, nothing mounted. This is the pass that
+##                   decides whether something ships, because a review of your
+##                   working tree is not a review of the artifact.
+##   review_live     pages/ mounted AND watched. Save a .css and the stylesheet
+##                   swaps in place; save a .py and the app restarts itself and
+##                   the tab reloads. No rebuild, no manual restart.
+##   review_rebuild  it_build first — the escape hatch for the one thing a mount
+##                   cannot cover, which is the SPA bundle.
+##
+## Both non-rebuild targets keep the data volume (REUSE_DATA=1), so flipping
+## between them costs a boot rather than a boot plus re-seeding an admin and
+## re-grafting the ui-Sprig.
+##
+## THE GATES DELIBERATELY HAVE NO SUCH SWITCH. `e2e`, `e2e_both` and
+## `wizard_smoke` always boot the baked image with nothing mounted, because a
+## guard-rail that ran against a working tree would be testing something we do
+## not ship. Do not add a live mode to them.
+review:
+	@if [ "$(REBUILD)" = "1" ]; then $(MAKE) it_build; fi
+	@KEEP=1 REUSE_DATA=1 $(if $(LIVE),LIVE=1,) scripts/manual-check.sh --graft-ui
+
+# Aliases. The three targets above were three preset calls to one script that
+# already reads LIVE/KEEP/REUSE_DATA from the environment, so they collapsed
+# into `review` plus two flags. These stay because six docs and a month of
+# muscle memory point at them, and an alias costs one line.
+review_live:
+	@$(MAKE) review LIVE=1
+
+review_rebuild:
+	@$(MAKE) review REBUILD=1
+
 ## e2e — headless Cypress from a pinned sibling container (no npm on host);
 ## videos land in app/cypress/videos. e2e_watch — same, but interactive GUI
 ## served at http://localhost:6080/vnc.html (noVNC; WebRTC alt backlogged).
-e2e:
+## Depends on sprig_registry for the same reason e2e_heavy does: run-cypress.sh
+## points the app at SPRIG_REGISTRY=local-registry:5000, so with that container
+## stopped the vector-chroma deliver test waits 180s and then reports
+## "expected 'sprouted' to equal 'delivered'" — a message that names everything
+## except the reason. The target is idempotent, so this costs a `docker ps`.
+e2e: sprig_registry
 	@scripts/e2e/run-cypress.sh $(IMAGE_NAME):$(IMAGE_TAG)
 
 ## e2e_heavy — opt-in heavy cultivar grafts through the real admin UI:
@@ -497,7 +635,11 @@ e2e_watch:
 ## activate with: git config core.hooksPath .githooks
 gauntlet: it_build sprig_smoke
 
-gauntlet_full: gauntlet sprig_durability sprig_signing parity_gate e2e
+# surface_budget is last and costs ~3 minutes for its snapshot boot. It earns the
+# place: it is the only member that judges what the migration CLAIMS — that a
+# server-rendered surface is lighter than the SvelteKit one it replaces — rather
+# than whether the code runs.
+gauntlet_full: pipefail_lint pipefail_fixture ruff_gate cognitive_complexity chat_path_structure sprig_capabilities_check startr_swap_check reasoning_finalizer_fixture serialize_blocks_fixture tool_call_accumulator_fixture chat_response_oracle gauntlet sprig_durability sprig_signing ui_sprig_gate parity_gate e2e_both surface_budget
 
 ## it_build_amd64 — build an amd64 image via buildx + --load.
 ##
@@ -656,6 +798,213 @@ it_build_multi_arch_push_GHCR: ghcr_login
 # Build both registries
 it_build_multi_arch_all: it_build_multi_arch_push_docker_hub it_build_multi_arch_push_GHCR
 	@echo "Completed all multi-arch builds and pushes for version $(IMAGE_TAG)"
+
+# Poka-yoke: after the push, prove the GHCR image is PRESENT (not a 404) and a
+# real multi-arch (amd64+arm64) index — so a missing/single-arch push fails the
+# release here, not later at CapRover. Verifies both pushed tags.
+verify_ghcr_manifest:  ## Assert the pushed GHCR image is a present, multi-arch (amd64+arm64) index
+	@scripts/verify-image-manifest.sh $(GHCR_IMAGE_NAME):$(IMAGE_TAG) $(GHCR_IMAGE_NAME):latest
+
+# Prove the manifest guard's logic against known public images (no push needed)
+manifest_verify_fixture:  ## Fixture: exercise verify-image-manifest.sh (good/single-arch/absent)
+	@scripts/smoke/manifest-verify-fixture.sh
+
+# Reproduce the reasoning-tag defects that swallow or leak the model's answer.
+#
+# DELIBERATELY NOT in gauntlet or gauntlet_full. It fails today, by design —
+# it is the reproduction for an open bug, not a gate. Wire it into gauntlet_full
+# in the same commit that fixes the bug, and not before, or every run goes red
+# for a reason nobody is acting on.
+reasoning_tag_fixture:  ## Fixture: reasoning blocks that swallow or leak the answer (FAILS until fixed)
+	@python3 scripts/smoke/reasoning-tag-fixture.py
+
+# Gate: a stream may never end with a content block left open, and the answer
+# may never be sealed inside one. Drives the shipped finalize_content_blocks
+# against block lists shaped as the streaming loop leaves them. Deterministic on
+# purpose — the trigger in the wild is model compliance variance.
+reasoning_finalizer_fixture:  ## Fixture: no content block left open at end of stream
+	@$(CONTAINER_RUNTIME) run --rm -e WEBUI_SECRET_KEY=fixture \
+	  -v "$$(pwd)/app/backend/sage_is_ai:/app/backend/sage_is_ai:ro" \
+	  -v "$$(pwd)/scripts:/scripts:ro" --entrypoint python3 \
+	  $(IMAGE_NAME):$(IMAGE_TAG) /scripts/smoke/reasoning-finalizer-fixture.py
+
+# First test of tool-call accumulation anywhere in the tree — no oracle golden
+# carries a tool_calls delta.
+tool_call_accumulator_fixture:  ## Fixture: streamed tool-call deltas merge by index
+	@$(CONTAINER_RUNTIME) run --rm -e WEBUI_SECRET_KEY=fixture \
+	  -v "$$(pwd)/app/backend/sage_is_ai:/app/backend/sage_is_ai:ro" \
+	  -v "$$(pwd)/scripts:/scripts:ro" --entrypoint python3 \
+	  $(IMAGE_NAME):$(IMAGE_TAG) /scripts/smoke/tool-call-accumulator-fixture.py
+
+# Covers the two regions the oracle goldens never execute: the tool_calls branch
+# (no golden carries a tool_calls delta) and the whole raw=True axis (no golden
+# sets features.code_interpreter, and the code-interpreter continuation is the
+# only raw=True call site). The golden deliberately freezes the raw tool-call
+# hole from the bug ledger; it goes red the day that fix lands.
+serialize_blocks_fixture:  ## Fixture: block renderer byte-identical across every block shape
+	@$(CONTAINER_RUNTIME) run --rm -e WEBUI_SECRET_KEY=fixture \
+	  -v "$$(pwd)/app/backend/sage_is_ai:/app/backend/sage_is_ai:ro" \
+	  -v "$$(pwd)/scripts:/scripts:ro" --entrypoint python3 \
+	  $(IMAGE_NAME):$(IMAGE_TAG) /scripts/smoke/serialize-blocks-fixture.py
+
+serialize_blocks_fixture_update:  ## Re-record the block-renderer golden (intentional changes only)
+	@$(CONTAINER_RUNTIME) run --rm -e WEBUI_SECRET_KEY=fixture \
+	  -v "$$(pwd)/app/backend/sage_is_ai:/app/backend/sage_is_ai:ro" \
+	  -v "$$(pwd)/scripts:/scripts" --entrypoint python3 \
+	  $(IMAGE_NAME):$(IMAGE_TAG) /scripts/smoke/serialize-blocks-fixture.py --update
+
+serialize_blocks_fixture_teeth:  ## Prove the block-renderer fixture can fail
+	@$(CONTAINER_RUNTIME) run --rm -e WEBUI_SECRET_KEY=fixture \
+	  -v "$$(pwd)/app/backend/sage_is_ai:/app/backend/sage_is_ai:ro" \
+	  -v "$$(pwd)/scripts:/scripts:ro" --entrypoint python3 \
+	  $(IMAGE_NAME):$(IMAGE_TAG) /scripts/smoke/serialize-blocks-fixture.py --teeth
+
+# Gate: the chat path may get simpler, never more tangled.
+#
+# Asserts six structural ceilings that only ratchet DOWN — largest function,
+# nesting depth, lines at 6+ levels, `nonlocal` count, commented-out code, and
+# silent `except: pass` — plus zero citation rot in the charts and bug ledger.
+# Baseline recorded 2026-08-04, before any restructuring commit, so the effort
+# has a number to beat rather than a memory to argue with.
+#
+# Runs on the host: no image, no container. A gate that needs a build gets
+# skipped locally and only fails in CI, long after the commit that broke it.
+# These call measure.py directly rather than through run-gate.sh. The wrapper is
+# a convenience for running the gate by path from any directory; make already
+# runs from the repo root, so depending on it here would only add a second file
+# that must exist for gauntlet_full to work.
+chat_path_structure:  ## Gate: chat-path structure ceilings + citation rot
+	@python3 scripts/gates/chat-path-structure/measure.py
+
+# Lower the ceilings to what the code achieves right now. Run this in the same
+# commit as the refactor that earned it, never on its own.
+chat_path_structure_tighten:  ## Ratchet the chat-path ceilings down to today's numbers
+	@python3 scripts/gates/chat-path-structure/measure.py --tighten
+
+# Where did the fences move to? Report only, nothing is rewritten. Turns a stale
+# citation from an afternoon of line-hunting into a lookup table.
+chat_path_structure_relocate:  ## Report where each chat-path fence moved to
+	@python3 scripts/gates/chat-path-structure/measure.py --relocate
+
+# Prove every detector fires on a sample built to trip it.
+chat_path_structure_teeth:  ## Prove the structure ratchet can fail
+	@python3 scripts/gates/chat-path-structure/measure.py --self-test
+
+# Markdown prose hygiene: authored .md must be one line per paragraph, no stray
+# unicode spaces. The checker is the machine-local ~/bin/mdprose, so this target
+# skips (does not fail) when it is absent — e.g. inside Docker or CI. To make it
+# a hard gate in gauntlet_full, vendor the script into scripts/gates/ first.
+md_prose:  ## Gate: authored markdown is normalized (skips if mdprose absent)
+	@if command -v mdprose >/dev/null 2>&1; then \
+		mdprose check . ; \
+	else \
+		echo "md_prose: mdprose not on PATH — skipped (install ~/bin/mdprose)" ; \
+	fi
+
+md_prose_fix:  ## Fold hard-wrapped paragraphs in authored markdown (writes files)
+	@mdprose fix .
+
+# The Sprig capability reference is emitted from the catalog and the three
+# dispatch fan-outs, never hand-written. Same host-only discipline as the
+# ratchet above: it parses source with ast and imports nothing, because
+# importing the supervisor pulls config.py, and config.py runs migrations.
+sprig_capabilities:  ## Rewrite docs/sprigs/capabilities.md from the code
+	@python3 scripts/gates/sprig-capabilities/generate.py
+
+# Gate: the reference still describes the code. Fails with a diff when a
+# capability is added, a dispatch changes what it writes, or a prune reset is
+# forgotten — the last of which is otherwise silent until a user hits it.
+sprig_capabilities_check:  ## Gate: capability reference matches the code
+	@python3 scripts/gates/sprig-capabilities/generate.py --check
+
+sprig_capabilities_teeth:  ## Prove the capability gate can fail
+	@python3 scripts/gates/sprig-capabilities/generate.py --self-test
+
+# Startr Swap is written to be published for other projects, including static
+# sites. That claim decays the first time somebody reaches for `/pages/` to fix
+# a bug: it still works here and silently stops working anywhere else.
+startr_swap_check:  ## Gate: the swap library names nothing in this application
+	@python3 scripts/gates/startr-swap/check.py --check
+
+startr_swap_teeth:  ## Prove the swap-library gate can fail
+	@python3 scripts/gates/startr-swap/check.py --self-test
+
+# Release-time only. The reference is generated and gated HERE, where it can see
+# the catalog it describes. The spec gets a FOLD, not a copy: a vocabulary view
+# spliced into v1.md's reserved-prefix section, listing which reservations ship,
+# which shipped names are unreserved, and which reservations are still empty.
+#
+# Deliberately not the whole reference. The spec states a contract; prune gaps
+# and config field names are implementation status and stay on this side. Both
+# halves of the comparison are derived — the reserved prefixes are read out of
+# v1.md itself — so adding a reservation there corrects the delta on the next
+# publish, with nothing to maintain by hand in either repo.
+SPRIG_SPEC_DIR ?= ../BONSAI/sprig-spec
+sprig_capabilities_publish:  ## Fold the capability vocabulary into the Sprig spec
+	@test -f "$(SPRIG_SPEC_DIR)/v1.md" || { \
+	  echo "sprig-capabilities: $(SPRIG_SPEC_DIR)/v1.md not found."; \
+	  echo "Set SPRIG_SPEC_DIR=<path> or check the spec repo out beside this one."; \
+	  exit 1; }
+	@python3 scripts/gates/sprig-capabilities/generate.py
+	@python3 scripts/gates/sprig-capabilities/generate.py --check
+	@python3 scripts/gates/sprig-capabilities/generate.py \
+	  --publish-spec "$(SPRIG_SPEC_DIR)/v1.md"
+
+# Gate: the chat path emits what it emitted yesterday.
+#
+# Replays recorded upstream SSE streams through the real process_chat_response
+# and diffs the whole ordered transcript — every socket event and every DB write,
+# in call order — against a golden file. This is the oracle the chat-path chart's
+# behaviour freeze depends on: without it, "the same bytes on the wire" is a
+# promise nobody can check.
+#
+# A red run means the chat path changed. If the change was deliberate, re-record
+# with `make chat_response_oracle_update` and READ the golden diff before
+# committing it — that diff is the behaviour change, stated in full.
+chat_response_oracle:  ## Gate: replayed chat streams emit byte-identical transcripts
+	@$(CONTAINER_RUNTIME) run --rm -e WEBUI_SECRET_KEY=fixture \
+	  -v "$$(pwd)/app/backend/sage_is_ai:/app/backend/sage_is_ai:ro" \
+	  -v "$$(pwd)/scripts:/scripts:ro" --entrypoint python3 \
+	  $(IMAGE_NAME):$(IMAGE_TAG) /scripts/smoke/chat-response-oracle.py
+
+# Re-record the goldens. Only after an INTENTIONAL behaviour change, and the
+# resulting diff belongs in the commit message.
+chat_response_oracle_update:  ## Re-record the chat-path goldens (intentional changes only)
+	@$(CONTAINER_RUNTIME) run --rm -e WEBUI_SECRET_KEY=fixture \
+	  -v "$$(pwd)/app/backend/sage_is_ai:/app/backend/sage_is_ai:ro" \
+	  -v "$$(pwd)/scripts:/scripts:rw" --entrypoint python3 \
+	  $(IMAGE_NAME):$(IMAGE_TAG) /scripts/smoke/chat-response-oracle.py --update
+
+# Prove the gate can fail. Disables finalize_content_blocks in memory and
+# asserts the transcript moves, then asserts it moves back. A gate nobody has
+# seen fail is a gate nobody should trust.
+chat_response_oracle_teeth:  ## Prove the chat-path oracle fails when behaviour changes
+	@$(CONTAINER_RUNTIME) run --rm -e WEBUI_SECRET_KEY=fixture \
+	  -v "$$(pwd)/app/backend/sage_is_ai:/app/backend/sage_is_ai:ro" \
+	  -v "$$(pwd)/scripts:/scripts:ro" --entrypoint python3 \
+	  $(IMAGE_NAME):$(IMAGE_TAG) /scripts/smoke/chat-response-oracle.py \
+	  --self-test --case reasoning-field-never-closed
+
+# Park a finished or dormant chart: move it under charts/_archive/ (excluded in
+# .todoscope-exclude.csv, so its cards leave the kanban board) and prepend a
+# stub the operator fills in. Refuses to clobber an existing archive entry.
+#
+# The stub is the point. An archived chart that does not say why it stopped
+# cannot be told apart from an abandoned one, and the next reader either redoes
+# settled work or trusts something that was never finished.
+chart_archive:  ## Archive a chart: make chart_archive CHART=<name>
+	@test -n "$(CHART)" || { echo "usage: make chart_archive CHART=<name>"; \
+	  echo "available:"; find charts -mindepth 2 -maxdepth 2 -name TODO.md -not -path 'charts/_archive/*' \
+	    | sed 's|charts/||; s|/TODO.md||; s|^|  |'; exit 1; }
+	@test -d "charts/$(CHART)" || { echo "no such chart: charts/$(CHART)"; exit 1; }
+	@test ! -e "charts/_archive/$(CHART)" || { echo "already archived: charts/_archive/$(CHART)"; exit 1; }
+	@mkdir -p charts/_archive
+	@mv "charts/$(CHART)" "charts/_archive/$(CHART)"
+	@printf '> **Archived %s.** Finished or parked: FILL IN.\n> Shipped: FILL IN (commit or decision record).\n> Left open: FILL IN, and whether anyone should care.\n\n' "$$(date +%Y-%m-%d)" \
+	  | cat - "charts/_archive/$(CHART)/TODO.md" > "charts/_archive/$(CHART)/TODO.md.tmp"
+	@mv "charts/_archive/$(CHART)/TODO.md.tmp" "charts/_archive/$(CHART)/TODO.md"
+	@echo "archived -> charts/_archive/$(CHART)/TODO.md"
+	@echo "NOW: fill in the three FILL IN lines at the top, or the archive says nothing."
 
 # Utility target to show current version
 show-version:
@@ -826,6 +1175,7 @@ install_dev:
 # Stages installed:
 #   pre-commit      gitleaks, bandit, codespell, hygiene, audit-deps,
 #                   distribution-chain-verify (refuse if hardlink chain broken)
+#   pre-push        scan-tree (whole-tree private-data gitleaks pass)
 #   post-checkout   distribution-chain-heal (silent re-link if chain broken
 #                   and content matches; warn if content diverges)
 #   post-merge      distribution-chain-heal
@@ -835,8 +1185,9 @@ install_hooks:
 		echo "ERROR: pre-commit not installed. Run: make install_dev"; \
 		exit 1; \
 	}
-	@echo "Installing pre-commit hooks (commit + checkout + merge + rewrite stages)..."
+	@echo "Installing pre-commit hooks (commit + push + checkout + merge + rewrite stages)..."
 	pre-commit install
+	pre-commit install --hook-type pre-push
 	pre-commit install --hook-type post-checkout
 	pre-commit install --hook-type post-merge
 	pre-commit install --hook-type post-rewrite
@@ -858,6 +1209,18 @@ scan_secrets:
 	$(call require_tool,GITLEAKS,gitleaks)
 	@echo "=== Secrets scan (gitleaks) ==="
 	$(GITLEAKS) detect --source . --config .gitleaks.toml --verbose
+
+# scan_tree: Private-data scan of the tracked tree at HEAD. Scans a `git archive`
+# (only tracked files — no node_modules to trudge through, no history noise), so
+# it is fast enough for the pre-push hook. Full-history auditing stays in
+# scan_secrets; the commit-stage gitleaks hook covers the staged diff.
+scan_tree:
+	$(call require_tool,GITLEAKS,gitleaks)
+	@echo "=== Private-data scan: tracked tree at HEAD (gitleaks) ==="
+	@tmp=$$(mktemp -d); \
+	git archive HEAD | tar -x -C "$$tmp"; \
+	$(GITLEAKS) detect --no-git --source "$$tmp" --config .gitleaks.toml --verbose; \
+	rc=$$?; rm -rf "$$tmp"; exit $$rc
 
 # scan_sast: Static Application Security Testing.
 # - semgrep/opengrep: JS/TS/Svelte frontend + Python backend (offline rules in .semgrep/)
@@ -916,7 +1279,52 @@ trivy_db_update:
 # Complements (does not replace) the per-tool bun scripts.
 
 # lint: Run all linters — eslint, svelte-check, prettier, black.
-lint:
+## docs_gate — a doc that names a make target which does not exist fails here.
+## Added 2026-08-02 after a scripted diff found in seconds what months of reading
+## had missed: five phantom `make test_*` commands in a Testing Standards section
+## describing a DJANGO project (this is FastAPI), and three claims that
+## `try_sage_stop` already existed. It never did.
+docs_gate:
+	@scripts/gates/docs-targets.sh
+
+## ruff_gate — the Python linter. Nothing else in this repo reads Python
+## semantics: bandit reads security, black reads formatting, and the chat-path
+## ratchet reads six shapes of one file. Ruff read all 218 backend files in 40ms
+## and found the one undefined name in the tree — the frozen NameError at
+## middleware.py:1209. Config and the reasoning behind every ignored rule live in
+## app/pyproject.toml under [tool.ruff].
+ruff_gate:
+	@scripts/gates/ruff/run-gate.sh check
+
+## ruff_format_check — reports formatter drift. NOT wired into lint yet: 83 of
+## 218 backend files are unformatted, and one of them is middleware.py, whose
+## line numbers are anchored by nine fences and 64 chart citations. Reformatting
+## it is a sequenced job, not a side effect of turning a gate on.
+ruff_format_check:
+	@scripts/gates/ruff/run-gate.sh format-check
+
+## ruff_format_fix — applies the formatter. Run it deliberately, then re-point
+## the chat-path fences and citations before committing.
+ruff_format_fix:
+	@scripts/gates/ruff/run-gate.sh format-fix
+
+## cognitive_complexity — the depth ratchet for the whole backend. Cyclomatic
+## complexity sat flat at F (58) across the three passes that cut
+## process_chat_response by 30%; radon's maintainability index moved the WRONG
+## way on a commit that changed no code at all. Cognitive complexity was the only
+## measure of the five benched that registered the work: 826 to 578.
+cognitive_complexity:
+	@scripts/gates/cognitive-complexity/run-gate.sh
+
+## cognitive_complexity_tighten — lower the baseline to what the tree earns today.
+cognitive_complexity_tighten:
+	@scripts/gates/cognitive-complexity/run-gate.sh --tighten
+
+## cognitive_complexity_teeth — prove the ratchet still fails a worsened tree.
+cognitive_complexity_teeth:
+	@scripts/gates/cognitive-complexity/run-gate.sh --self-test
+
+lint: docs_gate pipefail_lint ruff_gate cognitive_complexity
 	@echo "=== Frontend lint (eslint + svelte-check) ==="
 	cd app && bun run lint:frontend
 	cd app && bun run lint:types
@@ -927,18 +1335,9 @@ lint:
 
 # ===========================================================================
 
-.PHONY: release it_build it_build_no_cache dev_run it_run it_build_n_run it_build_n_run_no_cache \
-	ghcr_login \
-	it_build_multi_arch_push_docker_hub it_build_multi_arch_push_GHCR \
-	it_build_multi_arch_all show-version setup setup_env setup_env_auto setup_env_template setup_siblings \
-	require_gitflow_next bump_release_version release_and_push_GHCR hotfix_and_push_GHCR \
-	waha_start waha_stop waha_logs waha_status \
-	signal_start signal_stop signal_logs signal_status \
-	install_dev scan scan_secrets scan_sast scan_deps scan_container scan_dast \
-	trivy_db_update lint test_db_upgrade test_db_fresh wizard_smoke \
-	it_build_amd64 cross_smoke release_smoke \
-	sprig_registry sprig_smoke sprig_durability sprig_sign sprig_signing sprig_publish upgrade_gate parity_gate e2e e2e_watch e2e_heavy gauntlet gauntlet_full \
-	catalog_prep catalog_build catalog_release ship
+.PHONY: $(shell grep -hoE '^[a-zA-Z_][a-zA-Z0-9_-]*:' $(MAKEFILE_LIST) | tr -d ':')
+## Derived, not hand-listed. There were 104 targets and 14 declarations, so
+## 90 were one same-named file away from silently not running.
 
 
 # Version Management with Git Flow
@@ -1008,140 +1407,72 @@ hotfix: require_gitflow_next
 	git flow hotfix start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{if (NF < 4) print $$1"."$$2"."$$3".1"; else print $$1"."$$2"."$$3"."$$4+1}')
 	$(next_steps_hotfix)
 
-# Self-heal git-flow stale state before release/hotfix finish — POKA-YOKE.
+# Finish a release or hotfix with plain git — NOT git-flow-next's finish.
 #
-# git-flow-next persists per-step state in .git/gitflow/state/*.json. If a
-# previous `release finish` aborted before the merge actually ran (e.g.
-# operator cancelled, pre-flight failed, terminal closed), the state file
-# survives. The next `release finish` then errors with "a merge is already
-# in progress" — a misleading message, since no merge is in progress and
-# the working tree is clean.
+# git-flow-next's finish repeatedly stranded releases: it committed a
+# fast-forward as an empty merge, misread skipped pre-commit hooks as a
+# failure, and (3.0.0) ran a remote-branch sync check that dies when the
+# topic branch was never pushed — leaving a half-done finish plus a stale
+# state file. We drove the merges by hand to recover every time, so that is
+# the default now. git flow release/hotfix START still creates branches.
 #
-# When ALL safety gates pass, this target DELETES the stale state file
-# and lets `release_finish` run the full `git flow release finish` from
-# scratch. We do NOT use git-flow-next's --continue because, as of
-# version 1.0.0, --continue from currentStep="merge" assumes git itself
-# has an in-progress merge (MERGE_HEAD set) and jumps straight to
-# `git commit`. When the previous run died at step 1 before staging
-# anything (the common case for cancelled releases), the index is empty,
-# `git commit` says "nothing to commit," and --continue can never
-# succeed. Dropping the state and restarting is the only correct path.
-#
-# Two flags accompany the fresh `git flow finish` calls in release_finish
-# and hotfix_finish:
-#
-#   --no-ff      Force a real merge commit even when release/X.Y.Z is a
-#                fast-forward over master. Without it git-flow may try
-#                to commit an empty fast-forward "merge." With it, git
-#                runs `git merge --no-ff` which creates an actual merge
-#                commit (parents = [master, release/X.Y.Z], tree = merge
-#                result). Bonus: preserves the release branch shape in
-#                master's history graph.
-#
-#   --no-verify  Bypass pre-commit-framework hooks on git-flow's INTERNAL
-#                merge commit. Those hooks are for the operator-commit
-#                surface; they have nothing to check on an auto-driven
-#                merge and report Skipped for every entry.
-#
-# Heal refuses to act when ANY of these is true, kicking the decision back
-# to the operator with named conditions:
-#
-#   - A real in-progress merge exists (.git/MERGE_HEAD present)
-#   - A real in-progress rebase exists (.git/REBASE_HEAD or rebase-merge dir)
-#   - The recorded release branch no longer exists
-#   - The recorded parent branch (master) already contains the release
-#     branch tip — meaning the merge already happened; "continue" would
-#     re-run it and could cause duplicate commits
-#   - Working tree is dirty
-_release_finish_heal:
-	@state_file=.git/gitflow/state/merge.json; \
-	test -f "$$state_file" || exit 0; \
-	if [ -e .git/MERGE_HEAD ]; then \
-		echo "REFUSE TO HEAL: a real git merge is in progress."; \
-		echo "  Resolve conflicts and: git commit"; \
-		echo "  Or abort: git merge --abort"; \
-		exit 1; \
+# The version comes from the in-progress release/*|hotfix/* branch, which is
+# authoritative; RELEASE_VERSION (a make var that falls back to the latest tag
+# off-branch) is only the fallback for the re-push case after the branch is
+# gone. Every step is idempotent — a merge already in master or develop is
+# skipped, an existing tag is skipped — so a conflict-and-retry RESUMES rather
+# than double-merging or wedging. No git-flow state file exists, so no
+# self-heal target is needed. The topic branch is never pushed; results push
+# explicitly at the end. distribution_verify still guards the hardlink chain.
+define finish_flow
+	@set -e; \
+	br="$$(git for-each-ref --format='%(refname:short)' refs/heads/release refs/heads/hotfix 2>/dev/null | head -1)"; \
+	if [ -n "$$br" ]; then ver="$${br#*/}"; else ver="$(RELEASE_VERSION)"; fi; \
+	test -n "$$ver" || { echo "Nothing to finish: no release/*|hotfix/* branch and no version (already complete?)."; exit 0; }; \
+	tag="v$$ver"; \
+	master="$$(git config --get gitflow.branch.master 2>/dev/null || echo master)"; \
+	develop="$$(git config --get gitflow.branch.develop 2>/dev/null || echo develop)"; \
+	if [ -n "$$(git status --porcelain --untracked-files=no)" ]; then \
+		echo "ERROR: working tree has uncommitted tracked changes — commit or stash first."; \
+		git status --short; exit 1; \
 	fi; \
-	if [ -e .git/REBASE_HEAD ] || [ -d .git/rebase-merge ] || [ -d .git/rebase-apply ]; then \
-		echo "REFUSE TO HEAL: a real git rebase is in progress."; \
-		echo "  Continue: git rebase --continue"; \
-		echo "  Or abort: git rebase --abort"; \
-		exit 1; \
+	echo "=== Finishing $$ver (plain git; no git-flow finish) ==="; \
+	if [ -n "$$br" ]; then echo "  $$br -> $$master + $$develop, tag $$tag"; \
+	else echo "  branch already merged/gone — resuming push (tag $$tag)"; fi; \
+	if [ -n "$$br" ]; then \
+		git checkout "$$master"; \
+		if git merge-base --is-ancestor "$$br" HEAD; then echo "  $$master already contains $$br — skip merge"; \
+		else git merge --no-ff --no-verify -m "Merge branch '$$br'" "$$br"; fi; \
 	fi; \
-	if [ -n "$$(git status --porcelain)" ]; then \
-		echo "REFUSE TO HEAL: working tree is dirty."; \
-		echo "  Commit or stash before re-running release_finish."; \
-		exit 1; \
+	if git rev-parse -q --verify "refs/tags/$$tag" >/dev/null; then echo "  tag $$tag exists — skip"; \
+	else git tag -a "$$tag" -m "Release $$tag"; fi; \
+	if [ -n "$$br" ]; then \
+		git checkout "$$develop"; \
+		if git merge-base --is-ancestor "$$br" HEAD; then echo "  $$develop already contains $$br — skip merge"; \
+		else git merge --no-ff --no-verify -m "Merge branch '$$br'" "$$br"; fi; \
+		git branch -d "$$br"; \
 	fi; \
-	branch=$$(python3 -c "import json,sys; print(json.load(open('$$state_file'))['fullBranchName'])" 2>/dev/null); \
-	parent=$$(python3 -c "import json,sys; print(json.load(open('$$state_file'))['parentBranch'])" 2>/dev/null); \
-	step=$$(python3 -c "import json,sys; print(json.load(open('$$state_file'))['currentStep'])" 2>/dev/null); \
-	if [ -z "$$branch" ] || [ -z "$$parent" ]; then \
-		echo "REFUSE TO HEAL: stale gitflow state file is unparsable."; \
-		echo "  Inspect: cat $$state_file"; \
-		echo "  Remove manually if appropriate."; \
-		exit 1; \
-	fi; \
-	if ! git rev-parse --verify "$$branch" >/dev/null 2>&1; then \
-		echo "REFUSE TO HEAL: state file names branch '$$branch' which no longer exists."; \
-		echo "  Inspect: cat $$state_file"; \
-		echo "  Remove manually if appropriate (the release was likely already finished)."; \
-		exit 1; \
-	fi; \
-	if git merge-base --is-ancestor "$$branch" "$$parent" 2>/dev/null; then \
-		echo "REFUSE TO HEAL: '$$parent' already contains '$$branch'."; \
-		echo "  The merge already happened in an earlier run. Running --continue"; \
-		echo "  could create duplicate commits. Inspect:"; \
-		echo "    git log --oneline $$parent ^$$branch | head"; \
-		echo "    git log --oneline $$branch ^$$parent | head"; \
-		exit 1; \
-	fi; \
-	echo "=== Healing stale gitflow state ==="; \
-	echo "  branch: $$branch"; \
-	echo "  parent: $$parent"; \
-	echo "  step:   $$step"; \
-	echo "  working tree clean, no real merge/rebase, parent does not"; \
-	echo "  contain branch, no index changes from prior run."; \
-	echo "  Action: drop state file and restart from scratch."; \
+	git checkout "$$develop"; \
+	git push origin "$$develop"; \
+	git push origin "$$master"; \
+	git push --tags; \
 	echo ""; \
-	rm -f "$$state_file"; \
-	rmdir .git/gitflow/state 2>/dev/null; \
-	rmdir .git/gitflow 2>/dev/null; \
-	echo "  Stale state cleared. release_finish will now run fresh."
+	echo "=== $$ver complete — pushed $$develop + $$master + tag $$tag ==="
+endef
 
-# If _release_finish_heal already drove `git flow release finish --continue`
-# to completion, the release branch is gone and we just need to push.
-# Otherwise (no stale state), run the normal `git flow release finish` path.
-release_finish: require_gitflow_next distribution_verify _release_finish_heal
-	@echo "=== Finishing release ==="
-	@if git branch --list 'release/*' | grep -q .; then \
-		echo "Merging to master, tagging, pushing..."; \
-		git flow release finish --no-ff --no-verify; \
-	else \
-		echo "Release branch already merged (heal completed it); pushing only."; \
-	fi
-	git push origin develop && git push origin master && git push --tags && git checkout develop
-	@echo ""
-	@echo "=== Release complete ==="
-	@echo "Tag: v$(IMAGE_TAG)"
-	@echo "Pushed: develop, master, tags"
+release_finish: distribution_verify
+	$(finish_flow)
 
-hotfix_finish: require_gitflow_next distribution_verify _release_finish_heal
-	@echo "=== Finishing hotfix ==="
-	@if git branch --list 'hotfix/*' | grep -q .; then \
-		echo "Merging to master, tagging, pushing..."; \
-		git flow hotfix finish --no-ff --no-verify; \
-	else \
-		echo "Hotfix branch already merged (heal completed it); pushing only."; \
-	fi
-	git push origin develop && git push origin master && git push --tags && git checkout develop
-	@echo ""
-	@echo "=== Hotfix complete ==="
+hotfix_finish: distribution_verify
+	$(finish_flow)
 
 release_and_push_GHCR: release_smoke release_finish
 	@echo ""
 	@echo "=== Building and pushing to GHCR ==="
 	@make it_build_multi_arch_push_GHCR
+	@echo ""
+	@echo "=== Verifying the pushed manifest is present + multi-arch ==="
+	@make verify_ghcr_manifest
 	@echo ""
 	@echo "=== Pinning SERVER_TAG=$(IMAGE_TAG) in distribution.env ==="
 	@$(MAKE) _pin_server_tag IMAGE_TAG=$(IMAGE_TAG)
@@ -1154,6 +1485,9 @@ hotfix_and_push_GHCR: release_smoke hotfix_finish
 	@echo ""
 	@echo "=== Building and pushing to GHCR ==="
 	@make it_build_multi_arch_push_GHCR
+	@echo ""
+	@echo "=== Verifying the pushed manifest is present + multi-arch ==="
+	@make verify_ghcr_manifest
 	@echo ""
 	@echo "=== Pinning SERVER_TAG=$(IMAGE_TAG) in distribution.env ==="
 	@$(MAKE) _pin_server_tag IMAGE_TAG=$(IMAGE_TAG)

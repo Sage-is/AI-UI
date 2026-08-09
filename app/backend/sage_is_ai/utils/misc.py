@@ -25,6 +25,21 @@ def deep_update(d, u):
     return d
 
 
+def get_available_models(request) -> dict:
+    """The model map this request may use: the direct-connection model when the
+    request carries one, otherwise the app-wide registry.
+
+    Returns the SAME dict object `request.app.state.MODELS` in the second arm —
+    twelve call sites relied on that identity, so no copy is made. Lives here
+    because misc.py imports nothing but env: categorically cycle-free.
+    """
+    if getattr(request.state, "direct", False) and hasattr(request.state, "model"):
+        return {
+            request.state.model["id"]: request.state.model,
+        }
+    return request.app.state.MODELS
+
+
 def get_message_list(messages, message_id):
     """
     Reconstructs a list of messages in order up to the specified message_id.

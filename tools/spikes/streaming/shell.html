@@ -1,0 +1,100 @@
+<!doctype html>
+<!-- Phase S streaming spike — the SHELL. THROWAWAY.
+     Server-rendered chrome. htmx owns fragment swaps; the island owns only the
+     streaming region. The composer arrives as a server fragment specifically to
+     prove the two coexist: the island binds through the document, so htmx can
+     replace the composer mid-session without the island losing its stream.
+
+     Layout is startr.style inline props, authored mobile-first: base values are
+     the phone case, and a suffix appears ONLY where the layout actually changes
+     going up. Nothing here repeats a base value in a -md. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Phase S — streaming spike</title>
+  <!-- First-party framework. NOTE: unversioned URL is a known SPOF (startr.style
+       footgun #6) — when it 5xxs, consumers render naked. /v1/ + SRI is queued
+       upstream; this is a throwaway spike so it rides the live sheet. -->
+  <link rel="stylesheet" href="https://startr.style/style.css" />
+  <style>
+    /* Only what the prop vocabulary cannot express: pseudo-states and the
+       markdown typography of streamed output. Inline props are flat — no
+       :focus-visible, which keyboard users need (footgun #8). */
+    #jump { box-shadow: 0 2px 8px rgb(0 0 0 / .18); }
+    #jump:focus-visible { --p: 2px solid var(--links, currentColor); --p-offset: 2px; }
+    /* No [hidden] rule here on purpose: startr.style's
+       `display: var(--d) !important` outranks it. The island toggles --d. */
+    #output pre { background: color-mix(in srgb, currentColor 8%, transparent);
+                  padding: .7rem .8rem; border-radius: .4rem; overflow-x: auto; }
+    #output code { font: 13px/1.5 ui-monospace, monospace; }
+    #output h2, #output h3 { margin: 1.1rem 0 .4rem; }
+    #output h2:first-child, #output h3:first-child { margin-top: 0; }
+  </style>
+  <!-- htmx vendored, not CDN-loaded: the no-build end state serves every shared
+       asset as a content-hashed immutable static file. -->
+  <script src="/vendor/htmx.min.js" defer></script>
+</head>
+
+<body style="--maxw:46rem; --m:0 auto; --p:1rem; --p-md:1.5rem; --lh:1.55">
+
+  <h1 style="--size:1.05rem; --weight:600; --m:0 0 .25rem">
+    Phase S — vanilla streaming island in an htmx shell
+  </h1>
+  <p style="--size:.8rem; --op:.65; --m:0 0 1rem">
+    Server-rendered chrome. The island owns only the region below.
+  </p>
+
+  <!-- The stream region owns its own jump-to-latest affordance, mirroring the
+       real chat (MessageInput.svelte: centred pill, arrow-down, re-pins on
+       click). Sticky bottom is only comfortable if leaving it is reversible.
+       Taller on a phone (little else on screen), fixed box from -md up. -->
+  <div style="--pos:relative">
+    <div id="scroller" style="
+      --h:58vh; --h-md:22rem;
+      --ofy:auto;
+      --p:.9rem 1rem;
+      outline:1px solid color-mix(in srgb, currentColor 22%, transparent);
+      --br:.5rem;
+    ">
+      <div id="output"></div>
+    </div>
+
+    <button id="jump" hidden aria-label="Scroll to latest" style="
+      --pos:absolute; --left:50%; --bottom:.75rem; --t:translateX(-50%); --z:5;
+      --d:none; --ji:center; --ai:center;   /* island flips to grid when released */
+      --w:2.25rem; --h:2.25rem; --p:0;
+      --br:999px; --cur:pointer;
+      outline:1px solid color-mix(in srgb, currentColor 25%, transparent);
+      --bgc:var(--background); --c:inherit;
+      --hvr-bgc:color-mix(in srgb, currentColor 10%, var(--background));
+    ">
+      <svg viewBox="0 0 20 20" width="17" height="17" aria-hidden="true">
+        <path d="M10 3.5v12m0 0l-5-5m5 5l5-5" fill="none" stroke="currentColor"
+              stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Swapped in from the server on load: chrome is the shell's job, not the island's. -->
+  <div hx-get="/fragment/composer" hx-trigger="load" hx-swap="outerHTML">
+    <div style="--d:flex; --ai:center; --g:.5rem; --mt:.8rem; --size:.8rem; --op:.7">
+      loading composer…
+    </div>
+  </div>
+
+  <!-- Stacks on a phone, two columns once there is room. -->
+  <dl style="
+    --d:grid; --gtc:auto 1fr; --gtc-md:auto auto 1fr;
+    --g:.15rem .6rem; --jc:start;
+    --size:.8rem; --op:.8; --m:.7rem 0 0;
+  ">
+    <dt style="--op:.6">protocol</dt><dd id="protocol" style="--m:0; --ff:ui-monospace, monospace">…</dd>
+    <dt style="--op:.6">autoscroll</dt><dd id="stick" style="--m:0; --ff:ui-monospace, monospace">pinned</dd>
+  </dl>
+
+  <div id="metrics" style="--size:.8rem; --op:.7; --mt:.6rem; --ff:ui-monospace, monospace; --wb:break-all">—</div>
+
+  <script type="module" src="/island.js"></script>
+</body>
+</html>

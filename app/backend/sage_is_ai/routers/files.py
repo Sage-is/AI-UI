@@ -547,7 +547,7 @@ async def get_html_file_content_by_id(id: str, user=Depends(get_verified_user)):
 
 
 @router.get("/{id}/content/{file_name}")
-async def get_file_content_by_id(id: str, user=Depends(get_verified_user)):
+async def get_file_content_by_id(id: str, user=Depends(get_verified_user)):  # noqa: F811
     file = Files.get_file_by_id(id)
 
     if not file:

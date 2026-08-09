@@ -20,6 +20,7 @@ from sage_is_ai.socket.main import (
     get_active_user_ids,
     get_user_active_status,
 )
+from sage_is_ai.config import DEFAULT_USER_PERMISSIONS
 from sage_is_ai.constants import ERROR_MESSAGES
 from sage_is_ai.env import SRC_LOG_LEVELS
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -186,42 +187,56 @@ async def get_user_permissisions(request: Request, user=Depends(get_verified_use
 ############################
 # User Default Permissions
 ############################
+# These models describe what the admin permissions panel renders. Their
+# defaults come from DEFAULT_USER_PERMISSIONS — the same table has_permission()
+# enforces — so the panel cannot advertise a policy the backend does not apply.
+# Hardcoding them here is what let `features.web_search` exist in the panel but
+# not in enforcement, and left four sharing.* defaults contradicting the table
+# (masked only because the stored config happened to carry those keys).
+# A key here with no entry in the table now raises KeyError at import: the
+# container fails loudly at boot instead of shipping a silent policy lie.
+_WORKSHOP = DEFAULT_USER_PERMISSIONS["workshop"]
+_SHARING = DEFAULT_USER_PERMISSIONS["sharing"]
+_CHAT = DEFAULT_USER_PERMISSIONS["chat"]
+_FEATURES = DEFAULT_USER_PERMISSIONS["features"]
+
+
 class WorkshopPermissions(BaseModel):
-    models: bool = False
-    knowledge: bool = False
-    prompts: bool = False
-    tools: bool = False
+    models: bool = _WORKSHOP["models"]
+    knowledge: bool = _WORKSHOP["knowledge"]
+    prompts: bool = _WORKSHOP["prompts"]
+    tools: bool = _WORKSHOP["tools"]
 
 
 class SharingPermissions(BaseModel):
-    public_models: bool = True
-    public_knowledge: bool = True
-    public_prompts: bool = True
-    public_tools: bool = True
+    public_models: bool = _SHARING["public_models"]
+    public_knowledge: bool = _SHARING["public_knowledge"]
+    public_prompts: bool = _SHARING["public_prompts"]
+    public_tools: bool = _SHARING["public_tools"]
 
 
 class ChatPermissions(BaseModel):
-    controls: bool = True
-    system_prompt: bool = True
-    file_upload: bool = True
-    delete: bool = True
-    edit: bool = True
-    share: bool = True
-    export: bool = True
-    stt: bool = True
-    tts: bool = True
-    call: bool = True
-    multiple_models: bool = True
-    temporary: bool = True
-    temporary_enforced: bool = False
+    controls: bool = _CHAT["controls"]
+    system_prompt: bool = _CHAT["system_prompt"]
+    file_upload: bool = _CHAT["file_upload"]
+    delete: bool = _CHAT["delete"]
+    edit: bool = _CHAT["edit"]
+    share: bool = _CHAT["share"]
+    export: bool = _CHAT["export"]
+    stt: bool = _CHAT["stt"]
+    tts: bool = _CHAT["tts"]
+    call: bool = _CHAT["call"]
+    multiple_models: bool = _CHAT["multiple_models"]
+    temporary: bool = _CHAT["temporary"]
+    temporary_enforced: bool = _CHAT["temporary_enforced"]
 
 
 class FeaturesPermissions(BaseModel):
-    direct_tool_servers: bool = False
-    web_search: bool = True
-    image_generation: bool = True
-    code_interpreter: bool = True
-    notes: bool = True
+    direct_tool_servers: bool = _FEATURES["direct_tool_servers"]
+    web_search: bool = _FEATURES["web_search"]
+    image_generation: bool = _FEATURES["image_generation"]
+    code_interpreter: bool = _FEATURES["code_interpreter"]
+    notes: bool = _FEATURES["notes"]
 
 
 class UserPermissions(BaseModel):

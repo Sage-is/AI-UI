@@ -51,7 +51,12 @@ from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
 from fastapi.openapi.utils import get_openapi
 
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
+from fastapi.responses import (
+    FileResponse,
+    HTMLResponse,
+    JSONResponse,
+    RedirectResponse,
+)
 from fastapi.staticfiles import StaticFiles
 
 from starlette_compress import CompressMiddleware
@@ -128,9 +133,6 @@ from sage_is_ai.config import (
     OLLAMA_API_CONFIGS,
     # OpenAI
     ENABLE_OPENAI_API,
-    ONEDRIVE_CLIENT_ID,
-    ONEDRIVE_SHAREPOINT_URL,
-    ONEDRIVE_SHAREPOINT_TENANT_ID,
     OPENAI_API_BASE_URLS,
     OPENAI_API_KEYS,
     OPENAI_API_CONFIGS,
@@ -224,6 +226,10 @@ from sage_is_ai.config import (
     RAG_EXTERNAL_RERANKER_URL,
     RAG_EXTERNAL_RERANKER_API_KEY,
     SPRIG_ACTIVE_THEME,
+    SPRIG_ACTIVE_UI,
+    HOME_CALENDAR_ICS_URL,
+    SPRIG_WIRES,
+    SPRIG_UI_SCRIPTING_GRANT,
     RAG_RERANKING_MODEL_AUTO_UPDATE,
     RAG_RERANKING_MODEL_TRUST_REMOTE_CODE,
     RAG_EMBEDDING_ENGINE,
@@ -494,7 +500,7 @@ log.setLevel(SRC_LOG_LEVELS["MAIN"])
 class SPAStaticFiles(StaticFiles):
     async def get_response(self, path: str, scope):
         try:
-            return await super().get_response(path, scope)
+            response = await super().get_response(path, scope)
         except (HTTPException, StarletteHTTPException) as ex:
             if ex.status_code == 404:
                 if path.endswith(".js"):
@@ -513,6 +519,13 @@ class SPAStaticFiles(StaticFiles):
                 return await super().get_response("index.html", scope)
             else:
                 raise ex
+        # Assets under _app/immutable/ are content-hashed by SvelteKit — a new
+        # deploy changes the filename — so they are safe to cache forever. This
+        # ends the per-asset revalidation round-trips that inflate repeat-visit
+        # load. The SPA shell (index.html) is intentionally NOT cached here.
+        if path.startswith("_app/immutable/"):
+            response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        return response
 
 
 import os as _banner_os
@@ -870,7 +883,10 @@ app.state.config.ENABLE_DIRECT_CONNECTIONS = ENABLE_DIRECT_CONNECTIONS
 ########################################
 
 app.state.config.ENABLE_BASE_MODELS_CACHE = ENABLE_BASE_MODELS_CACHE
-app.state.BASE_MODELS = []
+# None = never fetched. [] = fetched, and every provider offered nothing. The two
+# are not the same, and conflating them made the cache unable to hold the only
+# result worth holding. See get_all_models() in utils/models.py.
+app.state.BASE_MODELS = None
 
 ########################################
 #
@@ -1077,6 +1093,10 @@ app.state.config.RAG_RERANKING_MODEL = RAG_RERANKING_MODEL
 app.state.config.RAG_EXTERNAL_RERANKER_URL = RAG_EXTERNAL_RERANKER_URL
 app.state.config.RAG_EXTERNAL_RERANKER_API_KEY = RAG_EXTERNAL_RERANKER_API_KEY
 app.state.config.SPRIG_ACTIVE_THEME = SPRIG_ACTIVE_THEME
+app.state.config.SPRIG_ACTIVE_UI = SPRIG_ACTIVE_UI
+app.state.config.HOME_CALENDAR_ICS_URL = HOME_CALENDAR_ICS_URL
+app.state.config.SPRIG_WIRES = SPRIG_WIRES
+app.state.config.SPRIG_UI_SCRIPTING_GRANT = SPRIG_UI_SCRIPTING_GRANT
 
 app.state.config.RAG_TEMPLATE = RAG_TEMPLATE
 
@@ -2109,7 +2129,7 @@ async def get_app_version():
 async def get_app_latest_release_version(user=Depends(get_verified_user)):
     if not ENABLE_VERSION_UPDATE_CHECK:
         log.debug(
-            f"Version update check is disabled, returning current version as latest version"
+            "Version update check is disabled, returning current version as latest version"
         )
         return {"current": VERSION, "latest": VERSION}
     try:
@@ -2238,7 +2258,30 @@ async def healthcheck_with_db():
 
 
 
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+class CachedStaticFiles(StaticFiles):
+    """StaticFiles that lets the browser keep the file instead of revalidating.
+
+    Starlette sends an ETag and Last-Modified but no Cache-Control, so every
+    repeat visit spends a round-trip per asset to be told 304 Not Modified.
+    These files are not content-hashed (unlike _app/immutable/), so the cache
+    is bounded rather than immutable: STATIC_DIR is re-synced from the build
+    output at startup, meaning a deploy is what changes them, and a week is the
+    worst-case staleness. Theme CSS is NOT affected — it is served by its own
+    route with an explicit no-cache header.
+    """
+
+    def __init__(self, *args, max_age: int = 604800, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cache_max_age = max_age
+
+    async def get_response(self, path: str, scope):
+        response = await super().get_response(path, scope)
+        if response.status_code in (200, 304):
+            response.headers["Cache-Control"] = f"public, max-age={self.cache_max_age}"
+        return response
+
+
+app.mount("/static", CachedStaticFiles(directory=STATIC_DIR), name="static")
 
 # SvelteKit-built HTML references SPA assets at root paths like /assets/loader.js.
 # The boot-time sync in config.py copies these from FRONTEND_BUILD_DIR/static/assets/
@@ -2249,7 +2292,7 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 if (STATIC_DIR / "assets").exists():
     app.mount(
         "/assets",
-        StaticFiles(directory=STATIC_DIR / "assets"),
+        CachedStaticFiles(directory=STATIC_DIR / "assets"),
         name="spa-assets",
     )
 
@@ -2300,6 +2343,108 @@ async def active_theme_css():
         headers={"Cache-Control": "no-cache"},
     )
 
+
+# ui-Sprigs™: the marketplace surface. Serves the active grafted fragment from
+# the DATA volume, or nothing when none is grafted — the same shape as
+# /themes/active.css above, and registered before the SPA mount for the same
+# reason. Unauthenticated for the same reason too: it is interface, validated
+# fail-closed at graft (sprigs/ui_dispatch.py), carrying no request data.
+#
+# Revalidated on activation as well as at graft. The bytes on the volume are
+# the bytes we checked, but the SCRIPTING GRANT is a separate persisted value an
+# admin can change without regrafting — so a fragment approved while a grant was
+# live must not keep serving its script after the grant is gone.
+@app.get("/ui/active.html")
+async def active_ui_fragment():
+    name = str(app.state.config.SPRIG_ACTIVE_UI or "").strip()
+    if name:
+        from sage_is_ai.sprigs.ui_dispatch import (
+            UiValidationError,
+            ui_fragment_path,
+            validate_ui_bundle,
+        )
+
+        granted = str(app.state.config.SPRIG_UI_SCRIPTING_GRANT or "").strip()
+        try:
+            validate_ui_bundle(name, scripting_granted=granted == name)
+        except UiValidationError as e:
+            log.warning("ui sprig '%s' no longer passes the contract: %s", name, e)
+        else:
+            return FileResponse(
+                ui_fragment_path(name),
+                media_type="text/html",
+                headers={"Cache-Control": "no-cache"},
+            )
+    return Response(
+        "", media_type="text/html", headers={"Cache-Control": "no-cache"}
+    )
+
+
+# ── The no-build seam (Phase 0 of the frontend migration) ────────────────────
+#
+# Explicit routes registered BEFORE the SPA catch-all, so the compiled bundle
+# never sees them and both frontends coexist for the whole migration. This is
+# the same trick /themes/active.css above already relies on; naming it here
+# makes it a seam rather than a coincidence.
+#
+# Assets are cached for a week and cache-busted by ?v=VERSION (pages/shell.py),
+# because there is no build step to content-hash them — that being the point.
+from sage_is_ai.pages import ASSETS_DIR as PAGES_ASSETS_DIR  # noqa: E402
+from sage_is_ai.pages.router import router as pages_router  # noqa: E402
+from sage_is_ai.pages.slashes import PagesSlashMiddleware  # noqa: E402
+
+app.include_router(pages_router, prefix="/pages", tags=["pages"])
+# Trailing slashes, before the SPA mount can swallow them. `SPAStaticFiles` is
+# mounted at `/` with html=True, so an unmatched `/pages/...` returns the shell
+# with a 200 rather than a 404 — a wrong page that no status code reveals. This
+# canonicalises instead. See pages/slashes.py for why it is not a rewrite.
+app.add_middleware(PagesSlashMiddleware)
+app.mount(
+    "/pages/_assets",
+    CachedStaticFiles(directory=PAGES_ASSETS_DIR),
+    name="pages-assets",
+)
+
+
+# ── The try.sage welcome, server-rendered ────────────────────────────────────
+#
+# Registered only when the trial subsystem exists at all, so a normal deploy
+# keeps its `/` exactly as the SPA mount serves it and these routes cannot be
+# reached, guessed, or misconfigured into existence.
+#
+# `/` wins against the SPA mount because explicit routes resolve first — the
+# same seam every /pages/ route rides. Anonymous visitors get the welcome page
+# in the first response, no bundle; a signed-in reader gets the SPA index the
+# mount would have served. Identity comes from the auth cookie, which every
+# sign-in path sets and signout deletes, so there is no loop between this and
+# the SPA's own anonymous redirect to /auth.
+if ENABLE_TRY_SAGE:
+    from sage_is_ai.pages.try_sage_panel import render_try_sage  # noqa: E402
+
+    @app.get("/welcome", response_class=HTMLResponse)
+    async def try_sage_welcome(request: Request) -> HTMLResponse:
+        """The welcome page at its own address — linkable, and what `/` serves
+        an anonymous visitor. Kept even for signed-in readers: a facilitator
+        projecting this page for a room is signed in themselves."""
+        return HTMLResponse(
+            render_try_sage(request), headers={"Cache-Control": "no-cache"}
+        )
+
+    @app.get("/", response_class=HTMLResponse)
+    async def try_sage_root(
+        request: Request, response: Response, background_tasks: BackgroundTasks
+    ):
+        from sage_is_ai.utils.auth import get_current_user
+
+        try:
+            get_current_user(request, response, background_tasks, auth_token=None)
+        except HTTPException:
+            return HTMLResponse(
+                render_try_sage(request), headers={"Cache-Control": "no-cache"}
+            )
+        return FileResponse(
+            os.path.join(FRONTEND_BUILD_DIR, "index.html"), media_type="text/html"
+        )
 
 
 @app.get("/cache/{path:path}")

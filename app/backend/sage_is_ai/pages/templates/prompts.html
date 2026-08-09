@@ -1,0 +1,160 @@
+{# The Prompts surface.
+
+   Built plain first and reviewed, then styled — the standing order. The styling
+   is entirely IMPORTED: `_workshop.html` holds one vocabulary for every workshop
+   surface, so Prompts, Agents and whatever follows share a card size rather than
+   drifting apart one considered tweak at a time. This file adds no style strings
+   of its own and no lines to `pages.css`.
+
+   The interaction model is still almost nothing: search is a GET form, the row
+   actions are POST forms, the menu is a native <details>, and the confirmation
+   is a server-rendered <dialog open> that a few lines raise to a real modal. #}
+{% import "_workshop.html" as ws %}
+
+{# `data-swap-target` because this form lives OUTSIDE the region it updates, so
+   Startr Swap cannot infer the region from where the control sits. It is the one
+   case the nearest-ancestor rule cannot reach — and the reason the attribute
+   exists at all. #}
+<form method="get" action="{{ base }}" data-swap-target="#prompts-results">
+  <input type="hidden" name="lang" value="{{ lang[6:] }}" />
+  <label for="prompts-q">{{ search_label }}</label>
+  <input data-cy="prompts-search" id="prompts-q" type="search" name="q" value="{{ query }}" />
+  <button class="btn" type="submit">{{ search_submit_label }}</button>
+  {% if query %}
+  <a class="btn" data-cy="prompts-search-clear" href="{{ clear_url }}">{{ clear_label }}</a>
+  {% endif %}
+</form>
+
+<p><a class="btn btn-primary" data-cy="prompts-create" href="{{ create_url }}">{{ create_label }}</a></p>
+
+{# The swap region — the same shape Agents uses, and for the same reasons.
+   The SEARCH FORM STAYS OUTSIDE: replacing it would replace the input, and a
+   replaced input loses focus and cursor position. Everything a row action can
+   change is inside; nothing it cannot is.
+
+   `data-swap` marks it, and the `id` is what lets the response name it — a
+   sub-swap region needs one, because a selector has to find the same piece in a
+   document that has never met this page. Controls INSIDE it need no attribute
+   at all: the nearest region above a control is the one it updates. #}
+<div id="prompts-results" data-swap>
+
+{% if message %}
+<p data-cy="panel-message">{{ message }}</p>
+{% endif %}
+
+
+{# The list renders even when EMPTY, with the empty message inside it. The
+   Agents page learned this from the parity gate: an if/else that swapped the
+   whole <ul> for a <p> meant `agents-list` existed on one implementation and not
+   the other, and every behavioural spec was blind to it because they all seed
+   rows first. One container, always. #}
+<ul data-cy="prompts-list" style="{{ ws.list_s }}">
+  {% for p in prompts %}
+  <li data-cy="prompts-row" style="{{ ws.card_s }}">
+    <h3 style="{{ ws.name_s }}"><a data-cy="prompts-title" href="{{ p.edit_url }}" style="--c:inherit; --td:none">{{ p.title }}</a></h3>
+    {# `by_s`, not `body_s`. The shared body style reserves 5rem for a
+       description, and a prompt has none — the legacy row shows title, command
+       and owner, nothing else. Borrowing the taller style would be reserving
+       height for text that does not exist, and inventing a description to fill
+       it would be redesigning a surface I was asked to migrate. Cards in a
+       wrapped row still line up: flex stretches them to the tallest by
+       default. #}
+    <p style="{{ ws.by_s }}"><code>{{ p.command }}</code></p>
+    {# Text, never a picture. The list endpoint nests the owner's whole record
+       including a base64 avatar; rendering it would port the defect. #}
+    <p style="{{ ws.by_s }}">{{ p.author }}</p>
+
+    <div style="{{ ws.act_s }}">
+    <a class="btn" data-cy="prompts-edit" href="{{ p.edit_url }}">{{ edit_label }}</a>
+
+    {% if p.confirming %}
+    {# Asked, not assumed — and asked by the SERVER, so the question exists
+       before any script runs.
+
+       `<dialog open>` renders visible and usable with scripting off: the
+       browser's own styles centre it horizontally and draw its border, Confirm
+       is a form and Cancel is a link. Three lines of script then raise it with
+       `showModal()`, which is the part no declarative markup can give — the top
+       layer, a `::backdrop`, Escape to dismiss, a focus trap, and an inert
+       background. That is real modality; a popover offers Escape and
+       light-dismiss with no script at all but leaves the page behind it live,
+       which for a destructive action is the wrong trade.
+
+       `showModal()` also centres it VERTICALLY with no CSS of ours, via the UA's
+       `inset:0; margin:auto` — which is why this survives the plain-HTML phase
+       looking like something rather than nothing. #}
+    <dialog open data-cy="prompts-confirm" data-cancel="{{ cancel_url }}" style="{{ ws.dialog_s }}">
+      <p>{{ confirm_delete_label }} <strong>{{ p.command }}</strong></p>
+      <div style="{{ ws.dialog_actions_s }}">
+        <form method="post" action="{{ base }}/delete/{{ p.slug | urlencode }}{{ lang }}&confirm=1">
+          <button class="btn btn-primary" data-cy="prompts-confirm-delete" type="submit">{{ confirm_label }}</button>
+        </form>
+        <a class="btn" data-cy="prompts-confirm-cancel" href="{{ cancel_url }}">{{ cancel_label }}</a>
+      </div>
+    </dialog>
+    {% else %}
+    <details name="prompt-menu" style="{{ ws.menu_wrap_s }}">
+      <summary class="btn" data-cy="prompts-menu" style="--lis:none">{{ actions_label }}</summary>
+      <ul style="{{ ws.menu_s }}">
+        {% if community %}
+        <li><a data-cy="prompts-menu-share" href="{{ share_url }}" target="_blank" rel="noopener">{{ share_label }}</a></li>
+        {% endif %}
+        <li>
+          <form method="post" action="{{ base }}/clone/{{ p.slug | urlencode }}{{ lang }}">
+            <button data-cy="prompts-menu-clone" type="submit" style="{{ ws.menu_item_s }}">{{ clone_label }}</button>
+          </form>
+        </li>
+        <li><a data-cy="prompts-menu-export" href="{{ p.export_url }}">{{ export_label }}</a></li>
+        <li>
+          <form method="post" action="{{ base }}/delete/{{ p.slug | urlencode }}{{ lang }}">
+            <button data-cy="prompts-menu-delete" type="submit" style="{{ ws.menu_item_s }}">{{ delete_label }}</button>
+          </form>
+        </li>
+      </ul>
+    </details>
+    {% endif %}
+    </div>
+  </li>
+  {% endfor %}
+  {% if not prompts %}
+  <li data-cy="prompts-empty">{{ empty_label }}</li>
+  {% endif %}
+</ul>
+
+{# The pager renders only above one page, so a small instance never sees paging
+   machinery it does not need. Links, not buttons and not script: the page number
+   lives in the URL beside the search, so a reader can bookmark page 3 of a
+   filtered list and the back button walks it backwards. #}
+{% if pager %}
+<nav data-cy="prompts-pager" aria-label="Pages">
+  {% if prev_url %}<a data-cy="prompts-page-prev" rel="prev" href="{{ prev_url }}">{{ prev_label }}</a>{% endif %}
+  {% for p in pager %}
+  <a data-cy="prompts-page" href="{{ p.href }}"{% if p.current %} aria-current="page"{% endif %}>{{ p.n }}</a>
+  {% endfor %}
+  {% if next_url %}<a data-cy="prompts-page-next" rel="next" href="{{ next_url }}">{{ next_label }}</a>{% endif %}
+  <small>{{ showing_label }}</small>
+</nav>
+{% endif %}
+
+</div>{# /prompts-results #}
+
+{% if is_admin %}
+<form method="post" action="{{ base }}/import{{ lang }}" enctype="multipart/form-data">
+  <label for="prompts-import-file">{{ import_label }}</label>
+  <input id="prompts-import-file" type="file" name="file" accept=".json" required />
+  <button class="btn" data-cy="prompts-import" type="submit">{{ import_label }}</button>
+</form>
+{% if prompts %}
+<p><a class="btn" data-cy="prompts-export" href="{{ export_all_url }}">{{ export_all_label }} ({{ count }})</a></p>
+{% endif %}
+{% endif %}
+
+{% if community %}
+<h2>{{ community_heading }}</h2>
+<p>
+  <a data-cy="prompts-community" href="{{ community_url }}" target="_blank" rel="noopener">
+    {{ community_title }}
+  </a>
+</p>
+<p>{{ community_sub }}</p>
+{% endif %}

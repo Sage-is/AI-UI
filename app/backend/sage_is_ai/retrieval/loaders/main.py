@@ -146,7 +146,7 @@ class TikaLoader:
         else:
             headers = {}
 
-        if self.extract_images == True:
+        if self.extract_images == True:  # noqa: E712
             headers["X-Tika-PDFextractInlineImages"] = "true"
 
         endpoint = self.url

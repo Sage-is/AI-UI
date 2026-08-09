@@ -82,9 +82,23 @@ def _collect_urls(app) -> list[tuple[str, str]]:
         for u in _persistent_value(getattr(cfg, "OLLAMA_BASE_URLS", None)) or []
     )
 
+    # Content extraction: probe only the backend actually SELECTED by
+    # CONTENT_EXTRACTION_ENGINE. The Tika/Docling URLs carry sidecar defaults
+    # (http://tika:9998 / http://docling:5001), so probing them unconditionally
+    # cried "unreachable" on every non-sidecar deploy even when the built-in
+    # extractor (engine unset) is doing the work. It's only a real problem —
+    # graft the Tika/Docling Sprig™ or run the sidecar — when that engine is set.
+    engine = (
+        _persistent_value(getattr(cfg, "CONTENT_EXTRACTION_ENGINE", None)) or ""
+    ).lower()
+    extraction: list[tuple[str, str]] = []
+    if engine == "tika":
+        extraction.append(("TIKA_SERVER_URL", "rag/tika"))
+    elif engine == "docling":
+        extraction.append(("DOCLING_SERVER_URL", "rag/docling"))
+
     for attr, capability in [
-        ("TIKA_SERVER_URL", "rag/tika"),
-        ("DOCLING_SERVER_URL", "rag/docling"),
+        *extraction,
         ("RAG_EXTERNAL_RERANKER_URL", "rag/reranker"),
     ]:
         url = _persistent_value(getattr(cfg, attr, None))

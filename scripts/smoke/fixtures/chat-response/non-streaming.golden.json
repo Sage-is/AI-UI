@@ -1,0 +1,81 @@
+[
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "content": "RAD and Agile are both iterative.",
+              "role": "assistant"
+            }
+          }
+        ],
+        "id": "chatcmpl-fixture-8",
+        "model": "fixture-model",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 8,
+          "prompt_tokens": 12,
+          "total_tokens": 20
+        }
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "event",
+    "payload": {
+      "data": {
+        "content": "RAD and Agile are both iterative.",
+        "done": true,
+        "title": "Fixture chat"
+      },
+      "type": "chat:completion"
+    }
+  },
+  {
+    "channel": "db",
+    "chat_id": "chat-fixture",
+    "message_id": "msg-fixture",
+    "patch": {
+      "content": "RAD and Agile are both iterative.",
+      "role": "assistant"
+    }
+  },
+  {
+    "channel": "return",
+    "value": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "content": "RAD and Agile are both iterative.",
+            "role": "assistant"
+          }
+        }
+      ],
+      "id": "chatcmpl-fixture-8",
+      "model": "fixture-model",
+      "object": "chat.completion",
+      "sources": [
+        {
+          "document": [
+            "chapter 4"
+          ],
+          "source": {
+            "name": "handbook.pdf"
+          }
+        }
+      ],
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 12,
+        "total_tokens": 20
+      }
+    }
+  }
+]

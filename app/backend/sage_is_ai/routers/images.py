@@ -700,7 +700,7 @@ async def image_generations(
             return images
     except Exception as e:
         error = e
-        if r != None:
+        if r != None:  # noqa: E711
             data = r.json()
             if "error" in data:
                 error = data["error"]["message"]

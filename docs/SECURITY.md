@@ -45,10 +45,16 @@ Reports not submitted through our designated GitHub repository will be disregard
 
 ## Product Security
 
-We regularly audit our internal processes and system architecture for vulnerabilities using a combination of automated and manual testing techniques. We are also planning to implement SAST and SCA scans in our project soon.
+We scan for secrets, private data, insecure code, and vulnerable dependencies on every commit and push — locally, with no external CI service. The same checks run by hand with `make scan`.
+
+- **Secrets and private data** — gitleaks, with custom rules for internal hostnames, developer paths, and contact lists (`.gitleaks.toml`).
+- **SAST** — semgrep (JS/TS/Svelte and Python) and bandit (Python); rules in `.semgrep/` and `.bandit.yaml`.
+- **Dependencies (SCA)** — trivy against lockfiles for known CVEs.
+
+Enforcement is local-first: a pre-commit hook scans each change, a pre-push hook scans the whole tree, and `make scan_secrets` audits full git history. See [`development-workflow.md`](development-workflow.md) for the developer setup.
 
 For immediate concerns or detailed reports that meet our guidelines, please create an issue in our [issue tracker](/sage-webui/sage-webui/issues) or contact us on [Discord](https://discord.gg/3BtwHkXS).
 
 ---
 
-_Last updated on **2024-08-19**._
+_Last updated on **2026-07-24**._

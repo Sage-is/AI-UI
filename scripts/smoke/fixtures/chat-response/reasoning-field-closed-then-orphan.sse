@@ -1,0 +1,6 @@
+data: {"id":"chatcmpl-fixture-12","object":"chat.completion.chunk","model":"qwen3.5-9b","choices":[{"index":0,"delta":{"role":"assistant","reasoning_content":"The user wants summary statistics. "},"finish_reason":null}]}
+data: {"id":"chatcmpl-fixture-12","object":"chat.completion.chunk","model":"qwen3.5-9b","choices":[{"index":0,"delta":{"reasoning_content":"The output is clear and accurate."},"finish_reason":null}]}
+data: {"id":"chatcmpl-fixture-12","object":"chat.completion.chunk","model":"qwen3.5-9b","choices":[{"index":0,"delta":{"content":"</think>"},"finish_reason":null}]}
+data: {"id":"chatcmpl-fixture-12","object":"chat.completion.chunk","model":"qwen3.5-9b","choices":[{"index":0,"delta":{"content":"\n\nHere are the results from the simulation."},"finish_reason":null}]}
+data: {"id":"chatcmpl-fixture-12","object":"chat.completion.chunk","model":"qwen3.5-9b","choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}
+data: [DONE]

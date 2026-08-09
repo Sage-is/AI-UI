@@ -1,4 +1,7 @@
-import katex from 'katex';
+// NOTE: katex itself is NOT imported here — this extension only *tokenizes*
+// math (finds the delimiters); the actual render happens in KatexRenderer.svelte
+// (lazily). A dead `import katex` here used to drag the whole library into the
+// eager utils chunk (this file is imported by utils/index.ts).
 
 const DELIMITER_LIST = [
 	{ left: '$$', right: '$$', display: true },
@@ -23,8 +26,8 @@ const ALLOWED_SURROUNDING_CHARS =
 // const inlineRule = /^(\${1,2})(?!\$)((?:\\.|[^\\\n])*?(?:\\.|[^\\\n\$]))\1(?=[\s?!\.,:？！。，：]|$)/;
 // const blockRule = /^(\${1,2})\n((?:\\[^]|[^\\])+?)\n\1(?:\n|$)/;
 
-let inlinePatterns: string[] = [];
-let blockPatterns: string[] = [];
+const inlinePatterns: string[] = [];
+const blockPatterns: string[] = [];
 
 function escapeRegex(string: string) {
 	return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
@@ -69,7 +72,7 @@ export default function (options = {}) {
 }
 
 function katexStart(src: string, displayMode: boolean) {
-	let ruleReg = displayMode ? blockRule : inlineRule;
+	const ruleReg = displayMode ? blockRule : inlineRule;
 
 	let indexSrc = src;
 
@@ -78,7 +81,7 @@ function katexStart(src: string, displayMode: boolean) {
 		let startIndex = -1;
 		let startDelimiter = '';
 		let endDelimiter = '';
-		for (let delimiter of DELIMITER_LIST) {
+		for (const delimiter of DELIMITER_LIST) {
 			if (delimiter.display !== displayMode) {
 				continue;
 			}
@@ -115,8 +118,8 @@ function katexStart(src: string, displayMode: boolean) {
 }
 
 function katexTokenizer(src: string, tokens: any, displayMode: boolean) {
-	let ruleReg = displayMode ? blockRule : inlineRule;
-	let type = displayMode ? 'blockKatex' : 'inlineKatex';
+	const ruleReg = displayMode ? blockRule : inlineRule;
+	const type = displayMode ? 'blockKatex' : 'inlineKatex';
 
 	const match = src.match(ruleReg);
 

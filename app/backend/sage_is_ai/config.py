@@ -991,10 +991,16 @@ OPENAI_API_BASE_URL = "https://api.openai.com/v1"
 # MODELS
 ####################################
 
+# On by default: the provider probe behind /api/models costs ~740ms per call
+# uncached and ~5ms cached (measured), and it is on the boot path for every
+# user. The cache is warmed at startup (main.py) and cleared by
+# invalidate_base_models_cache() whenever a provider connection changes, so the
+# staleness window that justified defaulting this off is closed. Set
+# ENABLE_BASE_MODELS_CACHE=False to opt back out.
 ENABLE_BASE_MODELS_CACHE = PersistentConfig(
     "ENABLE_BASE_MODELS_CACHE",
     "models.base_models_cache",
-    os.environ.get("ENABLE_BASE_MODELS_CACHE", "False").lower() == "true",
+    os.environ.get("ENABLE_BASE_MODELS_CACHE", "True").lower() == "true",
 )
 
 
@@ -1180,6 +1186,66 @@ SPRIG_ACTIVE_THEME = PersistentConfig(
     os.environ.get("SPRIG_ACTIVE_THEME", ""),
 )
 
+# The active ui-Sprig™ (catalog name). Set by grafting a `ui` capability,
+# cleared by pruning it; /ui/active.html serves the pointed-at fragment from
+# the DATA volume. Empty = no fragment.
+SPRIG_ACTIVE_UI = PersistentConfig(
+    "SPRIG_ACTIVE_UI",
+    "ui.sprig_active_ui",
+    os.environ.get("SPRIG_ACTIVE_UI", ""),
+)
+
+# The one ui-Sprig™ an admin has granted scripting permission, by NAME. Empty =
+# nobody, which is the default and the state we want deployments to stay in.
+#
+# Modelled on how Apple gates unsigned apps: the fragment contract is markup
+# only, and an admin may deliberately widen it for one Sprig they have read.
+# Storing the NAME rather than a boolean is the poka-yoke — a grant follows the
+# Sprig it was made for and cannot be inherited by whatever is grafted next.
+# Pruning clears it, so revoking is what already happens when you remove the
+# thing you granted.
+SPRIG_UI_SCRIPTING_GRANT = PersistentConfig(
+    "SPRIG_UI_SCRIPTING_GRANT",
+    "ui.sprig_ui_scripting_grant",
+    os.environ.get("SPRIG_UI_SCRIPTING_GRANT", ""),
+)
+
+# Wired Sprigs™ — operator-supplied settings per grafted Sprig, as
+# {sprig_name: {wire_name: value}}. Empty = nothing wired.
+#
+# One config key rather than a table, matching SPRIG_ACTIVE_UI above. Pruning a
+# Sprig discards its wires, so revoking a setting is what already happens when
+# you remove the thing it configured.
+#
+# SECRET WIRES LIVE HERE IN CLEAR. That is a real limitation and it bounds what
+# may be a secret wire: a token for a third-party service the operator can
+# rotate, never a credential to this instance. `sprigs/wiring.py` is what stops
+# a secret being RENDERED; nothing here stops it being read by whoever can read
+# the config store.
+SPRIG_WIRES = PersistentConfig(
+    "SPRIG_WIRES",
+    "ui.sprig_wires",
+    {},
+)
+
+# An iCalendar (.ics) feed for the Calendar card on /pages/home. Empty = the
+# card shows its own "not configured" state and NOTHING IS FETCHED.
+#
+# This is the one setting in the no-build pages that makes the server reach off
+# the machine, so it is empty by default and stays that way until an operator
+# names a host. Nextcloud is the case it was built for — a shared calendar there
+# publishes a read-only ICS URL needing no credentials — but it is a plain feed
+# URL and any calendar that publishes one will do.
+#
+# Scaffold today, a wire tomorrow: the eventual home is a Wired Sprig™ with
+# `delivery: service-endpoint`, because a ui-Sprig fragment may not reach an
+# external URL at all and the fetch has to stay server-side.
+HOME_CALENDAR_ICS_URL = PersistentConfig(
+    "HOME_CALENDAR_ICS_URL",
+    "ui.home_calendar_ics_url",
+    os.environ.get("HOME_CALENDAR_ICS_URL", ""),
+)
+
 
 USER_PERMISSIONS_WORKSHOP_MODELS_ACCESS = (
     os.environ.get("USER_PERMISSIONS_WORKSHOP_MODELS_ACCESS", "False").lower() == "true"
@@ -1302,6 +1368,16 @@ USER_PERMISSIONS_FEATURES_NOTES = (
     os.environ.get("USER_PERMISSIONS_FEATURES_NOTES", "True").lower() == "true"
 )
 
+# Defaults True to match what the admin permissions panel has always ADVERTISED
+# for this key. It was missing from the table below, so enforcement read it as
+# absent — i.e. denied — and non-admins never got the web-search button while
+# the panel said they had it. Exposure is still gated by the global
+# enable_web_search feature flag, so this does not switch web search on for
+# anyone who has not enabled it.
+USER_PERMISSIONS_FEATURES_WEB_SEARCH = (
+    os.environ.get("USER_PERMISSIONS_FEATURES_WEB_SEARCH", "True").lower() == "true"
+)
+
 
 DEFAULT_USER_PERMISSIONS = {
     "workshop": {
@@ -1333,6 +1409,7 @@ DEFAULT_USER_PERMISSIONS = {
     },
     "features": {
         "direct_tool_servers": USER_PERMISSIONS_FEATURES_DIRECT_TOOL_SERVERS,
+        "web_search": USER_PERMISSIONS_FEATURES_WEB_SEARCH,
         "image_generation": USER_PERMISSIONS_FEATURES_IMAGE_GENERATION,
         "code_interpreter": USER_PERMISSIONS_FEATURES_CODE_INTERPRETER,
         "notes": USER_PERMISSIONS_FEATURES_NOTES,
@@ -3227,7 +3304,7 @@ TRY_SAGE_TOOL_SERVER_URL = PersistentConfig(
     "try_sage.tool_servers.real_url",
     os.environ.get(
         "TRY_SAGE_TOOL_SERVER_URL",
-        "https://tool-server.example.com",
+        "",  # env-only; empty skips markdown-search registration (see try_sage_tool_servers.py). Never ship an internal host in the public image.
     ),
 )
 

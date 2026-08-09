@@ -1,0 +1,21 @@
+{# The wizard's opening choice. Six checkboxes and a start button.
+
+   Every string arriving here is already translated — the panel binds a
+   translator per request and the template does presentation only, so a
+   `_()` call in here would be a second place that decides what language a
+   page is in.
+
+   Autoescaped, so nothing below writes `escape()` and nothing can forget it. #}
+{% from "_macros.html" import checkbox_row, submit %}
+{% set group_s = " --p:0; --m:1.25rem 0" %}
+<section data-cy="welcome-panel">
+  <form method="post" action="/pages/admin/setup/welcome/start{{ lang }}">
+    <fieldset>
+      <legend style="--size:.85rem; --weight:600; --p:0">{{ legend }}</legend>
+      {% for row in rows %}
+      {{ checkbox_row(row) }}
+      {% endfor %}
+    </fieldset>
+    {{ submit("welcome-start", start) }}
+  </form>
+</section>

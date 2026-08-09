@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { WEBUI_BASE_URL } from '$lib/constants';
-
 	export let name: string;
 	export let className: string = 'size-6';
 </script>
@@ -9,5 +7,7 @@
 	class={className}
 	aria-hidden="true"
 >
-	<use href="{WEBUI_BASE_URL}/static/sprites/oauth.svg#{name}" />
+	<!-- Relative/same-origin on purpose — see Icon.svelte: an SVG <use> href must
+	     match the frame origin, and Vite proxies /static to the backend in dev. -->
+	<use href="/static/sprites/oauth.svg#{name}" />
 </svg>

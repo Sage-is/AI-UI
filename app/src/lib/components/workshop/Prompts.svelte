@@ -121,10 +121,15 @@
 
 	<div style="--d:flex; --fd:column; --g:0.2rem; --my:0.4rem">
 		<div style="--d:flex; --jc:space-between; --ai:center">
-			<div style="--d:flex; --as-md:center; --size:1.2rem; --weight:500; --px:0.125rem; --ai:center">
+			<div
+				style="--d:flex; --as-md:center; --size:1.2rem; --weight:500; --px:0.125rem; --ai:center"
+			>
 				{$i18n.t('Prompts')}
-				<div style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)" />
-				<span style="--size:1.125rem; --weight:500; --c:var(--color-gray-500); --dark-c:var(--color-gray-300)"
+				<div
+					style="--d:flex; --as:center; --w:1px; --h:1.5rem; --mx:0.625rem; --bgc:var(--color-gray-50); --dark-bgc:var(--color-gray-850)"
+				/>
+				<span
+					style="--size:1.125rem; --weight:500; --c:var(--color-gray-500); --dark-c:var(--color-gray-300)"
 					>{filteredItems.length}</span
 				>
 			</div>
@@ -133,6 +138,7 @@
 		<div style="--d:flex; --ai:center; --w:100%; --g:0.5rem">
 			<div>
 				<a
+					data-cy="prompts-create"
 					style="--px:0.5rem; --py:0.5rem; --radius:0.6rem; --hvr-bgc:rgb(78 78 78 / 0.1); --hvr-dark-bgc:rgb(236 236 236 / 0.1); --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1); --weight:500; --size:0.8rem; --d:flex; --ai:center; --g:0.2rem"
 					href="/workshop/prompts/create"
 				>
@@ -145,14 +151,18 @@
 					<Icon name="search" className="size-3.5" />
 				</div>
 				<input
+					data-cy="prompts-search"
 					style="--w:100%; --size:0.8rem; --pr:1rem; --py:0.2rem; --btrr:0.6rem; --bbrr:0.6rem; --oe:none; --bgc:transparent"
 					bind:value={query}
 					placeholder={$i18n.t('Search Prompts')}
 				/>
 
 				{#if query}
-					<div style="--as:center; --pl:0.4rem; --translatey:0.5px; --btlr:0.6rem; --bblr:0.6rem; --bgc:transparent">
+					<div
+						style="--as:center; --pl:0.4rem; --translatey:0.5px; --btlr:0.6rem; --bblr:0.6rem; --bgc:transparent"
+					>
 						<button
+							data-cy="prompts-search-clear"
 							style="--p:0.125rem; --radius:9999px; --hvr-bgc:var(--color-gray-100); --hvr-dark-bgc:var(--color-gray-900); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 							on:click={() => {
 								query = '';
@@ -166,13 +176,20 @@
 		</div>
 	</div>
 
-	<div style="--mb:1.2rem; --g:0.5rem; --d:grid; --gtc-lg:repeat(2, minmax(0, 1fr)); --gtc-xl:repeat(3, minmax(0, 1fr))">
+	<div
+		data-cy="prompts-list"
+		style="--mb:1.2rem; --g:0.5rem; --d:grid; --gtc-lg:repeat(2, minmax(0, 1fr)); --gtc-xl:repeat(3, minmax(0, 1fr))"
+	>
 		{#each filteredItems as prompt}
 			<div
+				data-cy="prompts-row"
 				style="--d:flex; --g:1rem; --cur:pointer; --w:100%; --px:0.6rem; --py:0.5rem; --hvr-dark-bgc:rgb(255 255 255 / 0.05); --hvr-bgc:rgb(0 0 0 / 0.05); --radius:0.6rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 			>
 				<div style="--d:flex; --fx:1 1 0%; --g:1rem; --cur:pointer; --w:100%">
-					<a href={`/workshop/prompts/edit?command=${encodeURIComponent(prompt.command)}`}>
+					<a
+						data-cy="prompts-title"
+						href={`/workshop/prompts/edit?command=${encodeURIComponent(prompt.command)}`}
+					>
 						<div style="--fx:1 1 0%; --d:flex; --ai:center; --g:0.5rem; --as:center">
 							<div style="--weight:600; --line-clamp:1; --tt:capitalize">{prompt.title}</div>
 							<div style="--size:0.6rem; --of:hidden; text-overflow:ellipsis; --line-clamp:1">
@@ -199,6 +216,7 @@
 				</div>
 				<div style="--d:flex; --fd:row; --g:0.125rem; --as:center">
 					<a
+						data-cy="prompts-edit"
 						style="--as:center; --w:fit-content; --size:0.8rem; --px:0.5rem; --py:0.5rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 						type="button"
 						href={`/workshop/prompts/edit?command=${encodeURIComponent(prompt.command)}`}
@@ -223,6 +241,7 @@
 						onClose={() => {}}
 					>
 						<button
+							data-cy="prompts-menu"
 							style="--as:center; --w:fit-content; --size:0.8rem; --p:0.4rem; --dark-c:var(--color-gray-300); --hvr-dark-c:#fff; --hvr-bgc:rgb(0 0 0 / 0.05); --hvr-dark-bgc:rgb(255 255 255 / 0.05); --radius:0.6rem"
 							type="button"
 						>
@@ -276,12 +295,15 @@
 				/>
 
 				<button
+					data-cy="prompts-import"
 					style="--d:flex; --size:0.6rem; --ai:center; --g:0.2rem; --px:0.6rem; --py:0.4rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 					on:click={() => {
 						promptsImportInputElement.click();
 					}}
 				>
-					<div style="--as:center; --mr:0.5rem; --weight:500; --line-clamp:1">{$i18n.t('Import Prompts')}</div>
+					<div style="--as:center; --mr:0.5rem; --weight:500; --line-clamp:1">
+						{$i18n.t('Import Prompts')}
+					</div>
 
 					<div style="--as:center">
 						<Icon name="clipboard-import" className="size-4" />
@@ -290,6 +312,7 @@
 
 				{#if prompts.length}
 					<button
+						data-cy="prompts-export"
 						style="--d:flex; --size:0.6rem; --ai:center; --g:0.2rem; --px:0.6rem; --py:0.4rem; --radius:0.6rem; --bgc:var(--color-gray-50); --hvr-bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-dark-bgc:var(--color-gray-700); --dark-c:var(--color-gray-200); --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 						on:click={async () => {
 							let blob = new Blob([JSON.stringify(prompts)], {
@@ -318,6 +341,7 @@
 			</div>
 
 			<a
+				data-cy="prompts-community"
 				style="--d:flex; --cur:pointer; --ai:center; --jc:space-between; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --w:100%; --mb:0.5rem; --px:0.8rem; --py:0.4rem; --radius:0.6rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
 				href="https://sage.is/community"
 				target="_blank"

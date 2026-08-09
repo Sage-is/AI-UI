@@ -154,7 +154,7 @@ async def periodic_usage_pool_cleanup():
     try:
         while True:
             if not renew_func():
-                log.error(f"Unable to renew cleanup lock. Exiting usage pool cleanup.")
+                log.error("Unable to renew cleanup lock. Exiting usage pool cleanup.")
                 raise Exception("Unable to renew usage pool cleanup lock.")
 
             now = int(time.time())
@@ -534,7 +534,7 @@ async def yjs_document_update(sid, data):
 
         try:
             await stop_item_tasks(REDIS, document_id)
-        except:
+        except:  # noqa: E722
             pass
 
         user_id = data.get("user_id", sid)

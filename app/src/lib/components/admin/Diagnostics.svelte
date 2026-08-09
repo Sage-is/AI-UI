@@ -31,6 +31,8 @@
 	// HowToFixModal state
 	let fixModalShow = false;
 	let fixModalIssueType: string | null = null;
+	let fixModalSprig: string | null = null;
+	let fixModalSprigCapability: string | null = null;
 
 	$: deploymentShape = (health?.deployment_shape?.shape ?? 'unknown') as DeploymentShape;
 	$: deploymentConfidence = (health?.deployment_shape?.confidence ?? 'unknown') as
@@ -38,8 +40,14 @@
 		| 'low'
 		| 'unknown';
 
-	const openFixModal = (issueType: string) => {
+	const openFixModal = (
+		issueType: string,
+		sprig: string | null = null,
+		sprigCapability: string | null = null
+	) => {
 		fixModalIssueType = issueType;
+		fixModalSprig = sprig;
+		fixModalSprigCapability = sprigCapability;
 		fixModalShow = true;
 	};
 
@@ -190,6 +198,7 @@
 			<button
 				type="button"
 				class="text-sm px-3 py-1.5 rounded border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 flex items-center gap-2"
+				data-cy="diagnostics-refresh"
 				on:click={reprobeAll}
 				disabled={refreshing || !loaded}
 				aria-label={$i18n.t('Re-probe all endpoints')}
@@ -225,6 +234,7 @@
 			<button
 				type="button"
 				class="text-sm px-3 py-1.5 rounded border border-red-300 dark:border-red-700 hover:bg-red-100 dark:hover:bg-red-900 disabled:opacity-50 flex items-center gap-2"
+				data-cy="diagnostics-retry"
 				on:click={loadHealth}
 				disabled={refreshing}
 				aria-label={$i18n.t('Retry loading diagnostics')}
@@ -257,7 +267,7 @@
 
 		<!-- Issues banner -->
 		{#if issues.length > 0 && !bootInFlight}
-			<div class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-4">
+			<div class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-4" data-cy="diag-issues">
 				<h2 id="diagnostics-issues-heading" class="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">
 					{$i18n.t('Issues')}
 				</h2>
@@ -316,7 +326,7 @@
 		{/if}
 
 		<!-- Endpoints -->
-		<div class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-4">
+		<div class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-4" data-cy="diag-section" data-section="endpoints">
 			<h2 class="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">
 				{$i18n.t('Endpoints')}
 			</h2>
@@ -336,7 +346,9 @@
 
 				{#if ghostEndpoints.length > 0}
 					<div class="mt-3">
-						<Collapsible chevron={true} title={$i18n.t('Previously configured')}>
+						<!-- svelte-ignore a11y-no-static-element-interactions -->
+					<div data-cy="diag-ghost-endpoints">
+					<Collapsible chevron={true} title={$i18n.t('Previously configured')}>
 							<div slot="content" class="pt-2">
 								{#each ghostEndpoints as [url, row]}
 									<DiagnosticRow label={url} record={row} onFix={openFixModal} />
@@ -344,16 +356,25 @@
 							</div>
 						</Collapsible>
 					</div>
+					</div>
 				{/if}
 			{/if}
 		</div>
 
 		<!-- Boot status -->
-		<div class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-4">
+		<div class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-4" data-cy="diag-section" data-section="boot_status">
 			<h2 class="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">
 				{$i18n.t('Boot status')}
 			</h2>
-			{#each ['data_dir_writable', 'secret_key_persisted', 'alembic_head'] as key}
+			<!-- Enumerated from the response, not hardcoded.
+			     This used to list the three keys it knew about, so adding a
+			     fourth check to `_boot_status_section()` rendered it on the
+			     no-build page — which loops over whatever arrives — and silently
+			     nowhere here, because the `{#if}` below turns a missing key into
+			     nothing rather than into an error. `diagnostics-panel.cy.ts`
+			     caught it by asking the API which keys exist and demanding a row
+			     for each. Looping over the response is what stops that recurring. -->
+			{#each Object.keys(health?.boot_status ?? {}) as key}
 				{#if health?.boot_status?.[key]}
 					<DiagnosticRow label={key} record={health.boot_status[key]} onFix={openFixModal} />
 				{/if}
@@ -361,7 +382,7 @@
 		</div>
 
 		<!-- Static assets -->
-		<div class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-4">
+		<div class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-4" data-cy="diag-section" data-section="static_assets">
 			<h2 class="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">
 				{$i18n.t('Static assets')}
 			</h2>
@@ -373,7 +394,7 @@
 		</div>
 
 		<!-- Browser headers -->
-		<div class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-4">
+		<div class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-4" data-cy="diag-section" data-section="browser_headers">
 			<h2 class="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">
 				{$i18n.t('Browser headers')}
 			</h2>
@@ -397,6 +418,9 @@
 <HowToFixModal
 	bind:show={fixModalShow}
 	issueType={fixModalIssueType}
+	sprig={fixModalSprig}
+	sprigCapability={fixModalSprigCapability}
 	defaultShape={deploymentShape}
 	shapeConfidence={deploymentConfidence}
+	onGrafted={loadHealth}
 />

@@ -1,0 +1,7 @@
+: keep-alive comment, not a data frame
+data: {"id":"chatcmpl-fixture-7","object":"chat.completion.chunk","model":"fixture-model","choices":[{"index":0,"delta":{"role":"assistant","content":"Answer survives the noise."},"finish_reason":null}]}
+data: {"id":"chatcmpl-fixture-7","truncated json without a closing brace
+event: ping
+data: {"id":"chatcmpl-fixture-7","object":"chat.completion.chunk","model":"fixture-model","choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}
+data: [DONE]
+data: {"id":"chatcmpl-fixture-7","object":"chat.completion.chunk","model":"fixture-model","choices":[{"index":0,"delta":{"content":" trailing after DONE"},"finish_reason":null}]}

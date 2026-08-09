@@ -6,16 +6,67 @@
 // graft (mock cultivar: no artifact pull, fast), prune, and a deliver-sprig
 // graft whose post_graft_note must surface as a visible warning toast
 // (vector-chroma: requires the local sprig registry on the docker network).
-describe('Sprigs panel', () => {
+// One spec, two implementations, chosen by the runner rather than by this
+// file. `make e2e_both` runs the whole suite once per target, so "green against
+// both" is what the gate means instead of what somebody remembered to check.
+//
+// Every assertion below reads a data-cy attribute or a message the backend
+// itself supplies — never a class name, never a phrase one implementation
+// happens to use. That is what lets one spec judge two implementations.
+import { surfacePath, isNoBuild } from '../support/surfaces';
+
+const PANEL = surfacePath('sprigs');
+
+describe(`Sprigs panel (${PANEL})`, () => {
 	beforeEach(() => {
 		cy.loginAdmin();
-		cy.visit('/admin/sprigs');
+		cy.visit(PANEL);
 	});
 
 	it('runs in a secure context (TLS sidecar) so gated APIs are testable', () => {
 		// clipboard, crypto.subtle, service workers, getUserMedia all require
 		// this — over plain http on a non-localhost origin they silently vanish.
 		cy.window().its('isSecureContext').should('be.true');
+	});
+
+	// Without this, the spec could pass against the SPA while believing it was
+	// testing the no-build page — a green run that proves nothing, which is the
+	// failure mode the streaming spike taught us to design against. It also
+	// encodes the plan's rule for every later surface: a migrated route passes
+	// its spec with the SvelteKit bundle absent.
+	it('the no-build page ships no SvelteKit bundle', function () {
+		if (!isNoBuild()) this.skip();
+		cy.document().then((doc) => {
+			const srcs = [...doc.querySelectorAll('script[src]')].map((s) => s.getAttribute('src') ?? '');
+			expect(srcs.filter((s) => s.includes('_app/immutable')), 'SvelteKit chunks').to.be.empty;
+			expect(srcs.some((s) => s.includes('/pages/_assets/vendor/htmx.min.js')), 'htmx is all that runs')
+				.to.be.true;
+		});
+	});
+
+	// The first-paint claim, made falsifiable. The island could not do this: it
+	// shipped chrome and then fetched, so the catalog was absent from the HTML
+	// the server sent. Asserting on the RESPONSE BODY rather than the rendered
+	// page is the whole point — a browser would fill either one in.
+	it('the panel is in the HTML the server sends, not fetched afterwards', function () {
+		if (!isNoBuild()) this.skip();
+		cy.request(PANEL).then((res) => {
+			expect(res.body, 'catalog rendered server-side').to.contain('data-sprig="mock-embedding"');
+			expect(res.body).to.contain('data-cy="sprigs-grafted-count"');
+		});
+	});
+
+	// The action endpoint takes its verb from the path, so the set of reachable
+	// verbs has to be closed. It is a Literal type, which FastAPI refuses before
+	// the handler runs — this asserts that rather than trusting it, because a
+	// path param that reaches a dispatch is the shape of a nasty bug.
+	it('only graft and prune are reachable as actions', function () {
+		if (!isNoBuild()) this.skip();
+		cy.request({
+			method: 'POST',
+			url: `${PANEL}/destroy/mock-embedding`,
+			failOnStatusCode: false
+		}).then((res) => expect(res.status, 'unknown verb refused').to.eq(422));
 	});
 
 	it('renders the catalog with state badges', () => {
@@ -35,6 +86,19 @@ describe('Sprigs panel', () => {
 		// The fix-pointer phrase exists ONLY in the backend's error detail — the
 		// bare string "vector-chroma" would also match that sprig's catalog card.
 		cy.contains('Graft vector-chroma first', { timeout: 30000 }).should('exist');
+	});
+
+	// The durable half of a failure, asked for by hand: the toast fades and the
+	// page gets reloaded, but the thing that broke has not been fixed. This runs
+	// straight after the failing-graft test above, so there IS an unresolved
+	// error to find — and it reloads first, which is the whole point.
+	it('a failed graft leaves an error on the card that survives a reload', () => {
+		cy.visit(PANEL);
+		cy.get('[data-sprig="multilingual-e5-large"] [data-cy="sprig-error"]', { timeout: 20000 })
+			.should('exist')
+			// The backend's fix pointer, not a generic word — the same contract the
+			// toast holds, now held by something that does not disappear.
+			.and('contain', 'vector-chroma');
 	});
 
 	it('grafts the mock embedding cultivar and shows it rooted', () => {
@@ -68,17 +132,43 @@ describe('Sprigs panel', () => {
 		});
 	});
 
-	it('deliver-sprig graft surfaces the post-graft warning toast', () => {
-		cy.get('[data-sprig="vector-chroma"]', { timeout: 20000 }).within(() => {
-			cy.get('[data-cy="sprig-graft"]').click();
-			cy.get('[data-cy="sprig-state"]', { timeout: 180000 }).should(
-				'have.attr',
-				'data-state',
-				'delivered'
-			);
-		});
-		// The Poka-Yoke UX contract: the operator is TOLD what to do next.
-		cy.contains('Restart the Rootstock', { timeout: 10000 }).should('exist');
+	// retries:0 on purpose. This test grafts, so a retry does not re-run it — it
+	// runs a DIFFERENT test against already-delivered state, where the Graft
+	// button is a Prune button. That second failure ("sprig-graft never found")
+	// then masks the first, real one. Once burned: the real failure here was a
+	// missing toast, and the retry's error sent the diagnosis chasing an
+	// ordering bug that did not exist.
+	it('deliver-sprig graft surfaces the post-graft warning toast', { retries: 0 }, () => {
+		// Ask the backend what it will say, instead of hardcoding a copy of the
+		// copy. This assertion used to look for "Restart the Rootstock" — a phrase
+		// the product stopped emitting when grafting became restart-free — so a
+		// genuine UX improvement showed up as a failing graft test. Sourcing the
+		// text from the catalog means rewording the note can never break this,
+		// while the contract it guards (the operator is TOLD what happens next)
+		// is still enforced.
+		cy.window()
+			.then((win) =>
+				cy.request({
+					url: '/api/v1/retrieval/sprigs/catalog',
+					headers: { Authorization: `Bearer ${win.localStorage.getItem('token')}` }
+				})
+			)
+			.then((res) => {
+				const note = res.body?.catalog?.['vector-chroma']?.post_graft_note;
+				expect(note, 'vector-chroma declares a post_graft_note').to.be.a('string').and.not.be
+					.empty;
+
+				cy.get('[data-sprig="vector-chroma"]', { timeout: 20000 }).within(() => {
+					cy.get('[data-cy="sprig-graft"]').click();
+					cy.get('[data-cy="sprig-state"]', { timeout: 180000 }).should(
+						'have.attr',
+						'data-state',
+						'delivered'
+					);
+				});
+				// The Poka-Yoke UX contract: the operator is TOLD what happens next.
+				cy.contains(note, { timeout: 10000 }).should('exist');
+			});
 	});
 
 	// Regression: the header counter must include 'delivered' sprigs, matching the

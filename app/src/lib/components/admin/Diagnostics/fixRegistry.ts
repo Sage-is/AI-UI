@@ -5,6 +5,15 @@
 // the container), use universal_steps instead of duplicating across shape keys.
 //
 // Backend issue_type values originate in app/backend/sage_is_ai/routers/diagnostics.py.
+//
+// The DATA lives in fixRegistry.json beside this file, not in this module. Two
+// readers need it now — this component, and the server-rendered diagnostics
+// page, which has no bundler to import a .ts through. Keeping the remedies in
+// TypeScript would have meant transcribing them into Python, and a second
+// hand-typed copy of 40 remediation steps is precisely the drift this migration
+// exists to delete. The types below still describe the shape.
+
+import fixRegistryData from './fixRegistry.json';
 
 export type DeploymentShape = 'caprover' | 'docker_compose' | 'brew' | 'unknown';
 
@@ -22,226 +31,10 @@ export interface FixEntry {
 	brew_steps?: FixStep[];
 }
 
-export const fixRegistry: Record<string, FixEntry> = {
-	endpoint_unreachable: {
-		plain_english_key: 'diagnostics.fix.endpoint_unreachable.plain',
-		caprover_steps: [
-			{
-				description_key: 'diagnostics.fix.endpoint_unreachable.caprover.0',
-				ui_path: 'Admin → Settings → Connections'
-			},
-			{
-				description_key: 'diagnostics.fix.endpoint_unreachable.caprover.1'
-			},
-			{
-				description_key: 'diagnostics.fix.endpoint_unreachable.caprover.2'
-			}
-		],
-		docker_compose_steps: [
-			{
-				description_key: 'diagnostics.fix.endpoint_unreachable.docker_compose.0'
-			},
-			{
-				description_key: 'diagnostics.fix.endpoint_unreachable.docker_compose.1',
-				command: 'docker compose down && docker compose up -d'
-			}
-		],
-		brew_steps: [
-			{
-				description_key: 'diagnostics.fix.endpoint_unreachable.brew.0',
-				command: 'ai-ui stop'
-			},
-			{
-				description_key: 'diagnostics.fix.endpoint_unreachable.brew.1'
-			},
-			{
-				description_key: 'diagnostics.fix.endpoint_unreachable.brew.2',
-				command: 'ai-ui start'
-			}
-		]
-	},
-
-	endpoint_degraded: {
-		plain_english_key: 'diagnostics.fix.endpoint_degraded.plain',
-		universal_steps: [
-			{
-				description_key: 'diagnostics.fix.endpoint_degraded.universal.0'
-			},
-			{
-				description_key: 'diagnostics.fix.endpoint_degraded.universal.1'
-			}
-		]
-	},
-
-	secret_key_ephemeral: {
-		plain_english_key: 'diagnostics.fix.secret_key_ephemeral.plain',
-		caprover_steps: [
-			{
-				description_key: 'diagnostics.fix.secret_key_ephemeral.caprover.0',
-				command: 'head -c 32 /dev/random | base64',
-				ui_path: 'Apps → App Configs → Environmental Variables'
-			},
-			{
-				description_key: 'diagnostics.fix.secret_key_ephemeral.caprover.1'
-			},
-			{
-				description_key: 'diagnostics.fix.secret_key_ephemeral.caprover.2'
-			}
-		],
-		docker_compose_steps: [
-			{
-				description_key: 'diagnostics.fix.secret_key_ephemeral.docker_compose.0',
-				command: 'head -c 32 /dev/random | base64'
-			},
-			{
-				description_key: 'diagnostics.fix.secret_key_ephemeral.docker_compose.1'
-			},
-			{
-				description_key: 'diagnostics.fix.secret_key_ephemeral.docker_compose.2',
-				command: 'docker compose down && docker compose up -d'
-			}
-		],
-		brew_steps: [
-			{
-				description_key: 'diagnostics.fix.secret_key_ephemeral.brew.0',
-				command: 'head -c 32 /dev/random | base64'
-			},
-			{
-				description_key: 'diagnostics.fix.secret_key_ephemeral.brew.1'
-			},
-			{
-				description_key: 'diagnostics.fix.secret_key_ephemeral.brew.2',
-				command: 'ai-ui restart'
-			}
-		]
-	},
-
-	alembic_pending: {
-		plain_english_key: 'diagnostics.fix.alembic_pending.plain',
-		caprover_steps: [
-			{
-				description_key: 'diagnostics.fix.alembic_pending.caprover.0',
-				ui_path: 'Apps → <your-app> → Deployment → Force Rebuild & Restart'
-			}
-		],
-		docker_compose_steps: [
-			{
-				description_key: 'diagnostics.fix.alembic_pending.docker_compose.0',
-				command: 'docker compose restart'
-			}
-		],
-		brew_steps: [
-			{
-				description_key: 'diagnostics.fix.alembic_pending.brew.0',
-				command: 'ai-ui restart'
-			}
-		]
-	},
-
-	alembic_ahead: {
-		plain_english_key: 'diagnostics.fix.alembic_ahead.plain',
-		universal_steps: [
-			{
-				description_key: 'diagnostics.fix.alembic_ahead.universal.0'
-			},
-			{
-				description_key: 'diagnostics.fix.alembic_ahead.universal.1'
-			},
-			{
-				description_key: 'diagnostics.fix.alembic_ahead.universal.2'
-			}
-		]
-	},
-
-	data_not_writable: {
-		plain_english_key: 'diagnostics.fix.data_not_writable.plain',
-		caprover_steps: [
-			{
-				description_key: 'diagnostics.fix.data_not_writable.caprover.0',
-				ui_path: 'Apps → <your-app> → App Configs → Persistent Directories'
-			},
-			{
-				description_key: 'diagnostics.fix.data_not_writable.caprover.1'
-			}
-		],
-		docker_compose_steps: [
-			{
-				description_key: 'diagnostics.fix.data_not_writable.docker_compose.0'
-			},
-			{
-				description_key: 'diagnostics.fix.data_not_writable.docker_compose.1',
-				command: 'sudo chown -R 1000:1000 ./data'
-			}
-		],
-		brew_steps: [
-			{
-				description_key: 'diagnostics.fix.data_not_writable.brew.0',
-				command: 'chmod -R u+rw "$HOME/Library/Application Support/ai-ui"'
-			}
-		]
-	},
-
-	static_asset_missing: {
-		plain_english_key: 'diagnostics.fix.static_asset_missing.plain',
-		caprover_steps: [
-			{
-				description_key: 'diagnostics.fix.static_asset_missing.caprover.0',
-				ui_path: 'Apps → <your-app> → Deployment → Force Rebuild & Restart'
-			}
-		],
-		docker_compose_steps: [
-			{
-				description_key: 'diagnostics.fix.static_asset_missing.docker_compose.0',
-				command: 'docker compose pull && docker compose up -d --force-recreate'
-			}
-		],
-		brew_steps: [
-			{
-				description_key: 'diagnostics.fix.static_asset_missing.brew.0',
-				command: 'ai-ui update'
-			}
-		]
-	},
-
-	permissions_policy_invalid: {
-		plain_english_key: 'diagnostics.fix.permissions_policy_invalid.plain',
-		caprover_steps: [
-			{
-				description_key: 'diagnostics.fix.permissions_policy_invalid.caprover.0',
-				ui_path: 'Apps → <your-app> → App Configs → Environmental Variables'
-			},
-			{
-				description_key: 'diagnostics.fix.permissions_policy_invalid.caprover.1'
-			}
-		],
-		docker_compose_steps: [
-			{
-				description_key: 'diagnostics.fix.permissions_policy_invalid.docker_compose.0'
-			},
-			{
-				description_key: 'diagnostics.fix.permissions_policy_invalid.docker_compose.1',
-				command: 'docker compose down && docker compose up -d'
-			}
-		],
-		brew_steps: [
-			{
-				description_key: 'diagnostics.fix.permissions_policy_invalid.brew.0'
-			}
-		]
-	},
-
-	csp_missing: {
-		plain_english_key: 'diagnostics.fix.csp_missing.plain',
-		universal_steps: [
-			{
-				description_key: 'diagnostics.fix.csp_missing.universal.0'
-			},
-			{
-				description_key: 'diagnostics.fix.csp_missing.universal.1'
-			}
-		]
-	}
-};
+export const fixRegistry: Record<string, FixEntry> = fixRegistryData as Record<
+	string,
+	FixEntry
+>;
 
 export function getStepsFor(entry: FixEntry, shape: DeploymentShape): FixStep[] {
 	if (shape === 'caprover' && entry.caprover_steps) return entry.caprover_steps;

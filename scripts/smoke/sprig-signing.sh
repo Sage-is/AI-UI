@@ -22,7 +22,7 @@ PORT="${SPRIG_SIGNING_PORT:-8098}"; BASE="http://localhost:${PORT}"
 HERE="$(cd "$(dirname "$0")/../.." && pwd)"
 DEVKEY="$HERE/scripts/dev-keys/sprig-dev-TEST-ONLY.key"
 DEVPUB="$(sed -n 2p "$HERE/scripts/dev-keys/sprig-dev-TEST-ONLY.pub")"
-PASS=0; FAIL=0; ok(){ echo "  ✅ $1"; PASS=$((PASS+1)); }; no(){ echo "  ❌ $1"; FAIL=$((FAIL+1)); }
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/gate.sh"   # PASS/FAIL + ok/no/require
 
 cleanup(){
   # Leave the shared registry with CLEAN signatures even on an aborted run.
@@ -58,7 +58,7 @@ G(){ curl -s --max-time 300 -X POST "$BASE/api/v1/retrieval/sprigs/graft" -H "$A
 echo "== 3. signed artifact grafts (signature verified) =="
 G backup-rclone backup | jq -e '.delivered==true' >/dev/null 2>&1 \
   && ok "backup-rclone (signed) grafted under REQUIRE_SIGNED" || no "signed graft failed"
-docker logs "$ROOT" 2>&1 | grep -q "minisign OK" \
+wait_for_log "$ROOT" "minisign OK" 15 \
   && ok "supervisor logged 'minisign OK'" || no "no minisign OK in logs"
 
 echo "== 4. unsigned artifact is REFUSED =="

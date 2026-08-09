@@ -22,6 +22,14 @@
 # Large backup tgz
 *.tgz
 
+# Tracked outside git. These trees carry private working notes and are
+# mirrored by other means — they are durable records, not scratch. Git is
+# simply not the system of record for them.
+# (.claude/ is already denied by the `.*` rule at the top of this file.)
+/docs/decisions/
+/charts/
+/scripts/gates/*/baseline.json
+
 node_modules
 /app/.svelte-kit
 vite.config.js.timestamp-*
@@ -30,6 +38,14 @@ vite.config.ts.timestamp-*
 __pycache__/
 *.py[cod]
 *$py.class
+
+# complexipy drops this beside the cwd when run by hand. The gate writes it to a
+# temp directory instead — the baseline it ratchets against is
+# scripts/gates/cognitive-complexity/baseline.json, kept outside git like the
+# other gate baselines (see the block above).
+# (.complexipy_cache/ and .ruff_cache/ are already denied by the `.*` rule above.)
+complexipy-snapshot.json
+complexipy-results.json
 
 # Pyodide distribution
 app/static/pyodide/*
@@ -73,6 +89,12 @@ docs/outreach/*
 # optional REPORT=1 junit XML; no Cypress Cloud anywhere)
 app/cypress/videos
 app/cypress/screenshots
+app/cypress/reports
+app/cypress/perf-resources.json
+app/cypress/perf-plain.json
+app/cypress/perf-workshop.json
+app/cypress/perf-routes.json
+app/cypress/boot-waterfall-timing.json
 
 # Decision records (not public - only for internal team use)
 !docs/decisions/README.md

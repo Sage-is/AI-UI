@@ -189,6 +189,10 @@ async def update_password(
         user = Auths.authenticate_user(session_user.email, form_data.password)
 
         if user:
+            if len(form_data.new_password) < 8:
+                raise HTTPException(400, detail=ERROR_MESSAGES.PASSWORD_TOO_SHORT)
+            if len(form_data.new_password.encode("utf-8")) > 72:
+                raise HTTPException(400, detail=ERROR_MESSAGES.PASSWORD_TOO_LONG)
             hashed = get_password_hash(form_data.new_password)
             return Auths.update_user_password_by_id(user.id, hashed)
         else:
@@ -233,6 +237,10 @@ async def claim_account(
         raise HTTPException(400, detail=ERROR_MESSAGES.EMAIL_TAKEN)
 
     # Update password so they can log in again
+    if len(form_data.password) < 8:
+        raise HTTPException(400, detail=ERROR_MESSAGES.PASSWORD_TOO_SHORT)
+    if len(form_data.password.encode("utf-8")) > 72:
+        raise HTTPException(400, detail=ERROR_MESSAGES.PASSWORD_TOO_LONG)
     hashed = get_password_hash(form_data.password)
     Auths.update_user_password_by_id(session_user.id, hashed)
 
@@ -306,7 +314,7 @@ async def claim_account(
 ############################
 @router.post("/ldap", response_model=SessionUserResponse)
 async def ldap_auth(request: Request, response: Response, form_data: LdapForm):
-    ENABLE_LDAP = request.app.state.config.ENABLE_LDAP
+    ENABLE_LDAP = request.app.state.config.ENABLE_LDAP  # noqa: F811
     LDAP_SERVER_LABEL = request.app.state.config.LDAP_SERVER_LABEL
     LDAP_SERVER_HOST = request.app.state.config.LDAP_SERVER_HOST
     LDAP_SERVER_PORT = request.app.state.config.LDAP_SERVER_PORT
@@ -613,7 +621,7 @@ async def signin(request: Request, response: Response, form_data: SigninForm):
             if group_names:
                 Groups.sync_groups_by_group_names(user.id, group_names)
 
-    elif WEBUI_AUTH == False:
+    elif WEBUI_AUTH == False:  # noqa: E712
         admin_email = "admin@localhost"
         admin_password = "admin"
 
@@ -715,6 +723,15 @@ async def signup(request: Request, response: Response, form_data: SignupForm):
         role = (
             "admin" if user_count == 0 else request.app.state.config.DEFAULT_USER_ROLE
         )
+
+        # Enforce a minimum password length for real signups. Skip when
+        # WEBUI_AUTH is disabled, where signup() is reused to bootstrap the
+        # built-in admin account with a short default password.
+        if WEBUI_AUTH and len(form_data.password) < 8:
+            raise HTTPException(
+                status.HTTP_400_BAD_REQUEST,
+                detail=ERROR_MESSAGES.PASSWORD_TOO_SHORT,
+            )
 
         # The password passed to bcrypt must be 72 bytes or fewer. If it is longer, it will be truncated before hashing.
         if len(form_data.password.encode("utf-8")) > 72:

@@ -1,0 +1,87 @@
+{# Sign-in providers. OAuth cards, magic link, and the sign-up toggles.
+
+   SECRETS RENDER EMPTY. The field carries `data-stored` and a placeholder that
+   reports EXISTENCE, never the value — the Svelte panel loaded both OAuth
+   client secrets and the SMTP password into its inputs, where they sat in the
+   reader's browser. Leaving one blank keeps what is stored.
+
+   EVERY checkbox renders every time. The old panel hid "Allow OAuth Signup"
+   until sign-ups were on and a provider was configured, and a hidden checkbox
+   posts nothing — which this form reads as off. Hiding one would silently clear
+   it on the next Save. #}
+{% from "_macros.html" import submit, saved %}
+{% set card_s = "outline:1px solid var(--line); --br:.6rem; --m:0 0 .6rem; --p:0" %}
+{% set summary_s = "--p:.7rem .8rem; --cur:pointer; --size:.85rem; --weight:500" %}
+{% set inner_s = "--p:0 .8rem .8rem" %}
+{% set label_s = "--size:.72rem; --weight:500; --d:block; --m:.5rem 0 .15rem" %}
+{% set input_s = "--w:100%; --bxs:border-box; --p:.4rem .6rem; --size:.78rem; --br:.4rem; outline:1px solid var(--line); --bgc:transparent; --c:inherit" %}
+{% set help_s = "--size:.7rem; --op:.7; --lh:1.5; --m:.35rem 0 0" %}
+{% set row_s = "--d:flex; --ai:start; --g:.6rem; --p:.6rem; --br:.5rem; outline:1px solid var(--line); --m:0 0 .4rem; --cur:pointer" %}
+{% set badge_s = "--size:.6rem; --weight:600; --tt:uppercase; --ml:.4rem; --p:.1rem .3rem; --br:.25rem; outline:1px solid var(--line)" %}
+{% set group_s = " --p:0; --m:1.25rem 0; --border:0" %}
+
+{% macro field(f) -%}
+{% if f.secret %}
+<input data-cy="{{ f.hook }}" type="password" name="{{ f.name }}" value=""
+       autocomplete="new-password" data-stored="{{ 'true' if f.stored else 'false' }}"
+       placeholder="{{ f.placeholder }}" style="{{ input_s }}" />
+{% else %}
+<input data-cy="{{ f.hook }}" type="{{ f.kind }}" name="{{ f.name }}"
+       value="{{ f.value }}" placeholder="{{ f.placeholder }}" style="{{ input_s }}" />
+{% endif %}
+{%- endmacro %}
+
+<section data-cy="auth-panel">
+  <form method="post" action="/pages/admin/setup/auth/save{{ lang }}">
+    {% for card in providers %}
+    <details data-cy="{{ card.hook }}" style="{{ card_s }}"{% if card.configured %} open{% endif %}>
+      <summary style="{{ summary_s }}">{{ card.label }}{% if card.configured %}<small style="{{ badge_s }}">{{ configured_label }}</small>{% endif %}</summary>
+      <div style="{{ inner_s }}">
+        <p style="{{ help_s }}">
+          <a href="{{ card.url }}" target="_blank" rel="noopener">{{ card.link }} &#8599;</a>
+          &mdash; {{ card.how }}
+          {% if card.callback %}
+          {{ callback_label }} <code style="--size:.68rem; --p:.1rem .3rem; --br:.25rem; outline:1px solid var(--line); --wb:break-all">{{ card.callback }}</code>
+          {% endif %}
+        </p>
+        <label style="{{ label_s }}">{{ client_id_label }}</label>
+        {{ field(card.id_field) }}
+        <label style="{{ label_s }}">{{ client_secret_label }}</label>
+        {{ field(card.secret_field) }}
+      </div>
+    </details>
+    {% endfor %}
+
+    <details data-cy="auth-magic-link-card" style="{{ card_s }}"{% if magic.on %} open{% endif %}>
+      <summary style="{{ summary_s }}">{{ magic.title }}<small style="{{ badge_s }}">{{ beta_label }}</small>{% if magic.configured %}<small style="{{ badge_s }}">{{ configured_label }}</small>{% endif %}</summary>
+      <div style="{{ inner_s }}">
+        <p style="{{ help_s }}">{{ magic.help }}</p>
+        <label style="{{ row_s }}">
+          <input data-cy="{{ magic.hook }}" type="checkbox" name="ENABLE_MAGIC_LINK_LOGIN" value="1"{% if magic.on %} checked{% endif %} />
+          <span><span style="--size:.82rem; --weight:500">{{ magic.enable_label }}</span></span>
+        </label>
+        {% for f in magic.fields %}
+        <label style="{{ label_s }}">{{ f.label }}</label>
+        {{ field(f) }}
+        {% endfor %}
+      </div>
+    </details>
+
+    <fieldset>
+      <legend style="--size:.85rem; --weight:600; --p:0">{{ legend }}</legend>
+      {% for t in toggles %}
+      <label style="{{ row_s }}">
+        <input data-cy="{{ t.hook }}" type="checkbox" name="{{ t.key }}" value="1"{% if t.on %} checked{% endif %} />
+        <span>
+          <span style="--size:.82rem; --weight:500">{{ t.label }}</span>
+          <small style="--size:.7rem; --op:.7; --d:block">{{ t.caption }}</small>
+        </span>
+      </label>
+      {% endfor %}
+    </fieldset>
+    {{ submit("auth-save", save_label) }}
+    {% if note %}
+    {{ saved("auth-saved", note) }}
+    {% endif %}
+  </form>
+</section>

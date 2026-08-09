@@ -47,7 +47,7 @@ async def get_functions(user=Depends(get_verified_user)):
 
 
 @router.get("/export", response_model=list[FunctionModel])
-async def get_functions(user=Depends(get_admin_user)):
+async def get_functions(user=Depends(get_admin_user)):  # noqa: F811
     return Functions.get_functions()
 
 

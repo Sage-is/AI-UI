@@ -2,6 +2,7 @@ import { WEBUI_API_BASE_URL } from '$lib/constants';
 
 type SpaceForm = {
 	name: string;
+	description?: string;
 	data?: object;
 	meta?: object;
 	access_control?: object;

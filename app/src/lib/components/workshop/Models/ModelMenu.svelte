@@ -47,7 +47,7 @@
 			align="start"
 			transition={flyAndScale}
 		>
-			<DropdownMenu.Item
+			<DropdownMenu.Item data-cy="agents-menu-hide"
 				style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem"
 				on:click={() => {
 					hideHandler();
@@ -68,7 +68,7 @@
 				</div>
 			</DropdownMenu.Item>
 
-			<DropdownMenu.Item
+			<DropdownMenu.Item data-cy="agents-menu-copy-link"
 				style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem"
 				on:click={() => {
 					copyLinkHandler();
@@ -80,7 +80,7 @@
 			</DropdownMenu.Item>
 
 			{#if $config?.features.enable_community_sharing}
-				<DropdownMenu.Item
+				<DropdownMenu.Item data-cy="agents-menu-share"
 					style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem"
 					on:click={() => {
 						shareHandler();
@@ -91,7 +91,7 @@
 				</DropdownMenu.Item>
 			{/if}
 
-			<DropdownMenu.Item
+			<DropdownMenu.Item data-cy="agents-menu-clone"
 				style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem"
 				on:click={() => {
 					cloneHandler();
@@ -102,7 +102,7 @@
 				<div style="--d:flex; --ai:center">{$i18n.t('Clone')}</div>
 			</DropdownMenu.Item>
 
-			<DropdownMenu.Item
+			<DropdownMenu.Item data-cy="agents-menu-export"
 				style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem"
 				on:click={() => {
 					exportHandler();
@@ -115,7 +115,7 @@
 
 			<hr style="--bc:var(--color-gray-100); --dark-bc:var(--color-gray-850); --my:0.2rem" />
 
-			<DropdownMenu.Item
+			<DropdownMenu.Item data-cy="agents-menu-delete"
 				style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem"
 				on:click={() => {
 					deleteHandler();

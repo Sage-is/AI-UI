@@ -80,10 +80,13 @@ def remove_open_webui_params(params: dict) -> dict:
     return params
 
 
-# inplace function: form_data is modified
-def apply_model_params_to_body_openai(params: dict, form_data: dict) -> dict:
-    params = remove_open_webui_params(params)
+def merge_custom_params(params: dict) -> dict:
+    """Pop `custom_params`, JSON-parse its string values, deep-merge into params.
 
+    Extracted from three verbatim copies (both apply_model_params_to_body_*
+    variants and the chat-path middleware). Only json.JSONDecodeError is
+    swallowed — a deliberate part of the contract.
+    """
     custom_params = params.pop("custom_params", {})
     if custom_params:
         # Attempt to parse custom_params if they are strings
@@ -98,6 +101,13 @@ def apply_model_params_to_body_openai(params: dict, form_data: dict) -> dict:
 
         # If there are custom parameters, we need to apply them first
         params = deep_update(params, custom_params)
+    return params
+
+
+# inplace function: form_data is modified
+def apply_model_params_to_body_openai(params: dict, form_data: dict) -> dict:
+    params = remove_open_webui_params(params)
+    params = merge_custom_params(params)
 
     mappings = {
         "temperature": float,
@@ -117,21 +127,7 @@ def apply_model_params_to_body_openai(params: dict, form_data: dict) -> dict:
 
 def apply_model_params_to_body_ollama(params: dict, form_data: dict) -> dict:
     params = remove_open_webui_params(params)
-
-    custom_params = params.pop("custom_params", {})
-    if custom_params:
-        # Attempt to parse custom_params if they are strings
-        for key, value in custom_params.items():
-            if isinstance(value, str):
-                try:
-                    # Attempt to parse the string as JSON
-                    custom_params[key] = json.loads(value)
-                except json.JSONDecodeError:
-                    # If it fails, keep the original string
-                    pass
-
-        # If there are custom parameters, we need to apply them first
-        params = deep_update(params, custom_params)
+    params = merge_custom_params(params)
 
     # Convert OpenAI parameter names to Ollama parameter names if needed.
     name_differences = {

@@ -153,7 +153,64 @@ build-backend = "hatchling.build"
 
 [tool.rye]
 managed = true
-dev-dependencies = []
+dev-dependencies = [
+    # Gate tools. Not shipped in the image — the ruff and cognitive-complexity
+    # gates read source and import nothing from the application, so they run on
+    # the host in under a second. `black` is NOT here: it stays a runtime
+    # dependency above because routers/utils.py imports it for the code
+    # formatting endpoint. Ruff replaces it as the format checker only.
+    "ruff==0.16.1",
+    "complexipy==6.2.0",
+]
+
+# ---------------------------------------------------------------------------
+# ruff — linter and format checker for the backend
+# ---------------------------------------------------------------------------
+# Adopted 2026-08-06. Ruff found the one undefined name in 200+ backend files in
+# 40 milliseconds: the frozen chat_web_search_handler NameError recorded at
+# TODO.md:601. Nothing else in the repo reads Python semantics — bandit reads
+# security, black reads formatting, and the chat-path ratchet reads six shapes of
+# one file.
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+# Relative to this file (app/), which is where ruff resolves them from.
+extend-exclude = [".venv", "venv", "build", "data", "static/pyodide"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
+
+# Every rule below currently fires somewhere in the backend. They are ignored
+# wholesale rather than grandfathered line by line because each one is either a
+# deliberate convention or a debt item too large to clear in the same commit that
+# turns the gate on. Everything else in the selected set is enforced now, with
+# the 49 existing violations carrying an explicit `# noqa` naming the rule.
+ignore = [
+    # 93 sites. Imports placed after configuration or after a sys.path edit. A
+    # convention in this codebase, not an accident.
+    "E402",
+    # 13 sites. `f = lambda x: ...` instead of `def`. Stylistic, no defect.
+    "E731",
+    # 248 sites, and the largest single cleanup available in the backend. It
+    # earns its own commit and a full gauntlet run, because an unused import is
+    # sometimes a re-export and sometimes a side effect.
+    "F401",
+    # 37 sites, 8 of them in utils/middleware.py — whose line numbers are
+    # anchored by nine fences in scripts/gates/chat-path-structure/baseline.json
+    # and 64 citations across the charts. Removing a binding there shifts every
+    # one of them. Sequenced after the chart's [Re-tighten and re-point] card.
+    "F841",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# A name imported into a package __init__ and not used there is the definition
+# of a re-export.
+"**/__init__.py" = ["F401"]
+# SQLAlchemy and peewee overload __eq__ to build SQL. `Chat.pinned == False`
+# compiles to `pinned = false`; `not Chat.pinned` evaluates in Python and
+# silently returns every row. `is None` breaks `IS NULL` the same way. Ruff
+# offers these only as unsafe fixes, and it is right to.
+"**/models/*.py" = ["E711", "E712"]
 
 [tool.hatch.metadata]
 allow-direct-references = true

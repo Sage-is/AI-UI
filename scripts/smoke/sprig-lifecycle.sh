@@ -11,7 +11,7 @@ set -uo pipefail
 IMG="${1:-sage-is/ai-ui:develop}"
 NET="${SPRIG_SMOKE_NET:-sage-network}"; ROOT="${SPRIG_SMOKE_NAME:-sage-wolfi}"; VOL="${ROOT}-data"
 PORT="${SPRIG_SMOKE_PORT:-8099}"; BASE="http://localhost:${PORT}"
-PASS=0; FAIL=0; ok(){ echo "  ✅ $1"; PASS=$((PASS+1)); }; no(){ echo "  ❌ $1"; FAIL=$((FAIL+1)); }
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/gate.sh"   # PASS/FAIL + ok/no/require
 X(){ docker exec "$ROOT" sh -lc "$1"; }
 
 echo "== fresh 8.I.2 rootstock =="
@@ -32,9 +32,41 @@ echo "$WCT" | grep -q wasm && no "real wasm still shipped" || ok "wasm not shipp
 
 TOK=$(curl -s -X POST "$BASE/api/v1/auths/signup" -H 'Content-Type: application/json' -d '{"name":"S8","email":"s8@sage.is","password":"sprig-smoke-pw-123"}' | jq -r '.token // empty')
 AUTH="Authorization: Bearer $TOK"; [ -n "$TOK" ] && ok "admin signup (PyJWT alive)" || { no "signup"; exit 1; }
+# Re-sign-in and refresh the shared $TOK/$AUTH. The gate holds ONE session across
+# a chain of grafts that each block up to 600s, so a JWT minted at signup can age
+# out mid-run (seen 2026-07-19: section 2f's theme grafts 401'd with "session has
+# expired" after the 2b/2d/2e pulls, cascading 5 failures). Any long section can
+# hit this; G() self-heals below, and section 4 also re-auths explicitly.
+reauth(){
+  TOK=$(curl -s -X POST "$BASE/api/v1/auths/signin" -H 'Content-Type: application/json' -d '{"email":"s8@sage.is","password":"sprig-smoke-pw-123"}' | jq -r '.token // empty')
+  AUTH="Authorization: Bearer $TOK"
+}
 # 600s ceiling: by section 9 the rootstock runs several grafted server children
 # while pulling the biggest artifacts (dev-svelte ~1.1GB) — 300s flaked under load.
-G(){ curl -s --max-time 600 -X POST "$BASE/api/v1/retrieval/sprigs/graft" -H "$AUTH" -H 'Content-Type: application/json' -d "{\"name\":\"$1\",\"capability\":\"$2\"}"; }
+# On an expired-token response, refresh $AUTH once and retry — the refreshed token
+# is global, so the rest of the section rides the fresh session too.
+G(){
+  local r
+  r=$(curl -s --max-time 600 -X POST "$BASE/api/v1/retrieval/sprigs/graft" -H "$AUTH" -H 'Content-Type: application/json' -d "{\"name\":\"$1\",\"capability\":\"$2\"}")
+  if printf '%s' "$r" | grep -qiE 'session has expired|token is invalid'; then
+    reauth
+    r=$(curl -s --max-time 600 -X POST "$BASE/api/v1/retrieval/sprigs/graft" -H "$AUTH" -H 'Content-Type: application/json' -d "{\"name\":\"$1\",\"capability\":\"$2\"}")
+  fi
+  printf '%s' "$r"
+}
+# Authed GET that self-heals on an expired/invalid token, same as G(). Direct
+# authed reads (e.g. the wizard status poll) are otherwise a false-error source:
+# a stale token returns a 401 body that a bare `jq -e ... >/dev/null` misreads as
+# the asserted-for value being absent. Returns the (possibly re-fetched) body.
+QG(){
+  local r
+  r=$(curl -s -H "$AUTH" "$1")
+  if printf '%s' "$r" | grep -qiE 'session has expired|token is invalid'; then
+    reauth
+    r=$(curl -s -H "$AUTH" "$1")
+  fi
+  printf '%s' "$r"
+}
 PDF(){ curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE/api/v1/utils/pdf" -H "$AUTH" -H 'Content-Type: application/json' -d '{"title":"t","messages":[{"role":"user","content":"hello sprig"}]}'; }
 
 echo "== 2. clean degradation pre-graft =="
@@ -83,24 +115,33 @@ echo "$SDIRECT" | jq -e 'has("text")' >/dev/null 2>&1 && ok "whisper-server answ
 # otherwise send application/octet-stream -> 400 before reaching the sprig.
 SAPP=$(X "curl -s -o /dev/null -w '%{http_code}' -X POST http://localhost:8080/api/v1/audio/transcriptions -H '$AUTH' -F 'file=@/tmp/gate.wav;type=audio/wav'")
 [ "$SAPP" = "200" ] && ok "app /audio/transcriptions 200 through the grafted sprig" || no "app transcription: HTTP $SAPP"
-curl -s "$BASE/api/v1/retrieval/models/status" -H "$AUTH" | jq -e '.models.whisper=="ready" or .whisper=="ready"' >/dev/null 2>&1 \
-  && ok "wizard whisper status ready (HF download skippable)" || no "whisper status not ready post-graft"
+# Poll (self-healing auth): the wizard status flips when stt dispatch points at
+# the graft; give it a few tries so a propagation lag can't false-fail, and dump
+# the real status object if it genuinely never flips.
+WHOK=0; WS=""
+for _ in $(seq 1 8); do
+  WS=$(QG "$BASE/api/v1/retrieval/models/status")
+  echo "$WS" | jq -e '.models.whisper=="ready" or .whisper=="ready"' >/dev/null 2>&1 && { WHOK=1; break; }
+  sleep 1
+done
+[ "$WHOK" = 1 ] && ok "wizard whisper status ready (HF download skippable)" \
+  || no "whisper status not ready post-graft: $(echo "$WS" | jq -c '.models // .' 2>/dev/null | head -c 200)"
 
 echo "== 2f. theme cultivar: design tokens served at /themes/active.css =="
-curl -s "$BASE/themes/active.css" | grep -q 'no theme grafted' \
+fetch_has "$BASE/themes/active.css" "no theme grafted" \
   && ok "active.css serves the empty default pre-graft" || no "default theme sheet wrong"
 TB=$(G theme-workshop-bio theme)
 echo "$TB" | jq -e '.delivered==true' >/dev/null 2>&1 && ok "bio theme grafts (deliver, no process)" || no "theme graft: $(echo "$TB" | head -c 200)"
-curl -s "$BASE/themes/active.css" | grep -q 'sprig-theme:workshop-bio' \
+fetch_has "$BASE/themes/active.css" "sprig-theme:workshop-bio" \
   && ok "active.css serves the bio tokens" || no "bio tokens not served"
 G theme-workshop-math theme | jq -e '.delivered==true' >/dev/null 2>&1 \
   && ok "math theme grafts over bio" || no "math theme graft failed"
-curl -s "$BASE/themes/active.css" | grep -q 'sprig-theme:workshop-math' \
+fetch_has "$BASE/themes/active.css" "sprig-theme:workshop-math" \
   && ok "last grafted theme wins the active pointer" || no "active theme did not swap"
 PTM=$(curl -s -X POST "$BASE/api/v1/retrieval/sprigs/prune" -H "$AUTH" -H 'Content-Type: application/json' -d '{"name":"theme-workshop-math"}')
 echo "$PTM" | jq -e '.theme_reset==true' >/dev/null 2>&1 \
   && ok "pruning the active theme resets the pointer" || no "theme prune reset: $(echo "$PTM" | head -c 150)"
-curl -s "$BASE/themes/active.css" | grep -q 'no theme grafted' \
+fetch_has "$BASE/themes/active.css" "no theme grafted" \
   && ok "default look restored post-prune" || no "stale theme after prune"
 G theme-workshop-bio theme | jq -e '.delivered==true' >/dev/null 2>&1 \
   && ok "bio re-grafted for the restart check" || no "bio re-graft failed"
@@ -120,7 +161,7 @@ echo "$RCFG2" | jq -e '.RAG_RERANKING_ENGINE=="external"' >/dev/null 2>&1 \
 ACFG2=$(curl -s "$BASE/api/v1/audio/config" -H "$AUTH")
 echo "$ACFG2" | jq -e '.stt.ENGINE=="openai" and (.stt.OPENAI_API_BASE_URL|startswith("http://127.0.0.1"))' >/dev/null 2>&1 \
   && ok "stt re-pointed by boot reconcile" || no "stt config lost across restart: $(echo "$ACFG2" | jq -c '.stt' 2>/dev/null | head -c 150)"
-curl -s "$BASE/themes/active.css" | grep -q 'sprig-theme:workshop-bio' \
+fetch_has "$BASE/themes/active.css" "sprig-theme:workshop-bio" \
   && ok "active theme survives restart (volume css + persisted pointer)" || no "theme lost across restart"
 X 'python3 -c "import chromadb, numpy, tokenizers, huggingface_hub"' && ok "chromadb + numpy + tokenizers + hf via overlay" || no "overlay imports failed"
 
@@ -139,9 +180,10 @@ Q=$(curl -s -X POST "$BASE/api/v1/retrieval/query/collection" -H "$AUTH" -H 'Con
 echo "$Q" | jq -e '(.distances|length)>0' >/dev/null 2>&1 && ok "query round-trip" || no "query failed"
 
 echo "== 6. e5-large now grafts (runtime via vector-chroma v2) =="
-G multilingual-e5-large embedding | jq -e '.status==true' >/dev/null 2>&1 && ok "e5-large grafts" || no "e5 graft failed"
+E5G=$(G multilingual-e5-large embedding)
+echo "$E5G" | jq -e '.status==true' >/dev/null 2>&1 && ok "e5-large grafts" || no "e5 graft failed: $(echo "$E5G" | head -c 200)"
 PT=$(curl -s -X POST "$BASE/api/v1/retrieval/process/text" -H "$AUTH" -H 'Content-Type: application/json' -d '{"name":"e","content":"onnx on the slim rootstock","collection_name":"e5col"}')
-echo "$PT" | jq -e '.status==true' >/dev/null 2>&1 && ok "1024-dim embed through onnx server" || no "e5 embed failed"
+echo "$PT" | jq -e '.status==true' >/dev/null 2>&1 && ok "1024-dim embed through onnx server" || no "e5 embed failed: $(echo "$PT" | head -c 200)"
 
 echo "== 6b. live top-graft swap: onnx -> gguf, same width, RAG keeps working =="
 G e5-large-gguf embedding | jq -e '.status==true' >/dev/null 2>&1 && ok "top-graft onnx->gguf" || no "gguf top-graft failed"
@@ -173,13 +215,27 @@ WCT=$(curl -s -o /dev/null -w '%{http_code} %{content_type}' "$BASE/wasm/ort-was
 echo "$WCT" | grep -q "200.*wasm" && ok "/wasm/ serves REAL wasm post-graft" || no "wasm wrong after graft: $WCT"
 
 echo "== 9. binaries + dev toolchain still deliver =="
-G media-ffmpeg media | jq -e '.delivered==true' >/dev/null 2>&1 && ok "media-ffmpeg" || no "ffmpeg delivery"
-G backup-rclone backup | jq -e '.delivered==true' >/dev/null 2>&1 && ok "backup-rclone" || no "rclone delivery"
-G dev-svelte dev | jq -e '.delivered==true' >/dev/null 2>&1 && ok "dev-svelte" || no "dev-svelte delivery"
+FF=$(G media-ffmpeg media); echo "$FF" | jq -e '.delivered==true' >/dev/null 2>&1 && ok "media-ffmpeg" || no "ffmpeg delivery: $(echo "$FF" | head -c 200)"
+RC=$(G backup-rclone backup); echo "$RC" | jq -e '.delivered==true' >/dev/null 2>&1 && ok "backup-rclone" || no "rclone delivery: $(echo "$RC" | head -c 200)"
+DS=$(G dev-svelte dev); echo "$DS" | jq -e '.delivered==true' >/dev/null 2>&1 && ok "dev-svelte" || no "dev-svelte delivery: $(echo "$DS" | head -c 200)"
 
 echo "== 10. UI serves to a fresh admin =="
-curl -s "$BASE/" | grep -qi "html" && ok "/ serves SPA" || no "SPA broken"
-[ "$(curl -s -o /dev/null -w '%{http_code}' "$BASE/static/icons/favicon.svg")" = "200" ] && ok "favicon" || no "favicon broken"
+fetch_has "$BASE/" "[Hh][Tt][Mm][Ll]" && ok "/ serves SPA" || no "SPA broken"
+# Assert the icons `app/src/app.html` DECLARES, not one somebody remembers.
+#
+# This asked for `favicon.svg` until 2026-08-09, and that file was deleted on
+# 2026-08-02 — deliberately, because it was 203 kB of two 2036x2040 PNGs
+# base64-embedded in an SVG wrapper, fetched to draw a 16-pixel tab icon. So the
+# gate spent a week failing on the absence of something nobody wanted, which is
+# the worst kind: it blocks every push while checking nothing true.
+#
+# Keep this list in step with the `<link rel="icon">` tags in app.html. An icon
+# that is linked and missing is a broken tab; an icon that is neither is not
+# this gate's business.
+for ICON in favicon-96x96.png favicon.ico apple-touch-icon.png; do
+  [ "$(curl -s -o /dev/null -w '%{http_code}' "$BASE/static/icons/$ICON")" = "200" ] \
+    && ok "favicon $ICON" || no "favicon $ICON missing — app.html links it"
+done
 
 echo ""
 echo "================  8.I.2 RESULT: ${PASS} passed, ${FAIL} failed  ================"
