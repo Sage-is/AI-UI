@@ -639,7 +639,7 @@ gauntlet: it_build sprig_smoke
 # place: it is the only member that judges what the migration CLAIMS — that a
 # server-rendered surface is lighter than the SvelteKit one it replaces — rather
 # than whether the code runs.
-gauntlet_full: pipefail_lint pipefail_fixture ruff_gate cognitive_complexity chat_path_structure sprig_capabilities_check startr_swap_check reasoning_finalizer_fixture serialize_blocks_fixture tool_call_accumulator_fixture chat_response_oracle gauntlet sprig_durability sprig_signing ui_sprig_gate parity_gate e2e_both surface_budget
+gauntlet_full: pipefail_lint pipefail_fixture ruff_gate cognitive_complexity chat_path_structure sprig_capabilities_check startr_swap_check reasoning_finalizer_fixture serialize_blocks_fixture tool_call_accumulator_fixture distribution_heal_fixture chat_response_oracle gauntlet sprig_durability sprig_signing ui_sprig_gate parity_gate e2e_both surface_budget
 
 ## it_build_amd64 — build an amd64 image via buildx + --load.
 ##
@@ -819,6 +819,14 @@ verify_ghcr_manifest:  ## Assert the pushed GHCR image is a present, multi-arch 
 # Prove the manifest guard's logic against known public images (no push needed)
 manifest_verify_fixture:  ## Fixture: exercise verify-image-manifest.sh (good/single-arch/absent)
 	@scripts/smoke/manifest-verify-fixture.sh
+
+# Prove distribution_heal resolves a severed hardlink chain by itself: newest
+# SERVER_TAG wins, propagation is forward only, and the target never exits
+# non-zero. Runs against throwaway files in a temp directory — the three sibling
+# path variables are `?=`, so the real repos are never touched. The older-side
+# no-op is the row that matters: it is what keeps release_finish alive.
+distribution_heal_fixture:  ## Fixture: distribution_heal — newest wins, forward only, never fails
+	@python3 scripts/smoke/distribution-heal-fixture.py
 
 # Reproduce the reasoning-tag defects that swallow or leak the model's answer.
 #
@@ -1654,60 +1662,80 @@ distribution_verify:
 	done; \
 	echo "OK: distribution.env hardlink chain intact ($$expected links)."
 
-# Self-heal the hardlink chain when a git operation (checkout / merge /
-# rebase / amend) has rewritten distribution.env in place. Direction is the
-# inverse of distribution_sync: we trust this repo's distribution.env as the
-# new canonical because that's what git just wrote. Siblings get re-linked
-# to it. If a sibling holds *different* content, we WARN and exit clean —
-# silent overwrite of a divergent sibling would mask drift.
+# Repair the distribution.env hardlink chain after a git operation (checkout /
+# merge / rebase / amend) rewrote the file in place.
 #
-# Silent on the happy path: most checkouts don't touch distribution.env, so
-# the inode survives and the chain is intact.
-# Heal is ADVISORY and must never fail a checkout. It runs from pre-commit on
-# post-checkout/post-merge/post-rewrite, and git propagates a non-zero hook to
-# `git checkout` itself -- which `set -e` inside finish_flow then treats as a
-# dead release. That is not hypothetical: it stopped 3.1.0 halfway, with master
-# merged and develop not.
+# distribution.env is ONE file with three names -- a single inode with directory
+# entries in AI-UI, homebrew-apps and WEB-Sage.Education-docs. A hardlink has no
+# original. While the link holds there is no ownership question to answer. Once
+# git severs it there are three independent files and no repo has standing to
+# overrule another; DIST_SOURCE is merely the path this Makefile reads at
+# startup, not an authority. So a break cannot be settled by asking who owns the
+# file. Only the content can settle it, and the content carries a version.
 #
-# A hardlink CANNOT survive `git checkout` across a branch where the file's
-# content differs -- git writes a new file, which is a new inode, by definition.
-# So a broken chain mid-release is the expected state, not damage. Warn, relink
-# what is safe to relink, and let the operator through. `distribution_verify`
-# stays the strict gate and is still wired into release_finish/hotfix_finish.
+# The rule: NEWEST WINS, FORWARD ONLY.
 #
-# One shell, deliberately: this target previously ran as separate recipe lines,
-# so its `exit 0` on the diverged path exited only that line and Make carried on
-# into the final verify -- the target announced it was not failing, then failed.
+#   links intact                 -> silent, exit 0
+#   cut, content equal           -> relink peers
+#   cut, this repo's tag NEWER   -> this repo wins, relink peers
+#   cut, this repo's tag OLDER   -> no-op; the merge brings this repo forward
+#                                   and the post-merge run relinks
+#   cut, same tag, other content -> no-op; nothing to rank on, so do not guess
+#
+# Two constraints are load-bearing. Undo either and the release breaks again.
+#
+# 1. NEWEST MEANS HIGHEST VERSION, NEVER NEWEST MTIME. `git checkout` stamps the
+#    file it writes with the current time, so the STALE content is always the
+#    freshest file on disk. A timestamp comparison picks the wrong side every
+#    single time.
+#
+# 2. NEVER WRITE INTO THIS REPO'S WORKTREE. Heal fires from a hook in the repo
+#    that just checked out. Writing the newer value in here dirties a file the
+#    next `git merge` must touch, and git refuses with "Your local changes would
+#    be overwritten by merge" -- a hard stop where there was only a warning.
+#    The older-side no-op is what keeps release_finish alive.
+#
+# The older-side no-op is also the regression guard: a checkout of an old branch
+# must never push a stale SERVER_TAG out into the other two repos.
+#
+# ADVISORY, ALWAYS -- exits 0 whatever it finds. Git propagates a non-zero
+# post-checkout hook to `git checkout` itself, and `set -e` inside finish_flow
+# reads that as a dead release. This target therefore does NOT call
+# distribution_verify; that call is what halted 3.1.0 three times. Verification
+# stays where it belongs: the distribution-chain-verify pre-commit hook, and
+# release_finish / hotfix_finish.
+#
+# One shell, deliberately. As separate recipe lines an `exit 0` ends only its
+# own line and Make carries on into the next one.
+#
+# Proof: make distribution_heal_fixture
 distribution_heal:
 	@set -e; \
-	test -f $(SIBLING_AI_UI)/distribution.env || exit 0; \
+	self=$(SIBLING_AI_UI)/distribution.env; \
+	if [ ! -f "$$self" ]; then exit 0; fi; \
 	expected=2; \
-	test -d $(SIBLING_DOCS) && expected=3; \
-	if [ -e $(DIST_SOURCE) ]; then \
-		links=$$(stat -f "%l" $(SIBLING_AI_UI)/distribution.env 2>/dev/null || \
-		         stat -c "%h" $(SIBLING_AI_UI)/distribution.env); \
-		if [ "$$links" != "$$expected" ]; then \
-			if ! cmp -s $(SIBLING_AI_UI)/distribution.env $(DIST_SOURCE); then \
-				echo ""; \
-				echo "NOTE: distribution.env chain broken and content differs — leaving both alone."; \
-				echo "  AI-UI:         $(SIBLING_AI_UI)/distribution.env"; \
-				echo "  homebrew-apps: $(DIST_SOURCE)"; \
-				echo "  Expected mid-release: a checkout rewrites the file and severs the link."; \
-				echo "  The merge that lands the new SERVER_TAG reconciles it."; \
-				echo "  To force it now: diff the two, then 'make distribution_sync'."; \
-				exit 0; \
-			fi; \
-			ln -f $(SIBLING_AI_UI)/distribution.env $(DIST_SOURCE); \
-		fi; \
-	fi; \
-	if [ -d $(SIBLING_DOCS) ] && [ -e $(SIBLING_DOCS)/distribution.env ]; then \
-		if ! cmp -s $(SIBLING_AI_UI)/distribution.env $(SIBLING_DOCS)/distribution.env; then \
-			echo "NOTE: $(SIBLING_DOCS)/distribution.env differs; leaving alone."; \
+	if [ -d $(SIBLING_DOCS) ]; then expected=3; fi; \
+	links=$$(stat -f "%l" "$$self" 2>/dev/null || stat -c "%h" "$$self"); \
+	if [ "$$links" = "$$expected" ]; then exit 0; fi; \
+	mine=$$(grep -E '^SERVER_TAG=' "$$self" 2>/dev/null | head -1 | cut -d= -f2); \
+	held=""; \
+	for peer in $(DIST_SOURCE) $(SIBLING_DOCS)/distribution.env; do \
+		if [ ! -e "$$peer" ]; then continue; fi; \
+		if cmp -s "$$self" "$$peer"; then ln -f "$$self" "$$peer"; continue; fi; \
+		theirs=$$(grep -E '^SERVER_TAG=' "$$peer" 2>/dev/null | head -1 | cut -d= -f2); \
+		newest=$$(printf '%s\n%s\n' "$$mine" "$$theirs" \
+		          | sort -t. -k1,1n -k2,2n -k3,3n | tail -1); \
+		if [ -n "$$mine" ] && [ "$$mine" != "$$theirs" ] && [ "$$newest" = "$$mine" ]; then \
+			ln -f "$$self" "$$peer"; \
 		else \
-			ln -f $(SIBLING_AI_UI)/distribution.env $(SIBLING_DOCS)/distribution.env; \
+			held="$$held $$peer"; \
 		fi; \
+	done; \
+	if [ -n "$$held" ]; then \
+		echo "distribution.env: holding at SERVER_TAG=$$mine; a newer copy exists in:$$held"; \
+		echo "  A checkout severed the link. The merge that lands the newer tag reconciles it."; \
 	fi; \
-	$(MAKE) -s distribution_verify || true
+	exit 0
 
 # Rewrites SERVER_TAG in distribution.env while preserving the inode (so the
 # hardlink chain stays intact) and verifies the chain afterward. `perl -i` /
