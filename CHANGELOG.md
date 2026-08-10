@@ -6,7 +6,30 @@ All notable changes to [Sage.is AI-UI](https://github.com/Sage-is/AI-UI) are doc
 
 ## [Unreleased]
 
+## [3.1.0] — 2026-08-09
+
 ### Added
+
+**A calendar, on the dashboard and on its own page**
+The home screen carries calendar card: the month as a grid of dots, and what is coming up as a list. A full page sits behind it with the month, the agenda, and controls to walk backwards and forwards. Weeks start on Sunday.
+
+Two people on one instance see different calendars. Administrators shares the feeds everyone should see. Each person can adds their own on a settings page of their own, and the two merge.
+
+Feeds are currently read-only iCalendar addresses. Repeating events are expanded for daily, weekly and monthly rules. Cancelled instances, rules like "last Friday of the month", and named time zones are not handled yet, and the page says so. Calendars that need a username and password are not yet supported.
+
+Before a feed is added, the page shows a worked example so a reader can see what a connected calendar looks like. The example is a real `.ics` file read by the same parser that reads a real feed.
+
+**Wired Sprigs™ — grafted capabilities can carry settings**
+A Sprig used to be all or nothing: graft it or do not. Some need an address, a token, or a switch before they are any use.
+
+Secrets are stored and never shown again. The field reads "stored" and stays blank, and saving an empty one keeps what is already there rather than erasing it; so saving an unrelated setting cannot wipe a token. Pruning a Sprig discards its settings with it, secrets included.
+
+NOTE: Sprig Settings are currently stored in clear. That bounds what a secret may be. Use a token you can rotate at the service that issued it.
+
+**Startr Swap — pages change without reloading**
+Links and forms on server-rendered pages swap in place. The page keeps its scroll, its open menus and its typed text, and the browser fetches only what changed. It is a plain script with no build step and no framework, and it works on any page that marks a region.
+
+With JavaScript switched off, every link is a link and every form posts. Nothing depends on the script being there.
 
 **The Sprig™ capability reference is generated from the code, never written by hand**
 `docs/sprigs/capabilities.md` describes every capability the catalog ships: what each one delivers, whether it runs a process, what it writes into the running configuration, and what a prune reverses. The document is emitted by reading the catalog and the three dispatch fan-outs with a parser, so it cannot drift from the code that defines it. `make sprig_capabilities_check` runs inside `gauntlet_full` and fails with a diff when a capability is added, a dispatch changes what it writes, or a prune reset is forgotten. The gate has its own self-test, which perturbs the committed document three ways and asserts the check notices each one — a gate nobody has watched fail is a gate nobody should trust.
@@ -16,6 +39,11 @@ The reference reports what the code does rather than what it should do, and the 
 `make sprig_capabilities_publish` folds a vocabulary view into the Sprig specification next door — which reserved prefixes ship, which shipped names have no reservation, which reservations are still empty. A view, not a copy: the specification states a contract, and prune gaps are implementation status that stays on this side. Both halves of the comparison are derived, the reserved list from the specification's own prose, so a reservation added there corrects the delta on the next publish with nothing to maintain by hand.
 
 ### Changed
+
+**The dashboard and the calendar keep the app around them**
+`/home` and `/calendar` keep their address and the sidebar, and render a server-rendered page inside that frame. One implementation of each screen instead of two, at the address people already use.
+
+This costs bytes rather than saving them, and it is worth saying why it was done anyway. The app boots and then fetches a page on top, which is more than either alone. What it buys is one implementation, and a place for grafted interface fragments to reach the first screen a person opens. The bytes come back when the frame comes down.
 
 **The chat path's largest function lost a third of its lines, with the behaviour frozen**
 `process_chat_response` fell from 1,511 lines to 1,108, and the file's deeply nested lines fell from 1,009 to 773 — from half the code to two fifths. Three mechanical passes did it: thirteen dead imports dropped, five pure functions lifted out of the closure to module level, and eleven hand-spelled `chat:completion` payloads collapsed onto two helpers. Four of those eleven were identical character for character.
@@ -31,6 +59,14 @@ A model can close a thinking tag that the reader never saw open. The provider ro
 `make release_finish` and `make hotfix_finish` now merge the release branch into master and develop, tag it, and delete it with plain git. git-flow-next's finish stranded three releases: it committed a fast-forward as an empty merge, misread skipped pre-commit hooks as a failure, and ran a remote-branch sync check that died when the release branch was never pushed to origin. Each time the fix was to finish the merge by hand, so the Makefile does that by default now. `git flow release start` still opens branches. Every step is idempotent — an already-merged branch or an existing tag is skipped — so a merge conflict resolves and the finish resumes instead of wedging. The self-heal target that dropped git-flow's stale state files is gone; there are no state files left to clean.
 
 ### Fixed
+
+**Moving around inside the dashboard no longer walks you out of the app**
+The calendar's month controls were plain links to the bare page behind it. Clicking "Next" left the app: the sidebar vanished and the reader landed on a page with no way back. From the dashboard, "Add a calendar" did the same, and the settings page it reached pointed back at another page with no route home. A one-way door.
+
+Those links swap in place now. The address stays one you can share, the back button walks the months back, and the app stays around you.
+
+**A second visit to the dashboard runs its scripts again**
+A small script corrects the greeting to the reader's own clock. Returning to the dashboard a second time re-rendered the page and skipped the script, so the greeting stayed at the server's guess — wrong for anyone more than a few hours from the server. Nothing looked broken, which is why it lasted.
 
 **The try.sage welcome page scrolls on phones**
 The welcome page pinned a full-screen layer at 100vh and centered its content with flexbox. On a phone, 100vh includes the strip behind the browser chrome, so the bottom of the page hid behind the toolbar. Centered overflow was cut off both ends with no way to scroll to it. The page is now server-rendered as a normal document: it scrolls whenever it is taller than the screen, full height means the height you can see (dvh), and the safe-area inset keeps the footer clear of the home indicator. First response is the whole page — 5 KB, no JavaScript bundle.
