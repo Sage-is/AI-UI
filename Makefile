@@ -1663,33 +1663,51 @@ distribution_verify:
 #
 # Silent on the happy path: most checkouts don't touch distribution.env, so
 # the inode survives and the chain is intact.
+# Heal is ADVISORY and must never fail a checkout. It runs from pre-commit on
+# post-checkout/post-merge/post-rewrite, and git propagates a non-zero hook to
+# `git checkout` itself -- which `set -e` inside finish_flow then treats as a
+# dead release. That is not hypothetical: it stopped 3.1.0 halfway, with master
+# merged and develop not.
+#
+# A hardlink CANNOT survive `git checkout` across a branch where the file's
+# content differs -- git writes a new file, which is a new inode, by definition.
+# So a broken chain mid-release is the expected state, not damage. Warn, relink
+# what is safe to relink, and let the operator through. `distribution_verify`
+# stays the strict gate and is still wired into release_finish/hotfix_finish.
+#
+# One shell, deliberately: this target previously ran as separate recipe lines,
+# so its `exit 0` on the diverged path exited only that line and Make carried on
+# into the final verify -- the target announced it was not failing, then failed.
 distribution_heal:
-	@test -f $(SIBLING_AI_UI)/distribution.env || exit 0
-	@if [ -e $(DIST_SOURCE) ]; then \
+	@set -e; \
+	test -f $(SIBLING_AI_UI)/distribution.env || exit 0; \
+	expected=2; \
+	test -d $(SIBLING_DOCS) && expected=3; \
+	if [ -e $(DIST_SOURCE) ]; then \
 		links=$$(stat -f "%l" $(SIBLING_AI_UI)/distribution.env 2>/dev/null || \
 		         stat -c "%h" $(SIBLING_AI_UI)/distribution.env); \
-		expected=2; \
-		test -d $(SIBLING_DOCS) && expected=3; \
-		if [ "$$links" = "$$expected" ]; then exit 0; fi; \
-		if ! cmp -s $(SIBLING_AI_UI)/distribution.env $(DIST_SOURCE); then \
-			echo ""; \
-			echo "WARN: distribution.env hardlink chain broken AND content has diverged."; \
-			echo "  AI-UI:        $(SIBLING_AI_UI)/distribution.env"; \
-			echo "  homebrew-apps: $(DIST_SOURCE)"; \
-			echo "  Run 'diff $(SIBLING_AI_UI)/distribution.env $(DIST_SOURCE)' and reconcile."; \
-			echo "  Then run 'make distribution_sync' to re-establish the chain."; \
-			exit 0; \
+		if [ "$$links" != "$$expected" ]; then \
+			if ! cmp -s $(SIBLING_AI_UI)/distribution.env $(DIST_SOURCE); then \
+				echo ""; \
+				echo "NOTE: distribution.env chain broken and content differs — leaving both alone."; \
+				echo "  AI-UI:         $(SIBLING_AI_UI)/distribution.env"; \
+				echo "  homebrew-apps: $(DIST_SOURCE)"; \
+				echo "  Expected mid-release: a checkout rewrites the file and severs the link."; \
+				echo "  The merge that lands the new SERVER_TAG reconciles it."; \
+				echo "  To force it now: diff the two, then 'make distribution_sync'."; \
+				exit 0; \
+			fi; \
+			ln -f $(SIBLING_AI_UI)/distribution.env $(DIST_SOURCE); \
 		fi; \
-		ln -f $(SIBLING_AI_UI)/distribution.env $(DIST_SOURCE); \
-	fi
-	@if [ -d $(SIBLING_DOCS) ] && [ -e $(SIBLING_DOCS)/distribution.env ]; then \
+	fi; \
+	if [ -d $(SIBLING_DOCS) ] && [ -e $(SIBLING_DOCS)/distribution.env ]; then \
 		if ! cmp -s $(SIBLING_AI_UI)/distribution.env $(SIBLING_DOCS)/distribution.env; then \
-			echo "WARN: $(SIBLING_DOCS)/distribution.env diverges; leaving alone."; \
+			echo "NOTE: $(SIBLING_DOCS)/distribution.env differs; leaving alone."; \
 		else \
 			ln -f $(SIBLING_AI_UI)/distribution.env $(SIBLING_DOCS)/distribution.env; \
 		fi; \
-	fi
-	@$(MAKE) -s distribution_verify
+	fi; \
+	$(MAKE) -s distribution_verify || true
 
 # Rewrites SERVER_TAG in distribution.env while preserving the inode (so the
 # hardlink chain stays intact) and verifies the chain afterward. `perl -i` /
