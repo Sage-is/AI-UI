@@ -103,3 +103,4 @@ docs/decisions/*
 # Chart artifacts (not public - only for internal team use)
 !charts/README.md
 charts/*
+.obsidian/workspace.json
