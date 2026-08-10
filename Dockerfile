@@ -29,9 +29,17 @@ RUN npm install -g bun
 WORKDIR /app
 
 # Install dependencies via bun (cache layer)
+#
+# sharing=locked is load-bearing, not an optimisation. A multi-arch build runs
+# the amd64 and arm64 frontend stages at the same time, and two concurrent bun
+# installs starve each other on I/O: the run stretches from 21s to 181s and one
+# arch dies with `Fail extracting tarball for "mermaid"` -- always mermaid, the
+# largest tarball in the tree. It killed the 3.1.0 release twice. The lock
+# serialises the two extractions; the second arch then rides the warm cache.
 COPY app/package.json /app/package.json
 COPY app/bun.lock /app/bun.lock
-RUN bun install --frozen-lockfile
+RUN --mount=type=cache,target=/root/.bun/install/cache,sharing=locked \
+    bun install --frozen-lockfile
 
 # Setup Pyodide (cache layer)
 COPY app/scripts/prepare-pyodide.js /app/scripts/prepare-pyodide.js
