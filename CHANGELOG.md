@@ -78,6 +78,11 @@ Signed-in readers get the app exactly as before. A visitor who lands on `/auth` 
 **Server-rendered pages pick up an edited stylesheet or script within a release**
 Assets under `/pages/_assets/` ship with a week-long cache and used to carry the release version in their URL, on the reasoning that the version changes whenever the file could have. It does not: a file edited twice inside one release keeps one URL, so a browser that loaded the first version runs it for a week while the server serves the second. The operator ships a fix and watches the old behaviour. The URL now carries eight characters of the file's own hash, read at first use — no build step, sixteen small files, once per process — so it changes when and only when the bytes do. Found the hard way: a fixed page kept rendering the broken script.
 
+**The multi-arch release build no longer dies on the largest npm tarball**
+The amd64 and arm64 frontend stages ran `bun install` at the same moment and starved each other. Alone, the install takes 21 seconds. Side by side it takes 181, and one arch gives up with `Fail extracting tarball for "mermaid"` — always mermaid, the largest tarball among 940 packages. It killed the 3.1.0 release twice. It reads like a network flake, and that reading cost an hour spent on the disk and the lockfile, both innocent. The bun cache now sits on a BuildKit cache mount marked `sharing=locked`, so the two extractions take turns. The second arch reads the cache the first one filled and finishes in 31 seconds.
+
+Two smaller repairs fell out of the same hunt. `ensure_builder` passed `--use` only on the run that created the builder, so every later multi-arch build ran on whichever builder happened to be selected — the docker driver, not the one the target names. And `build_multi_arch` wiped the build cache every run, which forced each release to re-download all 940 tarballs cold and walk straight into the contention. The wipe is now opt-in with `CLEAN_BUILD=1`.
+
 ## [3.0.0] — 2026-07-15
 
 ### Added
