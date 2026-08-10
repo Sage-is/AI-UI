@@ -741,16 +741,27 @@ ghcr_login:
 	@echo "  gh auth refresh -s write:packages"
 
 # Ensure builder target
+#
+# `create --use` only selects the builder on the run that CREATES it. Once it
+# exists, a bare create-or-nothing leaves whatever builder is currently selected
+# in charge -- so multi-arch builds silently ran on the docker driver instead.
+# Select it unconditionally, every time.
 ensure_builder:
-	@docker buildx inspect multi-arch-builder >/dev/null 2>&1 || docker buildx create --name multi-arch-builder --use
+	@docker buildx inspect multi-arch-builder >/dev/null 2>&1 || docker buildx create --name multi-arch-builder
+	@docker buildx use multi-arch-builder
 
 # Multi-architecture build+push helper
 # Builds amd64 and arm64, creates manifest list, and pushes in one step.
 # Replaces the old per-arch build → docker manifest create → push pattern
 # which broke with buildx v0.10+ (provenance attestation wraps every push
 # in a manifest list, and docker manifest create rejects manifest-list sources).
+#
+# The cache wipe is OPT-IN (CLEAN_BUILD=1). It used to run unconditionally, which
+# forced every release build to re-download all ~940 npm tarballs on both arches
+# at once -- one registry hiccup then cost a full cold rebuild. It burned 3.1.0
+# on "Fail extracting tarball for mermaid". Keep the escape hatch, lose the tax.
 define build_multi_arch
-	@make it_clean
+	@[ -z "$(CLEAN_BUILD)" ] || make it_clean
 	@make ensure_builder
 	docker buildx build --platform linux/amd64,linux/arm64 $(OCI_LABELS) \
 		-t $(1):$(IMAGE_TAG) \
