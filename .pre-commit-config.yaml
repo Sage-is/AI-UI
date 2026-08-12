@@ -41,6 +41,22 @@ repos:
         pass_filenames: false
         stages: [pre-push]
 
+      # Every gate that needs nothing but this host: no image, no container.
+      # Seconds, not minutes, and that is the design rather than a happy accident.
+      # The FULL gauntlet was wired to a pre-push hook once, in .githooks/pre-push,
+      # and never switched on — it cost minutes, so it shipped with two SKIP_ escape
+      # hatches, and a hook people bypass protects nothing. Everything heavier lives
+      # in `make gauntlet_full` and on the CI runner.
+      #
+      # gauntlet_fast also carries the four *_teeth gates, which prove their gate
+      # can still fail. Before this, not one of them ran anywhere.
+      - id: gauntlet-fast
+        name: host-only gauntlet (gates + teeth, no image)
+        entry: make gauntlet_fast
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+
   # ---------------------------------------------------------------------------
   # Python Security — catch common security bugs in backend code
   # ---------------------------------------------------------------------------

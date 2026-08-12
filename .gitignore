@@ -6,6 +6,7 @@
 !.*.example
 !/.gitattributes
 !/.gitignore
+!/.githooks/**
 !/.gitleaks.toml
 !/.pre-commit-config.yaml
 !/.trivyignore
