@@ -1,9 +1,8 @@
 # Sage.is AI-UI
 
-## v3.1.0
-
 An AI interface you run on your own hardware, with your own models, on your own terms.
 
+[![Version](https://img.shields.io/github/v/tag/Sage-is/AI-UI?label=version)](https://github.com/Sage-is/AI-UI/releases)
 [![GitHub stars](https://img.shields.io/github/stars/Sage-is/AI-UI?style=social)](https://github.com/Sage-is/AI-UI)
 [![License](https://img.shields.io/badge/License-AGPL_v3%2B-blue)](LICENSE)
 [![Discord](https://img.shields.io/badge/Discord-Community-blue?logo=discord&logoColor=white)](https://discord.gg/3BtwHkXS)
@@ -104,17 +103,19 @@ After `install_dev`, every commit scans the staged diff and every push scans the
 **Release process:**
 
 ```bash
-make major_release        # (or minor_release / patch_release) — creates release branch
-make bump_release_version # Updates package.json + README.md
+make major_release        # (or minor_release / patch_release) — creates the release branch
+make bump_release_version # Writes the version into app/package.json
 # Edit CHANGELOG.md, commit, then:
-make it_build             # Build Docker image
-make test_db_upgrade      # Verify migrations against prior-version DB
-make test_db_fresh        # Verify clean schema creation
+make it_build             # Build the image
+make test_db_upgrade      # Migrations against a prior-version DB
+make test_db_fresh        # Clean schema creation
 make it_run               # Smoke test
-make release_and_push_GHCR # Finish release, tag, push to GHCR
+make ship                 # Finish, tag, push the image, publish the Sprig catalog
 ```
 
-Each release target prints the full checklist. Steps are guidance today; gated enforcement (require tests to pass before `release_finish`) is planned for a future release, runnable locally or on a CI server.
+`make ship` is the only way to publish, and it covers hotfixes too. The steps underneath it are private, so there is no second door to take by mistake. It gates on `release_smoke`, which refuses to run off a `release/*` or `hotfix/*` branch, on a dirty tree, or when `app/package.json` disagrees with the branch version.
+
+Full runbook, including what to do when a step fails halfway: [docs/release-runbook.md](docs/release-runbook.md).
 
 DB snapshots for upgrade testing live in `tools/db_snapshots/` (gitignored, synced via SyncThing). See `tools/db_snapshots/README.md` for details.
 

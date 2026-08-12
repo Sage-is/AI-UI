@@ -369,8 +369,9 @@ A real finding fails the commit or push. Clear a false positive by adding a path
 **Escape hatches** (deliberate, visible):
 
 - `git commit --no-verify` — skip the commit-stage hooks.
-- `git push --no-verify` — skip the pre-push tree scan.
-- `SKIP_SCAN=1` / `SKIP_GAUNTLET=1` — skip the scan or the build under the optional `core.hooksPath .githooks` setup.
+- `git push --no-verify` — skip the pre-push stage: the tree scan and `make gauntlet_fast`.
+
+There is one hook mechanism, the pre-commit framework, and `core.hooksPath` must stay unset. Setting it redirects git away from `.git/hooks`, which is where `make install_hooks` puts all five stages, so every hook in the table above stops running at once and nothing says so.
 
 **Never commit:** real `.env` values, `tools/db_snapshots/` (real user data), or `docs/outreach/` drafts (named prospects). All are git-ignored — keep them that way.
 

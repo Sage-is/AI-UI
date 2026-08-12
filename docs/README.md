@@ -14,7 +14,8 @@ This directory now separates active reference material from historical audits, p
 
 ## Start Here
 
-- `development-workflow.md` — release flow, verification steps, and daily workflow
+- `release-runbook.md` — `make ship`, what preflight refuses, and how to recover from a half-finished release
+- `development-workflow.md` — gates, hooks, verification steps, and daily workflow
 - `product-stack.md` — architecture and product stack overview
 - `bridges.md` — WhatsApp, Telegram, Signal, and Email bridge setup
 - `SECURITY.md` — security posture and reporting notes

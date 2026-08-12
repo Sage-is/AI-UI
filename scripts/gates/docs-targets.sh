@@ -31,8 +31,10 @@ real=$(grep -oE '^[a-zA-Z_][a-zA-Z0-9_-]*:' Makefile | tr -d ':' | sort -u)
 allow=""
 [ -f "$ALLOW" ] && allow=$(grep -vE '^\s*#|^\s*$' "$ALLOW" | awk '{print $1}' | sort -u)
 
-# docs/archive/ is history and is allowed to name things that are gone.
-files=$(git ls-files '*.md' | grep -v '^docs/archive/' || true)
+# History is allowed to name things that are gone. A completed item records what
+# was actually run at the time; rewriting it to match today's target names would
+# make the record false in order to keep a gate quiet.
+files=$(git ls-files '*.md' | grep -vE '^docs/archive/|^docs/completed-todos\.md$' || true)
 
 for f in $files; do
   # Backticked form, then the bare form restricted to underscore-bearing names.
