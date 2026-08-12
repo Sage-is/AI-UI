@@ -681,11 +681,11 @@ gauntlet: it_build sprig_smoke  ## Build + Sprig lifecycle smoke
 ## hand-run tools; run them yourself after `--tighten` records a baseline.
 ## `chat_path_structure_teeth` DOES belong here: it builds its own sample and
 ## proves the structural detectors still fire without needing a baseline at all.
-gauntlet_fast: pipefail_lint pipefail_fixture ruff_gate \
+gauntlet_fast: pipefail_lint pipefail_fixture ruff_gate docs_gate \
                sprig_capabilities_check startr_swap_check \
                distribution_heal_fixture tags_annotated \
                chat_path_structure_teeth sprig_capabilities_teeth \
-               startr_swap_teeth tags_annotated_teeth  ## Gate: host-only gates, seconds (pre-push hook)
+               startr_swap_teeth tags_annotated_teeth docs_gate_teeth  ## Gate: host-only gates, seconds (pre-push hook)
 
 ## tags_annotated — refuse to publish a lightweight v* tag.
 ##
@@ -1411,8 +1411,18 @@ trivy_db_update:
 ## had missed: five phantom `make test_*` commands in a Testing Standards section
 ## describing a DJANGO project (this is FastAPI), and three claims that
 ## `try_sage_stop` already existed. It never did.
-docs_gate:  ## Gate: every `make X` named in a tracked .md exists
+## Extended 2026-08-12 to scan document trees OUTSIDE the repo — agent memory
+## stores, notes vaults, sibling checkouts. They issue instructions the same way
+## a runbook does and rot the same way, with nobody reviewing them: one such file
+## was still saying "release with `make release_and_push_GHCR`" days after that
+## door was made private, and it was found by hand. Which trees exist is data,
+## in scripts/gates/docs-targets.roots, not logic in the gate. An absent root is
+## announced and skipped, so a fresh clone still runs.
+docs_gate:  ## Gate: every `make X` named in a scanned document exists
 	@scripts/gates/docs-targets.sh
+
+docs_gate_teeth:  ## Prove the doc-target gate can fail
+	@scripts/gates/docs-targets.sh --self-test
 
 ## ruff_gate — the Python linter. Nothing else in this repo reads Python
 ## semantics: bandit reads security, black reads formatting, and the chat-path

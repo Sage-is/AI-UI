@@ -2,8 +2,12 @@
 # Poka-Yoke: no lightweight v* tag may be published.
 #
 # WHY THIS EXISTS. `finish_flow` cuts tags with `git tag -a`. A human typing
-# `git tag -f` does not, and that is how v3.1.0 became the only lightweight tag
-# in this repo's history. An annotated tag carries an author, a date and a
+# `git tag -f` does not, and that is how v3.1.0 became lightweight. It is not
+# alone: v2.0.0 is lightweight too (2 of 11 v* tags, counted 2026-08-12). An
+# earlier version of this comment called v3.1.0 the only one, which was wrong
+# and is the reason the count is now written down. Neither is worth repairing
+# retroactively — re-cutting an old tag stamps today's date on a past release,
+# which trades one wrong fact for another. An annotated tag carries an author, a date and a
 # message; a lightweight one is a bare pointer, so `git describe`, `git for-each-ref`
 # and every provenance question answer differently depending on which kind you
 # got. One release cut one of each, which is the whole problem.

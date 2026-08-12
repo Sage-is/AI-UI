@@ -44,6 +44,12 @@
 /docs/decisions/
 /charts/
 /scripts/gates/*/baseline.json
+# Names document trees on THIS machine — home-directory layout, agent memory
+# locations, private vaults. That is the developer-path class `scan_tree` exists
+# to keep out of a public repo, so the live file syncs outside git like the trees
+# it points at. docs-targets.roots.example IS tracked: it carries the syntax and
+# the reason, with every entry commented out.
+/scripts/gates/docs-targets.roots
 
 node_modules
 /app/.svelte-kit

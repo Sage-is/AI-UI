@@ -34,11 +34,19 @@ repos:
   # leaves the machine. Local-first: same `make scan_tree` you can run by hand.
   - repo: local
     hooks:
+      # always_run is load-bearing, not decoration. `pass_filenames: false` only
+      # says "do not hand the hook a file list"; it does NOT say "run when the
+      # list is empty". pre-commit defaults always_run to false, so a push whose
+      # ref range contains no new commits — a TAG push, most of all — skips every
+      # hook here with "(no files to check)". Observed 2026-08-12 on the v3.1.0
+      # tag repair: all eight hooks skipped. These two scan the whole tree and
+      # the whole host, so the file list was never their input anyway.
       - id: scan-tree
         name: private-data scan (gitleaks --no-git, whole tree)
         entry: make scan_tree
         language: system
         pass_filenames: false
+        always_run: true
         stages: [pre-push]
 
       # Every gate that needs nothing but this host: no image, no container.
@@ -50,11 +58,17 @@ repos:
       #
       # gauntlet_fast also carries the four *_teeth gates, which prove their gate
       # can still fail. Before this, not one of them ran anywhere.
+      #
+      # always_run: see the note on scan-tree above. Without it this hook — and
+      # so `tags_annotated`, the device whose entire job is refusing a bad TAG
+      # push — could not fire on a tag push. The gate looked wired and was inert
+      # at exactly the moment it existed for.
       - id: gauntlet-fast
         name: host-only gauntlet (gates + teeth, no image)
         entry: make gauntlet_fast
         language: system
         pass_filenames: false
+        always_run: true
         stages: [pre-push]
 
   # ---------------------------------------------------------------------------

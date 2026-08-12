@@ -1,0 +1,36 @@
+# Extra documentation roots for the docs-targets gate. One directory per line.
+#
+# COPY THIS TO docs-targets.roots TO USE IT. The live file is gitignored, because
+# it names paths on your machine and this repo is public. Sync and back it up by
+# whatever means you use for the other trees git is not the system of record for.
+#
+# The gate's main input is `git ls-files '*.md'`. This file adds trees that live
+# OUTSIDE the repo but still issue instructions to whoever reads them: an agent
+# memory store, a private notes vault, a sibling docs checkout. Those rot the
+# same way a runbook rots, with nobody reviewing them, and a stale one keeps
+# issuing a command that no longer exists.
+#
+# A line naming a directory that is not present is announced and skipped rather
+# than failing, because these trees are per-machine and most will be absent on
+# most machines. No file here at all means tracked repo docs only, and the gate
+# says so when it runs.
+#
+# Expansions:
+#   ~            home directory
+#   %REPO_SLUG%  this repo's absolute path with every '/' replaced by '-'
+#
+# Only the TOP LEVEL of each directory is scanned. Nested directories are left
+# alone on purpose, so backup and archive subtrees stay free to name targets
+# that are gone.
+
+# Agent memory for this project. Memory carries more authority than a doc: it is
+# injected unprompted, and nobody re-reads it the way they re-read a runbook. A
+# file in one of these stores was still saying "release with `make
+# release_and_push_GHCR`" days after that door was made private, and it was found
+# by hand. Another assistant with another layout is one more line, not a code
+# change.
+# ~/.claude/projects/%REPO_SLUG%/memory
+
+# A sibling checkout or a private notes vault, same idea.
+# ~/notes/vaults/this-project
+# ../WEB-Sage.Education-docs/docs
