@@ -6,13 +6,27 @@
 !.*.example
 !/.gitattributes
 !/.gitignore
-!/.githooks/**
+# No !/.githooks/** here, deliberately. There is ONE hook mechanism: the
+# pre-commit framework, installed into .git/hooks by `make install_hooks`.
+# .githooks/ existed alongside it and `git config core.hooksPath .githooks`
+# redirected git away from .git/hooks, silently disabling all five stages.
+# Tracking the directory would distribute that trap to every clone.
 !/.gitleaks.toml
 !/.pre-commit-config.yaml
 !/.trivyignore
 !.todoscope-exclude.csv
 !.obsidian/
 !.obsidian/**
+# ...except per-machine state. app.json, appearance.json, hotkeys.json,
+# core-plugins.json, snippets/ and themes/ are shared vault CONFIG and belong in
+# git. workspace.json is open panes, scroll positions and lastOpenFiles, which
+# Obsidian rewrites continuously — 12 of 394 commits touched it, one with a
+# subject line about lastOpenFiles. SyncThing already replicates the vault, so
+# tracking it here put two mechanisms on one file and produced the
+# sync-conflict-*.json wreckage.
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+*.sync-conflict-*
 !/.semgrep/
 !/.semgrep/**
 !/app/.eslintrc.cjs
