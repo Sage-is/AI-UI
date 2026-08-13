@@ -154,12 +154,19 @@ repos:
   # silently overwriting it). distribution_sync is the manual reconcile.
   - repo: local
     hooks:
+      # `files: ^distribution\.env$` used to gate this, which made it inert for
+      # the failure it exists to catch: a hardlink breaks with NO content change,
+      # so nothing stages and the hook never runs. Measured — `cp a c && mv c a`
+      # takes the link count 2 -> 1 with byte-identical content. macOS `sed -i`
+      # replaces the inode the same way. always_run costs 0.17s; the break costs
+      # a release. See the derivation note above DIST_LINK_PRELUDE in the Makefile
+      # for why this was safe to switch on only after the count was fixed.
       - id: distribution-chain-verify
         name: distribution.env hardlink chain intact
         entry: make -s distribution_verify
         language: system
-        files: ^distribution\.env$
         pass_filenames: false
+        always_run: true
         stages: [pre-commit]
       - id: distribution-chain-heal
         name: distribution.env hardlink chain heal

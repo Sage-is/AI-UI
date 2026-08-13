@@ -683,7 +683,7 @@ gauntlet: it_build sprig_smoke  ## Build + Sprig lifecycle smoke
 ## proves the structural detectors still fire without needing a baseline at all.
 gauntlet_fast: pipefail_lint pipefail_fixture ruff_gate docs_gate \
                sprig_capabilities_check startr_swap_check \
-               distribution_heal_fixture tags_annotated \
+               distribution_heal_fixture distribution_verify tags_annotated \
                chat_path_structure_teeth sprig_capabilities_teeth \
                startr_swap_teeth tags_annotated_teeth docs_gate_teeth  ## Gate: host-only gates, seconds (pre-push hook)
 
@@ -1816,8 +1816,19 @@ distribution_sync:  ## Re-link distribution.env across the sibling repos
 #
 # Defined as a shell prelude rather than a Make define because both callers are a
 # single `\`-continued shell block, and a define would inject line breaks into it.
+# The count is DERIVED, not assumed. It used to start at 2 and rise to 3 when the
+# docs sibling existed, which silently assumed homebrew-apps was always there. On
+# a clone with no siblings, distribution.env is an ordinary 1-link file and the
+# gate FAILED — it could not pass on a fresh machine. That went unnoticed only
+# because the pre-commit hook was gated on the file being staged, so it almost
+# never ran. Two defects hiding each other. Count the locations that exist and
+# the gate is right everywhere, including the machine that has none of them.
 DIST_LINK_PRELUDE = links_of() { stat -f "%l" "$$1" 2>/dev/null || stat -c "%h" "$$1"; }; \
-	expected_links=2; [ -d "$(SIBLING_DOCS)" ] && expected_links=3 || true;
+	expected_links=0; \
+	for d in "$(SIBLING_HOMEBREW)" "$(SIBLING_AI_UI)" "$(SIBLING_DOCS)"; do \
+		if [ -d "$$d" ]; then expected_links=$$((expected_links + 1)); fi; \
+	done; \
+	if [ "$$expected_links" -lt 1 ]; then expected_links=1; fi;
 
 distribution_verify:  ## Assert the distribution.env hardlink chain is intact
 	@set -e; $(DIST_LINK_PRELUDE) \
