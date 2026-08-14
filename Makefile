@@ -1792,14 +1792,20 @@ SIBLING_HOMEBREW ?= ../homebrew-apps
 SIBLING_DOCS     ?= ../WEB-Sage.Education-docs
 DIST_PEERS        = $(SIBLING_HOMEBREW)/distribution.env $(SIBLING_DOCS)/distribution.env
 
+# Both targets report the COUNT. A gate that compares nothing must not print the
+# same word as a gate that compared everything — that is how parity_gate reported
+# success forever while watching nothing. "0 compared" reads as skipped.
 distribution_verify:  ## Assert every sibling copy of distribution.env matches this one
-	@for p in $(DIST_PEERS); do [ -f "$$p" ] || continue; \
+	@test -f distribution.env || { echo "FAIL: no distribution.env in this repo."; exit 1; }
+	@n=0; for p in $(DIST_PEERS); do [ -f "$$p" ] || continue; n=$$((n+1)); \
 		cmp -s distribution.env "$$p" || { echo "FAIL: $$p differs. Reconcile by hand, then 'make distribution_sync'."; exit 1; }; \
-	done; echo "OK: distribution.env matches every sibling present."
+	done; echo "OK: distribution.env matches $$n sibling(s) present."
 
 distribution_sync:  ## Publish this repo's distribution.env to the sibling repos
 	@for p in $(DIST_PEERS); do d=$$(dirname "$$p"); \
-		if [ -d "$$d" ] && ! cmp -s distribution.env "$$p"; then cp distribution.env "$$p.new" && mv "$$p.new" "$$p"; fi; \
+		if [ ! -d "$$d" ]; then echo "  skipped (absent): $$p"; \
+		elif cmp -s distribution.env "$$p"; then echo "  already equal:    $$p"; \
+		else cp distribution.env "$$p.new" && mv "$$p.new" "$$p" && echo "  published:        $$p"; fi; \
 	done
 	@$(MAKE) -s distribution_verify
 
@@ -1814,5 +1820,10 @@ _pin_server_tag:
 	@test -n "$(IMAGE_TAG)" || { echo "ERROR: _pin_server_tag needs IMAGE_TAG=X.Y.Z"; exit 1; }
 	@$(MAKE) -s distribution_verify
 	@perl -i -pe 's/^SERVER_TAG=.*/SERVER_TAG=$(IMAGE_TAG)/' distribution.env
+	@# Assert the RESULT, not the attempt. `perl -i` matching nothing changes
+	@# nothing and exits 0, so without this the next line reports a pin that never
+	@# happened — the same silent-no-op that the README version writer produced.
+	@grep -qx "SERVER_TAG=$(IMAGE_TAG)" distribution.env || { \
+		echo "FAIL: SERVER_TAG=$(IMAGE_TAG) not present after the rewrite."; exit 1; }
 	@$(MAKE) -s distribution_sync
 	@echo "OK: distribution.env SERVER_TAG=$(IMAGE_TAG)"
