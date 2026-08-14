@@ -61,7 +61,9 @@ The underscores are the point. These are reachable when you mean them and invisi
 
 **`verify_ghcr_manifest` failed.** The push produced no image, or a single-arch one. Do not pin `SERVER_TAG`. Re-run the push step; the verify is what stands between a bad push and a CapRover deploy that says `manifest unknown`.
 
-**`distribution_verify` failed inside `release_finish`.** A checkout severed the `distribution.env` hardlink. `distribution_heal` runs from the `post-checkout`, `post-merge` and `post-rewrite` hooks and repairs it forward, newest `SERVER_TAG` winning. It never exits non-zero, by rule: a hook runs whatever Makefile the checkout landed on, so a failing one cannot be fixed by editing a single branch.
+**`distribution_verify` failed inside `release_finish`.** A sibling repo's `distribution.env` differs from this one's. Read the diff before doing anything: the gate does not pick a winner, because homebrew-apps legitimately owns `CLI_VERSION` while this repo owns `SERVER_TAG`, and a rule that chose automatically would silently discard whichever field it did not favour. Fold the sibling's change into this repo's copy by hand, then `make distribution_sync` to publish, then re-run. If the difference is only ours to push, `make distribution_sync` alone is enough.
+
+Note the ordering inside `_pin_server_tag`: it verifies *before* it rewrites `SERVER_TAG`, so a divergent sibling stops the release while everything is still untouched, rather than after a sync has already overwritten what that sibling was holding.
 
 ## Tags
 

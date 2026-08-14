@@ -683,7 +683,7 @@ gauntlet: it_build sprig_smoke  ## Build + Sprig lifecycle smoke
 ## proves the structural detectors still fire without needing a baseline at all.
 gauntlet_fast: pipefail_lint pipefail_fixture ruff_gate docs_gate \
                sprig_capabilities_check startr_swap_check \
-               distribution_heal_fixture distribution_verify tags_annotated \
+               distribution_verify tags_annotated \
                chat_path_structure_teeth sprig_capabilities_teeth \
                startr_swap_teeth tags_annotated_teeth docs_gate_teeth  ## Gate: host-only gates, seconds (pre-push hook)
 
@@ -899,14 +899,6 @@ verify_ghcr_manifest:  ## Assert the pushed GHCR image is a present, multi-arch 
 # Prove the manifest guard's logic against known public images (no push needed)
 manifest_verify_fixture:  ## Fixture: exercise verify-image-manifest.sh (good/single-arch/absent)
 	@scripts/smoke/manifest-verify-fixture.sh
-
-# Prove distribution_heal resolves a severed hardlink chain by itself: newest
-# SERVER_TAG wins, propagation is forward only, and the target never exits
-# non-zero. Runs against throwaway files in a temp directory — the three sibling
-# path variables are `?=`, so the real repos are never touched. The older-side
-# no-op is the row that matters: it is what keeps release_finish alive.
-distribution_heal_fixture:  ## Fixture: distribution_heal — newest wins, forward only, never fails
-	@python3 scripts/smoke/distribution-heal-fixture.py
 
 # Reproduce the reasoning-tag defects that swallow or leak the model's answer.
 #
@@ -1772,158 +1764,55 @@ try_sage_links:
 # ---------------------------------------------------------------------------
 # Distribution.env hardlink chain (Jidoka 自働化 primitive)
 # ---------------------------------------------------------------------------
-# distribution.env is the single source of truth for canonical distribution
-# facts (image, server tag, volume, install command, CLI version). It lives
-# in homebrew-apps and is hardlinked into this repo and WEB-Sage.Education-docs
-# so an edit in any one propagates immediately to the other two.
+# distribution.env carries the canonical distribution facts (image, server tag,
+# volume, install command, CLI version) shared by this repo, homebrew-apps and
+# WEB-Sage.Education-docs. Each repo holds an ORDINARY COPY.
 #
-# Hardlinks don't survive a fresh `git clone` — the new clone has its own
-# inode. After cloning, run `make distribution_sync` from any sibling to
-# re-establish the chain.
+# It used to be one inode with three names. That propagated an edit instantly,
+# which was the appeal, but a hardlink has no owner, so a break could not be
+# settled by asking who was right — hence a NEWEST-WINS version ladder, a healer
+# on three git stages and a link-count derivation. Roughly 155 lines answering a
+# question that existed only because the link broke. And it broke SILENTLY: `cp`
+# or macOS `sed -i` replaces the inode, leaving byte-identical files and nothing
+# to stage. Measured 2026-08-12: three links to one, sha unchanged.
 #
-# `release_finish` calls `distribution_verify` so a release halts if the
-# chain has drifted (e.g. an editor wrote a copy instead of editing in place).
+# No repo is declared the owner, because two of them legitimately write different
+# fields — homebrew-apps owns CLI_VERSION, this repo owns SERVER_TAG. A declared
+# owner would silently clobber the other. So divergence is REPORTED, not
+# arbitrated, which is what a two-writer file actually needs. `distribution_sync`
+# publishes this repo's copy; running it is the deliberate act of saying "mine is
+# the one". `release_finish` calls `distribution_verify`, so a release halts on a
+# divergence rather than picking a winner.
+#
+# `cmp` is true whether the files are one inode or three copies, so this change
+# has no flag day: an existing hardlinked chain passes unchanged.
 
-# Where the sibling repos live. Override SIBLING_HOMEBREW if homebrew-apps
-# is checked out somewhere other than `../homebrew-apps`.
+# Where the sibling repos live. Override if they are checked out elsewhere.
 SIBLING_HOMEBREW ?= ../homebrew-apps
 SIBLING_DOCS     ?= ../WEB-Sage.Education-docs
-SIBLING_AI_UI    ?= .
-DIST_SOURCE      := $(SIBLING_HOMEBREW)/distribution.env
+DIST_PEERS        = $(SIBLING_HOMEBREW)/distribution.env $(SIBLING_DOCS)/distribution.env
 
-distribution_sync:  ## Re-link distribution.env across the sibling repos
-	@test -f $(DIST_SOURCE) || { \
-		echo "ERROR: $(DIST_SOURCE) not found."; \
-		echo "       Run 'make setup_siblings' first (or clone homebrew-apps"; \
-		echo "       as a sibling: git clone https://github.com/Sage-is/homebrew-apps.git $(SIBLING_HOMEBREW))"; \
-		exit 1; \
-	}
-	@test -d $(SIBLING_DOCS) || { \
-		echo "ERROR: $(SIBLING_DOCS) not found."; \
-		echo "       Run 'make setup_siblings' first."; \
-		exit 1; \
-	}
-	@ln -f $(DIST_SOURCE) $(SIBLING_AI_UI)/distribution.env
-	@ln -f $(DIST_SOURCE) $(SIBLING_DOCS)/distribution.env
-	@$(MAKE) distribution_verify
+distribution_verify:  ## Assert every sibling copy of distribution.env matches this one
+	@for p in $(DIST_PEERS); do [ -f "$$p" ] || continue; \
+		cmp -s distribution.env "$$p" || { echo "FAIL: $$p differs. Reconcile by hand, then 'make distribution_sync'."; exit 1; }; \
+	done; echo "OK: distribution.env matches every sibling present."
 
-# ONE DERIVATION, TWO CALLERS. distribution_verify and distribution_heal each
-# worked out the expected link count for themselves, and spelled it in opposite
-# directions: verify started at 3 and dropped to 2 when the docs sibling was
-# missing, heal started at 2 and raised to 3 when it was present. Same answer,
-# two ways to get it wrong independently, on the one file that has already broken
-# two releases. They also each open-coded the BSD/GNU `stat` fallback.
-#
-# Defined as a shell prelude rather than a Make define because both callers are a
-# single `\`-continued shell block, and a define would inject line breaks into it.
-# The count is DERIVED, not assumed. It used to start at 2 and rise to 3 when the
-# docs sibling existed, which silently assumed homebrew-apps was always there. On
-# a clone with no siblings, distribution.env is an ordinary 1-link file and the
-# gate FAILED — it could not pass on a fresh machine. That went unnoticed only
-# because the pre-commit hook was gated on the file being staged, so it almost
-# never ran. Two defects hiding each other. Count the locations that exist and
-# the gate is right everywhere, including the machine that has none of them.
-DIST_LINK_PRELUDE = links_of() { stat -f "%l" "$$1" 2>/dev/null || stat -c "%h" "$$1"; }; \
-	expected_links=0; \
-	for d in "$(SIBLING_HOMEBREW)" "$(SIBLING_AI_UI)" "$(SIBLING_DOCS)"; do \
-		if [ -d "$$d" ]; then expected_links=$$((expected_links + 1)); fi; \
-	done; \
-	if [ "$$expected_links" -lt 1 ]; then expected_links=1; fi;
+distribution_sync:  ## Publish this repo's distribution.env to the sibling repos
+	@for p in $(DIST_PEERS); do d=$$(dirname "$$p"); \
+		if [ -d "$$d" ] && ! cmp -s distribution.env "$$p"; then cp distribution.env "$$p.new" && mv "$$p.new" "$$p"; fi; \
+	done
+	@$(MAKE) -s distribution_verify
 
-distribution_verify:  ## Assert the distribution.env hardlink chain is intact
-	@set -e; $(DIST_LINK_PRELUDE) \
-	for f in $(DIST_SOURCE) $(SIBLING_AI_UI)/distribution.env $(SIBLING_DOCS)/distribution.env; do \
-		test -e "$$f" || continue; \
-		links=$$(links_of "$$f"); \
-		if [ "$$links" != "$$expected_links" ]; then \
-			echo "FAIL: $$f has $$links links, expected $$expected_links"; \
-			echo "  Run 'make distribution_sync' to re-establish the chain."; \
-			exit 1; \
-		fi; \
-	done; \
-	echo "OK: distribution.env hardlink chain intact ($$expected_links links)."
 
-# Repair the distribution.env hardlink chain after a git operation (checkout /
-# merge / rebase / amend) rewrote the file in place.
-#
-# distribution.env is ONE file with three names -- a single inode with directory
-# entries in AI-UI, homebrew-apps and WEB-Sage.Education-docs. A hardlink has no
-# original. While the link holds there is no ownership question to answer. Once
-# git severs it there are three independent files and no repo has standing to
-# overrule another; DIST_SOURCE is merely the path this Makefile reads at
-# startup, not an authority. So a break cannot be settled by asking who owns the
-# file. Only the content can settle it, and the content carries a version.
-#
-# The rule: NEWEST WINS, FORWARD ONLY.
-#
-#   links intact                 -> silent, exit 0
-#   cut, content equal           -> relink peers
-#   cut, this repo's tag NEWER   -> this repo wins, relink peers
-#   cut, this repo's tag OLDER   -> no-op; the merge brings this repo forward
-#                                   and the post-merge run relinks
-#   cut, same tag, other content -> no-op; nothing to rank on, so do not guess
-#
-# Two constraints are load-bearing. Undo either and the release breaks again.
-#
-# 1. NEWEST MEANS HIGHEST VERSION, NEVER NEWEST MTIME. `git checkout` stamps the
-#    file it writes with the current time, so the STALE content is always the
-#    freshest file on disk. A timestamp comparison picks the wrong side every
-#    single time.
-#
-# 2. NEVER WRITE INTO THIS REPO'S WORKTREE. Heal fires from a hook in the repo
-#    that just checked out. Writing the newer value in here dirties a file the
-#    next `git merge` must touch, and git refuses with "Your local changes would
-#    be overwritten by merge" -- a hard stop where there was only a warning.
-#    The older-side no-op is what keeps release_finish alive.
-#
-# The older-side no-op is also the regression guard: a checkout of an old branch
-# must never push a stale SERVER_TAG out into the other two repos.
-#
-# ADVISORY, ALWAYS -- exits 0 whatever it finds. Git propagates a non-zero
-# post-checkout hook to `git checkout` itself, and `set -e` inside finish_flow
-# reads that as a dead release. This target therefore does NOT call
-# distribution_verify; that call is what halted 3.1.0 three times. Verification
-# stays where it belongs: the distribution-chain-verify pre-commit hook, and
-# release_finish / hotfix_finish.
-#
-# One shell, deliberately. As separate recipe lines an `exit 0` ends only its
-# own line and Make carries on into the next one.
-#
-# Proof: make distribution_heal_fixture
-distribution_heal:
-	@set -e; $(DIST_LINK_PRELUDE) \
-	self=$(SIBLING_AI_UI)/distribution.env; \
-	if [ ! -f "$$self" ]; then exit 0; fi; \
-	links=$$(links_of "$$self"); \
-	if [ "$$links" = "$$expected_links" ]; then exit 0; fi; \
-	mine=$$(grep -E '^SERVER_TAG=' "$$self" 2>/dev/null | head -1 | cut -d= -f2); \
-	held=""; \
-	for peer in $(DIST_SOURCE) $(SIBLING_DOCS)/distribution.env; do \
-		if [ ! -e "$$peer" ]; then continue; fi; \
-		if cmp -s "$$self" "$$peer"; then ln -f "$$self" "$$peer"; continue; fi; \
-		theirs=$$(grep -E '^SERVER_TAG=' "$$peer" 2>/dev/null | head -1 | cut -d= -f2); \
-		newest=$$(printf '%s\n%s\n' "$$mine" "$$theirs" \
-		          | sort -t. -k1,1n -k2,2n -k3,3n | tail -1); \
-		if [ -n "$$mine" ] && [ "$$mine" != "$$theirs" ] && [ "$$newest" = "$$mine" ]; then \
-			ln -f "$$self" "$$peer"; \
-		else \
-			held="$$held $$peer"; \
-		fi; \
-	done; \
-	if [ -n "$$held" ]; then \
-		echo "distribution.env: holding at SERVER_TAG=$$mine; a newer copy exists in:$$held"; \
-		echo "  A checkout severed the link. The merge that lands the newer tag reconciles it."; \
-	fi; \
-	exit 0
-
-# Rewrites SERVER_TAG in distribution.env while preserving the inode (so the
-# hardlink chain stays intact) and verifies the chain afterward. `perl -i` /
-# `sed -i` would rename a temp file over the target and break hardlinks.
+# Rewrites SERVER_TAG in this repo's distribution.env, then publishes it. The old
+# version wrote through a temp file to preserve the inode, because a rename would
+# have severed the hardlink; there is no hardlink to sever now, so it writes in
+# place. Verify runs BEFORE the edit on purpose: if a sibling has diverged, the
+# release stops before anything is rewritten, rather than after sync has already
+# overwritten whatever that sibling was holding.
 _pin_server_tag:
 	@test -n "$(IMAGE_TAG)" || { echo "ERROR: _pin_server_tag needs IMAGE_TAG=X.Y.Z"; exit 1; }
-	@tmp=$$(mktemp) && \
-	  perl -pe 's/^SERVER_TAG=.*/SERVER_TAG=$(IMAGE_TAG)/' $(DIST_SOURCE) > "$$tmp" && \
-	  cat "$$tmp" > $(DIST_SOURCE) && \
-	  rm -f "$$tmp"
-	@$(MAKE) distribution_verify
+	@$(MAKE) -s distribution_verify
+	@perl -i -pe 's/^SERVER_TAG=.*/SERVER_TAG=$(IMAGE_TAG)/' distribution.env
+	@$(MAKE) -s distribution_sync
 	@echo "OK: distribution.env SERVER_TAG=$(IMAGE_TAG)"

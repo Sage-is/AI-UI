@@ -1,8 +1,23 @@
-# Targets a doc PROPOSES but that do not exist yet. One name per line, with a
-# reason. An entry here is a recorded intention; an unlisted stray is a lie.
+# Targets a doc PROPOSES but that do not exist yet. One name per line, with an
+# expiry date and a reason. An entry here is a recorded intention; an unlisted
+# stray is a lie.
 #
-# name                     reason
-try_sage_smoke             # docs/try-sage-docker-exploration.md PR 6 — proposed CI smoke check
-try_sage_stop              # same doc — proposed, never written; the doc now says so
-try_sage_build_n_start     # same doc — an option it explicitly recommends AGAINST
-caprover_app_create        # TODO.md open item — proposed CapRover wrapper
+# FORMAT:  <target>  <YYYY-MM-DD>  # reason
+#
+# The date is when the intention LAPSES, not when it was written. An entry with
+# no date, or a malformed one, FAILS the gate immediately — that is deliberate,
+# because an allowlist you can add to without a date decays into a graveyard, and
+# every stale line is a hole in a gate whose whole premise is that an unlisted
+# stray is a lie.
+#
+# A LAPSED entry warns, it does not fail. Failing on a date would red the gate on
+# a day nobody chose, blocking a push for a reason unrelated to the change, which
+# is how a safety device becomes an obstacle and gets bypassed. The warning makes
+# the rot visible; you decide whether to build the target, drop the claim from
+# the doc, or push the date out on purpose.
+
+# name                     expires       reason
+try_sage_smoke             2026-11-13    # docs/try-sage-docker-exploration.md PR 6 — proposed CI smoke check
+try_sage_stop              2026-11-13    # same doc — proposed, never written; the doc now says so
+try_sage_build_n_start     2026-11-13    # same doc — an option it explicitly recommends AGAINST
+caprover_app_create        2026-11-13    # TODO.md open item — proposed CapRover wrapper

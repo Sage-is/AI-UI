@@ -72,8 +72,17 @@ self_test() {
   printf 'Run `make ghost_target` to build.\n' > "$repo/doc.md"
   run 1 "tracked doc naming a dead target fails"
 
-  printf 'ghost_target  proposed, not built yet\n' > "$repo/scripts/gates/docs-targets.allow"
-  run 0 "allowlisted dead target passes"
+  # Dates are literals here on purpose: a test that computes its own expiry
+  # cannot tell you the comparison is wired the right way round.
+  printf 'ghost_target  2999-01-01  # proposed, not built yet\n' > "$repo/scripts/gates/docs-targets.allow"
+  run 0 "allowlisted dead target passes while unexpired"
+
+  printf 'ghost_target  2000-01-01  # lapsed long ago\n' > "$repo/scripts/gates/docs-targets.allow"
+  run 0 "LAPSED allowlist entry still allows (warns, never reds)"
+
+  printf 'ghost_target  # no date at all\n' > "$repo/scripts/gates/docs-targets.allow"
+  run 1 "UNDATED allowlist entry fails"
+
   rm -f "$repo/scripts/gates/docs-targets.allow"
 
   printf 'Run `make real_target` to build.\n' > "$repo/doc.md"
@@ -107,8 +116,34 @@ real=$(grep -oE '^[a-zA-Z_][a-zA-Z0-9_-]*:' Makefile | tr -d ':' | sort -u)
 # Proposals are legitimate: a doc may say "Add a `make try_sage_smoke` target".
 # Those live in the allowlist, WITH a reason, so an unbuilt target is a recorded
 # intention rather than a lie.
+# Each entry carries an expiry: `<target> <YYYY-MM-DD> # reason`. A missing or
+# malformed date FAILS here and now, so an undated entry cannot be added. A date
+# already past WARNS and still allows — failing on a date would red the gate on a
+# day nobody chose, which is how a device becomes an obstacle and gets bypassed.
 allow=""
-[ -f "$ALLOW" ] && allow=$(grep -vE '^\s*#|^\s*$' "$ALLOW" | awk '{print $1}' | sort -u)
+allow_expired=""
+if [ -f "$ALLOW" ]; then
+  today=$(date +%F)
+  while IFS= read -r line || [ -n "$line" ]; do
+    line="${line%%#*}"
+    line="$(printf '%s' "$line" | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//')"
+    [ -z "$line" ] && continue
+    entry_name=$(printf '%s' "$line" | awk '{print $1}')
+    entry_exp=$(printf '%s' "$line" | awk '{print $2}')
+    if ! printf '%s' "$entry_exp" | grep -qE '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'; then
+      printf '%s: `%s` has no expiry date. Format: <target> <YYYY-MM-DD> # reason\n' \
+        "$ALLOW" "$entry_name"
+      FAILED=1
+      continue
+    fi
+    allow="$allow$entry_name
+"
+    if [[ "$entry_exp" < "$today" ]]; then
+      allow_expired="$allow_expired  $entry_name (lapsed $entry_exp)
+"
+    fi
+  done < "$ALLOW"
+fi
 
 # History is allowed to name things that are gone. A completed item records what
 # was actually run at the time; rewriting it to match today's target names would
@@ -154,10 +189,19 @@ for f in $files; do
   done
 done
 
+# Printed even when the run fails, because a lapsed intention is worth seeing
+# whether or not something else went wrong on the same run.
+if [ -n "$allow_expired" ]; then
+  echo
+  echo "docs-targets: WARNING — allowlisted intentions have lapsed:"
+  printf '%s' "$allow_expired"
+  echo "  Build it, drop the claim from the doc, or push the date out on purpose."
+fi
+
 if [ "$FAILED" -ne 0 ]; then
   echo
   echo "Either build the target, fix the document, or — if it is PROPOSING the"
-  echo "target — add the name to $ALLOW with a one-line reason."
+  echo "target — add it to $ALLOW as: <target> <YYYY-MM-DD> # reason"
   exit 1
 fi
 
