@@ -2,6 +2,7 @@
 	import { DropdownMenu } from 'bits-ui';
 	import { flyAndScale } from '$lib/utils/transitions';
 	import { getContext } from 'svelte';
+	import { config } from '$lib/stores';
 	import Icon from '$lib/components/Icon.svelte';
 
 	import Dropdown from '$lib/components/common/Dropdown.svelte';
@@ -73,15 +74,17 @@
 				<div style="--d:flex; --ai:center">{$i18n.t('Edit')}</div>
 			</DropdownMenu.Item>
 
-			<DropdownMenu.Item
-				style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem"
-				on:click={() => {
-					shareHandler();
-				}}
-			>
-				<Icon name="share" />
-				<div style="--d:flex; --ai:center">{$i18n.t('Share')}</div>
-			</DropdownMenu.Item>
+			{#if $config?.features.enable_community_sharing}
+				<DropdownMenu.Item
+					style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem"
+					on:click={() => {
+						shareHandler();
+					}}
+				>
+					<Icon name="share" />
+					<div style="--d:flex; --ai:center">{$i18n.t('Share')}</div>
+				</DropdownMenu.Item>
+			{/if}
 
 			<DropdownMenu.Item
 				style="--d:flex; --g:0.5rem; --ai:center; --px:0.6rem; --py:0.5rem; --size:0.8rem; --weight:500; --cur:pointer; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-800); --radius:0.4rem"

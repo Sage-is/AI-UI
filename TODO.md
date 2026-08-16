@@ -45,7 +45,7 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
         `sage-startr-cloud` carries none. Establish which is intended.
   - [ ] Storage shapes differ: `try-sage-is` uses a docker volume, `sage-startr-cloud`
         a bind mount into `/root/Sync`. Pick one.
-  - [ ] If both need the same wheels, evaluate a shared read-only wheelhouse volume —
+  - [x] If both need the same wheels, evaluate a shared read-only wheelhouse volume —
         feasible since both run on the same node, and pays the 5.4 GB once not twice.
   - [ ] Mark `ml_packages` and `cache` as regenerable so infrastructure backups can
         exclude them (they are ~36% of one node's nightly backup today)

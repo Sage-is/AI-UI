@@ -59,31 +59,42 @@ def _runs(raw: str, flat: str) -> list[dict]:
     """
     from bs4 import BeautifulSoup
 
-    root = BeautifulSoup(raw or "", "html.parser").find(["li", "p"])
-    if root is None:
+    roots = BeautifulSoup(raw or "", "html.parser").find_all(["li", "p"], recursive=False)
+    if not roots:
         return [{"text": flat, "code": False}] if flat else []
 
     runs: list[dict] = []
-    for node in root.children:
-        name = getattr(node, "name", None)
-        # The prose format puts the entry's title in a <strong>; the parser
-        # drops it from `content` and so must this.
-        if name == "strong":
-            continue
-        if name == "code":
-            runs.append({"text": node.get_text(), "code": True})
-        else:
-            runs.append(
-                {
-                    "text": node.get_text() if hasattr(node, "get_text") else str(node),
-                    "code": False,
-                }
-            )
+    title_dropped = False
+    for i, root in enumerate(roots):
+        # A multi-paragraph entry arrives as a run of <p>s. The parser joins
+        # its paragraphs with a single space in `content`; a single space run
+        # here keeps the rendered text equal to `content`, so the panel and
+        # `/api/changelog` cannot disagree about what an entry says.
+        if i:
+            runs.append({"text": " ", "code": False})
+        for node in root.children:
+            name = getattr(node, "name", None)
+            # The prose format puts the entry's title in the FIRST <strong> of
+            # the first <p>; the parser drops exactly that one from `content`
+            # and so must this. A later <strong> is emphasis inside the body —
+            # skipping those ate the bold "2.4" out of two v2.3.1 entries.
+            if name == "strong" and i == 0 and root.name == "p" and not title_dropped:
+                title_dropped = True
+                continue
+            if name == "code":
+                runs.append({"text": node.get_text(), "code": True})
+            else:
+                runs.append(
+                    {
+                        "text": node.get_text() if hasattr(node, "get_text") else str(node),
+                        "code": False,
+                    }
+                )
 
     # The list format is "Title: content", split on the FIRST ": " — mirroring
     # `parse_section` exactly, so the two cannot disagree about where the title
-    # ends.
-    if root.name == "li":
+    # ends. A list entry is always a single <li>.
+    if roots[0].name == "li":
         for i, run in enumerate(runs):
             if not run["code"] and ": " in run["text"]:
                 tail = run["text"].split(": ", 1)[1]

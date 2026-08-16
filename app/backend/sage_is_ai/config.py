@@ -1468,7 +1468,11 @@ ENABLE_ADMIN_CHAT_ACCESS = (
 ENABLE_COMMUNITY_SHARING = PersistentConfig(
     "ENABLE_COMMUNITY_SHARING",
     "ui.enable_community_sharing",
-    os.environ.get("ENABLE_COMMUNITY_SHARING", "True").lower() == "true",
+    # Defaults OFF: the community sharing destinations are not built in this
+    # fork yet (community.sage.is lands ~2 weeks out), and one share handler
+    # currently points at a public request bin. Turn this on only after the
+    # sharing site exists and the handlers are rewired. See TODO.md.
+    os.environ.get("ENABLE_COMMUNITY_SHARING", "False").lower() == "true",
 )
 
 ENABLE_MESSAGE_RATING = PersistentConfig(

@@ -202,17 +202,28 @@ def parse_section(h3_tag):
                     strong_tag.decompose()
                 content_text = clone.get_text().strip() if clone else ""
 
-                # Check if next sibling is a plain <p> (continuation of this entry)
+                # Every following plain <p> before the next <strong> title is a
+                # continuation of this entry. This used to take at most ONE:
+                # paragraph three onward vanished from `content`, and `raw` was
+                # left holding only the last paragraph taken — nine of v3.1.0's
+                # entries rendered truncated on the wizard panel. `raw` carries
+                # the full run of <p>s so a renderer can rebuild the entry.
+                # get_text() without strip=True for the same reason as above:
+                # strip=True concatenates stripped fragments and eats the
+                # spaces around inline code.
+                parts = [str(current)]
                 nxt = current.find_next_sibling()
-                if nxt and nxt.name == "p" and not nxt.find("strong"):
-                    content_text = (content_text + " " + nxt.get_text(strip=True)).strip()
+                while nxt and nxt.name == "p" and not nxt.find("strong"):
+                    content_text = (content_text + " " + nxt.get_text().strip()).strip()
+                    parts.append(str(nxt))
                     # Skip that sibling in the outer loop
                     current = nxt
+                    nxt = nxt.find_next_sibling()
 
                 items.append({
                     "title": title,
                     "content": content_text,
-                    "raw": str(current),
+                    "raw": "".join(parts),
                 })
 
         current = current.find_next_sibling()

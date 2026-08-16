@@ -1496,7 +1496,7 @@
           "text": "Storage shapes differ: `try-sage-is` uses a docker volume, `sage-startr-cloud`"
         },
         {
-          "checked": false,
+          "checked": true,
           "line_num": 48,
           "tags": [],
           "text": "If both need the same wheels, evaluate a shared read-only wheelhouse volume \u2014"
@@ -1516,7 +1516,7 @@
       "tags": [
         "#critical"
       ],
-      "text": "**Converge the two deployed instances: `try-sage-is` vs `sage-startr-cloud`**\n- [ ] `try-sage-is` carries **5.4 GB** of sprig-installed `ml_packages` (190 packages);\n- [ ] Storage shapes differ: `try-sage-is` uses a docker volume, `sage-startr-cloud`\n- [ ] If both need the same wheels, evaluate a shared read-only wheelhouse volume \u2014\n- [ ] Mark `ml_packages` and `cache` as regenerable so infrastructure backups can\n\n`#critical`\n`TODO.md:L41`",
+      "text": "**Converge the two deployed instances: `try-sage-is` vs `sage-startr-cloud`**\n- [ ] `try-sage-is` carries **5.4 GB** of sprig-installed `ml_packages` (190 packages);\n- [ ] Storage shapes differ: `try-sage-is` uses a docker volume, `sage-startr-cloud`\n- [x] If both need the same wheels, evaluate a shared read-only wheelhouse volume \u2014\n- [ ] Mark `ml_packages` and `cache` as regenerable so infrastructure backups can\n\n`#critical`\n`TODO.md:L41`",
       "type": "text",
       "width": 280,
       "x": 360,
