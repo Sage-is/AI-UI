@@ -23,6 +23,22 @@
      real shared rule and not a private one. #}
   <p class="toast toast-float toast-{{ kind }}" role="status" data-cy="panel-message">{{ message }}</p>
   {% endif %}
+  {% if active_theme %}
+  {# A grafted theme Sprig owns the whole look — accents AND grays — so the
+     colour fields below are parked rather than half-applied. Say who is
+     winning in plain words and offer the one-click way out. #}
+  <section data-cy="branding-theme-sprig-warning" role="status"
+           style="--p:0.6rem 0.8rem; --br:0.5rem; outline:1px solid var(--line); --m:0 0 1rem">
+    <p style="--m:0; {{ label_s }}">A theme Sprig is dressing this instance right now: {{ active_theme.label }}</p>
+    <p style="--m:0.25rem 0 0; {{ help_s }}">While it is grafted, the Sprig picks the colours — the ones below are
+      saved but will not show. Prune the Sprig to let your colours through.</p>
+    <form data-swap-off hx-post="/pages/admin/branding/prune-theme" hx-target="#branding-panel" hx-swap="outerHTML"
+          style="--m:0.5rem 0 0">
+      <button type="submit" data-cy="branding-prune-theme"
+              style="--p:0.35rem 0.9rem; --size:0.8rem; --br:999px; outline:1px solid var(--line); --cur:pointer">Prune the theme Sprig</button>
+    </form>
+  </section>
+  {% endif %}
   {# `data-swap-off` for the same reason as the Sprigs wiring form: this endpoint
      answers with a FRAGMENT, and the form carries no `action`, so an unclaimed
      submit would resolve to this page and re-render it — throwing away whatever

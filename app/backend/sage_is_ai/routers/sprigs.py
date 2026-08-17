@@ -348,13 +348,11 @@ async def prune_sprig(
     )
     # Themes have no process and no base_url; active = the config pointer
     # names this sprig. First deliver-kind capability with a prune-time reset.
-    was_active_theme = (
-        h.get("capability") == "theme"
-        and form_data.name == str(cfg.SPRIG_ACTIVE_THEME or "")
+    was_active_theme = h.get("capability") == "theme" and form_data.name == str(
+        cfg.SPRIG_ACTIVE_THEME or ""
     )
-    was_active_ui = (
-        h.get("capability") == "ui"
-        and form_data.name == str(cfg.SPRIG_ACTIVE_UI or "")
+    was_active_ui = h.get("capability") == "ui" and form_data.name == str(
+        cfg.SPRIG_ACTIVE_UI or ""
     )
     # Independent of "active": an admin can grant scripting to a Sprig that was
     # never activated, and removing it must still take the grant with it.
@@ -416,7 +414,9 @@ async def prune_sprig(
         # /themes/active.css falls back to the empty default sheet immediately;
         # the volume copy is gone with the prune, the pointer must follow.
         cfg.SPRIG_ACTIVE_THEME = ""
-        log.info("pruned active theme sprig '%s'; default look restored", form_data.name)
+        log.info(
+            "pruned active theme sprig '%s'; default look restored", form_data.name
+        )
 
     if was_active_ui:
         # Same shape as the theme reset: the bundle is gone, so the pointer goes
@@ -440,20 +440,34 @@ async def prune_sprig(
     # fragment view all restated these independently, which is precisely the
     # written-twice drift this codebase is trying to shed.
     resets = [
-        (was_active_embedding,
-         "Embedding dispatch reset — graft a cultivar to restore document search."),
-        (was_active_reranker,
-         "Reranking reset — hybrid search runs without rerank until a reranker is grafted."),
-        (was_active_stt,
-         "Speech-to-text reset — graft an STT Sprig™ to restore local voice input."),
-        (was_active_theme,
-         "Theme reset — the interface returns to the default look on reload."),
-        (was_active_ui,
-         "Fragment removed — the page returns to its default layout on reload."),
-        (had_scripting_grant,
-         "Scripting permission revoked with the Sprig™ it was granted to."),
-        (had_wires,
-         "Wires discarded with the Sprig™ they configured, secrets included."),
+        (
+            was_active_embedding,
+            "Embedding dispatch reset — graft a cultivar to restore document search.",
+        ),
+        (
+            was_active_reranker,
+            "Reranking reset — hybrid search runs without rerank until a reranker is grafted.",
+        ),
+        (
+            was_active_stt,
+            "Speech-to-text reset — graft an STT Sprig™ to restore local voice input.",
+        ),
+        (
+            was_active_theme,
+            "Theme reset — the interface returns to the default look on reload.",
+        ),
+        (
+            was_active_ui,
+            "Fragment removed — the page returns to its default layout on reload.",
+        ),
+        (
+            had_scripting_grant,
+            "Scripting permission revoked with the Sprig™ it was granted to.",
+        ),
+        (
+            had_wires,
+            "Wires discarded with the Sprig™ they configured, secrets included.",
+        ),
     ]
 
     return {
@@ -509,7 +523,9 @@ async def set_ui_scripting_grant(
     else:
         if str(cfg.SPRIG_UI_SCRIPTING_GRANT or "") == form_data.name:
             cfg.SPRIG_UI_SCRIPTING_GRANT = ""
-            log.info("scripting revoked for ui sprig '%s' by %s", form_data.name, user.id)
+            log.info(
+                "scripting revoked for ui sprig '%s' by %s", form_data.name, user.id
+            )
 
     return {
         "status": True,

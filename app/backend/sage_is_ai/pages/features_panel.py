@@ -29,15 +29,26 @@ __all__ = ["render_features", "save_features", "FIELDS"]
 
 # key, label, caption, beta. Order is render order; adding a feature is one row.
 FIELDS: tuple[tuple[str, str, str, bool], ...] = (
-    ("ENABLE_COMMUNITY_SHARING", "Community Sharing",
-     "Allow users to share conversations with the community", False),
-    ("ENABLE_MESSAGE_RATING", "Message Rating",
-     "Allow users to rate AI responses", False),
+    (
+        "ENABLE_COMMUNITY_SHARING",
+        "Community Sharing",
+        "Allow users to share conversations with the community",
+        False,
+    ),
+    (
+        "ENABLE_MESSAGE_RATING",
+        "Message Rating",
+        "Allow users to rate AI responses",
+        False,
+    ),
     ("ENABLE_NOTES", "Notes", "Enable note-taking features", True),
-    ("ENABLE_SPACES", "Spaces",
-     "Enable workspace and collaboration spaces", True),
-    ("ENABLE_USER_WEBHOOKS", "User Webhooks",
-     "Allow users to configure webhook integrations", False),
+    ("ENABLE_SPACES", "Spaces", "Enable workspace and collaboration spaces", True),
+    (
+        "ENABLE_USER_WEBHOOKS",
+        "User Webhooks",
+        "Allow users to configure webhook integrations",
+        False,
+    ),
 )
 
 
@@ -95,7 +106,11 @@ async def save_features(request: Request, user, form: dict) -> str:
     handler is where the side effects of each flag live, and reproducing them
     would be a second copy of the rules that drift apart on the first change.
     """
-    from sage_is_ai.routers.auths import AdminConfig, get_admin_config, update_admin_config
+    from sage_is_ai.routers.auths import (
+        AdminConfig,
+        get_admin_config,
+        update_admin_config,
+    )
 
     current = await get_admin_config(request, user)
     merged = dict(current)

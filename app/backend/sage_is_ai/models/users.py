@@ -167,9 +167,7 @@ class UsersTable:
     def get_user_by_name(self, name: str) -> Optional[UserModel]:
         try:
             with get_db() as db:
-                user = db.query(User).filter(
-                    User.name.ilike(name)
-                ).first()
+                user = db.query(User).filter(User.name.ilike(name)).first()
                 return UserModel.model_validate(user) if user else None
         except Exception:
             return None
@@ -418,9 +416,7 @@ class UsersTable:
     def get_expired_temporary_users(self) -> list[UserModel]:
         with get_db() as db:
             now = int(time.time())
-            temp_users = (
-                db.query(User).filter(User.role == "temporary").all()
-            )
+            temp_users = db.query(User).filter(User.role == "temporary").all()
             expired = []
             for u in temp_users:
                 if u.info and isinstance(u.info, dict):

@@ -1,8 +1,7 @@
 import json
 import uuid
 from sage_is_ai.utils.redis import get_redis_connection
-from typing import Optional, List, Tuple
-import pycrdt as Y
+from typing import List
 
 
 class RedisLock:

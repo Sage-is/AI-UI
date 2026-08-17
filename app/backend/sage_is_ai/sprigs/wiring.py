@@ -87,11 +87,16 @@ def validate(spec: dict, submitted: dict[str, Any]) -> dict[str, Any]:
         kind = wire.get("type", "text")
 
         if kind == "bool":
-            out[name] = bool(value) if isinstance(value, bool) else str(value).lower() in (
-                "1",
-                "true",
-                "on",
-                "yes",
+            out[name] = (
+                bool(value)
+                if isinstance(value, bool)
+                else str(value).lower()
+                in (
+                    "1",
+                    "true",
+                    "on",
+                    "yes",
+                )
             )
             continue
 
@@ -104,7 +109,9 @@ def validate(spec: dict, submitted: dict[str, Any]) -> dict[str, Any]:
             continue
 
         if kind == "url" and text:
-            for candidate in [u.strip() for u in text.replace(",", "\n").splitlines() if u.strip()]:
+            for candidate in [
+                u.strip() for u in text.replace(",", "\n").splitlines() if u.strip()
+            ]:
                 if not candidate.lower().startswith(("http://", "https://")):
                     raise WireError(f"wire {name!r} must be http(s); got {candidate!r}")
 

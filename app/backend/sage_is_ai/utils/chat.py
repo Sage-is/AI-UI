@@ -1,17 +1,15 @@
-import time
 import logging
 import sys
 
-from aiocache import cached
-from typing import Any, Optional
+from typing import Any
 import random
 import json
 import inspect
 import uuid
 import asyncio
 
-from fastapi import Request, status
-from starlette.responses import Response, StreamingResponse, JSONResponse
+from fastapi import Request
+from starlette.responses import StreamingResponse
 
 
 from sage_is_ai.utils.misc import get_available_models
@@ -33,16 +31,13 @@ from sage_is_ai.routers.ollama import (
 )
 
 from sage_is_ai.routers.pipelines import (
-    process_pipeline_inlet_filter,
     process_pipeline_outlet_filter,
 )
 
 from sage_is_ai.models.functions import Functions
-from sage_is_ai.models.models import Models
 
 
 from sage_is_ai.utils.plugin import (
-    load_function_module_by_id,
     get_function_module_from_cache,
 )
 from sage_is_ai.utils.models import get_all_models, check_model_access
@@ -131,7 +126,7 @@ async def generate_direct_chat_completion(
             async def background():
                 try:
                     del sio.handlers["/"][channel]
-                except Exception as e:
+                except Exception:
                     pass
 
             # Return the streaming response

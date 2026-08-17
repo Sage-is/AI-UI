@@ -1,4 +1,3 @@
-import json
 import logging
 import time
 from typing import Optional
@@ -6,8 +5,6 @@ import uuid
 
 from sage_is_ai.internal.db import Base, get_db
 from sage_is_ai.env import SRC_LOG_LEVELS
-
-from sage_is_ai.models.files import FileMetadataResponse
 
 
 from pydantic import BaseModel, ConfigDict

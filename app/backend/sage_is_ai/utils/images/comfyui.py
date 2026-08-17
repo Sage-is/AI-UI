@@ -27,7 +27,7 @@ def queue_prompt(prompt, client_id, base_url, api_key):
             data=data,
             headers={**default_headers, "Authorization": f"Bearer {api_key}"},
         )
-        response = urllib.request.urlopen(req).read()
+        response = urllib.request.urlopen(req).read()  # nosec B310 — operator-configured ComfyUI base_url, not user input
         return json.loads(response)
     except Exception as e:
         log.exception(f"Error while queuing prompt: {e}")
@@ -42,7 +42,7 @@ def get_image(filename, subfolder, folder_type, base_url, api_key):
         f"{base_url}/view?{url_values}",
         headers={**default_headers, "Authorization": f"Bearer {api_key}"},
     )
-    with urllib.request.urlopen(req) as response:
+    with urllib.request.urlopen(req) as response:  # nosec B310 — operator-configured ComfyUI base_url, not user input
         return response.read()
 
 
@@ -60,7 +60,7 @@ def get_history(prompt_id, base_url, api_key):
         f"{base_url}/history/{prompt_id}",
         headers={**default_headers, "Authorization": f"Bearer {api_key}"},
     )
-    with urllib.request.urlopen(req) as response:
+    with urllib.request.urlopen(req) as response:  # nosec B310 — operator-configured ComfyUI base_url, not user input
         return json.loads(response.read())
 
 
@@ -129,24 +129,24 @@ async def comfyui_generate_image(
                     workflow[node_id]["inputs"][node.key] = model
             elif node.type == "prompt":
                 for node_id in node.node_ids:
-                    workflow[node_id]["inputs"][
-                        node.key if node.key else "text"
-                    ] = payload.prompt
+                    workflow[node_id]["inputs"][node.key if node.key else "text"] = (
+                        payload.prompt
+                    )
             elif node.type == "negative_prompt":
                 for node_id in node.node_ids:
-                    workflow[node_id]["inputs"][
-                        node.key if node.key else "text"
-                    ] = payload.negative_prompt
+                    workflow[node_id]["inputs"][node.key if node.key else "text"] = (
+                        payload.negative_prompt
+                    )
             elif node.type == "width":
                 for node_id in node.node_ids:
-                    workflow[node_id]["inputs"][
-                        node.key if node.key else "width"
-                    ] = payload.width
+                    workflow[node_id]["inputs"][node.key if node.key else "width"] = (
+                        payload.width
+                    )
             elif node.type == "height":
                 for node_id in node.node_ids:
-                    workflow[node_id]["inputs"][
-                        node.key if node.key else "height"
-                    ] = payload.height
+                    workflow[node_id]["inputs"][node.key if node.key else "height"] = (
+                        payload.height
+                    )
             elif node.type == "n":
                 for node_id in node.node_ids:
                     workflow[node_id]["inputs"][
@@ -154,9 +154,9 @@ async def comfyui_generate_image(
                     ] = payload.n
             elif node.type == "steps":
                 for node_id in node.node_ids:
-                    workflow[node_id]["inputs"][
-                        node.key if node.key else "steps"
-                    ] = payload.steps
+                    workflow[node_id]["inputs"][node.key if node.key else "steps"] = (
+                        payload.steps
+                    )
             elif node.type == "seed":
                 seed = (
                     payload.seed

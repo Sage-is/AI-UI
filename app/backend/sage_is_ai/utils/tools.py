@@ -57,9 +57,9 @@ def get_tools(
     for tool_id in tool_ids:
         if tool_id.startswith("server:"):
             server_idx = int(tool_id.split(":")[1])
-            tool_server_connection = (
-                request.app.state.config.TOOL_SERVER_CONNECTIONS[server_idx]
-            )
+            tool_server_connection = request.app.state.config.TOOL_SERVER_CONNECTIONS[
+                server_idx
+            ]
             tool_server_data = None
             for server in request.app.state.TOOL_SERVERS:
                 if server["idx"] == server_idx:

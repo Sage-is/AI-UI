@@ -50,6 +50,7 @@ vendored copy instead. Until then, keep layout that must not break in
 pages.css: the local sheet is what survives the CDN being unreachable.
 """
 
+import re
 from functools import lru_cache
 from hashlib import sha256
 from html import escape
@@ -83,7 +84,9 @@ def asset_url(filename: str) -> str:
     file changes under a running process, so the cost of a stat-and-hash per
     render buys the thing you started the reloader for.
     """
-    token = _asset_token(filename) if PAGES_RELOAD_DIRS else _asset_token_cached(filename)
+    token = (
+        _asset_token(filename) if PAGES_RELOAD_DIRS else _asset_token_cached(filename)
+    )
     return f"/pages/_assets/{filename}?v={escape(token, quote=True)}"
 
 
@@ -148,6 +151,23 @@ def _ui_sprig_slot(request: Request) -> str:
     return f'<section id="sprig-ui-slot" data-sprig-ui="{escape(name, quote=True)}">{markup}</section>'
 
 
+_CSS_COLOR = re.compile(
+    r"^(#[0-9a-fA-F]{3,8}|[a-zA-Z]{1,30}|(rgb|rgba|hsl|hsla)\([0-9.,%\s/deg]{1,60}\))$"
+)
+
+
+def _css_color(value) -> str:
+    """A color literal safe to interpolate into the shell's <style> block.
+
+    Branding is admin-set, but these bytes land inside a style element the
+    whole admin surface shares — the allowlist keeps a stored value from ever
+    closing the tag or smuggling a url(). Anything unrecognized renders as
+    nothing, which is the framework default, not an error.
+    """
+    v = str(value or "").strip()
+    return v if v and _CSS_COLOR.match(v) else ""
+
+
 def render_page(
     *,
     request: Request,
@@ -194,6 +214,30 @@ def render_page(
         f'<script defer src="{escape(asset_url(s), quote=True)}"></script>'
         for s in scripts
     )
+
+    # Admin branding colors, mirrored from the SPA's $lib/utils/branding.ts —
+    # same props, same rule, change one, change both. An active theme Sprig™
+    # wins: while SPRIG_ACTIVE_THEME names one, branding colors step back and
+    # the branding panel offers the prune. The var() re-declarations restore
+    # Startr.Style's own cascade in case a sheet severed it with literals; the
+    # framework's color-mix recipes re-resolve — no color math here.
+    brand_style = ""
+    cfg = request.app.state.config
+    if not str(cfg.SPRIG_ACTIVE_THEME or "").strip():
+        b = cfg.BRANDING if isinstance(cfg.BRANDING, dict) else {}
+        primary = _css_color(b.get("primary_color"))
+        accent = _css_color(b.get("accent_color"))
+        decls = []
+        if primary:
+            decls += [
+                f"--primary:{primary}",
+                "--links:var(--primary)",
+                "--button-hover:var(--primary)",
+            ]
+        if accent:
+            decls.append(f"--secondary:{accent}")
+        if decls:
+            brand_style = f"\n  <style>:root{{{';'.join(decls)}}}</style>"
     sub = (
         f'<p style="--size:.8rem; --op:.65; --m:.25rem 0 0">{escape(subheading)}</p>'
         if subheading
@@ -215,7 +259,7 @@ def render_page(
            exception to the zero-egress line the rest of the product holds. An
            air-gapped Rootstock gets unstyled chrome. See the EGRESS note in this module's docstring. -->
   <link rel="stylesheet" href="https://startr.style/style.css" />
-  <link rel="stylesheet" href="{escape(asset_url('pages.css'), quote=True)}" />
+  <link rel="stylesheet" href="{escape(asset_url("pages.css"), quote=True)}" />{brand_style}
 </head>
 <!-- Authored mobile-first: base values are the phone case, and a suffix appears
      only where the layout actually changes going up. -->

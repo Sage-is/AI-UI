@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 from sage_is_ai.bridges.types import OutgoingMessage
 from sage_is_ai.models.bridges import BridgeConnections, BridgeThreads
@@ -27,7 +26,8 @@ async def forward_space_message_to_bridges(
     # NOTE: connection.channel_id is a DB column name -- kept for backwards compatibility
     connections = BridgeConnections.get_enabled_connections()
     space_bridges = [
-        c for c in connections
+        c
+        for c in connections
         if c.mode == "channel_bridge" and c.channel_id == space_id
     ]
 

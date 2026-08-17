@@ -3,7 +3,6 @@ import logging
 import asyncio
 import sys
 
-from aiocache import cached
 from fastapi import Request
 
 from sage_is_ai.routers import openai, ollama
@@ -15,7 +14,6 @@ from sage_is_ai.models.models import Models
 
 
 from sage_is_ai.utils.plugin import (
-    load_function_module_by_id,
     get_function_module_from_cache,
 )
 from sage_is_ai.utils.access_control import has_access
@@ -174,12 +172,15 @@ async def get_all_models(request, refresh: bool = False, user: UserModel = None)
         if custom_model.base_model_id is None:
             # Applied directly to a base model
             for model in models:
-                if custom_model.id == model["id"] or (
-                    model.get("owned_by") == "ollama"
-                    and custom_model.id
-                    == model["id"].split(":")[
-                        0
-                    ]  # Ollama may return model ids in different formats (e.g., 'llama3' vs. 'llama3:7b')
+                if (
+                    custom_model.id == model["id"]
+                    or (
+                        model.get("owned_by") == "ollama"
+                        and custom_model.id
+                        == model["id"].split(":")[
+                            0
+                        ]  # Ollama may return model ids in different formats (e.g., 'llama3' vs. 'llama3:7b')
+                    )
                 ):
                     if custom_model.is_active:
                         model["name"] = custom_model.name

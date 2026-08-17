@@ -45,8 +45,13 @@ class MessagePipeline:
             return
 
         # Check allowlist
-        if connection.allowed_ids and message.external_user_id not in connection.allowed_ids:
-            log.info(f"User {message.external_user_id} not in allowlist for {connection.id}")
+        if (
+            connection.allowed_ids
+            and message.external_user_id not in connection.allowed_ids
+        ):
+            log.info(
+                f"User {message.external_user_id} not in allowlist for {connection.id}"
+            )
             return
 
         # Resolve or create Sage user
@@ -195,7 +200,6 @@ class MessagePipeline:
             )
 
             # Send response back to external platform
-            from sage_is_ai.bridges.manager import BridgeManager
 
             bridge_manager = getattr(self.app.state, "bridge_manager", None)
             if bridge_manager:
@@ -236,7 +240,12 @@ class MessagePipeline:
         msg = Messages.insert_new_message(
             form_data=MessageForm(
                 content=message.content,
-                data={"bridge": {"platform": connection.platform, "connection_id": connection.id}},
+                data={
+                    "bridge": {
+                        "platform": connection.platform,
+                        "connection_id": connection.id,
+                    }
+                },
             ),
             channel_id=space.id,
             user_id=user.id,
@@ -266,7 +275,9 @@ class MessagePipeline:
 
         # If @sage mentioned, generate AI response
         if message.mentions_bot and message.content:
-            await self._generate_space_ai_response(connection, space, message, user, msg)
+            await self._generate_space_ai_response(
+                connection, space, message, user, msg
+            )
 
     async def _generate_space_ai_response(
         self, connection, space, message, user, space_msg
@@ -387,7 +398,10 @@ class MessagePipeline:
         if connection.user_provisioning == "disabled":
             return None
         if connection.user_provisioning == "pre_approved":
-            if not connection.allowed_ids or message.external_user_id not in connection.allowed_ids:
+            if (
+                not connection.allowed_ids
+                or message.external_user_id not in connection.allowed_ids
+            ):
                 return None
 
         # Auto-create user
@@ -462,7 +476,9 @@ class MessagePipeline:
             if m.get("role") in ("user", "assistant", "system") and m.get("content")
         ]
 
-    async def _process_media(self, message: IncomingMessage, user: UserModel) -> list[str]:
+    async def _process_media(
+        self, message: IncomingMessage, user: UserModel
+    ) -> list[str]:
         """Download media attachments and store them as files."""
         file_ids = []
         bridge_manager = getattr(self.app.state, "bridge_manager", None)
@@ -489,20 +505,14 @@ class MessagePipeline:
 
     def _get_default_model(self) -> str:
         """Get the default model for bridge AI chats."""
-        return getattr(
-            self.app.state.config, "BRIDGE_DEFAULT_MODEL", ""
-        )
+        return getattr(self.app.state.config, "BRIDGE_DEFAULT_MODEL", "")
 
     def _check_rate_limit(self, user_id: str) -> bool:
         """Check if a user is within rate limits."""
-        limit = getattr(
-            self.app.state.config, "BRIDGE_RATE_LIMIT_PER_MINUTE", 30
-        )
+        limit = getattr(self.app.state.config, "BRIDGE_RATE_LIMIT_PER_MINUTE", 30)
         now = time.time()
         # Clean old entries
-        _rate_limits[user_id] = [
-            ts for ts in _rate_limits[user_id] if now - ts < 60
-        ]
+        _rate_limits[user_id] = [ts for ts in _rate_limits[user_id] if now - ts < 60]
         if len(_rate_limits[user_id]) >= limit:
             return False
         _rate_limits[user_id].append(now)

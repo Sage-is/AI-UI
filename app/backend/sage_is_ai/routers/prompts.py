@@ -8,8 +8,12 @@ from sage_is_ai.models.prompts import (
 )
 from sage_is_ai.constants import ERROR_MESSAGES
 from fastapi import APIRouter, Depends, HTTPException, status, Request
-from sage_is_ai.utils.auth import get_admin_user, get_verified_user
-from sage_is_ai.utils.access_control import has_access, has_facilitator_access, has_permission
+from sage_is_ai.utils.auth import get_verified_user
+from sage_is_ai.utils.access_control import (
+    has_access,
+    has_facilitator_access,
+    has_permission,
+)
 
 router = APIRouter()
 

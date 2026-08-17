@@ -1,9 +1,7 @@
-import os
 import re
 
 import logging
 import aiohttp
-from pathlib import Path
 from typing import Optional
 
 from sage_is_ai.models.functions import (
@@ -101,7 +99,9 @@ async def load_function_from_url(
             file_name.endswith(".py")
             and (not file_name.startswith(("main.py", "index.py", "__init__.py")))
         )
-        else url_parts[-2] if len(url_parts) > 1 else "function"
+        else url_parts[-2]
+        if len(url_parts) > 1
+        else "function"
     )
 
     try:

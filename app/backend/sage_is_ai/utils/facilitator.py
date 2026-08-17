@@ -1,4 +1,3 @@
-from typing import Optional
 from sage_is_ai.models.groups import Groups
 
 

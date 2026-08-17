@@ -1,4 +1,4 @@
-from typing import Optional, Union, List, Dict, Any
+from typing import Optional, List, Dict, Any
 from sage_is_ai.models.users import Users, UserModel
 from sage_is_ai.models.groups import Groups
 

@@ -46,21 +46,27 @@ __all__ = ["render_auth", "save_auth", "PROVIDERS", "SECRETS", "TOGGLES"]
 # callback path, id placeholder, secret placeholder.
 PROVIDERS: tuple[tuple[str, ...], ...] = (
     (
-        "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "Google",
+        "GOOGLE_CLIENT_ID",
+        "GOOGLE_CLIENT_SECRET",
+        "Google",
         "https://console.cloud.google.com/apis/credentials",
         "Open Google Cloud Console",
         "create an OAuth 2.0 Client ID under Credentials, then Create "
         "Credentials, then OAuth client ID. Choose Web application as the type.",
         "/oauth/google/callback",
-        "123456789.apps.googleusercontent.com", "GOCSPX-...",
+        "123456789.apps.googleusercontent.com",
+        "GOCSPX-...",
     ),
     (
-        "GITHUB_CLIENT_ID", "GITHUB_CLIENT_SECRET", "GitHub",
+        "GITHUB_CLIENT_ID",
+        "GITHUB_CLIENT_SECRET",
+        "GitHub",
         "https://github.com/settings/developers",
         "Open GitHub Developer Settings",
         "click New OAuth App, then fill in your app name and homepage URL.",
         "/oauth/github/callback",
-        "Iv1.abc123...", "the generated client secret",
+        "Iv1.abc123...",
+        "the generated client secret",
     ),
 )
 
@@ -75,14 +81,26 @@ SECRETS: tuple[str, ...] = (
 # belongs to the admin config; the rest belong to the OAuth config. Two homes,
 # two handlers, one form.
 TOGGLES: tuple[tuple[str, str, str, str], ...] = (
-    ("ENABLE_SIGNUP", "admin", "Enable new sign ups",
-     "Anyone who can reach this instance can create an account."),
-    ("ENABLE_OAUTH_SIGNUP", "oauth", "Allow OAuth sign up",
-     "New people can create an account by signing in with a provider above. "
-     "Turn this off and only existing accounts can use OAuth."),
-    ("OAUTH_MERGE_ACCOUNTS_BY_EMAIL", "oauth", "Merge accounts by email",
-     "Link an OAuth login to an existing account when the email matches. Turn "
-     "this off to keep OAuth and password accounts separate."),
+    (
+        "ENABLE_SIGNUP",
+        "admin",
+        "Enable new sign ups",
+        "Anyone who can reach this instance can create an account.",
+    ),
+    (
+        "ENABLE_OAUTH_SIGNUP",
+        "oauth",
+        "Allow OAuth sign up",
+        "New people can create an account by signing in with a provider above. "
+        "Turn this off and only existing accounts can use OAuth.",
+    ),
+    (
+        "OAUTH_MERGE_ACCOUNTS_BY_EMAIL",
+        "oauth",
+        "Merge accounts by email",
+        "Link an OAuth login to an existing account when the email matches. Turn "
+        "this off to keep OAuth and password accounts separate.",
+    ),
 )
 
 # The magic-link SMTP fields: name, label, input type, placeholder.
@@ -93,7 +111,6 @@ SMTP_FIELDS: tuple[tuple[str, str, str, str], ...] = (
     ("MAGIC_LINK_SMTP_PASSWORD", "Password", "password", "App or SMTP password"),
     ("MAGIC_LINK_SMTP_FROM", "From address", "email", "noreply@yourdomain.com"),
 )
-
 
 
 def _hook(key: str) -> str:
@@ -170,7 +187,10 @@ async def render_auth(request: Request, user, saved: bool = False) -> str:
                 "their email. No password needed. Requires SMTP."
             ),
             "fields": [
-                {**field(name, kind, placeholder, str(oauth.get(name) or "")), "label": _(label)}
+                {
+                    **field(name, kind, placeholder, str(oauth.get(name) or "")),
+                    "label": _(label),
+                }
                 for name, label, kind, placeholder in SMTP_FIELDS
             ],
         },
@@ -195,6 +215,7 @@ async def render_auth(request: Request, user, saved: bool = False) -> str:
         save_label=_("Save"),
         note=_("Auth settings saved") if saved else "",
     )
+
 
 def _port(raw: object, fallback: int) -> int:
     """A port the model will accept. `MAGIC_LINK_SMTP_PORT` is typed `int`, and

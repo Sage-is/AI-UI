@@ -10,7 +10,16 @@ from uuid import uuid4
 from sage_is_ai.models.chats import ChatTitleMessagesForm
 from sage_is_ai.config import DATA_DIR, ENABLE_ADMIN_EXPORT
 from sage_is_ai.constants import ERROR_MESSAGES
-from fastapi import APIRouter, Depends, HTTPException, Request, Response, UploadFile, File, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    Request,
+    Response,
+    UploadFile,
+    File,
+    status,
+)
 from pydantic import BaseModel
 from starlette.responses import FileResponse
 
@@ -336,5 +345,3 @@ async def restore_db(file: UploadFile = File(...)):
     finally:
         if tmp_path.exists():
             tmp_path.unlink()
-
-

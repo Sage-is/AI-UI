@@ -1,4 +1,3 @@
-import json
 import time
 import uuid
 from typing import Optional
@@ -29,11 +28,15 @@ class BridgeConnection(Base):
     channel_id = Column(Text, nullable=True)  # linked Sage space (channel_bridge mode)
     model_id = Column(Text, nullable=True)  # default AI model (ai_chat mode)
 
-    user_provisioning = Column(Text, default="auto_create")  # auto_create | pre_approved | disabled
+    user_provisioning = Column(
+        Text, default="auto_create"
+    )  # auto_create | pre_approved | disabled
     allowed_ids = Column(JSON, nullable=True)  # phone/user allowlist
     enabled = Column(Boolean, default=True)
 
-    status = Column(Text, default="disconnected")  # connected/disconnected/error/starting
+    status = Column(
+        Text, default="disconnected"
+    )  # connected/disconnected/error/starting
     status_message = Column(Text, nullable=True)
 
     data = Column(JSON, nullable=True)
@@ -47,8 +50,10 @@ class BridgeThread(Base):
     __tablename__ = "bridge_thread"
     __table_args__ = (
         UniqueConstraint(
-            "connection_id", "external_thread_id", "external_user_id",
-            name="uq_bridge_thread_conn_ext"
+            "connection_id",
+            "external_thread_id",
+            "external_user_id",
+            name="uq_bridge_thread_conn_ext",
         ),
     )
 
@@ -111,7 +116,9 @@ class BridgeThreadModel(BaseModel):
 
     sage_user_id: Optional[str] = None
     sage_chat_id: Optional[str] = None
-    sage_channel_id: Optional[str] = None  # TODO(low): Rename to sage_space_id after DB migration
+    sage_channel_id: Optional[str] = (
+        None  # TODO(low): Rename to sage_space_id after DB migration
+    )
 
     data: Optional[dict] = None
     meta: Optional[dict] = None
@@ -318,9 +325,7 @@ class BridgeThreadTable:
             )
             return [BridgeThreadModel.model_validate(t) for t in threads]
 
-    def update_thread_by_id(
-        self, id: str, **kwargs
-    ) -> Optional[BridgeThreadModel]:
+    def update_thread_by_id(self, id: str, **kwargs) -> Optional[BridgeThreadModel]:
         with get_db() as db:
             thread = db.query(BridgeThread).filter(BridgeThread.id == id).first()
             if not thread:

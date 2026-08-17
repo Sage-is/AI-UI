@@ -1,6 +1,5 @@
 import json
 import logging
-import mimetypes
 import os
 import shutil
 import asyncio
@@ -9,21 +8,15 @@ import subprocess
 
 import uuid
 from datetime import datetime
-from pathlib import Path
-from typing import Iterator, List, Optional, Sequence, Union
+from typing import List, Optional
 
 from fastapi import (
     Depends,
-    FastAPI,
-    File,
-    Form,
     HTTPException,
-    UploadFile,
     Request,
     status,
     APIRouter,
 )
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.concurrency import run_in_threadpool
 from pydantic import BaseModel
 import tiktoken
@@ -74,6 +67,7 @@ def _require_text_splitters():
         RecursiveCharacterTextSplitter, TokenTextSplitter = _rc, _tk
         MarkdownHeaderTextSplitter = _md
 
+
 from sage_is_ai.models.files import FileModel, Files
 from sage_is_ai.models.knowledge import Knowledges
 from sage_is_ai.storage.provider import Storage
@@ -83,7 +77,10 @@ from sage_is_ai.retrieval.vector import factory
 
 # Document loaders
 from sage_is_ai.retrieval.loaders.main import Loader
-from sage_is_ai.retrieval.processors.ai_parser import ai_parse_content, DEFAULT_AI_PARSE_PROMPT
+from sage_is_ai.retrieval.processors.ai_parser import (
+    ai_parse_content,
+    DEFAULT_AI_PARSE_PROMPT,
+)
 from sage_is_ai.retrieval.loaders.youtube import YoutubeLoader
 
 from sage_is_ai.retrieval.web.utils import get_web_loader
@@ -107,12 +104,9 @@ from sage_is_ai.diagnostics import EndpointUnreachable
 from sage_is_ai.config import (
     ENV,
     VECTOR_DB,
-    RAG_EMBEDDING_MODEL_AUTO_UPDATE,
     RAG_EMBEDDING_MODEL_TRUST_REMOTE_CODE,
-    RAG_RERANKING_MODEL_AUTO_UPDATE,
     RAG_RERANKING_MODEL_TRUST_REMOTE_CODE,
     UPLOAD_DIR,
-    DEFAULT_LOCALE,
     RAG_EMBEDDING_CONTENT_PREFIX,
     RAG_EMBEDDING_QUERY_PREFIX,
 )
@@ -503,7 +497,10 @@ async def trigger_model_download(
                     if supervisor is not None:
                         try:
                             await supervisor.graft("rag-loaders", "rag")
-                            print("[AI Engine] Document loaders delivered by Sprig™", flush=True)
+                            print(
+                                "[AI Engine] Document loaders delivered by Sprig™",
+                                flush=True,
+                            )
                         except Exception as e:  # noqa: BLE001 — best-effort
                             log.warning(
                                 "rag-loaders Sprig™ unavailable (%s); uploads "
@@ -567,7 +564,10 @@ async def trigger_model_download(
                     import torch  # noqa: F401
                     import sentence_transformers  # noqa: F401
                 except ImportError:
-                    print("[AI Engine] Installing ML packages from locked manifest...", flush=True)
+                    print(
+                        "[AI Engine] Installing ML packages from locked manifest...",
+                        flush=True,
+                    )
                     # __file__ = sage_is_ai/routers/retrieval.py → 3 levels up to backend/
                     ml_lock = os.path.join(
                         os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
@@ -583,10 +583,16 @@ async def trigger_model_download(
                     # ships a per-arch × per-accel matrix.
                     await run_in_threadpool(
                         subprocess.run,
-                        ["uv", "pip", "install",
-                         "-r", ml_lock,
-                         "--target", ml_target,
-                         "--break-system-packages"],
+                        [
+                            "uv",
+                            "pip",
+                            "install",
+                            "-r",
+                            ml_lock,
+                            "--target",
+                            ml_target,
+                            "--break-system-packages",
+                        ],
                         check=True,
                     )
 
@@ -597,6 +603,7 @@ async def trigger_model_download(
                     # 30+ old-pinned lock packages would shadow site-packages
                     # for the life of the process.
                     import sys
+
                     if ml_target in sys.path:
                         sys.path.remove(ml_target)
                     sys.path.append(ml_target)
@@ -604,7 +611,10 @@ async def trigger_model_download(
 
             # Embedding model (legacy fallback — no cultivar matched)
             if embedding_pending:
-                print(f"[AI Engine] Downloading embedding model: {app_state.config.RAG_EMBEDDING_MODEL}", flush=True)
+                print(
+                    f"[AI Engine] Downloading embedding model: {app_state.config.RAG_EMBEDDING_MODEL}",
+                    flush=True,
+                )
                 ef = await run_in_threadpool(
                     get_ef,
                     app_state.config.RAG_EMBEDDING_ENGINE,
@@ -674,8 +684,12 @@ def _download_whisper():
     from faster_whisper import WhisperModel
 
     whisper_model = os.environ.get("WHISPER_MODEL", "base")
-    whisper_dir = os.environ.get("WHISPER_MODEL_DIR", "/app/backend/data/cache/whisper/models")
-    WhisperModel(whisper_model, device="cpu", compute_type="int8", download_root=whisper_dir)
+    whisper_dir = os.environ.get(
+        "WHISPER_MODEL_DIR", "/app/backend/data/cache/whisper/models"
+    )
+    WhisperModel(
+        whisper_model, device="cpu", compute_type="int8", download_root=whisper_dir
+    )
 
 
 @router.get("/config")
@@ -814,7 +828,6 @@ class ConfigForm(BaseModel):
     ENABLE_ONEDRIVE_INTEGRATION: Optional[bool] = None
 
     # Web search settings
-
 
 
 @router.post("/config/update")
@@ -1118,8 +1131,6 @@ async def update_rag_config(
         else request.app.state.config.ENABLE_ONEDRIVE_INTEGRATION
     )
 
-
-
     return {
         "status": True,
         # RAG settings
@@ -1181,7 +1192,6 @@ async def update_rag_config(
         # Integration settings
         "ENABLE_GOOGLE_DRIVE_INTEGRATION": request.app.state.config.ENABLE_GOOGLE_DRIVE_INTEGRATION,
         "ENABLE_ONEDRIVE_INTEGRATION": request.app.state.config.ENABLE_ONEDRIVE_INTEGRATION,
-
     }
 
 
@@ -1340,7 +1350,9 @@ def save_docs_to_vector_db(
             log.info(f"collection {collection_name} already exists")
 
             if overwrite:
-                factory.VECTOR_DB_CLIENT.delete_collection(collection_name=collection_name)
+                factory.VECTOR_DB_CLIENT.delete_collection(
+                    collection_name=collection_name
+                )
                 log.info(f"deleting existing collection {collection_name}")
             elif add is False:
                 log.info(
@@ -1435,7 +1447,9 @@ async def process_file(
 
             try:
                 # /files/{file_id}/data/content/update
-                factory.VECTOR_DB_CLIENT.delete_collection(collection_name=f"file-{file.id}")
+                factory.VECTOR_DB_CLIENT.delete_collection(
+                    collection_name=f"file-{file.id}"
+                )
             except:  # noqa: E722
                 # Audio file upload pipeline
                 pass
@@ -1552,8 +1566,13 @@ async def process_file(
             text_content = " ".join([doc.page_content for doc in docs])
 
         # AI Document Parsing — LLM post-processing
-        if form_data.ingestion_mode == "ai_parsed" and request.app.state.config.AI_PARSE_ENABLED:
-            model_id = form_data.ai_model or request.app.state.config.AI_PARSE_DEFAULT_MODEL
+        if (
+            form_data.ingestion_mode == "ai_parsed"
+            and request.app.state.config.AI_PARSE_ENABLED
+        ):
+            model_id = (
+                form_data.ai_model or request.app.state.config.AI_PARSE_DEFAULT_MODEL
+            )
             prompt = (
                 form_data.ai_prompt
                 or request.app.state.config.AI_PARSE_DEFAULT_PROMPT
@@ -1784,7 +1803,6 @@ def process_web(
         )
 
 
-
 class QueryDocForm(BaseModel):
     collection_name: str
     query: str
@@ -1803,15 +1821,17 @@ def query_doc_handler(
     try:
         if request.app.state.config.ENABLE_RAG_HYBRID_SEARCH:
             collection_results = {}
-            collection_results[form_data.collection_name] = factory.VECTOR_DB_CLIENT.get(
-                collection_name=form_data.collection_name
+            collection_results[form_data.collection_name] = (
+                factory.VECTOR_DB_CLIENT.get(collection_name=form_data.collection_name)
             )
             return query_doc_with_hybrid_search(
                 collection_name=form_data.collection_name,
                 collection_result=collection_results[form_data.collection_name],
                 query=form_data.query,
-                embedding_function=lambda query, prefix: request.app.state.EMBEDDING_FUNCTION(
-                    query, prefix=prefix, user=user
+                embedding_function=lambda query, prefix: (
+                    request.app.state.EMBEDDING_FUNCTION(
+                        query, prefix=prefix, user=user
+                    )
                 ),
                 k=form_data.k if form_data.k else request.app.state.config.TOP_K,
                 reranking_function=(
@@ -1875,8 +1895,10 @@ def query_collection_handler(
             return query_collection_with_hybrid_search(
                 collection_names=form_data.collection_names,
                 queries=[form_data.query],
-                embedding_function=lambda query, prefix: request.app.state.EMBEDDING_FUNCTION(
-                    query, prefix=prefix, user=user
+                embedding_function=lambda query, prefix: (
+                    request.app.state.EMBEDDING_FUNCTION(
+                        query, prefix=prefix, user=user
+                    )
                 ),
                 k=form_data.k if form_data.k else request.app.state.config.TOP_K,
                 reranking_function=(
@@ -1905,8 +1927,10 @@ def query_collection_handler(
             return query_collection(
                 collection_names=form_data.collection_names,
                 queries=[form_data.query],
-                embedding_function=lambda query, prefix: request.app.state.EMBEDDING_FUNCTION(
-                    query, prefix=prefix, user=user
+                embedding_function=lambda query, prefix: (
+                    request.app.state.EMBEDDING_FUNCTION(
+                        query, prefix=prefix, user=user
+                    )
                 ),
                 k=form_data.k if form_data.k else request.app.state.config.TOP_K,
             )
@@ -1934,7 +1958,9 @@ class DeleteForm(BaseModel):
 @router.post("/delete")
 def delete_entries_from_collection(form_data: DeleteForm, user=Depends(get_admin_user)):
     try:
-        if factory.VECTOR_DB_CLIENT.has_collection(collection_name=form_data.collection_name):
+        if factory.VECTOR_DB_CLIENT.has_collection(
+            collection_name=form_data.collection_name
+        ):
             file = Files.get_file_by_id(form_data.file_id)
             hash = file.hash
 

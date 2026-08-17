@@ -2,7 +2,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from pydantic import BaseModel
 
-from sage_is_ai.models.users import Users, UserModel
+from sage_is_ai.models.users import Users
 from sage_is_ai.models.feedbacks import (
     FeedbackModel,
     FeedbackResponse,

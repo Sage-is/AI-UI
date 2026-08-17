@@ -109,8 +109,7 @@ def render_try_sage(request: Request) -> str:
             "there to sign in."
         ),
         lost_link=_(
-            "Lost your link? Reach out to whoever invited you and they'll "
-            "resend it."
+            "Lost your link? Reach out to whoever invited you and they'll resend it."
         ),
         banner_text=str(cfg.TRY_SAGE_BANNER_TEXT or ""),
         # SlideShow.svelte's image list, same order. Its cycler skipped the

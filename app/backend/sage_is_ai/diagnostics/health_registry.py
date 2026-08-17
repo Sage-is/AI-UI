@@ -21,7 +21,7 @@ import logging
 import threading
 import time
 from contextlib import asynccontextmanager, contextmanager
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, asdict
 from pathlib import Path
 from typing import Dict, Optional
 
@@ -73,7 +73,9 @@ class EndpointHealth:
 
     # ---- mutators ----------------------------------------------------------
 
-    def record_probe(self, result: ProbeResult, capability: Optional[str] = None) -> None:
+    def record_probe(
+        self, result: ProbeResult, capability: Optional[str] = None
+    ) -> None:
         with self._lock:
             rec = self._records.setdefault(result.url, EndpointRecord(url=result.url))
             rec.capability = capability or rec.capability
@@ -81,7 +83,9 @@ class EndpointHealth:
             rec.last_status_code = result.status_code
             rec.last_latency_ms = result.latency_ms
             if result.reachable:
-                rec.last_status = "ok" if (result.status_code or 0) < 500 else "degraded"
+                rec.last_status = (
+                    "ok" if (result.status_code or 0) < 500 else "degraded"
+                )
                 rec.last_error_class = None
                 rec.last_error_message = None
                 if rec.last_status == "ok":

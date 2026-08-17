@@ -1,4 +1,3 @@
-import json
 import time
 import uuid
 from typing import Optional
@@ -7,9 +6,7 @@ from sage_is_ai.internal.db import Base, get_db
 from sage_is_ai.utils.access_control import has_access
 
 from pydantic import BaseModel, ConfigDict
-from sqlalchemy import BigInteger, Boolean, Column, String, Text, JSON
-from sqlalchemy import or_, func, select, and_, text
-from sqlalchemy.sql import exists
+from sqlalchemy import BigInteger, Column, Text, JSON
 
 ####################
 # Space DB Schema
@@ -111,9 +108,7 @@ class SpaceTable:
             space = db.query(Channel).filter(Channel.id == id).first()
             return SpaceModel.model_validate(space) if space else None
 
-    def update_space_by_id(
-        self, id: str, form_data: SpaceForm
-    ) -> Optional[SpaceModel]:
+    def update_space_by_id(self, id: str, form_data: SpaceForm) -> Optional[SpaceModel]:
         with get_db() as db:
             space = db.query(Channel).filter(Channel.id == id).first()
             if not space:
@@ -133,7 +128,6 @@ class SpaceTable:
             db.query(Channel).filter(Channel.id == id).delete()
             db.commit()
             return True
-
 
     def get_space_agents(self, space: SpaceModel) -> list[dict]:
         """Return the list of agent configs from a space's data field."""

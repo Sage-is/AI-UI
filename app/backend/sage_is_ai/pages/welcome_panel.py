@@ -33,15 +33,27 @@ __all__ = ["render_welcome", "start_wizard", "STEPS", "selected_steps"]
 # `ui.selectedSteps`, and it matches the modal's own vocabulary, including the
 # underscore in `search_audio`, so a value written by one is read by the other.
 STEPS: tuple[tuple[str, str, str], ...] = (
-    ("auth", "Authentication",
-     "Configure Google, GitHub, or email link sign-in for your users"),
-    ("connection", "Model Connections",
-     "Add or update API connections to model providers"),
+    (
+        "auth",
+        "Authentication",
+        "Configure Google, GitHub, or email link sign-in for your users",
+    ),
+    (
+        "connection",
+        "Model Connections",
+        "Add or update API connections to model providers",
+    ),
     ("users", "Users", "Invite your team or choose to work alone"),
-    ("features", "Features",
-     "Enable or disable platform features like sharing, notes, and spaces"),
-    ("search_audio", "AI Engine",
-     "Install local AI processing for document search and audio transcription"),
+    (
+        "features",
+        "Features",
+        "Enable or disable platform features like sharing, notes, and spaces",
+    ),
+    (
+        "search_audio",
+        "AI Engine",
+        "Install local AI processing for document search and audio transcription",
+    ),
     ("developer", "Developer Mode", "Set up a local development environment"),
 )
 
@@ -57,11 +69,18 @@ _ROUTES: dict[str, str] = {
     "developer": "developer",
 }
 
+
 def _has_models(request: Request) -> bool:
     cfg = request.app.state.config
     return bool(
-        (getattr(cfg, "ENABLE_OPENAI_API", False) and getattr(cfg, "OPENAI_API_BASE_URLS", []))
-        or (getattr(cfg, "ENABLE_OLLAMA_API", False) and getattr(cfg, "OLLAMA_BASE_URLS", []))
+        (
+            getattr(cfg, "ENABLE_OPENAI_API", False)
+            and getattr(cfg, "OPENAI_API_BASE_URLS", [])
+        )
+        or (
+            getattr(cfg, "ENABLE_OLLAMA_API", False)
+            and getattr(cfg, "OLLAMA_BASE_URLS", [])
+        )
     )
 
 
@@ -124,7 +143,9 @@ def render_welcome(request: Request, user) -> str:
     return render(
         "welcome.html",
         lang=lang_query(request),
-        legend=_("Choose what to set up. You can change any of it later in Admin settings."),
+        legend=_(
+            "Choose what to set up. You can change any of it later in Admin settings."
+        ),
         start=_("Get Started"),
         rows=[
             {

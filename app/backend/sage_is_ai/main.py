@@ -1,14 +1,10 @@
 import asyncio
-import inspect
 import json
 import logging
 import mimetypes
 import os
-import shutil
 import sys
 import time
-import random
-from uuid import uuid4
 
 # Suppress onnxruntime cpuid_info C-level stderr warning on virtualized CPUs
 # (Docker Desktop on macOS reports "Unknown CPU vendor")
@@ -29,8 +25,6 @@ from urllib.parse import urlencode, parse_qs, urlparse
 from pydantic import BaseModel
 from sqlalchemy import text
 
-from typing import Optional
-from aiocache import cached
 import aiohttp
 import anyio.to_thread
 import requests
@@ -39,11 +33,8 @@ import requests
 from fastapi import (
     Depends,
     FastAPI,
-    File,
-    Form,
     HTTPException,
     Request,
-    UploadFile,
     status,
     BackgroundTasks,
 )
@@ -64,7 +55,7 @@ from starlette_compress import CompressMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.sessions import SessionMiddleware
-from starlette.responses import Response, StreamingResponse
+from starlette.responses import Response
 from starlette.datastructures import Headers
 
 
@@ -122,7 +113,7 @@ from sage_is_ai.internal.db import Session, engine
 
 from sage_is_ai.models.functions import Functions
 from sage_is_ai.models.models import Models
-from sage_is_ai.models.users import UserModel, Users
+from sage_is_ai.models.users import Users
 from sage_is_ai.models.chats import Chats
 
 from sage_is_ai.config import (
@@ -201,26 +192,13 @@ from sage_is_ai.config import (
     AUDIO_TTS_AZURE_SPEECH_REGION,
     AUDIO_TTS_AZURE_SPEECH_BASE_URL,
     AUDIO_TTS_AZURE_SPEECH_OUTPUT_FORMAT,
-    PLAYWRIGHT_WS_URL,
-    PLAYWRIGHT_TIMEOUT,
-    #FIRECRAWL_API_BASE_URL,
-    #FIRECRAWL_API_KEY,
-    #TODO test if WEB_LOADER_ENGINE is used in any way
-    ##WEB_LOADER_ENGINE,
     WHISPER_MODEL,
     WHISPER_VAD_FILTER,
-    WHISPER_LANGUAGE,
     DEEPGRAM_API_KEY,
-    WHISPER_MODEL_AUTO_UPDATE,
-    WHISPER_MODEL_DIR,
-    # Retrieval
     RAG_TEMPLATE,
-    DEFAULT_RAG_TEMPLATE,
     RAG_FULL_CONTEXT,
     BYPASS_EMBEDDING_AND_RETRIEVAL,
     RAG_EMBEDDING_MODEL,
-    RAG_EMBEDDING_MODEL_AUTO_UPDATE,
-    RAG_EMBEDDING_MODEL_TRUST_REMOTE_CODE,
     RAG_RERANKING_ENGINE,
     RAG_RERANKING_MODEL,
     RAG_EXTERNAL_RERANKER_URL,
@@ -230,8 +208,6 @@ from sage_is_ai.config import (
     HOME_CALENDAR_ICS_URL,
     SPRIG_WIRES,
     SPRIG_UI_SCRIPTING_GRANT,
-    RAG_RERANKING_MODEL_AUTO_UPDATE,
-    RAG_RERANKING_MODEL_TRUST_REMOTE_CODE,
     RAG_EMBEDDING_ENGINE,
     RAG_EMBEDDING_BATCH_SIZE,
     RAG_TOP_K,
@@ -291,12 +267,9 @@ from sage_is_ai.config import (
     ONEDRIVE_SHAREPOINT_URL,
     ONEDRIVE_SHAREPOINT_TENANT_ID,
     ENABLE_RAG_HYBRID_SEARCH,
-    ENABLE_RAG_LOCAL_WEB_FETCH,
     ENABLE_WEB_LOADER_SSL_VERIFICATION,
     ENABLE_GOOGLE_DRIVE_INTEGRATION,
     ENABLE_ONEDRIVE_INTEGRATION,
-    UPLOAD_DIR,
-    # WebUI
     WEBUI_AUTH,
     WEBUI_NAME,
     WEBUI_BANNERS,
@@ -322,7 +295,6 @@ from sage_is_ai.config import (
     PENDING_USER_OVERLAY_TITLE,
     DEFAULT_PROMPT_SUGGESTIONS,
     DEFAULT_MODELS,
-    DEFAULT_ARENA_MODEL,
     MODEL_ORDER_LIST,
     DEFAULT_MODEL_SELECTOR_FILTER,
     EVALUATION_ARENA_MODELS,
@@ -379,7 +351,6 @@ from sage_is_ai.config import (
     ANALYTICS_PLAUSIBLE_DOMAIN,
     ANALYTICS_PLAUSIBLE_SCRIPT_URL,
     # Misc
-    ENV,
     CACHE_DIR,
     STATIC_DIR,
     FRONTEND_BUILD_DIR,
@@ -398,7 +369,6 @@ from sage_is_ai.config import (
     ENABLE_TAGS_GENERATION,
     ENABLE_TITLE_GENERATION,
     ENABLE_FOLLOW_UP_GENERATION,
-
     ENABLE_RETRIEVAL_QUERY_GENERATION,
     ENABLE_AUTOCOMPLETE_GENERATION,
     TITLE_GENERATION_PROMPT_TEMPLATE,
@@ -446,9 +416,6 @@ from sage_is_ai.env import (
     # so the /api/config response can advertise enabled-state to the
     # frontend; URL/key are NEVER returned in any response.
     ENABLE_TRY_SAGE,
-    TRY_SAGE_LLM_API_URL,
-    TRY_SAGE_LLM_API_KEY,
-    TRY_SAGE_LLM_MODELS,
 )
 
 
@@ -618,9 +585,7 @@ async def periodic_try_sage_reset(app):
                 if deadline.tzinfo is None:
                     deadline = deadline.replace(tzinfo=timezone.utc)
             except ValueError:
-                log.warning(
-                    "try_sage.reset.skip reason=parse_error raw=%r", raw
-                )
+                log.warning("try_sage.reset.skip reason=parse_error raw=%r", raw)
                 continue
 
             now = datetime.now(timezone.utc)
@@ -639,9 +604,7 @@ async def periodic_try_sage_reset(app):
             register_hidden_connections(app)
             await reset_persona_state(app)
 
-            new_deadline = now + timedelta(
-                hours=cfg.TRY_SAGE_RESET_INTERVAL_HOURS
-            )
+            new_deadline = now + timedelta(hours=cfg.TRY_SAGE_RESET_INTERVAL_HOURS)
             cfg.TRY_SAGE_RESET_AT = new_deadline.isoformat()
             log.info(
                 "try_sage.reset.complete next_reset=%s",
@@ -685,6 +648,7 @@ async def lifespan(app: FastAPI):
 
     # Migrate service prefixes from open-webui -> sage-is-ai (idempotent)
     from sage_is_ai.utils.prefix_migration import run_prefix_migrations
+
     await run_prefix_migrations(app)
 
     if THREAD_POOL_SIZE and THREAD_POOL_SIZE > 0:
@@ -715,6 +679,7 @@ async def lifespan(app: FastAPI):
     from sage_is_ai.utils.try_sage_tool_servers import register_try_sage_tool_servers
     from sage_is_ai.utils.try_sage_hidden_connections import register_hidden_connections
     from sage_is_ai.utils.try_sage_seed import seed_try_sage
+
     await register_try_sage_tool_servers(app)
     register_hidden_connections(app)
     await seed_try_sage(app)
@@ -726,6 +691,7 @@ async def lifespan(app: FastAPI):
     # so uvicorn doesn't wait on slow DNS at boot. Failures are diagnostic,
     # never fatal — the registry captures them for /admin/diagnostics.
     from sage_is_ai.diagnostics import run_boot_probes
+
     asyncio.create_task(run_boot_probes(app))
 
     asyncio.create_task(periodic_usage_pool_cleanup())
@@ -800,9 +766,9 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="Sage.is AI",
-    docs_url=None,       # Served via explicit routes below to avoid SPA mount conflict
-    openapi_url=None,    # Served via explicit routes below
-    redoc_url=None,      # Served via explicit routes below
+    docs_url=None,  # Served via explicit routes below to avoid SPA mount conflict
+    openapi_url=None,  # Served via explicit routes below
+    redoc_url=None,  # Served via explicit routes below
     lifespan=lifespan,
 )
 
@@ -1116,8 +1082,6 @@ app.state.config.YOUTUBE_LOADER_LANGUAGE = YOUTUBE_LOADER_LANGUAGE
 app.state.config.YOUTUBE_LOADER_PROXY_URL = YOUTUBE_LOADER_PROXY_URL
 
 
-
-
 def _embedding_not_ready(*args, **kwargs):
     raise HTTPException(
         status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -1407,7 +1371,6 @@ app.state.config.TASK_MODEL = TASK_MODEL
 app.state.config.TASK_MODEL_EXTERNAL = TASK_MODEL_EXTERNAL
 
 
-
 app.state.config.ENABLE_RETRIEVAL_QUERY_GENERATION = ENABLE_RETRIEVAL_QUERY_GENERATION
 app.state.config.ENABLE_AUTOCOMPLETE_GENERATION = ENABLE_AUTOCOMPLETE_GENERATION
 app.state.config.ENABLE_TAGS_GENERATION = ENABLE_TAGS_GENERATION
@@ -1561,9 +1524,7 @@ app.include_router(tasks.router, prefix="/api/v1/tasks", tags=["tasks"])
 app.include_router(images.router, prefix="/api/v1/images", tags=["images"])
 
 app.include_router(audio.router, prefix="/api/v1/audio", tags=["audio"])
-app.include_router(
-    sprigs.router, prefix="/api/v1/retrieval/sprigs", tags=["sprigs"]
-)
+app.include_router(sprigs.router, prefix="/api/v1/retrieval/sprigs", tags=["sprigs"])
 app.include_router(retrieval.router, prefix="/api/v1/retrieval", tags=["retrieval"])
 
 app.include_router(configs.router, prefix="/api/v1/configs", tags=["configs"])
@@ -1574,9 +1535,7 @@ app.include_router(users.router, prefix="/api/v1/users", tags=["users"])
 
 app.include_router(spaces.router, prefix="/api/v1/spaces", tags=["spaces"])
 app.include_router(bridges.router, prefix="/api/v1/bridges", tags=["bridges"])
-app.include_router(
-    chat_shares.router, prefix="/api/v1/chats", tags=["chat-shares"]
-)
+app.include_router(chat_shares.router, prefix="/api/v1/chats", tags=["chat-shares"])
 app.include_router(chats.router, prefix="/api/v1/chats", tags=["chats"])
 app.include_router(notes.router, prefix="/api/v1/notes", tags=["notes"])
 
@@ -1991,7 +1950,9 @@ async def get_app_config(request: Request):
                     "enable_user_webhooks": app.state.config.ENABLE_USER_WEBHOOKS,
                     "enable_admin_export": ENABLE_ADMIN_EXPORT,
                     "enable_admin_chat_access": ENABLE_ADMIN_CHAT_ACCESS,
-                    "enable_google_drive_integration": getattr(app.state.config, 'ENABLE_GOOGLE_DRIVE_INTEGRATION', False),
+                    "enable_google_drive_integration": getattr(
+                        app.state.config, "ENABLE_GOOGLE_DRIVE_INTEGRATION", False
+                    ),
                     "enable_onedrive_integration": app.state.config.ENABLE_ONEDRIVE_INTEGRATION,
                 }
                 if user is not None
@@ -2257,7 +2218,6 @@ async def healthcheck_with_db():
     return {"status": True}
 
 
-
 class CachedStaticFiles(StaticFiles):
     """StaticFiles that lets the browser keep the file instead of revalidating.
 
@@ -2375,9 +2335,7 @@ async def active_ui_fragment():
                 media_type="text/html",
                 headers={"Cache-Control": "no-cache"},
             )
-    return Response(
-        "", media_type="text/html", headers={"Cache-Control": "no-cache"}
-    )
+    return Response("", media_type="text/html", headers={"Cache-Control": "no-cache"})
 
 
 # ── The no-build seam (Phase 0 of the frontend migration) ────────────────────

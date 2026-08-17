@@ -4,11 +4,10 @@ import uuid
 from typing import Optional
 
 from sage_is_ai.internal.db import Base, get_db
-from sage_is_ai.models.chats import Chats
 
 from sage_is_ai.env import SRC_LOG_LEVELS
 from pydantic import BaseModel, ConfigDict
-from sqlalchemy import BigInteger, Column, Text, JSON, Boolean
+from sqlalchemy import BigInteger, Column, Text, JSON
 
 log = logging.getLogger(__name__)
 log.setLevel(SRC_LOG_LEVELS["MODELS"])

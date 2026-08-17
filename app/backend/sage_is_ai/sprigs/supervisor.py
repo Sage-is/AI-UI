@@ -111,6 +111,7 @@ def _registry_config_error() -> str | None:
         )
     return None
 
+
 # ---------------------------------------------------------------------------
 # Host-architecture guard. Binary sprigs are built per-arch; exec'ing an
 # aarch64 llama-server on an x86_64 host dies with "Exec format error", a
@@ -124,7 +125,12 @@ def _registry_config_error() -> str | None:
 # entry's top-level tag/sha" (the arm64 default). graft() overlays the
 # matching arch's override onto the spec before pulling. SPRIG_ARCH overrides
 # detection for tests.
-_ARCH_ALIASES = {"aarch64": "arm64", "arm64": "arm64", "x86_64": "amd64", "amd64": "amd64"}
+_ARCH_ALIASES = {
+    "aarch64": "arm64",
+    "arm64": "arm64",
+    "x86_64": "amd64",
+    "amd64": "amd64",
+}
 _raw_arch = (os.environ.get("SPRIG_ARCH", "").strip() or platform.machine()).lower()
 HOST_ARCH = _ARCH_ALIASES.get(_raw_arch, _raw_arch)
 
@@ -148,8 +154,10 @@ def _graft_refusal(spec: dict, host_arch: str) -> str | None:
     """
     arches = spec.get("arches")
     if arches is not None:
-        return None if host_arch in arches else (
-            f"requires {'/'.join(sorted(arches))} and this host is {host_arch}"
+        return (
+            None
+            if host_arch in arches
+            else (f"requires {'/'.join(sorted(arches))} and this host is {host_arch}")
         )
     if spec.get("arch_neutral"):
         return None
@@ -184,7 +192,9 @@ def _sprig(spec: dict, *, arch) -> dict:
             )
         return {**spec, "arch_neutral": True}
     if not isinstance(arch, dict) or not arch:
-        raise ValueError("arch must be NEUTRAL or a non-empty {host_arch: override} dict")
+        raise ValueError(
+            "arch must be NEUTRAL or a non-empty {host_arch: override} dict"
+        )
     unknown = set(arch) - _KNOWN_ARCHES
     if unknown:
         raise ValueError(
@@ -220,13 +230,16 @@ class SprigSupervisor:
     #   dim:    declared embedding width (the vector store binds this per collection)
     #   ready_timeout_s: per-cultivar health deadline (real models download weights)
     CATALOG: dict[str, dict] = {
-        "mock-embedding": _sprig({
-            "capability": "embedding",
-            "server": "mock",
-            "model": "mock-embedding",
-            "dim": _MOCK_EMBEDDING_DIM,
-            "ready_timeout_s": 15.0,
-        }, arch=NEUTRAL),
+        "mock-embedding": _sprig(
+            {
+                "capability": "embedding",
+                "server": "mock",
+                "model": "mock-embedding",
+                "dim": _MOCK_EMBEDDING_DIM,
+                "ready_timeout_s": 15.0,
+            },
+            arch=NEUTRAL,
+        ),
         # --- calendar: the first WIRED Sprig™, and it delivers nothing ---
         #
         # No `delivery` key, following mock-embedding above: the fetching code
@@ -244,101 +257,119 @@ class SprigSupervisor:
         # No secret wire yet, deliberately. Public ICS feeds need no credential,
         # and SPRIG_WIRES stores values in clear — so a secret here would have to
         # be a rotatable third-party token, never a credential to this instance.
-        "calendar": _sprig({
-            "capability": "calendar",
-            "server": "none",
-            "model": "iCalendar feeds",
-            "dim": 0,
-            "wires": [
-                {
-                    "name": "shared_feeds",
-                    "label": "Shared calendar feeds",
-                    "type": "url",
-                    "required": False,
-                    "default": "",
-                    "help": (
-                        "iCalendar (.ics) URLs everyone on this instance sees, "
-                        "one per line. A shared Nextcloud calendar publishes a "
-                        "read-only link needing no credentials. People add their "
-                        "own calendars in their settings."
-                    ),
-                },
-            ],
-        }, arch=NEUTRAL),
+        "calendar": _sprig(
+            {
+                "capability": "calendar",
+                "server": "none",
+                "model": "iCalendar feeds",
+                "dim": 0,
+                "wires": [
+                    {
+                        "name": "shared_feeds",
+                        "label": "Shared calendar feeds",
+                        "type": "url",
+                        "required": False,
+                        "default": "",
+                        "help": (
+                            "iCalendar (.ics) URLs everyone on this instance sees, "
+                            "one per line. A shared Nextcloud calendar publishes a "
+                            "read-only link needing no credentials. People add their "
+                            "own calendars in their settings."
+                        ),
+                    },
+                ],
+            },
+            arch=NEUTRAL,
+        ),
         # all-MiniLM-onnx (live chroma-S3/HF pull) was RETIRED 2026-07-05: it
         # spawned the byte-identical child to minilm-onnx-inhoused below, and
         # after any inhoused graft it silently served from the seeded cache
         # anyway. The catalog is the allowlist — keeping it kept an
         # admin-clickable ~80MB third-party egress on a zero-egress deployment.
-        "minilm-onnx-inhoused": _sprig({
-            "capability": "embedding",
-            "server": "embedding",
-            "backend": "onnx",
-            "model": "all-MiniLM-L6-v2",
-            "dim": 384,  # same width as the mock -> no reindex on swap
-            "ready_timeout_s": 60.0,  # weights pre-seeded by oras pull, no S3 download
-            # --- graft #3: OCI-artifact offline delivery (in-housed weights) ---
-            "delivery": "oci-artifact",
-            "repo": f"{SPRIG_REGISTRY}/sprig-embedding-minilm-onnx",
-            "tag": "v1",
-            "insecure": SPRIG_REGISTRY_INSECURE,
-            "binary_sha256": "14374a654078dea0b624b6cee6cadcefbcd714ef5964ffee1989fec578e6121d",
-            # onnx WEIGHTS are arch-neutral bytes (same tag+sha both arches);
-            # the arch-bound part is the onnxruntime they ride (vector-chroma).
-        }, arch={"arm64": {}, "amd64": {}}),
-        "multilingual-e5-large": _sprig({
-            "capability": "embedding",
-            "server": "embedding",
-            # onnx-transformer: onnxruntime + tokenizers, NO torch. Slim rootstock.
-            "backend": "onnx-transformer",
-            "pooling": "mean",  # e5 uses mean pooling
-            "model": "intfloat/multilingual-e5-large",
-            "dim": 1024,
-            "ready_timeout_s": 120.0,  # weights pre-seeded by oras pull, no HF download
-            "delivery": "oci-artifact",
-            "seed": "model-dir",
-            "repo": f"{SPRIG_REGISTRY}/sprig-embedding-e5-large-onnx",
-            "tag": "v1",
-            "insecure": SPRIG_REGISTRY_INSECURE,
-            "binary_sha256": "8fbe2a95fd729deb50a6fa9df7e7d49c78199ca3fa506c08b4f97161fca08a17",
-        }, arch={"arm64": {}, "amd64": {}}),  # neutral weights, see minilm note
-        "bge-large-en-v1.5": _sprig({
-            "capability": "embedding",
-            "server": "embedding",
-            "backend": "onnx-transformer",
-            "pooling": "cls",  # bge uses CLS pooling
-            "model": "BAAI/bge-large-en-v1.5",
-            "dim": 1024,
-            "ready_timeout_s": 120.0,
-            "delivery": "oci-artifact",
-            "seed": "model-dir",
-            "repo": f"{SPRIG_REGISTRY}/sprig-embedding-bge-onnx",
-            "tag": "v1",
-            "insecure": SPRIG_REGISTRY_INSECURE,
-            "binary_sha256": "df16cc5d077c5f9756b130e435e26629beea7bf07ea00c7551e2fc96f7f9a410",
-        }, arch={"arm64": {}, "amd64": {}}),  # neutral weights, see minilm note
+        "minilm-onnx-inhoused": _sprig(
+            {
+                "capability": "embedding",
+                "server": "embedding",
+                "backend": "onnx",
+                "model": "all-MiniLM-L6-v2",
+                "dim": 384,  # same width as the mock -> no reindex on swap
+                "ready_timeout_s": 60.0,  # weights pre-seeded by oras pull, no S3 download
+                # --- graft #3: OCI-artifact offline delivery (in-housed weights) ---
+                "delivery": "oci-artifact",
+                "repo": f"{SPRIG_REGISTRY}/sprig-embedding-minilm-onnx",
+                "tag": "v1",
+                "insecure": SPRIG_REGISTRY_INSECURE,
+                "binary_sha256": "14374a654078dea0b624b6cee6cadcefbcd714ef5964ffee1989fec578e6121d",
+                # onnx WEIGHTS are arch-neutral bytes (same tag+sha both arches);
+                # the arch-bound part is the onnxruntime they ride (vector-chroma).
+            },
+            arch={"arm64": {}, "amd64": {}},
+        ),
+        "multilingual-e5-large": _sprig(
+            {
+                "capability": "embedding",
+                "server": "embedding",
+                # onnx-transformer: onnxruntime + tokenizers, NO torch. Slim rootstock.
+                "backend": "onnx-transformer",
+                "pooling": "mean",  # e5 uses mean pooling
+                "model": "intfloat/multilingual-e5-large",
+                "dim": 1024,
+                "ready_timeout_s": 120.0,  # weights pre-seeded by oras pull, no HF download
+                "delivery": "oci-artifact",
+                "seed": "model-dir",
+                "repo": f"{SPRIG_REGISTRY}/sprig-embedding-e5-large-onnx",
+                "tag": "v1",
+                "insecure": SPRIG_REGISTRY_INSECURE,
+                "binary_sha256": "8fbe2a95fd729deb50a6fa9df7e7d49c78199ca3fa506c08b4f97161fca08a17",
+            },
+            arch={"arm64": {}, "amd64": {}},
+        ),  # neutral weights, see minilm note
+        "bge-large-en-v1.5": _sprig(
+            {
+                "capability": "embedding",
+                "server": "embedding",
+                "backend": "onnx-transformer",
+                "pooling": "cls",  # bge uses CLS pooling
+                "model": "BAAI/bge-large-en-v1.5",
+                "dim": 1024,
+                "ready_timeout_s": 120.0,
+                "delivery": "oci-artifact",
+                "seed": "model-dir",
+                "repo": f"{SPRIG_REGISTRY}/sprig-embedding-bge-onnx",
+                "tag": "v1",
+                "insecure": SPRIG_REGISTRY_INSECURE,
+                "binary_sha256": "df16cc5d077c5f9756b130e435e26629beea7bf07ea00c7551e2fc96f7f9a410",
+            },
+            arch={"arm64": {}, "amd64": {}},
+        ),  # neutral weights, see minilm note
         # "deliver" sprig — NOT a running server. Pulls the Svelte dev/build
         # toolchain (node_modules, ~1.1GB) from OUR registry and extracts it into
         # /app on demand, so it lives OUTSIDE the base rootstock image (dev mode
         # grafts it; production never carries it). Decision #14 dev-svelte.
-        "dev-svelte": _sprig({
-            "capability": "dev",
-            "server": "deliver",
-            "model": "svelte dev/build toolchain (node_modules + bun)",
-            "dim": 0,
-            "delivery": "oci-artifact",
-            "seed": "app-dir",
-            "target": "/app",
-            "sentinel": "node_modules",
-            "ready_timeout_s": 120.0,
-            "repo": f"{SPRIG_REGISTRY}/sprig-dev-svelte",
-            "tag": "v2",
-            "insecure": SPRIG_REGISTRY_INSECURE,
-            "binary_sha256": "c801539acd1373c2498c8f170eb4cba2643a0d48a15497d3446aafdbb418cb38",
-        }, arch={"arm64": {}, "amd64": {
-            "tag": "v2-amd64",
-            "binary_sha256": "d478f7a6dd05421f812a95049e9e8b496d17c7a62e836b285961851960ef29d5",
-        }}),
+        "dev-svelte": _sprig(
+            {
+                "capability": "dev",
+                "server": "deliver",
+                "model": "svelte dev/build toolchain (node_modules + bun)",
+                "dim": 0,
+                "delivery": "oci-artifact",
+                "seed": "app-dir",
+                "target": "/app",
+                "sentinel": "node_modules",
+                "ready_timeout_s": 120.0,
+                "repo": f"{SPRIG_REGISTRY}/sprig-dev-svelte",
+                "tag": "v2",
+                "insecure": SPRIG_REGISTRY_INSECURE,
+                "binary_sha256": "c801539acd1373c2498c8f170eb4cba2643a0d48a15497d3446aafdbb418cb38",
+            },
+            arch={
+                "arm64": {},
+                "amd64": {
+                    "tag": "v2-amd64",
+                    "binary_sha256": "d478f7a6dd05421f812a95049e9e8b496d17c7a62e836b285961851960ef29d5",
+                },
+            },
+        ),
         # Vector DB substrate — the chromadb closure (~170MB: chromadb, onnxruntime,
         # kubernetes, grpc, hnswlib, posthog) extracted straight into site-packages.
         # factory.py boots with VECTOR_DB_CLIENT=None when absent; vector_bootstrap
@@ -346,28 +377,34 @@ class SprigSupervisor:
         # through the factory module (not a by-value import), so document search is
         # active immediately — no restart. (Restore of prior collections still needs
         # the data already on the volume; a fresh graft serves new writes at once.)
-        "vector-chroma": _sprig({
-            "capability": "vector",
-            "server": "deliver",
-            "model": "chromadb vector DB + ML runtime (site-packages overlay)",
-            "dim": 0,
-            "delivery": "oci-artifact",
-            "seed": "app-dir",
-            "target": "/usr/local/lib/python3.11/site-packages",
-            "sentinel": "chromadb",
-            "post_graft_note": "Vector DB delivered. Document search is active now.",
-            "ready_timeout_s": 180.0,
-            "repo": f"{SPRIG_REGISTRY}/sprig-vector-chroma",
-            # v2 (8.I.2): + numpy, tokenizers, huggingface_hub closure — these
-            # left the base rootstock; the onnx embedding cultivars pre-check
-            # for them and point here.
-            "tag": "v2",
-            "insecure": SPRIG_REGISTRY_INSECURE,
-            "binary_sha256": "382b37fd4e0bf4131a26163db075eb1e842f87443f0c9bd200cab2727b552553",
-        }, arch={"arm64": {}, "amd64": {
-            "tag": "v2-amd64",
-            "binary_sha256": "045b9862caf418d7d9c8a44bb96de013f2850f6604a7b78b4f5237d7c7e45a4b",
-        }}),
+        "vector-chroma": _sprig(
+            {
+                "capability": "vector",
+                "server": "deliver",
+                "model": "chromadb vector DB + ML runtime (site-packages overlay)",
+                "dim": 0,
+                "delivery": "oci-artifact",
+                "seed": "app-dir",
+                "target": "/usr/local/lib/python3.11/site-packages",
+                "sentinel": "chromadb",
+                "post_graft_note": "Vector DB delivered. Document search is active now.",
+                "ready_timeout_s": 180.0,
+                "repo": f"{SPRIG_REGISTRY}/sprig-vector-chroma",
+                # v2 (8.I.2): + numpy, tokenizers, huggingface_hub closure — these
+                # left the base rootstock; the onnx embedding cultivars pre-check
+                # for them and point here.
+                "tag": "v2",
+                "insecure": SPRIG_REGISTRY_INSECURE,
+                "binary_sha256": "382b37fd4e0bf4131a26163db075eb1e842f87443f0c9bd200cab2727b552553",
+            },
+            arch={
+                "arm64": {},
+                "amd64": {
+                    "tag": "v2-amd64",
+                    "binary_sha256": "045b9862caf418d7d9c8a44bb96de013f2850f6604a7b78b4f5237d7c7e45a4b",
+                },
+            },
+        ),
         # GGUF cultivar (8.I.3, gates green 2026-07-02): e5-large Q8_0 served by
         # a static-PIE musl llama-server (llama.cpp b9859, built in-house) — ONE
         # binary + ONE model file, zero Python deps in the child, any libc.
@@ -376,24 +413,30 @@ class SprigSupervisor:
         # onnx CPU throughput. minilm/bge GGUF are HELD — llama.cpp's WPM
         # tokenizer diverges from HF on Hangul (22 vs 52 tokens); their onnx
         # cultivars remain canonical. Artifact is arm64; amd64 variety = 8.J.
-        "e5-large-gguf": _sprig({
-            "capability": "embedding",
-            "server": "llama-binary",
-            "model": "intfloat/multilingual-e5-large (GGUF Q8_0)",
-            "dim": 1024,
-            "gguf": "model.gguf",
-            "delivery": "oci-artifact",
-            "seed": "model-dir",
-            "sentinel": "model.gguf",
-            "ready_timeout_s": 240.0,
-            "repo": f"{SPRIG_REGISTRY}/sprig-embedding-e5-gguf",
-            "tag": "v1",
-            "insecure": SPRIG_REGISTRY_INSECURE,
-            "binary_sha256": "16f01a8d37e0e0ced47d0faef2b64de69d072f81399ac0c8b7065d72c459cdec",
-        }, arch={"arm64": {}, "amd64": {
-            "tag": "v1-amd64",
-            "binary_sha256": "4def63135a10bd4adf7c9cefb9a96d40d76337247fa3d8a02dee9b4f1859c401",
-        }}),
+        "e5-large-gguf": _sprig(
+            {
+                "capability": "embedding",
+                "server": "llama-binary",
+                "model": "intfloat/multilingual-e5-large (GGUF Q8_0)",
+                "dim": 1024,
+                "gguf": "model.gguf",
+                "delivery": "oci-artifact",
+                "seed": "model-dir",
+                "sentinel": "model.gguf",
+                "ready_timeout_s": 240.0,
+                "repo": f"{SPRIG_REGISTRY}/sprig-embedding-e5-gguf",
+                "tag": "v1",
+                "insecure": SPRIG_REGISTRY_INSECURE,
+                "binary_sha256": "16f01a8d37e0e0ced47d0faef2b64de69d072f81399ac0c8b7065d72c459cdec",
+            },
+            arch={
+                "arm64": {},
+                "amd64": {
+                    "tag": "v1-amd64",
+                    "binary_sha256": "4def63135a10bd4adf7c9cefb9a96d40d76337247fa3d8a02dee9b4f1859c401",
+                },
+            },
+        ),
         # Reranker cultivar — cross-encoder relevance scoring for hybrid search.
         # Same static-PIE llama-server (b9859) as e5-large-gguf, in --rerank
         # mode: /v1/rerank speaks the Jina/Cohere contract the existing
@@ -401,285 +444,348 @@ class SprigSupervisor:
         # ONE binary + ONE model file, zero Python deps in the child. -ub/-c
         # 2048: each (query, doc) pair must fit one ubatch (non-causal encoder);
         # default CHUNK_SIZE chunks fit comfortably.
-        "bge-reranker-v2-m3-gguf": _sprig({
-            "capability": "reranker",
-            "server": "llama-binary",
-            "model": "BAAI/bge-reranker-v2-m3 (GGUF Q8_0)",
-            "dim": 0,  # not an embedding; no collection width binding
-            "gguf": "model.gguf",
-            "server_args": ["--rerank", "-ub", "2048", "-c", "2048"],
-            "delivery": "oci-artifact",
-            "seed": "model-dir",
-            "sentinel": "model.gguf",
-            "ready_timeout_s": 240.0,
-            "repo": f"{SPRIG_REGISTRY}/sprig-reranker-bge-gguf",
-            "tag": "v1",
-            "insecure": SPRIG_REGISTRY_INSECURE,
-            "binary_sha256": "7c84c1d90f3eb217bff7f414569dafcd8b129731d023d308559f115f6143056f",
-        }, arch={"arm64": {}, "amd64": {
-            "tag": "v1-amd64",
-            "binary_sha256": "3dcbcd1f827e5c9c6b2e9bf63cd61cf6f5ac2b16ad66a1a9b8c35c9d7c9dee49",
-        }}),
+        "bge-reranker-v2-m3-gguf": _sprig(
+            {
+                "capability": "reranker",
+                "server": "llama-binary",
+                "model": "BAAI/bge-reranker-v2-m3 (GGUF Q8_0)",
+                "dim": 0,  # not an embedding; no collection width binding
+                "gguf": "model.gguf",
+                "server_args": ["--rerank", "-ub", "2048", "-c", "2048"],
+                "delivery": "oci-artifact",
+                "seed": "model-dir",
+                "sentinel": "model.gguf",
+                "ready_timeout_s": 240.0,
+                "repo": f"{SPRIG_REGISTRY}/sprig-reranker-bge-gguf",
+                "tag": "v1",
+                "insecure": SPRIG_REGISTRY_INSECURE,
+                "binary_sha256": "7c84c1d90f3eb217bff7f414569dafcd8b129731d023d308559f115f6143056f",
+            },
+            arch={
+                "arm64": {},
+                "amd64": {
+                    "tag": "v1-amd64",
+                    "binary_sha256": "3dcbcd1f827e5c9c6b2e9bf63cd61cf6f5ac2b16ad66a1a9b8c35c9d7c9dee49",
+                },
+            },
+        ),
         # STT cultivar — static whisper.cpp whisper-server + ggml base
         # (multilingual, q8_0). Serves /v1/audio/transcriptions, which is
         # EXACTLY where audio.py's STT_ENGINE="openai" client already POSTs —
         # zero client changes. Kills the last local-STT HuggingFace pull.
-        "whisper-base-ggml": _sprig({
-            "capability": "stt",
-            "server": "whisper-binary",
-            "model": "whisper base multilingual (ggml q8_0)",
-            "dim": 0,
-            "ggml": "model.bin",
-            "delivery": "oci-artifact",
-            "seed": "model-dir",
-            "sentinel": "model.bin",
-            "ready_timeout_s": 120.0,
-            "post_graft_note": (
-                "Local speech-to-text active. For browser voice notes "
-                "(webm/opus), also graft media-ffmpeg."
-            ),
-            "repo": f"{SPRIG_REGISTRY}/sprig-stt-whisper-base",
-            "tag": "v1",
-            "insecure": SPRIG_REGISTRY_INSECURE,
-            "binary_sha256": "5d570534a7f4524759ef1c9e4fa0fc5ea30652c0c7bd9008c732716582ebc641",
-        }, arch={"arm64": {}, "amd64": {
-            "tag": "v1-amd64",
-            "binary_sha256": "ac30634805224c9272baf59edfffa933f63e38e12bbc569daf43f8ec23a7c013",
-        }}),
+        "whisper-base-ggml": _sprig(
+            {
+                "capability": "stt",
+                "server": "whisper-binary",
+                "model": "whisper base multilingual (ggml q8_0)",
+                "dim": 0,
+                "ggml": "model.bin",
+                "delivery": "oci-artifact",
+                "seed": "model-dir",
+                "sentinel": "model.bin",
+                "ready_timeout_s": 120.0,
+                "post_graft_note": (
+                    "Local speech-to-text active. For browser voice notes "
+                    "(webm/opus), also graft media-ffmpeg."
+                ),
+                "repo": f"{SPRIG_REGISTRY}/sprig-stt-whisper-base",
+                "tag": "v1",
+                "insecure": SPRIG_REGISTRY_INSECURE,
+                "binary_sha256": "5d570534a7f4524759ef1c9e4fa0fc5ea30652c0c7bd9008c732716582ebc641",
+            },
+            arch={
+                "arm64": {},
+                "amd64": {
+                    "tag": "v1-amd64",
+                    "binary_sha256": "ac30634805224c9272baf59edfffa933f63e38e12bbc569daf43f8ec23a7c013",
+                },
+            },
+        ),
         # Office/PDF extraction — Apache Tika Server, a fat jar run by a bundled
         # jlink'd JRE (server: tika-jar). On graft, tika_dispatch points
         # TIKA_SERVER_URL at the loopback AND flips CONTENT_EXTRACTION_ENGINE to
         # "tika", so uploads route through Tika in-container — replaces the
         # http://tika:9998 sidecar default. Health = GET /tika (Tika has no
         # /health). Kills the "Tika unreachable" false alarm on non-sidecar hosts.
-        "tika": _sprig({
-            "capability": "tika",
-            "server": "tika-jar",
-            "model": "Apache Tika Server (standard)",
-            "dim": 0,
-            "jar": "tika-server-standard.jar",
-            "health_path": "/tika",
-            "delivery": "oci-artifact",
-            "seed": "model-dir",
-            "sentinel": "tika-server-standard.jar",
-            "ready_timeout_s": 180.0,
-            "post_graft_note": (
-                "Tika extraction active — Office/PDF uploads route through the "
-                "grafted server. No tika sidecar needed."
-            ),
-            "repo": f"{SPRIG_REGISTRY}/sprig-tika",
-            "tag": "v1",
-            "insecure": SPRIG_REGISTRY_INSECURE,
-            # arm64 pinned from build-sprig-tika.sh (deterministic jlink + pack).
-            "binary_sha256": "0538419c28edc103b185d5041eebafd10a6ee21ebae165fcfc806538e2054222",
-        }, arch={"arm64": {}, "amd64": {
-            "tag": "v1-amd64",
-            "binary_sha256": "5a977defce2fbb8a49e4e1b7e4b168c793c60645fe6ecf980c7c02a6e88fb263",
-        }}),
+        "tika": _sprig(
+            {
+                "capability": "tika",
+                "server": "tika-jar",
+                "model": "Apache Tika Server (standard)",
+                "dim": 0,
+                "jar": "tika-server-standard.jar",
+                "health_path": "/tika",
+                "delivery": "oci-artifact",
+                "seed": "model-dir",
+                "sentinel": "tika-server-standard.jar",
+                "ready_timeout_s": 180.0,
+                "post_graft_note": (
+                    "Tika extraction active — Office/PDF uploads route through the "
+                    "grafted server. No tika sidecar needed."
+                ),
+                "repo": f"{SPRIG_REGISTRY}/sprig-tika",
+                "tag": "v1",
+                "insecure": SPRIG_REGISTRY_INSECURE,
+                # arm64 pinned from build-sprig-tika.sh (deterministic jlink + pack).
+                "binary_sha256": "0538419c28edc103b185d5041eebafd10a6ee21ebae165fcfc806538e2054222",
+            },
+            arch={
+                "arm64": {},
+                "amd64": {
+                    "tag": "v1-amd64",
+                    "binary_sha256": "5a977defce2fbb8a49e4e1b7e4b168c793c60645fe6ecf980c7c02a6e88fb263",
+                },
+            },
+        ),
         # Layout-aware extraction — IBM Docling served by docling-serve from a
         # bundled relocatable venv (CPU torch + pre-seeded models; server:
         # docling-serve). HEAVY (multi-GB) — the opt-in enhanced extractor. On
         # graft, docling_dispatch points DOCLING_SERVER_URL at the loopback and
         # flips CONTENT_EXTRACTION_ENGINE to "docling". Replaces the
         # http://docling:5001 sidecar default. Health = GET /health.
-        "docling": _sprig({
-            "capability": "docling",
-            "server": "docling-serve",
-            "model": "IBM Docling (docling-serve, CPU)",
-            "dim": 0,
-            "health_path": "/health",
-            "delivery": "oci-artifact",
-            "seed": "model-dir",
-            "sentinel": "venv/bin/docling-serve",
-            "ready_timeout_s": 300.0,
-            "post_graft_note": (
-                "Docling layout-aware extraction active. The first conversion "
-                "warms the models; large uploads take longer than Tika."
-            ),
-            "repo": f"{SPRIG_REGISTRY}/sprig-docling",
-            "tag": "v1",
-            "insecure": SPRIG_REGISTRY_INSECURE,
-            # arm64 pinned from build-sprig-docling.sh (944MB tar.zst).
-            "binary_sha256": "7ee5670e9197b112f5685c6a8cccde79fb6673699c824b5195b00b1053927b83",
-        }, arch={"arm64": {}, "amd64": {
-            "tag": "v1-amd64",
-            "binary_sha256": "6a1bb2e19721c33ff865223b0501e158d22e8755b7897bf06fdce6e314e3c49f",
-        }}),
+        "docling": _sprig(
+            {
+                "capability": "docling",
+                "server": "docling-serve",
+                "model": "IBM Docling (docling-serve, CPU)",
+                "dim": 0,
+                "health_path": "/health",
+                "delivery": "oci-artifact",
+                "seed": "model-dir",
+                "sentinel": "venv/bin/docling-serve",
+                "ready_timeout_s": 300.0,
+                "post_graft_note": (
+                    "Docling layout-aware extraction active. The first conversion "
+                    "warms the models; large uploads take longer than Tika."
+                ),
+                "repo": f"{SPRIG_REGISTRY}/sprig-docling",
+                "tag": "v1",
+                "insecure": SPRIG_REGISTRY_INSECURE,
+                # arm64 pinned from build-sprig-docling.sh (944MB tar.zst).
+                "binary_sha256": "7ee5670e9197b112f5685c6a8cccde79fb6673699c824b5195b00b1053927b83",
+            },
+            arch={
+                "arm64": {},
+                "amd64": {
+                    "tag": "v1-amd64",
+                    "binary_sha256": "6a1bb2e19721c33ff865223b0501e158d22e8755b7897bf06fdce6e314e3c49f",
+                },
+            },
+        ),
         # Interface themes — design tokens only (one self-contained theme.css),
         # extracted onto the DATA volume (seed=model-dir) and served at
         # /themes/active.css. No process, no executable code: the css is
         # validated at graft time (sprigs/theme_dispatch.py, fail-closed).
         # The last grafted theme wins the active pointer; pruning the active
         # one restores the default look. Full source: scripts/themes/.
-        "theme-workshop-bio": _sprig({
-            "capability": "theme",
-            "server": "deliver",
-            "model": "Workshop theme — Bio (green)",
-            "dim": 0,
-            "delivery": "oci-artifact",
-            "seed": "model-dir",
-            "sentinel": "theme.css",
-            "ready_timeout_s": 60.0,
-            "post_graft_note": "Theme active. Reload the page to see it.",
-            "repo": f"{SPRIG_REGISTRY}/sprig-theme-workshop-bio",
-            "tag": "v1",
-            "insecure": SPRIG_REGISTRY_INSECURE,
-            "binary_sha256": "e2296b924d39576b462669741d87e1a85cda0cf8e720425cf019cbf6592bfc68",
-        }, arch=NEUTRAL),
+        "theme-workshop-bio": _sprig(
+            {
+                "capability": "theme",
+                "server": "deliver",
+                "model": "Workshop theme — Bio (green)",
+                "dim": 0,
+                "delivery": "oci-artifact",
+                "seed": "model-dir",
+                "sentinel": "theme.css",
+                "ready_timeout_s": 60.0,
+                "post_graft_note": "Theme active. Reload the page to see it.",
+                "repo": f"{SPRIG_REGISTRY}/sprig-theme-workshop-bio",
+                "tag": "v1",
+                "insecure": SPRIG_REGISTRY_INSECURE,
+                "binary_sha256": "e2296b924d39576b462669741d87e1a85cda0cf8e720425cf019cbf6592bfc68",
+            },
+            arch=NEUTRAL,
+        ),
         # ui-Sprigs™ — the marketplace surface. Hypermedia only: a
         # self-contained fragment.html plus an optional fragment.css, validated
         # fail-closed at graft (sprigs/ui_dispatch.py) and rendered into the
         # page shell's slot. Script is refused unless an admin grants it to
         # this Sprig by name; pruning revokes the grant. Source: scripts/ui-sprigs/.
-        "ui-workshop-welcome": _sprig({
-            "capability": "ui",
-            "server": "deliver",
-            "model": "Workshop welcome card",
-            "dim": 0,
-            "delivery": "oci-artifact",
-            "seed": "model-dir",
-            "sentinel": "fragment.html",
-            "ready_timeout_s": 60.0,
-            "post_graft_note": "Fragment active. Reload the page to see it.",
-            "repo": f"{SPRIG_REGISTRY}/sprig-ui-workshop-welcome",
-            "tag": "v1",
-            "insecure": SPRIG_REGISTRY_INSECURE,
-            "binary_sha256": "3448d61043e10efa593824df51340948eb37dc1375e40800f47681606aaea2c6",
-        }, arch=NEUTRAL),
-        "theme-workshop-math": _sprig({
-            "capability": "theme",
-            "server": "deliver",
-            "model": "Workshop theme — Math (blue)",
-            "dim": 0,
-            "delivery": "oci-artifact",
-            "seed": "model-dir",
-            "sentinel": "theme.css",
-            "ready_timeout_s": 60.0,
-            "post_graft_note": "Theme active. Reload the page to see it.",
-            "repo": f"{SPRIG_REGISTRY}/sprig-theme-workshop-math",
-            "tag": "v1",
-            "insecure": SPRIG_REGISTRY_INSECURE,
-            "binary_sha256": "5a26d18d5aeaeac6a87e253e21ed5da050bb4d527614d30f7dbcbb52c05c9c95",
-        }, arch=NEUTRAL),
+        "ui-workshop-welcome": _sprig(
+            {
+                "capability": "ui",
+                "server": "deliver",
+                "model": "Workshop welcome card",
+                "dim": 0,
+                "delivery": "oci-artifact",
+                "seed": "model-dir",
+                "sentinel": "fragment.html",
+                "ready_timeout_s": 60.0,
+                "post_graft_note": "Fragment active. Reload the page to see it.",
+                "repo": f"{SPRIG_REGISTRY}/sprig-ui-workshop-welcome",
+                "tag": "v1",
+                "insecure": SPRIG_REGISTRY_INSECURE,
+                "binary_sha256": "3448d61043e10efa593824df51340948eb37dc1375e40800f47681606aaea2c6",
+            },
+            arch=NEUTRAL,
+        ),
+        "theme-workshop-math": _sprig(
+            {
+                "capability": "theme",
+                "server": "deliver",
+                "model": "Workshop theme — Math (blue)",
+                "dim": 0,
+                "delivery": "oci-artifact",
+                "seed": "model-dir",
+                "sentinel": "theme.css",
+                "ready_timeout_s": 60.0,
+                "post_graft_note": "Theme active. Reload the page to see it.",
+                "repo": f"{SPRIG_REGISTRY}/sprig-theme-workshop-math",
+                "tag": "v1",
+                "insecure": SPRIG_REGISTRY_INSECURE,
+                "binary_sha256": "5a26d18d5aeaeac6a87e253e21ed5da050bb4d527614d30f7dbcbb52c05c9c95",
+            },
+            arch=NEUTRAL,
+        ),
         # RAG engines — langchain + langchain-community + numpy + format-loader
         # deps (pypdf, docx2txt, rank_bm25) as a site-packages overlay. The
         # overlay dir is on sys.path from boot, so document chunking/loading and
         # hybrid search work immediately after graft; ONLY web-page loading
         # needs a restart (web/utils.py subclasses loader bases at import).
-        "rag-loaders": _sprig({
-            "capability": "rag",
-            "server": "deliver",
-            "model": "langchain RAG engines + document loaders (overlay)",
-            "dim": 0,
-            "delivery": "oci-artifact",
-            "seed": "app-dir",
-            "target": "/usr/local/lib/python3.11/site-packages",
-            "sentinel": "langchain",
-            "post_graft_note": "Document processing active. Web-page loading activates after a restart.",
-            "ready_timeout_s": 180.0,
-            "repo": f"{SPRIG_REGISTRY}/sprig-rag-loaders",
-            "tag": "v1",
-            "insecure": SPRIG_REGISTRY_INSECURE,
-            "binary_sha256": "f207537072f6c055fe94cef57c27bef8213199770290708e8871ce132cd96c5d",
-        }, arch={"arm64": {}, "amd64": {
-            "tag": "v1-amd64",
-            "binary_sha256": "1aba23ed93a76fc45bd98dc14fc1315b2e987f2c45deab210a7efb1329a246b0",
-        }}),
+        "rag-loaders": _sprig(
+            {
+                "capability": "rag",
+                "server": "deliver",
+                "model": "langchain RAG engines + document loaders (overlay)",
+                "dim": 0,
+                "delivery": "oci-artifact",
+                "seed": "app-dir",
+                "target": "/usr/local/lib/python3.11/site-packages",
+                "sentinel": "langchain",
+                "post_graft_note": "Document processing active. Web-page loading activates after a restart.",
+                "ready_timeout_s": 180.0,
+                "repo": f"{SPRIG_REGISTRY}/sprig-rag-loaders",
+                "tag": "v1",
+                "insecure": SPRIG_REGISTRY_INSECURE,
+                "binary_sha256": "f207537072f6c055fe94cef57c27bef8213199770290708e8871ce132cd96c5d",
+            },
+            arch={
+                "arm64": {},
+                "amd64": {
+                    "tag": "v1-amd64",
+                    "binary_sha256": "1aba23ed93a76fc45bd98dc14fc1315b2e987f2c45deab210a7efb1329a246b0",
+                },
+            },
+        ),
         # PDF chat export — fpdf2 + fontTools + pillow into the overlay dir plus
         # the CJK Noto fonts into /app/static/fonts (frontend pdf-style.css uses
         # them too). Root-anchored tar; no restart needed (fpdf import is lazy).
-        "export-document": _sprig({
-            "capability": "export",
-            "server": "deliver",
-            "model": "PDF export (fpdf2 + CJK fonts)",
-            "dim": 0,
-            "delivery": "oci-artifact",
-            "seed": "app-dir",
-            "target": "/",
-            "sentinel": "usr/local/lib/python3.11/site-packages/fpdf",
-            "ready_timeout_s": 180.0,
-            "repo": f"{SPRIG_REGISTRY}/sprig-export-document",
-            "tag": "v1",
-            "insecure": SPRIG_REGISTRY_INSECURE,
-            "binary_sha256": "5139f34d07ccbff59ae29fd041c2f7492cef28cee74aa08b58bf4523321235d8",
-        }, arch={"arm64": {}, "amd64": {
-            "tag": "v1-amd64",
-            "binary_sha256": "913bfe99a2982c820d5e4f94c476bd749edce5b5fcccc673a2bee449766905b1",
-        }}),
+        "export-document": _sprig(
+            {
+                "capability": "export",
+                "server": "deliver",
+                "model": "PDF export (fpdf2 + CJK fonts)",
+                "dim": 0,
+                "delivery": "oci-artifact",
+                "seed": "app-dir",
+                "target": "/",
+                "sentinel": "usr/local/lib/python3.11/site-packages/fpdf",
+                "ready_timeout_s": 180.0,
+                "repo": f"{SPRIG_REGISTRY}/sprig-export-document",
+                "tag": "v1",
+                "insecure": SPRIG_REGISTRY_INSECURE,
+                "binary_sha256": "5139f34d07ccbff59ae29fd041c2f7492cef28cee74aa08b58bf4523321235d8",
+            },
+            arch={
+                "arm64": {},
+                "amd64": {
+                    "tag": "v1-amd64",
+                    "binary_sha256": "913bfe99a2982c820d5e4f94c476bd749edce5b5fcccc673a2bee449766905b1",
+                },
+            },
+        ),
         # Pyodide (browser code interpreter) — served from /app/build/pyodide
         # (workers load indexURL '/pyodide/'). Serves immediately after graft.
-        "code-pyodide": _sprig({
-            "capability": "code",
-            "server": "deliver",
-            "model": "pyodide browser code interpreter",
-            "dim": 0,
-            "delivery": "oci-artifact",
-            "seed": "app-dir",
-            "target": "/app/build/pyodide",
-            "sentinel": "pyodide.js",
-            "ready_timeout_s": 180.0,
-            "repo": f"{SPRIG_REGISTRY}/sprig-code-pyodide",
-            "tag": "v1",
-            "insecure": SPRIG_REGISTRY_INSECURE,
-            "binary_sha256": "d7683230a86a8874abce78889f06acfb40d3f1f545f4d85d089e862a88e9bf00",
-        }, arch=NEUTRAL),
+        "code-pyodide": _sprig(
+            {
+                "capability": "code",
+                "server": "deliver",
+                "model": "pyodide browser code interpreter",
+                "dim": 0,
+                "delivery": "oci-artifact",
+                "seed": "app-dir",
+                "target": "/app/build/pyodide",
+                "sentinel": "pyodide.js",
+                "ready_timeout_s": 180.0,
+                "repo": f"{SPRIG_REGISTRY}/sprig-code-pyodide",
+                "tag": "v1",
+                "insecure": SPRIG_REGISTRY_INSECURE,
+                "binary_sha256": "d7683230a86a8874abce78889f06acfb40d3f1f545f4d85d089e862a88e9bf00",
+            },
+            arch=NEUTRAL,
+        ),
         # onnxruntime-web wasm — in-browser ML (Evaluations leaderboard, kokoro
         # TTS worker); both consumers set wasmPaths='/wasm/'. Serves immediately.
-        "browser-ml": _sprig({
-            "capability": "browser-ml",
-            "server": "deliver",
-            "model": "onnxruntime-web wasm (in-browser ML)",
-            "dim": 0,
-            "delivery": "oci-artifact",
-            "seed": "app-dir",
-            "target": "/app/build/wasm",
-            "sentinel": "ort-wasm-simd-threaded.jsep.wasm",
-            "ready_timeout_s": 120.0,
-            "repo": f"{SPRIG_REGISTRY}/sprig-browser-ml",
-            "tag": "v1",
-            "insecure": SPRIG_REGISTRY_INSECURE,
-            "binary_sha256": "b8b4617991ee2e1655dd9bee6a48f2e63d64ccacd578fe3301f3603a507e8b88",
-        }, arch=NEUTRAL),
+        "browser-ml": _sprig(
+            {
+                "capability": "browser-ml",
+                "server": "deliver",
+                "model": "onnxruntime-web wasm (in-browser ML)",
+                "dim": 0,
+                "delivery": "oci-artifact",
+                "seed": "app-dir",
+                "target": "/app/build/wasm",
+                "sentinel": "ort-wasm-simd-threaded.jsep.wasm",
+                "ready_timeout_s": 120.0,
+                "repo": f"{SPRIG_REGISTRY}/sprig-browser-ml",
+                "tag": "v1",
+                "insecure": SPRIG_REGISTRY_INSECURE,
+                "binary_sha256": "b8b4617991ee2e1655dd9bee6a48f2e63d64ccacd578fe3301f3603a507e8b88",
+            },
+            arch=NEUTRAL,
+        ),
         # Static ffmpeg + ffprobe (johnvansickle 7.0.2) — audio transcode for
         # pydub/whisper paths. Replaces the ~110MB apt ffmpeg codec stack.
-        "media-ffmpeg": _sprig({
-            "capability": "media",
-            "server": "deliver",
-            "model": "static ffmpeg + ffprobe 7.0.2",
-            "dim": 0,
-            "delivery": "oci-artifact",
-            "seed": "app-dir",
-            "target": "/usr/local/bin",
-            "sentinel": "ffmpeg",
-            "ready_timeout_s": 120.0,
-            "repo": f"{SPRIG_REGISTRY}/sprig-media-ffmpeg",
-            "tag": "v1",
-            "insecure": SPRIG_REGISTRY_INSECURE,
-            "binary_sha256": "cfe4304c74ebcc04a8ee221968fdc783f46addbf5646c14971885bbb0e613bb2",
-        }, arch={"arm64": {}, "amd64": {
-            "tag": "v1-amd64",
-            "binary_sha256": "d1f466fa7fb88d387781f873862f5f214d5e04e55050cd762e98e74a8bff380c",
-        }}),
+        "media-ffmpeg": _sprig(
+            {
+                "capability": "media",
+                "server": "deliver",
+                "model": "static ffmpeg + ffprobe 7.0.2",
+                "dim": 0,
+                "delivery": "oci-artifact",
+                "seed": "app-dir",
+                "target": "/usr/local/bin",
+                "sentinel": "ffmpeg",
+                "ready_timeout_s": 120.0,
+                "repo": f"{SPRIG_REGISTRY}/sprig-media-ffmpeg",
+                "tag": "v1",
+                "insecure": SPRIG_REGISTRY_INSECURE,
+                "binary_sha256": "cfe4304c74ebcc04a8ee221968fdc783f46addbf5646c14971885bbb0e613bb2",
+            },
+            arch={
+                "arm64": {},
+                "amd64": {
+                    "tag": "v1-amd64",
+                    "binary_sha256": "d1f466fa7fb88d387781f873862f5f214d5e04e55050cd762e98e74a8bff380c",
+                },
+            },
+        ),
         # rclone (static Go binary) — cloud backup/restore. restore_backup_start.sh
         # skips backups gracefully when absent.
-        "backup-rclone": _sprig({
-            "capability": "backup",
-            "server": "deliver",
-            "model": "rclone (cloud backup)",
-            "dim": 0,
-            "delivery": "oci-artifact",
-            "seed": "app-dir",
-            "target": "/usr/local/bin",
-            "sentinel": "rclone",
-            "ready_timeout_s": 120.0,
-            "repo": f"{SPRIG_REGISTRY}/sprig-backup-rclone",
-            "tag": "v1",
-            "insecure": SPRIG_REGISTRY_INSECURE,
-            "binary_sha256": "df0f3c87f32c5ae4e9c71cb976bc25db870c53c8b5c5491d8cba8844a216a61f",
-        }, arch={"arm64": {}, "amd64": {
-            "tag": "v1-amd64",
-            "binary_sha256": "088cc8bbcafb03521f027aced74cce7c772d64a9e8e6338ce6c3946a1e36f182",
-        }}),
+        "backup-rclone": _sprig(
+            {
+                "capability": "backup",
+                "server": "deliver",
+                "model": "rclone (cloud backup)",
+                "dim": 0,
+                "delivery": "oci-artifact",
+                "seed": "app-dir",
+                "target": "/usr/local/bin",
+                "sentinel": "rclone",
+                "ready_timeout_s": 120.0,
+                "repo": f"{SPRIG_REGISTRY}/sprig-backup-rclone",
+                "tag": "v1",
+                "insecure": SPRIG_REGISTRY_INSECURE,
+                "binary_sha256": "df0f3c87f32c5ae4e9c71cb976bc25db870c53c8b5c5491d8cba8844a216a61f",
+            },
+            arch={
+                "arm64": {},
+                "amd64": {
+                    "tag": "v1-amd64",
+                    "binary_sha256": "088cc8bbcafb03521f027aced74cce7c772d64a9e8e6338ce6c3946a1e36f182",
+                },
+            },
+        ),
     }
 
     def __init__(self, app):
@@ -762,7 +868,9 @@ class SprigSupervisor:
         # signature-required graft (including reconcile of previously-legal
         # cached tars). Name it now.
         require_signed = os.environ.get("SPRIG_REQUIRE_SIGNED", "").lower() in (
-            "1", "true", "yes",
+            "1",
+            "true",
+            "yes",
         )
         from sage_is_ai.sprigs.artifact import _DEFAULT_PUBKEY
 
@@ -830,9 +938,7 @@ class SprigSupervisor:
                 return []
             errors = data.get("errors")
             if isinstance(errors, dict):
-                self._errors = {
-                    k: v for k, v in errors.items() if isinstance(v, dict)
-                }
+                self._errors = {k: v for k, v in errors.items() if isinstance(v, dict)}
             return data.get("grafted", [])
         except (OSError, ValueError) as exc:
             log.warning("could not read sprig state.json: %s", exc)
@@ -884,7 +990,9 @@ class SprigSupervisor:
             lock_path.parent.mkdir(parents=True, exist_ok=True)
             fd = os.open(str(lock_path), os.O_RDWR | os.O_CREAT, 0o644)
         except OSError as exc:
-            log.warning("could not open Sprig™ reconcile lock (%s); skipping restore", exc)
+            log.warning(
+                "could not open Sprig™ reconcile lock (%s); skipping restore", exc
+            )
             return False
         try:
             fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -920,7 +1028,9 @@ class SprigSupervisor:
                         "state.json lists Sprig™ '%s' (%s) which this image's "
                         "catalog no longer carries — skipping. Graft a current "
                         "%s cultivar from Admin → Sprigs.",
-                        name, cap, cap,
+                        name,
+                        cap,
+                        cap,
                     )
                     continue
                 if self.CATALOG[name].get("capability") == "dev" and not DEV_MODE:
@@ -983,7 +1093,9 @@ class SprigSupervisor:
                     self._deferred[name] = entry
                     log.warning(
                         "deferred Sprig™ '%s' (%s); kept in desired-state: %s",
-                        name, cap, exc,
+                        name,
+                        cap,
+                        exc,
                     )
         finally:
             self._reconciling = False
@@ -1039,7 +1151,13 @@ class SprigSupervisor:
 
         if server == "mock":
             return (
-                ["sage_is_ai.sprigs.mock_embedding_server", "--port", "{port}", "--dim", dim],
+                [
+                    "sage_is_ai.sprigs.mock_embedding_server",
+                    "--port",
+                    "{port}",
+                    "--dim",
+                    dim,
+                ],
                 ready_timeout,
             )
 
@@ -1085,9 +1203,7 @@ class SprigSupervisor:
                     if backend == "onnx"
                     else ("onnxruntime", "tokenizers", "numpy")
                 )
-                missing = [
-                    m for m in needed if importlib.util.find_spec(m) is None
-                ]
+                missing = [m for m in needed if importlib.util.find_spec(m) is None]
                 if missing:
                     # No restart needed for THIS retry — invalidate_caches above
                     # makes the overlay visible as soon as vector-chroma delivers.
@@ -1100,10 +1216,14 @@ class SprigSupervisor:
                     )
             args = [
                 "sage_is_ai.sprigs.embedding_server",
-                "--port", "{port}",
-                "--backend", backend,
-                "--model", spec.get("model", ""),
-                "--dim", dim,
+                "--port",
+                "{port}",
+                "--backend",
+                backend,
+                "--model",
+                spec.get("model", ""),
+                "--dim",
+                dim,
             ]
             if backend == "onnx-transformer":
                 # onnxruntime + tokenizers, no torch; model.onnx comes from the
@@ -1122,10 +1242,15 @@ class SprigSupervisor:
             return (
                 [
                     "{artifact_dir}/llama-server",
-                    "-m", "{artifact_dir}/" + spec.get("gguf", "model.gguf"),
-                    "--host", "127.0.0.1",
-                    "--port", "{port}",
-                    *spec.get("server_args", ["--embeddings", "-ub", "512", "-c", "512"]),
+                    "-m",
+                    "{artifact_dir}/" + spec.get("gguf", "model.gguf"),
+                    "--host",
+                    "127.0.0.1",
+                    "--port",
+                    "{port}",
+                    *spec.get(
+                        "server_args", ["--embeddings", "-ub", "512", "-c", "512"]
+                    ),
                 ],
                 ready_timeout,
             )
@@ -1140,10 +1265,14 @@ class SprigSupervisor:
             return (
                 [
                     "{artifact_dir}/whisper-server",
-                    "-m", "{artifact_dir}/" + spec.get("ggml", "model.bin"),
-                    "--host", "127.0.0.1",
-                    "--port", "{port}",
-                    "--inference-path", "/v1/audio/transcriptions",
+                    "-m",
+                    "{artifact_dir}/" + spec.get("ggml", "model.bin"),
+                    "--host",
+                    "127.0.0.1",
+                    "--port",
+                    "{port}",
+                    "--inference-path",
+                    "/v1/audio/transcriptions",
                     *spec.get("server_args", ["-l", "auto"]),
                 ],
                 ready_timeout,
@@ -1160,11 +1289,15 @@ class SprigSupervisor:
             return (
                 [
                     "{artifact_dir}/jre/bin/java",
-                    *spec.get("jvm_args", ["-XX:MaxRAMPercentage=50", "-XX:+UseSerialGC"]),
+                    *spec.get(
+                        "jvm_args", ["-XX:MaxRAMPercentage=50", "-XX:+UseSerialGC"]
+                    ),
                     "-jar",
                     "{artifact_dir}/" + spec.get("jar", "tika-server-standard.jar"),
-                    "--host", "127.0.0.1",
-                    "--port", "{port}",
+                    "--host",
+                    "127.0.0.1",
+                    "--port",
+                    "{port}",
                 ],
                 ready_timeout,
             )
@@ -1183,7 +1316,10 @@ class SprigSupervisor:
             return (
                 [
                     "{artifact_dir}/run-docling.sh",
-                    *spec.get("server_args", ["run", "--host", "127.0.0.1", "--port", "{port}"]),
+                    *spec.get(
+                        "server_args",
+                        ["run", "--host", "127.0.0.1", "--port", "{port}"],
+                    ),
                 ],
                 ready_timeout,
             )
@@ -1313,7 +1449,9 @@ class SprigSupervisor:
                     spec=spec, data_dir=DATA_DIR, catalog_name=name
                 )
             except artifact.ArtifactError as exc:
-                raise ValueError(f"artifact delivery failed for '{name}': {exc}") from exc
+                raise ValueError(
+                    f"artifact delivery failed for '{name}': {exc}"
+                ) from exc
 
             child_env = {
                 **os.environ,
@@ -1385,7 +1523,10 @@ class SprigSupervisor:
 
         self._persist_state()
         log.info(
-            "grafted sprig '%s' (pid %s) on %s", name, handle.process.pid, handle.base_url
+            "grafted sprig '%s' (pid %s) on %s",
+            name,
+            handle.process.pid,
+            handle.base_url,
         )
         return handle
 
@@ -1423,9 +1564,7 @@ class SprigSupervisor:
             except requests.RequestException:
                 pass
             await asyncio.sleep(0.25)
-        raise TimeoutError(
-            f"sprig '{handle.name}' not healthy within {timeout:.0f}s"
-        )
+        raise TimeoutError(f"sprig '{handle.name}' not healthy within {timeout:.0f}s")
 
     async def _terminate(self, name: str) -> None:
         handle = self._sprigs.pop(name, None)

@@ -1,5 +1,4 @@
 import asyncio
-import json
 import logging
 import re
 from typing import Optional
@@ -21,14 +20,19 @@ from sage_is_ai.models.messages import (
 )
 
 
-from sage_is_ai.config import ENABLE_ADMIN_CHAT_ACCESS, ENABLE_ADMIN_EXPORT
 from sage_is_ai.constants import ERROR_MESSAGES
 from sage_is_ai.env import SRC_LOG_LEVELS
 
 
-from sage_is_ai.utils.auth import get_admin_user, get_verified_user, get_admin_or_facilitator_user
-from sage_is_ai.utils.access_control import has_access, has_facilitator_access, get_users_with_access
-from sage_is_ai.utils.facilitator import can_facilitator_manage_group
+from sage_is_ai.utils.auth import (
+    get_verified_user,
+    get_admin_or_facilitator_user,
+)
+from sage_is_ai.utils.access_control import (
+    has_access,
+    has_facilitator_access,
+    get_users_with_access,
+)
 from sage_is_ai.utils.webhook import post_webhook
 
 log = logging.getLogger(__name__)
@@ -55,7 +59,7 @@ def _get_user_for_message(message) -> UserNameResponse:
     return UserNameResponse(**user.model_dump())
 
 
-def _check_space_access(user,space):
+def _check_space_access(user, space):
     """Check if a user has read access to a space. Raises 403 if not."""
     if user.role == "admin":
         return
@@ -68,6 +72,7 @@ def _check_space_access(user,space):
     raise HTTPException(
         status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_MESSAGES.DEFAULT()
     )
+
 
 ############################
 # GetSpaces
@@ -92,7 +97,9 @@ async def get_all_spaces(user=Depends(get_verified_user)):
 
 
 @router.post("/create", response_model=Optional[SpaceModel])
-async def create_new_space(form_data: SpaceForm, user=Depends(get_admin_or_facilitator_user)):
+async def create_new_space(
+    form_data: SpaceForm, user=Depends(get_admin_or_facilitator_user)
+):
     try:
         space = Spaces.insert_new_space(None, form_data, user.id)
         return SpaceModel(**space.model_dump())
@@ -116,7 +123,7 @@ async def get_space_by_id(id: str, user=Depends(get_verified_user)):
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_space_access(user,space)
+    _check_space_access(user, space)
 
     return SpaceModel(**space.model_dump())
 
@@ -182,7 +189,7 @@ async def get_space_participants(id: str, user=Depends(get_verified_user)):
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_space_access(user,space)
+    _check_space_access(user, space)
 
     # Get users with read access
     if space.access_control:
@@ -191,10 +198,7 @@ async def get_space_participants(id: str, user=Depends(get_verified_user)):
         # No access control -- all users have access
         result = Users.get_users()
         space_users = result.get("users", []) if isinstance(result, dict) else result
-    users_list = [
-        UserNameResponse(**u.model_dump()).model_dump()
-        for u in space_users
-    ]
+    users_list = [UserNameResponse(**u.model_dump()).model_dump() for u in space_users]
 
     # Get agents from space data
     agents = Spaces.get_space_agents(space)
@@ -221,7 +225,7 @@ async def get_space_messages(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_space_access(user,space)
+    _check_space_access(user, space)
 
     message_list = Messages.get_messages_by_space_id(id, skip, limit)
     user_cache = {}
@@ -288,7 +292,9 @@ async def send_notification(name, webui_url, space, message, active_user_ids):
                     )
 
 
-async def generate_agent_response(request, space, trigger_message, agent_config, trigger_user):
+async def generate_agent_response(
+    request, space, trigger_message, agent_config, trigger_user
+):
     """Generate an AI agent response when @mentioned in a space."""
     try:
         app = request.app
@@ -297,6 +303,7 @@ async def generate_agent_response(request, space, trigger_message, agent_config,
         # Ensure models are loaded (may be empty on cold start)
         if not app.state.MODELS:
             from sage_is_ai.utils.models import get_all_models
+
             await get_all_models(request, user=trigger_user)
 
         if not model_id or model_id not in app.state.MODELS:
@@ -307,9 +314,9 @@ async def generate_agent_response(request, space, trigger_message, agent_config,
         agent_name = agent_config.get("name", model.get("name", "Agent"))
         agent_profile_image = agent_config.get(
             "profile_image_url",
-            model.get("info", {}).get("meta", {}).get(
-                "profile_image_url", "/static/icons/favicon.png"
-            ),
+            model.get("info", {})
+            .get("meta", {})
+            .get("profile_image_url", "/static/icons/favicon.png"),
         )
         agent_info = {
             "model_id": model_id,
@@ -353,9 +360,7 @@ async def generate_agent_response(request, space, trigger_message, agent_config,
         # Extract response content
         if isinstance(response, dict):
             content = (
-                response.get("choices", [{}])[0]
-                .get("message", {})
-                .get("content", "")
+                response.get("choices", [{}])[0].get("message", {}).get("content", "")
             )
         else:
             # Handle StreamingResponse -- shouldn't happen with stream=False
@@ -477,10 +482,8 @@ async def send_mention_notifications(app, space, message, mentions, sender_user)
 
             # Send webhook notification if configured
             if mentioned_user.settings:
-                webhook_url = (
-                    mentioned_user.settings.ui.get("notifications", {}).get(
-                        "webhook_url", None
-                    )
+                webhook_url = mentioned_user.settings.ui.get("notifications", {}).get(
+                    "webhook_url", None
                 )
                 if webhook_url:
                     webui_url = app.state.config.WEBUI_URL
@@ -513,7 +516,7 @@ async def post_new_message(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_space_access(user,space)
+    _check_space_access(user, space)
 
     try:
         message = Messages.insert_new_message(form_data, space.id, user.id)
@@ -668,16 +671,14 @@ async def post_new_message(
 
 
 @router.get("/{id}/messages/{message_id}", response_model=Optional[MessageUserResponse])
-async def get_space_message(
-    id: str, message_id: str, user=Depends(get_verified_user)
-):
+async def get_space_message(id: str, message_id: str, user=Depends(get_verified_user)):
     space = Spaces.get_space_by_id(id)
     if not space:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_space_access(user,space)
+    _check_space_access(user, space)
 
     message = Messages.get_message_by_id(message_id)
     if not message:
@@ -720,7 +721,7 @@ async def get_space_thread_messages(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_space_access(user,space)
+    _check_space_access(user, space)
 
     message_list = Messages.get_messages_by_parent_id(id, message_id, skip, limit)
     user_cache = {}
@@ -766,7 +767,7 @@ async def update_message_by_id(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_space_access(user,space)
+    _check_space_access(user, space)
 
     message = Messages.get_message_by_id(message_id)
     if not message:
@@ -834,7 +835,7 @@ async def add_reaction_to_message(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_space_access(user,space)
+    _check_space_access(user, space)
 
     message = Messages.get_message_by_id(message_id)
     if not message:
@@ -894,7 +895,7 @@ async def remove_reaction_by_id_and_user_id_and_name(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_space_access(user,space)
+    _check_space_access(user, space)
 
     message = Messages.get_message_by_id(message_id)
     if not message:
@@ -957,7 +958,7 @@ async def delete_message_by_id(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_space_access(user,space)
+    _check_space_access(user, space)
 
     message = Messages.get_message_by_id(message_id)
     if not message:

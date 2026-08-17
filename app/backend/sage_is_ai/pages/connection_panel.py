@@ -40,6 +40,7 @@ PROVIDERS: tuple[tuple[str, str, str, str, bool], ...] = (
     ("ollama", "Ollama", "url", "http://host.docker.internal:11434", False),
 )
 
+
 def _state(request: Request, provider: str) -> tuple[str, str]:
     """Current URL and whether this provider is switched on.
 

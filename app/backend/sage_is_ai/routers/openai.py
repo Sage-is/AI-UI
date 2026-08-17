@@ -2,16 +2,14 @@ import asyncio
 import hashlib
 import json
 import logging
-from pathlib import Path
-from typing import Literal, Optional, overload
+from typing import Optional
 
 import aiohttp
 from aiocache import cached
 import requests
 from urllib.parse import quote
 
-from fastapi import Depends, FastAPI, HTTPException, Request, APIRouter
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import Depends, HTTPException, Request, APIRouter
 from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 from starlette.background import BackgroundTask
@@ -31,7 +29,7 @@ from sage_is_ai.env import (
 from sage_is_ai.models.users import UserModel
 
 from sage_is_ai.constants import ERROR_MESSAGES
-from sage_is_ai.env import ENV, SRC_LOG_LEVELS
+from sage_is_ai.env import SRC_LOG_LEVELS
 
 
 from sage_is_ai.utils.payload import (
@@ -564,9 +562,7 @@ async def get_all_models(request: Request, user: UserModel) -> dict[str, list]:
     # We short-circuit only when there are also no hidden connections.
     if not request.app.state.config.ENABLE_OPENAI_API:
         hidden_only = await _get_hidden_connection_models(request, user=user)
-        request.app.state.OPENAI_MODELS = {
-            model["id"]: model for model in hidden_only
-        }
+        request.app.state.OPENAI_MODELS = {model["id"]: model for model in hidden_only}
         return {"data": hidden_only}
 
     responses = await get_all_models_responses(request, user=user)
@@ -584,7 +580,6 @@ async def get_all_models(request: Request, user: UserModel) -> dict[str, list]:
 
         for idx, models in enumerate(model_lists):
             if models is not None and "error" not in models:
-
                 merged_list.extend(
                     [
                         {
@@ -724,9 +719,7 @@ async def get_models(
                 # so the operator gets a structured 503 with a fix-pointer
                 # to /admin/diagnostics naming the unreachable URL.
                 log.exception(f"Client error: {str(e)}")
-                endpoint_health.record_failure(
-                    url, e, capability="openai/list_models"
-                )
+                endpoint_health.record_failure(url, e, capability="openai/list_models")
                 raise EndpointUnreachable(
                     url, underlying=e, capability="openai/list_models"
                 ) from e
@@ -915,8 +908,6 @@ async def generate_chat_completion(
     if BYPASS_MODEL_ACCESS_CONTROL:
         bypass_filter = True
 
-    idx = 0
-
     payload = {**form_data}
     metadata = payload.pop("metadata", None)
 
@@ -958,9 +949,7 @@ async def generate_chat_completion(
 
     await get_all_models(request, user=user)
     model = request.app.state.OPENAI_MODELS.get(model_id)
-    if model:
-        idx = model["urlIdx"]
-    else:
+    if not model:
         raise HTTPException(
             status_code=404,
             detail="Model not found",

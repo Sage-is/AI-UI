@@ -21,14 +21,26 @@ __all__ = ["render_developer", "save_developer"]
 
 # number, title, command (or empty), hint
 _STEPS: tuple[tuple[str, str, str, str], ...] = (
-    ("1", "Install the CLI", "brew tap sage-is/apps && brew install ai-ui",
-     "One tap, one install. Homebrew does the heavy lifting."),
-    ("2", "Launch dev mode", "ai-ui dev",
-     "Clones the repo, mounts source, fires up hot reload. Grab a coffee while "
-     "it downloads ~1 GB of Node goodness the first time."),
-    ("3", "Break things (then fix them)", "",
-     "Edit code, save, watch it reload. That is the whole loop. Ship it when "
-     "you are proud of it."),
+    (
+        "1",
+        "Install the CLI",
+        "brew tap sage-is/apps && brew install ai-ui",
+        "One tap, one install. Homebrew does the heavy lifting.",
+    ),
+    (
+        "2",
+        "Launch dev mode",
+        "ai-ui dev",
+        "Clones the repo, mounts source, fires up hot reload. Grab a coffee while "
+        "it downloads ~1 GB of Node goodness the first time.",
+    ),
+    (
+        "3",
+        "Break things (then fix them)",
+        "",
+        "Edit code, save, watch it reload. That is the whole loop. Ship it when "
+        "you are proud of it.",
+    ),
 )
 
 _LINKS: tuple[tuple[str, str], ...] = (
@@ -39,8 +51,10 @@ _LINKS: tuple[tuple[str, str], ...] = (
 
 _DEV_LINKS: tuple[tuple[str, str], ...] = (
     ("https://github.com/Sage-is/AI-UI", "GitHub Repository"),
-    ("https://github.com/Sage-is/AI-UI/blob/master/docs/CONTRIBUTING.md",
-     "Contributing Guide"),
+    (
+        "https://github.com/Sage-is/AI-UI/blob/master/docs/CONTRIBUTING.md",
+        "Contributing Guide",
+    ),
 )
 
 
@@ -73,7 +87,9 @@ def render_developer(request: Request, user, saved: bool = False) -> str:
         live_source=_("Live source mounted. Changes reload automatically."),
         mounted=_("Source code mounted"),
         hot_reload=_("Hot reload active"),
-        intro=_("Two commands and you are hacking on AI UI with hot reload. No PhD required."),
+        intro=_(
+            "Two commands and you are hacking on AI UI with hot reload. No PhD required."
+        ),
         signup_label=_("Sign me up for the mission"),
         signup_hint=_(
             "I solemnly swear I will open a terminal. Remind me next time I log in until I do."

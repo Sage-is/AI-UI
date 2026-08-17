@@ -1,11 +1,9 @@
-import random
 import logging
 import sys
 
 from fastapi import Request
 from sage_is_ai.models.users import UserModel
 from sage_is_ai.utils.misc import get_available_models
-from sage_is_ai.models.models import Models
 from sage_is_ai.utils.models import check_model_access
 from sage_is_ai.env import SRC_LOG_LEVELS, GLOBAL_LOG_LEVEL, BYPASS_MODEL_ACCESS_CONTROL
 

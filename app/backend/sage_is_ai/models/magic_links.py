@@ -8,7 +8,7 @@ from sage_is_ai.internal.db import Base, get_db
 from sage_is_ai.env import SRC_LOG_LEVELS
 
 from pydantic import BaseModel, ConfigDict
-from sqlalchemy import BigInteger, Boolean, Column, Integer, String, Text, JSON
+from sqlalchemy import BigInteger, Boolean, Column, Integer, Text, JSON
 
 
 log = logging.getLogger(__name__)

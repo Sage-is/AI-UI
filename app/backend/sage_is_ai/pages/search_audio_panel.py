@@ -32,7 +32,12 @@ from fastapi import Request
 from sage_is_ai.pages.i18n import lang_query, translator
 from sage_is_ai.pages.templates import render
 
-__all__ = ["render_search_audio", "graft_components", "download_components", "COMPONENTS"]
+__all__ = [
+    "render_search_audio",
+    "graft_components",
+    "download_components",
+    "COMPONENTS",
+]
 
 # form field, cultivars to graft IN ORDER, label, caption. One row per
 # component; the renderer, the graft and the download all read this, so they
@@ -46,12 +51,19 @@ __all__ = ["render_search_audio", "graft_components", "download_components", "CO
 # else knows it, which is exactly why the old one-shot graft of `mock-embedding`
 # was the path of least resistance.
 COMPONENTS: tuple[tuple[str, tuple[str, ...], str, str], ...] = (
-    ("embedding", ("vector-chroma", "minilm-onnx-inhoused"), "Document Search",
-     "Embedding model for document search and knowledge base queries."),
-    ("whisper", ("whisper-base-ggml",), "Speech-to-Text",
-     "Transcribes audio files and voice input into text."),
+    (
+        "embedding",
+        ("vector-chroma", "minilm-onnx-inhoused"),
+        "Document Search",
+        "Embedding model for document search and knowledge base queries.",
+    ),
+    (
+        "whisper",
+        ("whisper-base-ggml",),
+        "Speech-to-Text",
+        "Transcribes audio files and voice input into text.",
+    ),
 )
-
 
 
 def _status(request: Request) -> dict[str, str]:
@@ -69,7 +81,9 @@ def render_search_audio(request: Request, message: str = "") -> str:
         lang=lang_query(request),
         states=state,
         message=message,
-        legend=_("Install local AI components for document search and audio transcription."),
+        legend=_(
+            "Install local AI components for document search and audio transcription."
+        ),
         graft_label=_("Graft Sprigs"),
         for_me_label=_("for me"),
         download_label=_("Download weights"),
@@ -80,13 +94,16 @@ def render_search_audio(request: Request, message: str = "") -> str:
                 "caption": _(caption),
                 "state": state[key],
                 "busy": state[key] in _BUSY,
-                "badge": said.get(state[key], state[key]) if state[key] != "pending" else "",
+                "badge": said.get(state[key], state[key])
+                if state[key] != "pending"
+                else "",
             }
             # `cultivars` rather than `_` for the discarded column. `_` is the
             # translator here, and unpacking over it would shadow it mid-loop.
             for key, cultivars, label, caption in COMPONENTS
         ],
     )
+
 
 # A component is off-limits when it is already installed, and equally when its
 # weights are mid-download. Both mean "do not start work on this one".
@@ -144,7 +161,8 @@ async def graft_components(request: Request, user, form: dict) -> str:
     skipped = _skipped(request, form)
     if not wanted:
         return render_search_audio(
-            request, "Nothing to install" + (f" — {'; '.join(skipped)}." if skipped else ".")
+            request,
+            "Nothing to install" + (f" — {'; '.join(skipped)}." if skipped else "."),
         )
 
     supervisor = request.app.state.sprig_supervisor
@@ -184,7 +202,8 @@ async def download_components(request: Request, user, form: dict) -> str:
     skipped = _skipped(request, form)
     if not wanted:
         return render_search_audio(
-            request, "Nothing to install" + (f" — {'; '.join(skipped)}." if skipped else ".")
+            request,
+            "Nothing to install" + (f" — {'; '.join(skipped)}." if skipped else "."),
         )
 
     try:

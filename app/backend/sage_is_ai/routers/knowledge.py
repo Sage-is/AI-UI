@@ -18,11 +18,14 @@ from sage_is_ai.routers.retrieval import (
     process_files_batch,
     BatchProcessFilesForm,
 )
-from sage_is_ai.storage.provider import Storage
 
 from sage_is_ai.constants import ERROR_MESSAGES
 from sage_is_ai.utils.auth import get_verified_user
-from sage_is_ai.utils.access_control import has_access, has_facilitator_access, has_permission
+from sage_is_ai.utils.access_control import (
+    has_access,
+    has_facilitator_access,
+    has_permission,
+)
 
 
 from sage_is_ai.env import SRC_LOG_LEVELS
@@ -220,7 +223,9 @@ async def reindex_knowledge_files(request: Request, user=Depends(get_verified_us
             file_ids = knowledge_base.data.get("file_ids", [])
             files = Files.get_files_by_ids(file_ids)
             try:
-                if factory.VECTOR_DB_CLIENT.has_collection(collection_name=knowledge_base.id):
+                if factory.VECTOR_DB_CLIENT.has_collection(
+                    collection_name=knowledge_base.id
+                ):
                     factory.VECTOR_DB_CLIENT.delete_collection(
                         collection_name=knowledge_base.id
                     )
@@ -277,13 +282,11 @@ async def get_knowledge_by_id(id: str, user=Depends(get_verified_user)):
     knowledge = Knowledges.get_knowledge_by_id(id=id)
 
     if knowledge:
-
         if (
             user.role == "admin"
             or knowledge.user_id == user.id
             or has_access(user.id, "read", knowledge.access_control)
         ):
-
             file_ids = knowledge.data.get("file_ids", []) if knowledge.data else []
             files = Files.get_file_metadatas_by_ids(file_ids)
 
@@ -456,7 +459,6 @@ async def update_file_from_knowledge_by_id(
         and not has_access(user.id, "write", knowledge.access_control)
         and user.role != "admin"
     ):
-
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=ERROR_MESSAGES.ACCESS_PROHIBITED,

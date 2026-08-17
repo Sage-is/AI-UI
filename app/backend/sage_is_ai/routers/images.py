@@ -5,7 +5,6 @@ import json
 import logging
 import mimetypes
 import re
-from pathlib import Path
 from typing import Optional
 
 from urllib.parse import quote
@@ -207,7 +206,6 @@ async def verify_url(request: Request, user=Depends(get_admin_user)):
             request.app.state.config.ENABLE_IMAGE_GENERATION = False
             raise HTTPException(status_code=400, detail=ERROR_MESSAGES.INVALID_URL)
     elif request.app.state.config.IMAGE_GENERATION_ENGINE == "comfyui":
-
         headers = None
         if request.app.state.config.COMFYUI_API_KEY:
             headers = {

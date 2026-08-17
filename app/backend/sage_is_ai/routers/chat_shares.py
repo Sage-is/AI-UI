@@ -110,7 +110,9 @@ async def get_chats_shared_with_me(
 
     for share in shares:
         # Deduplicate: if shared via both user and group, show once
-        effective_chat_id = share.snapshot_chat_id if share.share_mode == "snapshot" else share.chat_id
+        effective_chat_id = (
+            share.snapshot_chat_id if share.share_mode == "snapshot" else share.chat_id
+        )
         if effective_chat_id in seen_chat_ids:
             continue
         seen_chat_ids.add(effective_chat_id)

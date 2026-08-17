@@ -1417,23 +1417,23 @@ docs_gate_teeth:  ## Prove the doc-target gate can fail
 	@scripts/gates/docs-targets.sh --self-test
 
 ## ruff_gate — the Python linter. Nothing else in this repo reads Python
-## semantics: bandit reads security, black reads formatting, and the chat-path
-## ratchet reads six shapes of one file. Ruff read all 218 backend files in 40ms
-## and found the one undefined name in the tree — the frozen NameError at
-## middleware.py:1209. Config and the reasoning behind every ignored rule live in
-## app/pyproject.toml under [tool.ruff].
+## semantics: bandit reads security, ruff format reads formatting, and the
+## chat-path ratchet reads six shapes of one file. Ruff read all backend files
+## in 40ms and found the one undefined name in the tree — the frozen NameError
+## then at middleware.py:1209. Config and the reasoning behind every ignored
+## rule live in app/pyproject.toml under [tool.ruff].
 ruff_gate:  ## Gate: ruff clean
 	@scripts/gates/ruff/run-gate.sh check
 
-## ruff_format_check — reports formatter drift. NOT wired into lint yet: 83 of
-## 218 backend files are unformatted, and one of them is middleware.py, whose
-## line numbers are anchored by nine fences and 64 chart citations. Reformatting
-## it is a sequenced job, not a side effect of turning a gate on.
-ruff_format_check:
+## ruff_format_check — the format half of `lint`. The whole backend was
+## reformatted on 2026-08-17 (the sequenced job: reformat, re-point the
+## chat-path fences and citations, oracle byte-identical) and black retired
+## with the same change; ruff format is the only formatter now.
+ruff_format_check:  ## Gate: ruff format clean
 	@scripts/gates/ruff/run-gate.sh format-check
 
-## ruff_format_fix — applies the formatter. Run it deliberately, then re-point
-## the chat-path fences and citations before committing.
+## ruff_format_fix — applies the formatter. If middleware.py is in the diff,
+## re-point the chat-path fences and citations before committing.
 ruff_format_fix:
 	@scripts/gates/ruff/run-gate.sh format-fix
 
@@ -1453,14 +1453,13 @@ cognitive_complexity_tighten:
 cognitive_complexity_teeth:
 	@scripts/gates/cognitive-complexity/run-gate.sh --self-test
 
-lint: docs_gate pipefail_lint ruff_gate cognitive_complexity  ## Lint: docs, pipefail, ruff, eslint, svelte-check, prettier, black
+lint: docs_gate pipefail_lint ruff_gate ruff_format_check cognitive_complexity  ## Lint: docs, pipefail, ruff, ruff format, eslint, svelte-check, prettier
 	@echo "=== Frontend lint (eslint + svelte-check) ==="
 	cd app && bun run lint:frontend
 	cd app && bun run lint:types
 	@echo ""
-	@echo "=== Format check (prettier + black) ==="
+	@echo "=== Format check (prettier) ==="
 	cd app && bunx prettier --check "**/*.{js,ts,svelte,css,md,html,json}"
-	cd app && black --check --exclude ".venv/|/venv/" backend/
 
 # ===========================================================================
 

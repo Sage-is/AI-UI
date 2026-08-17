@@ -220,11 +220,13 @@ def parse_section(h3_tag):
                     current = nxt
                     nxt = nxt.find_next_sibling()
 
-                items.append({
-                    "title": title,
-                    "content": content_text,
-                    "raw": "".join(parts),
-                })
+                items.append(
+                    {
+                        "title": title,
+                        "content": content_text,
+                        "raw": "".join(parts),
+                    }
+                )
 
         current = current.find_next_sibling()
 

@@ -19,13 +19,17 @@ class MessageBridge(ABC):
         self.connection_id = connection_id
         self.config = config
         self._connected = False
-        self._incoming_handler: Optional[Callable[[IncomingMessage], Awaitable[None]]] = None
+        self._incoming_handler: Optional[
+            Callable[[IncomingMessage], Awaitable[None]]
+        ] = None
 
     @property
     def connected(self) -> bool:
         return self._connected
 
-    def set_incoming_handler(self, handler: Callable[[IncomingMessage], Awaitable[None]]) -> None:
+    def set_incoming_handler(
+        self, handler: Callable[[IncomingMessage], Awaitable[None]]
+    ) -> None:
         """Set callback for adapters that push messages (polling, websocket, etc.)."""
         self._incoming_handler = handler
 
@@ -53,7 +57,9 @@ class MessageBridge(ABC):
         ...
 
     @abstractmethod
-    async def handle_webhook(self, body: bytes, headers: dict) -> Optional[IncomingMessage]:
+    async def handle_webhook(
+        self, body: bytes, headers: dict
+    ) -> Optional[IncomingMessage]:
         """Parse an incoming webhook request into an IncomingMessage.
         Returns None if the event should be ignored (e.g. status updates)."""
         ...

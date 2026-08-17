@@ -76,7 +76,11 @@ def render_calendar(request: Request, user, month: str = "") -> str:
     mine = user_calendar(user)
     configured = bool(shared or mine["feeds"])
     events = (
-        upcoming(shared, personal="\n".join(mine["feeds"]), hidden_shared=mine["hidden_shared"])
+        upcoming(
+            shared,
+            personal="\n".join(mine["feeds"]),
+            hidden_shared=mine["hidden_shared"],
+        )
         if configured
         else sample_events()
     )

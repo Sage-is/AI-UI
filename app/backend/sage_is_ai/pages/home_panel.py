@@ -65,8 +65,16 @@ _CALENDAR_LIMIT = 4
 # soon". The rest stay placeholders; the slot below them is where a grafted card
 # lands.
 _SOON = (
-    ("📊", "Usage", "Track your activity, token usage, and model performance over time."),
-    ("⚡", "Quick Actions", "One-tap shortcuts to your most-used prompts and workflows."),
+    (
+        "📊",
+        "Usage",
+        "Track your activity, token usage, and model performance over time.",
+    ),
+    (
+        "⚡",
+        "Quick Actions",
+        "One-tap shortcuts to your most-used prompts and workflows.",
+    ),
 )
 
 
@@ -155,7 +163,9 @@ def render_home(request: Request, user) -> str:
         calendar_events=[
             {
                 "title": e["title"],
-                "when": _("all day") if e["all_day"] else e["start"].strftime("%a %d %b, %H:%M"),
+                "when": _("all day")
+                if e["all_day"]
+                else e["start"].strftime("%a %d %b, %H:%M"),
             }
             for e in events[:_CALENDAR_LIMIT]
         ],

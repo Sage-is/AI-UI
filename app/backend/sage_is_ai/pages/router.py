@@ -44,8 +44,12 @@ from sage_is_ai.pages.auth import (
 )
 from sage_is_ai.pages.i18n import lang_query, supported, translator
 from sage_is_ai.pages.shell import render_page
-from sage_is_ai.pages.templates import TEMPLATES_DIR, render
-from sage_is_ai.pages.branding_panel import render_branding, save_branding
+from sage_is_ai.pages.templates import TEMPLATES_DIR
+from sage_is_ai.pages.branding_panel import (
+    prune_active_theme,
+    render_branding,
+    save_branding,
+)
 from sage_is_ai.pages.changelog_panel import mark_changelog_read, render_changelog
 from sage_is_ai.pages.features_panel import render_features, save_features
 from sage_is_ai.pages.calendar_panel import render_calendar
@@ -288,21 +292,25 @@ async def pages_index(
         )
         for panel in _SETUP_ORDER
     )
-    everyone = _index_item(
-        "/pages/home",
-        _("Home"),
-        _("Your recent work, and whatever this instance has grafted."),
-        lang,
-    ) + _index_item(
-        "/pages/calendar",
-        _("Calendar"),
-        _("What is coming up, from the feeds this instance is pointed at."),
-        lang,
-    ) + _index_item(
-        "/pages/changelog",
-        _("What's New"),
-        _("The release notes, open to every signed-in reader."),
-        lang,
+    everyone = (
+        _index_item(
+            "/pages/home",
+            _("Home"),
+            _("Your recent work, and whatever this instance has grafted."),
+            lang,
+        )
+        + _index_item(
+            "/pages/calendar",
+            _("Calendar"),
+            _("What is coming up, from the feeds this instance is pointed at."),
+            lang,
+        )
+        + _index_item(
+            "/pages/changelog",
+            _("What's New"),
+            _("The release notes, open to every signed-in reader."),
+            lang,
+        )
     )
 
     # Fragment endpoints (`…/panel`) and the reloader's event stream are left
@@ -340,7 +348,7 @@ def _dev_banner(_) -> str:
     return (
         '<p data-cy="index-dev-banner" style="--p:.7rem; --br:.6rem; '
         '--b:1px solid var(--line); --size:.78rem; --m:0 0 .5rem">'
-        f'<strong>{escape(_("Development reloader is on."))}</strong> '
+        f"<strong>{escape(_('Development reloader is on.'))}</strong> "
         + escape(
             _(
                 "Saving a panel restarts the app and reloads this tab; saving a "
@@ -363,7 +371,10 @@ async def sprigs_page(
     island version could not manage.
     """
     return _whole_page(
-        request, "admin/sprigs", await render_panel(request, user), ("vendor/htmx.min.js",)
+        request,
+        "admin/sprigs",
+        await render_panel(request, user),
+        ("vendor/htmx.min.js",),
     )
 
 
@@ -392,7 +403,9 @@ async def sprigs_wire(
 
 
 @router.get("/admin/sprigs/panel", response_class=HTMLResponse)
-async def sprigs_panel(request: Request, user=Depends(require_admin_page)) -> HTMLResponse:
+async def sprigs_panel(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
     return HTMLResponse(await render_panel(request, user))
 
 
@@ -423,6 +436,18 @@ async def branding_page(
         render_branding(request),
         ("vendor/htmx.min.js", "color-pair.js"),
     )
+
+
+@router.post("/admin/branding/prune-theme", response_class=HTMLResponse)
+async def branding_prune_theme(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
+    """Prune the active theme Sprig™ from the branding panel's warning.
+
+    Same API prune path as the Sprigs panel — the panel differs, the prune
+    does not — then the whole branding panel comes back, warning gone.
+    """
+    return HTMLResponse(await prune_active_theme(request, user))
 
 
 @router.post("/admin/branding/save", response_class=HTMLResponse)
@@ -492,7 +517,11 @@ async def agents_action(
     # delete — dropped the reader onto an unstyled page. Shipped that way, and
     # invisible to every gate, because they all assert server state and hook
     # presence and none of them asks whether a document is still a document.
-    return _whole_page(request, "workshop/agents", await run_agent_action(request, user, agent_id, verb))
+    return _whole_page(
+        request,
+        "workshop/agents",
+        await run_agent_action(request, user, agent_id, verb),
+    )
 
 
 @router.get("/workshop/agents/export")
@@ -517,13 +546,15 @@ async def agents_export(
 async def agents_import(
     request: Request, file: UploadFile = File(...), user=Depends(require_agents_reader)
 ) -> HTMLResponse:
-    return _whole_page(request, "workshop/agents", await import_agents(request, user, await file.read()))
+    return _whole_page(
+        request,
+        "workshop/agents",
+        await import_agents(request, user, await file.read()),
+    )
 
 
 @router.get("/workshop/agents/avatar/{agent_id:path}")
-async def agents_avatar(
-    agent_id: str, user=Depends(require_agents_reader)
-) -> Response:
+async def agents_avatar(agent_id: str, user=Depends(require_agents_reader)) -> Response:
     """An agent's picture as bytes, cached hard.
 
     The version token in the query is the content hash, so this URL changes when
@@ -532,7 +563,9 @@ async def agents_avatar(
     what it costs today, inlined as base64 in every list response.
     """
     data, media = await avatar_bytes(user, agent_id)
-    return Response(content=data, media_type=media, headers={"Cache-Control": AVATAR_CACHE})
+    return Response(
+        content=data, media_type=media, headers={"Cache-Control": AVATAR_CACHE}
+    )
 
 
 # ── The Prompts surface ───────────────────────────────────────────────────────
@@ -601,7 +634,11 @@ async def prompts_export(
 async def prompts_import(
     request: Request, file: UploadFile = File(...), user=Depends(require_agents_reader)
 ) -> HTMLResponse:
-    return _whole_page(request, "workshop/prompts", await import_prompts(request, user, await file.read()))
+    return _whole_page(
+        request,
+        "workshop/prompts",
+        await import_prompts(request, user, await file.read()),
+    )
 
 
 # The whole-page surfaces, the way `_SETUP_PAGES` does it for the wizard.
@@ -641,13 +678,19 @@ _PAGES: dict[str, tuple[str, str]] = {
 _SETUP_PAGES = {
     "changelog": ("What's New", "Everything that changed, newest first."),
     "welcome": ("Setup Wizard", "Pick what to configure. Nothing here is permanent."),
-    "auth": ("Authentication", "Let people sign in with Google, GitHub, or an emailed link."),
+    "auth": (
+        "Authentication",
+        "Let people sign in with Google, GitHub, or an emailed link.",
+    ),
     "connection": ("Model Connections", "Point this instance at a model provider."),
     "users": ("Users", "Invite your team, or say you are working alone."),
     "features": ("Features", "Enable or disable platform features for your users."),
     "developer": ("Developer Mode", "Run this thing from source, with hot reload."),
     "complete": ("You are all set", "What this instance has configured so far."),
-    "search-audio": ("AI Engine", "Document search and speech-to-text, installed locally."),
+    "search-audio": (
+        "AI Engine",
+        "Document search and speech-to-text, installed locally.",
+    ),
 }
 
 
@@ -837,9 +880,7 @@ _HOME_PAGE = (
 
 
 @router.get("/home", response_class=HTMLResponse)
-async def home_page(
-    request: Request, user=Depends(require_page_user)
-) -> HTMLResponse:
+async def home_page(request: Request, user=Depends(require_page_user)) -> HTMLResponse:
     heading, subheading = _HOME_PAGE
     return HTMLResponse(
         render_page(
@@ -988,7 +1029,9 @@ async def setup_connection_save(
     """
     form = await request.form()
     return _setup_page(
-        request, "connection", await verify_and_save(request, user, provider, dict(form))
+        request,
+        "connection",
+        await verify_and_save(request, user, provider, dict(form)),
     )
 
 
@@ -1072,7 +1115,9 @@ async def setup_features_save(
     config.
     """
     form = await request.form()
-    return _setup_page(request, "features", await save_features(request, user, dict(form)))
+    return _setup_page(
+        request, "features", await save_features(request, user, dict(form))
+    )
 
 
 @router.get("/admin/setup/developer", response_class=HTMLResponse)
@@ -1184,7 +1229,9 @@ async def diagnostics_probe(
     from sage_is_ai.routers.diagnostics import ProbeForm, probe_endpoint
 
     try:
-        await probe_endpoint(ProbeForm(url=url, capability=capability or None), request, user)
+        await probe_endpoint(
+            ProbeForm(url=url, capability=capability or None), request, user
+        )
     except HTTPException:
         # The refusal is the interesting case and it is already visible in the
         # re-rendered row's status; a probe that fails is data, not an error.

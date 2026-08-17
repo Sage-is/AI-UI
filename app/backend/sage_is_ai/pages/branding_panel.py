@@ -32,27 +32,52 @@ from fastapi import Request
 
 from sage_is_ai.pages.templates import render
 
-__all__ = ["render_branding", "save_branding", "FIELDS"]
+__all__ = ["render_branding", "save_branding", "prune_active_theme", "FIELDS"]
 
 # name, label, placeholder, help. The order is the order they render, and the
 # grouping below reads off it, so adding a field is one row here plus one entry
 # in _GROUPS.
 FIELDS: tuple[tuple[str, str, str, str], ...] = (
-    ("logo_url", "Logo URL (Light Mode)", "https://example.com/logo.png",
-     "URL to your logo image for light mode"),
-    ("logo_dark_url", "Logo URL (Dark Mode)", "https://example.com/logo-dark.png",
-     "Falls back to the light-mode logo when empty"),
-    ("favicon_url", "Favicon URL", "https://example.com/favicon.ico",
-     "URL to your favicon (browser tab icon)"),
-    ("title", "Application Title", "Sage.is AI",
-     "Main title displayed in your application"),
-    ("subtitle", "Application Subtitle", "Powered by Sage.is AI UI",
-     "Subtitle or tagline for your application"),
+    (
+        "logo_url",
+        "Logo URL (Light Mode)",
+        "https://example.com/logo.png",
+        "URL to your logo image for light mode",
+    ),
+    (
+        "logo_dark_url",
+        "Logo URL (Dark Mode)",
+        "https://example.com/logo-dark.png",
+        "Falls back to the light-mode logo when empty",
+    ),
+    (
+        "favicon_url",
+        "Favicon URL",
+        "https://example.com/favicon.ico",
+        "URL to your favicon (browser tab icon)",
+    ),
+    (
+        "title",
+        "Application Title",
+        "Sage.is AI",
+        "Main title displayed in your application",
+    ),
+    (
+        "subtitle",
+        "Application Subtitle",
+        "Powered by Sage.is AI UI",
+        "Subtitle or tagline for your application",
+    ),
 )
 
 _COLORS: tuple[tuple[str, str, str, str], ...] = (
     ("primary_color", "Primary Color", "#3B82F6", "Main brand colour (buttons, links)"),
-    ("accent_color", "Accent Color", "#10B981", "Secondary accent colour for highlights"),
+    (
+        "accent_color",
+        "Accent Color",
+        "#10B981",
+        "Secondary accent colour for highlights",
+    ),
 )
 
 _GROUPS = (
@@ -121,10 +146,21 @@ def render_branding(request: Request, *, message: str = "", kind: str = "info") 
             "picker_value": value or "#000000",
         }
 
+    # An active theme Sprig™ owns the look — accents and grays together — so
+    # the color fields are parked while one is grafted. The panel says who is
+    # winning and offers the prune instead of silently half-applying.
+    theme_name = str(request.app.state.config.SPRIG_ACTIVE_THEME or "").strip()
+    theme_label = ""
+    if theme_name:
+        supervisor = getattr(request.app.state, "sprig_supervisor", None)
+        spec = (supervisor.CATALOG.get(theme_name) or {}) if supervisor else {}
+        theme_label = spec.get("model") or theme_name
+
     return render(
         "branding.html",
         message=message,
         kind=kind,
+        active_theme={"name": theme_name, "label": theme_label} if theme_name else None,
         groups=[
             {"name": name, "fields": [field(*f) for f in fields]}
             for name, fields in _GROUPS
@@ -137,11 +173,15 @@ def render_branding(request: Request, *, message: str = "", kind: str = "info") 
             "primary_color": b.get("primary_color") or "",
             "swatches": [
                 {"kind": kind_, "color": b[key]}
-                for kind_, key in (("primary", "primary_color"), ("accent", "accent_color"))
+                for kind_, key in (
+                    ("primary", "primary_color"),
+                    ("accent", "accent_color"),
+                )
                 if b.get(key)
             ],
         },
     )
+
 
 async def save_branding(request: Request, user, form: dict) -> str:
     """Persist through the API handler, then re-render.
@@ -158,6 +198,37 @@ async def save_branding(request: Request, user, form: dict) -> str:
     try:
         await set_branding(request, BrandingModel(**payload), user)
     except Exception as exc:  # noqa: BLE001 — the operator gets the reason
-        return render_branding(request, message=f"Could not save branding: {exc}", kind="error")
+        return render_branding(
+            request, message=f"Could not save branding: {exc}", kind="error"
+        )
 
     return render_branding(request, message="Branding saved.", kind="success")
+
+
+async def prune_active_theme(request: Request, user) -> str:
+    """Prune the theme Sprig™ that is overriding the branding colours.
+
+    Goes through the API handler so every prune-time reset (the active-theme
+    pointer included) happens exactly as it would from the Sprigs panel — one
+    prune path, not two.
+    """
+    from fastapi import HTTPException
+
+    from sage_is_ai.routers.sprigs import PruneRequest, prune_sprig
+
+    name = str(request.app.state.config.SPRIG_ACTIVE_THEME or "").strip()
+    if not name:
+        return render_branding(
+            request, message="No theme Sprig is active.", kind="info"
+        )
+
+    try:
+        await prune_sprig(request, PruneRequest(name=name), user)
+    except HTTPException as exc:
+        return render_branding(
+            request, message=f"Could not prune {name}: {exc.detail}", kind="error"
+        )
+
+    return render_branding(
+        request, message="Theme Sprig pruned — your colours are live.", kind="success"
+    )

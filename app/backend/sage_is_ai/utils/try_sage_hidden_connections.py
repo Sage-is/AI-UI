@@ -154,7 +154,9 @@ def register_hidden_connections(app) -> None:
         "try.sage registered hidden LLM connection (id=%s, allowlist=%d %s).",
         entry["id"],
         allowlist_size,
-        "models" if allowlist_size > 0 else "models — empty means 'pass through full upstream list'",
+        "models"
+        if allowlist_size > 0
+        else "models — empty means 'pass through full upstream list'",
     )
 
 
@@ -228,9 +230,7 @@ def _matches_allowlist(model_id: str, allowlist: set[str]) -> bool:
     return False
 
 
-def filter_models_to_allowlist(
-    models: list[dict], hidden_conn_id: str
-) -> list[dict]:
+def filter_models_to_allowlist(models: list[dict], hidden_conn_id: str) -> list[dict]:
     """Optionally narrow a model list to ``TRY_SAGE_LLM_MODELS``.
 
     Models served by *other* connections (positive ``urlIdx``, or
@@ -270,9 +270,7 @@ def filter_models_to_allowlist(
     return filtered
 
 
-def resolve_hidden_connection(
-    app, hidden_conn_id: str
-) -> dict | None:
+def resolve_hidden_connection(app, hidden_conn_id: str) -> dict | None:
     """Look up a hidden connection by its stable ID.
 
     Used at inference-dispatch sites (chat/completions, embeddings,

@@ -20,6 +20,7 @@ there. This is for launch scripts that must guarantee a delivery synchronously.
 Exit status: 0 on success or already-on-hand, 1 on failure — so a boot script
 can warn and carry on rather than abort.
 """
+
 from __future__ import annotations
 
 import argparse

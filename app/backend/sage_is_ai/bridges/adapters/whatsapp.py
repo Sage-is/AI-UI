@@ -42,9 +42,7 @@ class WhatsAppBridge(MessageBridge):
         )
 
         try:
-            async with self._session.get(
-                f"/api/sessions/{self._session_name}"
-            ) as resp:
+            async with self._session.get(f"/api/sessions/{self._session_name}") as resp:
                 if resp.status == 200:
                     data = await resp.json()
                     waha_status = data.get("status", "")
@@ -56,9 +54,7 @@ class WhatsAppBridge(MessageBridge):
                         )
                         return True
                     else:
-                        log.warning(
-                            f"WAHA session status: {waha_status}"
-                        )
+                        log.warning(f"WAHA session status: {waha_status}")
                         return False
                 elif resp.status == 404:
                     # Session doesn't exist, try to create it
@@ -78,9 +74,7 @@ class WhatsAppBridge(MessageBridge):
                 "name": self._session_name,
                 "start": True,
             }
-            async with self._session.post(
-                "/api/sessions", json=payload
-            ) as resp:
+            async with self._session.post("/api/sessions", json=payload) as resp:
                 if resp.status in (200, 201):
                     self._connected = True
                     log.info(f"WAHA session created: {self._session_name}")
@@ -110,9 +104,7 @@ class WhatsAppBridge(MessageBridge):
                 "session": self._session_name,
             }
 
-            async with self._session.post(
-                "/api/sendText", json=payload
-            ) as resp:
+            async with self._session.post("/api/sendText", json=payload) as resp:
                 if resp.status == 200 or resp.status == 201:
                     return True
                 else:
@@ -128,9 +120,7 @@ class WhatsAppBridge(MessageBridge):
             return False
 
         try:
-            async with self._session.get(
-                f"/api/sessions/{self._session_name}"
-            ) as resp:
+            async with self._session.get(f"/api/sessions/{self._session_name}") as resp:
                 if resp.status == 200:
                     data = await resp.json()
                     return data.get("status") == "WORKING"
@@ -210,9 +200,7 @@ class WhatsAppBridge(MessageBridge):
             mentions_bot=mentions_bot,
         )
 
-    async def verify_webhook_signature(
-        self, body: bytes, headers: dict
-    ) -> bool:
+    async def verify_webhook_signature(self, body: bytes, headers: dict) -> bool:
         if not self._webhook_secret:
             # No secret configured, allow all
             return True

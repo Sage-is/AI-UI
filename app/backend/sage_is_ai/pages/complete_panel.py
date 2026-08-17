@@ -43,7 +43,6 @@ from sage_is_ai.pages.templates import render
 __all__ = ["render_complete", "finish_setup"]
 
 
-
 def _line(key: str, text: str, ok: bool = True) -> dict:
     """One summary row, as data. `templates/complete.html` decides how it looks."""
     return {"key": key, "text": text, "ok": ok}
@@ -66,19 +65,34 @@ def _facts(request: Request, user) -> tuple[list[dict], dict[str, int]]:
 
     # Auth methods, same three the Svelte panel checks and in the same order.
     methods = []
-    if getattr(cfg, "GOOGLE_CLIENT_ID", "") and getattr(cfg, "GOOGLE_CLIENT_SECRET", ""):
+    if getattr(cfg, "GOOGLE_CLIENT_ID", "") and getattr(
+        cfg, "GOOGLE_CLIENT_SECRET", ""
+    ):
         methods.append("Google")
-    if getattr(cfg, "GITHUB_CLIENT_ID", "") and getattr(cfg, "GITHUB_CLIENT_SECRET", ""):
+    if getattr(cfg, "GITHUB_CLIENT_ID", "") and getattr(
+        cfg, "GITHUB_CLIENT_SECRET", ""
+    ):
         methods.append("GitHub")
     if getattr(cfg, "ENABLE_MAGIC_LINK_LOGIN", False):
         methods.append("Email Link")
     if methods:
-        lines.append(_line("auth", _("Auth configured: {{methods}}", {"methods": ", ".join(methods)})))
+        lines.append(
+            _line(
+                "auth",
+                _("Auth configured: {{methods}}", {"methods": ", ".join(methods)}),
+            )
+        )
 
     # A model connection exists if either provider is switched on with a URL.
     connected = bool(
-        (getattr(cfg, "ENABLE_OPENAI_API", False) and getattr(cfg, "OPENAI_API_BASE_URLS", []))
-        or (getattr(cfg, "ENABLE_OLLAMA_API", False) and getattr(cfg, "OLLAMA_BASE_URLS", []))
+        (
+            getattr(cfg, "ENABLE_OPENAI_API", False)
+            and getattr(cfg, "OPENAI_API_BASE_URLS", [])
+        )
+        or (
+            getattr(cfg, "ENABLE_OLLAMA_API", False)
+            and getattr(cfg, "OLLAMA_BASE_URLS", [])
+        )
     )
     if connected:
         lines.append(_line("connection", _("Model connection configured")))
@@ -103,22 +117,31 @@ def _facts(request: Request, user) -> tuple[list[dict], dict[str, int]]:
         lines.append(_line("ai-engine", _("AI engine components installed")))
     elif downloading:
         lines.append(
-            _line("ai-engine",
-                  _("{{ready}} of {{total}} AI engine components ready...",
-                    {"ready": ready, "total": len(parts)}), ok=False)
+            _line(
+                "ai-engine",
+                _(
+                    "{{ready}} of {{total}} AI engine components ready...",
+                    {"ready": ready, "total": len(parts)},
+                ),
+                ok=False,
+            )
         )
     elif ready:
-        lines.append(_line("ai-engine",
-            _("{{ready}} of {{total}} AI engine components installed",
-              {"ready": ready, "total": len(parts)})))
+        lines.append(
+            _line(
+                "ai-engine",
+                _(
+                    "{{ready}} of {{total}} AI engine components installed",
+                    {"ready": ready, "total": len(parts)},
+                ),
+            )
+        )
 
     if DEV_MODE:
         lines.append(_line("dev-mode", _("Developer mode active")))
 
     enabled = len([k for k, _, _, _ in FIELDS if getattr(cfg, k, False)])
-    lines.append(
-        _line("features", _("{{count}} features enabled", {"count": enabled}))
-    )
+    lines.append(_line("features", _("{{count}} features enabled", {"count": enabled})))
 
     return lines, {"users": others, "features": enabled, "ready": ready}
 

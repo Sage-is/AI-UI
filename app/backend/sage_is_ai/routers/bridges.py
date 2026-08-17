@@ -75,9 +75,7 @@ async def get_available_platforms(user=Depends(get_admin_user)):
 
 
 @router.get("/status/all")
-async def get_all_bridge_statuses(
-    request: Request, user=Depends(get_admin_user)
-):
+async def get_all_bridge_statuses(request: Request, user=Depends(get_admin_user)):
     bridge_manager = getattr(request.app.state, "bridge_manager", None)
     if not bridge_manager:
         return {}
@@ -278,9 +276,7 @@ async def toggle_bridge_connection(
 
 
 @router.get("/{id}/health")
-async def get_bridge_health(
-    request: Request, id: str, user=Depends(get_admin_user)
-):
+async def get_bridge_health(request: Request, id: str, user=Depends(get_admin_user)):
     bridge_manager = getattr(request.app.state, "bridge_manager", None)
     if not bridge_manager:
         raise HTTPException(

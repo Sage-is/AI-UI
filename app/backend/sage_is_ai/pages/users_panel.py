@@ -52,7 +52,6 @@ CSV_ROLES: tuple[str, ...] = ROLES + ("pending",)
 CSV_COLUMNS = ("name", "email", "password", "role")
 
 
-
 def _people(request: Request) -> list[tuple[str, str, str]]:
     """Everyone who is not an admin, which is who this step is about."""
     from sage_is_ai.models.users import Users
@@ -101,8 +100,10 @@ def render_users(request: Request, user, message: str = "") -> str:
         people_label=_("People"),
     )
 
-async def _create(request: Request, user, name: str, email: str, password: str,
-                  role: str) -> str:
+
+async def _create(
+    request: Request, user, name: str, email: str, password: str, role: str
+) -> str:
     """Add one user through the API handler. Returns "" on success, else why not."""
     from fastapi import HTTPException
 
@@ -159,9 +160,7 @@ async def import_csv(request: Request, user, raw: bytes) -> str:
     lookup = {str(f).strip().lower(): f for f in reader.fieldnames}
     missing = [c for c in CSV_COLUMNS if c not in lookup]
     if missing:
-        return render_users(
-            request, user, f"Missing column(s): {', '.join(missing)}."
-        )
+        return render_users(request, user, f"Missing column(s): {', '.join(missing)}.")
 
     added, problems = 0, []
     for line, row in enumerate(reader, start=2):  # line 1 is the header
@@ -172,8 +171,12 @@ async def import_csv(request: Request, user, raw: bytes) -> str:
             problems.append(f"line {line}: name, email and password are all required")
             continue
         problem = await _create(
-            request, user, values["name"], values["email"],
-            values["password"], values["role"].lower() or "user",
+            request,
+            user,
+            values["name"],
+            values["email"],
+            values["password"],
+            values["role"].lower() or "user",
         )
         if problem:
             problems.append(f"line {line}: {problem}")

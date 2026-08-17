@@ -39,6 +39,7 @@ from sage_is_ai.pages.templates import render
 
 __all__ = ["render_changelog", "mark_changelog_read"]
 
+
 def _runs(raw: str, flat: str) -> list[dict]:
     """One entry's content as inline runs, so `<code>` survives.
 
@@ -59,7 +60,9 @@ def _runs(raw: str, flat: str) -> list[dict]:
     """
     from bs4 import BeautifulSoup
 
-    roots = BeautifulSoup(raw or "", "html.parser").find_all(["li", "p"], recursive=False)
+    roots = BeautifulSoup(raw or "", "html.parser").find_all(
+        ["li", "p"], recursive=False
+    )
     if not roots:
         return [{"text": flat, "code": False}] if flat else []
 
@@ -86,7 +89,9 @@ def _runs(raw: str, flat: str) -> list[dict]:
             else:
                 runs.append(
                     {
-                        "text": node.get_text() if hasattr(node, "get_text") else str(node),
+                        "text": node.get_text()
+                        if hasattr(node, "get_text")
+                        else str(node),
                         "code": False,
                     }
                 )
@@ -107,7 +112,9 @@ def _runs(raw: str, flat: str) -> list[dict]:
     return [r for r in runs if r["text"]]
 
 
-def render_changelog(request: Request, *, base: str = "/pages/admin/setup/changelog") -> str:
+def render_changelog(
+    request: Request, *, base: str = "/pages/admin/setup/changelog"
+) -> str:
     """Build the context; `templates/changelog.html` decides how it looks.
 
     `base` is where Continue posts. Two routes render this panel: the wizard's

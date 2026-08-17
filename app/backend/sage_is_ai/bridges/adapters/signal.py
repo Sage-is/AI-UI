@@ -50,9 +50,7 @@ class SignalBridge(MessageBridge):
                     return False
 
             # Verify phone number is registered
-            async with self._session.get(
-                f"{self._api_url}/v1/accounts"
-            ) as resp:
+            async with self._session.get(f"{self._api_url}/v1/accounts") as resp:
                 if resp.status == 200:
                     accounts = await resp.json()
                     # accounts is a list of registered numbers
@@ -62,8 +60,7 @@ class SignalBridge(MessageBridge):
                             or acc == self._phone_number
                             for acc in (
                                 accounts
-                                if not accounts
-                                or isinstance(accounts[0], str)
+                                if not accounts or isinstance(accounts[0], str)
                                 else accounts
                             )
                         )
@@ -145,9 +142,7 @@ class SignalBridge(MessageBridge):
     async def _ws_receive_loop(self) -> None:
         """Background task that connects to signal-cli-rest-api WebSocket."""
         # Build WS URL: replace http(s) with ws(s)
-        ws_url = self._api_url.replace("https://", "wss://").replace(
-            "http://", "ws://"
-        )
+        ws_url = self._api_url.replace("https://", "wss://").replace("http://", "ws://")
         number_encoded = self._phone_number.replace("+", "%2B")
         ws_endpoint = f"{ws_url}/v1/receive/{number_encoded}"
 
@@ -199,9 +194,7 @@ class SignalBridge(MessageBridge):
 
         return self._parse_envelope(event)
 
-    async def verify_webhook_signature(
-        self, body: bytes, headers: dict
-    ) -> bool:
+    async def verify_webhook_signature(self, body: bytes, headers: dict) -> bool:
         # signal-cli-rest-api has no HMAC webhook signing;
         # secure via Docker network / firewall rules
         return True
@@ -394,7 +387,10 @@ class SignalBridge(MessageBridge):
                     default="websocket",
                     options=[
                         {"value": "websocket", "label": "WebSocket (recommended)"},
-                        {"value": "webhook", "label": "Webhook (set RECEIVE_WEBHOOK_URL on container)"},
+                        {
+                            "value": "webhook",
+                            "label": "Webhook (set RECEIVE_WEBHOOK_URL on container)",
+                        },
                     ],
                 ),
                 ConfigField(

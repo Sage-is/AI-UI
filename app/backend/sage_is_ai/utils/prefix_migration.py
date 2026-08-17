@@ -14,6 +14,7 @@ log = logging.getLogger(__name__)
 # Redis
 # ---------------------------------------------------------------------------
 
+
 async def migrate_redis_prefixes(redis_client) -> int:
     """
     Scan for keys with the old 'open-webui:' prefix and RENAME them
@@ -35,7 +36,7 @@ async def migrate_redis_prefixes(redis_client) -> int:
             )
             for key in keys:
                 key_str = key if isinstance(key, str) else key.decode()
-                new_key = new_prefix + key_str[len(old_prefix):]
+                new_key = new_prefix + key_str[len(old_prefix) :]
                 # Only rename if target does not already exist
                 if not await redis_client.exists(new_key):
                     await redis_client.rename(key_str, new_key)
@@ -54,6 +55,7 @@ async def migrate_redis_prefixes(redis_client) -> int:
 # Qdrant
 # ---------------------------------------------------------------------------
 
+
 def migrate_qdrant_prefixes():
     """
     Create aliases from new collection names to old collection names.
@@ -61,11 +63,14 @@ def migrate_qdrant_prefixes():
     """
     try:
         from sage_is_ai.config import VECTOR_DB
+
         if VECTOR_DB != "qdrant":
             return
 
         from sage_is_ai.config import (
-            QDRANT_URI, QDRANT_API_KEY, QDRANT_COLLECTION_PREFIX,
+            QDRANT_URI,
+            QDRANT_API_KEY,
+            QDRANT_COLLECTION_PREFIX,
         )
         from qdrant_client import QdrantClient
 
@@ -77,12 +82,17 @@ def migrate_qdrant_prefixes():
 
         for name in collections:
             if name.startswith(old_prefix):
-                new_name = new_prefix + name[len(old_prefix):]
+                new_name = new_prefix + name[len(old_prefix) :]
                 if new_name not in collections:
                     try:
                         client.update_collection_aliases(
                             change_aliases_operations=[
-                                {"create_alias": {"collection_name": name, "alias_name": new_name}}
+                                {
+                                    "create_alias": {
+                                        "collection_name": name,
+                                        "alias_name": new_name,
+                                    }
+                                }
                             ]
                         )
                         log.info(f"Qdrant: aliased '{new_name}' -> '{name}'")
@@ -98,18 +108,24 @@ def migrate_qdrant_prefixes():
 # Elasticsearch
 # ---------------------------------------------------------------------------
 
+
 def migrate_elasticsearch_prefixes():
     """Create index aliases from new prefix to old prefix collections."""
     try:
         from sage_is_ai.config import VECTOR_DB
+
         if VECTOR_DB != "elasticsearch":
             return
 
         from sage_is_ai.config import (
-            ELASTICSEARCH_URL, ELASTICSEARCH_API_KEY,
-            ELASTICSEARCH_USERNAME, ELASTICSEARCH_PASSWORD,
-            ELASTICSEARCH_CLOUD_ID, ELASTICSEARCH_CA_CERTS,
-            SSL_ASSERT_FINGERPRINT, ELASTICSEARCH_INDEX_PREFIX,
+            ELASTICSEARCH_URL,
+            ELASTICSEARCH_API_KEY,
+            ELASTICSEARCH_USERNAME,
+            ELASTICSEARCH_PASSWORD,
+            ELASTICSEARCH_CLOUD_ID,
+            ELASTICSEARCH_CA_CERTS,
+            SSL_ASSERT_FINGERPRINT,
+            ELASTICSEARCH_INDEX_PREFIX,
         )
         from elasticsearch import Elasticsearch
 
@@ -134,7 +150,7 @@ def migrate_elasticsearch_prefixes():
         old_prefix = "open_webui_collections"
 
         for idx_name in indices:
-            new_name = new_prefix + idx_name[len(old_prefix):]
+            new_name = new_prefix + idx_name[len(old_prefix) :]
             try:
                 es.indices.put_alias(index=idx_name, name=new_name)
                 log.info(f"Elasticsearch: aliased '{new_name}' -> '{idx_name}'")
@@ -150,16 +166,21 @@ def migrate_elasticsearch_prefixes():
 # OpenSearch
 # ---------------------------------------------------------------------------
 
+
 def migrate_opensearch_prefixes():
     """Create index aliases from new prefix to old prefix indices."""
     try:
         from sage_is_ai.config import VECTOR_DB
+
         if VECTOR_DB != "opensearch":
             return
 
         from sage_is_ai.config import (
-            OPENSEARCH_URI, OPENSEARCH_SSL,
-            OPENSEARCH_CERT_VERIFY, OPENSEARCH_USERNAME, OPENSEARCH_PASSWORD,
+            OPENSEARCH_URI,
+            OPENSEARCH_SSL,
+            OPENSEARCH_CERT_VERIFY,
+            OPENSEARCH_USERNAME,
+            OPENSEARCH_PASSWORD,
         )
         from opensearchpy import OpenSearch
 
@@ -175,7 +196,7 @@ def migrate_opensearch_prefixes():
         new_prefix = "sage_is_ai"
 
         for idx_name in indices:
-            new_name = new_prefix + idx_name[len(old_prefix):]
+            new_name = new_prefix + idx_name[len(old_prefix) :]
             try:
                 client.indices.put_alias(index=idx_name, name=new_name)
                 log.info(f"OpenSearch: aliased '{new_name}' -> '{idx_name}'")
@@ -191,10 +212,12 @@ def migrate_opensearch_prefixes():
 # Milvus
 # ---------------------------------------------------------------------------
 
+
 def migrate_milvus_prefixes():
     """Rename Milvus collections from old prefix to new prefix."""
     try:
         from sage_is_ai.config import VECTOR_DB
+
         if VECTOR_DB != "milvus":
             return
 
@@ -209,7 +232,7 @@ def migrate_milvus_prefixes():
 
         for name in collections:
             if name.startswith(old_prefix):
-                new_name = new_prefix + name[len(old_prefix):]
+                new_name = new_prefix + name[len(old_prefix) :]
                 if new_name not in collections:
                     try:
                         client.rename_collection(old_name=name, new_name=new_name)
@@ -226,10 +249,12 @@ def migrate_milvus_prefixes():
 # Pinecone
 # ---------------------------------------------------------------------------
 
+
 def migrate_pinecone_prefixes():
     """Log a warning — Pinecone has no rename/alias API."""
     try:
         from sage_is_ai.config import VECTOR_DB
+
         if VECTOR_DB != "pinecone":
             return
 
@@ -246,6 +271,7 @@ def migrate_pinecone_prefixes():
 # ---------------------------------------------------------------------------
 # Orchestrator
 # ---------------------------------------------------------------------------
+
 
 async def run_prefix_migrations(app) -> None:
     """

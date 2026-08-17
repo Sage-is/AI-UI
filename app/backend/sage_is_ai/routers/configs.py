@@ -275,7 +275,9 @@ async def set_models_config(
 ):
     request.app.state.config.DEFAULT_MODELS = form_data.DEFAULT_MODELS
     request.app.state.config.MODEL_ORDER_LIST = form_data.MODEL_ORDER_LIST
-    request.app.state.config.DEFAULT_MODEL_SELECTOR_FILTER = form_data.DEFAULT_MODEL_SELECTOR_FILTER
+    request.app.state.config.DEFAULT_MODEL_SELECTOR_FILTER = (
+        form_data.DEFAULT_MODEL_SELECTOR_FILTER
+    )
     return {
         "DEFAULT_MODELS": request.app.state.config.DEFAULT_MODELS,
         "MODEL_ORDER_LIST": request.app.state.config.MODEL_ORDER_LIST,
@@ -336,19 +338,38 @@ async def get_banners(
 ############################
 
 
-@router.get("/branding", response_model=BrandingModel)
+class BrandingResponse(BrandingModel):
+    # GET-only annotation: the theme Sprig™ currently dressing the instance.
+    # Clients step branding colors back while one is active and surface the
+    # prune offer. Never accepted on POST — a stored copy would go stale the
+    # moment the Sprig is pruned.
+    active_theme_sprig: Optional[str] = None
+    active_theme_label: Optional[str] = None
+
+
+def _active_theme(request: Request) -> tuple[Optional[str], Optional[str]]:
+    name = str(request.app.state.config.SPRIG_ACTIVE_THEME or "").strip()
+    if not name:
+        return None, None
+    supervisor = getattr(request.app.state, "sprig_supervisor", None)
+    spec = (supervisor.CATALOG.get(name) or {}) if supervisor else {}
+    return name, spec.get("model") or name
+
+
+@router.get("/branding", response_model=BrandingResponse)
 async def get_branding(request: Request):
     """Get branding configuration - publicly accessible for unauthenticated users"""
-    import logging
-    log = logging.getLogger(__name__)
     branding_data = request.app.state.config.BRANDING
-    log.info(f"GET /branding - raw data: {branding_data}, type: {type(branding_data)}")
-    if isinstance(branding_data, dict):
-        result = BrandingModel(**branding_data)
-        log.info(f"GET /branding - returning: {result.model_dump()}")
-        return result
-    log.info(f"GET /branding - returning non-dict: {branding_data}")
-    return branding_data
+    if not isinstance(branding_data, dict):
+        branding_data = (
+            branding_data.model_dump() if hasattr(branding_data, "model_dump") else {}
+        )
+    theme_name, theme_label = _active_theme(request)
+    return BrandingResponse(
+        **branding_data,
+        active_theme_sprig=theme_name,
+        active_theme_label=theme_label,
+    )
 
 
 @router.post("/branding", response_model=BrandingModel)
@@ -359,11 +380,14 @@ async def set_branding(
 ):
     """Set branding configuration - requires admin privileges"""
     import logging
+
     log = logging.getLogger(__name__)
     data = form_data.model_dump()
     log.info(f"POST /branding - saving data: {data}")
     request.app.state.config.BRANDING = data
-    log.info(f"POST /branding - after save, BRANDING = {request.app.state.config.BRANDING}")
+    log.info(
+        f"POST /branding - after save, BRANDING = {request.app.state.config.BRANDING}"
+    )
     return BrandingModel(**data)
 
 

@@ -250,7 +250,9 @@ async def render_agents(
         if needle and needle not in f"{m.name} {m.id} {description}".lower():
             continue
         if tag and tag not in {
-            str(t.get("name")) for t in (getattr(meta, "tags", None) or []) if isinstance(t, dict)
+            str(t.get("name"))
+            for t in (getattr(meta, "tags", None) or [])
+            if isinstance(t, dict)
         }:
             continue
         author = (m.user and (m.user.name or m.user.email)) or _("Deleted User")
@@ -269,7 +271,9 @@ async def render_agents(
                 "edit_url": f"/workshop/models/edit?id={quote(m.id, safe='')}",
                 "open_url": f"/?models={quote(m.id, safe='')}",
                 "toggle_label": _("Disable") if m.is_active else _("Enable"),
-                "hide_label": _("Show Model") if getattr(meta, "hidden", False) else _("Hide Model"),
+                "hide_label": _("Show Model")
+                if getattr(meta, "hidden", False)
+                else _("Hide Model"),
             }
         )
 
@@ -303,7 +307,10 @@ async def render_agents(
         # instance never sees paging machinery it does not need.
         page=page,
         pages=pages,
-        pager=[{"n": n, "href": url(page=n), "current": n == page} for n in range(1, pages + 1)]
+        pager=[
+            {"n": n, "href": url(page=n), "current": n == page}
+            for n in range(1, pages + 1)
+        ]
         if pages > 1
         else [],
         prev_url=url(page=page - 1) if page > 1 else "",
@@ -380,14 +387,18 @@ async def run_action(request: Request, user, agent_id: str, verb: str) -> str:
 
     async def _form():
         model = await _find(user, agent_id)
-        return ModelForm(**model.model_dump(exclude={"user", "updated_at", "created_at"}))
+        return ModelForm(
+            **model.model_dump(exclude={"user", "updated_at", "created_at"})
+        )
 
     async def _hide():
         form = await _form()
         meta = form.meta.model_dump()
         meta["hidden"] = not bool(meta.get("hidden"))
         form.meta = type(form.meta)(**meta)
-        await update_model_by_id(request=request, id=agent_id, form_data=form, user=user)
+        await update_model_by_id(
+            request=request, id=agent_id, form_data=form, user=user
+        )
         return ""
 
     async def _clone():
@@ -462,9 +473,13 @@ async def import_agents(request: Request, user, payload: bytes) -> str:
     try:
         rows = json.loads(payload or b"[]")
     except ValueError:
-        return await render_agents(request, user, message=_("That file is not valid JSON."))
+        return await render_agents(
+            request, user, message=_("That file is not valid JSON.")
+        )
     if not isinstance(rows, list):
-        return await render_agents(request, user, message=_("That file is not valid JSON."))
+        return await render_agents(
+            request, user, message=_("That file is not valid JSON.")
+        )
 
     done, failed = 0, 0
     existing = {m.id for m in await _visible(user)}
@@ -472,11 +487,17 @@ async def import_agents(request: Request, user, payload: bytes) -> str:
         # An export from the model editor nests the agent under `info`; one from
         # this page does not. Both shapes are accepted, because a person with a
         # file does not know which tool made it.
-        data = row.get("info") if isinstance(row, dict) and isinstance(row.get("info"), dict) else row
+        data = (
+            row.get("info")
+            if isinstance(row, dict) and isinstance(row.get("info"), dict)
+            else row
+        )
         try:
             form = ModelForm(**data)
             if form.id in existing:
-                await update_model_by_id(request=request, id=form.id, form_data=form, user=user)
+                await update_model_by_id(
+                    request=request, id=form.id, form_data=form, user=user
+                )
             else:
                 await create_new_model(request=request, form_data=form, user=user)
             done += 1
@@ -499,5 +520,7 @@ async def avatar_bytes(user, agent_id: str) -> tuple[bytes, str]:
     """
     for model in await _visible(user):
         if model.id == agent_id:
-            return _decode((getattr(model, "meta", None) and model.meta.profile_image_url) or "")
+            return _decode(
+                (getattr(model, "meta", None) and model.meta.profile_image_url) or ""
+            )
     raise HTTPException(status.HTTP_404_NOT_FOUND, "No image")

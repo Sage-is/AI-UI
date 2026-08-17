@@ -230,7 +230,10 @@ async def render_prompts(
         count=total,
         page=page,
         pages=pages,
-        pager=[{"n": n, "href": url(page=n), "current": n == page} for n in range(1, pages + 1)]
+        pager=[
+            {"n": n, "href": url(page=n), "current": n == page}
+            for n in range(1, pages + 1)
+        ]
         if pages > 1
         else [],
         prev_url=url(page=page - 1) if page > 1 else "",
@@ -252,7 +255,9 @@ async def render_prompts(
         # The community links render only when the instance has the feature on,
         # matching the legacy page. A zero-egress Rootstock turns it off, and a
         # dead outbound link on an air-gapped deployment is worse than no link.
-        community=bool(getattr(request.app.state.config, "ENABLE_COMMUNITY_SHARING", False)),
+        community=bool(
+            getattr(request.app.state.config, "ENABLE_COMMUNITY_SHARING", False)
+        ),
         community_url="https://sage.is/community",
         share_url="https://sage.is/prompts/create",
         community_heading=_("Sage.is AI Community"),
@@ -303,7 +308,9 @@ async def run_action(
         # modal does not.
         if not confirmed:
             raise _NeedsConfirmation(_slug(command))
-        await delete_prompt_by_command(command=await _canonical(user, command), user=user)
+        await delete_prompt_by_command(
+            command=await _canonical(user, command), user=user
+        )
         return _("Deleted {{name}}", {"name": command})
 
     async def _clone():
@@ -368,9 +375,13 @@ async def import_prompts(request: Request, user, payload: bytes) -> str:
     try:
         rows = json.loads(payload or b"[]")
     except ValueError:
-        return await render_prompts(request, user, message=_("That file is not valid JSON."))
+        return await render_prompts(
+            request, user, message=_("That file is not valid JSON.")
+        )
     if not isinstance(rows, list):
-        return await render_prompts(request, user, message=_("That file is not valid JSON."))
+        return await render_prompts(
+            request, user, message=_("That file is not valid JSON.")
+        )
 
     done, failed = 0, 0
     existing = {_slug(p.command) for p in await _visible(user)}

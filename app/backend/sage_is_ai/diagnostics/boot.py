@@ -17,7 +17,7 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, asdict
-from typing import Iterable, Optional
+from typing import Optional
 
 from sage_is_ai.diagnostics.health_registry import endpoint_health
 from sage_is_ai.diagnostics.probes import probe_http
@@ -202,9 +202,7 @@ async def run_boot_probes(app, timeout: float = 5.0) -> None:
             await asyncio.gather(*futures, return_exceptions=True)
 
         snapshot = endpoint_health.snapshot()
-        reachable = sum(
-            1 for r in snapshot.values() if r.get("last_status") == "ok"
-        )
+        reachable = sum(1 for r in snapshot.values() if r.get("last_status") == "ok")
         log.warning(
             "boot probes: complete (%d reachable, %d total)",
             reachable,

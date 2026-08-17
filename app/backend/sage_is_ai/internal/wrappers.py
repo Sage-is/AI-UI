@@ -28,9 +28,7 @@ class PeeweeConnectionState(object):
 
 
 class CustomReconnectMixin(ReconnectMixin):
-    reconnect_errors = (
-        (PeeWeeInterfaceError, "closed"),
-    )
+    reconnect_errors = ((PeeWeeInterfaceError, "closed"),)
 
 
 def register_connection(db_url):
