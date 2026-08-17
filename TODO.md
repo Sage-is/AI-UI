@@ -26,14 +26,30 @@ This file tracks active work only.
 
 _Items currently in progress. Move items here and or use tag source with `# FIXME:` when work begins._
 
-- [ ] **Board hygiene — finish the 2026-08-03 note-creep sweep** (Sage.is AI): 18 completed cards and the registry-drift incident note moved to `docs/completed-todos.md`; Bugs section reverified against code. Remaining:
-  - _2026-08-15 conservative pass: archived the Happy Summary ledger, 4 fixed bugs, and 6 collapsed sub-step groups (hidden-artifact, bonsai hub, audio, Docker, auto-reset, Reviewer T) → `docs/completed-todos.md`. The interleaved sharded-parrot release card and tri-repo Jidoka card were left for the un-mix below._
-  - [x] Un-mix the `- [x]` parents that still carry open children — done 2026-08-15: Phase S and Phase 1 parents archived, open children extracted into the "ui-Sprig spec follow-through" card and the promoted `/themes/active.css` card (Phase Q was already an open parent, no un-mix needed)
-  - [x] ~33 entries ran past 1,200 chars — register pass done 2026-08-15: 40 card blocks rewritten (143.5k → 87.8k chars, −39%), enumerations broken into subtasks, full originals in `docs/board-dossiers.md`, 36 shipped essays archived; run-on lines fell ~40 → 2 open (both dense fact, 1,245/1,291 ch)
-  - [x] Archive the shipped `Post-push manifest verify` sub-essay out of the still-open Poka-Yoke release-plan card — done 2026-08-15
-  - [ ] **Weekly register pass** (Alexander, 2026-08-15): re-run the board pass at least once a week, here and on every project — standing overhead until the gate in the Backlog card makes it unnecessary. Method: `docs/board-register-method.md`.
-    - [ ] Scout open lines >350 ch; rewrite to claim + sub-checklist; dossier cut narration; verify tokens; re-point chart refs the same sitting.
+- [ ] **Unused-import/local cleanup**: 248 unused imports and 37 unused locals, ignored by name (`F401`/`F841`) so the ruff gate could go green (2026-08-06). #gates
+  - [ ] `F401` and `F841` are the two rules turned off in `[tool.ruff.lint]` for size rather than principle — every other rule in the conservative set is enforced now.
+  - [ ] Imports are the larger prize and the riskier one: an unused import is sometimes a re-export and sometimes a side effect.
+    - [ ] The cleanup wants its own commit and a `make gauntlet_full` run rather than a blanket `ruff check --fix`.
+  - [ ] Locals are cheaper, but eight sit in `middleware.py`, whose line numbers are anchored by nine fences in `scripts/gates/chat-path-structure/baseline.json` and 64 chart citations.
+    - [ ] Removing a binding there shifts every one, so they sequence after [Re-tighten and re-point].
+  - [ ] Reasoning recorded per rule in `app/pyproject.toml`; adoption in [2026-08-06-python-quality-gates.md](docs/decisions/2026-08-06-python-quality-gates.md).
 
+- [ ] **Consolidate formatting on `ruff format`**: `black --check` has been failing on 73 of 218 backend files, so the format half of `make lint` proves nothing (found 2026-08-06 while adopting ruff). #gates
+  - [ ] The target runs `black --check --exclude ".venv/|/venv/" backend/` at [Makefile:1289](Makefile#L1289) and it is red on `HEAD` — either nobody runs `make lint` or CI does not gate on it.
+  - [ ] `ruff format` would rewrite 83, a near-superset — but the swap was NOT made.
+    - [ ] One of the 83 is `middleware.py`; reformatting a fence-anchored file as a side effect of turning a linter on is the exact commit boundary that left nine fences stale last week.
+  - [ ] `make ruff_format_check` reports the drift; `make ruff_format_fix` applies it.
+  - [ ] Sequence:
+    - [ ] Reformat.
+    - [ ] Re-point the fences and citations.
+    - [ ] Run the oracle.
+    - [ ] Delete the black line and wire `ruff_format_check` into `lint`.
+
+- [ ] **Automate `sage-archivo.ttf` subsetting**: stop committing a hand-subsetted binary — subset at build time so there's no duplicate to maintain in git.
+  - [ ] `scripts/e2e/watch/sage-archivo.ttf` is a manually-subsetted (basic-Latin + em-dash) copy of `app/static/assets/fonts/Archivo-Variable.ttf`.
+    - [ ] Shrunk from 637 KB to 153 KB to clear the `check-added-large-files` 500 KB cap.
+  - [ ] It'll silently drift out of sync (or grow back over the cap) if the noVNC branding text changes and nobody remembers to re-subset by hand.
+  - [ ] Move the `pyftsubset` step into `scripts/e2e/watch/Dockerfile`: `COPY` the full font, subset at build time.
 ---
 
 ## TODO
@@ -66,19 +82,9 @@ _The first paid real-estate deployment of AI-UI, and deliberately the beachhead 
   - Fix: server-rendered no-build page (`pages/try_sage_panel.py` + `try-sage.html`, 4.6 KB first response) — normal flow, `100dvh`, safe-area inset, overflow-safe `margin:auto` centering.
   - `TrySageWelcome.svelte` deleted; anonymous `/` answers server-side only when `ENABLE_TRY_SAGE` is on, other deploys untouched.
   - Guard-rail `try-sage-welcome.cy.ts` asserts phone-viewport scroll + flag-off inertness; `ENABLE_TRY_SAGE` passthrough added to the e2e + manual-check harnesses.
-  - [ ] **e2e flake under disk pressure** (2026-08-03): one full run reported 3 failing/2 skipped; the identical image re-ran clean. Capture full output on every gate run.
-    - Spec names not captured — a lead, not a diagnosis.
-    - Free space fell 61 GB → 34 GB with 15.5 GB Docker build cache held; the skipped-specs shape matches the renderer-crash-on-full-disk failure.
-  - _Shipped steps (reproduce @ 3.0.0, gates-green, three regressions fixed, 3.0.1 cut + deploy) archived 2026-08-15 → `docs/completed-todos.md`._
 - [ ] Turn on Spaces access for Realtor R.
 - [ ] Diagnose the unresponsive Space Agent via `/admin/diagnostics`. Actionable as of 2026-08-03 — the diagnostics page (2.3.3) and how-to-fix modals (2.3.4) are now live on try.sage.is.
 - [ ] **Decide the trial model set and who pays for the tokens.** Undecided as of 2026-07-30 and it gates the instance provisioning below. Note the hidden Groq connection on try.sage.is is uncapped per user, and three people will share this workspace.
-- [ ] **Demo tenant reset — one task, not three**: export, purge, and sweep School B's data in one pass — a stray reference surfacing mid-demo ends a sales call.
-  - [ ] Export School B's KB entries and Agents to a durable destination.
-  - [ ] Purge them along with their intro-card references.
-  - [ ] Sweep for stragglers (Space titles, prompt text, uploaded files).
-  - [ ] Confirm with Alexander whether School B should be asked before their data is removed.
-  - **This recurs before every demo until Realtor R is off the shared instance** — it is standing overhead, not a checkbox.
 - [ ] **Day-in-the-life walkthrough — staged and labelled as staged**: the proactive beats are outbound-on-a-schedule and **there is no job scheduler** — do not let "does it do that by itself?" get a soft answer.
   - The Telegram adapter (`bridges/adapters/telegram.py`, the most mature at 505 lines) carries the demo.
   - The only `scheduler` hits in the backend are the AUTOMATIC1111 diffusion sampler.
@@ -205,30 +211,7 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
   - [ ] The fix (`langchain-core==1.2.22`) needs `langchain-core<1.0.0` dropped, which both pinned sprig-side packages require (`langchain==0.3.30`, `langchain-community==0.3.27`, `app/backend/requirements.txt:51-56`).
   - [ ] Plan and test the coordinated bump, then remove the `.trivyignore` entry.
 
-- [ ] **Unused-import/local cleanup**: 248 unused imports and 37 unused locals, ignored by name (`F401`/`F841`) so the ruff gate could go green (2026-08-06). #gates
-  - [ ] `F401` and `F841` are the two rules turned off in `[tool.ruff.lint]` for size rather than principle — every other rule in the conservative set is enforced now.
-  - [ ] Imports are the larger prize and the riskier one: an unused import is sometimes a re-export and sometimes a side effect.
-    - [ ] The cleanup wants its own commit and a `make gauntlet_full` run rather than a blanket `ruff check --fix`.
-  - [ ] Locals are cheaper, but eight sit in `middleware.py`, whose line numbers are anchored by nine fences in `scripts/gates/chat-path-structure/baseline.json` and 64 chart citations.
-    - [ ] Removing a binding there shifts every one, so they sequence after [Re-tighten and re-point].
-  - [ ] Reasoning recorded per rule in `app/pyproject.toml`; adoption in [2026-08-06-python-quality-gates.md](docs/decisions/2026-08-06-python-quality-gates.md).
 
-- [ ] **Consolidate formatting on `ruff format`**: `black --check` has been failing on 73 of 218 backend files, so the format half of `make lint` proves nothing (found 2026-08-06 while adopting ruff). #gates
-  - [ ] The target runs `black --check --exclude ".venv/|/venv/" backend/` at [Makefile:1289](Makefile#L1289) and it is red on `HEAD` — either nobody runs `make lint` or CI does not gate on it.
-  - [ ] `ruff format` would rewrite 83, a near-superset — but the swap was NOT made.
-    - [ ] One of the 83 is `middleware.py`; reformatting a fence-anchored file as a side effect of turning a linter on is the exact commit boundary that left nine fences stale last week.
-  - [ ] `make ruff_format_check` reports the drift; `make ruff_format_fix` applies it.
-  - [ ] Sequence:
-    - [ ] Reformat.
-    - [ ] Re-point the fences and citations.
-    - [ ] Run the oracle.
-    - [ ] Delete the black line and wire `ruff_format_check` into `lint`.
-
-- [ ] **Automate `sage-archivo.ttf` subsetting**: stop committing a hand-subsetted binary — subset at build time so there's no duplicate to maintain in git.
-  - [ ] `scripts/e2e/watch/sage-archivo.ttf` is a manually-subsetted (basic-Latin + em-dash) copy of `app/static/assets/fonts/Archivo-Variable.ttf`.
-    - [ ] Shrunk from 637 KB to 153 KB to clear the `check-added-large-files` 500 KB cap.
-  - [ ] It'll silently drift out of sync (or grow back over the cap) if the noVNC branding text changes and nobody remembers to re-subset by hand.
-  - [ ] Move the `pyftsubset` step into `scripts/e2e/watch/Dockerfile`: `COPY` the full font, subset at build time.
 
 ### OAuth UX & Identity Linking
 
@@ -868,6 +851,7 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
 ## Backlog
 
 _Items deferred to a later planning cycle. Move here from TODO when deprioritized._
+
 
 - [ ] **Optimize the board register pass** (Alexander, 2026-08-15): make the weekly pass cheap — or unnecessary at the source. #dx
   - [ ] A `scripts/gates/` check (the `docs-targets.sh` / `--self-test` shape) refusing commits that add open TODO.md lines >350 ch — stops regrowth where it starts.
