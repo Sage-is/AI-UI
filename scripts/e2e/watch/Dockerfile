@@ -8,8 +8,11 @@ FROM cypress/included:15.18.0
 
 # scrot: one-command screenshots of the virtual display for debugging
 # (docker exec sage-e2e-watch scrot /tmp/s.png)
+# python3-fonttools: fontTools.subset for the build-time font subset below
+# (the library package; the pyftsubset CLI lives in a separate Debian package,
+# so the RUN below calls the module form).
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends x11vnc novnc websockify fluxbox scrot && \
+    apt-get install -y --no-install-recommends x11vnc novnc websockify fluxbox scrot python3-fonttools && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Fluxbox: maximize every window on this single-purpose display — the Cypress
@@ -36,9 +39,18 @@ RUN cp /tmp/sage-logo-64.png /usr/share/novnc/app/images/sage-logo.png && \
     grep -c "Sage.is" /usr/share/novnc/vnc.html
 
 # Match the logo type/color to the AI-UI itself (Archivo, black) instead of
-# noVNC's stock yellow Orbitron.
+# noVNC's stock yellow Orbitron. The font is subset HERE, at build time, from
+# the app's own Archivo-Variable.ttf (named build context "fonts" — see
+# run-cypress-watch.sh) so there is no committed binary to drift out of sync.
+# Coverage: basic Latin + em-dash, the hedge against banner-text edits; the
+# variable axes survive subsetting, so sage-brand.css's font-weight range works.
+# app/src/app.css's "deliberately NOT subsetted" doctrine guards PRODUCT
+# surfaces against silent glyph fallback; this dev-only banner is exempt.
 COPY sage-brand.css /usr/share/novnc/app/styles/sage-brand.css
-COPY sage-archivo.ttf /usr/share/novnc/app/styles/sage-archivo.ttf
+COPY --from=fonts Archivo-Variable.ttf /tmp/Archivo-Variable.ttf
+RUN python3 -m fontTools.subset /tmp/Archivo-Variable.ttf --unicodes="U+0020-007E,U+2014" \
+      --output-file=/usr/share/novnc/app/styles/sage-archivo.ttf && \
+    rm /tmp/Archivo-Variable.ttf
 RUN sed -i 's|</head>|<link rel="stylesheet" href="app/styles/sage-brand.css">\n</head>|' /usr/share/novnc/vnc.html
 
 COPY entrypoint.sh /watch-entrypoint.sh

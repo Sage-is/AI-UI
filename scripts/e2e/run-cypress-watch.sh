@@ -7,13 +7,17 @@
 # Usage: scripts/e2e/run-cypress-watch.sh [image]
 set -euo pipefail
 IMG="${1:-sage-is/ai-ui:develop}"
-WATCH_IMG="sage-is/cypress-watch:15.18.0"   # keep in lockstep with run-cypress.sh
+WATCH_IMG="sage-is/cypress-watch:15.18.0-r2"   # prefix in lockstep with run-cypress.sh; -rN busts the image-exists cache below
 NET="sage-network"; ROOT="sage-e2e"; VOL="sage-e2e-data"; PORT=8100
 REPO="$(cd "$(dirname "$0")/../.." && pwd)"
 
 docker image inspect "$WATCH_IMG" >/dev/null 2>&1 || {
   echo "== building $WATCH_IMG (one-time) =="
-  docker build -t "$WATCH_IMG" "$REPO/scripts/e2e/watch"
+  # "fonts" build context: the Dockerfile subsets the app's Archivo at build
+  # time instead of shipping a committed pre-subset binary. --load matters on
+  # docker-container builders, which otherwise keep the image in build cache.
+  docker build --load --build-context fonts="$REPO/app/static/assets/fonts" \
+    -t "$WATCH_IMG" "$REPO/scripts/e2e/watch"
 }
 
 docker network inspect "$NET" >/dev/null 2>&1 || docker network create "$NET" >/dev/null
