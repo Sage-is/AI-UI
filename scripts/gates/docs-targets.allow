@@ -21,3 +21,4 @@ try_sage_smoke             2026-11-13    # docs/try-sage-docker-exploration.md P
 try_sage_stop              2026-11-13    # same doc — proposed, never written; the doc now says so
 try_sage_build_n_start     2026-11-13    # same doc — an option it explicitly recommends AGAINST
 caprover_app_create        2026-11-13    # TODO.md open item — proposed CapRover wrapper
+sync_todos                 2026-11-17    # docs/file-handling-field-rules.md — proposed TODO.md/README sync target

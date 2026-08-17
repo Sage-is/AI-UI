@@ -26,30 +26,30 @@ This file tracks active work only.
 
 _Items currently in progress. Move items here and or use tag source with `# FIXME:` when work begins._
 
-- [ ] **Unused-import/local cleanup**: 248 unused imports and 37 unused locals, ignored by name (`F401`/`F841`) so the ruff gate could go green (2026-08-06). #gates
-  - [ ] `F401` and `F841` are the two rules turned off in `[tool.ruff.lint]` for size rather than principle — every other rule in the conservative set is enforced now.
-  - [ ] Imports are the larger prize and the riskier one: an unused import is sometimes a re-export and sometimes a side effect.
-    - [ ] The cleanup wants its own commit and a `make gauntlet_full` run rather than a blanket `ruff check --fix`.
-  - [ ] Locals are cheaper, but eight sit in `middleware.py`, whose line numbers are anchored by nine fences in `scripts/gates/chat-path-structure/baseline.json` and 64 chart citations.
-    - [ ] Removing a binding there shifts every one, so they sequence after [Re-tighten and re-point].
-  - [ ] Reasoning recorded per rule in `app/pyproject.toml`; adoption in [2026-08-06-python-quality-gates.md](docs/decisions/2026-08-06-python-quality-gates.md).
+- [ ] **DRY the fresh-boot test admin — one canonical credential, no drift** (Alexander, 2026-08-17: "Always avoid drift"): every harness that boots an EMPTY instance uses `admin@example.com`/`password`, defined once. #dx
+  - [ ] Canonical source: `scripts/lib/test-admin.env` (`TEST_ADMIN_EMAIL`, `TEST_ADMIN_PASSWORD`, `TEST_ADMIN_NAME`).
+  - [ ] Consumers: `scripts/smoke/sprig-lifecycle.sh` (drifted to `s8@sage.is`, 3 sites), `scripts/manual-check.sh` (re-point its defaults), `scripts/e2e/run-cypress.sh` (export as `CYPRESS_ADMIN_*`), `app/cypress/support/e2e.ts` (env first, canonical value as documented fallback).
+  - [ ] The snapshot-backed gates KEEP their distinct `upgrade-gate@sage.is` on purpose — an injected row in a copy of production data must not collide with a real account and must self-attribute. Do not "DRY" them into the shared identity; say so in the env file.
 
-- [ ] **Consolidate formatting on `ruff format`**: `black --check` has been failing on 73 of 218 backend files, so the format half of `make lint` proves nothing (found 2026-08-06 while adopting ruff). #gates
-  - [ ] The target runs `black --check --exclude ".venv/|/venv/" backend/` at [Makefile:1289](Makefile#L1289) and it is red on `HEAD` — either nobody runs `make lint` or CI does not gate on it.
-  - [ ] `ruff format` would rewrite 83, a near-superset — but the swap was NOT made.
-    - [ ] One of the 83 is `middleware.py`; reformatting a fence-anchored file as a side effect of turning a linter on is the exact commit boundary that left nine fences stale last week.
-  - [ ] `make ruff_format_check` reports the drift; `make ruff_format_fix` applies it.
-  - [ ] Sequence:
-    - [ ] Reformat.
-    - [ ] Re-point the fences and citations.
-    - [ ] Run the oracle.
-    - [ ] Delete the black line and wire `ruff_format_check` into `lint`.
+- [ ] **Remove htmx; every consumer moves to startr-swap** (earmarked 2026-08-17): three admin panels still ride the 50.9 KB vendored `htmx.min.js` while the 11.9 KB in-house library carries every page-to-page swap — one engine, not two. #frontend #dx
+  - [x] **Fragment question SETTLED by reading the source (2026-08-17, Alexander's call, verified)**: startr-swap already consumes fragments — `DOMParser.parseFromString(text, 'text/html')` wraps any fragment in a document, and `selectorFor` finds the region by `#id` in it. The panels' htmx `outerHTML` responses (wrapper included) are already the right shape. Today's `data-swap-off` exists only because the panels were never DECLARED as regions — `closest` resolved to the outer region, whose selector isn't in the fragment.
+    - [ ] Mechanics that ARE the migration: mark each panel wrapper `data-swap` (ids stay); htmx buttons become real links or one-button forms (startr-swap claims only `a[href]` and `form`); `hx-vals` JSON becomes hidden inputs.
+    - [ ] Semantic shift to check per panel: htmx `outerHTML` replaces the wrapper element, startr-swap replaces its CHILDREN — server-set attributes on the wrapper itself won't land.
+    - [ ] No fragment fixture exists (`fixtures/swap/` holds full documents only) — add one so the behavior is pinned before the panels lean on it.
+  - [ ] Consumers to migrate, each with its e2e spec green after:
+    - [ ] Sprigs (`sprigs.html`, `sprigs_panel.py`): Refresh `hx-get`, per-card `hx-post` wire + verb actions, all targeting `#sprigs-panel`/`outerHTML`.
+    - [ ] Diagnostics (`diagnostics.html`, `diagnostics_panel.py`): per-row Re-probe `hx-post` carrying `hx-vals` JSON — needs a plain-form equivalent (hidden inputs) — plus Re-probe-all `hx-get`, `#diagnostics-panel`.
+    - [ ] Branding (`branding.html`, `branding_panel.py`): save form `hx-post`, `#branding-panel`; its `data-swap-off` becomes a live swap.
+  - [ ] Delete the scaffolding: `vendor/htmx.min.js` plus its section in `vendor/README.md`; the three injection sites `router.py:373`, `:433`, `:1194`.
+  - [ ] Re-word the prose that names htmx: `shell.py:191`, `sprigs_panel.py` and `branding_panel.py` docstrings, `router.py` comments `:497` and `:800`, `pages.css:274`, `color-pair.js` header — note its document-delegation pattern survives the engine change.
+  - [ ] Cross-link: deleting the vendor file kills the bulk of the 9,609-error eslint card under Bugs — re-measure and update that card in the same sitting.
+  - [ ] Guard rails: `startr_swap_check` still green; the panels' Cypress specs plus `make e2e` green; no third swap idiom — plain HTML first, per doctrine.
 
-- [ ] **Automate `sage-archivo.ttf` subsetting**: stop committing a hand-subsetted binary — subset at build time so there's no duplicate to maintain in git.
-  - [ ] `scripts/e2e/watch/sage-archivo.ttf` is a manually-subsetted (basic-Latin + em-dash) copy of `app/static/assets/fonts/Archivo-Variable.ttf`.
-    - [ ] Shrunk from 637 KB to 153 KB to clear the `check-added-large-files` 500 KB cap.
-  - [ ] It'll silently drift out of sync (or grow back over the cap) if the noVNC branding text changes and nobody remembers to re-subset by hand.
-  - [ ] Move the `pyftsubset` step into `scripts/e2e/watch/Dockerfile`: `COPY` the full font, subset at build time.
+- [x] _Unused-import/local cleanup DONE (2026-08-17): 247 F401 + 36 F841 cleared, both rules enforced in `[tool.ruff.lint]` — the conservative set now runs whole; 214 auto-fixed, the rest read (2 availability probes kept: 1 `noqa` naming the sprig hot-graft rebind, 1 deleted); frozen migration trees (`migrations/versions/`, `internal/migrations/`) per-file-ignored, not edited; middleware's one line deletion (`negative_prompt`, dead since fork) re-pointed all 9 fences and 52 citations −1 in the same change. Archived → docs/completed-todos.md._ #gates
+
+- [x] _Formatting consolidated on `ruff format` (2026-08-17): 87 files reformatted, oracle 12/12 byte-identical, `changelog_panel.py` AST-proven identical against a complexipy +8 artifact (baseline raised with note, not earned); `black --check` deleted from `lint`, `ruff_format_check` wired in; black survives ONLY as the runtime dep behind the `routers/utils.py` format endpoint. Found on the way: `lint`'s frontend half was already red — see Bugs. Archived → docs/completed-todos.md._ #gates
+
+- [x] _`sage-archivo.ttf` subsetting automated (2026-08-17): committed 153 KB binary deleted; the watch Dockerfile now subsets `Archivo-Variable.ttf` at build time (`python3 -m fontTools.subset`, basic-Latin + em-dash, 92 KB, wght/wdth axes verified) via a named `fonts` build context; `WATCH_IMG` bumped `15.18.0-r2` so cached images rebuild themselves. Archived → docs/completed-todos.md._
 ---
 
 ## TODO
@@ -184,7 +184,7 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
     - [ ] Report-only first, per the parent.
 - [ ] **Neuter the `execute` event branch, do NOT delete it**: `Chat.svelte:382-395` runs server-supplied code through `new Function(...)` in the top frame, unsandboxed (Note 1 of the 2026-08-15 poka-yoke resolution). #security #critical ([dossier](docs/board-dossiers.md))
   - [ ] Deletion refuted by adversarial verification: it looks dead — nothing in the repo emits `"execute"` — but that was the wrong test; it is public extension-API vocabulary reached through two unfiltered forwarders.
-  - [ ] Forwarder 1: `middleware.py:1781-1782` forwards any event a configured upstream model, Pipe, or stream Filter puts in the SSE body.
+  - [ ] Forwarder 1: `middleware.py:1782-1784` forwards any event a configured upstream model, Pipe, or stream Filter puts in the SSE body.
   - [ ] Forwarder 2: `routers/chats.py:522-552` (`EventForm{type,data}`, `get_verified_user` only) forwards any event from a REST client or API key — and `ENABLE_API_KEY_ENDPOINT_RESTRICTIONS` defaults False.
   - [ ] The CSP child above closes the same hole browser-side — belt-and-braces, do both, ship whichever lands first.
   - [ ] Keep the arm, refuse to call `new Function`, always invoke `cb` so callers get a response.
@@ -289,9 +289,9 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
   - [x] _`make help` scans `##` SHIPPED (2026-08-12) — awk scan of `## ` comments, 29 documented targets annotated up to 71; `make help_all` keeps the full 137-name dump; `_`-prefixed targets cannot appear. Archived → docs/completed-todos.md._
   - [ ] **Both ratchets are unrunnable on a fresh clone (2026-08-12)** `#critical`: `cognitive_complexity` and `chat_path_structure` hard-fail "no baseline" on every clone and CI runner, and `make lint` fails with them.
     - [ ] `.gitignore:31` excludes `/scripts/gates/*/baseline.json` and none was ever committed.
-    - [ ] `chat_path_structure` cannot bootstrap: `run()` calls `load_baseline()` before the `tighten` flag, so `--tighten` exits telling you to run `--tighten`.
+    - [x] Bootstrap circularity FIXED (2026-08-17): `--tighten` now seeds all six ceilings from scratch and warns that fences are authored by hand, never generated. Proven live — the chat-path baseline was lost locally and rebuilt through this path (ceilings via `--tighten`, nine fences re-authored from the 2026-08-05 census, gate + relocate + teeth all green).
     - [ ] Baselines stay out of git (Alexander, 2026-08-12); `chat_path_structure_teeth` stays in `gauntlet_fast`.
-    - [ ] Fix the bootstrap circularity, then either track the baselines or drop the ratchets from every rollup.
+    - [ ] Remaining: either track the baselines or drop the ratchets from every rollup — a fresh clone still starts fence-less, and ceilings seeded from a regressed tree bless the regression.
   - [x] _`gauntlet_fast` + one hook mechanism (2026-08-12) — pre-push runs `scan_tree` + `gauntlet_fast`, green in 8.3s; deleted `.githooks/`, which `.gitignore:3` kept out of git so `Makefile:633`'s recommended hooksPath silently disabled all 5 pre-commit stages on a fresh clone; 4 `_teeth` gates now run for the first time. Archived → docs/completed-todos.md._
   - [x] _`gauntlet_full` runs from clean (2026-08-12) — declared `it_build` on the 12 targets consuming `$(IMAGE_NAME):$(IMAGE_TAG)` instead of reordering, so position carries no meaning; phony, so one build (dry run: build line 14, first consumer 28); `scan_container` joins `gauntlet_full`, NOT `scan`. Archived → docs/completed-todos.md._
   - [x] _`parity_gate` removed from `gauntlet_full` (2026-08-12) — exits 0 when its multi-gigabyte GGUF artifacts are absent, so it reported success forever and the Korean-probe canary watched nothing; run it on a llama.cpp tag bump; `GATE_STRICT=1` draft dropped. Archived → docs/completed-todos.md._
@@ -580,7 +580,7 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
   - [ ] Intelligent load balancing for multiple Ollama backends (`ollama.py:1`)
   - [ ] Update Ollama type support when upstream adds new types (`ollama.py:1378`)
   - [ ] Handle tool name collisions by prepending toolkit name (`utils/tools.py:109`)
-  - [ ] Replace legacy system message insertion with `add_or_update_system_message` (`middleware.py:1038`)
+  - [ ] Replace legacy system message insertion with `add_or_update_system_message` (`middleware.py:1037`)
   - [ ] Add retries to audio processing requests (`audio.py:1120`)
   - [ ] Remove deprecated `WEBUI_JWT_SECRET_KEY` fallback at next major version (`env.py:393`)
 
@@ -1073,6 +1073,29 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 
 ## Bugs
 
+- [ ] **`surface_budget` floor over ceiling since at least 3.1.0**: `notes-empty` decodes 6,978 kB against the 6,800 kB ceiling — and the 2026-08-10 `3.1.0-amd64` image measures 6,978.6, so the regression PREDATES the 2026-08-17 cleanup sitting (A/B run, same snapshot, 0.5 kB apart). #bug #critical
+  - [ ] The gate's own comment records 6,642 kB on 2026-08-02 after the font/icon work — ~336 kB grew back somewhere in 2026-08-02→08-10 and nobody ran `gauntlet_full` across the line.
+  - [ ] Heaviest single item: `/api/models?` at 2,702 kB decoded — snapshot-driven, worth checking against the 08-02 figure first; the rest is `_app/immutable` chunks (top four: 764+606+543+411 kB).
+  - [ ] The ledger (`app/cypress/perf-routes.json`) is untracked and overwritten per run, so there was no baseline to catch the drift — consider committing a dated copy per release.
+  - [ ] Do NOT raise the ceiling to go green; the gate says so itself. Find the 336 kB or earn the raise deliberately.
+
+- [ ] **Branding colors don't reach the page — theme Sprig severs the cascade, no-build shell plumbs nothing** (diagnosed live on :8099, 2026-08-17; approach settled with Alexander same day). Config holds `#b2b1fe`/`#9178cc`; the page feels green anyway. #bug #frontend
+  - [ ] Three stacked sources on :8099: grafted `sprig-theme:workshop-bio` (`/themes/active.css`) sets `--primary/--secondary/--links` as GREEN LITERALS + a green-tinted `--color-gray-N` scale; `+layout.svelte:565-570` sets inline purple `--primary/--secondary` (wins those two); stock startr.style derives `--links: var(--primary)`.
+  - [ ] Root cause: the Sprig's literal `--links` SEVERS the framework cascade, so inline `--primary` never reaches links; the tinted gray scale covers most surface regardless.
+  - [ ] Fix 1 — restore severed props, never duplicate recipes: injection sets `--primary`, `--secondary`, plus `--links: var(--primary)` and `--button-hover: var(--primary)`; the framework's own color-mix recipes re-resolve. No app-side color math.
+  - [ ] Fix 2 — no-build shell parity: `pages/shell.py` emits the same `:root{}` block from `app.state.config.BRANDING`; today it plumbs nothing and every panel (the branding panel included) wears framework defaults.
+  - [ ] Fix 3 — honest conflict UX, not silent precedence: the branding panel AND `Theme.svelte` show a plain-words warning when a theme Sprig is active, with a one-click prune. ELI5 wording.
+  - [ ] Upstream (first-party) fix: theme Sprigs must author `--links: var(--primary)`, not literals — keeps grafted themes brandable; fix `workshop-bio` + the authoring contract in the sprig spec.
+  - [ ] Guard: e2e asserts a saved color reaches BOTH a SPA and a no-build page; the drift class is "one consumer honors config, the other silently doesn't".
+  - [ ] Inline `<style>` stays CSP-compatible today (`'unsafe-inline'` kept per the CSP card); note in the policy's exception list when that ships.
+  - [ ] Found on the way: the no-build shell never loads `/themes/active.css` — a grafted theme dresses the SPA and NOT the server-rendered panels. Decide whether the shell links it (theme parity) or stays deliberately unthemed; today's fix gates shell colors on `SPRIG_ACTIVE_THEME` so the two surfaces at least agree on who wins.
+
+- [ ] **`make lint`'s frontend half is red and always was**: `bun run lint:frontend` (`eslint . --fix`) exits 1 with 9,609 errors (found 2026-08-17 the first time `lint` went otherwise green — the Python half never let it get this far). #bug #dx
+  - [ ] The bulk is vendored code eslint should never read: `pages/assets/vendor/htmx.min.js` alone contributes thousands; `dev-reload.js` and `startr-swap.js` carry a handful of real `no-unused-vars`.
+  - [ ] The vendored no-build assets under `backend/sage_is_ai/pages/assets/` postdate the eslint config — nothing ignores them.
+  - [ ] Fix shape: eslint ignore for `pages/assets/vendor/`, then read the residue honestly.
+  - [ ] Note `--fix` in a LINT target mutates the tree on check — same class of surprise the format gate just retired.
+
 - [ ] **Admin models panel tears down on every mutation**: `init()` in [Settings/Models.svelte](app/src/lib/components/admin/Settings/Models.svelte) opens with `models = null` and the whole panel sits inside `{#if models !== null}` — the control just clicked unmounts and a spinner replaces it (found 2026-08-07 by `models-refresh.cy.ts`). #bug
   - [ ] `init()` is called by upsert, toggle, delete and the model editor as well as by mount — correct on first load, wrong for a mutation.
   - [ ] Symptom: the user's cursor is left hovering nothing; a populated list flashes to a spinner and back.
@@ -1122,25 +1145,25 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 - [ ] **Six JSON parse sites scrape from the first `{` to the last `}`; the prompt template teaches the model to break it**: `config.py:1584` ends the title template with a literal example object, so a model that restates the format emits two objects — exactly the input the scrape fails on. #bug ([dossier](docs/board-dossiers.md))
   - [ ] Found 2026-08-08. Clean and fenced input parse; two objects in one reply do not.
   - [ ] These calls run on the task model, which operators set small, and small models restate the format most.
-  - [ ] Worst site is RAG queries ([middleware.py:1042](app/backend/sage_is_ai/utils/middleware.py#L1042)): on failure it sets the entire model reply as the retrieval query, silently degrading RAG.
+  - [ ] Worst site is RAG queries ([middleware.py:1041](app/backend/sage_is_ai/utils/middleware.py#L1041)): on failure it sets the entire model reply as the retrieval query, silently degrading RAG.
   - [ ] (1) Set `response_format` on the task calls — `utils/payload.py:350-361` already converts it to Ollama's `format`, and no task call sets it. Behaviour: sequence after the structure work.
   - [ ] (2) One parser as the floor in a new `utils/llm_json.py` for providers that ignore it — strip fences, try the whole string, scan for balanced objects. New file, moves no citation; can land any time.
   - [ ] (3) Drop the example object from the template. Behaviour: sequence after the structure work.
   - [ ] Trap: a shared helper is NOT the fix — in the restated-format case both objects are valid JSON and both carry the key, so no parser can tell them apart.
   - [ ] The six sites, consolidated 2026-08-08 into one `slice_json_object` helper, behaviour byte-identical:
     - [ ] [797](app/backend/sage_is_ai/utils/middleware.py#L797) tool calling
-    - [ ] [955](app/backend/sage_is_ai/utils/middleware.py#L955) image prompt
-    - [ ] [1042](app/backend/sage_is_ai/utils/middleware.py#L1042) RAG queries
-    - [ ] [1498](app/backend/sage_is_ai/utils/middleware.py#L1498) follow-ups
+    - [ ] [955](app/backend/sage_is_ai/utils/middleware.py#L954) image prompt
+    - [ ] [1042](app/backend/sage_is_ai/utils/middleware.py#L1041) RAG queries
+    - [ ] [1498](app/backend/sage_is_ai/utils/middleware.py#L1499) follow-ups
     - [ ] [1543](app/backend/sage_is_ai/utils/middleware.py#L1543) title
     - [ ] [1572](app/backend/sage_is_ai/utils/middleware.py#L1572) tags
-- [ ] **Mid-stream model switch never reaches retries**: `stream_body_handler` assigns `model_id` at [middleware.py:1785](app/backend/sage_is_ai/utils/middleware.py#L1785) without `nonlocal` — the retries still read the originally requested model while the DB records the selected one. #bug
+- [ ] **Mid-stream model switch never reaches retries**: `stream_body_handler` assigns `model_id` at [middleware.py:1786](app/backend/sage_is_ai/utils/middleware.py#L1786) without `nonlocal` — the retries still read the originally requested model while the DB records the selected one. #bug
   - [ ] Only `content`/`content_blocks` are declared `nonlocal` (at 1749–1750), so the assignment is function-local.
   - [ ] The retries: tool-call at 2068, code-interpreter at 2163.
   - [ ] Found 2026-08-04 during the chat-path seam census; fix deferred — behaviour frozen until the structure work lands (`charts/chat-path-restructure`).
   - [ ] Line numbers restated 2026-08-06 after the three tightening passes.
 
-- [ ] **`features.web_search` is a live `NameError`, not a feature**: [middleware.py:1246](app/backend/sage_is_ai/utils/middleware.py#L1246) calls `chat_web_search_handler`, which does not exist — `POST /api/chat/completions` with `{"features": {"web_search": true}}` returns a 500. #bug ([dossier](docs/board-dossiers.md))
+- [ ] **`features.web_search` is a live `NameError`, not a feature**: [middleware.py:1247](app/backend/sage_is_ai/utils/middleware.py#L1247) calls `chat_web_search_handler`, which does not exist — `POST /api/chat/completions` with `{"features": {"web_search": true}}` returns a 500. #bug ([dossier](docs/board-dossiers.md))
   - [ ] Found 2026-08-04. The definition arrived commented out in `bbb4f10` and `hasattr` confirms False.
   - [ ] Unreachable from the UI: `Chat.svelte:1716` gates on `$config?.features?.enable_web_search`, which the backend never emits.
   - [ ] Reachable from the API: `features` is popped off the request body unvalidated.
@@ -1152,7 +1175,7 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 - [ ] **`ENABLE_REALTIME_CHAT_SAVE=true` leaves reasoning stuck on "Thinking…" for the whole generation**: the flag changes what the browser receives, and the reasoning close rides the first content delta — the disclosure spins until the terminal `done: True` event. ([dossier](docs/board-dossiers.md)) #bug
   - [ ] Flag on: text deltas ship raw and the frontend appends `choices[0].delta.content` ([Chat.svelte:1240](app/src/lib/components/chat/Chat.svelte#L1240)).
   - [ ] Flag off: the frontend replaces serialized blocks ([Chat.svelte:1276](app/src/lib/components/chat/Chat.svelte#L1276)).
-  - [ ] The close rides the first content delta ([middleware.py:1843](app/backend/sage_is_ai/utils/middleware.py#L1843)), so the last serialized snapshot says `done="false"`.
+  - [ ] The close rides the first content delta ([middleware.py:1844](app/backend/sage_is_ai/utils/middleware.py#L1844)), so the last serialized snapshot says `done="false"`.
   - [ ] DB is correct both ways (`done="true" duration="1"`; oracle replay of `reasoning-field-then-content.sse`).
   - [ ] Found 2026-08-04, chat-path census; behaviour frozen, logged not fixed.
   - [ ] Same family as the reasoning-block bug below.
@@ -1164,7 +1187,7 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] Found 2026-08-04, chat-path census; behaviour frozen.
   - [ ] Enforce the flag on the request path — needs sign-off, closing it narrows product surface.
   - [ ] Not an SSRF: `generate_direct_chat_completion` relays `request:chat:completion` to the BROWSER, which makes the call — triage as an open admin toggle, not server-side model access.
-- [ ] **`data: [DONE]` does not terminate the stream loop**: `stream_body_handler` has no case for the sentinel — it fails `json.loads` and is skipped by the `except` at [middleware.py:1925](app/backend/sage_is_ai/utils/middleware.py#L1925); a provider that appends anything after the sentinel gets it rendered. #bug
+- [ ] **`data: [DONE]` does not terminate the stream loop**: `stream_body_handler` has no case for the sentinel — it fails `json.loads` and is skipped by the `except` at [middleware.py:1926](app/backend/sage_is_ai/utils/middleware.py#L1926); a provider that appends anything after the sentinel gets it rendered. #bug
   - [ ] Content arriving AFTER `[DONE]` is still parsed, appended to the blocks, emitted to the reader and persisted.
   - [ ] Harmless with well-behaved providers, which stop sending.
   - [ ] Pinned in the `done-sentinel-and-noise` oracle golden, which ends with `"Answer survives the noise. trailing after DONE"`.
@@ -1189,7 +1212,7 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - Suspected cause of the unreproduced 3-failure run earlier on 2026-08-04.
 - [ ] **Unclosed reasoning block swallows the model's answer** (Alexander, 2026-08-03; demo-blocking): no close path has an end-of-stream finalizer — worst case the whole answer stays sealed inside the collapsed reasoning block, or private reasoning renders as text. Three variants. #critical #bug ([dossier](docs/board-dossiers.md))
   - [ ] `tag_content_handler` ([middleware.py:380](app/backend/sage_is_ai/utils/middleware.py#L380)) closes only on its opening pair's exact end tag, with no end-of-stream finalizer.
-  - [ ] The field-path close is guarded on `if value:` ([middleware.py:1849](app/backend/sage_is_ai/utils/middleware.py#L1849)).
+  - [ ] The field-path close is guarded on `if value:` ([middleware.py:1850](app/backend/sage_is_ai/utils/middleware.py#L1850)).
   - [ ] Variant 1, tag drift: any open/close mismatch leaves the block open forever.
     - [ ] `scripts/smoke/reasoning-tag-fixture.py` fails 16 cases across 5 defects (`<thinking>` closed `</think>`, the reverse, `</THINKING>`, `</ thinking>`, never-closes).
     - [ ] A sixth cosmetic case (space eaten at chunk=7, not chunk=1 or 999) explains the reported "not always".
