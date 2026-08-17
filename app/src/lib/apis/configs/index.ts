@@ -113,6 +113,10 @@ export interface Branding {
 	subtitle?: string;
 	primary_color?: string;
 	accent_color?: string;
+	// GET-only: present while a theme Sprig is grafted (it wins the look);
+	// never send these on POST.
+	active_theme_sprig?: string | null;
+	active_theme_label?: string | null;
 }
 
 export const getBranding = async (): Promise<Branding> => {
@@ -125,11 +129,11 @@ export const getBranding = async (): Promise<Branding> => {
 				'Content-Type': 'application/json'
 			}
 		});
-		
+
 		if (!res.ok) {
 			throw new Error(`Failed to get branding: ${res.status}`);
 		}
-		
+
 		return await res.json();
 	} catch (err: any) {
 		console.error('Error getting branding:', err);
