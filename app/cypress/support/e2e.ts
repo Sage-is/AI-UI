@@ -2,10 +2,13 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../support/index.d.ts" />
 
+// Canonical values live in scripts/lib/test-admin.env; run-cypress.sh forwards
+// them as CYPRESS_ADMIN_*. The literals below are the same values, kept only as
+// the fallback for a bare `cypress open` outside the harness.
 export const adminUser = {
 	name: 'Admin User',
-	email: 'admin@example.com',
-	password: 'password'
+	email: Cypress.env('ADMIN_EMAIL') || 'admin@example.com',
+	password: Cypress.env('ADMIN_PASSWORD') || 'password'
 };
 
 const login = (email: string, password: string) => {

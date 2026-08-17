@@ -12,6 +12,7 @@ IMG="${1:-sage-is/ai-ui:develop}"
 NET="${SPRIG_SMOKE_NET:-sage-network}"; ROOT="${SPRIG_SMOKE_NAME:-sage-wolfi}"; VOL="${ROOT}-data"
 PORT="${SPRIG_SMOKE_PORT:-8099}"; BASE="http://localhost:${PORT}"
 . "$(dirname "${BASH_SOURCE[0]}")/../lib/gate.sh"   # PASS/FAIL + ok/no/require
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/test-admin.env"   # the ONE fresh-boot admin
 X(){ docker exec "$ROOT" sh -lc "$1"; }
 
 echo "== fresh 8.I.2 rootstock =="
@@ -30,7 +31,7 @@ X 'test -d /app/static/fonts' >/dev/null 2>&1 && no "CJK fonts still shipped" ||
 WCT=$(curl -s -o /dev/null -w '%{content_type}' "$BASE/wasm/ort-wasm-simd-threaded.jsep.wasm")
 echo "$WCT" | grep -q wasm && no "real wasm still shipped" || ok "wasm not shipped pre-graft (SPA fallback: $WCT)"
 
-TOK=$(curl -s -X POST "$BASE/api/v1/auths/signup" -H 'Content-Type: application/json' -d '{"name":"S8","email":"s8@sage.is","password":"sprig-smoke-pw-123"}' | jq -r '.token // empty')
+TOK=$(curl -s -X POST "$BASE/api/v1/auths/signup" -H 'Content-Type: application/json' -d "{\"name\":\"$TEST_ADMIN_NAME\",\"email\":\"$TEST_ADMIN_EMAIL\",\"password\":\"$TEST_ADMIN_PASSWORD\"}" | jq -r '.token // empty')
 AUTH="Authorization: Bearer $TOK"; [ -n "$TOK" ] && ok "admin signup (PyJWT alive)" || { no "signup"; exit 1; }
 # Re-sign-in and refresh the shared $TOK/$AUTH. The gate holds ONE session across
 # a chain of grafts that each block up to 600s, so a JWT minted at signup can age
@@ -38,7 +39,7 @@ AUTH="Authorization: Bearer $TOK"; [ -n "$TOK" ] && ok "admin signup (PyJWT aliv
 # expired" after the 2b/2d/2e pulls, cascading 5 failures). Any long section can
 # hit this; G() self-heals below, and section 4 also re-auths explicitly.
 reauth(){
-  TOK=$(curl -s -X POST "$BASE/api/v1/auths/signin" -H 'Content-Type: application/json' -d '{"email":"s8@sage.is","password":"sprig-smoke-pw-123"}' | jq -r '.token // empty')
+  TOK=$(curl -s -X POST "$BASE/api/v1/auths/signin" -H 'Content-Type: application/json' -d "{\"email\":\"$TEST_ADMIN_EMAIL\",\"password\":\"$TEST_ADMIN_PASSWORD\"}" | jq -r '.token // empty')
   AUTH="Authorization: Bearer $TOK"
 }
 # 600s ceiling: by section 9 the rootstock runs several grafted server children
@@ -166,7 +167,7 @@ fetch_has "$BASE/themes/active.css" "sprig-theme:workshop-bio" \
 X 'python3 -c "import chromadb, numpy, tokenizers, huggingface_hub"' && ok "chromadb + numpy + tokenizers + hf via overlay" || no "overlay imports failed"
 
 echo "== 4. mock grafts; chunking blocked until rag-loaders =="
-TOK=$(curl -s -X POST "$BASE/api/v1/auths/signin" -H 'Content-Type: application/json' -d '{"email":"s8@sage.is","password":"sprig-smoke-pw-123"}' | jq -r .token)
+TOK=$(curl -s -X POST "$BASE/api/v1/auths/signin" -H 'Content-Type: application/json' -d "{\"email\":\"$TEST_ADMIN_EMAIL\",\"password\":\"$TEST_ADMIN_PASSWORD\"}" | jq -r .token)
 AUTH="Authorization: Bearer $TOK"
 G mock-embedding embedding | jq -e '.status==true' >/dev/null 2>&1 && ok "mock grafts (pure-python, no numpy)" || no "mock graft"
 PT=$(curl -s -X POST "$BASE/api/v1/retrieval/process/text" -H "$AUTH" -H 'Content-Type: application/json' -d '{"name":"d","content":"x","collection_name":"ragcol"}')
