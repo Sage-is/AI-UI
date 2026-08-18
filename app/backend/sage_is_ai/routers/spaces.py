@@ -383,9 +383,11 @@ async def generate_agent_response(
         if not content:
             return
 
-        # Build agent message data. If the response ends with '?', mark it as
-        # awaiting a reply from the triggering user — so they can respond without
-        # having to @mention the agent again. Other users must still @mention.
+        # Build agent message data. If the response ends with '?', arm it as
+        # awaiting a reply: ANY space member's next un-mentioned post answers it
+        # (the whole room is the bot's audience — a VA answering in the
+        # principal's place is the point). awaiting_reply_from still records the
+        # addressee for UI/TTL use; it no longer gates who may answer.
         # TODO: Add optional per-agent TTL setting for deployments that want expiration.
         agent_data = {"agent": {**agent_info}}
         if content.strip().endswith("?"):
@@ -599,9 +601,12 @@ async def post_new_message(
                 )
 
             # --- Agent auto-reply: if an agent's last response ended with '?',
-            # the triggering user can reply without @mentioning the agent.
+            # ANY space member can answer without @mentioning the agent — the
+            # poster already passed the space access gate, and that is the
+            # audience (2026-08-18: was addressee-only; a VA answering in the
+            # principal's place is the customer workflow, not an accident).
             # We only check the last 2 messages (not a deep scan) — if the agent's
-            # question isn't recent, the user isn't directly responding to it.
+            # question isn't recent, the room has moved on and the arm is dead.
             # Explicit @mentions always take priority over auto-reply.
             mentions = set(re.findall(r"@([\w][\w-]*)", message.content or ""))
 
@@ -613,8 +618,8 @@ async def post_new_message(
                         continue
                     agent_data = (recent_msg.data or {}).get("agent", {})
                     awaiting_user = agent_data.get("awaiting_reply_from")
-                    if awaiting_user and awaiting_user == user.id:
-                        # This user is responding to the agent's question — auto-trigger
+                    if awaiting_user:
+                        # Someone is answering the agent's open question — auto-trigger
                         agent_model_id = agent_data.get("model_id")
                         space_agents = Spaces.get_space_agents(space)
                         for agent_config in space_agents:

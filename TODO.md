@@ -26,10 +26,24 @@ This file tracks active work only.
 
 _Items currently in progress. Move items here and or use tag source with `# FIXME:` when work begins._
 
-- [ ] **DRY the fresh-boot test admin — one canonical credential, no drift** (Alexander, 2026-08-17: "Always avoid drift"): every harness that boots an EMPTY instance uses `admin@example.com`/`password`, defined once. #dx
-  - [ ] Canonical source: `scripts/lib/test-admin.env` (`TEST_ADMIN_EMAIL`, `TEST_ADMIN_PASSWORD`, `TEST_ADMIN_NAME`).
-  - [ ] Consumers: `scripts/smoke/sprig-lifecycle.sh` (drifted to `s8@sage.is`, 3 sites), `scripts/manual-check.sh` (re-point its defaults), `scripts/e2e/run-cypress.sh` (export as `CYPRESS_ADMIN_*`), `app/cypress/support/e2e.ts` (env first, canonical value as documented fallback).
-  - [ ] The snapshot-backed gates KEEP their distinct `upgrade-gate@sage.is` on purpose — an injected row in a copy of production data must not collide with a real account and must self-attribute. Do not "DRY" them into the shared identity; say so in the env file.
+- [ ] **Spaces Enhancements**: agent context modes, auto-reply TTL, and multi-user — pulled forward 2026-07-30 as unlock #1 for the real-estate engagement. ([dossier](docs/board-dossiers.md))
+  - [x] **Multi-user mechanics VERIFIED by the first Spaces e2e (2026-08-18)**: `spaces-multiuser.cy.ts` 5/5 — admin-created `role:user` member opens the shared space, posts via the socket round-trip, mentions by click, admin sees it.
+    - Membership is `access_control.read/write.user_ids`, set at space create; management UI stays admin/facilitator-gated (the principal is the facilitator).
+    - Found: the mention dropdown lists exactly `read.user_ids` — an unlisted admin is unmentionable (access bypass ≠ participant).
+    - Live-agent variant `live/spaces-live-agent.cy.ts` is opt-in via `CYPRESS_BOT_URL`/`CYPRESS_BOT_KEY` (subdir = excluded from bare `make e2e`).
+  - [ ] Agent context mode: `conversation` (last ~5 messages) and `full` (all recent) — `single` already ships
+    - Decision record 2026-08-18: ship context modes next; bridge adapter at marketplace time; sidecar is packaging. `docs/decisions/2026-08-18-spaces-agent-integration.md`.
+    - Live test rig: pullbots registered on :8099 via `scripts/seed-bot-agents.sh` (`bot9000.Sage-Agent`/`bot9001.Sage-Agent`, key in `.env` `PULLBOT_API_KEY`, never committed).
+  - [x] **Auto-reply opened to the whole space (2026-08-18, Alexander's call)**: any member's un-mentioned post answers an armed agent question — was addressee-only; the VA-answers-for-the-principal workflow needs it. One-condition change at `spaces.py:621`; guards unchanged (@mention wins, 2-message window, one auto-reply per post, no agent-to-agent path). `awaiting_reply_from` still records the addressee for future UI/TTL.
+  - [ ] Optional per-agent TTL for auto-reply expiration
+    <!-- inline: spaces.py:391 -->
+  - [ ] **Silverbullet integration into Spaces** — wire the self-hosted Silverbullet PKM/wiki into Spaces. Planning conversation first (architecture, auth, data model), then code.
+  - [ ] **Space theming for creator-led visual differentiation** (2026-06-15): creator-only "Theme" tab in Space settings — accent-color picker + optional logo upload, tinting nav chrome and thread accents
+    - [ ] Identical-looking Spaces cause mis-posts; load-bearing for workshop facilitators and multi-org Rootstocks
+    - [ ] No custom-CSS injection (XSS surface)
+    - [ ] Ship preset themes (bio = green, math = blue) so non-technical facilitators can theme without picking colors
+
+- [x] _Fresh-boot test admin DRY'd (2026-08-17): one canonical credential in `scripts/lib/test-admin.env` (`admin@example.com`/`password`), 4 consumers re-pointed — `sprig-lifecycle.sh` (3 drifted `s8@sage.is` sites), `manual-check.sh`, `run-cypress.sh` (forwards `CYPRESS_ADMIN_*`), `e2e.ts` (env-first) — snapshot-backed gates keep `upgrade-gate@sage.is` on purpose (collision + self-attribution), documented in the env file itself. Verified: throwaway `sprig_smoke` 68/68 (first run 67/68, flake cleared on re-run), branding e2e 7/7 through the modified harness. Archived → docs/completed-todos.md._ #dx
 
 - [ ] **Remove htmx; every consumer moves to startr-swap** (earmarked 2026-08-17): three admin panels still ride the 50.9 KB vendored `htmx.min.js` while the 11.9 KB in-house library carries every page-to-page swap — one engine, not two. #frontend #dx
   - [x] **Fragment question SETTLED by reading the source (2026-08-17, Alexander's call, verified)**: startr-swap already consumes fragments — `DOMParser.parseFromString(text, 'text/html')` wraps any fragment in a document, and `selectorFor` finds the region by `#id` in it. The panels' htmx `outerHTML` responses (wrapper included) are already the right shape. Today's `data-swap-off` exists only because the panels were never DECLARED as regions — `closest` resolved to the outer region, whose selector isn't in the fragment.
@@ -122,7 +136,7 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
 - The no-build strangler migration is mid-Phase 2 with the wizard (the hardest surface) still ahead; stalling it half-migrated is the worst available outcome.
 - The external November commitment is signage and materials only, so it imposes **no ship-by date** and must not be used to justify parallelising these.
 
-- [ ] **1. Spaces multi-user** — three people (principal, assistant, VA) share one workspace from day one, and the customer's primary success metric is unreachable without it. Highest value, do first. Extends `### v2.x — Near Term` → _Spaces Enhancements_.
+- [ ] **1. Spaces multi-user** — three people (principal, assistant, VA) share one workspace from day one, and the customer's primary success metric is unreachable without it. Highest value, do first. Now under `## In Progress` → _Spaces Enhancements_; mechanics e2e-verified 2026-08-18, remaining work is agent context modes + productization.
 - [ ] **2. Spend budgets per user AND per API key** — required before a customer instance goes live with hosted models and three sharers. See the backlog item; the try.sage uncapped-Groq note there is now a live commercial exposure, not a hypothetical.
 - [ ] **3. Sprig catalog de-hardcoding (marketplace M1)** — prerequisite for shipping the tooling as autoconfig Sprigs, and therefore for the segment story rather than just this customer. The blocker is the hardcoded Python `CATALOG` in `supervisor.py`.
 - [ ] **4. Job queue** — last on purpose. The demo is staged-and-labelled and November needs no software, so nothing forces real proactive nudges until the configs and features have landed. Promote it when a staged beat has to become a real one.
@@ -506,16 +520,6 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
   - [ ] Outgoing email notifications (reuse bridge SMTP config)
   - [ ] Consolidate LDAP config into Auth/Integrations tab
 
-- [ ] **Spaces Enhancements**: agent context modes, auto-reply TTL, and multi-user — pulled forward 2026-07-30 as unlock #1 for the real-estate engagement. ([dossier](docs/board-dossiers.md))
-  - [ ] **Multi-user**: a principal + assistant + VA share one workspace on day one; the customer's success metric ("they stop asking him things") is unreachable without it
-  - [ ] Agent context mode: `conversation` (last ~5 messages) and `full` (all recent) — `single` already ships
-  - [ ] Optional per-agent TTL for auto-reply expiration
-    <!-- inline: spaces.py:384 -->
-  - [ ] **Silverbullet integration into Spaces** — wire the self-hosted Silverbullet PKM/wiki into Spaces. Planning conversation first (architecture, auth, data model), then code.
-  - [ ] **Space theming for creator-led visual differentiation** (2026-06-15): creator-only "Theme" tab in Space settings — accent-color picker + optional logo upload, tinting nav chrome and thread accents
-    - [ ] Identical-looking Spaces cause mis-posts; load-bearing for workshop facilitators and multi-org Rootstocks
-    - [ ] No custom-CSS injection (XSS surface)
-    - [ ] Ship preset themes (bio = green, math = blue) so non-technical facilitators can theme without picking colors
 - [ ] **Frontend Toolchain Upgrade**: Svelte 5, Vite 6, SvelteKit latest
   - [ ] Svelte 4 → 5
   - [ ] Vite 5 → 6
@@ -853,6 +857,13 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
 _Items deferred to a later planning cycle. Move here from TODO when deprioritized._
 
 
+- [ ] **A process for agents whose model is gone** (Alexander, 2026-08-17): when an agent's base model stops resolving — model deleted, connection removed, hosted key dead, capability Sprig pruned — the agent goes silently mute; today nobody is told and nothing suggests a fix. #ux #reliability
+  - [ ] Detect: on agent use (and/or a periodic sweep), check the base model still resolves to a live entry; classify the loss (missing model vs dead connection vs pruned capability).
+  - [ ] Suggest, don't auto-fix: surface it to the agent's OWNER ("this agent can't reach its model — pick a new one") and to an ADMIN (which agents broke, what removed the model), with the plausible remaps offered.
+  - [ ] The live precedent: the unresponsive Space Agent on try.sage.is (`charts/friday-demo/TODO.md`) — this failure class is what that diagnosis keeps finding by hand.
+  - [ ] Fits `/admin/diagnostics`: an `agents_orphaned` check beside the capability probes, with a how-to-fix modal naming the affected agents.
+  - [ ] Decide the nudge channel: in-app banner on the agent, the admin panel, and/or the existing webhook/offline-notify path.
+
 - [ ] **Optimize the board register pass** (Alexander, 2026-08-15): make the weekly pass cheap — or unnecessary at the source. #dx
   - [ ] A `scripts/gates/` check (the `docs-targets.sh` / `--self-test` shape) refusing commits that add open TODO.md lines >350 ch — stops regrowth where it starts.
   - [ ] Extract the pass tooling (scout, rewrite contract, token verifier, splice) from `docs/board-register-method.md` into `scripts/` so any repo runs it in one command.
@@ -1095,6 +1106,13 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] The vendored no-build assets under `backend/sage_is_ai/pages/assets/` postdate the eslint config — nothing ignores them.
   - [ ] Fix shape: eslint ignore for `pages/assets/vendor/`, then read the residue honestly.
   - [ ] Note `--fix` in a LINT target mutates the tree on check — same class of surprise the format gate just retired.
+
+- [ ] **Spaces mention keyboard navigation is dead** (found 2026-08-18 writing the first Spaces e2e). #bug #frontend
+  - [ ] `MessageInput.svelte:740` queries `#mentions-container`; the real container id is `#commands-container` (`Mentions.svelte:57`).
+  - [ ] `MessageInput.svelte:747,:755,:762` query class `selected-mention-option-button`; the rendered class is `selected-command-option-button`.
+  - [ ] Effect: ArrowUp/Down/Tab/Enter fall through to plain-editor behavior; click selection works. `spaces-multiuser.cy.ts` clicks around it on purpose — fix frees the spec to test keyboard flow.
+
+- [ ] **Channel components carry zero `data-cy` hooks**: the Spaces specs pin on load-bearing raw ids (`#space-container`, `#messages-container`, `#send-message-button`) and the bare ProseMirror class; add hooks next time `app/src/lib/components/channel/` is touched. #dx
 
 - [ ] **Admin models panel tears down on every mutation**: `init()` in [Settings/Models.svelte](app/src/lib/components/admin/Settings/Models.svelte) opens with `models = null` and the whole panel sits inside `{#if models !== null}` — the control just clicked unmounts and a spinner replaces it (found 2026-08-07 by `models-refresh.cy.ts`). #bug
   - [ ] `init()` is called by upsert, toggle, delete and the model editor as well as by mount — correct on first load, wrong for a mutation.
