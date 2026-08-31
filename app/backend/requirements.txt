@@ -7,7 +7,7 @@ itsdangerous
 # CVE-2026-42561 (HIGH): pre-0.0.27 parser issue — bumped 2026-05-17.
 python-multipart==0.0.30
 
-python-socketio==5.16.2
+python-socketio==5.16.3
 passlib[bcrypt]==1.7.4
 cryptography
 
