@@ -41,7 +41,8 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [ ] **Space theming for creator-led visual differentiation** (2026-06-15): creator-only "Theme" tab in Space settings — accent-color picker + optional logo upload, tinting nav chrome and thread accents
     - [ ] Identical-looking Spaces cause mis-posts; load-bearing for workshop facilitators and multi-org Rootstocks
     - [ ] No custom-CSS injection (XSS surface)
-    - [ ] Ship preset themes (bio = green, math = blue) so non-technical facilitators can theme without picking colors
+    - [x] Peset themes shipped as sprigs (bio = green, math = blue) so non-technical facilitators can theme without picking colors
+    - [ ] Explore bundling and offering the presets only for spaces
 
 - [x] _Fresh-boot test admin DRY'd (2026-08-17): one canonical credential in `scripts/lib/test-admin.env` (`admin@example.com`/`password`), 4 consumers re-pointed — `sprig-lifecycle.sh` (3 drifted `s8@sage.is` sites), `manual-check.sh`, `run-cypress.sh` (forwards `CYPRESS_ADMIN_*`), `e2e.ts` (env-first) — snapshot-backed gates keep `upgrade-gate@sage.is` on purpose (collision + self-attribution), documented in the env file itself. Verified: throwaway `sprig_smoke` 68/68 (first run 67/68, flake cleared on re-run), branding e2e 7/7 through the modified harness. Archived → docs/completed-todos.md._ #dx
 
@@ -1150,7 +1151,9 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] No net covers it; extending `reasoning-tag-fixture.py` with a `◁think▷` case is part of the fix.
   - [ ] Behaviour frozen until the structure work lands.
 
-- [ ] **The two-message title path persists one message and emits another**: the `elif len(messages) == 2` arm persists `messages[0].get("content", user_message)` — the FIRST — but emits `message.get("content", user_message)` — the LAST — so the stored chat title and the one the reader watches arrive can differ (found 2026-08-08 by the sweep). #bug
+- [ ] **The two-message title path persists one message and emits another** (found 2026-08-08 by the sweep). #bug
+  - [ ] The `elif len(messages) == 2` arm persists `messages[0].get("content", user_message)` — the FIRST — but emits `message.get("content", user_message)` — the LAST.
+  - [ ] So the stored chat title and the one the reader watches arrive can differ.
   - [ ] Found while proving the title envelope cannot join the follow-ups/tags task runner.
   - [ ] A code comment now marks the emit site.
   - [ ] Frozen; fix belongs to [Unfreeze the ledger].
