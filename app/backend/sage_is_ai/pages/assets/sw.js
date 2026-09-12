@@ -28,9 +28,13 @@
  *
  * TURNING IT OFF
  * --------------
- * Deploy with ENABLE_SERVICE_WORKER=false. The route answers with a worker
- * that deletes these caches and unregisters itself on the next load. The
- * visitor does nothing. This makes it safe to ship on by default.
+ * Deploy with ENABLE_SERVICE_WORKER=false. /sw.js then answers 404. On the
+ * next load, app.html sees the update fail, unregisters this worker, and
+ * deletes its caches. The visitor does nothing. This makes it safe to ship on
+ * by default.
+ *
+ * The page does the teardown, not this worker. app.html registers on every
+ * load, so a worker that removed itself was reinstalled each time.
  */
 
 const VERSION = '__VERSION__';
