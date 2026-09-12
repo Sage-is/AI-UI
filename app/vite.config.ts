@@ -33,12 +33,28 @@ const BACKEND = [
 	'/user.png',
 	'/pages', // the server-rendered no-build surfaces
 	'/themes', // active.css  — a grafted Theme Sprig™
-	'/ui' // active.html — a grafted ui-Sprig™ fragment
+	'/ui', // active.html — a grafted ui-Sprig™ fragment
+	// Root paths that main.py GENERATES. They used to sit in FROM_STATIC and be
+	// rewritten to namesakes under /static, so dev served a hand-written file
+	// while the product served a route — which is how a manifest icon declared
+	// 512x512 for a 256x256 png survived, and how opensearch.xml kept pointing
+	// at localhost:5137. Both files are gone; these are the routes.
+	//
+	// Listing a path here is necessary but not sufficient. `app/static/` is
+	// Vite's publicDir, and a file there is answered before the proxy is ever
+	// consulted, silently. So a generated root path must ALSO have no namesake
+	// on disk. robots.txt still has one; it is byte-identical to the route, so
+	// the shadow is invisible. Add a third copy of anything here and it stops
+	// being invisible.
+	'/manifest.json',
+	'/opensearch.xml',
+	'/robots.txt',
+	'/sw.js' // version-stamped by the route; needs the real headers
 ];
 
 // Published at the root, served out of /static, so these carry a rewrite.
 // `/user.png` is deliberately NOT here — it was proxied without one.
-const FROM_STATIC = ['/manifest.json', '/opensearch.xml', '/robots.txt', '/favicon.ico'];
+const FROM_STATIC = ['/favicon.ico'];
 
 const backendProxy = {
 	...Object.fromEntries(

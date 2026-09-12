@@ -9,7 +9,9 @@ An AI interface you run on your own hardware, with your own models, on your own 
 
 Sage.is AI-UI is a chat and orchestration layer that runs on your own infrastructure. It talks to whichever model providers you have available: local Ollama, OpenAI, Anthropic, or anything that speaks the OpenAI API.
 
-![Demo](./demo.gif)
+![Sage.is AI-UI in a desktop browser: the workspace sidebar on the left, a named agent selected, and the prompt box waiting](./app/static/screenshots/wide-chat.png)
+
+<sub>The same interface on a phone: <a href="./app/static/screenshots/narrow-chat.png">narrow-chat.png</a>. Both are captured from a running instance by <code>scripts/capture_pwa_screenshots.mjs</code>, and both are what the browser shows in the install dialog.</sub>
 
 ## Why Sage.is AI-UI?
 

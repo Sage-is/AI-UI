@@ -409,6 +409,7 @@ from sage_is_ai.env import (
     BYPASS_MODEL_ACCESS_CONTROL,
     RESET_CONFIG_ON_START,
     ENABLE_VERSION_UPDATE_CHECK,
+    ENABLE_SERVICE_WORKER,
     ENABLE_OTEL,
     EXTERNAL_PWA_MANIFEST_URL,
     AIOHTTP_CLIENT_SESSION_SSL,
@@ -2162,31 +2163,87 @@ async def oauth_callback(provider: str, request: Request, response: Response):
     return await oauth_manager.handle_callback(request, provider, response)
 
 
+# The caption both manifest screenshots carry, and the description the capture
+# script gives the agent in them, so the install dialog and the image agree.
+# Adapted from Sage.is copy: the On-Prem page's subtitle (WEB-Sage.is
+# tools/generate-og-images.js) and its Enterprise line on custom agents
+# (WEB-Sage.is src/_data/hardware.yaml). Short on purpose: on a phone the app
+# shows two lines of an agent's description and cuts the rest, so a longer line
+# loses its end in the narrow screenshot. Must match AGENT_DESCRIPTION in
+# scripts/capture_pwa_screenshots.mjs.
+PWA_SCREENSHOT_LABEL = (
+    "Your hardware. Your data. Your AI. "
+    "Work with your data and build custom agents."
+)
+
+
 @app.get("/manifest.json")
 async def get_manifest_json():
     if app.state.EXTERNAL_PWA_MANIFEST_URL:
         return requests.get(app.state.EXTERNAL_PWA_MANIFEST_URL, timeout=10).json()
     else:
         return {
+            # The install identity. Without it a browser derives identity from
+            # start_url, so moving the app to another path orphans every copy
+            # already installed. It is a stable opaque string, not a URL that
+            # has to resolve — never change it once instances are in the wild.
+            "id": "/",
             "name": app.state.WEBUI_NAME,
             "short_name": app.state.WEBUI_NAME,
             "description": "Sage.is AI is an open, extensible, user-friendly interface for AI that adapts to your workflow.",
             "start_url": "/",
+            "scope": "/",
             "display": "standalone",
+            # Colours the OS title bar and task-switcher card of the installed
+            # app. It cannot follow the light/dark toggle — the manifest is read
+            # once at install — so it matches the `<meta name="theme-color">`
+            # default in app.html rather than the light value the toggle sets.
+            "theme_color": "#171717",
             "background_color": "#343541",
             "orientation": "any",
+            # Sizes must match the files byte for byte. logo.png stood here
+            # declared 512x512 and is 256x256; Chrome measures the PNG, finds
+            # the mismatch and drops the icon, which is why install offered a
+            # generated letter tile. These two are the real thing.
             "icons": [
                 {
-                    "src": "/static/icons/logo.png",
+                    "src": "/static/icons/web-app-manifest-192x192.png",
+                    "type": "image/png",
+                    "sizes": "192x192",
+                    "purpose": "any",
+                },
+                {
+                    "src": "/static/icons/web-app-manifest-512x512.png",
                     "type": "image/png",
                     "sizes": "512x512",
                     "purpose": "any",
                 },
                 {
-                    "src": "/static/icons/logo.png",
+                    "src": "/static/icons/web-app-manifest-512x512.png",
                     "type": "image/png",
                     "sizes": "512x512",
                     "purpose": "maskable",
+                },
+            ],
+            # What the browser shows in the install dialog instead of a bare
+            # name and icon. Chrome needs one of each form factor to offer the
+            # richer prompt, and it drops any entry whose declared size misses
+            # the file — the same trap the icons above fell into, so these are
+            # captured at exactly these dimensions by scripts/capture_pwa_screenshots.mjs.
+            "screenshots": [
+                {
+                    "src": "/static/screenshots/wide-chat.png",
+                    "type": "image/png",
+                    "sizes": "1280x800",
+                    "form_factor": "wide",
+                    "label": PWA_SCREENSHOT_LABEL,
+                },
+                {
+                    "src": "/static/screenshots/narrow-chat.png",
+                    "type": "image/png",
+                    "sizes": "412x915",
+                    "form_factor": "narrow",
+                    "label": PWA_SCREENSHOT_LABEL,
                 },
             ],
         }
@@ -2362,6 +2419,47 @@ app.mount(
     CachedStaticFiles(directory=PAGES_ASSETS_DIR),
     name="pages-assets",
 )
+
+
+@app.get("/sw.js", include_in_schema=False)
+async def service_worker():
+    """Serve the service worker from the root, which is the only scope worth having.
+
+    A worker controls its own directory and below, so the source in
+    pages/assets/ has to be answered from `/` to see a navigation at all.
+    Registration lives in app.html.
+
+    Two headers carry weight. `Service-Worker-Allowed: /` is what lets a script
+    claim a scope broader than its URL. `Cache-Control: no-cache` makes the
+    browser revalidate the script on every navigation, so a redeploy — or the
+    teardown below — lands on the next page load instead of whenever the
+    browser's own 24-hour ceiling expires.
+
+    With ENABLE_SERVICE_WORKER=false this 404s, which is a teardown rather than
+    an omission. A controlled page revalidates this script on navigation, and
+    the Update algorithm unregisters a registration whose script answers 404 —
+    so an installed worker removes itself on the next page load with nothing
+    asked of the visitor. Registration in app.html then fails on every later
+    load, which is where the caches get swept.
+
+    Answering with a self-destructing worker instead was tried and is worse:
+    app.html registers unconditionally, so each load installed a worker that
+    unregistered itself and the page stayed permanently controlled by the
+    tail of that cycle. Measured, not assumed.
+    """
+    headers = {"Cache-Control": "no-cache", "Service-Worker-Allowed": "/"}
+
+    if not ENABLE_SERVICE_WORKER:
+        return Response(status_code=404, headers=headers)
+
+    source = (PAGES_ASSETS_DIR / "sw.js").read_text()
+    # The cache names carry the release, so an upgrade evicts what the previous
+    # one stored rather than serving it beside the new build.
+    return Response(
+        source.replace("__VERSION__", VERSION),
+        media_type="text/javascript",
+        headers=headers,
+    )
 
 
 # ── The try.sage welcome, server-rendered ────────────────────────────────────
