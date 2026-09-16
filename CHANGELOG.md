@@ -6,6 +6,11 @@ All notable changes to [Sage.is AI-UI](https://github.com/Sage-is/AI-UI) are doc
 
 ## [Unreleased]
 
+### Fixed
+
+**A tool with only optional parameters can be called with none**
+An external tool server operation whose parameters are all optional was refused before the call was made: the runner treated an empty argument set as a missing request body and told the model "Request body expected but none found". A tool such as "leads nobody has touched", where every argument has a default, therefore never ran when the model sent no arguments. The runner now sends an empty JSON body when the operation's body is optional, and only refuses when the tool's own contract marks the body as required.
+
 ## [3.1.0] — 2026-08-09
 
 ### Added
