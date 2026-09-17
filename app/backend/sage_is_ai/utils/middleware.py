@@ -69,6 +69,7 @@ from sage_is_ai.utils.misc import (
     convert_logit_bias_input_to_json,
 )
 from sage_is_ai.utils.tools import get_tools
+from sage_is_ai.privacy import hooks as privacy
 from sage_is_ai.utils.filter import (
     get_sorted_filter_ids,
     process_filter_functions,
@@ -1751,6 +1752,13 @@ async def process_chat_response(
                     nonlocal content_blocks
 
                     response_tool_calls = []
+                    # Privacy: real values back into the stream, holding back the
+                    # tail so a pseudonym split across two chunks is still caught.
+                    privacy_reverser = (
+                        privacy.stream_reverser()
+                        if getattr(request.state, "privacy_active", False)
+                        else None
+                    )
 
                     async for line in response.body_iterator:
                         line = line.decode("utf-8") if isinstance(line, bytes) else line
@@ -1814,6 +1822,8 @@ async def process_chat_response(
                                         )
 
                                     value = delta.get("content")
+                                    if privacy_reverser is not None and value:
+                                        value = privacy_reverser.feed(value)
 
                                     reasoning_content = (
                                         delta.get("reasoning_content")
@@ -1943,6 +1953,15 @@ async def process_chat_response(
 
                                 if not content_blocks:
                                     append_empty_text_block(content_blocks)
+
+                    if privacy_reverser is not None:
+                        tail = privacy_reverser.flush()
+                        if tail:
+                            content = f"{content}{tail}"
+                            if not content_blocks:
+                                append_empty_text_block(content_blocks)
+                            content_blocks[-1]["content"] = content_blocks[-1]["content"] + tail
+                        privacy.reverse_tool_calls(response_tool_calls)
 
                     if response_tool_calls:
                         tool_calls.append(response_tool_calls)
@@ -2253,6 +2272,9 @@ async def process_chat_response(
 
                 if event:
                     yield wrap_item(json.dumps(event))
+
+            if getattr(request.state, "privacy_active", False):
+                original_generator = privacy.reverse_sse(original_generator)
 
             async for data in original_generator:
                 data, _ = await process_filter_functions(

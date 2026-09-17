@@ -160,6 +160,23 @@ async def generate_chat_completion(
     user: Any,
     bypass_filter: bool = False,
 ):
+    """Every completion, streamed or not, passes here; the privacy layer hangs
+    off this one door. Outbound rewriting happens inside, once the model is
+    known; a whole reply is reversed here, a streamed one in the middleware."""
+    from sage_is_ai.privacy import hooks as privacy
+
+    response = await _generate_chat_completion(request, form_data, user, bypass_filter)
+    if getattr(request.state, "privacy_active", False) and isinstance(response, dict):
+        privacy.reverse_completion(response)
+    return response
+
+
+async def _generate_chat_completion(
+    request: Request,
+    form_data: dict,
+    user: Any,
+    bypass_filter: bool = False,
+):
     log.debug(f"generate_chat_completion: {form_data}")
     if BYPASS_MODEL_ACCESS_CONTROL:
         bypass_filter = True
@@ -186,6 +203,12 @@ async def generate_chat_completion(
         raise Exception("Model not found")
 
     model = models[model_id]
+
+    from sage_is_ai.privacy import hooks as privacy
+
+    if privacy.active_for(request, model):
+        form_data = privacy.outbound(request, form_data)
+        request.state.privacy_active = True
 
     if getattr(request.state, "direct", False):
         return await generate_direct_chat_completion(

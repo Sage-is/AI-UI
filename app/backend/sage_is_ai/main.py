@@ -127,6 +127,7 @@ from sage_is_ai.config import (
     OPENAI_API_BASE_URLS,
     OPENAI_API_KEYS,
     OPENAI_API_CONFIGS,
+    PRIVACY_CONFIG,
     # Direct Connections
     ENABLE_DIRECT_CONNECTIONS,
     # Model list
@@ -823,6 +824,7 @@ app.state.config.ENABLE_OPENAI_API = ENABLE_OPENAI_API
 app.state.config.OPENAI_API_BASE_URLS = OPENAI_API_BASE_URLS
 app.state.config.OPENAI_API_KEYS = OPENAI_API_KEYS
 app.state.config.OPENAI_API_CONFIGS = OPENAI_API_CONFIGS
+app.state.config.PRIVACY_CONFIG = PRIVACY_CONFIG
 
 app.state.OPENAI_MODELS = {}
 
@@ -1745,6 +1747,8 @@ async def chat_completion(
             "files": form_data.get("files", None),
             "features": form_data.get("features", {}),
             "variables": form_data.get("variables", {}),
+            # Known values an API client wants pseudonymized too, e.g. surnames.
+            "privacy": form_data.pop("privacy", None),
             "model": model,
             "direct": model_item.get("direct", False),
             **(

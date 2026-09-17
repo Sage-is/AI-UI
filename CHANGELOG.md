@@ -6,6 +6,21 @@ All notable changes to [Sage.is AI-UI](https://github.com/Sage-is/AI-UI) are doc
 
 ## [Unreleased]
 
+### Added
+
+**Privacy rules: a hosted model never sees the real values**
+Text bound for a flagged connection is pseudonymized before it leaves and the
+reply is put back on the way in, streamed or not. Built-in detectors (e-mail,
+phone, Canadian postal code, card numbers), admin regex rules and literal
+replace rules, each with a strategy: a same-shape pseudonym that reverses, a
+fixed literal, or a one-way redaction. The same value always gets the same
+fake, so a conversation stays coherent, and the real-to-fake map stays on the
+instance. API clients may name known values per request. A new admin panel at
+`/pages/admin/privacy` holds the switches per connection, the rules, a test
+bench that shows what the model would see, and the map with an audited reveal,
+forget and purge. Off for every connection until an admin turns it on; the
+next version turns it on for external connections by default.
+
 ### Fixed
 
 **A tool with only optional parameters can be called with none**

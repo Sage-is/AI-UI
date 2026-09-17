@@ -26,6 +26,16 @@ This file tracks active work only.
 
 _Items currently in progress. Move items here and or use tag source with `# FIXME:` when work begins._
 
+- [ ] **Privacy rules**: pseudonymize what leaves for a hosted model, reverse what comes back #critical
+  - [x] 2026-09-16: `sage_is_ai/privacy/` engine (rules, same-shape fakes, reverser, hold-back stream reverser), 9 unit tests; hook at `utils/chat.py` dispatcher + both stream wrappers + tool arguments
+  - [x] `privacy_map` + `privacy_audit` tables (alembic `c2d3e4f5a6b7`), `PRIVACY_CONFIG` persistent config, `metadata.privacy.known` caller hints
+  - [x] Panel `/pages/admin/privacy`: per-connection tristate, detectors, rules, test bench, map with audited reveal / forget / purge; proven end to end against a recording mock provider, streamed and not
+  - [ ] Flip `default_external` to ON next version (decided 2026-09-16)
+  - [x] Cypress spec `privacy-panel.cy.ts`: 4 tests green against the dev container; picked up by the gate's `cypress/e2e/*.cy.ts` glob
+  - [ ] Svelte admin link to the panel (reachable today from the `/pages/` index)
+  - [ ] Ollama/direct connections: per-model override only today; reasoning deltas are not reversed
+  - [ ] `PRIVACY_KEY` env documented; rotation story (a new key orphans old fakes)
+
 - [ ] **Spaces Enhancements**: agent context modes, auto-reply TTL, and multi-user — pulled forward 2026-07-30 as unlock #1 for the real-estate engagement. ([dossier](docs/board-dossiers.md))
   - [x] **Multi-user mechanics VERIFIED by the first Spaces e2e (2026-08-18)**: `spaces-multiuser.cy.ts` 5/5 — admin-created `role:user` member opens the shared space, posts via the socket round-trip, mentions by click, admin sees it.
     - Membership is `access_control.read/write.user_ids`, set at space create; management UI stays admin/facilitator-gated (the principal is the facilitator).

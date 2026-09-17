@@ -975,6 +975,21 @@ OPENAI_API_CONFIGS = PersistentConfig(
     {},
 )
 
+# Privacy rules: pseudonymize what leaves for a hosted model, reverse what
+# comes back. Rules and switches live here; the real-to-fake map is a table.
+PRIVACY_CONFIG = PersistentConfig(
+    "PRIVACY_CONFIG",
+    "privacy.config",
+    {
+        "enabled": True,
+        "default_external": False,
+        "connections": {},
+        "models": {},
+        "detectors": {},
+        "rules": [],
+    },
+)
+
 # Get the actual OpenAI Compatible API key based on the base URL
 OPENAI_API_KEY = ""
 try:

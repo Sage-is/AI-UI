@@ -344,15 +344,51 @@ async def generate_agent_response(
             llm_messages.append({"role": "system", "content": system_prompt})
         llm_messages.append({"role": "user", "content": trigger_message.content})
 
+        # The tools the agent row declares (meta.toolIds) reach a Space the way
+        # they reach a chat: through the payload pipeline, which resolves tool
+        # servers and, in the default function-calling mode, runs the calls
+        # before the answer. No streaming needed, no client involved.
+        tool_ids = list(model.get("info", {}).get("meta", {}).get("toolIds") or [])
         form_data = {
             "model": model_id,
             "messages": llm_messages,
             "stream": False,
+            "tool_ids": tool_ids,
         }
+        metadata = {
+            "user_id": trigger_user.id,
+            "chat_id": None,
+            "message_id": None,
+            "session_id": None,
+            "filter_ids": [],
+            "tool_ids": tool_ids,
+            "tool_servers": None,
+            "files": None,
+            "features": {},
+            "variables": {},
+            "model": model,
+            "direct": False,
+            "space_id": space.id,
+        }
+        request.state.metadata = metadata
+        form_data["metadata"] = metadata
 
-        # Call the chat completion
         from sage_is_ai.utils.chat import generate_chat_completion
+        from sage_is_ai.utils.middleware import process_chat_payload
 
+        # The tool-server cache starts empty at boot and is filled when a
+        # client lists tools, which a chat page does and a Space never does.
+        # Fill it here the way the tools router does, or the resolver asserts.
+        if tool_ids and not app.state.TOOL_SERVERS:
+            from sage_is_ai.utils.tools import get_tool_servers_data
+
+            app.state.TOOL_SERVERS = await get_tool_servers_data(
+                app.state.config.TOOL_SERVER_CONNECTIONS
+            )
+
+        form_data, metadata, _events = await process_chat_payload(
+            request, form_data, trigger_user, metadata, model
+        )
         response = await generate_chat_completion(
             request, form_data, user=trigger_user, bypass_filter=True
         )
