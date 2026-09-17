@@ -8,6 +8,13 @@ All notable changes to [Sage.is AI-UI](https://github.com/Sage-is/AI-UI) are doc
 
 ### Added
 
+**Space agents reach their tool servers**
+An agent mentioned in a Space now answers with the tools its model row
+declares, the same tool servers a chat reaches, through the same payload
+pipeline. Known gap, listed on the board: the tool-server cache is filled the
+first time any client lists tools, so after a restart a Space agent with tools
+stays silent until someone opens a chat page.
+
 **Privacy rules: a hosted model never sees the real values**
 Text bound for a flagged connection is pseudonymized before it leaves and the
 reply is put back on the way in, streamed or not. Built-in detectors (e-mail,

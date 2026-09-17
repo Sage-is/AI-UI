@@ -47,6 +47,8 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [x] **Auto-reply opened to the whole space (2026-08-18, Alexander's call)**: any member's un-mentioned post answers an armed agent question — was addressee-only; the VA-answers-for-the-principal workflow needs it. One-condition change at `spaces.py:621`; guards unchanged (@mention wins, 2-message window, one auto-reply per post, no agent-to-agent path). `awaiting_reply_from` still records the addressee for future UI/TTL.
   - [ ] Optional per-agent TTL for auto-reply expiration
     <!-- inline: spaces.py:391 -->
+  - [x] **Tools from Spaces (2026-09-17)**: `generate_agent_response` sends the row's `meta.toolIds` through `process_chat_payload`; the CRM agent answers with its tool server while the cache is warm
+  - [x] Cold boot: `generate_agent_response` fills `app.state.TOOL_SERVERS` when empty (2026-09-17); proof at the next restart, tracked on the Trellis board
   - [ ] **Silverbullet integration into Spaces** — wire the self-hosted Silverbullet PKM/wiki into Spaces. Planning conversation first (architecture, auth, data model), then code.
   - [ ] **Space theming for creator-led visual differentiation** (2026-06-15): creator-only "Theme" tab in Space settings — accent-color picker + optional logo upload, tinting nav chrome and thread accents
     - [ ] Identical-looking Spaces cause mis-posts; load-bearing for workshop facilitators and multi-org Rootstocks
