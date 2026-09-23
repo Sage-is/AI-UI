@@ -10,6 +10,7 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import BigInteger, Column, Index, Text
+from sqlalchemy.exc import IntegrityError
 
 from sage_is_ai.internal.db import Base, get_db
 
@@ -57,9 +58,15 @@ class PrivacyMapsTable:
             return (row.category, row.real) if row else None
 
     def insert(self, category: str, real: str, fake: str) -> None:
+        # get_fake-then-insert is check-then-act, and `fake` is UNIQUE. Two
+        # requests meeting the same value for the first time race here; the
+        # loser's row is already the row it wanted, so losing is success.
         with get_db() as db:
             db.add(PrivacyMap(id=str(uuid.uuid4()), category=category, real=real, fake=fake, created_at=int(time.time())))
-            db.commit()
+            try:
+                db.commit()
+            except IntegrityError:
+                db.rollback()
 
     def pairs(self) -> list[tuple[str, str]]:
         with get_db() as db:

@@ -28,6 +28,11 @@ bench that shows what the model would see, and the map with an audited reveal,
 forget and purge. Off for every connection until an admin turns it on; the
 next version turns it on for external connections by default.
 
+Pseudonyms are salted with `PRIVACY_KEY`, or the instance secret when that is
+unset. With neither set, switching privacy on fails loudly rather than keying
+the map on nothing. Rotating the key orphans every existing fake, so replies
+sent before the change stop reversing.
+
 ### Fixed
 
 **A tool with only optional parameters can be called with none**

@@ -16,7 +16,7 @@ from sage_is_ai.pages.templates import render
 from sage_is_ai.privacy import hooks
 from sage_is_ai.privacy.engine import MemoryMapper, pseudonymize, reverse
 from sage_is_ai.privacy.mapper import invalidate
-from sage_is_ai.privacy.rules import DEFAULT_DETECTORS, DETECTORS, KINDS, STRATEGIES, rules_from_config
+from sage_is_ai.privacy.rules import DEFAULT_DETECTORS, DETECTORS, FORM_KINDS, STRATEGIES, rules_from_config
 
 TRISTATE = (("default", "instance default"), ("on", "on"), ("off", "off"))
 
@@ -53,7 +53,7 @@ def render_privacy(request: Request, *, message: str = "", kind: str = "info", b
         connections=_connections(request, cfg),
         detectors=[{"name": name, "category": category, "on": bool(detectors.get(name))} for name, (category, _) in DETECTORS.items()],
         rules=list(cfg.get("rules") or []) + [{"name": "", "kind": "literal", "pattern": "", "category": "", "strategy": "pseudonym", "replacement": "", "enabled": True}],
-        kinds=KINDS,
+        kinds=FORM_KINDS,
         strategies=STRATEGIES,
         tristate=TRISTATE,
         bench=bench,
@@ -73,7 +73,7 @@ def _rules_from_form(form) -> tuple[list[dict], str]:
         pattern = (pattern or "").strip()
         if not pattern:
             continue
-        kind = kinds[i] if i < len(kinds) and kinds[i] in KINDS else "literal"
+        kind = kinds[i] if i < len(kinds) and kinds[i] in FORM_KINDS else "literal"
         if kind == "regex":
             try:
                 re.compile(pattern)

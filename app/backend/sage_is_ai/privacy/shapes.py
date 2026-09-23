@@ -80,6 +80,11 @@ def _street(real: str, key: str, salt: int) -> str:
     return f"{number} {name} {suffix.group(0) if suffix else 'Ave'}"
 
 
+def hex_for(category: str, real: str, key: str, salt: int = 0, n: int = 12) -> str:
+    """The shapeless fallback, for when a category's shaped space runs out."""
+    return _hex(key, category, real, n, salt)
+
+
 def fake_for(category: str, real: str, key: str, salt: int = 0) -> str:
     if category == "phone":
         return _phone(real, key, salt)

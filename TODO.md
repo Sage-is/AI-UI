@@ -35,6 +35,7 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [ ] Svelte admin link to the panel (reachable today from the `/pages/` index)
   - [ ] Ollama/direct connections: per-model override only today; reasoning deltas are not reversed
   - [ ] `PRIVACY_KEY` env documented; rotation story (a new key orphans old fakes)
+  - [x] Poka-yoke pass on the unreleased diff 2026-09-23: all five reproduced defects fixed and the merge unblocked; 17 privacy unit tests pass, each new one proven to fail at HEAD. Remainder carded under "Privacy & Poka-Yoke"
 
 - [ ] **Spaces Enhancements**: agent context modes, auto-reply TTL, and multi-user — pulled forward 2026-07-30 as unlock #1 for the real-estate engagement. ([dossier](docs/board-dossiers.md))
   - [x] **Multi-user mechanics VERIFIED by the first Spaces e2e (2026-08-18)**: `spaces-multiuser.cy.ts` 5/5 — admin-created `role:user` member opens the shared space, posts via the socket round-trip, mentions by click, admin sees it.
@@ -371,6 +372,17 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
   - [ ] **PK-3 — Workshop external model warning**: Show inline warning when an agent is created with an external-provider base model
   - [ ] Update CHANGELOG.md: document breaking change (admin chat access now opt-in)
   - [ ] Full plan at: `~/agent-planning/plans/poka-yoke-buzzing-sedgewick.md`
+
+- [ ] **Privacy-layer poka-yoke (branch `feature/batter-agents-in-spaces`)**: all five reproduced defects fixed 2026-09-23, merge unblocked; what is left is housekeeping #security
+  - [x] **HANG** fixed 2026-09-23 `privacy/engine.py`: `MAX_SALT = 256` caps the collision loop, then `_tagged()` falls back to `[category-hex]` via new `shapes.hex_for`. Teeth: at HEAD the test spins in `fake`, killed by a 10s watchdog.
+  - [x] **CORRUPTION** fixed 2026-09-23, four layers: `store()` raises on an empty fake, `fake()` downgrades a blank-replacement literal to pseudonym, `rules_from_config` does the same at load, `_pattern()` drops empty keys. Teeth: at HEAD `reverse("hello", {"": "SECRET"})` returned `SECREThSECRETeSECRETlSECRETlSECREToSECRET`.
+  - [x] **500** fixed 2026-09-23: new `FORM_KINDS = ("regex", "literal")` is what `privacy_panel.py:76` whitelists; `rules_from_config` drops a detector naming no built-in; `compiled()` returns a never-matching pattern instead of raising. Teeth: at HEAD the crafted rule survived config load.
+  - [x] **RACE** fixed 2026-09-23 `models/privacy.py`: `PrivacyMaps.insert` catches `IntegrityError` and rolls back — the loser's row is already the row it wanted, so losing is success. Not unit-tested; concurrency needs a harness this suite does not have.
+  - [x] **DRIFT** fixed 2026-09-23: `PRIVACY_KEY` declared in `env.py`, the `"trellis-dev-key"` literal deleted, and `hooks.key()` now raises when both it and `WEBUI_SECRET_KEY` are empty rather than keying pseudonyms on nothing.
+  - [ ] **Follow-on found while fixing DRIFT**: this dev instance runs with an empty `WEBUI_SECRET_KEY` (`.env:22` is blank, and PID 1 carries it empty). Harmless while privacy is OFF; with the new guard, switching privacy ON here now fails loudly. Set a real key before enabling. #security
+  - [x] Two of the low five done 2026-09-23: `config()` deep-copies `DEFAULTS` so a caller cannot rewrite the module default; `_pattern()` keys its cache on the table object, not `id()`, so a freed dict's address cannot return under a stale pattern.
+  - [ ] Three low left: `reverse_tool_calls` str-only (`hooks.py`), Spaces `TOOL_SERVERS` check-then-act (`routers/spaces.py:382`), manifest `"id"` comment with no gate (`main.py`). None is request-path; none blocks the merge.
+  - [ ] `privacy/test_engine.py` (17 tests) runs only by hand: `python -m unittest sage_is_ai.privacy.test_engine`. No Makefile target, so nothing runs it in CI.
 
 ### Pitch & Documentation
 

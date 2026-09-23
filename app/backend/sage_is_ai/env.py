@@ -428,6 +428,10 @@ WEBUI_SECRET_KEY = os.environ.get(
     ),  # DEPRECATED: remove at next major version
 )
 
+# Salts every privacy pseudonym. Optional: unset, the instance secret is used.
+# Rotating it orphans every existing fake, so old replies stop reversing.
+PRIVACY_KEY = os.environ.get("PRIVACY_KEY", "")
+
 WEBUI_SESSION_COOKIE_SAME_SITE = os.environ.get("WEBUI_SESSION_COOKIE_SAME_SITE", "lax")
 
 WEBUI_SESSION_COOKIE_SECURE = (

@@ -27,6 +27,13 @@ DEFAULT_DETECTORS = {"email": True, "phone": True, "phone_intl": True, "postal_c
 DETECTOR_STRATEGY = {"card": "redact"}
 STRATEGIES = ("pseudonym", "literal", "redact")
 KINDS = ("detector", "regex", "literal")
+# What the admin form may submit. "detector" is built-in only: its pattern is a
+# key into DETECTORS, so accepting one from a form lets a crafted POST store a
+# pattern that is not a key and KeyError on every chat thereafter.
+FORM_KINDS = ("regex", "literal")
+
+
+_NEVER = re.compile(r"(?!)")  # matches nothing, anywhere
 
 
 @dataclass(frozen=True)
@@ -44,7 +51,12 @@ class Rule:
         if self.kind == "literal":
             return re.compile(r"(?<!\w)" + re.escape(self.pattern) + r"(?!\w)", re.IGNORECASE)
         if self.kind == "detector":
-            return re.compile(DETECTORS[self.pattern][1])
+            known = DETECTORS.get(self.pattern)
+            if known is None:
+                # Belt and braces behind rules_from_config: an unknown detector
+                # is dropped, never raised. This runs on every chat request.
+                return _NEVER
+            return re.compile(known[1])
         return re.compile(self.pattern, re.IGNORECASE)
 
 
@@ -67,11 +79,16 @@ def rules_from_config(config: dict) -> list[Rule]:
         if not raw.get("enabled", True) or not raw.get("pattern"):
             continue
         kind = raw.get("kind") if raw.get("kind") in KINDS else "literal"
+        if kind == "detector" and raw["pattern"] not in DETECTORS:
+            continue  # a stored detector naming no built-in pattern
         strategy = raw.get("strategy") if raw.get("strategy") in STRATEGIES else "pseudonym"
+        replacement = (raw.get("replacement") or "").strip()
+        if strategy == "literal" and not replacement:
+            strategy = "pseudonym"  # nothing to replace with; mask rather than store ""
         rules.append(Rule(
             name=raw.get("name") or f"rule {index + 1}", kind=kind, pattern=raw["pattern"],
             category=raw.get("category") or ("name" if kind == "literal" else "value"),
-            strategy=strategy, replacement=raw.get("replacement") or "", order=int(raw.get("order") or index),
+            strategy=strategy, replacement=replacement, order=int(raw.get("order") or index),
         ))
     return rules
 

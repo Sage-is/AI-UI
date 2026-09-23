@@ -8,9 +8,9 @@ key, and nothing here is specific to one provider.
 
 from __future__ import annotations
 
+import copy
 import json
 import logging
-import os
 
 from sage_is_ai.privacy.engine import StreamReverser, pseudonymize, reverse
 from sage_is_ai.privacy.mapper import DbMapper
@@ -30,13 +30,23 @@ DEFAULTS = {
 
 def config(request) -> dict:
     value = getattr(request.app.state.config, "PRIVACY_CONFIG", None) or {}
-    return {**DEFAULTS, **value}
+    # Deep-copied: the nested {} and [] defaults would otherwise be handed out
+    # by reference, and one caller mutating them rewrites the module default.
+    return {**copy.deepcopy(DEFAULTS), **value}
 
 
 def key() -> str:
-    from sage_is_ai.env import WEBUI_SECRET_KEY
+    # Both come from env.py. The old hardcoded fallback handed a misconfigured
+    # deploy predictable pseudonyms and said nothing; refusing is the point.
+    from sage_is_ai.env import PRIVACY_KEY, WEBUI_SECRET_KEY
 
-    return os.environ.get("PRIVACY_KEY") or WEBUI_SECRET_KEY or "trellis-dev-key"
+    value = PRIVACY_KEY or WEBUI_SECRET_KEY
+    if not value:
+        raise RuntimeError(
+            "privacy is enabled but neither PRIVACY_KEY nor WEBUI_SECRET_KEY is "
+            "set: pseudonyms would be keyed on nothing and trivially reversible"
+        )
+    return value
 
 
 def is_external(model: dict) -> bool:

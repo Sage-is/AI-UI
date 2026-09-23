@@ -84,5 +84,65 @@ class EngineTest(unittest.TestCase):
         self.assertNotEqual(a, b)
 
 
+class EmptyFakeTest(unittest.TestCase):
+    """An empty fake in the reverse table injects the real value between every
+    character of every reply. It must be unreachable by any route."""
+
+    def test_store_refuses_an_empty_fake(self):
+        with self.assertRaises(ValueError):
+            MemoryMapper(KEY).store("name", "Faye", "")
+
+    def test_a_literal_strategy_with_a_blank_replacement_pseudonymizes(self):
+        mapper = MemoryMapper(KEY)
+        fake = mapper.fake("name", "Faye", "literal", "")
+        self.assertTrue(fake)
+        self.assertNotIn("", mapper.reverse_table().keys() - {fake})
+
+    def test_a_blank_replacement_rule_is_downgraded_at_load(self):
+        rules = rules_from_config({"rules": [
+            {"name": "r", "kind": "literal", "pattern": "Faye", "strategy": "literal", "replacement": "  "},
+        ]})
+        rule = [r for r in rules if r.name == "r"][0]
+        self.assertEqual(rule.strategy, "pseudonym")
+
+    def test_reverse_ignores_an_empty_fake_in_the_table(self):
+        self.assertEqual(reverse("hello", {"": "SECRET"}), "hello")
+
+
+class BadDetectorTest(unittest.TestCase):
+    """kind=detector carries a key into DETECTORS. A crafted one used to
+    KeyError on every chat."""
+
+    def test_an_unknown_detector_matches_nothing_rather_than_raising(self):
+        self.assertEqual(Rule("x", "detector", "not-a-detector").compiled().findall("anything"), [])
+
+    def test_config_drops_a_detector_naming_no_builtin(self):
+        rules = rules_from_config({"rules": [
+            {"name": "evil", "kind": "detector", "pattern": "nope", "enabled": True},
+        ]})
+        self.assertNotIn("evil", [r.name for r in rules])
+
+
+class ExhaustionTest(unittest.TestCase):
+    """SURNAMES is forty long. The forty-first distinct name used to spin."""
+
+    def test_a_name_past_the_shaped_space_falls_back_instead_of_spinning(self):
+        mapper = MemoryMapper(KEY)
+        tagged = None
+        for i in range(400):
+            fake = mapper.fake("surname", f"Person{i}", "pseudonym")
+            self.assertTrue(fake, f"empty fake at {i}")
+            if fake.startswith("[surname-"):
+                tagged = fake
+                break
+        self.assertIsNotNone(tagged, "the shaped space never gave way to the fallback")
+
+    def test_the_fallback_still_reverses(self):
+        mapper = MemoryMapper(KEY)
+        fakes = [mapper.fake("surname", f"Person{i}", "pseudonym") for i in range(400)]
+        table = mapper.reverse_table()
+        self.assertEqual(reverse(fakes[-1], table), "Person399")
+
+
 if __name__ == "__main__":
     unittest.main()
