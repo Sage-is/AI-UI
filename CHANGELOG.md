@@ -6,6 +6,38 @@ All notable changes to [Sage.is AI-UI](https://github.com/Sage-is/AI-UI) are doc
 
 ## [Unreleased]
 
+### Added
+
+**Space agents reach their tool servers**
+An agent mentioned in a Space now answers with the tools its model row
+declares, the same tool servers a chat reaches, through the same payload
+pipeline. Known gap, listed on the board: the tool-server cache is filled the
+first time any client lists tools, so after a restart a Space agent with tools
+stays silent until someone opens a chat page.
+
+**Privacy rules: a hosted model never sees the real values**
+Text bound for a flagged connection is pseudonymized before it leaves and the
+reply is put back on the way in, streamed or not. Built-in detectors (e-mail,
+phone, Canadian postal code, card numbers), admin regex rules and literal
+replace rules, each with a strategy: a same-shape pseudonym that reverses, a
+fixed literal, or a one-way redaction. The same value always gets the same
+fake, so a conversation stays coherent, and the real-to-fake map stays on the
+instance. API clients may name known values per request. A new admin panel at
+`/pages/admin/privacy` holds the switches per connection, the rules, a test
+bench that shows what the model would see, and the map with an audited reveal,
+forget and purge. Off for every connection until an admin turns it on; the
+next version turns it on for external connections by default.
+
+Pseudonyms are salted with `PRIVACY_KEY`, or the instance secret when that is
+unset. With neither set, switching privacy on fails loudly rather than keying
+the map on nothing. Rotating the key orphans every existing fake, so replies
+sent before the change stop reversing.
+
+### Fixed
+
+**A tool with only optional parameters can be called with none**
+An external tool server operation whose parameters are all optional was refused before the call was made: the runner treated an empty argument set as a missing request body and told the model "Request body expected but none found". A tool such as "leads nobody has touched", where every argument has a default, therefore never ran when the model sent no arguments. The runner now sends an empty JSON body when the operation's body is optional, and only refuses when the tool's own contract marks the body as required.
+
 ## [3.1.0] — 2026-08-09
 
 ### Added

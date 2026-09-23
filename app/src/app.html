@@ -103,6 +103,51 @@
 		})();
 	</script>
 
+	<script>
+		// Register the service worker. It caches hashed build assets and nothing
+		// else — see the header of pages/assets/sw.js for what it refuses to touch
+		// and why. Deferred to `load` so it never competes with first paint.
+		//
+		// `navigator.serviceWorker` is undefined outside a secure context, so plain
+		// http on a LAN address simply skips this. That is the intended behaviour
+		// rather than a gap: a worker there could not install anyway.
+		//
+		// The off switch is the server's, not this file's. ENABLE_SERVICE_WORKER=false
+		// makes /sw.js answer with a worker that unregisters itself, which reaches
+		// copies already installed. Deleting this block would not.
+		if ('serviceWorker' in navigator) {
+			window.addEventListener('load', () => {
+				// Remove the worker and everything it stored. The page does this, not
+				// the worker: a worker that unregisters itself does delete its caches,
+				// but this file registers on every load, so each load reinstalled one
+				// and the page stayed controlled by the tail of that loop.
+				const teardown = () => {
+					navigator.serviceWorker
+						.getRegistrations()
+						.then((registrations) => Promise.all(registrations.map((r) => r.unregister())))
+						.catch(() => {});
+					if (!window.caches) return;
+					caches
+						.keys()
+						.then((keys) => keys.filter((k) => k.startsWith('sage-')).forEach((k) => caches.delete(k)))
+						.catch(() => {});
+				};
+
+				// ENABLE_SERVICE_WORKER=false makes /sw.js 404, and update() is what
+				// reports that. register() does NOT: when a registration already
+				// exists it resolves with the old one and lets the script fetch fail
+				// in the background, so a catch on register() alone never fires and
+				// the switch does nothing on exactly the instances that have a worker
+				// installed. Measured, not assumed. register() still rejects on a
+				// first visit, so both paths tear down.
+				navigator.serviceWorker
+					.register('/sw.js', { scope: '/' })
+					.then((registration) => registration.update().catch(teardown))
+					.catch(teardown);
+			});
+		}
+	</script>
+
 	<title>Sage.is AI</title>
 
 	%sveltekit.head%

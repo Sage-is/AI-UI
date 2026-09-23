@@ -428,6 +428,10 @@ WEBUI_SECRET_KEY = os.environ.get(
     ),  # DEPRECATED: remove at next major version
 )
 
+# Salts every privacy pseudonym. Optional: unset, the instance secret is used.
+# Rotating it orphans every existing fake, so old replies stop reversing.
+PRIVACY_KEY = os.environ.get("PRIVACY_KEY", "")
+
 WEBUI_SESSION_COOKIE_SAME_SITE = os.environ.get("WEBUI_SESSION_COOKIE_SAME_SITE", "lax")
 
 WEBUI_SESSION_COOKIE_SECURE = (
@@ -592,6 +596,16 @@ ENABLE_VERSION_UPDATE_CHECK = (
     os.environ.get("ENABLE_VERSION_UPDATE_CHECK", "true").lower() == "true"
 )
 OFFLINE_MODE = os.environ.get("OFFLINE_MODE", "false").lower() == "true"
+
+# The service worker at /sw.js. On by default because what it caches is public
+# and hashed — no document, no API response, nothing tied to an account. Set
+# this false and the route answers with a worker that deletes its caches and
+# unregisters itself, so every installed copy tears down on the next load
+# without the visitor clearing site data. That teardown path is the reason the
+# default can be "true": switching it off is one variable and one redeploy.
+ENABLE_SERVICE_WORKER = (
+    os.environ.get("ENABLE_SERVICE_WORKER", "true").lower() == "true"
+)
 
 if OFFLINE_MODE:
     os.environ["HF_HUB_OFFLINE"] = "1"

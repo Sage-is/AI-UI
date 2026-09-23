@@ -26,6 +26,17 @@ This file tracks active work only.
 
 _Items currently in progress. Move items here and or use tag source with `# FIXME:` when work begins._
 
+- [ ] **Privacy rules**: pseudonymize what leaves for a hosted model, reverse what comes back #critical
+  - [x] 2026-09-16: `sage_is_ai/privacy/` engine (rules, same-shape fakes, reverser, hold-back stream reverser), 9 unit tests; hook at `utils/chat.py` dispatcher + both stream wrappers + tool arguments
+  - [x] `privacy_map` + `privacy_audit` tables (alembic `c2d3e4f5a6b7`), `PRIVACY_CONFIG` persistent config, `metadata.privacy.known` caller hints
+  - [x] Panel `/pages/admin/privacy`: per-connection tristate, detectors, rules, test bench, map with audited reveal / forget / purge; proven end to end against a recording mock provider, streamed and not
+  - [ ] Flip `default_external` to ON next version (decided 2026-09-16)
+  - [x] Cypress spec `privacy-panel.cy.ts`: 4 tests green against the dev container; picked up by the gate's `cypress/e2e/*.cy.ts` glob
+  - [ ] Svelte admin link to the panel (reachable today from the `/pages/` index)
+  - [ ] Ollama/direct connections: per-model override only today; reasoning deltas are not reversed
+  - [ ] `PRIVACY_KEY` env documented; rotation story (a new key orphans old fakes)
+  - [x] Poka-yoke pass on the unreleased diff 2026-09-23: all five reproduced defects fixed and the merge unblocked; 17 privacy unit tests pass, each new one proven to fail at HEAD. Remainder carded under "Privacy & Poka-Yoke"
+
 - [ ] **Spaces Enhancements**: agent context modes, auto-reply TTL, and multi-user — pulled forward 2026-07-30 as unlock #1 for the real-estate engagement. ([dossier](docs/board-dossiers.md))
   - [x] **Multi-user mechanics VERIFIED by the first Spaces e2e (2026-08-18)**: `spaces-multiuser.cy.ts` 5/5 — admin-created `role:user` member opens the shared space, posts via the socket round-trip, mentions by click, admin sees it.
     - Membership is `access_control.read/write.user_ids`, set at space create; management UI stays admin/facilitator-gated (the principal is the facilitator).
@@ -37,11 +48,14 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [x] **Auto-reply opened to the whole space (2026-08-18, Alexander's call)**: any member's un-mentioned post answers an armed agent question — was addressee-only; the VA-answers-for-the-principal workflow needs it. One-condition change at `spaces.py:621`; guards unchanged (@mention wins, 2-message window, one auto-reply per post, no agent-to-agent path). `awaiting_reply_from` still records the addressee for future UI/TTL.
   - [ ] Optional per-agent TTL for auto-reply expiration
     <!-- inline: spaces.py:391 -->
+  - [x] **Tools from Spaces (2026-09-17)**: `generate_agent_response` sends the row's `meta.toolIds` through `process_chat_payload`; the CRM agent answers with its tool server while the cache is warm
+  - [x] Cold boot: `generate_agent_response` fills `app.state.TOOL_SERVERS` when empty (2026-09-17); proof at the next restart, tracked on the Trellis board
   - [ ] **Silverbullet integration into Spaces** — wire the self-hosted Silverbullet PKM/wiki into Spaces. Planning conversation first (architecture, auth, data model), then code.
   - [ ] **Space theming for creator-led visual differentiation** (2026-06-15): creator-only "Theme" tab in Space settings — accent-color picker + optional logo upload, tinting nav chrome and thread accents
     - [ ] Identical-looking Spaces cause mis-posts; load-bearing for workshop facilitators and multi-org Rootstocks
     - [ ] No custom-CSS injection (XSS surface)
-    - [ ] Ship preset themes (bio = green, math = blue) so non-technical facilitators can theme without picking colors
+    - [x] Peset themes shipped as sprigs (bio = green, math = blue) so non-technical facilitators can theme without picking colors
+    - [ ] Explore bundling and offering the presets only for spaces
 
 - [x] _Fresh-boot test admin DRY'd (2026-08-17): one canonical credential in `scripts/lib/test-admin.env` (`admin@example.com`/`password`), 4 consumers re-pointed — `sprig-lifecycle.sh` (3 drifted `s8@sage.is` sites), `manual-check.sh`, `run-cypress.sh` (forwards `CYPRESS_ADMIN_*`), `e2e.ts` (env-first) — snapshot-backed gates keep `upgrade-gate@sage.is` on purpose (collision + self-attribution), documented in the env file itself. Verified: throwaway `sprig_smoke` 68/68 (first run 67/68, flake cleared on re-run), branding e2e 7/7 through the modified harness. Archived → docs/completed-todos.md._ #dx
 
@@ -358,6 +372,17 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
   - [ ] **PK-3 — Workshop external model warning**: Show inline warning when an agent is created with an external-provider base model
   - [ ] Update CHANGELOG.md: document breaking change (admin chat access now opt-in)
   - [ ] Full plan at: `~/agent-planning/plans/poka-yoke-buzzing-sedgewick.md`
+
+- [ ] **Privacy-layer poka-yoke (branch `feature/batter-agents-in-spaces`)**: all five reproduced defects fixed 2026-09-23, merge unblocked; what is left is housekeeping #security
+  - [x] **HANG** fixed 2026-09-23 `privacy/engine.py`: `MAX_SALT = 256` caps the collision loop, then `_tagged()` falls back to `[category-hex]` via new `shapes.hex_for`. Teeth: at HEAD the test spins in `fake`, killed by a 10s watchdog.
+  - [x] **CORRUPTION** fixed 2026-09-23, four layers: `store()` raises on an empty fake, `fake()` downgrades a blank-replacement literal to pseudonym, `rules_from_config` does the same at load, `_pattern()` drops empty keys. Teeth: at HEAD `reverse("hello", {"": "SECRET"})` returned `SECREThSECRETeSECRETlSECRETlSECREToSECRET`.
+  - [x] **500** fixed 2026-09-23: new `FORM_KINDS = ("regex", "literal")` is what `privacy_panel.py:76` whitelists; `rules_from_config` drops a detector naming no built-in; `compiled()` returns a never-matching pattern instead of raising. Teeth: at HEAD the crafted rule survived config load.
+  - [x] **RACE** fixed 2026-09-23 `models/privacy.py`: `PrivacyMaps.insert` catches `IntegrityError` and rolls back — the loser's row is already the row it wanted, so losing is success. Not unit-tested; concurrency needs a harness this suite does not have.
+  - [x] **DRIFT** fixed 2026-09-23: `PRIVACY_KEY` declared in `env.py`, the `"trellis-dev-key"` literal deleted, and `hooks.key()` now raises when both it and `WEBUI_SECRET_KEY` are empty rather than keying pseudonyms on nothing.
+  - [ ] **Follow-on found while fixing DRIFT**: this dev instance runs with an empty `WEBUI_SECRET_KEY` (`.env:22` is blank, and PID 1 carries it empty). Harmless while privacy is OFF; with the new guard, switching privacy ON here now fails loudly. Set a real key before enabling. #security
+  - [x] Two of the low five done 2026-09-23: `config()` deep-copies `DEFAULTS` so a caller cannot rewrite the module default; `_pattern()` keys its cache on the table object, not `id()`, so a freed dict's address cannot return under a stale pattern.
+  - [ ] Three low left: `reverse_tool_calls` str-only (`hooks.py`), Spaces `TOOL_SERVERS` check-then-act (`routers/spaces.py:382`), manifest `"id"` comment with no gate (`main.py`). None is request-path; none blocks the merge.
+  - [ ] `privacy/test_engine.py` (17 tests) runs only by hand: `python -m unittest sage_is_ai.privacy.test_engine`. No Makefile target, so nothing runs it in CI.
 
 ### Pitch & Documentation
 
@@ -1150,7 +1175,9 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] No net covers it; extending `reasoning-tag-fixture.py` with a `◁think▷` case is part of the fix.
   - [ ] Behaviour frozen until the structure work lands.
 
-- [ ] **The two-message title path persists one message and emits another**: the `elif len(messages) == 2` arm persists `messages[0].get("content", user_message)` — the FIRST — but emits `message.get("content", user_message)` — the LAST — so the stored chat title and the one the reader watches arrive can differ (found 2026-08-08 by the sweep). #bug
+- [ ] **The two-message title path persists one message and emits another** (found 2026-08-08 by the sweep). #bug
+  - [ ] The `elif len(messages) == 2` arm persists `messages[0].get("content", user_message)` — the FIRST — but emits `message.get("content", user_message)` — the LAST.
+  - [ ] So the stored chat title and the one the reader watches arrive can differ.
   - [ ] Found while proving the title envelope cannot join the follow-ups/tags task runner.
   - [ ] A code comment now marks the emit site.
   - [ ] Frozen; fix belongs to [Unfreeze the ledger].

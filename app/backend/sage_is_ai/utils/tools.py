@@ -396,10 +396,15 @@ async def execute_tool_server(
         if operation.get("requestBody", {}).get("content"):
             if params:
                 body_params = params
-            else:
+            elif operation["requestBody"].get("required", False):
                 raise Exception(
                     f"Request body expected for operation '{name}' but none found."
                 )
+            else:
+                # An optional body and no arguments is a legitimate call: a tool
+                # whose parameters are all optional gets called with none. Send
+                # an empty object so the server applies its own defaults.
+                body_params = {}
 
         headers = {"Content-Type": "application/json"}
 

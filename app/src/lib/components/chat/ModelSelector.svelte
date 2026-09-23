@@ -120,9 +120,15 @@
 	{/each}
 </div>
 
+<!-- In flow, deliberately. This was --pos:absolute with --mt:-0.6rem, and
+	 there is no positioned ancestor here, so it resolved against the page and
+	 landed on top of the Temporary Chat control below — both rows painted over
+	 each other in the header. Absolute bought nothing: this is a 0.7rem line
+	 stacked under the model name, which is what normal flow already does. The
+	 margins match the Temporary Chat block so the two line up. -->
 {#if showSetDefault}
 	<div
-		style="--pos:absolute; --ta:left; --mt:-0.6rem; --ml:0.4rem; --size:0.7rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); {isAlreadyDefault ? '--d:none;' : ''}"
+		style="--ta:left; --mt:0.2rem; --ml:0.2rem; --size:0.7rem; --c:var(--color-gray-600); --dark-c:var(--color-gray-400); {isAlreadyDefault ? '--d:none;' : ''}"
 	class="font-primary"
 	>
 		<button on:click={saveDefaultModel}> {$i18n.t('Set as default')}</button>

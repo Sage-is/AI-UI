@@ -51,6 +51,14 @@ from sage_is_ai.pages.branding_panel import (
     save_branding,
 )
 from sage_is_ai.pages.changelog_panel import mark_changelog_read, render_changelog
+from sage_is_ai.pages.privacy_panel import (
+    bench_privacy,
+    forget_privacy,
+    purge_privacy,
+    render_privacy,
+    reveal_privacy,
+    save_privacy,
+)
 from sage_is_ai.pages.features_panel import render_features, save_features
 from sage_is_ai.pages.calendar_panel import render_calendar
 from sage_is_ai.pages.settings_calendar_panel import (
@@ -419,6 +427,37 @@ async def sprigs_action(
     return HTMLResponse(await run_action(request, user, name, verb))
 
 
+@router.get("/admin/privacy", response_class=HTMLResponse)
+async def privacy_page(request: Request, user=Depends(require_admin_page)) -> HTMLResponse:
+    """Privacy rules: switches, detectors, rules, the test bench and the map."""
+    return _whole_page(request, "admin/privacy", render_privacy(request), ("vendor/htmx.min.js",))
+
+
+@router.post("/admin/privacy/save", response_class=HTMLResponse)
+async def privacy_save(request: Request, user=Depends(require_admin_page)) -> HTMLResponse:
+    return HTMLResponse(await save_privacy(request, user, await request.form()))
+
+
+@router.post("/admin/privacy/test", response_class=HTMLResponse)
+async def privacy_test(request: Request, user=Depends(require_admin_page)) -> HTMLResponse:
+    return HTMLResponse(await bench_privacy(request, await request.form()))
+
+
+@router.post("/admin/privacy/reveal", response_class=HTMLResponse)
+async def privacy_reveal(request: Request, user=Depends(require_admin_page)) -> HTMLResponse:
+    return HTMLResponse(await reveal_privacy(request, user, await request.form()))
+
+
+@router.post("/admin/privacy/forget", response_class=HTMLResponse)
+async def privacy_forget(request: Request, user=Depends(require_admin_page)) -> HTMLResponse:
+    return HTMLResponse(await forget_privacy(request, user, await request.form()))
+
+
+@router.post("/admin/privacy/purge", response_class=HTMLResponse)
+async def privacy_purge(request: Request, user=Depends(require_admin_page)) -> HTMLResponse:
+    return HTMLResponse(await purge_privacy(request, user, await request.form()))
+
+
 @router.get("/admin/branding", response_class=HTMLResponse)
 async def branding_page(
     request: Request, user=Depends(require_admin_page)
@@ -660,6 +699,10 @@ _PAGES: dict[str, tuple[str, str]] = {
     "admin/branding": (
         "Theme & Branding",
         "The name, the marks and the colours this instance wears.",
+    ),
+    "admin/privacy": (
+        "Privacy",
+        "What a hosted model is allowed to see, and how it is put back.",
     ),
     # Not under `admin/`, and that is the point: this surface is permission-gated
     # rather than admin-only, so putting it in the admin tree would be a trap for
