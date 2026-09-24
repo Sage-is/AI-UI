@@ -1,23 +1,23 @@
-fastapi==0.115.7
-uvicorn[standard]==0.35.0
+fastapi==0.141.1
+uvicorn[standard]==0.52.4
 typer
-pydantic==2.11.7
+pydantic==2.13.5
 itsdangerous
 # CVE-2026-24486 (HIGH): arbitrary file write — fixed in 0.0.22
 # CVE-2026-42561 (HIGH): pre-0.0.27 parser issue — bumped 2026-05-17.
-python-multipart==0.0.30
+python-multipart==0.0.32
 
-python-socketio==5.16.2
+python-socketio==5.16.4
 passlib[bcrypt]==1.7.4
 cryptography
 
-requests==2.32.4
+requests==2.34.2
 # CVE-2025-69223 (HIGH): zip bomb via auto_decompress + 8 more CVEs (smuggling, DoS)
-aiohttp==3.13.3
+aiohttp==3.14.3
 async-timeout
 aiocache
 aiofiles
-starlette-compress==1.6.0
+starlette-compress==1.8.0
 # Templating for the no-build pages (SPIKE, welcome panel only — 2026-07-31).
 # Adopted for two things line count does not measure: a template is data read
 # from disk, so `auto_reload` takes a markup edit from an app restart to a
@@ -30,8 +30,8 @@ beautifulsoup4
 # Response decompression stays available via whatever the middleware deps pin.
 httpx[socks,http2]==0.28.1
 
-sqlalchemy==2.0.38
-alembic==1.14.0
+sqlalchemy==2.0.52
+alembic==1.19.1
 peewee==3.18.1
 peewee-migrate==1.12.2
 bcrypt==4.3.0
@@ -42,10 +42,10 @@ websocket-client
 
 redis
 
-pycrdt==0.12.25
+pycrdt==0.14.4
 
 loguru==0.7.3
-asgiref==3.8.1
+asgiref==3.12.1
 
 tiktoken
 
@@ -82,18 +82,18 @@ langchain-core==0.3.86
 # Document processing: pypdf + docx2txt ride the rag-loaders Sprig™ (8.I.2)
 # — they exist only for langchain_community.document_loaders.
 # unstructured + python-pptx — installed at runtime when non-PDF document types are uploaded
-ftfy==6.2.3
+ftfy==6.3.1
 # fpdf2 (+ fontTools + pillow + CJK fonts) rides the export-document Sprig™
 # (8.I.2). CVE pins move into the sprig build: fpdf2==2.8.2, pillow==12.2.0
 # (CVE-2025-48379, CVE-2026-25990, CVE-2026-40192).
-Markdown==3.7
+Markdown==3.10.3
 validators==0.35.0
 # soundfile — removed (8.I.2): imported nowhere in the codebase (dead dep).
 
 # CVE-2026-32597 (HIGH): accepts unknown crit header extensions — fixed in 2.12.0
 PyJWT[crypto]==2.13.0
 # CVE-2026-27962 (CRITICAL): auth bypass via JWK header — fixed in 1.6.9
-authlib==1.6.9
+authlib==1.7.2
 
 # black — installed at runtime if code formatting is needed
 
@@ -112,14 +112,14 @@ pydub
 ldap3==2.9.1
 
 ## Trace
-opentelemetry-api==1.32.1
-opentelemetry-sdk==1.32.1
-opentelemetry-exporter-otlp==1.32.1
-opentelemetry-instrumentation==0.53b1
-opentelemetry-instrumentation-fastapi==0.53b1
-opentelemetry-instrumentation-sqlalchemy==0.53b1
-opentelemetry-instrumentation-redis==0.53b1
-opentelemetry-instrumentation-requests==0.53b1
-opentelemetry-instrumentation-logging==0.53b1
-opentelemetry-instrumentation-httpx==0.53b1
-opentelemetry-instrumentation-aiohttp-client==0.53b1
+opentelemetry-api==1.44.0
+opentelemetry-sdk==1.44.0
+opentelemetry-exporter-otlp==1.44.0
+opentelemetry-instrumentation==0.65b0
+opentelemetry-instrumentation-fastapi==0.65b0
+opentelemetry-instrumentation-sqlalchemy==0.65b0
+opentelemetry-instrumentation-redis==0.65b0
+opentelemetry-instrumentation-requests==0.65b0
+opentelemetry-instrumentation-logging==0.65b0
+opentelemetry-instrumentation-httpx==0.65b0
+opentelemetry-instrumentation-aiohttp-client==0.65b0
