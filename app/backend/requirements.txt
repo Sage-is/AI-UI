@@ -13,7 +13,7 @@ cryptography
 
 requests==2.32.4
 # CVE-2025-69223 (HIGH): zip bomb via auto_decompress + 8 more CVEs (smuggling, DoS)
-aiohttp==3.13.3
+aiohttp==3.14.1
 async-timeout
 aiocache
 aiofiles
