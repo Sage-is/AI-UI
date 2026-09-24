@@ -25,13 +25,21 @@ fake, so a conversation stays coherent, and the real-to-fake map stays on the
 instance. API clients may name known values per request. A new admin panel at
 `/pages/admin/privacy` holds the switches per connection, the rules, a test
 bench that shows what the model would see, and the map with an audited reveal,
-forget and purge. Off for every connection until an admin turns it on; the
-next version turns it on for external connections by default.
+forget and purge. On by default for external connections; local models are
+never filtered. See Changed for upgrades and the three ways to turn it off.
 
 Pseudonyms are salted with `PRIVACY_KEY`, or the instance secret when that is
 unset. With neither set, switching privacy on fails loudly rather than keying
 the map on nothing. Rotating the key orphans every existing fake, so replies
 sent before the change stop reversing.
+
+**Works offline, and installs as an app**
+A service worker at `/sw.js` caches the public files: the build's hashed assets for good, the static and page assets with a background refresh. It never caches the API, sockets, pages or live config. A navigation that fails shows an offline card instead of the browser's error. Each release clears the previous release's cache. `ENABLE_SERVICE_WORKER=false` turns it off: `/sw.js` then answers 404, and every browser removes the worker and its caches on its next visit. The manifest gains an `id`, a `scope`, a theme colour, real 192 and 512 pixel icons and two screenshots, so the install prompt shows the app properly.
+
+### Changed
+
+**Privacy rules are on for external connections by default**
+On upgrade, an instance whose admin never saved the privacy panel starts filtering every external connection. An instance whose admin saved it keeps that choice. Three switches in `/pages/admin/privacy` turn it off: "Privacy rules on" for the whole instance, "Filter every external connection" for the default, and each connection's own setting. The filter fails closed: when it cannot run, the request stops rather than leaving unfiltered.
 
 ### Fixed
 

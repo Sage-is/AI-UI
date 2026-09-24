@@ -8,7 +8,7 @@ reverses when unique, or a one-way redaction.
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 # name -> (category, pattern). Categories drive the fake's shape.
 DETECTORS: dict[str, tuple[str, str]] = {

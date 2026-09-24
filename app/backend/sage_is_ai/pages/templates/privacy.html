@@ -20,7 +20,7 @@
       <legend style="{{ legend_s }}">Switches</legend>
       <p><label style="{{ label_s }}"><input type="checkbox" name="enabled" value="on" {% if enabled %}checked{% endif %} data-cy="privacy-enabled"> Privacy rules on</label></p>
       <p><label style="{{ label_s }}"><input type="checkbox" name="default_external" value="on" {% if default_external %}checked{% endif %} data-cy="privacy-default-external"> Filter every external connection unless told otherwise</label>
-        <small style="{{ help_s }}"> (off in this version; on by default next version)</small></p>
+        <small style="{{ help_s }}"> (on by default; untick to filter only the connections you switch on below)</small></p>
       {% if connections %}
       <table style="--w:100%; --bc:collapse">
         <thead><tr><th style="{{ td_s }}">Connection</th><th style="{{ td_s }}">Filter</th><th style="{{ td_s }}">Effective</th></tr></thead>

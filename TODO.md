@@ -288,13 +288,22 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
 
 ### Release Wrap-Up
 
+- [ ] **3.2.0 — privacy on by default, offline, Space tools** #critical: plan `release-3.2.0-poka-yoke` (audited 2026-09-24)
+  - [x] Preflight regex matches `## [X.Y.Z]` (it matched `# [`, so it would have refused every release); tag built from a worktree with its own revision; `make privacy_tests` in `gauntlet_fast`
+  - [x] `default_external` ON; three off-switches and the two-defaults drift unit-tested; reaches only instances that never saved the panel; CHANGELOG `### Changed` says so
+  - [x] CHANGELOG: offline/PWA entry, privacy text corrected; `PRIVACY_KEY` in `.env.example`; dead plan citations removed from the board and dossiers
+  - [x] `make e2e` refuses an image not built from `HEAD` (it had run the 3.2.0 specs against a five-week-old 3.1.0 image, 47/48 green); `docs_gate` and `ruff_gate` green
+  - [ ] [MANUALLY] Commit, push `develop`, `make minor_release`, `make bump_release_version`, rename `## [Unreleased]` to `## [3.2.0] — <date>`, commit
+  - [ ] [WE] Gates on the release branch: `privacy_tests`, `lint`, `gauntlet_fast`, `it_build` then `e2e`, `distribution_verify`
+  - [ ] [MANUALLY] `make ship` (tags and pushes); then CapRover deploy by digest and `curl …/api/config`
+
 - [ ] **`make caprover_app_create APP=<name>` wrapper**: one Makefile call to register a new CapRover app via the HTTP API — avoid the dashboard click-through we did for `try-sage-is` on `captain.example.com` 2026-05-01.
   - [ ] Register via `/api/v2/user/apps/appDefinitions/register`.
   - [ ] POST the env-var block.
   - [ ] Set the persistent volume path.
   - [ ] Connect a custom domain.
 
-- [ ] **Port `sharded-zooming-parrot` Poka-Yoke release plan to this Makefile**: make `_it_build_multi_arch_push_GHCR` safe to re-run after a partial failure; build the tag from a throwaway worktree. Plan: `~/.claude/plans/sharded-zooming-parrot.md`. ([dossier](docs/board-dossiers.md))
+- [x] **Release build from the tag, re-runnable (3.2.0)**: `_it_build_multi_arch_push_GHCR` builds `v$(IMAGE_TAG)` in a throwaway worktree with the tag's own revision label; a trap removes the worktree, so a failed build re-runs. ([dossier](docs/board-dossiers.md))
   - [x] _Post-push GHCR manifest verify SHIPPED 2026-07-19 — fixture 3/3, `verify_ghcr_manifest` + `manifest_verify_fixture` gate the SERVER_TAG pin. Sub-essay archived 2026-08-15 → `docs/completed-todos.md`._
   - [ ] **The release builds whichever branch you are standing on, not the tag (2026-08-11)**: fix — build the tag from a throwaway `git worktree`. #critical
     - [ ] A worktree build is reproducible from the tag, immune to local edits and branch position.
@@ -332,7 +341,7 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
     - [ ] Schedule `make scan_deps` + `scan_container` on a CI runner (see Gitea-vs-Woodpecker).
   - [x] _`docs_gate` reads doc trees outside the repo (2026-08-12) — roots are DATA in `scripts/gates/docs-targets.roots` (gitignored, tracked `.example`; `~` and `%REPO_SLUG%` expand at run time), absent roots announced not silent; now in `gauntlet_fast` with `docs_gate_teeth`, self-test 6/6 — caught its own vacuous pass first run. Archived → docs/completed-todos.md._
   - [x] _`distribution_verify`/`distribution_heal` unified on one `DIST_LINK_PRELUDE` (2026-08-12) — two opposite-direction link-count derivations and two open-coded BSD/GNU `stat` fallbacks collapsed; heal fixture still 7/7. Archived → docs/completed-todos.md._
-- [ ] **Tri-repo Jidoka (自働化) + Poka-Yoke (ポカヨケ) for the publish flow**: Bootstrap shipped in 2.3.1; the render layer and commit-hook checks are still open. Plan at `~/.claude/plans/given-our-newest-trends-modular-sloth.md`. ([dossier](docs/board-dossiers.md))
+- [ ] **Tri-repo Jidoka (自働化) + Poka-Yoke (ポカヨケ) for the publish flow**: Bootstrap shipped in 2.3.1; the render layer and commit-hook checks are still open. ([dossier](docs/board-dossiers.md))
   - [x] **Source of truth** — `distribution.env` hardlinked across all three repos (CLI_VERSION, SERVER_TAG, IMAGE, VOLUME, DATA_MOUNT, WAITLIST_URL). `make distribution_sync`/`distribution_verify` in each repo's Makefile; `release_finish`/`hotfix_finish` gated on verify.
   - [x] **Bootstrap order** — homebrew-apps (canonical volume + `--tag` on `ai-ui start`/`try`/`update`), AI-UI (Makefile reads `distribution.env` for VOLUME_DATA + IMAGE_TAG defaults), Sage.Education-docs (Makefile reads `distribution.env`, `distribution_sync`/`verify` targets) — all wired.
   - [x] **Cross-repo workflow doctrine** — homebrew-apps README states `git flow feature start <name>` policy. AI-UI and docs README updates land with the docs-repo install pages.
@@ -356,7 +365,7 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
   - [ ] Idempotent install/upgrade: `brew upgrade ai-ui` must not duplicate the plist, evict a running service, or leave an orphan plist after `brew uninstall`; `brew services list` always reflects reality
   - [ ] Pre-flight in `ai-ui start`: refuse to launch when another container holds the configured port or container name; prompt the operator to `ai-ui stop` first
   - [ ] Smoke: formula `test do` block installs the agent, asserts the service starts, hits `/health`, deregisters cleanly
-- [ ] **Update banner: redirect admins to auto-update config**: replace `UpdateInfoToast.svelte` copy with deployment-shape-aware guidance — messaging only, no backend changes. Plan: `~/.claude/plans/given-our-newest-trends-modular-sloth.md`.
+- [ ] **Update banner: redirect admins to auto-update config**: replace `UpdateInfoToast.svelte` copy with deployment-shape-aware guidance — messaging only, no backend changes.
   - [ ] Guidance: auto-deploying installs (CapRover, Portainer, K8s) pick up new tags automatically; brew/manual installs run `ai-ui update --tag X.Y.Z` (shown inline)
   - [ ] CapRover's existing auto-pull is the structural poka-yoke
   - [ ] Edit `app/src/lib/components/layout/UpdateInfoToast.svelte`: new copy + inline `<code>` for the command + two links
@@ -476,7 +485,7 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
     - [ ] Phase M1: catalog-as-data + admin self-load — also redacts `repo/tag/binary_sha256/insecure` from the browser catalog
     - [ ] Phases M2-M5: M2 remote storefront + in-house registry cutover (Zot), M3 discovery UX, M4 community submission, M5 commerce
     - [ ] Open: storefront name, M1 index shape, self-load sha-pin default, Zot vs GHCR-proxy, entitlement binding
-    - [ ] Design: `~/.claude/plans/the-arch-guard-trusts-effervescent-moonbeam.md` (Track B) + memory `project_sprig_marketplace.md`
+    - [ ] Design: memory `project_sprig_marketplace.md`
   - [ ] **Quarter slice, scoped 2026-08-15 against a social push**: the push needs the store to exist. #bonsai #marketplace
     - [ ] M1 stays at position 3 in the `#### Platform unlocks` sequence, so the push date depends on Spaces multi-user and spend budgets — book no announcement against a date those two control
     - [ ] Ships: M1 catalog-as-data, M1b admin self-load (`POST …/sprigs/load`, `sprigs.d/*.json` on the volume), `/catalog` redaction
@@ -486,7 +495,7 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
     - [ ] Does not ship: public submission lane, storefront index, M5 commerce, in-house registry, `delivery: service-endpoint`
     - [ ] Dropping the public lane defers signature liability — self-load is admin-only; the admin stays the trust boundary
     - [ ] We do not charge makers to list (present tense, not "ever"); creators earn through contracts we sell direct, not a storefront cut
-    - [ ] Cards: `charts/sprig-creator-program/TODO.md`; analysis: `~/.claude/plans/business-planning-time-how-stateful-crystal.md`
+    - [ ] Cards: `charts/sprig-creator-program/TODO.md`
   - [ ] **Blocker — the `execute` event runs arbitrary JS in the top frame, and a listing policy does not fix it**. #security #critical
     - [ ] `Chat.svelte:387` passes the `__event_emitter__` `execute` type to `new Function(...)` unsandboxed
     - [ ] `POST /api/v1/functions/load/url` (`routers/functions.py:82`) installs a `main.py` from any GitHub URL today, no marketplace involved
@@ -555,7 +564,7 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
   - [ ] Document Podman-specific setup (VM memory bump, `host.containers.internal`)
   - [ ] Revisit Makefile `CONTAINER_RUNTIME` auto-detection once Podman is a verified alternative
 
-- [ ] **2.4 ML Bundle (signed per-arch × per-accel)**: replace the 2.3.1 transitional ML wizard path (runtime `uv pip install` + `sitecustomize.py`) with signed tarball bundles published on GitHub Releases. Plan: `~/.claude/plans/given-our-newest-trends-modular-sloth.md`.
+- [ ] **2.4 ML Bundle (signed per-arch × per-accel)**: replace the 2.3.1 transitional ML wizard path (runtime `uv pip install` + `sitecustomize.py`) with signed tarball bundles published on GitHub Releases.
   - [ ] Wizard pulls via `curl | sha256sum -c | tar -xz`
   - [ ] `distribution.env` carries `ML_BUNDLE_TAG` + per-variant SHA256s
   - [ ] Bring CUDA back as a first-class matrix cell
@@ -635,8 +644,7 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
 > server-rendered HTML + vanilla/htmx islands, Svelte-as-biomes, strangler to
 > zero. Three evidenced legs — delete duplicated code (~50%), cut the
 > conversation load (172 req / 7.9 MB / ~19 s → near-instant), turn shared chats
-> into a crawlable distribution surface. Full plan:
-> `~/.claude/plans/we-got-to-gtm-stateful-teapot.md`.
+> into a crawlable distribution surface.
 
 > **HOW TO WORK ON THESE PAGES (as of 2026-07-31).** Never `make it_build` just
 > to look at something.

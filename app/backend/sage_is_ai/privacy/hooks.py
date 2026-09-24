@@ -20,7 +20,7 @@ log = logging.getLogger(__name__)
 
 DEFAULTS = {
     "enabled": True,
-    "default_external": False,  # decided 2026-09-16: off this version, on next
+    "default_external": True,  # ON from 3.2.0; must equal config.py PRIVACY_CONFIG
     "connections": {},  # "<urlIdx>" or "hidden:<id>" -> bool
     "models": {},  # model id -> bool, overrides the connection
     "detectors": {},

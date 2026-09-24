@@ -92,12 +92,15 @@ SAFE_GIT_BRANCH := $(shell echo $(SAFE_GIT_BRANCH) | tr '[:upper:]' '[:lower:]')
 # build target below so `docker inspect` + CapRover's deploy-history git-hash
 # column show source + version + creation provenance. Without these, image-pull
 # deploys display `n/a` in CapRover's hash column.
-OCI_LABELS := --label org.opencontainers.image.revision=$(shell git rev-parse HEAD) \
-              --label org.opencontainers.image.source=https://github.com/Sage-is/AI-UI \
+# The revision is split out so a release build can stamp the TAG's commit
+# instead of whatever HEAD the working tree happens to be on.
+OCI_REVISION := $(shell git rev-parse HEAD)
+OCI_LABELS_BASE := --label org.opencontainers.image.source=https://github.com/Sage-is/AI-UI \
               --label org.opencontainers.image.version=$(IMAGE_TAG) \
               --label org.opencontainers.image.created=$(shell date -u +%Y-%m-%dT%H:%M:%SZ) \
               --label org.opencontainers.image.title=Sage.is-AI-UI \
               --label org.opencontainers.image.licenses=MIT
+OCI_LABELS := --label org.opencontainers.image.revision=$(OCI_REVISION) $(OCI_LABELS_BASE)
 CONTAINER_NAME ?= $(shell echo $(GIT_REPO_SLUG) | tr '/' '-')
 PORT_MAPPING ?= 8080:8080
 # Host-side port from PORT_MAPPING (`HOST:CONTAINER` → HOST). Reference this
@@ -647,7 +650,16 @@ review_rebuild:
 # stopped the vector-chroma deliver test waits 180s and then reports
 # "expected 'sprouted' to equal 'delivered'" — a message that names everything
 # except the reason. The target is idempotent, so this costs a `docker ps`.
+# Poka-yoke: the image must be built from HEAD. On 2026-09-24 this target ran
+# the 3.2.0 specs against a five-week-old 3.1.0 image and reported 47 of 48
+# green: the suite tested nothing that was about to ship.
 e2e: sprig_registry  # Cypress against the built image
+	@rev=$$(docker image inspect -f '{{index .Config.Labels "org.opencontainers.image.revision"}}' $(IMAGE_NAME):$(IMAGE_TAG) 2>/dev/null); \
+	head=$$(git rev-parse HEAD); \
+	if [ "$$rev" != "$$head" ] && [ -z "$(E2E_ALLOW_STALE)" ]; then \
+		echo "e2e: $(IMAGE_NAME):$(IMAGE_TAG) was built from $${rev:-an unknown commit}; HEAD is $$head."; \
+		echo "     Run 'make it_build' first, or E2E_ALLOW_STALE=1 to test that image anyway."; exit 1; \
+	fi
 	@scripts/e2e/run-cypress.sh $(IMAGE_NAME):$(IMAGE_TAG)
 
 # e2e_heavy — opt-in heavy cultivar grafts through the real admin UI:
@@ -684,11 +696,17 @@ gauntlet: it_build sprig_smoke  # Build + Sprig lifecycle smoke
 # hand-run tools; run them yourself after `--tighten` records a baseline.
 # `chat_path_structure_teeth` DOES belong here: it builds its own sample and
 # proves the structural detectors still fire without needing a baseline at all.
-gauntlet_fast: pipefail_lint pipefail_fixture ruff_gate docs_gate \
+gauntlet_fast: privacy_tests pipefail_lint pipefail_fixture ruff_gate docs_gate \
                sprig_capabilities_check startr_swap_check \
                distribution_verify tags_annotated \
                chat_path_structure_teeth sprig_capabilities_teeth \
                startr_swap_teeth tags_annotated_teeth docs_gate_teeth  # Gate: host-only gates, seconds (pre-push hook)
+
+# privacy_tests — the privacy engine and the admin's off-switches, on the host,
+# no database, well under a second. Privacy is ON by default for external
+# connections from 3.2.0, so a regression here is a default-on defect.
+privacy_tests:  ## Gate: privacy engine + off-switch unit tests (host, <1s)
+	@cd app/backend && python3 -m unittest -q sage_is_ai.privacy.test_engine sage_is_ai.privacy.test_hooks
 
 # tags_annotated — refuse to publish a lightweight v* tag.
 #
@@ -850,15 +868,6 @@ ensure_builder:
 # forced every release build to re-download all ~940 npm tarballs on both arches
 # at once — one registry hiccup then cost a full cold rebuild. It burned 3.1.0
 # on "Fail extracting tarball for mermaid". Keep the escape hatch, lose the tax.
-define build_multi_arch
-	@[ -z "$(CLEAN_BUILD)" ] || make it_clean
-	@make ensure_builder
-	docker buildx build --platform linux/amd64,linux/arm64 $(OCI_LABELS) \
-		-t $(1):$(IMAGE_TAG) \
-		-t $(1):latest \
-		--push .
-endef
-
 # Bring down container instances on each SAGE_HOST
 it_down_sage_hosts:
 	@echo "Bringing down instances on SAGE_HOSTS from .env file..."
@@ -890,9 +899,24 @@ it_check_sage_hosts:
 # The Docker Hub twin and the build-both-registries target that used to sit here
 # are gone: nothing called either, REGISTRY already defaults to ghcr.io/sage-is,
 # and every extra publishing door is a door somebody can take by mistake.
+# Poka-yoke: build the release from its TAG, in a throwaway worktree, never
+# from the working tree. finish_flow ends on develop, so `.` would be develop's
+# files and `git rev-parse HEAD` develop's commit: 3.1.0 shipped 7 files off
+# its tag that way, and 2.3.0 before it. The trap removes the worktree on any
+# exit, so a build that fails part-way can simply be run again.
 _it_build_multi_arch_push_GHCR: ghcr_login
-	@echo "Building multi-arch and pushing to GHCR"
-	$(call build_multi_arch,$(GHCR_IMAGE_NAME))
+	@[ -z "$(CLEAN_BUILD)" ] || make it_clean
+	@make ensure_builder
+	@set -e; tag="v$(IMAGE_TAG)"; \
+	git rev-parse -q --verify "refs/tags/$$tag" >/dev/null || { echo "  FAIL  no tag $$tag to build from"; exit 1; }; \
+	rev=$$(git rev-list -n1 "$$tag"); \
+	wt=$$(mktemp -d "$${TMPDIR:-/tmp}/ai-ui-$$tag.XXXXXX"); \
+	trap 'git worktree remove --force "$$wt" >/dev/null 2>&1 || true; rm -rf "$$wt"; git worktree prune' EXIT; \
+	git worktree add --detach "$$wt" "$$tag" >/dev/null; \
+	echo "Building $$tag ($$rev) multi-arch from $$wt and pushing to GHCR"; \
+	cd "$$wt" && docker buildx build --platform linux/amd64,linux/arm64 \
+		--label org.opencontainers.image.revision=$$rev $(OCI_LABELS_BASE) \
+		-t $(GHCR_IMAGE_NAME):$(IMAGE_TAG) -t $(GHCR_IMAGE_NAME):latest --push .
 	@echo "Completed GHCR multi-arch push for version $(IMAGE_TAG)"
 
 # Poka-yoke: after the push, prove the GHCR image is PRESENT (not a 404) and a
@@ -1641,8 +1665,8 @@ release_preflight:  # Release gate: gh auth, docker memory, tag not published, C
 		echo "        Fix: publish the existing tag's image, or release a new version."; exit 1; \
 	fi; \
 	echo "  ok    v$$ver is not yet on origin"; \
-	if ! grep -qE "^# \[$$ver\]" CHANGELOG.md; then \
-		echo "  FAIL  CHANGELOG.md has no '# [$$ver]' section."; \
+	if ! grep -qE "^## \[$$ver\]" CHANGELOG.md; then \
+		echo "  FAIL  CHANGELOG.md has no '## [$$ver]' section."; \
 		echo "        Nothing can derive this one: it is prose, and it has to be written."; exit 1; \
 	fi; \
 	echo "  ok    CHANGELOG.md has a [$$ver] section"; \

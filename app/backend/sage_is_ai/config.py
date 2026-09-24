@@ -982,7 +982,9 @@ PRIVACY_CONFIG = PersistentConfig(
     "privacy.config",
     {
         "enabled": True,
-        "default_external": False,
+        # ON from 3.2.0: external connections are filtered unless an admin
+        # turns it off. Must equal privacy/hooks.py DEFAULTS (test_hooks checks).
+        "default_external": True,
         "connections": {},
         "models": {},
         "detectors": {},
