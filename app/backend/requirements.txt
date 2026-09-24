@@ -1,7 +1,7 @@
 fastapi==0.115.7
 uvicorn[standard]==0.35.0
 typer
-pydantic==2.11.7
+pydantic==2.13.4
 itsdangerous
 # CVE-2026-24486 (HIGH): arbitrary file write — fixed in 0.0.22
 # CVE-2026-42561 (HIGH): pre-0.0.27 parser issue — bumped 2026-05-17.
