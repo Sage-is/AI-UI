@@ -82,7 +82,7 @@ langchain-core==0.3.86
 # Document processing: pypdf + docx2txt ride the rag-loaders Sprig™ (8.I.2)
 # — they exist only for langchain_community.document_loaders.
 # unstructured + python-pptx — installed at runtime when non-PDF document types are uploaded
-ftfy==6.2.3
+ftfy==6.3.1
 # fpdf2 (+ fontTools + pillow + CJK fonts) rides the export-document Sprig™
 # (8.I.2). CVE pins move into the sprig build: fpdf2==2.8.2, pillow==12.2.0
 # (CVE-2025-48379, CVE-2026-25990, CVE-2026-40192).
