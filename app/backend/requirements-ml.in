@@ -14,7 +14,7 @@
 sentence-transformers==4.1.0
 # >=4.47.0 dropped the huggingface-hub<1.0 constraint; sentence-transformers
 # 4.1.0 pulls hub 1.x, so transformers must agree.
-transformers>=4.47.0,<5.0
+transformers>=4.57.6,<5.0
 # transformers in the 4.47.x range hard-requires tokenizers<=0.23.0; without
 # this explicit bound pip's resolver picks 0.23.1 (the latest available) and
 # transformers refuses to import. Discovered 2026-05-12 during 2.3.1 verify.
