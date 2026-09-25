@@ -31,11 +31,11 @@ Step 3 is the first irreversible one. Everything before it can be re-run freely.
 3. [MANUALLY] Write the `## [X.Y.Z]` section in `CHANGELOG.md`, then commit. Preflight refuses without it.
 4. [WE] `make ship`.
 
-## What preflight refuses
+## What  blocks preflight
 
-Four checks, and each is a fact about the world outside this repo. Everything else that used to live here has been designed away rather than checked.
 
-| Check | Why it cannot be designed away |
+
+| Check | What's the holdup |
 | --- | --- |
 | `gh auth status` succeeds | Credential state lives outside the repo. A stale login fails *after* the tag is cut |
 | Docker reachable with at least 8 GiB | 2.3.0 died of buildx OOM with the tag already on origin. Override with `RELEASE_MIN_DOCKER_GIB=<n>` |
@@ -48,7 +48,9 @@ Preflight runs before `release_smoke`, not after. A preflight that fires at the 
 
 **Preflight or smoke failed.** Nothing has happened yet. Fix and re-run `make ship`.
 
-**The build or push failed after `release_finish`.** The merges and the tag are already on origin and the release branch is gone, so `make ship` will fail at `release_smoke`. Run the publishing half on its own:
+**The build or push failed after `release_finish`.** The merges and the tag are already on origin and the release branch is gone, so `make ship` will fail at `release_smoke`.
+
+To recover the release run the publishing half on its own:
 
 ```bash
 make _it_build_multi_arch_push_GHCR
@@ -57,11 +59,13 @@ make _pin_server_tag IMAGE_TAG=<X.Y.Z>
 make sprig_publish
 ```
 
-The underscores are the point. These are reachable when you mean them and invisible when you do not.
+
 
 **`verify_ghcr_manifest` failed.** The push produced no image, or a single-arch one. Do not pin `SERVER_TAG`. Re-run the push step; the verify is what stands between a bad push and a CapRover deploy that says `manifest unknown`.
 
-**`distribution_verify` failed inside `release_finish`.** A sibling repo's `distribution.env` differs from this one's. Read the diff before doing anything: the gate does not pick a winner, because homebrew-apps legitimately owns `CLI_VERSION` while this repo owns `SERVER_TAG`, and a rule that chose automatically would silently discard whichever field it did not favour. Fold the sibling's change into this repo's copy by hand, then `make distribution_sync` to publish, then re-run. If the difference is only ours to push, `make distribution_sync` alone is enough.
+**`distribution_verify` failed inside `release_finish`.** Sibling repos' `distribution.env` often differ from this repo's. Read the diff before doing anything; homebrew-apps owns `CLI_VERSION` while this repo owns `SERVER_TAG`.
+
+Fold the sibling's change into this repo's copy by hand, then `make distribution_sync` to publish, then re-run.
 
 Note the ordering inside `_pin_server_tag`: it verifies *before* it rewrites `SERVER_TAG`, so a divergent sibling stops the release while everything is still untouched, rather than after a sync has already overwritten what that sibling was holding.
 

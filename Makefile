@@ -326,7 +326,7 @@ dev: sprig_registry  ## Everything live: Svelte HMR, Python reload, pages/
 
 dev_run: dev
 
-## dev_bg — the same dev container, detached, so a sibling repo's demo target
+## dev_bg — the same dev container, detached, so Sibling repos' demo target
 ## (Trellis: `make demo_up`) can bring it up without holding a terminal.
 ## Everything else is `dev`: same mounts, same volume, same seeded admin.
 ## `docker logs -f sage-is-ai-ui` for the output; `docker rm -f sage-is-ai-ui` to stop.
