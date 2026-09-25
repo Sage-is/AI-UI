@@ -49,7 +49,11 @@ class PrivacyAuditModel(BaseModel):
 class PrivacyMapsTable:
     def get_fake(self, category: str, real: str) -> Optional[str]:
         with get_db() as db:
-            row = db.query(PrivacyMap).filter(PrivacyMap.category == category, PrivacyMap.real == real).first()
+            row = (
+                db.query(PrivacyMap)
+                .filter(PrivacyMap.category == category, PrivacyMap.real == real)
+                .first()
+            )
             return row.fake if row else None
 
     def get_owner(self, fake: str) -> Optional[tuple[str, str]]:
@@ -62,7 +66,15 @@ class PrivacyMapsTable:
         # requests meeting the same value for the first time race here; the
         # loser's row is already the row it wanted, so losing is success.
         with get_db() as db:
-            db.add(PrivacyMap(id=str(uuid.uuid4()), category=category, real=real, fake=fake, created_at=int(time.time())))
+            db.add(
+                PrivacyMap(
+                    id=str(uuid.uuid4()),
+                    category=category,
+                    real=real,
+                    fake=fake,
+                    created_at=int(time.time()),
+                )
+            )
             try:
                 db.commit()
             except IntegrityError:
@@ -70,7 +82,10 @@ class PrivacyMapsTable:
 
     def pairs(self) -> list[tuple[str, str]]:
         with get_db() as db:
-            return [(row.fake, row.real) for row in db.query(PrivacyMap.fake, PrivacyMap.real).all()]
+            return [
+                (row.fake, row.real)
+                for row in db.query(PrivacyMap.fake, PrivacyMap.real).all()
+            ]
 
     def count(self) -> int:
         with get_db() as db:
@@ -79,13 +94,35 @@ class PrivacyMapsTable:
     def recent(self, limit: int = 20) -> list[dict]:
         """For the panel: fakes and categories, never the real values."""
         with get_db() as db:
-            rows = db.query(PrivacyMap).order_by(PrivacyMap.created_at.desc()).limit(limit).all()
-            return [{"id": r.id, "category": r.category, "fake": r.fake, "created_at": r.created_at} for r in rows]
+            rows = (
+                db.query(PrivacyMap)
+                .order_by(PrivacyMap.created_at.desc())
+                .limit(limit)
+                .all()
+            )
+            return [
+                {
+                    "id": r.id,
+                    "category": r.category,
+                    "fake": r.fake,
+                    "created_at": r.created_at,
+                }
+                for r in rows
+            ]
 
     def reveal(self, id: str) -> Optional[dict]:
         with get_db() as db:
             row = db.query(PrivacyMap).filter(PrivacyMap.id == id).first()
-            return {"id": row.id, "category": row.category, "fake": row.fake, "real": row.real} if row else None
+            return (
+                {
+                    "id": row.id,
+                    "category": row.category,
+                    "fake": row.fake,
+                    "real": row.real,
+                }
+                if row
+                else None
+            )
 
     def forget(self, id: str) -> bool:
         with get_db() as db:
@@ -103,12 +140,25 @@ class PrivacyMapsTable:
 class PrivacyAuditsTable:
     def write(self, user_id: str, action: str, subject: str) -> None:
         with get_db() as db:
-            db.add(PrivacyAudit(id=str(uuid.uuid4()), user_id=user_id, action=action, subject=subject[:200], created_at=int(time.time())))
+            db.add(
+                PrivacyAudit(
+                    id=str(uuid.uuid4()),
+                    user_id=user_id,
+                    action=action,
+                    subject=subject[:200],
+                    created_at=int(time.time()),
+                )
+            )
             db.commit()
 
     def recent(self, limit: int = 10) -> list[PrivacyAuditModel]:
         with get_db() as db:
-            rows = db.query(PrivacyAudit).order_by(PrivacyAudit.created_at.desc()).limit(limit).all()
+            rows = (
+                db.query(PrivacyAudit)
+                .order_by(PrivacyAudit.created_at.desc())
+                .limit(limit)
+                .all()
+            )
             return [PrivacyAuditModel.model_validate(r) for r in rows]
 
 

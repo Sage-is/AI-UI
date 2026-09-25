@@ -962,9 +962,9 @@ async def reset_persona_state(app) -> None:
                 # collection should not block the reset. Log + move on.
                 log.warning(f"try_sage_seed: file cleanup partial for {f.id}: {e}")
 
-    # Re-run seed for drift correction (idempotent) and to refresh the
-    # persona-link cache with newly-minted JWTs. The previous cycle's
-    # links would JWT-expire on their own, but rotating signals "new
-    # session" to anyone holding an old link from the projector.
+    # Re-run seed for drift correction (idempotent). This mints persona
+    # links for personas missing from the cache, links handed out before reset
+    # keep working until their TTL; the session cutoff set above is what signs
+    # everyone out.
     await seed_try_sage(app)
     log.info("try_sage_seed: reset complete; persona chats/files wiped, KBs preserved")

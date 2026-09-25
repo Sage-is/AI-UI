@@ -7,7 +7,7 @@ An AI interface you run on your own hardware, with your own models, on your own 
 [![License](https://img.shields.io/badge/License-AGPL_v3%2B-blue)](LICENSE)
 [![Discord](https://img.shields.io/badge/Discord-Community-blue?logo=discord&logoColor=white)](https://discord.gg/3BtwHkXS)
 
-Sage.is AI-UI is a chat and orchestration layer that runs on your own infrastructure. It talks to whichever model providers you have available: local Ollama, OpenAI, Anthropic, or anything that speaks the OpenAI API.
+Sage.is AI-UI is a chat and orchestration layer that runs on your own infrastructure. It talks to whichever model providers you have available: any OpenAI-compatible provider (OpenAI, OpenRouter and others) plus Ollama.
 
 ![Sage.is AI-UI in a desktop browser: the workspace sidebar on the left, a named agent selected, and the prompt box waiting](./app/static/screenshots/wide-chat.png)
 
@@ -17,13 +17,13 @@ Sage.is AI-UI is a chat and orchestration layer that runs on your own infrastruc
 
 **Your data stays put.** Conversations never leave the server you run Sage.is on. No telemetry on chat content, no exfiltration paths, no cloud dependency unless you graft one.
 
-**Bring your own models.** Sage.is works with Ollama, OpenAI, Anthropic, and any OpenAI-compatible API. Mix providers per conversation if you want.
+**Bring your own models.** Sage.is works with any OpenAI-compatible provider (OpenAI, OpenRouter and others) plus Ollama. Mix providers per conversation if you want.
 
 **Teams work the way teams work.** Permissions, user groups, role-based access. Nothing exotic; nothing missing.
 
 **Plug things in.** Custom functions, RAG, code execution, image generation, voice. The pieces compose.
 
-**Community Hub.** Browse and share models, prompts, tools, and knowledge across your Sage instances via [community.sage.is](https://community.sage.is).
+**Community Hub.** Coming soon. Browse and share models, prompts, tools, and knowledge across your Sage instances via [community.sage.is](https://community.sage.is). The site is not built yet, and `ENABLE_COMMUNITY_SHARING` stays off.
 
 ## Quick Start
 
@@ -37,25 +37,29 @@ make it_build_n_run
 
 Now open [http://localhost:8080](http://localhost:8080) and create your admin account.
 
-If you want to do front end dev and see changes to svelte files live, go instead to [http://localhost:5173/](http://localhost:5173/) as this will update on file change.
+`make dev` runs everything live: Svelte HMR on [http://localhost:5173/](http://localhost:5173/) and Python reload. `make it_build_n_run` builds and runs the baked image on port 8080 only.
 
 ## Available Make Commands
 
 - `make it_run` — Start Sage.is AI-UI with Docker
 - `make it_stop` — Stop running containers
 - `make it_build` — Build Docker images
-- `make it_clean` — Clean up containers and images
+- `make it_clean` — Runs `docker system prune` and builder prune: system-wide, not only this project
 - `make waha_start` — Start WAHA (WhatsApp bridge) locally
 - `make waha_stop` — Stop WAHA container
 - `make signal_start` — Start signal-cli-rest-api (Signal bridge) locally
 - `make signal_stop` — Stop signal-cli-rest-api container
-- `make help` — Show all available commands
+- `make help` — List the annotated targets
+- `make help_all` — List every target
+- `make dev` — Everything live: Svelte HMR on 5173, Python reload
+- `make review` — The baked image, nothing mounted (`LIVE=1` mounts `pages/`, `REBUILD=1` rebuilds first)
 
 ## Core Features
 
 - **Multi-model chat:** switch between models in the same chat, or talk to several at once.
 - **Knowledge bases:** RAG-powered chats from PDFs, docs, websites, or Workshop Knowledge.
-- **Community Hub:** browse, share, and deploy community models, prompts, tools, and knowledge ([docs](./docs/community-hub.md)).
+- **Privacy rules:** text bound for a hosted model is pseudonymized and the reply restored. Built-in detectors, admin rules, and a test bench. Panel at `/pages/admin/privacy`. ON by default for external connections from 3.2.0. Three switches turn it off.
+- **Community Hub:** coming soon. community.sage.is is not built yet and `ENABLE_COMMUNITY_SHARING` stays off ([docs](./docs/community-hub.md)).
 - **Messaging bridges:** WhatsApp, Telegram, Signal, and email feed conversations and channels through Sage ([docs](./docs/bridges.md)).
 - **Code execution:** built-in Python environment with custom function support.
 - **Voice & video:** speech-to-text and text-to-speech for hands-free conversation.
@@ -70,9 +74,8 @@ Sage.is AI-UI runs with sensible defaults. You can override:
 **Environment Variables:**
 
 - `OPENAI_API_KEY` — Connect to OpenAI models
-- `ANTHROPIC_API_KEY` — Enable Claude models
 - `OLLAMA_BASE_URL` — Point to your Ollama instance
-- `ENABLE_RAG` — Enable document processing (default: true)
+- `PRIVACY_KEY` — Key for privacy pseudonyms. Empty falls back to `WEBUI_SECRET_KEY`.
 
 ## Styling
 
@@ -105,14 +108,10 @@ After `install_dev`, every commit scans the staged diff and every push scans the
 **Release process:**
 
 ```bash
-make major_release        # (or minor_release / patch_release) — creates the release branch
+make minor_release        # (or patch_release / major_release) — creates the release branch
 make bump_release_version # Writes the version into app/package.json
-# Edit CHANGELOG.md, commit, then:
-make it_build             # Build the image
-make test_db_upgrade      # Migrations against a prior-version DB
-make test_db_fresh        # Clean schema creation
-make it_run               # Smoke test
-make ship                 # Finish, tag, push the image, publish the Sprig catalog
+# Write the ## [X.Y.Z] section in CHANGELOG.md
+make ship                 # Runs preflight and the smoke test itself, then tags and pushes
 ```
 
 `make ship` is the only way to publish, and it covers hotfixes too. The steps underneath it are private, so there is no second door to take by mistake. It gates on `release_smoke`, which refuses to run off a `release/*` or `hotfix/*` branch, on a dirty tree, or when `app/package.json` disagrees with the branch version.
@@ -126,17 +125,18 @@ DB snapshots for upgrade testing live in `tools/db_snapshots/` (gitignored, sync
 - [Documentation Index](./docs/README.md)
 - [Messaging Bridges (WhatsApp, etc.)](./docs/bridges.md)
 - [try.sage Trial Deployment](./docs/try-sage-deployment.md)
-- [API Examples](./docs/API-examples.md)
+- [Product Stack](./docs/product-stack.md)
 - [Development Workflow](./docs/development-workflow.md)
-- [API Refactoring Plan](./docs/api-refactoring-plan.md)
 - [Community Hub Integration](./docs/community-hub.md)
 - [Contributing](./docs/CONTRIBUTING.md)
+- [Security](./docs/SECURITY.md)
+- [Troubleshooting](./docs/troubleshooting.md)
+- [Orientation](./docs/orientation.md)
 - [Documentation Archive](./docs/archive/README.md)
-- [Kokoro.js TTS Fix (July 28, 2025)](./docs/archive/fixes/kokoro-tts-fix-2025-07-28.md)
 
 ## Community
 
-- **Community Hub:** [Browse & share models, prompts, tools, and more](https://community.sage.is). Deploy community items directly to your Sage instances.
+- **Community Hub:** coming soon. community.sage.is is not built yet and `ENABLE_COMMUNITY_SHARING` stays off. You will be able to browse and share models, prompts, tools, and more, and deploy community items directly to your Sage instances.
 - **Discord:** [Join our community](https://discord.gg/3BtwHkXS)
 - **Issues:** [Report bugs](https://github.com/Sage-is/AI-UI/issues)
 

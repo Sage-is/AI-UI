@@ -110,13 +110,16 @@ RUN mkdir -p /app/backend/tiktoken_cache && \
 
 # =============================================================================
 # Stage 3: RUNTIME — Wolfi rootstock (Decision #20, 2026-07-01 research round)
-# glibc 2.43 base at ~15MB. Every manylinux Sprig™ overlay (onnxruntime et al.)
+# glibc 2.44 base at ~15MB. Every manylinux Sprig™ overlay (onnxruntime et al.)
 # runs unchanged and the bash entrypoint keeps working. Python 3.11 via apk.
 # Digest-pinned against a rolling :latest, so treat every bump as a release:
 #   docker buildx imagetools inspect cgr.dev/chainguard/wolfi-base:latest
-# Pinned: latest as of 2026-07-02 (multi-arch index, amd64+arm64).
+# Pinned: latest as of 2026-09-25 (multi-arch index, amd64+arm64). Bumped from
+# the 2026-07-02 pin (glibc 2.43) because apk's python-3.11 moved to glibc 2.44:
+# the old base installed a Python whose math module could not load, and the
+# image built fine and died at boot. The import check below now fails the build.
 # =============================================================================
-FROM cgr.dev/chainguard/wolfi-base@sha256:2f7a5c164eafbdbe46fe1d91bd1ab4c8cb5c2bdbd10641c3d61bd39962384cdb AS runtime
+FROM cgr.dev/chainguard/wolfi-base@sha256:fac38d12efdb4bf43ac9e599a31db10a27ad5dd71e5f1618790962eda8d66180 AS runtime
 
 ARG USE_CUDA
 ARG USE_OLLAMA
@@ -136,6 +139,10 @@ ARG BUILD_HASH
 #     the base rootstock. Graft the `media-ffmpeg` / `backup-rclone` Sprigs™ to
 #     deliver static binaries on demand.
 RUN apk add --no-cache python-3.11 bash ca-certificates curl jq zstd gnutar libstdc++ tzdata && \
+    # Poka-yoke: the Python apk just installed must load its C extensions on
+    # this base's glibc. A skew (python built for a newer glibc) fails here,
+    # at build time, instead of at boot after the image has shipped.
+    python3 -c "import math, ssl, sqlite3, ctypes, hashlib, zlib" && \
     # Wolfi's own pip/setuptools out. The Debian-built closure from the
     # python-build stage replaces it below; mixing the two corrupts dist
     # metadata.
@@ -157,7 +164,7 @@ RUN apk add --no-cache python-3.11 bash ca-certificates curl jq zstd gnutar libs
     oras version
 
 # Copy Python packages from python-build stage. The wheels are built on Debian
-# glibc 2.36 (manylinux-compatible) and run on Wolfi's 2.43. Same rule as the
+# glibc 2.36 (manylinux-compatible) and run on Wolfi's 2.44. Same rule as the
 # Sprig™ overlays: build on the older glibc, run on the newer.
 COPY --from=python-build /usr/local/lib/python3.11/site-packages/ /usr/lib/python3.11/site-packages/
 COPY --from=python-build /usr/local/bin/ /usr/local/bin/

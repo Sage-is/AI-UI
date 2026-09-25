@@ -14,16 +14,33 @@ from dataclasses import dataclass
 DETECTORS: dict[str, tuple[str, str]] = {
     "email": ("email", r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}"),
     # NANP: optional +1, area code, exchange, line; spaces, dots, dashes, parens.
-    "phone": ("phone", r"(?<![\d\w])(?:\+?1[ .\-]?)?\(?[2-9]\d{2}\)?[ .\-]?\d{3}[ .\-]?\d{4}(?![\d\w])"),
+    "phone": (
+        "phone",
+        r"(?<![\d\w])(?:\+?1[ .\-]?)?\(?[2-9]\d{2}\)?[ .\-]?\d{3}[ .\-]?\d{4}(?![\d\w])",
+    ),
     # International with a leading +, not +1.
-    "phone_intl": ("phone", r"(?<![\d\w])\+(?!1(?:\D|$))\d{1,3}[ .\-]?(?:\d[ .\-]?){6,12}\d(?![\d\w])"),
-    "postal_ca": ("postal", r"\b[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ \-]?\d[ABCEGHJ-NPRSTV-Z]\d\b"),
+    "phone_intl": (
+        "phone",
+        r"(?<![\d\w])\+(?!1(?:\D|$))\d{1,3}[ .\-]?(?:\d[ .\-]?){6,12}\d(?![\d\w])",
+    ),
+    "postal_ca": (
+        "postal",
+        r"\b[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ \-]?\d[ABCEGHJ-NPRSTV-Z]\d\b",
+    ),
     "postal_us": ("postal", r"\b\d{5}(?:-\d{4})?\b"),
     "card": ("card", r"\b(?:\d[ \-]?){13,18}\d\b"),
     "ip": ("ip", r"\b(?:\d{1,3}\.){3}\d{1,3}\b"),
 }
 
-DEFAULT_DETECTORS = {"email": True, "phone": True, "phone_intl": True, "postal_ca": True, "card": True, "postal_us": False, "ip": False}
+DEFAULT_DETECTORS = {
+    "email": True,
+    "phone": True,
+    "phone_intl": True,
+    "postal_ca": True,
+    "card": True,
+    "postal_us": False,
+    "ip": False,
+}
 DETECTOR_STRATEGY = {"card": "redact"}
 STRATEGIES = ("pseudonym", "literal", "redact")
 KINDS = ("detector", "regex", "literal")
@@ -49,7 +66,9 @@ class Rule:
 
     def compiled(self) -> re.Pattern:
         if self.kind == "literal":
-            return re.compile(r"(?<!\w)" + re.escape(self.pattern) + r"(?!\w)", re.IGNORECASE)
+            return re.compile(
+                r"(?<!\w)" + re.escape(self.pattern) + r"(?!\w)", re.IGNORECASE
+            )
         if self.kind == "detector":
             known = DETECTORS.get(self.pattern)
             if known is None:
@@ -69,28 +88,50 @@ class Hit:
 
 def rules_from_config(config: dict) -> list[Rule]:
     """Detectors the admin left on, then the admin's own rules, in their order."""
-    rules: list[Rule] = []
-    detectors = {**DEFAULT_DETECTORS, **(config.get("detectors") or {})}
-    for name, (category, _) in DETECTORS.items():
-        if detectors.get(name):
-            rules.append(Rule(name=name, kind="detector", pattern=name, category=category,
-                              strategy=DETECTOR_STRATEGY.get(name, "pseudonym"), order=100))
+    rules = _detector_rules(config)
     for index, raw in enumerate(config.get("rules") or []):
-        if not raw.get("enabled", True) or not raw.get("pattern"):
-            continue
-        kind = raw.get("kind") if raw.get("kind") in KINDS else "literal"
-        if kind == "detector" and raw["pattern"] not in DETECTORS:
-            continue  # a stored detector naming no built-in pattern
-        strategy = raw.get("strategy") if raw.get("strategy") in STRATEGIES else "pseudonym"
-        replacement = (raw.get("replacement") or "").strip()
-        if strategy == "literal" and not replacement:
-            strategy = "pseudonym"  # nothing to replace with; mask rather than store ""
-        rules.append(Rule(
-            name=raw.get("name") or f"rule {index + 1}", kind=kind, pattern=raw["pattern"],
-            category=raw.get("category") or ("name" if kind == "literal" else "value"),
-            strategy=strategy, replacement=replacement, order=int(raw.get("order") or index),
-        ))
+        rule = _admin_rule(index, raw)
+        if rule is not None:
+            rules.append(rule)
     return rules
+
+
+def _detector_rules(config: dict) -> list[Rule]:
+    detectors = {**DEFAULT_DETECTORS, **(config.get("detectors") or {})}
+    return [
+        Rule(
+            name=name,
+            kind="detector",
+            pattern=name,
+            category=category,
+            strategy=DETECTOR_STRATEGY.get(name, "pseudonym"),
+            order=100,
+        )
+        for name, (category, _) in DETECTORS.items()
+        if detectors.get(name)
+    ]
+
+
+def _admin_rule(index: int, raw: dict) -> Rule | None:
+    """One stored rule, or None when it is off, empty, or names no detector."""
+    if not raw.get("enabled", True) or not raw.get("pattern"):
+        return None
+    kind = raw.get("kind") if raw.get("kind") in KINDS else "literal"
+    if kind == "detector" and raw["pattern"] not in DETECTORS:
+        return None  # a stored detector naming no built-in pattern
+    strategy = raw.get("strategy") if raw.get("strategy") in STRATEGIES else "pseudonym"
+    replacement = (raw.get("replacement") or "").strip()
+    if strategy == "literal" and not replacement:
+        strategy = "pseudonym"  # nothing to replace with; mask rather than store ""
+    return Rule(
+        name=raw.get("name") or f"rule {index + 1}",
+        kind=kind,
+        pattern=raw["pattern"],
+        category=raw.get("category") or ("name" if kind == "literal" else "value"),
+        strategy=strategy,
+        replacement=replacement,
+        order=int(raw.get("order") or index),
+    )
 
 
 def hint_rules(hints) -> list[Rule]:
@@ -100,6 +141,13 @@ def hint_rules(hints) -> list[Rule]:
         value = str((hint or {}).get("value") or "").strip()
         if len(value) < 2:
             continue
-        rules.append(Rule(name=f"hint:{index}", kind="literal", pattern=value,
-                          category=str(hint.get("kind") or "name"), order=-1))
+        rules.append(
+            Rule(
+                name=f"hint:{index}",
+                kind="literal",
+                pattern=value,
+                category=str(hint.get("kind") or "name"),
+                order=-1,
+            )
+        )
     return rules

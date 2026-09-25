@@ -339,6 +339,18 @@ async def get_tool_servers_data(
     return results
 
 
+def _request_body(operation: dict, params: dict, name: str) -> dict:
+    """The JSON body for an operation that takes one: the arguments, or {}."""
+    if params:
+        return params
+    if operation["requestBody"].get("required", False):
+        raise Exception(f"Request body expected for operation '{name}' but none found.")
+    # An optional body and no arguments is a legitimate call: a tool whose
+    # parameters are all optional gets called with none. Send an empty object
+    # so the server applies its own defaults.
+    return {}
+
+
 async def execute_tool_server(
     token: str, url: str, name: str, params: Dict[str, Any], server_data: Dict[str, Any]
 ) -> Any:
@@ -394,17 +406,7 @@ async def execute_tool_server(
             final_url = f"{final_url}?{query_string}"
 
         if operation.get("requestBody", {}).get("content"):
-            if params:
-                body_params = params
-            elif operation["requestBody"].get("required", False):
-                raise Exception(
-                    f"Request body expected for operation '{name}' but none found."
-                )
-            else:
-                # An optional body and no arguments is a legitimate call: a tool
-                # whose parameters are all optional gets called with none. Send
-                # an empty object so the server applies its own defaults.
-                body_params = {}
+            body_params = _request_body(operation, params, name)
 
         headers = {"Content-Type": "application/json"}
 

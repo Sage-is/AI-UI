@@ -114,7 +114,9 @@ A background task wakes every 5 minutes and checks `TRY_SAGE_RESET_AT`. When the
 - Every chat owned by every persona (`Chats.delete_chats_by_user_id`).
 - Every uploaded file owned by every persona (`Files.get_files_by_user_id` then `Storage.delete_file` per file).
 - Per-file vector collections (the `file-{id}` ones).
-- The persona magic-link cache. Every persona link is re-minted.
+- Every browser session, admins included (`TRY_SAGE_SESSIONS_INVALIDATED_AT`): anyone signed in opens their persona link again. `sk-` API keys are a separate path and keep working.
+
+Persona links are **not** re-minted: they survive every reset until `TRY_SAGE_PERSONA_LINK_TTL_DAYS` runs out or the container restarts (see above).
 
 ### What survives
 

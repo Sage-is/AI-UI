@@ -1,6 +1,8 @@
 # Community Hub Integration
 
-Sage.is AI-UIintegrates with the [Sage Community Hub](https://community.sage.is) to let users browse, share, and deploy workshop items (models, prompts, tools, functions, knowledge) across their Sage instances.
+Sage.is AI-UI integrates with the [Sage Community Hub](https://community.sage.is) to let users browse, share, and deploy workshop items (models, prompts, tools, functions, knowledge) across their Sage instances.
+
+**Status: not live.** community.sage.is is not built yet, and `ENABLE_COMMUNITY_SHARING` defaults to off. This page describes the integration as designed.
 
 ## Overview
 

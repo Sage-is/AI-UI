@@ -95,17 +95,22 @@ def outbound(request, form_data: dict) -> dict:
         return out
 
     for message in form_data.get("messages") or []:
-        content = message.get("content")
-        if isinstance(content, str):
-            message["content"] = rewrite(content)
-        elif isinstance(content, list):
-            for part in content:
-                if isinstance(part, dict) and part.get("type") == "text" and part.get("text"):
-                    part["text"] = rewrite(part["text"])
+        _rewrite_message(message, rewrite)
     request.state.privacy_hits = counts
     if counts:
         log.info("privacy: pseudonymized %s", counts)
     return form_data
+
+
+def _rewrite_message(message: dict, rewrite) -> None:
+    """A message's text, whether a plain string or a list of typed parts."""
+    content = message.get("content")
+    if isinstance(content, str):
+        message["content"] = rewrite(content)
+        return
+    for part in content if isinstance(content, list) else []:
+        if isinstance(part, dict) and part.get("type") == "text" and part.get("text"):
+            part["text"] = rewrite(part["text"])
 
 
 def reverse_text(text: str) -> str:
@@ -132,31 +137,78 @@ def stream_reverser() -> StreamReverser:
     return StreamReverser(mapper().reverse_table())
 
 
+class PassThrough:
+    """The reverser for a request privacy does not cover: every step is a no-op."""
+
+    active = False
+
+    def feed(self, chunk):
+        return chunk
+
+    def flush(self) -> str:
+        return ""
+
+
+def stream_reverser_for(request):
+    """This request's stream reverser: the real one when privacy covers it."""
+    if getattr(request.state, "privacy_active", False):
+        return stream_reverser()
+    return PassThrough()
+
+
+def finish_stream(reverser, tool_calls: list) -> str:
+    """End of a streamed reply: the held-back tail, and tool arguments put back."""
+    tail = reverser.flush()
+    if reverser.active:
+        reverse_tool_calls(tool_calls)
+    return tail
+
+
+def reverse_sse_for(request, lines):
+    """The provider's SSE lines, reversed when privacy covers this request."""
+    if getattr(request.state, "privacy_active", False):
+        return reverse_sse(lines)
+    return lines
+
+
+def _as_line(text: str, like) -> bytes | str:
+    return text.encode("utf-8") if isinstance(like, bytes) else text
+
+
+def _sse_body(line) -> str | None:
+    """The payload of a `data:` line, or None for any other line."""
+    text = (line.decode("utf-8") if isinstance(line, bytes) else line).strip()
+    return text[len("data:") :].strip() if text.startswith("data:") else None
+
+
+def _reverse_event(body: str, reverser: StreamReverser) -> str | None:
+    """One SSE event with its content deltas reversed; None when it is not JSON."""
+    try:
+        data = json.loads(body)
+    except ValueError:
+        return None
+    for choice in data.get("choices") or []:
+        delta = choice.get("delta") or {}
+        if isinstance(delta.get("content"), str) and delta["content"]:
+            delta["content"] = reverser.feed(delta["content"])
+    return f"data: {json.dumps(data)}\n\n"
+
+
 async def reverse_sse(lines):
     """Server-sent event lines from a provider, content deltas reversed in order."""
     reverser = stream_reverser()
     async for line in lines:
-        raw = line.decode("utf-8") if isinstance(line, bytes) else line
-        text = raw.strip()
-        if not text.startswith("data:"):
+        body = _sse_body(line)
+        if body is None:
             yield line
-            continue
-        body = text[len("data:"):].strip()
-        if body == "[DONE]":
+        elif body == "[DONE]":
             tail = reverser.flush()
             if tail:
-                extra = json.dumps({"choices": [{"index": 0, "delta": {"content": tail}}]})
-                yield f"data: {extra}\n\n".encode("utf-8") if isinstance(line, bytes) else f"data: {extra}\n\n"
+                extra = json.dumps(
+                    {"choices": [{"index": 0, "delta": {"content": tail}}]}
+                )
+                yield _as_line(f"data: {extra}\n\n", line)
             yield line
-            continue
-        try:
-            data = json.loads(body)
-        except ValueError:
-            yield line
-            continue
-        for choice in data.get("choices") or []:
-            delta = choice.get("delta") or {}
-            if isinstance(delta.get("content"), str) and delta["content"]:
-                delta["content"] = reverser.feed(delta["content"])
-        out = f"data: {json.dumps(data)}\n\n"
-        yield out.encode("utf-8") if isinstance(line, bytes) else out
+        else:
+            out = _reverse_event(body, reverser)
+            yield line if out is None else _as_line(out, line)

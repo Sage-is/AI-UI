@@ -428,33 +428,47 @@ async def sprigs_action(
 
 
 @router.get("/admin/privacy", response_class=HTMLResponse)
-async def privacy_page(request: Request, user=Depends(require_admin_page)) -> HTMLResponse:
+async def privacy_page(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
     """Privacy rules: switches, detectors, rules, the test bench and the map."""
-    return _whole_page(request, "admin/privacy", render_privacy(request), ("vendor/htmx.min.js",))
+    return _whole_page(
+        request, "admin/privacy", render_privacy(request), ("vendor/htmx.min.js",)
+    )
 
 
 @router.post("/admin/privacy/save", response_class=HTMLResponse)
-async def privacy_save(request: Request, user=Depends(require_admin_page)) -> HTMLResponse:
+async def privacy_save(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
     return HTMLResponse(await save_privacy(request, user, await request.form()))
 
 
 @router.post("/admin/privacy/test", response_class=HTMLResponse)
-async def privacy_test(request: Request, user=Depends(require_admin_page)) -> HTMLResponse:
+async def privacy_test(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
     return HTMLResponse(await bench_privacy(request, await request.form()))
 
 
 @router.post("/admin/privacy/reveal", response_class=HTMLResponse)
-async def privacy_reveal(request: Request, user=Depends(require_admin_page)) -> HTMLResponse:
+async def privacy_reveal(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
     return HTMLResponse(await reveal_privacy(request, user, await request.form()))
 
 
 @router.post("/admin/privacy/forget", response_class=HTMLResponse)
-async def privacy_forget(request: Request, user=Depends(require_admin_page)) -> HTMLResponse:
+async def privacy_forget(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
     return HTMLResponse(await forget_privacy(request, user, await request.form()))
 
 
 @router.post("/admin/privacy/purge", response_class=HTMLResponse)
-async def privacy_purge(request: Request, user=Depends(require_admin_page)) -> HTMLResponse:
+async def privacy_purge(
+    request: Request, user=Depends(require_admin_page)
+) -> HTMLResponse:
     return HTMLResponse(await purge_privacy(request, user, await request.form()))
 
 

@@ -49,8 +49,34 @@ class OffSwitches(unittest.TestCase):
 
     def test_config_py_and_hooks_defaults_agree(self):
         src = (Path(__file__).resolve().parents[1] / "config.py").read_text()
-        m = re.search(r'"default_external":\s*(True|False)', src[src.index('"privacy.config"'):])
+        m = re.search(
+            r'"default_external":\s*(True|False)', src[src.index('"privacy.config"') :]
+        )
         self.assertEqual(m.group(1) == "True", hooks.DEFAULTS["default_external"])
+
+
+class PassThroughPath(unittest.TestCase):
+    """Privacy off for a request: the chat path's calls change nothing."""
+
+    def test_reverser_is_a_no_op(self):
+        r = hooks.stream_reverser_for(SimpleNamespace(state=SimpleNamespace()))
+        self.assertEqual(
+            (r.feed("x"), r.feed(None), r.flush(), r.active), ("x", None, "", False)
+        )
+
+    def test_finish_leaves_tool_calls_alone(self):
+        calls = [{"function": {"arguments": "p1234abcd@example.invalid"}}]
+        tail = hooks.finish_stream(hooks.PassThrough(), calls)
+        self.assertEqual(
+            (tail, calls[0]["function"]["arguments"]), ("", "p1234abcd@example.invalid")
+        )
+
+    def test_sse_lines_come_back_untouched(self):
+        lines = object()
+        self.assertIs(
+            hooks.reverse_sse_for(SimpleNamespace(state=SimpleNamespace()), lines),
+            lines,
+        )
 
 
 if __name__ == "__main__":

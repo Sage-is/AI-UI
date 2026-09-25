@@ -293,6 +293,9 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
   - [x] `default_external` ON; three off-switches and the two-defaults drift unit-tested; reaches only instances that never saved the panel; CHANGELOG `### Changed` says so
   - [x] CHANGELOG: offline/PWA entry, privacy text corrected; `PRIVACY_KEY` in `.env.example`; dead plan citations removed from the board and dossiers
   - [x] `make e2e` refuses an image not built from `HEAD` (it had run the 3.2.0 specs against a five-week-old 3.1.0 image, 47/48 green); `docs_gate` and `ruff_gate` green
+  - [x] Base image bumped to glibc 2.44 (a fresh image died at boot: Python needed 2.44, the pinned base had 2.43); the Dockerfile now imports math, ssl and sqlite3 right after installing Python, so a skew fails the build
+  - [x] Cognitive-complexity gate green by refactoring, not raising: privacy functions split under 15, the chat path back to 357 via a pass-through reverser, the tool runner's body helper; the baseline only follows the `_generate_chat_completion` rename at its unchanged 57
+  - [ ] `make lint`'s frontend half has 9,622 errors, nearly all the vendored `htmx.min.js` and Cypress specs; not a `ship` gate; ignore vendor files and fix the rest in its own pass
   - [ ] [MANUALLY] Commit, push `develop`, `make minor_release`, `make bump_release_version`, rename `## [Unreleased]` to `## [3.2.0] — <date>`, commit
   - [ ] [WE] Gates on the release branch: `privacy_tests`, `lint`, `gauntlet_fast`, `it_build` then `e2e`, `distribution_verify`
   - [ ] [MANUALLY] `make ship` (tags and pushes); then CapRover deploy by digest and `curl …/api/config`

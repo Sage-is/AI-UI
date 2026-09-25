@@ -23,7 +23,9 @@ MAX_SALT = 256
 
 
 class Mapper(Protocol):
-    def fake(self, category: str, real: str, strategy: str, replacement: str = "") -> str: ...
+    def fake(
+        self, category: str, real: str, strategy: str, replacement: str = ""
+    ) -> str: ...
 
     def owner(self, fake: str) -> tuple[str, str] | None: ...
 
@@ -56,7 +58,9 @@ class MemoryMapper:
         self.by_real[self._real_key(category, real)] = fake
         self.by_fake[fake] = self._real_key(category, real)
 
-    def fake(self, category: str, real: str, strategy: str, replacement: str = "") -> str:
+    def fake(
+        self, category: str, real: str, strategy: str, replacement: str = ""
+    ) -> str:
         if strategy == "redact":
             return f"[{category}]"
         known = self.lookup(category, real)
@@ -66,7 +70,9 @@ class MemoryMapper:
             owner = self.owner(replacement)
             if owner is None:
                 self.store(category, real, replacement)
-            return replacement  # a shared literal still replaces; it just cannot reverse
+            return (
+                replacement  # a shared literal still replaces; it just cannot reverse
+            )
         # A literal strategy with a blank replacement is an admin asking for
         # masking and naming nothing to mask with. Pseudonymize instead.
         salt = 0
@@ -102,7 +108,9 @@ class MemoryMapper:
         return {fake: real for fake, (_, real) in self.by_fake.items()}
 
 
-def pseudonymize(text: str, rules: list[Rule], mapper: Mapper, hints=None) -> tuple[str, list[Hit]]:
+def pseudonymize(
+    text: str, rules: list[Rule], mapper: Mapper, hints=None
+) -> tuple[str, list[Hit]]:
     if not text:
         return text, []
     active = hint_rules(hints) + [r for r in rules if r.enabled]
@@ -111,7 +119,15 @@ def pseudonymize(text: str, rules: list[Rule], mapper: Mapper, hints=None) -> tu
     for rank, rule in enumerate(active):
         for match in rule.compiled().finditer(text):
             if match.end() > match.start():
-                candidates.append((match.start(), -(match.end() - match.start()), rank, match.end(), rule))
+                candidates.append(
+                    (
+                        match.start(),
+                        -(match.end() - match.start()),
+                        rank,
+                        match.end(),
+                        rule,
+                    )
+                )
     candidates.sort()
     out, cursor, hits = [], 0, {}
     for start, _, _, end, rule in candidates:
@@ -122,7 +138,9 @@ def pseudonymize(text: str, rules: list[Rule], mapper: Mapper, hints=None) -> tu
         if mapper.owner(real) is not None:
             out.append(real)  # already a fake: a message sent twice stays stable
         else:
-            out.append(mapper.fake(rule.category, real, rule.strategy, rule.replacement))
+            out.append(
+                mapper.fake(rule.category, real, rule.strategy, rule.replacement)
+            )
         cursor = end
         hit = hits.setdefault(rule.name, Hit(rule.name, rule.category))
         hit.count += 1
@@ -155,6 +173,8 @@ def reverse(text: str, table: dict[str, str]) -> str:
 
 
 class StreamReverser:
+    active = True  # hooks.PassThrough is the inactive twin
+
     def __init__(self, table: dict[str, str]):
         self.table = table
         self.pattern, self.hold = _pattern(table)
@@ -162,7 +182,7 @@ class StreamReverser:
 
     def feed(self, chunk: str) -> str:
         if not chunk:
-            return ""
+            return chunk  # "" or None passes through as it came
         if self.pattern is None:
             return chunk
         self.buffer += chunk

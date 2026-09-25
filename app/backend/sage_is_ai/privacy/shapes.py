@@ -10,17 +10,73 @@ import hmac
 import re
 
 SURNAMES = (
-    "Abara", "Bettencourt", "Cardoso", "Duarte", "Ekwueme", "Fontaine", "Guerra", "Halvorsen",
-    "Ibrahim", "Jansen", "Kowalski", "Lindqvist", "Moreau", "Nakamura", "Okafor", "Pereira",
-    "Quintero", "Rosenthal", "Silveira", "Tremblay", "Uddin", "Vasquez", "Whitfield", "Xavier",
-    "Yamada", "Zielinski", "Andersen", "Baptiste", "Castellano", "Delgado", "Eriksen", "Farah",
-    "Gagnon", "Hoffmann", "Iyer", "Jorgensen", "Kaur", "Lambert", "Mbeki", "Novak",
+    "Abara",
+    "Bettencourt",
+    "Cardoso",
+    "Duarte",
+    "Ekwueme",
+    "Fontaine",
+    "Guerra",
+    "Halvorsen",
+    "Ibrahim",
+    "Jansen",
+    "Kowalski",
+    "Lindqvist",
+    "Moreau",
+    "Nakamura",
+    "Okafor",
+    "Pereira",
+    "Quintero",
+    "Rosenthal",
+    "Silveira",
+    "Tremblay",
+    "Uddin",
+    "Vasquez",
+    "Whitfield",
+    "Xavier",
+    "Yamada",
+    "Zielinski",
+    "Andersen",
+    "Baptiste",
+    "Castellano",
+    "Delgado",
+    "Eriksen",
+    "Farah",
+    "Gagnon",
+    "Hoffmann",
+    "Iyer",
+    "Jorgensen",
+    "Kaur",
+    "Lambert",
+    "Mbeki",
+    "Novak",
 )
 STREETS = (
-    "Alder", "Birch", "Cedar", "Dogwood", "Elm", "Fir", "Hawthorn", "Juniper", "Linden", "Maple",
-    "Oak", "Pine", "Rowan", "Spruce", "Willow", "Aspen", "Beech", "Chestnut", "Hazel", "Poplar",
+    "Alder",
+    "Birch",
+    "Cedar",
+    "Dogwood",
+    "Elm",
+    "Fir",
+    "Hawthorn",
+    "Juniper",
+    "Linden",
+    "Maple",
+    "Oak",
+    "Pine",
+    "Rowan",
+    "Spruce",
+    "Willow",
+    "Aspen",
+    "Beech",
+    "Chestnut",
+    "Hazel",
+    "Poplar",
 )
-_STREET_SUFFIX = re.compile(r"\b(Ave(?:nue)?|St(?:reet)?|Rd|Road|Dr(?:ive)?|Blvd|Cres(?:cent)?|Way|Lane|Ln|Ct|Court|Pl(?:ace)?)\.?$", re.I)
+_STREET_SUFFIX = re.compile(
+    r"\b(Ave(?:nue)?|St(?:reet)?|Rd|Road|Dr(?:ive)?|Blvd|Cres(?:cent)?|Way|Lane|Ln|Ct|Court|Pl(?:ace)?)\.?$",
+    re.I,
+)
 _CA_LETTERS = "ABCEGHJKLMNPRSTVWXYZ"
 
 
@@ -31,7 +87,7 @@ def _digest(key: str, category: str, real: str, salt: int) -> bytes:
 
 def _digits(key, category, real, n, salt=0) -> str:
     value = int.from_bytes(_digest(key, category, real, salt), "big")
-    return str(value % (10 ** n)).zfill(n)
+    return str(value % (10**n)).zfill(n)
 
 
 def _index(key, category, real, modulo, salt=0) -> int:
@@ -67,7 +123,9 @@ def _postal(real: str, key: str, salt: int) -> str:
         d = _digest(key, "postal", real, salt)
         chars = [compact[0]]
         for i in range(1, 6):
-            chars.append(str(d[i] % 10) if i % 2 else _CA_LETTERS[d[i] % len(_CA_LETTERS)])
+            chars.append(
+                str(d[i] % 10) if i % 2 else _CA_LETTERS[d[i] % len(_CA_LETTERS)]
+            )
         code = "".join(chars)
         return code[:3] + " " + code[3:] if " " in real else code
     return _digits(key, "postal", real, 5, salt)
@@ -105,7 +163,23 @@ def fake_for(category: str, real: str, key: str, salt: int = 0) -> str:
 
 
 _WORD = re.compile(r"[A-Za-z]{3,}")
-_STREET_WORDS = {"ave", "avenue", "st", "street", "rd", "road", "dr", "drive", "blvd", "way", "lane", "court", "place", "cres", "crescent"}
+_STREET_WORDS = {
+    "ave",
+    "avenue",
+    "st",
+    "street",
+    "rd",
+    "road",
+    "dr",
+    "drive",
+    "blvd",
+    "way",
+    "lane",
+    "court",
+    "place",
+    "cres",
+    "crescent",
+}
 
 
 def too_close(fake: str, real: str, category: str = "") -> bool:

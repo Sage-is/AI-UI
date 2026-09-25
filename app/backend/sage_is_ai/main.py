@@ -2176,8 +2176,7 @@ async def oauth_callback(provider: str, request: Request, response: Response):
 # loses its end in the narrow screenshot. Must match AGENT_DESCRIPTION in
 # scripts/capture_pwa_screenshots.mjs.
 PWA_SCREENSHOT_LABEL = (
-    "Your hardware. Your data. Your AI. "
-    "Work with your data and build custom agents."
+    "Your hardware. Your data. Your AI. Work with your data and build custom agents."
 )
 
 

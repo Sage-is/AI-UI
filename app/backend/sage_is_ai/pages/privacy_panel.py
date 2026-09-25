@@ -16,7 +16,13 @@ from sage_is_ai.pages.templates import render
 from sage_is_ai.privacy import hooks
 from sage_is_ai.privacy.engine import MemoryMapper, pseudonymize, reverse
 from sage_is_ai.privacy.mapper import invalidate
-from sage_is_ai.privacy.rules import DEFAULT_DETECTORS, DETECTORS, FORM_KINDS, STRATEGIES, rules_from_config
+from sage_is_ai.privacy.rules import (
+    DEFAULT_DETECTORS,
+    DETECTORS,
+    FORM_KINDS,
+    STRATEGIES,
+    rules_from_config,
+)
 
 TRISTATE = (("default", "instance default"), ("on", "on"), ("off", "off"))
 
@@ -29,19 +35,29 @@ def _connections(request: Request, cfg: dict) -> list[dict]:
     for idx, url in enumerate(urls):
         api_config = configs.get(str(idx), {}) or {}
         flag = flags.get(str(idx))
-        rows.append({
-            "key": str(idx),
-            "name": api_config.get("name") or url,
-            "url": url,
-            "enabled": api_config.get("enable", True),
-            "state": "default" if flag is None else ("on" if flag else "off"),
-            "effective": bool(cfg.get("default_external") if flag is None else flag),
-        })
+        rows.append(
+            {
+                "key": str(idx),
+                "name": api_config.get("name") or url,
+                "url": url,
+                "enabled": api_config.get("enable", True),
+                "state": "default" if flag is None else ("on" if flag else "off"),
+                "effective": bool(
+                    cfg.get("default_external") if flag is None else flag
+                ),
+            }
+        )
     return rows
 
 
-def render_privacy(request: Request, *, message: str = "", kind: str = "info", bench: dict | None = None,
-                   revealed: dict | None = None) -> str:
+def render_privacy(
+    request: Request,
+    *,
+    message: str = "",
+    kind: str = "info",
+    bench: dict | None = None,
+    revealed: dict | None = None,
+) -> str:
     cfg = hooks.config(request)
     detectors = {**DEFAULT_DETECTORS, **(cfg.get("detectors") or {})}
     return render(
@@ -51,8 +67,22 @@ def render_privacy(request: Request, *, message: str = "", kind: str = "info", b
         enabled=bool(cfg.get("enabled", True)),
         default_external=bool(cfg.get("default_external")),
         connections=_connections(request, cfg),
-        detectors=[{"name": name, "category": category, "on": bool(detectors.get(name))} for name, (category, _) in DETECTORS.items()],
-        rules=list(cfg.get("rules") or []) + [{"name": "", "kind": "literal", "pattern": "", "category": "", "strategy": "pseudonym", "replacement": "", "enabled": True}],
+        detectors=[
+            {"name": name, "category": category, "on": bool(detectors.get(name))}
+            for name, (category, _) in DETECTORS.items()
+        ],
+        rules=list(cfg.get("rules") or [])
+        + [
+            {
+                "name": "",
+                "kind": "literal",
+                "pattern": "",
+                "category": "",
+                "strategy": "pseudonym",
+                "replacement": "",
+                "enabled": True,
+            }
+        ],
         kinds=FORM_KINDS,
         strategies=STRATEGIES,
         tristate=TRISTATE,
@@ -64,31 +94,59 @@ def render_privacy(request: Request, *, message: str = "", kind: str = "info", b
     )
 
 
+_RULE_FIELDS = (
+    "name",
+    "kind",
+    "pattern",
+    "category",
+    "strategy",
+    "replacement",
+    "enabled",
+)
+
+
+def _at(values: list, i: int, default: str = "") -> str:
+    """The i-th posted value of a repeated field, or the default when absent."""
+    return values[i] if i < len(values) else default
+
+
 def _rules_from_form(form) -> tuple[list[dict], str]:
-    names, kinds, patterns = form.getlist("rule_name"), form.getlist("rule_kind"), form.getlist("rule_pattern")
-    categories, strategies = form.getlist("rule_category"), form.getlist("rule_strategy")
-    replacements, enabled = form.getlist("rule_replacement"), form.getlist("rule_enabled")
+    columns = {field: form.getlist(f"rule_{field}") for field in _RULE_FIELDS}
     rules = []
-    for i, pattern in enumerate(patterns):
+    for i, pattern in enumerate(columns["pattern"]):
         pattern = (pattern or "").strip()
         if not pattern:
             continue
-        kind = kinds[i] if i < len(kinds) and kinds[i] in FORM_KINDS else "literal"
-        if kind == "regex":
-            try:
-                re.compile(pattern)
-            except re.error as error:
-                return [], f"Rule {i + 1}: bad regex ({error})"
-        rules.append({
-            "name": (names[i] if i < len(names) else "").strip() or f"rule {len(rules) + 1}",
-            "kind": kind,
-            "pattern": pattern,
-            "category": (categories[i] if i < len(categories) else "").strip() or ("name" if kind == "literal" else "value"),
-            "strategy": strategies[i] if i < len(strategies) and strategies[i] in STRATEGIES else "pseudonym",
-            "replacement": (replacements[i] if i < len(replacements) else "").strip(),
-            "enabled": (enabled[i] if i < len(enabled) else "on") == "on",
-        })
+        rule = _rule_from_row(columns, i, pattern, len(rules))
+        error = _regex_error(pattern) if rule["kind"] == "regex" else ""
+        if error:
+            return [], f"Rule {i + 1}: bad regex ({error})"
+        rules.append(rule)
     return rules, ""
+
+
+def _rule_from_row(columns: dict, i: int, pattern: str, count: int) -> dict:
+    kind = _at(columns["kind"], i)
+    kind = kind if kind in FORM_KINDS else "literal"
+    strategy = _at(columns["strategy"], i)
+    return {
+        "name": _at(columns["name"], i).strip() or f"rule {count + 1}",
+        "kind": kind,
+        "pattern": pattern,
+        "category": _at(columns["category"], i).strip()
+        or ("name" if kind == "literal" else "value"),
+        "strategy": strategy if strategy in STRATEGIES else "pseudonym",
+        "replacement": _at(columns["replacement"], i).strip(),
+        "enabled": _at(columns["enabled"], i, "on") == "on",
+    }
+
+
+def _regex_error(pattern: str) -> str:
+    try:
+        re.compile(pattern)
+    except re.error as error:
+        return str(error)
+    return ""
 
 
 async def save_privacy(request: Request, user, form) -> str:
@@ -99,7 +157,7 @@ async def save_privacy(request: Request, user, form) -> str:
     connections = {}
     for key, value in form.multi_items():
         if key.startswith("connection_") and value in ("on", "off"):
-            connections[key[len("connection_"):]] = value == "on"
+            connections[key[len("connection_") :]] = value == "on"
     chosen = set(form.getlist("detector"))
     new_cfg = {
         **cfg,
@@ -124,7 +182,9 @@ async def bench_privacy(request: Request, form) -> str:
         "out": out,
         "back": back,
         "round_trip": back == text,
-        "hits": [{"rule": h.rule, "category": h.category, "count": h.count} for h in hits],
+        "hits": [
+            {"rule": h.rule, "category": h.category, "count": h.count} for h in hits
+        ],
     }
     return render_privacy(request, bench=bench)
 
@@ -144,12 +204,18 @@ async def forget_privacy(request: Request, user, form) -> str:
     PrivacyMaps.forget(row["id"])
     invalidate()
     PrivacyAudits.write(user.id, "forget", f"{row['category']} {row['fake']}")
-    return render_privacy(request, message="Forgotten. Old replies holding that pseudonym stay as they are.", kind="success")
+    return render_privacy(
+        request,
+        message="Forgotten. Old replies holding that pseudonym stay as they are.",
+        kind="success",
+    )
 
 
 async def purge_privacy(request: Request, user, form) -> str:
     if form.get("confirm") != "yes":
-        return render_privacy(request, message="Tick the confirmation to purge.", kind="error")
+        return render_privacy(
+            request, message="Tick the confirmation to purge.", kind="error"
+        )
     count = PrivacyMaps.purge()
     invalidate()
     PrivacyAudits.write(user.id, "purge", f"{count} pairs")

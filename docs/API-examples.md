@@ -1,6 +1,6 @@
 # Sage.Education AI API Tutorial
 
-Welcome to the Sage.Education AI API tutorial! This guide will help you interact with the Sage.Education AI API efficiently. 
+Welcome to the Sage.Education AI API tutorial! This guide will help you interact with the Sage.Education AI API efficiently.
 
 ## Getting Started
 
@@ -10,14 +10,14 @@ You’ll need an API token for authentication. Follow these steps to get your to
 
 Use the following `curl` command to authenticate and retrieve your token.
 
-Script to store your email and pass as varables for bash scripts. This script asks for your email and password and stores them in variables for use in other scripts.
+Script to store your email and pass as variables for bash scripts. This script asks for your email and password and stores them in variables for use in other scripts.
 ```bash
 read -p "Enter your email: " email &&\
 read -sp "Enter your password: " password &&\
 echo "export SAGE_EMAIL=$email" > ~/.sage &&\
 echo "export SAGE_PASSWORD=$password" >> ~/.sage &&\
 export SAGE_EMAIL=$email &&\
-export SAGE_PASSWORD=$password 
+export SAGE_PASSWORD=$password
 ```
 
 ```bash
@@ -53,7 +53,7 @@ This will show you a list of models accessible via the API.
 Initiate a new chat session with the command below:
 
 ```bash
-CHAT_RESPONSE=$(curl -X POST https://sage.startr.cloudapi/v1/chats/new \
+CHAT_RESPONSE=$(curl -X POST https://sage.startr.cloud/api/v1/chats/new \
 -H "Authorization: Bearer $TOKEN" \
 -H 'Content-Type: application/json' \
 -d '{
@@ -71,7 +71,7 @@ CHAT_ID=$(echo $CHAT_RESPONSE | jq -r '.id')
 To send a message through the chat, use:
 
 ```bash
-curl -X POST https://sage.startr.cloudapi/v1/chats/$CHAT_ID/messages \
+curl -X POST https://sage.startr.cloud/api/v1/chats/$CHAT_ID/messages \
 -H "Authorization: Bearer $TOKEN" \
 -H 'Content-Type: application/json' \
 -d '{

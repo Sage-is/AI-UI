@@ -99,7 +99,7 @@ OCI_LABELS_BASE := --label org.opencontainers.image.source=https://github.com/Sa
               --label org.opencontainers.image.version=$(IMAGE_TAG) \
               --label org.opencontainers.image.created=$(shell date -u +%Y-%m-%dT%H:%M:%SZ) \
               --label org.opencontainers.image.title=Sage.is-AI-UI \
-              --label org.opencontainers.image.licenses=MIT
+              --label org.opencontainers.image.licenses=AGPL-3.0-or-later
 OCI_LABELS := --label org.opencontainers.image.revision=$(OCI_REVISION) $(OCI_LABELS_BASE)
 CONTAINER_NAME ?= $(shell echo $(GIT_REPO_SLUG) | tr '/' '-')
 PORT_MAPPING ?= 8080:8080
