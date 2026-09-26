@@ -301,7 +301,7 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
   - [x] Base image bumped to glibc 2.44 (a fresh image died at boot: Python needed 2.44, the pinned base had 2.43); the Dockerfile now imports math, ssl and sqlite3 right after installing Python, so a skew fails the build
   - [x] Cognitive-complexity gate green by refactoring, not raising: privacy functions split under 15, the chat path back to 357 via a pass-through reverser, the tool runner's body helper; the baseline only follows the `_generate_chat_completion` rename at its unchanged 57
   - [ ] [MANUALLY] Commit, push `develop`, `make minor_release`, `make bump_release_version`, rename `## [Unreleased]` to `## [3.2.0] — <date>`, commit
-  - [ ] [WE] Gates on the release branch: `privacy_tests`, `lint`, `gauntlet_fast`, `it_build` then `e2e`, `distribution_verify`
+  - [x] [WE] Gates on the release branch (2026-09-25): `gauntlet_fast` (with `privacy_tests`), `distribution_verify`, `it_build` then `e2e` 199/245, 0 failing, 46 pending; `lint` Python green, frontend ESLint 9,622 = the carded baseline, none new
   - [ ] [MANUALLY] `make ship` (tags and pushes); then CapRover deploy by digest and `curl …/api/config`
 
 - [ ] **`make caprover_app_create APP=<name>` wrapper**: one Makefile call to register a new CapRover app via the HTTP API — avoid the dashboard click-through we did for `try-sage-is` on `captain.example.com` 2026-05-01.
