@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-8 -8 80 80" width="80" height="80" fill="none" stroke="#1a1714" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Ledger emblem">
+<style>
+svg{--ink:#1a1714;--tile:#fdfaf3}
+@media (prefers-color-scheme:dark){svg{--ink:#fdfaf3;--tile:#1a1714}}
+svg,.tile{stroke:var(--ink)}
+.tile{fill:var(--tile)}
+[fill="#1a1714"]{fill:var(--ink)}
+</style>
+<polygon class="tile" points="-4,32 14,-2 50,-2 68,32 50,66 14,66" fill="#fdfaf3" stroke="#1a1714" stroke-width="4"/>
+<path d="M32,18 L15,14 L15,46 L32,50 Z M32,18 L49,14 L49,46 L32,50 Z M32,18 L32,50"/>
+<path d="M20,23 L29,23 M20,30 L29,30 M35,23 L44,23 M35,30 L44,30" stroke="#d4a017" stroke-width="2.5"/>
+</svg>

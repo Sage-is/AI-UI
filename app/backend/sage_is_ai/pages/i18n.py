@@ -52,7 +52,8 @@ def supported() -> frozenset[str]:
     """
     try:
         return frozenset(
-            p.name for p in _LOCALES.iterdir()
+            p.name
+            for p in _LOCALES.iterdir()
             if p.is_dir() and (p / "translation.json").is_file()
         )
     except OSError:
@@ -84,7 +85,9 @@ def _catalog(locale: str) -> dict:
         return {}
 
 
-def t(key: str, params: dict[str, Any] | None = None, *, locale: str = DEFAULT_LOCALE) -> str:
+def t(
+    key: str, params: dict[str, Any] | None = None, *, locale: str = DEFAULT_LOCALE
+) -> str:
     """Resolve a dotted i18next key and fill in any `{{name}}` placeholders.
 
     Returns the key itself when it does not resolve, the same as i18next. An

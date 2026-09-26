@@ -18,7 +18,7 @@ high-cardinality label sets.
 from __future__ import annotations
 
 import time
-from typing import Dict, List, Sequence, Any
+from typing import Dict, List, Sequence
 
 from fastapi import FastAPI, Request
 from opentelemetry import metrics

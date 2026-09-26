@@ -113,7 +113,11 @@ def _unfold(raw: str) -> list[str]:
 def _parse_dt(value: str) -> tuple[datetime | None, bool]:
     """Return the moment and whether it was date-only (an all-day event)."""
     value = value.strip()
-    for fmt, all_day in (("%Y%m%dT%H%M%SZ", False), ("%Y%m%dT%H%M%S", False), ("%Y%m%d", True)):
+    for fmt, all_day in (
+        ("%Y%m%dT%H%M%SZ", False),
+        ("%Y%m%dT%H%M%S", False),
+        ("%Y%m%d", True),
+    ):
         try:
             parsed = datetime.strptime(value, fmt)
         except ValueError:
@@ -184,7 +188,11 @@ def _expand(event: dict[str, Any], horizon: datetime) -> list[datetime]:
             week_start = cursor - timedelta(days=cursor.weekday())
             for day in sorted(bydays):
                 moment = week_start + timedelta(days=day)
-                if moment >= start and moment <= horizon and (not until or moment <= until):
+                if (
+                    moment >= start
+                    and moment <= horizon
+                    and (not until or moment <= until)
+                ):
                     out.append(moment)
             cursor = cursor + timedelta(weeks=interval)
         elif freq == "DAILY":
@@ -453,7 +461,15 @@ def days_with_events(events: list[dict[str, Any]]) -> set[date]:
 # them: the home card shows only first letters, and "S M T W T F S" has two S
 # and two T in it — the full name rides along for anyone who cannot see the
 # column.
-WEEKDAY_NAMES = ("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+WEEKDAY_NAMES = (
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+)
 WEEKDAY_SHORT = ("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
 
 
@@ -466,7 +482,9 @@ def _week_start(day: date) -> date:
     return day - timedelta(days=(day.weekday() + 1) % 7)
 
 
-def _grid(first_cell: date, weeks: int, marked: set[date], month: int | None) -> list[list[dict]]:
+def _grid(
+    first_cell: date, weeks: int, marked: set[date], month: int | None
+) -> list[list[dict]]:
     rows = []
     day = first_cell
     for _ in range(weeks):
@@ -487,7 +505,9 @@ def _grid(first_cell: date, weeks: int, marked: set[date], month: int | None) ->
     return rows
 
 
-def rolling_grid(events: list[dict[str, Any]], *, weeks: int = 5, today: date | None = None):
+def rolling_grid(
+    events: list[dict[str, Any]], *, weeks: int = 5, today: date | None = None
+):
     """Five weeks from the Sunday of this week — the home card's dot grid."""
     today = today or datetime.now(timezone.utc).date()
     return _grid(_week_start(today), weeks, days_with_events(events), None)

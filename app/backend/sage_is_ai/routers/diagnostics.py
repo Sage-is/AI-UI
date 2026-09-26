@@ -48,7 +48,6 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
-import time
 from pathlib import Path
 from typing import Optional
 
@@ -244,9 +243,7 @@ def _endpoints_section(app) -> dict:
     rows = []
     for url, record in snapshot.items():
         last_status = record.get("last_status") or "unknown"
-        status_str = (
-            last_status if last_status in _STATUS_RANK else "unknown"
-        )
+        status_str = last_status if last_status in _STATUS_RANK else "unknown"
         sort_key = (
             _STATUS_RANK.get(status_str, 3),
             -(record.get("consecutive_failures") or 0),
@@ -345,7 +342,9 @@ def _detect_fs_type(path: Path) -> str:
             if len(parts) < 3:
                 continue
             mount_point, fs_type = parts[1], parts[2]
-            if target == mount_point or target.startswith(mount_point.rstrip("/") + "/"):
+            if target == mount_point or target.startswith(
+                mount_point.rstrip("/") + "/"
+            ):
                 if len(mount_point) > len(best_match):
                     best_match = mount_point
                     best_fs = fs_type
@@ -378,9 +377,6 @@ def _check_webui_secret_key() -> dict:
 
     is_ephemeral = fs_type in _EPHEMERAL_FS_TYPES
     correct_length = key_len == expected_len
-    persisted = key_file_present or (
-        key_present and not is_ephemeral and correct_length
-    )
 
     technical = {
         "key_present": key_present,
@@ -394,12 +390,7 @@ def _check_webui_secret_key() -> dict:
 
     # Degraded if anything in the persistence chain is missing or
     # ephemeral. Key length is reported but not the value (rule R1).
-    healthy = (
-        key_present
-        and correct_length
-        and key_file_present
-        and not is_ephemeral
-    )
+    healthy = key_present and correct_length and key_file_present and not is_ephemeral
 
     if healthy:
         return _row(

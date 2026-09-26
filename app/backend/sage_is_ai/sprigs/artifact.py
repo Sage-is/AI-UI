@@ -167,9 +167,7 @@ def _signing_policy(spec: dict) -> tuple[str, bool]:
     return pubkey, required
 
 
-async def _verify_signature(
-    tar_zst: Path, spec: dict, catalog_name: str
-) -> None:
+async def _verify_signature(tar_zst: Path, spec: dict, catalog_name: str) -> None:
     """Enforce the signing policy on a sha256-verified tar. Fail-closed.
 
     - Signature present + key pinned  -> verify (any failure refuses the graft).
@@ -197,7 +195,8 @@ async def _verify_signature(
             )
         log.warning(
             "artifact for '%s' carries a signature but no public key is "
-            "pinned; signature NOT verified", catalog_name,
+            "pinned; signature NOT verified",
+            catalog_name,
         )
         return
 
@@ -288,7 +287,8 @@ async def _obtain_tar(spec: dict, root: Path, catalog_name: str) -> Path:
             # be signed by now — fall through to a fresh pull instead of failing.
             log.warning(
                 "cached artifact for '%s' has no signature but one is now "
-                "required; re-pulling", catalog_name,
+                "required; re-pulling",
+                catalog_name,
             )
         else:
             try:
@@ -296,13 +296,15 @@ async def _obtain_tar(spec: dict, root: Path, catalog_name: str) -> Path:
                 await _verify_signature(cached, spec, catalog_name)
                 log.warning(
                     "using volume-cached artifact for '%s' (%s); no network pull",
-                    catalog_name, cached.name,
+                    catalog_name,
+                    cached.name,
                 )
                 return cached
             except ArtifactVerificationError:
                 log.warning(
                     "cached artifact for '%s' failed verification; discarding "
-                    "and re-pulling", catalog_name,
+                    "and re-pulling",
+                    catalog_name,
                 )
                 cached.unlink(missing_ok=True)
                 cached_sig.unlink(missing_ok=True)
@@ -374,8 +376,12 @@ async def ensure(spec: dict, data_dir: Path, catalog_name: str) -> str:
             and tag_marker.read_text().strip() == tag
         )
         if already:
-            log.warning("delivery '%s' tag %s already present at %s; skipping",
-                        catalog_name, tag, sentinel)
+            log.warning(
+                "delivery '%s' tag %s already present at %s; skipping",
+                catalog_name,
+                tag,
+                sentinel,
+            )
             return str(target)
         tar_zst = await _obtain_tar(spec, root, catalog_name)
         await _extract(tar_zst, target)  # extract the packed tree into target
@@ -411,13 +417,16 @@ async def ensure(spec: dict, data_dir: Path, catalog_name: str) -> str:
     ):
         log.warning(
             "artifact already present for '%s' tag %s (%s); skipping pull",
-            catalog_name, tag, sentinel,
+            catalog_name,
+            tag,
+            sentinel,
         )
         return str(serve_path)
     if sentinel.exists():
         log.warning(
             "artifact for '%s' is a different tag (want %s); re-pulling",
-            catalog_name, tag,
+            catalog_name,
+            tag,
         )
 
     tar_zst = await _obtain_tar(spec, root, catalog_name)
@@ -434,7 +443,9 @@ async def ensure(spec: dict, data_dir: Path, catalog_name: str) -> str:
                 f"artifact for '{catalog_name}' is missing {expected} (seed=model-dir)"
             )
         tag_marker.write_text(tag)
-        log.warning("artifact extracted for '%s' tag %s -> %s", catalog_name, tag, extract_dir)
+        log.warning(
+            "artifact extracted for '%s' tag %s -> %s", catalog_name, tag, extract_dir
+        )
         return str(extract_dir)
 
     cache_dir = _chroma_cache_dir(data_dir)

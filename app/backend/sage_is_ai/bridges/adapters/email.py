@@ -39,7 +39,9 @@ class EmailBridge(MessageBridge):
         self._password: str = config.get("password", "")
         self._poll_interval: int = int(config.get("poll_interval", 30))
         self._subject_prefix: str = config.get("subject_prefix", "")
-        self._default_subject: str = config.get("default_subject", "Message from Sage AI")
+        self._default_subject: str = config.get(
+            "default_subject", "Message from Sage AI"
+        )
 
         self._poll_task: Optional[asyncio.Task] = None
         self._stop_event = asyncio.Event()
@@ -134,7 +136,9 @@ class EmailBridge(MessageBridge):
     # Webhook stubs (email doesn't use webhooks)
     # ------------------------------------------------------------------
 
-    async def handle_webhook(self, body: bytes, headers: dict) -> Optional[IncomingMessage]:
+    async def handle_webhook(
+        self, body: bytes, headers: dict
+    ) -> Optional[IncomingMessage]:
         return None
 
     async def verify_webhook_signature(self, body: bytes, headers: dict) -> bool:

@@ -2,7 +2,6 @@ import logging
 from typing import Optional, Tuple, List, Dict, Any
 from urllib.parse import urlparse
 
-import grpc
 from sage_is_ai.config import (
     QDRANT_API_KEY,
     QDRANT_GRPC_PORT,
@@ -19,7 +18,6 @@ from sage_is_ai.retrieval.vector.main import (
     VectorItem,
 )
 from qdrant_client import QdrantClient as Qclient
-from qdrant_client.http.exceptions import UnexpectedResponse
 from qdrant_client.http.models import PointStruct
 from qdrant_client.models import models
 

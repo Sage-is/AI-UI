@@ -7,7 +7,6 @@ from sage_is_ai.bridges.types import PlatformInfo
 from sage_is_ai.models.bridges import (
     BridgeConnections,
     BridgeConnectionModel,
-    BridgeThreads,
 )
 
 log = logging.getLogger(__name__)
@@ -34,7 +33,9 @@ class BridgeManager:
         self.app = app
         self._adapters: dict[str, MessageBridge] = {}  # connection_id -> adapter
         self._health_task: Optional[asyncio.Task] = None
-        self._reconnect_delays: dict[str, float] = {}  # connection_id -> backoff seconds
+        self._reconnect_delays: dict[
+            str, float
+        ] = {}  # connection_id -> backoff seconds
 
     async def start(self) -> None:
         """Load enabled connections and start adapters."""

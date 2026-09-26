@@ -12,7 +12,11 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 
 
 from sage_is_ai.utils.auth import get_admin_user, get_verified_user
-from sage_is_ai.utils.access_control import has_access, has_facilitator_access, has_permission
+from sage_is_ai.utils.access_control import (
+    has_access,
+    has_facilitator_access,
+    has_permission,
+)
 
 
 router = APIRouter()

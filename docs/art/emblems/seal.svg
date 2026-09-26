@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-8 -8 80 80" width="80" height="80" fill="none" stroke="#1a1714" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Seal emblem">
+<style>
+svg{--ink:#1a1714;--tile:#fdfaf3}
+@media (prefers-color-scheme:dark){svg{--ink:#fdfaf3;--tile:#1a1714}}
+svg,.tile{stroke:var(--ink)}
+.tile{fill:var(--tile)}
+[fill="#1a1714"]{fill:var(--ink)}
+</style>
+<polygon class="tile" points="-4,32 14,-2 50,-2 68,32 50,66 14,66" fill="#fdfaf3" stroke="#1a1714" stroke-width="4"/>
+<path d="M26,43 L22,43 L14,57 L16,53 L18,57 Z M38,43 L42,43 L50,57 L48,53 L46,57 Z" fill="#1a1714" stroke="none"/>
+<circle cx="32" cy="30" r="15"/>
+<circle cx="32" cy="30" r="9" stroke="#d4a017" stroke-width="3"/>
+<path d="M32,23 L34,28 L39,30 L34,32 L32,37 L30,32 L25,30 L30,28 Z" fill="#1a1714" stroke="none"/>
+</svg>

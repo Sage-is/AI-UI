@@ -365,7 +365,9 @@ _DEFAULT_AGENT_CAPABILITIES: dict = {
 }
 
 
-def _ensure_agent(persona_user_id: str, agent_def: dict, kb_id: Optional[str] = None) -> None:
+def _ensure_agent(
+    persona_user_id: str, agent_def: dict, kb_id: Optional[str] = None
+) -> None:
     """Find-or-update one agent (a Model row) by slug.
 
     Agents in this codebase ARE model rows with `base_model_id` set —
@@ -618,9 +620,7 @@ def _ensure_kb(app, persona_user_id: str, slug: str) -> Optional[str]:
         return None
 
     # Stamp the new file ids into the KB row and persist the version.
-    Knowledges.update_knowledge_data_by_id(
-        knowledge.id, {"file_ids": new_file_ids}
-    )
+    Knowledges.update_knowledge_data_by_id(knowledge.id, {"file_ids": new_file_ids})
 
     version_map[slug] = folder_hash
     TRY_SAGE_KB_INGESTED_VERSION.value = json.dumps(version_map)
@@ -847,9 +847,7 @@ async def seed_try_sage(app) -> None:
     # so the operator's terminal stays clean. First boot prints once;
     # adding a new persona seat prints once per added seat.
     if needs_mint:
-        _print_persona_links(
-            personas, app.state.try_sage_persona_links, ttl_hours
-        )
+        _print_persona_links(personas, app.state.try_sage_persona_links, ttl_hours)
 
 
 def _print_persona_links(
@@ -964,9 +962,9 @@ async def reset_persona_state(app) -> None:
                 # collection should not block the reset. Log + move on.
                 log.warning(f"try_sage_seed: file cleanup partial for {f.id}: {e}")
 
-    # Re-run seed for drift correction (idempotent) and to refresh the
-    # persona-link cache with newly-minted JWTs. The previous cycle's
-    # links would JWT-expire on their own, but rotating signals "new
-    # session" to anyone holding an old link from the projector.
+    # Re-run seed for drift correction (idempotent). This mints persona
+    # links for personas missing from the cache, links handed out before reset
+    # keep working until their TTL; the session cutoff set above is what signs
+    # everyone out.
     await seed_try_sage(app)
     log.info("try_sage_seed: reset complete; persona chats/files wiped, KBs preserved")

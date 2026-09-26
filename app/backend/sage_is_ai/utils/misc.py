@@ -5,7 +5,7 @@ import uuid
 import logging
 from datetime import timedelta
 from pathlib import Path
-from typing import Callable, Optional
+from typing import Optional
 import json
 
 

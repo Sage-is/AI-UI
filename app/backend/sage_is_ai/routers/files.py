@@ -32,7 +32,6 @@ from sage_is_ai.models.files import (
 )
 from sage_is_ai.models.knowledge import Knowledges
 
-from sage_is_ai.routers.knowledge import get_knowledge, get_knowledge_list
 from sage_is_ai.routers.retrieval import ProcessFileForm, process_file
 from sage_is_ai.routers.audio import transcribe
 from sage_is_ai.storage.provider import Storage
@@ -585,7 +584,6 @@ async def get_file_content_by_id(id: str, user=Depends(get_verified_user)):  # n
         else:
             # File path doesn’t exist, return the content as .txt if possible
             file_content = file.content.get("content", "")
-            file_name = file.filename
 
             # Create a generator that encodes the file content
             def generator():
@@ -623,7 +621,6 @@ async def delete_file_by_id(id: str, user=Depends(get_verified_user)):
         or user.role == "admin"
         or has_access_to_file(id, "write", user)
     ):
-
         result = Files.delete_file_by_id(id)
         if result:
             try:

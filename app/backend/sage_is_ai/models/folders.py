@@ -9,7 +9,6 @@ from sage_is_ai.models.chats import Chats
 from sage_is_ai.env import SRC_LOG_LEVELS
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import BigInteger, Column, Text, JSON, Boolean
-from sage_is_ai.utils.access_control import get_permissions
 
 
 log = logging.getLogger(__name__)

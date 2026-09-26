@@ -58,8 +58,14 @@ describe('Pages index', () => {
 						// screens of markup burying the one useful word, the
 						// href. A gate whose failure you have to go investigate
 						// is half a gate.
+						//
+						// The marker is `page-heading`, the one shell.py documents
+						// as proof a server-rendered page answered. This used to
+						// look for the literal string `<main>`, which broke the
+						// day Startr Swap landed `data-swap` on that tag — a
+						// bare-tag match is a bet no attribute ever appears.
 						expect(
-							String(res.body).includes('<main>'),
+							String(res.body).includes('data-cy="page-heading"'),
 							`${href} returned the SPA shell, not a server-rendered page`
 						).to.eq(true);
 					});

@@ -1,5 +1,5 @@
 ---
-title: "Contributing to Sage AI WebUI"
+title: "Contributing to Sage.is AI-UI"
 description: "Guidelines for contributing code, documentation, translations, and bug reports."
 date: 2026-01-10
 tags:

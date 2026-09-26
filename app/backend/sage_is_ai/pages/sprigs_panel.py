@@ -51,7 +51,9 @@ _LABEL = {
 _GRAFTED = {"rooted", "delivered", "enabled"}
 
 
-def _card(name: str, spec: dict, g: dict | None, host_arch: str, error: dict | None = None) -> dict:
+def _card(
+    name: str, spec: dict, g: dict | None, host_arch: str, error: dict | None = None
+) -> dict:
     """One catalog row as data. `templates/sprigs.html` decides how it looks."""
     state = (g or {}).get("state") or "sprouted"
     if state in _GRAFTED:
@@ -95,13 +97,17 @@ def _card(name: str, spec: dict, g: dict | None, host_arch: str, error: dict | N
         "wires": [
             {**w, "value": (spec.get("wire_values") or {}).get(w["name"], "")}
             for w in (spec.get("wires") or [])
-        ] if state in _GRAFTED else [],
+        ]
+        if state in _GRAFTED
+        else [],
         "unwired": bool(spec.get("unwired")) and state in _GRAFTED,
         "missing_wires": ", ".join(spec.get("missing_wires") or []),
     }
 
 
-async def render_panel(request: Request, user, *, message: str = "", kind: str = "info") -> str:
+async def render_panel(
+    request: Request, user, *, message: str = "", kind: str = "info"
+) -> str:
     """Build the context; `templates/sprigs.html` decides how it looks.
 
     The whole panel is also the whole swap target. Returning everything rather
@@ -124,6 +130,7 @@ async def render_panel(request: Request, user, *, message: str = "", kind: str =
         ],
     )
 
+
 async def run_action(request: Request, user, name: str, verb: str) -> str:
     """Run a lifecycle action through the API handler, then re-render.
 
@@ -145,19 +152,27 @@ async def run_action(request: Request, user, name: str, verb: str) -> str:
             # no business knowing it, and a value it cannot send is a value it
             # cannot get wrong.
             capability = (supervisor.CATALOG.get(name) or {}).get("capability", "")
-            res = await graft_sprig(request, GraftRequest(name=name, capability=capability), user)
+            res = await graft_sprig(
+                request, GraftRequest(name=name, capability=capability), user
+            )
             extra = getattr(res, "warning", None) or ""
         else:
             res = await prune_sprig(request, PruneRequest(name=name), user)
             extra = " ".join(res.get("messages") or [])
     except HTTPException as exc:
         return await render_panel(
-            request, user, message=f"Failed to {verb} {name}: {exc.detail}", kind="error"
+            request,
+            user,
+            message=f"Failed to {verb} {name}: {exc.detail}",
+            kind="error",
         )
 
     done = "Grafted" if verb == "graft" else "Pruned"
     return await render_panel(
-        request, user, message=f"{done} {name}." + (f" {extra}" if extra else ""), kind="success"
+        request,
+        user,
+        message=f"{done} {name}." + (f" {extra}" if extra else ""),
+        kind="success",
     )
 
 

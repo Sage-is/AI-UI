@@ -106,7 +106,8 @@ def _build_sentence_transformers(model_id: str):
 
     device = os.environ.get("SPRIG_EMBEDDING_DEVICE", "cpu")
     trust = (
-        os.environ.get("RAG_EMBEDDING_MODEL_TRUST_REMOTE_CODE", "True").lower() == "true"
+        os.environ.get("RAG_EMBEDDING_MODEL_TRUST_REMOTE_CODE", "True").lower()
+        == "true"
     )
     model = SentenceTransformer(model_id, device=device, trust_remote_code=trust)
 
@@ -167,7 +168,9 @@ def _build_onnx_transformer(pooling: str, model_id: str = ""):
 
 def _load(backend: str, model_id: str, dim: int, pooling: str = "mean") -> None:
     try:
-        log.warning("loading embedding cultivar backend=%s model=%s ...", backend, model_id)
+        log.warning(
+            "loading embedding cultivar backend=%s model=%s ...", backend, model_id
+        )
         if backend == "onnx":
             embed, label = _build_onnx()
         elif backend == "onnx-transformer":
@@ -183,7 +186,10 @@ def _load(backend: str, model_id: str, dim: int, pooling: str = "mean") -> None:
         if actual != dim:
             log.warning(
                 "cultivar %s reports dim %s; catalog declared %s; using %s",
-                label, actual, dim, actual,
+                label,
+                actual,
+                dim,
+                actual,
             )
         app.state.embed = embed
         app.state.label = label
@@ -191,7 +197,9 @@ def _load(backend: str, model_id: str, dim: int, pooling: str = "mean") -> None:
         app.state.ready = True
         log.warning("cultivar %s ready (dim=%s)", label, actual)
     except Exception as exc:  # noqa: BLE001 — fail the graft fast and loudly
-        log.error("cultivar load failed (backend=%s model=%s): %s", backend, model_id, exc)
+        log.error(
+            "cultivar load failed (backend=%s model=%s): %s", backend, model_id, exc
+        )
         # Exit so the supervisor's returncode check fails the graft immediately
         # instead of hanging until ready_timeout_s.
         os._exit(1)

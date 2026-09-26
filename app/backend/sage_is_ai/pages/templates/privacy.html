@@ -1,0 +1,131 @@
+{# Privacy rules. The whole panel is the htmx swap target. Plain HTML first. #}
+{% set label_s = "--size:0.8rem; --weight:500" %}
+{% set help_s = "--size:0.7rem; --c:var(--muted)" %}
+{% set input_s = "--w:100%; --bxs:border-box; --p:0.4rem 0.6rem; --size:0.85rem; --br:0.4rem; outline:1px solid var(--line); --bgc:transparent; --c:inherit" %}
+{% set legend_s = "--size:0.85rem; --weight:600; --p:0" %}
+{% set button_s = "--p:0.35rem 0.9rem; --size:0.8rem; --br:999px; outline:1px solid var(--line); --cur:pointer" %}
+{% set td_s = "--p:0.25rem 0.4rem; --size:0.8rem; --va:top" %}
+
+<div id="privacy-panel">
+  {% if message %}
+  <p class="toast toast-float toast-{{ kind }}" role="status" data-cy="panel-message">{{ message }}</p>
+  {% endif %}
+
+  <p style="{{ help_s }}">Text bound for a flagged connection is pseudonymized before it leaves; the reply is
+    put back on the way in, streamed or not. Same-shape fakes, the same fake for the same value, reversible
+    through a map that stays on this instance.</p>
+
+  <form data-swap-off hx-post="/pages/admin/privacy/save" hx-target="#privacy-panel" hx-swap="outerHTML" data-cy="privacy-form">
+    <fieldset style="--p:0; --m:1rem 0">
+      <legend style="{{ legend_s }}">Switches</legend>
+      <p><label style="{{ label_s }}"><input type="checkbox" name="enabled" value="on" {% if enabled %}checked{% endif %} data-cy="privacy-enabled"> Privacy rules on</label></p>
+      <p><label style="{{ label_s }}"><input type="checkbox" name="default_external" value="on" {% if default_external %}checked{% endif %} data-cy="privacy-default-external"> Filter every external connection unless told otherwise</label>
+        <small style="{{ help_s }}"> (on by default; untick to filter only the connections you switch on below)</small></p>
+      {% if connections %}
+      <table style="--w:100%; --bc:collapse">
+        <thead><tr><th style="{{ td_s }}">Connection</th><th style="{{ td_s }}">Filter</th><th style="{{ td_s }}">Effective</th></tr></thead>
+        <tbody>
+        {% for c in connections %}
+        <tr data-cy="privacy-connection-{{ c.key }}">
+          <td style="{{ td_s }}">{{ c.name }}{% if not c.enabled %} <small style="{{ help_s }}">(connection disabled)</small>{% endif %}<br><small style="{{ help_s }}">{{ c.url }}</small></td>
+          <td style="{{ td_s }}"><select name="connection_{{ c.key }}" style="{{ input_s }}" data-cy="privacy-connection-{{ c.key }}-state">
+            {% for value, text in tristate %}<option value="{{ value }}" {% if c.state == value %}selected{% endif %}>{{ text }}</option>{% endfor %}
+          </select></td>
+          <td style="{{ td_s }}">{{ "filtered" if c.effective else "not filtered" }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p style="{{ help_s }}">No external connections configured.</p>
+      {% endif %}
+    </fieldset>
+
+    <fieldset style="--p:0; --m:1rem 0">
+      <legend style="{{ legend_s }}">Detectors</legend>
+      {% for d in detectors %}
+      <label style="{{ label_s }}; --d:inline-block; --mr:1rem"><input type="checkbox" name="detector" value="{{ d.name }}" {% if d.on %}checked{% endif %} data-cy="privacy-detector-{{ d.name }}"> {{ d.name }} <small style="{{ help_s }}">({{ d.category }})</small></label>
+      {% endfor %}
+    </fieldset>
+
+    <fieldset style="--p:0; --m:1rem 0">
+      <legend style="{{ legend_s }}">Rules</legend>
+      <p style="{{ help_s }}">A literal matches a word or phrase as typed. A regex is yours to write. Pseudonym keeps the
+        value's shape and reverses; literal replaces with your text and reverses when unique; redact is one way.</p>
+      <table style="--w:100%; --bc:collapse" data-cy="privacy-rules">
+        <thead><tr>
+          <th style="{{ td_s }}">Name</th><th style="{{ td_s }}">Kind</th><th style="{{ td_s }}">Pattern</th>
+          <th style="{{ td_s }}">Category</th><th style="{{ td_s }}">Strategy</th><th style="{{ td_s }}">Replacement</th><th style="{{ td_s }}">Enabled</th>
+        </tr></thead>
+        <tbody>
+        {% for r in rules %}
+        <tr data-cy="privacy-rule-row">
+          <td style="{{ td_s }}"><input name="rule_name" value="{{ r.name }}" style="{{ input_s }}" data-cy="rule-name"></td>
+          <td style="{{ td_s }}"><select name="rule_kind" style="{{ input_s }}" data-cy="rule-kind">{% for k in kinds if k != "detector" %}<option value="{{ k }}" {% if r.kind == k %}selected{% endif %}>{{ k }}</option>{% endfor %}</select></td>
+          <td style="{{ td_s }}"><input name="rule_pattern" value="{{ r.pattern }}" style="{{ input_s }}" data-cy="rule-pattern"></td>
+          <td style="{{ td_s }}"><input name="rule_category" value="{{ r.category }}" style="{{ input_s }}" placeholder="name, street, org…" data-cy="rule-category"></td>
+          <td style="{{ td_s }}"><select name="rule_strategy" style="{{ input_s }}" data-cy="rule-strategy">{% for s in strategies %}<option value="{{ s }}" {% if r.strategy == s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select></td>
+          <td style="{{ td_s }}"><input name="rule_replacement" value="{{ r.replacement }}" style="{{ input_s }}" data-cy="rule-replacement"></td>
+          <td style="{{ td_s }}"><select name="rule_enabled" style="{{ input_s }}"><option value="on" {% if r.enabled %}selected{% endif %}>on</option><option value="off" {% if not r.enabled %}selected{% endif %}>off</option></select></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <p style="{{ help_s }}">The blank last row adds a rule. Clear a pattern to drop one.</p>
+    </fieldset>
+
+    <p><button type="submit" style="{{ button_s }}" data-cy="privacy-save">Save</button></p>
+  </form>
+
+  <section style="--m:1.5rem 0">
+    <h2 style="{{ legend_s }}">Test bench</h2>
+    <p style="{{ help_s }}">Runs the same engine against a throwaway map. Nothing here is stored.</p>
+    <form data-swap-off hx-post="/pages/admin/privacy/test" hx-target="#privacy-panel" hx-swap="outerHTML">
+      <textarea name="text" rows="3" style="{{ input_s }}" data-cy="bench-text">{{ bench.text if bench else "" }}</textarea>
+      <p><button type="submit" style="{{ button_s }}" data-cy="bench-run">See what the model would see</button></p>
+    </form>
+    {% if bench %}
+    <dl data-cy="bench-result">
+      <dt style="{{ label_s }}">The model sees</dt><dd><pre style="--ws:pre-wrap; --size:0.8rem" data-cy="bench-out">{{ bench.out }}</pre></dd>
+      <dt style="{{ label_s }}">Comes back as</dt><dd><pre style="--ws:pre-wrap; --size:0.8rem" data-cy="bench-back">{{ bench.back }}</pre></dd>
+      <dt style="{{ label_s }}">Hits</dt><dd data-cy="bench-hits">{% for h in bench.hits %}{{ h.rule }} ({{ h.category }}) ×{{ h.count }}{% if not loop.last %}, {% endif %}{% else %}none{% endfor %}</dd>
+      <dt style="{{ label_s }}">Round trip</dt><dd data-cy="bench-roundtrip">{{ "identical" if bench.round_trip else "differs (a redaction is one way)" }}</dd>
+    </dl>
+    {% endif %}
+  </section>
+
+  <section style="--m:1.5rem 0">
+    <h2 style="{{ legend_s }}">The map <small style="{{ help_s }}">({{ map_count }} pairs)</small></h2>
+    <p style="{{ help_s }}">Fakes and their kind. Revealing a real value is audited. Forgetting a pair means old replies
+      that hold its pseudonym stay as they are.</p>
+    <table style="--w:100%; --bc:collapse" data-cy="privacy-map">
+      <thead><tr><th style="{{ td_s }}">Category</th><th style="{{ td_s }}">Fake</th><th style="{{ td_s }}">Real</th><th style="{{ td_s }}"></th></tr></thead>
+      <tbody>
+      {% for row in map_recent %}
+      <tr data-cy="map-row">
+        <td style="{{ td_s }}">{{ row.category }}</td>
+        <td style="{{ td_s }}"><code>{{ row.fake }}</code></td>
+        <td style="{{ td_s }}">{% if row.id in revealed %}<code data-cy="map-real">{{ revealed[row.id] }}</code>{% else %}
+          <form data-swap-off hx-post="/pages/admin/privacy/reveal" hx-target="#privacy-panel" hx-swap="outerHTML" style="--d:inline">
+            <input type="hidden" name="id" value="{{ row.id }}"><button type="submit" style="{{ button_s }}" data-cy="map-reveal">Reveal</button></form>{% endif %}</td>
+        <td style="{{ td_s }}"><form data-swap-off hx-post="/pages/admin/privacy/forget" hx-target="#privacy-panel" hx-swap="outerHTML" style="--d:inline">
+            <input type="hidden" name="id" value="{{ row.id }}"><button type="submit" style="{{ button_s }}" data-cy="map-forget">Forget</button></form></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4" style="{{ td_s }}">Empty.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <form data-swap-off hx-post="/pages/admin/privacy/purge" hx-target="#privacy-panel" hx-swap="outerHTML" style="--m:0.75rem 0">
+      <label style="{{ label_s }}"><input type="checkbox" name="confirm" value="yes" data-cy="purge-confirm"> I understand every pair goes and nothing already sent can be reversed afterwards</label>
+      <button type="submit" style="{{ button_s }}" data-cy="purge-run">Purge the map</button>
+    </form>
+  </section>
+
+  <section style="--m:1.5rem 0">
+    <h2 style="{{ legend_s }}">Audit</h2>
+    <ul data-cy="privacy-audit" style="{{ help_s }}">
+      {% for a in audits %}<li>{{ a.action }} · {{ a.subject }} · user {{ a.user_id }}</li>{% else %}<li>Nothing yet.</li>{% endfor %}
+    </ul>
+  </section>
+</div>

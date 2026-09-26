@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Offline — Sage.is AI</title>
+<!-- Shown by sw.js when a navigation fails. It is the one page here that
+     cannot link a stylesheet: it renders precisely when the network is gone,
+     so every byte it needs is in this file. No startr.style, no pages.css, no
+     image. That is why the markup carries a <style> block, which nothing else
+     in pages/assets/ is allowed to do. Keep it plain and keep it small. -->
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 1.5rem;
+    font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: #ffffff;
+    color: #171717;
+  }
+  main { max-width: 28rem; }
+  h1 { font-size: 1.35rem; margin: 0 0 .75rem; }
+  p { margin: 0 0 1rem; }
+  .muted { color: #6b6b6b; font-size: .9rem; }
+  button {
+    font: inherit;
+    padding: .55rem 1.1rem;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+  @media (prefers-color-scheme: dark) {
+    body { background: #171717; color: #ededed; }
+    .muted { color: #9a9a9a; }
+  }
+</style>
+</head>
+<body>
+
+<main>
+  <h1>You are offline</h1>
+  <p>This page needs the network and could not reach it. Your models and your data are untouched — nothing was lost.</p>
+  <p class="muted">If Sage.is AI runs on this machine, check that the container is still up. If it runs elsewhere, check the connection to it.</p>
+  <p><button type="button" onclick="location.reload()">Try again</button></p>
+</main>
+
+</body>
+</html>

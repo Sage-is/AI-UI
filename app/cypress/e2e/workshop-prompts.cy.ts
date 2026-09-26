@@ -188,8 +188,15 @@ describe('Workshop: Prompts', () => {
 		// what it caught. Counted rather than selected, because the Svelte page
 		// omits the items until the menu opens and the server-rendered page hides
 		// them; both are correct, and both count zero.
+		// `checkVisibility()`, not jQuery `:visible`. Chrome 131+ hides a closed
+		// <details>' content with `content-visibility: hidden`, under which the
+		// hidden elements still report offsetWidth and client rects — the boxes
+		// jQuery's heuristic reads — so `:visible` calls a correctly hidden menu
+		// shown. `checkVisibility()` asks the browser instead of inferring.
 		cy.get('body').then(($b) => {
-			const open = $b.find('[data-cy="prompts-menu-delete"]:visible');
+			const open = $b
+				.find('[data-cy="prompts-menu-delete"]')
+				.filter((_, el) => el.checkVisibility());
 			expect(open.length, 'no row menu is showing before anything is clicked').to.eq(0);
 		});
 
@@ -247,7 +254,14 @@ describe('Workshop: Prompts', () => {
 		serverCommands().should('include', 'cy-prompt-gamma');
 
 		row('cy-prompt-gamma').find('[data-cy="prompts-menu"]').click();
-		cy.get('[data-cy="prompts-menu-delete"]').filter(':visible').first().click();
+		// `checkVisibility()` for the same Chrome 131+ reason as the menu-count
+		// assert above: `:visible` matches all three rows' delete buttons, and
+		// `.first()` then picks a closed row whose click lands on whatever paints
+		// at those coordinates.
+		cy.get('[data-cy="prompts-menu-delete"]')
+			.filter((_, el) => el.checkVisibility())
+			.first()
+			.click();
 
 		// A confirmation is REQUIRED — tolerantly as to shape, strictly as to
 		// existence. `CONFIRM` names both hooks, so this is not a vote for either

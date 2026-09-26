@@ -1,5 +1,4 @@
 import asyncio
-import json
 import logging
 import re
 from typing import Optional
@@ -21,14 +20,19 @@ from sage_is_ai.models.messages import (
 )
 
 
-from sage_is_ai.config import ENABLE_ADMIN_CHAT_ACCESS, ENABLE_ADMIN_EXPORT
 from sage_is_ai.constants import ERROR_MESSAGES
 from sage_is_ai.env import SRC_LOG_LEVELS
 
 
-from sage_is_ai.utils.auth import get_admin_user, get_verified_user, get_admin_or_facilitator_user
-from sage_is_ai.utils.access_control import has_access, has_facilitator_access, get_users_with_access
-from sage_is_ai.utils.facilitator import can_facilitator_manage_group
+from sage_is_ai.utils.auth import (
+    get_verified_user,
+    get_admin_or_facilitator_user,
+)
+from sage_is_ai.utils.access_control import (
+    has_access,
+    has_facilitator_access,
+    get_users_with_access,
+)
 from sage_is_ai.utils.webhook import post_webhook
 
 log = logging.getLogger(__name__)
@@ -55,7 +59,7 @@ def _get_user_for_message(message) -> UserNameResponse:
     return UserNameResponse(**user.model_dump())
 
 
-def _check_space_access(user,space):
+def _check_space_access(user, space):
     """Check if a user has read access to a space. Raises 403 if not."""
     if user.role == "admin":
         return
@@ -68,6 +72,7 @@ def _check_space_access(user,space):
     raise HTTPException(
         status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_MESSAGES.DEFAULT()
     )
+
 
 ############################
 # GetSpaces
@@ -92,7 +97,9 @@ async def get_all_spaces(user=Depends(get_verified_user)):
 
 
 @router.post("/create", response_model=Optional[SpaceModel])
-async def create_new_space(form_data: SpaceForm, user=Depends(get_admin_or_facilitator_user)):
+async def create_new_space(
+    form_data: SpaceForm, user=Depends(get_admin_or_facilitator_user)
+):
     try:
         space = Spaces.insert_new_space(None, form_data, user.id)
         return SpaceModel(**space.model_dump())
@@ -116,7 +123,7 @@ async def get_space_by_id(id: str, user=Depends(get_verified_user)):
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_space_access(user,space)
+    _check_space_access(user, space)
 
     return SpaceModel(**space.model_dump())
 
@@ -182,7 +189,7 @@ async def get_space_participants(id: str, user=Depends(get_verified_user)):
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_space_access(user,space)
+    _check_space_access(user, space)
 
     # Get users with read access
     if space.access_control:
@@ -191,10 +198,7 @@ async def get_space_participants(id: str, user=Depends(get_verified_user)):
         # No access control -- all users have access
         result = Users.get_users()
         space_users = result.get("users", []) if isinstance(result, dict) else result
-    users_list = [
-        UserNameResponse(**u.model_dump()).model_dump()
-        for u in space_users
-    ]
+    users_list = [UserNameResponse(**u.model_dump()).model_dump() for u in space_users]
 
     # Get agents from space data
     agents = Spaces.get_space_agents(space)
@@ -221,7 +225,7 @@ async def get_space_messages(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_space_access(user,space)
+    _check_space_access(user, space)
 
     message_list = Messages.get_messages_by_space_id(id, skip, limit)
     user_cache = {}
@@ -288,7 +292,9 @@ async def send_notification(name, webui_url, space, message, active_user_ids):
                     )
 
 
-async def generate_agent_response(request, space, trigger_message, agent_config, trigger_user):
+async def generate_agent_response(
+    request, space, trigger_message, agent_config, trigger_user
+):
     """Generate an AI agent response when @mentioned in a space."""
     try:
         app = request.app
@@ -297,6 +303,7 @@ async def generate_agent_response(request, space, trigger_message, agent_config,
         # Ensure models are loaded (may be empty on cold start)
         if not app.state.MODELS:
             from sage_is_ai.utils.models import get_all_models
+
             await get_all_models(request, user=trigger_user)
 
         if not model_id or model_id not in app.state.MODELS:
@@ -307,9 +314,9 @@ async def generate_agent_response(request, space, trigger_message, agent_config,
         agent_name = agent_config.get("name", model.get("name", "Agent"))
         agent_profile_image = agent_config.get(
             "profile_image_url",
-            model.get("info", {}).get("meta", {}).get(
-                "profile_image_url", "/static/icons/favicon.png"
-            ),
+            model.get("info", {})
+            .get("meta", {})
+            .get("profile_image_url", "/static/icons/favicon.png"),
         )
         agent_info = {
             "model_id": model_id,
@@ -337,15 +344,51 @@ async def generate_agent_response(request, space, trigger_message, agent_config,
             llm_messages.append({"role": "system", "content": system_prompt})
         llm_messages.append({"role": "user", "content": trigger_message.content})
 
+        # The tools the agent row declares (meta.toolIds) reach a Space the way
+        # they reach a chat: through the payload pipeline, which resolves tool
+        # servers and, in the default function-calling mode, runs the calls
+        # before the answer. No streaming needed, no client involved.
+        tool_ids = list(model.get("info", {}).get("meta", {}).get("toolIds") or [])
         form_data = {
             "model": model_id,
             "messages": llm_messages,
             "stream": False,
+            "tool_ids": tool_ids,
         }
+        metadata = {
+            "user_id": trigger_user.id,
+            "chat_id": None,
+            "message_id": None,
+            "session_id": None,
+            "filter_ids": [],
+            "tool_ids": tool_ids,
+            "tool_servers": None,
+            "files": None,
+            "features": {},
+            "variables": {},
+            "model": model,
+            "direct": False,
+            "space_id": space.id,
+        }
+        request.state.metadata = metadata
+        form_data["metadata"] = metadata
 
-        # Call the chat completion
         from sage_is_ai.utils.chat import generate_chat_completion
+        from sage_is_ai.utils.middleware import process_chat_payload
 
+        # The tool-server cache starts empty at boot and is filled when a
+        # client lists tools, which a chat page does and a Space never does.
+        # Fill it here the way the tools router does, or the resolver asserts.
+        if tool_ids and not app.state.TOOL_SERVERS:
+            from sage_is_ai.utils.tools import get_tool_servers_data
+
+            app.state.TOOL_SERVERS = await get_tool_servers_data(
+                app.state.config.TOOL_SERVER_CONNECTIONS
+            )
+
+        form_data, metadata, _events = await process_chat_payload(
+            request, form_data, trigger_user, metadata, model
+        )
         response = await generate_chat_completion(
             request, form_data, user=trigger_user, bypass_filter=True
         )
@@ -353,9 +396,7 @@ async def generate_agent_response(request, space, trigger_message, agent_config,
         # Extract response content
         if isinstance(response, dict):
             content = (
-                response.get("choices", [{}])[0]
-                .get("message", {})
-                .get("content", "")
+                response.get("choices", [{}])[0].get("message", {}).get("content", "")
             )
         else:
             # Handle StreamingResponse -- shouldn't happen with stream=False
@@ -378,9 +419,11 @@ async def generate_agent_response(request, space, trigger_message, agent_config,
         if not content:
             return
 
-        # Build agent message data. If the response ends with '?', mark it as
-        # awaiting a reply from the triggering user — so they can respond without
-        # having to @mention the agent again. Other users must still @mention.
+        # Build agent message data. If the response ends with '?', arm it as
+        # awaiting a reply: ANY space member's next un-mentioned post answers it
+        # (the whole room is the bot's audience — a VA answering in the
+        # principal's place is the point). awaiting_reply_from still records the
+        # addressee for UI/TTL use; it no longer gates who may answer.
         # TODO: Add optional per-agent TTL setting for deployments that want expiration.
         agent_data = {"agent": {**agent_info}}
         if content.strip().endswith("?"):
@@ -477,10 +520,8 @@ async def send_mention_notifications(app, space, message, mentions, sender_user)
 
             # Send webhook notification if configured
             if mentioned_user.settings:
-                webhook_url = (
-                    mentioned_user.settings.ui.get("notifications", {}).get(
-                        "webhook_url", None
-                    )
+                webhook_url = mentioned_user.settings.ui.get("notifications", {}).get(
+                    "webhook_url", None
                 )
                 if webhook_url:
                     webui_url = app.state.config.WEBUI_URL
@@ -513,7 +554,7 @@ async def post_new_message(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_space_access(user,space)
+    _check_space_access(user, space)
 
     try:
         message = Messages.insert_new_message(form_data, space.id, user.id)
@@ -596,9 +637,12 @@ async def post_new_message(
                 )
 
             # --- Agent auto-reply: if an agent's last response ended with '?',
-            # the triggering user can reply without @mentioning the agent.
+            # ANY space member can answer without @mentioning the agent — the
+            # poster already passed the space access gate, and that is the
+            # audience (2026-08-18: was addressee-only; a VA answering in the
+            # principal's place is the customer workflow, not an accident).
             # We only check the last 2 messages (not a deep scan) — if the agent's
-            # question isn't recent, the user isn't directly responding to it.
+            # question isn't recent, the room has moved on and the arm is dead.
             # Explicit @mentions always take priority over auto-reply.
             mentions = set(re.findall(r"@([\w][\w-]*)", message.content or ""))
 
@@ -610,8 +654,8 @@ async def post_new_message(
                         continue
                     agent_data = (recent_msg.data or {}).get("agent", {})
                     awaiting_user = agent_data.get("awaiting_reply_from")
-                    if awaiting_user and awaiting_user == user.id:
-                        # This user is responding to the agent's question — auto-trigger
+                    if awaiting_user:
+                        # Someone is answering the agent's open question — auto-trigger
                         agent_model_id = agent_data.get("model_id")
                         space_agents = Spaces.get_space_agents(space)
                         for agent_config in space_agents:
@@ -668,16 +712,14 @@ async def post_new_message(
 
 
 @router.get("/{id}/messages/{message_id}", response_model=Optional[MessageUserResponse])
-async def get_space_message(
-    id: str, message_id: str, user=Depends(get_verified_user)
-):
+async def get_space_message(id: str, message_id: str, user=Depends(get_verified_user)):
     space = Spaces.get_space_by_id(id)
     if not space:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_space_access(user,space)
+    _check_space_access(user, space)
 
     message = Messages.get_message_by_id(message_id)
     if not message:
@@ -720,7 +762,7 @@ async def get_space_thread_messages(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_space_access(user,space)
+    _check_space_access(user, space)
 
     message_list = Messages.get_messages_by_parent_id(id, message_id, skip, limit)
     user_cache = {}
@@ -766,7 +808,7 @@ async def update_message_by_id(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_space_access(user,space)
+    _check_space_access(user, space)
 
     message = Messages.get_message_by_id(message_id)
     if not message:
@@ -834,7 +876,7 @@ async def add_reaction_to_message(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_space_access(user,space)
+    _check_space_access(user, space)
 
     message = Messages.get_message_by_id(message_id)
     if not message:
@@ -894,7 +936,7 @@ async def remove_reaction_by_id_and_user_id_and_name(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_space_access(user,space)
+    _check_space_access(user, space)
 
     message = Messages.get_message_by_id(message_id)
     if not message:
@@ -957,7 +999,7 @@ async def delete_message_by_id(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
 
-    _check_space_access(user,space)
+    _check_space_access(user, space)
 
     message = Messages.get_message_by_id(message_id)
     if not message:

@@ -69,6 +69,7 @@ from sage_is_ai.utils.misc import (
     convert_logit_bias_input_to_json,
 )
 from sage_is_ai.utils.tools import get_tools
+from sage_is_ai.privacy import hooks as privacy
 from sage_is_ai.utils.filter import (
     get_sorted_filter_ids,
     process_filter_functions,
@@ -272,7 +273,7 @@ def _render_tool_calls(content, block, raw):
 
 def _render_reasoning(content, block, raw):
     if raw:
-        return f'{content}\n{block["start_tag"]}{block["content"]}{block["end_tag"]}\n'
+        return f"{content}\n{block['start_tag']}{block['content']}{block['end_tag']}\n"
 
     body = "\n".join(
         (f"> {line}" if not line.startswith(">") else line)
@@ -393,7 +394,6 @@ def tag_content_handler(content_type, tags, content, content_blocks):
 
     if content_blocks[-1]["type"] == "text":
         for start_tag, end_tag in tags:
-
             start_tag_pattern = rf"{re.escape(start_tag)}"
             if start_tag.startswith("<") and start_tag.endswith(">"):
                 # Match start tag e.g., <tag> or <tag attr="value">
@@ -624,9 +624,9 @@ def accumulate_tool_call_deltas(response_tool_calls, delta_tool_calls):
                     current_response_tool_call["function"]["name"] += delta_name
 
                 if delta_arguments:
-                    current_response_tool_call["function"][
-                        "arguments"
-                    ] += delta_arguments
+                    current_response_tool_call["function"]["arguments"] += (
+                        delta_arguments
+                    )
 
 
 def build_extra_params(request, model, metadata, user, event_emitter, event_call):
@@ -649,6 +649,16 @@ def get_filter_functions(request, model, metadata):
             request, model, metadata.get("filter_ids", [])
         )
     ]
+
+
+def append_stream_tail(content, content_blocks, tail):
+    """Add text held back until the end of a stream (the privacy tail) to the reply."""
+    if not tail:
+        return content
+    if not content_blocks:
+        append_empty_text_block(content_blocks)
+    content_blocks[-1]["content"] = content_blocks[-1]["content"] + tail
+    return f"{content}{tail}"
 
 
 def append_empty_text_block(content_blocks):
@@ -727,7 +737,8 @@ async def emit_content(event_emitter, content_blocks):
 
 
 async def chat_completion_tools_handler(
-    request: Request, body: dict, extra_params: dict, user: UserModel, models, tools) -> tuple[dict, dict]:
+    request: Request, body: dict, extra_params: dict, user: UserModel, models, tools
+) -> tuple[dict, dict]:
     async def get_content_from_response(response) -> Optional[str]:
         content = None
         if hasattr(response, "body_iterator"):
@@ -745,7 +756,7 @@ async def chat_completion_tools_handler(
     def get_tools_function_calling_payload(messages, task_model_id, content):
         user_message = get_last_user_message(messages)
         history = "\n".join(
-            f"{message['role'].upper()}: \"\"\"{message['content']}\"\"\""
+            f'{message["role"].upper()}: """{message["content"]}"""'
             for message in messages[::-1][:4]
         )
 
@@ -934,7 +945,6 @@ async def chat_image_generation_handler(
     user_message = get_last_user_message(messages)
 
     prompt = user_message
-    negative_prompt = ""
 
     if request.app.state.config.ENABLE_IMAGE_PROMPT_GENERATION:
         try:
@@ -958,7 +968,7 @@ async def chat_image_generation_handler(
                 response = slice_json_object(response)
                 response = json.loads(response)
                 prompt = response.get("prompt", [])
-            except Exception as e:
+            except Exception:
                 prompt = user_message
 
         except Exception as e:
@@ -1044,7 +1054,7 @@ async def chat_completion_files_handler(
 
                 queries_response = slice_json_object(queries_response)
                 queries_response = json.loads(queries_response)
-            except Exception as e:
+            except Exception:
                 queries_response = {"queries": [queries_response]}
 
             queries = queries_response.get("queries", [])
@@ -1064,8 +1074,10 @@ async def chat_completion_files_handler(
                         request=request,
                         items=files,
                         queries=queries,
-                        embedding_function=lambda query, prefix: request.app.state.EMBEDDING_FUNCTION(
-                            query, prefix=prefix, user=user
+                        embedding_function=lambda query, prefix: (
+                            request.app.state.EMBEDDING_FUNCTION(
+                                query, prefix=prefix, user=user
+                            )
                         ),
                         k=request.app.state.config.TOP_K,
                         reranking_function=(
@@ -1212,7 +1224,7 @@ async def process_chat_payload(request, form_data, user, metadata, model):
         files.extend(knowledge_files)
         form_data["files"] = files
 
-    variables = form_data.pop("variables", None)
+    form_data.pop("variables", None)
 
     # Process the form_data through the pipeline
     try:
@@ -1487,7 +1499,7 @@ async def process_chat_response(
                         persist(value)
 
                         await event_emitter(make_event(value))
-                    except Exception as e:
+                    except Exception:
                         pass
 
             if tasks and messages:
@@ -1517,7 +1529,6 @@ async def process_chat_response(
                         user_message = user_message[:100] + "..."
 
                     if tasks[TASKS.TITLE_GENERATION]:
-
                         res = await generate_title(
                             request,
                             {
@@ -1546,7 +1557,7 @@ async def process_chat_response(
                                 title = json.loads(title_string).get(
                                     "title", user_message
                                 )
-                            except Exception as e:
+                            except Exception:
                                 title = ""
 
                             if not title:
@@ -1621,7 +1632,6 @@ async def process_chat_response(
                 content = response["choices"][0]["message"]["content"]
 
                 if content:
-
                     await emit_completion(event_emitter, response)
 
                     title = Chats.get_chat_title_by_id(metadata["chat_id"])
@@ -1698,13 +1708,15 @@ async def process_chat_response(
                     last_assistant_message = get_last_assistant_message(
                         form_data["messages"]
                     )
-            except Exception as e:
+            except Exception:
                 pass
 
             content = (
                 message.get("content", "")
                 if message
-                else last_assistant_message if last_assistant_message else ""
+                else last_assistant_message
+                if last_assistant_message
+                else ""
             )
 
             content_blocks = [
@@ -1750,6 +1762,10 @@ async def process_chat_response(
                     nonlocal content_blocks
 
                     response_tool_calls = []
+                    # Privacy: real values back into the stream, holding back the
+                    # tail so a pseudonym split across two chunks is still caught.
+                    # A pass-through when privacy does not cover this request.
+                    privacy_reverser = privacy.stream_reverser_for(request)
 
                     async for line in response.body_iterator:
                         line = line.decode("utf-8") if isinstance(line, bytes) else line
@@ -1813,6 +1829,7 @@ async def process_chat_response(
                                         )
 
                                     value = delta.get("content")
+                                    value = privacy_reverser.feed(value)
 
                                     reasoning_content = (
                                         delta.get("reasoning_content")
@@ -1943,6 +1960,12 @@ async def process_chat_response(
                                 if not content_blocks:
                                     append_empty_text_block(content_blocks)
 
+                    content = append_stream_tail(
+                        content,
+                        content_blocks,
+                        privacy.finish_stream(privacy_reverser, response_tool_calls),
+                    )
+
                     if response_tool_calls:
                         tool_calls.append(response_tool_calls)
 
@@ -2038,15 +2061,17 @@ async def process_chat_response(
                         tool_result_files = []
 
                         if tool_name in tools:
-                            tool_result, tool_result_files, tool_function_params = (
-                                await execute_tool_call(
-                                    tools[tool_name],
-                                    tool_name,
-                                    tool_function_params,
-                                    event_caller,
-                                    metadata,
-                                    ensure_ascii=False,
-                                )
+                            (
+                                tool_result,
+                                tool_result_files,
+                                tool_function_params,
+                            ) = await execute_tool_call(
+                                tools[tool_name],
+                                tool_name,
+                                tool_function_params,
+                                event_caller,
+                                metadata,
+                                ensure_ascii=False,
                             )
 
                         results.append(
@@ -2084,7 +2109,6 @@ async def process_chat_response(
                         content_blocks[-1]["type"] == "code_interpreter"
                         and retries < MAX_RETRIES
                     ):
-
                         await emit_content(event_emitter, content_blocks)
 
                         retries += 1
@@ -2251,6 +2275,8 @@ async def process_chat_response(
 
                 if event:
                     yield wrap_item(json.dumps(event))
+
+            original_generator = privacy.reverse_sse_for(request, original_generator)
 
             async for data in original_generator:
                 data, _ = await process_filter_functions(

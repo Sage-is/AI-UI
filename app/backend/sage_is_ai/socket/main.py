@@ -5,8 +5,6 @@ import socketio
 import logging
 import sys
 import time
-from typing import Dict, Set
-from redis import asyncio as aioredis
 import pycrdt as Y
 
 from sage_is_ai.models.users import Users, UserNameResponse
@@ -30,7 +28,7 @@ from sage_is_ai.utils.auth import decode_token
 from sage_is_ai.socket.utils import RedisDict, RedisLock, YdocManager
 from sage_is_ai.tasks import create_task, stop_item_tasks
 from sage_is_ai.utils.redis import get_redis_connection
-from sage_is_ai.utils.access_control import has_access, get_users_with_access
+from sage_is_ai.utils.access_control import has_access
 
 
 from sage_is_ai.env import (
@@ -158,7 +156,6 @@ async def periodic_usage_pool_cleanup():
                 raise Exception("Unable to renew usage pool cleanup lock.")
 
             now = int(time.time())
-            send_usage = False
             for model_id, connections in list(USAGE_POOL.items()):
                 # Creating a list of sids to remove if they have timed out
                 expired_sids = [
@@ -176,7 +173,6 @@ async def periodic_usage_pool_cleanup():
                 else:
                     USAGE_POOL[model_id] = connections
 
-                send_usage = True
             await asyncio.sleep(TIMEOUT_DURATION)
     finally:
         release_func()
@@ -261,6 +257,7 @@ async def connect(sid, environ, auth):
         cookies = environ.get("HTTP_COOKIE", "")
         if cookies:
             from http.cookies import SimpleCookie
+
             cookie = SimpleCookie()
             cookie.load(cookies)
             if "token" in cookie:

@@ -1,5 +1,4 @@
 import asyncio
-import hashlib
 import hmac
 import json
 import logging
@@ -199,9 +198,7 @@ class TelegramBridge(MessageBridge):
 
         return await self._parse_update(update)
 
-    async def verify_webhook_signature(
-        self, body: bytes, headers: dict
-    ) -> bool:
+    async def verify_webhook_signature(self, body: bytes, headers: dict) -> bool:
         if not self._webhook_secret:
             return True
 
@@ -228,9 +225,7 @@ class TelegramBridge(MessageBridge):
 
     async def _poll_loop(self) -> None:
         """Background task that long-polls Telegram getUpdates."""
-        log.info(
-            f"Telegram poll loop started (timeout={self._poll_timeout}s)"
-        )
+        log.info(f"Telegram poll loop started (timeout={self._poll_timeout}s)")
         while not self._stop_event.is_set():
             try:
                 params = {
@@ -344,7 +339,11 @@ class TelegramBridge(MessageBridge):
                 elif media_key == "voice":
                     mime_type = media_obj.get("mime_type", "audio/ogg")
                 elif media_key == "sticker":
-                    mime_type = "image/webp" if not media_obj.get("is_animated") else "application/x-tgsticker"
+                    mime_type = (
+                        "image/webp"
+                        if not media_obj.get("is_animated")
+                        else "application/x-tgsticker"
+                    )
 
                 media.append(
                     MediaAttachment(
@@ -462,8 +461,14 @@ class TelegramBridge(MessageBridge):
                     required=True,
                     default="polling",
                     options=[
-                        {"value": "polling", "label": "Long Polling (no public URL needed)"},
-                        {"value": "webhook", "label": "Webhook (requires public HTTPS URL)"},
+                        {
+                            "value": "polling",
+                            "label": "Long Polling (no public URL needed)",
+                        },
+                        {
+                            "value": "webhook",
+                            "label": "Webhook (requires public HTTPS URL)",
+                        },
                     ],
                 ),
                 ConfigField(

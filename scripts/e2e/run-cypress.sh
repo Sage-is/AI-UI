@@ -40,6 +40,11 @@ done < <(env | sed -n 's/^\(CYPRESS_[A-Za-z0-9_]*\)=.*/\1/p' | sort -u)
 CYPRESS_IMG="cypress/included:15.18.0"   # 15.x — see watch/Dockerfile note
 NET="sage-network"; ROOT="sage-e2e"; VOL="sage-e2e-data"; PORT=8100
 REPO="$(cd "$(dirname "$0")/../.." && pwd)"
+# Canonical fresh-boot admin, forwarded to the specs. Callers with their own
+# identity (the snapshot gates) still win: existing CYPRESS_ADMIN_* survive.
+. "$REPO/scripts/lib/test-admin.env"
+CYPRESS_ADMIN_EMAIL="${CYPRESS_ADMIN_EMAIL:-$TEST_ADMIN_EMAIL}"
+CYPRESS_ADMIN_PASSWORD="${CYPRESS_ADMIN_PASSWORD:-$TEST_ADMIN_PASSWORD}"
 
 docker network inspect "$NET" >/dev/null 2>&1 || docker network create "$NET" >/dev/null
 
@@ -140,6 +145,8 @@ docker run --rm --network "$NET" \
   ${CY_ENV[@]+"${CY_ENV[@]}"} \
   -e "CYPRESS_baseUrl=https://sage-e2e-tls:8443" \
   -e "CYPRESS_COMMERCIAL_RECOMMENDATIONS=0" \
+  -e "CYPRESS_ADMIN_EMAIL=$CYPRESS_ADMIN_EMAIL" \
+  -e "CYPRESS_ADMIN_PASSWORD=$CYPRESS_ADMIN_PASSWORD" \
   "$CYPRESS_IMG" ${SPEC:+--config "specPattern=$SPEC"} "${REPORT_ARGS[@]}"
 RC=$?
 set -e

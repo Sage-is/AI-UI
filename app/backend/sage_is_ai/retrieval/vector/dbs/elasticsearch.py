@@ -1,6 +1,5 @@
-from elasticsearch import Elasticsearch, BadRequestError
+from elasticsearch import Elasticsearch
 from typing import Optional
-import ssl
 from elasticsearch.helpers import bulk, scan
 from sage_is_ai.retrieval.vector.main import (
     VectorDBBase,
@@ -24,8 +23,8 @@ class ElasticsearchClient(VectorDBBase):
     """
     Important:
     in order to reduce the number of indexes and since the embedding vector length is fixed, we avoid creating
-    an index for each file but store it as a text field, while seperating to different index
-    baesd on the embedding length.
+    an index for each file but store it as a text field, while separating to different index
+    based on the embedding length.
     """
 
     def __init__(self):
@@ -142,7 +141,7 @@ class ElasticsearchClient(VectorDBBase):
             result = self.client.count(index=f"{self.index_prefix}*", body=query_body)
 
             return result.body["count"] > 0
-        except Exception as e:
+        except Exception:
             return None
 
     def delete_collection(self, collection_name: str):
@@ -205,7 +204,7 @@ class ElasticsearchClient(VectorDBBase):
 
             return self._result_to_get_result(result)
 
-        except Exception as e:
+        except Exception:
             return None
 
     # Status: works

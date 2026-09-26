@@ -2,7 +2,6 @@ import inspect
 import logging
 
 from sage_is_ai.utils.plugin import (
-    load_function_module_by_id,
     get_function_module_from_cache,
 )
 from sage_is_ai.models.functions import Functions

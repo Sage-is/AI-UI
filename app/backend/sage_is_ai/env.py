@@ -202,18 +202,31 @@ def parse_section(h3_tag):
                     strong_tag.decompose()
                 content_text = clone.get_text().strip() if clone else ""
 
-                # Check if next sibling is a plain <p> (continuation of this entry)
+                # Every following plain <p> before the next <strong> title is a
+                # continuation of this entry. This used to take at most ONE:
+                # paragraph three onward vanished from `content`, and `raw` was
+                # left holding only the last paragraph taken — nine of v3.1.0's
+                # entries rendered truncated on the wizard panel. `raw` carries
+                # the full run of <p>s so a renderer can rebuild the entry.
+                # get_text() without strip=True for the same reason as above:
+                # strip=True concatenates stripped fragments and eats the
+                # spaces around inline code.
+                parts = [str(current)]
                 nxt = current.find_next_sibling()
-                if nxt and nxt.name == "p" and not nxt.find("strong"):
-                    content_text = (content_text + " " + nxt.get_text(strip=True)).strip()
+                while nxt and nxt.name == "p" and not nxt.find("strong"):
+                    content_text = (content_text + " " + nxt.get_text().strip()).strip()
+                    parts.append(str(nxt))
                     # Skip that sibling in the outer loop
                     current = nxt
+                    nxt = nxt.find_next_sibling()
 
-                items.append({
-                    "title": title,
-                    "content": content_text,
-                    "raw": str(current),
-                })
+                items.append(
+                    {
+                        "title": title,
+                        "content": content_text,
+                        "raw": "".join(parts),
+                    }
+                )
 
         current = current.find_next_sibling()
 
@@ -415,6 +428,10 @@ WEBUI_SECRET_KEY = os.environ.get(
     ),  # DEPRECATED: remove at next major version
 )
 
+# Salts every privacy pseudonym. Optional: unset, the instance secret is used.
+# Rotating it orphans every existing fake, so old replies stop reversing.
+PRIVACY_KEY = os.environ.get("PRIVACY_KEY", "")
+
 WEBUI_SESSION_COOKIE_SAME_SITE = os.environ.get("WEBUI_SESSION_COOKIE_SAME_SITE", "lax")
 
 WEBUI_SESSION_COOKIE_SECURE = (
@@ -579,6 +596,16 @@ ENABLE_VERSION_UPDATE_CHECK = (
     os.environ.get("ENABLE_VERSION_UPDATE_CHECK", "true").lower() == "true"
 )
 OFFLINE_MODE = os.environ.get("OFFLINE_MODE", "false").lower() == "true"
+
+# The service worker at /sw.js. On by default because what it caches is public
+# and hashed — no document, no API response, nothing tied to an account. Set
+# this false and the route answers with a worker that deletes its caches and
+# unregisters itself, so every installed copy tears down on the next load
+# without the visitor clearing site data. That teardown path is the reason the
+# default can be "true": switching it off is one variable and one redeploy.
+ENABLE_SERVICE_WORKER = (
+    os.environ.get("ENABLE_SERVICE_WORKER", "true").lower() == "true"
+)
 
 if OFFLINE_MODE:
     os.environ["HF_HUB_OFFLINE"] = "1"

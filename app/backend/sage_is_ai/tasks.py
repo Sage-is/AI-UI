@@ -5,7 +5,6 @@ from uuid import uuid4
 import json
 import logging
 from redis.asyncio import Redis
-from fastapi import Request
 from typing import List, Optional
 
 from sage_is_ai.env import SRC_LOG_LEVELS

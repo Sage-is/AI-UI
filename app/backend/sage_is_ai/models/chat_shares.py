@@ -7,7 +7,7 @@ from sage_is_ai.internal.db import Base, get_db
 from sage_is_ai.env import SRC_LOG_LEVELS
 
 from pydantic import BaseModel, ConfigDict
-from sqlalchemy import BigInteger, Column, String, Text, or_, and_
+from sqlalchemy import BigInteger, Column, String, or_, and_
 
 
 log = logging.getLogger(__name__)
@@ -252,9 +252,7 @@ class ChatShareTable:
                     )
                 )
 
-            return (
-                db.query(ChatShare).filter(or_(*conditions)).first() is not None
-            )
+            return db.query(ChatShare).filter(or_(*conditions)).first() is not None
 
 
 ChatShares = ChatShareTable()

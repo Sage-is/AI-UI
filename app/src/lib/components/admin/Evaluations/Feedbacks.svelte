@@ -9,6 +9,7 @@
 	dayjs.extend(relativeTime);
 
 	import { onMount, getContext } from 'svelte';
+	import { config } from '$lib/stores';
 	const i18n = getContext('i18n');
 
 	import { deleteFeedbackById, exportAllFeedbacks, getAllFeedbacks } from '$lib/apis/evaluations';
@@ -388,7 +389,7 @@
 	{/if}
 </div>
 
-{#if feedbacks.length > 0}
+{#if feedbacks.length > 0 && $config?.features.enable_community_sharing}
 	<div style="--d:flex; --fd:column; --jc:flex-end; --w:100%; --ta:right; --g:0.2rem">
 		<div style="--line-clamp:1; --c:var(--color-gray-500); --size:0.6rem">
 			{$i18n.t('Help us create the best community leaderboard by sharing your feedback history!')}

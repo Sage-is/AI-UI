@@ -30,9 +30,9 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 _CHUNK = 1 << 16
 
 # minisign algorithm tags (first 2 bytes of the base64 payloads)
-_ALG_PUBKEY = b"Ed"      # public key files
-_ALG_PREHASH = b"ED"     # signature over blake2b-512 of the file (minisign default)
-_ALG_LEGACY = b"Ed"      # signature over the raw file (pre-0.7 legacy)
+_ALG_PUBKEY = b"Ed"  # public key files
+_ALG_PREHASH = b"ED"  # signature over blake2b-512 of the file (minisign default)
+_ALG_LEGACY = b"Ed"  # signature over the raw file (pre-0.7 legacy)
 
 
 class MinisignError(Exception):
@@ -72,23 +72,29 @@ def _parse_sig_file(sig_path: Path) -> tuple[bytes, bytes, bytes, bytes, str]:
     try:
         lines = sig_path.read_text("utf-8").splitlines()
     except OSError as exc:
-        raise MinisignError(f"cannot read signature file {sig_path.name}: {exc}") from exc
+        raise MinisignError(
+            f"cannot read signature file {sig_path.name}: {exc}"
+        ) from exc
     if len(lines) < 4:
         raise MinisignError(f"{sig_path.name}: expected 4 lines, got {len(lines)}")
 
     sig_doc = _b64_field(lines[1], f"{sig_path.name} signature")
     if len(sig_doc) != 74:
-        raise MinisignError(f"{sig_path.name}: signature block is {len(sig_doc)} bytes, want 74")
+        raise MinisignError(
+            f"{sig_path.name}: signature block is {len(sig_doc)} bytes, want 74"
+        )
     alg, key_id, signature = sig_doc[:2], sig_doc[2:10], sig_doc[10:74]
 
     trusted_prefix = "trusted comment: "
     if not lines[2].startswith(trusted_prefix):
         raise MinisignError(f"{sig_path.name}: line 3 is not a trusted comment")
-    trusted_comment = lines[2][len(trusted_prefix):]
+    trusted_comment = lines[2][len(trusted_prefix) :]
 
     global_sig = _b64_field(lines[3], f"{sig_path.name} global signature")
     if len(global_sig) != 64:
-        raise MinisignError(f"{sig_path.name}: global signature is {len(global_sig)} bytes, want 64")
+        raise MinisignError(
+            f"{sig_path.name}: global signature is {len(global_sig)} bytes, want 64"
+        )
 
     return alg, key_id, signature, global_sig, trusted_comment
 

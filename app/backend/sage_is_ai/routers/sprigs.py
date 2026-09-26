@@ -44,6 +44,41 @@ log = logging.getLogger(__name__)
 
 router = APIRouter()
 
+# What a catalog entry may tell a browser. EVERYTHING ELSE IS PRIVATE, and the
+# default is the whole point: this used to be `**spec`, so any field added to
+# the CATALOG for the supervisor's benefit shipped to the panel the same hour it
+# was written, by nobody's decision. `repo`, `tag`, `binary_sha256` and
+# `insecure` went out that way — the registry we pull from, the exact artifact
+# pin, and whether we talk to it over plain http. A read-only panel is still a
+# browser, and a browser is a cache, a screenshot and a bug report.
+#
+# Adding a name here is a deliberate act, not bookkeeping. It publishes that
+# field for EVERY entry in the catalog, including the ones written later by
+# somebody who never read this comment. Marketplace M1 adds publisher, license,
+# tier, size_mb, display_name, description and homepage; each arrives private
+# and gets promoted only when a surface is actually built to render it.
+#
+# Same rule `public_values` already applies to wires, one level up: a surface
+# gets what it renders and not one field more.
+#
+# Each name is here because a named consumer READS it:
+#   capability       Sprigs.svelte (graft payload + meta line), sprigs_panel
+#                    `_card` meta, ui-sprig-contract.cy.ts
+#   model, dim       the meta line on both panels' cards
+#   wires            the wiring form's field DECLARATIONS (name/label/type/help).
+#                    Declarations only — the values ride `wire_values` below,
+#                    which is where the secret rule lives.
+#   post_graft_note  the "what happens next" toast; sprigs-panel.cy.ts sources
+#                    the expected text from here rather than keeping a copy of
+#                    the copy, so rewording the note cannot fail the gate.
+PUBLIC_CATALOG_FIELDS = (
+    "capability",
+    "model",
+    "dim",
+    "wires",
+    "post_graft_note",
+)
+
 
 @router.get("/catalog")
 async def get_sprig_catalog(request: Request, user=Depends(get_admin_user)):
@@ -60,7 +95,12 @@ async def get_sprig_catalog(request: Request, user=Depends(get_admin_user)):
     for name, spec in supervisor.CATALOG.items():
         stored = read_wires(cfg, name)
         catalog[name] = {
-            **spec,
+            # Projected, never spread. `if k in spec` rather than a default, so
+            # an absent field stays absent exactly as it did under `**spec` —
+            # both panels branch on presence (`spec.dim ? …`, `spec.get("wires")`)
+            # and a helpfully-supplied None would render as a card meta line
+            # reading "· None".
+            **{k: spec[k] for k in PUBLIC_CATALOG_FIELDS if k in spec},
             "compatible": _graft_refusal(spec, HOST_ARCH) is None,
             # Wires go out as PUBLIC values only. A secret reports set-or-not,
             # never its value — this endpoint is read by a panel, and a panel is
@@ -308,13 +348,11 @@ async def prune_sprig(
     )
     # Themes have no process and no base_url; active = the config pointer
     # names this sprig. First deliver-kind capability with a prune-time reset.
-    was_active_theme = (
-        h.get("capability") == "theme"
-        and form_data.name == str(cfg.SPRIG_ACTIVE_THEME or "")
+    was_active_theme = h.get("capability") == "theme" and form_data.name == str(
+        cfg.SPRIG_ACTIVE_THEME or ""
     )
-    was_active_ui = (
-        h.get("capability") == "ui"
-        and form_data.name == str(cfg.SPRIG_ACTIVE_UI or "")
+    was_active_ui = h.get("capability") == "ui" and form_data.name == str(
+        cfg.SPRIG_ACTIVE_UI or ""
     )
     # Independent of "active": an admin can grant scripting to a Sprig that was
     # never activated, and removing it must still take the grant with it.
@@ -376,7 +414,9 @@ async def prune_sprig(
         # /themes/active.css falls back to the empty default sheet immediately;
         # the volume copy is gone with the prune, the pointer must follow.
         cfg.SPRIG_ACTIVE_THEME = ""
-        log.info("pruned active theme sprig '%s'; default look restored", form_data.name)
+        log.info(
+            "pruned active theme sprig '%s'; default look restored", form_data.name
+        )
 
     if was_active_ui:
         # Same shape as the theme reset: the bundle is gone, so the pointer goes
@@ -400,20 +440,34 @@ async def prune_sprig(
     # fragment view all restated these independently, which is precisely the
     # written-twice drift this codebase is trying to shed.
     resets = [
-        (was_active_embedding,
-         "Embedding dispatch reset — graft a cultivar to restore document search."),
-        (was_active_reranker,
-         "Reranking reset — hybrid search runs without rerank until a reranker is grafted."),
-        (was_active_stt,
-         "Speech-to-text reset — graft an STT Sprig™ to restore local voice input."),
-        (was_active_theme,
-         "Theme reset — the interface returns to the default look on reload."),
-        (was_active_ui,
-         "Fragment removed — the page returns to its default layout on reload."),
-        (had_scripting_grant,
-         "Scripting permission revoked with the Sprig™ it was granted to."),
-        (had_wires,
-         "Wires discarded with the Sprig™ they configured, secrets included."),
+        (
+            was_active_embedding,
+            "Embedding dispatch reset — graft a cultivar to restore document search.",
+        ),
+        (
+            was_active_reranker,
+            "Reranking reset — hybrid search runs without rerank until a reranker is grafted.",
+        ),
+        (
+            was_active_stt,
+            "Speech-to-text reset — graft an STT Sprig™ to restore local voice input.",
+        ),
+        (
+            was_active_theme,
+            "Theme reset — the interface returns to the default look on reload.",
+        ),
+        (
+            was_active_ui,
+            "Fragment removed — the page returns to its default layout on reload.",
+        ),
+        (
+            had_scripting_grant,
+            "Scripting permission revoked with the Sprig™ it was granted to.",
+        ),
+        (
+            had_wires,
+            "Wires discarded with the Sprig™ they configured, secrets included.",
+        ),
     ]
 
     return {
@@ -469,7 +523,9 @@ async def set_ui_scripting_grant(
     else:
         if str(cfg.SPRIG_UI_SCRIPTING_GRANT or "") == form_data.name:
             cfg.SPRIG_UI_SCRIPTING_GRANT = ""
-            log.info("scripting revoked for ui sprig '%s' by %s", form_data.name, user.id)
+            log.info(
+                "scripting revoked for ui sprig '%s' by %s", form_data.name, user.id
+            )
 
     return {
         "status": True,

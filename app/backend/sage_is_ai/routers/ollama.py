@@ -1,4 +1,4 @@
-#TODO: Implement a more intelligent load balancing mechanism for distributing requests among multiple backend instances.
+# TODO: Implement a more intelligent load balancing mechanism for distributing requests among multiple backend instances.
 # Current implementation uses a simple round-robin approach (random.choice). Consider incorporating algorithms like weighted round-robin,
 # least connections, or least response time for better resource utilization and performance optimization.
 
@@ -18,7 +18,6 @@ from aiocache import cached
 import requests
 from urllib.parse import quote
 
-from sage_is_ai.models.chats import Chats
 from sage_is_ai.models.users import UserModel
 
 from sage_is_ai.env import (
@@ -27,14 +26,12 @@ from sage_is_ai.env import (
 
 from fastapi import (
     Depends,
-    FastAPI,
     File,
     HTTPException,
     Request,
     UploadFile,
     APIRouter,
 )
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, ConfigDict, validator
 from starlette.background import BackgroundTask
@@ -63,7 +60,6 @@ from sage_is_ai.config import (
     UPLOAD_DIR,
 )
 from sage_is_ai.env import (
-    ENV,
     SRC_LOG_LEVELS,
     MODELS_CACHE_TTL,
     AIOHTTP_CLIENT_SESSION_SSL,
@@ -1839,7 +1835,9 @@ async def upload_model(
             # --- P3: Upload to ollama /api/blobs ---
             with open(file_path, "rb") as f:
                 url = f"{ollama_url}/api/blobs/sha256:{file_hash}"
-                response = requests.post(url, data=f, timeout=240)  # TODO: make timeout configurable for large uploads
+                response = requests.post(
+                    url, data=f, timeout=240
+                )  # TODO: make timeout configurable for large uploads
 
             if response.ok:
                 log.info("Uploaded to /api/blobs")  # DEBUG

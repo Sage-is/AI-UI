@@ -9,9 +9,8 @@ import os
 
 
 from datetime import datetime, timedelta
-import pytz
 from pytz import UTC
-from typing import Optional, Union, List, Dict
+from typing import Optional, Union
 
 from opentelemetry import trace
 
@@ -219,7 +218,7 @@ def get_current_user(
     # auth by jwt token
     try:
         data = decode_token(token)
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token",

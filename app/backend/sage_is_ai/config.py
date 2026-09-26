@@ -2,7 +2,6 @@ import json
 import logging
 import os
 import shutil
-import base64
 import redis
 
 from datetime import datetime
@@ -18,12 +17,7 @@ from authlib.integrations.starlette_client import OAuth
 
 from sage_is_ai.env import (
     DATA_DIR,
-    DATABASE_URL,
     ENV,
-    REDIS_URL,
-    REDIS_KEY_PREFIX,
-    REDIS_SENTINEL_HOSTS,
-    REDIS_SENTINEL_PORT,
     FRONTEND_BUILD_DIR,
     OFFLINE_MODE,
     SAGE_IS_AI_DIR,
@@ -754,10 +748,15 @@ else:
                 target_path.parent.mkdir(parents=True, exist_ok=True)
                 try:
                     # Only copy if source is newer or target doesn't exist
-                    if not target_path.exists() or file_path.stat().st_mtime > target_path.stat().st_mtime:
+                    if (
+                        not target_path.exists()
+                        or file_path.stat().st_mtime > target_path.stat().st_mtime
+                    ):
                         shutil.copy2(file_path, target_path)
                 except Exception as e:
-                    log.error(f"[STATIC] Failed to sync {file_path} to {target_path}: {e}")
+                    log.error(
+                        f"[STATIC] Failed to sync {file_path} to {target_path}: {e}"
+                    )
 
     frontend_favicon = FRONTEND_BUILD_DIR / "static" / "favicon.png"
     if frontend_favicon.exists():
@@ -974,6 +973,23 @@ OPENAI_API_CONFIGS = PersistentConfig(
     "OPENAI_API_CONFIGS",
     "openai.api_configs",
     {},
+)
+
+# Privacy rules: pseudonymize what leaves for a hosted model, reverse what
+# comes back. Rules and switches live here; the real-to-fake map is a table.
+PRIVACY_CONFIG = PersistentConfig(
+    "PRIVACY_CONFIG",
+    "privacy.config",
+    {
+        "enabled": True,
+        # ON from 3.2.0: external connections are filtered unless an admin
+        # turns it off. Must equal privacy/hooks.py DEFAULTS (test_hooks checks).
+        "default_external": True,
+        "connections": {},
+        "models": {},
+        "detectors": {},
+        "rules": [],
+    },
 )
 
 # Get the actual OpenAI Compatible API key based on the base URL
@@ -1468,7 +1484,11 @@ ENABLE_ADMIN_CHAT_ACCESS = (
 ENABLE_COMMUNITY_SHARING = PersistentConfig(
     "ENABLE_COMMUNITY_SHARING",
     "ui.enable_community_sharing",
-    os.environ.get("ENABLE_COMMUNITY_SHARING", "True").lower() == "true",
+    # Defaults OFF: the community sharing destinations are not built in this
+    # fork yet (community.sage.is lands ~2 weeks out), and one share handler
+    # currently points at a public request bin. Turn this on only after the
+    # sharing site exists and the handlers are rewired. See TODO.md.
+    os.environ.get("ENABLE_COMMUNITY_SHARING", "False").lower() == "true",
 )
 
 ENABLE_MESSAGE_RATING = PersistentConfig(
@@ -1566,7 +1586,7 @@ except Exception as e:
 WEBUI_BRANDING = PersistentConfig(
     "WEBUI_BRANDING",
     "ui.branding",
-    branding.model_dump() if hasattr(branding, 'model_dump') else branding.dict()
+    branding.model_dump() if hasattr(branding, "model_dump") else branding.dict(),
 )
 
 
@@ -2010,9 +2030,7 @@ CHROMA_DATA_PATH = f"{DATA_DIR}/vector_db"
 CHROMA_HTTP_HOST = os.environ.get("CHROMA_HTTP_HOST", "")
 CHROMA_HTTP_PORT = int(os.environ.get("CHROMA_HTTP_PORT", "8000"))
 CHROMA_CLIENT_AUTH_PROVIDER = os.environ.get("CHROMA_CLIENT_AUTH_PROVIDER", "")
-CHROMA_CLIENT_AUTH_CREDENTIALS = os.environ.get(
-    "CHROMA_CLIENT_AUTH_CREDENTIALS", ""
-)
+CHROMA_CLIENT_AUTH_CREDENTIALS = os.environ.get("CHROMA_CLIENT_AUTH_CREDENTIALS", "")
 _chroma_http_headers_raw = os.environ.get("CHROMA_HTTP_HEADERS", "")
 CHROMA_HTTP_HEADERS = (
     dict(pair.split("=") for pair in _chroma_http_headers_raw.split(","))
@@ -2436,9 +2454,7 @@ RAG_ALLOWED_FILE_EXTENSIONS = PersistentConfig(
 # so the seeded KBs ingest on first boot without dragging in torch.
 # An explicit operator-set RAG_EMBEDDING_ENGINE env var still wins.
 _default_rag_embedding_engine = (
-    "chroma"
-    if os.environ.get("ENABLE_TRY_SAGE", "False").lower() == "true"
-    else ""
+    "chroma" if os.environ.get("ENABLE_TRY_SAGE", "False").lower() == "true" else ""
 )
 RAG_EMBEDDING_ENGINE = PersistentConfig(
     "RAG_EMBEDDING_ENGINE",

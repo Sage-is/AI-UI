@@ -1,4 +1,3 @@
-import datetime
 import logging
 import time
 import uuid
@@ -117,9 +116,7 @@ async def get_magic_link_by_id(id: str, user=Depends(get_admin_or_facilitator_us
 
 
 @router.post("/{id}/deactivate", response_model=Optional[MagicLinkResponse])
-async def deactivate_magic_link(
-    id: str, user=Depends(get_admin_or_facilitator_user)
-):
+async def deactivate_magic_link(id: str, user=Depends(get_admin_or_facilitator_user)):
     link = MagicLinks.get_by_id(id)
     if not link:
         raise HTTPException(

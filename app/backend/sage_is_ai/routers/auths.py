@@ -37,11 +37,10 @@ from sage_is_ai.env import (
     SRC_LOG_LEVELS,
 )
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from fastapi.responses import RedirectResponse, Response, JSONResponse
+from fastapi.responses import Response, JSONResponse
 from sage_is_ai.config import (
     OPENID_PROVIDER_URL,
     ENABLE_OAUTH_SIGNUP,
-    ENABLE_LDAP,
     OAUTH_MERGE_ACCOUNTS_BY_EMAIL,
     GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET,
@@ -72,7 +71,7 @@ from sage_is_ai.utils.auth import (
 from sage_is_ai.utils.webhook import post_webhook
 from sage_is_ai.utils.access_control import get_permissions
 
-from typing import Optional, List
+from typing import Optional
 
 from ssl import CERT_NONE, CERT_REQUIRED, PROTOCOL_TLS
 
@@ -315,7 +314,6 @@ async def claim_account(
 @router.post("/ldap", response_model=SessionUserResponse)
 async def ldap_auth(request: Request, response: Response, form_data: LdapForm):
     ENABLE_LDAP = request.app.state.config.ENABLE_LDAP  # noqa: F811
-    LDAP_SERVER_LABEL = request.app.state.config.LDAP_SERVER_LABEL
     LDAP_SERVER_HOST = request.app.state.config.LDAP_SERVER_HOST
     LDAP_SERVER_PORT = request.app.state.config.LDAP_SERVER_PORT
     LDAP_ATTRIBUTE_FOR_MAIL = request.app.state.config.LDAP_ATTRIBUTE_FOR_MAIL
@@ -642,7 +640,6 @@ async def signin(request: Request, response: Response, form_data: SigninForm):
         user = Auths.authenticate_user(form_data.email.lower(), form_data.password)
 
     if user:
-
         expires_delta = parse_duration(request.app.state.config.JWT_EXPIRES_IN)
         expires_at = None
         if expires_delta:
@@ -1174,7 +1171,9 @@ async def send_magic_link_login(request: Request, form_data: MagicLinkSendForm):
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Magic link login is disabled")
 
     # Always return success to prevent email enumeration
-    generic_response = {"message": "If an account with that email exists, a login link has been sent."}
+    generic_response = {
+        "message": "If an account with that email exists, a login link has been sent."
+    }
 
     user = Users.get_user_by_email(form_data.email.lower().strip())
     if not user:
@@ -1219,7 +1218,9 @@ async def send_magic_link_login(request: Request, form_data: MagicLinkSendForm):
         server.quit()
     except Exception as e:
         log.error(f"Failed to send magic link email: {e}")
-        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to send email")
+        raise HTTPException(
+            status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to send email"
+        )
 
     return generic_response
 

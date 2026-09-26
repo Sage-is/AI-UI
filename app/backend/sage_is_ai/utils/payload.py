@@ -177,7 +177,7 @@ def apply_model_params_to_body_ollama(params: dict, form_data: dict) -> dict:
         """
         try:
             return json.loads(value)
-        except Exception as e:
+        except Exception:
             return value
 
     ollama_root_params = {
@@ -305,7 +305,7 @@ def convert_payload_openai_to_ollama(openai_payload: dict) -> dict:
             """
             try:
                 return json.loads(value)
-            except Exception as e:
+            except Exception:
                 return value
 
         ollama_root_params = {

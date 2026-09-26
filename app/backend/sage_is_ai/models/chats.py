@@ -1,17 +1,15 @@
 import logging
-import json
 import time
 import uuid
 from typing import Optional
 
 from sage_is_ai.internal.db import Base, get_db
-from sage_is_ai.models.tags import TagModel, Tag, Tags
+from sage_is_ai.models.tags import TagModel, Tags
 from sage_is_ai.env import SRC_LOG_LEVELS
 
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import BigInteger, Boolean, Column, String, Text, JSON
-from sqlalchemy import or_, func, select, and_, text
-from sqlalchemy.sql import exists
+from sqlalchemy import or_, and_, text
 from sqlalchemy.sql.expression import bindparam
 
 ####################

@@ -201,8 +201,14 @@ describe('Workshop: Agents', () => {
 		// Counted rather than selected: on the Svelte page the items are not in the
 		// DOM until the menu opens, and on the server-rendered page they are in the
 		// DOM but hidden. Both are correct, and both count zero.
+		// `checkVisibility()`, not jQuery `:visible` — see the twin in
+		// `workshop-prompts.cy.ts`: Chrome 131+ hides closed-<details> content
+		// with `content-visibility: hidden`, whose phantom boxes `:visible`
+		// misreads as shown.
 		cy.get('body').then(($b) => {
-			const open = $b.find('[data-cy="agents-menu-delete"]:visible');
+			const open = $b
+				.find('[data-cy="agents-menu-delete"]')
+				.filter((_, el) => el.checkVisibility());
 			expect(open.length, 'no row menu is showing before anything is clicked').to.eq(0);
 		});
 

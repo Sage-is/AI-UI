@@ -2,10 +2,12 @@
 # The Python linter for the backend.
 #
 # Adopted 2026-08-06. Nothing else in this repo reads Python semantics — bandit
-# reads security, black reads formatting, and the chat-path ratchet reads six
-# shapes of one file. Ruff read all 218 backend files in 40 milliseconds and
-# found the single undefined name in the tree: chat_web_search_handler at
-# utils/middleware.py:1209, the frozen NameError recorded at TODO.md:601.
+# reads security, `ruff format` reads formatting (it replaced black as the
+# format gate 2026-08-17; black survives only as the runtime dependency behind
+# the routers/utils.py code-formatting endpoint), and the chat-path ratchet
+# reads six shapes of one file. Ruff read all 218 backend files in 40
+# milliseconds and found the single undefined name in the tree:
+# chat_web_search_handler, the frozen NameError recorded in TODO.md.
 #
 # Configuration lives in app/pyproject.toml under [tool.ruff], including the
 # reasoning for every ignored rule. The 20 violations that survive that config
@@ -41,8 +43,8 @@ case "${1:-check}" in
         exec "${RUFF[@]}" check backend/
         ;;
     format-check)
-        # Reports only. See the lint target in the Makefile for why this is not
-        # yet a blocking gate: the tree has never been format-clean.
+        # Blocking since 2026-08-17: the backend went format-clean in the
+        # ruff-format adoption and `lint` gates on it.
         exec "${RUFF[@]}" format --check backend/
         ;;
     format-fix)

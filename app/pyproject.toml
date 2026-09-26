@@ -167,10 +167,10 @@ dev-dependencies = [
 # ruff — linter and format checker for the backend
 # ---------------------------------------------------------------------------
 # Adopted 2026-08-06. Ruff found the one undefined name in 200+ backend files in
-# 40 milliseconds: the frozen chat_web_search_handler NameError recorded at
-# TODO.md:601. Nothing else in the repo reads Python semantics — bandit reads
-# security, black reads formatting, and the chat-path ratchet reads six shapes of
-# one file.
+# 40 milliseconds: the frozen chat_web_search_handler NameError recorded in
+# TODO.md. Nothing else in the repo reads Python semantics — bandit reads
+# security, `ruff format` reads formatting (black retired as the format gate
+# 2026-08-17), and the chat-path ratchet reads six shapes of one file.
 [tool.ruff]
 line-length = 88
 target-version = "py311"
@@ -191,15 +191,6 @@ ignore = [
     "E402",
     # 13 sites. `f = lambda x: ...` instead of `def`. Stylistic, no defect.
     "E731",
-    # 248 sites, and the largest single cleanup available in the backend. It
-    # earns its own commit and a full gauntlet run, because an unused import is
-    # sometimes a re-export and sometimes a side effect.
-    "F401",
-    # 37 sites, 8 of them in utils/middleware.py — whose line numbers are
-    # anchored by nine fences in scripts/gates/chat-path-structure/baseline.json
-    # and 64 citations across the charts. Removing a binding there shifts every
-    # one of them. Sequenced after the chart's [Re-tighten and re-point] card.
-    "F841",
 ]
 
 [tool.ruff.lint.per-file-ignores]
@@ -211,6 +202,10 @@ ignore = [
 # silently returns every row. `is None` breaks `IS NULL` the same way. Ruff
 # offers these only as unsafe fixes, and it is right to.
 "**/models/*.py" = ["E711", "E712"]
+# Frozen migration history, alembic and peewee alike. Editing a shipped
+# migration to appease a linter is worse than the lint; ignored, not fixed.
+"**/migrations/versions/*.py" = ["F401", "F841"]
+"**/internal/migrations/*.py" = ["F401", "F841"]
 
 [tool.hatch.metadata]
 allow-direct-references = true

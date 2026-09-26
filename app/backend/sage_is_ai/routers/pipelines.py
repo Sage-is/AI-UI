@@ -1,6 +1,5 @@
 from fastapi import (
     Depends,
-    FastAPI,
     File,
     Form,
     HTTPException,
@@ -15,12 +14,10 @@ import logging
 import shutil
 import requests
 from pydantic import BaseModel
-from starlette.responses import FileResponse
 from typing import Optional
 
 from sage_is_ai.env import SRC_LOG_LEVELS, AIOHTTP_CLIENT_SESSION_SSL
 from sage_is_ai.config import CACHE_DIR
-from sage_is_ai.constants import ERROR_MESSAGES
 
 
 from sage_is_ai.routers.openai import get_all_models_responses
@@ -101,7 +98,7 @@ async def process_pipeline_inlet_filter(request, payload, user, models):
                     endpoint_health.record_success(
                         filter_url, capability="pipelines/inlet_filter"
                     )
-            except aiohttp.ClientResponseError as e:
+            except aiohttp.ClientResponseError:
                 res = (
                     await response.json()
                     if response.content_type == "application/json"
@@ -164,7 +161,7 @@ async def process_pipeline_outlet_filter(request, payload, user, models):
                     endpoint_health.record_success(
                         filter_url, capability="pipelines/outlet_filter"
                     )
-            except aiohttp.ClientResponseError as e:
+            except aiohttp.ClientResponseError:
                 try:
                     res = (
                         await response.json()

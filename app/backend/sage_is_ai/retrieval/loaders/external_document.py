@@ -1,7 +1,7 @@
 import requests
 import logging
 import os
-from typing import Iterator, List, Union
+from typing import List
 
 from langchain_core.document_loaders import BaseLoader
 from langchain_core.documents import Document
@@ -55,7 +55,6 @@ class ExternalDocumentLoader(BaseLoader):
             raise Exception(f"Error connecting to endpoint: {e}")
 
         if response.ok:
-
             response_data = response.json()
             if response_data:
                 if isinstance(response_data, dict):

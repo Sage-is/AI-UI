@@ -14,15 +14,19 @@
 {# `data-swap-target` because this form lives OUTSIDE the region it updates, so
    Startr Swap cannot infer the region from where the control sits. It is the one
    case the nearest-ancestor rule cannot reach — and the reason the attribute
-   exists at all. #}
+   exists at all.
+
+   The clear link is NOT here beside the search button, and that is load-bearing:
+   the form is outside the region precisely so a swap never replaces it, which
+   also means nothing in it can change after a swapped search. A clear link
+   rendered `{% if query %}` inside a never-updated form can never appear. It
+   lives at the top of `#prompts-results` instead — state that changes with the
+   query belongs to the region the query updates. #}
 <form method="get" action="{{ base }}" data-swap-target="#prompts-results">
   <input type="hidden" name="lang" value="{{ lang[6:] }}" />
   <label for="prompts-q">{{ search_label }}</label>
   <input data-cy="prompts-search" id="prompts-q" type="search" name="q" value="{{ query }}" />
   <button class="btn" type="submit">{{ search_submit_label }}</button>
-  {% if query %}
-  <a class="btn" data-cy="prompts-search-clear" href="{{ clear_url }}">{{ clear_label }}</a>
-  {% endif %}
 </form>
 
 <p><a class="btn btn-primary" data-cy="prompts-create" href="{{ create_url }}">{{ create_label }}</a></p>
@@ -37,6 +41,11 @@
    document that has never met this page. Controls INSIDE it need no attribute
    at all: the nearest region above a control is the one it updates. #}
 <div id="prompts-results" data-swap>
+
+{# In the region, not in the form — see the form's comment for why. #}
+{% if query %}
+<p><a class="btn" data-cy="prompts-search-clear" href="{{ clear_url }}">{{ clear_label }}</a></p>
+{% endif %}
 
 {% if message %}
 <p data-cy="panel-message">{{ message }}</p>

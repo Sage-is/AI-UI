@@ -2,10 +2,13 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../support/index.d.ts" />
 
+// Canonical values live in scripts/lib/test-admin.env; run-cypress.sh forwards
+// them as CYPRESS_ADMIN_*. The literals below are the same values, kept only as
+// the fallback for a bare `cypress open` outside the harness.
 export const adminUser = {
 	name: 'Admin User',
-	email: 'admin@example.com',
-	password: 'password'
+	email: Cypress.env('ADMIN_EMAIL') || 'admin@example.com',
+	password: Cypress.env('ADMIN_PASSWORD') || 'password'
 };
 
 const login = (email: string, password: string) => {
@@ -136,6 +139,9 @@ const RESTORED_CONFIG: ConfigSurface[] = [
 	// a spec that leaves test branding behind does not merely change a config
 	// value — it repaints every page every later spec looks at.
 	{ name: 'branding', read: '/api/v1/configs/branding', write: '/api/v1/configs/branding' },
+	// GET returns exactly the AdminConfig field set POST requires (ENABLE_SPACES,
+	// ENABLE_SIGNUP, DEFAULT_USER_ROLE, ...), so no wrap is needed.
+	{ name: 'admin', read: '/api/v1/auths/admin/config', write: '/api/v1/auths/admin/config' },
 	{ name: 'ollama', read: '/ollama/config', write: '/ollama/config/update' },
 	{ name: 'openai', read: '/openai/config', write: '/openai/config/update' },
 	{

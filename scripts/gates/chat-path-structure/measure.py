@@ -254,20 +254,48 @@ RATCHETED = [
 ]
 
 
-def load_baseline() -> dict:
+def load_baseline(bootstrap: bool = False) -> dict:
+    """With bootstrap=True a missing baseline yields an empty skeleton instead
+    of exiting, so --tighten can record a first baseline on a fresh clone.
+    Fences are never bootstrapped: they are authored judgments, not
+    measurements."""
     if not BASELINE.exists():
+        if bootstrap:
+            return {"ceilings": {}, "fences": {}}
         sys.exit(f"ratchet: no baseline at {BASELINE} — run with --tighten to record one")
     return json.loads(BASELINE.read_text())
 
 
 def run(tighten: bool, source_path: pathlib.Path | None = None) -> int:
-    base = load_baseline()
+    fresh = not BASELINE.exists()
+    base = load_baseline(bootstrap=tighten)
     ceilings = base["ceilings"]
     fences = base.get("fences", {})
 
     actual = measure_structure()
     rot_count, rot_problems = measure_citations(fences)
     actual["citation_rot"] = rot_count
+
+    # Tighten before any comparison: overwriting every ceiling needs no
+    # ceiling to compare against, and running it first is what lets a
+    # fresh clone bootstrap at all.
+    if tighten:
+        for key, _ in RATCHETED:
+            ceilings[key] = actual[key]
+        base["ceilings"] = ceilings
+        base["measured_code_lines"] = actual["code_lines"]
+        BASELINE.write_text(json.dumps(base, indent=2) + "\n")
+        print("Ceilings lowered to what the code achieves today:\n")
+        for key, label in RATCHETED:
+            print(f"  {label}: {actual[key]}")
+        print(f"\nWrote {BASELINE.relative_to(ROOT)} (kept out of git — synced by other means).")
+        if fresh:
+            print(
+                "\nBOOTSTRAP: this baseline has no fences. Fences are authored"
+                "\njudgments — add each load-bearing line to `fences` by hand"
+                "\n(the census lives in docs/decisions/)."
+            )
+        return 0
 
     over: list[str] = []
     under: list[str] = []
@@ -282,18 +310,6 @@ def run(tighten: bool, source_path: pathlib.Path | None = None) -> int:
 
     if rot_count:
         over.append(f"citation rot: {rot_count} stale line link(s)")
-
-    if tighten:
-        for key, _ in RATCHETED:
-            ceilings[key] = actual[key]
-        base["ceilings"] = ceilings
-        base["measured_code_lines"] = actual["code_lines"]
-        BASELINE.write_text(json.dumps(base, indent=2) + "\n")
-        print("Ceilings lowered to what the code achieves today:\n")
-        for key, label in RATCHETED:
-            print(f"  {label}: {actual[key]}")
-        print(f"\nWrote {BASELINE.relative_to(ROOT)}. Commit it with the change that earned it.")
-        return 0
 
     if over:
         print("FAIL — the chat path got more tangled, not less:\n")

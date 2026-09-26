@@ -1,16 +1,12 @@
-import json
 import time
 import uuid
 from typing import Optional
 
 from sage_is_ai.internal.db import Base, get_db
-from sage_is_ai.models.tags import TagModel, Tag, Tags
 
 
 from pydantic import BaseModel, ConfigDict
-from sqlalchemy import BigInteger, Boolean, Column, String, Text, JSON
-from sqlalchemy import or_, func, select, and_, text
-from sqlalchemy.sql import exists
+from sqlalchemy import BigInteger, Column, Text, JSON
 
 ####################
 # Message DB Schema
@@ -160,7 +156,10 @@ class MessageTable:
 
     def get_messages_by_space_id(
         # NOTE: channel_id parameter maps to DB column name -- kept for backwards compatibility
-        self, channel_id: str, skip: int = 0, limit: int = 50
+        self,
+        channel_id: str,
+        skip: int = 0,
+        limit: int = 50,
     ) -> list[MessageModel]:
         with get_db() as db:
             all_messages = (

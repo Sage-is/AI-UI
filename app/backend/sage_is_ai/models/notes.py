@@ -1,17 +1,14 @@
-import json
 import time
 import uuid
 from typing import Optional
 
 from sage_is_ai.internal.db import Base, get_db
 from sage_is_ai.utils.access_control import has_access
-from sage_is_ai.models.users import Users, UserResponse
+from sage_is_ai.models.users import UserResponse
 
 
 from pydantic import BaseModel, ConfigDict
-from sqlalchemy import BigInteger, Boolean, Column, String, Text, JSON
-from sqlalchemy import or_, func, select, and_, text
-from sqlalchemy.sql import exists
+from sqlalchemy import BigInteger, Column, Text, JSON
 
 ####################
 # Note DB Schema

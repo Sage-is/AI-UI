@@ -239,9 +239,7 @@ async def get_personas(request: Request):
             "key": p["key"],
             "label": p["label"],
             "role": p["role"],
-            "login_url": _get_persona_link(
-                request, p["key"], p["email"], ttl_hours
-            ),
+            "login_url": _get_persona_link(request, p["key"], p["email"], ttl_hours),
         }
         for p in get_persona_definitions(request.app)
     ]

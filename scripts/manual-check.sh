@@ -35,7 +35,9 @@ IMG="${IMG:-sage-is/ai-ui:develop}"
 PORT="${PORT:-9443}"
 NET="${NET:-sage-network}"
 ROOT="sage-manual"; TLS="sage-manual-tls"; VOL="sage-manual-data"
-EMAIL="${EMAIL:-admin@example.com}"; PASSWORD="${PASSWORD:-password}"
+# Canonical fresh-boot admin; override with EMAIL=/PASSWORD= for a one-off.
+. "$(cd "$(dirname "$0")" && pwd)/lib/test-admin.env"
+EMAIL="${EMAIL:-$TEST_ADMIN_EMAIL}"; PASSWORD="${PASSWORD:-$TEST_ADMIN_PASSWORD}"
 HERE="$(cd "$(dirname "$0")/.." && pwd)"
 BASE="http://localhost:8101"
 

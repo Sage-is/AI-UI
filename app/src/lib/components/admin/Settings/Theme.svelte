@@ -3,6 +3,8 @@
 	import type { Writable } from 'svelte/store';
 	import type { i18n as i18nType } from 'i18next';
 	import { getBranding, setBranding, type Branding } from '$lib/apis/configs';
+	import { pruneSprig } from '$lib/apis/retrieval';
+	import { applyBrandingColors } from '$lib/utils/branding';
 	import { WEBUI_NAME } from '$lib/stores';
 	import { toast } from 'svelte-sonner';
 
@@ -34,22 +36,22 @@
 		}
 	};
 
-	/**
-	 * Apply branding colors to Startr.Style CSS variables immediately.
-	 * Startr.Style cascades from --primary/--secondary, so setting these
-	 * on :root recolors --links, --background-alt, --focus, etc. automatically.
-	 */
-	const applyBrandingColors = () => {
-		const root = document.documentElement;
-		if (branding.primary_color) {
-			root.style.setProperty('--primary', branding.primary_color);
-		} else {
-			root.style.removeProperty('--primary');
-		}
-		if (branding.accent_color) {
-			root.style.setProperty('--secondary', branding.accent_color);
-		} else {
-			root.style.removeProperty('--secondary');
+	// The one implementation lives in $lib/utils/branding — shared with +layout's
+	// boot path and mirrored by the no-build shell.
+
+	const pruneActiveTheme = async () => {
+		if (!branding.active_theme_sprig) return;
+		saving = true;
+		try {
+			await pruneSprig(localStorage.token, { name: branding.active_theme_sprig });
+			toast.success($i18n.t('Theme Sprig pruned — your colors are live.'));
+			branding = await getBranding();
+			applyBrandingColors(branding);
+		} catch (error) {
+			console.error('Error pruning theme sprig:', error);
+			toast.error($i18n.t('Failed to prune the theme Sprig'));
+		} finally {
+			saving = false;
 		}
 	};
 
@@ -57,9 +59,12 @@
 		saving = true;
 		try {
 			const token = localStorage.token;
-			await setBranding(token, branding);
+			// GET-only annotations never go back on POST — a stored copy would go
+			// stale the moment the Sprig is pruned.
+			const { active_theme_sprig, active_theme_label, ...toSave } = branding;
+			await setBranding(token, toSave);
 			// Apply colors live so admin sees the effect immediately
-			applyBrandingColors();
+			applyBrandingColors(branding);
 			toast.success($i18n.t('Branding settings saved successfully!'));
 			dispatch('save');
 		} catch (error) {
@@ -189,6 +194,36 @@
 				<div style="--size:0.6rem; --c:var(--color-gray-500)">
 					{$i18n.t('Overrides the Startr.Style theme colors. Leave empty to use defaults.')}
 				</div>
+
+				{#if branding.active_theme_sprig}
+					<!-- A grafted theme Sprig owns the whole look (accents AND grays), so
+						 the colors below are parked rather than half-applied. Honest UX over
+						 silent precedence: say who is winning, offer the one-click way out. -->
+					<div
+						data-cy="branding-theme-sprig-warning"
+						role="status"
+						style="--p:0.6rem 0.8rem; --radius:0.4rem; --bg:var(--background-alt); --size:0.7rem"
+					>
+						<p style="--m:0; --weight:500">
+							{$i18n.t('A theme Sprig is dressing this instance right now:')}
+							{branding.active_theme_label || branding.active_theme_sprig}
+						</p>
+						<p style="--m:0.25rem 0 0">
+							{$i18n.t(
+								'While it is grafted, the Sprig picks the colors — the ones below are saved but will not show. Prune the Sprig to let your colors through.'
+							)}
+						</p>
+						<button
+							type="button"
+							data-cy="branding-prune-theme"
+							disabled={saving}
+							on:click={pruneActiveTheme}
+							style="--mt:0.5rem"
+						>
+							{$i18n.t('Prune the theme Sprig')}
+						</button>
+					</div>
+				{/if}
 
 				<div>
 					<label style="--d:block; --size:0.8rem; --weight:500; --mb:0.5rem" for="primary-color">

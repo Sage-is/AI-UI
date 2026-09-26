@@ -156,7 +156,9 @@ def _row(label: str, record: dict, shape: str = "unknown") -> dict:
             if record.get("summary_key")
             else ""
         ),
-        "fix": _fix_steps(str(record["issue_type"]), shape) if record.get("issue_type") else None,
+        "fix": _fix_steps(str(record["issue_type"]), shape)
+        if record.get("issue_type")
+        else None,
         "technical": (
             json.dumps(record["technical"], indent=2, default=str)
             if record.get("technical")
@@ -168,6 +170,7 @@ def _row(label: str, record: dict, shape: str = "unknown") -> dict:
         "reprobe": bool(capability and label.startswith(("http://", "https://"))),
     }
 
+
 def _rows_of(health: dict, section: str) -> list[tuple[str, dict]]:
     """Normalise a section into (label, record) pairs.
 
@@ -177,7 +180,11 @@ def _rows_of(health: dict, section: str) -> list[tuple[str, dict]]:
     """
     out = []
     for label, entry in (health.get(section) or {}).items():
-        record = entry.get("configured") if isinstance(entry, dict) and "configured" in entry else entry
+        record = (
+            entry.get("configured")
+            if isinstance(entry, dict) and "configured" in entry
+            else entry
+        )
         if isinstance(record, dict):
             out.append((label, record))
     return out
@@ -226,7 +233,11 @@ async def render_diagnostics(request: Request, user) -> str:
         ]
         # History, and history should not push the live rows down the page.
         ghosts = (
-            [_row(label, rec, shape) for label, rec in rows if rec.get("in_config") is False]
+            [
+                _row(label, rec, shape)
+                for label, rec in rows
+                if rec.get("in_config") is False
+            ]
             if key == "endpoints"
             else []
         )

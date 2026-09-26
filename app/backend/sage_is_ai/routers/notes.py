@@ -1,9 +1,8 @@
-import json
 import logging
 from typing import Optional
 
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
 
 from sage_is_ai.socket.main import sio
@@ -12,12 +11,11 @@ from sage_is_ai.socket.main import sio
 from sage_is_ai.models.users import Users, UserResponse
 from sage_is_ai.models.notes import Notes, NoteModel, NoteForm, NoteUserResponse
 
-from sage_is_ai.config import ENABLE_ADMIN_CHAT_ACCESS, ENABLE_ADMIN_EXPORT
 from sage_is_ai.constants import ERROR_MESSAGES
 from sage_is_ai.env import SRC_LOG_LEVELS
 
 
-from sage_is_ai.utils.auth import get_admin_user, get_verified_user
+from sage_is_ai.utils.auth import get_verified_user
 from sage_is_ai.utils.access_control import has_access, has_permission
 
 log = logging.getLogger(__name__)

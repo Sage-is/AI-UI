@@ -1,5 +1,3 @@
-import os
-from pathlib import Path
 from typing import Optional
 import logging
 
@@ -12,9 +10,8 @@ from sage_is_ai.models.groups import (
     UserIdsForm,
 )
 
-from sage_is_ai.config import CACHE_DIR
 from sage_is_ai.constants import ERROR_MESSAGES
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from sage_is_ai.utils.auth import (
     get_admin_user,

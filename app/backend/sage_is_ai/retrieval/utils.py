@@ -46,7 +46,7 @@ def _require_hybrid_retrievers():
         ContextualCompressionRetriever, EnsembleRetriever = _cc, _en
         BM25Retriever = _bm
 
-from sage_is_ai.config import VECTOR_DB
+
 from sage_is_ai.retrieval.vector import factory
 
 from sage_is_ai.models.users import UserModel
@@ -220,7 +220,7 @@ def query_doc_with_hybrid_search(
 
         log.info(
             "query_doc_with_hybrid_search:result "
-            + f'{result["metadatas"]} {result["distances"]}'
+            + f"{result['metadatas']} {result['distances']}"
         )
         return result
     except Exception as e:
@@ -445,10 +445,12 @@ def get_embedding_function(
 ):
     if embedding_engine == "":
         if embedding_function is None:
+
             def _not_ready(*args, **kwargs):
                 raise ValueError(
                     "Embedding model not loaded. Install the AI Engine from the setup wizard."
                 )
+
             return _not_ready
         return lambda query, prefix=None, user=None: embedding_function.encode(
             query, **({"prompt": prefix} if prefix else {})
@@ -460,11 +462,13 @@ def get_embedding_function(
         # (a `prefix` arg is accepted but ignored — chromadb's bundled
         # MiniLM doesn't take a prompt prefix).
         if embedding_function is None:
+
             def _not_ready(*args, **kwargs):
                 raise ValueError(
                     "ChromaDB embedding function unavailable. "
                     "Verify chromadb is installed in this image."
                 )
+
             return _not_ready
 
         def _embed_chroma(query, prefix=None, user=None):
@@ -641,7 +645,6 @@ def get_sources_from_items(
                     user.role == "admin"
                     or has_access(user.id, "read", knowledge_base.access_control)
                 ):
-
                     file_ids = knowledge_base.data.get("file_ids", [])
 
                     documents = []
@@ -708,7 +711,7 @@ def get_sources_from_items(
                                 r=r,
                                 hybrid_bm25_weight=hybrid_bm25_weight,
                             )
-                        except Exception as e:
+                        except Exception:
                             log.debug(
                                 "Error when using hybrid search, using non hybrid search as fallback."
                             )
@@ -840,9 +843,7 @@ def generate_openai_batch_embeddings(
             endpoint_health.record_success(url, capability="embedding/openai")
             return [elem["embedding"] for elem in data["data"]]
         else:
-            raise ValueError(
-                f"openai embeddings response missing 'data' key: {data}"
-            )
+            raise ValueError(f"openai embeddings response missing 'data' key: {data}")
     except Exception as e:
         log.exception(f"Error generating openai batch embeddings: {e}")
         endpoint_health.record_failure(url, e, capability="embedding/openai")

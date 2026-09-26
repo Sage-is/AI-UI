@@ -43,6 +43,7 @@
 	import i18n, { initI18n, getLanguages, changeLanguage } from '$lib/i18n';
 	import { bestMatchingLanguage } from '$lib/utils';
 	import { configureSanitizer } from '$lib/utils/sanitize';
+	import { applyBrandingColors } from '$lib/utils/branding';
 	import { getAllTags, getChatList } from '$lib/apis/chats';
 	import { getBranding } from '$lib/apis/configs';
 	import NotificationToast from '$lib/components/NotificationToast.svelte';
@@ -74,27 +75,8 @@
 	let tokenTimer: ReturnType<typeof setInterval> | null = null;
 	let branding: { favicon_url?: string; logo_url?: string; logo_dark_url?: string; title?: string; subtitle?: string; primary_color?: string; accent_color?: string } = {};
 
-	/**
-	 * Apply admin branding colors as Startr.Style CSS variable overrides.
-	 * Startr.Style's semantic system cascades from --primary and --secondary:
-	 *   --links: var(--primary)
-	 *   --background-alt: color-mix(... var(--primary) ...)
-	 *   --focus: color-mix(... var(--primary) ...)
-	 * So setting --primary here recolors the entire UI automatically.
-	 */
-	const applyBrandingColors = (b: typeof branding) => {
-		const root = document.documentElement;
-		if (b?.primary_color) {
-			root.style.setProperty('--primary', b.primary_color);
-		} else {
-			root.style.removeProperty('--primary');
-		}
-		if (b?.accent_color) {
-			root.style.setProperty('--secondary', b.accent_color);
-		} else {
-			root.style.removeProperty('--secondary');
-		}
-	};
+	// The one implementation lives in $lib/utils/branding — shared with the
+	// admin Theme panel's live preview and mirrored by the no-build shell.
 
 	const BREAKPOINT = 768;
 

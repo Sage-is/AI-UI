@@ -4,7 +4,6 @@ import socket
 import ssl
 import urllib.parse
 import urllib.request
-from collections import defaultdict
 from datetime import datetime, time, timedelta
 from typing import (
     Any,
@@ -20,6 +19,7 @@ from typing import (
 import aiohttp
 import certifi
 import validators
+
 # Web loaders ride the rag-loaders Sprig™. Unlike the lazy call-time imports
 # elsewhere, the Safe* classes below SUBCLASS these at module load, so a graft
 # after boot needs a restart to take effect here (see _require_web_loaders).
@@ -65,6 +65,8 @@ def _require_web_loaders():
         "rag-loaders Sprig™ grafted — restart the Rootstock™ to "
         "activate web-page loading."
     )
+
+
 from sage_is_ai.retrieval.loaders.tavily import TavilyLoader
 from sage_is_ai.retrieval.loaders.external_web import ExternalWebLoader
 from sage_is_ai.constants import ERROR_MESSAGES
@@ -80,7 +82,7 @@ from sage_is_ai.config import (
     EXTERNAL_WEB_LOADER_URL,
     EXTERNAL_WEB_LOADER_API_KEY,
 )
-from sage_is_ai.env import SRC_LOG_LEVELS, AIOHTTP_CLIENT_SESSION_SSL
+from sage_is_ai.env import SRC_LOG_LEVELS
 
 log = logging.getLogger(__name__)
 log.setLevel(SRC_LOG_LEVELS["RAG"])

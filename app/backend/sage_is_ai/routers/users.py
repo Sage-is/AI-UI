@@ -8,7 +8,6 @@ from sage_is_ai.models.users import (
     UserModel,
     UserListResponse,
     UserInfoListResponse,
-    UserRoleUpdateForm,
     Users,
     UserSettings,
     UserUpdateForm,
@@ -32,7 +31,10 @@ from sage_is_ai.utils.auth import (
     get_password_hash,
     get_verified_user,
 )
-from sage_is_ai.utils.facilitator import get_facilitator_scope, can_facilitator_manage_user
+from sage_is_ai.utils.facilitator import (
+    get_facilitator_scope,
+    can_facilitator_manage_user,
+)
 from sage_is_ai.utils.access_control import get_permissions, has_permission
 
 
@@ -138,9 +140,7 @@ async def get_managed_users(
     if query:
         q = query.lower()
         managed_users = [
-            u
-            for u in managed_users
-            if q in u.name.lower() or q in u.email.lower()
+            u for u in managed_users if q in u.name.lower() or q in u.email.lower()
         ]
 
     total = len(managed_users)
@@ -148,7 +148,14 @@ async def get_managed_users(
     # Apply ordering
     if order_by:
         reverse = direction != "asc"
-        if order_by in ("name", "email", "role", "created_at", "last_active_at", "updated_at"):
+        if order_by in (
+            "name",
+            "email",
+            "role",
+            "created_at",
+            "last_active_at",
+            "updated_at",
+        ):
             managed_users.sort(key=lambda u: getattr(u, order_by, ""), reverse=reverse)
 
     # Apply pagination

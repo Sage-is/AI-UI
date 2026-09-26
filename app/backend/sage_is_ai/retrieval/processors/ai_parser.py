@@ -115,7 +115,7 @@ async def ai_parse_content(
             result = await _call_llm(app, model_id, prompt, chunk, user)
             processed_chunks.append(result)
         except Exception as e:
-            log.error(f"AI parse failed on chunk {i+1}/{len(chunks)}: {e}")
+            log.error(f"AI parse failed on chunk {i + 1}/{len(chunks)}: {e}")
             # Fall back to raw chunk on error
             processed_chunks.append(chunk)
 

@@ -1,14 +1,10 @@
 import asyncio
-import inspect
 import json
 import logging
 import mimetypes
 import os
-import shutil
 import sys
 import time
-import random
-from uuid import uuid4
 
 # Suppress onnxruntime cpuid_info C-level stderr warning on virtualized CPUs
 # (Docker Desktop on macOS reports "Unknown CPU vendor")
@@ -29,8 +25,6 @@ from urllib.parse import urlencode, parse_qs, urlparse
 from pydantic import BaseModel
 from sqlalchemy import text
 
-from typing import Optional
-from aiocache import cached
 import aiohttp
 import anyio.to_thread
 import requests
@@ -39,11 +33,8 @@ import requests
 from fastapi import (
     Depends,
     FastAPI,
-    File,
-    Form,
     HTTPException,
     Request,
-    UploadFile,
     status,
     BackgroundTasks,
 )
@@ -64,7 +55,7 @@ from starlette_compress import CompressMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.sessions import SessionMiddleware
-from starlette.responses import Response, StreamingResponse
+from starlette.responses import Response
 from starlette.datastructures import Headers
 
 
@@ -122,7 +113,7 @@ from sage_is_ai.internal.db import Session, engine
 
 from sage_is_ai.models.functions import Functions
 from sage_is_ai.models.models import Models
-from sage_is_ai.models.users import UserModel, Users
+from sage_is_ai.models.users import Users
 from sage_is_ai.models.chats import Chats
 
 from sage_is_ai.config import (
@@ -136,6 +127,7 @@ from sage_is_ai.config import (
     OPENAI_API_BASE_URLS,
     OPENAI_API_KEYS,
     OPENAI_API_CONFIGS,
+    PRIVACY_CONFIG,
     # Direct Connections
     ENABLE_DIRECT_CONNECTIONS,
     # Model list
@@ -201,26 +193,13 @@ from sage_is_ai.config import (
     AUDIO_TTS_AZURE_SPEECH_REGION,
     AUDIO_TTS_AZURE_SPEECH_BASE_URL,
     AUDIO_TTS_AZURE_SPEECH_OUTPUT_FORMAT,
-    PLAYWRIGHT_WS_URL,
-    PLAYWRIGHT_TIMEOUT,
-    #FIRECRAWL_API_BASE_URL,
-    #FIRECRAWL_API_KEY,
-    #TODO test if WEB_LOADER_ENGINE is used in any way
-    ##WEB_LOADER_ENGINE,
     WHISPER_MODEL,
     WHISPER_VAD_FILTER,
-    WHISPER_LANGUAGE,
     DEEPGRAM_API_KEY,
-    WHISPER_MODEL_AUTO_UPDATE,
-    WHISPER_MODEL_DIR,
-    # Retrieval
     RAG_TEMPLATE,
-    DEFAULT_RAG_TEMPLATE,
     RAG_FULL_CONTEXT,
     BYPASS_EMBEDDING_AND_RETRIEVAL,
     RAG_EMBEDDING_MODEL,
-    RAG_EMBEDDING_MODEL_AUTO_UPDATE,
-    RAG_EMBEDDING_MODEL_TRUST_REMOTE_CODE,
     RAG_RERANKING_ENGINE,
     RAG_RERANKING_MODEL,
     RAG_EXTERNAL_RERANKER_URL,
@@ -230,8 +209,6 @@ from sage_is_ai.config import (
     HOME_CALENDAR_ICS_URL,
     SPRIG_WIRES,
     SPRIG_UI_SCRIPTING_GRANT,
-    RAG_RERANKING_MODEL_AUTO_UPDATE,
-    RAG_RERANKING_MODEL_TRUST_REMOTE_CODE,
     RAG_EMBEDDING_ENGINE,
     RAG_EMBEDDING_BATCH_SIZE,
     RAG_TOP_K,
@@ -291,12 +268,9 @@ from sage_is_ai.config import (
     ONEDRIVE_SHAREPOINT_URL,
     ONEDRIVE_SHAREPOINT_TENANT_ID,
     ENABLE_RAG_HYBRID_SEARCH,
-    ENABLE_RAG_LOCAL_WEB_FETCH,
     ENABLE_WEB_LOADER_SSL_VERIFICATION,
     ENABLE_GOOGLE_DRIVE_INTEGRATION,
     ENABLE_ONEDRIVE_INTEGRATION,
-    UPLOAD_DIR,
-    # WebUI
     WEBUI_AUTH,
     WEBUI_NAME,
     WEBUI_BANNERS,
@@ -322,7 +296,6 @@ from sage_is_ai.config import (
     PENDING_USER_OVERLAY_TITLE,
     DEFAULT_PROMPT_SUGGESTIONS,
     DEFAULT_MODELS,
-    DEFAULT_ARENA_MODEL,
     MODEL_ORDER_LIST,
     DEFAULT_MODEL_SELECTOR_FILTER,
     EVALUATION_ARENA_MODELS,
@@ -379,7 +352,6 @@ from sage_is_ai.config import (
     ANALYTICS_PLAUSIBLE_DOMAIN,
     ANALYTICS_PLAUSIBLE_SCRIPT_URL,
     # Misc
-    ENV,
     CACHE_DIR,
     STATIC_DIR,
     FRONTEND_BUILD_DIR,
@@ -398,7 +370,6 @@ from sage_is_ai.config import (
     ENABLE_TAGS_GENERATION,
     ENABLE_TITLE_GENERATION,
     ENABLE_FOLLOW_UP_GENERATION,
-
     ENABLE_RETRIEVAL_QUERY_GENERATION,
     ENABLE_AUTOCOMPLETE_GENERATION,
     TITLE_GENERATION_PROMPT_TEMPLATE,
@@ -439,6 +410,7 @@ from sage_is_ai.env import (
     BYPASS_MODEL_ACCESS_CONTROL,
     RESET_CONFIG_ON_START,
     ENABLE_VERSION_UPDATE_CHECK,
+    ENABLE_SERVICE_WORKER,
     ENABLE_OTEL,
     EXTERNAL_PWA_MANIFEST_URL,
     AIOHTTP_CLIENT_SESSION_SSL,
@@ -446,9 +418,6 @@ from sage_is_ai.env import (
     # so the /api/config response can advertise enabled-state to the
     # frontend; URL/key are NEVER returned in any response.
     ENABLE_TRY_SAGE,
-    TRY_SAGE_LLM_API_URL,
-    TRY_SAGE_LLM_API_KEY,
-    TRY_SAGE_LLM_MODELS,
 )
 
 
@@ -618,9 +587,7 @@ async def periodic_try_sage_reset(app):
                 if deadline.tzinfo is None:
                     deadline = deadline.replace(tzinfo=timezone.utc)
             except ValueError:
-                log.warning(
-                    "try_sage.reset.skip reason=parse_error raw=%r", raw
-                )
+                log.warning("try_sage.reset.skip reason=parse_error raw=%r", raw)
                 continue
 
             now = datetime.now(timezone.utc)
@@ -639,9 +606,7 @@ async def periodic_try_sage_reset(app):
             register_hidden_connections(app)
             await reset_persona_state(app)
 
-            new_deadline = now + timedelta(
-                hours=cfg.TRY_SAGE_RESET_INTERVAL_HOURS
-            )
+            new_deadline = now + timedelta(hours=cfg.TRY_SAGE_RESET_INTERVAL_HOURS)
             cfg.TRY_SAGE_RESET_AT = new_deadline.isoformat()
             log.info(
                 "try_sage.reset.complete next_reset=%s",
@@ -685,6 +650,7 @@ async def lifespan(app: FastAPI):
 
     # Migrate service prefixes from open-webui -> sage-is-ai (idempotent)
     from sage_is_ai.utils.prefix_migration import run_prefix_migrations
+
     await run_prefix_migrations(app)
 
     if THREAD_POOL_SIZE and THREAD_POOL_SIZE > 0:
@@ -715,6 +681,7 @@ async def lifespan(app: FastAPI):
     from sage_is_ai.utils.try_sage_tool_servers import register_try_sage_tool_servers
     from sage_is_ai.utils.try_sage_hidden_connections import register_hidden_connections
     from sage_is_ai.utils.try_sage_seed import seed_try_sage
+
     await register_try_sage_tool_servers(app)
     register_hidden_connections(app)
     await seed_try_sage(app)
@@ -726,6 +693,7 @@ async def lifespan(app: FastAPI):
     # so uvicorn doesn't wait on slow DNS at boot. Failures are diagnostic,
     # never fatal — the registry captures them for /admin/diagnostics.
     from sage_is_ai.diagnostics import run_boot_probes
+
     asyncio.create_task(run_boot_probes(app))
 
     asyncio.create_task(periodic_usage_pool_cleanup())
@@ -800,9 +768,9 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="Sage.is AI",
-    docs_url=None,       # Served via explicit routes below to avoid SPA mount conflict
-    openapi_url=None,    # Served via explicit routes below
-    redoc_url=None,      # Served via explicit routes below
+    docs_url=None,  # Served via explicit routes below to avoid SPA mount conflict
+    openapi_url=None,  # Served via explicit routes below
+    redoc_url=None,  # Served via explicit routes below
     lifespan=lifespan,
 )
 
@@ -856,6 +824,7 @@ app.state.config.ENABLE_OPENAI_API = ENABLE_OPENAI_API
 app.state.config.OPENAI_API_BASE_URLS = OPENAI_API_BASE_URLS
 app.state.config.OPENAI_API_KEYS = OPENAI_API_KEYS
 app.state.config.OPENAI_API_CONFIGS = OPENAI_API_CONFIGS
+app.state.config.PRIVACY_CONFIG = PRIVACY_CONFIG
 
 app.state.OPENAI_MODELS = {}
 
@@ -1114,8 +1083,6 @@ app.state.config.PDF_EXTRACT_IMAGES = PDF_EXTRACT_IMAGES
 
 app.state.config.YOUTUBE_LOADER_LANGUAGE = YOUTUBE_LOADER_LANGUAGE
 app.state.config.YOUTUBE_LOADER_PROXY_URL = YOUTUBE_LOADER_PROXY_URL
-
-
 
 
 def _embedding_not_ready(*args, **kwargs):
@@ -1407,7 +1374,6 @@ app.state.config.TASK_MODEL = TASK_MODEL
 app.state.config.TASK_MODEL_EXTERNAL = TASK_MODEL_EXTERNAL
 
 
-
 app.state.config.ENABLE_RETRIEVAL_QUERY_GENERATION = ENABLE_RETRIEVAL_QUERY_GENERATION
 app.state.config.ENABLE_AUTOCOMPLETE_GENERATION = ENABLE_AUTOCOMPLETE_GENERATION
 app.state.config.ENABLE_TAGS_GENERATION = ENABLE_TAGS_GENERATION
@@ -1561,9 +1527,7 @@ app.include_router(tasks.router, prefix="/api/v1/tasks", tags=["tasks"])
 app.include_router(images.router, prefix="/api/v1/images", tags=["images"])
 
 app.include_router(audio.router, prefix="/api/v1/audio", tags=["audio"])
-app.include_router(
-    sprigs.router, prefix="/api/v1/retrieval/sprigs", tags=["sprigs"]
-)
+app.include_router(sprigs.router, prefix="/api/v1/retrieval/sprigs", tags=["sprigs"])
 app.include_router(retrieval.router, prefix="/api/v1/retrieval", tags=["retrieval"])
 
 app.include_router(configs.router, prefix="/api/v1/configs", tags=["configs"])
@@ -1574,9 +1538,7 @@ app.include_router(users.router, prefix="/api/v1/users", tags=["users"])
 
 app.include_router(spaces.router, prefix="/api/v1/spaces", tags=["spaces"])
 app.include_router(bridges.router, prefix="/api/v1/bridges", tags=["bridges"])
-app.include_router(
-    chat_shares.router, prefix="/api/v1/chats", tags=["chat-shares"]
-)
+app.include_router(chat_shares.router, prefix="/api/v1/chats", tags=["chat-shares"])
 app.include_router(chats.router, prefix="/api/v1/chats", tags=["chats"])
 app.include_router(notes.router, prefix="/api/v1/notes", tags=["notes"])
 
@@ -1785,6 +1747,8 @@ async def chat_completion(
             "files": form_data.get("files", None),
             "features": form_data.get("features", {}),
             "variables": form_data.get("variables", {}),
+            # Known values an API client wants pseudonymized too, e.g. surnames.
+            "privacy": form_data.pop("privacy", None),
             "model": model,
             "direct": model_item.get("direct", False),
             **(
@@ -1991,7 +1955,9 @@ async def get_app_config(request: Request):
                     "enable_user_webhooks": app.state.config.ENABLE_USER_WEBHOOKS,
                     "enable_admin_export": ENABLE_ADMIN_EXPORT,
                     "enable_admin_chat_access": ENABLE_ADMIN_CHAT_ACCESS,
-                    "enable_google_drive_integration": getattr(app.state.config, 'ENABLE_GOOGLE_DRIVE_INTEGRATION', False),
+                    "enable_google_drive_integration": getattr(
+                        app.state.config, "ENABLE_GOOGLE_DRIVE_INTEGRATION", False
+                    ),
                     "enable_onedrive_integration": app.state.config.ENABLE_ONEDRIVE_INTEGRATION,
                 }
                 if user is not None
@@ -2201,31 +2167,86 @@ async def oauth_callback(provider: str, request: Request, response: Response):
     return await oauth_manager.handle_callback(request, provider, response)
 
 
+# The caption both manifest screenshots carry, and the description the capture
+# script gives the agent in them, so the install dialog and the image agree.
+# Adapted from Sage.is copy: the On-Prem page's subtitle (WEB-Sage.is
+# tools/generate-og-images.js) and its Enterprise line on custom agents
+# (WEB-Sage.is src/_data/hardware.yaml). Short on purpose: on a phone the app
+# shows two lines of an agent's description and cuts the rest, so a longer line
+# loses its end in the narrow screenshot. Must match AGENT_DESCRIPTION in
+# scripts/capture_pwa_screenshots.mjs.
+PWA_SCREENSHOT_LABEL = (
+    "Your hardware. Your data. Your AI. Work with your data and build custom agents."
+)
+
+
 @app.get("/manifest.json")
 async def get_manifest_json():
     if app.state.EXTERNAL_PWA_MANIFEST_URL:
         return requests.get(app.state.EXTERNAL_PWA_MANIFEST_URL, timeout=10).json()
     else:
         return {
+            # The install identity. Without it a browser derives identity from
+            # start_url, so moving the app to another path orphans every copy
+            # already installed. It is a stable opaque string, not a URL that
+            # has to resolve — never change it once instances are in the wild.
+            "id": "/",
             "name": app.state.WEBUI_NAME,
             "short_name": app.state.WEBUI_NAME,
             "description": "Sage.is AI is an open, extensible, user-friendly interface for AI that adapts to your workflow.",
             "start_url": "/",
+            "scope": "/",
             "display": "standalone",
+            # Colours the OS title bar and task-switcher card of the installed
+            # app. It cannot follow the light/dark toggle — the manifest is read
+            # once at install — so it matches the `<meta name="theme-color">`
+            # default in app.html rather than the light value the toggle sets.
+            "theme_color": "#171717",
             "background_color": "#343541",
             "orientation": "any",
+            # Sizes must match the files byte for byte. logo.png stood here
+            # declared 512x512 and is 256x256; Chrome measures the PNG, finds
+            # the mismatch and drops the icon, which is why install offered a
+            # generated letter tile. These two are the real thing.
             "icons": [
                 {
-                    "src": "/static/icons/logo.png",
+                    "src": "/static/icons/web-app-manifest-192x192.png",
+                    "type": "image/png",
+                    "sizes": "192x192",
+                    "purpose": "any",
+                },
+                {
+                    "src": "/static/icons/web-app-manifest-512x512.png",
                     "type": "image/png",
                     "sizes": "512x512",
                     "purpose": "any",
                 },
                 {
-                    "src": "/static/icons/logo.png",
+                    "src": "/static/icons/web-app-manifest-512x512.png",
                     "type": "image/png",
                     "sizes": "512x512",
                     "purpose": "maskable",
+                },
+            ],
+            # What the browser shows in the install dialog instead of a bare
+            # name and icon. Chrome needs one of each form factor to offer the
+            # richer prompt, and it drops any entry whose declared size misses
+            # the file — the same trap the icons above fell into, so these are
+            # captured at exactly these dimensions by scripts/capture_pwa_screenshots.mjs.
+            "screenshots": [
+                {
+                    "src": "/static/screenshots/wide-chat.png",
+                    "type": "image/png",
+                    "sizes": "1280x800",
+                    "form_factor": "wide",
+                    "label": PWA_SCREENSHOT_LABEL,
+                },
+                {
+                    "src": "/static/screenshots/narrow-chat.png",
+                    "type": "image/png",
+                    "sizes": "412x915",
+                    "form_factor": "narrow",
+                    "label": PWA_SCREENSHOT_LABEL,
                 },
             ],
         }
@@ -2255,7 +2276,6 @@ async def healthcheck():
 async def healthcheck_with_db():
     Session.execute(text("SELECT 1;")).all()
     return {"status": True}
-
 
 
 class CachedStaticFiles(StaticFiles):
@@ -2375,9 +2395,7 @@ async def active_ui_fragment():
                 media_type="text/html",
                 headers={"Cache-Control": "no-cache"},
             )
-    return Response(
-        "", media_type="text/html", headers={"Cache-Control": "no-cache"}
-    )
+    return Response("", media_type="text/html", headers={"Cache-Control": "no-cache"})
 
 
 # ── The no-build seam (Phase 0 of the frontend migration) ────────────────────
@@ -2404,6 +2422,47 @@ app.mount(
     CachedStaticFiles(directory=PAGES_ASSETS_DIR),
     name="pages-assets",
 )
+
+
+@app.get("/sw.js", include_in_schema=False)
+async def service_worker():
+    """Serve the service worker from the root, which is the only scope worth having.
+
+    A worker controls its own directory and below, so the source in
+    pages/assets/ has to be answered from `/` to see a navigation at all.
+    Registration lives in app.html.
+
+    Two headers carry weight. `Service-Worker-Allowed: /` is what lets a script
+    claim a scope broader than its URL. `Cache-Control: no-cache` makes the
+    browser revalidate the script on every navigation, so a redeploy — or the
+    teardown below — lands on the next page load instead of whenever the
+    browser's own 24-hour ceiling expires.
+
+    With ENABLE_SERVICE_WORKER=false this 404s, which is a teardown rather than
+    an omission. A controlled page revalidates this script on navigation, and
+    the Update algorithm unregisters a registration whose script answers 404 —
+    so an installed worker removes itself on the next page load with nothing
+    asked of the visitor. Registration in app.html then fails on every later
+    load, which is where the caches get swept.
+
+    Answering with a self-destructing worker instead was tried and is worse:
+    app.html registers unconditionally, so each load installed a worker that
+    unregistered itself and the page stayed permanently controlled by the
+    tail of that cycle. Measured, not assumed.
+    """
+    headers = {"Cache-Control": "no-cache", "Service-Worker-Allowed": "/"}
+
+    if not ENABLE_SERVICE_WORKER:
+        return Response(status_code=404, headers=headers)
+
+    source = (PAGES_ASSETS_DIR / "sw.js").read_text()
+    # The cache names carry the release, so an upgrade evicts what the previous
+    # one stored rather than serving it beside the new build.
+    return Response(
+        source.replace("__VERSION__", VERSION),
+        media_type="text/javascript",
+        headers=headers,
+    )
 
 
 # ── The try.sage welcome, server-rendered ────────────────────────────────────
