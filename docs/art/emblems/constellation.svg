@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-8 -8 80 80" width="80" height="80" role="img" aria-label="Constellation" fill="none" stroke="#1a1714" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+<style>
+svg{--ink:#1a1714;--tile:#fdfaf3}
+@media (prefers-color-scheme:dark){svg{--ink:#fdfaf3;--tile:#1a1714}}
+svg,.tile{stroke:var(--ink)}
+.tile{fill:var(--tile)}
+.n{fill:var(--ink);stroke:none}.g{fill:#d4a017;stroke:none}
+</style>
+<polygon class="tile" points="-4,32 14,-2 50,-2 68,32 50,66 14,66" fill="#fdfaf3" stroke="#1a1714" stroke-width="4"/>
+<path d="M22,17 L43,13 L47,35 L31,50 L17,37 Z"/>
+<circle class="n" cx="22" cy="17" r="4.5"/><circle class="n" cx="47" cy="35" r="4.5"/><circle class="n" cx="31" cy="50" r="4.5"/><circle class="n" cx="17" cy="37" r="4.5"/><circle class="g" cx="43" cy="13" r="4.5"/>
+</svg>

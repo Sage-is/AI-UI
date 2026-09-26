@@ -14,7 +14,7 @@ This directory now separates active reference material from historical audits, p
 
 ## Start Here
 
-- [release-runbook.md](release-runbook.md) — `make ship`, what preflight refuses, and how to recover from a half-finished release
+- [release-runbook.md](release-runbook.md) — `make ship`, What  blocks preflight, and how to recover from a half-finished release
 - [try-sage-deployment.md](try-sage-deployment.md) — try.sage.is, the demo box: persona magic links, the 24-hour wipe and reset, and production deployment
 - [development-workflow.md](development-workflow.md) — gates, hooks, verification steps, and daily workflow
 - [product-stack.md](product-stack.md) — architecture and product stack overview

@@ -6,6 +6,8 @@ All notable changes to [Sage.is AI-UI](https://github.com/Sage-is/AI-UI) are doc
 
 ## [Unreleased]
 
+## [3.2.0] — 2026-09-25
+
 ### Added
 
 **Space agents reach their tool servers**
