@@ -272,7 +272,7 @@ The live trial runs on the `try-sage-is` CapRover app at `captain.example.com` (
 1. **Build and push the image** from a `release/<X.Y.Z>` branch with `make ship`. That runs `release_smoke`, then `release_finish` (gitflow merge → tag `v<X.Y.Z>` → push), then the multi-arch buildx push of `:<X.Y.Z>` and `:latest` to GHCR, then the manifest verify and the `SERVER_TAG` pin, then `sprig_publish`. `IMAGE_TAG` auto-derives from the latest git tag, so the new tag must exist before the push step runs.
 2. **Create the app** in the CapRover dashboard with **Has Persistent Data: YES**. Add Persistent Directory `/app/backend/data` (label `try-sage-is-data`). Container HTTP Port `8080`. Instance Count `1` (SQLite does not tolerate multi-replica writes).
 3. **Bulk-paste env vars** (App Configs → Environmental Variables → Bulk Edit) using the block above. Leave `WEBUI_SECRET_KEY` unset — `app/backend/start.sh` auto-generates one on first boot and writes it to `/app/backend/data/.webui_secret_key`, so it stays stable across restarts as long as the persistent volume sticks around. Set `WEBUI_URL=https://try.sage.is` so persona magic links resolve to the public host.
-4. **Deploy by image name** via the Deployment tab → Method 6: paste `ghcr.io/sage-is/ai-ui:<X.Y.Z>`. No local `caprover deploy` config needed.
+4. **[WE] Deploy with `make deploy`.** try.sage.is is the canary, so it goes first; see [release-runbook.md](release-runbook.md#deploying-what-you-shipped).
 5. **DNS + HTTPS**: Cloudflare CNAME `try` → `try-app.example.com` (your CapRover app host; DNS-only / gray cloud during cert issue). Connect the domain in CapRover → Enable HTTPS → Force HTTPS. Once the LE cert is in place, flip Cloudflare back to proxied (orange cloud) with SSL/TLS mode **Full (strict)**.
 6. **Restart** so `WEBUI_URL` populates the persona magic-link cache. Verify `GET /api/v1/sage/runtime/status` returns `enabled: true` and `/api/v1/sage/runtime/personas` lists `login_url`s rooted at the public host (not `localhost`).
 
@@ -289,6 +289,10 @@ make _pin_server_tag IMAGE_TAG=<X.Y.Z>
 ```
 
 `IMAGE_TAG` already resolves to the new tag once `v<X.Y.Z>` exists, so the rerun names the image correctly. The underscore is the point: these are reachable when you mean them and invisible when you do not.
+
+#### Recovery: `make deploy` failed mid-rollout
+
+See [release-runbook.md](release-runbook.md#when-a-deploy-fails). A stuck try.sage.is harms no one: its data resets every 24 h.
 
 ## Troubleshooting
 

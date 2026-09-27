@@ -31,6 +31,18 @@ This file tracks active work only.
 
 _Items currently in progress. Move items here and or use tag source with `# FIXME:` when work begins._
 
+- [ ] **One way to deploy: `captain` + `make deploy`** #critical: plan Amendment 55, 2026-09-27
+  - [x] [WE] `captain` in the tap (from Trellis `caprover.py`): bind mounts in `apps`, `--verify/--expect/--health`, `rollback`, build-start race fixed, 9 tests
+  - [x] [WE] `make deploy` / `deploy_rollback`, `deploy/instances.toml`, `scripts/deploy.py`; canary verify-only and no-key refusal proven
+  - [x] [WE] Legacy `it_deploy`, `it_*_sage_hosts`, `captain-definition` removed; runbook, try-sage, sage.startr.cloud docs rewritten
+  - [x] [WE] Trellis on `captain`: dry-run 0 changes, `caprover_deploy_all` + `/crm/health/` green; `scripts/caprover.py` deleted
+  - [ ] [MANUALLY] Commit AI-UI, Trellis, homebrew-apps; release `captain-v0.1.0` (fill the formula sha256) and `offload-v0.7.0`
+  - [ ] [MANUALLY] Admin API key on sage.startr.cloud → `SAGE_STARTR_CLOUD_ADMIN_KEY=` in `.env`; Syncthing `sage-ai-data` Up to Date
+  - [ ] [WE] `make deploy TAG=3.2.0`: backup, then sage.startr.cloud to 3.2.0; [MANUALLY] check chats and Spaces
+  - [ ] [WE] Rollback drill on try.sage.is once it has two digest deploys; 2026-09-27 run refused the tag-deployed 3.1.0 by design, message now says how
+
+- [ ] **sage.startr.cloud SQLite over Syncthing**: replicas can sync torn; nightly `sqlite3 .backup` into the synced folder, Syncthing ignores live `webui.db`/`-wal`/`-shm`; Postgres later
+
 - [ ] **Privacy rules**: pseudonymize what leaves for a hosted model, reverse what comes back #critical
   - [x] 2026-09-16: `sage_is_ai/privacy/` engine (rules, same-shape fakes, reverser, hold-back stream reverser), 9 unit tests; hook at `utils/chat.py` dispatcher + both stream wrappers + tool arguments
   - [x] `privacy_map` + `privacy_audit` tables (alembic `c2d3e4f5a6b7`), `PRIVACY_CONFIG` persistent config, `metadata.privacy.known` caller hints
@@ -308,11 +320,11 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
   - [x] [WE] Rebuilt from the tag, index `sha256:197883c6…fbb6fc`, revision `e0bb99e5`; manifest 6/6; `SERVER_TAG=3.2.0`; the build's trap exit 128 after a good push fixed
   - [x] [WE] try.sage.is deployed by digest 2026-09-27; `/api/config` 3.2.0, `/health` 200
 
-- [ ] **`make caprover_app_create APP=<name>` wrapper**: one Makefile call to register a new CapRover app via the HTTP API — avoid the dashboard click-through we did for `try-sage-is` on `captain.example.com` 2026-05-01.
-  - [ ] Register via `/api/v2/user/apps/appDefinitions/register`.
-  - [ ] POST the env-var block.
-  - [ ] Set the persistent volume path.
-  - [ ] Connect a custom domain.
+- [x] **`make caprover_app_create APP=<name>` wrapper**: covered by `captain ensure <instance file>` (register, env, volume, domain, HTTPS, DNS), 2026-09-27
+  - [x] Register via `/api/v2/user/apps/appDefinitions/register`.
+  - [x] POST the env-var block.
+  - [x] Set the persistent volume path.
+  - [x] Connect a custom domain.
 
 - [x] **Release build from the tag, re-runnable (3.2.0)**: `_it_build_multi_arch_push_GHCR` builds `v$(IMAGE_TAG)` in a throwaway worktree with the tag's own revision label; a trap removes the worktree, so a failed build re-runs. ([dossier](docs/board-dossiers.md))
   - [x] _Post-push GHCR manifest verify SHIPPED 2026-07-19 — fixture 3/3, `verify_ghcr_manifest` + `manifest_verify_fixture` gate the SERVER_TAG pin. Sub-essay archived 2026-08-15 → `docs/completed-todos.md`._
@@ -1065,8 +1077,7 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] `make lint` — eslint + prettier + black rollup
   - [ ] Gate release finish on passing DB tests and scans
   - [ ] Support the same gated release flow locally or on CI
-  - [ ] Staging CapRover instance for pre-prod testing
-    <!-- inline: Makefile:572 -->
+  - [x] Staging: try.sage.is is the canary; `make deploy` stops there if it does not come up (2026-09-27)
   - [ ] Selenium-driven browser regression tests
   - [ ] OWASP ZAP DAST via `make scan_dast`
 

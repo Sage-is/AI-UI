@@ -19,7 +19,7 @@ The steps underneath `ship` now start with an underscore. They carry no `##` com
 | 3 | `release_finish` | [WE] | Merges to master and develop, cuts the annotated tag, pushes all three |
 | 4 | `_it_build_multi_arch_push_GHCR` | [WE] | Multi-arch buildx push of `:X.Y.Z` and `:latest` |
 | 5 | `verify_ghcr_manifest` | [WE] | Asserts the pushed image is present and a real amd64 plus arm64 index |
-| 6 | `_pin_server_tag` | [WE] | Writes `SERVER_TAG` into `distribution.env`, preserving the inode |
+| 6 | `_pin_server_tag` | [WE] | Rewrites `SERVER_TAG` in `distribution.env` and copies it to the siblings via `distribution_sync` |
 | 7 | `sprig_publish` | [WE] | Pushes every local Sprig tag and gates on anonymous pullability |
 
 Step 3 is the first irreversible one. Everything before it can be re-run freely.
@@ -78,18 +78,32 @@ The pre-push hook refuses to publish a lightweight `v*` tag. It only judges tags
 
 ## Deploying what you shipped
 
-[MANUALLY] CapRover deploys by image name (Deployment tab, Method 6). Paste a digest-pinned reference rather than a tag:
+`make ship` publishes a release. `make deploy` puts it live. They are separate on purpose: changing servers people use is its own decision.
 
-```
-ghcr.io/sage-is/ai-ui@sha256:<index-digest>
-```
-
-Swarm can serve a stale image after a same-tag redeploy, which bit 3.0.0. A digest cannot be stale. Get it from the output of `verify_ghcr_manifest`.
-
-[MANUALLY] Then check the running version:
+[MANUALLY] Once: put an admin API key for sage.startr.cloud in this repo's `.env` (untracked, synced outside git) as `SAGE_STARTR_CLOUD_ADMIN_KEY=sk-...`. The Makefile loads `.env`, so `make deploy` sees it.
 
 ```bash
-curl -s https://try.sage.is/api/config | python3 -m json.tool | grep -i version
+make deploy    # [WE] SERVER_TAG, every app in deploy/instances.toml
 ```
 
-A verified image is not a running image. Only that curl proves the deploy landed.
+For each app in `deploy/instances.toml`, in order, `scripts/deploy.py`:
+
+1. Resolves the multi-arch index digest of `ghcr.io/sage-is/ai-ui:<tag>`. Nobody copies a digest by hand.
+2. Skips the deploy if the app already runs that digest, and only checks it answers.
+3. Refuses an app whose data would not survive a redeploy (no volume, no bind mount) unless it is marked `throwaway`.
+4. Downloads the database first when the app is marked `backup`: sage.startr.cloud, to `~/Backups/ai-ui/sage-startr-cloud/<date>-<old version>.db`. No backup, no deploy.
+5. Runs `captain deploy-image` by digest, then waits up to 300 s for `/api/config` to report the new version and `/health` to answer 200.
+
+try.sage.is goes first. It is the canary: synthetic data, wiped every 24 h. If it does not come up, the rollout stops and sage.startr.cloud is never touched.
+
+`make deploy APPS=try-sage-is` limits the rollout. `make deploy TAG=3.2.0` deploys another release.
+
+### When a deploy fails
+
+```bash
+make deploy_rollback APP=sage-startr-cloud   # runs the version before the current one
+```
+
+If the new version already ran its database migrations, restore the backup the deploy took: see [deploy-sage-startr-cloud.md](deploy-sage-startr-cloud.md).
+
+Deploys go by digest only. CapRover can serve a stale image after a same-tag redeploy, which bit 3.0.0.

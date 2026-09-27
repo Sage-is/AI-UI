@@ -868,31 +868,6 @@ ensure_builder:
 # forced every release build to re-download all ~940 npm tarballs on both arches
 # at once — one registry hiccup then cost a full cold rebuild. It burned 3.1.0
 # on "Fail extracting tarball for mermaid". Keep the escape hatch, lose the tax.
-# Bring down container instances on each SAGE_HOST
-it_down_sage_hosts:
-	@echo "Bringing down instances on SAGE_HOSTS from .env file..."
-	@[ -f .env ] || { echo "ERROR: .env file not found. Cannot read SAGE_HOSTS."; exit 1; }
-	@hosts=$$(grep -E "^SAGE_HOSTS=" .env | cut -d '=' -f2 | tr ',' '\n' | grep -v '^$$'); \
-	[ -n "$$hosts" ] || { echo "ERROR: SAGE_HOSTS missing or empty in .env"; exit 1; }; \
-	echo "$$hosts" | while read host; do \
-		echo "Stopping containers on $$host..."; \
-		ssh "$$host" "docker stop $$(docker ps -aqf 'name=sage*') && docker rm $$(docker ps -aqf 'name=sage*')" || echo "Failed to stop containers on $$host"; \
-	done
-
-# Check for running Sage instances on each SAGE_HOST
-it_check_sage_hosts:
-	@echo "Checking for running Sage instances on SAGE_HOSTS from .env file..."
-	@[ -f .env ] || { echo "ERROR: .env file not found. Cannot read SAGE_HOSTS."; exit 1; }
-	@hosts=$$(grep -E "^SAGE_HOSTS=" .env | cut -d '=' -f2 | tr ',' '\n' | grep -v '^$$'); \
-	[ -n "$$hosts" ] || { echo "ERROR: SAGE_HOSTS missing or empty in .env"; exit 1; }; \
-	echo "Host                 | Container ID    | Name             | Image                | Status           | Created"; \
-	echo "-------------------- | --------------- | ---------------- | -------------------- | ---------------- | ---------------"; \
-	echo "$$hosts" | while read host; do \
-		echo "$$host:"; \
-		ssh "$$host" "docker ps --format '{{.ID}} | {{.Names}} | {{.Image}} | {{.Status}} | {{.CreatedAt}}' -f 'name=sage*'" || echo "   Failed to connect to $$host"; \
-		echo ""; \
-	done
-
 # PRIVATE (leading underscore, no # comment, so `make help` cannot list it).
 # Pushes a multi-arch image to a public registry. Reached through `make ship`.
 #
@@ -1718,13 +1693,18 @@ _release_and_push_GHCR: release_preflight release_smoke release_finish
 	@echo "=== $(IMAGE_TAG) published ==="
 	@echo "Verify: docker pull $(GHCR_IMAGE_NAME):$(IMAGE_TAG)"
 	@echo "Verify: docker pull $(GHCR_IMAGE_NAME):latest"
+	@echo "Next:   make deploy   (try.sage.is first, then sage.startr.cloud)"
+
+deploy:  ## Put SERVER_TAG (or TAG=) live: try.sage.is, then sage.startr.cloud after a DB backup (APPS= to pick)
+	@python3 scripts/deploy.py --image $(IMAGE) --tag $(or $(TAG),$(SERVER_TAG)) $(APPS)
+
+deploy_rollback:  ## Run APP= on the version before the current one again
+	@test -n "$(APP)" || { echo "usage: make deploy_rollback APP=<CapRover app, see deploy/instances.toml>"; exit 1; }
+	@captain rollback $(APP)
 
 things_clean:
 	git clean --exclude=!.env -Xdf
 
-
-it_deploy:
-	caprover deploy --default
 
 it_start:
 	$(CONTAINER_RUNTIME) start $(CONTAINER_NAME)
