@@ -39,6 +39,7 @@ Step 3 is the first irreversible one. Everything before it can be re-run freely.
 | --- | --- |
 | `gh auth status` succeeds | Credential state lives outside the repo. A stale login fails *after* the tag is cut |
 | Docker reachable with at least 8 GiB | 2.3.0 died of buildx OOM with the tag already on origin. Override with `RELEASE_MIN_DOCKER_GIB=<n>` |
+| At least 30 GiB free on the host disk Docker writes to | 3.2.0 died with `input/output error` after the tag reached origin. Docker Desktop's `Docker.raw` is sparse and grows onto the host volume, and that drive had 373 MiB left. Docker cannot see this; `scripts/gates/docker-disk-free.py` reads the host. Override with `RELEASE_MIN_BUILD_DISK_GIB=<n>` |
 | `v<X.Y.Z>` is not already on origin | Origin is shared mutable state. This single check catches both the 2.3.0 and the 3.1.0 failures |
 | `CHANGELOG.md` has a `## [X.Y.Z]` section | Prose. There is nothing to derive it from |
 

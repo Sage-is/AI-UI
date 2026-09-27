@@ -907,11 +907,13 @@ it_check_sage_hosts:
 _it_build_multi_arch_push_GHCR: ghcr_login
 	@[ -z "$(CLEAN_BUILD)" ] || make it_clean
 	@make ensure_builder
+	@# The trap cds out first: the build runs INSIDE the worktree, and deleting the shell's
+	@# own cwd made 'git worktree prune' exit 128 after a good push (3.2.0, 2026-09-27).
 	@set -e; tag="v$(IMAGE_TAG)"; \
 	git rev-parse -q --verify "refs/tags/$$tag" >/dev/null || { echo "  FAIL  no tag $$tag to build from"; exit 1; }; \
 	rev=$$(git rev-list -n1 "$$tag"); \
 	wt=$$(mktemp -d "$${TMPDIR:-/tmp}/ai-ui-$$tag.XXXXXX"); \
-	trap 'git worktree remove --force "$$wt" >/dev/null 2>&1 || true; rm -rf "$$wt"; git worktree prune' EXIT; \
+	trap 'cd "$(CURDIR)"; git worktree remove --force "$$wt" >/dev/null 2>&1 || true; rm -rf "$$wt"; git worktree prune' EXIT; \
 	git worktree add --detach "$$wt" "$$tag" >/dev/null; \
 	echo "Building $$tag ($$rev) multi-arch from $$wt and pushing to GHCR"; \
 	cd "$$wt" && docker buildx build --platform linux/amd64,linux/arm64 \
@@ -1627,6 +1629,8 @@ endef
 # OOM mid-push, leaving a tag on origin and no image behind it. Override on the
 # command line if your host genuinely needs less.
 RELEASE_MIN_DOCKER_GIB ?= 8
+# Free space on the HOST volume holding Docker's disk. 3.2.0 filled it mid-build.
+RELEASE_MIN_BUILD_DISK_GIB ?= 30
 
 # release_preflight — the four things that can only be checked against the
 # outside world. Everything else this used to hold has been designed away.
@@ -1637,7 +1641,7 @@ RELEASE_MIN_DOCKER_GIB ?= 8
 #
 # Runs BEFORE release_smoke, not after: a preflight that fires at the end of a
 # twenty-minute build has already wasted the twenty minutes.
-release_preflight:  # Release gate: gh auth, docker memory, tag not published, CHANGELOG entry
+release_preflight:  # Release gate: gh auth, docker memory, host disk, tag not published, CHANGELOG entry
 	@set -e; \
 	ver="$(RELEASE_VERSION)"; \
 	if [ -z "$$ver" ]; then \
@@ -1649,7 +1653,7 @@ release_preflight:  # Release gate: gh auth, docker memory, tag not published, C
 		echo "        Fix: gh auth login"; exit 1; \
 	fi; \
 	echo "  ok    gh authenticated"; \
-	mem=$$(docker info --format '{{.MemTotal}}' 2>/dev/null || echo 0); \
+	mem=$$(docker info --format '{{.MemTotal}}' 2>/dev/null) || mem=0; \
 	need=$$(( $(RELEASE_MIN_DOCKER_GIB) * 1024 * 1024 * 1024 )); \
 	if [ "$$mem" = "0" ]; then \
 		echo "  FAIL  docker daemon is not reachable."; exit 1; \
@@ -1659,6 +1663,16 @@ release_preflight:  # Release gate: gh auth, docker memory, tag not published, C
 		echo "        Fix: raise the VM memory, or override RELEASE_MIN_DOCKER_GIB=<n>."; exit 1; \
 	fi; \
 	echo "  ok    docker up with $$(( mem / 1024 / 1024 / 1024 ))GiB"; \
+	set -- $$(python3 scripts/gates/docker-disk-free.py); free=$$1; grow=$$2; shift 2; where="$$*"; \
+	dneed=$$(( $(RELEASE_MIN_BUILD_DISK_GIB) * 1024 * 1024 * 1024 )); \
+	if [ "$$free" -lt "$$dneed" ]; then \
+		echo "  FAIL  the host disk Docker writes to has $$(( free / 1024 / 1024 ))MiB free: $$where"; \
+		echo "        The multi-arch build wants $(RELEASE_MIN_BUILD_DISK_GIB)GiB there. Docker.raw may still grow $$(( grow / 1024 / 1024 / 1024 ))GiB."; \
+		echo "        3.2.0 died here: the drive filled, buildkit said input/output error, the tag was on origin."; \
+		echo "        Fix: free space on that volume, move the disk image (Docker Desktop, Resources),"; \
+		echo "        or override RELEASE_MIN_BUILD_DISK_GIB=<n>."; exit 1; \
+	fi; \
+	echo "  ok    $$(( free / 1024 / 1024 / 1024 ))GiB free on the host disk Docker writes to"; \
 	if [ -n "$$(git ls-remote --tags origin "refs/tags/v$$ver" 2>/dev/null)" ]; then \
 		echo "  FAIL  tag v$$ver is already on origin. This release has been cut before."; \
 		echo "        Both 2.3.0 and 3.1.0 reached this state and were recovered by hand."; \

@@ -293,7 +293,7 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
 
 ### Release Wrap-Up
 
-- [ ] **3.2.0 — privacy on by default, offline, Space tools** #critical: plan `release-3.2.0-poka-yoke` (audited 2026-09-24)
+- [x] **3.2.0 — privacy on by default, offline, Space tools** #critical: plan `release-3.2.0-poka-yoke` (audited 2026-09-24)
   - [x] Preflight regex matches `## [X.Y.Z]` (it matched `# [`, so it would have refused every release); tag built from a worktree with its own revision; `make privacy_tests` in `gauntlet_fast`
   - [x] `default_external` ON; three off-switches and the two-defaults drift unit-tested; reaches only instances that never saved the panel; CHANGELOG `### Changed` says so
   - [x] CHANGELOG: offline/PWA entry, privacy text corrected; `PRIVACY_KEY` in `.env.example`; dead plan citations removed from the board and dossiers
@@ -302,7 +302,11 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
   - [x] Cognitive-complexity gate green by refactoring, not raising: privacy functions split under 15, the chat path back to 357 via a pass-through reverser, the tool runner's body helper; the baseline only follows the `_generate_chat_completion` rename at its unchanged 57
   - [ ] [MANUALLY] Commit, push `develop`, `make minor_release`, `make bump_release_version`, rename `## [Unreleased]` to `## [3.2.0] — <date>`, commit
   - [x] [WE] Gates on the release branch (2026-09-25): `gauntlet_fast` (with `privacy_tests`), `distribution_verify`, `it_build` then `e2e` 199/245, 0 failing, 46 pending; `lint` Python green, frontend ESLint 9,622 = the carded baseline, none new
-  - [ ] [MANUALLY] `make ship` (tags and pushes); then CapRover deploy by digest and `curl …/api/config`
+  - [x] [WE] `make ship` 2026-09-26: preflight, smoke (native + amd64) green; `develop`, `master`, tag `v3.2.0` pushed
+  - [x] GHCR image was missing: build died `input/output error`, the Docker drive had 373 MiB free; preflight now checks host disk (`RELEASE_MIN_BUILD_DISK_GIB`, 30)
+  - [x] [MANUALLY] Freed the Docker drive with `offload drain` (FFPF, ROMs to the 14 TB): 92 GiB free
+  - [x] [WE] Rebuilt from the tag, index `sha256:197883c6…fbb6fc`, revision `e0bb99e5`; manifest 6/6; `SERVER_TAG=3.2.0`; the build's trap exit 128 after a good push fixed
+  - [x] [WE] try.sage.is deployed by digest 2026-09-27; `/api/config` 3.2.0, `/health` 200
 
 - [ ] **`make caprover_app_create APP=<name>` wrapper**: one Makefile call to register a new CapRover app via the HTTP API — avoid the dashboard click-through we did for `try-sage-is` on `captain.example.com` 2026-05-01.
   - [ ] Register via `/api/v2/user/apps/appDefinitions/register`.
