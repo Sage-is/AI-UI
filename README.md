@@ -24,7 +24,7 @@ ai-ui start
 
 Open [http://localhost:8080](http://localhost:8080) and create your admin account.
 
-We are not in Homebrew's main catalogue yet, and Homebrew 6 asks you to trust third-party taps. Pass `--port 3000` if 8080 is taken.
+> You can pass `--port 3000` if 8080 is taken.
 
 Tap source: <https://github.com/Sage-is/homebrew-apps>.
 
