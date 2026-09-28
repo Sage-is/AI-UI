@@ -43,7 +43,7 @@ make it_build_n_run
 - **Your data stays put.** Conversations never leave the server you run Sage.is on. No telemetry on chat content, no exfiltration paths, no cloud dependency unless you graft one.
 - **Bring your own models.** Works with any OpenAI-compatible provider (OpenAI, OpenRouter and others) plus Ollama. Mix providers per conversation if you want.
 - **Teams work the way teams work.** Permissions, user groups, role-based access. Nothing exotic, nothing missing.
-- **Plug things in.** Custom functions, RAG, code execution, image generation, voice. The pieces compose.
+- **Plug things in.** Custom functions, RAG, code execution, image generation, voice.
 
 ## <img src="docs/art/emblems/constellation.svg" width="32" height="32" alt="" align="absmiddle"> Features
 
@@ -82,15 +82,14 @@ Sage.is AI-UI runs with sensible defaults. Override with environment variables:
 
 ## <img src="docs/art/emblems/people.svg" width="32" height="32" alt="" align="absmiddle"> Community
 
-- **Discord:** [Join our community](https://discord.gg/3BtwHkXS)
 - **Issues:** [Report bugs](https://github.com/Sage-is/AI-UI/issues)
-- **Community Hub:** coming soon. community.sage.is is not yet public and `ENABLE_COMMUNITY_SHARING` stays off ([docs](./docs/community-hub.md)). Browse and share models, prompts, and tools across your Sage instances.
+- **Community Hub:** coming soon. community.sage.is is not yet public so make sure `ENABLE_COMMUNITY_SHARING` stays off ([docs](./docs/community-hub.md) for now). Browse and share models, prompts, and tools across your Sage instances.
 
 ## <img src="docs/art/emblems/seal.svg" width="32" height="32" alt="" align="absmiddle"> License
 
 [GNU Affero General Public License v3](LICENSE)
 
-Copyright (c) [year] [copyright holders]
+Copyright (c) 2026 Sage LLC. 
 
 Permission is hereby granted to any person obtaining a copy of this software and associated documentation files, to use, copy, modify, merge, publish, distribute, sublicense, and sell copies of the software, including for commercial purposes, subject to the following conditions:
 
