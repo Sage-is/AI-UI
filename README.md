@@ -7,7 +7,6 @@ An AI interface you run on your own hardware, with your own models, on your own 
 [![Version](https://img.shields.io/github/v/tag/Sage-is/AI-UI?label=version)](https://github.com/Sage-is/AI-UI/releases)
 [![GitHub stars](https://img.shields.io/github/stars/Sage-is/AI-UI?style=social)](https://github.com/Sage-is/AI-UI)
 [![License](https://img.shields.io/badge/License-AGPL_v3%2B-blue)](LICENSE)
-[![Discord](https://img.shields.io/badge/Discord-Community-blue?logo=discord&logoColor=white)](https://discord.gg/3BtwHkXS)
 
 Sage.is AI-UI is a chat and orchestration layer you run on your own infrastructure. It talks to any OpenAI-compatible provider (OpenAI, OpenRouter and others) plus Ollama.
 
