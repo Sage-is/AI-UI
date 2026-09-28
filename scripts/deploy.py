@@ -26,13 +26,13 @@ def run(*cmd: str) -> str:
 
 
 def digest_of(image: str, tag: str) -> str:
-    """The multi-arch index digest behind a tag: what `captain deploy-image` needs."""
+    """The multi-arch index digest behind a tag: what `cr-deploy deploy-image` needs."""
     manifest = run("docker", "buildx", "imagetools", "inspect", f"{image}:{tag}", "--format", "{{json .Manifest}}")
     return json.loads(manifest)["digest"]
 
 
 def live_app(app: str) -> dict:
-    return json.loads(run("captain", "apps", app, "--json"))[0]
+    return json.loads(run("cr-deploy", "apps", app, "--json"))[0]
 
 
 def version_at(url: str) -> str:
@@ -55,7 +55,7 @@ def back_up(instance: dict) -> Path:
         data = r.read()
     if not data.startswith(SQLITE_HEADER):
         sys.exit(f"{app}: the download is not a SQLite database; no deploy")
-    target = BACKUPS / app / f"{datetime.date.today().isoformat()}-{version_at(url)}.db"
+    target = BACKUPS / app / f"{datetime.datetime.now():%Y-%m-%d-%H%M}-{version_at(url)}.db"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_bytes(data)
     target.chmod(0o600)
@@ -72,7 +72,7 @@ def roll_out(instance: dict, tag: str, image: str) -> bool:
         sys.exit(f"{app}: no volume and no bind mount; a deploy would start it empty. Refusing.")
     if instance.get("backup"):
         print(f"{app}: database saved to {back_up(instance)}")
-    deploy = ["captain", "deploy-image", app, image, "--verify", f"{url}/api/config",
+    deploy = ["cr-deploy", "deploy-image", app, image, "--verify", f"{url}/api/config",
               "--expect", f"version={tag}", "--health", f"{url}/health"]
     return subprocess.run(deploy).returncode == 0
 

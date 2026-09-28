@@ -13,7 +13,7 @@ Run `make deploy`.
 The procedure, the automatic database download and the canary order are in [release-runbook.md](release-runbook.md#deploying-what-you-shipped).
 
 ## Check after deploy
-[WE] `captain apps sage-startr-cloud` shows the bind mount under Service Update Override.
+[WE] `cr-deploy apps sage-startr-cloud` shows the bind mount under Service Update Override.
 [WE] `curl https://sage.startr.cloud/api/config` reports the new version.
 [MANUALLY] Open a few chats and Spaces by hand to confirm the data.
 Re-index knowledge bases if the embedding engine changed (the catalog store records zero collections on prior versions, so this is required regardless).
@@ -27,7 +27,7 @@ Re-index knowledge bases if the embedding engine changed (the catalog store reco
 [MANUALLY] In the CapRover dashboard set the app's Instance Count back to 1 and save.
 
 ## Rollback
-[WE] `make deploy_rollback APP=sage-startr-cloud` — `captain rollback` runs the image version before the current one.
+[WE] `make deploy_rollback APP=sage-startr-cloud` — `cr-deploy rollback` runs the image version before the current one.
 [MANUALLY] If a schema migration ran on the upgrade, restore the pre-upgrade backup via the Restore steps above; otherwise the rolled-back image still reads the current schema.
 
 ## Sprig registry

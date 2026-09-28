@@ -1700,7 +1700,7 @@ deploy:  ## Put SERVER_TAG (or TAG=) live: try.sage.is, then sage.startr.cloud a
 
 deploy_rollback:  ## Run APP= on the version before the current one again
 	@test -n "$(APP)" || { echo "usage: make deploy_rollback APP=<CapRover app, see deploy/instances.toml>"; exit 1; }
-	@captain rollback $(APP)
+	@cr-deploy rollback $(APP)
 
 things_clean:
 	git clean --exclude=!.env -Xdf

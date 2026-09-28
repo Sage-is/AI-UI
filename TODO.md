@@ -31,14 +31,15 @@ This file tracks active work only.
 
 _Items currently in progress. Move items here and or use tag source with `# FIXME:` when work begins._
 
-- [ ] **One way to deploy: `captain` + `make deploy`** #critical: plan Amendment 55, 2026-09-27
-  - [x] [WE] `captain` in the tap (from Trellis `caprover.py`): bind mounts in `apps`, `--verify/--expect/--health`, `rollback`, build-start race fixed, 9 tests
+- [ ] **One way to deploy: `cr-deploy` + `make deploy`** #critical: plan Amendment 55, 2026-09-27
+  - [x] [WE] `cr-deploy` in the tap (named `captain` until 2026-09-28; from Trellis `caprover.py`): bind mounts in `apps`, `--verify/--expect/--health`, `rollback`, build-start race fixed, 9 tests
   - [x] [WE] `make deploy` / `deploy_rollback`, `deploy/instances.toml`, `scripts/deploy.py`; canary verify-only and no-key refusal proven
   - [x] [WE] Legacy `it_deploy`, `it_*_sage_hosts`, `captain-definition` removed; runbook, try-sage, sage.startr.cloud docs rewritten
-  - [x] [WE] Trellis on `captain`: dry-run 0 changes, `caprover_deploy_all` + `/crm/health/` green; `scripts/caprover.py` deleted
-  - [ ] [MANUALLY] Commit AI-UI, Trellis, homebrew-apps; release `captain-v0.1.0` (fill the formula sha256) and `offload-v0.7.0`
-  - [ ] [MANUALLY] Admin API key on sage.startr.cloud → `SAGE_STARTR_CLOUD_ADMIN_KEY=` in `.env`; Syncthing `sage-ai-data` Up to Date
-  - [ ] [WE] `make deploy TAG=3.2.0`: backup, then sage.startr.cloud to 3.2.0; [MANUALLY] check chats and Spaces
+  - [x] [WE] Trellis on `cr-deploy`: dry-run 0 changes, `caprover_deploy_all` + `/crm/health/` green; `scripts/caprover.py` deleted
+  - [ ] [MANUALLY] Commit AI-UI, Trellis, homebrew-apps; release `cr-deploy-v0.1.0` (fill the formula sha256) and `offload-v0.7.0`
+  - [x] [MANUALLY] Admin API key on sage.startr.cloud → `SAGE_STARTR_CLOUD_ADMIN_KEY=` in `.env`; Syncthing `sage-ai-data` Up to Date
+  - [x] [WE] `make deploy TAG=3.2.0` 2026-09-27: backup (170 MB, integrity ok, 32 users, 2124 chats), sage.startr.cloud 3.2.0 on openco2; `webui.db` identical on all 3 nodes, no new sync-conflicts
+  - [ ] [MANUALLY] Check chats and Spaces on sage.startr.cloud
   - [ ] [WE] Rollback drill on try.sage.is once it has two digest deploys; 2026-09-27 run refused the tag-deployed 3.1.0 by design, message now says how
 
 - [ ] **sage.startr.cloud SQLite over Syncthing**: replicas can sync torn; nightly `sqlite3 .backup` into the synced folder, Syncthing ignores live `webui.db`/`-wal`/`-shm`; Postgres later
@@ -320,7 +321,7 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
   - [x] [WE] Rebuilt from the tag, index `sha256:197883c6…fbb6fc`, revision `e0bb99e5`; manifest 6/6; `SERVER_TAG=3.2.0`; the build's trap exit 128 after a good push fixed
   - [x] [WE] try.sage.is deployed by digest 2026-09-27; `/api/config` 3.2.0, `/health` 200
 
-- [x] **`make caprover_app_create APP=<name>` wrapper**: covered by `captain ensure <instance file>` (register, env, volume, domain, HTTPS, DNS), 2026-09-27
+- [x] **`make caprover_app_create APP=<name>` wrapper**: covered by `cr-deploy ensure <instance file>` (register, env, volume, domain, HTTPS, DNS), 2026-09-27
   - [x] Register via `/api/v2/user/apps/appDefinitions/register`.
   - [x] POST the env-var block.
   - [x] Set the persistent volume path.

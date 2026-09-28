@@ -92,7 +92,7 @@ For each app in `deploy/instances.toml`, in order, `scripts/deploy.py`:
 2. Skips the deploy if the app already runs that digest, and only checks it answers.
 3. Refuses an app whose data would not survive a redeploy (no volume, no bind mount) unless it is marked `throwaway`.
 4. Downloads the database first when the app is marked `backup`: sage.startr.cloud, to `~/Backups/ai-ui/sage-startr-cloud/<date>-<old version>.db`. No backup, no deploy.
-5. Runs `captain deploy-image` by digest, then waits up to 300 s for `/api/config` to report the new version and `/health` to answer 200.
+5. Runs `cr-deploy deploy-image` by digest, then waits up to 300 s for `/api/config` to report the new version and `/health` to answer 200.
 
 try.sage.is goes first. It is the canary: synthetic data, wiped every 24 h. If it does not come up, the rollout stops and sage.startr.cloud is never touched.
 
