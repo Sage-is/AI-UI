@@ -59,7 +59,7 @@ REGISTRY ?= ghcr.io/sage-is
 GHCR_IMAGE_NAME ?= $(REGISTRY)/$(notdir $(GIT_REPO_SLUG))
 # Host architectures the catalog builds for. Both by default (all platforms).
 ARCHES ?= arm64 amd64
-GIT_TAG := $(shell git tag --sort=-v:refname | sed 's/^v//' | head -n 1)
+GIT_TAG := $(shell git tag -l 'v[0-9]*' --sort=-v:refname | sed 's/^v//' | head -n 1)
 
 # Release version detection. Prefers release/X.Y.Z or hotfix/X.Y.Z branch name
 # so that `make it_build` on a release branch tags the *new* version, not the
@@ -84,7 +84,7 @@ endif
 IMAGE_TAG := $(if $(RELEASE_VERSION),$(RELEASE_VERSION),latest)
 GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 ifeq ($(GIT_BRANCH),HEAD)
-    GIT_BRANCH := $(shell git describe --tags --exact-match 2>/dev/null || git rev-parse --short HEAD)
+    GIT_BRANCH := $(shell git describe --tags --exact-match --match 'v[0-9]*' 2>/dev/null || git rev-parse --short HEAD)
 endif
 SAFE_GIT_BRANCH := $(subst /,-,$(GIT_BRANCH))
 SAFE_GIT_BRANCH := $(shell echo $(SAFE_GIT_BRANCH) | tr '[:upper:]' '[:lower:]')
@@ -1529,22 +1529,22 @@ endef
 
 minor_release: require_gitflow_next  # Start a git-flow release branch, minor bump
 	@# Start a minor release with incremented minor version
-	git flow release start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{print $$1"."$$2+1".0"}')
+	git flow release start $$(git tag -l 'v[0-9]*' --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{print $$1"."$$2+1".0"}')
 	$(next_steps_release)
 
 patch_release: require_gitflow_next  # Start a git-flow release branch, patch bump
 	@# Start a patch release with incremented patch version
-	git flow release start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{print $$1"."$$2"."$$3+1}')
+	git flow release start $$(git tag -l 'v[0-9]*' --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{print $$1"."$$2"."$$3+1}')
 	$(next_steps_release)
 
 major_release: require_gitflow_next  # Start a git-flow release branch, major bump
 	@# Start a major release with incremented major version
-	git flow release start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{print $$1+1".0.0"}')
+	git flow release start $$(git tag -l 'v[0-9]*' --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{print $$1+1".0.0"}')
 	$(next_steps_release)
 
 hotfix: require_gitflow_next  # Start a git-flow hotfix branch
 	@# Start a hotfix with incremented patch.patch version (fourth component)
-	git flow hotfix start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{if (NF < 4) print $$1"."$$2"."$$3".1"; else print $$1"."$$2"."$$3"."$$4+1}')
+	git flow hotfix start $$(git tag -l 'v[0-9]*' --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{if (NF < 4) print $$1"."$$2"."$$3".1"; else print $$1"."$$2"."$$3"."$$4+1}')
 	$(next_steps_hotfix)
 
 # Finish a release or hotfix with plain git — NOT git-flow-next's finish.
