@@ -1694,7 +1694,7 @@ _release_and_push_GHCR: release_preflight release_smoke release_finish
 	@echo "Verify: docker pull $(GHCR_IMAGE_NAME):$(IMAGE_TAG)"
 	@echo "Verify: docker pull $(GHCR_IMAGE_NAME):latest"
 	@echo "Next:   make deploy   (try.sage.is first, then sage.startr.cloud)"
-	@echo "Then:   cd ../homebrew-apps && git-release patch   (so brew upgrade ai-ui pins $(IMAGE_TAG))"
+	@echo "Then:   cd ../homebrew-apps && make release_ai_ui   (the brew CLI becomes $(IMAGE_TAG) too)"
 
 deploy:  ## Put SERVER_TAG (or TAG=) live: try.sage.is, then sage.startr.cloud after a DB backup (APPS= to pick)
 	@python3 scripts/deploy.py --image $(IMAGE) --tag $(or $(TAG),$(SERVER_TAG)) $(APPS)
