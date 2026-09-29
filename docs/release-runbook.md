@@ -80,6 +80,8 @@ The pre-push hook refuses to publish a lightweight `v*` tag. It only judges tags
 
 `make ship` publishes a release. `make deploy` puts it live. They are separate on purpose: changing servers people use is its own decision.
 
+[MANUALLY] Then release the brew CLI: `git-release patch` in `../homebrew-apps`. Each CLI release pins the server version from `distribution.env`, so `brew upgrade ai-ui` followed by `ai-ui update` moves a machine to exactly this release. Until you do, `brew upgrade ai-ui` reports the CLI as up to date.
+
 [MANUALLY] Once: put an admin API key for sage.startr.cloud in this repo's `.env` (untracked, synced outside git) as `SAGE_STARTR_CLOUD_ADMIN_KEY=sk-...`. The Makefile loads `.env`, so `make deploy` sees it.
 
 ```bash
