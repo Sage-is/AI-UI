@@ -19,11 +19,11 @@ transformers>=4.47.0,<5.0
 # this explicit bound pip's resolver picks 0.23.1 (the latest available) and
 # transformers refuses to import. Discovered 2026-05-12 during 2.3.1 verify.
 tokenizers>=0.22.0,<=0.23.0
-colbert-ai==0.2.21
+colbert-ai==0.2.22
 
-faster-whisper==1.1.1
+faster-whisper==1.2.1
 ctranslate2
-onnxruntime==1.20.1
+onnxruntime==1.29.0
 
 # torch from the PyTorch CPU-only index — avoids dragging the CUDA wheels
 # (nvidia-cusolver, nvidia-cublas, nvidia-cudnn, ...) that the default PyPI
