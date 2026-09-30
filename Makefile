@@ -140,6 +140,7 @@ GITLEAKS   ?= $(shell command -v gitleaks 2>/dev/null)
 SEMGREP    ?= $(shell command -v semgrep 2>/dev/null || command -v opengrep 2>/dev/null)
 BANDIT     ?= $(shell command -v bandit 2>/dev/null)
 TRIVY      ?= $(shell command -v trivy 2>/dev/null)
+RSVG       ?= $(shell command -v rsvg-convert 2>/dev/null)
 
 # Guard macro: prints a helpful error if a required tool is missing.
 # Usage: $(call require_tool,VAR_NAME,tool-name)
@@ -696,11 +697,16 @@ gauntlet: it_build sprig_smoke  # Build + Sprig lifecycle smoke
 # hand-run tools; run them yourself after `--tighten` records a baseline.
 # `chat_path_structure_teeth` DOES belong here: it builds its own sample and
 # proves the structural detectors still fire without needing a baseline at all.
-gauntlet_fast: privacy_tests pipefail_lint pipefail_fixture ruff_gate docs_gate \
+gauntlet_fast: privacy_tests cli_tests pipefail_lint pipefail_fixture ruff_gate docs_gate \
                sprig_capabilities_check startr_swap_check \
                distribution_verify tags_annotated \
                chat_path_structure_teeth sprig_capabilities_teeth \
                startr_swap_teeth tags_annotated_teeth docs_gate_teeth  # Gate: host-only gates, seconds (pre-push hook)
+
+# cli_tests — the brew CLI in cli/: runtime choice, nuke, the credential repair.
+# Stand-in docker, colima and open commands; macOS only, seconds.
+cli_tests:  ## Gate: the ai-ui CLI's unit tests (host, seconds)
+	@cd cli && python3 -B -m unittest discover -s tests -q
 
 # privacy_tests — the privacy engine and the admin's off-switches, on the host,
 # no database, well under a second. Privacy is ON by default for external
@@ -1274,7 +1280,7 @@ install_dev:  # Install the dev toolchain and wire the git hooks
 	fi
 	@# --- All tools via brew (single package manager, DRY) ---
 	@echo "Installing tools via Homebrew..."
-	brew install gitleaks trivy semgrep pre-commit
+	brew install gitleaks trivy semgrep pre-commit librsvg
 	@# bandit is Python-only, not in brew — install via pip
 	@echo ""
 	@echo "Installing bandit (Python SAST)..."
@@ -1424,6 +1430,14 @@ trivy_db_update:
 # announced and skipped, so a fresh clone still runs.
 docs_gate:  # Gate: every `make X` named in a scanned document exists
 	@scripts/gates/docs-targets.sh
+
+# social_cards — rebuild the 1280x640 PNG beside each card SVG in docs/art/social.
+# The SVG is the source: edit it by hand or in Inkscape, then run this.
+social_cards:  ## Rebuild the social preview PNGs from their SVGs (docs/art/social)
+	$(call require_tool,RSVG,rsvg-convert)
+	@for svg in docs/art/social/*.svg; do \
+		$(RSVG) -w 1280 -h 640 "$$svg" -o "$${svg%.svg}.png" && echo "  $${svg%.svg}.png"; \
+	done
 
 docs_gate_teeth:  # Prove the doc-target gate can fail
 	@scripts/gates/docs-targets.sh --self-test
@@ -1694,7 +1708,7 @@ _release_and_push_GHCR: release_preflight release_smoke release_finish
 	@echo "Verify: docker pull $(GHCR_IMAGE_NAME):$(IMAGE_TAG)"
 	@echo "Verify: docker pull $(GHCR_IMAGE_NAME):latest"
 	@echo "Next:   make deploy   (try.sage.is first, then sage.startr.cloud)"
-	@echo "Then:   cd ../homebrew-apps && make release_ai_ui   (the brew CLI becomes $(IMAGE_TAG) too)"
+	@echo "Then:   cd ../homebrew-apps && make ai_ui_formula   (brew's ai-ui follows this release)"
 
 deploy:  ## Put SERVER_TAG (or TAG=) live: try.sage.is, then sage.startr.cloud after a DB backup (APPS= to pick)
 	@python3 scripts/deploy.py --image $(IMAGE) --tag $(or $(TAG),$(SERVER_TAG)) $(APPS)

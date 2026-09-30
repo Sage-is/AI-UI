@@ -439,6 +439,20 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
   - [ ] Written commitment: no automated behavioral flagging (hate speech, self-harm, etc.) without explicit school opt-in
   - [ ] Publish to `docs/` and link from README and elevator-pitch
 
+- [ ] **Homebrew core: earn the self-submission bar on AI-UI** (decided 2026-09-30): 225 stars, 90 forks or 90 watchers; today 9, 2 and 1 #launch
+  - [x] [WE] The `ai-ui` CLI, `nuke-sage` and their 16 tests live in `cli/` (gate `cli_tests`); the tap's `ai_ui_formula` target points the formula at each release (2026-09-30)
+  - [ ] [MANUALLY] Ship the CLI inside the next AI-UI release, then run the tap's `ai_ui_formula` target; CLI-only `3.2.0_N` revisions end
+  - [x] [WE] Repo page through `gh`: 13 topics, homepage https://sage.is, "let's" fixed in the description (2026-09-30)
+  - [ ] [MANUALLY] Social preview image: Settings, Social preview (GitHub's API cannot set it)
+  - [ ] [MANUALLY] Triage the 16 open Dependabot pull requests and the 8 Sage Notes issues from 2025-11 (#2 is out of date): a stale queue reads as unmaintained
+  - [ ] [WE] Issue templates, and 10–15 real `good first issue` + `help wanted` issues, drafted for review before they are published
+  - [ ] [MANUALLY] "Make Sage yours" workshop: teams fork AI-UI, change something real and run it with `ai-ui dev`; participants self-organize
+  - [ ] [WE] `ai-ui dev --fork` (opt-in, via `gh`) and a fork-and-PR path in CONTRIBUTING for outside contributors
+  - [ ] [MANUALLY] Launch: an awesome-selfhosted entry "(fork of Open WebUI)" written by hand; a Show HN on "one brew line, no Docker Desktop"; r/selfhosted, r/LocalLLaMA
+  - [ ] [WE] README: a plain star line, and "Watch → Custom → Releases" for release notes
+  - [ ] [WE] A check that prints AI-UI's stars, forks and watchers against the bars
+  - [ ] [MANUALLY] Submit to homebrew-core once one bar clears and `brew audit --new --strict --online` passes; route and rules in homebrew-apps `docs/official-homebrew.md`
+
 ### Sprig B1 — finish extraction (audit backlog, sequenced next)
 
 - [ ] **Accelerator-aware Sprigs™ — drop the CPU-only assumption** (captured 2026-07-27): the whole chain currently hardcodes CPU; when GPU support lands, sprigs need alternative variants per accelerator (cuda/rocm/metal) selected the same way arch is today. #bonsai

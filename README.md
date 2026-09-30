@@ -25,7 +25,9 @@ Open [http://localhost:8080](http://localhost:8080) and create your admin accoun
 
 > You can pass `--port 3000` if 8080 is taken.
 
-Tap source: <https://github.com/Sage-is/homebrew-apps>.
+Tap source: <https://github.com/Sage-is/homebrew-apps>. The `ai-ui` command itself lives in this repo's [`cli/`](cli/) folder and ships with each release.
+
+On a Mac it runs Sage in Colima: no window, no sign-in. A Mac that already uses Docker Desktop or OrbStack may keep it: `ai-ui start --runtime docker-desktop`.
 
 ## <img src="docs/art/emblems/run.svg" width="32" height="32" alt="" align="absmiddle"> Run from source
 
@@ -88,7 +90,7 @@ Sage.is AI-UI runs with sensible defaults. Override with environment variables:
 
 [GNU Affero General Public License v3](LICENSE)
 
-Copyright (c) 2026 Sage LLC. 
+Copyright (c) 2026 Sage LLC.
 
 Permission is hereby granted to any person obtaining a copy of this software and associated documentation files, to use, copy, modify, merge, publish, distribute, sublicense, and sell copies of the software, including for commercial purposes, subject to the following conditions:
 

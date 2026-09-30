@@ -1,0 +1,750 @@
+#!/bin/bash
+set -euo pipefail
+
+# ---------------------------------------------------------------------------
+# Canonical distribution facts.
+# ---------------------------------------------------------------------------
+# These mirror values in distribution.env, which pins the server version this
+# CLI ships with. The CLI lives in AI-UI's cli/ folder and ships inside each
+# AI-UI release, so the file sits one folder up in a checkout and beside the
+# script in a brew install. The defaults below apply only when it is absent.
+
+IMAGE_REGISTRY="ghcr.io/sage-is/ai-ui"
+DEFAULT_SERVER_TAG="latest"
+CONTAINER="sage-ai"
+VOLUME="sage-ai-data"
+DATA_MOUNT="/app/backend/data"
+DEFAULT_PORT=8080
+
+_script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+for _env in "$_script_dir/distribution.env" "$_script_dir/../distribution.env"; do
+  if [[ -f "$_env" ]]; then
+    set -a
+    # shellcheck source=/dev/null
+    source "$_env"
+    set +a
+    IMAGE_REGISTRY="${IMAGE:-$IMAGE_REGISTRY}"
+    DEFAULT_SERVER_TAG="${SERVER_TAG:-$DEFAULT_SERVER_TAG}"
+    VOLUME="${VOLUME:-$VOLUME}"
+    DATA_MOUNT="${DATA_MOUNT:-$DATA_MOUNT}"
+    break
+  fi
+done
+
+# One version number: the CLI's version is the AI-UI server version it pins.
+VERSION="$DEFAULT_SERVER_TAG"
+
+# Active image tag. Overridable per-invocation via `--tag X.Y.Z`.
+IMAGE_TAG="$DEFAULT_SERVER_TAG"
+IMAGE="$IMAGE_REGISTRY:$IMAGE_TAG"
+
+# try.sage trial mode runs the same image with ENABLE_TRY_SAGE=true. Separate
+# container + volume so a workstation can keep its prod install around without
+# data cross-contamination — though both bind 8080, so only one runs at a time.
+TRY_CONTAINER="sage-try"
+TRY_VOLUME="sage-try-data"
+
+# ---------------------------------------------------------------------------
+# Sage project registry (~/.sage-is/)
+# Remembers where you cloned things so you never lose your code.
+# ---------------------------------------------------------------------------
+SAGE_CONFIG_DIR="${HOME}/.sage-is"
+SAGE_PROJECTS="${SAGE_CONFIG_DIR}/projects"
+TRY_ENV_FILE="${SAGE_CONFIG_DIR}/try.env"
+
+# The upstream remote URL pattern (matches any protocol/suffix).
+AI_UI_REMOTE="Sage-is/AI-UI"
+
+# Read saved clone path for a project. Prints nothing if unset.
+sage_project_dir() {
+  [[ -f "$SAGE_PROJECTS" ]] && sed -n "s/^${1}=//p" "$SAGE_PROJECTS"
+}
+
+# Save (or update) the clone path for a project.
+sage_set_project_dir() {
+  local project="$1" dir="$2"
+  mkdir -p "$SAGE_CONFIG_DIR"
+  # Remove existing entry, then append. sed -i.bak for macOS compat.
+  if [[ -f "$SAGE_PROJECTS" ]]; then
+    sed -i.bak "/^${project}=/d" "$SAGE_PROJECTS" && rm -f "${SAGE_PROJECTS}.bak"
+  fi
+  echo "${project}=${dir}" >> "$SAGE_PROJECTS"
+}
+
+# Check if a directory is a clone of a given repo (by git remote, not folder name).
+is_repo_for() {
+  local dir="$1" pattern="$2"
+  [[ -d "$dir/.git" ]] && git -C "$dir" remote -v 2>/dev/null | grep -qi "$pattern"
+}
+
+# Find a matching repo nearby: check cwd (walk up to git root), then scan subdirs.
+# Detects by content (git remote), not directory name — works with any folder name.
+find_repo_nearby() {
+  local pattern="$1"
+
+  # Are we already inside a matching repo?
+  local git_root
+  git_root="$(git rev-parse --show-toplevel 2>/dev/null)" || true
+  if [[ -n "$git_root" ]] && is_repo_for "$git_root" "$pattern"; then
+    echo "$git_root"; return 0
+  fi
+
+  # Scan immediate subdirectories (one level) for any matching clone.
+  local subdir
+  for subdir in ./*/; do
+    [[ -d "$subdir/.git" ]] || continue
+    if is_repo_for "$subdir" "$pattern"; then
+      (cd "$subdir" && pwd); return 0
+    fi
+  done
+
+  return 1
+}
+
+# Check if a path is ephemeral (won't survive reboot).
+is_ephemeral_path() {
+  case "$1" in
+    /tmp/*|/private/tmp/*|/var/folders/*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+usage() {
+  cat <<EOF
+Usage: ai-ui <command> [options]
+
+Commands:
+  start [--port PORT] [--tag X.Y.Z]
+                        Pull image and start Sage AI UI (default port: $DEFAULT_PORT)
+                        --tag pins a specific server version (default: $DEFAULT_SERVER_TAG)
+  stop                  Stop the running container (prod and trial)
+  try   [--port PORT] [--tag X.Y.Z]
+                        Start try.sage trial mode (BYO Groq key on first run)
+  update [--tag X.Y.Z]  Pull a tag (default latest) and restart
+  dev   [--port PORT] [--dir DIR] [--where]
+                        Clone and run in dev mode with hot reload
+  logs                  Tail container logs
+  open                  Open the UI in your default browser
+  status                Show container status
+  version               Show CLI version
+  nuke  [--dry-run] [--all|--genesis]
+                        Remove Sage AI UI for a clean slate (ai-ui nuke --help)
+
+Every command also takes:
+  --runtime NAME        macOS container runtime: colima (the default),
+                        docker-desktop or orbstack. Remembered for next time.
+
+EOF
+}
+
+cmd_version() {
+  echo "ai-ui $VERSION (server $DEFAULT_SERVER_TAG)"
+}
+
+# ---------------------------------------------------------------------------
+# Container runtime
+# ---------------------------------------------------------------------------
+# On macOS Sage runs in Colima by default: no window, no sign-in, no licence
+# screen. A Mac that already uses Docker Desktop or OrbStack may keep it. Each
+# runtime keeps its own sage-ai-data volume, so the choice is saved and every
+# command follows it. On Linux, Sage uses the Docker Engine as it is.
+RUNTIMES="colima docker-desktop orbstack"
+RUNTIME_FILE="${SAGE_CONFIG_DIR}/runtime"
+RUNTIME_FLAG=""
+RUNTIME=""
+APPLICATIONS_DIR="${APPLICATIONS_DIR:-/Applications}"
+
+# The docker context each runtime creates for itself.
+runtime_context() {
+  case "$1" in
+    colima)         echo colima ;;
+    docker-desktop) echo desktop-linux ;;
+    orbstack)       echo orbstack ;;
+  esac
+}
+
+runtime_installed() {
+  case "$1" in
+    colima)         command -v colima &>/dev/null ;;
+    docker-desktop) [[ -d "$APPLICATIONS_DIR/Docker.app" ]] ;;
+    orbstack)       [[ -d "$APPLICATIONS_DIR/OrbStack.app" ]] ;;
+    *)              return 1 ;;
+  esac
+}
+
+runtime_install_command() {
+  case "$1" in
+    colima)         echo "brew install colima" ;;
+    docker-desktop) echo "brew install --cask docker-desktop" ;;
+    orbstack)       echo "brew install --cask orbstack" ;;
+  esac
+}
+
+# The runtime this Mac used last: each one makes its own context docker's current one.
+last_used_runtime() {
+  case "$(docker context show 2>/dev/null)" in
+    desktop-linux) echo docker-desktop ;;
+    orbstack)      echo orbstack ;;
+    *)             echo colima ;;
+  esac
+}
+
+# The first start on a Mac with more than one runtime asks which to use.
+# The question goes to stderr; the answer is printed.
+ask_runtime() {
+  local default runtime answer="" installed=() n=0
+  default="$(last_used_runtime)"
+  runtime_installed "$default" || default=colima
+  for runtime in $RUNTIMES; do
+    if runtime_installed "$runtime"; then installed+=("$runtime"); fi
+  done
+  if [[ ${#installed[@]} -lt 2 || ! -t 0 ]]; then
+    echo "$default"
+    return
+  fi
+
+  {
+    echo "Sage runs in a container runtime. This Mac has:"
+    for runtime in "${installed[@]}"; do
+      n=$((n + 1))
+      echo "  $n) $runtime"
+    done
+    echo "Ran Sage here before? Pick the runtime you used: your data lives there."
+    echo "ai-ui remembers the answer; switch later with --runtime NAME."
+  } >&2
+  read -rp "Runtime [$default]: " answer || true
+  case "$answer" in
+    "")    echo "$default" ;;
+    [1-9]) echo "${installed[answer - 1]:-$answer}" ;;
+    *)     echo "$answer" ;;
+  esac
+}
+
+# Choose this command's runtime and point docker at it. `ask` (start, try,
+# update, dev) saves the choice, asking on the first start; other commands follow it.
+select_runtime() {
+  if [[ -n "$RUNTIME_FLAG" ]]; then
+    RUNTIME="$RUNTIME_FLAG"
+  elif [[ -f "$RUNTIME_FILE" ]]; then
+    RUNTIME="$(cat "$RUNTIME_FILE")"
+  elif [[ "${1:-}" == ask ]]; then
+    RUNTIME="$(ask_runtime)"
+  else
+    RUNTIME="$(last_used_runtime)"
+  fi
+  if [[ -z "$(runtime_context "$RUNTIME")" ]]; then
+    echo "Error: unknown runtime '$RUNTIME'. Use one of: $RUNTIMES"
+    exit 1
+  fi
+  if [[ -n "$RUNTIME_FLAG" || "${1:-}" == ask ]]; then
+    mkdir -p "$SAGE_CONFIG_DIR"
+    echo "$RUNTIME" > "$RUNTIME_FILE"
+  fi
+  DOCKER_CONTEXT="$(runtime_context "$RUNTIME")"
+  export DOCKER_CONTEXT
+}
+
+# A desktop app that has run before starts in the background, hidden. Its very
+# first start stays in view: it shows terms or setup screens that need a click.
+open_app() {
+  local app="$1" set_up_marker="$2"
+  if [[ -e "$set_up_marker" ]]; then
+    open -g -j -a "$app"
+  else
+    echo "$app's first start shows its own setup screens. Sign-in is optional."
+    open -a "$app"
+  fi
+}
+
+start_runtime() {
+  if ! runtime_installed "$RUNTIME"; then
+    echo "Error: $RUNTIME is not installed."
+    echo "  Install it:    $(runtime_install_command "$RUNTIME")"
+    [[ "$RUNTIME" == colima ]] || echo "  Or use Colima: ai-ui start --runtime colima"
+    exit 1
+  fi
+
+  echo "Starting $RUNTIME..."
+  case "$RUNTIME" in
+    colima)
+      if [[ "$(colima list --json 2>/dev/null)" == *'"name":"default"'* ]]; then
+        colima start
+      else
+        # The first start creates the VM. vz is Apple's own hypervisor, so there is
+        # no QEMU to install; Colima's default 2 GiB of memory is too small for Sage.
+        colima start --vm-type vz --memory 4
+      fi
+      ;;
+    docker-desktop) open_app Docker "$HOME/Library/Group Containers/group.com.docker/settings-store.json" ;;
+    orbstack)       open_app OrbStack "$HOME/.orbstack" ;;
+  esac
+}
+
+wait_for_runtime() {
+  echo "Waiting for $RUNTIME..."
+  for _ in $(seq 1 180); do
+    if docker info &>/dev/null; then
+      echo "$RUNTIME is ready."
+      return 0
+    fi
+    sleep 1
+  done
+  echo "Error: $RUNTIME did not answer within 3 minutes."
+  [[ "$RUNTIME" == colima ]] || echo "  Finish any setup screen it shows and run this again, or use Colima: --runtime colima"
+  exit 1
+}
+
+# Docker Desktop writes "credsStore": "desktop" into docker's config. Once Docker
+# Desktop is gone, so is its docker-credential-desktop helper, and every pull fails
+# with "error getting credentials". Drop a credsStore whose helper is missing.
+drop_missing_credential_helper() {
+  local config="${DOCKER_CONFIG:-$HOME/.docker}/config.json" store backup
+  store="$(plutil -extract credsStore raw -o - "$config" 2>/dev/null)" || return 0
+  command -v "docker-credential-$store" &>/dev/null && return 0
+  backup="$config.$(date +%Y%m%d-%H%M%S).bak"
+  cp "$config" "$backup"
+  plutil -remove credsStore "$config"
+  echo "Removed \"credsStore\": \"$store\" from $config: docker-credential-$store is not installed."
+  echo "  The previous file is at $backup"
+}
+
+# Make sure the chosen runtime answers, starting it if needed.
+ensure_docker() {
+  if [[ "$(uname)" == Darwin ]]; then
+    drop_missing_credential_helper
+  fi
+  if docker info &>/dev/null; then
+    return 0
+  fi
+
+  case "$(uname)" in
+    Darwin)
+      start_runtime
+      wait_for_runtime
+      ;;
+
+    Linux)
+      if ! command -v docker &>/dev/null; then
+        echo "Error: Docker is not installed."
+        echo "  See: https://docs.docker.com/engine/install/"
+        exit 1
+      fi
+      echo "Error: Docker daemon is not running."
+      echo "  Start it with: sudo systemctl start docker"
+      echo "  Enable on boot: sudo systemctl enable docker"
+      exit 1
+      ;;
+
+    *)
+      echo "Error: Cannot connect to Docker."
+      exit 1
+      ;;
+  esac
+}
+
+cmd_start() {
+  local port=$DEFAULT_PORT
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --port) port="$2"; shift 2 ;;
+      --tag)  IMAGE_TAG="$2"; IMAGE="$IMAGE_REGISTRY:$IMAGE_TAG"; shift 2 ;;
+      *) echo "Unknown option: $1"; usage; exit 1 ;;
+    esac
+  done
+
+  ensure_docker
+
+  echo "Pulling $IMAGE..."
+  docker pull "$IMAGE"
+
+  # Stop existing container if running
+  docker rm -f "$CONTAINER" 2>/dev/null || true
+
+  echo "Starting Sage AI UI on port $port..."
+  docker run -d \
+    -p "$port:8080" \
+    -v "$VOLUME:$DATA_MOUNT" \
+    --name "$CONTAINER" \
+    "$IMAGE"
+
+  echo ""
+  echo "Sage AI UI is running at http://localhost:$port"
+  echo "Run 'ai-ui open' to open in your browser."
+}
+
+cmd_stop() {
+  echo "Stopping Sage AI UI..."
+  for c in "$CONTAINER" "$TRY_CONTAINER"; do
+    docker stop "$c" 2>/dev/null || true
+    docker rm "$c" 2>/dev/null || true
+  done
+  echo "Stopped."
+}
+
+cmd_dev() {
+  local port=$DEFAULT_PORT
+  local explicit_dir=""
+  local repo_dir=""
+  local saved
+  saved="$(sage_project_dir ai-ui)" || true
+  local needs_clone=false
+
+  # --- Parse flags ---
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --port)  port="$2"; shift 2 ;;
+      --dir)   explicit_dir="$2"; shift 2 ;;
+      --where)
+        # Quick lookup: where's my code?
+        if [[ -n "$saved" ]]; then
+          echo "$saved"
+        else
+          echo "No saved location yet. Run 'ai-ui dev' to set one up."
+        fi
+        return 0
+        ;;
+      *) echo "Unknown option: $1"; usage; exit 1 ;;
+    esac
+  done
+
+  # --- Step 1: Explicit --dir? Trust the user. ---
+  if [[ -n "$explicit_dir" ]]; then
+    repo_dir="$explicit_dir"
+    if [[ -n "$saved" && "$saved" != "$repo_dir" ]]; then
+      echo "Note: switching from $saved (previously saved) to $repo_dir."
+    fi
+
+  # --- Step 2: SAGE_DEV_DIR env var? Backwards compat. ---
+  elif [[ -n "${SAGE_DEV_DIR:-}" ]]; then
+    repo_dir="$SAGE_DEV_DIR"
+    if [[ -n "$saved" && "$saved" != "$repo_dir" ]]; then
+      echo "Note: SAGE_DEV_DIR is set — switching from $saved to $repo_dir."
+    fi
+
+  # --- Step 3: Are we inside (or next to) an AI-UI repo right now? ---
+  elif repo_dir="$(find_repo_nearby "$AI_UI_REMOTE")"; then
+    if [[ -n "$saved" && "$saved" != "$repo_dir" ]]; then
+      echo "Found AI-UI source here ($repo_dir)."
+      echo "  Note: previously saved as $saved — updating."
+    elif [[ -z "$saved" ]]; then
+      echo "Found AI-UI source here ($repo_dir). Saving for next time."
+    else
+      echo "Using AI-UI source at $repo_dir"
+    fi
+
+  # --- Step 4: Do we have a saved path from last time? ---
+  elif [[ -n "$saved" ]]; then
+    if [[ -d "$saved" ]]; then
+      echo "Using your AI-UI source at $saved (saved from last time)."
+      repo_dir="$saved"
+    else
+      # The directory is gone — don't silently forget.
+      echo "Heads up — your AI-UI source was at $saved, but that directory is gone."
+      echo "  (If you moved it, you can point us there with: ai-ui dev --dir /new/path)"
+      echo ""
+      repo_dir="${HOME}/src/ai-ui"
+      needs_clone=true
+    fi
+
+  # --- Step 5: First time, nothing found. Clone fresh. ---
+  else
+    repo_dir="${HOME}/src/ai-ui"
+    needs_clone=true
+  fi
+
+  # --- Clone if needed ---
+  if [[ "$needs_clone" == true ]] || [[ ! -d "$repo_dir" ]]; then
+    echo "Cloning Sage AI UI to $repo_dir..."
+    git clone https://github.com/Sage-is/AI-UI.git "$repo_dir"
+    echo "  (We'll remember this location for next time.)"
+  fi
+
+  # --- Step 6: Ephemeral path warning ---
+  if is_ephemeral_path "$repo_dir"; then
+    echo ""
+    echo "  ⚠ Heads up: $repo_dir may not survive a reboot."
+    echo "    Your code changes could be lost."
+    echo "    For a permanent location: ai-ui dev --dir ~/src/ai-ui"
+    echo ""
+  fi
+
+  # --- Save the resolved path for next time ---
+  sage_set_project_dir ai-ui "$repo_dir"
+
+  # --- Start dev container ---
+  ensure_docker
+
+  docker rm -f "$CONTAINER" 2>/dev/null || true
+
+  echo "Pulling latest image..."
+  docker pull "$IMAGE"
+
+  echo "Starting in dev mode on port $port..."
+  docker run -d \
+    -p "$port:8080" \
+    -p 5173:5173 \
+    -v "$VOLUME:$DATA_MOUNT" \
+    -v "$repo_dir/app/src:/app/src" \
+    -v "$repo_dir/app/backend:/app/backend" \
+    -v "$repo_dir/app/static:/app/static" \
+    -e DEV_MODE=true \
+    --name "$CONTAINER" \
+    "$IMAGE"
+
+  echo ""
+  echo "Dev mode running. Source: $repo_dir"
+  echo "App:      http://localhost:$port"
+  echo "Vite HMR: http://localhost:5173 (when Node.js installed)"
+  echo ""
+  echo "Run 'ai-ui logs' to see output."
+  echo "Run 'ai-ui open' to open in your browser."
+}
+
+# ---------------------------------------------------------------------------
+# try.sage trial mode
+# ---------------------------------------------------------------------------
+# Bring up a trial container with seeded personas, hidden LLM connection, and
+# 24h auto-reset. BYO Groq API key (saved chmod 600 to ~/.sage-is/try.env).
+# Future: 'ai-ui login' will provide hosted free tokens after onboarding.
+
+ensure_try_credentials() {
+  mkdir -p "$SAGE_CONFIG_DIR"
+
+  if [[ -f "$TRY_ENV_FILE" ]]; then
+    set -a
+    # shellcheck source=/dev/null
+    source "$TRY_ENV_FILE"
+    set +a
+    if [[ -n "${TRY_SAGE_LLM_API_URL:-}" && -n "${TRY_SAGE_LLM_API_KEY:-}" ]]; then
+      return 0
+    fi
+    echo "Found $TRY_ENV_FILE but it's missing required values. Re-prompting."
+    echo ""
+  fi
+
+  cat <<EOF
+try.sage needs an OpenAI-compatible LLM provider. We recommend Groq (fast, free tier):
+
+  1. Sign up free at https://console.groq.com
+  2. Create an API key at https://console.groq.com/keys
+  3. Paste it below.
+
+We'll save it to $TRY_ENV_FILE (chmod 600). Edit or delete that file to change it.
+
+(Coming soon: 'ai-ui login' for hosted free tokens — no Groq account needed.)
+
+EOF
+  local key=""
+  read -rp "Groq API key (starts with gsk_): " key
+  if [[ -z "$key" ]]; then
+    echo "No key provided. Aborting."
+    exit 1
+  fi
+
+  cat > "$TRY_ENV_FILE" <<EOF
+# Generated by 'ai-ui try'. Edit or delete this file to re-prompt.
+TRY_SAGE_LLM_API_URL=https://api.groq.com/openai/v1
+TRY_SAGE_LLM_API_KEY=$key
+# Optional. Comma-separated whitelist of models. Empty = expose the full provider list.
+TRY_SAGE_LLM_MODELS=
+# Optional. Number of trial seats (personas). Default 3.
+TRY_SAGE_USER_SEAT_COUNT=3
+# Optional. Hours between auto-resets. Default 24.
+TRY_SAGE_RESET_INTERVAL_HOURS=24
+EOF
+  chmod 600 "$TRY_ENV_FILE"
+  echo "Saved to $TRY_ENV_FILE"
+  echo ""
+
+  set -a
+  # shellcheck source=/dev/null
+  source "$TRY_ENV_FILE"
+  set +a
+}
+
+# Print the persona magic-link URLs for the running trial container.
+print_try_links() {
+  local port="$1"
+  echo "Trial welcome URL: http://localhost:$port/auth (open in incognito)"
+  echo ""
+  echo "Persona magic-links:"
+  curl -fsS "http://localhost:$port/api/v1/sage/runtime/personas" 2>/dev/null \
+    | python3 -c "import json, sys; [print(f\"  {p['key']:12}  {p['login_url']}\") for p in json.load(sys.stdin)]" \
+    || echo "  (container not yet responding on :$port — give it a moment, then re-run 'ai-ui try')"
+}
+
+cmd_try() {
+  local port=$DEFAULT_PORT
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --port) port="$2"; shift 2 ;;
+      --tag)  IMAGE_TAG="$2"; IMAGE="$IMAGE_REGISTRY:$IMAGE_TAG"; shift 2 ;;
+      *) echo "Unknown option: $1"; usage; exit 1 ;;
+    esac
+  done
+
+  # Already running (e.g. backgrounded in another terminal)? Just print links.
+  if docker inspect --format='{{.State.Status}}' "$TRY_CONTAINER" 2>/dev/null | grep -q running; then
+    local existing_port
+    existing_port=$(docker port "$TRY_CONTAINER" 8080 2>/dev/null | head -1 | cut -d: -f2)
+    existing_port="${existing_port:-$port}"
+    echo "try.sage is already running on port $existing_port."
+    echo ""
+    print_try_links "$existing_port"
+    return 0
+  fi
+
+  ensure_try_credentials
+  ensure_docker
+
+  echo "Pulling latest image..."
+  docker pull "$IMAGE"
+
+  # Both prod and trial bind 8080 — drop whichever is in the way.
+  docker rm -f "$CONTAINER" 2>/dev/null || true
+  docker rm -f "$TRY_CONTAINER" 2>/dev/null || true
+
+  local webui_url="${WEBUI_URL:-http://localhost:$port}"
+
+  echo ""
+  echo "Booting try.sage on $webui_url"
+  echo "Magic links will print below once the runtime seeds personas."
+  echo "Press Ctrl-C to stop."
+  echo ""
+
+  # Background poller waits for the API, prints persona links, then exits.
+  # Decoupled from the foreground `docker run` so Ctrl-C cleanly tears down
+  # the container (--rm) without us juggling pids.
+  (
+    for _ in $(seq 1 30); do
+      if curl -fsS "http://localhost:$port/api/v1/sage/runtime/personas" >/dev/null 2>&1; then
+        echo ""
+        echo "═══════════════════════════════════════════════════════════"
+        print_try_links "$port"
+        echo "═══════════════════════════════════════════════════════════"
+        echo ""
+        case "$(uname)" in
+          Darwin) open "http://localhost:$port" ;;
+          *)      xdg-open "http://localhost:$port" 2>/dev/null || true ;;
+        esac
+        exit 0
+      fi
+      sleep 1
+    done
+  ) &
+
+  # Foreground run. Ctrl-C stops the container; --rm cleans the row.
+  docker run --rm \
+    -p "$port:8080" \
+    -v "$TRY_VOLUME:$DATA_MOUNT" \
+    -e ENABLE_TRY_SAGE=true \
+    -e WEBUI_URL="$webui_url" \
+    -e TRY_SAGE_LLM_API_URL="$TRY_SAGE_LLM_API_URL" \
+    -e TRY_SAGE_LLM_API_KEY="$TRY_SAGE_LLM_API_KEY" \
+    -e TRY_SAGE_LLM_MODELS="${TRY_SAGE_LLM_MODELS:-}" \
+    -e TRY_SAGE_USER_SEAT_COUNT="${TRY_SAGE_USER_SEAT_COUNT:-3}" \
+    -e TRY_SAGE_RESET_INTERVAL_HOURS="${TRY_SAGE_RESET_INTERVAL_HOURS:-24}" \
+    --name "$TRY_CONTAINER" \
+    "$IMAGE"
+}
+
+# Nuke from orbit — delegates to the Genesis Device (standalone, works without ai-ui installed).
+cmd_nuke() {
+  local script_dir
+  script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  if [[ -x "$script_dir/nuke-sage" ]]; then
+    exec "$script_dir/nuke-sage" ai-ui "$@"
+  else
+    echo "Error: nuke-sage is not beside $script_dir/ai-ui."
+    exit 1
+  fi
+}
+
+cmd_update() {
+  # Pre-parse --tag so the pull line shows the right image; cmd_start re-parses.
+  local i=0
+  while [[ $i -lt $# ]]; do
+    i=$((i + 1))
+    if [[ "${!i:-}" == "--tag" ]]; then
+      local next=$((i + 1))
+      IMAGE_TAG="${!next}"
+      IMAGE="$IMAGE_REGISTRY:$IMAGE_TAG"
+      break
+    fi
+  done
+
+  ensure_docker
+  echo "Pulling $IMAGE..."
+  docker pull "$IMAGE"
+  cmd_stop
+  cmd_start "$@"
+}
+
+cmd_logs() {
+  docker logs -f "$CONTAINER"
+}
+
+cmd_open() {
+  local port
+  port=$(docker port "$CONTAINER" 8080 2>/dev/null | head -1 | cut -d: -f2)
+  if [[ -z "$port" ]]; then
+    echo "Container is not running. Start it first with: ai-ui start"
+    exit 1
+  fi
+  local url="http://localhost:$port"
+  case "$(uname)" in
+    Darwin) open "$url" ;;
+    *)      xdg-open "$url" 2>/dev/null || echo "Open $url in your browser." ;;
+  esac
+}
+
+cmd_status() {
+  docker inspect --format='Status: {{.State.Status}}' "$CONTAINER" 2>/dev/null || echo "Container is not running."
+  local port
+  port=$(docker port "$CONTAINER" 8080 2>/dev/null | head -1 | cut -d: -f2)
+  if [[ -n "$port" ]]; then
+    echo "URL: http://localhost:$port"
+  fi
+}
+
+if [[ $# -eq 0 ]]; then
+  usage
+  exit 0
+fi
+
+command="$1"; shift
+
+# --runtime NAME works with every command: take it out before the command reads its own options.
+args=()
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --runtime)
+      [[ $# -ge 2 ]] || { echo "Error: --runtime needs one of: $RUNTIMES"; exit 1; }
+      RUNTIME_FLAG="$2"; shift 2 ;;
+    *) args+=("$1"); shift ;;
+  esac
+done
+# macOS runs bash 3.2, where "${args[@]}" on an empty array trips `set -u`.
+set -- ${args[@]+"${args[@]}"}
+
+if [[ "$(uname)" == Darwin ]]; then
+  case "$command" in
+    start|try|update|dev)       select_runtime ask ;;
+    stop|logs|open|status|nuke) select_runtime ;;
+  esac
+fi
+
+case "$command" in
+  start)  cmd_start "$@" ;;
+  stop)   cmd_stop ;;
+  try)    cmd_try "$@" ;;
+  update) cmd_update "$@" ;;
+  dev)    cmd_dev "$@" ;;
+  logs)   cmd_logs ;;
+  open)   cmd_open ;;
+  status) cmd_status ;;
+  nuke)   cmd_nuke "$@" ;;
+  version|-v|--version) cmd_version ;;
+  -h|--help|help) usage ;;
+  *) echo "Unknown command: $command"; usage; exit 1 ;;
+esac
