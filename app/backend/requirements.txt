@@ -5,7 +5,7 @@ pydantic==2.11.7
 itsdangerous
 # CVE-2026-24486 (HIGH): arbitrary file write — fixed in 0.0.22
 # CVE-2026-42561 (HIGH): pre-0.0.27 parser issue — bumped 2026-05-17.
-python-multipart==0.0.30
+python-multipart==0.0.31
 
 python-socketio==5.16.2
 passlib[bcrypt]==1.7.4
@@ -13,7 +13,7 @@ cryptography
 
 requests==2.32.4
 # CVE-2025-69223 (HIGH): zip bomb via auto_decompress + 8 more CVEs (smuggling, DoS)
-aiohttp==3.13.3
+aiohttp==3.14.3
 async-timeout
 aiocache
 aiofiles
@@ -59,7 +59,7 @@ tiktoken
 # langchain-core STAYS — it is the interface layer (Document, BaseLoader,
 # BaseRetriever) subclassed across the codebase. Pinned to the version the
 # sprig-side packages expect.
-langchain-core==0.3.86
+langchain-core==1.3.3
 
 ## Vector DB — chromadb is NOT baked into the base rootstock (Bonsai™ slimming).
 ## Its ~170MB closure (chromadb, onnxruntime, kubernetes, grpc, hnswlib, posthog)
