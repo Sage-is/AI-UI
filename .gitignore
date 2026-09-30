@@ -117,3 +117,7 @@ app/cypress/perf-workshop.json
 app/cypress/perf-routes.json
 app/cypress/boot-waterfall-timing.json
 
+
+# Social cards: `make social_cards` builds each PNG from the SVG beside it.
+# Upload from there; committing the PNG would let it drift from its SVG.
+docs/art/social/*.png
