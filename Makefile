@@ -553,9 +553,14 @@ catalog_release: catalog_build
 # it are private (leading underscore, absent from `make help`) because three
 # doors existed here and the documented one skipped sprig_publish, which shipped
 # a Sprig that nobody outside could pull. Hotfixes come through here too.
-ship: _release_and_push_GHCR sprig_publish  # Publish a release or hotfix: image to GHCR + Sprig catalog
+ship: _release_and_push_GHCR sprig_publish  # Publish a release or hotfix: image to GHCR + Sprig catalog + brew formula
 	@echo ""
-	@echo "=== ship complete: image published + catalog verified at $(REGISTRY) ==="
+	@echo "=== image published + catalog verified at $(REGISTRY) ==="
+	@# Last, so a brew hiccup can never hold back the image or the catalog.
+	@echo ""
+	@echo "=== Pointing brew's ai-ui formula at $(IMAGE_TAG) in $(SIBLING_HOMEBREW) ==="
+	@$(MAKE) -C $(SIBLING_HOMEBREW) ai_ui_formula
+	@echo "=== ship complete. Then: commit and push $(SIBLING_HOMEBREW); brew users get $(IMAGE_TAG) from its develop ==="
 
 # upgrade_gate — boot THIS image on a COPY of a production data snapshot
 # (default: newest tools/db_snapshots/*) and prove the upgrade path: DB
@@ -1708,7 +1713,6 @@ _release_and_push_GHCR: release_preflight release_smoke release_finish
 	@echo "Verify: docker pull $(GHCR_IMAGE_NAME):$(IMAGE_TAG)"
 	@echo "Verify: docker pull $(GHCR_IMAGE_NAME):latest"
 	@echo "Next:   make deploy   (try.sage.is first, then sage.startr.cloud)"
-	@echo "Then:   cd ../homebrew-apps && make ai_ui_formula   (brew's ai-ui follows this release)"
 
 deploy:  ## Put SERVER_TAG (or TAG=) live: try.sage.is, then sage.startr.cloud after a DB backup (APPS= to pick)
 	@python3 scripts/deploy.py --image $(IMAGE) --tag $(or $(TAG),$(SERVER_TAG)) $(APPS)
