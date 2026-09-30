@@ -445,7 +445,10 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
   - [x] [WE] Repo page through `gh`: 13 topics, homepage https://sage.is, "let's" fixed in the description (2026-09-30)
   - [x] [WE] Social card chosen and edited (`docs/art/social/social-c-terminal.svg`, with the sage.is tile); `make social_cards` builds each PNG, which git ignores (2026-09-30)
   - [ ] [MANUALLY] Upload the card: Settings, Social preview (GitHub's API cannot set it)
-  - [ ] [MANUALLY] Triage the 16 open Dependabot pull requests and the 8 Sage Notes issues from 2025-11 (#2 is out of date): a stale queue reads as unmaintained
+  - [x] [WE] Triage, 2026-09-30: #2 closed; 9 stale Dependabot PRs closed with reasons; dependabot.yml watches what ships (bun for app/, backend grouped minor/patch); security updates on
+  - [ ] [MANUALLY] Held PRs: #33 after an image build and e2e (aiohttp HIGH fix); #13 after `npm test` in tools/tw2startr; close #32 #21 #20 #19 #18 once Dependabot opens bun PRs
+  - [ ] [WE] Bump pypdf 4.3.1 to 6.x in `scripts/build-sprig-rag-loaders.sh` (Dependabot cannot read it); no CI runs on PRs yet
+  - [ ] [MANUALLY] Decide the 7 Sage Notes issues from 2025-11 (#1, #3 to #8): product calls first, then label real starter work
   - [ ] [WE] Issue templates, and 10–15 real `good first issue` + `help wanted` issues, drafted for review before they are published
   - [ ] [MANUALLY] "Make Sage yours" workshop: teams fork AI-UI, change something real and run it with `ai-ui dev`; participants self-organize
   - [ ] [WE] `ai-ui dev --fork` (opt-in, via `gh`) and a fork-and-PR path in CONTRIBUTING for outside contributors
