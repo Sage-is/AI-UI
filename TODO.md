@@ -31,6 +31,10 @@ This file tracks active work only.
 
 _Items currently in progress. Move items here and or use tag source with `# FIXME:` when work begins._
 
+- [ ] **Paused 2026-10-01: Trellis first** (Alexander) #critical: no new AI-UI work until the ISA pilot ships (Trellis plan Amendment 60); bookkeeping and the pending commits only
+  - [ ] [MANUALLY] The tap's step-2 commit and push (the ai-ui formula follows AI-UI releases); this board's commit
+  - [ ] Parked AI-UI changes Trellis may need later: forward the chatting user's identity to tool servers (`execute_tool_server` sends only the bearer today); AI-UI as identity provider
+
 - [ ] **One way to deploy: `cr-deploy` + `make deploy`** #critical: plan Amendment 55, 2026-09-27
   - [x] [WE] `cr-deploy` in the tap (named `captain` until 2026-09-28; from Trellis `caprover.py`): bind mounts in `apps`, `--verify/--expect/--health`, `rollback`, build-start race fixed, 9 tests
   - [x] [WE] `make deploy` / `deploy_rollback`, `deploy/instances.toml`, `scripts/deploy.py`; canary verify-only and no-key refusal proven
@@ -41,6 +45,7 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [x] [WE] `make deploy TAG=3.2.0` 2026-09-27: backup (170 MB, integrity ok, 32 users, 2124 chats), sage.startr.cloud 3.2.0 on openco2; `webui.db` identical on all 3 nodes, no new sync-conflicts
   - [ ] [MANUALLY] Check chats and Spaces on sage.startr.cloud
   - [ ] [WE] Rollback drill on try.sage.is once it has two digest deploys; 2026-09-27 run refused the tag-deployed 3.1.0 by design, message now says how
+  - [ ] [WE] `cr-deploy` with an expired token and no terminal dies in a traceback (`EOFError` in `getpass`, 2026-09-29); say "token expired, run `cr-deploy info` in a terminal" and exit 1
 
 - [ ] **sage.startr.cloud SQLite over Syncthing**: replicas can sync torn; nightly `sqlite3 .backup` into the synced folder, Syncthing ignores live `webui.db`/`-wal`/`-shm`; Postgres later
 
@@ -100,6 +105,16 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
 
 ## TODO
 
+- [ ] **Fabric for work on the captain nodes; first job: backups** #critical: the hourly `APP-backup` cron has backed up nothing since 2025-11-28, and Trellis `/data` gets company mail next (2026-09-29)
+  - [ ] [WE] Bug: `pipenv run ./backup.py` (crontab, :53 hourly) crashes on import, first `fabric` then `yaml`: 2,308 tracebacks in `backup_cron.log` (5.9 MB); no `config.yaml` either; retire the line or rebuild
+  - [ ] [MANUALLY] `~/bin/cron/backup_openco2.sh` (daily 15:50, `root@openco2`, three `/root/backup_*.sh`, rsync to `OpenCo/Backups`) writes no log; check its files are still fresh
+  - [ ] [MANUALLY] Install `brew install fabric` (3.2.3, the SSH library; `fabric-ai` is an unrelated AI tool) or pipenv; home: revive `APP-backup` or a new ops repo
+  - [ ] SSH: one dedicated key, used from the Studio only, not root where avoidable; scope it before any task runs (the cluster was compromised 2026-08-11)
+  - [ ] Inventory = the rosters we have: `deploy/instances.toml` + Trellis `crm/deploy/*.yaml` (app, node); no third list; merge the two when the new client instances land
+  - [ ] First task `backup`: `sqlite3 .backup` per app volume on its node (`trellis-data`, AI-UI `webui.db`), pulled to the Studio, integrity check, keep N; covers the Syncthing card's nightly backup
+  - [ ] Rule: deploys stay on `cr-deploy`; a Fabric task never changes a CapRover service behind the captain's back
+  - [ ] Later tasks: disk and health sweep of the 3 nodes, the OpenCo IR detection scripts, fail2ban
+
 - [ ] **Converge the two deployed instances**: `try-sage-is` vs `sage-startr-cloud` #critical
   Both run `ghcr.io/sage-is/ai-ui:3.1.0` on the same host (openco2), yet their runtime
   state differs materially. Surfaced 2026-08-15 during an infrastructure backup audit.
@@ -114,7 +129,7 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
 
 ### Real-estate segment engagement — first paid deployment (opened 2026-07-30)
 
-_The first paid real-estate deployment of AI-UI, and deliberately the beachhead for a real-estate vertical rather than a one-off. Client identities, commercial terms, dates, and the external commitment live in [.clients.md](.clients.md) — untracked by design (`.gitignore:3` denies dotfiles), so that link is dead in a fresh clone and is meant to be. **Codenames only in this file:** **Realtor R** (the customer), **School B** (the prior demo tenant whose data is still on try.sage.is), **Reviewer T** (internal reviewer). Never write a real client name into a tracked file._
+_The first paid real-estate deployment of AI-UI, and deliberately the beachhead for a real-estate vertical rather than a one-off. Client identities, commercial terms, dates, and the external commitment live in [.clients.md](.clients.md) — untracked by design (`.gitignore:3` denies dotfiles), so that link is dead in a fresh clone and is meant to be. **Codenames only in this file:** **Realtor M** (the customer), **School B** (the prior demo tenant whose data is still on try.sage.is), **Reviewer T** (internal reviewer). Never write a real client name into a tracked file._
 
 **How success is measured here** — the customer's own definition, and worth adopting as the segment's: (1) their assistant and VA stop having to ask the principal things, (2) hours back in the principal's week. They explicitly rejected "deals closed" (market forces dominate; attribution is fiction) and "nothing falls through the cracks" (humans stay in the loop and humans drop things). We measure what the software determines and nothing more. Any dashboard or report we build should hold that line.
 
@@ -128,7 +143,7 @@ _The first paid real-estate deployment of AI-UI, and deliberately the beachhead 
   - Fix: server-rendered no-build page (`pages/try_sage_panel.py` + `try-sage.html`, 4.6 KB first response) — normal flow, `100dvh`, safe-area inset, overflow-safe `margin:auto` centering.
   - `TrySageWelcome.svelte` deleted; anonymous `/` answers server-side only when `ENABLE_TRY_SAGE` is on, other deploys untouched.
   - Guard-rail `try-sage-welcome.cy.ts` asserts phone-viewport scroll + flag-off inertness; `ENABLE_TRY_SAGE` passthrough added to the e2e + manual-check harnesses.
-- [ ] Turn on Spaces access for Realtor R.
+- [ ] Turn on Spaces access for Realtor M.
 - [ ] Diagnose the unresponsive Space Agent via `/admin/diagnostics`. Actionable as of 2026-08-03 — the diagnostics page (2.3.3) and how-to-fix modals (2.3.4) are now live on try.sage.is.
 - [ ] **Decide the trial model set and who pays for the tokens.** Undecided as of 2026-07-30 and it gates the instance provisioning below. Note the hidden Groq connection on try.sage.is is uncapped per user, and three people will share this workspace.
 - [ ] **Day-in-the-life walkthrough — staged and labelled as staged**: the proactive beats are outbound-on-a-schedule and **there is no job scheduler** — do not let "does it do that by itself?" get a soft answer.
@@ -154,9 +169,9 @@ _The first paid real-estate deployment of AI-UI, and deliberately the beachhead 
 
 #### Dedicated instance — after the demo
 
-- [ ] **Provision Realtor R his own instance rather than leaving a paying customer on the shared demo box.** Decided 2026-07-30. Solves three problems at once: recurring tenant cleanup, uncapped shared spend, and his working data sitting beside strangers'.
+- [ ] **Provision Realtor M his own instance rather than leaving a paying customer on the shared demo box.** Decided 2026-07-30. Solves three problems at once: recurring tenant cleanup, uncapped shared spend, and his working data sitting beside strangers'.
 - [ ] Migration path for anything he creates on try.sage.is between the demo and the cutover.
-- [ ] **The social push escalates this from tidy-up to pre-launch blocker**: before the announcement, migrate Realtor R off the shared box, or cap spend, or both — not covered by any marketplace item. #critical
+- [ ] **The social push escalates this from tidy-up to pre-launch blocker**: before the announcement, migrate Realtor M off the shared box, or cap spend, or both — not covered by any marketplace item. #critical
   - The push drives open-source self-installers at try.sage.is — the same shared box holding a paying customer's working data.
   - All three problems above get worse at once: tenant cleanup, uncapped shared spend, and his data sitting beside strangers'.
   - Spend budgets are item 2 in the `#### Platform unlocks` sequence, which the marketplace quarter slice already depends on.
@@ -439,7 +454,7 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
   - [ ] Written commitment: no automated behavioral flagging (hate speech, self-harm, etc.) without explicit school opt-in
   - [ ] Publish to `docs/` and link from README and elevator-pitch
 
-- [ ] **Homebrew core: earn the self-submission bar on AI-UI** (decided 2026-09-30): 225 stars, 90 forks or 90 watchers; today 9, 2 and 1 #launch
+- [ ] **Homebrew core: earn the self-submission bar on AI-UI** (decided 2026-09-30; paused 2026-10-01, Trellis first): 225 stars, 90 forks or 90 watchers; today 9, 2 and 1 #launch
   - [x] [WE] The `ai-ui` CLI, `nuke-sage` and their 16 tests live in `cli/` (gate `cli_tests`); the tap's `ai_ui_formula` target points the formula at each release (2026-09-30)
   - [ ] [MANUALLY] Ship the CLI inside the next AI-UI release, then run the tap's `ai_ui_formula` target; CLI-only `3.2.0_N` revisions end
   - [x] [WE] Repo page through `gh`: 13 topics, homepage https://sage.is, "let's" fixed in the description (2026-09-30)
@@ -449,9 +464,14 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
   - [ ] [MANUALLY] Held PRs: #33 after an image build and e2e (aiohttp HIGH fix); #13 after `npm test` in tools/tw2startr; close #32 #21 #20 #19 #18 once Dependabot opens bun PRs
   - [ ] [WE] Bump pypdf 4.3.1 to 6.x in `scripts/build-sprig-rag-loaders.sh` (Dependabot cannot read it); no CI runs on PRs yet
   - [ ] [MANUALLY] Decide the 7 Sage Notes issues from 2025-11 (#1, #3 to #8): product calls first, then label real starter work
-  - [ ] [WE] Issue templates, and 10–15 real `good first issue` + `help wanted` issues, drafted for review before they are published
+  - [x] [WE] Members only, 2026-09-30: PR creation limited to collaborators; master pushable by opencoca alone; develop cannot be force-pushed or deleted; josesimas and AnatoliHS raised to write; tobiasmarx9904 stays read (junior)
+  - [ ] [MANUALLY] Issues for collaborators only: Settings, General, Features, Issues, Creation allowed by. Pinned 2026-10-01: GraphQL `updateRepository` takes `issueCreationPolicy`, so it can be automated
+  - [x] [WE] Ruleset "Release tags: admins only": only repository admins create, move or delete `v*` tags (2026-09-30)
+  - [ ] [WE] Confirm Dependabot still opens PRs under collaborators-only PRs (its first run after 2026-09-30 22:00 UTC)
+  - [ ] [MANUALLY] New batch #35 to #42 from the old config: after the dependabot.yml push, close the npm and /app pip ones; #36 (backend security) waits for a build and e2e
+  - [ ] [WE] Paused while members only: issue templates and 10–15 real `good first issue` + `help wanted` issues
   - [ ] [MANUALLY] "Make Sage yours" workshop: teams fork AI-UI, change something real and run it with `ai-ui dev`; participants self-organize
-  - [ ] [WE] `ai-ui dev --fork` (opt-in, via `gh`) and a fork-and-PR path in CONTRIBUTING for outside contributors
+  - [ ] [WE] Paused while members only: `ai-ui dev --fork` and a fork-and-PR path for outside contributors (forks and stars stay open to all)
   - [ ] [MANUALLY] Launch: an awesome-selfhosted entry "(fork of Open WebUI)" written by hand; a Show HN on "one brew line, no Docker Desktop"; r/selfhosted, r/LocalLLaMA
   - [ ] [WE] README: a plain star line, and "Watch → Custom → Releases" for release notes
   - [ ] [WE] A check that prints AI-UI's stars, forks and watchers against the bars
