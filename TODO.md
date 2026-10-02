@@ -952,6 +952,12 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
 _Items deferred to a later planning cycle. Move here from TODO when deprioritized._
 
 
+- [ ] **LocalMind deep-exam: steal its ingestion/exports/copy, make it an AI-UI satellite** (plan: `docs/localmind-exam-plan.md`; frozen until Trellis/ISA pilot ships)
+  - [ ] [WE] Phase 0–1: sample-pack baselines (ingest + export matrices), port proposals for PDF chunking, markdown-IR exporters, `{{Blank}}` copy model
+  - [ ] [WE] Phase 2: one small PR per adopted piece behind AI-UI seams, with tests; kill-or-keep on `pandas`/`trafilatura` weight
+  - [ ] [WE] Phase 3: satellite contract thinnest-first — STT via whisper sprig (deletes ~1G venv), embeddings/chat overflow, Docling for hard PDFs; read-only API scopes
+  - [ ] [MANUALLY] Ship order decision (recommend STT first), then wire + test on the school server
+
 - [ ] **A process for agents whose model is gone** (Alexander, 2026-08-17): when an agent's base model stops resolving — model deleted, connection removed, hosted key dead, capability Sprig pruned — the agent goes silently mute; today nobody is told and nothing suggests a fix. #ux #reliability
   - [ ] Detect: on agent use (and/or a periodic sweep), check the base model still resolves to a live entry; classify the loss (missing model vs dead connection vs pruned capability).
   - [ ] Suggest, don't auto-fix: surface it to the agent's OWNER ("this agent can't reach its model — pick a new one") and to an ADMIN (which agents broke, what removed the model), with the plausible remaps offered.
