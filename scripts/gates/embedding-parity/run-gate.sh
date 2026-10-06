@@ -10,16 +10,16 @@
 #   Q8_0: cosine_min >= 0.99 AND full retrieval recall
 #
 # Prerequisites (large artifacts, NOT in the repo — build with the sprig chain):
-#   $GATE_BIN_DIR   static llama-server (default /tmp/sprig-build/8i3/bin)
-#   $GATE_GGUF_DIR  <model>-{f16,q8}.gguf   (default /tmp/sprig-build/8i3/gguf)
+#   $GATE_BIN_DIR   static llama-server (default ~/.cache/ai-ui/sprig-build/8i3/bin)
+#   $GATE_GGUF_DIR  <model>-{f16,q8}.gguf   (default ~/.cache/ai-ui/sprig-build/8i3/gguf)
 #   $GATE_REF       harness reference dir with reference.json + tokens_ref.json
-#                   (default /tmp/sprig-build/8i3/harness — regenerate via the
+#                   (default ~/.cache/ai-ui/sprig-build/8i3/harness — regenerate via the
 #                   conversion container if absent; see roadmap 8.I.3)
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
-BIN="${GATE_BIN_DIR:-/tmp/sprig-build/8i3/bin}"
-GGUF="${GATE_GGUF_DIR:-/tmp/sprig-build/8i3/gguf}"
-REF="${GATE_REF:-/tmp/sprig-build/8i3/harness}"
+BIN="${GATE_BIN_DIR:-${SPRIG_BUILD_ROOT:-$HOME/.cache/ai-ui/sprig-build}/8i3/bin}"
+GGUF="${GATE_GGUF_DIR:-${SPRIG_BUILD_ROOT:-$HOME/.cache/ai-ui/sprig-build}/8i3/gguf}"
+REF="${GATE_REF:-${SPRIG_BUILD_ROOT:-$HOME/.cache/ai-ui/sprig-build}/8i3/harness}"
 MODELS="${GATE_MODELS:-e5}"   # gate the shipped cultivar by default; add "minilm bge" to retest held ones
 
 for p in "$BIN/llama-server" "$REF/reference.json"; do

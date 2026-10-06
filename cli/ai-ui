@@ -30,6 +30,9 @@ for _env in "$_script_dir/distribution.env" "$_script_dir/../distribution.env"; 
     break
   fi
 done
+# The data volume, or a folder for it. Read after distribution.env, which sets
+# VOLUME itself and would overwrite a plain VOLUME from the environment.
+VOLUME="${SAGE_AI_VOLUME:-$VOLUME}"
 
 # One version number: the CLI's version is the AI-UI server version it pins.
 VERSION="$DEFAULT_SERVER_TAG"

@@ -33,7 +33,8 @@ SIG_TYPE="application/vnd.sage-is.sprig.minisig"
 [ -f "$SIGN_KEY" ] || { echo "ERROR: SIGN_KEY $SIGN_KEY not found"; exit 1; }
 KEY_DIR="$(cd "$(dirname "$SIGN_KEY")" && pwd)"; KEY_FILE="$(basename "$SIGN_KEY")"
 
-WORK="$(mktemp -d)"; trap 'rm -rf "$WORK"' EXIT
+. "$(dirname "${BASH_SOURCE[0]}")/lib/mount-tmp.sh"
+WORK="$(mount_tmp sign-sprigs)"; trap 'rm -rf "$WORK"' EXIT
 ORAS(){ docker run --rm --network "$NET" -v "$WORK:/w" -w /w "$ORAS_IMG" "$@"; }
 
 # Interactive TTY only when the key needs a passphrase prompt.

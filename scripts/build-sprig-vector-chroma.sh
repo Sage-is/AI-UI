@@ -42,7 +42,7 @@ CHROMADB_PIN="${CHROMADB_PIN:-chromadb==0.6.3}"
 # expand in the host shell into the docker bash -c string, quotes and all).
 PIP_SPECS="'$CHROMADB_PIN' 'tokenizers<=0.23.0' 'huggingface-hub<1.0' 'numpy<2'"
 
-WORK="${WORK:-/tmp/sprig-build/vector-chroma-$ARCH}"
+WORK="${WORK:-${SPRIG_BUILD_ROOT:-$HOME/.cache/ai-ui/sprig-build}/vector-chroma-$ARCH}"
 OUT_DIR="${OUT_DIR:-$(pwd)}"
 OUT="$OUT_DIR/$NAME-$ARCHTAG.tar.zst"
 

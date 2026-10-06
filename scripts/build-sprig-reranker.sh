@@ -29,10 +29,10 @@ LAYER_TYPE="application/vnd.sage-is.sprig.tar+zstd"
 
 HF_REPO="BAAI/bge-reranker-v2-m3"
 LLAMA_CPP_REF="b9859"                      # keep in lockstep with the binary
-LLAMA_BIN="${LLAMA_BIN:-/tmp/sprig-build/8i3/bin/llama-server}"
-LLAMA_QUANTIZE="${LLAMA_QUANTIZE:-/tmp/sprig-build/8i3/bin/llama-quantize}"
+LLAMA_BIN="${LLAMA_BIN:-${SPRIG_BUILD_ROOT:-$HOME/.cache/ai-ui/sprig-build}/8i3/bin/llama-server}"
+LLAMA_QUANTIZE="${LLAMA_QUANTIZE:-${SPRIG_BUILD_ROOT:-$HOME/.cache/ai-ui/sprig-build}/8i3/bin/llama-quantize}"
 
-WORK="${WORK:-/tmp/sprig-build/reranker}"
+WORK="${WORK:-${SPRIG_BUILD_ROOT:-$HOME/.cache/ai-ui/sprig-build}/reranker}"
 OUT_DIR="${OUT_DIR:-$(pwd)}"
 OUT="$OUT_DIR/$NAME-$TAG.tar.zst"
 
@@ -141,7 +141,7 @@ if [ "$MANAGE_REGISTRY" = "1" ]; then
   docker network inspect "$NETWORK" >/dev/null 2>&1 || docker network create "$NETWORK"
   if ! docker ps --format '{{.Names}}' | grep -qx local-registry; then
     docker rm -f local-registry >/dev/null 2>&1 || true
-    docker run -d --name local-registry --network "$NETWORK" -p 5000:5000 -v sprig-registry-data:/var/lib/registry registry:2 >/dev/null
+    docker run -d --name local-registry --network "$NETWORK" -p 5000:5000 -v "${SPRIG_REGISTRY_DATA:-$HOME/SageData/sprig-registry}:/var/lib/registry" registry:2 >/dev/null
   fi
   for _ in $(seq 1 30); do curl -fsS "http://localhost:5000/v2/" >/dev/null 2>&1 && break; sleep 0.5; done
 fi

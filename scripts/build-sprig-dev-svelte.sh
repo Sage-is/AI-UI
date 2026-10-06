@@ -42,7 +42,7 @@ REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 [ -f "$REPO_ROOT/app/package.json" ] || { echo "ERROR: app/package.json not found" >&2; exit 1; }
 [ -f "$REPO_ROOT/app/bun.lock" ]     || { echo "ERROR: app/bun.lock not found" >&2; exit 1; }
 
-WORK="${WORK:-/tmp/sprig-build/dev-svelte-$ARCH}"
+WORK="${WORK:-${SPRIG_BUILD_ROOT:-$HOME/.cache/ai-ui/sprig-build}/dev-svelte-$ARCH}"
 OUT_DIR="${OUT_DIR:-$(pwd)}"
 OUT="$OUT_DIR/$NAME-$ARCHTAG.tar.zst"
 

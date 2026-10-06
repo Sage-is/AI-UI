@@ -39,6 +39,9 @@ ROOT="sage-manual"; TLS="sage-manual-tls"; VOL="sage-manual-data"
 . "$(cd "$(dirname "$0")" && pwd)/lib/test-admin.env"
 EMAIL="${EMAIL:-$TEST_ADMIN_EMAIL}"; PASSWORD="${PASSWORD:-$TEST_ADMIN_PASSWORD}"
 HERE="$(cd "$(dirname "$0")/.." && pwd)"
+# Under $HOME: Docker on Colima shares only $HOME with its VM, so a Caddyfile
+# in /tmp mounts as an empty folder and Caddy starts with no config.
+CADDYFILE="$HOME/.cache/ai-ui/manual-Caddyfile"
 BASE="http://localhost:8101"
 
 # REUSE_DATA=1 keeps the data volume across a teardown.
@@ -62,7 +65,7 @@ cleanup(){
   else
     $RUNTIME volume rm "$VOL" >/dev/null 2>&1 || true
   fi
-  rm -f /tmp/manual-Caddyfile
+  rm -f "$CADDYFILE"
 }
 # KEEP=1 leaves the instance running after this script exits.
 #
@@ -112,14 +115,16 @@ if [ "${LIVE:-0}" = "1" ]; then
   # keeps the watched set and the mounted set from drifting — a reloader
   # watching a directory nothing writes to is a feature that silently does
   # nothing, which is the failure shape this repo keeps finding.
-  LIVE_ENV="-e PAGES_RELOAD_DIRS=/app/backend/sage_is_ai/pages"
+  # Polling, because Docker on Colima relays a Mac edit as a metadata change,
+  # which the watcher ignores: without it a save never reloads (2026-10-06).
+  LIVE_ENV="-e PAGES_RELOAD_DIRS=/app/backend/sage_is_ai/pages -e WATCHFILES_FORCE_POLLING=true"
 fi
 
 echo "== booting $IMG on a throwaway volume =="
 # SPRIG_REGISTRY points at the local registry so grafting works like it does in
 # the gates. ENABLE_SIGNUP is on only long enough to seed the first admin —
 # this fork hard-closes signup once one exists.
-# shellcheck disable=SC2086  # LIVE_MOUNT/LIVE_ENV are empty or one flag pair each
+# shellcheck disable=SC2086  # LIVE_MOUNT/LIVE_ENV are empty or a few flags each
 $RUNTIME run -d --name "$ROOT" --network "$NET" -p 8101:8080 \
   -e SPRIG_REGISTRY=local-registry:5000 -e ENABLE_SIGNUP=True -e WEBUI_AUTH=True \
   ${ENABLE_TRY_SAGE:+-e "ENABLE_TRY_SAGE=$ENABLE_TRY_SAGE"} \
@@ -162,7 +167,8 @@ echo "== tls sidecar (secure context) =="
 # https matters even for a click-through: over plain http on a non-localhost
 # origin the browser silently denies clipboard, crypto.subtle and service
 # workers, so you would be testing a different app than the one you ship.
-cat > /tmp/manual-Caddyfile <<CADDY
+mkdir -p "$(dirname "$CADDYFILE")"
+cat > "$CADDYFILE" <<CADDY
 {
 	auto_https disable_redirects
 }
@@ -172,7 +178,7 @@ https://localhost:$PORT {
 }
 CADDY
 $RUNTIME run -d --name "$TLS" --network "$NET" -p "$PORT:$PORT" \
-  -v /tmp/manual-Caddyfile:/etc/caddy/Caddyfile:ro caddy:2-alpine >/dev/null
+  -v "$CADDYFILE:/etc/caddy/Caddyfile:ro" caddy:2-alpine >/dev/null
 for _ in $(seq 1 30); do
   curl -sk -o /dev/null "https://localhost:$PORT/health" 2>/dev/null && break; sleep 1
 done

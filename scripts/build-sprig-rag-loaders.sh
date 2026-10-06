@@ -31,7 +31,7 @@ sprig_arch_normalize
 
 PIP_SPECS="'langchain==0.3.30' 'langchain-community==0.3.27' 'pypdf==4.3.1' 'docx2txt==0.8' 'rank_bm25' 'numpy<2'"
 
-WORK="${WORK:-/tmp/sprig-build/rag-loaders-$ARCH}"
+WORK="${WORK:-${SPRIG_BUILD_ROOT:-$HOME/.cache/ai-ui/sprig-build}/rag-loaders-$ARCH}"
 OUT_DIR="${OUT_DIR:-$(pwd)}"
 OUT="$OUT_DIR/$NAME-$ARCHTAG.tar.zst"
 

@@ -46,7 +46,7 @@ fi
 JV_OLD="https://johnvansickle.com/ffmpeg/old-releases/ffmpeg-${FFMPEG_VERSION}-${ARCH}-static.tar.xz"
 JV_CUR="https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-${ARCH}-static.tar.xz"
 
-WORK="${WORK:-/tmp/sprig-build/media-ffmpeg-$ARCH}"
+WORK="${WORK:-${SPRIG_BUILD_ROOT:-$HOME/.cache/ai-ui/sprig-build}/media-ffmpeg-$ARCH}"
 OUT_DIR="${OUT_DIR:-$(pwd)}"
 OUT="$OUT_DIR/$NAME-$ARCHTAG.tar.zst"
 

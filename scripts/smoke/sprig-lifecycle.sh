@@ -9,7 +9,7 @@
 # with the catalog artifacts. Runs a FRESH container; safe to re-run.
 set -uo pipefail
 IMG="${1:-sage-is/ai-ui:develop}"
-NET="${SPRIG_SMOKE_NET:-sage-network}"; ROOT="${SPRIG_SMOKE_NAME:-sage-wolfi}"; VOL="${ROOT}-data"
+NET="${SPRIG_SMOKE_NET:-sage-network}"; ROOT="${SPRIG_SMOKE_NAME:-sage-sprig-smoke}"; VOL="${ROOT}-data"  # never sage-wolfi: that instance is kept, and this gate deletes its volume
 PORT="${SPRIG_SMOKE_PORT:-8099}"; BASE="http://localhost:${PORT}"
 . "$(dirname "${BASH_SOURCE[0]}")/../lib/gate.sh"   # PASS/FAIL + ok/no/require
 . "$(dirname "${BASH_SOURCE[0]}")/../lib/test-admin.env"   # the ONE fresh-boot admin

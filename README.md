@@ -73,7 +73,7 @@ Sage.is AI-UI runs with sensible defaults. Override with environment variables:
 - [try.sage Trial Deployment](./docs/try-sage-deployment.md)
 - [Product Stack](./docs/product-stack.md)
 - [Development Workflow](./docs/development-workflow.md): Make targets, styling, scans
-- [Community Hub Integration](./docs/community-hub.md)
+- [Community Hub: the winter plan](./docs/community-hub.md)
 - [Contributing](./docs/CONTRIBUTING.md)
 - [Security](./docs/SECURITY.md)
 - [Troubleshooting](./docs/troubleshooting.md)
@@ -84,7 +84,7 @@ Sage.is AI-UI runs with sensible defaults. Override with environment variables:
 ## <img src="docs/art/emblems/people.svg" width="32" height="32" alt="" align="absmiddle"> Community
 
 - **Issues:** [Report bugs](https://github.com/Sage-is/AI-UI/issues)
-- **Community Hub:** coming soon. community.sage.is is not yet public so make sure `ENABLE_COMMUNITY_SHARING` stays off ([docs](./docs/community-hub.md) for now). Browse and share models, prompts, and tools across your Sage instances.
+- **Community Hub:** coming this winter. community.sage.is is not yet public so make sure `ENABLE_COMMUNITY_SHARING` stays off ([docs](./docs/community-hub.md) for now). Browse and share models, prompts, and tools across your Sage instances.
 
 ## <img src="docs/art/emblems/seal.svg" width="32" height="32" alt="" align="absmiddle"> License
 
@@ -98,7 +98,7 @@ If you distribute this software, or any work derived from it, you must release t
 
 These permissions are irrevocable and royalty-free for the term of copyright. THE SOFTWARE IS PROVIDED "AS IS," WITHOUT WARRANTY OF ANY KIND. This is a plain-language summary. The full legal text of the GNU Affero General Public License, version 3, governs all use for you.
 
-Sage.is Sprig Extensions built on the published [Sprig Spec](./docs/bonsai/sprig-spec-v1-draft.md) are not derivative works and may be authored under any license.
+Sage.is Sprig Extensions built on the published [Sprig Spec](https://sage.is/bonsai/) are not derivative works and may be authored under any license.
 
 ---
 

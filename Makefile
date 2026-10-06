@@ -33,6 +33,18 @@ endif
 # Auto-detect container runtime (prefer podman, fall back to docker)
 CONTAINER_RUNTIME ?= $(shell command -v podman 2>/dev/null || echo docker)
 
+# Docker on Colima shares only $HOME with its VM: a bind mount from /tmp or
+# /var/folders arrives as an empty folder, silently (the DB smoke tests then
+# migrate a blank database and pass). macOS mktemp ignores TMPDIR, so folders
+# that get mounted name this root explicitly (scripts: lib/mount-tmp.sh).
+export AI_UI_TMP := $(HOME)/.cache/ai-ui/tmp
+$(shell mkdir -p $(AI_UI_TMP))
+
+# The local Sprig registry keeps its blobs in a folder, not a volume, so Colima
+# and Docker Desktop share one copy: `sage-runtime use` never has to move it.
+# Databases stay in volumes (see the 2026-10-06 decision in TODO.md).
+export SPRIG_REGISTRY_DATA ?= $(HOME)/SageData/sprig-registry
+
 # Cross-platform "build complete" chime.
 # macOS: plays the system Glass sound. Linux/WSL/Windows: silent no-op.
 # Resolved once at parse time so per-site call sites stay one line.
@@ -271,6 +283,7 @@ DEV_RUN_ARGS := $(COMMON_RUN_ARGS) \
 	-v $$(pwd)/app/postcss.config.js:/app/postcss.config.js \
 	-v $$(pwd)/app/tailwind.config.js:/app/tailwind.config.js \
 	-v $$(pwd)/app/package.json:/app/package.json \
+	-e WATCHFILES_FORCE_POLLING=true \
 	-e PAGES_RELOAD_DIRS=/app/backend/sage_is_ai/pages
 
 it_stop:  ## Stop the running container
@@ -383,7 +396,7 @@ test_db_upgrade:
 	fi
 	@echo "=== DB Upgrade Smoke Test ==="
 	@# Copy snapshot to temp dir so container writes don't mutate the original
-	@TMPDIR=$$(mktemp -d) && \
+	@TMPDIR=$$(mktemp -d "$(AI_UI_TMP)/db-test.XXXXXX") && \
 	SNAPSHOT=$$([ -n "$(DB_SNAPSHOT)" ] && echo "$(DB_SNAPSHOT_DIR)/$(DB_SNAPSHOT)" || ls -1 $(DB_SNAPSHOT_DIR)/*.sqlite | head -1) && \
 	cp "$$SNAPSHOT" "$$TMPDIR/webui.db" && \
 	echo "Source: $$SNAPSHOT ($$(du -h "$$SNAPSHOT" | cut -f1))" && \
@@ -421,10 +434,10 @@ wizard_smoke:  ## Install-wizard smoke
 sprig_registry:
 	@$(CONTAINER_RUNTIME) network inspect sage-network >/dev/null 2>&1 || $(CONTAINER_RUNTIME) network create sage-network >/dev/null
 	@$(CONTAINER_RUNTIME) ps --format '{{.Names}}' | grep -qx local-registry || { \
-		echo "== starting local-registry (sage-network, NAMED volume sprig-registry-data) =="; \
+		echo "== starting local-registry (sage-network, data in $(SPRIG_REGISTRY_DATA)) =="; \
 		$(CONTAINER_RUNTIME) rm -f local-registry >/dev/null 2>&1 || true; \
 		$(CONTAINER_RUNTIME) run -d --name local-registry --network sage-network -p 5000:5000 \
-			-v sprig-registry-data:/var/lib/registry registry:2 >/dev/null; \
+			-v "$(SPRIG_REGISTRY_DATA):/var/lib/registry" registry:2 >/dev/null; \
 		for i in $$(seq 1 30); do curl -fsS http://localhost:5000/v2/ >/dev/null 2>&1 && break; sleep 0.5; done; \
 	}
 	@echo "local-registry: up ($$(curl -fsS http://localhost:5000/v2/_catalog 2>/dev/null || echo 'unreachable'))"
@@ -835,7 +848,7 @@ release_smoke:  # Release gate: version checks + native and amd64 smoke
 # Fresh DB smoke test — verifies clean schema creation from scratch.
 test_db_fresh:
 	@echo "=== Fresh DB Smoke Test ==="
-	@TMPDIR=$$(mktemp -d) && \
+	@TMPDIR=$$(mktemp -d "$(AI_UI_TMP)/db-test.XXXXXX") && \
 	echo "Testing fresh schema creation against $(IMAGE_NAME):$(IMAGE_TAG)..." && \
 	$(CONTAINER_RUNTIME) run --rm \
 		-v "$$TMPDIR:/app/backend/data" \
@@ -865,9 +878,12 @@ ghcr_login:
 # exists, a bare create-or-nothing leaves whatever builder is currently selected
 # in charge — so multi-arch builds silently ran on the docker driver instead.
 # Select it unconditionally, every time.
+# A buildx builder remembers the context it was made in. One name per context
+# keeps Docker Desktop's builder off Colima and Colima's off Docker Desktop.
 ensure_builder:
-	@docker buildx inspect multi-arch-builder >/dev/null 2>&1 || docker buildx create --name multi-arch-builder
-	@docker buildx use multi-arch-builder
+	@b=multi-arch-builder-$$(docker context show); \
+	docker buildx inspect $$b >/dev/null 2>&1 || docker buildx create --name $$b; \
+	docker buildx use $$b
 
 # Multi-architecture build+push helper
 # Builds amd64 and arm64, creates manifest list, and pushes in one step.
@@ -1393,7 +1409,8 @@ scan_deps:
 scan_container: it_build  # Gate: trivy over the BUILT image (HIGH/CRITICAL)
 	$(call require_tool,TRIVY,trivy)
 	@echo "=== Container image scan (trivy) ==="
-	$(TRIVY) image --severity HIGH,CRITICAL $(IMAGE_NAME):$(IMAGE_TAG)
+	@# trivy reads DOCKER_HOST, not docker's context: Colima has no /var/run/docker.sock.
+	DOCKER_HOST=$$(docker context inspect -f '{{.Endpoints.docker.Host}}') $(TRIVY) image --severity HIGH,CRITICAL $(IMAGE_NAME):$(IMAGE_TAG)
 
 # scan_dast: Dynamic Application Security Testing (STUB — future TODO).
 # Requires a running staging environment. See TODO.md for the full plan:
@@ -1744,7 +1761,7 @@ it_update:
 # Boots the same image as `it_run` but flips on the trial runtime: hidden LLM
 # connection, persona seeds, 24h auto-reset, banner. The hidden connection
 # secrets stay env-only — the API key never lands in the config DB. See
-# docs/try-sage-deployment.md and docs/try-sage-docker-exploration.md.
+# docs/try-sage-deployment.md.
 TRY_SAGE_USER_SEAT_COUNT      ?= 3
 TRY_SAGE_RESET_INTERVAL_HOURS ?= 24
 

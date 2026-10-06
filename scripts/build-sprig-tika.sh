@@ -31,7 +31,7 @@ TIKA_URL="https://repo1.maven.org/maven2/org/apache/tika/tika-server-standard/${
 
 sprig_arch_normalize
 
-WORK="${WORK:-/tmp/sprig-build/tika-$ARCH}"
+WORK="${WORK:-${SPRIG_BUILD_ROOT:-$HOME/.cache/ai-ui/sprig-build}/tika-$ARCH}"
 OUT_DIR="$WORK/out"
 OUT="$OUT_DIR/${NAME}-${ARCHTAG}.tar.zst"
 rm -rf "$WORK"; mkdir -p "$WORK/stage" "$OUT_DIR"

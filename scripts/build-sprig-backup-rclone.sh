@@ -43,7 +43,7 @@ RC_ZIP="rclone-${RCLONE_VERSION}-linux-${ARCH}.zip"
 RC_URL="https://downloads.rclone.org/${RCLONE_VERSION}/${RC_ZIP}"
 RC_SUMS="https://downloads.rclone.org/${RCLONE_VERSION}/SHA256SUMS"
 
-WORK="${WORK:-/tmp/sprig-build/backup-rclone-$ARCH}"
+WORK="${WORK:-${SPRIG_BUILD_ROOT:-$HOME/.cache/ai-ui/sprig-build}/backup-rclone-$ARCH}"
 OUT_DIR="${OUT_DIR:-$(pwd)}"
 OUT="$OUT_DIR/$NAME-$ARCHTAG.tar.zst"
 

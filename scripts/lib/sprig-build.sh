@@ -69,7 +69,7 @@ sprig_ensure_registry(){
   docker network inspect "$NETWORK" >/dev/null 2>&1 || docker network create "$NETWORK"
   if ! docker ps --format '{{.Names}}' | grep -qx local-registry; then
     docker rm -f local-registry >/dev/null 2>&1 || true
-    docker run -d --name local-registry --network "$NETWORK" -p 5000:5000 -v sprig-registry-data:/var/lib/registry registry:2 >/dev/null
+    docker run -d --name local-registry --network "$NETWORK" -p 5000:5000 -v "${SPRIG_REGISTRY_DATA:-$HOME/SageData/sprig-registry}:/var/lib/registry" registry:2 >/dev/null
   fi
   for _ in $(seq 1 30); do curl -fsS "http://localhost:5000/v2/" >/dev/null 2>&1 && break; sleep 0.5; done
   return 0

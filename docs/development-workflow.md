@@ -322,6 +322,7 @@ Append a breakpoint suffix to any property:
 
 Standard targets for common tasks:
 - `make setup` - Configure local environment
+- `make setup_env` - Write `.env` only; wraps `tools/setup_project_env.sh`
 - `make help` - Show available commands
 - Project-specific build/deploy targets
 

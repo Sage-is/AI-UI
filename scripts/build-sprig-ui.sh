@@ -17,7 +17,7 @@
 #   NAME=workshop-welcome TAG=v1 SIGN_KEY=... scripts/build-sprig-ui.sh
 # Env (conventions match build-sprig-theme.sh):
 #   REGISTRY=localhost:5000  TAG=v1  INSECURE=1  MANAGE_REGISTRY=0
-#   NETWORK=sage-network  OUT_DIR=/tmp/sprig-build/ui  SIGN_KEY/SIGN_NOPASS
+#   NETWORK=sage-network  OUT_DIR=~/.cache/ai-ui/sprig-build/ui  SIGN_KEY/SIGN_NOPASS
 set -euo pipefail
 
 NAME_ARG="${NAME:?NAME=<dir under scripts/ui-sprigs> required (e.g. workshop-welcome)}"
@@ -31,7 +31,7 @@ TAG="${TAG:-v1}"
 INSECURE="${INSECURE:-1}"
 MANAGE_REGISTRY="${MANAGE_REGISTRY:-0}"
 NETWORK="${NETWORK:-sage-network}"
-OUT_DIR="${OUT_DIR:-/tmp/sprig-build/ui}"
+OUT_DIR="${OUT_DIR:-${SPRIG_BUILD_ROOT:-$HOME/.cache/ai-ui/sprig-build}/ui}"
 ARTIFACT_TYPE="application/vnd.sage-is.sprig.v1"
 LAYER_TYPE="application/vnd.sage-is.sprig.tar+zstd"
 # oras runs DOCKERIZED — no host install needed.
@@ -41,7 +41,8 @@ command -v docker >/dev/null || { echo "ERROR: docker not on PATH" >&2; exit 1; 
 sha256(){ shasum -a 256 "$1" 2>/dev/null | awk '{print $1}' || sha256sum "$1" | awk '{print $1}'; }
 
 # --- 1. stage ---------------------------------------------------------------
-STAGE="$(mktemp -d)"; trap 'rm -rf "$STAGE"' EXIT
+. "$(dirname "${BASH_SOURCE[0]}")/lib/mount-tmp.sh"
+STAGE="$(mount_tmp sprig-ui)"; trap 'rm -rf "$STAGE"' EXIT
 mkdir -p "$OUT_DIR"
 cp "$SRC_DIR/fragment.html" "$STAGE/fragment.html"
 HTML_SHA="$(sha256 "$STAGE/fragment.html")"
@@ -127,7 +128,7 @@ if [ "$MANAGE_REGISTRY" = "1" ]; then
   if ! docker ps --format '{{.Names}}' | grep -qx local-registry; then
     docker rm -f local-registry >/dev/null 2>&1 || true
     docker run -d --name local-registry --network "$NETWORK" -p 5000:5000 \
-      -v sprig-registry-data:/var/lib/registry registry:2 >/dev/null
+      -v "${SPRIG_REGISTRY_DATA:-$HOME/SageData/sprig-registry}:/var/lib/registry" registry:2 >/dev/null
   fi
   for _ in $(seq 1 30); do curl -fsS "http://localhost:5000/v2/" >/dev/null 2>&1 && break; sleep 0.5; done
 fi

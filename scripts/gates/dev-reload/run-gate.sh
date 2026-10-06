@@ -41,7 +41,8 @@ NAME="sage-reload-gate-$$"
 VOL="sage-reload-gate-data-$$"
 BASE="http://localhost:8109"
 HERE="$(cd "$(dirname "$0")/../../.." && pwd)"
-WORK="$(mktemp -d)"
+. "$(dirname "${BASH_SOURCE[0]}")/../../lib/mount-tmp.sh"
+WORK="$(mount_tmp dev-reload)"
 EMAIL="admin@example.com"; PASSWORD="password"
 FAILED=0
 

@@ -34,7 +34,7 @@ MODEL_URL="https://huggingface.co/ggerganov/whisper.cpp/resolve/main/${MODEL_FIL
 # `-amd64`-suffixed tag so it sits beside the arm64 artifact under one repo.
 sprig_arch_normalize
 
-WORK="${WORK:-/tmp/sprig-build/whisper-$ARCH}"
+WORK="${WORK:-${SPRIG_BUILD_ROOT:-$HOME/.cache/ai-ui/sprig-build}/whisper-$ARCH}"
 OUT_DIR="${OUT_DIR:-$(pwd)}"
 OUT="$OUT_DIR/$NAME-$ARCHTAG.tar.zst"
 

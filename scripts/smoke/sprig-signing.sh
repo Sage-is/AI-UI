@@ -70,7 +70,8 @@ echo "$R" | grep -qi "signed artifact" \
   && ok "refusal names the missing signature" || no "refusal detail unclear: $(echo "$R" | head -c 160)"
 
 echo "== 5. tampered signature is REFUSED =="
-WORK=$(mktemp -d)
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/mount-tmp.sh"
+WORK="$(mount_tmp sprig-signing)"
 docker run --rm --network "$NET" -v "$WORK:/w" -w /w ghcr.io/oras-project/oras:v1.2.0 \
   pull --plain-http "local-registry:5000/sprig-browser-ml:v1" >/dev/null
 TARF=$(cd "$WORK" && ls -- *.tar.zst | head -1)

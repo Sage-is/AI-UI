@@ -159,6 +159,14 @@ class OtherCommands(Mac):
                         next(i for i, call in enumerate(calls) if " pull " in call))
 
 
+class DataVolume(Mac):
+    def test_sage_ai_volume_picks_where_the_data_lives(self):
+        self.env["SAGE_AI_VOLUME"] = str(self.home / "SageData" / "ai-ui")
+        result = self.run_ai_ui("start")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn(f"-v {self.home}/SageData/ai-ui:/app/backend/data", " ".join(self.calls()))
+
+
 class Nuke(Mac):
     def test_a_brew_install_finds_nuke_sage_and_passes_its_flags(self):
         libexec = self.home / "keg" / "libexec"  # the formula installs all three side by side

@@ -45,6 +45,7 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [x] [WE] `make deploy TAG=3.2.0` 2026-09-27: backup (170 MB, integrity ok, 32 users, 2124 chats), sage.startr.cloud 3.2.0 on openco2; `webui.db` identical on all 3 nodes, no new sync-conflicts
   - [ ] [MANUALLY] Check chats and Spaces on sage.startr.cloud
   - [ ] [WE] Rollback drill on try.sage.is once it has two digest deploys; 2026-09-27 run refused the tag-deployed 3.1.0 by design, message now says how
+  - [ ] [MANUALLY] The captain's CapRover version (decided 2026-10-04): read it (`cr-deploy info`, needs your login); below 1.14.2, go to exactly 1.14.2 after host-level copies of `/captain/data` and the app volumes; hold 1.15.x until a release restores its own backups. Evidence: Trellis `crm/docs/decisions/2026-10-04-pilot-hosting-options.md`
   - [ ] [WE] `cr-deploy` with an expired token and no terminal dies in a traceback (`EOFError` in `getpass`, 2026-09-29); say "token expired, run `cr-deploy info` in a terminal" and exit 1
 
 - [ ] **sage.startr.cloud SQLite over Syncthing**: replicas can sync torn; nightly `sqlite3 .backup` into the synced folder, Syncthing ignores live `webui.db`/`-wal`/`-shm`; Postgres later
@@ -105,10 +106,21 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
 
 ## TODO
 
+- [ ] **Develop on Colima, Docker Desktop optional** (Alexander, 2026-10-06; switch with the tap's `sage-runtime`) #dx
+  - [x] [WE] Temp folders that get bind-mounted live under `$AI_UI_TMP` (`~/.cache/ai-ui/tmp`, `scripts/lib/mount-tmp.sh`): Colima mounts /tmp and /var/folders empty, and macOS mktemp ignores TMPDIR; `test_db_upgrade` now sees its 155 MB snapshot
+  - [x] [WE] `make review`'s Caddyfile and the Sprig build root (`SPRIG_BUILD_ROOT`) moved under `$HOME`; review answers HTTPS 200 on Colima
+  - [x] [WE] `WATCHFILES_FORCE_POLLING=true` for `make dev` and `review LIVE=1`: Colima relays a save as a metadata change WatchFiles ignores; reload now 1 s, before never
+  - [x] [WE] buildx builder named per context; `trivy image` gets `DOCKER_HOST`; `it_build` 6m25s on an 8 GiB Colima VM
+  - [ ] [WE] Vite HMR in `make dev` on Colima: needs the `dev-svelte` Sprig, so the local registry (`sprig-registry-data`, 6.8 GB) on Colima first
+  - [ ] `scripts/gates/docker-disk-free.py` reads only Docker Desktop's disk; add Colima (`colima list --json`) and fix the `release_preflight` hints
+  - [ ] `ai-ui` CLI: create Colima with `--vz-rosetta --mount-inotify` and 8 GiB; refuse `ai-ui dev --dir` outside `$HOME`; `nuke --genesis` warns before removing Colima
+  - [ ] Docs naming Docker Desktop: README.md:30, docs/product-stack.md:66,154, docs/release-runbook.md:42, docs/troubleshooting.md:24-28
+
 - [ ] **Fabric for work on the captain nodes; first job: backups** #critical: the hourly `APP-backup` cron has backed up nothing since 2025-11-28, and Trellis `/data` gets company mail next (2026-09-29)
   - [ ] [WE] Bug: `pipenv run ./backup.py` (crontab, :53 hourly) crashes on import, first `fabric` then `yaml`: 2,308 tracebacks in `backup_cron.log` (5.9 MB); no `config.yaml` either; retire the line or rebuild
   - [ ] [MANUALLY] `~/bin/cron/backup_openco2.sh` (daily 15:50, `root@openco2`, three `/root/backup_*.sh`, rsync to `OpenCo/Backups`) writes no log; check its files are still fresh
-  - [ ] [MANUALLY] Install `brew install fabric` (3.2.3, the SSH library; `fabric-ai` is an unrelated AI tool) or pipenv; home: revive `APP-backup` or a new ops repo
+  - [ ] [MANUALLY] Install `brew install fabric` (3.2.3, the SSH library; `fabric-ai` is an unrelated AI tool) or pipenv; home: a new `ops` repo (decided 2026-10-04), then drop the dead `APP-backup` cron line
+  - [ ] Owner open (Alexander 2026-10-04): not the intern, since the task needs production SSH; pick a senior
   - [ ] SSH: one dedicated key, used from the Studio only, not root where avoidable; scope it before any task runs (the cluster was compromised 2026-08-11)
   - [ ] Inventory = the rosters we have: `deploy/instances.toml` + Trellis `crm/deploy/*.yaml` (app, node); no third list; merge the two when the new client instances land
   - [ ] First task `backup`: `sqlite3 .backup` per app volume on its node (`trellis-data`, AI-UI `webui.db`), pulled to the Studio, integrity check, keep N; covers the Syncthing card's nightly backup
@@ -411,6 +423,7 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
   - [ ] Update `app/src/lib/i18n/locales/en-US/translation.json` with new strings; other locales fall back to English until translated
   - [ ] Create `WEB-Sage.Education-docs/docs/admin/auto-updates.md` (CapRover config + brew alt + Portainer/K8s/other one-paragraph each + Need help? → `support@sage.is`)
   - [ ] Verify: banner renders with new copy when current < latest for an admin; release-notes link points at the specific tag; docs page renders in Docusaurus dev server
+- [ ] **`make ship` publishes no GitHub release page**: add a `gh release create --verify-tag --latest` step with the CHANGELOG section as notes (v3.0.0 to v3.2.0 were published by hand 2026-09-29)
 
 ### Privacy & Poka-Yoke #critical
 
@@ -1184,19 +1197,26 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 
 ## Bugs
 
+- [ ] **Today's image builds lose `sha224` and `sha3`** #critical (found 2026-10-06 on Colima; not Colima's doing): `hashlib.sha224` raises AttributeError, and `random` logs `_sha512` tracebacks at import
+  - [ ] Cause: the wolfi base is pinned by digest, but `apk` pulls the newest `python-3.11` at build time: 3.11.16-r8 (OpenSSL 3.6.4, good, built 2026-09-25) became 3.11.17-r2 (OpenSSL 4.0.2, broken)
+  - [ ] Proof: Docker Desktop's 2026-09-25 image computes sha224 on Colima; the 2026-10-06 build fails on both runtimes
+  - [ ] Fix: pin `python-3.11=3.11.16-r8` (or the next good revision) in the Dockerfile's apk line, then a smoke assert `python3 -c "import hashlib; hashlib.sha224"` in `it_build`
+
 - [ ] **`surface_budget` floor over ceiling since at least 3.1.0**: `notes-empty` decodes 6,978 kB against the 6,800 kB ceiling — and the 2026-08-10 `3.1.0-amd64` image measures 6,978.6, so the regression PREDATES the 2026-08-17 cleanup sitting (A/B run, same snapshot, 0.5 kB apart). #bug #critical
   - [ ] The gate's own comment records 6,642 kB on 2026-08-02 after the font/icon work — ~336 kB grew back somewhere in 2026-08-02→08-10 and nobody ran `gauntlet_full` across the line.
   - [ ] Heaviest single item: `/api/models?` at 2,702 kB decoded — snapshot-driven, worth checking against the 08-02 figure first; the rest is `_app/immutable` chunks (top four: 764+606+543+411 kB).
   - [ ] The ledger (`app/cypress/perf-routes.json`) is untracked and overwritten per run, so there was no baseline to catch the drift — consider committing a dated copy per release.
   - [ ] Do NOT raise the ceiling to go green; the gate says so itself. Find the 336 kB or earn the raise deliberately.
 
-- [ ] **Branding colors don't reach the page — theme Sprig severs the cascade, no-build shell plumbs nothing** (diagnosed live on :8099, 2026-08-17; approach settled with Alexander same day). Config holds `#b2b1fe`/`#9178cc`; the page feels green anyway. #bug #frontend
-  - [ ] Three stacked sources on :8099: grafted `sprig-theme:workshop-bio` (`/themes/active.css`) sets `--primary/--secondary/--links` as GREEN LITERALS + a green-tinted `--color-gray-N` scale; `+layout.svelte:565-570` sets inline purple `--primary/--secondary` (wins those two); stock startr.style derives `--links: var(--primary)`.
+- [ ] **Branding colors don't reach the page — theme Sprig severs the cascade** (diagnosed live on :8099, 2026-08-17; approach settled with Alexander same day). Config holds `#b2b1fe`/`#9178cc`; the page feels green anyway. Fixes 1–3 shipped 2026-08-17; the rest is open (re-verified 2026-10-05). #bug #frontend
+  - [ ] Three stacked sources on :8099: grafted `sprig-theme:workshop-bio` (`/themes/active.css`) sets `--primary/--secondary/--links` as GREEN LITERALS + a green-tinted `--color-gray-N` scale; the layout sets inline purple `--primary/--secondary` (wins those two); stock startr.style derives `--links: var(--primary)`.
+    - The inline set moved from `+layout.svelte:565-570` to `applyBrandingColors` (`$lib/utils/branding.ts:25`), called at `+layout.svelte:552`.
   - [ ] Root cause: the Sprig's literal `--links` SEVERS the framework cascade, so inline `--primary` never reaches links; the tinted gray scale covers most surface regardless.
-  - [ ] Fix 1 — restore severed props, never duplicate recipes: injection sets `--primary`, `--secondary`, plus `--links: var(--primary)` and `--button-hover: var(--primary)`; the framework's own color-mix recipes re-resolve. No app-side color math.
-  - [ ] Fix 2 — no-build shell parity: `pages/shell.py` emits the same `:root{}` block from `app.state.config.BRANDING`; today it plumbs nothing and every panel (the branding panel included) wears framework defaults.
-  - [ ] Fix 3 — honest conflict UX, not silent precedence: the branding panel AND `Theme.svelte` show a plain-words warning when a theme Sprig is active, with a one-click prune. ELI5 wording.
+  - [x] Fix 1 — restore severed props, never duplicate recipes: injection sets `--primary`, `--secondary`, plus `--links: var(--primary)` and `--button-hover: var(--primary)`; the framework's own color-mix recipes re-resolve. No app-side color math. Shipped 2026-08-17 in `c26e223`.
+  - [x] Fix 2 — no-build shell parity: `pages/shell.py` emits the same `:root{}` block from `app.state.config.BRANDING`. Shipped 2026-08-17 inside `2daa3ac` (`shell.py:226-235`); skipped while a theme Sprig is active.
+  - [x] Fix 3 — honest conflict UX, not silent precedence: the branding panel AND `Theme.svelte` show a plain-words warning when a theme Sprig is active, with a one-click prune. ELI5 wording. Shipped: `templates/branding.html:26-32`, `pruneActiveTheme` in `Theme.svelte:42`.
   - [ ] Upstream (first-party) fix: theme Sprigs must author `--links: var(--primary)`, not literals — keeps grafted themes brandable; fix `workshop-bio` + the authoring contract in the sprig spec.
+    - Still open 2026-10-05: `scripts/themes/workshop-bio/theme.css:22` sets `--links: #2f7d4f`. The theme lives in this repo.
   - [ ] Guard: e2e asserts a saved color reaches BOTH a SPA and a no-build page; the drift class is "one consumer honors config, the other silently doesn't".
   - [ ] Inline `<style>` stays CSP-compatible today (`'unsafe-inline'` kept per the CSP card); note in the policy's exception list when that ships.
   - [ ] Found on the way: the no-build shell never loads `/themes/active.css` — a grafted theme dresses the SPA and NOT the server-rendered panels. Decide whether the shell links it (theme parity) or stays deliberately unthemed; today's fix gates shell colors on `SPRIG_ACTIVE_THEME` so the two surfaces at least agree on who wins.
@@ -1210,7 +1230,8 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 - [ ] **Spaces mention keyboard navigation is dead** (found 2026-08-18 writing the first Spaces e2e). #bug #frontend
   - [ ] `MessageInput.svelte:740` queries `#mentions-container`; the real container id is `#commands-container` (`Mentions.svelte:57`).
   - [ ] `MessageInput.svelte:747,:755,:762` query class `selected-mention-option-button`; the rendered class is `selected-command-option-button`.
-  - [ ] Effect: ArrowUp/Down/Tab/Enter fall through to plain-editor behavior; click selection works. `spaces-multiuser.cy.ts` clicks around it on purpose — fix frees the spec to test keyboard flow.
+  - [ ] Effect: keyboard selection fails; click selection works. `spaces-multiuser.cy.ts` clicks around it on purpose — fix frees the spec to test keyboard flow.
+  - Corrected 2026-10-05: the keys do not fall through to the plain editor. The dropdown renders the commands ids, so keys land in the commands branch (`MessageInput.svelte:772`); ArrowUp/Down drive the hidden Commands list and do nothing. Tab/Enter not checked live.
 
 - [ ] **Channel components carry zero `data-cy` hooks**: the Spaces specs pin on load-bearing raw ids (`#space-container`, `#messages-container`, `#send-message-button`) and the bare ProseMirror class; add hooks next time `app/src/lib/components/channel/` is touched. #dx
 
@@ -1221,26 +1242,21 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] Refresh path already fixed (`init` gained a `blank = true` parameter; `refreshModelsHandler` passes `false`) — the other four call sites still blank.
   - [ ] Fix the rest: a one-word change each, but each wants a look at what the surrounding handler does after the await.
 
-- [ ] **`getModels` has no token parameter, yet 33 call sites pass one**: `connections` gets a string, the merge no-ops — direct-connection models are silently never merged; where `base` lands truthy, `/api/models/base` returns 200 with the wrong list (found 2026-08-07). #bug ([dossier](docs/board-dossiers.md))
+- [ ] **`getModels` has no token parameter, yet 36 call sites pass one** (recounted 2026-10-05; was 33): `connections` gets a string, the merge no-ops — direct-connection models are silently never merged; where `base` lands truthy, `/api/models/base` returns 200 with the wrong list (found 2026-08-07). #bug ([dossier](docs/board-dossiers.md))
   - [ ] Signature at [apis/index.ts:52](app/src/lib/apis/index.ts#L52) is `(connections, base, refresh)`; callers spell `getModels(localStorage.token, <directConnections>)`.
   - [ ] The merge at [index.ts:90](app/src/lib/apis/index.ts#L90) iterates `undefined` and no-ops.
-  - [ ] Worst path: truthy `base` sends the request to `/api/models/base` ([main.py:1698](app/backend/sage_is_ai/main.py#L1698)) — 200 with the wrong list instead of 404ing where someone would notice.
-  - [ ] Fix the 32 remaining call sites. The admin models page is already corrected — `(token, null, true)` → `(null, false, true)`, provably identical since its merge block was a no-op.
+  - [ ] Worst path: truthy `base` sends the request to `/api/models/base` ([main.py:1667](app/backend/sage_is_ai/main.py#L1667)) — 200 with the wrong list instead of 404ing where someone would notice.
+  - [ ] Fix the 36 remaining call sites. Some call it as `_getModels` (e.g. `SettingsModal.svelte:498`); `Audio.svelte` imports a different `getModels` from `$lib/apis/audio` and is correct. The admin models page is already corrected — `(token, null, true)` → `(null, false, true)`, provably identical since its merge block was a no-op.
   - [ ] Mechanical fix, but it touches the model list on every surface: own commit + full `make e2e_both`.
-- [ ] **Four names defined twice in the same module; the first of each is unreachable by name**: each site carries a `# noqa: F811` today — gate green, shadowing greppable, not correct (found 2026-08-06 by the newly adopted ruff gate, `F811`). #bug #gates
+- [ ] **Three names defined twice in the same module; the first of each is unreachable by name**: each site carries a `# noqa: F811` today — gate green, shadowing greppable, not correct (found 2026-08-06 by the newly adopted ruff gate, `F811`; four until 2026-08-17). #bug #gates
   - [ ] `get_all_feedbacks` at [evaluations.py:97](app/backend/sage_is_ai/routers/evaluations.py#L97) shadows the one at :75.
-  - [ ] `get_file_content_by_id` at [files.py:550](app/backend/sage_is_ai/routers/files.py#L550) shadows :431.
-  - [ ] `get_functions` at [functions.py:50](app/backend/sage_is_ai/routers/functions.py#L50) shadows :40.
+  - [ ] `get_file_content_by_id` at [files.py:549](app/backend/sage_is_ai/routers/files.py#L549) shadows :430.
+  - [ ] `get_functions` at [functions.py:48](app/backend/sage_is_ai/routers/functions.py#L48) shadows :38.
   - [ ] All three are FastAPI handlers, so both routes still serve — the decorator registers by path, and only the Python name collides.
-  - [ ] The fourth is different and worth reading first: `ENABLE_LDAP` is imported at [auths.py:44](app/backend/sage_is_ai/routers/auths.py#L44) and rebound at :317 — a config import shadowed by a local.
+  - [x] The fourth (`ENABLE_LDAP`, imported at `auths.py:44` and rebound below) went away by accident: `2daa3ac` (2026-08-17, ruff F401) dropped the unused import.
+  - [ ] Drop the now-stale `# noqa: F811` at [auths.py:316](app/backend/sage_is_ai/routers/auths.py#L316) — it suppresses nothing (found 2026-10-05).
   - [ ] Decide per site: rename the second, or delete the first if it is genuinely dead.
 
-- [ ] **`bump_release_version` leaves `SERVER_TAG` on the previous release**: the bump target updates only `app/package.json` and `README.md`, so `distribution.env` reads `SERVER_TAG=3.0.0` while 3.0.1 is being cut (found 2026-08-06 while readying 3.0.1). #release
-  - [ ] `SERVER_TAG` is the canonical server-image version read by the brew CLI, the Makefile fallback and the docs.
-  - [ ] The tag still resolves correctly during a release because `GIT_TAG` outranks it in the precedence chain (`Makefile:74`) — the staleness is invisible until something reads the file directly.
-  - [ ] The file has three hardlinks — source of truth `homebrew-apps/distribution.env`, mirrored into this repo and `WEB-Sage.Education-docs` — so it must be edited in place.
-    - [ ] macOS `sed -i` replaces the inode and breaks the chain.
-  - [ ] Either teach `bump_release_version` to rewrite it inode-safely, or add it to the release runbook as an explicit manual step.
 - [ ] **A literal `◁think▷` in streamed content freezes client-visible streaming for the rest of the stream**: `tag_content_handler` keeps a zero-capture-group pattern, so `match.group(1)` raises `IndexError` on every later delta before the emit (found 2026-08-08 by the duplication sweep's dead-code lens, adversarially confirmed). #bug
   - [ ] Mechanism: for a start tag not shaped `<...>`, `start_tag_pattern = re.escape(start_tag)` — zero capture groups — so when `◁think▷` appears in content, `re.search` matches and `match.group(1)` raises `IndexError`.
   - [ ] The per-delta try swallows it, but the append already happened — EVERY later delta re-matches and re-raises BEFORE the emit and before the realtime save.
@@ -1260,31 +1276,34 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 - [ ] **`response.background()` runs twice for the original streaming response**: `stream_body_handler` awaits it at its tail for every response it drains; `response_handler` awaits it again on the same original after the retry loops — awaiting a Starlette `BackgroundTask` twice runs the wrapped callable twice. #bug
   - [ ] Found 2026-08-08 during the chat-path weight census, while classifying it as dead code — it is not dead, it is a double-execution.
   - [ ] Continuation responses are spared — only `stream_body_handler` touches those.
-  - [ ] Harmless if the background is an idempotent cleanup; not verified.
+  - [x] Harmless for the built-in providers (verified 2026-10-05): `cleanup_response` (`openai.py:146`, ollama's own copy at `ollama.py:117`) closes an aiohttp response and session, and a second close does nothing; the direct-connection `background()` (`utils/chat.py:126`) wraps its `del` in try/except.
+  - [ ] Not verified: pipe functions that set their own background task.
   - [ ] Deleting the second call is a behaviour change, so it is frozen with the rest.
-- [ ] **Six JSON parse sites scrape from the first `{` to the last `}`; the prompt template teaches the model to break it**: `config.py:1584` ends the title template with a literal example object, so a model that restates the format emits two objects — exactly the input the scrape fails on. #bug ([dossier](docs/board-dossiers.md))
+- [ ] **Six JSON parse sites scrape from the first `{` to the last `}`; the prompt template teaches the model to break it**: the title template (`config.py:1629`) carries a literal example object at `:1640`, so a model that restates the format emits two objects — exactly the input the scrape fails on. #bug ([dossier](docs/board-dossiers.md))
   - [ ] Found 2026-08-08. Clean and fenced input parse; two objects in one reply do not.
   - [ ] These calls run on the task model, which operators set small, and small models restate the format most.
-  - [ ] Worst site is RAG queries ([middleware.py:1041](app/backend/sage_is_ai/utils/middleware.py#L1041)): on failure it sets the entire model reply as the retrieval query, silently degrading RAG.
-  - [ ] (1) Set `response_format` on the task calls — `utils/payload.py:350-361` already converts it to Ollama's `format`, and no task call sets it. Behaviour: sequence after the structure work.
+  - [ ] Worst site is RAG queries ([middleware.py:1055](app/backend/sage_is_ai/utils/middleware.py#L1055)): on failure it sets the entire model reply as the retrieval query, silently degrading RAG.
+  - [ ] (1) Set `response_format` on the task calls — `utils/payload.py:346-353` already converts it to Ollama's `format`, and no task call sets it. Behaviour: sequence after the structure work.
   - [ ] (2) One parser as the floor in a new `utils/llm_json.py` for providers that ignore it — strip fences, try the whole string, scan for balanced objects. New file, moves no citation; can land any time.
   - [ ] (3) Drop the example object from the template. Behaviour: sequence after the structure work.
   - [ ] Trap: a shared helper is NOT the fix — in the restated-format case both objects are valid JSON and both carry the key, so no parser can tell them apart.
-  - [ ] The six sites, consolidated 2026-08-08 into one `slice_json_object` helper, behaviour byte-identical:
-    - [ ] [797](app/backend/sage_is_ai/utils/middleware.py#L797) tool calling
-    - [ ] [955](app/backend/sage_is_ai/utils/middleware.py#L954) image prompt
-    - [ ] [1042](app/backend/sage_is_ai/utils/middleware.py#L1041) RAG queries
-    - [ ] [1498](app/backend/sage_is_ai/utils/middleware.py#L1499) follow-ups
-    - [ ] [1543](app/backend/sage_is_ai/utils/middleware.py#L1543) title
-    - [ ] [1572](app/backend/sage_is_ai/utils/middleware.py#L1572) tags
+  - [ ] The six sites, consolidated 2026-08-08 into one `slice_json_object` helper, behaviour byte-identical (lines restated 2026-10-05):
+    - [ ] [808](app/backend/sage_is_ai/utils/middleware.py#L808) tool calling
+    - [ ] [968](app/backend/sage_is_ai/utils/middleware.py#L968) image prompt
+    - [ ] [1055](app/backend/sage_is_ai/utils/middleware.py#L1055) RAG queries
+    - [ ] [1494](app/backend/sage_is_ai/utils/middleware.py#L1494) follow-ups, through `run_json_task` (called at 1510)
+    - [ ] [1554](app/backend/sage_is_ai/utils/middleware.py#L1554) title
+    - [ ] [1494](app/backend/sage_is_ai/utils/middleware.py#L1494) tags, through `run_json_task` (called at 1583)
 - [ ] **Mid-stream model switch never reaches retries**: `stream_body_handler` assigns `model_id` at [middleware.py:1786](app/backend/sage_is_ai/utils/middleware.py#L1786) without `nonlocal` — the retries still read the originally requested model while the DB records the selected one. #bug
   - [ ] Only `content`/`content_blocks` are declared `nonlocal` (at 1749–1750), so the assignment is function-local.
   - [ ] The retries: tool-call at 2068, code-interpreter at 2163.
   - [ ] Found 2026-08-04 during the chat-path seam census; fix deferred — behaviour frozen until the structure work lands (`charts/chat-path-restructure`).
   - [ ] Line numbers restated 2026-08-06 after the three tightening passes.
 
-- [ ] **`features.web_search` is a live `NameError`, not a feature**: [middleware.py:1247](app/backend/sage_is_ai/utils/middleware.py#L1247) calls `chat_web_search_handler`, which does not exist — `POST /api/chat/completions` with `{"features": {"web_search": true}}` returns a 500. #bug ([dossier](docs/board-dossiers.md))
+- [ ] **`features.web_search` is a live `NameError`, not a feature**: [middleware.py:1258](app/backend/sage_is_ai/utils/middleware.py#L1258) calls `chat_web_search_handler`, which does not exist — `POST /api/chat/completions` with `{"features": {"web_search": true}}` returns a 400. #bug ([dossier](docs/board-dossiers.md))
   - [ ] Found 2026-08-04. The definition arrived commented out in `bbb4f10` and `hasattr` confirms False.
+  - Corrected 2026-10-05: a 400, not a 500. The `except` at `main.py:1773` turns the `NameError` into `HTTP_400_BAD_REQUEST` with the message as detail.
+  - The `noqa` at `middleware.py:1258` cites `TODO.md:601`; the card has moved since. Re-point it when the chat path thaws.
   - [ ] Unreachable from the UI: `Chat.svelte:1716` gates on `$config?.features?.enable_web_search`, which the backend never emits.
   - [ ] Reachable from the API: `features` is popped off the request body unvalidated.
   - [ ] Delete the branch — do NOT wire it up. Decision confirmed 2026-08-06: search moved to OpenAPI tool servers (`TOOL_SERVER_CONNECTIONS` + `utils/try_sage_tool_servers.py`).
@@ -1301,11 +1320,12 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] Same family as the reasoning-block bug below.
   - [ ] Check whether the flag is set on try.sage.is before deciding severity — if it is, users see this now.
 - [ ] **The direct-connections admin toggle is advisory, not enforcing**: no request path checks `ENABLE_DIRECT_CONNECTIONS` — an admin who disables direct connections for data governance has not closed the path; any client posting `model_item: {"direct": true}` walks through. ([dossier](docs/board-dossiers.md)) #bug #security
-  - [ ] `ENABLE_DIRECT_CONNECTIONS` is read only by `/api/config` ([main.py:1978](app/backend/sage_is_ai/main.py#L1978)) and the admin get/set pair in `routers/configs.py`.
-  - [ ] The chat route branches on `model_item.get("direct", False)` off the request body ([main.py:1752](app/backend/sage_is_ai/main.py#L1752)) and that branch skips `check_model_access`.
+  - [ ] `ENABLE_DIRECT_CONNECTIONS` is read only by `/api/config` ([main.py:1946](app/backend/sage_is_ai/main.py#L1946)) and the admin get/set pair in `routers/configs.py`.
+  - [ ] The chat route branches on `model_item.get("direct", False)` off the request body ([main.py:1718](app/backend/sage_is_ai/main.py#L1718)) and that branch skips `check_model_access`.
   - [ ] `utils/chat.py` gates only on `request.state.direct`.
+  - Wider than first logged (2026-10-05): `/api/chat/completed` ([main.py:1826](app/backend/sage_is_ai/main.py#L1826)) and `/api/chat/actions/{action_id}` ([main.py:1845](app/backend/sage_is_ai/main.py#L1845)) also take `model_item.direct` off the body.
   - [ ] Found 2026-08-04, chat-path census; behaviour frozen.
-  - [ ] Enforce the flag on the request path — needs sign-off, closing it narrows product surface.
+  - [ ] [MANUALLY] Alexander's sign-off: enforce the flag on all three routes — closing it narrows product surface. Raised again in the 2026-10-05 bug sitrep; open.
   - [ ] Not an SSRF: `generate_direct_chat_completion` relays `request:chat:completion` to the BROWSER, which makes the call — triage as an open admin toggle, not server-side model access.
 - [ ] **`data: [DONE]` does not terminate the stream loop**: `stream_body_handler` has no case for the sentinel — it fails `json.loads` and is skipped by the `except` at [middleware.py:1926](app/backend/sage_is_ai/utils/middleware.py#L1926); a provider that appends anything after the sentinel gets it rendered. #bug
   - [ ] Content arriving AFTER `[DONE]` is still parsed, appended to the blocks, emitted to the reader and persisted.
@@ -1326,31 +1346,34 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] Found 2026-08-05 (AIML responder charting); reported mechanically in the Gaps section of `docs/sprigs/capabilities.md`, gated by `make sprig_capabilities_check`.
   - [ ] Quick fix: two more `was_active_*` resets beside the five in `sprigs.py`.
   - [ ] Better: a `point_*_off(app, handle)` companion per dispatch module plus one registry read by the graft, boot-reconcile and prune fan-outs — today three hand-maintained copies of one table.
-- [ ] ~~**`models-cache.cy.ts` gates a timing quantity, and it now fails on `HEAD`**~~ (2026-08-04, superseded by the entry above — kept for the record of how the wrong answer looked right) ([dossier](docs/board-dossiers.md)) #tests #bug
+- [ ] ~~**`models-cache.cy.ts` gates a timing quantity, and it now fails on `HEAD`**~~ (2026-08-04, superseded by "`/api/models` re-probed every provider on every call", FIXED 2026-08-07 and archived in `docs/completed-todos.md` — kept for the record of how the wrong answer looked right) ([dossier](docs/board-dossiers.md)) #tests #bug
   - Both assertions compare a round-trip against `CACHED_MAX_MS` 250 ms, measured 810/871 ms on `HEAD` and 912/968 ms with an unrelated change reverted.
   - The machine, not the code, is the variable — the exact flaky-gate failure the `surface_budget` bytes-only doctrine predicts.
   - Suspected cause of the unreproduced 3-failure run earlier on 2026-08-04.
-- [ ] **Unclosed reasoning block swallows the model's answer** (Alexander, 2026-08-03; demo-blocking): no close path has an end-of-stream finalizer — worst case the whole answer stays sealed inside the collapsed reasoning block, or private reasoning renders as text. Three variants. #critical #bug ([dossier](docs/board-dossiers.md))
-  - [ ] `tag_content_handler` ([middleware.py:380](app/backend/sage_is_ai/utils/middleware.py#L380)) closes only on its opening pair's exact end tag, with no end-of-stream finalizer.
-  - [ ] The field-path close is guarded on `if value:` ([middleware.py:1850](app/backend/sage_is_ai/utils/middleware.py#L1850)).
-  - [ ] Variant 1, tag drift: any open/close mismatch leaves the block open forever.
-    - [ ] `scripts/smoke/reasoning-tag-fixture.py` fails 16 cases across 5 defects (`<thinking>` closed `</think>`, the reverse, `</THINKING>`, `</ thinking>`, never-closes).
+- [ ] **Unclosed reasoning block swallows the model's answer** (Alexander, 2026-08-03; demo-blocking): the end-of-stream finalizer shipped 2026-08-04 (`6fc2271`, in v3.1.0 and v3.2.0), so a sealed answer now surfaces at stream end; mid-stream sealing, variant 3 and the no-opener leak remain. #critical #bug ([dossier](docs/board-dossiers.md))
+  - [ ] `tag_content_handler` ([middleware.py:381](app/backend/sage_is_ai/utils/middleware.py#L381)) closes only on its opening pair's exact end tag (`end_tag_pattern`, :451-457); only the finalizer matches loosely.
+  - [ ] The field-path close is guarded on `if value:` ([middleware.py:1866](app/backend/sage_is_ai/utils/middleware.py#L1866)).
+  - [ ] Variant 1, tag drift: any open/close mismatch leaves the block open until the stream ends, where the finalizer now closes it.
+    - [ ] `scripts/smoke/reasoning-tag-fixture.py` fails 26 cases on 2026-10-05: the original 16 across 5 defects (`<thinking>` closed `</think>`, the reverse, `</THINKING>`, `</ thinking>`, never-closes).
+    - The other 10 come from cases added since: nested tags ×3, the two no-opener forms ×3 each, two blocks at chunk=999. The fixture never calls the finalizer, so never-closes overstates the live bug.
     - [ ] A sixth cosmetic case (space eaten at chunk=7, not chunk=1 or 999) explains the reported "not always".
   - [ ] Variant 2, field path — the priority, reproduced from Alexander's capture: the literal `</thinking>` plus the whole answer stay sealed, `done="false"`.
     - [ ] DeepSeek R1 templates pre-fill the opener into the PROMPT; a provider that streams everything through `reasoning` and sends no `content` delta never fires the `if value:` close.
     - [ ] Confirmed 3 ways 2026-08-04 on live code: chat `171f30b9`, 08:34 UTC, production snapshot on `:8102`; a `deepseek-r1-distill-llama-70b` call with 736 reasoning chars and 0 content; a control that closed.
     - [ ] Trigger: a UI-built agent whose system prompt asks for `<thinking>` tags on a native-reasoning provider.
+    - Since `6fc2271`: healed at stream end — golden `reasoning-field-never-closed` ends `done="true"` with the answer outside the block. Mid-stream the answer still sits inside "Thinking…" (`done="false"` snapshots).
   - [ ] Variant 3 (2026-08-06, `qwen3.5:9b` via Ollama, chat `aafdddab`): a bare `</think>` with no opener arrives in the CONTENT stream and renders as text.
     - [ ] The field path opens AND closes correctly (`done="true"`) first; the field path opens it, the tag path orphans the close.
     - [ ] Not a regression: pre- and post-tightening replays were byte-identical.
-  - [ ] Fix (1): end-of-stream finalizer — close any reasoning block still open when the stream ends and surface its content.
+  - [x] Fix (1): end-of-stream finalizer — close any reasoning block still open when the stream ends and surface its content. Shipped 2026-08-04 in `6fc2271`: `finalize_content_blocks` (middleware.py:110), called at :2206 (normal end) and :2239 (cancel).
   - [ ] Fix (2): treat an unpaired closing tag as an implicit opening at position zero (tag-path variant).
     - [ ] Does NOT cover variant 3 — there, DROP an orphan close tag when a reasoning block already closed in the same message.
   - [ ] Fix (3): widen the close match to any end tag in the list, case-insensitive, `</\s*tag\s*>`.
+    - Done inside the finalizer only (`REASONING_END_TAG_RE`, middleware.py:102, `re.IGNORECASE`); the stream-time `tag_content_handler` still needs the exact tag.
   - [ ] Remove the `<<thinking>(.*?)>` start-tag strip WITH a fixture case — it eats literal `<<thinking>…>` spans, silently deleting reasoning content.
     - [ ] NOT dead (proven 2026-08-08 after a session deleted and restored it).
   - [ ] Extend the fixture to the field path before trusting it; today it mirrors the TAG path only.
-  - [ ] READ FIRST: golden `fixtures/chat-response/reasoning-field-closed-then-orphan.sse` (oracle replays 12 streams) FREEZES the variant-3 leak as it is; read it before changing the tag logic.
+  - [ ] READ FIRST: golden `scripts/smoke/fixtures/chat-response/reasoning-field-closed-then-orphan.sse` (oracle replays 12 streams) FREEZES the variant-3 leak as it is; read it before changing the tag logic.
     - [ ] Its job is to go RED when fix (2) lands — an implicit open there would mint a second block and swallow the answer.
     - [ ] Line numbers restated 2026-08-04 (stale by ~93 before the −160 dead-handler deletion); re-derive from the quoted source text, not the number.
 - [ ] **Model special tokens reach the reader**: the assistant's rendered answer ended with `<｜end▁of▁sentence｜>`, DeepSeek's EOS token, printed as visible text — nothing in the backend strips model special tokens. #bug
@@ -1369,15 +1392,16 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 - [ ] **The diagnostics page still renders English for every reader**: every other no-build panel binds `translator(request)`, but `diagnostics_panel.py` calls `t(key, {})` at the default locale — a genuine loss for a Spanish operator rather than a no-op. #bug
   - [ ] Re-confirmed 2026-08-01 after the Jinja2 conversion — the templating pass moved its markup but did not thread a locale.
   - [ ] `_library_entries`, `_fix_steps` and `_row` still call `t(key, {})`.
-  - [ ] Call sites: [line 81](app/backend/sage_is_ai/pages/diagnostics_panel.py#L81), [88](app/backend/sage_is_ai/pages/diagnostics_panel.py#L88).
-  - [ ] Call sites: [89](app/backend/sage_is_ai/pages/diagnostics_panel.py#L89), [144](app/backend/sage_is_ai/pages/diagnostics_panel.py#L144).
+  - [ ] Call sites (restated 2026-10-05): [73-75](app/backend/sage_is_ai/pages/diagnostics_panel.py#L73) in `_library_entries`, [113](app/backend/sage_is_ai/pages/diagnostics_panel.py#L113) and [117](app/backend/sage_is_ai/pages/diagnostics_panel.py#L117) in `_fix_steps`.
+  - [ ] Call site: [155](app/backend/sage_is_ai/pages/diagnostics_panel.py#L155) in `_row`.
   - [ ] Keys are the nested `diagnostics.fix.*` ones whose values are real sentences.
-  - [ ] Fix: thread a locale through `_library_block` → `_fix_steps` → `_row` → `_ghost_block`, four signatures deep — why it was not done alongside the wizard panels.
+  - [ ] Fix: thread a locale from `render_diagnostics(request, user)` (:204) through `_library_entries`, `_row` and `_fix_steps`. `_library_block` and `_ghost_block` went away in the Jinja2 conversion.
+  - [ ] `_STATUS_LABEL` (:127) and `_SECTIONS` (:133) are hardcoded English too.
   - [ ] The mechanism is already there; only the plumbing is missing.
 
-- [ ] **`SensitiveInput` hardcodes `id="password-input"`, so a page with two of them mislabels every field but the first**: [SensitiveInput.svelte:27](app/src/lib/components/common/SensitiveInput.svelte#L27) sets a literal `id` — every screen reader announces "Client Secret" for all five fields on `OAuthSettings.svelte`. #bug #a11y
+- [ ] **`SensitiveInput` hardcodes `id="password-input"`, so a page with two of them mislabels every field but the first**: [SensitiveInput.svelte:27](app/src/lib/components/common/SensitiveInput.svelte#L27) sets a literal `id` — every screen reader announces "Client Secret" for all four fields on `OAuthSettings.svelte`. #bug #a11y
   - [ ] Line 23 pairs it with `<label class="sr-only" for="password-input">`.
-  - [ ] `OAuthSettings.svelte` mounts five of them — Google secret, GitHub secret, Microsoft secret, magic-link SMTP password, LDAP password.
+  - [ ] `OAuthSettings.svelte` mounts four of them — Google secret (:236), GitHub secret (:303), magic-link SMTP password (:397), LDAP password (:737). There is no Microsoft field (corrected 2026-10-05).
   - [ ] Duplicate IDs are invalid HTML; `for` resolves to the first match, so clicking any label focuses the Google field.
   - [ ] Fix: default `id` to a generated value and let callers override — the same shape `Switch.svelte` already uses (`export let id = ''`).
   - [ ] Found while hooking the panel for the no-build migration, not introduced by it.
@@ -1388,30 +1412,21 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] Two fixes together:
     - [ ] (1) say what happened — "pruned while booting: 'multilingual-e5-large' took over the embedding capability".
     - [ ] (2) capture child `stderr` — it is `DEVNULL` ([supervisor.py:1299](app/backend/sage_is_ai/sprigs/supervisor.py#L1299)), so a cultivar that dies for any other reason leaves no evidence.
-- [ ] **Retest knowledge upload on sage.startr.cloud (on 3.0.0 since 2026-07-16)**: the misleading TypeError can no longer occur, but the underlying endpoint fault it masked (engine config or a stale URL/key in the inherited volume) was never diagnosed. Upload once; if it fails, `/admin/diagnostics` now names the real cause. #bug
+- [ ] **Retest knowledge upload on sage.startr.cloud (on 3.2.0 since 2026-09-27)**: the misleading TypeError can no longer occur, but the underlying endpoint fault it masked (engine config or a stale URL/key in the inherited volume) was never diagnosed. Upload once; if it fails, `/admin/diagnostics` now names the real cause. #bug
 
 - [ ] **AI Engine Wizard Embedding Download Has No Stall Watchdog**: when the embedding model fetch from HuggingFace stalls, the wizard sits in `embedding=downloading` indefinitely — a real user has no signal except an idle spinner. #bug
   - [ ] Stall causes: network drop, HF outage, slow link.
   - [ ] No timeout, no retry, no resumable state surfaced to the admin.
   - [ ] `wizard-smoke.sh` catches this externally via `INSTALL_TIMEOUT_SEC`.
   - [ ] Verified still unfixed 2026-08-03: no watchdog or `stalled` state in `routers/retrieval.py`.
+  - Narrower than written (2026-10-05): `_download` tries `ensure_embedding` first (`retrieval.py:523`), and Sprig artifact pulls time out at 300 s (`sprigs/artifact.py:58`). A stall now needs the legacy fallback: `uv pip install` and the `get_ef` pull (`retrieval.py:584-623`), neither timed.
   - [ ] Surface HF download progress (bytes, last-byte timestamp) to `request.app.state.MODEL_DOWNLOAD_STATUS` so the status endpoint exposes liveness.
   - [ ] Watchdog in `_download` (`retrieval.py`):
     - [ ] if cache size hasn't grown in N minutes (configurable, default 5), mark status=`stalled`, capture the error.
-    - [ ] allow retry via a re-POST to `/api/v1/retrieval/models/download`.
+    - [ ] allow retry via a re-POST to `/api/v1/retrieval/models/download`. Today `retrieval.py:455-456` answers "Download already in progress" while status reads `downloading`; the watchdog must move it off that value first.
   - [ ] Surface stalled state in the wizard UI with a retry button + "check your connection" hint.
 
 *(Surfaced 2026-05-18 during the cross-arch smoke run when an internet drop wedged the embedding download. The wizard never noticed.)*
-
-- [ ] **Wizard `whisper` status stuck at `pending` after a whisper Sprig™ graft (cosmetic — STT works)**: grafting `whisper-base-ggml` serves STT, but `GET /api/v1/retrieval/models/status` keeps `models.whisper != "ready"` — static analysis says it SHOULD read ready. #bug
-  - [ ] STT works through the sprig: `/api/v1/audio/transcriptions` → 200.
-  - [ ] `point_stt_at` ([sprigs/stt_dispatch.py:40](app/backend/sage_is_ai/sprigs/stt_dispatch.py#L40)) flips it and IS called by the graft route ([routers/sprigs.py:113](app/backend/sage_is_ai/routers/sprigs.py#L113)).
-  - [ ] Single worker; dict seeded ([main.py:1119](app/backend/sage_is_ai/main.py#L1119)); endpoint returns it raw ([retrieval.py:439](app/backend/sage_is_ai/routers/retrieval.py#L439)).
-  - [ ] Needs LIVE inspection:
-    - [ ] `KEEP=1 make sprig_smoke`
-    - [ ] `curl …/models/status` right after the whisper graft
-    - [ ] temp log in `point_stt_at`
-  - [ ] Surfaced 2026-07-22 by `sprig_smoke`.
 
 - [ ] **Chat Microphone Recording Does Not Populate Message Input**: Recording from the microphone icon in chat does not process speech into the text field used to send messages. Reported 2026-05-11 against a pre-2.3.3 build — reproduce on 3.0.0 first; STT plumbing has changed twice since (whisper Sprig dispatch, wizard cut-over). #critical #bug
   - [ ] Reproduce on 3.0.0; confirm whether capture, transcription, or input binding fails

@@ -32,7 +32,7 @@ PIP_SPECS="'fpdf2==2.8.2' 'pillow==12.2.0' 'fonttools'"
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 FONTS_SRC="${FONTS_SRC:-$REPO_ROOT/app/static/fonts}"
-WORK="${WORK:-/tmp/sprig-build/export-document-$ARCH}"
+WORK="${WORK:-${SPRIG_BUILD_ROOT:-$HOME/.cache/ai-ui/sprig-build}/export-document-$ARCH}"
 OUT_DIR="${OUT_DIR:-$(pwd)}"
 OUT="$OUT_DIR/$NAME-$ARCHTAG.tar.zst"
 
