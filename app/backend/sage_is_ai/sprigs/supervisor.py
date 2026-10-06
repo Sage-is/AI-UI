@@ -31,8 +31,7 @@ DEFERRED: restart-with-backoff health-watch, full multi-worker support (one
 worker spawns children; the per-worker catalog view can still differ),
 structured child-log capture (server children are DEVNULL'd, so a failed
 graft's stderr is not surfaced), the amd64 ARTIFACT builds themselves (8.J —
-schema + image ready; per-artifact binary/wheel builds remain, see
-docs/deploy-sage-startr-cloud.md).
+schema + image ready; per-artifact binary/wheel builds remain).
 """
 
 from __future__ import annotations

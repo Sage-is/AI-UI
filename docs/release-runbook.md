@@ -106,6 +106,6 @@ try.sage.is goes first. It is the canary: synthetic data, wiped every 24 h. If i
 make deploy_rollback APP=sage-startr-cloud   # runs the version before the current one
 ```
 
-If the new version already ran its database migrations, restore the backup the deploy took: see [deploy-sage-startr-cloud.md](deploy-sage-startr-cloud.md).
+If the new version already ran its database migrations, restore the backup the deploy took. The restore steps for our production instance live in the private ops repo, `OPS-Sage/docs/apps/sage-startr-cloud.md`.
 
 Deploys go by digest only. CapRover can serve a stale image after a same-tag redeploy, which bit 3.0.0.

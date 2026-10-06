@@ -49,7 +49,7 @@ Fix each item in place; the evidence is in the sweep tables.
 - **`docs/development-workflow.md`**: cut the `src/admin/config.yml` / CMS residue (:188-201) and the Django test residue (:433-443). Replace the README section list. Replace "This Week" with the real board sections. `make help_all` lists the gate targets. Add `distribution-chain-verify` to the hook list.
 - **`docs/release-runbook.md:22`**: `_pin_server_tag` writes in place with `perl -i`.
 - **`docs/try-sage-deployment.md`**: `configured` equals `bool(connections)` (:180). Add `make sprig_publish` to recovery (:283-289). Tool servers register conditionally (:5,136). Three analytics providers, not four. Fix the banner title, the persona labels and the `/openai` mount.
-- **`docs/deploy-sage-startr-cloud.md`**: delete the shipped "Still remaining" list (:74-80). The catalogue has 19 packages, not 16.
+- **`docs/deploy-sage-startr-cloud.md`**: moved to the private ops repo on 2026-10-06 (`OPS-Sage/docs/apps/sage-startr-cloud.md`); its "Still remaining" list was already gone.
 - **`docs/apache.md`**: port 8080; drop the upstream branding at :214-216. It has uncommitted edits, so keep them.
 - **`docs/orientation.md`**: five surfaces, stated once. `/welcome` has been replaced and `/home` hollowed. The wire route is `/pages/admin/sprigs/wire/{name}`.
 - **`docs/no-build-surface-convention.md`**: the figures now come from `route-payload.cy.ts`. Update the surface and panel counts (19 panels, 21 templates).
