@@ -970,6 +970,11 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] [WE] Phase 2: one small PR per adopted piece behind AI-UI seams, with tests; kill-or-keep on `pandas`/`trafilatura` weight
   - [ ] [WE] Phase 3: satellite contract thinnest-first — STT via whisper sprig (deletes ~1G venv), embeddings/chat overflow, Docling for hard PDFs; read-only API scopes
   - [ ] [MANUALLY] Ship order decision (recommend STT first), then wire + test on the school server
+  - [x] Decided 2026-10-07 (Alexander, interviewed): satellite first, then donations as Sprigs; LocalMind (now "Mike") stays its author's school app and sheds duplicate accounts, KB and admin over time
+  - [ ] [MANUALLY] Ask its author for AGPL-3.0 in writing (a `LICENSE` in the author's own commit); nothing is ported before that; the import commit is credited in a `NOTICE`
+  - [ ] Seam correction: models through AI-UI's Ollama-compatible `/ollama/api/*` with a bearer token (about 5 lines in `app/ollama.py`); verify the privacy filter covers that path first
+  - [ ] Seam correction: speech-to-text through `/api/v1/audio/transcriptions`, not the whisper Sprig's loopback port
+  - [ ] Onboarding rides on the shared collaboration repo (guide + skill pack, installed through the tap); AI-UI gets a real `AGENTS.md` and `CLAUDE.md` stub
 
 - [ ] **A process for agents whose model is gone** (Alexander, 2026-08-17): when an agent's base model stops resolving — model deleted, connection removed, hosted key dead, capability Sprig pruned — the agent goes silently mute; today nobody is told and nothing suggests a fix. #ux #reliability
   - [ ] Detect: on agent use (and/or a periodic sweep), check the base model still resolves to a live entry; classify the loss (missing model vs dead connection vs pruned capability).
