@@ -278,7 +278,9 @@ The live trial runs on the `try-sage-is` CapRover app at `captain.example.com` (
 
 #### Recovery: `make ship` failed mid-way (buildx OOM)
 
-The gitflow side and the buildx push are sequential, not transactional. If the merge and tag complete but the push OOMs (Vite plus arm64 emulation is the spike — raise Docker memory before retrying), the tag and merges are already on origin and the release branch is gone, so rerunning `make ship` fails at `release_smoke`.
+The gitflow side and the buildx push are sequential, not transactional. If the merge and tag complete but the push runs out of memory, the tag and merges are already on origin and the release branch is gone, so rerunning `make ship` fails at `release_smoke`.
+
+Vite under amd64 emulation is the spike. On a Mac with Colima, push from the build VM, which `sage-runtime build-vm` sizes for the multi-arch release; put `DOCKER_CONTEXT=colima-build` in front of the push step. A Colima VM that `sage-runtime` makes takes its memory from `SAGE_RUNTIME_MEMORY` (GiB) when that is set. Docker Desktop and OrbStack set memory in their own settings. See [release-runbook.md](release-runbook.md#where-it-builds).
 
 Recovery is the build-and-push half on its own. Those steps are private targets, so call them by their underscored names deliberately:
 
