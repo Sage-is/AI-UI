@@ -16,8 +16,14 @@ VOLUME="sage-ai-data"
 DATA_MOUNT="/app/backend/data"
 DEFAULT_PORT=8080
 
-_script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-for _env in "$_script_dir/distribution.env" "$_script_dir/../distribution.env"; do
+# The CLI's own files sit beside it. A link to it, such as one in ~/bin, leads there.
+here="${BASH_SOURCE[0]}"
+while [[ -L "$here" ]]; do
+  target="$(readlink "$here")"
+  if [[ "$target" == /* ]]; then here="$target"; else here="$(dirname "$here")/$target"; fi
+done
+here="$(cd "$(dirname "$here")" && pwd)"
+for _env in "$here/distribution.env" "$here/../distribution.env"; do
   if [[ -f "$_env" ]]; then
     set -a
     # shellcheck source=/dev/null
@@ -34,6 +40,18 @@ done
 # VOLUME itself and would overwrite a plain VOLUME from the environment.
 VOLUME="${SAGE_AI_VOLUME:-$VOLUME}"
 
+# The runtime code ai-ui shares with sage-runtime and trellis-crm: a copy of
+# the homebrew-apps tap's lib/sage-runtime.sh, made by `make runtime_sync`.
+[[ -f "$here/lib/sage-runtime.sh" ]] || { echo "Error: $here/lib/sage-runtime.sh is missing. Reinstall ai-ui (brew reinstall ai-ui), or in an AI-UI checkout run: make runtime_sync" >&2; exit 1; }
+# shellcheck source=lib/sage-runtime.sh
+source "$here/lib/sage-runtime.sh"
+trap_cleanup
+# The lib's cleanup, then Sage back up where a move stopped it (restart_sage).
+trap 'cleanup; restart_sage' EXIT
+# Its messages name ai-ui's own commands.
+USE_COMMAND="ai-ui start --runtime"
+CONVERT_COMMAND="ai-ui migrate"
+
 # One version number: the CLI's version is the AI-UI server version it pins.
 VERSION="$DEFAULT_SERVER_TAG"
 
@@ -47,11 +65,16 @@ IMAGE="$IMAGE_REGISTRY:$IMAGE_TAG"
 TRY_CONTAINER="sage-try"
 TRY_VOLUME="sage-try-data"
 
+# The image's Ollama default is http://host.docker.internal:11434. Containers
+# reach this machine by that name on every runtime with this flag: Colima
+# resolves it only through Lima's DNS, and Linux not at all. host-gateway is
+# the machine's address as the engine sees it (192.168.5.2 in a Colima VM).
+HOST_ENTRY="--add-host=host.docker.internal:host-gateway"
+
 # ---------------------------------------------------------------------------
 # Sage project registry (~/.sage-is/)
 # Remembers where you cloned things so you never lose your code.
 # ---------------------------------------------------------------------------
-SAGE_CONFIG_DIR="${HOME}/.sage-is"
 SAGE_PROJECTS="${SAGE_CONFIG_DIR}/projects"
 TRY_ENV_FILE="${SAGE_CONFIG_DIR}/try.env"
 
@@ -112,6 +135,11 @@ is_ephemeral_path() {
   esac
 }
 
+# Colima shares only the home folder with containers: a folder elsewhere mounts empty.
+in_home() {
+  [[ "$1/" == "$HOME"/* ]]
+}
+
 usage() {
   cat <<EOF
 Usage: ai-ui <command> [options]
@@ -125,7 +153,10 @@ Commands:
                         Start try.sage trial mode (BYO Groq key on first run)
   update [--tag X.Y.Z]  Pull a tag (default latest) and restart
   dev   [--port PORT] [--dir DIR] [--where]
-                        Clone and run in dev mode with hot reload
+                        Clone and run in dev mode with hot reload. On Colima,
+                        DIR must be in your home folder
+  migrate [--dry-run]   Move Sage's data from Docker Desktop or OrbStack to
+                        Colima, or make a vz Colima VM krunkit (macOS)
   logs                  Tail container logs
   open                  Open the UI in your default browser
   status                Show container status
@@ -136,6 +167,30 @@ Commands:
 Every command also takes:
   --runtime NAME        macOS container runtime: colima (the default),
                         docker-desktop or orbstack. Remembered for next time.
+
+On a Mac, start and update offer once to move Sage from Docker Desktop or
+OrbStack to Colima, or from a vz Colima VM to krunkit. The answer is kept in
+~/.sage-is/offers. ai-ui migrate moves Sage any time. It stops Sage, copies
+sage-ai-data and sage-try-data through a file in ~/.sage-is/staging, and
+counts the files on both sides. Then it starts Sage in Colima with the same
+tag and port.
+The old runtime keeps its copy: go back with --runtime docker-desktop or
+--runtime orbstack. Other apps' data stays where it is; sage-runtime migrate
+moves it all.
+
+Colima's first start creates its VM; later starts keep it. On Apple Silicon,
+install krunkit first: a krunkit VM gives memory Sage frees back to macOS.
+  $KRUNKIT_INSTALL
+Before ai-ui makes a krunkit VM, it adds two settings to Lima's override
+file, which every Colima VM reads:
+  $LIMA_OVERRIDE
+"mountType: virtiofs" (abiosoft/colima#1607) forces virtiofs mounts, so a
+QEMU Colima profile will not start while it is there. A boot step mounts the
+VM's data disk, which krunkit leaves unmounted after its first boot
+(abiosoft/colima#1614). Docker keeps its images and volumes there, Sage's
+data among them: on a krunkit VM, colima ssh -- findmnt /var/lib/docker
+shows /dev/vdc1. ai-ui stops while Docker runs on the VM's root disk
+instead; colima restart puts it back once the step is in the file.
 
 EOF
 }
@@ -151,52 +206,14 @@ cmd_version() {
 # screen. A Mac that already uses Docker Desktop or OrbStack may keep it. Each
 # runtime keeps its own sage-ai-data volume, so the choice is saved and every
 # command follows it. On Linux, Sage uses the Docker Engine as it is.
-RUNTIMES="colima docker-desktop orbstack"
-RUNTIME_FILE="${SAGE_CONFIG_DIR}/runtime"
 RUNTIME_FLAG=""
 RUNTIME=""
-APPLICATIONS_DIR="${APPLICATIONS_DIR:-/Applications}"
-
-# The docker context each runtime creates for itself.
-runtime_context() {
-  case "$1" in
-    colima)         echo colima ;;
-    docker-desktop) echo desktop-linux ;;
-    orbstack)       echo orbstack ;;
-  esac
-}
-
-runtime_installed() {
-  case "$1" in
-    colima)         command -v colima &>/dev/null ;;
-    docker-desktop) [[ -d "$APPLICATIONS_DIR/Docker.app" ]] ;;
-    orbstack)       [[ -d "$APPLICATIONS_DIR/OrbStack.app" ]] ;;
-    *)              return 1 ;;
-  esac
-}
-
-runtime_install_command() {
-  case "$1" in
-    colima)         echo "brew install colima" ;;
-    docker-desktop) echo "brew install --cask docker-desktop" ;;
-    orbstack)       echo "brew install --cask orbstack" ;;
-  esac
-}
-
-# The runtime this Mac used last: each one makes its own context docker's current one.
-last_used_runtime() {
-  case "$(docker context show 2>/dev/null)" in
-    desktop-linux) echo docker-desktop ;;
-    orbstack)      echo orbstack ;;
-    *)             echo colima ;;
-  esac
-}
 
 # The first start on a Mac with more than one runtime asks which to use.
 # The question goes to stderr; the answer is printed.
 ask_runtime() {
   local default runtime answer="" installed=() n=0
-  default="$(last_used_runtime)"
+  default="$(current_runtime)"
   runtime_installed "$default" || default=colima
   for runtime in $RUNTIMES; do
     if runtime_installed "$runtime"; then installed+=("$runtime"); fi
@@ -223,109 +240,43 @@ ask_runtime() {
   esac
 }
 
+# Remembers RUNTIME for the commands that follow.
+save_runtime() {
+  mkdir -p "$SAGE_CONFIG_DIR"
+  echo "$RUNTIME" > "$RUNTIME_FILE"
+}
+
 # Choose this command's runtime and point docker at it. `ask` (start, try,
 # update, dev) saves the choice, asking on the first start; other commands follow it.
 select_runtime() {
   if [[ -n "$RUNTIME_FLAG" ]]; then
     RUNTIME="$RUNTIME_FLAG"
-  elif [[ -f "$RUNTIME_FILE" ]]; then
-    RUNTIME="$(cat "$RUNTIME_FILE")"
-  elif [[ "${1:-}" == ask ]]; then
+  elif [[ ! -f "$RUNTIME_FILE" && "${1:-}" == ask ]]; then
     RUNTIME="$(ask_runtime)"
   else
-    RUNTIME="$(last_used_runtime)"
+    RUNTIME="$(current_runtime)"
   fi
-  if [[ -z "$(runtime_context "$RUNTIME")" ]]; then
-    echo "Error: unknown runtime '$RUNTIME'. Use one of: $RUNTIMES"
-    exit 1
-  fi
-  if [[ -n "$RUNTIME_FLAG" || "${1:-}" == ask ]]; then
-    mkdir -p "$SAGE_CONFIG_DIR"
-    echo "$RUNTIME" > "$RUNTIME_FILE"
-  fi
+  check_runtime "$RUNTIME"
+  if [[ -n "$RUNTIME_FLAG" || "${1:-}" == ask ]]; then save_runtime; fi
   DOCKER_CONTEXT="$(runtime_context "$RUNTIME")"
   export DOCKER_CONTEXT
 }
 
-# A desktop app that has run before starts in the background, hidden. Its very
-# first start stays in view: it shows terms or setup screens that need a click.
-open_app() {
-  local app="$1" set_up_marker="$2"
-  if [[ -e "$set_up_marker" ]]; then
-    open -g -j -a "$app"
-  else
-    echo "$app's first start shows its own setup screens. Sign-in is optional."
-    open -a "$app"
-  fi
-}
-
-start_runtime() {
-  if ! runtime_installed "$RUNTIME"; then
-    echo "Error: $RUNTIME is not installed."
-    echo "  Install it:    $(runtime_install_command "$RUNTIME")"
-    [[ "$RUNTIME" == colima ]] || echo "  Or use Colima: ai-ui start --runtime colima"
-    exit 1
-  fi
-
-  echo "Starting $RUNTIME..."
-  case "$RUNTIME" in
-    colima)
-      if [[ "$(colima list --json 2>/dev/null)" == *'"name":"default"'* ]]; then
-        colima start
-      else
-        # The first start creates the VM. vz is Apple's own hypervisor, so there is
-        # no QEMU to install; Colima's default 2 GiB of memory is too small for Sage.
-        colima start --vm-type vz --memory 4
-      fi
-      ;;
-    docker-desktop) open_app Docker "$HOME/Library/Group Containers/group.com.docker/settings-store.json" ;;
-    orbstack)       open_app OrbStack "$HOME/.orbstack" ;;
-  esac
-}
-
-wait_for_runtime() {
-  echo "Waiting for $RUNTIME..."
-  for _ in $(seq 1 180); do
-    if docker info &>/dev/null; then
-      echo "$RUNTIME is ready."
-      return 0
-    fi
-    sleep 1
-  done
-  echo "Error: $RUNTIME did not answer within 3 minutes."
-  [[ "$RUNTIME" == colima ]] || echo "  Finish any setup screen it shows and run this again, or use Colima: --runtime colima"
-  exit 1
-}
-
-# Docker Desktop writes "credsStore": "desktop" into docker's config. Once Docker
-# Desktop is gone, so is its docker-credential-desktop helper, and every pull fails
-# with "error getting credentials". Drop a credsStore whose helper is missing.
-drop_missing_credential_helper() {
-  local config="${DOCKER_CONFIG:-$HOME/.docker}/config.json" store backup
-  store="$(plutil -extract credsStore raw -o - "$config" 2>/dev/null)" || return 0
-  command -v "docker-credential-$store" &>/dev/null && return 0
-  backup="$config.$(date +%Y%m%d-%H%M%S).bak"
-  cp "$config" "$backup"
-  plutil -remove credsStore "$config"
-  echo "Removed \"credsStore\": \"$store\" from $config: docker-credential-$store is not installed."
-  echo "  The previous file is at $backup"
-}
-
-# Make sure the chosen runtime answers, starting it if needed.
+# Make sure the chosen runtime answers. On a Mac, docker's logins are mended
+# first, then the runtime starts if it must; Colima's must keep Docker on the
+# VM's data disk, however the VM came up. A Docker Desktop or OrbStack that is
+# gone leaves Colima, which needs no app. Elsewhere, say how to start Docker.
 ensure_docker() {
   if [[ "$(uname)" == Darwin ]]; then
-    drop_missing_credential_helper
-  fi
-  if docker info &>/dev/null; then
+    if [[ "$RUNTIME" != colima ]] && ! runtime_installed "$RUNTIME"; then
+      die "$RUNTIME is not installed. Run Sage in Colima: ai-ui start --runtime colima. Or install it: $(runtime_install_command "$RUNTIME")"
+    fi
+    fix_credentials "$RUNTIME"
+    start_runtime "$RUNTIME"
     return 0
   fi
-
+  docker info &>/dev/null && return 0
   case "$(uname)" in
-    Darwin)
-      start_runtime
-      wait_for_runtime
-      ;;
-
     Linux)
       if ! command -v docker &>/dev/null; then
         echo "Error: Docker is not installed."
@@ -355,6 +306,7 @@ cmd_start() {
     esac
   done
 
+  offer_colima
   ensure_docker
 
   echo "Pulling $IMAGE..."
@@ -366,6 +318,7 @@ cmd_start() {
   echo "Starting Sage AI UI on port $port..."
   docker run -d \
     -p "$port:8080" \
+    "$HOST_ENTRY" \
     -v "$VOLUME:$DATA_MOUNT" \
     --name "$CONTAINER" \
     "$IMAGE"
@@ -373,6 +326,7 @@ cmd_start() {
   echo ""
   echo "Sage AI UI is running at http://localhost:$port"
   echo "Run 'ai-ui open' to open in your browser."
+  moved_note
 }
 
 cmd_stop() {
@@ -455,6 +409,12 @@ cmd_dev() {
     needs_clone=true
   fi
 
+  # --- Colima mounts only the home folder ---
+  [[ "$repo_dir" == /* ]] || repo_dir="$PWD/$repo_dir"
+  if [[ "$RUNTIME" == colima ]] && ! in_home "$repo_dir"; then
+    die "$repo_dir is outside your home folder, the only one Colima shares with containers. Move it under $HOME, then: ai-ui dev --dir NEW_PATH"
+  fi
+
   # --- Clone if needed ---
   if [[ "$needs_clone" == true ]] || [[ ! -d "$repo_dir" ]]; then
     echo "Cloning Sage AI UI to $repo_dir..."
@@ -482,15 +442,18 @@ cmd_dev() {
   echo "Pulling latest image..."
   docker pull "$IMAGE"
 
+  # File events from the Mac may never reach the container: the reloader polls.
   echo "Starting in dev mode on port $port..."
   docker run -d \
     -p "$port:8080" \
     -p 5173:5173 \
+    "$HOST_ENTRY" \
     -v "$VOLUME:$DATA_MOUNT" \
     -v "$repo_dir/app/src:/app/src" \
     -v "$repo_dir/app/backend:/app/backend" \
     -v "$repo_dir/app/static:/app/static" \
     -e DEV_MODE=true \
+    -e WATCHFILES_FORCE_POLLING=true \
     --name "$CONTAINER" \
     "$IMAGE"
 
@@ -639,6 +602,7 @@ cmd_try() {
   # Foreground run. Ctrl-C stops the container; --rm cleans the row.
   docker run --rm \
     -p "$port:8080" \
+    "$HOST_ENTRY" \
     -v "$TRY_VOLUME:$DATA_MOUNT" \
     -e ENABLE_TRY_SAGE=true \
     -e WEBUI_URL="$webui_url" \
@@ -653,12 +617,10 @@ cmd_try() {
 
 # Nuke from orbit — delegates to the Genesis Device (standalone, works without ai-ui installed).
 cmd_nuke() {
-  local script_dir
-  script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-  if [[ -x "$script_dir/nuke-sage" ]]; then
-    exec "$script_dir/nuke-sage" ai-ui "$@"
+  if [[ -x "$here/nuke-sage" ]]; then
+    exec "$here/nuke-sage" ai-ui "$@"
   else
-    echo "Error: nuke-sage is not beside $script_dir/ai-ui."
+    echo "Error: nuke-sage is not beside $here/ai-ui."
     exit 1
   fi
 }
@@ -676,11 +638,189 @@ cmd_update() {
     fi
   done
 
+  offer_colima
   ensure_docker
   echo "Pulling $IMAGE..."
   docker pull "$IMAGE"
   cmd_stop
   cmd_start "$@"
+}
+
+# ---------------------------------------------------------------------------
+# Moving to Colima
+# ---------------------------------------------------------------------------
+# Docker Desktop and OrbStack hold on to memory Sage no longer uses, and so
+# does a vz VM; a krunkit VM gives it back to macOS. ai-ui migrate moves
+# Sage's own data to Colima, or makes a vz VM krunkit, with the copy and the
+# conversion in lib/sage-runtime.sh. start and update offer it once.
+OFFERS_FILE="${SAGE_CONFIG_DIR}/offers"
+OFFERED=""
+MOVED_FROM=""
+# The runtime a move stopped sage-ai in, until its copies end.
+STOPPED_IN=""
+
+# A move that stops partway starts sage-ai again where it ran, which keeps its
+# data and stays ai-ui's runtime. It runs on exit, so it must not fail.
+restart_sage() {
+  [[ -n "$STOPPED_IN" ]] || return 0
+  if docker --context "$(runtime_context "$STOPPED_IN")" start "$CONTAINER" >/dev/null 2>&1; then
+    echo "Started Sage again in $STOPPED_IN." >&2 || true
+  else
+    echo "Warning: Sage stays stopped in $STOPPED_IN. Start it: ai-ui start --runtime $STOPPED_IN" >&2 || true
+  fi
+}
+
+# Keeps the answer to offer $1, so it is never asked again.
+remember_offer() {
+  mkdir -p "$SAGE_CONFIG_DIR"
+  echo "ai-ui $1 $2" >> "$OFFERS_FILE"
+}
+
+# Asks once, with a terminal, whether to move Sage to Colima from Docker
+# Desktop or OrbStack (ask_runtime may just have picked one, since the data
+# lives there), or to make a vz VM krunkit; it acts on yes, and no changes
+# nothing. A yes is kept once the move ends: one that stops partway says to
+# run this again, and asks again. A vz VM without krunkit, which ai-ui cannot
+# depend on (homebrew-core), gets one line on how to get it, once. A command
+# given --runtime asks nothing: that runtime is a choice already. Without a
+# terminal, one line says how, and nothing is kept.
+offer_colima() {
+  local offer say ask="" hint answer=""
+  [[ "$(uname)" == Darwin && -z "$OFFERED$RUNTIME_FLAG" ]] || return 0
+  OFFERED=1
+  if [[ "$RUNTIME" != colima ]]; then
+    runtime_installed "$RUNTIME" && runtime_installed colima || return 0
+    offer=colima
+    say="Sage runs in $RUNTIME. Colima is free, and its krunkit VM on Apple Silicon gives memory back to macOS. $RUNTIME keeps its copy of Sage's data."
+    ask="Move Sage to Colima now?"
+    hint="Sage runs in $RUNTIME. Colima is free, and its krunkit VM on Apple Silicon gives memory back to macOS. Move Sage there: ai-ui migrate"
+  else
+    [[ "$(uname -m)" == arm64 && "$(vm_type)" == vz ]] || return 0
+    offer=krunkit
+    say="Colima runs Sage on a vz VM, which keeps memory it has touched. A krunkit VM gives it back to macOS."
+    ask="Make the VM krunkit now, keeping every image and volume?"
+    hint="$say Convert it, keeping every image and volume: ai-ui migrate"
+    if ! krunkit_ready; then
+      offer=krunkit-install ask=""
+      hint="$say Get krunkit, then run ai-ui migrate: $KRUNKIT_INSTALL"
+    fi
+  fi
+  grep -q "^ai-ui $offer " "$OFFERS_FILE" 2>/dev/null && return 0
+  if [[ ! -t 0 || -z "$ask" ]]; then
+    echo "$hint"
+    if [[ -t 0 ]]; then remember_offer "$offer" shown; fi
+    return 0
+  fi
+  echo "$say" >&2
+  read -rp "$ask ai-ui asks only this once; ai-ui migrate does it later. [y/N] " answer || true
+  if [[ "$answer" != [yY]* ]]; then
+    remember_offer "$offer" no
+    return 0
+  fi
+  if [[ "$offer" == krunkit ]]; then convert_colima 1; else move_data "$RUNTIME" 0; fi
+  remember_offer "$offer" yes
+}
+
+# Moves Sage's volumes from runtime $1 to Colima, then makes Colima the
+# runtime; $2 is 1 for the plan alone. Each copy passes through a staged
+# file, is counted on both sides and recorded. A volume Colima holds with
+# data stays, unless that record vouches for it: a rerun after a stop partway
+# goes on. Colima is checked before Sage stops; the copy checks the source
+# after, since Sage itself uses its volumes, and a refusal there starts Sage
+# again. The source keeps its copy.
+move_data() {
+  local from="$1" dry="$2" name copy="" listing
+  if [[ "$VOLUME" == /* ]]; then
+    in_home "$VOLUME" \
+      || die "Sage's data is in $VOLUME, outside your home folder, the only one Colima shares with containers. Move it under $HOME and point SAGE_AI_VOLUME there, then run this again."
+    echo "Sage's data is in $VOLUME on this Mac, so it needs no copy."
+  fi
+  if (( dry == 1 )) && ! runtime_running "$from"; then
+    echo "Would start $from. It is not running, so its volumes were not listed."
+    return 0
+  fi
+  # The copy pulls alpine, which fails on a credsStore whose helper left with
+  # Docker Desktop; ensure_docker mends that only after the move.
+  (( dry == 1 )) || fix_credentials "$from"
+  start_engine "$from"
+  # Colima is not ai-ui's runtime yet. With docker's saved context in sight,
+  # not the exported one, start_engine puts it back after colima start takes it.
+  (( dry == 1 )) || DOCKER_CONTEXT='' start_runtime colima
+  for name in $VOLUME $TRY_VOLUME; do
+    if [[ "$name" == /* ]] || ! volume_exists "$from" "$name"; then continue; fi
+    if (( dry == 1 )); then
+      echo "Would copy volume $name from $from to colima."
+    elif volume_exists colima "$name" && measure_volume colima "$name" && (( ENTRIES > 1 )); then
+      measure_volume "$from" "$name"
+      [[ "$(recorded_copy "$name" "$from" colima)" == "$ENTRIES $KIB" ]] \
+        || die "colima already has a volume $name with data that no copy from $from vouches for, so nothing was copied. Keep Colima's: ai-ui start --runtime colima. Or replace it with $from's: sage-runtime copy-volume $name --from $from --to colima --force"
+      echo "Skipping volume $name: copied from $from before, and unchanged there since."
+    else
+      copy+=" $name"
+    fi
+  done
+  (( dry == 0 )) || return 0
+  echo "Stopping Sage in $from..."
+  listing="$(container_mounts "$from")" || exit 1
+  if [[ $'\n'"$listing" == *$'\n'"$CONTAINER"$'\t'* ]]; then STOPPED_IN="$from"; fi
+  docker --context "$(runtime_context "$from")" stop "$CONTAINER" "$TRY_CONTAINER" >/dev/null 2>&1 || true
+  for name in $copy; do copy_volume "$name" "$from" colima 0; done
+  STOPPED_IN=""
+  RUNTIME=colima DOCKER_CONTEXT=colima MOVED_FROM="$from"
+  save_runtime
+  # As sage-runtime use does: docker's saved context names the runtime in use.
+  docker context use colima >/dev/null 2>&1 \
+    || echo "Warning: docker's context stays where it was. Point it at Colima: docker context use colima" >&2
+}
+
+# The last words of a move: the way back, krunkit, and the other apps.
+moved_note() {
+  [[ -n "$MOVED_FROM" ]] || return 0
+  echo ""
+  echo "$MOVED_FROM keeps its own copy of Sage's data. Go back any time: ai-ui start --runtime $MOVED_FROM"
+  # ai-ui is bound for homebrew-core, which cannot depend on krunkit's tap.
+  if [[ "$(uname -m)" == arm64 ]] && ! krunkit_ready; then
+    echo "krunkit is not installed, so Colima runs Sage on a vz VM. Get it, then make the VM krunkit with ai-ui migrate: $KRUNKIT_INSTALL"
+  fi
+  hint_convert
+  echo "Other apps' data stays in $MOVED_FROM. sage-runtime migrate --from $MOVED_FROM moves it all (brew tap sage-is/apps && brew tap libkrun/krun && brew trust --tap sage-is/apps libkrun/krun && brew install sage-runtime)."
+}
+
+# Moves Sage to Colima with the tag and port sage-ai has in the source. On
+# Colima itself, makes a vz VM krunkit, which restarts sage-ai on its own.
+cmd_migrate() {
+  local dry=0 port=$DEFAULT_PORT line="" image bound
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --dry-run) dry=1; shift ;;
+      --yes)     shift ;;  # the conversion's messages name it; migrate acts without it
+      *) echo "Unknown option: $1"; usage; exit 1 ;;
+    esac
+  done
+  [[ "$(uname)" == Darwin ]] || die "migrate moves Sage between container runtimes on a Mac."
+  OFFERED=1
+  if [[ "$RUNTIME" == colima ]]; then
+    if [[ "$(uname -m)" != arm64 ]]; then
+      echo "Sage runs in Colima already."
+      return 0
+    fi
+    convert_colima $(( 1 - dry ))
+    return 0
+  fi
+  (( dry == 1 )) || start_engine "$RUNTIME"
+  if runtime_running "$RUNTIME"; then
+    line="$(briefly docker inspect --format '{{.Config.Image}} {{range (index .HostConfig.PortBindings "8080/tcp")}}{{.HostPort}}{{end}}' "$CONTAINER" 2>/dev/null)" || line=""
+  fi
+  read -r image bound <<< "$line"
+  if [[ "$image" == "$IMAGE_REGISTRY:"* ]]; then IMAGE_TAG="${image#"$IMAGE_REGISTRY":}"; fi
+  if [[ "$bound" =~ ^[0-9]+$ ]]; then port="$bound"; fi
+  move_data "$RUNTIME" "$dry"
+  if (( dry == 1 )); then
+    echo "Would stop Sage in $RUNTIME, make colima ai-ui's runtime and start $IMAGE_REGISTRY:$IMAGE_TAG there on port $port. $RUNTIME keeps its copy."
+    echo "Dry run: nothing changed. Move: ai-ui migrate"
+    return 0
+  fi
+  cmd_start --port "$port" --tag "$IMAGE_TAG"
 }
 
 cmd_logs() {
@@ -732,21 +872,22 @@ set -- ${args[@]+"${args[@]}"}
 
 if [[ "$(uname)" == Darwin ]]; then
   case "$command" in
-    start|try|update|dev)       select_runtime ask ;;
-    stop|logs|open|status|nuke) select_runtime ;;
+    start|try|update|dev)               select_runtime ask ;;
+    stop|logs|open|status|nuke|migrate) select_runtime ;;
   esac
 fi
 
 case "$command" in
-  start)  cmd_start "$@" ;;
-  stop)   cmd_stop ;;
-  try)    cmd_try "$@" ;;
-  update) cmd_update "$@" ;;
-  dev)    cmd_dev "$@" ;;
-  logs)   cmd_logs ;;
-  open)   cmd_open ;;
-  status) cmd_status ;;
-  nuke)   cmd_nuke "$@" ;;
+  start)   cmd_start "$@" ;;
+  stop)    cmd_stop ;;
+  try)     cmd_try "$@" ;;
+  update)  cmd_update "$@" ;;
+  dev)     cmd_dev "$@" ;;
+  migrate) cmd_migrate "$@" ;;
+  logs)    cmd_logs ;;
+  open)    cmd_open ;;
+  status)  cmd_status ;;
+  nuke)    cmd_nuke "$@" ;;
   version|-v|--version) cmd_version ;;
   -h|--help|help) usage ;;
   *) echo "Unknown command: $command"; usage; exit 1 ;;
