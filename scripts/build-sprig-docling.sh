@@ -40,6 +40,7 @@ PYPI_INDEX="${PYPI_INDEX:-https://pypi.org/simple}"
 TORCH_SPEC="${TORCH_SPEC:-torch torchvision --extra-index-url $CPU_INDEX}"
 
 sprig_arch_normalize
+[ "$ARCH" = arm64 ] || "$(dirname "${BASH_SOURCE[0]}")/gates/docker-preflight.sh" amd64 "ARCH=amd64 $0"
 
 WORK="${WORK:-${SPRIG_BUILD_ROOT:-$HOME/.cache/ai-ui/sprig-build}/docling-$ARCH}"
 OUT_DIR="$WORK/out"

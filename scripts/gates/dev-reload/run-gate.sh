@@ -62,9 +62,11 @@ fail() { printf '  \033[31m✗\033[0m %s\n' "$*"; FAILED=1; }
 cp -R "$HERE/app/backend/sage_is_ai/pages" "$WORK/pages"
 
 echo "== booting $IMG with the reloader on =="
+# Polling, because Docker on Colima relays a Mac edit as a metadata change,
+# which the watcher ignores: without it no edit below ever reloads.
 docker run -d --name "$NAME" -p 8109:8080 \
   -e ENABLE_SIGNUP=True -e WEBUI_AUTH=True \
-  -e PAGES_RELOAD_DIRS=/app/backend/sage_is_ai/pages \
+  -e PAGES_RELOAD_DIRS=/app/backend/sage_is_ai/pages -e WATCHFILES_FORCE_POLLING=true \
   -v "$WORK/pages:/app/backend/sage_is_ai/pages" \
   -v "$VOL:/app/backend/data" "$IMG" >/dev/null || { echo "docker run failed"; exit 1; }
 

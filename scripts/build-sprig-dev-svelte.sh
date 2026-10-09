@@ -30,6 +30,7 @@ sprig_build_defaults
 sprig_timing_start
 
 sprig_arch_normalize
+[ "$ARCH" = arm64 ] || "$(dirname "${BASH_SOURCE[0]}")/gates/docker-preflight.sh" amd64 "ARCH=amd64 $0"
 
 # POKA-YOKE: the arm64 v2 blob predates this recipe and is pinned/published.
 if [ "$ARCH" = "arm64" ] && [ "$TAG" = "v2" ] && [ "${ALLOW_RETAG:-0}" != "1" ]; then

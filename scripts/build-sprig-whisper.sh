@@ -33,6 +33,7 @@ MODEL_URL="https://huggingface.co/ggerganov/whisper.cpp/resolve/main/${MODEL_FIL
 # Host arch this artifact serves. Default: the build host. amd64 gets a
 # `-amd64`-suffixed tag so it sits beside the arm64 artifact under one repo.
 sprig_arch_normalize
+[ "$ARCH" = arm64 ] || "$(dirname "${BASH_SOURCE[0]}")/gates/docker-preflight.sh" amd64 "ARCH=amd64 $0"
 
 WORK="${WORK:-${SPRIG_BUILD_ROOT:-$HOME/.cache/ai-ui/sprig-build}/whisper-$ARCH}"
 OUT_DIR="${OUT_DIR:-$(pwd)}"

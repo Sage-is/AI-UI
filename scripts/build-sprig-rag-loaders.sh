@@ -28,6 +28,7 @@ sprig_build_defaults
 sprig_timing_start
 
 sprig_arch_normalize
+[ "$ARCH" = arm64 ] || "$(dirname "${BASH_SOURCE[0]}")/gates/docker-preflight.sh" amd64 "ARCH=amd64 $0"
 
 PIP_SPECS="'langchain==0.3.30' 'langchain-community==0.3.27' 'pypdf==4.3.1' 'docx2txt==0.8' 'rank_bm25' 'numpy<2'"
 

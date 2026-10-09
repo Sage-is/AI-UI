@@ -31,6 +31,7 @@ sprig_timing_start
 FFMPEG_VERSION="${FFMPEG_VERSION:-7.0.2}"
 
 sprig_arch_normalize
+[ "$ARCH" = arm64 ] || "$(dirname "${BASH_SOURCE[0]}")/gates/docker-preflight.sh" amd64 "ARCH=amd64 $0"
 
 # POKA-YOKE: the arm64 v1 blob predates this recipe and is pinned/published.
 # A rebuild would change its sha out from under the CATALOG pin.

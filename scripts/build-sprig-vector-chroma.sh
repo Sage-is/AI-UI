@@ -35,6 +35,7 @@ sprig_timing_start
 # Host arch this artifact serves. Default: the build host. amd64 gets a
 # `-amd64`-suffixed tag so it sits beside the arm64 artifact under one repo.
 sprig_arch_normalize
+[ "$ARCH" = arm64 ] || "$(dirname "${BASH_SOURCE[0]}")/gates/docker-preflight.sh" amd64 "ARCH=amd64 $0"
 
 # Closure pins (keep in lockstep with app/backend/requirements.txt).
 CHROMADB_PIN="${CHROMADB_PIN:-chromadb==0.6.3}"

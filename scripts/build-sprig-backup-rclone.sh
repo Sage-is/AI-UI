@@ -31,6 +31,7 @@ sprig_timing_start
 RCLONE_VERSION="${RCLONE_VERSION:-v1.60.1}"
 
 sprig_arch_normalize
+[ "$ARCH" = arm64 ] || "$(dirname "${BASH_SOURCE[0]}")/gates/docker-preflight.sh" amd64 "ARCH=amd64 $0"
 
 # POKA-YOKE: the arm64 v1 blob predates this recipe and is pinned/published.
 if [ "$ARCH" = "arm64" ] && [ "$TAG" = "v1" ] && [ "${ALLOW_RETAG:-0}" != "1" ]; then

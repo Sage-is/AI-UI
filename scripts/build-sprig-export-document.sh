@@ -27,6 +27,7 @@ sprig_build_defaults
 sprig_timing_start
 
 sprig_arch_normalize
+[ "$ARCH" = arm64 ] || "$(dirname "${BASH_SOURCE[0]}")/gates/docker-preflight.sh" amd64 "ARCH=amd64 $0"
 
 PIP_SPECS="'fpdf2==2.8.2' 'pillow==12.2.0' 'fonttools'"
 

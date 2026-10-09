@@ -27,10 +27,9 @@
 # Ctrl-C tears everything down.
 set -uo pipefail
 
-# One runtime, resolved the same way the Makefile resolves it. Hardcoding
-# `docker` here meant `make dev` and `make review` would use different
-# runtimes the day podman is installed.
-RUNTIME="${CONTAINER_RUNTIME:-$(command -v podman >/dev/null 2>&1 && echo podman || echo docker)}"
+# One runtime, resolved the same way the Makefile resolves it: docker, unless
+# CONTAINER_RUNTIME names another. An installed podman no longer wins by itself.
+RUNTIME="${CONTAINER_RUNTIME:-docker}"
 IMG="${IMG:-sage-is/ai-ui:develop}"
 PORT="${PORT:-9443}"
 NET="${NET:-sage-network}"

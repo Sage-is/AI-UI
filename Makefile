@@ -6,7 +6,7 @@
 # no GitLab CI, no vendor lock-in.
 #
 # Runs on: Linux, macOS, Windows (WSL)
-# Requires: make, bash, git, container runtime (podman or docker)
+# Requires: make, bash, git, docker (podman with CONTAINER_RUNTIME=podman)
 #
 # Quick start:
 #   make install_dev    — install dev/security tools
@@ -30,8 +30,14 @@ ifneq (,$(wildcard ./.env))
     export
 endif
 
-# Auto-detect container runtime (prefer podman, fall back to docker)
-CONTAINER_RUNTIME ?= $(shell command -v podman 2>/dev/null || echo docker)
+# docker, unless CONTAINER_RUNTIME names another. Podman used to win whenever it
+# was installed, which split images and volumes across two engines.
+CONTAINER_RUNTIME ?= docker
+
+# Preflights (scripts/gates/docker-preflight.sh). linux/amd64 work stops on a
+# krunkit VM and names the build VM; BuildKit builds need the buildx plugin.
+AMD64_PREFLIGHT = @scripts/gates/docker-preflight.sh amd64 "make $(or $(MAKECMDGOALS),$@)"
+BUILDX_PREFLIGHT = @scripts/gates/docker-preflight.sh buildx
 
 # Docker on Colima shares only $HOME with its VM: a bind mount from /tmp or
 # /var/folders arrives as an empty folder, silently (the DB smoke tests then
@@ -239,6 +245,33 @@ setup: setup_env setup_siblings  ## Fresh setup: .env + sibling copies
 	@echo "=== Setup complete ==="
 	@echo "    Next: make it_build && make it_run"
 
+NEED_SAGE_RUNTIME = command -v sage-runtime >/dev/null || { echo "Needs sage-runtime: brew tap sage-is/apps && brew tap libkrun/krun && brew trust --tap sage-is/apps libkrun/krun && brew install sage-runtime"; \
+	echo "  Until its first release: brew install --HEAD sage-runtime"; exit 1; }
+
+# Docker Desktop to Colima, once per Mac: sage-runtime copies every named
+# volume across, then points docker at Colima. Docker Desktop keeps its copy.
+migrate_to_colima:  ## Move this Mac from Docker Desktop to Colima (DRY=1 lists, IMAGES=1 brings images)
+	@$(NEED_SAGE_RUNTIME)
+	sage-runtime migrate $(if $(DRY),--dry-run) $(if $(filter 1,$(IMAGES)),--images)
+
+# A Colima VM made before krunkit was the default is vz. sage-runtime remakes it
+# as krunkit on the same disk, with every image and volume.
+convert_to_krunkit:  ## Convert this Mac's vz Colima VM to krunkit, data kept (YES=1 converts, else the plan)
+	@$(NEED_SAGE_RUNTIME)
+	sage-runtime convert $(if $(filter 1,$(YES)),--yes)
+
+# cli/lib/sage-runtime.sh is a copy, so ai-ui needs nothing else installed.
+# Edit the tap's lib/sage-runtime.sh, then run this.
+runtime_sync:  ## Copy the tap's lib/sage-runtime.sh into cli/lib (edit it in the tap)
+	@test -d "$(SIBLING_HOMEBREW)" || { echo "MISSING: $(SIBLING_HOMEBREW)"; echo "  Clone with one of:"; \
+		echo "    git clone https://github.com/Sage-is/homebrew-apps.git $(SIBLING_HOMEBREW)"; \
+		echo "    git clone git@github.com:Sage-is/homebrew-apps.git $(SIBLING_HOMEBREW)"; exit 1; }
+	@test -f "$(SIBLING_HOMEBREW)/lib/sage-runtime.sh" || { \
+		echo "MISSING: $(SIBLING_HOMEBREW)/lib/sage-runtime.sh. Update the tap: git -C $(SIBLING_HOMEBREW) pull"; exit 1; }
+	@mkdir -p cli/lib
+	@if cmp -s "$(SIBLING_HOMEBREW)/lib/sage-runtime.sh" cli/lib/sage-runtime.sh; then echo "  already equal: cli/lib/sage-runtime.sh"; \
+	else cp "$(SIBLING_HOMEBREW)/lib/sage-runtime.sh" cli/lib/sage-runtime.sh && echo "  copied:        $(SIBLING_HOMEBREW)/lib/sage-runtime.sh -> cli/lib/sage-runtime.sh"; fi
+
 # Base flags every container run needs. DOCKER_RUN_ARGS and
 # TRY_SAGE_DOCKER_RUN_ARGS both extend this — add a flag here and it
 # applies to both production and trial runs.
@@ -302,6 +335,7 @@ it_gone:
 
 # Build Docker Image with Branch Name
 it_build:  ## Build the Docker image
+	$(BUILDX_PREFLIGHT) $(CONTAINER_RUNTIME)
 	@echo "Building Docker image with BuildKit enabled..."
 	@START=$$(date +%s) && export DOCKER_BUILDKIT=1 && \
 	$(CONTAINER_RUNTIME) build --load $(OCI_LABELS) -t $(IMAGE_NAME):$(IMAGE_TAG) \
@@ -316,6 +350,7 @@ it_build:  ## Build the Docker image
 
 # Build Docker Image without Cache and with Branch Name
 it_build_no_cache:  ## Build the image from scratch, no layer cache
+	$(BUILDX_PREFLIGHT) $(CONTAINER_RUNTIME)
 	@echo "Building Docker image without cache and with BuildKit enabled..."
 	@START=$$(date +%s) && export DOCKER_BUILDKIT=1 && \
 	$(CONTAINER_RUNTIME) build --no-cache --load $(OCI_LABELS) -t $(IMAGE_NAME):$(IMAGE_TAG) \
@@ -432,6 +467,7 @@ wizard_smoke:  ## Install-wizard smoke
 # script gap (only sprig-embedding-minilm-onnx has a build script in git;
 # the other 11 catalog artifacts on this machine have no in-repo recipe).
 sprig_registry:
+	@scripts/gates/docker-preflight.sh registry $(CONTAINER_RUNTIME)
 	@$(CONTAINER_RUNTIME) network inspect sage-network >/dev/null 2>&1 || $(CONTAINER_RUNTIME) network create sage-network >/dev/null
 	@$(CONTAINER_RUNTIME) ps --format '{{.Names}}' | grep -qx local-registry || { \
 		echo "== starting local-registry (sage-network, data in $(SPRIG_REGISTRY_DATA)) =="; \
@@ -524,7 +560,9 @@ CATALOG_ARCH_RECIPES    := build-sprig-vector-chroma.sh build-sprig-rag-loaders.
 # after editing a recipe. Heavy: pulls models + runs buildx per arch. ARCHES
 # selects host arches (default: arm64 amd64). Each recipe prints the tar.zst
 # sha256 to pin in the supervisor CATALOG (per-arch entries -> arches overrides).
-catalog_build: catalog_prep
+# The amd64 check comes before catalog_prep: a registry it started in a krunkit
+# VM would hold port 5000 against the build VM's.
+catalog_build: _catalog_amd64_preflight catalog_prep
 	@echo "== catalog_build -> local-registry:5000 (arches: $(ARCHES)) =="
 	@env REGISTRY=localhost:5000 INSECURE=1 NETWORK=sage-network THEME=workshop-bio  scripts/build-sprig-theme.sh
 	@env REGISTRY=localhost:5000 INSECURE=1 NETWORK=sage-network THEME=workshop-math scripts/build-sprig-theme.sh
@@ -537,6 +575,9 @@ catalog_build: catalog_prep
 	  env REGISTRY=localhost:5000 INSECURE=1 NETWORK=sage-network ARCH=$$a PLATFORM=linux/$$a scripts/$$r || exit 1; \
 	done; done
 	@echo "== catalog_build complete; pins printed above -> app/backend/sage_is_ai/sprigs/supervisor.py CATALOG =="
+
+_catalog_amd64_preflight:
+	$(if $(filter amd64,$(ARCHES)),$(AMD64_PREFLIGHT))
 
 # catalog_release — build -> sign -> publish the whole Sprig™ catalog to
 # $(REGISTRY). This is the SPRIGS-CHANGED path (new sprig, tag bump, new
@@ -715,7 +756,7 @@ gauntlet: it_build sprig_smoke  # Build + Sprig lifecycle smoke
 # hand-run tools; run them yourself after `--tighten` records a baseline.
 # `chat_path_structure_teeth` DOES belong here: it builds its own sample and
 # proves the structural detectors still fire without needing a baseline at all.
-gauntlet_fast: privacy_tests cli_tests pipefail_lint pipefail_fixture ruff_gate docs_gate \
+gauntlet_fast: privacy_tests cli_tests runtime_tests pipefail_lint pipefail_fixture ruff_gate docs_gate \
                sprig_capabilities_check startr_swap_check \
                distribution_verify tags_annotated \
                chat_path_structure_teeth sprig_capabilities_teeth \
@@ -725,6 +766,11 @@ gauntlet_fast: privacy_tests cli_tests pipefail_lint pipefail_fixture ruff_gate 
 # Stand-in docker, colima and open commands; macOS only, seconds.
 cli_tests:  ## Gate: the ai-ui CLI's unit tests (host, seconds)
 	@cd cli && python3 -B -m unittest discover -s tests -q
+
+# runtime_tests — the docker preflights, the disk gate and the runtime targets
+# above, with stand-in docker, podman, gh and sage-runtime; seconds.
+runtime_tests:  ## Gate: docker preflights, disk gate and runtime targets (host, seconds)
+	@cd scripts/gates && python3 -B -m unittest -q test_runtime
 
 # privacy_tests — the privacy engine and the admin's off-switches, on the host,
 # no database, well under a second. Privacy is ON by default for external
@@ -778,6 +824,8 @@ gauntlet_full: gauntlet_fast manifest_verify_fixture \
 # native build because layers are emulated. Tag is suffixed `-amd64` so
 # it sits beside the host-arch image without overwriting it.
 it_build_amd64:  # Build an amd64 image via buildx (validates x86_64 hosts)
+	$(AMD64_PREFLIGHT)
+	$(BUILDX_PREFLIGHT)
 	@echo "Building Docker image for linux/amd64 via buildx..."
 	@docker buildx build --platform linux/amd64 --load $(OCI_LABELS) \
 	    -t $(IMAGE_NAME):$(IMAGE_TAG)-amd64 \
@@ -805,6 +853,7 @@ cross_smoke: it_build_amd64
 #
 # Use this AS the last step before `make ship`.
 release_smoke:  # Release gate: version checks + native and amd64 smoke
+	$(AMD64_PREFLIGHT)
 	@case "$(GIT_BRANCH)" in \
 	  release/*|hotfix/*) ;; \
 	  *) echo "ERROR: release_smoke must run from a release/X.Y.Z or hotfix/X.Y.Z branch."; \
@@ -865,6 +914,7 @@ test_db_fresh:
 # write:packages scope.
 ghcr_login:
 	@echo "=== Logging into GHCR via gh CLI ==="
+	@scripts/gates/docker-preflight.sh creds
 	@gh auth status >/dev/null 2>&1 || { echo "Error: gh CLI not authenticated. Run: gh auth login"; exit 1; }
 	@gh auth token | docker login ghcr.io -u $$(gh api user -q .login) --password-stdin
 	@echo "Logged into ghcr.io as $$(gh api user -q .login)"
@@ -881,6 +931,7 @@ ghcr_login:
 # A buildx builder remembers the context it was made in. One name per context
 # keeps Docker Desktop's builder off Colima and Colima's off Docker Desktop.
 ensure_builder:
+	$(BUILDX_PREFLIGHT)
 	@b=multi-arch-builder-$$(docker context show); \
 	docker buildx inspect $$b >/dev/null 2>&1 || docker buildx create --name $$b; \
 	docker buildx use $$b
@@ -907,6 +958,7 @@ ensure_builder:
 # its tag that way, and 2.3.0 before it. The trap removes the worktree on any
 # exit, so a build that fails part-way can simply be run again.
 _it_build_multi_arch_push_GHCR: ghcr_login
+	$(AMD64_PREFLIGHT)
 	@[ -z "$(CLEAN_BUILD)" ] || make it_clean
 	@make ensure_builder
 	@# The trap cds out first: the build runs INSIDE the worktree, and deleting the shell's
@@ -1640,7 +1692,8 @@ endef
 # OOM mid-push, leaving a tag on origin and no image behind it. Override on the
 # command line if your host genuinely needs less.
 RELEASE_MIN_DOCKER_GIB ?= 8
-# Free space on the HOST volume holding Docker's disk. 3.2.0 filled it mid-build.
+# Free space on the HOST volume holding the runtime's disk (Colima's, OrbStack's or
+# Docker Desktop's, whichever docker's context uses). 3.2.0 filled it mid-build.
 RELEASE_MIN_BUILD_DISK_GIB ?= 30
 
 # release_preflight — the four things that can only be checked against the
@@ -1652,7 +1705,7 @@ RELEASE_MIN_BUILD_DISK_GIB ?= 30
 #
 # Runs BEFORE release_smoke, not after: a preflight that fires at the end of a
 # twenty-minute build has already wasted the twenty minutes.
-release_preflight:  # Release gate: gh auth, docker memory, host disk, tag not published, CHANGELOG entry
+release_preflight:  # Release gate: gh auth, docker memory, host disk, local registry, tag not published, CHANGELOG entry
 	@set -e; \
 	ver="$(RELEASE_VERSION)"; \
 	if [ -z "$$ver" ]; then \
@@ -1674,16 +1727,9 @@ release_preflight:  # Release gate: gh auth, docker memory, host disk, tag not p
 		echo "        Fix: raise the VM memory, or override RELEASE_MIN_DOCKER_GIB=<n>."; exit 1; \
 	fi; \
 	echo "  ok    docker up with $$(( mem / 1024 / 1024 / 1024 ))GiB"; \
-	set -- $$(python3 scripts/gates/docker-disk-free.py); free=$$1; grow=$$2; shift 2; where="$$*"; \
-	dneed=$$(( $(RELEASE_MIN_BUILD_DISK_GIB) * 1024 * 1024 * 1024 )); \
-	if [ "$$free" -lt "$$dneed" ]; then \
-		echo "  FAIL  the host disk Docker writes to has $$(( free / 1024 / 1024 ))MiB free: $$where"; \
-		echo "        The multi-arch build wants $(RELEASE_MIN_BUILD_DISK_GIB)GiB there. Docker.raw may still grow $$(( grow / 1024 / 1024 / 1024 ))GiB."; \
-		echo "        3.2.0 died here: the drive filled, buildkit said input/output error, the tag was on origin."; \
-		echo "        Fix: free space on that volume, move the disk image (Docker Desktop, Resources),"; \
-		echo "        or override RELEASE_MIN_BUILD_DISK_GIB=<n>."; exit 1; \
-	fi; \
-	echo "  ok    $$(( free / 1024 / 1024 / 1024 ))GiB free on the host disk Docker writes to"; \
+	python3 scripts/gates/docker-disk-free.py $(RELEASE_MIN_BUILD_DISK_GIB); \
+	scripts/gates/docker-preflight.sh registry $(CONTAINER_RUNTIME); \
+	echo "  ok    sprig_publish will use this context's local-registry"; \
 	if [ -n "$$(git ls-remote --tags origin "refs/tags/v$$ver" 2>/dev/null)" ]; then \
 		echo "  FAIL  tag v$$ver is already on origin. This release has been cut before."; \
 		echo "        Both 2.3.0 and 3.1.0 reached this state and were recovered by hand."; \
