@@ -112,9 +112,16 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [x] [WE] `WATCHFILES_FORCE_POLLING=true` for `make dev` and `review LIVE=1`: Colima relays a save as a metadata change WatchFiles ignores; reload now 1 s, before never
   - [x] [WE] buildx builder named per context; `trivy image` gets `DOCKER_HOST`; `it_build` 6m25s on an 8 GiB Colima VM
   - [ ] [WE] Vite HMR in `make dev` on Colima: needs the `dev-svelte` Sprig, so the local registry (`sprig-registry-data`, 6.8 GB) on Colima first
-  - [ ] `scripts/gates/docker-disk-free.py` reads only Docker Desktop's disk; add Colima (`colima list --json`) and fix the `release_preflight` hints
-  - [ ] `ai-ui` CLI: create Colima with `--vz-rosetta --mount-inotify` and 8 GiB; refuse `ai-ui dev --dir` outside `$HOME`; `nuke --genesis` warns before removing Colima
-  - [ ] Docs naming Docker Desktop: README.md:30, docs/product-stack.md:66,154, docs/release-runbook.md:42, docs/troubleshooting.md:24-28
+  - [x] [WE] 2026-10-09: the disk gate measures the runtime in use (Colima's disks, OrbStack, Docker Desktop's `Docker.raw`); amd64 and multi-arch targets stop on a krunkit context with the build-VM route; buildx preflight; `ghcr_login` checks the login helper; Podman only when set; `make runtime_tests` 41
+  - [x] [WE] 2026-10-09: `ai-ui` makes a krunkit VM on Apple Silicon (vz with Rosetta without krunkit, vz alone on Intel) through the tap's shared runtime code; `dev` refuses a `--dir` outside `$HOME`; `--add-host` on start, dev and try
+  - [ ] [WE] `nuke --genesis` warns before removing Colima
+  - [x] [WE] 2026-10-09: docs say Colima by default with Docker Desktop and OrbStack supported (release runbook, troubleshooting, try-sage deployment; the Education docs' quick start and update pages)
+
+- [ ] **Mac upgrades offer the move to Colima** (Alexander, 2026-10-09) #ux
+  - [x] [WE] `ai-ui migrate [--dry-run]` moves Sage's data from Docker Desktop or OrbStack into Colima (staged copy, verified, source kept); `start` and `update` offer it once, also the krunkit conversion of a vz VM; the answer stays in `~/.sage-is/offers`; 73 CLI tests
+  - [x] [WE] The runtime code is vendored from the tap: `make runtime_sync` copies `lib/sage-runtime.sh` into `cli/lib/`; a test fails on drift
+  - [ ] [MANUALLY] Ships with the next AI-UI release; the tap's formula follows through the tap's `ai_ui_formula` target and installs `cli/lib/`
+  - [ ] [WE] Prove it on a spare macOS account: today's `ai-ui` on Docker Desktop, upgrade, accept the offer, same data on Colima, no second ask
 
 - [ ] **Fabric for work on the captain nodes; first job: backups** #critical: the hourly `APP-backup` cron has backed up nothing since 2025-11-28, and Trellis `/data` gets company mail next (2026-09-29)
   - [ ] [WE] Bug: `pipenv run ./backup.py` (crontab, :53 hourly) crashes on import, first `fabric` then `yaml`: 2,308 tracebacks in `backup_cron.log` (5.9 MB); no `config.yaml` either; retire the line or rebuild
@@ -964,6 +971,10 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
 
 _Items deferred to a later planning cycle. Move here from TODO when deprioritized._
 
+- [ ] **Admin notice when Sage runs on Docker Desktop or OrbStack** (Alexander, 2026-10-09: "we may want to add an admin notice") #ux
+  - [ ] [WE] `ai-ui` passes the runtime into the container (an env var such as `SAGE_RUNTIME`)
+  - [ ] [WE] The admin panel shows a dismissible notice with the `ai-ui migrate` line; a server change, so it waits on the pause (decision 60a)
+
 
 - [ ] **LocalMind deep-exam: steal its ingestion/exports/copy, make it an AI-UI satellite** (plan: `docs/localmind-exam-plan.md`; frozen until Trellis/ISA pilot ships)
   - [ ] [WE] Phase 0–1: sample-pack baselines (ingest + export matrices), port proposals for PDF chunking, markdown-IR exporters, `{{Blank}}` copy model
@@ -1194,7 +1205,7 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] Tier B `home` from admin shell: `sudo offload --target-home /Users/somma move home --apply`. Reconcile the Music symlink first (points at `/Volumes/Somma 01 Dock Drive/Music`, offload expects `/MovedHome/somma/Music`) — same-volume `mv` + re-symlink, three commands
   - [ ] Tier B `app` (Signal, Obsidian, Steam, Keybase, VSCode, Cursor, Epic, Minecraft) — quit each before firing
   - [ ] Tier B `dev` (CoreSimulator 5.8 GiB)
-  - [ ] Relocate the Docker Desktop disk image via native UI (~14 GiB, biggest single win remaining)
+  - [x] Docker Desktop's disk image already lives on the Dock Drive, and its volumes moved to Colima on 2026-10-08; Docker Desktop is uninstalled after 2026-10-16 (tap board)
   - [ ] Move iMovie, Music, and Photos libraries via native UI (per `offload relocations`)
   - [ ] Track [`Sage-is/homebrew-apps#1`](https://github.com/Sage-is/homebrew-apps/issues/1): `du -sk` → `stat -f %z` verification swap unblocks one-shot `offload move home --apply` on APFS-clone-heavy targets like `~/Movies`; until then, use the manual rsync + stat-verify + symlink dance from the 2.3.4 ship session
 
