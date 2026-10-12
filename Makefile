@@ -378,12 +378,13 @@ dev_run: dev
 ## dev_bg — the same dev container, detached, so Sibling repos' demo target
 ## (Trellis: `make demo_up`) can bring it up without holding a terminal.
 ## Everything else is `dev`: same mounts, same volume, same seeded admin.
-## `docker logs -f sage-is-ai-ui` for the output; `docker rm -f sage-is-ai-ui` to stop.
+## The container is named after the git remote (sage-is-ai-ui here, another on
+## a fork); the last line prints it. `make it_stop` stops it.
 dev_bg: sprig_registry  ## dev, detached
-	@$(CONTAINER_RUNTIME) rm -f sage-is-ai-ui >/dev/null 2>&1 || true
+	@$(CONTAINER_RUNTIME) rm -f $(CONTAINER_NAME) >/dev/null 2>&1 || true
 	$(CONTAINER_RUNTIME) run -d $(DEV_RUN_ARGS) $(IMAGE_NAME):$(IMAGE_TAG) bash -c "/app/backend/restore_backup_start.sh dev" >/dev/null
 	@for i in $$(seq 1 60); do curl -fsS http://localhost:$(LOCAL_PORT)/health >/dev/null 2>&1 && break; sleep 2; done
-	@echo "ai-ui dev (detached) -> http://localhost:$(LOCAL_PORT)/"
+	@echo "ai-ui dev (detached) -> http://localhost:$(LOCAL_PORT)/  (container $(CONTAINER_NAME))"
 
 # Run targets
 it_run:  ## Run the built image
