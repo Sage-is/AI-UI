@@ -272,6 +272,18 @@ runtime_sync:  ## Copy the tap's lib/sage-runtime.sh into cli/lib (edit it in th
 	@if cmp -s "$(SIBLING_HOMEBREW)/lib/sage-runtime.sh" cli/lib/sage-runtime.sh; then echo "  already equal: cli/lib/sage-runtime.sh"; \
 	else cp "$(SIBLING_HOMEBREW)/lib/sage-runtime.sh" cli/lib/sage-runtime.sh && echo "  copied:        $(SIBLING_HOMEBREW)/lib/sage-runtime.sh -> cli/lib/sage-runtime.sh"; fi
 
+
+# A box is a Mac that runs AI-UI (and Trellis) for a team, set up by sage-box
+# from the tap, from one file per box in ~/.sage-is/boxes/ that stays out of git.
+BOX ?= pilot
+box_check:
+	@command -v sage-box >/dev/null || { echo "sage-box is not installed: brew install sage-is/apps/sage-box"; exit 1; }
+box_up: box_check  ## plan a box: BOX=name; APPLY=1 runs the plan, REBOOT=1 restarts it at the end
+	sage-box $(BOX) $(if $(APPLY),--apply) $(if $(REBOOT),--reboot)
+box_update: box_check  ## brew upgrade, git pull in source mode, trellis-crm update, ai-ui start, verify
+	sage-box $(BOX) update
+box_status: box_check  ## both apps, the VM, the boot daemon, the newest backup
+	sage-box $(BOX) status
 # Base flags every container run needs. DOCKER_RUN_ARGS and
 # TRY_SAGE_DOCKER_RUN_ARGS both extend this — add a flag here and it
 # applies to both production and trial runs.
