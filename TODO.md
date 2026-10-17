@@ -29,11 +29,38 @@ This file tracks active work only.
 
 ## In Progress
 
+- [ ] **Security fixes, AI-UI woken for them** #critical #security (Alexander, 2026-10-07; an exception to the Trellis-first pause): from the Dependabot and trivy review of 3.2.0
+  - Plan: `~/.claude/plans/ai-ui-3.2.1-security-bumps.md` (approved 2026-10-14); notes in `CHANGELOG.md` under Unreleased, heading becomes `## [3.2.1]` on the release branch
+  - [x] [WE] FastAPI 0.143.1 + Starlette 1.8.0 pinned on its own: Range header, form limits and multipart DoS closed; `strict_content_type=False` keeps 3.2.0 behaviour (Alexander, 2026-10-14)
+  - [x] [WE] ORAS left the image (was 1.2.0, then 1.3.4 with 4 HIGH Go findings): `sprigs/oci.py` pulls Sprigs; `test_oci.py` pins 12 refusals; a real ghcr.io pull matches the catalog pin
+  - [x] [WE] pypdf 6.20.1 in rag-loaders v2; its gate reads a hand-built PDF through langchain-community 0.3.27's `PyPDFLoader`, arm64 + amd64
+  - [x] [WE] aiohttp 3.14.5, PyJWT 2.15.1, authlib 1.9.1 (CVE-2026-96760 critical, 2026-10-14), requests 2.34.2, Markdown 3.11.1, python-multipart 0.0.32, python-socketio 5.17.0, starlette-compress 1.8.0
+  - [x] [WE] Pillow 12.3.0 in export-document v2; its gate renders CJK + a Pillow image, arm64 + amd64
+  - [x] [WE] Wolfi base digest of 2026-10-14; the build-time check now asserts sha224 and a TLS context; no Python pin
+  - [x] [WE] Less does more: OpenTelemetry 11 pins → 1 (`opentelemetry-api`); SDK, gRPC exporter, grpcio, protobuf ride vector-chroma v3; `app/pyproject.toml` deps emptied (194 phantom alerts); `requirements-ml.txt` deleted
+  - [x] [WE] Catalog: rag-loaders + export-document `v2`, vector-chroma `v3` (both arches, six new pins); older tags stay published for 3.2.0; an old cache re-pulls on first boot
+  - [x] [WE] Small cuts (Alexander, 2026-10-15): pip/setuptools/wheel → uv (`utils/runtime_install.py`); typer CLI and its data-moving pip layout; passlib → bcrypt (`utils/passwords.py`, passlib-made hashes pinned); curl + jq → `utils/localhttp.py`; async-timeout
+  - [x] [WE] Medium cut: peewee → `internal/legacy_db.py` + frozen `legacy_schema.sql`; fresh schema identical to 3.2.0 (233 lines), an 18-migration snapshot gains `chat_share`, a pre-alembic DB is refused with the fix named
+  - [x] [WE] Medium cut: vector-chroma v3 = closure minus what the rootstock ships (46 kept, 41 left out), its gate runs chromadb inside the rootstock, its OpenTelemetry pin read from `requirements.txt`
+  - [x] [WE] Poka-yoke: Dockerfile cuts-stay-cut check (names the package that pulls a cut back); `make in_container_tools` lint, incl. a cut-module import fence cross-checked against the Dockerfile; `make image_unit_tests` (39 tests); `netcurl`
+  - [x] [WE] Gate fixes found on the way: `sign-sprigs.sh` + `sprig_signing` step 5 dodge the krunkit stale-file trap (step 5 had pushed a VALID signature silently); `inject-test-admin.py` off passlib; `upgrade_gate` section 6 re-signs in once
+  - Gates on the final image, 2026-10-15: `image_unit_tests` 39/39, `sprig_durability` 12/12, `sprig_signing` 11/11, `upgrade_gate` 20/20 (trimmed snapshot), `test_db_fresh` + `test_db_upgrade` pass, trivy 0 HIGH/CRITICAL, 16/16 hand checks
+  - Gates on the build before the last refactors: `sprig_smoke` 69/69, `e2e_both` all specs on both surfaces; `make -n patch_release` opens `release/3.2.1`
+  - [ ] [MANUALLY] Review and commit; `make patch_release` → 3.2.1; `DOCKER_CONTEXT=colima-build make ship` publishes the three new Sprig tags to GHCR before any deploy
+  - [ ] [MANUALLY] Free space first: "Somma 01 Dock Drive" (Colima's VM disks) had 6.1 GiB free on 2026-10-15; `release_preflight` wants 30 there, and the build VM's sparse disk grows onto it
+  - [ ] [MANUALLY] `make deploy`, then [WE] verify 3.2.1 on both hosts, rag-loaders v2 and vector-chroma v3 re-pulled, a PDF upload, a document search and an SSO login on try.sage.is
+    - 2026-10-15: the cluster is down for hardware maintenance at the New York location; `make deploy` waits until service is restored
+  - [ ] [MANUALLY] Close Dependabot PRs 36, 37, 43, 45 as superseded; PR 44 rides the ML lock card
+  - [ ] [WE] Host-side ORAS: 8 scripts still run `ghcr.io/oras-project/oras:v1.2.0` (`scripts/lib/sprig-build.sh`, `publish-sprigs.sh`, `sign-sprigs.sh` …); `sprig_publish` reaches GHCR through it; move to 1.3.4 by digest
+  - trivy HIGH/CRITICAL on the 3.2.1 image: 6 on 2026-10-14 (ORAS 4, setuptools-vendored 2), 0 on 2026-10-15 after the cuts; `.trivyignore` still holds CVE-2026-34070 (langchain-core)
+  - [x] [WE] ~~The last 4 ORAS findings need an ORAS built on Go ≥ 1.26.9~~: superseded, ORAS left the image
+  - [x] [WE] setuptools 79.0.1's vendored jaraco.context and wheel (2 HIGH): dropped with setuptools itself
+
 _Items currently in progress. Move items here and or use tag source with `# FIXME:` when work begins._
 
 - [ ] **Paused 2026-10-01: Trellis first** (Alexander) #critical: no new AI-UI work until the ISA pilot ships (Trellis plan Amendment 60); bookkeeping and the pending commits only
   - [ ] [MANUALLY] The tap's step-2 commit and push (the ai-ui formula follows AI-UI releases); this board's commit
-  - [ ] Parked AI-UI changes Trellis may need later: forward the chatting user's identity to tool servers (`execute_tool_server` sends only the bearer today); AI-UI as identity provider
+  - [ ] Parked AI-UI changes Trellis may need later: forward the chatting user's identity to tool servers (`execute_tool_server` sends only the bearer today); AI-UI as identity provider (own card since 2026-10-15, under OAuth UX & Identity Linking)
 
 - [ ] **One way to deploy: `cr-deploy` + `make deploy`** #critical: plan Amendment 55, 2026-09-27
   - [x] [WE] `cr-deploy` in the tap (named `captain` until 2026-09-28; from Trellis `caprover.py`): bind mounts in `apps`, `--verify/--expect/--health`, `rollback`, build-start race fixed, 9 tests
@@ -49,6 +76,8 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [ ] [WE] `cr-deploy` with an expired token and no terminal dies in a traceback (`EOFError` in `getpass`, 2026-09-29); say "token expired, run `cr-deploy info` in a terminal" and exit 1
 
 - [ ] **sage.startr.cloud SQLite over Syncthing**: replicas can sync torn; nightly `sqlite3 .backup` into the synced folder, Syncthing ignores live `webui.db`/`-wal`/`-shm`; Postgres later
+  - The office Mac is a fourth Syncthing device; Backblaze (unlimited plan) backs up its copy off-site, with the nodes' nightly backups (four nights) beside it (checked 2026-10-15; `OPS-Sage/docs/storage.md`)
+  - So a torn live file also reaches the Mac and Backblaze; a nightly `.backup` file would give that chain a clean copy too
 
 - [ ] **Privacy rules**: pseudonymize what leaves for a hosted model, reverse what comes back #critical
   - [x] 2026-09-16: `sage_is_ai/privacy/` engine (rules, same-shape fakes, reverser, hold-back stream reverser), 9 unit tests; hook at `utils/chat.py` dispatcher + both stream wrappers + tool arguments
@@ -106,6 +135,18 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
 
 ## TODO
 
+- [ ] **ML lock: sentence-transformers 4.1.0 → 5.6.0** #critical #security (Alexander, 2026-10-14: own card, after 3.2.1): CVE-2026-68770 critical in `app/backend/requirements-ml.lock`, which the AI Engine wizard installs
+  - Dependabot PR 44 proposes 5.6.0; 5.6.0 accepts `transformers>=4.41,<6`, so the 4.57.6 pin can stay
+  - The lock also pins pillow 12.2.0 (4 HIGH, fixed in 12.3.0), aiohttp 3.13.5, requests 2.28.1, urllib3 1.26.13; `ml_packages` sits last on `sys.path`, so base aiohttp and requests win
+  - Deleting the `requirements-ml.txt` tombstone in 3.2.1 closed the Dependabot alert, not the risk
+  - [ ] [WE] Edit `requirements-ml.in`; regenerate with `uv pip compile … --generate-hashes --python-version 3.11` on uv 0.12.24, the image's
+  - [ ] [WE] Retest the wizard install and the embedding, reranking and STT paths on a fresh volume
+
+- [ ] **langchain-core out of the base, and gzip for compression** #perf #security (planned 2026-10-15): 15 MB and ~170 ms of boot for six names; plan `~/.claude/plans/langchain-core-out-of-the-base.md`
+  - 11 files import `langchain_core` (10 at module level) for `Document`, `BaseLoader`, `BaseRetriever`, `BaseDocumentCompressor`, two callback types; it drags in langsmith and 7 helpers
+  - [ ] [MANUALLY] Decide compression: Starlette `GZipMiddleware` (drops starlette-compress, brotli, zstandard: 28 MB) or keep brotli/zstd; the plan's step 7 measures it first
+  - [ ] [WE] `retrieval/documents.py` + import fence; hybrid classes move to `retrieval/hybrid/`; `.trivyignore` loses CVE-2026-34070
+
 - [ ] **Develop on Colima, Docker Desktop optional** (Alexander, 2026-10-06; switch with the tap's `sage-runtime`) #dx
   - [x] [WE] Temp folders that get bind-mounted live under `$AI_UI_TMP` (`~/.cache/ai-ui/tmp`, `scripts/lib/mount-tmp.sh`): Colima mounts /tmp and /var/folders empty, and macOS mktemp ignores TMPDIR; `test_db_upgrade` now sees its 155 MB snapshot
   - [x] [WE] `make review`'s Caddyfile and the Sprig build root (`SPRIG_BUILD_ROOT`) moved under `$HOME`; review answers HTTPS 200 on Colima
@@ -148,9 +189,9 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
 
 ### Real-estate segment engagement — first paid deployment (opened 2026-07-30)
 
-_The first paid real-estate deployment of AI-UI, and deliberately the beachhead for a real-estate vertical rather than a one-off. Client identities, commercial terms, dates, and the external commitment live in [.clients.md](.clients.md) — untracked by design (`.gitignore:3` denies dotfiles), so that link is dead in a fresh clone and is meant to be. **Codenames only in this file:** **Realtor M** (the customer), **School B** (the prior demo tenant whose data is still on try.sage.is), **Reviewer T** (internal reviewer). Never write a real client name into a tracked file._
+_The first paid real-estate deployment of AI-UI, and deliberately the beachhead for a real-estate vertical rather than a one-off. Client identities, commercial terms, dates, and the external commitment live in [.clients.md](.clients.md) — untracked by design (`.gitignore:3` denies dotfiles), so that link is dead in a fresh clone and is meant to be. **Codenames only in this file:** **Realtor M** (our peer), **School B** (the prior demo tenant whose data is still on try.sage.is), **Reviewer T** (internal reviewer). Never write a real client name into a tracked file._
 
-**How success is measured here** — the customer's own definition, and worth adopting as the segment's: (1) their assistant and VA stop having to ask the principal things, (2) hours back in the principal's week. They explicitly rejected "deals closed" (market forces dominate; attribution is fiction) and "nothing falls through the cracks" (humans stay in the loop and humans drop things). We measure what the software determines and nothing more. Any dashboard or report we build should hold that line.
+**How success is measured here** — our peer's own definition, and worth adopting as the segment's: (1) their assistant and VA stop having to ask the principal things, (2) hours back in the principal's week. They explicitly rejected "deals closed" (market forces dominate; attribution is fiction) and "nothing falls through the cracks" (humans stay in the loop and humans drop things). We measure what the software determines and nothing more. Any dashboard or report we build should hold that line.
 
 **Shape of the delivery** — configs lead, code follows: ship value as Agents, prompts, knowledge bases, and Spaces configuration first; add features only where configuration genuinely cannot reach; then package the whole arrangement as **autoconfig Sprigs** so the next agent in the segment is a graft rather than a rebuild. That last step is what makes this a beachhead instead of a consulting job.
 
@@ -184,7 +225,7 @@ _The first paid real-estate deployment of AI-UI, and deliberately the beachhead 
   - [ ] If we do proceed: provision a WAHA sidecar container, a phone number, and a public HTTPS webhook.
     - try.sage.is is a single-app CapRover deploy with no sidecar beside it, so this is infra provisioning, not a config toggle.
 - [ ] **Establish the brokerage's position on email.** Their shared admin and tech staff own it. Any mail-side integration needs their cooperation and may simply be refused — better to know before it is designed in.
-- [ ] **Replace the floating delivery milestone with a real anchor.** The "4-month" figure was the customer's own arbitrary soon-ish and cannot be met or missed as written.
+- [ ] **Replace the floating delivery milestone with a real anchor.** The "4-month" figure was our peer's own arbitrary soon-ish and cannot be met or missed as written.
 
 #### Dedicated instance — after the demo
 
@@ -202,7 +243,7 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
 - The no-build strangler migration is mid-Phase 2 with the wizard (the hardest surface) still ahead; stalling it half-migrated is the worst available outcome.
 - The external November commitment is signage and materials only, so it imposes **no ship-by date** and must not be used to justify parallelising these.
 
-- [ ] **1. Spaces multi-user** — three people (principal, assistant, VA) share one workspace from day one, and the customer's primary success metric is unreachable without it. Highest value, do first. Now under `## In Progress` → _Spaces Enhancements_; mechanics e2e-verified 2026-08-18, remaining work is agent context modes + productization.
+- [ ] **1. Spaces multi-user** — three people (principal, assistant, VA) share one workspace from day one, and our peer's primary success metric is unreachable without it. Highest value, do first. Now under `## In Progress` → _Spaces Enhancements_; mechanics e2e-verified 2026-08-18, remaining work is agent context modes + productization.
 - [ ] **2. Spend budgets per user AND per API key** — required before a customer instance goes live with hosted models and three sharers. See the backlog item; the try.sage uncapped-Groq note there is now a live commercial exposure, not a hypothetical.
 - [ ] **3. Sprig catalog de-hardcoding (marketplace M1)** — prerequisite for shipping the tooling as autoconfig Sprigs, and therefore for the segment story rather than just this customer. The blocker is the hardcoded Python `CATALOG` in `supervisor.py`.
 - [ ] **4. Job queue** — last on purpose. The demo is staged-and-labelled and November needs no software, so nothing forces real proactive nudges until the configs and features have landed. Promote it when a staged beat has to become a real one.
@@ -294,6 +335,14 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
 
 
 ### OAuth UX & Identity Linking
+
+- [ ] **AI-UI as the single sign-on for our other projects** #auth #federation (Alexander, 2026-10-15; plan after the Brokerage H demo): one AI-UI login opens Trellis, the Tinker.Click library server and later projects, so no project keeps its own user list
+  - [ ] [WE] Plan it after the demo; interview Alexander first; plan file in `~/.claude/plans/`
+  - [ ] Decide first: AI-UI signs sessions with HS256 and `WEBUI_SECRET_KEY` (`utils/auth.py:38`), so any project that verifies them with that key can also mint a session for any user, admin included
+  - [ ] The likely answer: an OpenID Connect (OIDC) provider in AI-UI, one client per project, tokens signed with a private key whose public half (JWKS) is all a project holds
+  - [ ] Today AI-UI signs people in only as a client: OAuth/OIDC providers (`utils/oauth.py`), LDAP, and the trusted e-mail header (`WEBUI_AUTH_TRUSTED_EMAIL_HEADER`)
+  - [ ] Consumers: Trellis (its card "AI-UI is the identity provider", decided 2026-09-17; personas on try.sage.is, amendment 44), the Tinker.Click library server (upstream; needs OIDC client support), community.sage.is
+  - [ ] Ties to the federation plan's "identity across boxes" flow, and its open question: how a box proves who it is
 
 - [ ] **OAuth identity linking v1**: let users attach Google/GitHub/Microsoft to existing accounts whose email doesn't match the provider's email; decisions confirmed in plan thread 2026-05-28 ([dossier](docs/board-dossiers.md)).
   - [ ] The only graceful path today is `OAUTH_MERGE_ACCOUNTS_BY_EMAIL` — silent email-match linking, useless when the local email differs from the provider's.
@@ -450,9 +499,15 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
   - [ ] **Follow-on found while fixing DRIFT**: this dev instance runs with an empty `WEBUI_SECRET_KEY` (`.env:22` is blank, and PID 1 carries it empty). Harmless while privacy is OFF; with the new guard, switching privacy ON here now fails loudly. Set a real key before enabling. #security
   - [x] Two of the low five done 2026-09-23: `config()` deep-copies `DEFAULTS` so a caller cannot rewrite the module default; `_pattern()` keys its cache on the table object, not `id()`, so a freed dict's address cannot return under a stale pattern.
   - [ ] Three low left: `reverse_tool_calls` str-only (`hooks.py`), Spaces `TOOL_SERVERS` check-then-act (`routers/spaces.py:382`), manifest `"id"` comment with no gate (`main.py`). None is request-path; none blocks the merge.
-  - [ ] `privacy/test_engine.py` (17 tests) runs only by hand: `python -m unittest sage_is_ai.privacy.test_engine`. No Makefile target, so nothing runs it in CI.
+  - [x] `privacy/test_engine.py` (17 tests) runs only by hand: `python -m unittest sage_is_ai.privacy.test_engine`. No Makefile target, so nothing runs it in CI. Stale by 2026-10-15: `make privacy_tests` (`Makefile:801`) runs it and `test_hooks` inside `gauntlet_fast`.
 
 ### Pitch & Documentation
+
+- [x] **Federation doc: what may leave a box** (2026-10-15): `docs/federation.md` holds the three rules, the box and the system map, and sorts AI-UI's data, definitions and numbers; linked from `docs/product-stack.md` #docs
+  - Plan: `~/.claude/plans/brokerage-demo-tinker-trellis.md`, section 6; the Trellis and Tinker.Click docs carry the same rules and map
+  - [x] [WE] Rules, box line and Mermaid map verbatim; every path, route and setting checked against this tree
+  - Gaps the doc names: no scan before an Agent, prompt or function export; `/api/usage` returns active user IDs; `API_KEY_ALLOWED_ENDPOINTS` holds for every `sk-` key, not one
+  - The Workshop apps plan is the Backlog card **Workshop apps tab**
 
 - [ ] **Pitch — Fix Privacy Absolutes**: Audit `docs/elevator-pitch.md` for unconditional privacy claims
   - [ ] Replace "nothing phones home" → "nothing leaves your building unless you send it"
@@ -971,6 +1026,24 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
 
 _Items deferred to a later planning cycle. Move here from TODO when deprioritized._
 
+- [ ] **Workshop apps tab: Tinker.Click apps run inside the box** (planned 2026-10-15, not built; waits on the Trellis-first pause): storage, ask and connector bridges keep each app's data home #frontend #security
+  - Plan: `~/.claude/plans/brokerage-demo-tinker-trellis.md`, "Later"; rules and map in `docs/federation.md`
+  - [ ] [WE] `/workshop/apps` tab behind a `workshop.apps` key in `DEFAULT_USER_PERMISSIONS` (`config.py`) and `WorkshopPermissions` (`routers/users.py`); `permissions-drift.cy.ts` fails if they disagree
+  - [ ] [WE] Sandboxed frame like `Artifacts.svelte` (`srcdoc`, `allow-scripts`, no `allow-same-origin`); the host checks `event.source`, since such a frame's messages arrive with origin `"null"`
+  - [ ] [WE] Per-user storage bridge: app state kept on the box per user and app; an opaque frame has no browser storage
+  - [ ] [WE] Ask bridge: model calls through `/api/chat/completions`, so the privacy filter covers them; never the raw `/openai` or `/ollama` routes
+  - [ ] [WE] Connectors as tool servers in `TOOL_SERVER_CONNECTIONS`, as Trellis already is (@crm)
+  - Shares the `event.source` fix and per-user state with the app-pane item on the Sprig marketplace card
+  - New pages ship plain HTML first (`docs/no-build-surface-convention.md`, rule 4)
+
+- [ ] **`telemetry-otel` Sprig: tracing for operators who set `ENABLE_OTEL`** #bonsai (2026-10-14): the 3.2.1 base keeps only `opentelemetry-api`; `ENABLE_OTEL=true` boots untraced with a warning
+  - The SDK and gRPC exporter already ride vector-chroma v3; this Sprig would add the HTTP exporter and the instrumentors
+  - [ ] [WE] Pip overlay built like vector-chroma v3 (closure minus the rootstock): `opentelemetry-exporter-otlp-proto-http` + the `opentelemetry-instrumentation-*` set at the base's API version (1.45.1 / 0.66b1)
+  - [ ] [WE] Decide who owns spans: FastAPI 0.143's native telemetry steps aside when the instrumentor's middleware is present (`_legacy_otel`)
+  - [ ] [WE] Gate: graft, set `ENABLE_OTEL=true`, a span reaches a test OTLP collector
+
+- [ ] **FastAPI's strict JSON Content-Type: turn it on?** #security (3.2.1 kept it off, Alexander 2026-10-14): `strict_content_type=False` in `main.py` parses a body sent with no Content-Type as JSON, as 3.2.0 did; decide after finding which API clients omit the header
+
 - [ ] **Admin notice when Sage runs on Docker Desktop or OrbStack** (Alexander, 2026-10-09: "we may want to add an admin notice") #ux
   - [ ] [WE] `ai-ui` passes the runtime into the container (an env var such as `SAGE_RUNTIME`)
   - [ ] [WE] The admin panel shows a dismissible notice with the `ai-ui migrate` line; a server change, so it waits on the pause (decision 60a)
@@ -1020,6 +1093,16 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] The prop system's `--gtc` has base/`-sm`/`-md`/`-lg`/`-xl` but no `-xs`, so a layout wanting both a 440px tier and a 1280px tier must mix the two systems
   - [ ] Upstream fix: a handful of lines in `src/static/style.css`; one fix serves every consumer — real gap, not a blocker (the agents list went flex-wrap at zero cost)
   - [ ] Document the 440px `-xs` tier in the `/startr-style` skill prop tables — they list only `-sm`/`-md`/`-lg`/`-xl`/`-pt`
+- [ ] **startr.style 1.x from core changes AI-UI's pages the day it ships** (2026-10-16): AI-UI loads the rolling `/style.css`, so the publish on WEB-startr.style.core/TODO.md lands here at once #startr-style #frontend
+  - [x] 1.4.0 regression, live 2026-10-16: the kit's `button:hover` filled transparent icon buttons solid `--primary` (34 of 50 in the chat shell, 45 of 59 on admin settings); fixed upstream in 1.4.2 (1.4.1 missed Tailwind's preflight; each hover selector now carries its base rule's specificity, so AI-UI's resets win); gate: `bun run probe:hover <url> --login …` in WEB-startr.style.core, 4 s a page (2026-10-17)
+  - [x] `--maxw-sm` works again: the chat column (Message.svelte) and the auth form narrow to their declared widths; intended (regression run 2026-10-17)
+  - [x] tools/tw2startr writes suffix states (`hover:bg-…` → `--bgc-hover`; focus, active, open/checked/aria → `-on`, group-hover → `-in-hover`) and leaves a state with no kit prop as a class; 88 tests pass under `bun test` (2026-10-16)
+  - [ ] 206 Svelte files carry `--dark-bgc`/`--dark-c`/`--dark-bc`/`--hvr-dark-bgc`, which no rule reads in the kit or in AI-UI: dark styling from converted `dark:` classes never applies. Decide: kit tokens under `[data-theme="dark"]`, or a kit dark variant
+  - [ ] Silent no-ops props.json catches: `--opacity` ×8 in pages/templates/try-sage.html (lines 145-198; the prop is `--op`), `--list-style` in complete.html:11 (`--lis`)
+  - [ ] `--c-hover` and `--bgc-hover` in pages/templates/agents.html:153,158,160 are no-ops today and work once 1.x ships; check the look is still wanted
+  - [ ] `--button-hover:var(--primary)` from pages/shell.py:235 starts working: plain `<button>`s hover to the brand primary (`.btn:hover` outranks it)
+  - [ ] `--br:1px solid …` as border-right (admin/Settings/Interface.svelte:431/437/444, admin/Settings/Images.svelte:552, workshop/Models/ModelEditor.svelte:583) keeps working in 1.x; move to the 2.0 name when it lands
+
 - [ ] **One-click GUI installer + code signing** (captured 2026-07-17): a double-click installer for Sage.is AI-UI (+ its Rootstock™/Sprig™ runtime) for people who won't touch a terminal — not just the `ai-ui` brew CLI. #onboarding
   - [ ] Load-bearing prerequisite: **software signing**, or the flow dies at the OS "unidentified developer / can't be opened" warning (exactly the audience that bails)
     - [ ] macOS: Apple Developer ID + **notarization** (+ stapling) of the `.app`/`.dmg`/`.pkg`
@@ -1213,10 +1296,46 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 
 ## Bugs
 
-- [ ] **Today's image builds lose `sha224` and `sha3`** #critical (found 2026-10-06 on Colima; not Colima's doing): `hashlib.sha224` raises AttributeError, and `random` logs `_sha512` tracebacks at import
+- [ ] **Privacy: tool arguments leak on the follow-up** #security #bug (2026-10-15): with native function calling, the next request resends the arguments `finish_stream` made real (`privacy/hooks.py:159-164`), because `outbound` rewrites only `content` (`hooks.py:105-113`); the provider sees each stand-in beside its real value
+  - Path: `utils/middleware.py:1966` reverses the arguments in place; `2091-2100` and `345-352` put that same list in `assistant.tool_calls`; `outbound` (`utils/chat.py:209-211`) skips it; `routers/openai.py:1034-1052` posts it.
+  - Ships in v3.2.0: the tag carries the same code on every line above.
+  - Replayed 2026-10-15 on the real hooks and middleware helpers: round 1 carried only stand-ins; the follow-up carried the planted name and email in its tool arguments. `role: tool` content stayed stand-in.
+  - Needs: privacy on for the model (default for external connections since 3.2.0), native function calling (opt-in, `main.py:1769-1778`), the UI's socket stream (`middleware.py:1687`), a stand-in in the arguments.
+  - Each tool round resends every earlier call, up to 10 rounds (`middleware.py:2008`).
+  - API clients on `stream: false` that echo `tool_calls` back leak the same way: `reverse_completion` hands them real arguments (`hooks.py:120-126`).
+  - Clean: prompt-based tools (the default), Spaces (no stream, never native), and later turns, where the UI keeps only the result (`app/src/lib/utils/index.ts:875-895`).
+  - Worst case: the map is instance-wide and stable under `PRIVACY_KEY`, so one leaked pair unmasks that stand-in in every request from this instance.
+  - [ ] [WE] Fix `_rewrite_message` in `privacy/hooks.py`: parse each `tool_calls[].function.arguments`, pseudonymize every string, re-dump; unparsable text goes through `rewrite` whole. Covers API clients too.
+    - [ ] Handle `tool_calls` outside the early `return` at `hooks.py:110`: the middleware's assistant message always has string content (`middleware.py:349`).
+    - [ ] Write into copied calls: the list is the content block's own (`middleware.py:350`), and the UI and DB must keep it real.
+  - [ ] [WE] Unit test in `privacy/test_hooks.py`, run by `make privacy_tests`: a planted name in a tool argument and a tool result reaches the model only as a stand-in.
+    - [ ] Hint a non-ASCII name and an email; call a tool with their stand-ins; `finish_stream`; re-dump as `middleware.py:2056`; return a result naming both; run `outbound` on the follow-up.
+    - [ ] Assert on decoded argument JSON and `role: tool` content: stand-ins only, and the content block keeps the real name. A scratch run (2026-10-15) fails at HEAD and passes with the fix.
+    - [ ] Trap: no substring check on the dumped wire. `json.dumps` writes the name as `é` escapes, so that check passes at HEAD while the name leaks.
+  - [ ] [WE] E2E on the recording mock. It cannot emit a tool call today, so the Privacy rules card's "streamed and not" proof never covered one.
+    - [ ] `scripts/privacy/mock_provider.py`: given `tools` and no `role: tool` message, stream one tool call with the last user message as the tool's first parameter (others are dropped, `middleware.py:553-556`); serve all captures.
+    - [ ] Cypress through the chat UI (the tool loop needs a socket session): native function calling, a tool that returns its input, a literal name rule; the follow-up holds only stand-ins.
+  - [ ] [WE] Card the siblings this trace found:
+    - [ ] The reverse table is instance-wide (`models/privacy.py:83`): a surname stand-in in any reply or tool call becomes another chat's real name (replayed: `Okafor` to `Silva`).
+    - [ ] The model preset system prompt, with `{{USER_NAME}}` and `{{USER_LOCATION}}` filled in, joins the messages after `outbound` (`routers/openai.py:928-929`).
+    - [ ] `/openai/chat/completions` skips the hook (`routers/openai.py:901`); the streamed API pass-through leaves tool-call deltas fake (`hooks.py:190-193`).
+
+- [ ] **Secrets in logs: an OAuth token response, and a dead API-key method** #security #bug (2026-10-15): `utils/oauth.py:363` logs the whole token response (access, ID and any refresh token) at WARNING when the provider returns no user info; `models/auths.py:151` logs a whole API key at INFO
+  - `authenticate_user_by_api_key` has no callers: API keys sign in through `utils/auth.py:194` and `286-287`, which log no key. Line 151 fires only if someone wires the method back in.
+  - `utils/oauth.py:368` logs the provider's user info (email, name) at WARNING when `sub` is missing.
+  - [ ] [WE] Delete `authenticate_user_by_api_key`; at `oauth.py:363` log the token's key names, never its values; at `368` log only the claim names.
+
+- [ ] **A busy database reads as "session expired"** #bug #auth (2026-10-15): `Users.get_user_by_id` (`models/users.py`) returns None on ANY exception, so `get_current_user` answers 401 "Your session has expired or the token is invalid" for a DB error
+  - Seen: `sprig_smoke` 2026-07-19 (5 cascading 401s, papered over by `G()`'s re-sign-in) and `upgrade_gate` section 6 on 2026-10-15; a reduced replay passed on both images, so load or lock timing, not the token
+  - [ ] [WE] Log the swallowed exception (type + message) before returning None, then re-run the heavy gates to name the real error
+  - [ ] [WE] If it is SQLite's busy lock: raise the busy timeout or retry the read once, and stop masking DB errors as auth errors
+
+- [x] **Today's image builds lose `sha224` and `sha3`** #critical (found 2026-10-06 on Colima; not Colima's doing): `hashlib.sha224` raises AttributeError, and `random` logs `_sha512` tracebacks at import
   - [ ] Cause: the wolfi base is pinned by digest, but `apk` pulls the newest `python-3.11` at build time: 3.11.16-r8 (OpenSSL 3.6.4, good, built 2026-09-25) became 3.11.17-r2 (OpenSSL 4.0.2, broken)
   - [ ] Proof: Docker Desktop's 2026-09-25 image computes sha224 on Colima; the 2026-10-06 build fails on both runtimes
-  - [ ] Fix: pin `python-3.11=3.11.16-r8` (or the next good revision) in the Dockerfile's apk line, then a smoke assert `python3 -c "import hashlib; hashlib.sha224"` in `it_build`
+  - [x] ~~Fix: pin `python-3.11=3.11.16-r8` (or the next good revision) in the Dockerfile's apk line, then a smoke assert `python3 -c "import hashlib; hashlib.sha224"` in `it_build`~~ superseded by the next two lines
+  - [x] [WE] 2026-10-15, no pin (Wolfi prunes old revisions, so a pin breaks builds later): the 2026-10-14 base gives Python 3.11.17 on OpenSSL 4.0.3, which computes sha224, sha3_256, sha512; `import random` is clean
+  - [x] [WE] The Dockerfile's build-time import check asserts sha224, sha3_256, sha512 and a TLS context (2026-10-15); a base that loses one fails the build
 
 - [ ] **`surface_budget` floor over ceiling since at least 3.1.0**: `notes-empty` decodes 6,978 kB against the 6,800 kB ceiling — and the 2026-08-10 `3.1.0-amd64` image measures 6,978.6, so the regression PREDATES the 2026-08-17 cleanup sitting (A/B run, same snapshot, 0.5 kB apart). #bug #critical
   - [ ] The gate's own comment records 6,642 kB on 2026-08-02 after the font/icon work — ~336 kB grew back somewhere in 2026-08-02→08-10 and nobody ran `gauntlet_full` across the line.
