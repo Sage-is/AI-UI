@@ -97,7 +97,7 @@ dependencies = [
     "PyJWT[crypto]==2.10.1",
     "authlib==1.4.1",
 
-    "black==25.1.0",
+    "black==26.10.1",
     "langfuse==2.44.0",
     "youtube-transcript-api==1.0.3",
     "pytube==15.0.0",
