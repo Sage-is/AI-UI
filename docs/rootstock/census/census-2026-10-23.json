@@ -1,0 +1,5104 @@
+{
+ "2026-07-12/webui.db": {
+  "alembic_head": "b1c2d3e4f5a6",
+  "chat": {
+   "chat.*": {
+    "<other>": 19,
+    "branchPointMessageId": 12,
+    "files": 1971,
+    "history": 1982,
+    "id": 1982,
+    "messages": 1982,
+    "models": 1982,
+    "originalChatId": 12,
+    "params": 1982,
+    "tags": 1982,
+    "timestamp": 1982,
+    "title": 1982
+   },
+   "chats_per_user": {
+    "max": 1077,
+    "n": 53,
+    "p50": 1,
+    "p90": 13
+   },
+   "message.*": {
+    "annotation": 31,
+    "arena": 4,
+    "childrenIds": 16646,
+    "citations": 22,
+    "content": 16650,
+    "done": 9103,
+    "error": 599,
+    "favorite": 116,
+    "feedbackId": 29,
+    "files": 200,
+    "followUps": 2915,
+    "id": 16646,
+    "info": 90,
+    "lastSentence": 7608,
+    "merged": 8,
+    "model": 9217,
+    "modelIdx": 9216,
+    "modelName": 9216,
+    "models": 7423,
+    "originalContent": 219,
+    "parentId": 16646,
+    "role": 16646,
+    "selectedModelId": 4,
+    "sources": 1678,
+    "statusHistory": 694,
+    "timestamp": 15925,
+    "usage": 3819,
+    "userContext": 4996
+   },
+   "message.role": {
+    "assistant": 9216,
+    "null": 8,
+    "user": 7430
+   },
+   "messages_per_chat": {
+    "max": 306,
+    "n": 1982,
+    "p50": 4,
+    "p90": 16
+   },
+   "model_kind": {
+    "agent": 1440,
+    "base_or_external": 596
+   }
+  },
+  "config": {
+   "audio": {
+    "stt": {
+     "azure": {
+      "api_key": "str:empty",
+      "base_url": "str:empty",
+      "locales": "str:empty",
+      "max_speakers": "str:empty",
+      "region": "str:empty"
+     },
+     "deepgram": {
+      "api_key": "str:empty"
+     },
+     "engine": "str:empty",
+     "model": "str",
+     "openai": {
+      "api_base_url": "str",
+      "api_key": "str"
+     },
+     "supported_content_types": "list[1]",
+     "whisper_model": "str"
+    },
+    "tts": {
+     "api_key": "str:empty",
+     "azure": {
+      "speech_base_url": "str:empty",
+      "speech_output_format": "str",
+      "speech_region": "str"
+     },
+     "engine": "str:empty",
+     "model": "str",
+     "openai": {
+      "api_base_url": "str",
+      "api_key": "str"
+     },
+     "split_on": "str",
+     "voice": "str:empty"
+    }
+   },
+   "auth": {
+    "admin": {
+     "show": true
+    },
+    "api_key": {
+     "allowed_endpoints": "str:empty",
+     "enable": true,
+     "endpoint_restrictions": false
+    },
+    "jwt_expiry": "str"
+   },
+   "channels": {
+    "enable": true
+   },
+   "direct": {
+    "enable": true
+   },
+   "file": {
+    "image_compression_height": null,
+    "image_compression_width": null
+   },
+   "google_drive": {
+    "enable": false
+   },
+   "image_generation": {
+    "automatic1111": {
+     "api_auth": "str:empty",
+     "base_url": "str:empty",
+     "cfg_scale": null,
+     "sampler": null,
+     "scheduler": null
+    },
+    "comfyui": {
+     "api_key": "str:empty",
+     "base_url": "str:empty",
+     "nodes": "list[6]",
+     "workflow": "str"
+    },
+    "enable": true,
+    "engine": "str",
+    "gemini": {
+     "api_base_url": "str:empty",
+     "api_key": "str:empty"
+    },
+    "model": "str",
+    "openai": {
+     "api_base_url": "str",
+     "api_key": "str"
+    },
+    "prompt": {
+     "enable": true
+    },
+    "size": "str",
+    "steps": "number"
+   },
+   "ldap": {
+    "enable": false
+   },
+   "magic_link_login": {
+    "enable": false,
+    "smtp_from": "str:empty",
+    "smtp_host": "str:empty",
+    "smtp_password": "str:empty",
+    "smtp_port": "number",
+    "smtp_user": "str:empty"
+   },
+   "models": {
+    "base_models_cache": false
+   },
+   "notes": {
+    "enable": true
+   },
+   "oauth": {
+    "enable_signup": false,
+    "github": {
+     "client_id": "str:empty",
+     "client_secret": "str:empty"
+    },
+    "google": {
+     "client_id": "str:empty",
+     "client_secret": "str:empty"
+    },
+    "merge_accounts_by_email": true
+   },
+   "ollama": {
+    "api_configs": "dict[1]",
+    "base_urls": "list[1]",
+    "enable": false
+   },
+   "onedrive": {
+    "enable": false
+   },
+   "openai": {
+    "api_base_urls": "list[6]",
+    "api_configs": "dict[6]",
+    "api_keys": "list[6]",
+    "enable": true
+   },
+   "rag": {
+    "<other>": 4,
+    "CONTENT_EXTRACTION_ENGINE": "str:empty",
+    "DATALAB_MARKER_USE_LLM": false,
+    "ai_parse": {
+     "chunk_before_llm": true,
+     "enabled": true,
+     "max_chunk_size": "number",
+     "model": "str:empty",
+     "prompt": "str:empty"
+    },
+    "azure_openai": {
+     "api_key": "str:empty",
+     "api_version": "str:empty",
+     "base_url": "str:empty"
+    },
+    "bypass_embedding_and_retrieval": false,
+    "chunk_overlap": "number",
+    "chunk_size": "number",
+    "datalab_marker_api_key": "str:empty",
+    "datalab_marker_force_ocr": false,
+    "datalab_marker_langs": "str:empty",
+    "datalab_marker_output_format": "str",
+    "datalab_marker_paginate": false,
+    "datalab_marker_skip_cache": false,
+    "docling_do_picture_description": false,
+    "docling_ocr_engine": "str",
+    "docling_ocr_lang": "str",
+    "docling_picture_description_api": {},
+    "docling_picture_description_mode": "str:empty",
+    "docling_server_url": "str",
+    "document_intelligence_endpoint": "str:empty",
+    "document_intelligence_key": "str:empty",
+    "embedding_batch_size": "number",
+    "embedding_engine": "str",
+    "embedding_model": "str",
+    "embedding_openai_batch_size": "number",
+    "enable_hybrid_search": false,
+    "external_document_loader_api_key": "str:empty",
+    "external_document_loader_url": "str:empty",
+    "external_reranker_api_key": "str:empty",
+    "external_reranker_url": "str:empty",
+    "file": {
+     "allowed_extensions": "list[0]",
+     "max_count": null,
+     "max_size": null
+    },
+    "full_context": false,
+    "hybrid_bm25_weight": "number",
+    "mistral_ocr_api_key": "str:empty",
+    "ollama": {
+     "key": "str:empty",
+     "url": "str"
+    },
+    "openai_api_base_url": "str",
+    "openai_api_key": "str",
+    "pdf_extract_images": false,
+    "relevance_threshold": "number",
+    "reranking_engine": "str:empty",
+    "reranking_model": "str:empty",
+    "template": "str",
+    "text_splitter": "str:empty",
+    "tika_server_url": "str",
+    "top_k": "number",
+    "top_k_reranker": "number",
+    "web": {
+     "loader": {
+      "engine": "str:empty",
+      "external_web_loader_api_key": "str:empty",
+      "external_web_loader_url": "str:empty",
+      "firecrawl_api_key": "str:empty",
+      "firecrawl_api_url": "str",
+      "playwright_timeout": "number",
+      "playwright_ws_url": "str:empty",
+      "ssl_verification": true
+     },
+     "search": {
+      "bing_search_v7_endpoint": "str",
+      "bing_search_v7_subscription_key": "str:empty",
+      "bocha_search_api_key": "str:empty",
+      "brave_search_api_key": "str",
+      "bypass_embedding_and_retrieval": false,
+      "bypass_web_loader": false,
+      "concurrent_requests": "number",
+      "domain": {
+       "filter_list": "list[0]"
+      },
+      "enable": false,
+      "engine": "str",
+      "exa_api_key": "str:empty",
+      "external_web_search_api_key": "str:empty",
+      "external_web_search_url": "str:empty",
+      "google_pse_api_key": "str:empty",
+      "google_pse_engine_id": "str:empty",
+      "jina_api_key": "str:empty",
+      "kagi_search_api_key": "str:empty",
+      "mojeek_search_api_key": "str:empty",
+      "perplexity_api_key": "str:empty",
+      "perplexity_model": "str",
+      "perplexity_search_context_usage": "str",
+      "result_count": "number",
+      "searchapi_api_key": "str:empty",
+      "searchapi_engine": "str:empty",
+      "searxng_query_url": "str",
+      "serpapi_api_key": "str:empty",
+      "serpapi_engine": "str:empty",
+      "serper_api_key": "str:empty",
+      "serply_api_key": "str:empty",
+      "serpstack_api_key": "str:empty",
+      "serpstack_https": true,
+      "sougou_api_sid": "str:empty",
+      "sougou_api_sk": "str:empty",
+      "tavily_api_key": "str:empty",
+      "tavily_extract_depth": "str",
+      "trust_env": false,
+      "yacy_password": "str:empty",
+      "yacy_query_url": "str:empty",
+      "yacy_username": "str:empty"
+     }
+    },
+    "youtube_loader_language": "list[1]",
+    "youtube_loader_proxy_url": "str:empty"
+   },
+   "spaces": {
+    "enable": true
+   },
+   "task": {
+    "autocomplete": {
+     "enable": false,
+     "input_max_length": "number"
+    },
+    "follow_up": {
+     "enable": true,
+     "prompt_template": "str:empty"
+    },
+    "image": {
+     "prompt_template": "str:empty"
+    },
+    "model": {
+     "default": "str:empty",
+     "external": "str:empty"
+    },
+    "query": {
+     "prompt_template": "str:empty",
+     "retrieval": {
+      "enable": true
+     },
+     "search": {
+      "enable": false
+     }
+    },
+    "search": {
+     "enable": true,
+     "prompt_template": "str:empty"
+    },
+    "tags": {
+     "enable": true,
+     "prompt_template": "str:empty"
+    },
+    "title": {
+     "enable": true,
+     "prompt_template": "str:empty"
+    },
+    "tools": {
+     "prompt_template": "str:empty"
+    }
+   },
+   "tool_server": {
+    "connections": "list[2]"
+   },
+   "ui": {
+    "banners": "list[0]",
+    "branding": {
+     "accent_color": null,
+     "favicon_url": null,
+     "logo_dark_url": null,
+     "logo_url": null,
+     "primary_color": "str",
+     "subtitle": null,
+     "title": null
+    },
+    "default_locale": "str:empty",
+    "default_models": "str",
+    "default_user_role": "str",
+    "enable_community_sharing": true,
+    "enable_message_rating": true,
+    "enable_signup": false,
+    "enable_user_webhooks": true,
+    "model_order_list": "list[407]",
+    "pending_user_overlay_content": "str:empty",
+    "pending_user_overlay_title": "str:empty",
+    "prompt_suggestions": "list[7]",
+    "watermark": "str:empty"
+   },
+   "user": {
+    "permissions": {
+     "chat": {
+      "call": true,
+      "controls": true,
+      "delete": true,
+      "edit": true,
+      "export": true,
+      "file_upload": true,
+      "multiple_models": true,
+      "share": true,
+      "stt": true,
+      "system_prompt": true,
+      "temporary": true,
+      "temporary_enforced": false,
+      "tts": true
+     },
+     "features": {
+      "code_interpreter": true,
+      "direct_tool_servers": false,
+      "image_generation": true,
+      "notes": true,
+      "web_search": true
+     },
+     "sharing": {
+      "public_knowledge": false,
+      "public_models": false,
+      "public_prompts": false,
+      "public_tools": false
+     },
+     "workshop": {
+      "knowledge": false,
+      "models": false,
+      "prompts": false,
+      "tools": false
+     },
+     "workspace": {
+      "knowledge": true,
+      "models": true,
+      "prompts": false,
+      "tools": false
+     }
+    }
+   },
+   "version": "number",
+   "webhook_url": "str:empty",
+   "webui": {
+    "url": "str:empty"
+   }
+  },
+  "file_bytes": 170254336,
+  "freelist_pages": 338,
+  "journal_mode": "delete",
+  "tables": {
+   "alembic_version": {
+    "columns": {
+     "version_num": {
+      "type": "VARCHAR(32)",
+      "typeof": {
+       "text": 1
+      }
+     }
+    },
+    "rows": 1
+   },
+   "auth": {
+    "columns": {
+     "active": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 32
+      }
+     },
+     "email": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 32
+      }
+     },
+     "id": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 32
+      }
+     },
+     "password": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 32
+      }
+     }
+    },
+    "enums": {
+     "active": {
+      "1": 32
+     }
+    },
+    "rows": 32
+   },
+   "bridge_connection": {
+    "columns": {
+     "allowed_ids": {
+      "type": "JSON",
+      "typeof": {}
+     },
+     "channel_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "config": {
+      "type": "JSON",
+      "typeof": {}
+     },
+     "created_at": {
+      "type": "BIGINT",
+      "typeof": {}
+     },
+     "data": {
+      "type": "JSON",
+      "typeof": {}
+     },
+     "enabled": {
+      "type": "BOOLEAN",
+      "typeof": {}
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "meta": {
+      "type": "JSON",
+      "typeof": {}
+     },
+     "mode": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "model_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "name": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "platform": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "status": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "status_message": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "updated_at": {
+      "type": "BIGINT",
+      "typeof": {}
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "user_provisioning": {
+      "type": "TEXT",
+      "typeof": {}
+     }
+    },
+    "enums": {
+     "enabled": {},
+     "mode": {},
+     "platform": {},
+     "status": {}
+    },
+    "months": {
+     "created_at": {},
+     "updated_at": {}
+    },
+    "rows": 0
+   },
+   "bridge_thread": {
+    "columns": {
+     "connection_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "created_at": {
+      "type": "BIGINT",
+      "typeof": {}
+     },
+     "data": {
+      "type": "JSON",
+      "typeof": {}
+     },
+     "external_thread_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "external_user_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "meta": {
+      "type": "JSON",
+      "typeof": {}
+     },
+     "sage_channel_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "sage_chat_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "sage_user_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "updated_at": {
+      "type": "BIGINT",
+      "typeof": {}
+     }
+    },
+    "months": {
+     "created_at": {},
+     "updated_at": {}
+    },
+    "rows": 0
+   },
+   "channel": {
+    "columns": {
+     "access_control": {
+      "type": "JSON",
+      "typeof": {
+       "text": 3
+      }
+     },
+     "created_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 3
+      }
+     },
+     "data": {
+      "type": "JSON",
+      "typeof": {
+       "text": 3
+      }
+     },
+     "description": {
+      "type": "TEXT",
+      "typeof": {
+       "null": 3
+      }
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 3
+      }
+     },
+     "meta": {
+      "type": "JSON",
+      "typeof": {
+       "text": 3
+      }
+     },
+     "name": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 3
+      }
+     },
+     "type": {
+      "type": "TEXT",
+      "typeof": {
+       "null": 3
+      }
+     },
+     "updated_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 3
+      }
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 3
+      }
+     }
+    },
+    "enums": {
+     "type": {
+      "null": 3
+     }
+    },
+    "json": {
+     "access_control": {
+      "dicts": 3,
+      "keys": {
+       "read": 3,
+       "write": 3
+      }
+     },
+     "data": {
+      "dicts": 1,
+      "keys": {
+       "<other>": 1
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2025-08": 2,
+      "2025-11": 1
+     },
+     "updated_at": {
+      "2025-08": 2,
+      "2026-04": 1
+     }
+    },
+    "rows": 3
+   },
+   "channel_member": {
+    "columns": {
+     "channel_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "created_at": {
+      "type": "BIGINT",
+      "typeof": {}
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {}
+     }
+    },
+    "months": {
+     "created_at": {}
+    },
+    "rows": 0
+   },
+   "chat": {
+    "columns": {
+     "archived": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 1982
+      }
+     },
+     "chat": {
+      "type": "JSON",
+      "typeof": {
+       "text": 1982
+      }
+     },
+     "created_at": {
+      "type": "DATETIME",
+      "typeof": {
+       "integer": 1982
+      }
+     },
+     "folder_id": {
+      "type": "TEXT",
+      "typeof": {
+       "null": 1924,
+       "text": 58
+      }
+     },
+     "id": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 1982
+      }
+     },
+     "meta": {
+      "type": "JSON",
+      "typeof": {
+       "text": 1982
+      }
+     },
+     "pinned": {
+      "type": "BOOLEAN",
+      "typeof": {
+       "integer": 1904,
+       "null": 78
+      }
+     },
+     "share_id": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "null": 1953,
+       "text": 29
+      }
+     },
+     "title": {
+      "empty": 1,
+      "type": "TEXT",
+      "typeof": {
+       "text": 1982
+      }
+     },
+     "updated_at": {
+      "type": "DATETIME",
+      "typeof": {
+       "integer": 1982
+      }
+     },
+     "user_id": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 1982
+      }
+     }
+    },
+    "enums": {
+     "archived": {
+      "0": 1980,
+      "1": 2
+     },
+     "pinned": {
+      "0": 1889,
+      "1": 15,
+      "null": 78
+     }
+    },
+    "json": {
+     "meta": {
+      "dicts": 1982,
+      "keys": {
+       "tags": 1556
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2024-09": 1,
+      "2024-10": 95,
+      "2024-11": 34,
+      "2024-12": 83,
+      "2025-01": 138,
+      "2025-02": 108,
+      "2025-03": 99,
+      "2025-04": 111,
+      "2025-05": 96,
+      "2025-06": 90,
+      "2025-07": 122,
+      "2025-08": 93,
+      "2025-09": 82,
+      "2025-10": 98,
+      "2025-11": 116,
+      "2025-12": 104,
+      "2026-01": 86,
+      "2026-02": 72,
+      "2026-03": 120,
+      "2026-04": 89,
+      "2026-05": 73,
+      "2026-06": 50,
+      "2026-07": 22
+     },
+     "updated_at": {
+      "2024-09": 1,
+      "2024-10": 90,
+      "2024-11": 36,
+      "2024-12": 82,
+      "2025-01": 138,
+      "2025-02": 106,
+      "2025-03": 97,
+      "2025-04": 109,
+      "2025-05": 98,
+      "2025-06": 92,
+      "2025-07": 123,
+      "2025-08": 92,
+      "2025-09": 82,
+      "2025-10": 102,
+      "2025-11": 115,
+      "2025-12": 101,
+      "2026-01": 88,
+      "2026-02": 74,
+      "2026-03": 119,
+      "2026-04": 90,
+      "2026-05": 73,
+      "2026-06": 51,
+      "2026-07": 23
+     }
+    },
+    "present": {
+     "folder_id": 58,
+     "share_id": 29
+    },
+    "rows": 1982
+   },
+   "chat_share": {
+    "columns": {
+     "chat_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "created_at": {
+      "type": "INTEGER",
+      "typeof": {}
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "share_mode": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "shared_by": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "snapshot_chat_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "target_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "target_type": {
+      "type": "TEXT",
+      "typeof": {}
+     }
+    },
+    "enums": {
+     "share_mode": {},
+     "target_type": {}
+    },
+    "months": {
+     "created_at": {}
+    },
+    "rows": 0
+   },
+   "chatidtag": {
+    "columns": {
+     "chat_id": {
+      "type": "VARCHAR(255)",
+      "typeof": {}
+     },
+     "id": {
+      "type": "VARCHAR(255)",
+      "typeof": {}
+     },
+     "tag_name": {
+      "type": "VARCHAR(255)",
+      "typeof": {}
+     },
+     "timestamp": {
+      "type": "INTEGER",
+      "typeof": {}
+     },
+     "user_id": {
+      "type": "VARCHAR(255)",
+      "typeof": {}
+     }
+    },
+    "months": {
+     "timestamp": {}
+    },
+    "rows": 0
+   },
+   "config": {
+    "columns": {
+     "created_at": {
+      "type": "DATETIME",
+      "typeof": {
+       "text": 1
+      }
+     },
+     "data": {
+      "type": "JSON",
+      "typeof": {
+       "text": 1
+      }
+     },
+     "id": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 1
+      }
+     },
+     "updated_at": {
+      "type": "DATETIME",
+      "typeof": {
+       "text": 1
+      }
+     },
+     "version": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 1
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2024-10": 1
+     },
+     "updated_at": {
+      "2026-07": 1
+     }
+    },
+    "rows": 1
+   },
+   "document": {
+    "columns": {
+     "collection_name": {
+      "type": "VARCHAR(255)",
+      "typeof": {}
+     },
+     "content": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "filename": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "id": {
+      "type": "INTEGER",
+      "typeof": {}
+     },
+     "name": {
+      "type": "VARCHAR(255)",
+      "typeof": {}
+     },
+     "timestamp": {
+      "type": "INTEGER",
+      "typeof": {}
+     },
+     "title": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "user_id": {
+      "type": "VARCHAR(255)",
+      "typeof": {}
+     }
+    },
+    "months": {
+     "timestamp": {}
+    },
+    "rows": 0
+   },
+   "feedback": {
+    "columns": {
+     "created_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 30
+      }
+     },
+     "data": {
+      "type": "JSON",
+      "typeof": {
+       "text": 30
+      }
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 30
+      }
+     },
+     "meta": {
+      "type": "JSON",
+      "typeof": {
+       "text": 30
+      }
+     },
+     "snapshot": {
+      "type": "JSON",
+      "typeof": {
+       "text": 30
+      }
+     },
+     "type": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 30
+      }
+     },
+     "updated_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 30
+      }
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 30
+      }
+     },
+     "version": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 30
+      }
+     }
+    },
+    "enums": {
+     "type": {
+      "rating": 30
+     }
+    },
+    "json": {
+     "data": {
+      "dicts": 30,
+      "keys": {
+       "comment": 30,
+       "details": 5,
+       "model_id": 30,
+       "rating": 30,
+       "reason": 30,
+       "sibling_model_ids": 30,
+       "tags": 29
+      }
+     },
+     "meta": {
+      "dicts": 30,
+      "keys": {
+       "base_models": 17,
+       "chat_id": 30,
+       "message_id": 30,
+       "message_index": 30,
+       "model_id": 30
+      }
+     },
+     "snapshot": {
+      "dicts": 30,
+      "keys": {
+       "chat": 30
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2024-10": 1,
+      "2024-11": 12,
+      "2025-01": 5,
+      "2025-04": 1,
+      "2025-06": 1,
+      "2025-07": 1,
+      "2025-11": 1,
+      "2026-02": 4,
+      "2026-03": 2,
+      "2026-07": 2
+     },
+     "updated_at": {
+      "2024-10": 1,
+      "2024-11": 12,
+      "2025-01": 5,
+      "2025-04": 1,
+      "2025-06": 1,
+      "2025-07": 1,
+      "2025-11": 1,
+      "2026-02": 4,
+      "2026-03": 2,
+      "2026-07": 2
+     }
+    },
+    "rows": 30
+   },
+   "file": {
+    "columns": {
+     "access_control": {
+      "type": "JSON",
+      "typeof": {
+       "null": 42,
+       "text": 2151
+      }
+     },
+     "created_at": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 2193
+      }
+     },
+     "data": {
+      "type": "JSON",
+      "typeof": {
+       "null": 3,
+       "text": 2190
+      }
+     },
+     "filename": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 2193
+      }
+     },
+     "hash": {
+      "type": "TEXT",
+      "typeof": {
+       "null": 1113,
+       "text": 1080
+      }
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 2193
+      }
+     },
+     "meta": {
+      "type": "JSON",
+      "typeof": {
+       "text": 2193
+      }
+     },
+     "path": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 2193
+      }
+     },
+     "updated_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 2190,
+       "null": 3
+      }
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 2193
+      }
+     }
+    },
+    "json": {
+     "data": {
+      "dicts": 2190,
+      "keys": {
+       "content": 1080
+      }
+     },
+     "meta": {
+      "dicts": 2193,
+      "keys": {
+       "collection_name": 392,
+       "content_type": 2193,
+       "data": 2151,
+       "name": 2193,
+       "path": 3,
+       "size": 2193
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2024-10": 5,
+      "2024-12": 3,
+      "2025-01": 28,
+      "2025-02": 6,
+      "2025-03": 3,
+      "2025-04": 5,
+      "2025-05": 75,
+      "2025-06": 5,
+      "2025-07": 1,
+      "2025-08": 955,
+      "2025-09": 1,
+      "2025-10": 13,
+      "2025-11": 3,
+      "2026-01": 68,
+      "2026-02": 999,
+      "2026-03": 5,
+      "2026-04": 1,
+      "2026-05": 4,
+      "2026-06": 13
+     },
+     "updated_at": {
+      "2024-10": 2,
+      "2024-12": 3,
+      "2025-01": 28,
+      "2025-02": 6,
+      "2025-03": 3,
+      "2025-04": 5,
+      "2025-05": 75,
+      "2025-06": 5,
+      "2025-07": 1,
+      "2025-08": 955,
+      "2025-09": 1,
+      "2025-10": 13,
+      "2025-11": 3,
+      "2026-01": 68,
+      "2026-02": 999,
+      "2026-03": 5,
+      "2026-04": 1,
+      "2026-05": 4,
+      "2026-06": 13
+     }
+    },
+    "present": {
+     "hash": 1080,
+     "path": 2193
+    },
+    "rows": 2193
+   },
+   "folder": {
+    "columns": {
+     "created_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 14
+      }
+     },
+     "data": {
+      "type": "JSON",
+      "typeof": {
+       "null": 7,
+       "text": 7
+      }
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 14
+      }
+     },
+     "is_expanded": {
+      "type": "BOOLEAN",
+      "typeof": {
+       "integer": 14
+      }
+     },
+     "items": {
+      "type": "JSON",
+      "typeof": {
+       "text": 14
+      }
+     },
+     "meta": {
+      "type": "JSON",
+      "typeof": {
+       "text": 14
+      }
+     },
+     "name": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 14
+      }
+     },
+     "parent_id": {
+      "type": "TEXT",
+      "typeof": {
+       "null": 14
+      }
+     },
+     "updated_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 14
+      }
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 14
+      }
+     }
+    },
+    "json": {
+     "data": {
+      "dicts": 7,
+      "keys": {
+       "files": 7,
+       "system_prompt": 7
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2024-12": 1,
+      "2025-01": 2,
+      "2025-02": 1,
+      "2025-04": 1,
+      "2025-05": 1,
+      "2025-06": 1,
+      "2025-08": 2,
+      "2025-09": 3,
+      "2025-10": 2
+     },
+     "updated_at": {
+      "2026-07": 14
+     }
+    },
+    "rows": 14
+   },
+   "function": {
+    "columns": {
+     "content": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 1
+      }
+     },
+     "created_at": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 1
+      }
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 1
+      }
+     },
+     "is_active": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 1
+      }
+     },
+     "is_global": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 1
+      }
+     },
+     "meta": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 1
+      }
+     },
+     "name": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 1
+      }
+     },
+     "type": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 1
+      }
+     },
+     "updated_at": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 1
+      }
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 1
+      }
+     },
+     "valves": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 1
+      }
+     }
+    },
+    "enums": {
+     "is_active": {
+      "0": 1
+     },
+     "is_global": {
+      "0": 1
+     },
+     "type": {
+      "pipe": 1
+     }
+    },
+    "json": {
+     "meta": {
+      "dicts": 1,
+      "keys": {
+       "<other>": 2
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2025-06": 1
+     },
+     "updated_at": {
+      "2026-04": 1
+     }
+    },
+    "rows": 1
+   },
+   "group": {
+    "columns": {
+     "created_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 3
+      }
+     },
+     "data": {
+      "type": "JSON",
+      "typeof": {
+       "text": 3
+      }
+     },
+     "description": {
+      "empty": 3,
+      "type": "TEXT",
+      "typeof": {
+       "text": 3
+      }
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 3
+      }
+     },
+     "meta": {
+      "type": "JSON",
+      "typeof": {
+       "text": 3
+      }
+     },
+     "name": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 3
+      }
+     },
+     "permissions": {
+      "type": "JSON",
+      "typeof": {
+       "text": 3
+      }
+     },
+     "updated_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 3
+      }
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 3
+      }
+     },
+     "user_ids": {
+      "type": "JSON",
+      "typeof": {
+       "text": 3
+      }
+     }
+    },
+    "json": {
+     "permissions": {
+      "chat.*": {
+       "<other>": 39
+      },
+      "chat.*=true": {
+       "<other>": 36
+      },
+      "dicts": 3,
+      "features.*": {
+       "<other>": 15
+      },
+      "features.*=true": {
+       "<other>": 12
+      },
+      "keys": {
+       "<other>": 14
+      },
+      "workspace.*": {
+       "<other>": 8
+      },
+      "workspace.*=true": {
+       "<other>": 6
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2024-12": 1,
+      "2025-05": 1,
+      "2025-06": 1
+     },
+     "updated_at": {
+      "2025-09": 1,
+      "2026-03": 2
+     }
+    },
+    "rows": 3
+   },
+   "knowledge": {
+    "columns": {
+     "access_control": {
+      "type": "JSON",
+      "typeof": {
+       "text": 18
+      }
+     },
+     "created_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 18
+      }
+     },
+     "data": {
+      "type": "JSON",
+      "typeof": {
+       "text": 18
+      }
+     },
+     "description": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 18
+      }
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 18
+      }
+     },
+     "meta": {
+      "type": "JSON",
+      "typeof": {
+       "text": 18
+      }
+     },
+     "name": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 18
+      }
+     },
+     "updated_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 18
+      }
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 18
+      }
+     }
+    },
+    "json": {
+     "access_control": {
+      "dicts": 15,
+      "keys": {
+       "read": 15,
+       "write": 14
+      }
+     },
+     "data": {
+      "dicts": 13,
+      "keys": {
+       "file_ids": 13
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2024-12": 2,
+      "2025-01": 2,
+      "2025-02": 2,
+      "2025-05": 1,
+      "2025-07": 1,
+      "2025-08": 3,
+      "2025-09": 1,
+      "2025-10": 2,
+      "2026-01": 3,
+      "2026-06": 1
+     },
+     "updated_at": {
+      "2025-01": 1,
+      "2025-02": 1,
+      "2025-05": 1,
+      "2025-07": 1,
+      "2025-08": 4,
+      "2025-09": 2,
+      "2025-10": 1,
+      "2025-11": 2,
+      "2026-01": 2,
+      "2026-02": 2,
+      "2026-06": 1
+     }
+    },
+    "rows": 18
+   },
+   "magic_link": {
+    "columns": {
+     "account_duration": {
+      "type": "BIGINT",
+      "typeof": {}
+     },
+     "created_at": {
+      "type": "BIGINT",
+      "typeof": {}
+     },
+     "created_by": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "expires_at": {
+      "type": "BIGINT",
+      "typeof": {}
+     },
+     "group_ids": {
+      "type": "JSON",
+      "typeof": {}
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "is_active": {
+      "type": "BOOLEAN",
+      "typeof": {}
+     },
+     "max_uses": {
+      "type": "INTEGER",
+      "typeof": {}
+     },
+     "meta": {
+      "type": "JSON",
+      "typeof": {}
+     },
+     "role": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "token": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "updated_at": {
+      "type": "BIGINT",
+      "typeof": {}
+     },
+     "use_count": {
+      "type": "INTEGER",
+      "typeof": {}
+     },
+     "webhook_url": {
+      "type": "TEXT",
+      "typeof": {}
+     }
+    },
+    "enums": {
+     "is_active": {},
+     "role": {}
+    },
+    "months": {
+     "created_at": {},
+     "updated_at": {}
+    },
+    "rows": 0
+   },
+   "memory": {
+    "columns": {
+     "content": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "created_at": {
+      "type": "INTEGER",
+      "typeof": {}
+     },
+     "id": {
+      "type": "VARCHAR(255)",
+      "typeof": {}
+     },
+     "updated_at": {
+      "type": "INTEGER",
+      "typeof": {}
+     },
+     "user_id": {
+      "type": "VARCHAR(255)",
+      "typeof": {}
+     }
+    },
+    "months": {
+     "created_at": {},
+     "updated_at": {}
+    },
+    "rows": 0
+   },
+   "message": {
+    "columns": {
+     "channel_id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 50
+      }
+     },
+     "content": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 50
+      }
+     },
+     "created_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 50
+      }
+     },
+     "data": {
+      "type": "JSON",
+      "typeof": {
+       "text": 50
+      }
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 50
+      }
+     },
+     "meta": {
+      "type": "JSON",
+      "typeof": {
+       "text": 50
+      }
+     },
+     "parent_id": {
+      "type": "TEXT",
+      "typeof": {
+       "null": 46,
+       "text": 4
+      }
+     },
+     "updated_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 50
+      }
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 50
+      }
+     }
+    },
+    "json": {
+     "data": {
+      "dicts": 47,
+      "keys": {
+       "<other>": 16,
+       "files": 10
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2025-08": 1,
+      "2025-10": 1,
+      "2025-11": 5,
+      "2026-02": 4,
+      "2026-04": 39
+     },
+     "updated_at": {
+      "2025-08": 1,
+      "2025-10": 1,
+      "2025-11": 5,
+      "2026-02": 4,
+      "2026-04": 39
+     }
+    },
+    "rows": 50
+   },
+   "message_reaction": {
+    "columns": {
+     "created_at": {
+      "type": "BIGINT",
+      "typeof": {}
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "message_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "name": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {}
+     }
+    },
+    "months": {
+     "created_at": {}
+    },
+    "rows": 0
+   },
+   "migratehistory": {
+    "columns": {
+     "id": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 19
+      }
+     },
+     "migrated_at": {
+      "type": "DATETIME",
+      "typeof": {
+       "text": 19
+      }
+     },
+     "name": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 19
+      }
+     }
+    },
+    "rows": 19
+   },
+   "model": {
+    "columns": {
+     "access_control": {
+      "type": "JSON",
+      "typeof": {
+       "null": 185,
+       "text": 147
+      }
+     },
+     "base_model_id": {
+      "type": "TEXT",
+      "typeof": {
+       "null": 281,
+       "text": 51
+      }
+     },
+     "created_at": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 332
+      }
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 332
+      }
+     },
+     "is_active": {
+      "type": "BOOLEAN",
+      "typeof": {
+       "integer": 332
+      }
+     },
+     "meta": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 332
+      }
+     },
+     "name": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 332
+      }
+     },
+     "params": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 332
+      }
+     },
+     "updated_at": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 332
+      }
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 332
+      }
+     }
+    },
+    "enums": {
+     "is_active": {
+      "0": 2,
+      "1": 330
+     }
+    },
+    "json": {
+     "access_control": {
+      "dicts": 40,
+      "keys": {
+       "read": 38,
+       "write": 38
+      }
+     },
+     "meta": {
+      "capabilities.*": {
+       "citations": 145,
+       "code_interpreter": 144,
+       "file_upload": 144,
+       "image_generation": 144,
+       "usage": 56,
+       "vision": 147,
+       "web_search": 131
+      },
+      "capabilities.*=true": {
+       "citations": 137,
+       "code_interpreter": 135,
+       "file_upload": 140,
+       "image_generation": 131,
+       "vision": 110,
+       "web_search": 118
+      },
+      "dicts": 332,
+      "keys": {
+       "capabilities": 285,
+       "description": 283,
+       "hidden": 60,
+       "knowledge": 9,
+       "position": 277,
+       "profile_image_url": 332,
+       "suggestion_prompts": 65,
+       "tags": 52,
+       "toolIds": 18
+      }
+     },
+     "params": {
+      "dicts": 332,
+      "keys": {
+       "<other>": 2,
+       "system": 55
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2024-10": 55,
+      "2024-11": 4,
+      "2024-12": 220,
+      "2025-01": 2,
+      "2025-02": 3,
+      "2025-03": 3,
+      "2025-04": 1,
+      "2025-05": 3,
+      "2025-06": 3,
+      "2025-07": 2,
+      "2025-08": 4,
+      "2025-09": 3,
+      "2025-10": 3,
+      "2025-11": 3,
+      "2025-12": 7,
+      "2026-01": 1,
+      "2026-02": 3,
+      "2026-03": 4,
+      "2026-04": 2,
+      "2026-05": 1,
+      "2026-07": 5
+     },
+     "updated_at": {
+      "2024-10": 53,
+      "2024-11": 4,
+      "2024-12": 220,
+      "2025-01": 2,
+      "2025-02": 3,
+      "2025-03": 3,
+      "2025-04": 1,
+      "2025-05": 3,
+      "2025-06": 3,
+      "2025-07": 2,
+      "2025-08": 4,
+      "2025-09": 4,
+      "2025-10": 3,
+      "2025-11": 4,
+      "2025-12": 7,
+      "2026-01": 1,
+      "2026-02": 3,
+      "2026-03": 4,
+      "2026-04": 2,
+      "2026-05": 1,
+      "2026-07": 5
+     }
+    },
+    "present": {
+     "base_model_id": 51
+    },
+    "rows": 332
+   },
+   "note": {
+    "columns": {
+     "access_control": {
+      "type": "JSON",
+      "typeof": {
+       "text": 17
+      }
+     },
+     "created_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 17
+      }
+     },
+     "data": {
+      "type": "JSON",
+      "typeof": {
+       "text": 17
+      }
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 17
+      }
+     },
+     "meta": {
+      "type": "JSON",
+      "typeof": {
+       "text": 17
+      }
+     },
+     "title": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 17
+      }
+     },
+     "updated_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 17
+      }
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 17
+      }
+     }
+    },
+    "json": {
+     "access_control": {
+      "dicts": 15,
+      "keys": {
+       "read": 6,
+       "write": 6
+      }
+     },
+     "data": {
+      "dicts": 17,
+      "keys": {
+       "content": 17,
+       "files": 13
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2025-08": 2,
+      "2025-10": 1,
+      "2025-11": 5,
+      "2025-12": 1,
+      "2026-01": 3,
+      "2026-03": 2,
+      "2026-05": 2,
+      "2026-06": 1
+     },
+     "updated_at": {
+      "2025-08": 2,
+      "2025-11": 2,
+      "2026-01": 3,
+      "2026-02": 1,
+      "2026-03": 4,
+      "2026-05": 2,
+      "2026-06": 3
+     }
+    },
+    "rows": 17
+   },
+   "prompt": {
+    "columns": {
+     "access_control": {
+      "type": "JSON",
+      "typeof": {
+       "text": 8
+      }
+     },
+     "command": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 8
+      }
+     },
+     "content": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 8
+      }
+     },
+     "id": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 8
+      }
+     },
+     "timestamp": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 8
+      }
+     },
+     "title": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 8
+      }
+     },
+     "user_id": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 8
+      }
+     }
+    },
+    "json": {
+     "access_control": {
+      "dicts": 7,
+      "keys": {}
+     }
+    },
+    "months": {
+     "timestamp": {
+      "2025-01": 1,
+      "2025-08": 1,
+      "2025-10": 4,
+      "2026-03": 2
+     }
+    },
+    "rows": 8
+   },
+   "tag": {
+    "columns": {
+     "id": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 1395
+      }
+     },
+     "meta": {
+      "type": "JSON",
+      "typeof": {
+       "text": 1395
+      }
+     },
+     "name": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 1395
+      }
+     },
+     "user_id": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 1395
+      }
+     }
+    },
+    "rows": 1395
+   },
+   "tool": {
+    "columns": {
+     "access_control": {
+      "type": "JSON",
+      "typeof": {
+       "null": 1,
+       "text": 1
+      }
+     },
+     "content": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 2
+      }
+     },
+     "created_at": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 2
+      }
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 2
+      }
+     },
+     "meta": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 2
+      }
+     },
+     "name": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 2
+      }
+     },
+     "specs": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 2
+      }
+     },
+     "updated_at": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 2
+      }
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 2
+      }
+     },
+     "valves": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 2
+      }
+     }
+    },
+    "json": {
+     "meta": {
+      "dicts": 2,
+      "keys": {
+       "<other>": 4
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2024-10": 1,
+      "2025-06": 1
+     },
+     "updated_at": {
+      "2026-03": 2
+     }
+    },
+    "rows": 2
+   },
+   "user": {
+    "columns": {
+     "api_key": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "null": 31,
+       "text": 1
+      }
+     },
+     "created_at": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 32
+      }
+     },
+     "email": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 32
+      }
+     },
+     "id": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 32
+      }
+     },
+     "info": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 32
+      }
+     },
+     "last_active_at": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 32
+      }
+     },
+     "name": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 32
+      }
+     },
+     "oauth_sub": {
+      "type": "TEXT",
+      "typeof": {
+       "null": 32
+      }
+     },
+     "profile_image_url": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 32
+      }
+     },
+     "role": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 32
+      }
+     },
+     "settings": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 32
+      }
+     },
+     "updated_at": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 32
+      }
+     }
+    },
+    "enums": {
+     "role": {
+      "admin": 5,
+      "user": 27
+     }
+    },
+    "json": {
+     "settings": {
+      "dicts": 19,
+      "keys": {
+       "ui": 19
+      },
+      "ui.*": {
+       "<other>": 9,
+       "audio": 5,
+       "copyFormatted": 2,
+       "imageCompressionSize": 2,
+       "models": 13,
+       "notifications": 8,
+       "params": 7,
+       "pinnedModels": 2,
+       "setupCompleted": 3,
+       "version": 9
+      },
+      "ui.*=true": {
+       "<other>": 2,
+       "copyFormatted": 2,
+       "setupCompleted": 3
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2024-09": 3,
+      "2024-10": 8,
+      "2024-11": 3,
+      "2024-12": 4,
+      "2025-01": 1,
+      "2025-02": 1,
+      "2025-03": 1,
+      "2025-05": 2,
+      "2025-06": 1,
+      "2025-08": 4,
+      "2025-10": 2,
+      "2025-11": 2
+     },
+     "last_active_at": {
+      "2024-10": 3,
+      "2024-11": 2,
+      "2024-12": 4,
+      "2025-02": 1,
+      "2025-04": 1,
+      "2025-05": 2,
+      "2025-06": 1,
+      "2025-08": 3,
+      "2025-10": 1,
+      "2025-11": 3,
+      "2026-03": 2,
+      "2026-04": 1,
+      "2026-05": 1,
+      "2026-06": 3,
+      "2026-07": 4
+     },
+     "updated_at": {
+      "2024-09": 3,
+      "2024-10": 8,
+      "2024-11": 3,
+      "2024-12": 4,
+      "2025-01": 1,
+      "2025-02": 1,
+      "2025-03": 1,
+      "2025-05": 2,
+      "2025-06": 1,
+      "2025-08": 4,
+      "2025-10": 2,
+      "2025-11": 2
+     }
+    },
+    "present": {
+     "api_key": 1,
+     "last_active_at": 32,
+     "oauth_sub": 0
+    },
+    "rows": 32
+   }
+  },
+  "users_active_within_days": {
+   "30": 7,
+   "7": 3,
+   "90": 8
+  }
+ },
+ "sage-startr-cloud/2026-09-27-3.1.0.db": {
+  "alembic_head": "b1c2d3e4f5a6",
+  "chat": {
+   "chat.*": {
+    "<other>": 19,
+    "branchPointMessageId": 13,
+    "files": 2113,
+    "history": 2124,
+    "id": 2124,
+    "messages": 2124,
+    "models": 2124,
+    "originalChatId": 13,
+    "params": 2124,
+    "tags": 2124,
+    "timestamp": 2124,
+    "title": 2124
+   },
+   "chats_per_user": {
+    "max": 1159,
+    "n": 53,
+    "p50": 1,
+    "p90": 14
+   },
+   "message.*": {
+    "annotation": 33,
+    "arena": 4,
+    "childrenIds": 17589,
+    "citations": 22,
+    "content": 17593,
+    "done": 9598,
+    "error": 630,
+    "favorite": 122,
+    "feedbackId": 31,
+    "files": 200,
+    "followUps": 3154,
+    "id": 17589,
+    "info": 90,
+    "lastSentence": 8003,
+    "merged": 8,
+    "model": 9727,
+    "modelIdx": 9726,
+    "modelName": 9726,
+    "models": 7856,
+    "originalContent": 235,
+    "parentId": 17589,
+    "role": 17589,
+    "selectedModelId": 4,
+    "sources": 1802,
+    "statusHistory": 695,
+    "timestamp": 16868,
+    "usage": 4285,
+    "userContext": 4996
+   },
+   "message.role": {
+    "assistant": 9726,
+    "null": 8,
+    "user": 7863
+   },
+   "messages_per_chat": {
+    "max": 306,
+    "n": 2124,
+    "p50": 4,
+    "p90": 16
+   },
+   "model_kind": {
+    "agent": 1579,
+    "base_or_external": 599
+   }
+  },
+  "config": {
+   "audio": {
+    "stt": {
+     "azure": {
+      "api_key": "str:empty",
+      "base_url": "str:empty",
+      "locales": "str:empty",
+      "max_speakers": "str:empty",
+      "region": "str:empty"
+     },
+     "deepgram": {
+      "api_key": "str:empty"
+     },
+     "engine": "str:empty",
+     "model": "str",
+     "openai": {
+      "api_base_url": "str",
+      "api_key": "str"
+     },
+     "supported_content_types": "list[1]",
+     "whisper_model": "str"
+    },
+    "tts": {
+     "api_key": "str:empty",
+     "azure": {
+      "speech_base_url": "str:empty",
+      "speech_output_format": "str",
+      "speech_region": "str"
+     },
+     "engine": "str:empty",
+     "model": "str",
+     "openai": {
+      "api_base_url": "str",
+      "api_key": "str"
+     },
+     "split_on": "str",
+     "voice": "str:empty"
+    }
+   },
+   "auth": {
+    "admin": {
+     "show": true
+    },
+    "api_key": {
+     "allowed_endpoints": "str:empty",
+     "enable": true,
+     "endpoint_restrictions": false
+    },
+    "jwt_expiry": "str"
+   },
+   "channels": {
+    "enable": true
+   },
+   "direct": {
+    "enable": true
+   },
+   "file": {
+    "image_compression_height": null,
+    "image_compression_width": null
+   },
+   "google_drive": {
+    "enable": false
+   },
+   "image_generation": {
+    "automatic1111": {
+     "api_auth": "str:empty",
+     "base_url": "str:empty",
+     "cfg_scale": null,
+     "sampler": null,
+     "scheduler": null
+    },
+    "comfyui": {
+     "api_key": "str:empty",
+     "base_url": "str:empty",
+     "nodes": "list[6]",
+     "workflow": "str"
+    },
+    "enable": true,
+    "engine": "str",
+    "gemini": {
+     "api_base_url": "str:empty",
+     "api_key": "str:empty"
+    },
+    "model": "str",
+    "openai": {
+     "api_base_url": "str",
+     "api_key": "str"
+    },
+    "prompt": {
+     "enable": true
+    },
+    "size": "str",
+    "steps": "number"
+   },
+   "ldap": {
+    "enable": false
+   },
+   "magic_link_login": {
+    "enable": false,
+    "smtp_from": "str:empty",
+    "smtp_host": "str:empty",
+    "smtp_password": "str:empty",
+    "smtp_port": "number",
+    "smtp_user": "str:empty"
+   },
+   "models": {
+    "base_models_cache": false
+   },
+   "notes": {
+    "enable": true
+   },
+   "oauth": {
+    "enable_signup": false,
+    "github": {
+     "client_id": "str:empty",
+     "client_secret": "str:empty"
+    },
+    "google": {
+     "client_id": "str:empty",
+     "client_secret": "str:empty"
+    },
+    "merge_accounts_by_email": true
+   },
+   "ollama": {
+    "api_configs": "dict[1]",
+    "base_urls": "list[1]",
+    "enable": false
+   },
+   "onedrive": {
+    "enable": false
+   },
+   "openai": {
+    "api_base_urls": "list[7]",
+    "api_configs": "dict[7]",
+    "api_keys": "list[7]",
+    "enable": true
+   },
+   "rag": {
+    "<other>": 4,
+    "CONTENT_EXTRACTION_ENGINE": "str:empty",
+    "DATALAB_MARKER_USE_LLM": false,
+    "ai_parse": {
+     "chunk_before_llm": true,
+     "enabled": true,
+     "max_chunk_size": "number",
+     "model": "str:empty",
+     "prompt": "str:empty"
+    },
+    "azure_openai": {
+     "api_key": "str:empty",
+     "api_version": "str:empty",
+     "base_url": "str:empty"
+    },
+    "bypass_embedding_and_retrieval": false,
+    "chunk_overlap": "number",
+    "chunk_size": "number",
+    "datalab_marker_api_key": "str:empty",
+    "datalab_marker_force_ocr": false,
+    "datalab_marker_langs": "str:empty",
+    "datalab_marker_output_format": "str",
+    "datalab_marker_paginate": false,
+    "datalab_marker_skip_cache": false,
+    "docling_do_picture_description": false,
+    "docling_ocr_engine": "str",
+    "docling_ocr_lang": "str",
+    "docling_picture_description_api": {},
+    "docling_picture_description_mode": "str:empty",
+    "docling_server_url": "str",
+    "document_intelligence_endpoint": "str:empty",
+    "document_intelligence_key": "str:empty",
+    "embedding_batch_size": "number",
+    "embedding_engine": "str",
+    "embedding_model": "str",
+    "embedding_openai_batch_size": "number",
+    "enable_hybrid_search": false,
+    "external_document_loader_api_key": "str:empty",
+    "external_document_loader_url": "str:empty",
+    "external_reranker_api_key": "str:empty",
+    "external_reranker_url": "str:empty",
+    "file": {
+     "allowed_extensions": "list[0]",
+     "max_count": null,
+     "max_size": null
+    },
+    "full_context": false,
+    "hybrid_bm25_weight": "number",
+    "mistral_ocr_api_key": "str:empty",
+    "ollama": {
+     "key": "str:empty",
+     "url": "str"
+    },
+    "openai_api_base_url": "str",
+    "openai_api_key": "str",
+    "pdf_extract_images": false,
+    "relevance_threshold": "number",
+    "reranking_engine": "str:empty",
+    "reranking_model": "str:empty",
+    "template": "str",
+    "text_splitter": "str:empty",
+    "tika_server_url": "str",
+    "top_k": "number",
+    "top_k_reranker": "number",
+    "web": {
+     "loader": {
+      "engine": "str:empty",
+      "external_web_loader_api_key": "str:empty",
+      "external_web_loader_url": "str:empty",
+      "firecrawl_api_key": "str:empty",
+      "firecrawl_api_url": "str",
+      "playwright_timeout": "number",
+      "playwright_ws_url": "str:empty",
+      "ssl_verification": true
+     },
+     "search": {
+      "bing_search_v7_endpoint": "str",
+      "bing_search_v7_subscription_key": "str:empty",
+      "bocha_search_api_key": "str:empty",
+      "brave_search_api_key": "str",
+      "bypass_embedding_and_retrieval": false,
+      "bypass_web_loader": false,
+      "concurrent_requests": "number",
+      "domain": {
+       "filter_list": "list[0]"
+      },
+      "enable": false,
+      "engine": "str",
+      "exa_api_key": "str:empty",
+      "external_web_search_api_key": "str:empty",
+      "external_web_search_url": "str:empty",
+      "google_pse_api_key": "str:empty",
+      "google_pse_engine_id": "str:empty",
+      "jina_api_key": "str:empty",
+      "kagi_search_api_key": "str:empty",
+      "mojeek_search_api_key": "str:empty",
+      "perplexity_api_key": "str:empty",
+      "perplexity_model": "str",
+      "perplexity_search_context_usage": "str",
+      "result_count": "number",
+      "searchapi_api_key": "str:empty",
+      "searchapi_engine": "str:empty",
+      "searxng_query_url": "str",
+      "serpapi_api_key": "str:empty",
+      "serpapi_engine": "str:empty",
+      "serper_api_key": "str:empty",
+      "serply_api_key": "str:empty",
+      "serpstack_api_key": "str:empty",
+      "serpstack_https": true,
+      "sougou_api_sid": "str:empty",
+      "sougou_api_sk": "str:empty",
+      "tavily_api_key": "str:empty",
+      "tavily_extract_depth": "str",
+      "trust_env": false,
+      "yacy_password": "str:empty",
+      "yacy_query_url": "str:empty",
+      "yacy_username": "str:empty"
+     }
+    },
+    "youtube_loader_language": "list[1]",
+    "youtube_loader_proxy_url": "str:empty"
+   },
+   "spaces": {
+    "enable": true
+   },
+   "task": {
+    "autocomplete": {
+     "enable": false,
+     "input_max_length": "number"
+    },
+    "follow_up": {
+     "enable": true,
+     "prompt_template": "str:empty"
+    },
+    "image": {
+     "prompt_template": "str:empty"
+    },
+    "model": {
+     "default": "str:empty",
+     "external": "str:empty"
+    },
+    "query": {
+     "prompt_template": "str:empty",
+     "retrieval": {
+      "enable": true
+     },
+     "search": {
+      "enable": false
+     }
+    },
+    "search": {
+     "enable": true,
+     "prompt_template": "str:empty"
+    },
+    "tags": {
+     "enable": true,
+     "prompt_template": "str:empty"
+    },
+    "title": {
+     "enable": true,
+     "prompt_template": "str:empty"
+    },
+    "tools": {
+     "prompt_template": "str:empty"
+    }
+   },
+   "tool_server": {
+    "connections": "list[2]"
+   },
+   "ui": {
+    "banners": "list[0]",
+    "branding": {
+     "accent_color": null,
+     "favicon_url": null,
+     "logo_dark_url": null,
+     "logo_url": null,
+     "primary_color": "str",
+     "subtitle": null,
+     "title": null
+    },
+    "default_locale": "str:empty",
+    "default_models": "str",
+    "default_user_role": "str",
+    "enable_community_sharing": true,
+    "enable_message_rating": true,
+    "enable_signup": false,
+    "enable_user_webhooks": true,
+    "model_order_list": "list[407]",
+    "pending_user_overlay_content": "str:empty",
+    "pending_user_overlay_title": "str:empty",
+    "prompt_suggestions": "list[7]",
+    "watermark": "str:empty"
+   },
+   "user": {
+    "permissions": {
+     "chat": {
+      "call": true,
+      "controls": true,
+      "delete": true,
+      "edit": true,
+      "export": true,
+      "file_upload": true,
+      "multiple_models": true,
+      "share": true,
+      "stt": true,
+      "system_prompt": true,
+      "temporary": true,
+      "temporary_enforced": false,
+      "tts": true
+     },
+     "features": {
+      "code_interpreter": true,
+      "direct_tool_servers": false,
+      "image_generation": true,
+      "notes": true,
+      "web_search": true
+     },
+     "sharing": {
+      "public_knowledge": false,
+      "public_models": false,
+      "public_prompts": false,
+      "public_tools": false
+     },
+     "workshop": {
+      "knowledge": false,
+      "models": false,
+      "prompts": false,
+      "tools": false
+     },
+     "workspace": {
+      "knowledge": true,
+      "models": true,
+      "prompts": false,
+      "tools": false
+     }
+    }
+   },
+   "version": "number",
+   "webhook_url": "str:empty",
+   "webui": {
+    "url": "str:empty"
+   }
+  },
+  "file_bytes": 178032640,
+  "freelist_pages": 18,
+  "journal_mode": "delete",
+  "tables": {
+   "alembic_version": {
+    "columns": {
+     "version_num": {
+      "type": "VARCHAR(32)",
+      "typeof": {
+       "text": 1
+      }
+     }
+    },
+    "rows": 1
+   },
+   "auth": {
+    "columns": {
+     "active": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 32
+      }
+     },
+     "email": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 32
+      }
+     },
+     "id": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 32
+      }
+     },
+     "password": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 32
+      }
+     }
+    },
+    "enums": {
+     "active": {
+      "1": 32
+     }
+    },
+    "rows": 32
+   },
+   "bridge_connection": {
+    "columns": {
+     "allowed_ids": {
+      "type": "JSON",
+      "typeof": {}
+     },
+     "channel_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "config": {
+      "type": "JSON",
+      "typeof": {}
+     },
+     "created_at": {
+      "type": "BIGINT",
+      "typeof": {}
+     },
+     "data": {
+      "type": "JSON",
+      "typeof": {}
+     },
+     "enabled": {
+      "type": "BOOLEAN",
+      "typeof": {}
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "meta": {
+      "type": "JSON",
+      "typeof": {}
+     },
+     "mode": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "model_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "name": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "platform": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "status": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "status_message": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "updated_at": {
+      "type": "BIGINT",
+      "typeof": {}
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "user_provisioning": {
+      "type": "TEXT",
+      "typeof": {}
+     }
+    },
+    "enums": {
+     "enabled": {},
+     "mode": {},
+     "platform": {},
+     "status": {}
+    },
+    "months": {
+     "created_at": {},
+     "updated_at": {}
+    },
+    "rows": 0
+   },
+   "bridge_thread": {
+    "columns": {
+     "connection_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "created_at": {
+      "type": "BIGINT",
+      "typeof": {}
+     },
+     "data": {
+      "type": "JSON",
+      "typeof": {}
+     },
+     "external_thread_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "external_user_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "meta": {
+      "type": "JSON",
+      "typeof": {}
+     },
+     "sage_channel_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "sage_chat_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "sage_user_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "updated_at": {
+      "type": "BIGINT",
+      "typeof": {}
+     }
+    },
+    "months": {
+     "created_at": {},
+     "updated_at": {}
+    },
+    "rows": 0
+   },
+   "channel": {
+    "columns": {
+     "access_control": {
+      "type": "JSON",
+      "typeof": {
+       "text": 3
+      }
+     },
+     "created_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 3
+      }
+     },
+     "data": {
+      "type": "JSON",
+      "typeof": {
+       "text": 3
+      }
+     },
+     "description": {
+      "type": "TEXT",
+      "typeof": {
+       "null": 3
+      }
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 3
+      }
+     },
+     "meta": {
+      "type": "JSON",
+      "typeof": {
+       "text": 3
+      }
+     },
+     "name": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 3
+      }
+     },
+     "type": {
+      "type": "TEXT",
+      "typeof": {
+       "null": 3
+      }
+     },
+     "updated_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 3
+      }
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 3
+      }
+     }
+    },
+    "enums": {
+     "type": {
+      "null": 3
+     }
+    },
+    "json": {
+     "access_control": {
+      "dicts": 3,
+      "keys": {
+       "read": 3,
+       "write": 3
+      }
+     },
+     "data": {
+      "dicts": 1,
+      "keys": {
+       "<other>": 1
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2025-08": 2,
+      "2025-11": 1
+     },
+     "updated_at": {
+      "2025-08": 2,
+      "2026-08": 1
+     }
+    },
+    "rows": 3
+   },
+   "channel_member": {
+    "columns": {
+     "channel_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "created_at": {
+      "type": "BIGINT",
+      "typeof": {}
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {}
+     }
+    },
+    "months": {
+     "created_at": {}
+    },
+    "rows": 0
+   },
+   "chat": {
+    "columns": {
+     "archived": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 2124
+      }
+     },
+     "chat": {
+      "type": "JSON",
+      "typeof": {
+       "text": 2124
+      }
+     },
+     "created_at": {
+      "type": "DATETIME",
+      "typeof": {
+       "integer": 2124
+      }
+     },
+     "folder_id": {
+      "type": "TEXT",
+      "typeof": {
+       "null": 2066,
+       "text": 58
+      }
+     },
+     "id": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 2124
+      }
+     },
+     "meta": {
+      "type": "JSON",
+      "typeof": {
+       "text": 2124
+      }
+     },
+     "pinned": {
+      "type": "BOOLEAN",
+      "typeof": {
+       "integer": 2046,
+       "null": 78
+      }
+     },
+     "share_id": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "null": 2095,
+       "text": 29
+      }
+     },
+     "title": {
+      "empty": 1,
+      "type": "TEXT",
+      "typeof": {
+       "text": 2124
+      }
+     },
+     "updated_at": {
+      "type": "DATETIME",
+      "typeof": {
+       "integer": 2124
+      }
+     },
+     "user_id": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 2124
+      }
+     }
+    },
+    "enums": {
+     "archived": {
+      "0": 2122,
+      "1": 2
+     },
+     "pinned": {
+      "0": 2027,
+      "1": 19,
+      "null": 78
+     }
+    },
+    "json": {
+     "meta": {
+      "dicts": 2124,
+      "keys": {
+       "tags": 1679
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2024-09": 1,
+      "2024-10": 95,
+      "2024-11": 34,
+      "2024-12": 83,
+      "2025-01": 138,
+      "2025-02": 108,
+      "2025-03": 99,
+      "2025-04": 111,
+      "2025-05": 96,
+      "2025-06": 90,
+      "2025-07": 122,
+      "2025-08": 93,
+      "2025-09": 82,
+      "2025-10": 98,
+      "2025-11": 116,
+      "2025-12": 104,
+      "2026-01": 86,
+      "2026-02": 72,
+      "2026-03": 120,
+      "2026-04": 89,
+      "2026-05": 73,
+      "2026-06": 50,
+      "2026-07": 43,
+      "2026-08": 58,
+      "2026-09": 63
+     },
+     "updated_at": {
+      "2024-09": 1,
+      "2024-10": 90,
+      "2024-11": 36,
+      "2024-12": 82,
+      "2025-01": 138,
+      "2025-02": 106,
+      "2025-03": 97,
+      "2025-04": 109,
+      "2025-05": 98,
+      "2025-06": 92,
+      "2025-07": 123,
+      "2025-08": 92,
+      "2025-09": 82,
+      "2025-10": 102,
+      "2025-11": 115,
+      "2025-12": 101,
+      "2026-01": 88,
+      "2026-02": 74,
+      "2026-03": 119,
+      "2026-04": 90,
+      "2026-05": 73,
+      "2026-06": 51,
+      "2026-07": 40,
+      "2026-08": 59,
+      "2026-09": 66
+     }
+    },
+    "present": {
+     "folder_id": 58,
+     "share_id": 29
+    },
+    "rows": 2124
+   },
+   "chat_share": {
+    "columns": {
+     "chat_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "created_at": {
+      "type": "INTEGER",
+      "typeof": {}
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "share_mode": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "shared_by": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "snapshot_chat_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "target_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "target_type": {
+      "type": "TEXT",
+      "typeof": {}
+     }
+    },
+    "enums": {
+     "share_mode": {},
+     "target_type": {}
+    },
+    "months": {
+     "created_at": {}
+    },
+    "rows": 0
+   },
+   "chatidtag": {
+    "columns": {
+     "chat_id": {
+      "type": "VARCHAR(255)",
+      "typeof": {}
+     },
+     "id": {
+      "type": "VARCHAR(255)",
+      "typeof": {}
+     },
+     "tag_name": {
+      "type": "VARCHAR(255)",
+      "typeof": {}
+     },
+     "timestamp": {
+      "type": "INTEGER",
+      "typeof": {}
+     },
+     "user_id": {
+      "type": "VARCHAR(255)",
+      "typeof": {}
+     }
+    },
+    "months": {
+     "timestamp": {}
+    },
+    "rows": 0
+   },
+   "config": {
+    "columns": {
+     "created_at": {
+      "type": "DATETIME",
+      "typeof": {
+       "text": 1
+      }
+     },
+     "data": {
+      "type": "JSON",
+      "typeof": {
+       "text": 1
+      }
+     },
+     "id": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 1
+      }
+     },
+     "updated_at": {
+      "type": "DATETIME",
+      "typeof": {
+       "text": 1
+      }
+     },
+     "version": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 1
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2024-10": 1
+     },
+     "updated_at": {
+      "2026-09": 1
+     }
+    },
+    "rows": 1
+   },
+   "document": {
+    "columns": {
+     "collection_name": {
+      "type": "VARCHAR(255)",
+      "typeof": {}
+     },
+     "content": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "filename": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "id": {
+      "type": "INTEGER",
+      "typeof": {}
+     },
+     "name": {
+      "type": "VARCHAR(255)",
+      "typeof": {}
+     },
+     "timestamp": {
+      "type": "INTEGER",
+      "typeof": {}
+     },
+     "title": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "user_id": {
+      "type": "VARCHAR(255)",
+      "typeof": {}
+     }
+    },
+    "months": {
+     "timestamp": {}
+    },
+    "rows": 0
+   },
+   "feedback": {
+    "columns": {
+     "created_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 32
+      }
+     },
+     "data": {
+      "type": "JSON",
+      "typeof": {
+       "text": 32
+      }
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 32
+      }
+     },
+     "meta": {
+      "type": "JSON",
+      "typeof": {
+       "text": 32
+      }
+     },
+     "snapshot": {
+      "type": "JSON",
+      "typeof": {
+       "text": 32
+      }
+     },
+     "type": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 32
+      }
+     },
+     "updated_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 32
+      }
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 32
+      }
+     },
+     "version": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 32
+      }
+     }
+    },
+    "enums": {
+     "type": {
+      "rating": 32
+     }
+    },
+    "json": {
+     "data": {
+      "dicts": 32,
+      "keys": {
+       "comment": 32,
+       "details": 5,
+       "model_id": 32,
+       "rating": 32,
+       "reason": 32,
+       "sibling_model_ids": 32,
+       "tags": 31
+      }
+     },
+     "meta": {
+      "dicts": 32,
+      "keys": {
+       "base_models": 19,
+       "chat_id": 32,
+       "message_id": 32,
+       "message_index": 32,
+       "model_id": 32
+      }
+     },
+     "snapshot": {
+      "dicts": 32,
+      "keys": {
+       "chat": 32
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2024-10": 1,
+      "2024-11": 12,
+      "2025-01": 5,
+      "2025-04": 1,
+      "2025-06": 1,
+      "2025-07": 1,
+      "2025-11": 1,
+      "2026-02": 4,
+      "2026-03": 2,
+      "2026-07": 2,
+      "2026-08": 1,
+      "2026-09": 1
+     },
+     "updated_at": {
+      "2024-10": 1,
+      "2024-11": 12,
+      "2025-01": 5,
+      "2025-04": 1,
+      "2025-06": 1,
+      "2025-07": 1,
+      "2025-11": 1,
+      "2026-02": 4,
+      "2026-03": 2,
+      "2026-07": 2,
+      "2026-08": 1,
+      "2026-09": 1
+     }
+    },
+    "rows": 32
+   },
+   "file": {
+    "columns": {
+     "access_control": {
+      "type": "JSON",
+      "typeof": {
+       "null": 42,
+       "text": 2152
+      }
+     },
+     "created_at": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 2194
+      }
+     },
+     "data": {
+      "type": "JSON",
+      "typeof": {
+       "null": 3,
+       "text": 2191
+      }
+     },
+     "filename": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 2194
+      }
+     },
+     "hash": {
+      "type": "TEXT",
+      "typeof": {
+       "null": 1114,
+       "text": 1080
+      }
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 2194
+      }
+     },
+     "meta": {
+      "type": "JSON",
+      "typeof": {
+       "text": 2194
+      }
+     },
+     "path": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 2194
+      }
+     },
+     "updated_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 2191,
+       "null": 3
+      }
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 2194
+      }
+     }
+    },
+    "json": {
+     "data": {
+      "dicts": 2191,
+      "keys": {
+       "content": 1080
+      }
+     },
+     "meta": {
+      "dicts": 2194,
+      "keys": {
+       "collection_name": 392,
+       "content_type": 2194,
+       "data": 2152,
+       "name": 2194,
+       "path": 3,
+       "size": 2194
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2024-10": 5,
+      "2024-12": 3,
+      "2025-01": 28,
+      "2025-02": 6,
+      "2025-03": 3,
+      "2025-04": 5,
+      "2025-05": 75,
+      "2025-06": 5,
+      "2025-07": 1,
+      "2025-08": 955,
+      "2025-09": 1,
+      "2025-10": 13,
+      "2025-11": 3,
+      "2026-01": 68,
+      "2026-02": 999,
+      "2026-03": 5,
+      "2026-04": 1,
+      "2026-05": 4,
+      "2026-06": 13,
+      "2026-08": 1
+     },
+     "updated_at": {
+      "2024-10": 2,
+      "2024-12": 3,
+      "2025-01": 28,
+      "2025-02": 6,
+      "2025-03": 3,
+      "2025-04": 5,
+      "2025-05": 75,
+      "2025-06": 5,
+      "2025-07": 1,
+      "2025-08": 955,
+      "2025-09": 1,
+      "2025-10": 13,
+      "2025-11": 3,
+      "2026-01": 68,
+      "2026-02": 999,
+      "2026-03": 5,
+      "2026-04": 1,
+      "2026-05": 4,
+      "2026-06": 13,
+      "2026-08": 1
+     }
+    },
+    "present": {
+     "hash": 1080,
+     "path": 2194
+    },
+    "rows": 2194
+   },
+   "folder": {
+    "columns": {
+     "created_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 14
+      }
+     },
+     "data": {
+      "type": "JSON",
+      "typeof": {
+       "null": 7,
+       "text": 7
+      }
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 14
+      }
+     },
+     "is_expanded": {
+      "type": "BOOLEAN",
+      "typeof": {
+       "integer": 14
+      }
+     },
+     "items": {
+      "type": "JSON",
+      "typeof": {
+       "text": 14
+      }
+     },
+     "meta": {
+      "type": "JSON",
+      "typeof": {
+       "text": 14
+      }
+     },
+     "name": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 14
+      }
+     },
+     "parent_id": {
+      "type": "TEXT",
+      "typeof": {
+       "null": 14
+      }
+     },
+     "updated_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 14
+      }
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 14
+      }
+     }
+    },
+    "json": {
+     "data": {
+      "dicts": 7,
+      "keys": {
+       "files": 7,
+       "system_prompt": 7
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2024-12": 1,
+      "2025-01": 2,
+      "2025-02": 1,
+      "2025-04": 1,
+      "2025-05": 1,
+      "2025-06": 1,
+      "2025-08": 2,
+      "2025-09": 3,
+      "2025-10": 2
+     },
+     "updated_at": {
+      "2026-09": 14
+     }
+    },
+    "rows": 14
+   },
+   "function": {
+    "columns": {
+     "content": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 1
+      }
+     },
+     "created_at": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 1
+      }
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 1
+      }
+     },
+     "is_active": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 1
+      }
+     },
+     "is_global": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 1
+      }
+     },
+     "meta": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 1
+      }
+     },
+     "name": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 1
+      }
+     },
+     "type": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 1
+      }
+     },
+     "updated_at": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 1
+      }
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 1
+      }
+     },
+     "valves": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 1
+      }
+     }
+    },
+    "enums": {
+     "is_active": {
+      "0": 1
+     },
+     "is_global": {
+      "0": 1
+     },
+     "type": {
+      "pipe": 1
+     }
+    },
+    "json": {
+     "meta": {
+      "dicts": 1,
+      "keys": {
+       "<other>": 2
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2025-06": 1
+     },
+     "updated_at": {
+      "2026-04": 1
+     }
+    },
+    "rows": 1
+   },
+   "group": {
+    "columns": {
+     "created_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 3
+      }
+     },
+     "data": {
+      "type": "JSON",
+      "typeof": {
+       "text": 3
+      }
+     },
+     "description": {
+      "empty": 3,
+      "type": "TEXT",
+      "typeof": {
+       "text": 3
+      }
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 3
+      }
+     },
+     "meta": {
+      "type": "JSON",
+      "typeof": {
+       "text": 3
+      }
+     },
+     "name": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 3
+      }
+     },
+     "permissions": {
+      "type": "JSON",
+      "typeof": {
+       "text": 3
+      }
+     },
+     "updated_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 3
+      }
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 3
+      }
+     },
+     "user_ids": {
+      "type": "JSON",
+      "typeof": {
+       "text": 3
+      }
+     }
+    },
+    "json": {
+     "permissions": {
+      "chat.*": {
+       "<other>": 39
+      },
+      "chat.*=true": {
+       "<other>": 36
+      },
+      "dicts": 3,
+      "features.*": {
+       "<other>": 15
+      },
+      "features.*=true": {
+       "<other>": 12
+      },
+      "keys": {
+       "<other>": 14
+      },
+      "workspace.*": {
+       "<other>": 8
+      },
+      "workspace.*=true": {
+       "<other>": 6
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2024-12": 1,
+      "2025-05": 1,
+      "2025-06": 1
+     },
+     "updated_at": {
+      "2025-09": 1,
+      "2026-03": 2
+     }
+    },
+    "rows": 3
+   },
+   "knowledge": {
+    "columns": {
+     "access_control": {
+      "type": "JSON",
+      "typeof": {
+       "text": 18
+      }
+     },
+     "created_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 18
+      }
+     },
+     "data": {
+      "type": "JSON",
+      "typeof": {
+       "text": 18
+      }
+     },
+     "description": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 18
+      }
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 18
+      }
+     },
+     "meta": {
+      "type": "JSON",
+      "typeof": {
+       "text": 18
+      }
+     },
+     "name": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 18
+      }
+     },
+     "updated_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 18
+      }
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 18
+      }
+     }
+    },
+    "json": {
+     "access_control": {
+      "dicts": 15,
+      "keys": {
+       "read": 15,
+       "write": 14
+      }
+     },
+     "data": {
+      "dicts": 13,
+      "keys": {
+       "file_ids": 13
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2024-12": 2,
+      "2025-01": 2,
+      "2025-02": 2,
+      "2025-05": 1,
+      "2025-07": 1,
+      "2025-08": 3,
+      "2025-09": 1,
+      "2025-10": 2,
+      "2026-01": 3,
+      "2026-06": 1
+     },
+     "updated_at": {
+      "2025-01": 1,
+      "2025-02": 1,
+      "2025-05": 1,
+      "2025-07": 1,
+      "2025-08": 4,
+      "2025-09": 2,
+      "2025-10": 1,
+      "2025-11": 2,
+      "2026-01": 2,
+      "2026-02": 2,
+      "2026-06": 1
+     }
+    },
+    "rows": 18
+   },
+   "magic_link": {
+    "columns": {
+     "account_duration": {
+      "type": "BIGINT",
+      "typeof": {}
+     },
+     "created_at": {
+      "type": "BIGINT",
+      "typeof": {}
+     },
+     "created_by": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "expires_at": {
+      "type": "BIGINT",
+      "typeof": {}
+     },
+     "group_ids": {
+      "type": "JSON",
+      "typeof": {}
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "is_active": {
+      "type": "BOOLEAN",
+      "typeof": {}
+     },
+     "max_uses": {
+      "type": "INTEGER",
+      "typeof": {}
+     },
+     "meta": {
+      "type": "JSON",
+      "typeof": {}
+     },
+     "role": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "token": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "updated_at": {
+      "type": "BIGINT",
+      "typeof": {}
+     },
+     "use_count": {
+      "type": "INTEGER",
+      "typeof": {}
+     },
+     "webhook_url": {
+      "type": "TEXT",
+      "typeof": {}
+     }
+    },
+    "enums": {
+     "is_active": {},
+     "role": {}
+    },
+    "months": {
+     "created_at": {},
+     "updated_at": {}
+    },
+    "rows": 0
+   },
+   "memory": {
+    "columns": {
+     "content": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "created_at": {
+      "type": "INTEGER",
+      "typeof": {}
+     },
+     "id": {
+      "type": "VARCHAR(255)",
+      "typeof": {}
+     },
+     "updated_at": {
+      "type": "INTEGER",
+      "typeof": {}
+     },
+     "user_id": {
+      "type": "VARCHAR(255)",
+      "typeof": {}
+     }
+    },
+    "months": {
+     "created_at": {},
+     "updated_at": {}
+    },
+    "rows": 0
+   },
+   "message": {
+    "columns": {
+     "channel_id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 50
+      }
+     },
+     "content": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 50
+      }
+     },
+     "created_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 50
+      }
+     },
+     "data": {
+      "type": "JSON",
+      "typeof": {
+       "text": 50
+      }
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 50
+      }
+     },
+     "meta": {
+      "type": "JSON",
+      "typeof": {
+       "text": 50
+      }
+     },
+     "parent_id": {
+      "type": "TEXT",
+      "typeof": {
+       "null": 46,
+       "text": 4
+      }
+     },
+     "updated_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 50
+      }
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 50
+      }
+     }
+    },
+    "json": {
+     "data": {
+      "dicts": 47,
+      "keys": {
+       "<other>": 17,
+       "files": 10
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2025-08": 1,
+      "2025-10": 1,
+      "2025-11": 5,
+      "2026-02": 4,
+      "2026-04": 37,
+      "2026-08": 2
+     },
+     "updated_at": {
+      "2025-08": 1,
+      "2025-10": 1,
+      "2025-11": 5,
+      "2026-02": 4,
+      "2026-04": 37,
+      "2026-08": 2
+     }
+    },
+    "rows": 50
+   },
+   "message_reaction": {
+    "columns": {
+     "created_at": {
+      "type": "BIGINT",
+      "typeof": {}
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "message_id": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "name": {
+      "type": "TEXT",
+      "typeof": {}
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {}
+     }
+    },
+    "months": {
+     "created_at": {}
+    },
+    "rows": 0
+   },
+   "migratehistory": {
+    "columns": {
+     "id": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 19
+      }
+     },
+     "migrated_at": {
+      "type": "DATETIME",
+      "typeof": {
+       "text": 19
+      }
+     },
+     "name": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 19
+      }
+     }
+    },
+    "rows": 19
+   },
+   "model": {
+    "columns": {
+     "access_control": {
+      "type": "JSON",
+      "typeof": {
+       "null": 185,
+       "text": 152
+      }
+     },
+     "base_model_id": {
+      "type": "TEXT",
+      "typeof": {
+       "null": 286,
+       "text": 51
+      }
+     },
+     "created_at": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 337
+      }
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 337
+      }
+     },
+     "is_active": {
+      "type": "BOOLEAN",
+      "typeof": {
+       "integer": 337
+      }
+     },
+     "meta": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 337
+      }
+     },
+     "name": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 337
+      }
+     },
+     "params": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 337
+      }
+     },
+     "updated_at": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 337
+      }
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 337
+      }
+     }
+    },
+    "enums": {
+     "is_active": {
+      "0": 2,
+      "1": 335
+     }
+    },
+    "json": {
+     "access_control": {
+      "dicts": 45,
+      "keys": {
+       "read": 43,
+       "write": 43
+      }
+     },
+     "meta": {
+      "capabilities.*": {
+       "citations": 150,
+       "code_interpreter": 149,
+       "file_upload": 149,
+       "image_generation": 149,
+       "usage": 56,
+       "vision": 152,
+       "web_search": 131
+      },
+      "capabilities.*=true": {
+       "citations": 142,
+       "code_interpreter": 140,
+       "file_upload": 145,
+       "image_generation": 136,
+       "vision": 115,
+       "web_search": 118
+      },
+      "dicts": 337,
+      "keys": {
+       "capabilities": 290,
+       "description": 288,
+       "hidden": 60,
+       "knowledge": 9,
+       "position": 277,
+       "profile_image_url": 337,
+       "suggestion_prompts": 70,
+       "tags": 57,
+       "toolIds": 18
+      }
+     },
+     "params": {
+      "dicts": 337,
+      "keys": {
+       "<other>": 2,
+       "system": 55
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2024-10": 55,
+      "2024-11": 4,
+      "2024-12": 220,
+      "2025-01": 2,
+      "2025-02": 3,
+      "2025-03": 3,
+      "2025-04": 1,
+      "2025-05": 3,
+      "2025-06": 3,
+      "2025-07": 2,
+      "2025-08": 4,
+      "2025-09": 3,
+      "2025-10": 3,
+      "2025-11": 3,
+      "2025-12": 7,
+      "2026-01": 1,
+      "2026-02": 3,
+      "2026-03": 4,
+      "2026-04": 2,
+      "2026-05": 1,
+      "2026-07": 7,
+      "2026-08": 3
+     },
+     "updated_at": {
+      "2024-10": 53,
+      "2024-11": 4,
+      "2024-12": 220,
+      "2025-01": 2,
+      "2025-02": 3,
+      "2025-03": 3,
+      "2025-04": 1,
+      "2025-05": 3,
+      "2025-06": 3,
+      "2025-07": 2,
+      "2025-08": 4,
+      "2025-09": 4,
+      "2025-10": 3,
+      "2025-11": 4,
+      "2025-12": 7,
+      "2026-01": 1,
+      "2026-02": 3,
+      "2026-03": 4,
+      "2026-04": 2,
+      "2026-05": 1,
+      "2026-07": 7,
+      "2026-08": 3
+     }
+    },
+    "present": {
+     "base_model_id": 51
+    },
+    "rows": 337
+   },
+   "note": {
+    "columns": {
+     "access_control": {
+      "type": "JSON",
+      "typeof": {
+       "text": 17
+      }
+     },
+     "created_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 17
+      }
+     },
+     "data": {
+      "type": "JSON",
+      "typeof": {
+       "text": 17
+      }
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 17
+      }
+     },
+     "meta": {
+      "type": "JSON",
+      "typeof": {
+       "text": 17
+      }
+     },
+     "title": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 17
+      }
+     },
+     "updated_at": {
+      "type": "BIGINT",
+      "typeof": {
+       "integer": 17
+      }
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 17
+      }
+     }
+    },
+    "json": {
+     "access_control": {
+      "dicts": 15,
+      "keys": {
+       "read": 6,
+       "write": 6
+      }
+     },
+     "data": {
+      "dicts": 17,
+      "keys": {
+       "content": 17,
+       "files": 13
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2025-08": 2,
+      "2025-10": 1,
+      "2025-11": 5,
+      "2025-12": 1,
+      "2026-01": 3,
+      "2026-03": 2,
+      "2026-05": 2,
+      "2026-06": 1
+     },
+     "updated_at": {
+      "2025-08": 2,
+      "2025-11": 2,
+      "2026-01": 3,
+      "2026-02": 1,
+      "2026-03": 4,
+      "2026-05": 2,
+      "2026-06": 3
+     }
+    },
+    "rows": 17
+   },
+   "prompt": {
+    "columns": {
+     "access_control": {
+      "type": "JSON",
+      "typeof": {
+       "text": 8
+      }
+     },
+     "command": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 8
+      }
+     },
+     "content": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 8
+      }
+     },
+     "id": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 8
+      }
+     },
+     "timestamp": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 8
+      }
+     },
+     "title": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 8
+      }
+     },
+     "user_id": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 8
+      }
+     }
+    },
+    "json": {
+     "access_control": {
+      "dicts": 7,
+      "keys": {}
+     }
+    },
+    "months": {
+     "timestamp": {
+      "2025-01": 1,
+      "2025-08": 1,
+      "2025-10": 4,
+      "2026-03": 2
+     }
+    },
+    "rows": 8
+   },
+   "tag": {
+    "columns": {
+     "id": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 1494
+      }
+     },
+     "meta": {
+      "type": "JSON",
+      "typeof": {
+       "text": 1494
+      }
+     },
+     "name": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 1494
+      }
+     },
+     "user_id": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 1494
+      }
+     }
+    },
+    "rows": 1494
+   },
+   "tool": {
+    "columns": {
+     "access_control": {
+      "type": "JSON",
+      "typeof": {
+       "null": 1,
+       "text": 1
+      }
+     },
+     "content": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 2
+      }
+     },
+     "created_at": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 2
+      }
+     },
+     "id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 2
+      }
+     },
+     "meta": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 2
+      }
+     },
+     "name": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 2
+      }
+     },
+     "specs": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 2
+      }
+     },
+     "updated_at": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 2
+      }
+     },
+     "user_id": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 2
+      }
+     },
+     "valves": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 2
+      }
+     }
+    },
+    "json": {
+     "meta": {
+      "dicts": 2,
+      "keys": {
+       "<other>": 4
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2024-10": 1,
+      "2025-06": 1
+     },
+     "updated_at": {
+      "2026-03": 2
+     }
+    },
+    "rows": 2
+   },
+   "user": {
+    "columns": {
+     "api_key": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "null": 31,
+       "text": 1
+      }
+     },
+     "created_at": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 32
+      }
+     },
+     "email": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 32
+      }
+     },
+     "id": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 32
+      }
+     },
+     "info": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 32
+      }
+     },
+     "last_active_at": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 32
+      }
+     },
+     "name": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 32
+      }
+     },
+     "oauth_sub": {
+      "type": "TEXT",
+      "typeof": {
+       "null": 32
+      }
+     },
+     "profile_image_url": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 32
+      }
+     },
+     "role": {
+      "type": "VARCHAR(255)",
+      "typeof": {
+       "text": 32
+      }
+     },
+     "settings": {
+      "type": "TEXT",
+      "typeof": {
+       "text": 32
+      }
+     },
+     "updated_at": {
+      "type": "INTEGER",
+      "typeof": {
+       "integer": 32
+      }
+     }
+    },
+    "enums": {
+     "role": {
+      "admin": 5,
+      "user": 27
+     }
+    },
+    "json": {
+     "settings": {
+      "dicts": 19,
+      "keys": {
+       "<other>": 1,
+       "ui": 19
+      },
+      "ui.*": {
+       "<other>": 9,
+       "audio": 5,
+       "copyFormatted": 2,
+       "imageCompressionSize": 2,
+       "models": 13,
+       "notifications": 8,
+       "params": 8,
+       "pinnedModels": 2,
+       "setupCompleted": 3,
+       "version": 9
+      },
+      "ui.*=true": {
+       "<other>": 2,
+       "copyFormatted": 2,
+       "setupCompleted": 3
+      }
+     }
+    },
+    "months": {
+     "created_at": {
+      "2024-09": 3,
+      "2024-10": 8,
+      "2024-11": 3,
+      "2024-12": 4,
+      "2025-01": 1,
+      "2025-02": 1,
+      "2025-03": 1,
+      "2025-05": 2,
+      "2025-06": 1,
+      "2025-08": 4,
+      "2025-10": 2,
+      "2025-11": 2
+     },
+     "last_active_at": {
+      "2024-10": 3,
+      "2024-11": 2,
+      "2024-12": 4,
+      "2025-02": 1,
+      "2025-04": 1,
+      "2025-05": 2,
+      "2025-06": 1,
+      "2025-08": 3,
+      "2025-10": 1,
+      "2025-11": 3,
+      "2026-03": 2,
+      "2026-04": 1,
+      "2026-06": 3,
+      "2026-09": 5
+     },
+     "updated_at": {
+      "2024-09": 3,
+      "2024-10": 8,
+      "2024-11": 3,
+      "2024-12": 4,
+      "2025-01": 1,
+      "2025-02": 1,
+      "2025-03": 1,
+      "2025-05": 2,
+      "2025-06": 1,
+      "2025-08": 4,
+      "2025-10": 2,
+      "2025-11": 2
+     }
+    },
+    "present": {
+     "api_key": 1,
+     "last_active_at": 32,
+     "oauth_sub": 0
+    },
+    "rows": 32
+   }
+  },
+  "users_active_within_days": {
+   "30": 5,
+   "7": 3,
+   "90": 5
+  }
+ }
+}
