@@ -50,7 +50,7 @@ This file tracks active work only.
     - The push needed a workaround on the build VM (card "The release push cannot build amd64 on the build VM" in Bugs)
   - [x] [WE] 3.2.2 shipped 2026-10-24 (Alexander's go) so brew boxes get these fixes: tag `v3.2.2` pins `SERVER_TAG=3.2.2`, image `sha256:388fe4df…`, both smokes pass, `make ship` ran end to end; tap `0878c52` installs 3.2.2
   - [x] [MANUALLY] Tap formulas' licence: `AGPL-3.0-or-later` (Alexander, 2026-10-24), in `0878c52`
-  - [ ] [MANUALLY] Refresh the captain login (any `cr-deploy` command in a terminal asks for the password), then [WE] `make deploy TAG=3.2.2`; the captain token expired after the 3.2.1 deploy
+  - [x] [WE] `make deploy TAG=3.2.2` 2026-10-24, once Alexander refreshed the expired captain login: both hosts on 3.2.2 by digest `sha256:388fe4df…`, `/health` true, no Sprig errors on sage.startr.cloud; its backup (integrity ok, 32 users, 2,184 chats) moved to Somma 02 encrypted
   - [x] [WE] Free space first (2026-10-23, Alexander's go): Docker Desktop's retired 49 GB disk archived encrypted to the Somma 02 backups, key in the vault, verified, original removed; "Somma 01 Dock Drive" 9.9 → 203 GiB free (`release_preflight` wants 30)
   - [x] [WE] `make deploy` 2026-10-24: both hosts on 3.2.1 by digest, `/health` true; backup first (185 MB, integrity ok, 32 users, 2,184 chats); sage.startr.cloud grafts `rag-loaders` (delivered), no Sprig errors; `vector-chroma` is not grafted there (card "Knowledge bases on sage.startr.cloud return nothing")
     - 2026-10-24: the cluster maintenance of 2026-10-15 is over (Alexander)
@@ -1352,7 +1352,7 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 ## Bugs
 
 - [ ] **Production data reaches Backblaze in plaintext** #security #backup (Alexander, 2026-10-24): the deploy backups now move to Somma 02 encrypted; their siblings stay as they are until each gets a decision
-  - [x] [WE] 2026-10-24: both `make deploy` backups (3.1.0, 3.2.0) moved to `Somma 02 14TB/Backups/ai-ui/sage-startr-cloud/`, gzipped and encrypted, key `bw:ai-ui-deploy-db-backup`, decrypt verified; mover `~/.local/share/ai-ui/move-deploy-backup.sh`
+  - [x] [WE] 2026-10-24: the `make deploy` backups (3.1.0, 3.2.0, 3.2.1) moved to `Somma 02 14TB/Backups/ai-ui/sage-startr-cloud/`, gzipped and encrypted, key `bw:ai-ui-deploy-db-backup`, decrypt verified; mover `~/.local/share/ai-ui/move-deploy-backup.sh`
   - [ ] [WE] `scripts/deploy.py` writes the encrypted copy to Somma 02 itself, through `sage-secret`, and never a plaintext file
   - [ ] [WE] `make deploy` reads the admin key as `bw:sage-startr-cloud-admin-key` through `sage-secret run`; `.env` keeps a plaintext copy at mode 600 until then (the vault holds the same value)
   - [ ] [MANUALLY] Sibling: Syncthing mirrors sage.startr.cloud's data folder (`webui.db`, uploads, vectors) to `Somma 01 Dock Drive/Sync/`, which Backblaze backs up as it is
