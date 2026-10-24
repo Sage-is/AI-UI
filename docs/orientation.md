@@ -231,7 +231,8 @@ First customer: the `calendar` Sprig. See
 - **`/opt/homebrew` is write-locked on purpose.** Ask for brew installs; prefer a
   containerised tool.
 - **Check hardlink counts before editing a Makefile** (`stat -f "%l %N"`). If
-  greater than one, use `sed -i` — Edit and Write break the inode.
+  greater than one, edit with `sed '…' file > tmp && cat tmp > file`, then re-check
+  the count. Edit, Write and `sed -i` replace the inode and break the link.
 - **Wiring changes need a rebuild.** `LIVE=1` mounts `sage_is_ai/pages/`, so
   templates and panels are live; `main.py` is outside that mount.
 

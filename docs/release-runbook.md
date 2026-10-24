@@ -117,6 +117,16 @@ try.sage.is goes first. It is the canary: synthetic data, wiped every 24 h. If i
 
 `make deploy APPS=try-sage-is` limits the rollout. `make deploy TAG=3.2.0` deploys another release.
 
+### Where the production data lives
+
+On our CapRover cluster, sage.startr.cloud keeps its whole data folder in `/root/Sync/sage-ai-data`: the database, uploads and vector store. Syncthing keeps that folder the same on the cluster's three nodes and on a Mac at our office. Backblaze backs up that Mac's copy off-site.
+
+- Each node also writes a nightly backup of its pinned apps into the same synced tree and keeps four nights. Those reach the office Mac and Backblaze the same way.
+- try.sage.is is in neither, on purpose. Its data is synthetic and wiped every 24 h.
+- A customer's own box is outside this chain. It needs its own backup before it holds real work.
+
+Syncthing copies live files, so a database copied mid-write can be torn, and a torn copy travels to the Mac and to Backblaze too. The clean restore point is the database `make deploy` downloads before each upgrade. Device paths, the Backblaze details and the restore steps live in the private ops repo, `OPS-Sage/docs/apps/sage-startr-cloud.md`.
+
 ### When a deploy fails
 
 ```bash

@@ -640,7 +640,7 @@ async def post_new_message(
             # ANY space member can answer without @mentioning the agent — the
             # poster already passed the space access gate, and that is the
             # audience (2026-08-18: was addressee-only; a VA answering in the
-            # principal's place is the customer workflow, not an accident).
+            # principal's place is our peer workflow, not an accident).
             # We only check the last 2 messages (not a deep scan) — if the agent's
             # question isn't recent, the room has moved on and the arm is dead.
             # Explicit @mentions always take priority over auto-reply.

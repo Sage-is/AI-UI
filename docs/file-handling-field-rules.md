@@ -16,7 +16,7 @@ For any file that might be hardlinked — Makefiles especially — check first:
 stat -f "%l %N" Makefile   # macOS: prints link count
 ```
 
-Any count above 1 means Edit/Write replaces the inode and this silently breaks the hardlink chain. Use `sed -i ''` in place instead.
+Any count above 1 means Edit, Write and `sed -i` replace the inode and silently break the hardlink chain. Edit in place with `sed '…' file > tmp && cat tmp > file`, then re-check the link count with `stat`.
 
 ## Before you trust a file
 

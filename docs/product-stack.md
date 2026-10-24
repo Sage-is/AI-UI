@@ -132,7 +132,7 @@ graph TD
 
 - SQLAlchemy 2.0.38 talks to the database, and Alembic 1.14.0 migrates it (20 revisions).
 - The database is SQLite at `{DATA_DIR}/webui.db`, and only SQLite works in practice. A non-SQLite URL raises an error at import. There is no psycopg and no pgvector.
-- Peewee only runs the 19 legacy migrations before Alembic. No models use it.
+- Peewee is gone (3.2.1). A fresh database gets the schema its 19 legacy migrations built, frozen in `internal/legacy_schema.sql`, before Alembic runs; a database missing one of them refuses to start and names the fix.
 - Files go to local disk at UPLOAD_DIR. There is no S3, GCS or Azure provider.
 - Redis is optional, and REDIS_URL is empty by default. When set, it syncs config across instances, relays task stops and can run the Socket.IO manager.
 
@@ -150,6 +150,7 @@ graph TD
 
 - Chat bridges reach WhatsApp (through a WAHA sidecar), Signal (through a signal-cli-rest-api sidecar), Telegram and Email. They are off by default (ENABLE_BRIDGES=False).
 - Tool servers are OpenAPI only. Admins set the shared ones in TOOL_SERVER_CONNECTIONS. An admin can also add personal tool servers in Settings → Tools, and so can a user once USER_PERMISSIONS_FEATURES_DIRECT_TOOL_SERVERS is on (off by default); the browser calls those itself. Custom Python tools are gone, and there is no MCP client or server. Trellis, the CRM, is a separate product an admin can plug in this way, with a static Bearer token and an agent named crm, so users reach it as @crm. AI-UI ships no Trellis wiring; each instance sets it up by hand.
+- [federation.md](federation.md) sets what may cross these edges: data stays in the box, definitions travel, and numbers travel only with consent.
 - The image is ghcr.io/sage-is/ai-ui at 3.2.0. `make deploy` resolves the tag to its multi-arch digest and runs `cr-deploy`. It deploys try.sage.is first as the canary, backs up and deploys sage.startr.cloud next, and stops at the first failure.
 - The `ai-ui` CLI, installed by Homebrew, runs the image locally. On a Mac it uses colima (the default), Docker Desktop or OrbStack; on Linux it uses Docker Engine. `ai-ui try` boots a local try.sage trial.
 - Analytics (Matomo, Google Analytics 4 or Plausible) stays off until configured. The try.sage demo mode stays off unless ENABLE_TRY_SAGE=True.

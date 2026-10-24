@@ -6,6 +6,54 @@ All notable changes to [Sage.is AI-UI](https://github.com/Sage-is/AI-UI) are doc
 
 ## [Unreleased]
 
+### Security
+
+**One client can no longer stall a public instance**
+FastAPI moves from 0.115.7 to 0.143.1, and Starlette, now pinned on its own, moves to 1.8.0. That closes three denial-of-service paths open to anyone, signed in or not: a crafted Range header on a file download (CVE-2025-62727), a large multipart upload (CVE-2025-54121), and form size limits that were ignored for URL-encoded bodies (CVE-2026-54283). It also closes three header and routing bugs (CVE-2026-48710, CVE-2026-48817, CVE-2026-54282).
+
+**Sign-in tokens and single sign-on are patched**
+PyJWT moves from 2.13.0 to 2.15.1. That release line fixes one critical and four high advisories, CVE-2026-102268 among them. Authlib moves from 1.6.9 to 1.9.1 for a critical signature-verification bypass published on 2026-10-14 (CVE-2026-96760) and three related advisories.
+
+**More pins moved for published advisories**
+aiohttp 3.14.5, python-socketio 5.17.0, python-multipart 0.0.32, requests 2.34.2, Markdown 3.11.1 and starlette-compress 1.8.0.
+
+**Three Sprigs ship new versions**
+rag-loaders v2 carries pypdf 6.20.1 instead of 4.3.1. A crafted PDF could hang or slow document processing through eight advisories and three infinite-loop bugs; all are fixed. export-document v2 carries Pillow 12.3.0, which fixes four high advisories. vector-chroma v3 now carries chromadb's OpenTelemetry SDK, gRPC exporter, grpcio and protobuf, which left the base image (see Removed). An instance that had grafted an older version pulls the new one from the registry on its first boot and drops the old copy. An air-gapped instance needs these three artifacts in its own registry before the upgrade; without vector-chroma v3, vector search stays off until it can be pulled. The older versions stay published, so 3.2.0 instances keep working.
+
+**No download tools left in the image**
+The image no longer ships ORAS, curl, jq or pip, so a shell inside the container has nothing to fetch with. Sprigs are pulled by `sprigs/oci.py`, about 200 lines of Python that refuse plain HTTP outside the local registry, image indexes, layer names that could write outside the target folder, oversized layers, and any blob whose bytes do not match its digest. ORAS 1.3.4, the newest release, still carried four HIGH findings in Go's own libraries. The HEALTHCHECK and the start scripts use `sage_is_ai.utils.localhttp`, a standard-library client. trivy now reports no HIGH or CRITICAL finding in the image's binaries or Python packages.
+
+**Passwords no longer go through passlib**
+passlib has had no release since 2020 and could no longer read bcrypt's version; a muted logger hid the error. `utils/passwords.py` now calls bcrypt directly and keeps every rule passlib applied: `$2b$` at 12 rounds, `$2a$` and `$2y$` accepted, input cut to 72 bytes. Hashes passlib made are pinned in a test and all still verify. A stored value that is not a bcrypt hash now fails the check instead of raising an exception.
+
+**The base layer and uv are current**
+The Wolfi base digest moves to the 2026-10-14 release. `uv`, which now does every runtime install, comes from Astral's official image by digest instead of a curl installer, and moves from 0.5.18 to 0.12.24, past CVE-2025-54368.
+
+### Changed
+
+**JSON without a Content-Type is still accepted**
+FastAPI 0.132 began rejecting JSON request bodies sent without a JSON Content-Type header. AI-UI turns that check off, so API clients that worked on 3.2.0 keep working.
+
+**Tracing needs its packages delivered first**
+The base image keeps only the OpenTelemetry API, which FastAPI requires. The SDK and gRPC exporter arrive with the vector-chroma Sprig; the eight instrumentation packages and the HTTP exporter ship nowhere. With `ENABLE_OTEL=true`, the app now logs a warning naming the missing package and starts without tracing. In 3.2.0 those packages were baked in, and tracing started on its own.
+
+**Function and Tool requirements install with uv**
+pip is gone, so the requirements a Function or Tool declares now install through `uv pip install`. `PIP_OPTIONS` and `PIP_PACKAGE_INDEX_OPTIONS` keep their names and their pip spellings, which uv accepts. The four flags uv refuses (`--root-user-action`, `--prefer-binary`, `--no-warn-script-location`, `--user`) are dropped with a warning that names them.
+
+**A pre-alembic database stops with the fix named**
+peewee is gone. A fresh database now gets the exact schema peewee's 19 migrations built, frozen in `internal/legacy_schema.sql`, so new installs match every existing one; an alembic-only schema would differ in 152 lines. A database made before 2026-03-09 gets the `chat_share` table, as peewee gave it. A database missing any older migration, which only an Open WebUI 0.3-era file can be, now refuses to start and says to open it once with 3.2.0. A backup restore of such a file is refused the same way, and the previous database is put back.
+
+**The build fails on a broken base or a returning cut**
+The image build now checks that Python's sha224, sha3 and sha512 digests and a default TLS context work on the Wolfi base. In early October a stale base lost sha224 and sha3 while the build still passed. The build also fails if any package or tool removed in this release comes back, and names the package that pulled it in.
+
+### Removed
+
+**A dependency list nothing installed**
+`app/pyproject.toml` listed 95 packages that no build ever installed. GitHub's dependency graph still read them and filed 194 Dependabot alerts against them. The list is now empty; the real pins live in `app/backend/requirements.txt`, the hashed ML lock and each Sprig recipe. `app/backend/requirements-ml.txt`, a tombstone since 2.3.1, is gone.
+
+**About 100 MB the image did not need**
+The unpacked image went from 472 MB to 371 MB. Gone from the base: pip, setuptools and wheel (16 MB), the OpenTelemetry SDK with grpcio and protobuf (24 MB, now in vector-chroma), the typer command line with rich and pygments (13 MB), ORAS (10 MB), passlib, peewee, peewee-migrate, async-timeout, curl and jq. The container always started uvicorn directly, so the typer entry point and its pip-package layout, which could move the data folder and delete the old one, are gone too. Every Sprig child server starts without importing them.
+
 ## [3.2.0] — 2026-09-25
 
 ### Added

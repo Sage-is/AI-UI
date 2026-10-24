@@ -164,7 +164,7 @@ _Board section at compression time: `Sprig B2 — non-technical clarity (audit b
 
 _Board section at compression time: `v2.x — Near Term`._
 
-- [ ] **Spaces Enhancements**: Agent context modes and auto-reply TTL. **Multi-user pulled forward 2026-07-30 — unlock #1 for the real-estate engagement**: a principal plus an assistant plus a VA share one workspace on day one, and the customer's primary success metric ("they stop asking him things") is unreachable without it.
+- [ ] **Spaces Enhancements**: Agent context modes and auto-reply TTL. **Multi-user pulled forward 2026-07-30 — unlock #1 for the real-estate engagement**: a principal plus an assistant plus a VA share one workspace on day one, and our peer's primary success metric ("they stop asking him things") is unreachable without it.
   - [ ] Agent context mode: `conversation` (last ~5 messages) and `full` (all recent) — `single` already ships
   - [ ] Optional per-agent TTL for auto-reply expiration
     <!-- inline: spaces.py:384 -->
