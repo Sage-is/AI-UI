@@ -1,23 +1,31 @@
-fastapi==0.115.7
+# FastAPI 0.143 leaves Starlette unbounded, so Starlette is pinned on its own.
+# 3.2.1 (2026-10-14): Starlette 1.8.0 closes the Range-header O(n^2)
+# (CVE-2025-62727), multipart (CVE-2025-54121) and ignored form-limit
+# (CVE-2026-54283) DoS paths, plus CVE-2026-48710/48817/54282. Starlette 1.8
+# needs Python 3.11+ and anyio 4. FastAPI 0.132+ rejects JSON without a JSON
+# Content-Type; main.py turns that off to keep 3.2.0 behaviour.
+fastapi==0.143.1
+starlette==1.8.0
 uvicorn[standard]==0.35.0
-typer
 pydantic==2.11.7
 itsdangerous
 # CVE-2026-24486 (HIGH): arbitrary file write — fixed in 0.0.22
 # CVE-2026-42561 (HIGH): pre-0.0.27 parser issue — bumped 2026-05-17.
-python-multipart==0.0.30
+# CVE-2026-53540 (LOW): negative Content-Length buffers the body — fixed in 0.0.31
+python-multipart==0.0.32
 
-python-socketio==5.16.2
-passlib[bcrypt]==1.7.4
+# CVE-2026-48804 (HIGH): binary attachment DoS — fixed in 5.16.4
+python-socketio==5.17.0
 cryptography
 
-requests==2.32.4
+# CVE-2026-25645 (MEDIUM): temp file reuse in extract_zipped_paths — fixed in 2.33.0
+requests==2.34.2
 # CVE-2025-69223 (HIGH): zip bomb via auto_decompress + 8 more CVEs (smuggling, DoS)
-aiohttp==3.13.3
-async-timeout
+# CVE-2026-69244 (HIGH) — fixed in 3.14.3; four lows — fixed in 3.14.4
+aiohttp==3.14.5
 aiocache
 aiofiles
-starlette-compress==1.6.0
+starlette-compress==1.8.0
 # Templating for the no-build pages (SPIKE, welcome panel only — 2026-07-31).
 # Adopted for two things line count does not measure: a template is data read
 # from disk, so `auto_reload` takes a markup edit from an app restart to a
@@ -32,8 +40,8 @@ httpx[socks,http2]==0.28.1
 
 sqlalchemy==2.0.38
 alembic==1.14.0
-peewee==3.18.1
-peewee-migrate==1.12.2
+# Passwords: bcrypt called directly (utils/passwords.py); passlib left in 3.2.1.
+# peewee + peewee-migrate left too: internal/db.py refuses a pre-alembic DB.
 bcrypt==4.3.0
 pytz
 websocket-client
@@ -55,15 +63,16 @@ tiktoken
 # retrieval/utils.py (hybrid retrievers), retrieval/web/utils.py (web loaders,
 # restart-to-activate). CVE pins move with them into the sprig build:
 #   langchain==0.3.30 (CVE-2026-45134), langchain-community==0.3.27
-#   (CVE-2025-6984), pypdf==4.3.1, docx2txt==0.8, numpy<2, rank_bm25
+#   (CVE-2025-6984), pypdf==6.20.1 (CVE-2026-102993..103000 and three
+#   infinite-loop advisories of 2026-10-12), docx2txt==0.8, numpy<2, rank_bm25
 # langchain-core STAYS — it is the interface layer (Document, BaseLoader,
 # BaseRetriever) subclassed across the codebase. Pinned to the version the
 # sprig-side packages expect.
 langchain-core==0.3.86
 
 ## Vector DB — chromadb is NOT baked into the base rootstock (Bonsai™ slimming).
-## Its ~170MB closure (chromadb, onnxruntime, kubernetes, grpc, hnswlib, posthog)
-## is delivered by grafting the `vector-chroma` Sprig™ (sha256-pinned OCI artifact
+## Its closure (chromadb, onnxruntime, kubernetes, hnswlib, posthog) is
+## delivered by grafting the `vector-chroma` Sprig™ (sha256-pinned OCI artifact
 ## extracted into site-packages; restart to activate). retrieval/vector/factory.py
 ## already degrades to VECTOR_DB_CLIENT=None when chromadb is absent at boot.
 ## Other backends (pymilvus, qdrant-client, opensearch-py, elasticsearch, pinecone)
@@ -76,7 +85,8 @@ langchain-core==0.3.86
 #   - tokenizers<=0.23.0, huggingface-hub<1.0, numpy<2
 
 # ML packages (torch, sentence-transformers, transformers, colbert-ai, faster-whisper,
-# onnxruntime) — installed at runtime via the AI Engine wizard step (requirements-ml.txt)
+# onnxruntime) — installed at runtime via the AI Engine wizard step
+# (requirements-ml.in, compiled to the hashed requirements-ml.lock)
 
 
 # Document processing: pypdf + docx2txt ride the rag-loaders Sprig™ (8.I.2)
@@ -84,16 +94,21 @@ langchain-core==0.3.86
 # unstructured + python-pptx — installed at runtime when non-PDF document types are uploaded
 ftfy==6.2.3
 # fpdf2 (+ fontTools + pillow + CJK fonts) rides the export-document Sprig™
-# (8.I.2). CVE pins move into the sprig build: fpdf2==2.8.2, pillow==12.2.0
-# (CVE-2025-48379, CVE-2026-25990, CVE-2026-40192).
-Markdown==3.7
+# (8.I.2). CVE pins move into the sprig build: fpdf2==2.8.2, pillow==12.3.0
+# (CVE-2025-48379, CVE-2026-25990, CVE-2026-40192; CVE-2026-59205, 59199,
+# 55380, 54060).
+Markdown==3.11.1
 validators==0.35.0
 # soundfile — removed (8.I.2): imported nowhere in the codebase (dead dep).
 
 # CVE-2026-32597 (HIGH): accepts unknown crit header extensions — fixed in 2.12.0
-PyJWT[crypto]==2.13.0
+# CVE-2026-102268 (CRITICAL) + 102266/102267/102272/102273 (HIGH) — fixed in 2.14.0
+# CVE-2026-101918, CVE-2026-102275 (MEDIUM) — fixed in 2.15.0
+PyJWT[crypto]==2.15.1
 # CVE-2026-27962 (CRITICAL): auth bypass via JWK header — fixed in 1.6.9
-authlib==1.6.9
+# CVE-2026-96760 (CRITICAL): signature verification bypass — fixed in 1.9.0,
+# with three more advisories published 2026-10-14 (nonce, OctKey, implicit grant)
+authlib==1.9.1
 
 # black — installed at runtime if code formatting is needed
 
@@ -112,14 +127,11 @@ pydub
 ldap3==2.9.1
 
 ## Trace
-opentelemetry-api==1.32.1
-opentelemetry-sdk==1.32.1
-opentelemetry-exporter-otlp==1.32.1
-opentelemetry-instrumentation==0.53b1
-opentelemetry-instrumentation-fastapi==0.53b1
-opentelemetry-instrumentation-sqlalchemy==0.53b1
-opentelemetry-instrumentation-redis==0.53b1
-opentelemetry-instrumentation-requests==0.53b1
-opentelemetry-instrumentation-logging==0.53b1
-opentelemetry-instrumentation-httpx==0.53b1
-opentelemetry-instrumentation-aiohttp-client==0.53b1
+# One pin. FastAPI 0.142+ requires opentelemetry-api>=1.44, and utils/auth.py +
+# utils/logger.py call `opentelemetry.trace`, a no-op until a provider is set.
+# The SDK and the gRPC exporter (with grpcio + protobuf) ride the vector-chroma
+# Sprig since 3.2.1, beside chromadb, the only thing that imports them; its
+# recipe pins them to THIS version. The instrumentors and the HTTP exporter
+# left in 3.2.1. With ENABLE_OTEL=true and no SDK, main.py logs a warning and
+# boots untraced; a telemetry-otel Sprig is on the board.
+opentelemetry-api==1.45.1

@@ -772,6 +772,10 @@ app = FastAPI(
     openapi_url=None,  # Served via explicit routes below
     redoc_url=None,  # Served via explicit routes below
     lifespan=lifespan,
+    # FastAPI 0.132 began rejecting JSON bodies sent without a JSON
+    # Content-Type. Kept off in 3.2.1 (2026-10-14) so API clients that worked
+    # on 3.2.0 keep working; turning it on is its own decision.
+    strict_content_type=False,
 )
 
 oauth_manager = OAuthManager(app)
@@ -796,9 +800,20 @@ app.state.LICENSE_METADATA = None
 ########################################
 
 if ENABLE_OTEL:
-    from sage_is_ai.utils.telemetry.setup import setup as setup_opentelemetry
-
-    setup_opentelemetry(app=app, db_engine=engine)
+    # Since 3.2.1 the base image carries only the OpenTelemetry API. The SDK and
+    # gRPC exporter arrive with the vector-chroma Sprig (chromadb imports them);
+    # the HTTP exporter and the instrumentors ship nowhere. Tracing needs them
+    # delivered first; without them the app boots untraced instead of dying.
+    try:
+        from sage_is_ai.utils.telemetry.setup import setup as setup_opentelemetry
+    except ImportError as e:
+        log.warning(
+            f"ENABLE_OTEL is set but an OpenTelemetry package is missing ({e}). "
+            "Running without tracing. Install opentelemetry-exporter-otlp and the "
+            "opentelemetry-instrumentation-* packages at 1.45.1 / 0.66b1."
+        )
+    else:
+        setup_opentelemetry(app=app, db_engine=engine)
 
 
 ########################################
