@@ -3,13 +3,11 @@ import logging
 from contextlib import contextmanager
 from typing import Any, Optional
 
-from sage_is_ai.internal.wrappers import register_connection
+from sage_is_ai.internal.legacy_db import prepare as prepare_legacy_database
 from sage_is_ai.env import (
-    SAGE_IS_AI_DIR,
     DATABASE_URL,
     SRC_LOG_LEVELS,
 )
-from peewee_migrate import Router
 from sqlalchemy import Dialect, create_engine, types
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -42,39 +40,16 @@ class JSONField(types.TypeDecorator):
             return json.loads(value)
 
 
-# Workaround to handle the peewee migration
-# This is required to ensure the peewee migration is handled before the alembic migration
-def handle_peewee_migration(DATABASE_URL):
-    # db = None
-    try:
-        db = register_connection(DATABASE_URL)
-        migrate_dir = SAGE_IS_AI_DIR / "internal" / "migrations"
-        router = Router(db, logger=log, migrate_dir=migrate_dir)
-        router.run()
-        db.close()
-
-    except Exception as e:
-        log.error(f"Failed to initialize the database connection: {e}")
-        log.warning(
-            "Hint: If your database password contains special characters, you may need to URL-encode it."
-        )
-        raise
-    finally:
-        # Properly closing the database connection
-        if db and not db.is_closed():
-            db.close()
-
-        # Assert if db connection has been closed
-        assert db.is_closed(), "Database connection is still open."
-
-
-handle_peewee_migration(DATABASE_URL)
-
-
 SQLALCHEMY_DATABASE_URL = DATABASE_URL
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
 )
+
+# Until 3.2.0 the 19 peewee migrations ran here, before alembic. Since 3.2.1 a
+# fresh database gets their frozen DDL and a pre-alembic one is finished or
+# refused with the fix named (internal/legacy_db.py). Alembic still runs later,
+# from config.run_migrations.
+log.info("legacy database check: %s", prepare_legacy_database(engine))
 
 SessionLocal = sessionmaker(
     autocommit=False, autoflush=False, bind=engine, expire_on_commit=False
