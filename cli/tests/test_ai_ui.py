@@ -114,6 +114,9 @@ case "$1 ${2:-}" in
       tar -C "$dir" -xf "$stage/${last#/stage/}"
     elif [[ "$*" == *" find /v -mindepth 1 -delete"* ]]; then
       find "$dir" -mindepth 1 -delete
+    elif [[ "$*" == *"VACUUM INTO"* ]]; then
+      [[ ! -e "$STATE/fail-backup" ]] || exit 1
+      echo "Database backed up to /app/backend/data/backups/webui-test.db (0 MB)."
     elif [[ "$*" == *" sh -c "* ]]; then
       sh -c "${last//\/v/$dir}"
     fi ;;
@@ -1087,6 +1090,45 @@ class Formula(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("AI-UI v3.9.9 has no cli/lib/sage-runtime.sh", result.stderr)
         self.assertEqual(self.formula.read_text(), before)
+
+class BackupBeforeUpdate(Mac):
+    """An update copies the database before Sage stops. No copy, no update."""
+
+    def sage_runs(self):
+        self.save_runtime("colima")
+        self.running("colima")
+        self.app("colima", "ghcr.io/sage-is/ai-ui:3.1.0", 8080)
+        self.volume("colima", "sage-ai-data", {"webui.db": "data"})
+
+    def test_update_backs_up_after_the_pull_and_before_sage_stops(self):
+        self.sage_runs()
+        result = self.ok("update")
+        self.assertIn("Database backed up to", result.stdout)
+        calls = self.calls()  # the backup's python spans several logged lines; its head names the volume
+        backup = next(i for i, call in enumerate(calls)
+                      if " run --rm -v sage-ai-data:/app/backend/data --entrypoint python3 " in call)
+        self.assertLess(next(i for i, call in enumerate(calls) if " pull " in call), backup)
+        self.assertLess(backup, next(i for i, call in enumerate(calls) if " stop sage-ai" in call or " rm -f sage-ai" in call))
+        self.assertIn("VACUUM INTO", " ".join(calls))
+
+    def test_start_over_a_running_sage_backs_up_too(self):
+        self.sage_runs()
+        self.ok("start")
+        self.assertIn("VACUUM INTO", " ".join(self.calls()))
+
+    def test_no_backup_means_no_update(self):
+        self.sage_runs()
+        (self.state / "fail-backup").touch()
+        result = self.run_ai_ui("update")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("the database was not backed up, so Sage was not updated", result.stderr)
+        self.assertFalse([call for call in self.calls() if " stop " in call or " rm -f " in call], self.calls())
+
+    def test_a_first_start_has_nothing_to_back_up(self):
+        self.save_runtime("colima")
+        self.running("colima")
+        self.ok("start")
+        self.assertNotIn("VACUUM INTO", " ".join(self.calls()))
 
 
 if __name__ == "__main__":
