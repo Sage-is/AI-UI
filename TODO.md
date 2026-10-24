@@ -46,9 +46,11 @@ This file tracks active work only.
   - [x] [WE] Gate fixes found on the way: `sign-sprigs.sh` + `sprig_signing` step 5 dodge the krunkit stale-file trap (step 5 had pushed a VALID signature silently); `inject-test-admin.py` off passlib; `upgrade_gate` section 6 re-signs in once
   - Gates on the final image, 2026-10-15: `image_unit_tests` 39/39, `sprig_durability` 12/12, `sprig_signing` 11/11, `upgrade_gate` 20/20 (trimmed snapshot), `test_db_fresh` + `test_db_upgrade` pass, trivy 0 HIGH/CRITICAL, 16/16 hand checks
   - Gates on the build before the last refactors: `sprig_smoke` 69/69, `e2e_both` all specs on both surfaces; `make -n patch_release` opens `release/3.2.1`
-  - [x] [WE] Shipped 2026-10-24 (Alexander's go): 13 commits, tag `v3.2.1`, image `sha256:3e2a15c4…` on GHCR, the six new Sprig tags public; the wizard smoke passes on the published image and Sprigs; brew stays on 3.2.0 (card "Each release tag pins the previous server" in Bugs)
+  - [x] [WE] Shipped 2026-10-24 (Alexander's go): 13 commits, tag `v3.2.1`, image `sha256:3e2a15c4…` on GHCR, the six new Sprig tags public; the wizard smoke passes on the published image and Sprigs; brew could not take it (card "Each release tag pins the previous server" in Bugs)
     - The push needed a workaround on the build VM (card "The release push cannot build amd64 on the build VM" in Bugs)
-  - [ ] [MANUALLY] Both tap formulas declare `license "MIT"` but now install AI-UI's `cli/`, which ships AGPL-3.0: pick `AGPL-3.0-only` or `AGPL-3.0-or-later`
+  - [x] [WE] 3.2.2 shipped 2026-10-24 (Alexander's go) so brew boxes get these fixes: tag `v3.2.2` pins `SERVER_TAG=3.2.2`, image `sha256:388fe4df…`, both smokes pass, `make ship` ran end to end; tap `0878c52` installs 3.2.2
+  - [x] [MANUALLY] Tap formulas' licence: `AGPL-3.0-or-later` (Alexander, 2026-10-24), in `0878c52`
+  - [ ] [MANUALLY] Refresh the captain login (any `cr-deploy` command in a terminal asks for the password), then [WE] `make deploy TAG=3.2.2`; the captain token expired after the 3.2.1 deploy
   - [x] [WE] Free space first (2026-10-23, Alexander's go): Docker Desktop's retired 49 GB disk archived encrypted to the Somma 02 backups, key in the vault, verified, original removed; "Somma 01 Dock Drive" 9.9 → 203 GiB free (`release_preflight` wants 30)
   - [x] [WE] `make deploy` 2026-10-24: both hosts on 3.2.1 by digest, `/health` true; backup first (185 MB, integrity ok, 32 users, 2,184 chats); sage.startr.cloud grafts `rag-loaders` (delivered), no Sprig errors; `vector-chroma` is not grafted there (card "Knowledge bases on sage.startr.cloud return nothing")
     - 2026-10-24: the cluster maintenance of 2026-10-15 is over (Alexander)
@@ -289,6 +291,7 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
 
 - [ ] **1. Spaces multi-user** — three people (principal, assistant, VA) share one workspace from day one, and our peer's primary success metric is unreachable without it. Highest value, do first. Now under `## In Progress` → _Spaces Enhancements_; mechanics e2e-verified 2026-08-18, remaining work is agent context modes + productization.
 - [ ] **2. Spend budgets per user AND per API key** — required before a customer instance goes live with hosted models and three sharers. See the backlog item; the try.sage uncapped-Groq note there is now a live commercial exposure, not a hypothetical.
+  - 2026-10-24 (Alexander): every provider on every instance has an API spend limit at the provider, so no key runs uncapped; per-user and per-key budgets in the app are still to build
 - [ ] **3. Sprig catalog de-hardcoding (marketplace M1)** — prerequisite for shipping the tooling as autoconfig Sprigs, and therefore for the segment story rather than just this customer. The blocker is the hardcoded Python `CATALOG` in `supervisor.py`.
 - [ ] **4. Job queue** — last on purpose. The demo is staged-and-labelled and November needs no software, so nothing forces real proactive nudges until the configs and features have landed. Promote it when a staged beat has to become a real one.
 
@@ -1348,14 +1351,22 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 
 ## Bugs
 
-- [ ] **Each release tag pins the previous server, so brew cannot ship it** #bug #release #critical (2026-10-24, the 3.2.1 release): `_pin_server_tag` runs after `release_finish`, so `v3.2.1`'s `distribution.env` says `SERVER_TAG=3.2.0`, and the formula aborts on that mismatch
-  - [ ] [WE] Pin `SERVER_TAG` to the release version on the release branch, before the tag; move the sibling sync and its check to match
-  - [ ] [MANUALLY] Cut 3.2.2 with the pin inside its tag, so brew boxes get the 3.2.1 security fixes
+- [ ] **Production data reaches Backblaze in plaintext** #security #backup (Alexander, 2026-10-24): the deploy backups now move to Somma 02 encrypted; their siblings stay as they are until each gets a decision
+  - [x] [WE] 2026-10-24: both `make deploy` backups (3.1.0, 3.2.0) moved to `Somma 02 14TB/Backups/ai-ui/sage-startr-cloud/`, gzipped and encrypted, key `bw:ai-ui-deploy-db-backup`, decrypt verified; mover `~/.local/share/ai-ui/move-deploy-backup.sh`
+  - [ ] [WE] `scripts/deploy.py` writes the encrypted copy to Somma 02 itself, through `sage-secret`, and never a plaintext file
+  - [ ] [WE] `make deploy` reads the admin key as `bw:sage-startr-cloud-admin-key` through `sage-secret run`; `.env` keeps a plaintext copy at mode 600 until then (the vault holds the same value)
+  - [ ] [MANUALLY] Sibling: Syncthing mirrors sage.startr.cloud's data folder (`webui.db`, uploads, vectors) to `Somma 01 Dock Drive/Sync/`, which Backblaze backs up as it is
+  - [ ] [MANUALLY] Sibling: each node's nightly backup (volumes, database dumps, `captain-config`) rides the same sync to this Mac and Backblaze
+  - [ ] [MANUALLY] Sibling: Colima's VM disks, dev volumes included, sit on the same drive
+  - [ ] [MANUALLY] Check whether this Mac's Backblaze uses a private encryption key; with one, Backblaze holds only ciphertext for every sibling above
+- [x] **Each release tag pins the previous server, so brew cannot ship it** #bug #release #critical (2026-10-24, the 3.2.1 release): `_pin_server_tag` ran after `release_finish`, so `v3.2.1`'s `distribution.env` said `SERVER_TAG=3.2.0`, and the formula aborts on that mismatch
+  - [x] [WE] `bump_release_version` pins `SERVER_TAG` on the release branch and copies it to the siblings (`96f1fba`); `v3.2.2` carries `SERVER_TAG=3.2.2`
+  - [x] [MANUALLY] Cut 3.2.2 with the pin inside its tag (Alexander's go, 2026-10-24); the tap's check passes and `0878c52` installs it
   - [x] [WE] The CLI test that named 3.2.0 reads the pin from `distribution.env` instead; it had failed the develop push
-  - Until then brew installs AI-UI 3.2.0: the tap's `check-formulae.sh` refused the 3.2.1 formula on pre-push, and the unpushed formula commit was undone
+  - Brew installed AI-UI 3.2.0 until `0878c52`: the tap's `check-formulae.sh` had refused the 3.2.1 formula on pre-push
 - [ ] **The release push cannot build amd64 on the build VM** #bug #release (2026-10-24, the 3.2.1 push): the docker-container builder runs amd64 under its bundled QEMU, where esbuild crashes; dockerd's own builder reaches Rosetta, but both arches' `vite build` at once OOM the 10 GiB VM
-  - [ ] [WE] `ensure_builder`: use the context's docker driver when dockerd runs the containerd image store, as the build VM does
-  - [ ] [WE] `_it_build_multi_arch_push_GHCR`: warm the cache one platform at a time (`--output type=cacheonly`), then push both
+  - [x] [WE] `ensure_builder`: use the context's docker driver when dockerd runs the containerd image store, as the build VM does (`96f1fba`)
+  - [x] [WE] `_it_build_multi_arch_push_GHCR`: build each platform alone into the cache, then push both (`96f1fba`); 3.2.2's push ran this way with no OOM
   - [ ] [WE] `docker-preflight.sh amd64`: refuse a builder that lists no linux/amd64 on a Rosetta VM, before a 20-minute build
   - 2026-10-24 recovery: build VM restarted, cache warmed per platform, then the push with `BUILDX_BUILDER=colima-build` (`~/.local/share/ai-ui/3.2.1-warm-and-push.sh`)
 - [ ] **`release_smoke` tests new Sprig tags before `sprig_publish` puts them on GHCR** #bug #release (2026-10-24, the 3.2.1 release): `wizard-smoke.sh` grafts from ghcr.io, so a release that bumps a Sprig fails its smoke, and a fail-open trap let `ship` go on
