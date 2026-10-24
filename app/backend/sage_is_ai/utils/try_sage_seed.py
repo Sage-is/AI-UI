@@ -213,8 +213,8 @@ def _ensure_persona_account(persona: dict) -> Optional[Any]:
     """Find-or-create the User+Auth row for a single persona.
 
     Returns the `UserModel` (or None on failure). Idempotent: if the user
-    already exists the role is refreshed but the password is left alone
-    (rotating it would invalidate any password-based sessions in flight).
+    already exists the role is refreshed, an env-supplied password is applied
+    when the row does not match it, and a generated password is left alone.
 
     Why not `Auths.insert_new_auth` for new accounts? That path always
     generates a uuid for the user id, which is fine here. We import it
@@ -230,15 +230,6 @@ def _ensure_persona_account(persona: dict) -> Optional[Any]:
     from sage_is_ai.models.users import Users
     from sage_is_ai.utils.auth import get_password_hash
 
-    existing = Users.get_user_by_email(persona["email"])
-    if existing:
-        # Drift correction: persona role might have been changed via the
-        # admin UI (e.g. someone demoting try-admin to user by mistake).
-        # Force back to canonical.
-        if existing.role != persona["role"]:
-            Users.update_user_role_by_id(existing.id, persona["role"])
-        return existing
-
     # Pick the right env-supplied password for this persona key. If none
     # is set, generate a strong random one and log it ONCE — facilitators
     # can grab it from the boot log if magic links somehow break.
@@ -250,6 +241,21 @@ def _ensure_persona_account(persona: dict) -> Optional[Any]:
         password = TRY_SAGE_USER_PASSWORD
     else:
         password = password_overrides.get(persona["key"], "")
+
+    existing = Users.get_user_by_email(persona["email"])
+    if existing:
+        # Drift correction: persona role might have been changed via the
+        # admin UI (e.g. someone demoting try-admin to user by mistake).
+        # Force back to canonical.
+        if existing.role != persona["role"]:
+            Users.update_user_role_by_id(existing.id, persona["role"])
+        # An env-supplied password is the operator's word: apply it when the
+        # row does not match it, so a secret rotation, which ends every persona
+        # link, leaves a way in. Sessions are JWTs; this signs nobody out.
+        if password and not Auths.authenticate_user(persona["email"], password):
+            Auths.update_user_password_by_id(existing.id, get_password_hash(password))
+            log.info(f"try_sage_seed: applied the env-supplied password for {persona['email']}")
+        return existing
 
     generated = False
     if not password:
