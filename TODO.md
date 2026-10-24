@@ -47,7 +47,7 @@ This file tracks active work only.
   - Gates on the final image, 2026-10-15: `image_unit_tests` 39/39, `sprig_durability` 12/12, `sprig_signing` 11/11, `upgrade_gate` 20/20 (trimmed snapshot), `test_db_fresh` + `test_db_upgrade` pass, trivy 0 HIGH/CRITICAL, 16/16 hand checks
   - Gates on the build before the last refactors: `sprig_smoke` 69/69, `e2e_both` all specs on both surfaces; `make -n patch_release` opens `release/3.2.1`
   - [ ] [MANUALLY] Review and commit; `make patch_release` → 3.2.1; `DOCKER_CONTEXT=colima-build make ship` publishes the three new Sprig tags to GHCR before any deploy
-  - [ ] [MANUALLY] Free space first: "Somma 01 Dock Drive" (Colima's VM disks) had 6.1 GiB free on 2026-10-15; `release_preflight` wants 30 there, and the build VM's sparse disk grows onto it
+  - [x] [WE] Free space first (2026-10-23, Alexander's go): Docker Desktop's retired 49 GB disk archived encrypted to the Somma 02 backups, key in the vault, verified, original removed; "Somma 01 Dock Drive" 9.9 → 203 GiB free (`release_preflight` wants 30)
   - [ ] [MANUALLY] `make deploy`, then [WE] verify 3.2.1 on both hosts, rag-loaders v2 and vector-chroma v3 re-pulled, a PDF upload, a document search and an SSO login on try.sage.is
     - 2026-10-15: the cluster is down for hardware maintenance at the New York location; `make deploy` waits until service is restored
   - [ ] [MANUALLY] Close Dependabot PRs 36, 37, 43, 45 as superseded; PR 44 rides the ML lock card
@@ -61,6 +61,29 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
 - [ ] **Paused 2026-10-01: Trellis first** (Alexander) #critical: no new AI-UI work until the ISA pilot ships (Trellis plan Amendment 60); bookkeeping and the pending commits only
   - [ ] [MANUALLY] The tap's step-2 commit and push (the ai-ui formula follows AI-UI releases); this board's commit
   - [ ] Parked AI-UI changes Trellis may need later: forward the chatting user's identity to tool servers (`execute_tool_server` sends only the bearer today); AI-UI as identity provider (own card since 2026-10-15, under OAuth UX & Identity Linking)
+  - Exceptions: the 3.2.1 security fixes (2026-10-07); the Rootstock, on `develop` (Alexander, 2026-10-23), where Trellis pilot work preempts Rootstock work and Alexander reviews the exception at each release
+
+- [ ] **Rootstock: a clean-room Django core at about a seventh of today's code, strangled in surface by surface** #rootstock (Alexander, 2026-10-23; rewrite approved 2026-10-24; on `develop`, forward only): plan `~/.claude/plans/ok-so-we-have-kind-platypus.md`; F0 (3.3.0) fixes 18 security bugs where they live
+  - [x] [WE] Phase 0 staging (2026-10-23): census, SQLite probe, ten research notes, edge-case harvest, in `~/.local/share/ai-ui/rootstock-staging/`; still open: the `design.md` caps and the OpenAPI contract
+  - [x] [WE] SQLite probe in the 3.2.0 image (2026-10-23): SQLite 3.54.0, extension loading + FTS5 ok; sqlite-vec 0.1.9 cosine over 50,000 × 384 in ~40 ms; pure-Python fallback 204 ms at 20,000
+  - [x] [WE] Census (2026-10-23, stdlib `census.py`, canary self-test with teeth): 3/7/8 users active in 7/30/90 days; agents in 1,440 of 2,036 chat-model uses; `sources` on 1,678 messages, `error` on 599; arena 4, code execution 0
+  - [x] [WE] Dock drive freed (2026-10-23): 203 GiB free; see the Security fixes card
+  - [ ] [MANUALLY] Commit and tag v3.2.1 (Security fixes card); the seam edits files the 3.2.1 work also changes, so it waits for that commit
+  - [x] [MANUALLY] The adversarial rewrite and its congestion section, approved with the plan (2026-10-24): 18 security bugs fixed at source in F0; congestion fixes in F1; the gateway beside the Django pilot in F2; a go or no-go after F2; new features after F8
+  - [ ] [WE] First after the tag, on `develop`: move the staging in, then F0 (3.3.0): the 18 fixes where each bug lives; one HTTP test per card in `rootstock/tests/security/`, each shown to fail on 3.2.1 first; the loop-lag watchdog; look back, rotate, notify
+  - [ ] [WE] Then `docs/rootstock/design.md`; OpenAPI capture and goldens from the 3.2.1 image; the parity runner
+  - [ ] [WE] F1 (3.4.0): the seam, pass-through; the eight congestion fixes (card "Congestion" in Bugs); consistent backups; `make stream_load` with an asyncio mock provider
+  - [ ] [WE] F2 (3.5.0): the model gateway, a plain ASGI app in its own process, behind an nginx inside the container; the Workshop agents page on Django; WAL with its own switch; Alexander's go or no-go
+  - [ ] [WE] The gateway's byte path moves to Rust (Tinker's `core/src/llm`) only when `stream_load` shows a trigger: gateway CPU over 60% of a core, loop lag p99 over 50 ms, added first-token p95 over 50 ms, or more than 250 streams
+  - [x] [WE] Ten research notes and `edge-cases.md` (347 entries: 189 keep, 128 fix, 30 die) (2026-10-23); `check_cites.py` resolves all 2,213 `path:line` cites; findings folded into the plan; 12 security cards filed in Bugs, 2 existing cards extended
+  - [x] [WE] `test_budget.py` (0/13,000) and `test_legacy_ratchet.py` (52,084 Python, 67,277 frontend, 1,665 pages), each shown to fail on purpose; staging mirrored to `~/.local/share/ai-ui/rootstock-staging/`
+  - [ ] [WE] Image diet (decided 2026-10-23: Django squeezed, containers everywhere): 390 MB today (152 MB to download); at F8 must ≤150 MB, target ≤110, stretch ≤75; `image_budget` ratchets down each release; levers measured in the plan (63 MB of `.pyc`, 37 MB `uv`, a doubled 21 MB zstandard, Django trimmed 49→24 MB)
+    - [ ] [WE] Repo weight: 97 MB tracked against Tinker's 19, though the code is about the same size; 63 MB of CJK fonts (PDF export only, already out of the image) move into the export-document Sprig recipe, the 5.5 MB `.xcf` leaves `app/static/icons/`, and a test fails on any new tracked file over 1 MB
+  - [ ] [WE] Few libraries (Alexander, 2026-10-23; evidence in the plan): `test_dependencies.py` lists about 12 direct Python packages, about 30 installed by their closure (today 95), no npm package at runtime (today 1,160 build the SPA), vendored pinned files checked by sha256, hash-pinned locks with an `exclude-newer` cool-down
+  - [ ] [WE] Install and onboarding: `install_smoke` times a fresh install to the first answer and counts the steps; it fails on any tour, modal or carousel before that answer
+  - [ ] [MANUALLY] SSO decision from the `federation/` research note, before F6, where sign-in now moves
+  - [ ] [MANUALLY] Sitting 2 of the plan's decision queue: what tool servers receive and direct connections (before F3), Space rules (before F4), the default embedder and the Sprig questions (before F5)
+  - Folds in: Workshop apps tab (Backlog), AI-UI as identity provider (OAuth UX), Backend Rewrite Research (superseded)
 
 - [ ] **One way to deploy: `cr-deploy` + `make deploy`** #critical: plan Amendment 55, 2026-09-27
   - [x] [WE] `cr-deploy` in the tap (named `captain` until 2026-09-28; from Trellis `caprover.py`): bind mounts in `apps`, `--verify/--expect/--health`, `rollback`, build-start race fixed, 9 tests
@@ -134,6 +157,22 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
 ---
 
 ## TODO
+
+- [ ] **Knowledge bases on sage.startr.cloud return nothing** #bug #critical (diagnosed 2026-10-20; fixes and the re-index wait on Alexander's go): all 13 knowledge bases with files answer queries 200 with 0 hits, and adding a file fails 400. Three faults stack
+  - [x] [WE] Probe (`scripts/kb-probe.py` plus one read-only SSH pass; 3.2.0 by digest on openco3): `vector_db_ready: false`; grafted are `mock-embedding` (rooted), `rag-loaders` and `calendar`; `vector-chroma` is absent, so `VECTOR_DB_CLIENT` is None
+  - [x] [WE] Logs, 72 h: `'NoneType' object has no attribute 'search'` ×26 on queries, `'query'` ×9 on adds (3 knowledge-file adds answered 400); `query_collection` swallows the errors and returns empty results with 200
+  - [x] [WE] The vector data is gone: `chroma.sqlite3` holds 0 collections against 19 knowledge bases and 2,197 file rows; 654 HNSW directories are orphans, the same count as July on 2.3.2
+  - [x] [WE] Embedding is the mock: `mock-embedding` (sha256-seeded 384-dim noise) re-roots on every boot; 57b6b30 (3.1.0) stopped new mock grafts but moves no instance off it, and diagnostics reports it `ok`
+  - [x] [WE] Not the cause: content extraction. This boot probed no Tika or Docling; their red rows date from 2026-08-10, before 3.2.0 gated the probe. The diagnostics registry keeps stale rows forever (20 dead loopback Sprig ports)
+  - [ ] [MANUALLY] Confirm the saved content-extraction engine and hybrid-search setting (Admin → Documents); the agent's SSH read of the saved config was refused
+  - [ ] [WE] On Alexander's go: graft `vector-chroma`, then `minilm-onnx-inhoused` (the mock's 384 width), then prune `mock-embedding`; openco3 must reach the Sprig registry
+  - [ ] [WE] On Alexander's go, after the real cultivar roots: re-index every knowledge base. `POST /api/v1/knowledge/reindex` is synchronous and Cloudflare cuts a request at 100 s, so call the unproxied `*.production.openco.ca` name or run it in the container
+    - Warning (2026-10-23): `/reindex` DELETES every knowledge base whose `data` is null or not a dict (`routers/knowledge.py:209-215`); that is 5 of 18 in both census databases. Back up first, and fix or bypass that branch before calling it
+    - Only 1,080 of 2,190 file rows hold stored text (`file.data.content`); the rest cannot be rebuilt without the original upload
+  - [ ] [WE] On Alexander's go, fixes: diagnostics flags `vector_db_ready: false` and a rooted `mock-embedding`; boot moves an instance off the mock; `query_collection` and the knowledge add path return the real 503; the registry prunes stale rows
+  - [ ] [WE] On Alexander's go, a gate: a real PDF into a knowledge base, a query, and a chat with the sources injected; none exists today
+  - [ ] [WE] Also seen once in 72 h: a chat background task crashed with `'NoneType' object has no attribute 'find'` in `middleware.py`'s `response_handler`; recheck after the fixes
+  - Verify with `scripts/kb-probe.py kbs`: every knowledge base with files returns hits. The admin key is in the vault as `sage-startr-cloud-admin-key` (Agents-edit)
 
 - [ ] **ML lock: sentence-transformers 4.1.0 → 5.6.0** #critical #security (Alexander, 2026-10-14: own card, after 3.2.1): CVE-2026-68770 critical in `app/backend/requirements-ml.lock`, which the AI Engine wizard installs
   - Dependabot PR 44 proposes 5.6.0; 5.6.0 accepts `transformers>=4.41,<6`, so the 4.57.6 pin can stay
@@ -229,7 +268,9 @@ _The first paid real-estate deployment of AI-UI, and deliberately the beachhead 
 
 #### Dedicated instance — after the demo
 
-- [ ] **Provision Realtor M his own instance rather than leaving a paying customer on the shared demo box.** Decided 2026-07-30. Solves three problems at once: recurring tenant cleanup, uncapped shared spend, and his working data sitting beside strangers'.
+- [ ] **Move Realtor M off the shared demo box onto his own AI-UI** (decided 2026-07-30): it ends tenant cleanup, uncapped shared spend, and his data beside strangers'. Since 2026-10-04 it runs on his own Mac (private Trellis board, card "Realtor M's Mac mini").
+  - [x] His AI-UI is up on the box, :8080, loopback only (2026-10-20)
+  - [ ] [MANUALLY] The Cloudflare Tunnel on a startr.cloud codename host behind Access (decided 2026-10-22; his domain later); then he signs in there, not on try.sage.is
 - [ ] Migration path for anything he creates on try.sage.is between the demo and the cutover.
 - [ ] **The social push escalates this from tidy-up to pre-launch blocker**: before the announcement, migrate Realtor M off the shared box, or cap spend, or both — not covered by any marketplace item. #critical
   - The push drives open-source self-installers at try.sage.is — the same shared box holding a paying customer's working data.
@@ -840,6 +881,7 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
   - [x] _Boot waterfall batched into one `Promise.all` wave after settings: three round-trips removed (~19 ms loopback, ~180 ms at 60 ms RTT); `boot-waterfall.cy.ts` RED→GREEN and pins settings-resolves-before-`/api/models`. #perf #frontend. Archived → docs/completed-todos.md._
   - [x] _Caching pass (2026-07-26): flipped the `ENABLE_BASE_MODELS_CACHE` default with invalidation wired from both provider-config endpoints (~740 ms → ~4.5 ms, ~160×; `models-cache.cy.ts` asserts both halves); `/static` + `/assets` get `public, max-age=604800`; combined: boot data-fetch 821.5→102.5 ms (8×), `/api/models` 768→17 ms; e2e 12/14 (two known leaks); PersistentConfig — an admin's saved choice survives upgrade. #perf. Archived → docs/completed-todos.md._
   - [ ] **`@cached(ttl=MODELS_CACHE_TTL)` never hits — the decorator is inert** (caching pass, 2026-07-26): the knob does nothing and every request stores an entry, so memory grows with request rate. #perf #tech-debt
+    - Measured 2026-10-23: `generate_chat_completion` (`routers/openai.py:950`) calls it on every model call, so every answer probes providers live; fixed in Rootstock F1 (card "Congestion" in Bugs)
     - [ ] `routers/openai.py:550` + `routers/ollama.py:378` use bare `aiocache.cached` with no `key_builder`; the default key stringifies the Starlette `Request`, a new object each call, so it never repeats
     - [ ] Proven with `MODELS_CACHE_TTL=60`: five `/api/models` calls 0.74/0.73/0.78/1.70/0.74 s, zero hits
     - [ ] Add a `key_builder` on stable values (user id + provider-config revision) — or delete the decorators; removing a cache that never hits is behaviour-preserving.
@@ -1027,6 +1069,7 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
 _Items deferred to a later planning cycle. Move here from TODO when deprioritized._
 
 - [ ] **Workshop apps tab: Tinker.Click apps run inside the box** (planned 2026-10-15, not built; waits on the Trellis-first pause): storage, ask and connector bridges keep each app's data home #frontend #security
+  - Model calls from apps, Tinker desktops and the library server go through the box's gateway from Rootstock F2 (plan, "The gateway contract")
   - Plan: `~/.claude/plans/brokerage-demo-tinker-trellis.md`, "Later"; rules and map in `docs/federation.md`
   - [ ] [WE] `/workshop/apps` tab behind a `workshop.apps` key in `DEFAULT_USER_PERMISSIONS` (`config.py`) and `WorkshopPermissions` (`routers/users.py`); `permissions-drift.cy.ts` fails if they disagree
   - [ ] [WE] Sandboxed frame like `Artifacts.svelte` (`srcdoc`, `allow-scripts`, no `allow-same-origin`); the host checks `event.source`, since such a frame's messages arrive with origin `"null"`
@@ -1035,6 +1078,11 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] [WE] Connectors as tool servers in `TOOL_SERVER_CONNECTIONS`, as Trellis already is (@crm)
   - Shares the `event.source` fix and per-user state with the app-pane item on the Sprig marketplace card
   - New pages ship plain HTML first (`docs/no-build-surface-convention.md`, rule 4)
+  - Tinker mini (reflection, Alexander, 2026-10-20): three steps in `docs/federation.md`, "A Tinker mini"; nothing built yet
+  - [ ] [WE] Step 1, no code: a "Tinker mini" model preset whose system prompt is adapted from Tinker's `system-compact.md` (credited); it answers with one self-contained `html` block, which the Artifacts panel already runs sandboxed
+  - [ ] [WE] Step 2 is this tab: run saved `<!-- tenkts-app … -->` files; only storage, ask and connector cross the bridge; `fetch`, files, `run` and `browse` answer "not available here", as Tinker's iOS host does
+  - [ ] Step 3: one written bridge contract for Tinker desktop, iOS and AI-UI, offered upstream as a pull request
+  - Open: Tinker's look or the host's; Tinker's `LICENSE` (AGPL-3.0) against its README and `Cargo.toml` (MIT); apps that need `fetch` or `browse` stay in Tinker desktop
 
 - [ ] **`telemetry-otel` Sprig: tracing for operators who set `ENABLE_OTEL`** #bonsai (2026-10-14): the 3.2.1 base keeps only `opentelemetry-api`; `ENABLE_OTEL=true` boots untraced with a warning
   - The SDK and gRPC exporter already ride vector-chroma v3; this Sprig would add the HTTP exporter and the instrumentors
@@ -1056,7 +1104,7 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] [MANUALLY] Ship order decision (recommend STT first), then wire + test on the school server
   - [x] Decided 2026-10-07 (Alexander, interviewed): satellite first, then donations as Sprigs; LocalMind (now "Mike") stays its author's school app and sheds duplicate accounts, KB and admin over time
   - [ ] [MANUALLY] Ask its author for AGPL-3.0 in writing (a `LICENSE` in the author's own commit); nothing is ported before that; the import commit is credited in a `NOTICE`
-  - [ ] Seam correction: models through AI-UI's Ollama-compatible `/ollama/api/*` with a bearer token (about 5 lines in `app/ollama.py`); verify the privacy filter covers that path first
+  - [ ] Seam correction: models through `/api/chat/completions` with a bearer token, not `/ollama/api/*`: checked 2026-10-23, the raw `/ollama` routes skip the privacy filter, and the Rootstock cuts the Ollama proxy
   - [ ] Seam correction: speech-to-text through `/api/v1/audio/transcriptions`, not the whisper Sprig's loopback port
   - [ ] Onboarding rides on the shared collaboration repo (guide + skill pack, installed through the tap); AI-UI gets a real `AGENTS.md` and `CLAUDE.md` stub
 
@@ -1268,6 +1316,7 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] Keep a small manual/staged real-microphone smoke suite; never a required CI gate
   - [ ] Document local, CI, and staging runs: browser flags, fixtures, expected assertions
 - [ ] **Backend Rewrite Research**: Evaluate framework options and build contract tests
+  - Superseded 2026-10-23 by the Rootstock card (In Progress): Django, same database, contract = OpenAPI subset + HAR goldens + live A/B
   - [ ] Review `docs/backend-rewrite-research.md` with team
   - [ ] Phase -1: Generate contract test suite from OpenAPI spec (private submodule)
   - [ ] Phase 0 spike: chosen framework + streaming Ollama proxy
@@ -1296,7 +1345,21 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 
 ## Bugs
 
+- [ ] **Space agent replies skip the model access check** #security #bug (2026-10-24; found by the guide-and-guard review): `routers/spaces.py:393` passes `bypass_filter=True`, which skips `check_model_access` (`utils/chat.py:219`), so any Space member can trigger an agent row and its tool-server key
+  - [ ] [WE] Check Space membership against the model's access list, or drop `bypass_filter` for agent replies
+- [ ] **The privacy filter's reverse table is shared by the whole instance** #security (2026-10-24; found by the guide-and-guard review): `privacy/mapper.py:28-34` caches every real-to-fake pair, and `hooks.py` restores real values into tool-call arguments
+  - [ ] [WE] Scope the table to the request or conversation; restore real values only into arguments a tool declares it accepts
+- [ ] **Congestion: one event loop carries every request, stream and socket, so streams stall and pages hang** #bug #perf #critical (Alexander, 2026-10-23; measured in the code the same day; plan section "Congestion and the Tinker gateway")
+  - Every model call fetches provider model lists live: `routers/openai.py:950` calls the router's `get_all_models`, whose `@cached` (`:555`) never hits, and each call opens a new HTTP session (`:1042`)
+  - Stream frames carry the whole answer so far, one per provider chunk, to every tab (`utils/middleware.py:1935-1941`, `socket/main.py:647-669`): about 5.6 MB per tab for a p90 answer, 43 MB for a p99
+  - Uploads run extraction and embedding on the loop (`routers/retrieval.py:1536,1617`); the model list costs about 660 queries per page for role `user` (`main.py:1631`, `utils/access_control.py:145`)
+  - Each answer rewrites the chat blob at least three times, and every chat stores its messages twice; every request writes `user.last_active_at` (`utils/auth.py:277,303`); the database pool waits 30 s (`internal/db.py:43-46`)
+  - [ ] [WE] Rootstock F0: the loop-lag watchdog logs the file and line of each stall, never values; its first week orders the fixes
+  - [ ] [WE] Rootstock F1: the eight fixes in the plan, gated by `make stream_load` at 30 UI streams with uploads: loop lag p99 ≤100 ms, bytes ≤2× the text plus 40 kB, at most 3 blob writes per answer, 0 errors
+  - [ ] [WE] Tinker load, hundreds to thousands of streams per box: the model gateway in its own process from Rootstock F2 (Rootstock card)
+
 - [ ] **Privacy: tool arguments leak on the follow-up** #security #bug (2026-10-15): with native function calling, the next request resends the arguments `finish_stream` made real (`privacy/hooks.py:159-164`), because `outbound` rewrites only `content` (`hooks.py:105-113`); the provider sees each stand-in beside its real value
+  - Closes in Rootstock F0 (3.3.0), fixed at source (plan, F0 section)
   - Path: `utils/middleware.py:1966` reverses the arguments in place; `2091-2100` and `345-352` put that same list in `assistant.tool_calls`; `outbound` (`utils/chat.py:209-211`) skips it; `routers/openai.py:1034-1052` posts it.
   - Ships in v3.2.0: the tag carries the same code on every line above.
   - Replayed 2026-10-15 on the real hooks and middleware helpers: round 1 carried only stand-ins; the follow-up carried the planted name and email in its tool arguments. `role: tool` content stayed stand-in.
@@ -1316,14 +1379,89 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
     - [ ] `scripts/privacy/mock_provider.py`: given `tools` and no `role: tool` message, stream one tool call with the last user message as the tool's first parameter (others are dropped, `middleware.py:553-556`); serve all captures.
     - [ ] Cypress through the chat UI (the tool loop needs a socket session): native function calling, a tool that returns its input, a literal name rule; the follow-up holds only stand-ins.
   - [ ] [WE] Card the siblings this trace found:
-    - [ ] The reverse table is instance-wide (`models/privacy.py:83`): a surname stand-in in any reply or tool call becomes another chat's real name (replayed: `Okafor` to `Silva`).
-    - [ ] The model preset system prompt, with `{{USER_NAME}}` and `{{USER_LOCATION}}` filled in, joins the messages after `outbound` (`routers/openai.py:928-929`).
+    - [x] The reverse table is instance-wide (`models/privacy.py:83`): a surname stand-in in any reply or tool call becomes another chat's real name (replayed: `Okafor` to `Silva`).
+    - [x] The model preset system prompt, with `{{USER_NAME}}` and `{{USER_LOCATION}}` filled in, joins the messages after `outbound` (`routers/openai.py:928-929`).
     - [ ] `/openai/chat/completions` skips the hook (`routers/openai.py:901`); the streamed API pass-through leaves tool-call deltas fake (`hooks.py:190-193`).
 
+- [ ] **Privacy: the reverse table is instance-wide, so one chat's reply can show another chat's real name** #security #bug (2026-10-23, from the tool-argument trace): `reverse_table()` holds every pair on the instance (`privacy/mapper.py:28-33`), and name stand-ins are common surnames (`privacy/shapes.py:153-154`)
+  - Replayed 2026-10-15: a surname stand-in in one chat's reply came back as another chat's real name (`Okafor` to `Silva`)
+  - [ ] [WE] Reverse only the stand-ins the request itself sent; a test plants a name in one user's chat and its stand-in surname in another user's reply
+  - Closes in Rootstock F0 (plan, F0 section)
+
+- [ ] **Privacy: the preset system prompt joins after the filter, carrying the user's name and location** #security #bug (2026-10-23, from the tool-argument trace): `apply_model_system_prompt_to_body` fills `{{USER_NAME}}` and `{{USER_LOCATION}}` after `outbound` has run (`routers/openai.py:925-929`)
+  - [ ] [WE] Apply the system prompt before `outbound`; a test with privacy on sees only a stand-in for the user's name in the system message
+  - Closes in Rootstock F0 (plan, F0 section)
+
+- [ ] **Knowledge access: chat retrieval and `/query/*` read any file or collection a client names** #security #bug (2026-10-23): a file item with `context: full` returns the whole file with no owner check (`retrieval/utils.py:614-628`); vector search takes any collection id (`:629-634`, `:669-674`, `:682-687`; `routers/retrieval.py:1815-1943`)
+  - [ ] [WE] One access check for every file, collection and knowledge id before retrieval, the rule `:644-647` already applies to full-context knowledge; ids leak through shared chats and agents, so an unguessable id is not a control
+  - [ ] [WE] A test: a second user naming the first user's file id, in chat and on `/query/doc`, gets nothing
+  - [ ] [WE] Second path (2026-10-23): a client `model_item` with `direct: true` skips the model lookup (`main.py:1733-1751`), and its `info.meta.knowledge` ids reach vector search unchecked (`utils/middleware.py:1188-1225`); the test sends this body too
+  - Found by the Rootstock Phase 0 knowledge survey
+  - Closes in Rootstock F0, fixed at source: one access check at retrieval for every file, collection and knowledge id, whatever supplied it (plan, F0 section)
+
+- [ ] **The raw `/openai/{path}` proxy lends connection 0's key to any verified user** #security #bug (2026-10-23): `routers/openai.py:1178-1236` forwards GET, POST, PUT and DELETE on any path to the first connection with its API key, past the privacy filter and model access control
+  - [ ] [WE] Admin-only, or an allowlist of paths; decide whether anything still needs it
+  - Closes in Rootstock F0, fixed at source: non-admins reach only the raw paths the SPA's own API modules call and those `docs/API-examples.md` documents
+
+- [ ] **Model access checks apply only to role `user`** #security #bug (2026-10-23): `/api/models` filters and chat checks access only when `user.role == "user"` (`main.py:1673,1742`), so facilitator and temporary accounts reach every model, restricted ones included
+  - [ ] [WE] Check every non-admin role; a test per role. The same `role == "user"` test sits at `utils/chat.py:219`, `routers/openai.py:731,932`, `routers/ollama.py:544,1375,1481,1564,1659` and more (13 in all, per the identity survey)
+  - [ ] [WE] Spaces: any facilitator can edit any Space; `update_space_by_id` checks the role, not ownership (`routers/spaces.py:136-150`)
+  - Closes in Rootstock F0, fixed at source: one `is_restricted(user)` helper replaces the 13 role tests
+
+- [ ] **Spaces: any reader can edit or delete anyone's message** #security #bug (2026-10-23): message update and delete (`routers/spaces.py:799-830`, `:992-1017`) check only read access to the Space (`_check_space_access`, `:62-74`), never the author; no `write` check exists anywhere in `spaces.py`
+  - [ ] [WE] Edit and delete: the author, a Space manager, or an admin; post: `write` access; a test per role
+  - [ ] [WE] Notes live edit: `ydoc:document:update` (`socket/main.py:526-569`) checks nothing and trusts a client-sent `user_id`, so any socket can push edits that other editors' clients then save; check the session user's write access, as the save path does
+  - Closes in Rootstock F0, fixed at source: edits and deletes need the author, the Space's owner or an admin; `ydoc:document:update` takes the session user; who may post does not change
+
+- [ ] **Client-set flags skip checks: `?bypass_filter=true` and `?internal=true`** #security #bug (2026-10-23): both are plain request parameters; the first skips model access control on `/openai/chat/completions` (`routers/openai.py:906,932,943`), the second the upload type allowlist (`routers/files.py:91,114`)
+  - [ ] [WE] Make both server-internal arguments, never request parameters; a test sends each flag as a non-admin and expects the check to hold
+  - Closes in Rootstock F0, fixed at source: both flags are honoured only from server-internal calls
+
+- [ ] **A temporary account can extend its own expiry** #security #bug (2026-10-23): `/users/user/info/update` merges any client JSON into `user.info` (`routers/users.py:353-374`), and expiry lives at `user.info.temporary.expires_at` (`utils/auth.py:315-321`; cleanup `models/users.py:424`), so a try.sage persona can stay forever
+  - [ ] [WE] An allowlist of user-editable `info` keys; `temporary` is server-only; a test
+  - Closes in Rootstock F0, fixed at source: `/users/user/info/update` merges only an allowlist of user-editable keys
+
+- [ ] **`/cache/{path}` guards traversal with a bare string prefix** #security (2026-10-23): `main.py:2529-2531` tests `startswith(abspath(CACHE_DIR))`, which admits a sibling such as `../cache-old/x`; low risk while no such sibling exists
+  - [ ] [WE] `Path.resolve()` then `is_relative_to(CACHE_DIR)`; a test with `../cache-x/f`
+  - Closes in Rootstock F0, fixed at source: `resolve()`, then `is_relative_to` the cache root
+
+- [ ] **Pages load startr.style from a rolling URL** #security #supply-chain (2026-10-23): `app/src/app.html:31` and `pages/templates/try-sage.html:58` link `https://startr.style/style.css`, which changes under every box at once and is fetched on every page view, the shape of the 2024 polyfill.io takeover, on our own domain
+  - [ ] [WE] Consumer fix: vendor the immutable `v1.5.0/style.css` and serve it from the box with an `integrity` hash, as Trellis vendors it (`crm/templates/_shell.html:11`, which sets no `integrity` yet)
+  - [ ] [WE] A third site links the same URL: `pages/shell.py:261` (found 2026-10-23)
+  - [ ] [MANUALLY] Upstream fix, proposed, never edited from here: startr.style publishes an SRI hash beside every versioned file and keeps versioned paths immutable
+  - Closes in Rootstock F0, fixed at source: all three pages load the vendored `v1.5.0` copy with SRI
+
+- [ ] **Login redirect runs any URL, `javascript:` included** #security #bug (2026-10-23): `app/src/routes/auth/+page.svelte:80,106` sets `window.location.href` to the raw `?redirect=` value, so a crafted sign-in link can run script in the app's origin, where the SPA keeps its token
+  - [ ] [WE] Accept only same-origin paths that start with `/` and not `//`; anything else goes to `/`; a test with `javascript:`, `//evil` and `https://evil`
+  - Closes in Rootstock F0, fixed at source: the auth page accepts same-origin paths only
+
+- [ ] **Community sharing is still saved ON** #security (2026-10-23): both census databases (production, 2026-07-12 and the 2026-09-27 backup) store `ui.enable_community_sharing: true`; a saved value outranks the flipped default (`config.py:168-170`, `:1484-1492`), and one share handler points at a public request bin
+  - [x] [MANUALLY] sage.startr.cloud: switched off in Admin → Interface (Alexander, 2026-10-23)
+  - [ ] [MANUALLY] try.sage.is: left on while only developers can reach it and no demos run (2026-10-23 to 2026-10-30); switch it off before the next demo
+  - The handler sends the whole agent, owner name and email included, to a webhook.site address in the public repo since `bbb4f10` (2026-01-10) (`app/src/lib/components/workshop/Models.svelte:102-126`); the click never reaches our servers, so whoever owns that bin can say whether anything arrived
+  - [ ] [WE] Until the sharing site exists, force the flag off at boot whatever is saved, and say so in diagnostics
+  - Closes in Rootstock F0: saved off and defaulted off until the sharing site exists; the [MANUALLY] switch above still goes first
+
+- [ ] **API-key endpoint allowlist fails open on an empty entry** #security #bug (2026-10-23): `utils/auth.py:176-192` keeps `""` from an empty list or a trailing comma, and `"" + "/"` matches every path, which voids the consent-key recipe in `docs/federation.md:95-99`
+  - [ ] [WE] Drop empty entries; an empty allowlist denies everything; a test with `""`, `"a,"` and `" , "`
+  - Closes in Rootstock F0, fixed at source: empty entries are dropped, and an empty list denies everything
+
+- [ ] **Session tokens: no expiry by default, and the reset cutoff is skipped** #security #bug (2026-10-23): `JWT_EXPIRES_IN` defaults to `-1` (`config.py:288-290`); 5 of 8 session mints omit `iat` (`routers/auths.py:272,527,904`, `routers/magic_links.py:369`, `utils/oauth.py:511`) and 2 omit `exp` (`auths.py:904`, `magic_links.py:369`)
+  - [ ] [WE] One mint helper that always sets `iat` and `exp`; the try.sage cutoff (`utils/auth.py:236`) then holds for every token
+  - [ ] [WE] The cutoff guards 1 of 8 decode sites; the sockets (`socket/main.py:267,287,315,336`), `/api/config` (`main.py:1915`) and `routers/auths.py:109` skip it
+  - Closes in Rootstock F0, fixed at source: one mint helper, the cutoff at the socket sites, `JWT_EXPIRES_IN` defaulting to `4w`, and tokens without `iat` refused from 3.3.0
+
+- [ ] **Sprig children inherit the whole environment, `WEBUI_SECRET_KEY` included** #security #bug (2026-10-23): `sprigs/supervisor.py:1463-1468` builds `child_env = {**os.environ, …}`, so every grafted child (llama-server, whisper-server, Tika, Docling) can read the session-signing key and every provider key
+  - [ ] [WE] Hand children an allowlist (`PATH`, `HOME`, `LANG`, `TZ`, the cultivar's own variables) instead of `os.environ`; a test asserts `WEBUI_SECRET_KEY` and every `*_API_KEY` are absent from `child_env`
+  - Found by the Rootstock Phase 0 Sprigs survey; the Rootstock's service-Sprig facility carries the same allowlist
+  - Closes in Rootstock F0, fixed at source: an environment allowlist; the adapted supervisor inherits it at F5
+
 - [ ] **Secrets in logs: an OAuth token response, and a dead API-key method** #security #bug (2026-10-15): `utils/oauth.py:363` logs the whole token response (access, ID and any refresh token) at WARNING when the provider returns no user info; `models/auths.py:151` logs a whole API key at INFO
+  - Closes in Rootstock F0 (3.3.0), fixed at source (plan, F0 section)
   - `authenticate_user_by_api_key` has no callers: API keys sign in through `utils/auth.py:194` and `286-287`, which log no key. Line 151 fires only if someone wires the method back in.
   - `utils/oauth.py:368` logs the provider's user info (email, name) at WARNING when `sub` is missing.
   - [ ] [WE] Delete `authenticate_user_by_api_key`; at `oauth.py:363` log the token's key names, never its values; at `368` log only the claim names.
+  - [ ] [WE] `app/backend/restore_backup_start.sh:46-48` prints the whole generated `rclone.conf`, backup-remote credentials included, to the container log (found 2026-10-23 by the Rootstock ops survey); print the remote name only
 
 - [ ] **A busy database reads as "session expired"** #bug #auth (2026-10-15): `Users.get_user_by_id` (`models/users.py`) returns None on ANY exception, so `get_current_user` answers 401 "Your session has expired or the token is invalid" for a DB error
   - Seen: `sprig_smoke` 2026-07-19 (5 cascading 401s, papered over by `G()`'s re-sign-in) and `upgrade_gate` section 6 on 2026-10-15; a reduced replay passed on both images, so load or lock timing, not the token
@@ -1460,7 +1598,8 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] `utils/chat.py` gates only on `request.state.direct`.
   - Wider than first logged (2026-10-05): `/api/chat/completed` ([main.py:1826](app/backend/sage_is_ai/main.py#L1826)) and `/api/chat/actions/{action_id}` ([main.py:1845](app/backend/sage_is_ai/main.py#L1845)) also take `model_item.direct` off the body.
   - [ ] Found 2026-08-04, chat-path census; behaviour frozen.
-  - [ ] [MANUALLY] Alexander's sign-off: enforce the flag on all three routes — closing it narrows product surface. Raised again in the 2026-10-05 bug sitrep; open.
+  - [x] [MANUALLY] Alexander's sign-off: enforce the flag on all three routes — closing it narrows product surface. Signed off with the Rootstock plan, 2026-10-24.
+  - Closes in Rootstock F0: the switch is enforced on all three routes (approved with the plan, 2026-10-24)
   - [ ] Not an SSRF: `generate_direct_chat_completion` relays `request:chat:completion` to the BROWSER, which makes the call — triage as an open admin toggle, not server-side model access.
 - [ ] **`data: [DONE]` does not terminate the stream loop**: `stream_body_handler` has no case for the sentinel — it fails `json.loads` and is skipped by the `except` at [middleware.py:1926](app/backend/sage_is_ai/utils/middleware.py#L1926); a provider that appends anything after the sentinel gets it rendered. #bug
   - [ ] Content arriving AFTER `[DONE]` is still parsed, appended to the blocks, emitted to the reader and persisted.
@@ -1547,7 +1686,6 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] Two fixes together:
     - [ ] (1) say what happened — "pruned while booting: 'multilingual-e5-large' took over the embedding capability".
     - [ ] (2) capture child `stderr` — it is `DEVNULL` ([supervisor.py:1299](app/backend/sage_is_ai/sprigs/supervisor.py#L1299)), so a cultivar that dies for any other reason leaves no evidence.
-- [ ] **Retest knowledge upload on sage.startr.cloud (on 3.2.0 since 2026-09-27)**: the misleading TypeError can no longer occur, but the underlying endpoint fault it masked (engine config or a stale URL/key in the inherited volume) was never diagnosed. Upload once; if it fails, `/admin/diagnostics` now names the real cause. #bug
 
 - [ ] **AI Engine Wizard Embedding Download Has No Stall Watchdog**: when the embedding model fetch from HuggingFace stalls, the wizard sits in `embedding=downloading` indefinitely — a real user has no signal except an idle spinner. #bug
   - [ ] Stall causes: network drop, HF outage, slow link.
