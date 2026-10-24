@@ -46,7 +46,7 @@ This file tracks active work only.
   - [x] [WE] Gate fixes found on the way: `sign-sprigs.sh` + `sprig_signing` step 5 dodge the krunkit stale-file trap (step 5 had pushed a VALID signature silently); `inject-test-admin.py` off passlib; `upgrade_gate` section 6 re-signs in once
   - Gates on the final image, 2026-10-15: `image_unit_tests` 39/39, `sprig_durability` 12/12, `sprig_signing` 11/11, `upgrade_gate` 20/20 (trimmed snapshot), `test_db_fresh` + `test_db_upgrade` pass, trivy 0 HIGH/CRITICAL, 16/16 hand checks
   - Gates on the build before the last refactors: `sprig_smoke` 69/69, `e2e_both` all specs on both surfaces; `make -n patch_release` opens `release/3.2.1`
-  - [x] [WE] Shipped 2026-10-24 (Alexander's go): 13 commits, tag `v3.2.1`, image `sha256:3e2a15c4…` on GHCR, the six new Sprig tags public, tap formula 3.2.1 (`20334a5`); the wizard smoke passes on the published image and Sprigs
+  - [x] [WE] Shipped 2026-10-24 (Alexander's go): 13 commits, tag `v3.2.1`, image `sha256:3e2a15c4…` on GHCR, the six new Sprig tags public; the wizard smoke passes on the published image and Sprigs; brew stays on 3.2.0 (card "Each release tag pins the previous server" in Bugs)
     - The push needed a workaround on the build VM (card "The release push cannot build amd64 on the build VM" in Bugs)
   - [ ] [MANUALLY] Both tap formulas declare `license "MIT"` but now install AI-UI's `cli/`, which ships AGPL-3.0: pick `AGPL-3.0-only` or `AGPL-3.0-or-later`
   - [x] [WE] Free space first (2026-10-23, Alexander's go): Docker Desktop's retired 49 GB disk archived encrypted to the Somma 02 backups, key in the vault, verified, original removed; "Somma 01 Dock Drive" 9.9 → 203 GiB free (`release_preflight` wants 30)
@@ -1348,6 +1348,11 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 
 ## Bugs
 
+- [ ] **Each release tag pins the previous server, so brew cannot ship it** #bug #release #critical (2026-10-24, the 3.2.1 release): `_pin_server_tag` runs after `release_finish`, so `v3.2.1`'s `distribution.env` says `SERVER_TAG=3.2.0`, and the formula aborts on that mismatch
+  - [ ] [WE] Pin `SERVER_TAG` to the release version on the release branch, before the tag; move the sibling sync and its check to match
+  - [ ] [MANUALLY] Cut 3.2.2 with the pin inside its tag, so brew boxes get the 3.2.1 security fixes
+  - [x] [WE] The CLI test that named 3.2.0 reads the pin from `distribution.env` instead; it had failed the develop push
+  - Until then brew installs AI-UI 3.2.0: the tap's `check-formulae.sh` refused the 3.2.1 formula on pre-push, and the unpushed formula commit was undone
 - [ ] **The release push cannot build amd64 on the build VM** #bug #release (2026-10-24, the 3.2.1 push): the docker-container builder runs amd64 under its bundled QEMU, where esbuild crashes; dockerd's own builder reaches Rosetta, but both arches' `vite build` at once OOM the 10 GiB VM
   - [ ] [WE] `ensure_builder`: use the context's docker driver when dockerd runs the containerd image store, as the build VM does
   - [ ] [WE] `_it_build_multi_arch_push_GHCR`: warm the cache one platform at a time (`--output type=cacheonly`), then push both
