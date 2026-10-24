@@ -1183,9 +1183,15 @@ async def process_chat_payload(request, form_data, user, metadata, model):
                         *form_data.get("files", []),
                     ]
 
-    # Model "Knowledge" handling
+    # Model "Knowledge" handling. A direct model is the client's own description
+    # of a model (main.py: model_item with direct: true), so its knowledge list
+    # is the client's word; only a server-side model's knowledge is searched.
     user_message = get_last_user_message(form_data["messages"])
-    model_knowledge = model.get("info", {}).get("meta", {}).get("knowledge", False)
+    model_knowledge = (
+        False
+        if metadata.get("direct")
+        else model.get("info", {}).get("meta", {}).get("knowledge", False)
+    )
 
     if model_knowledge:
         await emit_event(

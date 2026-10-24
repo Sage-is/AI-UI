@@ -202,21 +202,17 @@ async def reindex_knowledge_files(request: Request, user=Depends(get_verified_us
 
     log.info(f"Starting reindexing for {len(knowledge_bases)} knowledge bases")
 
-    deleted_knowledge_bases = []
+    skipped_knowledge_bases = []
 
     for knowledge_base in knowledge_bases:
-        # -- Robust error handling for missing or invalid data
+        # A knowledge base with no file list (data null, or not a dict; every
+        # new one starts that way) has nothing to index: it is skipped and
+        # reported, never deleted. Until 3.3.0 this branch deleted it.
         if not knowledge_base.data or not isinstance(knowledge_base.data, dict):
             log.warning(
-                f"Knowledge base {knowledge_base.id} has no data or invalid data ({knowledge_base.data!r}). Deleting."
+                f"Knowledge base {knowledge_base.id} has no data or invalid data ({knowledge_base.data!r}). Skipped."
             )
-            try:
-                Knowledges.delete_knowledge_by_id(id=knowledge_base.id)
-                deleted_knowledge_bases.append(knowledge_base.id)
-            except Exception as e:
-                log.error(
-                    f"Failed to delete invalid knowledge base {knowledge_base.id}: {e}"
-                )
+            skipped_knowledge_bases.append(knowledge_base.id)
             continue
 
         try:
@@ -263,7 +259,7 @@ async def reindex_knowledge_files(request: Request, user=Depends(get_verified_us
                 log.warning(f"File ID: {failed['file_id']}, Error: {failed['error']}")
 
     log.info(
-        f"Reindexing completed. Deleted {len(deleted_knowledge_bases)} invalid knowledge bases: {deleted_knowledge_bases}"
+        f"Reindexing completed. Skipped {len(skipped_knowledge_bases)} knowledge bases with no data: {skipped_knowledge_bases}"
     )
     return True
 

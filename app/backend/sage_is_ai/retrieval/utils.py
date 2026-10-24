@@ -528,6 +528,41 @@ def get_reranking_function(reranking_engine, reranking_model, reranking_function
         return lambda sentences, user=None: reranking_function.predict(sentences)
 
 
+def can_read_knowledge(user: UserModel, knowledge_base) -> bool:
+    """The one read rule for a knowledge base: its owner, an admin, or read access through access_control."""
+    return (
+        user.role == "admin"
+        or knowledge_base.user_id == user.id
+        or has_access(user.id, "read", knowledge_base.access_control)
+    )
+
+
+def can_read_file(user: UserModel, file) -> bool:
+    """A file follows its owner, then the knowledge base it sits in (routers/files.py, has_access_to_file)."""
+    if user.role == "admin" or file.user_id == user.id:
+        return True
+    knowledge_id = (file.meta or {}).get("collection_name")
+    knowledge_base = Knowledges.get_knowledge_by_id(knowledge_id) if knowledge_id else None
+    return knowledge_base is not None and can_read_knowledge(user, knowledge_base)
+
+
+def can_read_collection(user: UserModel, collection_name: str) -> bool:
+    """Whether `user` may search a vector collection, whoever named it.
+
+    `file-<id>` follows the file's record and a knowledge base's id follows its record,
+    so an id carried by a shared chat, an agent or a client model is no key. A name with
+    no record (a URL hash from process_web, a legacy document) has no owner to check and
+    passes as before.
+    """
+    if user is None:
+        return False
+    if collection_name.startswith("file-"):
+        file = Files.get_file_by_id(collection_name[len("file-") :])
+        return file is not None and can_read_file(user, file)
+    knowledge_base = Knowledges.get_knowledge_by_id(collection_name)
+    return knowledge_base is None or can_read_knowledge(user, knowledge_base)
+
+
 def get_sources_from_items(
     request,
     items,
@@ -613,7 +648,7 @@ def get_sources_from_items(
                     }
                 elif item.get("id"):
                     file_object = Files.get_file_by_id(item.get("id"))
-                    if file_object:
+                    if file_object and can_read_file(user, file_object):
                         query_result = {
                             "documents": [[file_object.data.get("content", "")]],
                             "metadatas": [
@@ -641,10 +676,7 @@ def get_sources_from_items(
                 # Manual Full Mode Toggle for Collection
                 knowledge_base = Knowledges.get_knowledge_by_id(item.get("id"))
 
-                if knowledge_base and (
-                    user.role == "admin"
-                    or has_access(user.id, "read", knowledge_base.access_control)
-                ):
+                if knowledge_base and can_read_knowledge(user, knowledge_base):
                     file_ids = knowledge_base.data.get("file_ids", [])
 
                     documents = []
@@ -690,8 +722,16 @@ def get_sources_from_items(
         # Fallback to collection names and vector search the collections
         if query_result is None and collection_names:
             collection_names = set(collection_names).difference(extracted_collections)
+            denied = {
+                name for name in collection_names if not can_read_collection(user, name)
+            }
+            if denied:
+                log.warning(
+                    f"user {getattr(user, 'id', None)} may not read collections {sorted(denied)}: skipped"
+                )
+                collection_names = collection_names.difference(denied)
             if not collection_names:
-                log.debug(f"skipping {item} as it has already been extracted")
+                log.debug(f"skipping {item}: already extracted, or not readable")
                 continue
 
             try:

@@ -86,6 +86,7 @@ from sage_is_ai.retrieval.loaders.youtube import YoutubeLoader
 from sage_is_ai.retrieval.web.utils import get_web_loader
 
 from sage_is_ai.retrieval.utils import (
+    can_read_collection,
     get_embedding_function,
     get_reranking_function,
     get_model_path,
@@ -1818,6 +1819,11 @@ def query_doc_handler(
     form_data: QueryDocForm,
     user=Depends(get_verified_user),
 ):
+    if not can_read_collection(user, form_data.collection_name):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=ERROR_MESSAGES.ACCESS_PROHIBITED,
+        )
     try:
         if request.app.state.config.ENABLE_RAG_HYBRID_SEARCH:
             collection_results = {}
@@ -1890,6 +1896,11 @@ def query_collection_handler(
     form_data: QueryCollectionsForm,
     user=Depends(get_verified_user),
 ):
+    if not all(can_read_collection(user, name) for name in form_data.collection_names):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=ERROR_MESSAGES.ACCESS_PROHIBITED,
+        )
     try:
         if request.app.state.config.ENABLE_RAG_HYBRID_SEARCH:
             return query_collection_with_hybrid_search(
