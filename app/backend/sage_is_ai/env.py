@@ -1,10 +1,8 @@
-import importlib.metadata
 import json
 import logging
 import os
 import pkgutil
 import sys
-import shutil
 from uuid import uuid4
 from pathlib import Path
 
@@ -134,18 +132,10 @@ DEV_MODE = os.environ.get("DEV_MODE", "false").lower() == "true"
 # why `/admin/diagnostics` reports it as degraded when it is on.
 PAGES_RELOAD_DIRS = os.environ.get("PAGES_RELOAD_DIRS", "").strip()
 
-FROM_INIT_PY = os.environ.get("FROM_INIT_PY", "False").lower() == "true"
-
-if FROM_INIT_PY:
-    try:
-        PACKAGE_DATA = {"version": importlib.metadata.version("WEB-AI-Sage-WebUI")}
-    except importlib.metadata.PackageNotFoundError:
-        PACKAGE_DATA = {"version": "0.0.0"}
-else:
-    try:
-        PACKAGE_DATA = json.loads((BASE_DIR / "package.json").read_text())
-    except Exception:
-        PACKAGE_DATA = {"version": "0.0.0"}
+try:
+    PACKAGE_DATA = json.loads((BASE_DIR / "package.json").read_text())
+except Exception:
+    PACKAGE_DATA = {"version": "0.0.0"}
 
 VERSION = PACKAGE_DATA["version"]
 INSTANCE_ID = os.environ.get("INSTANCE_ID", str(uuid4()))
@@ -303,40 +293,16 @@ WEBUI_BUILD_HASH = os.environ.get("WEBUI_BUILD_HASH", "dev-build")
 # DATA/FRONTEND BUILD DIR
 ####################################
 
+# The pip-package layout (FROM_INIT_PY: data under the package dir, moved there
+# and the old tree deleted on first run) left with the typer CLI in 3.2.1. The
+# container is the only layout; DATA_DIR comes from the env or the backend dir.
 DATA_DIR = Path(os.getenv("DATA_DIR", BACKEND_DIR / "data")).resolve()
-
-if FROM_INIT_PY:
-    NEW_DATA_DIR = Path(os.getenv("DATA_DIR", SAGE_IS_AI_DIR / "data")).resolve()
-    NEW_DATA_DIR.mkdir(parents=True, exist_ok=True)
-
-    # Check if the data directory exists in the package directory
-    if DATA_DIR.exists() and DATA_DIR != NEW_DATA_DIR:
-        log.info(f"Moving {DATA_DIR} to {NEW_DATA_DIR}")
-        for item in DATA_DIR.iterdir():
-            dest = NEW_DATA_DIR / item.name
-            if item.is_dir():
-                shutil.copytree(item, dest, dirs_exist_ok=True)
-            else:
-                shutil.copy2(item, dest)
-
-        # Zip the data directory
-        shutil.make_archive(DATA_DIR.parent / "sage_is_ai_data", "zip", DATA_DIR)
-
-        # Remove the old data directory
-        shutil.rmtree(DATA_DIR)
-
-    DATA_DIR = Path(os.getenv("DATA_DIR", SAGE_IS_AI_DIR / "data"))
 
 STATIC_DIR = Path(os.getenv("STATIC_DIR", SAGE_IS_AI_DIR / "static"))
 
 FONTS_DIR = Path(os.getenv("FONTS_DIR", SAGE_IS_AI_DIR / "static" / "fonts"))
 
 FRONTEND_BUILD_DIR = Path(os.getenv("FRONTEND_BUILD_DIR", BASE_DIR / "build")).resolve()
-
-if FROM_INIT_PY:
-    FRONTEND_BUILD_DIR = Path(
-        os.getenv("FRONTEND_BUILD_DIR", SAGE_IS_AI_DIR / "frontend")
-    ).resolve()
 
 ####################################
 # Database
