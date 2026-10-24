@@ -72,18 +72,16 @@ DEV_EMAIL="${DEV_EMAIL:-admin@example.com}"
 DEV_PASSWORD="${DEV_PASSWORD:-password}"
 (
   API="http://localhost:$PORT"
-  JSON='Content-Type: application/json'
+  # No curl in the image since 3.2.1: utils/localhttp.py, standard library only.
+  # Bodies go in on stdin so the password stays out of the process list.
+  HTTP="python3 -m sage_is_ai.utils.localhttp"
   signin="{\"email\":\"$DEV_EMAIL\",\"password\":\"$DEV_PASSWORD\"}"
   signup="{\"name\":\"Admin\",\"email\":\"$DEV_EMAIL\",\"password\":\"$DEV_PASSWORD\"}"
-  token() { sed -n 's/.*"token":"\([^"]*\)".*/\1/p'; }
 
-  for _ in $(seq 1 60); do
-    curl -sf -o /dev/null "$API/health" 2>/dev/null && break
-    sleep 2
-  done
+  $HTTP --wait-seconds 120 "$API/health" >/dev/null 2>&1
 
-  tok=$(curl -s -X POST "$API/api/v1/auths/signup" -H "$JSON" -d "$signup" 2>/dev/null | token)
-  [ -n "$tok" ] || tok=$(curl -s -X POST "$API/api/v1/auths/signin" -H "$JSON" -d "$signin" 2>/dev/null | token)
+  tok=$(printf '%s' "$signup" | $HTTP --json @- --field token "$API/api/v1/auths/signup" 2>/dev/null)
+  [ -n "$tok" ] || tok=$(printf '%s' "$signin" | $HTTP --json @- --field token "$API/api/v1/auths/signin" 2>/dev/null)
 
   if [ -z "$tok" ]; then
     echo "⚠️  could not seed or sign in as $DEV_EMAIL — open $API and sign up."
@@ -94,8 +92,7 @@ DEV_PASSWORD="${DEV_PASSWORD:-password}"
   # the first account to sign up becomes an admin; every later one lands on
   # DEFAULT_USER_ROLE, which is `pending`. On a fresh dev volume this is always
   # admin — see VOLUME_DEV_DATA in the Makefile for why dev has its own.
-  role=$(curl -s -b "token=$tok" "$API/api/v1/auths/" 2>/dev/null \
-         | sed -n 's/.*"role":"\([^"]*\)".*/\1/p')
+  role=$($HTTP --cookie-token "$tok" --field role "$API/api/v1/auths/" 2>/dev/null)
   echo "🔑 Sign in:  $DEV_EMAIL / $DEV_PASSWORD  (role: ${role:-unknown})"
 
   if [ "$role" != "admin" ]; then
@@ -119,12 +116,11 @@ DEV_PASSWORD="${DEV_PASSWORD:-password}"
     exit 0
   fi
 
-  # -f so curl FAILS on a 4xx. Without it curl exits 0 on a permissions refusal
-  # and the success message below prints over the top of an error — a message
-  # that cannot fail, which is how this was found in the first place.
-  if curl -sf -X POST "$API/api/v1/retrieval/sprigs/graft" \
-       -H "Authorization: Bearer $tok" -H "$JSON" \
-       -d '{"name":"ui-workshop-welcome","capability":"ui"}' >/dev/null 2>&1; then
+  # localhttp exits non-zero on a 4xx, as `curl -f` did. Without that a
+  # permissions refusal exits 0 and the success message below prints over the
+  # top of an error — a message that cannot fail, which is how this was found.
+  if printf '%s' '{"name":"ui-workshop-welcome","capability":"ui"}' \
+       | $HTTP --json @- --bearer "$tok" "$API/api/v1/retrieval/sprigs/graft" >/dev/null 2>&1; then
     echo "🌱 ui-Sprig™ grafted — the marketplace slot is live."
   else
     echo "⚠️  ui-workshop-welcome graft failed; the slot will be empty."
