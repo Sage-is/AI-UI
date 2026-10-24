@@ -32,6 +32,7 @@ docker run -d --name "$NAME" --network sage-network -p "$PORT:8080" \
   -e ENABLE_SIGNUP=True -e WEBUI_AUTH=True -e DEFAULT_USER_ROLE=user \
   -e SPRIG_REGISTRY=local-registry:5000 -e PYTHONDONTWRITEBYTECODE=1 \
   -v "$TREE/app/backend/sage_is_ai:/app/backend/sage_is_ai:ro" \
+  -v "$TREE/app/static/vendor:/app/static/vendor:ro" \
   -v "$NAME-data:/app/backend/data" "$IMAGE" >/dev/null
 for _ in $(seq 1 60); do
   if curl -fsS -m 3 "http://localhost:$PORT/health" >/dev/null 2>&1; then

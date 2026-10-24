@@ -44,10 +44,11 @@ if they reference an external URL, and the pitch to a workshop is that nothing
 they type leaves the room.
 
 The vendored sheet still opens with upstream's `@import url('/fonts/Nunito-Sans.css')`,
-a host-absolute path that resolves to this box and finds nothing, so these pages
-fall back to the system sans-serif until the faces are vendored too (Trellis
-inlines them with its scripts/vendor_kit.py). Keep layout that must not break in
-pages.css: the local sheet is what survives a framework sheet that fails to load.
+a host-absolute path, so main.py serves `/fonts` from app/static/vendor/startr.style/fonts/:
+the ten Nunito Sans faces and their sheet, vendored with the stylesheet (3.3.0; before
+that the import found nothing and these pages fell back to the system sans-serif).
+Keep layout that must not break in pages.css: the local sheet is what survives a
+framework sheet that fails to load.
 """
 
 import re

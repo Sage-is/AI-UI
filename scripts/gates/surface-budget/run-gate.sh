@@ -144,8 +144,10 @@ echo "== 3. the app-wide floor must not grow =="
 # snapshot (card "The SPA floor crept 539 kB unnoticed"). The F0 build adds
 # 107 kB decoded and 0.5 kB on the wire: the startr.style stylesheet is served
 # from the box with SRI now, where the browser fetched the same bytes from
-# startr.style before, uncounted here.
-FLOOR_CEILING="${FLOOR_KB:-7300}"
+# startr.style before, uncounted here. Raised again to 7,350 the same day for
+# the sheet's Nunito Sans faces (+51 kB decoded), vendored at /fonts: the SPA
+# fetched them from startr.style before, through the sheet's @import, uncounted.
+FLOOR_CEILING="${FLOOR_KB:-7350}"
 FLOOR=$(jq -r '."notes-empty".decodedKB.median // empty' "$LEDGER")
 if [ -z "$FLOOR" ]; then
   no "the floor gauge (notes-empty) is missing from the ledger — the ceiling check cannot report"

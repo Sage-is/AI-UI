@@ -2365,6 +2365,16 @@ if (STATIC_DIR / "assets").exists():
         name="spa-assets",
     )
 
+# The vendored startr.style sheet opens with upstream's `@import url('/fonts/Nunito-Sans.css')`,
+# a host-absolute path, so the box serves the faces there itself: vendored beside the
+# sheet, so a page load still reaches nothing off-machine (pages/shell.py, EGRESS).
+if (STATIC_DIR / "vendor" / "startr.style" / "fonts").exists():
+    app.mount(
+        "/fonts",
+        CachedStaticFiles(directory=STATIC_DIR / "vendor" / "startr.style" / "fonts"),
+        name="vendored-fonts",
+    )
+
 
 # It should be noted that this endpoint is required to be at the root level for
 # web crawlers to find it.

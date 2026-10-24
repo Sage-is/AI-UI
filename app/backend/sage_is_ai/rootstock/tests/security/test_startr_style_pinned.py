@@ -54,3 +54,37 @@ class StartrStyleIsPinned(unittest.TestCase):
                 self.assertEqual(len(tags), 1, f"{page.name} links {HREF} {len(tags)} times")
                 self.assertEqual(tags[0].get("rel"), "stylesheet")
                 self.assertEqual(tags[0].get("integrity"), expected)
+
+
+FONTS = VENDORED.parent.parent / "fonts"
+# Startr/Style src/static/fonts/Nunito-Sans.css at f028648 (2025-03-02): what startr.style serves at /fonts/.
+FONT_SHEET_SHA256 = "338c1bdd787999e321f417f2604c9c9f0077c1943dd32b328c0d87f64aad27c8"
+
+
+class TheFacesComeFromTheBox(unittest.TestCase):
+    """The sheet's `@import url('/fonts/Nunito-Sans.css')` resolves on the box (TODO.md, "The vendored
+    startr.style sheet imports fonts this box does not serve"). The box under test serves the
+    vendored static tree (dev-box.sh mounts app/static/vendor)."""
+
+    def test_the_sheet_imports_only_the_vendored_font_sheet(self):
+        imports = re.findall(r"@import\s+url\('([^']+)'\)", VENDORED.read_text())
+        self.assertEqual(imports, ["/fonts/Nunito-Sans.css"])
+        sheet = FONTS / "Nunito-Sans.css"
+        self.assertEqual(hashlib.sha256(sheet.read_bytes()).hexdigest(), FONT_SHEET_SHA256)
+
+    def test_every_face_the_font_sheet_names_is_vendored(self):
+        faces = re.findall(r"url\(([^)]+\.woff2)\)", (FONTS / "Nunito-Sans.css").read_text())
+        self.assertEqual(len(faces), 10)
+        for face in faces:
+            with self.subTest(face=face):
+                self.assertTrue((FONTS / face).is_file(), f"{face} is not vendored")
+
+    def test_the_box_serves_the_font_sheet_and_a_face(self):
+        from ._http import call
+
+        sheet = call("GET", "/fonts/Nunito-Sans.css")
+        self.assertEqual(sheet.status, 200)
+        self.assertIn("text/css", sheet.headers.get("content-type", ""))
+        face = call("GET", "/fonts/Nunito-Sans-normal-200-1000-latin.woff2")
+        self.assertEqual(face.status, 200)
+        self.assertEqual(face.body[:4], b"wOF2", "not a woff2 file: the SPA catch-all answered")
