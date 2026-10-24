@@ -169,15 +169,19 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [x] [WE] The vector data is gone: `chroma.sqlite3` holds 0 collections against 19 knowledge bases and 2,197 file rows; 654 HNSW directories are orphans, the same count as July on 2.3.2
   - [x] [WE] Embedding is the mock: `mock-embedding` (sha256-seeded 384-dim noise) re-roots on every boot; 57b6b30 (3.1.0) stopped new mock grafts but moves no instance off it, and diagnostics reports it `ok`
   - [x] [WE] Not the cause: content extraction. This boot probed no Tika or Docling; their red rows date from 2026-08-10, before 3.2.0 gated the probe. The diagnostics registry keeps stale rows forever (20 dead loopback Sprig ports)
-  - [ ] [MANUALLY] Confirm the saved content-extraction engine and hybrid-search setting (Admin → Documents); the agent's SSH read of the saved config was refused
-  - [ ] [WE] On Alexander's go: graft `vector-chroma`, then `minilm-onnx-inhoused` (the mock's 384 width), then prune `mock-embedding`; openco3 must reach the Sprig registry
-  - [ ] [WE] On Alexander's go, after the real cultivar roots: re-index every knowledge base. `POST /api/v1/knowledge/reindex` is synchronous and Cloudflare cuts a request at 100 s, so call the unproxied `*.production.openco.ca` name or run it in the container
-    - Warning (2026-10-23): `/reindex` DELETES every knowledge base whose `data` is null or not a dict (`routers/knowledge.py:209-215`); that is 5 of 18 in both census databases. Back up first, and fix or bypass that branch before calling it
-    - Only 1,080 of 2,190 file rows hold stored text (`file.data.content`); the rest cannot be rebuilt without the original upload
+  - [x] [WE] Saved settings, read through the admin API 2026-10-24: content extraction on the built-in loaders, hybrid search off, chunk size 1500
+  - [x] [WE] 2026-10-24 (Alexander's go), after a fresh backup (integrity ok, moved to Somma 02 encrypted): `vector-chroma` grafted (9 s), then `multilingual-e5-large` in place of minilm (33 s), which replaced `mock-embedding`
+  - [ ] [WE] `vector` has no dispatch: a graft and every deploy leave the vector client off on a box that is not a try.sage trial, so search breaks again at the next deploy; call `vector_bootstrap` from the graft route and `_reconcile` #critical
+    - Until then, after every deploy: `scripts/kb-reindex.py --vector-on` (release runbook, "After the deploy: document reading"); on 2026-10-24 it took one AI Engine bootstrap call
+  - [x] [WE] Re-indexed 2026-10-24 file by file with `scripts/kb-reindex.py`, never `/reindex`: 144 of 145 files in 13 knowledge bases; the 6 with null data left as they are; 12 of 13 answer with hits
+    - Warning (2026-10-23): `/reindex` DELETES every knowledge base whose `data` is null or not a dict (`routers/knowledge.py:209-215`); that is 6 of 19 on 2026-10-24. Back up first, and fix or bypass that branch before calling it
+    - Only 1,080 of 2,190 file rows hold stored text (`file.data.content`); all 145 knowledge-base files do (2026-10-24)
+    - The re-index blocked the event loop long enough for the health check to replace the container once (about a minute down, near 09:02 UTC); the new container came up with the vector store off, as the `vector` trap predicts, and `--vector-on` restored it
+  - [ ] [WE] The French knowledge base's one file (130,090 characters) is not indexed: embedding it holds the event loop past the health check; index it after the Congestion card's "uploads off the loop", or once in a quiet window
   - [ ] [WE] On Alexander's go, fixes: diagnostics flags `vector_db_ready: false` and a rooted `mock-embedding`; boot moves an instance off the mock; `query_collection` and the knowledge add path return the real 503; the registry prunes stale rows
   - [ ] [WE] On Alexander's go, a gate: a real PDF into a knowledge base, a query, and a chat with the sources injected; none exists today
   - [ ] [WE] Also seen once in 72 h: a chat background task crashed with `'NoneType' object has no attribute 'find'` in `middleware.py`'s `response_handler`; recheck after the fixes
-  - Verify with `scripts/kb-probe.py kbs`: every knowledge base with files returns hits. The admin key is in the vault as `sage-startr-cloud-admin-key` (Agents-edit)
+  - Verify with `scripts/kb-probe.py kbs` under `sage-secret run`: every knowledge base with files returns hits (12 of 13 on 2026-10-24). The admin key is in the vault as `sage-startr-cloud-admin-key` (Agents-edit)
 
 - [ ] **ML lock: sentence-transformers 4.1.0 → 5.6.0** #critical #security (Alexander, 2026-10-14: own card, after 3.2.1): CVE-2026-68770 critical in `app/backend/requirements-ml.lock`, which the AI Engine wizard installs
   - Dependabot PR 44 proposes 5.6.0; 5.6.0 accepts `transformers>=4.41,<6`, so the 4.57.6 pin can stay
@@ -1357,7 +1361,8 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] [WE] A processing failure reaches the person plainly: today the upload answers 200 with an `error` field (`routers/files.py:208-216`), shown as a toast only after the wait (`chat/MessageInput.svelte:587-589`)
   - [ ] [WE] Messages: retrieval stops wrapping the 503 as a 400 "[ERROR: 503: …]" (`routers/retrieval.py:1869-1873`); the texts at `main.py:1103-1110` and `routers/retrieval.py:59-66` name who fixes it and how
   - [x] [WE] try.sage.is: `multilingual-e5-large` grafted 2026-10-24 (Alexander's go), rooted in 52 s; embedding "ready", queries answer 200 instead of the 503; since when it was missing is unknown (3.1.0 had a full ML stack)
-  - [ ] [MANUALLY] try.sage.is still lacks rag-loaders, so uploads extract nothing; its two seeded knowledge bases list one file each but hold 0 chunks, with their ingest versions stamped, so the seed will not retry: graft rag-loaders, then clear `TRY_SAGE_KB_INGESTED_VERSION` and restart (runbook)
+  - [x] [WE] try.sage.is, 2026-10-24 (Alexander's go): `rag-loaders` grafted (7 s); a three-page PDF now extracts and each search ranks its own page first; both seeded knowledge bases (0 chunks, versions stamped) emptied to re-ingest at the next reset, no restart (`docs/try-sage-deployment.md`, "Document reading")
+  - [ ] [WE] After try.sage.is's reset of 2026-10-24 15:13 UTC: both seeded knowledge bases list their file again and answer with hits
   - Found 2026-10-24 by a check through the public persona links: the user-1 link signs in (PyJWT path fine), the PDF stored and was deleted, extraction gave 0 characters, three searches got the 503
   - Related: card "Knowledge bases on sage.startr.cloud return nothing" (its fixes include the real 503); the diagnostics fix modals' Sprig remedies
 - [ ] **Production data reaches Backblaze in plaintext** #security #backup (Alexander, 2026-10-24): the deploy backups now move to Somma 02 encrypted; their siblings stay as they are until each gets a decision
@@ -1391,6 +1396,7 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - Every model call fetches provider model lists live: `routers/openai.py:950` calls the router's `get_all_models`, whose `@cached` (`:555`) never hits, and each call opens a new HTTP session (`:1042`)
   - Stream frames carry the whole answer so far, one per provider chunk, to every tab (`utils/middleware.py:1935-1941`, `socket/main.py:647-669`): about 5.6 MB per tab for a p90 answer, 43 MB for a p99
   - Uploads run extraction and embedding on the loop (`routers/retrieval.py:1536,1617`); the model list costs about 660 queries per page for role `user` (`main.py:1631`, `utils/access_control.py:145`)
+  - Seen 2026-10-24: re-indexing sage.startr.cloud's knowledge bases held the loop so long that `/health` stopped answering and the health check replaced the container once; a 130,090-character file still cannot be indexed there
   - Each answer rewrites the chat blob at least three times, and every chat stores its messages twice; every request writes `user.last_active_at` (`utils/auth.py:277,303`); the database pool waits 30 s (`internal/db.py:43-46`)
   - [ ] [WE] Rootstock F0: the loop-lag watchdog logs the file and line of each stall, never values; its first week orders the fixes
   - [ ] [WE] Rootstock F1: the eight fixes in the plan, gated by `make stream_load` at 30 UI streams with uploads: loop lag p99 ≤100 ms, bytes ≤2× the text plus 40 kB, at most 3 blob writes per answer, 0 errors
