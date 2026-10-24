@@ -6,6 +6,19 @@ All notable changes to [Sage.is AI-UI](https://github.com/Sage-is/AI-UI) are doc
 
 ## [Unreleased]
 
+## [3.2.2] — 2026-10-24
+
+### Fixed
+
+**Homebrew installs this release**
+The `ai-ui` command comes from AI-UI's own release, and it starts the server that the release's `distribution.env` pins. The 3.2.1 tag still pinned 3.2.0, so its Homebrew formula refused to install, and boxes that update through Homebrew stayed on 3.2.0 without 3.2.1's security fixes. 3.2.2 pins itself, and every release now writes its pin before it is tagged. The app is unchanged from 3.2.1 apart from its version number.
+
+**Release builds fit the Colima build VM**
+The multi-arch push uses the build VM's own Docker builder, which runs amd64 steps through Rosetta, and it builds each platform alone before it pushes both. The old builder ran amd64 under an emulator that crashed the frontend build, and two frontend builds at once ran the 10 GiB VM out of memory.
+
+**The wizard smoke test fails when it should**
+A failing `scripts/wizard-smoke.sh` run exited 0, so 3.2.1's release went on past a failed smoke test. The failure came from testing a new Sprig before it was published. The script now exits non-zero.
+
 ## [3.2.1] — 2026-10-24
 
 ### Security

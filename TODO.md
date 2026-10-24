@@ -46,10 +46,13 @@ This file tracks active work only.
   - [x] [WE] Gate fixes found on the way: `sign-sprigs.sh` + `sprig_signing` step 5 dodge the krunkit stale-file trap (step 5 had pushed a VALID signature silently); `inject-test-admin.py` off passlib; `upgrade_gate` section 6 re-signs in once
   - Gates on the final image, 2026-10-15: `image_unit_tests` 39/39, `sprig_durability` 12/12, `sprig_signing` 11/11, `upgrade_gate` 20/20 (trimmed snapshot), `test_db_fresh` + `test_db_upgrade` pass, trivy 0 HIGH/CRITICAL, 16/16 hand checks
   - Gates on the build before the last refactors: `sprig_smoke` 69/69, `e2e_both` all specs on both surfaces; `make -n patch_release` opens `release/3.2.1`
-  - [ ] [MANUALLY] Review and commit; `make patch_release` → 3.2.1; `DOCKER_CONTEXT=colima-build make ship` publishes the three new Sprig tags to GHCR before any deploy
+  - [x] [WE] Shipped 2026-10-24 (Alexander's go): 13 commits, tag `v3.2.1`, image `sha256:3e2a15c4…` on GHCR, the six new Sprig tags public; the wizard smoke passes on the published image and Sprigs; brew stays on 3.2.0 (card "Each release tag pins the previous server" in Bugs)
+    - The push needed a workaround on the build VM (card "The release push cannot build amd64 on the build VM" in Bugs)
+  - [ ] [MANUALLY] Both tap formulas declare `license "MIT"` but now install AI-UI's `cli/`, which ships AGPL-3.0: pick `AGPL-3.0-only` or `AGPL-3.0-or-later`
   - [x] [WE] Free space first (2026-10-23, Alexander's go): Docker Desktop's retired 49 GB disk archived encrypted to the Somma 02 backups, key in the vault, verified, original removed; "Somma 01 Dock Drive" 9.9 → 203 GiB free (`release_preflight` wants 30)
-  - [ ] [MANUALLY] `make deploy`, then [WE] verify 3.2.1 on both hosts, rag-loaders v2 and vector-chroma v3 re-pulled, a PDF upload, a document search and an SSO login on try.sage.is
-    - 2026-10-15: the cluster is down for hardware maintenance at the New York location; `make deploy` waits until service is restored
+  - [x] [WE] `make deploy` 2026-10-24: both hosts on 3.2.1 by digest, `/health` true; backup first (185 MB, integrity ok, 32 users, 2,184 chats); sage.startr.cloud grafts `rag-loaders` (delivered), no Sprig errors; `vector-chroma` is not grafted there (card "Knowledge bases on sage.startr.cloud return nothing")
+    - 2026-10-24: the cluster maintenance of 2026-10-15 is over (Alexander)
+  - [ ] [MANUALLY] On try.sage.is: a PDF upload, a document search and an SSO login; `.env` holds no admin key for it, so its Sprigs went unread
   - [ ] [MANUALLY] Close Dependabot PRs 36, 37, 43, 45 as superseded; PR 44 rides the ML lock card
   - [ ] [WE] Host-side ORAS: 8 scripts still run `ghcr.io/oras-project/oras:v1.2.0` (`scripts/lib/sprig-build.sh`, `publish-sprigs.sh`, `sign-sprigs.sh` …); `sprig_publish` reaches GHCR through it; move to 1.3.4 by digest
   - trivy HIGH/CRITICAL on the 3.2.1 image: 6 on 2026-10-14 (ORAS 4, setuptools-vendored 2), 0 on 2026-10-15 after the cuts; `.trivyignore` still holds CVE-2026-34070 (langchain-core)
@@ -68,7 +71,7 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [x] [WE] SQLite probe in the 3.2.0 image (2026-10-23): SQLite 3.54.0, extension loading + FTS5 ok; sqlite-vec 0.1.9 cosine over 50,000 × 384 in ~40 ms; pure-Python fallback 204 ms at 20,000
   - [x] [WE] Census (2026-10-23, stdlib `census.py`, canary self-test with teeth): 3/7/8 users active in 7/30/90 days; agents in 1,440 of 2,036 chat-model uses; `sources` on 1,678 messages, `error` on 599; arena 4, code execution 0
   - [x] [WE] Dock drive freed (2026-10-23): 203 GiB free; see the Security fixes card
-  - [ ] [MANUALLY] Commit and tag v3.2.1 (Security fixes card); the seam edits files the 3.2.1 work also changes, so it waits for that commit
+  - [x] [MANUALLY] Commit and tag v3.2.1 (Security fixes card): tagged and shipped 2026-10-24, so the seam work can start
   - [x] [MANUALLY] The adversarial rewrite and its congestion section, approved with the plan (2026-10-24): 18 security bugs fixed at source in F0; congestion fixes in F1; the gateway beside the Django pilot in F2; a go or no-go after F2; new features after F8
   - [ ] [WE] First after the tag, on `develop`: move the staging in, then F0 (3.3.0): the 18 fixes where each bug lives; one HTTP test per card in `rootstock/tests/security/`, each shown to fail on 3.2.1 first; the loop-lag watchdog; look back, rotate, notify
   - [ ] [WE] Then `docs/rootstock/design.md`; OpenAPI capture and goldens from the 3.2.1 image; the parity runner
@@ -77,7 +80,7 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [ ] [WE] The gateway's byte path moves to Rust (Tinker's `core/src/llm`) only when `stream_load` shows a trigger: gateway CPU over 60% of a core, loop lag p99 over 50 ms, added first-token p95 over 50 ms, or more than 250 streams
   - [x] [WE] Ten research notes and `edge-cases.md` (347 entries: 189 keep, 128 fix, 30 die) (2026-10-23); `check_cites.py` resolves all 2,213 `path:line` cites; findings folded into the plan; 12 security cards filed in Bugs, 2 existing cards extended
   - [x] [WE] `test_budget.py` (0/13,000) and `test_legacy_ratchet.py` (52,084 Python, 67,277 frontend, 1,665 pages), each shown to fail on purpose; staging mirrored to `~/.local/share/ai-ui/rootstock-staging/`
-  - [ ] [WE] Image diet (decided 2026-10-23: Django squeezed, containers everywhere): 390 MB today (152 MB to download); at F8 must ≤150 MB, target ≤110, stretch ≤75; `image_budget` ratchets down each release; levers measured in the plan (63 MB of `.pyc`, 37 MB `uv`, a doubled 21 MB zstandard, Django trimmed 49→24 MB)
+  - [ ] [WE] Image diet (decided 2026-10-23: Django squeezed, containers everywhere): 3.2.1 is 390 MB on disk (123–126 MB to download); at F8 must ≤150 MB, target ≤110, stretch ≤75; `image_budget` ratchets down each release; levers measured in the plan (63 MB of `.pyc`, 37 MB `uv`, a doubled 21 MB zstandard, Django trimmed 49→24 MB)
     - [ ] [WE] Repo weight: 97 MB tracked against Tinker's 19, though the code is about the same size; 63 MB of CJK fonts (PDF export only, already out of the image) move into the export-document Sprig recipe, the 5.5 MB `.xcf` leaves `app/static/icons/`, and a test fails on any new tracked file over 1 MB
   - [ ] [WE] Few libraries (Alexander, 2026-10-23; evidence in the plan): `test_dependencies.py` lists about 12 direct Python packages, about 30 installed by their closure (today 95), no npm package at runtime (today 1,160 build the SPA), vendored pinned files checked by sha256, hash-pinned locks with an `exclude-newer` cool-down
   - [ ] [WE] Install and onboarding: `install_smoke` times a fresh install to the first answer and counts the steps; it fails on any tour, modal or carousel before that answer
@@ -1344,6 +1347,21 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 ---
 
 ## Bugs
+
+- [ ] **Each release tag pins the previous server, so brew cannot ship it** #bug #release #critical (2026-10-24, the 3.2.1 release): `_pin_server_tag` runs after `release_finish`, so `v3.2.1`'s `distribution.env` says `SERVER_TAG=3.2.0`, and the formula aborts on that mismatch
+  - [ ] [WE] Pin `SERVER_TAG` to the release version on the release branch, before the tag; move the sibling sync and its check to match
+  - [ ] [MANUALLY] Cut 3.2.2 with the pin inside its tag, so brew boxes get the 3.2.1 security fixes
+  - [x] [WE] The CLI test that named 3.2.0 reads the pin from `distribution.env` instead; it had failed the develop push
+  - Until then brew installs AI-UI 3.2.0: the tap's `check-formulae.sh` refused the 3.2.1 formula on pre-push, and the unpushed formula commit was undone
+- [ ] **The release push cannot build amd64 on the build VM** #bug #release (2026-10-24, the 3.2.1 push): the docker-container builder runs amd64 under its bundled QEMU, where esbuild crashes; dockerd's own builder reaches Rosetta, but both arches' `vite build` at once OOM the 10 GiB VM
+  - [ ] [WE] `ensure_builder`: use the context's docker driver when dockerd runs the containerd image store, as the build VM does
+  - [ ] [WE] `_it_build_multi_arch_push_GHCR`: warm the cache one platform at a time (`--output type=cacheonly`), then push both
+  - [ ] [WE] `docker-preflight.sh amd64`: refuse a builder that lists no linux/amd64 on a Rosetta VM, before a 20-minute build
+  - 2026-10-24 recovery: build VM restarted, cache warmed per platform, then the push with `BUILDX_BUILDER=colima-build` (`~/.local/share/ai-ui/3.2.1-warm-and-push.sh`)
+- [ ] **`release_smoke` tests new Sprig tags before `sprig_publish` puts them on GHCR** #bug #release (2026-10-24, the 3.2.1 release): `wizard-smoke.sh` grafts from ghcr.io, so a release that bumps a Sprig fails its smoke, and a fail-open trap let `ship` go on
+  - [x] [WE] `wizard-smoke.sh` exits non-zero on FAIL again (`5458562`)
+  - [ ] [WE] Run the smoke container on sage-network with `SPRIG_REGISTRY=local-registry:5000`, as the Sprig gates do, so a release smokes the tags it is about to publish
+  - [x] [WE] 2026-10-24: after `sprig_publish`, the wizard smoke passes on `ghcr.io/sage-is/ai-ui:3.2.1`; the earlier FAIL was rag-loaders v2 missing from GHCR
 
 - [ ] **Space agent replies skip the model access check** #security #bug (2026-10-24; found by the guide-and-guard review): `routers/spaces.py:393` passes `bypass_filter=True`, which skips `check_model_access` (`utils/chat.py:219`), so any Space member can trigger an agent row and its tool-server key
   - [ ] [WE] Check Space membership against the model's access list, or drop `bypass_filter` for agent replies

@@ -19,3 +19,4 @@
 # name                     expires       reason
 caprover_app_create        2026-11-13    # TODO.md open item — proposed CapRover wrapper
 sync_todos                 2026-11-17    # docs/file-handling-field-rules.md — proposed TODO.md/README sync target
+stream_load                2026-12-15    # Rootstock plan F1: the congestion load test (TODO.md Congestion and Rootstock cards)

@@ -65,6 +65,7 @@ POLL_INTERVAL_SEC=10
 # you can `docker exec` in and inspect. Default cleans up unconditionally.
 KEEP_ON_FAIL="${KEEP_ON_FAIL:-1}"
 FAILED=0
+TMPFILE=""  # the upload fixture; cleanup() removes it
 
 fail() {
   echo "FAIL: $*" >&2
@@ -75,7 +76,11 @@ fail() {
 }
 
 cleanup() {
+  # Capture the exit status first: anything that runs before this line, such
+  # as an `rm` in a replacement trap, would hand cleanup its 0 instead, and a
+  # FAIL would exit 0 (it did, from 3.2.1's release smoke, 2026-10-24).
   local code=$?
+  if [ -n "$TMPFILE" ]; then rm -f "$TMPFILE"; fi
   if [ "$FAILED" = "1" ] && [ "$KEEP_ON_FAIL" = "1" ]; then
     echo "" >&2
     echo "Container $CONTAINER preserved on port $PORT for debugging." >&2
@@ -192,7 +197,6 @@ fi
 # 8. The regression target — file upload → add to KB.
 echo "[smoke] testing file upload + add-to-KB"
 TMPFILE=$(mktemp -t sage-smoke.XXXX.txt)
-trap "rm -f $TMPFILE; cleanup" EXIT
 echo "Hello world. Sage.is automated smoke fixture. $(date -u +%FT%TZ)" > "$TMPFILE"
 
 KB_ID=$(curl -s -X POST "${BASE}/api/v1/knowledge/create" \

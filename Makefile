@@ -986,11 +986,21 @@ ghcr_login:
 # Select it unconditionally, every time.
 # A buildx builder remembers the context it was made in. One name per context
 # keeps Docker Desktop's builder off Colima and Colima's off Docker Desktop.
+# A dockerd on the containerd image store (the Colima build VM's) builds
+# multi-platform itself and reaches Rosetta through binfmt, so there the
+# context's own builder is the one. A docker-container builder on that VM lists
+# no linux/amd64 and runs amd64 steps under its bundled QEMU, where esbuild dies
+# with `fatal error: lfstack.push` (3.2.1, 2026-10-24).
 ensure_builder:
 	$(BUILDX_PREFLIGHT)
-	@b=multi-arch-builder-$$(docker context show); \
-	docker buildx inspect $$b >/dev/null 2>&1 || docker buildx create --name $$b; \
-	docker buildx use $$b
+	@ctx=$$(docker context show); \
+	if docker info --format '{{json .DriverStatus}}' 2>/dev/null | grep -q io.containerd.snapshotter; then \
+		docker buildx use "$$ctx"; \
+	else \
+		b=multi-arch-builder-$$ctx; \
+		docker buildx inspect $$b >/dev/null 2>&1 || docker buildx create --name $$b; \
+		docker buildx use $$b; \
+	fi
 
 # Multi-architecture build+push helper
 # Builds amd64 and arm64, creates manifest list, and pushes in one step.
@@ -1019,6 +1029,8 @@ _it_build_multi_arch_push_GHCR: ghcr_login
 	@make ensure_builder
 	@# The trap cds out first: the build runs INSIDE the worktree, and deleting the shell's
 	@# own cwd made 'git worktree prune' exit 128 after a good push (3.2.0, 2026-09-27).
+	@# Each platform builds alone into the cache first: two `vite build`s at once, about
+	@# 4.6 GB each, ran the 10 GiB build VM out of memory (3.2.1). The push then reads the cache.
 	@set -e; tag="v$(IMAGE_TAG)"; \
 	git rev-parse -q --verify "refs/tags/$$tag" >/dev/null || { echo "  FAIL  no tag $$tag to build from"; exit 1; }; \
 	rev=$$(git rev-list -n1 "$$tag"); \
@@ -1026,7 +1038,12 @@ _it_build_multi_arch_push_GHCR: ghcr_login
 	trap 'cd "$(CURDIR)"; git worktree remove --force "$$wt" >/dev/null 2>&1 || true; rm -rf "$$wt"; git worktree prune' EXIT; \
 	git worktree add --detach "$$wt" "$$tag" >/dev/null; \
 	echo "Building $$tag ($$rev) multi-arch from $$wt and pushing to GHCR"; \
-	cd "$$wt" && docker buildx build --platform linux/amd64,linux/arm64 \
+	cd "$$wt"; \
+	for p in linux/arm64 linux/amd64; do \
+		echo "Building $$p alone into the cache"; \
+		docker buildx build --platform $$p --output type=cacheonly . || exit 1; \
+	done; \
+	docker buildx build --platform linux/amd64,linux/arm64 \
 		--label org.opencontainers.image.revision=$$rev $(OCI_LABELS_BASE) \
 		-t $(GHCR_IMAGE_NAME):$(IMAGE_TAG) -t $(GHCR_IMAGE_NAME):latest --push .
 	@echo "Completed GHCR multi-arch push for version $(IMAGE_TAG)"
@@ -1263,13 +1280,17 @@ chart_archive:  # Archive a chart: make chart_archive CHART=<name>
 # no-ops: `re.sub` with no match returns its input unchanged and the recipe
 # writes the file back identical — no error, no exit code, and the writer goes on
 # claiming to maintain something that is gone.
-bump_release_version:  # Write RELEASE_VERSION into app/package.json
+bump_release_version:  # Write RELEASE_VERSION into app/package.json and SERVER_TAG
 	@if [ -z "$(RELEASE_VERSION)" ]; then \
 		echo "Error: RELEASE_VERSION not defined. Are you on a release/ branch?"; \
 		exit 1; \
 	fi
 	@echo "Bumping version to $(RELEASE_VERSION)..."
 	@python3 -c "import json; f='app/package.json'; d=json.load(open(f)); d['version']='$(RELEASE_VERSION)'.lstrip('v'); json.dump(d, open(f,'w'), indent='\t'); f2=open(f,'a'); f2.write('\n'); f2.close(); print(f'Updated {f}')"
+	@# The tag must carry its own pin: brew installs ai-ui from the tag's tarball and
+	@# refuses a distribution.env that names another server. 3.2.1's tag still named
+	@# 3.2.0, because the pin came after the tag. The pin after the push now finds it set.
+	@$(MAKE) -s _pin_server_tag IMAGE_TAG=$(patsubst v%,%,$(RELEASE_VERSION))
 	@echo "Version bumped to $(RELEASE_VERSION)"
 
 # WAHA (WhatsApp HTTP API) for Messaging Bridges
@@ -1650,7 +1671,7 @@ define next_steps_release
 	@echo ""
 	@echo "=== Release branch created ==="
 	@echo "Next steps:"
-	@echo "  1. make bump_release_version     # Write the version into app/package.json"
+	@echo "  1. make bump_release_version     # Write the version into app/package.json and distribution.env"
 	@echo "  2. Edit CHANGELOG.md with release notes, then commit"
 	@echo "  3. make release_smoke            # Build :X.Y.Z + smoke native + amd64"
 	@echo "  4. (Staging deploy + verify against :X.Y.Z image)"
@@ -1664,7 +1685,7 @@ define next_steps_hotfix
 	@echo "=== Hotfix branch created ==="
 	@echo "Next steps:"
 	@echo "  1. Fix the issue, then commit"
-	@echo "  2. make bump_release_version     # Write the version into app/package.json (+ commit)"
+	@echo "  2. make bump_release_version     # Write the version into app/package.json and distribution.env (+ commit)"
 	@echo "  3. make release_smoke            # Build :X.Y.Z + smoke native + amd64"
 	@echo "  4. (Staging deploy + verify)"
 	@echo "  5. make ghcr_login"
