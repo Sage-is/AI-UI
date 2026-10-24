@@ -251,16 +251,79 @@ describe('Responsive prefixes', () => {
 });
 
 describe('Hover state', () => {
-  it('converts hover:bg to --hvr-bgc', () => {
+  it('converts hover:bg to --bgc-hover', () => {
     const result = convertClass('hover:bg-gray-100');
     expect(result.converted).toBe(true);
-    expect(result.properties[0].prop).toBe('--hvr-bgc');
+    expect(result.properties[0].prop).toBe('--bgc-hover');
   });
 
-  it('converts hover:text to --hvr-c', () => {
+  it('converts hover:text to --c-hover', () => {
     const result = convertClass('hover:text-white');
     expect(result.converted).toBe(true);
-    expect(result.properties[0].prop).toBe('--hvr-c');
+    expect(result.properties[0].prop).toBe('--c-hover');
+  });
+
+  it('converts hover:shadow to the --shadow-hover effect', () => {
+    const result = convertClass('hover:shadow-lg');
+    expect(result.converted).toBe(true);
+    expect(result.properties[0].prop).toBe('--shadow-hover');
+  });
+
+  it('leaves hover: on a prop with no hover state as a class', () => {
+    const result = convertClass('hover:flex');
+    expect(result.converted).toBe(false);
+    expect(result.reason).toMatch(/startr\.style has no --d-hover/);
+  });
+});
+
+describe('Other states', () => {
+  it('converts focus-visible: to the -focus suffix', () => {
+    const result = convertClass('focus-visible:bg-gray-100');
+    expect(result.converted).toBe(true);
+    expect(result.properties[0].prop).toBe('--bgc-focus');
+    expect(result.review).toBeUndefined();
+  });
+
+  it('converts focus: to -focus with a note that it means keyboard focus', () => {
+    const result = convertClass('focus:outline-none');
+    expect(result.converted).toBe(true);
+    expect(result.properties[0].prop).toBe('--oe-focus');
+    expect(result.review).toMatch(/:focus-visible/);
+  });
+
+  it('converts active: to the -active suffix', () => {
+    const result = convertClass('active:bg-gray-200');
+    expect(result.converted).toBe(true);
+    expect(result.properties[0].prop).toBe('--bgc-active');
+  });
+
+  it.each(['open', 'checked', 'aria-selected', 'aria-pressed', 'aria-expanded'])('converts %s: to the -on suffix', (prefix) => {
+    const result = convertClass(`${prefix}:text-white`);
+    expect(result.converted).toBe(true);
+    expect(result.properties[0].prop).toBe('--c-on');
+  });
+
+  it('converts group-hover: to -in-hover with a note about direct children', () => {
+    const result = convertClass('group-hover:text-white');
+    expect(result.converted).toBe(true);
+    expect(result.properties[0].prop).toBe('--c-in-hover');
+    expect(result.review).toMatch(/direct children/);
+  });
+
+  it('leaves a state with a breakpoint as a class: state props have no tiers', () => {
+    const result = convertClass('sm:hover:bg-blue-500');
+    expect(result.converted).toBe(false);
+    expect(result.reason).toMatch(/no breakpoint/);
+  });
+
+  it('leaves two states together as a class', () => {
+    const result = convertClass('hover:focus:bg-blue-500');
+    expect(result.converted).toBe(false);
+  });
+
+  it('leaves dark: with a state as a class', () => {
+    const result = convertClass('dark:hover:bg-gray-700');
+    expect(result.converted).toBe(false);
   });
 });
 
@@ -279,8 +342,8 @@ describe('Dark mode', () => {
 });
 
 describe('Unconvertible classes', () => {
-  it('flags focus: prefix as unconvertible', () => {
-    const result = convertClass('focus:outline-none');
+  it('flags focus-within: prefix as unconvertible', () => {
+    const result = convertClass('focus-within:outline-none');
     expect(result.converted).toBe(false);
     expect(result.reason).toMatch(/unconvertible prefix/);
   });
