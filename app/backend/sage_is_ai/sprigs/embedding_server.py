@@ -25,7 +25,7 @@ Loading happens in a background thread so uvicorn binds the port immediately and
 out within the cultivar's ``ready_timeout_s``. On a load failure the process exits
 non-zero so the supervisor's boot-crash check fails the graft fast.
 
-SHIPPED (the north-star "no end-user HuggingFace/pip pulls"): oras tar.zst weight
+SHIPPED (the north-star "no end-user HuggingFace/pip pulls"): OCI tar.zst weight
 delivery + offline/air-gapped caching (artifact.py seeds the cache and graft() sets
 OFFLINE_MODE/HF_HUB_OFFLINE). No catalog entry pulls live anymore — the last one
 (``all-MiniLM-onnx``) was retired 2026-07-05; every cultivar serves from the

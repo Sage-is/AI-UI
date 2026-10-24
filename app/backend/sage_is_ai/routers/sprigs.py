@@ -5,7 +5,7 @@ contract. Admin-gated. Endpoints:
     GET  /catalog  -> the catalog + currently-grafted handles
     POST /graft    -> graft a capability: spawn an embedding Sprig™ and point the
                       OpenAI-compatible dispatch at it, or deliver a "deliver" sprig
-                      (oras pull + sha256 verify + extract). Top-grafts an embedding
+                      (OCI pull + sha256 verify + extract). Top-grafts an embedding
                       cultivar over any prior one. Revive = re-graft the same name.
     POST /prune    -> terminate + remove a grafted Sprig™; resets the embedding
                       dispatch when the pruned sprig was the active cultivar.
