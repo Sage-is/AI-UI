@@ -1360,6 +1360,8 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 
 ## Bugs
 
+- [ ] **`branding-settings.cy.ts` flakes on a cold box** #test (2026-10-24, once in `gauntlet_full` on `920e944`, 0 of 3 fresh-box reruns): three saves read `''` from `GET /api/v1/configs/branding` inside the 4 s retry window, the save click landing before the Svelte page hydrated
+  - [ ] [WE] `cy.intercept('POST', '/api/v1/configs/branding')` and `cy.wait` on it before `readBranding()`, so the spec waits for the save instead of racing it; the route itself is unchanged since the ruff reformat
 - [ ] **The SPA floor crept 539 kB unnoticed between 2026-08-02 and 3.2.2** #perf (found 2026-10-24 by `surface_budget` in `gauntlet_full`): `notes-empty` measures 7,179.9 kB decoded on the 3.2.2 image against the 6,800 kB ceiling set on 2026-08-02 at 6,641 kB; `/api/models` is 2,902 kB decoded on the 2026-07-12 snapshot
   - [x] [WE] Ceiling raised to 7,300 kB with the reason in `run-gate.sh` (2026-10-24); the F0 build adds 107 kB decoded and 0.5 kB on the wire, the vendored startr.style stylesheet; then to 7,350 the same day for the vendored Nunito Sans faces (+51 kB decoded), which the SPA fetched from startr.style before through the sheet's `@import`
   - [ ] [WE] F1: the revision-keyed, ETag'd model list (plan, F1) brings `/api/models` down; re-measure and lower the ceiling with it
