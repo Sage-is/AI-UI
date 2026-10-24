@@ -624,6 +624,13 @@ async def lifespan(app: FastAPI):
     app.state.instance_id = INSTANCE_ID
     start_logger()
 
+    # Rootstock F0: log where the event loop stalls (file:line, never values).
+    # RS_LAG_WATCH=off disables it; see utils/loop_watch.py.
+    from sage_is_ai.env import DATA_DIR
+    from sage_is_ai.utils.loop_watch import start_loop_watch
+
+    loop_watch = start_loop_watch(asyncio.get_running_loop(), data_dir=DATA_DIR)
+
     if RESET_CONFIG_ON_START:
         reset_config()
 
@@ -753,6 +760,9 @@ async def lifespan(app: FastAPI):
         asyncio.create_task(ensure_try_sage_vector_backend(app))
 
     yield
+
+    if loop_watch:
+        loop_watch.stop()
 
     # Shutdown Bridge Manager
     if getattr(app.state, "bridge_manager", None):
