@@ -1,4 +1,4 @@
-"""chromadb bootstrap — Sprig™-first, pinned-pip fallback.
+"""chromadb bootstrap — Sprig™-first, pinned-install fallback (uv since 3.2.1).
 
 ONE implementation of "make chromadb + the vector client available", shared by
 the two former pip sites (the AI Engine wizard step in ``routers/retrieval.py``
@@ -14,8 +14,9 @@ Order of attempts:
      reconcile re-extracts the overlay, but nothing re-initialized the factory.
   3. Graft the vector-chroma Sprig™ — sha256-pinned closure, volume-cached tar
      first (offline: no registry, no PyPI needed after the first acquisition),
-     oras pull second. This is the north-star path.
-  4. Pinned pip fallback (``chromadb==0.6.3`` into DATA_DIR/ml_packages) — kept
+     registry pull second. This is the north-star path.
+  4. Pinned install fallback (``chromadb==0.6.3`` into DATA_DIR/ml_packages,
+     with uv) — kept
      because production (try.sage.is) has no artifact registry until the
      prod-registry cutover lands. On a registry-less box the sprig attempt
      fails DNS in milliseconds, so the fallback costs nothing. When the cutover
@@ -35,12 +36,32 @@ import sys
 
 from fastapi.concurrency import run_in_threadpool
 
+from sage_is_ai.utils.runtime_install import target_install_cmd
+
 log = logging.getLogger(__name__)
 
-# The canonical pin — tracks pyproject/the vector-chroma Sprig™ closure.
-# Unpinned pip resolves chromadb 1.5.x whose opentelemetry deps don't match the
+# The canonical pin — tracks the vector-chroma Sprig™ closure
+# (scripts/build-sprig-vector-chroma.sh).
+# An unpinned install resolves chromadb 1.5.x whose opentelemetry deps don't match the
 # base image ("cannot import name 'OTEL_SPAN_PARENT_ORIGIN'").
 CHROMADB_PIN = "chromadb==0.6.3"
+
+
+def otel_pins_matching_base() -> list[str]:
+    """chromadb imports the OpenTelemetry SDK and gRPC exporter at import time.
+
+    Since 3.2.1 the base image carries only ``opentelemetry-api``; the SDK rides
+    the vector-chroma Sprig. An unpinned install here would pull the newest SDK,
+    which may not match the API the base already loaded. Pin both to the API
+    version actually installed, read at run time so it cannot drift.
+    """
+    from importlib.metadata import PackageNotFoundError, version
+
+    try:
+        v = version("opentelemetry-api")
+    except PackageNotFoundError:
+        return []
+    return [f"opentelemetry-sdk=={v}", f"opentelemetry-exporter-otlp-proto-grpc=={v}"]
 
 
 def _set_status(app, state: str, error: str | None = None) -> None:
@@ -77,7 +98,7 @@ def _try_activate(vector_db: str) -> bool:
 
 
 async def _pip_fallback(vector_db: str) -> bool:
-    """The hardened pinned-pip path (relocated from try_sage_engine_install)."""
+    """The hardened pinned-install path (relocated from try_sage_engine_install)."""
     ml_target = os.path.join(
         os.environ.get("DATA_DIR", "/app/backend/data"), "ml_packages"
     )
@@ -95,7 +116,7 @@ async def _pip_fallback(vector_db: str) -> bool:
                 log.warning("could not clean %s before install (%s)", full, e)
 
     log.info(
-        "chromadb: sprig delivery unavailable — pip-installing %s into %s "
+        "chromadb: sprig delivery unavailable — installing %s into %s with uv "
         "(~30s-2min depending on network).",
         CHROMADB_PIN,
         ml_target,
@@ -103,24 +124,19 @@ async def _pip_fallback(vector_db: str) -> bool:
     try:
         await run_in_threadpool(
             subprocess.run,
-            [
-                "pip",
-                "install",
-                CHROMADB_PIN,
-                # Replace any wrong-version leftovers; no-op on clean installs.
-                "--force-reinstall",
-                "--target",
+            target_install_cmd(
+                [CHROMADB_PIN, *otel_pins_matching_base()],
                 ml_target,
-                "--break-system-packages",
-                "--root-user-action=ignore",
-            ],
+                # Replace any wrong-version leftovers; no-op on clean installs.
+                "--reinstall",
+            ),
             check=True,
         )
     except subprocess.CalledProcessError as e:
-        log.warning("chromadb pip fallback failed: %s", e)
+        log.warning("chromadb install fallback failed: %s", e)
         return False
     except FileNotFoundError as e:
-        log.warning("chromadb pip fallback skipped — pip not on PATH: %s", e)
+        log.warning("chromadb install fallback skipped — uv not on PATH: %s", e)
         return False
 
     if ml_target not in sys.path:
@@ -129,7 +145,7 @@ async def _pip_fallback(vector_db: str) -> bool:
 
 
 async def ensure_chromadb(app) -> bool:
-    """Sprig™-first, pip-fallback chromadb bootstrap. Idempotent on every axis."""
+    """Sprig™-first, install-fallback chromadb bootstrap. Idempotent on every axis."""
     from sage_is_ai.config import VECTOR_DB
 
     if VECTOR_DB != "chroma":
@@ -160,12 +176,15 @@ async def ensure_chromadb(app) -> bool:
                 return True
             log.warning(
                 "vector-chroma delivered but chromadb not importable in this "
-                "process; falling back to pip."
+                "process; falling back to a pinned install."
             )
         except Exception as e:  # noqa: BLE001 — registry-less prod fails fast here
-            log.info("vector-chroma Sprig™ unavailable (%s); falling back to pip.", e)
+            log.info(
+                "vector-chroma Sprig™ unavailable (%s); falling back to a pinned install.",
+                e,
+            )
 
-    # 4. Pinned pip fallback.
+    # 4. Pinned install fallback (uv).
     if await _pip_fallback(VECTOR_DB):
         _set_status(app, "ready")
         return True

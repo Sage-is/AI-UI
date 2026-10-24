@@ -7,6 +7,7 @@ import tempfile
 import logging
 
 from sage_is_ai.env import SRC_LOG_LEVELS, PIP_OPTIONS, PIP_PACKAGE_INDEX_OPTIONS
+from sage_is_ai.utils.runtime_install import system_install_cmd
 from sage_is_ai.models.functions import Functions
 
 log = logging.getLogger(__name__)
@@ -183,10 +184,7 @@ def install_frontmatter_requirements(requirements: str):
             req_list = [req.strip() for req in requirements.split(",")]
             log.info(f"Installing requirements: {' '.join(req_list)}")
             subprocess.check_call(
-                [sys.executable, "-m", "pip", "install"]
-                + PIP_OPTIONS
-                + req_list
-                + PIP_PACKAGE_INDEX_OPTIONS
+                system_install_cmd(req_list, PIP_OPTIONS, PIP_PACKAGE_INDEX_OPTIONS)
             )
         except Exception as e:
             log.error(f"Error installing packages: {' '.join(req_list)}")
@@ -201,8 +199,8 @@ def install_tool_and_function_dependencies():
     Install all dependencies for active functions.
 
     By first collecting all dependencies from the frontmatter of each function,
-    and then installing them using pip. Duplicates or similar version specifications are
-    handled by pip as much as possible.
+    and then installing them with uv (utils/runtime_install.py). Duplicates or similar
+    version specifications are left to uv's resolver.
     """
     function_list = Functions.get_functions(active_only=True)
 
