@@ -54,7 +54,7 @@ This file tracks active work only.
   - [x] [WE] Free space first (2026-10-23, Alexander's go): Docker Desktop's retired 49 GB disk archived encrypted to the Somma 02 backups, key in the vault, verified, original removed; "Somma 01 Dock Drive" 9.9 → 203 GiB free (`release_preflight` wants 30)
   - [x] [WE] `make deploy` 2026-10-24: both hosts on 3.2.1 by digest, `/health` true; backup first (185 MB, integrity ok, 32 users, 2,184 chats); sage.startr.cloud grafts `rag-loaders` (delivered), no Sprig errors; `vector-chroma` is not grafted there (card "Knowledge bases on sage.startr.cloud return nothing")
     - 2026-10-24: the cluster maintenance of 2026-10-15 is over (Alexander)
-  - [ ] [MANUALLY] On try.sage.is: a PDF upload, a document search and an SSO login; `.env` holds no admin key for it, so its Sprigs went unread
+  - [x] [WE] try.sage.is checked 2026-10-24 through its public persona links: sign-in works, but it cannot read documents (card "An upload starts before anyone checks that the box can read it" in Bugs); neither host configures an SSO provider, so there is no SSO login to test
   - [ ] [MANUALLY] Close Dependabot PRs 36, 37, 43, 45 as superseded; PR 44 rides the ML lock card
   - [ ] [WE] Host-side ORAS: 8 scripts still run `ghcr.io/oras-project/oras:v1.2.0` (`scripts/lib/sprig-build.sh`, `publish-sprigs.sh`, `sign-sprigs.sh` …); `sprig_publish` reaches GHCR through it; move to 1.3.4 by digest
   - trivy HIGH/CRITICAL on the 3.2.1 image: 6 on 2026-10-14 (ORAS 4, setuptools-vendored 2), 0 on 2026-10-15 after the cuts; `.trivyignore` still holds CVE-2026-34070 (langchain-core)
@@ -1351,6 +1351,14 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 
 ## Bugs
 
+- [ ] **An upload starts before anyone checks that the box can read it** #bug #ux #sprigs (Alexander, 2026-10-24; seen on try.sage.is 3.2.2): with no rag-loaders or embedding Sprig, a PDF uploads with 200 and nothing extracted, and search then fails with "[ERROR: 503: Embedding model not yet loaded. Complete setup wizard to download.]"
+  - [ ] [WE] Check before the upload starts: one readiness answer (rag-loaders grafted, embedding ready, vector DB ready) that any signed-in user may read; the composer and the knowledge page refuse the file at once and say why
+  - [ ] [WE] Help in place: an admin gets one button that grafts what is missing (rag-loaders, the embedding Sprig) and shows progress; a user reads "ask your admin to turn on document reading", never "Complete setup wizard"
+  - [ ] [WE] A processing failure reaches the person plainly: today the upload answers 200 with an `error` field (`routers/files.py:208-216`), shown as a toast only after the wait (`chat/MessageInput.svelte:587-589`)
+  - [ ] [WE] Messages: retrieval stops wrapping the 503 as a 400 "[ERROR: 503: …]" (`routers/retrieval.py:1869-1873`); the texts at `main.py:1103-1110` and `routers/retrieval.py:59-66` name who fixes it and how
+  - [ ] [MANUALLY] Decide whether try.sage.is gets document reading back now: it grafts only `vector-chroma`, the e5-large embedding is "pending" and rag-loaders is absent, so every query fails, its two seeded knowledge-base agents included; since when is unknown (3.1.0 had a full ML stack)
+  - Found 2026-10-24 by a check through the public persona links: the user-1 link signs in (PyJWT path fine), the PDF stored and was deleted, extraction gave 0 characters, three searches got the 503
+  - Related: card "Knowledge bases on sage.startr.cloud return nothing" (its fixes include the real 503); the diagnostics fix modals' Sprig remedies
 - [ ] **Production data reaches Backblaze in plaintext** #security #backup (Alexander, 2026-10-24): the deploy backups now move to Somma 02 encrypted; their siblings stay as they are until each gets a decision
   - [x] [WE] 2026-10-24: the `make deploy` backups (3.1.0, 3.2.0, 3.2.1) moved to `Somma 02 14TB/Backups/ai-ui/sage-startr-cloud/`, gzipped and encrypted, key `bw:ai-ui-deploy-db-backup`, decrypt verified; mover `~/.local/share/ai-ui/move-deploy-backup.sh`
   - [ ] [WE] `scripts/deploy.py` writes the encrypted copy to Somma 02 itself, through `sage-secret`, and never a plaintext file
