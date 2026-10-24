@@ -153,6 +153,15 @@ def has_access(
     )
 
 
+def is_restricted(user) -> bool:
+    """Whether model access control applies to this account: every role but admin.
+
+    The old test, ``user.role == "user"``, let facilitator and temporary accounts
+    past every check. One answer here keeps the next role from reopening that door.
+    """
+    return user.role != "admin"
+
+
 # Get all users with access to a resource
 def get_users_with_access(
     type: str = "write", access_control: Optional[dict] = None

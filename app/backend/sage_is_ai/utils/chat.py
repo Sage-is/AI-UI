@@ -41,6 +41,7 @@ from sage_is_ai.utils.plugin import (
     get_function_module_from_cache,
 )
 from sage_is_ai.utils.models import get_all_models, check_model_access
+from sage_is_ai.utils.access_control import is_restricted
 from sage_is_ai.utils.payload import convert_payload_openai_to_ollama
 from sage_is_ai.utils.response import (
     convert_response_ollama_to_openai,
@@ -216,7 +217,7 @@ async def _generate_chat_completion(
         )
     else:
         # Check if user has access to the model
-        if not bypass_filter and user.role == "user":
+        if not bypass_filter and is_restricted(user):
             try:
                 check_model_access(user, model)
             except Exception as e:

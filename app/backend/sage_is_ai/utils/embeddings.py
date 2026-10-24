@@ -5,6 +5,7 @@ from fastapi import Request
 from sage_is_ai.models.users import UserModel
 from sage_is_ai.utils.misc import get_available_models
 from sage_is_ai.utils.models import check_model_access
+from sage_is_ai.utils.access_control import is_restricted
 from sage_is_ai.env import SRC_LOG_LEVELS, GLOBAL_LOG_LEVEL, BYPASS_MODEL_ACCESS_CONTROL
 
 from sage_is_ai.routers.openai import embeddings as openai_embeddings
@@ -63,7 +64,7 @@ async def generate_embeddings(
 
     # Access filtering
     if not getattr(request.state, "direct", False):
-        if not bypass_filter and user.role == "user":
+        if not bypass_filter and is_restricted(user):
             check_model_access(user, model)
 
     # Ollama backend
