@@ -6,6 +6,8 @@ All notable changes to [Sage.is AI-UI](https://github.com/Sage-is/AI-UI) are doc
 
 ## [Unreleased]
 
+## [3.2.1] — 2026-10-24
+
 ### Security
 
 **One client can no longer stall a public instance**
@@ -52,7 +54,7 @@ The image build now checks that Python's sha224, sha3 and sha512 digests and a d
 `app/pyproject.toml` listed 95 packages that no build ever installed. GitHub's dependency graph still read them and filed 194 Dependabot alerts against them. The list is now empty; the real pins live in `app/backend/requirements.txt`, the hashed ML lock and each Sprig recipe. `app/backend/requirements-ml.txt`, a tombstone since 2.3.1, is gone.
 
 **About 100 MB the image did not need**
-The unpacked image went from 472 MB to 371 MB. Gone from the base: pip, setuptools and wheel (16 MB), the OpenTelemetry SDK with grpcio and protobuf (24 MB, now in vector-chroma), the typer command line with rich and pygments (13 MB), ORAS (10 MB), passlib, peewee, peewee-migrate, async-timeout, curl and jq. The container always started uvicorn directly, so the typer entry point and its pip-package layout, which could move the data folder and delete the old one, are gone too. Every Sprig child server starts without importing them.
+The unpacked image went from 484 MB to 390 MB, summed over every layer. Gone from the base: pip, setuptools and wheel (16 MB), the OpenTelemetry SDK with grpcio and protobuf (24 MB, now in vector-chroma), the typer command line with rich and pygments (13 MB), ORAS (10 MB), passlib, peewee, peewee-migrate, async-timeout, curl and jq. The container always started uvicorn directly, so the typer entry point and its pip-package layout, which could move the data folder and delete the old one, are gone too. Every Sprig child server starts without importing them.
 
 ## [3.2.0] — 2026-09-25
 
