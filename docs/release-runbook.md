@@ -45,7 +45,7 @@ Docker Desktop and OrbStack use Rosetta for amd64 by default, so they build in p
 ## Before you run it
 
 1. [WE] `make minor_release` (or `patch_release` / `major_release`) to cut the branch.
-2. [WE] `make bump_release_version` to write the version into `app/package.json`. This is the only file it touches. The README version is a shields badge that reads origin's tags, so nothing keeps it in step by hand.
+2. [WE] `make bump_release_version` to write the version into `app/package.json` and pin `SERVER_TAG` to it in `distribution.env`, then copy that file to the sibling repos. The tag must carry its own pin: brew installs `ai-ui` from the tag's tarball and refuses one that names another server, as 3.2.1's did. The README version is a shields badge that reads origin's tags, so nothing keeps it in step by hand.
 3. [MANUALLY] Write the `## [X.Y.Z]` section in `CHANGELOG.md`, then commit. Preflight refuses without it.
 4. [WE] `make ship`, on the build VM if this Mac uses Colima.
 
