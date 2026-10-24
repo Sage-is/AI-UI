@@ -138,7 +138,14 @@ echo "== 3. the app-wide floor must not grow =="
 # 7,576 kB to 6,642 kB on 2026-08-02; the ceiling is set just above that so the
 # saving cannot quietly evaporate. Raise it deliberately, never to make a run go
 # green.
-FLOOR_CEILING="${FLOOR_KB:-6800}"
+# Raised 6,800 -> 7,300 on 2026-10-24. The 3.2.2 image measures 7,179.9 kB: the
+# floor crept 539 kB between 2026-08-02 and 3.2.2 with this gate unrun (it sits
+# only in gauntlet_full), /api/models alone 2,902 kB decoded on the 2026-07-12
+# snapshot (card "The SPA floor crept 539 kB unnoticed"). The F0 build adds
+# 107 kB decoded and 0.5 kB on the wire: the startr.style stylesheet is served
+# from the box with SRI now, where the browser fetched the same bytes from
+# startr.style before, uncounted here.
+FLOOR_CEILING="${FLOOR_KB:-7300}"
 FLOOR=$(jq -r '."notes-empty".decodedKB.median // empty' "$LEDGER")
 if [ -z "$FLOOR" ]; then
   no "the floor gauge (notes-empty) is missing from the ledger — the ceiling check cannot report"

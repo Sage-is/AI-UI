@@ -18,9 +18,10 @@ BASE = os.environ.get("RS_BASE_URL", "http://localhost:8181").rstrip("/")
 ADMIN_EMAIL = os.environ.get("RS_ADMIN_EMAIL", "rs-admin@example.com")
 ADMIN_PASSWORD = os.environ.get("RS_ADMIN_PASSWORD", "rs-admin-password-1")
 # The mock provider (_mock_provider.py): the box reaches it on the docker network,
-# the tests read what it saw through its published port.
+# the tests read what it saw through its published port. The host port is not
+# 8098, which the sprig_signing and surface_budget gates bind.
 MOCK_INTERNAL = os.environ.get("RS_MOCK_INTERNAL_URL", "http://rs-mock:8098/v1")
-MOCK_URL = os.environ.get("RS_MOCK_URL", "http://localhost:8098").rstrip("/")
+MOCK_URL = os.environ.get("RS_MOCK_URL", "http://localhost:8182").rstrip("/")
 
 
 class Response:

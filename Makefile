@@ -823,7 +823,9 @@ privacy_tests:  ## Gate: privacy engine + off-switch unit tests (host, <1s)
 # this checkout. The security tests drive a running box: RS_BASE_URL, by default
 # the throwaway box scripts/rootstock/dev-box.sh starts on :8181, with the mock
 # provider (rootstock/tests/security/_mock_provider.py) running on sage-network
-# as rs-mock and published on :8098. Two modules skip on a box without document
+# as rs-mock (`dev-box.sh mock` starts it): 8098 inside the network, :8182 on the
+# host, because :8098 on the host belongs to the sprig_signing and surface_budget
+# gates. Two modules skip on a box without document
 # reading; run those against a box with vector-chroma, rag-loaders and an
 # embedding Sprig grafted. The modules that need the box's secret for a forged
 # token read RS_SECRET_KEY_FILE and skip without it.

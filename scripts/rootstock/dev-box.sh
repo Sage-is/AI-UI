@@ -3,6 +3,7 @@
 # tree's backend mounted over it, signup open, Sprigs from the local registry.
 #   scripts/rootstock/dev-box.sh [NAME] [PORT] [TREE] [IMAGE]
 #   scripts/rootstock/dev-box.sh --stop [NAME]
+#   scripts/rootstock/dev-box.sh mock [IMAGE]      # the mock provider, rs-mock on sage-network
 # Defaults: rs-f0, 8181, this checkout, ghcr.io/sage-is/ai-ui:<SERVER_TAG>.
 # It always recreates the container: after a host edit, a restarted container
 # on Colima's virtiofs can keep a stale view of a renamed file and fail to
@@ -10,11 +11,22 @@
 # volume <NAME>-data survives, so the admin account does too.
 set -euo pipefail
 HERE=$(cd "$(dirname "$0")/../.." && pwd)
-if [ "${1:-}" = --stop ]; then docker rm -f "${2:-rs-f0}" >/dev/null 2>&1 && echo "stopped ${2:-rs-f0}"; exit 0; fi
-NAME=${1:-rs-f0}; PORT=${2:-8181}; TREE=${3:-$HERE}
 TAG=$(sed -n 's/^SERVER_TAG=//p' "$HERE/distribution.env")
-IMAGE=${4:-ghcr.io/sage-is/ai-ui:$TAG}
+if [ "${1:-}" = --stop ]; then docker rm -f "${2:-rs-f0}" >/dev/null 2>&1 && echo "stopped ${2:-rs-f0}"; exit 0; fi
 docker network inspect sage-network >/dev/null 2>&1 || docker network create sage-network >/dev/null
+if [ "${1:-}" = mock ]; then
+  # The box reaches it at http://rs-mock:8098/v1; the tests read /_requests through
+  # the host port, 8182 by default, since :8098 on the host belongs to the
+  # sprig_signing and surface_budget gates (a clash stopped gauntlet_full, 2026-10-24).
+  MOCK_PORT=${RS_MOCK_PORT:-8182}
+  docker rm -f rs-mock >/dev/null 2>&1 || true
+  docker run -d --name rs-mock --network sage-network -p "$MOCK_PORT:8098" \
+    -v "$HERE/app/backend/sage_is_ai/rootstock/tests/security/_mock_provider.py:/mock.py:ro" \
+    --entrypoint python3 "${2:-ghcr.io/sage-is/ai-ui:$TAG}" /mock.py 8098 >/dev/null
+  echo "rs-mock: http://rs-mock:8098/v1 on sage-network, http://localhost:$MOCK_PORT on the host"; exit 0
+fi
+NAME=${1:-rs-f0}; PORT=${2:-8181}; TREE=${3:-$HERE}
+IMAGE=${4:-ghcr.io/sage-is/ai-ui:$TAG}
 docker rm -f "$NAME" >/dev/null 2>&1 || true
 docker run -d --name "$NAME" --network sage-network -p "$PORT:8080" \
   -e ENABLE_SIGNUP=True -e WEBUI_AUTH=True -e DEFAULT_USER_ROLE=user \
