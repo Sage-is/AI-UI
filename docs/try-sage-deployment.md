@@ -188,7 +188,7 @@ Two seeded agents ship with KBs:
 
 Drop markdown files in those folders and rebuild the image. The seed runs at every boot and every reset. It hashes each folder and compares the hash against `TRY_SAGE_KB_INGESTED_VERSION`. A KB re-ingests when its hash changed or its file list is empty; otherwise the seed skips it, so resets stay fast. The other agent's embeddings are left alone.
 
-To force a re-ingest without a restart, empty the KB's file list: `POST /api/v1/knowledge/{id}/update` as admin, sending the KB's own `name`, `description` and `access_control` with `"data": {"file_ids": []}`. The next reset or boot re-embeds it. A restart does it at once, but it mints new persona links, so every link already handed out stops working.
+To force a re-ingest without a restart, reset the KB as admin: `POST /api/v1/knowledge/{id}/reset` drops its vector collection and empties its file list. Emptying the file list alone is not enough: the stale collection makes the seed's re-ingest fail silently (seen 2026-10-24). The next reset or boot then re-embeds it; `POST /api/v1/sage/runtime/reset` runs that reset now (it ends every browser session, and the persona links keep working). A restart also re-embeds, but it mints new persona links, so every link already handed out stops working.
 
 ### Document reading
 

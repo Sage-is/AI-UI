@@ -77,6 +77,8 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [x] [MANUALLY] The adversarial rewrite and its congestion section, approved with the plan (2026-10-24): 18 security bugs fixed at source in F0; congestion fixes in F1; the gateway beside the Django pilot in F2; a go or no-go after F2; new features after F8
   - [x] [WE] First after the tag, on `develop`: move the staging in, then F0 (3.3.0): the 18 fixes where each bug lives; one HTTP test per card in `rootstock/tests/security/`, each shown to fail on 3.2.1 first; the loop-lag watchdog; look back, rotate, notify
     - Done 2026-10-24: Phase 0 in (`2f8325c`); the watchdog (`6222e39`); the 18 fixes in `d3db2c8`, `cfd95e5`, `80d115f`, `52885b0`, `bb99576`, with 68 tests under `rootstock/tests/security/` (`make rootstock_test`), each failing on 3.2.2 first; backups before update (`36b9592`); the look-back (`c5395e7`, nothing found)
+    - Exit checks 2026-10-24: `upgrade_gate` 20/20 on the 2026-07-12 snapshot; `gauntlet_full` exit 0 on the final tree (lifecycle 69/69, durability 12/12, signing 11/11, ui-Sprig 22/22, Cypress 48/48 files on both surfaces, surface budget 11/11, image unit tests 40, trivy 0 HIGH/CRITICAL)
+    - The gates caught on the way: the wizard's user add and CSV import called `add_user` with its pre-F0 arguments (`pages/users_panel.py`; two Cypress specs), fixed; `ca-certificates` 20260909-r2 flagged HIGH ×2 (CVE-2026-111943), cleared by moving the wolfi-base pin to 2026-10-24; the SPA floor creep (Bugs card) predates F0
     - [ ] [MANUALLY] Rotate the backup remote's credentials and `WEBUI_SECRET_KEY` (give `PRIVACY_KEY` its own value first); tell both box owners; release 3.3.0 and deploy it
   - [ ] [WE] Then `docs/rootstock/design.md`; OpenAPI capture and goldens from the 3.2.1 image; the parity runner
   - [ ] [WE] F1 (3.4.0): the seam, pass-through; the ten congestion fixes (card "Congestion" in Bugs); consistent backups; `make stream_load` with an asyncio mock provider
@@ -1357,6 +1359,10 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 
 ## Bugs
 
+- [ ] **The SPA floor crept 539 kB unnoticed between 2026-08-02 and 3.2.2** #perf (found 2026-10-24 by `surface_budget` in `gauntlet_full`): `notes-empty` measures 7,179.9 kB decoded on the 3.2.2 image against the 6,800 kB ceiling set on 2026-08-02 at 6,641 kB; `/api/models` is 2,902 kB decoded on the 2026-07-12 snapshot
+  - [x] [WE] Ceiling raised to 7,300 kB with the reason in `run-gate.sh` (2026-10-24); the F0 build adds 107 kB decoded and 0.5 kB on the wire, the vendored startr.style stylesheet
+  - [ ] [WE] F1: the revision-keyed, ETag'd model list (plan, F1) brings `/api/models` down; re-measure and lower the ceiling with it
+  - [ ] [WE] Propose: `surface_budget` runs in `release_smoke`, not only in `gauntlet_full`, so the floor cannot creep for a quarter again
 - [ ] **Any user can write chunks into any collection through `/api/v1/retrieval/process/file`** #security #bug (2026-10-24, found while fixing knowledge access): the route takes any `collection_name` and indexes the caller's file into it, the write-side twin of the read check F0 added
   - [ ] [WE] Refuse a collection the caller may not write (owner, write access or admin); one test beside `test_knowledge_access`
 - [ ] **The note item in retrieval checks access but not the note's owner** #security #bug (2026-10-24, found while fixing knowledge access): `get_sources_from_items` admits a note whose `access_control` allows it without asking who owns it
@@ -1372,7 +1378,7 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] [WE] Messages: retrieval stops wrapping the 503 as a 400 "[ERROR: 503: …]" (`routers/retrieval.py:1869-1873`); the texts at `main.py:1103-1110` and `routers/retrieval.py:59-66` name who fixes it and how
   - [x] [WE] try.sage.is: `multilingual-e5-large` grafted 2026-10-24 (Alexander's go), rooted in 52 s; embedding "ready", queries answer 200 instead of the 503; since when it was missing is unknown (3.1.0 had a full ML stack)
   - [x] [WE] try.sage.is, 2026-10-24 (Alexander's go): `rag-loaders` grafted (7 s); a three-page PDF now extracts and each search ranks its own page first; both seeded knowledge bases (0 chunks, versions stamped) emptied to re-ingest at the next reset, no restart (`docs/try-sage-deployment.md`, "Document reading")
-  - [ ] [WE] After try.sage.is's reset of 2026-10-24 15:13 UTC: both seeded knowledge bases list their file again and answer with hits
+  - [x] [WE] try.sage.is's seeded knowledge bases, 2026-10-24: the 15:13 reset did not re-ingest them (an emptied file list leaves a stale collection, and the seed's ingest then fails silently); `POST /api/v1/knowledge/{id}/reset` on both, then a manual trial reset, brought them back: one file each, searches hit (runbook updated)
   - Found 2026-10-24 by a check through the public persona links: the user-1 link signs in (PyJWT path fine), the PDF stored and was deleted, extraction gave 0 characters, three searches got the 503
   - Related: card "Knowledge bases on sage.startr.cloud return nothing" (its fixes include the real 503); the diagnostics fix modals' Sprig remedies
 - [ ] **Production data reaches Backblaze in plaintext** #security #backup (Alexander, 2026-10-24): the deploy backups now move to Somma 02 encrypted; their siblings stay as they are until each gets a decision

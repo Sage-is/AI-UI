@@ -1,0 +1,16 @@
+python 3.11.17 | sqlite 3.54.0
+enable_load_extension: ok
+fts5: ok
+json: ok
+rtree: ok
+math: ok
+compile_options: ['DEFAULT_WAL_AUTOCHECKPOINT=1000', 'DEFAULT_WAL_SYNCHRONOUS=2', 'ENABLE_FTS3', 'ENABLE_FTS3_PARENTHESIS', 'ENABLE_FTS4', 'ENABLE_FTS5', 'ENABLE_MATH_FUNCTIONS', 'THREADSAFE=1']
+python cosine (pre-normalised) 5000x384: 0.052s top=[3203, 221]
+python cosine (pre-normalised) 20000x384: 0.204s top=[14493, 8259]
+uv: /usr/local/bin/uv
+uv install sqlite-vec rc 0
+sqlite-vec version: v0.1.9
+sqlite-vec scalar cosine 50000x384: 0.045s top=46400
+sqlite-vec scalar cosine 50000x384: 0.039s top=46400
+sqlite-vec scalar cosine 50000x384: 0.040s top=46400
+db bytes for 50k x 384 float32: 76800000
