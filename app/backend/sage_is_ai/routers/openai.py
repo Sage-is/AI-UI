@@ -927,6 +927,13 @@ async def generate_chat_completion(
 
             payload = apply_model_params_to_body_openai(params, payload)
             payload = apply_model_system_prompt_to_body(system, payload, metadata, user)
+            # The system prompt arrives after the privacy filter ran on the
+            # messages, with the user's name and location filled in: it goes
+            # through the same request mapper before anything leaves.
+            if getattr(request.state, "privacy_active", False):
+                from sage_is_ai.privacy import hooks as privacy_hooks
+
+                payload = privacy_hooks.outbound_system(request, payload)
 
         # Check if user has access to the model
         if not bypass_filter and user.role == "user":

@@ -167,7 +167,7 @@ async def generate_chat_completion(
 
     response = await _generate_chat_completion(request, form_data, user, bypass_filter)
     if getattr(request.state, "privacy_active", False) and isinstance(response, dict):
-        privacy.reverse_completion(response)
+        privacy.reverse_completion(response, privacy.table_for(request))
     return response
 
 

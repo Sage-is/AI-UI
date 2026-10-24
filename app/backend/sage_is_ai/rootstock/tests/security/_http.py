@@ -2,8 +2,8 @@
 
 RS_BASE_URL names the box (default http://localhost:8181). The first sign-up on an
 empty box becomes its admin; RS_ADMIN_EMAIL and RS_ADMIN_PASSWORD name that account
-(defaults below) so a second run signs in instead. Every other user a test needs is
-signed up fresh with a unique address, then given its role by the admin.
+(defaults below) so a second run signs in instead. Sign-up closes after that first
+admin, so every other user a test needs is added by the admin with its role, then signs in.
 """
 
 from __future__ import annotations
@@ -17,6 +17,10 @@ import uuid
 BASE = os.environ.get("RS_BASE_URL", "http://localhost:8181").rstrip("/")
 ADMIN_EMAIL = os.environ.get("RS_ADMIN_EMAIL", "rs-admin@example.com")
 ADMIN_PASSWORD = os.environ.get("RS_ADMIN_PASSWORD", "rs-admin-password-1")
+# The mock provider (_mock_provider.py): the box reaches it on the docker network,
+# the tests read what it saw through its published port.
+MOCK_INTERNAL = os.environ.get("RS_MOCK_INTERNAL_URL", "http://rs-mock:8098/v1")
+MOCK_URL = os.environ.get("RS_MOCK_URL", "http://localhost:8098").rstrip("/")
 
 
 class Response:
@@ -85,16 +89,41 @@ def admin() -> User:
     return signin(ADMIN_EMAIL, ADMIN_PASSWORD) or signup(ADMIN_EMAIL, ADMIN_PASSWORD, "Rootstock Admin")
 
 
+def connect_mock(admin_user: User) -> None:
+    """Make the mock provider connection 0, and load its one model, mock-echo."""
+    r = admin_user.post("/openai/config/update", {  # the OpenAI router is mounted at /openai, not /api/v1
+        "ENABLE_OPENAI_API": True, "OPENAI_API_BASE_URLS": [MOCK_INTERNAL],
+        "OPENAI_API_KEYS": ["mock-key"], "OPENAI_API_CONFIGS": {"0": {}}})
+    if r.status != 200:
+        raise RuntimeError(f"connecting the mock failed: HTTP {r.status} {r.text[:200]}")
+    models = admin_user.get("/api/models").json() or {}
+    if not any(m.get("id") == "mock-echo" for m in models.get("data", [])):
+        raise RuntimeError("mock-echo is not in /api/models; is rs-mock running on sage-network?")
+
+
+def mock_requests() -> list:
+    """Every request the mock provider has seen since the last mock_forget()."""
+    req = urllib.request.Request(MOCK_URL + "/_requests", headers={"User-Agent": "sage-rootstock-security-tests"})
+    with urllib.request.urlopen(req, timeout=30) as r:  # nosec B310 — MOCK_URL is the mock's http URL
+        return json.loads(r.read())
+
+
+def mock_forget() -> None:
+    req = urllib.request.Request(MOCK_URL + "/_requests", method="DELETE",
+                                 headers={"User-Agent": "sage-rootstock-security-tests"})
+    urllib.request.urlopen(req, timeout=30).close()  # nosec B310 — MOCK_URL is the mock's http URL
+
+
 def new_user(role: str = "user", *, admin_user: User | None = None) -> User:
-    """A fresh account with a unique address, set to `role` by the admin when it is not the default."""
+    """A fresh account with a unique address: the admin adds it with `role` (sign-up
+    closes after the first admin on this fork), then it signs in."""
     tag = uuid.uuid4().hex[:10]
-    user = signup(f"rs-{tag}@example.com", f"pw-{tag}-long-enough", f"RS {tag}")
-    if user.role != role:
-        boss = admin_user or admin()
-        r = boss.post(f"/api/v1/users/{user.id}/update",
-                      {"role": role, "name": f"RS {tag}", "email": user.email, "profile_image_url": "/user.png"})
-        if r.status != 200:
-            raise RuntimeError(f"could not set role {role}: HTTP {r.status} {r.text[:200]}")
-        user = signin(user.email, user.password) or user
-        user.role = role
+    email, password = f"rs-{tag}@example.com", f"pw-{tag}-long-enough"
+    boss = admin_user or admin()
+    r = boss.post("/api/v1/auths/add", {"name": f"RS {tag}", "email": email, "password": password, "role": role})
+    if r.status != 200:
+        raise RuntimeError(f"adding a user failed: HTTP {r.status} {r.text[:200]}")
+    user = signin(email, password)
+    if user is None:
+        raise RuntimeError(f"the added user {email} cannot sign in")
     return user

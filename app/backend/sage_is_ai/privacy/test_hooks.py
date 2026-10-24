@@ -79,5 +79,71 @@ class PassThroughPath(unittest.TestCase):
         )
 
 
+class PerRequestTable(unittest.TestCase):
+    """F0: a reply reverses only the stand-ins its own request sent, tool
+    arguments go out pseudonymized, and a late system prompt joins the table."""
+
+    def setUp(self):
+        from sage_is_ai.privacy.engine import MemoryMapper
+
+        self.shared = MemoryMapper("test-key")  # one box: the same mapper for every request
+        self._mapper, hooks.mapper = hooks.mapper, lambda: self.shared
+
+    def tearDown(self):
+        hooks.mapper = self._mapper
+
+    def _request(self):
+        return SimpleNamespace(
+            app=SimpleNamespace(state=SimpleNamespace(config=SimpleNamespace(PRIVACY_CONFIG=None))),
+            state=SimpleNamespace(),
+        )
+
+    def _send(self, text):
+        request = self._request()
+        form = hooks.outbound(request, {"messages": [{"role": "user", "content": text}]})
+        return request, form["messages"][0]["content"]
+
+    def test_a_reply_reverses_only_what_its_request_sent(self):
+        first, sent_first = self._send("write to ada.first@example.com")
+        second, sent_second = self._send("write to bob.second@example.com")
+        fake_first = [f for f in hooks.table_for(first) if "example.com" not in f][0]
+        self.assertNotIn("ada.first", sent_first)
+        self.assertIn(fake_first, sent_first)
+        # The model answering the second request echoes a stand-in from the first.
+        reply = {"choices": [{"message": {"content": f"ok: {fake_first}"}}]}
+        hooks.reverse_completion(reply, hooks.table_for(second))
+        self.assertEqual(reply["choices"][0]["message"]["content"], f"ok: {fake_first}")
+        hooks.reverse_completion(reply, hooks.table_for(first))
+        self.assertEqual(reply["choices"][0]["message"]["content"], "ok: ada.first@example.com")
+
+    def test_tool_call_arguments_go_out_pseudonymized(self):
+        request = self._request()
+        form = hooks.outbound(request, {"messages": [
+            {"role": "user", "content": "mail carol.tool@example.com"},
+            {"role": "assistant", "content": None, "tool_calls": [
+                {"id": "c1", "type": "function",
+                 "function": {"name": "send", "arguments": '{"to": "carol.tool@example.com"}'}}]},
+        ]})
+        arguments = form["messages"][1]["tool_calls"][0]["function"]["arguments"]
+        self.assertNotIn("carol.tool", arguments)
+        fake = [f for f in hooks.table_for(request)][0]
+        self.assertIn(fake, arguments)
+        self.assertEqual(hooks.table_for(request)[fake], "carol.tool@example.com")
+
+    def test_a_late_system_prompt_uses_the_request_mapper(self):
+        request, _ = self._send("hello from dan.late@example.com")
+        form = hooks.outbound_system(request, {"messages": [
+            {"role": "system", "content": "The user is dan.late@example.com"},
+            {"role": "user", "content": "hi"}]})
+        system = form["messages"][0]["content"]
+        self.assertNotIn("dan.late", system)
+        (fake,) = hooks.table_for(request)
+        self.assertIn(fake, system)
+
+    def test_outbound_system_is_a_no_op_without_outbound(self):
+        form = {"messages": [{"role": "system", "content": "erin.none@example.com"}]}
+        self.assertEqual(hooks.outbound_system(self._request(), form), form)
+
+
 if __name__ == "__main__":
     unittest.main()

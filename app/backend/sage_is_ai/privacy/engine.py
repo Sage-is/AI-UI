@@ -151,18 +151,25 @@ def pseudonymize(
 _CACHE: dict = {"table": None, "pattern": None, "hold": 0}
 
 
-def _pattern(table: dict[str, str]) -> tuple[re.Pattern | None, int]:
-    # Keyed on the table object itself rather than id(): holding the reference
-    # keeps it alive, so a freed dict's address can never come back under a
-    # stale pattern. One live table at a time is plenty.
-    if _CACHE["table"] is table:
-        return _CACHE["pattern"], _CACHE["hold"]
+def _compile(table: dict[str, str]) -> tuple[re.Pattern | None, int]:
+    """One alternation of the table's fakes, longest first, and the longest length."""
     fakes = sorted((f for f in table if f), key=len, reverse=True)
     if not fakes:
         return None, 0
-    pattern = re.compile("|".join(re.escape(f) for f in fakes))
-    _CACHE.update(table=table, pattern=pattern, hold=len(fakes[0]))
-    return pattern, len(fakes[0])
+    return re.compile("|".join(re.escape(f) for f in fakes)), len(fakes[0])
+
+
+def _pattern(table: dict[str, str]) -> tuple[re.Pattern | None, int]:
+    # Keyed on the table object itself rather than id(): holding the reference
+    # keeps it alive, so a freed dict's address can never come back under a
+    # stale pattern. One live table at a time is plenty for whole replies; a
+    # StreamReverser compiles its own, since streams run side by side.
+    if _CACHE["table"] is table:
+        return _CACHE["pattern"], _CACHE["hold"]
+    pattern, hold = _compile(table)
+    if pattern is not None:
+        _CACHE.update(table=table, pattern=pattern, hold=hold)
+    return pattern, hold
 
 
 def reverse(text: str, table: dict[str, str]) -> str:
@@ -177,8 +184,15 @@ class StreamReverser:
 
     def __init__(self, table: dict[str, str]):
         self.table = table
-        self.pattern, self.hold = _pattern(table)
+        # Its own pattern: concurrent streams each carry their request's table,
+        # and the shared one-slot cache would recompile on every chunk.
+        self.pattern, self.hold = _compile(table)
         self.buffer = ""
+
+    def _reverse(self, text: str) -> str:
+        if self.pattern is None or not text:
+            return text
+        return self.pattern.sub(lambda m: self.table.get(m.group(0), m.group(0)), text)
 
     def feed(self, chunk: str) -> str:
         if not chunk:
@@ -192,8 +206,8 @@ class StreamReverser:
                 safe = match.start()  # a fake straddles the cut: hold it back whole
                 break
         out, self.buffer = self.buffer[:safe], self.buffer[safe:]
-        return reverse(out, self.table)
+        return self._reverse(out)
 
     def flush(self) -> str:
         out, self.buffer = self.buffer, ""
-        return reverse(out, self.table)
+        return self._reverse(out)

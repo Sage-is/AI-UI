@@ -80,11 +80,45 @@ def mapper() -> DbMapper:
     return DbMapper(key())
 
 
+class RecordingMapper:
+    """The mapper for one request: every stand-in it hands out is remembered, so
+    the reply reverses only what this request sent. The instance-wide table let
+    one chat's reply surface another chat's real name (F0, 2026-10-24)."""
+
+    def __init__(self, inner):
+        self.inner = inner
+        self.table: dict[str, str] = {}
+
+    def fake(self, category: str, real: str, strategy: str, replacement: str = "") -> str:
+        out = self.inner.fake(category, real, strategy, replacement)
+        # A redaction or a shared literal has no owner of its own: nothing to reverse.
+        if out and self.inner.owner(out) == (category, real.strip()):
+            self.table[out] = real.strip()
+        return out
+
+    def lookup(self, category: str, real: str):
+        return self.inner.lookup(category, real)
+
+    def owner(self, fake: str):
+        return self.inner.owner(fake)
+
+    def store(self, category: str, real: str, fake: str) -> None:
+        self.inner.store(category, real, fake)
+
+    def reverse_table(self) -> dict[str, str]:
+        return self.table
+
+
+def table_for(request) -> dict[str, str]:
+    """The stand-ins this request sent, and nothing else."""
+    return getattr(request.state, "privacy_table", None) or {}
+
+
 def outbound(request, form_data: dict) -> dict:
     """Pseudonymize every text part of every message, in place."""
     cfg = config(request)
     rules = rules_from_config(cfg)
-    db_mapper = mapper()
+    db_mapper = RecordingMapper(mapper())
     hints = ((form_data.get("metadata") or {}).get("privacy") or {}).get("known")
     counts: dict[str, int] = {}
 
@@ -97,13 +131,37 @@ def outbound(request, form_data: dict) -> dict:
     for message in form_data.get("messages") or []:
         _rewrite_message(message, rewrite)
     request.state.privacy_hits = counts
+    request.state.privacy_mapper = db_mapper
+    request.state.privacy_table = db_mapper.table
     if counts:
         log.info("privacy: pseudonymized %s", counts)
     return form_data
 
 
+def outbound_system(request, form_data: dict) -> dict:
+    """The system messages a model's params add after `outbound` ran, the user's
+    name and location filled in: through the same mapper, so the reply still
+    reverses. A no-op for a request `outbound` never saw."""
+    db_mapper = getattr(request.state, "privacy_mapper", None)
+    if db_mapper is None:
+        return form_data
+    rules = rules_from_config(config(request))
+    hints = ((form_data.get("metadata") or {}).get("privacy") or {}).get("known")
+    for message in form_data.get("messages") or []:
+        if message.get("role") == "system":
+            _rewrite_message(
+                message, lambda text: pseudonymize(text, rules, db_mapper, hints)[0]
+            )
+    return form_data
+
+
 def _rewrite_message(message: dict, rewrite) -> None:
-    """A message's text, whether a plain string or a list of typed parts."""
+    """A message's text, whether a plain string or a list of typed parts, and the
+    arguments of the tool calls it carries: a reversed reply resends them real."""
+    for call in message.get("tool_calls") or []:
+        function = call.get("function") or {}
+        if isinstance(function.get("arguments"), str) and function["arguments"]:
+            function["arguments"] = rewrite(function["arguments"])
     content = message.get("content")
     if isinstance(content, str):
         message["content"] = rewrite(content)
@@ -113,28 +171,28 @@ def _rewrite_message(message: dict, rewrite) -> None:
             part["text"] = rewrite(part["text"])
 
 
-def reverse_text(text: str) -> str:
-    return reverse(text, mapper().reverse_table())
+def reverse_text(text: str, table: dict[str, str]) -> str:
+    return reverse(text, table)
 
 
-def reverse_completion(response: dict) -> None:
+def reverse_completion(response: dict, table: dict[str, str]) -> None:
     """A whole (non-streamed) completion: message content and tool arguments."""
     for choice in response.get("choices") or []:
         message = choice.get("message") or {}
         if isinstance(message.get("content"), str):
-            message["content"] = reverse_text(message["content"])
-        reverse_tool_calls(message.get("tool_calls") or [])
+            message["content"] = reverse_text(message["content"], table)
+        reverse_tool_calls(message.get("tool_calls") or [], table)
 
 
-def reverse_tool_calls(tool_calls: list) -> None:
+def reverse_tool_calls(tool_calls: list, table: dict[str, str]) -> None:
     for call in tool_calls or []:
         function = call.get("function") or {}
         if isinstance(function.get("arguments"), str):
-            function["arguments"] = reverse_text(function["arguments"])
+            function["arguments"] = reverse_text(function["arguments"], table)
 
 
-def stream_reverser() -> StreamReverser:
-    return StreamReverser(mapper().reverse_table())
+def stream_reverser(table: dict[str, str]) -> StreamReverser:
+    return StreamReverser(table)
 
 
 class PassThrough:
@@ -152,7 +210,7 @@ class PassThrough:
 def stream_reverser_for(request):
     """This request's stream reverser: the real one when privacy covers it."""
     if getattr(request.state, "privacy_active", False):
-        return stream_reverser()
+        return stream_reverser(table_for(request))
     return PassThrough()
 
 
@@ -160,14 +218,14 @@ def finish_stream(reverser, tool_calls: list) -> str:
     """End of a streamed reply: the held-back tail, and tool arguments put back."""
     tail = reverser.flush()
     if reverser.active:
-        reverse_tool_calls(tool_calls)
+        reverse_tool_calls(tool_calls, reverser.table)
     return tail
 
 
 def reverse_sse_for(request, lines):
     """The provider's SSE lines, reversed when privacy covers this request."""
     if getattr(request.state, "privacy_active", False):
-        return reverse_sse(lines)
+        return reverse_sse(lines, table_for(request))
     return lines
 
 
@@ -194,9 +252,9 @@ def _reverse_event(body: str, reverser: StreamReverser) -> str | None:
     return f"data: {json.dumps(data)}\n\n"
 
 
-async def reverse_sse(lines):
+async def reverse_sse(lines, table: dict[str, str]):
     """Server-sent event lines from a provider, content deltas reversed in order."""
-    reverser = stream_reverser()
+    reverser = StreamReverser(table)
     async for line in lines:
         body = _sse_body(line)
         if body is None:
