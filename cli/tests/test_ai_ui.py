@@ -16,6 +16,8 @@ import unittest
 from pathlib import Path
 
 AI_UI = Path(__file__).resolve().parent.parent / "ai-ui"
+# The server tag ai-ui pins: each release moves it in distribution.env, so tests read it rather than name a version.
+PINNED_TAG = re.search(r"^SERVER_TAG=(\S+)$", (AI_UI.parent.parent / "distribution.env").read_text(), re.M).group(1)
 # ai-ui sources the runtime code it shares with sage-runtime and trellis-crm from lib/ beside it: a copy of the
 # homebrew-apps tap's, in a checkout beside this one.
 LIB = AI_UI.parent / "lib" / "sage-runtime.sh"
@@ -728,7 +730,7 @@ class Migrate(Mac):
         began = time.monotonic()
         result = self.ok("migrate", "--dry-run")
         self.assertLess(time.monotonic() - began, 25)
-        self.assertIn("start ghcr.io/sage-is/ai-ui:3.2.0 there on port 8080.", result.stdout)
+        self.assertIn(f"start ghcr.io/sage-is/ai-ui:{PINNED_TAG} there on port 8080.", result.stdout)
 
     def test_data_in_colima_that_no_copy_vouches_for_stops_the_move_before_sage_stops(self):
         self.running("colima")
