@@ -34,20 +34,20 @@ markup.
 
 EGRESS
 ------
-These pages load startr.style from its public URL, which is the one place this
-product reaches off-machine on a normal page load. Everything else about the
-Rootstock is built the other way: Sprigs are in-housed so no operator pulls from
-HuggingFace, theme and ui-Sprig bundles are refused at graft if they reference
-an external URL, and the pitch to a workshop is that nothing they type leaves
-the room.
+These pages load startr.style from this box: the 1.5.0 release is vendored under
+app/static/vendor/startr.style/1.5.0/ and linked with its sha384 integrity value,
+so a normal page load reaches nothing off-machine (3.3.0; until then the rolling
+public sheet was fetched on every view, the shape of the 2024 polyfill.io
+takeover). That matches the rest of the Rootstock: Sprigs are in-housed so no
+operator pulls from HuggingFace, theme and ui-Sprig bundles are refused at graft
+if they reference an external URL, and the pitch to a workshop is that nothing
+they type leaves the room.
 
-A stylesheet leaks far less than a script — no cookies are sent cross-origin for
-a CSS link, and it cannot read the page — but it does tell startr.style that
-someone opened an admin page, and an air-gapped deployment gets unstyled chrome.
-Both are deliberate for now (Alexander, 2026-07-28), and both stop being true
-when the versioned URL lands with SRI, or when a self-host flag serves a
-vendored copy instead. Until then, keep layout that must not break in
-pages.css: the local sheet is what survives the CDN being unreachable.
+The vendored sheet still opens with upstream's `@import url('/fonts/Nunito-Sans.css')`,
+a host-absolute path that resolves to this box and finds nothing, so these pages
+fall back to the system sans-serif until the faces are vendored too (Trellis
+inlines them with its scripts/vendor_kit.py). Keep layout that must not break in
+pages.css: the local sheet is what survives a framework sheet that fails to load.
 """
 
 import re
@@ -250,15 +250,10 @@ def render_page(
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{escape(title)}</title>
   <!-- First-party framework, loaded before our own sheet so page rules win.
-       Unversioned by decision (Alexander, 2026-07-28) with /v1/ + SRI coming.
-       Two things this costs, recorded rather than discovered:
-         * an unversioned URL is a single point of failure — when it 5xxs these
-           pages render with only the local sheet, which is why layout that must
-           not break lives in pages.css and not in props;
-         * it is a third-party request on every admin page load, which is a real
-           exception to the zero-egress line the rest of the product holds. An
-           air-gapped Rootstock gets unstyled chrome. See the EGRESS note in this module's docstring. -->
-  <link rel="stylesheet" href="https://startr.style/style.css" />
+       The vendored 1.5.0 release with its integrity hash (3.3.0): no third-party
+       request on a page load, and a swapped file fails closed. Layout that must
+       not break stays in pages.css. See the EGRESS note in this module's docstring. -->
+  <link rel="stylesheet" href="/static/vendor/startr.style/1.5.0/style.css" integrity="sha384-FkECkbET5+CiYC0S6ZEMR/7Fw2/RUYw58TWhsNi/NYKrS7c55s2ZdWOoKZfxaXxC" />
   <link rel="stylesheet" href="{escape(asset_url("pages.css"), quote=True)}" />{brand_style}
 </head>
 <!-- Authored mobile-first: base values are the phone case, and a suffix appears

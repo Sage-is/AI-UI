@@ -41,11 +41,8 @@ setup_rclone() {
     }
   done
 
-  echo "Rclone configuration generated."
-  echo ""
-  echo "*********"
-  cat "$config_dir/rclone.conf"
-  echo "*********"
+  # The remote names only: the file holds each remote's credentials, and this is the container log.
+  echo "Rclone configuration generated for: $(grep '^\[' "$config_dir/rclone.conf" | tr -d '[]' | tr '\n' ' ')"
 }
 
 # Function to perform backup

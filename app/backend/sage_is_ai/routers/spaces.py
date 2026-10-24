@@ -74,6 +74,22 @@ def _check_space_access(user, space):
     )
 
 
+def _check_space_owner(user, space):
+    """Only the Space's owner or an admin manages it: update, delete, moderate. Raises 403 if not."""
+    if user.role == "admin" or space.user_id == user.id:
+        return
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_MESSAGES.DEFAULT()
+    )
+
+
+def _check_message_author(user, space, message):
+    """A message is edited or deleted by its author, the Space's owner or an admin. Raises 403 if not."""
+    if message.user_id == user.id:
+        return
+    _check_space_owner(user, space)
+
+
 ############################
 # GetSpaces
 ############################
@@ -135,13 +151,15 @@ async def get_space_by_id(id: str, user=Depends(get_verified_user)):
 
 @router.post("/{id}/update", response_model=Optional[SpaceModel])
 async def update_space_by_id(
-    id: str, form_data: SpaceForm, user=Depends(get_admin_or_facilitator_user)
+    id: str, form_data: SpaceForm, user=Depends(get_verified_user)
 ):
     space = Spaces.get_space_by_id(id)
     if not space:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
+
+    _check_space_owner(user, space)
 
     try:
         space = Spaces.update_space_by_id(id, form_data)
@@ -159,12 +177,14 @@ async def update_space_by_id(
 
 
 @router.delete("/{id}/delete", response_model=bool)
-async def delete_space_by_id(id: str, user=Depends(get_admin_or_facilitator_user)):
+async def delete_space_by_id(id: str, user=Depends(get_verified_user)):
     space = Spaces.get_space_by_id(id)
     if not space:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND
         )
+
+    _check_space_owner(user, space)
 
     try:
         Spaces.delete_space_by_id(id)
@@ -822,6 +842,8 @@ async def update_message_by_id(
             status_code=status.HTTP_400_BAD_REQUEST, detail=ERROR_MESSAGES.DEFAULT()
         )
 
+    _check_message_author(user, space, message)
+
     try:
         message = Messages.update_message_by_id(message_id, form_data)
         message = Messages.get_message_by_id(message_id)
@@ -1012,6 +1034,8 @@ async def delete_message_by_id(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=ERROR_MESSAGES.DEFAULT()
         )
+
+    _check_message_author(user, space, message)
 
     try:
         Messages.delete_message_by_id(message_id)
