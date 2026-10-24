@@ -395,7 +395,9 @@ WEBUI_SECRET_KEY = os.environ.get(
 )
 
 # Salts every privacy pseudonym. Optional: unset, the instance secret is used.
-# Rotating it orphans every existing fake, so old replies stop reversing.
+# Rotating it changes only which fake a NEW real value gets; stored pairs keep
+# reversing, because reversal reads the map (models/privacy.py), not the salt.
+# Set it before rotating WEBUI_SECRET_KEY, so the two keys stop sharing a fate.
 PRIVACY_KEY = os.environ.get("PRIVACY_KEY", "")
 
 WEBUI_SESSION_COOKIE_SAME_SITE = os.environ.get("WEBUI_SESSION_COOKIE_SAME_SITE", "lax")

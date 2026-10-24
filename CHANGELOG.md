@@ -57,7 +57,7 @@ The OAuth callback logged the whole token response and user info on a failure; i
 Until the sharing site exists, the setting defaults off, a saved "on" is written back off at boot, and the admin form can switch it off but never on.
 
 **startr.style comes from the box**
-Every page loaded `https://startr.style/style.css`, a rolling URL that changes under every box at once. The 1.5.0 release is vendored under `app/static/vendor/startr.style/1.5.0/` and linked with its integrity hash, so a page load reaches nothing off-machine. The vendored sheet still imports its fonts from `/fonts/`, which this box does not serve, so the no-build pages fall back to the system sans-serif until the faces are vendored too.
+Every page loaded `https://startr.style/style.css`, a rolling URL that changes under every box at once. The 1.5.0 release is vendored under `app/static/vendor/startr.style/1.5.0/` and linked with its integrity hash, so a page load reaches nothing off-machine. The sheet's own `@import url('/fonts/Nunito-Sans.css')` resolves on the box too: the ten Nunito Sans faces and their sheet are vendored under `app/static/vendor/startr.style/fonts/` and served at `/fonts`, so the pages keep their typeface without reaching Google or startr.style.
 
 **A look back**
 `scripts/rootstock/lookback.py` counts the requests in an audit log that touched each hole this release closes. The only log we hold, 90 requests from April 2025, shows none.
@@ -66,6 +66,9 @@ Every page loaded `https://startr.style/style.css`, a rolling URL that changes u
 The runtime stage pins `cgr.dev/chainguard/wolfi-base` by digest. The 2026-10-14 pin had cached `ca-certificates` 20260909-r2, which trivy flags for CVE-2026-111943 (HIGH: Go's `crypto/x509` trusting untrusted intermediates). The pin moves forward, so the layer rebuilds with 20260909-r3.
 
 ### Fixed
+
+**try.sage.is: an env-supplied persona password applies to an existing persona**
+`TRY_SAGE_ADMIN_PASSWORD` and its siblings counted only when the persona was first created. After a secret rotation, which ends every persona link, nobody could sign in. The seed now applies an env-supplied password when the row does not match it. Sessions are JWTs, so the change signs nobody out.
 
 **Reindex no longer deletes knowledge bases**
 `POST /api/v1/knowledge/reindex` deleted every knowledge base whose data was null, which every new one is until its first file. It skips and reports them.
