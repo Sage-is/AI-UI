@@ -23,9 +23,10 @@ TREES = {
     "frontend": (REPO / "app" / "src", {".svelte", ".ts", ".js"}, set()),
     "pages": (BACKEND / "pages", {".html", ".js"}, set()),
 }
-# Baseline: develop at 3.2.2, measured 2026-10-24. F0 adds legacy lines on
-# purpose (fixes at source); the ceilings are re-measured at the 3.3.0 tag.
-CEILINGS = {"python": 52_095, "frontend": 67_277, "pages": 1_665}
+# Baseline: develop with F0's eighteen fixes at source, measured 2026-10-24
+# (3.2.2 stood at 52,095 / 67,277 / 1,665). F1's congestion fixes add legacy
+# lines on purpose too; re-measure at each tag until the strangler starts.
+CEILINGS = {"python": 52_551, "frontend": 67_285, "pages": 1_665}
 SLACK = 0.02
 
 

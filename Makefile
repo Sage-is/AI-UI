@@ -819,6 +819,18 @@ runtime_tests:  ## Gate: docker preflights, disk gate and runtime targets (host,
 privacy_tests:  ## Gate: privacy engine + off-switch unit tests (host, <1s)
 	@cd app/backend && python3 -m unittest -q sage_is_ai.privacy.test_engine sage_is_ai.privacy.test_hooks
 
+# rootstock_test — the Rootstock's own gates. The budget and the ratchet count
+# this checkout. The security tests drive a running box: RS_BASE_URL, by default
+# the throwaway box scripts/rootstock/dev-box.sh starts on :8181, with the mock
+# provider (rootstock/tests/security/_mock_provider.py) running on sage-network
+# as rs-mock and published on :8098. Two modules skip on a box without document
+# reading; run those against a box with vector-chroma, rag-loaders and an
+# embedding Sprig grafted. The modules that need the box's secret for a forged
+# token read RS_SECRET_KEY_FILE and skip without it.
+rootstock_test:  ## Gate: Rootstock budget, legacy ratchet, and the security tests against a box (RS_BASE_URL)
+	@cd app/backend && python3 sage_is_ai/rootstock/tests/test_budget.py && python3 sage_is_ai/rootstock/tests/test_legacy_ratchet.py
+	@cd app/backend && RS_BASE_URL=$(or $(RS_BASE_URL),http://localhost:8181) python3 -m unittest discover -s sage_is_ai/rootstock/tests/security -t . -p 'test_*.py'
+
 # cut_tests — unit tests for what replaced the 3.2.1 cuts. The host half needs
 # only the standard library. image_unit_tests runs all of them where bcrypt,
 # SQLAlchemy and httpx exist: inside the built image, against its own code.
