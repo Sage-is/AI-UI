@@ -27,7 +27,9 @@ from sage_is_ai.env import (
     WEBUI_AUTH_COOKIE_SAME_SITE,
     WEBUI_AUTH_COOKIE_SECURE,
 )
+from sage_is_ai.utils.misc import parse_duration
 from sage_is_ai.utils.auth import (
+    create_session_token,
     create_token,
     get_admin_or_facilitator_user,
     get_password_hash,
@@ -271,7 +273,9 @@ class RedeemResponse(BaseModel):
 
 
 @router.post("/redeem", response_model=RedeemResponse)
-async def redeem_magic_link(response: Response, form_data: RedeemForm):
+async def redeem_magic_link(
+    request: Request, response: Response, form_data: RedeemForm
+):
     link = MagicLinks.get_by_token(form_data.token)
 
     if not link:
@@ -366,7 +370,9 @@ async def redeem_magic_link(response: Response, form_data: RedeemForm):
             except Exception as e:
                 log.warning(f"Webhook failed for magic link {link.id}: {e}")
 
-        jwt_token = create_token(data={"id": new_user.id})
+        jwt_token, _ = create_session_token(
+            new_user.id, parse_duration(request.app.state.config.JWT_EXPIRES_IN)
+        )
 
         # Set the cookie token (same as signin/signup)
         response.set_cookie(

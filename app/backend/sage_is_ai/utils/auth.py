@@ -6,6 +6,7 @@ import hmac
 import hashlib
 import requests
 import os
+import time
 
 
 from datetime import datetime, timedelta
@@ -113,6 +114,9 @@ bearer_security = HTTPBearer(auto_error=False)
 
 def create_token(data: dict, expires_delta: Union[timedelta, None] = None) -> str:
     payload = data.copy()
+    # Every token says when it was minted, whichever caller minted it, so
+    # is_live_session can measure it (2026-10-23).
+    payload.setdefault("iat", int(time.time()))
 
     if expires_delta:
         expire = datetime.now(UTC) + expires_delta
@@ -122,9 +126,54 @@ def create_token(data: dict, expires_delta: Union[timedelta, None] = None) -> st
     return encoded_jwt
 
 
+def create_session_token(user_id: str, expires_delta: Union[timedelta, None] = None):
+    """Mint the token a browser or API client holds as its session.
+
+    Every session carries `iat`, which is_live_session reads, and `exp` when
+    JWT_EXPIRES_IN sets one (an admin's "-1" means no expiry). Returns the
+    token and its expiry as a Unix timestamp, None without one (2026-10-23).
+    """
+    issued_at = int(time.time())
+    expires_at = (
+        issued_at + int(expires_delta.total_seconds()) if expires_delta else None
+    )
+    claims = {"id": user_id, "iat": issued_at}
+    if expires_at:
+        claims["exp"] = expires_at
+    return create_token(claims), expires_at
+
+
+def is_live_session(data: dict, cutoff=0) -> bool:
+    """Whether decoded session claims still stand; the API and the socket share it.
+
+    A session token carries `iat`. Every mint since 3.3.0 stamps it, so a token
+    without it was minted before then, or by hand, and is refused, which signs
+    those sessions out once. `cutoff` is the try.sage reset: when a facilitator
+    presses "Reset now", every session minted before that moment is invalid. A
+    magic-link token is not a session and keeps its own check in
+    /magic-link/verify (2026-10-23).
+    """
+    if data.get("type") == "magic_link":
+        return True
+    try:
+        issued_at = int(data.get("iat") or 0)
+    except (TypeError, ValueError):
+        return False
+    try:
+        cutoff = int(cutoff or 0)
+    except (TypeError, ValueError):
+        cutoff = 0
+    return issued_at > 0 and issued_at >= cutoff
+
+
 def decode_token(token: str) -> Optional[dict]:
     try:
-        decoded = jwt.decode(token, SESSION_SECRET, algorithms=[ALGORITHM])
+        # PyJWT 2.10+ refuses an `iat` in the future. A clock that steps back,
+        # as a VM's does when its host corrects it, then rejects a session
+        # minted a moment ago for a second or two (seen 2026-10-24 as
+        # intermittent 401s on fresh sign-ins). A minute of leeway covers it
+        # without loosening `exp` in any way that matters.
+        decoded = jwt.decode(token, SESSION_SECRET, algorithms=[ALGORITHM], leeway=60)
         return decoded
     except Exception:
         return None
@@ -174,11 +223,15 @@ def get_current_user(
             )
 
         if request.app.state.config.ENABLE_API_KEY_ENDPOINT_RESTRICTIONS:
+            # Blank entries are dropped: "" + "/" would match every path, so
+            # an empty list or a trailing comma opened everything. An empty
+            # allowlist admits nothing (2026-10-23).
             allowed_paths = [
                 path.strip()
                 for path in str(
                     request.app.state.config.API_KEY_ALLOWED_ENDPOINTS
                 ).split(",")
+                if path.strip()
             ]
 
             # Check if the request path matches any allowed endpoint.
@@ -213,28 +266,11 @@ def get_current_user(
         )
 
     if data is not None and "id" in data:
-        # try.sage reset cutoff: when a workshop facilitator hits "Reset
-        # now", every session JWT minted before that moment becomes
-        # invalid. Magic-link JWTs (token_type == "magic_link") are
-        # never used as session cookies, but we explicitly skip them
-        # here as belt-and-suspenders so a stray verification call
-        # cannot blow up the persona's link.
-        try:
-            cutoff = int(
-                getattr(
-                    request.app.state.config,
-                    "TRY_SAGE_SESSIONS_INVALIDATED_AT",
-                    0,
-                )
-                or 0
-            )
-        except (TypeError, ValueError):
-            cutoff = 0
-        if (
-            cutoff
-            and data.get("type") != "magic_link"
-            and int(data.get("iat", 0) or 0) < cutoff
-        ):
+        # The session rules, shared with the socket: see is_live_session.
+        cutoff = getattr(
+            request.app.state.config, "TRY_SAGE_SESSIONS_INVALIDATED_AT", 0
+        )
+        if not is_live_session(data, cutoff):
             response.delete_cookie("token")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,

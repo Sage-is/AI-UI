@@ -68,6 +68,20 @@
 		return urlParams.get(key);
 	};
 
+	// A sign-in link may say where to land afterwards, but only on a path of
+	// this origin. `javascript:` would run in the app's origin, where the SPA
+	// keeps its token; `//host`, `/\host` and `/<tab>/host` leave it once the
+	// browser has parsed them. So parse as the browser will, keep a same-origin
+	// path, and send everything else to `/` (2026-10-23).
+	const safeRedirectPath = (value) => {
+		if (typeof value !== 'string' || !value.startsWith('/')) return '/';
+		try {
+			const url = new URL(value, window.location.origin);
+			if (url.origin === window.location.origin) return url.pathname + url.search + url.hash;
+		} catch {}
+		return '/';
+	};
+
 	const setSessionUser = async (sessionUser) => {
 		if (sessionUser) {
 			console.log('Login successful:', sessionUser);
@@ -77,7 +91,7 @@
 			toast.success($i18n.t(`Logging in.`));
 
 			// Calculate redirect path early
-			const redirectPath = querystringValue('redirect') || '/';
+			const redirectPath = safeRedirectPath(querystringValue('redirect'));
 
 			try {
 				// Optional: Update stores and emit socket event
@@ -278,7 +292,7 @@
 		await checkOauthCallback();
 
 		if ($user !== undefined) {
-			const redirectPath = querystringValue('redirect') || '/';
+			const redirectPath = safeRedirectPath(querystringValue('redirect'));
 			goto(redirectPath);
 		}
 

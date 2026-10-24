@@ -286,8 +286,16 @@ API_KEY_ALLOWED_ENDPOINTS = PersistentConfig(
 
 
 JWT_EXPIRES_IN = PersistentConfig(
-    "JWT_EXPIRES_IN", "auth.jwt_expiry", os.environ.get("JWT_EXPIRES_IN", "-1")
+    "JWT_EXPIRES_IN", "auth.jwt_expiry", os.environ.get("JWT_EXPIRES_IN", "4w")
 )
+
+# A saved "-1" is the pre-3.3.0 default echoed back by the admin form's Save, not a
+# choice, and it means sessions never expire. It moves to the new default once; an
+# admin who wants no expiry sets "-1" again afterwards, and it then stands.
+if str(JWT_EXPIRES_IN.value).strip() == "-1" and not os.environ.get("JWT_EXPIRES_IN"):
+    log.warning("JWT_EXPIRES_IN was -1 (sessions never expired); set to 4w, the 3.3.0 default")
+    JWT_EXPIRES_IN.value = "4w"
+    JWT_EXPIRES_IN.save()
 
 ####################################
 # OAuth config
@@ -1490,6 +1498,17 @@ ENABLE_COMMUNITY_SHARING = PersistentConfig(
     # sharing site exists and the handlers are rewired. See TODO.md.
     os.environ.get("ENABLE_COMMUNITY_SHARING", "False").lower() == "true",
 )
+
+# Until the sharing site exists the flag stays off whatever was saved (TODO.md,
+# "Community sharing is still saved ON"): a saved True outranks the default
+# above, so it is written back as False here, and routers/auths.py never saves
+# a True from the admin form.
+if ENABLE_COMMUNITY_SHARING.value:
+    log.warning(
+        "ENABLE_COMMUNITY_SHARING was on; forced off until the sharing site exists"
+    )
+    ENABLE_COMMUNITY_SHARING.value = False
+    ENABLE_COMMUNITY_SHARING.save()
 
 ENABLE_MESSAGE_RATING = PersistentConfig(
     "ENABLE_MESSAGE_RATING",

@@ -47,7 +47,7 @@ from sage_is_ai.env import (
     WEBUI_AUTH_COOKIE_SECURE,
 )
 from sage_is_ai.utils.misc import parse_duration
-from sage_is_ai.utils.auth import get_password_hash, create_token
+from sage_is_ai.utils.auth import get_password_hash, create_token, create_session_token
 from sage_is_ai.utils.webhook import post_webhook
 
 from sage_is_ai.env import SRC_LOG_LEVELS, GLOBAL_LOG_LEVEL
@@ -360,12 +360,16 @@ class OAuthManager:
         if not user_data or auth_manager_config.OAUTH_EMAIL_CLAIM not in user_data:
             user_data: UserInfo = await client.userinfo(token=token)
         if not user_data:
-            log.warning(f"OAuth callback failed, user data is missing: {token}")
+            # The key names only: the response holds the access, ID and refresh tokens.
+            log.warning(
+                f"OAuth callback failed, user data is missing; token fields: {sorted(token)}"
+            )
             raise HTTPException(400, detail=ERROR_MESSAGES.INVALID_CRED)
 
         sub = user_data.get(OAUTH_PROVIDERS[provider].get("sub_claim", "sub"))
         if not sub:
-            log.warning(f"OAuth callback failed, sub is missing: {user_data}")
+            # The claim names only, never the claims: they carry the person's email and name.
+            log.warning(f"OAuth callback failed, sub is missing; claims: {sorted(user_data)}")
             raise HTTPException(400, detail=ERROR_MESSAGES.INVALID_CRED)
         provider_sub = f"{provider}@{sub}"
         email_claim = auth_manager_config.OAUTH_EMAIL_CLAIM
@@ -408,7 +412,9 @@ class OAuthManager:
                     log.warning(f"Error fetching GitHub email: {e}")
                     raise HTTPException(400, detail=ERROR_MESSAGES.INVALID_CRED)
             else:
-                log.warning(f"OAuth callback failed, email is missing: {user_data}")
+                log.warning(
+                    f"OAuth callback failed, email is missing; claims: {sorted(user_data)}"
+                )
                 raise HTTPException(400, detail=ERROR_MESSAGES.INVALID_CRED)
         email = email.lower()
         if (
@@ -416,7 +422,7 @@ class OAuthManager:
             and email.split("@")[-1] not in auth_manager_config.OAUTH_ALLOWED_DOMAINS
         ):
             log.warning(
-                f"OAuth callback failed, e-mail domain is not in the list of allowed domains: {user_data}"
+                f"OAuth callback failed, e-mail domain is not in the list of allowed domains: {email.split('@')[-1]}"
             )
             raise HTTPException(400, detail=ERROR_MESSAGES.INVALID_CRED)
 
@@ -508,9 +514,8 @@ class OAuthManager:
                     status.HTTP_403_FORBIDDEN, detail=ERROR_MESSAGES.ACCESS_PROHIBITED
                 )
 
-        jwt_token = create_token(
-            data={"id": user.id},
-            expires_delta=parse_duration(auth_manager_config.JWT_EXPIRES_IN),
+        jwt_token, _ = create_session_token(
+            user.id, parse_duration(auth_manager_config.JWT_EXPIRES_IN)
         )
 
         if auth_manager_config.ENABLE_OAUTH_GROUP_MANAGEMENT and user.role != "admin":

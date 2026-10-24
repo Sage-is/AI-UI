@@ -24,7 +24,8 @@ from sage_is_ai.env import (
     WEBSOCKET_SENTINEL_PORT,
     WEBSOCKET_SENTINEL_HOSTS,
 )
-from sage_is_ai.utils.auth import decode_token
+from sage_is_ai.config import TRY_SAGE_SESSIONS_INVALIDATED_AT
+from sage_is_ai.utils.auth import decode_token, is_live_session
 from sage_is_ai.socket.utils import RedisDict, RedisLock, YdocManager
 from sage_is_ai.tasks import create_task, stop_item_tasks
 from sage_is_ai.utils.redis import get_redis_connection
@@ -245,6 +246,17 @@ async def usage(sid, data):
         }
 
 
+def _session_user(token: str):
+    """The user behind a session token, by the API's rules (get_current_user):
+    a live `iat`, minted after the try.sage reset cutoff (2026-10-23)."""
+    data = decode_token(token)
+    if data is None or "id" not in data:
+        return None
+    if not is_live_session(data, TRY_SAGE_SESSIONS_INVALIDATED_AT.value):
+        return None
+    return Users.get_user_by_id(data["id"])
+
+
 @sio.event
 async def connect(sid, environ, auth):
     user = None
@@ -264,10 +276,7 @@ async def connect(sid, environ, auth):
                 token = cookie["token"].value
 
     if token:
-        data = decode_token(token)
-
-        if data is not None and "id" in data:
-            user = Users.get_user_by_id(data["id"])
+        user = _session_user(token)
 
         if user:
             SESSION_POOL[sid] = user.model_dump()
@@ -284,11 +293,7 @@ async def user_join(sid, data):
     if not auth or "token" not in auth:
         return
 
-    data = decode_token(auth["token"])
-    if data is None or "id" not in data:
-        return
-
-    user = Users.get_user_by_id(data["id"])
+    user = _session_user(auth["token"])
     if not user:
         return
 
@@ -312,11 +317,7 @@ async def join_spaces(sid, data):
     if not auth or "token" not in auth:
         return
 
-    data = decode_token(auth["token"])
-    if data is None or "id" not in data:
-        return
-
-    user = Users.get_user_by_id(data["id"])
+    user = _session_user(auth["token"])
     if not user:
         return
 
@@ -333,11 +334,7 @@ async def join_note(sid, data):
     if not auth or "token" not in auth:
         return
 
-    token_data = decode_token(auth["token"])
-    if token_data is None or "id" not in token_data:
-        return
-
-    user = Users.get_user_by_id(token_data["id"])
+    user = _session_user(auth["token"])
     if not user:
         return
 
@@ -534,7 +531,13 @@ async def yjs_document_update(sid, data):
         except:  # noqa: E722
             pass
 
-        user_id = data.get("user_id", sid)
+        # The update's author is the socket's signed-in user, never a client-sent
+        # id; a socket that never joined has no user, and its update is dropped.
+        session_user = SESSION_POOL.get(sid)
+        if not session_user:
+            log.warning(f"Session {sid} is not signed in; dropping its update to {document_id}")
+            return
+        user_id = session_user["id"]
 
         update = data["update"]  # List of bytes from frontend
 

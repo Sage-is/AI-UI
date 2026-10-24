@@ -60,6 +60,7 @@ from sage_is_ai.utils.misc import parse_duration, validate_email_format
 from sage_is_ai.utils.auth import (
     decode_token,
     create_api_key,
+    create_session_token,
     create_token,
     get_admin_user,
     get_admin_or_facilitator_user,
@@ -264,14 +265,8 @@ async def claim_account(
     )
 
     # Generate new token and set cookie (same as signin)
-    expires_delta = parse_duration(request.app.state.config.JWT_EXPIRES_IN)
-    expires_at = None
-    if expires_delta:
-        expires_at = int(time.time()) + int(expires_delta.total_seconds())
-
-    token = create_token(
-        data={"id": session_user.id},
-        expires_delta=expires_delta,
+    token, expires_at = create_session_token(
+        session_user.id, parse_duration(request.app.state.config.JWT_EXPIRES_IN)
     )
 
     datetime_expires_at = (
@@ -519,14 +514,8 @@ async def ldap_auth(request: Request, response: Response, form_data: LdapForm):
             user = Auths.authenticate_user_by_email(email)
 
             if user:
-                expires_delta = parse_duration(request.app.state.config.JWT_EXPIRES_IN)
-                expires_at = None
-                if expires_delta:
-                    expires_at = int(time.time()) + int(expires_delta.total_seconds())
-
-                token = create_token(
-                    data={"id": user.id},
-                    expires_delta=expires_delta,
+                token, expires_at = create_session_token(
+                    user.id, parse_duration(request.app.state.config.JWT_EXPIRES_IN)
                 )
 
                 # Set the cookie token
@@ -640,14 +629,8 @@ async def signin(request: Request, response: Response, form_data: SigninForm):
         user = Auths.authenticate_user(form_data.email.lower(), form_data.password)
 
     if user:
-        expires_delta = parse_duration(request.app.state.config.JWT_EXPIRES_IN)
-        expires_at = None
-        if expires_delta:
-            expires_at = int(time.time()) + int(expires_delta.total_seconds())
-
-        token = create_token(
-            data={"id": user.id, "iat": int(time.time())},
-            expires_delta=expires_delta,
+        token, expires_at = create_session_token(
+            user.id, parse_duration(request.app.state.config.JWT_EXPIRES_IN)
         )
 
         datetime_expires_at = (
@@ -747,14 +730,8 @@ async def signup(request: Request, response: Response, form_data: SignupForm):
         )
 
         if user:
-            expires_delta = parse_duration(request.app.state.config.JWT_EXPIRES_IN)
-            expires_at = None
-            if expires_delta:
-                expires_at = int(time.time()) + int(expires_delta.total_seconds())
-
-            token = create_token(
-                data={"id": user.id, "iat": int(time.time())},
-                expires_delta=expires_delta,
+            token, expires_at = create_session_token(
+                user.id, parse_duration(request.app.state.config.JWT_EXPIRES_IN)
             )
 
             datetime_expires_at = (
@@ -874,7 +851,11 @@ async def signout(request: Request, response: Response):
 
 
 @router.post("/add", response_model=SigninResponse)
-async def add_user(form_data: AddUserForm, user=Depends(get_admin_or_facilitator_user)):
+async def add_user(
+    request: Request,
+    form_data: AddUserForm,
+    user=Depends(get_admin_or_facilitator_user),
+):
     # Facilitators can only create temporary users
     if user.role == "facilitator" and form_data.role != "temporary":
         raise HTTPException(
@@ -901,7 +882,9 @@ async def add_user(form_data: AddUserForm, user=Depends(get_admin_or_facilitator
         )
 
         if user:
-            token = create_token(data={"id": user.id})
+            token, _ = create_session_token(
+                user.id, parse_duration(request.app.state.config.JWT_EXPIRES_IN)
+            )
             return {
                 "token": token,
                 "token_type": "Bearer",
@@ -1025,9 +1008,10 @@ async def update_admin_config(
     if re.match(pattern, form_data.JWT_EXPIRES_IN):
         request.app.state.config.JWT_EXPIRES_IN = form_data.JWT_EXPIRES_IN
 
-    request.app.state.config.ENABLE_COMMUNITY_SHARING = (
-        form_data.ENABLE_COMMUNITY_SHARING
-    )
+    # Community sharing stays off until the sharing site exists (config.py forces
+    # it off at boot): the admin form can switch it off, never on.
+    if not form_data.ENABLE_COMMUNITY_SHARING:
+        request.app.state.config.ENABLE_COMMUNITY_SHARING = False
     request.app.state.config.ENABLE_MESSAGE_RATING = form_data.ENABLE_MESSAGE_RATING
 
     request.app.state.config.ENABLE_USER_WEBHOOKS = form_data.ENABLE_USER_WEBHOOKS
@@ -1246,20 +1230,11 @@ async def verify_magic_link_login(
     if not user:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or expired link")
 
-    # Issue a session token (same as password login).
-    expires_delta = parse_duration(request.app.state.config.JWT_EXPIRES_IN)
-    expires_at = None
-    if expires_delta:
-        expires_at = int(time.time()) + int(expires_delta.total_seconds())
-
-    # Stamp `iat` into the session token so the try-mode reset cutoff
-    # in `get_current_user` can reject sessions issued before the most
-    # recent reset. The magic-link JWT itself (form_data.token) is
-    # untouched — it keeps its original iat/exp so the link stays valid
-    # across as many resets as fit inside its TTL.
-    session_token = create_token(
-        data={"id": user.id, "iat": int(time.time())},
-        expires_delta=expires_delta,
+    # Issue a session token (same as password login). The magic-link JWT
+    # itself (form_data.token) is untouched — it keeps its original iat/exp
+    # so the link stays valid across as many resets as fit inside its TTL.
+    session_token, expires_at = create_session_token(
+        user.id, parse_duration(request.app.state.config.JWT_EXPIRES_IN)
     )
 
     datetime_expires_at = (
