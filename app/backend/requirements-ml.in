@@ -11,7 +11,7 @@
 #       --generate-hashes \
 #       --python-version 3.11
 
-sentence-transformers==4.1.0
+sentence-transformers==5.6.0
 # >=4.47.0 dropped the huggingface-hub<1.0 constraint; sentence-transformers
 # 4.1.0 pulls hub 1.x, so transformers must agree.
 transformers>=4.47.0,<5.0
