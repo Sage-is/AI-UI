@@ -20,7 +20,7 @@
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
-OUT="${GATE_OUT:-/tmp/sprig-build/8i3}"
+OUT="${GATE_OUT:-${SPRIG_BUILD_ROOT:-$HOME/.cache/ai-ui/sprig-build}/8i3}"
 BIN="${GATE_BIN_DIR:-$OUT/bin}"
 SHORT="${MODEL_SHORT:-e5}"
 HF_MODEL="${HF_MODEL:-intfloat/multilingual-e5-large}"

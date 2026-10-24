@@ -17,7 +17,7 @@ This directory now separates active reference material from historical audits, p
 - [release-runbook.md](release-runbook.md) — `make ship`, What  blocks preflight, and how to recover from a half-finished release
 - [try-sage-deployment.md](try-sage-deployment.md) — try.sage.is, the demo box: persona magic links, the 24-hour wipe and reset, and production deployment
 - [development-workflow.md](development-workflow.md) — gates, hooks, verification steps, and daily workflow
-- [product-stack.md](product-stack.md) — architecture and product stack overview
+- [product-stack.md](product-stack.md) — the stack as it is, redrawn 2026-10-04
 - [bridges.md](bridges.md) — WhatsApp, Telegram, Signal, and Email bridge setup
 - [SECURITY.md](SECURITY.md) — security posture and reporting notes
 - [CONTRIBUTING.md](CONTRIBUTING.md) — contribution process and expectations
@@ -26,11 +26,9 @@ This directory now separates active reference material from historical audits, p
 ## Active Reference Docs
 
 - [API-examples.md](API-examples.md) — API usage examples (older; some routes predate the current API, check against `/docs` on your instance)
-- [api-refactoring-plan.md](api-refactoring-plan.md) — the 2025 API cleanup plan, kept for history
 - [backend-rewrite-research.md](backend-rewrite-research.md) — backend rewrite options and research notes
-- [community-hub.md](community-hub.md) — Community Hub product and integration notes
-- [env-scripts.md](env-scripts.md) — helper scripts and environment setup details
-- [knowledge-ingestion-modes-plan.md](knowledge-ingestion-modes-plan.md) — current ingestion-mode planning for documents
+- [docs-drift-plan.md](docs-drift-plan.md) — the 2026-09-26 docs drift pass: steps 1 and 2 done (but for one doc), 3 to 5 open
+- [community-hub.md](community-hub.md) — the community hub winter plan: what exists, what blocks sharing, what ships
 - [completed-todos.md](completed-todos.md) — completed roadmap items and stale-task audit trail
 
 ## Archive

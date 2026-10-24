@@ -1,0 +1,14 @@
+# Where `make deploy` sends a release, in this order. The first app is the
+# canary: if it does not come up on the new version, the rollout stops there.
+# No secrets here; `admin_key_env` names a variable in .env (the Makefile loads it).
+
+[[instance]]
+app = "try-sage-is"
+url = "https://try.sage.is"
+throwaway = true            # synthetic personas, wiped every 24 h: no backup
+
+[[instance]]
+app = "sage-startr-cloud"
+url = "https://sage.startr.cloud"
+backup = true               # the team's real data: download the database first
+admin_key_env = "SAGE_STARTR_CLOUD_ADMIN_KEY"

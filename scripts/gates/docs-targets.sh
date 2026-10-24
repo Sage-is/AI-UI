@@ -4,9 +4,10 @@
 # WHY THIS EXISTS. On 2026-08-02 a scripted diff found, in seconds, three doc
 # defects that months of reading had missed: docs/development-workflow.md
 # documented five `make test_*` commands (none existed) as part of a Testing
-# Standards section describing a DJANGO project in a FastAPI repo, and
-# docs/try-sage-docker-exploration.md asserted `try_sage_stop` existed in three
-# places, twice as "already added". It was never written.
+# Standards section describing a DJANGO project in a FastAPI repo, and the
+# try.sage Docker exploration doc (since retired; see docs/completed-todos.md)
+# asserted `try_sage_stop` existed in three places, twice as "already added". It
+# was never written.
 #
 # Docs rot silently in exactly the places a grep can prove. So this is a gate
 # rather than an audit somebody remembers to run.

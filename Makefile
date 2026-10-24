@@ -6,7 +6,7 @@
 # no GitLab CI, no vendor lock-in.
 #
 # Runs on: Linux, macOS, Windows (WSL)
-# Requires: make, bash, git, container runtime (podman or docker)
+# Requires: make, bash, git, docker (podman with CONTAINER_RUNTIME=podman)
 #
 # Quick start:
 #   make install_dev    — install dev/security tools
@@ -30,8 +30,26 @@ ifneq (,$(wildcard ./.env))
     export
 endif
 
-# Auto-detect container runtime (prefer podman, fall back to docker)
-CONTAINER_RUNTIME ?= $(shell command -v podman 2>/dev/null || echo docker)
+# docker, unless CONTAINER_RUNTIME names another. Podman used to win whenever it
+# was installed, which split images and volumes across two engines.
+CONTAINER_RUNTIME ?= docker
+
+# Preflights (scripts/gates/docker-preflight.sh). linux/amd64 work stops on a
+# krunkit VM and names the build VM; BuildKit builds need the buildx plugin.
+AMD64_PREFLIGHT = @scripts/gates/docker-preflight.sh amd64 "make $(or $(MAKECMDGOALS),$@)"
+BUILDX_PREFLIGHT = @scripts/gates/docker-preflight.sh buildx
+
+# Docker on Colima shares only $HOME with its VM: a bind mount from /tmp or
+# /var/folders arrives as an empty folder, silently (the DB smoke tests then
+# migrate a blank database and pass). macOS mktemp ignores TMPDIR, so folders
+# that get mounted name this root explicitly (scripts: lib/mount-tmp.sh).
+export AI_UI_TMP := $(HOME)/.cache/ai-ui/tmp
+$(shell mkdir -p $(AI_UI_TMP))
+
+# The local Sprig registry keeps its blobs in a folder, not a volume, so Colima
+# and Docker Desktop share one copy: `sage-runtime use` never has to move it.
+# Databases stay in volumes (see the 2026-10-06 decision in TODO.md).
+export SPRIG_REGISTRY_DATA ?= $(HOME)/SageData/sprig-registry
 
 # Cross-platform "build complete" chime.
 # macOS: plays the system Glass sound. Linux/WSL/Windows: silent no-op.
@@ -59,7 +77,7 @@ REGISTRY ?= ghcr.io/sage-is
 GHCR_IMAGE_NAME ?= $(REGISTRY)/$(notdir $(GIT_REPO_SLUG))
 # Host architectures the catalog builds for. Both by default (all platforms).
 ARCHES ?= arm64 amd64
-GIT_TAG := $(shell git tag --sort=-v:refname | sed 's/^v//' | head -n 1)
+GIT_TAG := $(shell git tag -l 'v[0-9]*' --sort=-v:refname | sed 's/^v//' | head -n 1)
 
 # Release version detection. Prefers release/X.Y.Z or hotfix/X.Y.Z branch name
 # so that `make it_build` on a release branch tags the *new* version, not the
@@ -84,7 +102,7 @@ endif
 IMAGE_TAG := $(if $(RELEASE_VERSION),$(RELEASE_VERSION),latest)
 GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 ifeq ($(GIT_BRANCH),HEAD)
-    GIT_BRANCH := $(shell git describe --tags --exact-match 2>/dev/null || git rev-parse --short HEAD)
+    GIT_BRANCH := $(shell git describe --tags --exact-match --match 'v[0-9]*' 2>/dev/null || git rev-parse --short HEAD)
 endif
 SAFE_GIT_BRANCH := $(subst /,-,$(GIT_BRANCH))
 SAFE_GIT_BRANCH := $(shell echo $(SAFE_GIT_BRANCH) | tr '[:upper:]' '[:lower:]')
@@ -140,6 +158,7 @@ GITLEAKS   ?= $(shell command -v gitleaks 2>/dev/null)
 SEMGREP    ?= $(shell command -v semgrep 2>/dev/null || command -v opengrep 2>/dev/null)
 BANDIT     ?= $(shell command -v bandit 2>/dev/null)
 TRIVY      ?= $(shell command -v trivy 2>/dev/null)
+RSVG       ?= $(shell command -v rsvg-convert 2>/dev/null)
 
 # Guard macro: prints a helpful error if a required tool is missing.
 # Usage: $(call require_tool,VAR_NAME,tool-name)
@@ -226,6 +245,63 @@ setup: setup_env setup_siblings  ## Fresh setup: .env + sibling copies
 	@echo "=== Setup complete ==="
 	@echo "    Next: make it_build && make it_run"
 
+NEED_SAGE_RUNTIME = command -v sage-runtime >/dev/null || { echo "Needs sage-runtime: brew tap sage-is/apps && brew tap libkrun/krun && brew trust --tap sage-is/apps libkrun/krun && brew install sage-runtime"; \
+	echo "  Until its first release: brew install --HEAD sage-runtime"; exit 1; }
+
+# Docker Desktop to Colima, once per Mac: sage-runtime copies every named
+# volume across, then points docker at Colima. Docker Desktop keeps its copy.
+migrate_to_colima:  ## Move this Mac from Docker Desktop to Colima (DRY=1 lists, IMAGES=1 brings images)
+	@$(NEED_SAGE_RUNTIME)
+	sage-runtime migrate $(if $(DRY),--dry-run) $(if $(filter 1,$(IMAGES)),--images)
+
+# A Colima VM made before krunkit was the default is vz. sage-runtime remakes it
+# as krunkit on the same disk, with every image and volume.
+convert_to_krunkit:  ## Convert this Mac's vz Colima VM to krunkit, data kept (YES=1 converts, else the plan)
+	@$(NEED_SAGE_RUNTIME)
+	sage-runtime convert $(if $(filter 1,$(YES)),--yes)
+
+# cli/lib/sage-runtime.sh is a copy, so ai-ui needs nothing else installed.
+# Edit the tap's lib/sage-runtime.sh, then run this.
+runtime_sync:  ## Copy the tap's lib/sage-runtime.sh into cli/lib (edit it in the tap)
+	@test -d "$(SIBLING_HOMEBREW)" || { echo "MISSING: $(SIBLING_HOMEBREW)"; echo "  Clone with one of:"; \
+		echo "    git clone https://github.com/Sage-is/homebrew-apps.git $(SIBLING_HOMEBREW)"; \
+		echo "    git clone git@github.com:Sage-is/homebrew-apps.git $(SIBLING_HOMEBREW)"; exit 1; }
+	@test -f "$(SIBLING_HOMEBREW)/lib/sage-runtime.sh" || { \
+		echo "MISSING: $(SIBLING_HOMEBREW)/lib/sage-runtime.sh. Update the tap: git -C $(SIBLING_HOMEBREW) pull"; exit 1; }
+	@mkdir -p cli/lib
+	@if cmp -s "$(SIBLING_HOMEBREW)/lib/sage-runtime.sh" cli/lib/sage-runtime.sh; then echo "  already equal: cli/lib/sage-runtime.sh"; \
+	else cp "$(SIBLING_HOMEBREW)/lib/sage-runtime.sh" cli/lib/sage-runtime.sh && echo "  copied:        $(SIBLING_HOMEBREW)/lib/sage-runtime.sh -> cli/lib/sage-runtime.sh"; fi
+
+
+# A box is a Mac that runs AI-UI (and Trellis) for a team, set up by sage-box
+# from the tap, from one file per box in ~/.sage-is/boxes/ that stays out of git.
+# BOX has no default: a default would send an update, an apply or a reboot to the
+# client's Mac whenever the name was left off. APPLY and REBOOT act on that Mac, so
+# only 1 turns them on: APPLY=0 and APPLY=no are the plan.
+BOX ?=
+box_check:
+	@[ -n "$(BOX)" ] || { d="$${SAGE_BOXES_DIR:-$$HOME/.sage-is/boxes}"; names=; for f in "$$d"/*.env; do [ -e "$$f" ] && names="$$names $$(basename "$$f" .env)"; done; \
+	echo "Name the box: make $(MAKECMDGOALS) BOX=<name>. Boxes in $$d:$${names:- none}"; exit 1; }
+	@command -v sage-box >/dev/null || { echo "sage-box is not installed: brew install sage-is/apps/sage-box"; exit 1; }
+box_up: box_check  ## plan a box: BOX=name; APPLY=1 runs the plan, REBOOT=1 restarts it at the end (only 1 counts)
+	sage-box $(BOX) $(if $(filter 1,$(APPLY)),--apply) $(if $(filter 1,$(REBOOT)),--reboot)
+box_update: box_check  ## brew upgrade, git pull in source mode, trellis-crm update, ai-ui start, verify
+	sage-box $(BOX) update
+box_status: box_check  ## both apps, the VM, the boot daemon, the newest backup
+	sage-box $(BOX) status
+# One read verb through the box's read key alone (docs/boxes/access.md in the
+# tap). It is the one box target an agent's allow rule names, so it must run
+# nothing else. BOX and WHAT are taken unexpanded ($(value), so a $(shell ...)
+# typed into them never runs in make), refused with any $ in them, and reach the
+# shell as environment variables, never as command text. sage-box refuses any
+# verb not on its list.
+box_read: export SAGE_BOX_NAME := $(value BOX)
+box_read: export SAGE_BOX_WHAT := $(value WHAT)
+box_read:  ## one read verb, through the box's read key alone: BOX=name WHAT=probe|backup|power|containers|version
+	$(if $(findstring $$,$(value BOX)$(value WHAT)),$(error BOX and WHAT take no $$))
+	@command -v sage-box >/dev/null || { echo "sage-box is not installed: brew install sage-is/apps/sage-box"; exit 1; }
+	@[ -n "$$SAGE_BOX_NAME" ] && [ -n "$$SAGE_BOX_WHAT" ] || { echo "make box_read BOX=<name> WHAT=probe|backup|power|containers|version"; exit 1; }
+	@sage-box "$$SAGE_BOX_NAME" read "$$SAGE_BOX_WHAT"
 # Base flags every container run needs. DOCKER_RUN_ARGS and
 # TRY_SAGE_DOCKER_RUN_ARGS both extend this — add a flag here and it
 # applies to both production and trial runs.
@@ -270,6 +346,7 @@ DEV_RUN_ARGS := $(COMMON_RUN_ARGS) \
 	-v $$(pwd)/app/postcss.config.js:/app/postcss.config.js \
 	-v $$(pwd)/app/tailwind.config.js:/app/tailwind.config.js \
 	-v $$(pwd)/app/package.json:/app/package.json \
+	-e WATCHFILES_FORCE_POLLING=true \
 	-e PAGES_RELOAD_DIRS=/app/backend/sage_is_ai/pages
 
 it_stop:  ## Stop the running container
@@ -288,6 +365,7 @@ it_gone:
 
 # Build Docker Image with Branch Name
 it_build:  ## Build the Docker image
+	$(BUILDX_PREFLIGHT) $(CONTAINER_RUNTIME)
 	@echo "Building Docker image with BuildKit enabled..."
 	@START=$$(date +%s) && export DOCKER_BUILDKIT=1 && \
 	$(CONTAINER_RUNTIME) build --load $(OCI_LABELS) -t $(IMAGE_NAME):$(IMAGE_TAG) \
@@ -302,6 +380,7 @@ it_build:  ## Build the Docker image
 
 # Build Docker Image without Cache and with Branch Name
 it_build_no_cache:  ## Build the image from scratch, no layer cache
+	$(BUILDX_PREFLIGHT) $(CONTAINER_RUNTIME)
 	@echo "Building Docker image without cache and with BuildKit enabled..."
 	@START=$$(date +%s) && export DOCKER_BUILDKIT=1 && \
 	$(CONTAINER_RUNTIME) build --no-cache --load $(OCI_LABELS) -t $(IMAGE_NAME):$(IMAGE_TAG) \
@@ -329,12 +408,13 @@ dev_run: dev
 ## dev_bg — the same dev container, detached, so Sibling repos' demo target
 ## (Trellis: `make demo_up`) can bring it up without holding a terminal.
 ## Everything else is `dev`: same mounts, same volume, same seeded admin.
-## `docker logs -f sage-is-ai-ui` for the output; `docker rm -f sage-is-ai-ui` to stop.
+## The container is named after the git remote (sage-is-ai-ui here, another on
+## a fork); the last line prints it. `make it_stop` stops it.
 dev_bg: sprig_registry  ## dev, detached
-	@$(CONTAINER_RUNTIME) rm -f sage-is-ai-ui >/dev/null 2>&1 || true
+	@$(CONTAINER_RUNTIME) rm -f $(CONTAINER_NAME) >/dev/null 2>&1 || true
 	$(CONTAINER_RUNTIME) run -d $(DEV_RUN_ARGS) $(IMAGE_NAME):$(IMAGE_TAG) bash -c "/app/backend/restore_backup_start.sh dev" >/dev/null
 	@for i in $$(seq 1 60); do curl -fsS http://localhost:$(LOCAL_PORT)/health >/dev/null 2>&1 && break; sleep 2; done
-	@echo "ai-ui dev (detached) -> http://localhost:$(LOCAL_PORT)/"
+	@echo "ai-ui dev (detached) -> http://localhost:$(LOCAL_PORT)/  (container $(CONTAINER_NAME))"
 
 # Run targets
 it_run:  ## Run the built image
@@ -382,7 +462,7 @@ test_db_upgrade:
 	fi
 	@echo "=== DB Upgrade Smoke Test ==="
 	@# Copy snapshot to temp dir so container writes don't mutate the original
-	@TMPDIR=$$(mktemp -d) && \
+	@TMPDIR=$$(mktemp -d "$(AI_UI_TMP)/db-test.XXXXXX") && \
 	SNAPSHOT=$$([ -n "$(DB_SNAPSHOT)" ] && echo "$(DB_SNAPSHOT_DIR)/$(DB_SNAPSHOT)" || ls -1 $(DB_SNAPSHOT_DIR)/*.sqlite | head -1) && \
 	cp "$$SNAPSHOT" "$$TMPDIR/webui.db" && \
 	echo "Source: $$SNAPSHOT ($$(du -h "$$SNAPSHOT" | cut -f1))" && \
@@ -418,12 +498,13 @@ wizard_smoke:  ## Install-wizard smoke
 # script gap (only sprig-embedding-minilm-onnx has a build script in git;
 # the other 11 catalog artifacts on this machine have no in-repo recipe).
 sprig_registry:
+	@scripts/gates/docker-preflight.sh registry $(CONTAINER_RUNTIME)
 	@$(CONTAINER_RUNTIME) network inspect sage-network >/dev/null 2>&1 || $(CONTAINER_RUNTIME) network create sage-network >/dev/null
 	@$(CONTAINER_RUNTIME) ps --format '{{.Names}}' | grep -qx local-registry || { \
-		echo "== starting local-registry (sage-network, NAMED volume sprig-registry-data) =="; \
+		echo "== starting local-registry (sage-network, data in $(SPRIG_REGISTRY_DATA)) =="; \
 		$(CONTAINER_RUNTIME) rm -f local-registry >/dev/null 2>&1 || true; \
 		$(CONTAINER_RUNTIME) run -d --name local-registry --network sage-network -p 5000:5000 \
-			-v sprig-registry-data:/var/lib/registry registry:2 >/dev/null; \
+			-v "$(SPRIG_REGISTRY_DATA):/var/lib/registry" registry:2 >/dev/null; \
 		for i in $$(seq 1 30); do curl -fsS http://localhost:5000/v2/ >/dev/null 2>&1 && break; sleep 0.5; done; \
 	}
 	@echo "local-registry: up ($$(curl -fsS http://localhost:5000/v2/_catalog 2>/dev/null || echo 'unreachable'))"
@@ -458,6 +539,15 @@ pipefail_lint:  # Gate: no unbounded-writer `| grep -q` in scripts/
 # unless the broken shape is asserted too.
 pipefail_fixture:  # Fixture: prove the pipefail trap is real
 	@scripts/smoke/pipefail-grep-fixture.sh
+
+# in_container_tools — nothing calls curl, jq, pip or oras INSIDE the rootstock.
+# The image ships none of them since 3.2.1, and the Dockerfile's cuts-stay-cut
+# check fails a build that brings one back. A script that still expects one
+# would fail only when it ran, often minutes into a gate; this finds it at lint
+# time and names the replacement. The self-test proves the detector bites.
+in_container_tools:  # Gate: no in-container curl/jq/pip/oras (scripts, runtime, Dockerfile)
+	@python3 scripts/gates/in_container_tools.py --self-test
+	@python3 scripts/gates/in_container_tools.py
 
 # ui_sprig_gate — what the ui-Sprig™ contract REFUSES: off-origin references,
 # framing, interpreted script attributes, script without an admin's per-Sprig
@@ -510,7 +600,9 @@ CATALOG_ARCH_RECIPES    := build-sprig-vector-chroma.sh build-sprig-rag-loaders.
 # after editing a recipe. Heavy: pulls models + runs buildx per arch. ARCHES
 # selects host arches (default: arm64 amd64). Each recipe prints the tar.zst
 # sha256 to pin in the supervisor CATALOG (per-arch entries -> arches overrides).
-catalog_build: catalog_prep
+# The amd64 check comes before catalog_prep: a registry it started in a krunkit
+# VM would hold port 5000 against the build VM's.
+catalog_build: _catalog_amd64_preflight catalog_prep
 	@echo "== catalog_build -> local-registry:5000 (arches: $(ARCHES)) =="
 	@env REGISTRY=localhost:5000 INSECURE=1 NETWORK=sage-network THEME=workshop-bio  scripts/build-sprig-theme.sh
 	@env REGISTRY=localhost:5000 INSECURE=1 NETWORK=sage-network THEME=workshop-math scripts/build-sprig-theme.sh
@@ -523,6 +615,9 @@ catalog_build: catalog_prep
 	  env REGISTRY=localhost:5000 INSECURE=1 NETWORK=sage-network ARCH=$$a PLATFORM=linux/$$a scripts/$$r || exit 1; \
 	done; done
 	@echo "== catalog_build complete; pins printed above -> app/backend/sage_is_ai/sprigs/supervisor.py CATALOG =="
+
+_catalog_amd64_preflight:
+	$(if $(filter amd64,$(ARCHES)),$(AMD64_PREFLIGHT))
 
 # catalog_release — build -> sign -> publish the whole Sprig™ catalog to
 # $(REGISTRY). This is the SPRIGS-CHANGED path (new sprig, tag bump, new
@@ -552,9 +647,14 @@ catalog_release: catalog_build
 # it are private (leading underscore, absent from `make help`) because three
 # doors existed here and the documented one skipped sprig_publish, which shipped
 # a Sprig that nobody outside could pull. Hotfixes come through here too.
-ship: _release_and_push_GHCR sprig_publish  # Publish a release or hotfix: image to GHCR + Sprig catalog
+ship: _release_and_push_GHCR sprig_publish  # Publish a release or hotfix: image to GHCR + Sprig catalog + brew formula
 	@echo ""
-	@echo "=== ship complete: image published + catalog verified at $(REGISTRY) ==="
+	@echo "=== image published + catalog verified at $(REGISTRY) ==="
+	@# Last, so a brew hiccup can never hold back the image or the catalog.
+	@echo ""
+	@echo "=== Pointing brew's ai-ui formula at $(IMAGE_TAG) in $(SIBLING_HOMEBREW) ==="
+	@$(MAKE) -C $(SIBLING_HOMEBREW) ai_ui_formula
+	@echo "=== ship complete. Then: commit and push $(SIBLING_HOMEBREW); brew users get $(IMAGE_TAG) from its develop ==="
 
 # upgrade_gate — boot THIS image on a COPY of a production data snapshot
 # (default: newest tools/db_snapshots/*) and prove the upgrade path: DB
@@ -696,17 +796,43 @@ gauntlet: it_build sprig_smoke  # Build + Sprig lifecycle smoke
 # hand-run tools; run them yourself after `--tighten` records a baseline.
 # `chat_path_structure_teeth` DOES belong here: it builds its own sample and
 # proves the structural detectors still fire without needing a baseline at all.
-gauntlet_fast: privacy_tests pipefail_lint pipefail_fixture ruff_gate docs_gate \
+gauntlet_fast: privacy_tests cut_tests_host cli_tests runtime_tests pipefail_lint pipefail_fixture \
+               in_container_tools ruff_gate docs_gate \
                sprig_capabilities_check startr_swap_check \
                distribution_verify tags_annotated \
                chat_path_structure_teeth sprig_capabilities_teeth \
                startr_swap_teeth tags_annotated_teeth docs_gate_teeth  # Gate: host-only gates, seconds (pre-push hook)
+
+# cli_tests — the brew CLI in cli/: runtime choice, nuke, the credential repair.
+# Stand-in docker, colima and open commands; macOS only, seconds.
+cli_tests:  ## Gate: the ai-ui CLI's unit tests (host, seconds)
+	@cd cli && python3 -B -m unittest discover -s tests -q
+
+# runtime_tests — the docker preflights, the disk gate and the runtime targets
+# above, with stand-in docker, podman, gh and sage-runtime; seconds.
+runtime_tests:  ## Gate: docker preflights, disk gate and runtime targets (host, seconds)
+	@cd scripts/gates && python3 -B -m unittest -q test_runtime
 
 # privacy_tests — the privacy engine and the admin's off-switches, on the host,
 # no database, well under a second. Privacy is ON by default for external
 # connections from 3.2.0, so a regression here is a default-on defect.
 privacy_tests:  ## Gate: privacy engine + off-switch unit tests (host, <1s)
 	@cd app/backend && python3 -m unittest -q sage_is_ai.privacy.test_engine sage_is_ai.privacy.test_hooks
+
+# cut_tests — unit tests for what replaced the 3.2.1 cuts. The host half needs
+# only the standard library. image_unit_tests runs all of them where bcrypt,
+# SQLAlchemy and httpx exist: inside the built image, against its own code.
+#   test_passwords   passlib-made hashes still verify (bcrypt called directly)
+#   test_legacy_db   fresh / pre-March / pre-alembic databases (peewee's job)
+#   test_oci         the Sprig pull's refusals (ORAS's job)
+#   test_runtime_install, test_localhttp   uv commands, the curl replacement
+cut_tests_host:  # Gate: uv command + localhttp unit tests (host, seconds)
+	@cd app/backend && python3 -B -m unittest -q sage_is_ai.utils.test_runtime_install sage_is_ai.utils.test_localhttp
+
+image_unit_tests: it_build  ## Gate: the 3.2.1 cuts' unit tests, inside the built image
+	@$(CONTAINER_RUNTIME) run --rm --entrypoint python3 $(IMAGE_NAME):$(IMAGE_TAG) -B -m unittest -q \
+		sage_is_ai.utils.test_passwords sage_is_ai.internal.test_legacy_db sage_is_ai.sprigs.test_oci \
+		sage_is_ai.utils.test_runtime_install sage_is_ai.utils.test_localhttp
 
 # tags_annotated — refuse to publish a lightweight v* tag.
 #
@@ -745,7 +871,7 @@ gauntlet_full: gauntlet_fast manifest_verify_fixture \
                serialize_blocks_fixture serialize_blocks_fixture_teeth \
                chat_response_oracle chat_response_oracle_teeth \
                gauntlet sprig_durability sprig_signing ui_sprig_gate \
-               e2e_both scan_container surface_budget  # Gate: the full local suite (builds an image)
+               e2e_both scan_container surface_budget image_unit_tests  # Gate: the full local suite (builds an image)
 
 # it_build_amd64 — build an amd64 image via buildx + --load.
 #
@@ -754,6 +880,8 @@ gauntlet_full: gauntlet_fast manifest_verify_fixture \
 # native build because layers are emulated. Tag is suffixed `-amd64` so
 # it sits beside the host-arch image without overwriting it.
 it_build_amd64:  # Build an amd64 image via buildx (validates x86_64 hosts)
+	$(AMD64_PREFLIGHT)
+	$(BUILDX_PREFLIGHT)
 	@echo "Building Docker image for linux/amd64 via buildx..."
 	@docker buildx build --platform linux/amd64 --load $(OCI_LABELS) \
 	    -t $(IMAGE_NAME):$(IMAGE_TAG)-amd64 \
@@ -781,6 +909,7 @@ cross_smoke: it_build_amd64
 #
 # Use this AS the last step before `make ship`.
 release_smoke:  # Release gate: version checks + native and amd64 smoke
+	$(AMD64_PREFLIGHT)
 	@case "$(GIT_BRANCH)" in \
 	  release/*|hotfix/*) ;; \
 	  *) echo "ERROR: release_smoke must run from a release/X.Y.Z or hotfix/X.Y.Z branch."; \
@@ -824,7 +953,7 @@ release_smoke:  # Release gate: version checks + native and amd64 smoke
 # Fresh DB smoke test — verifies clean schema creation from scratch.
 test_db_fresh:
 	@echo "=== Fresh DB Smoke Test ==="
-	@TMPDIR=$$(mktemp -d) && \
+	@TMPDIR=$$(mktemp -d "$(AI_UI_TMP)/db-test.XXXXXX") && \
 	echo "Testing fresh schema creation against $(IMAGE_NAME):$(IMAGE_TAG)..." && \
 	$(CONTAINER_RUNTIME) run --rm \
 		-v "$$TMPDIR:/app/backend/data" \
@@ -841,6 +970,7 @@ test_db_fresh:
 # write:packages scope.
 ghcr_login:
 	@echo "=== Logging into GHCR via gh CLI ==="
+	@scripts/gates/docker-preflight.sh creds
 	@gh auth status >/dev/null 2>&1 || { echo "Error: gh CLI not authenticated. Run: gh auth login"; exit 1; }
 	@gh auth token | docker login ghcr.io -u $$(gh api user -q .login) --password-stdin
 	@echo "Logged into ghcr.io as $$(gh api user -q .login)"
@@ -854,9 +984,13 @@ ghcr_login:
 # exists, a bare create-or-nothing leaves whatever builder is currently selected
 # in charge — so multi-arch builds silently ran on the docker driver instead.
 # Select it unconditionally, every time.
+# A buildx builder remembers the context it was made in. One name per context
+# keeps Docker Desktop's builder off Colima and Colima's off Docker Desktop.
 ensure_builder:
-	@docker buildx inspect multi-arch-builder >/dev/null 2>&1 || docker buildx create --name multi-arch-builder
-	@docker buildx use multi-arch-builder
+	$(BUILDX_PREFLIGHT)
+	@b=multi-arch-builder-$$(docker context show); \
+	docker buildx inspect $$b >/dev/null 2>&1 || docker buildx create --name $$b; \
+	docker buildx use $$b
 
 # Multi-architecture build+push helper
 # Builds amd64 and arm64, creates manifest list, and pushes in one step.
@@ -868,31 +1002,6 @@ ensure_builder:
 # forced every release build to re-download all ~940 npm tarballs on both arches
 # at once — one registry hiccup then cost a full cold rebuild. It burned 3.1.0
 # on "Fail extracting tarball for mermaid". Keep the escape hatch, lose the tax.
-# Bring down container instances on each SAGE_HOST
-it_down_sage_hosts:
-	@echo "Bringing down instances on SAGE_HOSTS from .env file..."
-	@[ -f .env ] || { echo "ERROR: .env file not found. Cannot read SAGE_HOSTS."; exit 1; }
-	@hosts=$$(grep -E "^SAGE_HOSTS=" .env | cut -d '=' -f2 | tr ',' '\n' | grep -v '^$$'); \
-	[ -n "$$hosts" ] || { echo "ERROR: SAGE_HOSTS missing or empty in .env"; exit 1; }; \
-	echo "$$hosts" | while read host; do \
-		echo "Stopping containers on $$host..."; \
-		ssh "$$host" "docker stop $$(docker ps -aqf 'name=sage*') && docker rm $$(docker ps -aqf 'name=sage*')" || echo "Failed to stop containers on $$host"; \
-	done
-
-# Check for running Sage instances on each SAGE_HOST
-it_check_sage_hosts:
-	@echo "Checking for running Sage instances on SAGE_HOSTS from .env file..."
-	@[ -f .env ] || { echo "ERROR: .env file not found. Cannot read SAGE_HOSTS."; exit 1; }
-	@hosts=$$(grep -E "^SAGE_HOSTS=" .env | cut -d '=' -f2 | tr ',' '\n' | grep -v '^$$'); \
-	[ -n "$$hosts" ] || { echo "ERROR: SAGE_HOSTS missing or empty in .env"; exit 1; }; \
-	echo "Host                 | Container ID    | Name             | Image                | Status           | Created"; \
-	echo "-------------------- | --------------- | ---------------- | -------------------- | ---------------- | ---------------"; \
-	echo "$$hosts" | while read host; do \
-		echo "$$host:"; \
-		ssh "$$host" "docker ps --format '{{.ID}} | {{.Names}} | {{.Image}} | {{.Status}} | {{.CreatedAt}}' -f 'name=sage*'" || echo "   Failed to connect to $$host"; \
-		echo ""; \
-	done
-
 # PRIVATE (leading underscore, no # comment, so `make help` cannot list it).
 # Pushes a multi-arch image to a public registry. Reached through `make ship`.
 #
@@ -905,13 +1014,16 @@ it_check_sage_hosts:
 # its tag that way, and 2.3.0 before it. The trap removes the worktree on any
 # exit, so a build that fails part-way can simply be run again.
 _it_build_multi_arch_push_GHCR: ghcr_login
+	$(AMD64_PREFLIGHT)
 	@[ -z "$(CLEAN_BUILD)" ] || make it_clean
 	@make ensure_builder
+	@# The trap cds out first: the build runs INSIDE the worktree, and deleting the shell's
+	@# own cwd made 'git worktree prune' exit 128 after a good push (3.2.0, 2026-09-27).
 	@set -e; tag="v$(IMAGE_TAG)"; \
 	git rev-parse -q --verify "refs/tags/$$tag" >/dev/null || { echo "  FAIL  no tag $$tag to build from"; exit 1; }; \
 	rev=$$(git rev-list -n1 "$$tag"); \
 	wt=$$(mktemp -d "$${TMPDIR:-/tmp}/ai-ui-$$tag.XXXXXX"); \
-	trap 'git worktree remove --force "$$wt" >/dev/null 2>&1 || true; rm -rf "$$wt"; git worktree prune' EXIT; \
+	trap 'cd "$(CURDIR)"; git worktree remove --force "$$wt" >/dev/null 2>&1 || true; rm -rf "$$wt"; git worktree prune' EXIT; \
 	git worktree add --detach "$$wt" "$$tag" >/dev/null; \
 	echo "Building $$tag ($$rev) multi-arch from $$wt and pushing to GHCR"; \
 	cd "$$wt" && docker buildx build --platform linux/amd64,linux/arm64 \
@@ -1297,7 +1409,7 @@ install_dev:  # Install the dev toolchain and wire the git hooks
 	fi
 	@# --- All tools via brew (single package manager, DRY) ---
 	@echo "Installing tools via Homebrew..."
-	brew install gitleaks trivy semgrep pre-commit
+	brew install gitleaks trivy semgrep pre-commit librsvg
 	@# bandit is Python-only, not in brew — install via pip
 	@echo ""
 	@echo "Installing bandit (Python SAST)..."
@@ -1405,7 +1517,8 @@ scan_deps:
 scan_container: it_build  # Gate: trivy over the BUILT image (HIGH/CRITICAL)
 	$(call require_tool,TRIVY,trivy)
 	@echo "=== Container image scan (trivy) ==="
-	$(TRIVY) image --severity HIGH,CRITICAL $(IMAGE_NAME):$(IMAGE_TAG)
+	@# trivy reads DOCKER_HOST, not docker's context: Colima has no /var/run/docker.sock.
+	DOCKER_HOST=$$(docker context inspect -f '{{.Endpoints.docker.Host}}') $(TRIVY) image --severity HIGH,CRITICAL $(IMAGE_NAME):$(IMAGE_TAG)
 
 # scan_dast: Dynamic Application Security Testing (STUB — future TODO).
 # Requires a running staging environment. See TODO.md for the full plan:
@@ -1448,6 +1561,14 @@ trivy_db_update:
 docs_gate:  # Gate: every `make X` named in a scanned document exists
 	@scripts/gates/docs-targets.sh
 
+# social_cards — rebuild the 1280x640 PNG beside each card SVG in docs/art/social.
+# The SVG is the source: edit it by hand or in Inkscape, then run this.
+social_cards:  ## Rebuild the social preview PNGs from their SVGs (docs/art/social)
+	$(call require_tool,RSVG,rsvg-convert)
+	@for svg in docs/art/social/*.svg; do \
+		$(RSVG) -w 1280 -h 640 "$$svg" -o "$${svg%.svg}.png" && echo "  $${svg%.svg}.png"; \
+	done
+
 docs_gate_teeth:  # Prove the doc-target gate can fail
 	@scripts/gates/docs-targets.sh --self-test
 
@@ -1488,7 +1609,7 @@ cognitive_complexity_tighten:
 cognitive_complexity_teeth:
 	@scripts/gates/cognitive-complexity/run-gate.sh --self-test
 
-lint: docs_gate pipefail_lint ruff_gate ruff_format_check cognitive_complexity  # Lint: docs, pipefail, ruff, ruff format, eslint, svelte-check, prettier
+lint: docs_gate pipefail_lint in_container_tools ruff_gate ruff_format_check cognitive_complexity  # Lint: docs, pipefail, ruff, ruff format, eslint, svelte-check, prettier
 	@echo "=== Frontend lint (eslint + svelte-check) ==="
 	cd app && bun run lint:frontend
 	cd app && bun run lint:types
@@ -1552,22 +1673,22 @@ endef
 
 minor_release: require_gitflow_next  # Start a git-flow release branch, minor bump
 	@# Start a minor release with incremented minor version
-	git flow release start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{print $$1"."$$2+1".0"}')
+	git flow release start $$(git tag -l 'v[0-9]*' --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{print $$1"."$$2+1".0"}')
 	$(next_steps_release)
 
 patch_release: require_gitflow_next  # Start a git-flow release branch, patch bump
 	@# Start a patch release with incremented patch version
-	git flow release start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{print $$1"."$$2"."$$3+1}')
+	git flow release start $$(git tag -l 'v[0-9]*' --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{print $$1"."$$2"."$$3+1}')
 	$(next_steps_release)
 
 major_release: require_gitflow_next  # Start a git-flow release branch, major bump
 	@# Start a major release with incremented major version
-	git flow release start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{print $$1+1".0.0"}')
+	git flow release start $$(git tag -l 'v[0-9]*' --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{print $$1+1".0.0"}')
 	$(next_steps_release)
 
 hotfix: require_gitflow_next  # Start a git-flow hotfix branch
 	@# Start a hotfix with incremented patch.patch version (fourth component)
-	git flow hotfix start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{if (NF < 4) print $$1"."$$2"."$$3".1"; else print $$1"."$$2"."$$3"."$$4+1}')
+	git flow hotfix start $$(git tag -l 'v[0-9]*' --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{if (NF < 4) print $$1"."$$2"."$$3".1"; else print $$1"."$$2"."$$3"."$$4+1}')
 	$(next_steps_hotfix)
 
 # Finish a release or hotfix with plain git — NOT git-flow-next's finish.
@@ -1627,6 +1748,9 @@ endef
 # OOM mid-push, leaving a tag on origin and no image behind it. Override on the
 # command line if your host genuinely needs less.
 RELEASE_MIN_DOCKER_GIB ?= 8
+# Free space on the HOST volume holding the runtime's disk (Colima's, OrbStack's or
+# Docker Desktop's, whichever docker's context uses). 3.2.0 filled it mid-build.
+RELEASE_MIN_BUILD_DISK_GIB ?= 30
 
 # release_preflight — the four things that can only be checked against the
 # outside world. Everything else this used to hold has been designed away.
@@ -1637,7 +1761,7 @@ RELEASE_MIN_DOCKER_GIB ?= 8
 #
 # Runs BEFORE release_smoke, not after: a preflight that fires at the end of a
 # twenty-minute build has already wasted the twenty minutes.
-release_preflight:  # Release gate: gh auth, docker memory, tag not published, CHANGELOG entry
+release_preflight:  # Release gate: gh auth, docker memory, host disk, local registry, tag not published, CHANGELOG entry
 	@set -e; \
 	ver="$(RELEASE_VERSION)"; \
 	if [ -z "$$ver" ]; then \
@@ -1649,7 +1773,7 @@ release_preflight:  # Release gate: gh auth, docker memory, tag not published, C
 		echo "        Fix: gh auth login"; exit 1; \
 	fi; \
 	echo "  ok    gh authenticated"; \
-	mem=$$(docker info --format '{{.MemTotal}}' 2>/dev/null || echo 0); \
+	mem=$$(docker info --format '{{.MemTotal}}' 2>/dev/null) || mem=0; \
 	need=$$(( $(RELEASE_MIN_DOCKER_GIB) * 1024 * 1024 * 1024 )); \
 	if [ "$$mem" = "0" ]; then \
 		echo "  FAIL  docker daemon is not reachable."; exit 1; \
@@ -1659,6 +1783,9 @@ release_preflight:  # Release gate: gh auth, docker memory, tag not published, C
 		echo "        Fix: raise the VM memory, or override RELEASE_MIN_DOCKER_GIB=<n>."; exit 1; \
 	fi; \
 	echo "  ok    docker up with $$(( mem / 1024 / 1024 / 1024 ))GiB"; \
+	python3 scripts/gates/docker-disk-free.py $(RELEASE_MIN_BUILD_DISK_GIB); \
+	scripts/gates/docker-preflight.sh registry $(CONTAINER_RUNTIME); \
+	echo "  ok    sprig_publish will use this context's local-registry"; \
 	if [ -n "$$(git ls-remote --tags origin "refs/tags/v$$ver" 2>/dev/null)" ]; then \
 		echo "  FAIL  tag v$$ver is already on origin. This release has been cut before."; \
 		echo "        Both 2.3.0 and 3.1.0 reached this state and were recovered by hand."; \
@@ -1704,13 +1831,18 @@ _release_and_push_GHCR: release_preflight release_smoke release_finish
 	@echo "=== $(IMAGE_TAG) published ==="
 	@echo "Verify: docker pull $(GHCR_IMAGE_NAME):$(IMAGE_TAG)"
 	@echo "Verify: docker pull $(GHCR_IMAGE_NAME):latest"
+	@echo "Next:   make deploy   (try.sage.is first, then sage.startr.cloud)"
+
+deploy:  ## Put SERVER_TAG (or TAG=) live: try.sage.is, then sage.startr.cloud after a DB backup (APPS= to pick)
+	@python3 scripts/deploy.py --image $(IMAGE) --tag $(or $(TAG),$(SERVER_TAG)) $(APPS)
+
+deploy_rollback:  ## Run APP= on the version before the current one again
+	@test -n "$(APP)" || { echo "usage: make deploy_rollback APP=<CapRover app, see deploy/instances.toml>"; exit 1; }
+	@cr-deploy rollback $(APP)
 
 things_clean:
 	git clean --exclude=!.env -Xdf
 
-
-it_deploy:
-	caprover deploy --default
 
 it_start:
 	$(CONTAINER_RUNTIME) start $(CONTAINER_NAME)
@@ -1731,7 +1863,7 @@ it_update:
 # Boots the same image as `it_run` but flips on the trial runtime: hidden LLM
 # connection, persona seeds, 24h auto-reset, banner. The hidden connection
 # secrets stay env-only — the API key never lands in the config DB. See
-# docs/try-sage-deployment.md and docs/try-sage-docker-exploration.md.
+# docs/try-sage-deployment.md.
 TRY_SAGE_USER_SEAT_COUNT      ?= 3
 TRY_SAGE_RESET_INTERVAL_HOURS ?= 24
 

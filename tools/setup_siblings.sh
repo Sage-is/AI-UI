@@ -1,17 +1,16 @@
 #!/usr/bin/env bash
 # setup_siblings.sh — verify the Sage.is sibling-repo chain and establish the
-# distribution.env hardlinks. Idempotent. Safe to re-run.
+# distribution.env copies. Idempotent. Safe to re-run.
 #
 # The Sage.is product is composed of three repos that share canonical facts
-# (image tag, volume name, install command, CLI version) via a hardlinked
-# `distribution.env`. This script:
+# (image tag, volume name, install command, CLI version) through an ordinary
+# copy of `distribution.env` in each. This script:
 #   1. Checks that all three repos are checked out as siblings of one another.
 #   2. If any are missing, prints the exact `git clone` command and exits 1.
-#   3. If all three are present, calls `make distribution_sync` to (re)establish
-#      the hardlink chain.
+#   3. If all three are present, calls `make distribution_sync` to publish this
+#      repo's copy to the other two.
 #
-# Run once on a fresh machine. Run again any time a clone breaks the chain
-# (each `git clone` creates a new inode and severs the hardlink).
+# Run once on a fresh machine, and again after cloning a sibling.
 #
 # Same script lives in all three repos. The sibling list is identical.
 
@@ -49,5 +48,5 @@ if [ "$missing" = "1" ]; then
 fi
 
 echo ""
-echo "All siblings present. Establishing hardlink chain via distribution_sync..."
+echo "All siblings present. Publishing distribution.env via distribution_sync..."
 make -C "$REPO_ROOT" distribution_sync

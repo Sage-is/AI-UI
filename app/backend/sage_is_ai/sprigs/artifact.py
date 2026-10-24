@@ -1,15 +1,15 @@
 """OCI-artifact Sprig™ delivery — graft #3 (in-house the weights, offline serve).
 
 The Rootstock™ PULLS a tar.zst (ONNX weights + sprig.yaml manifest) from an OCI
-registry via the ``oras`` CLI, verifies its sha256 against the catalog pin,
+registry (``sprigs/oci.py``; the ``oras`` CLI until 3.2.1), verifies its sha256 against the catalog pin,
 extracts it, and seeds chromadb's offline ONNX model cache. The existing
 ``embedding_server.py --backend onnx`` then loads from that seeded cache with NO
 chroma-S3 / HuggingFace egress (chromadb's DefaultEmbeddingFunction reads
 ``$HOME/.cache/chroma``, which the image symlinks into ``DATA_DIR/cache/chroma``).
 
-Proven against a LOCAL registry (localhost:5000, --plain-http). Production swap to
-``ghcr.io/sage-is`` is a one-line catalog change (set ``insecure: False`` and
-``oras login`` at deploy). See scripts/build-sprig-minilm.sh for the packaging side.
+Pulls are anonymous: plain HTTP for the local dev registry (``insecure``), HTTPS
+with an anonymous token for ghcr.io. See scripts/build-sprig-minilm.sh for the
+packaging side.
 
 The verified tar is cached on the DATA volume (keyed on tag), so a re-graft after a
 restart extracts offline with no network — the supervisor's boot reconcile relies on
@@ -37,6 +37,7 @@ import os
 import shutil
 from pathlib import Path
 
+from sage_is_ai.sprigs import oci
 from sage_is_ai.sprigs.minisign import MinisignError, verify_file
 
 log = logging.getLogger("sprig.artifact")
@@ -64,7 +65,7 @@ class ArtifactError(Exception):
 
 
 class ArtifactPullError(ArtifactError):
-    """oras pull failed (registry unreachable, auth, missing artifact)."""
+    """The pull failed (registry unreachable, refused, missing artifact)."""
 
 
 class ArtifactVerificationError(ArtifactError):
@@ -112,17 +113,30 @@ async def _run(cmd: list[str], *, timeout: float, err: type[ArtifactError]) -> N
 
 
 async def _pull(repo: str, tag: str, dest: Path, *, insecure: bool) -> Path:
-    """oras pull <repo>:<tag> into dest; return the produced tar.zst path."""
+    """Pull <repo>:<tag> into dest (sprigs/oci.py); return the tar.zst path.
+
+    A blob that does not match its manifest digest is a verification failure,
+    the same class as a catalog sha256 mismatch: nothing is extracted.
+    """
     uri = f"{repo}:{tag}"
-    cmd = ["oras", "pull", uri, "--output", str(dest)]
-    if insecure:
-        cmd.append("--plain-http")  # localhost dev registry over HTTP
-    await _run(cmd, timeout=_PULL_TIMEOUT_S, err=ArtifactPullError)
+    log.warning("artifact pull: %s%s", uri, " (plain HTTP)" if insecure else "")
+    try:
+        await asyncio.wait_for(
+            oci.pull(repo, tag, dest, insecure=insecure), timeout=_PULL_TIMEOUT_S
+        )
+    except asyncio.TimeoutError as exc:
+        raise ArtifactPullError(
+            f"pull of {uri} timed out after {_PULL_TIMEOUT_S:.0f}s"
+        ) from exc
+    except oci.OCIDigestError as exc:
+        raise ArtifactVerificationError(f"pull of {uri}: {exc}") from exc
+    except oci.OCIError as exc:
+        raise ArtifactPullError(f"pull of {uri} failed: {exc}") from exc
 
     tars = sorted(dest.glob("*.tar.zst"))
     if not tars:
         raise ArtifactPullError(
-            f"oras pull of {uri} produced no *.tar.zst in {dest} "
+            f"pull of {uri} produced no *.tar.zst in {dest} "
             f"(got: {[p.name for p in dest.iterdir()]})"
         )
     if len(tars) > 1:
@@ -258,14 +272,14 @@ async def _obtain_tar(spec: dict, root: Path, catalog_name: str) -> Path:
     the cultivar's volume-resident root). Consequences:
 
     - **Restart durability / air-gap:** a re-graft after a container restart finds
-      the verified tar on the volume and extracts offline — no ``oras``, no network,
+      the verified tar on the volume and extracts offline — no pull, no network,
       which is what makes "deliver" overlays (extracted into the ephemeral container
       layer) survive a restart.
     - **Tag-bump correctness:** bumping a cultivar's tag changes the cache key, so a
       stale-tag tar is a cache miss and forces a fresh pull (fixes the old "sentinel
       present ⇒ never re-pull" footgun for the tar side).
 
-    On a cache miss it pulls via ``oras``, verifies against the pin BEFORE the tar
+    On a cache miss it pulls (``sprigs/oci.py``), verifies against the pin BEFORE the tar
     enters the cache, promotes it to the stable path, and drops stale-tag caches.
     """
     repo = spec.get("repo")

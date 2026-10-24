@@ -56,7 +56,7 @@ async def format_code(form_data: CodeForm, user=Depends(get_admin_user)):
     except ImportError:
         raise HTTPException(
             status_code=501,
-            detail="black is not installed. Run: pip install black",
+            detail="black is not installed. Run: uv pip install --system --break-system-packages black",
         )
     except Exception as e:
         if "NothingChanged" in type(e).__name__:
@@ -180,6 +180,29 @@ def _allowed_zip_entry(name: str) -> bool:
     return False
 
 
+def _migrate_restored_db(engine, backup_path: Path, db_path: Path) -> None:
+    """Bring a restored file up to date, or put the previous database back.
+
+    A pre-alembic file is refused (internal/legacy_db.py, 3.2.1): restore the
+    previous database and say why, rather than log a warning over a database
+    the app cannot use. Other migration trouble stays a logged warning.
+    """
+    from sage_is_ai.config import run_migrations
+    from sage_is_ai.internal.legacy_db import PreAlembicDatabase, prepare
+
+    try:
+        prepare(engine)
+    except PreAlembicDatabase as e:
+        engine.dispose()
+        if backup_path.exists():
+            shutil.move(str(backup_path), str(db_path))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    try:
+        run_migrations()
+    except Exception as e:
+        log.warning(f"Post-restore migration warning: {e}")
+
+
 @router.post("/db/restore")
 async def restore_db(file: UploadFile = File(...)):
     """
@@ -188,9 +211,7 @@ async def restore_db(file: UploadFile = File(...)):
     Accepts a raw .db file or a .zip containing webui.db + uploads/.
     """
     from sage_is_ai.models.users import Users
-    from sage_is_ai.internal.db import engine, handle_peewee_migration
-    from sage_is_ai.config import run_migrations
-    from sage_is_ai.env import DATABASE_URL
+    from sage_is_ai.internal.db import engine
 
     if Users.get_num_users() != 0:
         raise HTTPException(
@@ -321,12 +342,7 @@ async def restore_db(file: UploadFile = File(...)):
                 if extracted_db.exists():
                     extracted_db.unlink()
 
-        # Run migrations on the restored database
-        try:
-            handle_peewee_migration(DATABASE_URL)
-            run_migrations()
-        except Exception as e:
-            log.warning(f"Post-restore migration warning: {e}")
+        _migrate_restored_db(engine, backup_path, db_path)
 
         log.info("Database restored successfully from backup")
         return {"status": True}

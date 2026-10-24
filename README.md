@@ -7,7 +7,6 @@ An AI interface you run on your own hardware, with your own models, on your own 
 [![Version](https://img.shields.io/github/v/tag/Sage-is/AI-UI?label=version)](https://github.com/Sage-is/AI-UI/releases)
 [![GitHub stars](https://img.shields.io/github/stars/Sage-is/AI-UI?style=social)](https://github.com/Sage-is/AI-UI)
 [![License](https://img.shields.io/badge/License-AGPL_v3%2B-blue)](LICENSE)
-[![Discord](https://img.shields.io/badge/Discord-Community-blue?logo=discord&logoColor=white)](https://discord.gg/3BtwHkXS)
 
 Sage.is AI-UI is a chat and orchestration layer you run on your own infrastructure. It talks to any OpenAI-compatible provider (OpenAI, OpenRouter and others) plus Ollama.
 
@@ -24,9 +23,11 @@ ai-ui start
 
 Open [http://localhost:8080](http://localhost:8080) and create your admin account.
 
-We are not in Homebrew's main catalogue yet, and Homebrew 6 asks you to trust third-party taps. Pass `--port 3000` if 8080 is taken.
+> You can pass `--port 3000` if 8080 is taken.
 
-Tap source: <https://github.com/Sage-is/homebrew-apps>.
+Tap source: <https://github.com/Sage-is/homebrew-apps>. The `ai-ui` command itself lives in this repo's [`cli/`](cli/) folder and ships with each release.
+
+On a Mac it runs Sage in Colima: no window, no sign-in. A Mac that already uses Docker Desktop or OrbStack may keep it: `ai-ui start --runtime docker-desktop`.
 
 ## <img src="docs/art/emblems/run.svg" width="32" height="32" alt="" align="absmiddle"> Run from source
 
@@ -43,7 +44,7 @@ make it_build_n_run
 - **Your data stays put.** Conversations never leave the server you run Sage.is on. No telemetry on chat content, no exfiltration paths, no cloud dependency unless you graft one.
 - **Bring your own models.** Works with any OpenAI-compatible provider (OpenAI, OpenRouter and others) plus Ollama. Mix providers per conversation if you want.
 - **Teams work the way teams work.** Permissions, user groups, role-based access. Nothing exotic, nothing missing.
-- **Plug things in.** Custom functions, RAG, code execution, image generation, voice. The pieces compose.
+- **Plug things in.** Custom functions, RAG, code execution, image generation, voice.
 
 ## <img src="docs/art/emblems/constellation.svg" width="32" height="32" alt="" align="absmiddle"> Features
 
@@ -72,7 +73,7 @@ Sage.is AI-UI runs with sensible defaults. Override with environment variables:
 - [try.sage Trial Deployment](./docs/try-sage-deployment.md)
 - [Product Stack](./docs/product-stack.md)
 - [Development Workflow](./docs/development-workflow.md): Make targets, styling, scans
-- [Community Hub Integration](./docs/community-hub.md)
+- [Community Hub: the winter plan](./docs/community-hub.md)
 - [Contributing](./docs/CONTRIBUTING.md)
 - [Security](./docs/SECURITY.md)
 - [Troubleshooting](./docs/troubleshooting.md)
@@ -82,15 +83,14 @@ Sage.is AI-UI runs with sensible defaults. Override with environment variables:
 
 ## <img src="docs/art/emblems/people.svg" width="32" height="32" alt="" align="absmiddle"> Community
 
-- **Discord:** [Join our community](https://discord.gg/3BtwHkXS)
 - **Issues:** [Report bugs](https://github.com/Sage-is/AI-UI/issues)
-- **Community Hub:** coming soon. community.sage.is is not yet public and `ENABLE_COMMUNITY_SHARING` stays off ([docs](./docs/community-hub.md)). Browse and share models, prompts, and tools across your Sage instances.
+- **Community Hub:** coming this winter. community.sage.is is not yet public so make sure `ENABLE_COMMUNITY_SHARING` stays off ([docs](./docs/community-hub.md) for now). Browse and share models, prompts, and tools across your Sage instances.
 
 ## <img src="docs/art/emblems/seal.svg" width="32" height="32" alt="" align="absmiddle"> License
 
 [GNU Affero General Public License v3](LICENSE)
 
-Copyright (c) [year] [copyright holders]
+Copyright (c) 2026 Sage LLC.
 
 Permission is hereby granted to any person obtaining a copy of this software and associated documentation files, to use, copy, modify, merge, publish, distribute, sublicense, and sell copies of the software, including for commercial purposes, subject to the following conditions:
 
@@ -98,7 +98,7 @@ If you distribute this software, or any work derived from it, you must release t
 
 These permissions are irrevocable and royalty-free for the term of copyright. THE SOFTWARE IS PROVIDED "AS IS," WITHOUT WARRANTY OF ANY KIND. This is a plain-language summary. The full legal text of the GNU Affero General Public License, version 3, governs all use for you.
 
-Sage.is Sprig Extensions built on the published [Sprig Spec](./docs/bonsai/sprig-spec-v1-draft.md) are not derivative works and may be authored under any license.
+Sage.is Sprig Extensions built on the published [Sprig Spec](https://sage.is/bonsai/) are not derivative works and may be authored under any license.
 
 ---
 

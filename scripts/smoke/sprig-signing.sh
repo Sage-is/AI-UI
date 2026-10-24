@@ -70,18 +70,28 @@ echo "$R" | grep -qi "signed artifact" \
   && ok "refusal names the missing signature" || no "refusal detail unclear: $(echo "$R" | head -c 160)"
 
 echo "== 5. tampered signature is REFUSED =="
-WORK=$(mktemp -d)
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/mount-tmp.sh"
+WORK="$(mount_tmp sprig-signing)"
 docker run --rm --network "$NET" -v "$WORK:/w" -w /w ghcr.io/oras-project/oras:v1.2.0 \
   pull --plain-http "local-registry:5000/sprig-browser-ml:v1" >/dev/null
 TARF=$(cd "$WORK" && ls -- *.tar.zst | head -1)
 # Swap the signed trusted comment -> the global signature must no longer verify.
-awk 'NR==3{print "trusted comment: EVIL tampered comment"; next} {print}' \
-  "$WORK/$TARF.minisig" > "$WORK/$TARF.minisig.tmp" && mv "$WORK/$TARF.minisig.tmp" "$WORK/$TARF.minisig"
+# Done INSIDE a container: on Colima's krunkit VM a host-side rewrite of a file
+# a container wrote is invisible to the next container ("No such file"), so the
+# push below failed silently and the registry kept the VALID signature
+# (2026-10-15). A failed push now fails this step instead of passing it blind.
+docker run --rm -v "$WORK:/w" alpine:3.20 sh -c \
+  "awk 'NR==3{print \"trusted comment: EVIL tampered comment\"; next} {print}' /w/$TARF.minisig > /w/$TARF.minisig.tmp && mv /w/$TARF.minisig.tmp /w/$TARF.minisig"
 docker run --rm --network "$NET" -v "$WORK:/w" -w /w ghcr.io/oras-project/oras:v1.2.0 \
   push --plain-http "local-registry:5000/sprig-browser-ml:v1" \
   --artifact-type "application/vnd.sage-is.sprig.v1" \
   "$TARF:application/vnd.sage-is.sprig.tar+zstd" \
-  "$TARF.minisig:application/vnd.sage-is.sprig.minisig" >/dev/null
+  "$TARF.minisig:application/vnd.sage-is.sprig.minisig" >/dev/null \
+  || no "tampered push failed, so step 5 proves nothing"
+SIGD=$(curl -s -H 'Accept: application/vnd.oci.image.manifest.v1+json' http://localhost:5000/v2/sprig-browser-ml/manifests/v1 \
+  | jq -r '.layers[] | select(.annotations["org.opencontainers.image.title"] | endswith(".minisig")) | .digest')
+fetch_has "http://localhost:5000/v2/sprig-browser-ml/blobs/$SIGD" 'EVIL tampered comment' \
+  && ok "registry now serves the tampered signature" || no "registry still serves the valid signature: the tamper never landed"
 rm -rf "$WORK"
 R=$(G browser-ml browser-ml)
 echo "$R" | jq -e '.status==true or .delivered==true' >/dev/null 2>&1 \

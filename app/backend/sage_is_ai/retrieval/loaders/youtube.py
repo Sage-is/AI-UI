@@ -85,7 +85,7 @@ class YoutubeLoader:
         except ImportError:
             raise ImportError(
                 'Could not import "youtube_transcript_api" Python package. '
-                "Please install it with `pip install youtube-transcript-api`."
+                "Please install it with `uv pip install --system --break-system-packages youtube-transcript-api`."
             )
 
         if self.proxy_url:

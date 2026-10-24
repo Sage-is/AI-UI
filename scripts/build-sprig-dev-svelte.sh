@@ -30,6 +30,7 @@ sprig_build_defaults
 sprig_timing_start
 
 sprig_arch_normalize
+[ "$ARCH" = arm64 ] || "$(dirname "${BASH_SOURCE[0]}")/gates/docker-preflight.sh" amd64 "ARCH=amd64 $0"
 
 # POKA-YOKE: the arm64 v2 blob predates this recipe and is pinned/published.
 if [ "$ARCH" = "arm64" ] && [ "$TAG" = "v2" ] && [ "${ALLOW_RETAG:-0}" != "1" ]; then
@@ -42,7 +43,7 @@ REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 [ -f "$REPO_ROOT/app/package.json" ] || { echo "ERROR: app/package.json not found" >&2; exit 1; }
 [ -f "$REPO_ROOT/app/bun.lock" ]     || { echo "ERROR: app/bun.lock not found" >&2; exit 1; }
 
-WORK="${WORK:-/tmp/sprig-build/dev-svelte-$ARCH}"
+WORK="${WORK:-${SPRIG_BUILD_ROOT:-$HOME/.cache/ai-ui/sprig-build}/dev-svelte-$ARCH}"
 OUT_DIR="${OUT_DIR:-$(pwd)}"
 OUT="$OUT_DIR/$NAME-$ARCHTAG.tar.zst"
 

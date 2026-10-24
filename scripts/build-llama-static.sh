@@ -19,7 +19,7 @@
 # embedding/rerank server wants. LLAMA_BUILD_UI=OFF alone is NOT enough (the
 # HF fetch still runs).
 #
-# Output: $OUT_DIR/{llama-server,llama-quantize} (default /tmp/sprig-build/
+# Output: $OUT_DIR/{llama-server,llama-quantize} (default ~/.cache/ai-ui/sprig-build/
 # llama-$ARCH/bin). Cross-arch builds run under QEMU via --platform.
 set -euo pipefail
 
@@ -32,7 +32,7 @@ case "${ARCH:-$_RAW_ARCH}" in
   *) echo "ERROR: unsupported ARCH='${ARCH:-$_RAW_ARCH}' (want arm64|amd64)" >&2; exit 1 ;;
 esac
 PLATFORM="${PLATFORM:-linux/$ARCH}"
-OUT_DIR="${OUT_DIR:-/tmp/sprig-build/llama-$ARCH/bin}"
+OUT_DIR="${OUT_DIR:-${SPRIG_BUILD_ROOT:-$HOME/.cache/ai-ui/sprig-build}/llama-$ARCH/bin}"
 
 command -v docker >/dev/null || { echo "ERROR: docker not on PATH" >&2; exit 1; }
 mkdir -p "$OUT_DIR"
@@ -42,7 +42,8 @@ if [ -f "$OUT_DIR/llama-server" ] && [ -f "$OUT_DIR/llama-quantize" ] && [ "${FO
   exit 0
 fi
 
-BUILD_SCRIPT="$(mktemp)"
+. "$(dirname "${BASH_SOURCE[0]}")/lib/mount-tmp.sh"
+BUILD_SCRIPT="$(mount_tmp llama-build)/build.sh"
 cat > "$BUILD_SCRIPT" <<BUILD
 #!/bin/sh
 set -e
@@ -65,7 +66,7 @@ BUILD
 echo "== building static llama-server + llama-quantize ($ARCH, $LLAMA_CPP_REF, headless) =="
 echo "   (QEMU cross-build is SLOW for amd64 on arm64 hosts — ~20-40 min)"
 docker run --rm --platform "$PLATFORM" -v "$OUT_DIR:/out" -v "$BUILD_SCRIPT:/build.sh:ro" alpine sh /build.sh
-rm -f "$BUILD_SCRIPT"
+rm -rf "$(dirname "$BUILD_SCRIPT")"
 
 echo
 echo "== staged: =="

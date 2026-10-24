@@ -14,35 +14,55 @@ The steps underneath `ship` now start with an underscore. They carry no `##` com
 
 | # | Step | Label | What it does |
 | --- | --- | --- | --- |
-| 1 | `release_preflight` | [WE] | Four checks against the outside world. See below |
+| 1 | `release_preflight` | [WE] | Checks against the outside world. See below |
 | 2 | `release_smoke` | [WE] | Branch, version and clean-tree checks, then builds and smokes native plus amd64 |
 | 3 | `release_finish` | [WE] | Merges to master and develop, cuts the annotated tag, pushes all three |
 | 4 | `_it_build_multi_arch_push_GHCR` | [WE] | Multi-arch buildx push of `:X.Y.Z` and `:latest` |
 | 5 | `verify_ghcr_manifest` | [WE] | Asserts the pushed image is present and a real amd64 plus arm64 index |
-| 6 | `_pin_server_tag` | [WE] | Writes `SERVER_TAG` into `distribution.env`, preserving the inode |
+| 6 | `_pin_server_tag` | [WE] | Rewrites `SERVER_TAG` in `distribution.env` and copies it to the siblings via `distribution_sync` |
 | 7 | `sprig_publish` | [WE] | Pushes every local Sprig tag and gates on anonymous pullability |
 
 Step 3 is the first irreversible one. Everything before it can be re-run freely.
+
+## Where it builds
+
+A release builds linux/amd64 beside arm64. On Apple Silicon, Colima's default VM is krunkit, which has no Rosetta. amd64 runs there only under QEMU: slowly, and the Vite stage can run out of memory. So every amd64 or multi-arch target (`it_build_amd64`, `cross_smoke`, `release_smoke`, the GHCR push, and `catalog_build` with amd64) stops on a krunkit VM and names the build VM.
+
+The build VM is a second Colima VM: vz with Rosetta, and 9 to 12 GiB of memory. It never becomes docker's context, so name it on each command:
+
+```bash
+sage-runtime build-vm                          # [WE] start it; the first run makes it
+docker --context colima stop local-registry    # [WE] the build VM starts its own
+DOCKER_CONTEXT=colima-build make ship          # [WE]
+sage-runtime build-vm --stop                   # [WE] give its memory back
+make sprig_registry                            # [WE] the default VM's registry again
+```
+
+Each VM runs its own containers, and both mount `~/SageData/sprig-registry`. One `local-registry` may serve that folder and hold port 5000, so stop the default VM's before the build VM starts its own. `sprig_registry` and `release_preflight` refuse while the other VM's still runs, and name the command that stops it.
+
+Docker Desktop and OrbStack use Rosetta for amd64 by default, so they build in place.
 
 ## Before you run it
 
 1. [WE] `make minor_release` (or `patch_release` / `major_release`) to cut the branch.
 2. [WE] `make bump_release_version` to write the version into `app/package.json`. This is the only file it touches. The README version is a shields badge that reads origin's tags, so nothing keeps it in step by hand.
 3. [MANUALLY] Write the `## [X.Y.Z]` section in `CHANGELOG.md`, then commit. Preflight refuses without it.
-4. [WE] `make ship`.
+4. [WE] `make ship`, on the build VM if this Mac uses Colima.
 
-## What  blocks preflight
-
-
+## What blocks preflight
 
 | Check | What's the holdup |
 | --- | --- |
 | `gh auth status` succeeds | Credential state lives outside the repo. A stale login fails *after* the tag is cut |
 | Docker reachable with at least 8 GiB | 2.3.0 died of buildx OOM with the tag already on origin. Override with `RELEASE_MIN_DOCKER_GIB=<n>` |
+| At least 30 GiB free on the host disk that holds the runtime's disk | 3.2.0 died with `input/output error` after the tag reached origin. A VM's disk is sparse and grows onto the host volume, and that drive had 373 MiB left. Docker cannot see this; `scripts/gates/docker-disk-free.py` reads the host. It measures the runtime docker's context uses: Colima's `~/.colima/_lima/_disks`, OrbStack's data folder, or Docker Desktop's `Docker.raw`, and it names that runtime's fix. Override with `RELEASE_MIN_BUILD_DISK_GIB=<n>` |
+| No other VM's `local-registry` holds port 5000 | `sprig_publish` (step 7) reads this context's registry. On the build VM, the default VM's would still hold the port and the folder, and two registries would write it at once. Stop it first: `docker --context colima stop local-registry` |
 | `v<X.Y.Z>` is not already on origin | Origin is shared mutable state. This single check catches both the 2.3.0 and the 3.1.0 failures |
 | `CHANGELOG.md` has a `## [X.Y.Z]` section | Prose. There is nothing to derive it from |
 
 Preflight runs before `release_smoke`, not after. A preflight that fires at the end of a twenty-minute build has already wasted the twenty minutes.
+
+Two more checks run inside the steps. Every BuildKit target needs `docker buildx`, and Homebrew's docker comes without it: `brew install docker-buildx`. `ghcr_login` checks that the `credsStore` in `~/.docker/config.json` names a helper this machine has; Docker Desktop's `desktop` helper leaves with the app. Each check then prints `sage-runtime use` with the runtime docker uses now. That links Homebrew's plugins and switches the setting to the Keychain helper, which keeps your logins. The checks never name another runtime: `use` stops every runtime but the one it names.
 
 ## Recovery
 
@@ -50,7 +70,7 @@ Preflight runs before `release_smoke`, not after. A preflight that fires at the 
 
 **The build or push failed after `release_finish`.** The merges and the tag are already on origin and the release branch is gone, so `make ship` will fail at `release_smoke`.
 
-To recover the release run the publishing half on its own:
+To recover the release run the publishing half on its own. On Colima, run the push on the build VM too: `DOCKER_CONTEXT=colima-build make _it_build_multi_arch_push_GHCR`.
 
 ```bash
 make _it_build_multi_arch_push_GHCR
@@ -58,8 +78,6 @@ make verify_ghcr_manifest
 make _pin_server_tag IMAGE_TAG=<X.Y.Z>
 make sprig_publish
 ```
-
-
 
 **`verify_ghcr_manifest` failed.** The push produced no image, or a single-arch one. Do not pin `SERVER_TAG`. Re-run the push step; the verify is what stands between a bad push and a CapRover deploy that says `manifest unknown`.
 
@@ -77,18 +95,44 @@ The pre-push hook refuses to publish a lightweight `v*` tag. It only judges tags
 
 ## Deploying what you shipped
 
-[MANUALLY] CapRover deploys by image name (Deployment tab, Method 6). Paste a digest-pinned reference rather than a tag:
+`make ship` publishes a release. `make deploy` puts it live. They are separate on purpose: changing servers people use is its own decision.
 
-```
-ghcr.io/sage-is/ai-ui@sha256:<index-digest>
-```
+`make ship` ends by pointing the brew formula at this release in `../homebrew-apps` (its `ai_ui_formula` target); the CLI ships in this release's `cli/` folder. [MANUALLY] Commit and push the tap: `brew upgrade ai-ui` followed by `ai-ui update` then moves a machine to the release. Until you push, `brew upgrade ai-ui` reports the CLI as up to date, and the tap's own checks refuse any other push.
 
-Swarm can serve a stale image after a same-tag redeploy, which bit 3.0.0. A digest cannot be stale. Get it from the output of `verify_ghcr_manifest`.
-
-[MANUALLY] Then check the running version:
+[MANUALLY] Once: put an admin API key for sage.startr.cloud in this repo's `.env` (untracked, synced outside git) as `SAGE_STARTR_CLOUD_ADMIN_KEY=sk-...`. The Makefile loads `.env`, so `make deploy` sees it.
 
 ```bash
-curl -s https://try.sage.is/api/config | python3 -m json.tool | grep -i version
+make deploy    # [WE] SERVER_TAG, every app in deploy/instances.toml
 ```
 
-A verified image is not a running image. Only that curl proves the deploy landed.
+For each app in `deploy/instances.toml`, in order, `scripts/deploy.py`:
+
+1. Resolves the multi-arch index digest of `ghcr.io/sage-is/ai-ui:<tag>`. Nobody copies a digest by hand.
+2. Skips the deploy if the app already runs that digest, and only checks it answers.
+3. Refuses an app whose data would not survive a redeploy (no volume, no bind mount) unless it is marked `throwaway`.
+4. Downloads the database first when the app is marked `backup`: sage.startr.cloud, to `~/Backups/ai-ui/sage-startr-cloud/<date>-<old version>.db`. No backup, no deploy.
+5. Runs `cr-deploy deploy-image` by digest, then waits up to 300 s for `/api/config` to report the new version and `/health` to answer 200.
+
+try.sage.is goes first. It is the canary: synthetic data, wiped every 24 h. If it does not come up, the rollout stops and sage.startr.cloud is never touched.
+
+`make deploy APPS=try-sage-is` limits the rollout. `make deploy TAG=3.2.0` deploys another release.
+
+### Where the production data lives
+
+On our CapRover cluster, sage.startr.cloud keeps its whole data folder in `/root/Sync/sage-ai-data`: the database, uploads and vector store. Syncthing keeps that folder the same on the cluster's three nodes and on a Mac at our office. Backblaze backs up that Mac's copy off-site.
+
+- Each node also writes a nightly backup of its pinned apps into the same synced tree and keeps four nights. Those reach the office Mac and Backblaze the same way.
+- try.sage.is is in neither, on purpose. Its data is synthetic and wiped every 24 h.
+- A customer's own box is outside this chain. It needs its own backup before it holds real work.
+
+Syncthing copies live files, so a database copied mid-write can be torn, and a torn copy travels to the Mac and to Backblaze too. The clean restore point is the database `make deploy` downloads before each upgrade. Device paths, the Backblaze details and the restore steps live in the private ops repo, `OPS-Sage/docs/apps/sage-startr-cloud.md`.
+
+### When a deploy fails
+
+```bash
+make deploy_rollback APP=sage-startr-cloud   # runs the version before the current one
+```
+
+If the new version already ran its database migrations, restore the backup the deploy took. The restore steps for our production instance live in the private ops repo, `OPS-Sage/docs/apps/sage-startr-cloud.md`.
+
+Deploys go by digest only. CapRover can serve a stale image after a same-tag redeploy, which bit 3.0.0.

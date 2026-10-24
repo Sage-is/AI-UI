@@ -199,10 +199,25 @@ if [ "$REAL_TARGET" = "1" ]; then
 else
   echo "  … skipping the embedding server cultivar (needs a real $TARGET_ARCH image to execute)"
 fi
+tgt_graft() {
+  curl -s --max-time 60 -X POST "http://localhost:$((PORT+1))/api/v1/retrieval/sprigs/graft" \
+    -H "$A2" -H 'Content-Type: application/json' -d "{\"name\":\"$1\",\"capability\":\"$2\"}"
+}
 for pair in "${PAIRS[@]}"; do
   nm="${pair%%:*}"; cap="${pair##*:}"
-  R=$(curl -s --max-time 60 -X POST "http://localhost:$((PORT+1))/api/v1/retrieval/sprigs/graft" \
-    -H "$A2" -H 'Content-Type: application/json' -d "{\"name\":\"$nm\",\"capability\":\"$cap\"}")
+  R=$(tgt_graft "$nm" "$cap")
+  # Same self-heal as sprig-lifecycle.sh's G(): the user lookup behind every
+  # request turns ANY database error into "session expired" (models/users.py
+  # get_user_by_id), and under heavy I/O a busy SQLite lock does exactly that.
+  # Seen here 2026-10-15 (3 grafts after vector-chroma); a reduced replay on
+  # the same data passed on both images. Re-sign-in once, and say so.
+  if printf '%s' "$R" | grep -qiE 'session has expired|token is invalid'; then
+    echo "  … $nm: token rejected mid-run (see TODO: get_user_by_id swallows DB errors); re-signing in"
+    T2=$(curl -s -X POST "http://localhost:$((PORT+1))/api/v1/auths/signin" -H 'Content-Type: application/json' \
+      -d "{\"email\":\"$ADMIN_EMAIL\",\"password\":\"$ADMIN_PW\"}" | jq -r '.token // empty')
+    A2="Authorization: Bearer $T2"
+    R=$(tgt_graft "$nm" "$cap")
+  fi
   if echo "$R" | jq -e '.delivered==true or .status==true' >/dev/null 2>&1; then
     ok "$nm grafts on $TARGET_ARCH (capability available)"
   elif echo "$R" | grep -q "requires .* and this host is $TARGET_ARCH"; then

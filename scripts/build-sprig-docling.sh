@@ -40,15 +40,16 @@ PYPI_INDEX="${PYPI_INDEX:-https://pypi.org/simple}"
 TORCH_SPEC="${TORCH_SPEC:-torch torchvision --extra-index-url $CPU_INDEX}"
 
 sprig_arch_normalize
+[ "$ARCH" = arm64 ] || "$(dirname "${BASH_SOURCE[0]}")/gates/docker-preflight.sh" amd64 "ARCH=amd64 $0"
 
-WORK="${WORK:-/tmp/sprig-build/docling-$ARCH}"
+WORK="${WORK:-${SPRIG_BUILD_ROOT:-$HOME/.cache/ai-ui/sprig-build}/docling-$ARCH}"
 OUT_DIR="$WORK/out"
 OUT="$OUT_DIR/${NAME}-${ARCHTAG}.tar.zst"
 
 # Clean any prior build. A heavy torch tree can be container-owned and/or hit
 # FUSE "Directory not empty" on a host rm, so nuke it from inside a root
 # container and don't let it abort the run.
-docker run --rm -v /tmp/sprig-build:/b alpine rm -rf "/b/docling-$ARCH" 2>/dev/null || true
+docker run --rm -v "${SPRIG_BUILD_ROOT:-$HOME/.cache/ai-ui/sprig-build}:/b" alpine rm -rf "/b/docling-$ARCH" 2>/dev/null || true
 rm -rf "$WORK" 2>/dev/null || true
 mkdir -p "$OUT_DIR"
 

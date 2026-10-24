@@ -37,4 +37,4 @@ This folder holds historical material that is still worth keeping but should not
 ## Related Active Docs
 
 - `../completed-todos.md` keeps completed roadmap work and stale/resolved task notes.
-- `../backend-rewrite-research.md` and `../knowledge-ingestion-modes-plan.md` stay outside the archive because they still describe active future work.
+- `../backend-rewrite-research.md` stays outside the archive because it still describes active future work.

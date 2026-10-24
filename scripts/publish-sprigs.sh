@@ -34,7 +34,8 @@ command -v jq     >/dev/null || { echo "ERROR: jq not on PATH"; exit 1; }
 # minted from gh's token and mounted read-only (oras honors DOCKER_CONFIG).
 ORAS_IMG="${ORAS_IMG:-ghcr.io/oras-project/oras:v1.2.0}"
 NETWORK="${NETWORK:-sage-network}"
-AUTH_DIR="$(mktemp -d)"
+. "$(dirname "${BASH_SOURCE[0]}")/lib/mount-tmp.sh"
+AUTH_DIR="$(mount_tmp publish-auth)"
 trap 'rm -rf "$AUTH_DIR"' EXIT
 printf '{"auths":{"%s":{"auth":"%s"}}}' "${DEST%%/*}" \
   "$(printf '%s:%s' "$(gh api user -q .login)" "$(gh auth token)" | base64 | tr -d '\n')" \

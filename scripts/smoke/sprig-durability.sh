@@ -17,6 +17,7 @@ IMG="${1:-sage-is/ai-ui:develop}"
 NET="${SPRIG_SMOKE_NET:-sage-network}"; ROOT="sage-durability"; VOL="${ROOT}-data"
 PORT="${SPRIG_DURABILITY_PORT:-8097}"; BASE="http://localhost:${PORT}"
 . "$(dirname "${BASH_SOURCE[0]}")/../lib/gate.sh"   # PASS/FAIL + ok/no/require
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/rootstock-net.sh" # netcurl: loopback calls, no curl in the image
 X(){ docker exec "$ROOT" sh -lc "$1"; }
 
 REGISTRY_STOPPED=0
@@ -51,7 +52,7 @@ echo "== graft: mock-embedding (server child) + media-ffmpeg (deliver overlay) =
 G mock-embedding embedding | jq -e '.status==true' >/dev/null 2>&1 && ok "mock-embedding grafted" || no "mock graft failed"
 G media-ffmpeg media      | jq -e '.delivered==true' >/dev/null 2>&1 && ok "media-ffmpeg delivered" || no "ffmpeg delivery failed"
 X 'test -x /usr/local/bin/ffmpeg' && ok "ffmpeg binary present pre-recreation" || no "ffmpeg missing pre-recreation"
-X 'jq -e ".grafted | length == 2" /app/backend/data/sage-is/sprigs/state.json' >/dev/null 2>&1 \
+X 'cat /app/backend/data/sage-is/sprigs/state.json' 2>/dev/null | jq -e '.grafted | length == 2' >/dev/null 2>&1 \
   && ok "state.json records both grafts" || no "state.json wrong: $(X 'cat /app/backend/data/sage-is/sprigs/state.json' 2>/dev/null | head -c 200)"
 X 'ls /app/backend/data/sage-is/sprigs/media-ffmpeg/*.tar.zst' >/dev/null 2>&1 \
   && ok "verified tar cached on the volume" || no "tar not cached on volume"
@@ -67,7 +68,7 @@ CAT=$(curl -s "$BASE/api/v1/retrieval/sprigs/catalog" -H "$AUTH")
 echo "$CAT" | jq -e '.grafted["media-ffmpeg"].state=="delivered"' >/dev/null 2>&1 && ok "/catalog shows media-ffmpeg delivered" || no "ffmpeg absent from grafted view"
 echo "$CAT" | jq -e '.grafted["mock-embedding"].state=="rooted"' >/dev/null 2>&1 && ok "/catalog shows mock-embedding rooted" || no "mock not rooted post-restart"
 BURL=$(echo "$CAT" | jq -r '.grafted["mock-embedding"].base_url // empty')
-DIM=$(X "curl -s ${BURL}/embeddings -H 'Content-Type: application/json' -d '{\"input\":[\"vector after full recreation\"]}' | jq '.data[0].embedding | length'")
+DIM=$(netcurl -s "${BURL}/embeddings" -H 'Content-Type: application/json' -d '{"input":["vector after full recreation"]}' | jq '.data[0].embedding | length')
 [ "$DIM" = "384" ] && ok "re-spawned embedding serves a 384-dim vector" || no "embedding dead post-restart (dim=$DIM, url=$BURL)"
 
 docker start local-registry >/dev/null 2>&1 && REGISTRY_STOPPED=0 && echo "  local-registry restarted"

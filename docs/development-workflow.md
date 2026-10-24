@@ -208,7 +208,7 @@ For each task, define:
 
 ## Styling with Startr.Style
 
-This project uses [Startr.Style](https://startr.style) as its primary CSS framework. Startr.Style is a utility-complete CSS framework (under 50KB / 8KB gzipped) that uses inline CSS custom properties instead of class-based utilities.
+This project uses [Startr.Style](https://startr.style) as its primary CSS framework. Startr.Style is a utility-complete CSS framework (about 76 KB minified, 13.5 KB gzipped) that uses inline CSS custom properties instead of class-based utilities.
 
 ### Why Startr.Style
 
@@ -227,7 +227,7 @@ Style elements using `--property:value` in the `style` attribute:
 <div style="--d:flex; --ai:center; --jc:space-between; --g:1rem">
 
 <!-- Spacing & borders -->
-<div style="--p:0.6rem; --br:0.5rem; --b:1px solid var(--color-gray-200)">
+<div style="--p:0.6rem; --radius:0.5rem; --b:1px solid var(--color-gray-200)">
 
 <!-- Typography -->
 <span style="--size:0.8rem; --weight:500; --c:var(--color-gray-600)">
@@ -242,7 +242,7 @@ Style elements using `--property:value` in the `style` attribute:
 | `--m` | margin | `--m:0.5rem` |
 | `--bg` / `--bgc` | background / background-color | `--bg:var(--color-sky-500)` |
 | `--c` | color | `--c:white` |
-| `--br` | border-radius | `--br:0.5rem` |
+| `--radius` | border-radius | `--radius:0.5rem` |
 | `--b` | border | `--b:1px solid var(--color-gray-300)` |
 | `--w` / `--h` | width / height | `--w:100%` |
 | `--ai` | align-items | `--ai:center` |
@@ -273,12 +273,12 @@ Append a breakpoint suffix to any property:
 
 ### Dark Mode & Interactive States
 
-- **Dark mode:** prefix with `--dark-` (e.g., `--dark-bg:var(--color-gray-800)`)
-- **Hover:** prefix with `--hvr-` (e.g., `--hvr-bg:var(--color-sky-600)`)
+- **Dark mode:** the theme swaps named colors under `[data-theme="dark"]`, so tokens like `var(--background)` follow it. No per-prop dark prefix.
+- **Hover:** suffix with `-hover` (e.g., `--bg-hover:var(--color-sky-600)`)
 
 ```html
-<button style="--bgc:var(--color-gray-100); --dark-bgc:var(--color-gray-800); --hvr-bgc:var(--color-gray-200)">
-  Theme-aware button
+<button style="--bgc:var(--color-gray-100); --bgc-hover:var(--color-gray-200)">
+  Hover-aware button
 </button>
 ```
 
@@ -322,6 +322,7 @@ Append a breakpoint suffix to any property:
 
 Standard targets for common tasks:
 - `make setup` - Configure local environment
+- `make setup_env` - Write `.env` only; wraps `tools/setup_project_env.sh`
 - `make help` - Show available commands
 - Project-specific build/deploy targets
 
@@ -329,14 +330,10 @@ Standard targets for common tasks:
 
 **Commit message format:**
 ```
-[Type]: [Summary]
-
-- [Change 1]
-- [Change 2]
-- Mark TODO item as complete/in progress
+type(scope): subject
 ```
 
-**Types:** Add, Update, Fix, Remove, Refactor, Document
+**Types:** `feat`, `fix`, `docs`, `refactor`, `test`, `chore`
 
 ### Security & Private-Data Scanning
 

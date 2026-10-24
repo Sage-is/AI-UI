@@ -117,11 +117,7 @@ app/cypress/perf-workshop.json
 app/cypress/perf-routes.json
 app/cypress/boot-waterfall-timing.json
 
-# Decision records (not public - only for internal team use)
-!docs/decisions/README.md
-docs/decisions/*
 
-# Chart artifacts (not public - only for internal team use)
-!charts/README.md
-charts/*
-.obsidian/workspace.json
+# Social cards: `make social_cards` builds each PNG from the SVG beside it.
+# Upload from there; committing the PNG would let it drift from its SVG.
+docs/art/social/*.png

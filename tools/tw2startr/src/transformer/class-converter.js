@@ -59,26 +59,63 @@ const RESPONSIVE_SUFFIXES = {
 };
 
 /**
- * State prefixes that map to startr.style property prefixes
+ * Theme prefixes that map to startr.style property prefixes: dark:bg → --dark-bgc.
  */
 const STATE_PREFIX_MAP = {
-  hover: 'hvr',
   dark: 'dark',
 };
+
+/**
+ * State prefixes that become a startr.style state suffix. startr.style writes
+ * the prop first and the state after it, in whole words: --bgc-hover.
+ *   focus, focus-visible → -focus (startr.style matches :focus-visible)
+ *   open, checked, aria-selected/pressed/expanded → -on
+ *   group-hover → -in-hover (direct children of the hovered element only)
+ */
+const STATE_SUFFIX_MAP = {
+  hover: 'hover',
+  focus: 'focus',
+  'focus-visible': 'focus',
+  active: 'active',
+  open: 'on',
+  checked: 'on',
+  'aria-selected': 'on',
+  'aria-pressed': 'on',
+  'aria-expanded': 'on',
+  'group-hover': 'in-hover',
+};
+
+/** Props that take every state suffix: startr.style's paint set (see its props.json). */
+const PAINT_PROPS = new Set(['--bg', '--bgc', '--c', '--b', '--bc', '--boxs', '--op', '--t', '--oe']);
+
+/** Effect helpers that take -hover only (--shadow-hover, --levitate-hover, …). */
+const HOVER_EFFECTS = new Set([
+  '--shadow', '--levitate', '--translate', '--translatex', '--translatey', '--scale', '--rotate', '--skew',
+]);
+
+/** Notes for states whose startr.style meaning differs from Tailwind's. */
+const STATE_REVIEW = {
+  focus: 'focus: became -focus, which startr.style applies on :focus-visible (keyboard focus), not on every focus',
+  'group-hover': 'group-hover: became -in-hover, which reaches direct children of the hovered element only',
+};
+
+function acceptsState(prop, suffix) {
+  return PAINT_PROPS.has(prop) || (suffix === 'hover' && HOVER_EFFECTS.has(prop));
+}
 
 /**
  * State prefixes that CANNOT be converted to inline styles.
  * These stay in the class attribute.
  */
 const UNCONVERTIBLE_PREFIXES = new Set([
-  'focus', 'focus-within', 'focus-visible',
-  'active', 'visited', 'target',
+  'focus-within',
+  'visited', 'target',
   'first', 'last', 'only', 'odd', 'even',
   'first-of-type', 'last-of-type',
-  'empty', 'disabled', 'enabled', 'checked', 'indeterminate', 'default',
+  'empty', 'disabled', 'enabled', 'indeterminate', 'default',
   'required', 'valid', 'invalid', 'in-range', 'out-of-range',
   'placeholder-shown', 'autofill', 'read-only',
-  'group-hover', 'group-focus', 'group-active', 'group-first', 'group-last',
+  'group-focus', 'group-active', 'group-first', 'group-last',
   'peer-hover', 'peer-focus', 'peer-checked', 'peer-disabled',
   'has', 'group-has', 'peer-has',
   'before', 'after', 'first-line', 'first-letter',
@@ -86,7 +123,7 @@ const UNCONVERTIBLE_PREFIXES = new Set([
   'backdrop', 'supports', 'motion-safe', 'motion-reduce',
   'contrast-more', 'contrast-less',
   'portrait', 'landscape',
-  'ltr', 'rtl', 'open',
+  'ltr', 'rtl',
 ]);
 
 /**
@@ -125,6 +162,7 @@ export function parsePrefixes(twClass) {
  */
 export function findUnconvertiblePrefix(prefixes) {
   for (const prefix of prefixes) {
+    if (STATE_SUFFIX_MAP[prefix]) continue;
     if (UNCONVERTIBLE_PREFIXES.has(prefix)) return prefix;
     if (DATA_PREFIX_RE.test(prefix)) return prefix;
     // Check compound: group-hover, peer-focus, etc.
@@ -139,6 +177,7 @@ export function findUnconvertiblePrefix(prefixes) {
 function classifyPrefixes(prefixes) {
   const responsive = [];
   const states = [];
+  const suffixStates = [];
   const unconvertible = [];
 
   for (const prefix of prefixes) {
@@ -146,6 +185,8 @@ function classifyPrefixes(prefixes) {
       responsive.push(prefix);
     } else if (STATE_PREFIX_MAP[prefix]) {
       states.push(prefix);
+    } else if (STATE_SUFFIX_MAP[prefix]) {
+      suffixStates.push(prefix);
     } else if (UNCONVERTIBLE_PREFIXES.has(prefix) || DATA_PREFIX_RE.test(prefix) ||
                prefix.startsWith('group-') || prefix.startsWith('peer-')) {
       unconvertible.push(prefix);
@@ -155,7 +196,7 @@ function classifyPrefixes(prefixes) {
     }
   }
 
-  return { responsive, states, unconvertible };
+  return { responsive, states, suffixStates, unconvertible };
 }
 
 /**
@@ -173,16 +214,9 @@ function applyResponsiveSuffix(prop, responsivePrefix) {
 }
 
 /**
- * Apply state prefix to a startr.style property.
- * '--bgc' + 'hover' → '--hvr-bgc'  (extracts the short name after --)
- * '--c' + 'hover' → '--hvr-c'
- * '--bgc' + 'dark' → '--dark-bgc'
- *
- * For hover, only certain properties have startr.style support:
- * --hvr-bg, --hvr-bgc, --hvr-c, --hvr-b, --hvr-bc
- * Others are converted but may need review.
- *
- * For dark, use --dark-{shortname} pattern.
+ * Apply a theme prefix to a startr.style property.
+ * '--bgc' + 'dark' → '--dark-bgc'  (extracts the short name after --)
+ * States (hover, focus, …) are suffixes instead; see STATE_SUFFIX_MAP.
  */
 function applyStatePrefix(prop, statePrefix) {
   const stateKey = STATE_PREFIX_MAP[statePrefix];
@@ -203,13 +237,23 @@ function applyStatePrefix(prop, statePrefix) {
 export function convertClass(twClass) {
   // Parse prefixes
   const { prefixes, baseClass, isNegative } = parsePrefixes(twClass);
-  const { responsive, states, unconvertible } = classifyPrefixes(prefixes);
+  const { responsive, states, suffixStates, unconvertible } = classifyPrefixes(prefixes);
 
   // If any unconvertible prefix, can't convert
   if (unconvertible.length > 0) {
     return {
       converted: false,
       reason: `unconvertible prefix: ${unconvertible.join(', ')}`,
+      originalClass: twClass
+    };
+  }
+
+  // startr.style state props take no breakpoint, theme or second state:
+  // --bgc-hover exists, --bgc-hover-sm and --dark-bgc-hover do not.
+  if (suffixStates.length > 1 || (suffixStates.length > 0 && (responsive.length > 0 || states.length > 0))) {
+    return {
+      converted: false,
+      reason: `no startr.style prop combines "${prefixes.join(':')}"; state props take no breakpoint, theme or second state`,
       originalClass: twClass
     };
   }
@@ -262,8 +306,25 @@ export function convertClass(twClass) {
     }));
   }
 
-  // Apply state prefixes (dark:, hover:)
-  // Order matters: dark:hover:bg-gray-100 → --dark-hvr-bgc
+  // Apply a state suffix (hover:, focus:, …): hover:bg-gray-100 → --bgc-hover.
+  // Only props startr.style gives that state convert; anything else would be a
+  // silent no-op, so the class stays for review.
+  if (suffixStates.length === 1) {
+    const suffix = STATE_SUFFIX_MAP[suffixStates[0]];
+    const unsupported = properties.filter(p => !acceptsState(p.prop, suffix));
+    if (unsupported.length > 0) {
+      return {
+        converted: false,
+        reason: `startr.style has no ${unsupported.map(p => `${p.prop}-${suffix}`).join(', ')}`,
+        originalClass: twClass
+      };
+    }
+    properties = properties.map(p => ({ ...p, prop: `${p.prop}-${suffix}` }));
+    const note = STATE_REVIEW[suffixStates[0]];
+    if (note) review = (review ? review + '; ' : '') + note;
+  }
+
+  // Apply theme prefixes (dark:): dark:bg-gray-800 → --dark-bgc
   for (const statePrefix of states) {
     properties = properties.map(p => ({
       ...p,
@@ -272,7 +333,7 @@ export function convertClass(twClass) {
   }
 
   // Apply responsive suffixes
-  // sm:hover:flex → --hvr-d-sm
+  // sm:flex → --d-sm
   for (const respPrefix of responsive) {
     let hasPlainCSS = false;
     properties = properties.map(p => {

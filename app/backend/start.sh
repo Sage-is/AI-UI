@@ -211,15 +211,13 @@ if [ -n "$SPACE_ID" ]; then
     WEBUI_SECRET_KEY="$WEBUI_SECRET_KEY" uvicorn sage_is_ai.main:app --host "$HOST" --port "$PORT" --forwarded-allow-ips '*' &
     webui_pid=$!
     echo "Waiting for server to start..."
-    while ! curl -s http://localhost:8080/health > /dev/null; do
-      sleep 1
-    done
+    # No curl in the image since 3.2.1: utils/localhttp.py, standard library only.
+    python3 -m sage_is_ai.utils.localhttp --wait-seconds 600 "http://localhost:${PORT}/health" > /dev/null
     echo "Creating admin user..."
-    curl \
-      -X POST "http://localhost:8080/api/v1/auths/signup" \
-      -H "accept: application/json" \
-      -H "Content-Type: application/json" \
-      -d "{ \"email\": \"${ADMIN_USER_EMAIL}\", \"password\": \"${ADMIN_USER_PASSWORD}\", \"name\": \"Admin\" }"
+    # json.dumps, not printf: a quote or backslash in the password stays valid JSON.
+    ADMIN_USER_EMAIL="$ADMIN_USER_EMAIL" ADMIN_USER_PASSWORD="$ADMIN_USER_PASSWORD" python3 -c \
+      'import json, os; print(json.dumps({"email": os.environ["ADMIN_USER_EMAIL"], "password": os.environ["ADMIN_USER_PASSWORD"], "name": "Admin"}))' \
+      | python3 -m sage_is_ai.utils.localhttp --json @- "http://localhost:${PORT}/api/v1/auths/signup"
     echo "Shutting down server..."
     kill "$webui_pid"
   fi

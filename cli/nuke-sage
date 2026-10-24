@@ -1,0 +1,652 @@
+#!/bin/bash
+# nuke-sage — The Genesis Device.
+#
+# Universal cleanup for the Sage/Startr ecosystem.
+# Works standalone — no dependencies on ai-ui, brew, or Docker being installed.
+#
+# Modes:
+#   nuke-sage ai-ui              Surgical: remove one project's artifacts
+#   nuke-sage --all              Remove all Sage Docker/Brew (keep config vault)
+#   nuke-sage --genesis          Scorched earth: vaults, Docker provider, Ollama, everything
+#   nuke-sage --genesis --include-docker-data   Also nuke ~/.docker/ and VM data
+#
+# Flags:
+#   --yes, -y       Skip confirmation (for CI/scripting)
+#   --dry-run       Show what would be removed without doing anything
+#   -h, --help      Show this help
+#
+set -euo pipefail
+
+# ---------------------------------------------------------------------------
+# Config
+# ---------------------------------------------------------------------------
+SAGE_CONFIG_DIR="${HOME}/.sage-is"
+SAGE_PROJECTS="${SAGE_CONFIG_DIR}/projects"
+APPLICATIONS_DIR="${APPLICATIONS_DIR:-/Applications}"
+INSTALL_LINE="brew tap sage-is/apps && brew trust --tap sage-is/apps && brew install ai-ui"
+
+# Known project → Docker artifact mapping.
+# Format: name|container|volume|image_pattern|brew_formula
+# Add a line here when a new project joins the ecosystem.
+KNOWN_PROJECTS=(
+  "ai-ui|sage-ai|sage-ai-data|ghcr.io/sage-is/ai-ui|ai-ui"
+  "db-sage-pb|web-db-sage-pb|sage-pb-data|ghcr.io/sage-is/db-sage-pb|"
+  "open-webui||sage-open-webui||"
+)
+
+# Patterns for dynamic Docker discovery (--all and --genesis).
+CONTAINER_PATTERNS='^(sage|startr)[-_]'
+VOLUME_PATTERNS='^(sage|startr)[-_]'
+IMAGE_PATTERNS='sage-is/'
+NETWORK_PATTERNS='(sage|startr)[-_].*default$|^(sage|startr)[-_]'
+
+# ---------------------------------------------------------------------------
+# Parse arguments
+# ---------------------------------------------------------------------------
+MODE=""          # "project", "all", "genesis"
+PROJECT=""       # project name for surgical mode
+AUTO_YES=false
+DRY_RUN=false
+INCLUDE_DOCKER_DATA=false
+
+show_help() {
+  cat <<'EOF'
+Usage: nuke-sage [OPTIONS] [PROJECT]
+
+Modes:
+  PROJECT                    Nuke a specific project (e.g. ai-ui, db-sage-pb)
+  --all                      Nuke all Sage/Startr artifacts (keep vault for fast re-setup)
+  --genesis                  Scorched earth — vaults, Docker provider, Ollama, everything
+
+Options:
+  --include-docker-data      With --genesis: also remove ~/.docker/, VM data (affects non-Sage)
+  --yes, -y                  Skip confirmation
+  --dry-run                  Show what would be removed without doing anything
+  -h, --help                 Show this help
+
+Examples:
+  nuke-sage ai-ui                          # remove just ai-ui
+  nuke-sage --all                          # remove all Sage, keep config vault
+  nuke-sage --genesis --yes                # full scorched earth, no prompt
+  nuke-sage --all --dry-run                # see what would be removed
+EOF
+  exit 0
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --all)                  MODE="all"; shift ;;
+    --genesis)              MODE="genesis"; shift ;;
+    --include-docker-data)  INCLUDE_DOCKER_DATA=true; shift ;;
+    --yes|-y)               AUTO_YES=true; shift ;;
+    --dry-run)              DRY_RUN=true; shift ;;
+    -h|--help)              show_help ;;
+    -*)                     echo "Unknown flag: $1"; echo "Run nuke-sage --help"; exit 1 ;;
+    *)
+      if [[ -z "$MODE" ]]; then
+        MODE="project"
+        PROJECT="$1"
+      else
+        echo "Unexpected argument: $1"; exit 1
+      fi
+      shift ;;
+  esac
+done
+
+if [[ -z "$MODE" ]]; then
+  show_help
+fi
+
+if [[ "$MODE" == "project" && -z "$PROJECT" ]]; then
+  echo "Error: project name required. Run nuke-sage --help"
+  exit 1
+fi
+
+if [[ "$INCLUDE_DOCKER_DATA" == true && "$MODE" != "genesis" ]]; then
+  echo "Error: --include-docker-data only works with --genesis"
+  exit 1
+fi
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+# Read saved clone path for a project from ~/.sage-is/projects.
+saved_path_for() {
+  [[ -f "$SAGE_PROJECTS" ]] && sed -n "s/^${1}=//p" "$SAGE_PROJECTS"
+}
+
+# Look up a project in KNOWN_PROJECTS. Sets globals: K_CONTAINER, K_VOLUME, K_IMAGE, K_FORMULA.
+lookup_project() {
+  local name="$1"
+  K_CONTAINER="" K_VOLUME="" K_IMAGE="" K_FORMULA=""
+  for entry in "${KNOWN_PROJECTS[@]}"; do
+    IFS='|' read -r pname pcont pvol pimg pform <<< "$entry"
+    if [[ "$pname" == "$name" ]]; then
+      K_CONTAINER="$pcont" K_VOLUME="$pvol" K_IMAGE="$pimg" K_FORMULA="$pform"
+      return 0
+    fi
+  done
+  return 1
+}
+
+# Check if Docker is available (daemon may or may not be running).
+has_docker() { command -v docker &>/dev/null; }
+has_brew()   { command -v brew &>/dev/null; }
+
+# Safely check docker commands (daemon might be stopped).
+docker_ok() { docker info &>/dev/null 2>&1; }
+
+# ---------------------------------------------------------------------------
+# Scan — discover what exists
+# ---------------------------------------------------------------------------
+# Arrays to accumulate findings for the report.
+declare -a ITEMS=()           # display lines
+declare -a CONTAINERS=()      # containers to remove
+declare -a VOLUMES=()         # volumes to remove
+declare -a IMAGES=()          # images to remove
+declare -a NETWORKS=()        # networks to remove
+declare -a BREW_FORMULAS=()   # brew formulas to uninstall
+declare -a SOURCE_PATHS=()    # source code paths (shown, not deleted)
+HAS_TAP=false
+HAS_VAULT=false
+HAS_STARTR=false
+RUNNING_COUNT=0
+
+scan_docker_project() {
+  # Scan Docker for a specific project by its known names.
+  local cont="$1" vol="$2" img_pattern="$3"
+
+  if [[ -n "$cont" ]] && docker inspect "$cont" &>/dev/null 2>&1; then
+    local state
+    state="$(docker inspect --format='{{.State.Status}}' "$cont" 2>/dev/null)" || state="unknown"
+    CONTAINERS+=("$cont")
+    if [[ "$state" == "running" ]]; then
+      ITEMS+=("  Container:   $cont (running ⚠)")
+      ((RUNNING_COUNT++)) || true
+    else
+      ITEMS+=("  Container:   $cont ($state)")
+    fi
+  fi
+
+  if [[ -n "$vol" ]] && docker volume inspect "$vol" &>/dev/null 2>&1; then
+    VOLUMES+=("$vol")
+    ITEMS+=("  Volume:      $vol")
+  fi
+
+  if [[ -n "$img_pattern" ]]; then
+    local imgs
+    imgs="$(docker images --format '{{.Repository}}:{{.Tag}}' 2>/dev/null | grep -i "$img_pattern")" || true
+    while IFS= read -r img; do
+      [[ -z "$img" ]] && continue
+      local size
+      size="$(docker image inspect --format='{{.Size}}' "$img" 2>/dev/null)" || size=""
+      if [[ -n "$size" ]]; then
+        size="$(echo "$size" | awk '{printf "%.0f MB", $1/1048576}')"
+        ITEMS+=("  Image:       $img ($size)")
+      else
+        ITEMS+=("  Image:       $img")
+      fi
+      IMAGES+=("$img")
+    done <<< "$imgs"
+  fi
+}
+
+scan_docker_all() {
+  # Discover ALL Sage/Startr Docker artifacts by pattern matching.
+
+  # Containers
+  local conts
+  conts="$(docker ps -a --format '{{.Names}}' 2>/dev/null | grep -iE "$CONTAINER_PATTERNS")" || true
+  while IFS= read -r c; do
+    [[ -z "$c" ]] && continue
+    local state
+    state="$(docker inspect --format='{{.State.Status}}' "$c" 2>/dev/null)" || state="unknown"
+    CONTAINERS+=("$c")
+    if [[ "$state" == "running" ]]; then
+      ITEMS+=("  Container:   $c (running ⚠)")
+      ((RUNNING_COUNT++)) || true
+    else
+      ITEMS+=("  Container:   $c ($state)")
+    fi
+  done <<< "$conts"
+
+  # Volumes
+  local vols
+  vols="$(docker volume ls --format '{{.Name}}' 2>/dev/null | grep -iE "$VOLUME_PATTERNS")" || true
+  while IFS= read -r v; do
+    [[ -z "$v" ]] && continue
+    VOLUMES+=("$v")
+    ITEMS+=("  Volume:      $v")
+  done <<< "$vols"
+
+  # Images
+  local imgs
+  imgs="$(docker images --format '{{.Repository}}:{{.Tag}}' 2>/dev/null | grep -i "$IMAGE_PATTERNS")" || true
+  while IFS= read -r img; do
+    [[ -z "$img" ]] && continue
+    IMAGES+=("$img")
+    ITEMS+=("  Image:       $img")
+  done <<< "$imgs"
+
+  # Networks
+  local nets
+  nets="$(docker network ls --format '{{.Name}}' 2>/dev/null | grep -iE "$NETWORK_PATTERNS")" || true
+  while IFS= read -r n; do
+    [[ -z "$n" ]] && continue
+    NETWORKS+=("$n")
+    ITEMS+=("  Network:     $n")
+  done <<< "$nets"
+}
+
+scan_brew_project() {
+  local formula="$1"
+  [[ -z "$formula" ]] && return
+  # Check main formula and versioned formulas (ai-ui@1, ai-ui@2, etc.)
+  local all_formulas
+  all_formulas="$(brew list 2>/dev/null | grep -E "^${formula}(@[0-9]+)?$")" || true
+  while IFS= read -r f; do
+    [[ -z "$f" ]] && continue
+    BREW_FORMULAS+=("$f")
+    ITEMS+=("  Formula:     $f")
+  done <<< "$all_formulas"
+}
+
+scan_brew_all() {
+  # All ai-ui formulas (including versioned)
+  local formulas
+  formulas="$(brew list 2>/dev/null | grep -iE 'ai-ui')" || true
+  while IFS= read -r f; do
+    [[ -z "$f" ]] && continue
+    BREW_FORMULAS+=("$f")
+    ITEMS+=("  Formula:     $f")
+  done <<< "$formulas"
+}
+
+scan_brew_tap() {
+  if brew tap 2>/dev/null | grep -q "sage-is/apps"; then
+    HAS_TAP=true
+    ITEMS+=("  Tap:         sage-is/apps")
+  fi
+}
+
+scan_config_project() {
+  local name="$1"
+  if [[ -f "$SAGE_PROJECTS" ]] && grep -q "^${name}=" "$SAGE_PROJECTS" 2>/dev/null; then
+    HAS_VAULT=true
+    ITEMS+=("  Config:      ~/.sage-is/projects ($name entry)")
+  fi
+}
+
+scan_config_all() {
+  if [[ -d "$SAGE_CONFIG_DIR" ]]; then
+    HAS_VAULT=true
+    if [[ "$MODE" == "genesis" ]]; then
+      ITEMS+=("  Config:      ~/.sage-is/ (entire directory)")
+    else
+      ITEMS+=("  Config:      ~/.sage-is/ [preserved — use --genesis to remove]")
+    fi
+  fi
+  if [[ -d "${HOME}/.startr" ]]; then
+    HAS_STARTR=true
+    if [[ "$MODE" == "genesis" ]]; then
+      ITEMS+=("  Config:      ~/.startr/ (entire directory)")
+    else
+      ITEMS+=("  Config:      ~/.startr/ [preserved — use --genesis to remove]")
+    fi
+  fi
+}
+
+scan_source_paths() {
+  # From config vault
+  if [[ -f "$SAGE_PROJECTS" ]]; then
+    if [[ "$MODE" == "project" ]]; then
+      local saved
+      saved="$(saved_path_for "$PROJECT")" || true
+      if [[ -n "$saved" && -d "$saved" ]]; then
+        SOURCE_PATHS+=("$saved")
+      fi
+    else
+      while IFS='=' read -r name path; do
+        [[ -n "$path" && -d "$path" ]] && SOURCE_PATHS+=("$path")
+      done < "$SAGE_PROJECTS"
+    fi
+  fi
+
+  # Default ai-ui path
+  local default="${HOME}/src/ai-ui"
+  if [[ -d "$default" ]]; then
+    local already=false
+    for p in "${SOURCE_PATHS[@]+"${SOURCE_PATHS[@]}"}"; do
+      [[ "$p" == "$default" ]] && already=true
+    done
+    [[ "$already" == false ]] && SOURCE_PATHS+=("$default")
+  fi
+
+  for sp in "${SOURCE_PATHS[@]+"${SOURCE_PATHS[@]}"}"; do
+    ITEMS+=("  Source:      $sp (not auto-deleted)")
+  done
+}
+
+# Genesis-specific: detect Docker providers and Ollama.
+declare -a GENESIS_ITEMS=()
+declare -a DOCKER_PROVIDERS=()  # desktop, orbstack, colima
+HAS_OLLAMA=false
+declare -a DOCKER_DATA_PATHS=()
+
+scan_genesis() {
+  # Ollama
+  if has_brew && brew list ollama &>/dev/null 2>&1; then
+    HAS_OLLAMA=true
+    GENESIS_ITEMS+=("  Ollama:      installed (brew)")
+  fi
+
+  # Every Docker provider on this Mac: ai-ui may have run Sage in any of them.
+  if [[ -d "$APPLICATIONS_DIR/Docker.app" ]]; then
+    DOCKER_PROVIDERS+=("desktop")
+    GENESIS_ITEMS+=("  Docker:      Docker Desktop")
+  fi
+  if [[ -d "$APPLICATIONS_DIR/OrbStack.app" ]]; then
+    DOCKER_PROVIDERS+=("orbstack")
+    GENESIS_ITEMS+=("  Docker:      OrbStack")
+  fi
+  if command -v colima &>/dev/null; then
+    DOCKER_PROVIDERS+=("colima")
+    GENESIS_ITEMS+=("  Docker:      Colima")
+  fi
+
+  # Docker data paths (only with --include-docker-data)
+  if [[ "$INCLUDE_DOCKER_DATA" == true ]]; then
+    for dpath in \
+      "${HOME}/.docker" \
+      "${HOME}/Library/Containers/com.docker.docker" \
+      "${HOME}/Library/Group Containers/group.com.docker" \
+      "${HOME}/.colima" \
+      "${HOME}/Library/Containers/com.orbstack.OrbStack"; do
+      if [[ -d "$dpath" ]]; then
+        DOCKER_DATA_PATHS+=("$dpath")
+        GENESIS_ITEMS+=("  Data:        $dpath")
+      fi
+    done
+  fi
+}
+
+# ---------------------------------------------------------------------------
+# Run the scan
+# ---------------------------------------------------------------------------
+
+# Mode label for the banner
+case "$MODE" in
+  project) MODE_LABEL="project: $PROJECT" ;;
+  all)     MODE_LABEL="--all (keep config vaults)" ;;
+  genesis)
+    if [[ "$INCLUDE_DOCKER_DATA" == true ]]; then
+      MODE_LABEL="--genesis --include-docker-data"
+    else
+      MODE_LABEL="--genesis (scorched earth)"
+    fi
+    ;;
+esac
+
+echo ""
+echo "  ╔══════════════════════════════════════════════════╗"
+echo "  ║  nuke-sage — the Genesis Device                  ║"
+echo "  ║  Mode: $(printf '%-41s' "$MODE_LABEL")  ║"
+echo "  ╚══════════════════════════════════════════════════╝"
+echo ""
+
+# Docker scan
+if has_docker && docker_ok; then
+  if [[ "$MODE" == "project" ]]; then
+    if lookup_project "$PROJECT"; then
+      scan_docker_project "$K_CONTAINER" "$K_VOLUME" "$K_IMAGE"
+    else
+      echo "  Warning: unknown project '$PROJECT' — scanning by pattern..."
+      # Fall back to pattern matching with the project name
+      scan_docker_project "$PROJECT" "$PROJECT" "$PROJECT"
+    fi
+  else
+    scan_docker_all
+  fi
+elif has_docker; then
+  echo "  Note: Docker is installed but the daemon isn't running."
+  echo "  Some Docker artifacts may not be detected."
+  echo ""
+fi
+
+# Homebrew scan
+if has_brew; then
+  if [[ "$MODE" == "project" ]]; then
+    scan_brew_project "$K_FORMULA"
+  else
+    scan_brew_all
+  fi
+  scan_brew_tap
+fi
+
+# Config scan
+if [[ "$MODE" == "project" ]]; then
+  scan_config_project "$PROJECT"
+else
+  scan_config_all
+fi
+
+# Source paths
+scan_source_paths
+
+# Genesis extras
+if [[ "$MODE" == "genesis" ]]; then
+  scan_genesis
+fi
+
+# ---------------------------------------------------------------------------
+# Report
+# ---------------------------------------------------------------------------
+
+# Combine all items
+ALL_ITEMS=("${ITEMS[@]+"${ITEMS[@]}"}" "${GENESIS_ITEMS[@]+"${GENESIS_ITEMS[@]}"}")
+
+if [[ ${#ALL_ITEMS[@]} -eq 0 ]]; then
+  echo "Nothing to remove — already clean."
+  exit 0
+fi
+
+echo "Here's what we found:"
+echo ""
+for item in "${ALL_ITEMS[@]}"; do
+  echo "$item"
+done
+echo ""
+
+# Warnings
+if [[ ${#VOLUMES[@]} -gt 0 ]]; then
+  echo "  ⚠ Volumes may contain your data (conversations, databases, settings)."
+  echo "    This cannot be undone."
+  echo ""
+fi
+
+if [[ $RUNNING_COUNT -gt 0 ]]; then
+  echo "  ⚠ $RUNNING_COUNT running container(s) will be stopped."
+  echo ""
+fi
+
+if [[ ${#SOURCE_PATHS[@]} -gt 0 ]]; then
+  echo "  ⚠ Source directories may contain uncommitted work."
+  echo "    We won't delete them automatically — we'll show you how."
+  echo ""
+fi
+
+if [[ "$MODE" == "genesis" && ${#DOCKER_PROVIDERS[@]} -gt 0 ]]; then
+  echo "  ⚠ This will uninstall your Docker providers: ${DOCKER_PROVIDERS[*]}."
+  echo "    Non-Sage containers will also be affected."
+  echo ""
+fi
+
+if [[ "$INCLUDE_DOCKER_DATA" == true && ${#DOCKER_DATA_PATHS[@]} -gt 0 ]]; then
+  echo "  ⚠ Docker data directories will be removed."
+  echo "    ALL Docker images, containers, and volumes (including non-Sage) will be lost."
+  echo ""
+fi
+
+# Dry run stops here
+if [[ "$DRY_RUN" == true ]]; then
+  echo "[dry-run] Nothing was removed."
+  exit 0
+fi
+
+# ---------------------------------------------------------------------------
+# Confirm
+# ---------------------------------------------------------------------------
+if [[ "$AUTO_YES" == false ]]; then
+  read -r -p "Proceed? (yes/no): " confirm
+  if [[ "$confirm" != "yes" ]]; then
+    echo "Aborted. Nothing was touched."
+    exit 0
+  fi
+  echo ""
+fi
+
+# ---------------------------------------------------------------------------
+# Execute — in dependency order
+# ---------------------------------------------------------------------------
+
+# --- Layer 0+1: Docker artifacts ---
+for c in "${CONTAINERS[@]+"${CONTAINERS[@]}"}"; do
+  echo "Stopping and removing container $c..."
+  docker stop "$c" 2>/dev/null || true
+  docker rm "$c" 2>/dev/null || true
+  echo "  Done."
+done
+
+for v in "${VOLUMES[@]+"${VOLUMES[@]}"}"; do
+  echo "Removing volume $v..."
+  docker volume rm "$v" 2>/dev/null || true
+  echo "  Done."
+done
+
+for n in "${NETWORKS[@]+"${NETWORKS[@]}"}"; do
+  echo "Removing network $n..."
+  docker network rm "$n" 2>/dev/null || true
+  echo "  Done."
+done
+
+for img in "${IMAGES[@]+"${IMAGES[@]}"}"; do
+  echo "Removing image $img..."
+  docker rmi "$img" 2>/dev/null || true
+  echo "  Done."
+done
+
+# --- Layer 1: Homebrew ---
+for f in "${BREW_FORMULAS[@]+"${BREW_FORMULAS[@]}"}"; do
+  echo "Uninstalling $f..."
+  brew uninstall "$f" 2>/dev/null || true
+  echo "  Done."
+done
+
+if [[ "$HAS_TAP" == true ]]; then
+  echo "Removing sage-is/apps tap..."
+  brew untap sage-is/apps 2>/dev/null || true
+  echo "  Done."
+fi
+
+# --- Layer 2: Config vaults ---
+if [[ "$MODE" == "project" && "$HAS_VAULT" == true ]]; then
+  # Surgical: remove just the project's entry
+  echo "Removing $PROJECT entry from ~/.sage-is/projects..."
+  sed -i.bak "/^${PROJECT}=/d" "$SAGE_PROJECTS" && rm -f "${SAGE_PROJECTS}.bak"
+  if [[ ! -s "$SAGE_PROJECTS" ]]; then
+    rm -f "$SAGE_PROJECTS"
+    rmdir "$SAGE_CONFIG_DIR" 2>/dev/null || true
+    echo "  Removed ~/.sage-is/ (was empty)."
+  else
+    echo "  Done."
+  fi
+elif [[ "$MODE" == "genesis" ]]; then
+  if [[ -d "$SAGE_CONFIG_DIR" ]]; then
+    echo "Removing ~/.sage-is/..."
+    rm -rf "$SAGE_CONFIG_DIR"
+    echo "  Done."
+  fi
+  if [[ "$HAS_STARTR" == true ]]; then
+    echo "Removing ~/.startr/..."
+    rm -rf "${HOME}/.startr"
+    echo "  Done."
+  fi
+fi
+# --all mode: vaults are intentionally preserved.
+
+# --- Layer 3: Dependencies (genesis only) ---
+if [[ "$MODE" == "genesis" ]]; then
+  # Ollama
+  if [[ "$HAS_OLLAMA" == true ]]; then
+    echo "Stopping Ollama service..."
+    brew services stop ollama 2>/dev/null || true
+    echo "Uninstalling Ollama..."
+    brew uninstall ollama 2>/dev/null || true
+    echo "  Done."
+  fi
+
+  # Docker providers
+  for provider in "${DOCKER_PROVIDERS[@]+"${DOCKER_PROVIDERS[@]}"}"; do
+    echo "Removing Docker provider ($provider)..."
+    case "$provider" in
+      desktop)
+        # Quit the app first
+        osascript -e 'quit app "Docker"' 2>/dev/null || true
+        sleep 2
+        brew uninstall --cask docker-desktop 2>/dev/null || true
+        # If brew didn't handle it, remove the app manually
+        if [[ -d "$APPLICATIONS_DIR/Docker.app" ]]; then
+          rm -rf "$APPLICATIONS_DIR/Docker.app"
+        fi
+        ;;
+      orbstack)
+        osascript -e 'quit app "OrbStack"' 2>/dev/null || true
+        sleep 2
+        brew uninstall --cask orbstack 2>/dev/null || true
+        if [[ -d "$APPLICATIONS_DIR/OrbStack.app" ]]; then
+          rm -rf "$APPLICATIONS_DIR/OrbStack.app"
+        fi
+        ;;
+      colima)
+        colima stop 2>/dev/null || true
+        brew uninstall colima 2>/dev/null || true
+        ;;
+    esac
+    echo "  Done."
+  done
+
+  # Docker data (only with --include-docker-data)
+  if [[ "$INCLUDE_DOCKER_DATA" == true ]]; then
+    for dpath in "${DOCKER_DATA_PATHS[@]+"${DOCKER_DATA_PATHS[@]}"}"; do
+      echo "Removing $dpath..."
+      rm -rf "$dpath"
+      echo "  Done."
+    done
+  fi
+fi
+
+# --- Source code: show, never auto-delete ---
+if [[ ${#SOURCE_PATHS[@]} -gt 0 ]]; then
+  echo ""
+  echo "Source code left in place:"
+  for sp in "${SOURCE_PATHS[@]}"; do
+    echo "  rm -rf \"$sp\""
+  done
+fi
+
+# ---------------------------------------------------------------------------
+# Summary
+# ---------------------------------------------------------------------------
+echo ""
+if [[ "$MODE" == "genesis" ]]; then
+  echo "Genesis complete. The machine has no trace of Sage."
+  echo ""
+  echo "To start from absolute zero (Colima comes with ai-ui):"
+  echo "  $INSTALL_LINE"
+  echo "  ai-ui start"
+else
+  echo "All clean. To start fresh:"
+  echo "  $INSTALL_LINE"
+fi
+echo ""

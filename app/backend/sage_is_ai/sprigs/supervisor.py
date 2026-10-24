@@ -9,8 +9,8 @@ ready, or (b) pulling + sha256-verifying + extracting an OCI artifact into a tar
 browser-ml, media-ffmpeg, backup-rclone, dev-svelte).
 
 SHIPPED: the 15-entry CATALOG (11 capabilities, ALL zero-egress at graft time —
-the last live-pull entry, all-MiniLM-onnx, was retired 2026-07-05), ``oras``
-OCI-artifact delivery (see artifact.py), prune, top-graft (one cultivar rooted
+the last live-pull entry, all-MiniLM-onnx, was retired 2026-07-05),
+OCI-artifact delivery (see artifact.py and oci.py), prune, top-graft (one cultivar rooted
 per server capability: embedding/reranker/stt), and durable grafts —
 start() reconciles from a volume-resident ``state.json`` so a graft survives a
 Rootstock™ restart, re-extracting deliver overlays from the volume-cached tar and
@@ -31,8 +31,7 @@ DEFERRED: restart-with-backoff health-watch, full multi-worker support (one
 worker spawns children; the per-worker catalog view can still differ),
 structured child-log capture (server children are DEVNULL'd, so a failed
 graft's stderr is not surfaced), the amd64 ARTIFACT builds themselves (8.J —
-schema + image ready; per-artifact binary/wheel builds remain, see
-docs/deploy-sage-startr-cloud.md).
+schema + image ready; per-artifact binary/wheel builds remain).
 """
 
 from __future__ import annotations
@@ -92,7 +91,7 @@ SPRIG_REGISTRY_INSECURE = (
 def _registry_config_error() -> str | None:
     """Return a human message if SPRIG_REGISTRY is malformed, else None.
 
-    A scheme prefix (oras pull takes a bare host/path) or uppercase in the
+    A scheme prefix (the OCI pull takes a bare host/path) or uppercase in the
     org/path (OCI names are lowercase) breaks every graft with a confusing
     downstream error. Catch it at boot instead.
     """
@@ -293,7 +292,7 @@ class SprigSupervisor:
                 "backend": "onnx",
                 "model": "all-MiniLM-L6-v2",
                 "dim": 384,  # same width as the mock -> no reindex on swap
-                "ready_timeout_s": 60.0,  # weights pre-seeded by oras pull, no S3 download
+                "ready_timeout_s": 60.0,  # weights pre-seeded by the OCI pull, no S3 download
                 # --- graft #3: OCI-artifact offline delivery (in-housed weights) ---
                 "delivery": "oci-artifact",
                 "repo": f"{SPRIG_REGISTRY}/sprig-embedding-minilm-onnx",
@@ -314,7 +313,7 @@ class SprigSupervisor:
                 "pooling": "mean",  # e5 uses mean pooling
                 "model": "intfloat/multilingual-e5-large",
                 "dim": 1024,
-                "ready_timeout_s": 120.0,  # weights pre-seeded by oras pull, no HF download
+                "ready_timeout_s": 120.0,  # weights pre-seeded by the OCI pull, no HF download
                 "delivery": "oci-artifact",
                 "seed": "model-dir",
                 "repo": f"{SPRIG_REGISTRY}/sprig-embedding-e5-large-onnx",
@@ -370,8 +369,9 @@ class SprigSupervisor:
                 },
             },
         ),
-        # Vector DB substrate — the chromadb closure (~170MB: chromadb, onnxruntime,
-        # kubernetes, grpc, hnswlib, posthog) extracted straight into site-packages.
+        # Vector DB substrate — the chromadb closure (chromadb, onnxruntime,
+        # kubernetes, hnswlib, posthog, and since v3 grpc + the OpenTelemetry SDK)
+        # extracted into the overlay dir, behind the base on sys.path.
         # factory.py boots with VECTOR_DB_CLIENT=None when absent; vector_bootstrap
         # sets factory.VECTOR_DB_CLIENT live on graft, and every consumer reads it
         # through the factory module (not a by-value import), so document search is
@@ -393,15 +393,20 @@ class SprigSupervisor:
                 # v2 (8.I.2): + numpy, tokenizers, huggingface_hub closure — these
                 # left the base rootstock; the onnx embedding cultivars pre-check
                 # for them and point here.
-                "tag": "v2",
+                # v3 (3.2.1): + the OpenTelemetry SDK, gRPC exporter, grpcio and
+                # protobuf, which left the base; chromadb imports them. Built as
+                # the closure minus what the rootstock ships, and gated inside the
+                # rootstock (scripts/build-sprig-vector-chroma.sh). v2 stays
+                # published for 3.2.0, whose base still carries the SDK.
+                "tag": "v3",
                 "insecure": SPRIG_REGISTRY_INSECURE,
-                "binary_sha256": "382b37fd4e0bf4131a26163db075eb1e842f87443f0c9bd200cab2727b552553",
+                "binary_sha256": "d119d418667cd0e0d2db64883a66f6900ac7a5e883142b0b97e3f5e88886fca8",
             },
             arch={
                 "arm64": {},
                 "amd64": {
-                    "tag": "v2-amd64",
-                    "binary_sha256": "045b9862caf418d7d9c8a44bb96de013f2850f6604a7b78b4f5237d7c7e45a4b",
+                    "tag": "v3-amd64",
+                    "binary_sha256": "e3d73ca7c105719a381d0b10eb5a317036d3ae2b460c0adb6fac74b834f62bb2",
                 },
             },
         ),
@@ -655,15 +660,16 @@ class SprigSupervisor:
                 "post_graft_note": "Document processing active. Web-page loading activates after a restart.",
                 "ready_timeout_s": 180.0,
                 "repo": f"{SPRIG_REGISTRY}/sprig-rag-loaders",
-                "tag": "v1",
+                # v2 (3.2.1): pypdf 4.3.1 -> 6.20.1. v1 stays published for 3.2.0.
+                "tag": "v2",
                 "insecure": SPRIG_REGISTRY_INSECURE,
-                "binary_sha256": "f207537072f6c055fe94cef57c27bef8213199770290708e8871ce132cd96c5d",
+                "binary_sha256": "69952fde43fcce4b71f6c9b148acfbe1095f1682b30d6e25e88ca4344b29dce0",
             },
             arch={
                 "arm64": {},
                 "amd64": {
-                    "tag": "v1-amd64",
-                    "binary_sha256": "1aba23ed93a76fc45bd98dc14fc1315b2e987f2c45deab210a7efb1329a246b0",
+                    "tag": "v2-amd64",
+                    "binary_sha256": "e11e9be2b2a36b2ab8400a1de0e27d9d5577362efd858e41b80de37665e12858",
                 },
             },
         ),
@@ -682,15 +688,16 @@ class SprigSupervisor:
                 "sentinel": "usr/local/lib/python3.11/site-packages/fpdf",
                 "ready_timeout_s": 180.0,
                 "repo": f"{SPRIG_REGISTRY}/sprig-export-document",
-                "tag": "v1",
+                # v2 (3.2.1): pillow 12.2.0 -> 12.3.0. v1 stays published for 3.2.0.
+                "tag": "v2",
                 "insecure": SPRIG_REGISTRY_INSECURE,
-                "binary_sha256": "5139f34d07ccbff59ae29fd041c2f7492cef28cee74aa08b58bf4523321235d8",
+                "binary_sha256": "6551239e2b4a6220079bd1a8b6e4218202c2cb687389b5d0142a396aa58a8248",
             },
             arch={
                 "arm64": {},
                 "amd64": {
-                    "tag": "v1-amd64",
-                    "binary_sha256": "913bfe99a2982c820d5e4f94c476bd749edce5b5fcccc673a2bee449766905b1",
+                    "tag": "v2-amd64",
+                    "binary_sha256": "49bd2babc594ce4b839bc35509ef590bb0545e2d279f78e7a11b58a0c164d2ff",
                 },
             },
         ),

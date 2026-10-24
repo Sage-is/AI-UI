@@ -164,7 +164,7 @@ _Board section at compression time: `Sprig B2 — non-technical clarity (audit b
 
 _Board section at compression time: `v2.x — Near Term`._
 
-- [ ] **Spaces Enhancements**: Agent context modes and auto-reply TTL. **Multi-user pulled forward 2026-07-30 — unlock #1 for the real-estate engagement**: a principal plus an assistant plus a VA share one workspace on day one, and the customer's primary success metric ("they stop asking him things") is unreachable without it.
+- [ ] **Spaces Enhancements**: Agent context modes and auto-reply TTL. **Multi-user pulled forward 2026-07-30 — unlock #1 for the real-estate engagement**: a principal plus an assistant plus a VA share one workspace on day one, and our peer's primary success metric ("they stop asking him things") is unreachable without it.
   - [ ] Agent context mode: `conversation` (last ~5 messages) and `full` (all recent) — `single` already ships
   - [ ] Optional per-agent TTL for auto-reply expiration
     <!-- inline: spaces.py:384 -->
@@ -450,7 +450,7 @@ _Board section at compression time: `Bugs`._
 
 _Second-pass compression, 2026-08-15._
 
-- [ ] **Demo tenant reset — one task, not three.** Export School B's KB entries and Agents to a durable destination, then purge them along with their intro-card references, and sweep for stragglers (Space titles, prompt text, uploaded files). A stray reference surfacing mid-demo ends a sales call. Confirm with Alexander whether School B should be asked before their data is removed. **This recurs before every demo until Realtor R is off the shared instance** — it is standing overhead, not a checkbox.
+- [ ] **Demo tenant reset — one task, not three.** Purge School B's KB entries purge on try.sage.is along with their intro-card references, and sweep for stragglers (Space titles, prompt text, uploaded files). A stray reference surfacing mid-demo ends a sales call. Confirm with Alexander whether School B should be asked before their data is removed. **This recurs before every demo until Realtor M is off the shared instance** — it is standing overhead, not a checkbox.
 
 ## Day-in-the-life walkthrough — staged and labelled as staged.
 
@@ -470,7 +470,7 @@ _Second-pass compression, 2026-08-15._
 
 _Second-pass compression, 2026-08-15._
 
-- [ ] **The social push escalates this from tidy-up to pre-launch blocker.** The push drives open-source self-installers at try.sage.is, which is the same shared box holding a paying customer's working data. All three problems above get worse at once — tenant cleanup, uncapped shared spend, and his data sitting beside strangers' — and spend budgets are item 2 in the `#### Platform unlocks` sequence, which the marketplace quarter slice already depends on. **Before the announcement: migrate Realtor R off the shared box, or cap spend, or both.** Not covered by any marketplace item. #critical
+- [ ] **The social push escalates this from tidy-up to pre-launch blocker.** The push drives open-source self-installers at try.sage.is, which is the same shared box holding a paying customer's working data. All three problems above get worse at once — tenant cleanup, uncapped shared spend, and his data sitting beside strangers' — and spend budgets are item 2 in the `#### Platform unlocks` sequence, which the marketplace quarter slice already depends on. **Before the announcement: migrate Realtor M off the shared box, or cap spend, or both.** Not covered by any marketplace item. #critical
 
 #### Platform unlocks pulled forward by this engagement
 

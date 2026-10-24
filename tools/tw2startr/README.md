@@ -11,10 +11,10 @@ Given a Svelte component like this:
 tw2startr rewrites it to:
 
 ```svelte
-<div style="--d:flex; --ai:center; --g:1rem; --p:1.5rem; --bgc:#f3f4f6; --hvr-bgc:#e5e7eb; --radius:0.5rem; --shadow:3">
+<div style="--d:flex; --ai:center; --g:1rem; --p:1.5rem; --bgc:#f3f4f6; --bgc-hover:#e5e7eb; --radius:0.5rem; --shadow:3">
 ```
 
-Responsive and hover prefixes are preserved through the startr.style property naming convention (`sm:flex` becomes `--d-sm:flex`, `hover:bg-gray-200` becomes `--hvr-bgc:#e5e7eb`).
+Responsive and state prefixes are preserved through the startr.style property naming convention (`sm:flex` becomes `--d-sm:flex`, `hover:bg-gray-200` becomes `--bgc-hover:#e5e7eb`).
 
 ## Why startr.style?
 
@@ -151,14 +151,20 @@ Tailwind responsive prefixes are converted to startr.style suffixes on the custo
 | `2xl:` | `-xl` | `2xl:hidden` -> `--d-xl:none` (mapped to -xl) |
 | `print:` | `-pt` | `print:hidden` -> `--d-pt:none` |
 
-### Hover and Dark Mode
+### States and Dark Mode
+
+startr.style writes a state after the prop, in whole words. A state converts only where startr.style defines it: the paint props `--bg`, `--bgc`, `--c`, `--b`, `--bc`, `--boxs`, `--op`, `--t` and `--oe` take every state, and the effect helpers (`--shadow`, `--levitate`, `--translate`, `--scale`, `--rotate`, `--skew`) take `-hover`. Anything else stays in `class` for review, because an unknown prop does nothing.
 
 | Tailwind Prefix | startr.style Pattern | Example |
 |----------------|---------------------|---------|
-| `hover:` | `--hvr-{prop}` | `hover:bg-gray-200` -> `--hvr-bgc:#e5e7eb` |
+| `hover:` | `--{prop}-hover` | `hover:bg-gray-200` -> `--bgc-hover:#e5e7eb` |
+| `focus-visible:`, `focus:` | `--{prop}-focus` | `focus:outline-none` -> `--oe-focus:2px solid transparent` (review: startr.style matches `:focus-visible`) |
+| `active:` | `--{prop}-active` | `active:bg-gray-200` -> `--bgc-active:#e5e7eb` |
+| `open:`, `checked:`, `aria-selected:`, `aria-pressed:`, `aria-expanded:` | `--{prop}-on` | `aria-selected:text-white` -> `--c-on:#fff` |
+| `group-hover:` | `--{prop}-in-hover` | `group-hover:text-white` -> `--c-in-hover:#fff` (review: direct children only) |
 | `dark:` | `--dark-{prop}` | `dark:bg-gray-800` -> `--dark-bgc:#1f2937` |
 
-Prefixes compose. `sm:hover:bg-blue-500` becomes `--hvr-bgc-sm:#3b82f6`.
+Responsive prefixes compose with plain props only. State props take no breakpoint, theme or second state, so `sm:hover:bg-blue-500` and `dark:hover:bg-gray-700` stay in `class`.
 
 ## What Cannot Be Auto-Converted
 
@@ -166,10 +172,11 @@ The following patterns are flagged for manual review and left in the `class` att
 
 | Pattern | Reason |
 |---------|--------|
-| `focus:*`, `focus-within:*`, `focus-visible:*` | Pseudo-class states cannot be expressed as inline styles |
-| `active:*`, `visited:*`, `target:*` | Pseudo-class states |
+| `focus-within:*` | No startr.style state matches it |
+| `visited:*`, `target:*` | Pseudo-class states |
+| A state on a prop startr.style gives no state, or with a breakpoint, theme or second state | No startr.style prop exists, and an unknown prop does nothing |
 | `first:*`, `last:*`, `odd:*`, `even:*` | Structural pseudo-classes |
-| `group-hover:*`, `group-focus:*` | Requires parent `.group` selector context |
+| `group-focus:*`, `group-active:*` | Requires parent `.group` selector context |
 | `peer-hover:*`, `peer-focus:*`, `peer-checked:*` | Requires sibling `.peer` selector context |
 | `before:*`, `after:*` | Pseudo-elements |
 | `placeholder:*`, `file:*`, `marker:*` | Pseudo-element selectors |
@@ -305,6 +312,6 @@ The programmatic API is available via the main export:
 ```js
 import { convertClass, convertClasses, parsePrefixes, allRules } from 'tw2startr';
 
-const result = convertClass('sm:hover:bg-gray-100');
-// { converted: true, properties: [{ prop: '--hvr-bgc-sm', value: '#f3f4f6' }], ... }
+const result = convertClass('hover:bg-gray-100');
+// { converted: true, properties: [{ prop: '--bgc-hover', value: '#f3f4f6' }], ... }
 ```

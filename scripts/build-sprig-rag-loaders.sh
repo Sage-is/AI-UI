@@ -14,7 +14,11 @@
 #
 # Version pins track app/backend/requirements.txt (sprig closure comments):
 #   langchain==0.3.30 (CVE-2026-45134), langchain-community==0.3.27
-#   (CVE-2025-6984), pypdf==4.3.1, docx2txt==0.8, numpy<2, rank_bm25.
+#   (CVE-2025-6984), pypdf==6.20.1, docx2txt==0.8, numpy<2, rank_bm25.
+#
+# v2 (3.2.1, 2026-10-14): pypdf 4.3.1 -> 6.20.1 for CVE-2026-102993..103000 and
+# the three infinite-loop advisories of 2026-10-12. v1 stays published for 3.2.0
+# installs; a published tag is never overwritten.
 #
 # Local dev (default): pushes to localhost:5000 over --plain-http via a
 # DOCKERIZED oras (no host install). Production publishing goes through
@@ -24,14 +28,16 @@ set -euo pipefail
 # Shared boilerplate: constants, arch-normalize, sha256, registry, push, timing.
 . "$(dirname "${BASH_SOURCE[0]}")/lib/sprig-build.sh"
 NAME="${NAME:-sprig-rag-loaders}"
+TAG="${TAG:-v2}"                        # catalog rag-loaders is at v2 (preserve before defaults)
 sprig_build_defaults
 sprig_timing_start
 
 sprig_arch_normalize
+[ "$ARCH" = arm64 ] || "$(dirname "${BASH_SOURCE[0]}")/gates/docker-preflight.sh" amd64 "ARCH=amd64 $0"
 
-PIP_SPECS="'langchain==0.3.30' 'langchain-community==0.3.27' 'pypdf==4.3.1' 'docx2txt==0.8' 'rank_bm25' 'numpy<2'"
+PIP_SPECS="'langchain==0.3.30' 'langchain-community==0.3.27' 'pypdf==6.20.1' 'docx2txt==0.8' 'rank_bm25' 'numpy<2'"
 
-WORK="${WORK:-/tmp/sprig-build/rag-loaders-$ARCH}"
+WORK="${WORK:-${SPRIG_BUILD_ROOT:-$HOME/.cache/ai-ui/sprig-build}/rag-loaders-$ARCH}"
 OUT_DIR="${OUT_DIR:-$(pwd)}"
 OUT="$OUT_DIR/$NAME-$ARCHTAG.tar.zst"
 
@@ -55,7 +61,7 @@ delivery: oci-artifact
 capability: rag
 cultivar: rag-loaders
 variety: linux-$ARCH
-sprig_version: v1.0.0
+sprig_version: v2.0.0
 backend: site-packages-overlay
 target: /usr/local/lib/python3.11/site-packages
 sentinel: langchain
@@ -71,18 +77,44 @@ docker run --rm -v "$WORK/pkg:/pkg:ro" -v "$OUT_DIR:/out" alpine sh -c \
        -cf /out/$(basename "$OUT") -C /pkg ."
 TAR_SHA="$(sha256 "$OUT")"
 
-# --- 4. SANITY GATE: loaders import + split on the TARGET arch ------------------
-echo "== sanity gate: langchain splitter + loaders import on $PLATFORM =="
-docker run --rm --platform "$PLATFORM" -v "$WORK/pkg:/site:ro" python:3.11-slim \
-  python -c "
-import sys; sys.path.insert(0,'/site')
+# --- 4. SANITY GATE: loaders import, split, and read a real PDF on the TARGET arch
+# The PDF is built byte by byte (no writer library), so only the read path is
+# under test: pypdf through langchain-community's PyPDFLoader, the path
+# retrieval/loaders/main.py takes for an uploaded PDF.
+echo "== sanity gate: langchain splitter + PDF loader on $PLATFORM =="
+docker run --rm -i --platform "$PLATFORM" -v "$WORK/pkg:/site:ro" python:3.11-slim \
+  python - <<'GATE' || { echo "SANITY GATE FAILED — rag closure broken on $ARCH" >&2; exit 1; }
+import sys; sys.path.insert(0, '/site')
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders import TextLoader
+from langchain_community.document_loaders import PyPDFLoader, TextLoader
 import pypdf, docx2txt, rank_bm25
+assert pypdf.__version__ == '6.20.1', pypdf.__version__
 chunks = RecursiveCharacterTextSplitter(chunk_size=20, chunk_overlap=0).split_text('the rootstock grafts its rag engines back on')
 assert len(chunks) > 1, chunks
-print('rag closure OK: split ->', len(chunks), 'chunks')
-" || { echo "SANITY GATE FAILED — rag closure broken on $ARCH" >&2; exit 1; }
+
+stream = b'BT /F1 12 Tf 20 100 Td (rootstock grafts) Tj ET'
+objs = [
+    b'<< /Type /Catalog /Pages 2 0 R >>',
+    b'<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+    b'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 300 200] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>',
+    b'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+    b'<< /Length %d >>\nstream\n' % len(stream) + stream + b'\nendstream',
+]
+pdf, offsets = b'%PDF-1.4\n', []
+for n, body in enumerate(objs, 1):
+    offsets.append(len(pdf))
+    pdf += b'%d 0 obj\n' % n + body + b'\nendobj\n'
+xref = len(pdf)
+pdf += b'xref\n0 %d\n0000000000 65535 f \n' % (len(objs) + 1)
+pdf += b''.join(b'%010d 00000 n \n' % o for o in offsets)
+pdf += b'trailer\n<< /Size %d /Root 1 0 R >>\nstartxref\n%d\n%%%%EOF\n' % (len(objs) + 1, xref)
+open('/tmp/gate.pdf', 'wb').write(pdf)
+
+docs = PyPDFLoader('/tmp/gate.pdf').load()
+assert len(docs) == 1, docs
+assert 'rootstock grafts' in docs[0].page_content, repr(docs[0].page_content)
+print('rag closure OK: split ->', len(chunks), 'chunks; pypdf', pypdf.__version__, 'read', repr(docs[0].page_content))
+GATE
 
 echo
 echo "=================================================================="

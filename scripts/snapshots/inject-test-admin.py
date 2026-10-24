@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Insert (or reset) a throwaway admin account in a webui.db COPY.
 
-Runs INSIDE the ai-ui image (passlib/bcrypt ship there):
+Runs INSIDE the ai-ui image, and hashes with the app's own utils/passwords.py
+(bcrypt only), so the injected admin can never drift from how the app hashes:
 
   docker run --rm -v /path/to/COPY-of-data:/data \
     --entrypoint python3 sage-is/ai-ui:develop \
@@ -18,22 +19,24 @@ import sys
 import time
 import uuid
 
-# passlib 1.7.4 (final, unmaintained) reads bcrypt.__about__.__version__, which
-# bcrypt removed in 4.1+. On its own that logs a noisy "(trapped) error reading
-# bcrypt version" traceback (harmless — hashing still works). Restore the
-# attribute so passlib reads the real version and stays quiet. The app does the
-# equivalent in utils/auth.py; this standalone helper needs its own.
-import bcrypt as _bcrypt_mod
+# The image's backend, for the one module this needs. utils/passwords.py
+# imports bcrypt and nothing else from the app. (passlib left in 3.2.1.)
+# Images from before 3.2.1 lack that module but ship bcrypt, so the gate can
+# still run against them: the fallback applies the same three rules.
+sys.path.insert(0, "/app/backend")
+try:
+    from sage_is_ai.utils.passwords import get_password_hash  # noqa: E402
+except ImportError:
+    import bcrypt
 
-if not hasattr(_bcrypt_mod, "__about__"):
-    _bcrypt_mod.__about__ = type("about", (), {"__version__": _bcrypt_mod.__version__})
-
-from passlib.hash import bcrypt
+    def get_password_hash(password: str) -> str:
+        cut = password.encode("utf-8")[:72]  # bcrypt reads 72 bytes; passlib cut
+        return bcrypt.hashpw(cut, bcrypt.gensalt(rounds=12)).decode("ascii")
 
 
 def main() -> None:
     db_path, email, password = sys.argv[1], sys.argv[2].lower(), sys.argv[3]
-    pw_hash = bcrypt.using(rounds=12).hash(password)
+    pw_hash = get_password_hash(password)
     now = int(time.time())
     uid = f"upgrade-gate-{uuid.uuid4()}"
 

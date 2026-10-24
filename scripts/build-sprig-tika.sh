@@ -30,8 +30,9 @@ TIKA_JAR="tika-server-standard-${TIKA_VERSION}.jar"
 TIKA_URL="https://repo1.maven.org/maven2/org/apache/tika/tika-server-standard/${TIKA_VERSION}/${TIKA_JAR}"
 
 sprig_arch_normalize
+[ "$ARCH" = arm64 ] || "$(dirname "${BASH_SOURCE[0]}")/gates/docker-preflight.sh" amd64 "ARCH=amd64 $0"
 
-WORK="${WORK:-/tmp/sprig-build/tika-$ARCH}"
+WORK="${WORK:-${SPRIG_BUILD_ROOT:-$HOME/.cache/ai-ui/sprig-build}/tika-$ARCH}"
 OUT_DIR="$WORK/out"
 OUT="$OUT_DIR/${NAME}-${ARCHTAG}.tar.zst"
 rm -rf "$WORK"; mkdir -p "$WORK/stage" "$OUT_DIR"

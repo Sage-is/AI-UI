@@ -1,20 +1,7 @@
+# Watch what the image installs: app/backend/requirements.txt and app/bun.lock
+# (see the Dockerfile). app/pyproject.toml installs nothing, so it is not watched.
 version: 2
 updates:
-  - package-ecosystem: pip
-    directory: /app
-    schedule:
-      interval: weekly
-      day: monday
-    groups:
-      python-security:
-        applies-to: security-updates
-        patterns: ["*"]
-      python-minor-patch:
-        applies-to: version-updates
-        update-types: [minor, patch]
-    open-pull-requests-limit: 5
-    labels: [dependencies, python]
-
   - package-ecosystem: pip
     directory: /app/backend
     schedule:
@@ -24,10 +11,14 @@ updates:
       backend-security:
         applies-to: security-updates
         patterns: ["*"]
+      backend-minor-patch:
+        applies-to: version-updates
+        update-types: [minor, patch]
     open-pull-requests-limit: 5
     labels: [dependencies, python, backend]
 
-  - package-ecosystem: npm
+  # bun, not npm: the build runs `bun install --frozen-lockfile`, so a PR must update bun.lock.
+  - package-ecosystem: bun
     directory: /app
     schedule:
       interval: weekly

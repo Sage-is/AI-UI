@@ -32,7 +32,8 @@ NET="${NET:-sage-network}"
 ORAS_IMG="ghcr.io/oras-project/oras:v1.2.0"
 
 sha256(){ shasum -a 256 "$1" 2>/dev/null | awk '{print $1}' || sha256sum "$1" | awk '{print $1}'; }
-WORK="$(mktemp -d)"; trap 'rm -rf "$WORK"' EXIT
+. "$(dirname "${BASH_SOURCE[0]}")/lib/mount-tmp.sh"
+WORK="$(mount_tmp sprig-repack)"; trap 'rm -rf "$WORK"' EXIT
 
 echo "== pull $NAME:$SRC_TAG (arm64 source) =="
 docker run --rm --network "$NET" -v "$WORK:/w" -w /w "$ORAS_IMG" \

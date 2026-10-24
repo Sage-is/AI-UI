@@ -31,6 +31,7 @@ sprig_timing_start
 RCLONE_VERSION="${RCLONE_VERSION:-v1.60.1}"
 
 sprig_arch_normalize
+[ "$ARCH" = arm64 ] || "$(dirname "${BASH_SOURCE[0]}")/gates/docker-preflight.sh" amd64 "ARCH=amd64 $0"
 
 # POKA-YOKE: the arm64 v1 blob predates this recipe and is pinned/published.
 if [ "$ARCH" = "arm64" ] && [ "$TAG" = "v1" ] && [ "${ALLOW_RETAG:-0}" != "1" ]; then
@@ -43,7 +44,7 @@ RC_ZIP="rclone-${RCLONE_VERSION}-linux-${ARCH}.zip"
 RC_URL="https://downloads.rclone.org/${RCLONE_VERSION}/${RC_ZIP}"
 RC_SUMS="https://downloads.rclone.org/${RCLONE_VERSION}/SHA256SUMS"
 
-WORK="${WORK:-/tmp/sprig-build/backup-rclone-$ARCH}"
+WORK="${WORK:-${SPRIG_BUILD_ROOT:-$HOME/.cache/ai-ui/sprig-build}/backup-rclone-$ARCH}"
 OUT_DIR="${OUT_DIR:-$(pwd)}"
 OUT="$OUT_DIR/$NAME-$ARCHTAG.tar.zst"
 
