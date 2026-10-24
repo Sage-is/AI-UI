@@ -186,9 +186,20 @@ Two seeded agents ship with KBs:
 - `app/backend/sage_is_ai/data/try_sage_agents/sage-startr-style/kb/*.md`
 - `app/backend/sage_is_ai/data/try_sage_agents/astropi-ai-tutor/kb/*.md`
 
-Drop markdown files in those folders and rebuild the image. The seed routine hashes each folder and compares against `TRY_SAGE_KB_INGESTED_VERSION`. When the hash changes, only the affected agent's KB re-ingests. The other agent's embeddings are left alone. The reset cycle skips re-ingestion entirely so resets stay fast.
+Drop markdown files in those folders and rebuild the image. The seed runs at every boot and every reset. It hashes each folder and compares the hash against `TRY_SAGE_KB_INGESTED_VERSION`. A KB re-ingests when its hash changed or its file list is empty; otherwise the seed skips it, so resets stay fast. The other agent's embeddings are left alone.
 
-To force a full re-ingest, set the config key `TRY_SAGE_KB_INGESTED_VERSION` to `{}` via the admin config UI and restart. The seed will see no recorded hashes and re-embed every KB.
+To force a re-ingest without a restart, empty the KB's file list: `POST /api/v1/knowledge/{id}/update` as admin, sending the KB's own `name`, `description` and `access_control` with `"data": {"file_ids": []}`. The next reset or boot re-embeds it. A restart does it at once, but it mints new persona links, so every link already handed out stops working.
+
+### Document reading
+
+Uploads, document search and the seeded KBs need three Sprigs™: `vector-chroma` (the vector store), `rag-loaders` (extraction and chunking) and an embedding cultivar (`multilingual-e5-large`). Without them a PDF still uploads, with nothing extracted, and every search fails with "Embedding model not yet loaded".
+
+1. Check, as admin: `GET /api/v1/retrieval/sprigs/catalog` lists what is grafted, and `GET /api/v1/retrieval/models/status` should show `embedding` and `chromadb` as `ready` and `vector_db_ready` as `true`.
+2. Graft what is missing in Admin → Sprigs, or `POST /api/v1/retrieval/sprigs/graft` with `{"name": "multilingual-e5-large", "capability": "embedding"}`, `{"name": "rag-loaders", "capability": "rag"}` or `{"name": "vector-chroma", "capability": "vector"}`. None needs a restart.
+3. If `vector_db_ready` stays `false` after the `vector-chroma` graft, `POST /api/v1/retrieval/models/download` with `{"components": []}`. With the embedding already ready, it runs only the vector bootstrap, which switches the client on.
+4. Re-ingest the seeded KBs as above, then wait for the next reset.
+
+On 2026-10-24 try.sage.is had only `vector-chroma`. Grafting e5-large (52 s) and `rag-loaders` (7 s) brought back PDF extraction and search, and both seeded KBs were emptied to re-ingest at the next reset.
 
 To add a third agent: drop a `data/try_sage_agents/{slug}.md` file with frontmatter, optionally a `data/try_sage_agents/{slug}/kb/` folder, and add the slug to `_DEFAULT_AGENT_SLUGS` (and `_AGENTS_WITH_KB` if applicable) in `utils/try_sage_seed.py`.
 

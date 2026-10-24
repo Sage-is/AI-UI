@@ -261,6 +261,8 @@ config still names the old one. Nothing errors. The table above is the
 mechanical check on this: your capability must read *yes* under **Survives
 restart**, or say why it is n/a.
 
+**`vector` has no dispatch, and it needs one.** `retrieval/vector/factory.py` builds `VECTOR_DB_CLIENT` once, at import, before the supervisor runs. A `vector-chroma` graft and the boot reconcile both deliver the overlay and leave the client `None`. Only `sprigs/vector_bootstrap.ensure_chromadb` switches it on, and only the AI Engine wizard (`POST /api/v1/retrieval/models/download`, step 1) and the try.sage boot hook call it. So on any other box, document search stays off after the graft, despite its "active now" note, and goes off again whenever the container is recreated. Until both callers dispatch, run `scripts/kb-reindex.py --vector-on` after a graft or a deploy: it calls `POST /api/v1/retrieval/models/download` with `{"components": []}`, which with the embedding ready does nothing else. Found on sage.startr.cloud, 2026-10-24.
+
 **Prune is a third copy.** `supervisor.prune()` reverses nothing; the reset
 lives in `prune_sprig` beside the five that already have one. Skip it and your
 capability joins `tika` and `docling` in the Gaps section — config pointing at a

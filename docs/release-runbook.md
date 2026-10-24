@@ -110,12 +110,25 @@ For each app in `deploy/instances.toml`, in order, `scripts/deploy.py`:
 1. Resolves the multi-arch index digest of `ghcr.io/sage-is/ai-ui:<tag>`. Nobody copies a digest by hand.
 2. Skips the deploy if the app already runs that digest, and only checks it answers.
 3. Refuses an app whose data would not survive a redeploy (no volume, no bind mount) unless it is marked `throwaway`.
-4. Downloads the database first when the app is marked `backup`: sage.startr.cloud, to `~/Backups/ai-ui/sage-startr-cloud/<date>-<old version>.db`. No backup, no deploy.
+4. Downloads the database first when the app is marked `backup`: sage.startr.cloud, to `~/Backups/ai-ui/sage-startr-cloud/<date>-<old version>.db`. No backup, no deploy. That copy is plaintext, so move it to encrypted storage right after; the board card "Production data reaches Backblaze in plaintext" tracks making the script do it.
 5. Runs `cr-deploy deploy-image` by digest, then waits up to 300 s for `/api/config` to report the new version and `/health` to answer 200.
 
 try.sage.is goes first. It is the canary: synthetic data, wiped every 24 h. If it does not come up, the rollout stops and sage.startr.cloud is never touched.
 
 `make deploy APPS=try-sage-is` limits the rollout. `make deploy TAG=3.2.0` deploys another release.
+
+### After the deploy: document reading
+
+A deploy recreates the container, and on a box that is not a try.sage trial the vector store comes back switched off (`docs/sprigs/capabilities.md`, the trap "`vector` has no dispatch"). Until that is fixed, turn it on after every deploy of sage.startr.cloud, then check that every knowledge base with files answers:
+
+```bash
+# [WE] the admin key reaches only these processes, never a command line
+export SAGE_STARTR_CLOUD_ADMIN_KEY=bw:sage-startr-cloud-admin-key
+sage-secret run -- python3 scripts/kb-reindex.py --vector-on   # runs only the AI Engine's vector bootstrap
+sage-secret run -- python3 scripts/kb-probe.py kbs             # every knowledge base with files should show hits
+```
+
+If the knowledge bases answer with no hits after the store is on, re-index them with `scripts/kb-reindex.py`, never `POST /api/v1/knowledge/reindex`: that route deletes every knowledge base whose `data` is null.
 
 ### Where the production data lives
 
