@@ -62,6 +62,9 @@ Every page loaded `https://startr.style/style.css`, a rolling URL that changes u
 **A look back**
 `scripts/rootstock/lookback.py` counts the requests in an audit log that touched each hole this release closes. The only log we hold, 90 requests from April 2025, shows none.
 
+**The runtime base is the Wolfi index of 2026-10-24**
+The runtime stage pins `cgr.dev/chainguard/wolfi-base` by digest. The 2026-10-14 pin had cached `ca-certificates` 20260909-r2, which trivy flags for CVE-2026-111943 (HIGH: Go's `crypto/x509` trusting untrusted intermediates). The pin moves forward, so the layer rebuilds with 20260909-r3.
+
 ### Fixed
 
 **Reindex no longer deletes knowledge bases**

@@ -121,14 +121,16 @@ RUN python -m pip uninstall -y -q setuptools wheel && python -m pip uninstall -y
 # runs unchanged and the bash entrypoint keeps working. Python 3.11 via apk.
 # Digest-pinned against a rolling :latest, so treat every bump as a release:
 #   docker buildx imagetools inspect cgr.dev/chainguard/wolfi-base:latest
-# Pinned: latest as of 2026-10-14 (multi-arch index, amd64+arm64). Bumped from
-# the 2026-09-25 pin because a stale base pairs its old crypto libraries with
+# Pinned: latest as of 2026-10-24 (multi-arch index, amd64+arm64), bumped so the
+# apk layer rebuilds with ca-certificates 20260909-r3: trivy flagged the r2 the
+# 2026-10-14 pin cached (CVE-2026-111943, HIGH). That pin had replaced the
+# 2026-09-25 one because a stale base pairs its old crypto libraries with
 # whatever python-3.11 apk serves today: on 2026-10-07 that Python lost sha224.
 # Before that, the 2026-07-02 pin (glibc 2.43) installed a Python whose math
 # module could not load, and the image built fine and died at boot. The import
 # check below fails the build on both.
 # =============================================================================
-FROM cgr.dev/chainguard/wolfi-base@sha256:256c88bb066424045021090932d50be93c8e3f2ce3586707702a401b146f3e43 AS runtime
+FROM cgr.dev/chainguard/wolfi-base@sha256:360896efb0753a5701c48f860e17130c205eae5a264797aa3e7ea126ee2923a7 AS runtime
 
 ARG USE_CUDA
 ARG USE_OLLAMA
