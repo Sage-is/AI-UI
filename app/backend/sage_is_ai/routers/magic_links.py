@@ -30,7 +30,6 @@ from sage_is_ai.env import (
 from sage_is_ai.utils.misc import parse_duration
 from sage_is_ai.utils.auth import (
     create_session_token,
-    create_token,
     get_admin_or_facilitator_user,
     get_password_hash,
 )

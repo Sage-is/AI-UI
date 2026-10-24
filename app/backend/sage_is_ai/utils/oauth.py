@@ -47,7 +47,7 @@ from sage_is_ai.env import (
     WEBUI_AUTH_COOKIE_SECURE,
 )
 from sage_is_ai.utils.misc import parse_duration
-from sage_is_ai.utils.auth import get_password_hash, create_token, create_session_token
+from sage_is_ai.utils.auth import get_password_hash, create_session_token
 from sage_is_ai.utils.webhook import post_webhook
 
 from sage_is_ai.env import SRC_LOG_LEVELS, GLOBAL_LOG_LEVEL
