@@ -6,6 +6,31 @@ All notable changes to [Sage.is AI-UI](https://github.com/Sage-is/AI-UI) are doc
 
 ## [Unreleased]
 
+### Security
+
+**One chat can no longer surface another chat's real name**
+The privacy filter kept one instance-wide table of stand-ins and their real values, and reversed every reply against all of it. A model that repeated a stand-in it had seen in someone else's conversation handed that person's real address to the wrong chat. Each request now carries only the stand-ins it sent, and a reply reverses those alone. A test replays the leak against 3.2.2 and shows it closed.
+
+**Tool arguments and the preset system prompt pass the filter too**
+A reply's tool-call arguments came back reversed to real values and were resent in clear on the next turn. The model's preset system prompt, with the user's name and location filled in, was added after the filter had run. Both now go through the same request mapper before anything leaves the box.
+
+**A look back**
+`scripts/rootstock/lookback.py` counts the requests in an audit log that touched each hole this release closes. The only log we hold, 90 requests from April 2025, shows none.
+
+### Added
+
+**A loop-lag watchdog**
+When the event loop runs 250 ms late, a thread logs the file and line of the blocked frames, never a value, once per stack per ten minutes, and keeps a daily lag histogram under `data/rootstock/`. `RS_LAG_WATCH=off` disables it. Its first catch: the password check at sign-in holds the loop for about 270 ms.
+
+**A database copy before every update**
+`ai-ui update`, and `ai-ui start` over a running Sage, write a `VACUUM INTO` copy of the database under the volume's `backups/` before the old container goes, and keep the last five. No copy, no update. The sage-box update runs `ai-ui start`, so it is covered.
+
+**Knowledge bases re-index file by file**
+`scripts/kb-reindex.py` sends each file's stored text back through indexing and deletes nothing, where `POST /api/v1/knowledge/reindex` deletes every knowledge base whose data is null. Its `--vector-on` switches the vector store on after a graft or a deploy, which today's code leaves off.
+
+**The Rootstock's Phase 0**
+Ten research notes and an edge-case inventory under `docs/rootstock/research/`, every `path:line` citation checked; the census script with its canary self-test; the line budget and the legacy ratchet under `app/backend/sage_is_ai/rootstock/tests/`; a throwaway test box and an HTTP harness for the security tests.
+
 ## [3.2.2] — 2026-10-24
 
 ### Fixed
