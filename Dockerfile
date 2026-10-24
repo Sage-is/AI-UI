@@ -107,6 +107,13 @@ RUN mkdir -p /app/backend/tiktoken_cache && \
     TIKTOKEN_CACHE_DIR=/app/backend/tiktoken_cache \
     python -c "import tiktoken; tiktoken.get_encoding('o200k_base')"
 
+# pip, setuptools and wheel install packages; nothing imports them at run time
+# (only test/dev extras name them). Since 3.2.1 uv does every runtime install,
+# so they are uninstalled last, packages and console scripts, before the copy
+# below. That took 16 MB and trivy's last two HIGH Python findings with them
+# (jaraco.context and wheel, vendored inside setuptools).
+RUN python -m pip uninstall -y -q setuptools wheel && python -m pip uninstall -y -q pip
+
 
 # =============================================================================
 # Stage 3: RUNTIME — Wolfi rootstock (Decision #20, 2026-07-01 research round)
@@ -114,12 +121,14 @@ RUN mkdir -p /app/backend/tiktoken_cache && \
 # runs unchanged and the bash entrypoint keeps working. Python 3.11 via apk.
 # Digest-pinned against a rolling :latest, so treat every bump as a release:
 #   docker buildx imagetools inspect cgr.dev/chainguard/wolfi-base:latest
-# Pinned: latest as of 2026-09-25 (multi-arch index, amd64+arm64). Bumped from
-# the 2026-07-02 pin (glibc 2.43) because apk's python-3.11 moved to glibc 2.44:
-# the old base installed a Python whose math module could not load, and the
-# image built fine and died at boot. The import check below now fails the build.
+# Pinned: latest as of 2026-10-14 (multi-arch index, amd64+arm64). Bumped from
+# the 2026-09-25 pin because a stale base pairs its old crypto libraries with
+# whatever python-3.11 apk serves today: on 2026-10-07 that Python lost sha224.
+# Before that, the 2026-07-02 pin (glibc 2.43) installed a Python whose math
+# module could not load, and the image built fine and died at boot. The import
+# check below fails the build on both.
 # =============================================================================
-FROM cgr.dev/chainguard/wolfi-base@sha256:fac38d12efdb4bf43ac9e599a31db10a27ad5dd71e5f1618790962eda8d66180 AS runtime
+FROM cgr.dev/chainguard/wolfi-base@sha256:256c88bb066424045021090932d50be93c8e3f2ce3586707702a401b146f3e43 AS runtime
 
 ARG USE_CUDA
 ARG USE_OLLAMA
@@ -138,30 +147,22 @@ ARG BUILD_HASH
 #   - ffmpeg (~110MB of codec libs), rclone (51MB), and cron are NOT baked into
 #     the base rootstock. Graft the `media-ffmpeg` / `backup-rclone` Sprigs™ to
 #     deliver static binaries on demand.
-RUN apk add --no-cache python-3.11 bash ca-certificates curl jq zstd gnutar libstdc++ tzdata && \
+#   - No curl, jq or ORAS since 3.2.1. They served the HEALTHCHECK, two shell
+#     scripts and Sprig pulls; sage_is_ai/utils/localhttp.py and sprigs/oci.py
+#     do those jobs in Python. A shell in the container gets no download tools.
+RUN apk add --no-cache python-3.11 bash ca-certificates zstd gnutar libstdc++ tzdata && \
     # Poka-yoke: the Python apk just installed must load its C extensions on
-    # this base's glibc. A skew (python built for a newer glibc) fails here,
-    # at build time, instead of at boot after the image has shipped.
-    python3 -c "import math, ssl, sqlite3, ctypes, hashlib, zlib" && \
+    # this base's glibc and crypto. A skew (python built for a newer glibc or
+    # OpenSSL) fails here, at build time, instead of at boot after the image
+    # has shipped. sha224, sha3 and sha512 are what a stale base lost on
+    # 2026-10-06/07 (TODO.md Bugs: "Today's image builds lose sha224 and sha3").
+    python3 -c "import math, ssl, sqlite3, ctypes, hashlib, zlib; hashlib.sha224(b'x').hexdigest(); hashlib.new('sha224'); hashlib.sha3_256(b'x'); hashlib.sha512(b'x'); ssl.create_default_context()" && \
     # Wolfi's own pip/setuptools out. The Debian-built closure from the
     # python-build stage replaces it below; mixing the two corrupts dist
     # metadata.
     rm -rf /usr/lib/python3.11/site-packages/* && \
     # wolfi-base ships no /usr/local tree
-    mkdir -p /usr/local/bin /usr/local/lib && \
-    # ORAS CLI — graft #3 OCI-artifact Sprig™ delivery (arch-aware: amd64/arm64).
-    # Bump ORAS_VERSION to the latest release shipping both linux artifacts:
-    #   curl -s https://api.github.com/repos/oras-project/oras/releases/latest | jq -r .tag_name
-    ORAS_VERSION=1.2.0 && \
-    ARCH=$(uname -m) && \
-    case "$ARCH" in \
-      x86_64) ORAS_ARCH=amd64 ;; \
-      aarch64) ORAS_ARCH=arm64 ;; \
-      *) echo "Unsupported arch for oras: $ARCH" >&2 && exit 1 ;; \
-    esac && \
-    curl -fsSL "https://github.com/oras-project/oras/releases/download/v${ORAS_VERSION}/oras_${ORAS_VERSION}_linux_${ORAS_ARCH}.tar.gz" \
-      | tar -xz -C /usr/local/bin oras && \
-    oras version
+    mkdir -p /usr/local/bin /usr/local/lib
 
 # Copy Python packages from python-build stage. The wheels are built on Debian
 # glibc 2.36 (manylinux-compatible) and run on Wolfi's 2.44. Same rule as the
@@ -198,17 +199,69 @@ RUN printf 'import sys, os\nfor _p in ("/usr/local/lib/python3.11/site-packages"
     # import bindings freeze at boot in retrieval/vector/factory.py.
     mkdir -p /usr/local/lib/python3.11/site-packages
 
-# Install `uv` for the runtime ML wizard install. Pinned so a 0.x breaking
-# change cannot ship via the base image. The release artifact name uses the
-# same arch tokens as `uname -m` on Linux (x86_64, aarch64), which covers both
-# Docker buildx targets. Bump UV_VERSION to the latest release that has
-# both x86_64 and aarch64 Linux gnu artifacts at edit time:
-#   curl -s https://api.github.com/repos/astral-sh/uv/releases/latest | jq -r .tag_name
-ARG UV_VERSION=0.5.18
-RUN ARCH=$(uname -m) && \
-    curl -fsSL "https://github.com/astral-sh/uv/releases/download/${UV_VERSION}/uv-${ARCH}-unknown-linux-gnu.tar.gz" \
-      | tar -xz -C /usr/local/bin --strip-components=1 "uv-${ARCH}-unknown-linux-gnu/uv" && \
-    uv --version
+# Install `uv` for the runtime ML wizard install. Copied from Astral's
+# official image, pinned by its multi-arch index digest (linux/amd64 +
+# linux/arm64), so no curl installer runs and a moved tag cannot change the
+# binary. Keep this in step with the host uv that compiles
+# app/backend/requirements-ml.lock. To bump: read the release's breaking
+# changes when crossing a 0.N.0 line, then
+#   docker buildx imagetools inspect ghcr.io/astral-sh/uv:<version>   # index digest
+#   gh attestation verify oci://ghcr.io/astral-sh/uv:<version>@<digest> --owner astral-sh
+COPY --from=ghcr.io/astral-sh/uv:0.12.24@sha256:3af4716e991d6956a41e573eab705d0ee08500cd829ed30293eb8472f372c65a /uv /usr/local/bin/uv
+
+# Cuts stay cut (3.2.1). Each name below left the image on purpose; a new
+# requirement that quietly pulls one back (8.I.1 saw extras re-install rich and
+# pygments) fails HERE, naming the package that asked for it, not in a CVE scan
+# months later. To bring one back on purpose, delete its line and say why.
+RUN <<'CHECK' python3
+import importlib.metadata as md, importlib.util, re, shutil, sys
+gone_modules = {  # module: (distribution, why it left)
+    "pip": ("pip", "runtime installs use uv (utils/runtime_install.py)"),
+    "setuptools": ("setuptools", "nothing imports it at run time"),
+    "pkg_resources": ("setuptools", "nothing imports it at run time"),
+    "wheel": ("wheel", "nothing imports it at run time"),
+    "typer": ("typer", "the container starts uvicorn directly"),
+    "rich": ("rich", "only typer used it"),
+    "pygments": ("pygments", "only rich used it"),
+    "passlib": ("passlib", "utils/passwords.py calls bcrypt directly"),
+    "peewee": ("peewee", "internal/legacy_db.py replays its frozen schema"),
+    "peewee_migrate": ("peewee-migrate", "internal/legacy_db.py replays its frozen schema"),
+    "grpc": ("grpcio", "it rides the vector-chroma Sprig with chromadb"),
+    "google.protobuf": ("protobuf", "it rides the vector-chroma Sprig with chromadb"),
+    "opentelemetry.sdk": ("opentelemetry-sdk", "it rides the vector-chroma Sprig with chromadb"),
+}
+gone_binaries = {
+    "oras": "sprigs/oci.py",
+    "curl": "sage_is_ai.utils.localhttp",
+    "jq": "sage_is_ai.utils.localhttp --field",
+    "pip": "uv",
+    "pip3": "uv",
+}
+def norm(name):
+    return name.replace("_", "-").lower()
+def who_requires(dist):
+    return sorted({
+        d.metadata["Name"] for d in md.distributions()
+        for r in (d.requires or []) if "extra ==" not in r
+        and norm(re.split(r"[ ;<>=!~\[(]", r, maxsplit=1)[0]) == norm(dist)
+    })
+bad = []
+for mod, (dist, why) in gone_modules.items():
+    try:
+        found = importlib.util.find_spec(mod) is not None
+    except ModuleNotFoundError:
+        found = False
+    if found:
+        asked = who_requires(dist) or "nobody: a direct pin in requirements.txt"
+        bad.append(f"{mod} ({dist}) is back, required by {asked}. It left because {why}.")
+for exe, why in gone_binaries.items():
+    if shutil.which(exe):
+        bad.append(f"{exe} is back at {shutil.which(exe)}. Use {why} instead.")
+if not shutil.which("uv"):
+    bad.append("uv is missing; every runtime install needs it")
+print("\n".join(bad) or "cuts stay cut: all clear")
+sys.exit(1 if bad else 0)
+CHECK
 
 # Copy tiktoken cache
 COPY --from=python-build --chown=${UID}:${GID} /app/backend/tiktoken_cache/ /app/backend/tiktoken_cache/
@@ -337,8 +390,11 @@ RUN if [ $UID -ne 0 ]; then \
 
 # Conditional Ollama install (Debian-oriented installer, untested on the Wolfi
 # base; the supported path is a sidecar Ollama container or a future Sprig™)
+# curl comes and goes inside this one step, so the image keeps none.
 RUN if [ "$USE_OLLAMA" = "true" ]; then \
-    curl -fsSL https://ollama.com/install.sh | sh; \
+    apk add --no-cache --virtual .ollama-fetch curl && \
+    curl -fsSL https://ollama.com/install.sh | sh && \
+    apk del .ollama-fetch; \
     fi
 
 # Create data directory
@@ -347,7 +403,9 @@ RUN mkdir -p /app/backend/data && \
 
 EXPOSE 8080
 
-HEALTHCHECK CMD curl --silent --fail http://localhost:${PORT:-8080}/health | jq -ne 'input.status == true' || exit 1
+# No curl or jq in the image since 3.2.1: the standard-library client checks
+# that /health answers {"status": true}. Runs from WORKDIR /app/backend.
+HEALTHCHECK CMD python3 -m sage_is_ai.utils.localhttp --require-true status "http://localhost:${PORT:-8080}/health" > /dev/null || exit 1
 
 USER $UID:$GID
 

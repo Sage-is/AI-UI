@@ -275,15 +275,33 @@ runtime_sync:  ## Copy the tap's lib/sage-runtime.sh into cli/lib (edit it in th
 
 # A box is a Mac that runs AI-UI (and Trellis) for a team, set up by sage-box
 # from the tap, from one file per box in ~/.sage-is/boxes/ that stays out of git.
-BOX ?= pilot
+# BOX has no default: a default would send an update, an apply or a reboot to the
+# client's Mac whenever the name was left off. APPLY and REBOOT act on that Mac, so
+# only 1 turns them on: APPLY=0 and APPLY=no are the plan.
+BOX ?=
 box_check:
+	@[ -n "$(BOX)" ] || { d="$${SAGE_BOXES_DIR:-$$HOME/.sage-is/boxes}"; names=; for f in "$$d"/*.env; do [ -e "$$f" ] && names="$$names $$(basename "$$f" .env)"; done; \
+	echo "Name the box: make $(MAKECMDGOALS) BOX=<name>. Boxes in $$d:$${names:- none}"; exit 1; }
 	@command -v sage-box >/dev/null || { echo "sage-box is not installed: brew install sage-is/apps/sage-box"; exit 1; }
-box_up: box_check  ## plan a box: BOX=name; APPLY=1 runs the plan, REBOOT=1 restarts it at the end
-	sage-box $(BOX) $(if $(APPLY),--apply) $(if $(REBOOT),--reboot)
+box_up: box_check  ## plan a box: BOX=name; APPLY=1 runs the plan, REBOOT=1 restarts it at the end (only 1 counts)
+	sage-box $(BOX) $(if $(filter 1,$(APPLY)),--apply) $(if $(filter 1,$(REBOOT)),--reboot)
 box_update: box_check  ## brew upgrade, git pull in source mode, trellis-crm update, ai-ui start, verify
 	sage-box $(BOX) update
 box_status: box_check  ## both apps, the VM, the boot daemon, the newest backup
 	sage-box $(BOX) status
+# One read verb through the box's read key alone (docs/boxes/access.md in the
+# tap). It is the one box target an agent's allow rule names, so it must run
+# nothing else. BOX and WHAT are taken unexpanded ($(value), so a $(shell ...)
+# typed into them never runs in make), refused with any $ in them, and reach the
+# shell as environment variables, never as command text. sage-box refuses any
+# verb not on its list.
+box_read: export SAGE_BOX_NAME := $(value BOX)
+box_read: export SAGE_BOX_WHAT := $(value WHAT)
+box_read:  ## one read verb, through the box's read key alone: BOX=name WHAT=probe|backup|power|containers|version
+	$(if $(findstring $$,$(value BOX)$(value WHAT)),$(error BOX and WHAT take no $$))
+	@command -v sage-box >/dev/null || { echo "sage-box is not installed: brew install sage-is/apps/sage-box"; exit 1; }
+	@[ -n "$$SAGE_BOX_NAME" ] && [ -n "$$SAGE_BOX_WHAT" ] || { echo "make box_read BOX=<name> WHAT=probe|backup|power|containers|version"; exit 1; }
+	@sage-box "$$SAGE_BOX_NAME" read "$$SAGE_BOX_WHAT"
 # Base flags every container run needs. DOCKER_RUN_ARGS and
 # TRY_SAGE_DOCKER_RUN_ARGS both extend this — add a flag here and it
 # applies to both production and trial runs.
@@ -521,6 +539,15 @@ pipefail_lint:  # Gate: no unbounded-writer `| grep -q` in scripts/
 # unless the broken shape is asserted too.
 pipefail_fixture:  # Fixture: prove the pipefail trap is real
 	@scripts/smoke/pipefail-grep-fixture.sh
+
+# in_container_tools — nothing calls curl, jq, pip or oras INSIDE the rootstock.
+# The image ships none of them since 3.2.1, and the Dockerfile's cuts-stay-cut
+# check fails a build that brings one back. A script that still expects one
+# would fail only when it ran, often minutes into a gate; this finds it at lint
+# time and names the replacement. The self-test proves the detector bites.
+in_container_tools:  # Gate: no in-container curl/jq/pip/oras (scripts, runtime, Dockerfile)
+	@python3 scripts/gates/in_container_tools.py --self-test
+	@python3 scripts/gates/in_container_tools.py
 
 # ui_sprig_gate — what the ui-Sprig™ contract REFUSES: off-origin references,
 # framing, interpreted script attributes, script without an admin's per-Sprig
@@ -769,7 +796,8 @@ gauntlet: it_build sprig_smoke  # Build + Sprig lifecycle smoke
 # hand-run tools; run them yourself after `--tighten` records a baseline.
 # `chat_path_structure_teeth` DOES belong here: it builds its own sample and
 # proves the structural detectors still fire without needing a baseline at all.
-gauntlet_fast: privacy_tests cli_tests runtime_tests pipefail_lint pipefail_fixture ruff_gate docs_gate \
+gauntlet_fast: privacy_tests cut_tests_host cli_tests runtime_tests pipefail_lint pipefail_fixture \
+               in_container_tools ruff_gate docs_gate \
                sprig_capabilities_check startr_swap_check \
                distribution_verify tags_annotated \
                chat_path_structure_teeth sprig_capabilities_teeth \
@@ -790,6 +818,21 @@ runtime_tests:  ## Gate: docker preflights, disk gate and runtime targets (host,
 # connections from 3.2.0, so a regression here is a default-on defect.
 privacy_tests:  ## Gate: privacy engine + off-switch unit tests (host, <1s)
 	@cd app/backend && python3 -m unittest -q sage_is_ai.privacy.test_engine sage_is_ai.privacy.test_hooks
+
+# cut_tests — unit tests for what replaced the 3.2.1 cuts. The host half needs
+# only the standard library. image_unit_tests runs all of them where bcrypt,
+# SQLAlchemy and httpx exist: inside the built image, against its own code.
+#   test_passwords   passlib-made hashes still verify (bcrypt called directly)
+#   test_legacy_db   fresh / pre-March / pre-alembic databases (peewee's job)
+#   test_oci         the Sprig pull's refusals (ORAS's job)
+#   test_runtime_install, test_localhttp   uv commands, the curl replacement
+cut_tests_host:  # Gate: uv command + localhttp unit tests (host, seconds)
+	@cd app/backend && python3 -B -m unittest -q sage_is_ai.utils.test_runtime_install sage_is_ai.utils.test_localhttp
+
+image_unit_tests: it_build  ## Gate: the 3.2.1 cuts' unit tests, inside the built image
+	@$(CONTAINER_RUNTIME) run --rm --entrypoint python3 $(IMAGE_NAME):$(IMAGE_TAG) -B -m unittest -q \
+		sage_is_ai.utils.test_passwords sage_is_ai.internal.test_legacy_db sage_is_ai.sprigs.test_oci \
+		sage_is_ai.utils.test_runtime_install sage_is_ai.utils.test_localhttp
 
 # tags_annotated — refuse to publish a lightweight v* tag.
 #
@@ -828,7 +871,7 @@ gauntlet_full: gauntlet_fast manifest_verify_fixture \
                serialize_blocks_fixture serialize_blocks_fixture_teeth \
                chat_response_oracle chat_response_oracle_teeth \
                gauntlet sprig_durability sprig_signing ui_sprig_gate \
-               e2e_both scan_container surface_budget  # Gate: the full local suite (builds an image)
+               e2e_both scan_container surface_budget image_unit_tests  # Gate: the full local suite (builds an image)
 
 # it_build_amd64 — build an amd64 image via buildx + --load.
 #
@@ -1566,7 +1609,7 @@ cognitive_complexity_tighten:
 cognitive_complexity_teeth:
 	@scripts/gates/cognitive-complexity/run-gate.sh --self-test
 
-lint: docs_gate pipefail_lint ruff_gate ruff_format_check cognitive_complexity  # Lint: docs, pipefail, ruff, ruff format, eslint, svelte-check, prettier
+lint: docs_gate pipefail_lint in_container_tools ruff_gate ruff_format_check cognitive_complexity  # Lint: docs, pipefail, ruff, ruff format, eslint, svelte-check, prettier
 	@echo "=== Frontend lint (eslint + svelte-check) ==="
 	cd app && bun run lint:frontend
 	cd app && bun run lint:types

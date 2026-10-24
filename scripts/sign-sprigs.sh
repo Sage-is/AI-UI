@@ -35,7 +35,12 @@ KEY_DIR="$(cd "$(dirname "$SIGN_KEY")" && pwd)"; KEY_FILE="$(basename "$SIGN_KEY
 
 . "$(dirname "${BASH_SOURCE[0]}")/lib/mount-tmp.sh"
 WORK="$(mount_tmp sign-sprigs)"; trap 'rm -rf "$WORK"' EXIT
-ORAS(){ docker run --rm --network "$NET" -v "$WORK:/w" -w /w "$ORAS_IMG" "$@"; }
+# Each tag gets a FRESH subfolder, and nothing a container wrote is deleted from
+# the host before a container writes it again. Colima's krunkit file sharing
+# keeps a stale entry after a host-side delete, so the container's next write to
+# that path fails with "nonexistent directory" (2026-10-15: the re-sign of an
+# already-signed artifact died exactly there).
+ORAS(){ docker run --rm --network "$NET" -v "$TAGDIR:/w" -w /w "$ORAS_IMG" "$@"; }
 
 # Interactive TTY only when the key needs a passphrase prompt.
 MTTY=""; [ -z "${SIGN_NOPASS:-}" ] && MTTY="-it"
@@ -46,15 +51,16 @@ REPOS="${ONLY:-$(curl -fsS "http://$SRC/v2/_catalog" | jq -r '.repositories[]')}
 SIGNED=0
 for r in $REPOS; do
   for t in $(curl -fsS "http://$SRC/v2/$r/tags/list" | jq -r '.tags[]'); do
-    rm -rf "${WORK:?}"/*
+    TAGDIR="$WORK/$r-$t"; mkdir -p "$TAGDIR"
     printf "== %s:%s " "$r" "$t"
     ORAS pull --plain-http "$SRC_INTERNAL/$r:$t" >/dev/null
-    tar_file="$(cd "$WORK" && ls -- *.tar.zst 2>/dev/null | head -1)"
+    tar_file="$(cd "$TAGDIR" && ls -- *.tar.zst 2>/dev/null | head -1)"
     [ -n "$tar_file" ] || { echo "SKIP (no tar.zst layer)"; continue; }
-    sha="$(sha256 "$WORK/$tar_file")"
-    rm -f "$WORK/$tar_file.minisig"
-    docker run --rm $MTTY -v "$WORK:/w" -v "$KEY_DIR:/keys:ro" "$ALPINE_IMG" sh -c \
-      "apk add --no-cache minisign >/dev/null 2>&1 && minisign -S ${SIGN_NOPASS:+-W} \
+    sha="$(sha256 "$TAGDIR/$tar_file")"
+    # A signed artifact pulls its old .minisig too; drop it INSIDE the container
+    # that writes the new one (see the krunkit note above).
+    docker run --rm $MTTY -v "$TAGDIR:/w" -v "$KEY_DIR:/keys:ro" "$ALPINE_IMG" sh -c \
+      "rm -f /w/$tar_file.minisig && apk add --no-cache minisign >/dev/null 2>&1 && minisign -S ${SIGN_NOPASS:+-W} \
        -s /keys/$KEY_FILE -m /w/$tar_file \
        -t 'sage-is $r:$t sha256=$sha${TRUST_NOTE:+ }${TRUST_NOTE:-}'"
     ORAS push --plain-http "$SRC_INTERNAL/$r:$t" --artifact-type "$ARTIFACT_TYPE" \

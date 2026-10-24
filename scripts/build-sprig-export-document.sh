@@ -13,7 +13,11 @@
 # top-level tag; ARCH=amd64 tags `${TAG}-amd64` for the arches["amd64"] pin.
 #
 # Version pins track app/backend/requirements.txt (sprig closure comments):
-#   fpdf2==2.8.2, pillow==12.2.0 (CVE pins live HERE, not the base image).
+#   fpdf2==2.8.2, pillow==12.3.0 (CVE pins live HERE, not the base image).
+#
+# v2 (3.2.1, 2026-10-14): pillow 12.2.0 -> 12.3.0 for CVE-2026-59205, 59199,
+# 55380 and 54060. v1 stays published for 3.2.0 installs; a published tag is
+# never overwritten.
 #
 # Local dev (default): pushes to localhost:5000 over --plain-http via a
 # DOCKERIZED oras (no host install). Production publishing goes through
@@ -23,13 +27,14 @@ set -euo pipefail
 # Shared boilerplate: constants, arch-normalize, sha256, registry, push, timing.
 . "$(dirname "${BASH_SOURCE[0]}")/lib/sprig-build.sh"
 NAME="${NAME:-sprig-export-document}"
+TAG="${TAG:-v2}"                        # catalog export-document is at v2 (preserve before defaults)
 sprig_build_defaults
 sprig_timing_start
 
 sprig_arch_normalize
 [ "$ARCH" = arm64 ] || "$(dirname "${BASH_SOURCE[0]}")/gates/docker-preflight.sh" amd64 "ARCH=amd64 $0"
 
-PIP_SPECS="'fpdf2==2.8.2' 'pillow==12.2.0' 'fonttools'"
+PIP_SPECS="'fpdf2==2.8.2' 'pillow==12.3.0' 'fonttools'"
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 FONTS_SRC="${FONTS_SRC:-$REPO_ROOT/app/static/fonts}"
@@ -60,7 +65,7 @@ delivery: oci-artifact
 capability: export
 cultivar: export-document
 variety: linux-$ARCH
-sprig_version: v1.0.0
+sprig_version: v2.0.0
 backend: root-overlay
 target: /
 sentinel: usr/local/lib/python3.11/site-packages/fpdf
@@ -81,14 +86,18 @@ echo "== sanity gate: fpdf2 + Noto CJK render on $PLATFORM =="
 docker run --rm --platform "$PLATFORM" -v "$WORK/root:/r:ro" python:3.11-slim \
   python -c "
 import sys; sys.path.insert(0,'/r/usr/local/lib/python3.11/site-packages')
+import PIL
+from PIL import Image
 from fpdf import FPDF
+assert PIL.__version__ == '12.3.0', PIL.__version__
 pdf = FPDF()
 pdf.add_font('NotoSansSC', '', '/r/app/static/fonts/NotoSansSC-Regular.ttf')
 pdf.add_page(); pdf.set_font('NotoSansSC', size=12)
 pdf.cell(text='PDF export sanity: 你好，Sprig')
+pdf.image(Image.new('RGB', (8, 8), (40, 120, 80)), x=10, y=30, w=8)
 out = pdf.output()
 assert bytes(out[:5]) == b'%PDF-', out[:8]
-print('fpdf2 renders CJK OK,', len(out), 'bytes')
+print('fpdf2 renders CJK + a Pillow image OK, pillow', PIL.__version__, len(out), 'bytes')
 " || { echo "SANITY GATE FAILED — pdf render broken on $ARCH" >&2; exit 1; }
 
 echo
