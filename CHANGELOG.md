@@ -14,8 +14,58 @@ The privacy filter kept one instance-wide table of stand-ins and their real valu
 **Tool arguments and the preset system prompt pass the filter too**
 A reply's tool-call arguments came back reversed to real values and were resent in clear on the next turn. The model's preset system prompt, with the user's name and location filled in, was added after the filter had run. Both now go through the same request mapper before anything leaves the box.
 
+**Sessions expire, and every session says when it was minted**
+New sign-ins expire after four weeks by default (`JWT_EXPIRES_IN`). A saved `-1`, the old default echoed back by the admin form, moves to `4w` once, with a line in the log; an admin who wants no expiry sets `-1` again afterwards. Every session carries `iat`, the socket applies the same rule as the API, and a session without `iat` is signed out once. A minute of clock leeway keeps a VM clock step from rejecting fresh sessions, which PyJWT 2.10 and later did.
+
+**The API-key endpoint allowlist fails closed**
+A blank entry, such as a trailing comma leaves, matched every path. Blank entries are dropped, and an empty allowlist admits nothing.
+
+**A temporary account cannot extend its own expiry**
+`/api/v1/users/user/info/update` writes only `location`. `temporary` and the other server-owned keys in a client's write are dropped.
+
+**The login redirect stays on this origin**
+A `redirect` parameter that is not a same-origin path lands on `/`, `javascript:` and `//host` forms included.
+
+**Model access checks apply to every role but admin**
+Thirteen checks tested `role == "user"` and let facilitator and temporary accounts past them. One rule, `is_restricted`, replaces them in the model list, the chat routes, the OpenAI and Ollama routers and embeddings. A facilitator now sees and reaches what a user does.
+
+**The direct-connections switch holds**
+With direct connections off in Admin, a `model_item` with `direct: true` answers 403 on `/api/chat/completions`, `/api/chat/completed` and `/api/chat/actions/{id}`. Before, only the settings page read the switch.
+
+**Client flags are ignored**
+`?bypass_filter=true` and `?internal=true` are arguments for server-internal callers only: on the chat routes, the Ollama chat route and the file upload, where `internal` skipped the file-type allowlist.
+
+**The raw `/openai/{path}` proxy is admin-only**
+It forwarded any path to connection 0 with that connection's key, past the privacy filter and model access control, for any signed-in user. Non-admins get 404, and the attempt is logged.
+
+**Knowledge is read only by those who may**
+Chat retrieval and `/api/v1/retrieval/query/*` searched any file or collection a client named. One check at retrieval covers every file, collection and knowledge id, whoever supplied it; `/query/doc` and `/query/collection` answer 403; a client-supplied model's knowledge list is never searched.
+
+**`/cache/{path}` refuses traversal**
+The check was a string prefix, so a sibling folder whose name began the same way was reachable. The path is resolved, symlinks included, and must sit under the cache root.
+
+**Spaces: only the author, the Space's owner or an admin edits or deletes a message**
+Any reader could edit or delete anyone's message, and any facilitator could update or delete any Space. The Space's owner or an admin manages it, and the live-document handler takes the session's user, never a client-sent id.
+
+**Sprig children get an allowlisted environment**
+Every Sprig child inherited the whole environment, `WEBUI_SECRET_KEY` and `PRIVACY_KEY` included. A child now gets `PATH`, `HOME`, the locale and proxy variables, `PYTHON*`, `HF_*` and `SPRIG_*`, and never a name that looks like a secret.
+
+**No secrets in logs**
+The OAuth callback logged the whole token response and user info on a failure; it logs the claim names. An unused API-key sign-in method that logged the key is gone. `restore_backup_start.sh` no longer prints `rclone.conf`.
+
+**Community sharing stays off**
+Until the sharing site exists, the setting defaults off, a saved "on" is written back off at boot, and the admin form can switch it off but never on.
+
+**startr.style comes from the box**
+Every page loaded `https://startr.style/style.css`, a rolling URL that changes under every box at once. The 1.5.0 release is vendored under `app/static/vendor/startr.style/1.5.0/` and linked with its integrity hash, so a page load reaches nothing off-machine. The vendored sheet still imports its fonts from `/fonts/`, which this box does not serve, so the no-build pages fall back to the system sans-serif until the faces are vendored too.
+
 **A look back**
 `scripts/rootstock/lookback.py` counts the requests in an audit log that touched each hole this release closes. The only log we hold, 90 requests from April 2025, shows none.
+
+### Fixed
+
+**Reindex no longer deletes knowledge bases**
+`POST /api/v1/knowledge/reindex` deleted every knowledge base whose data was null, which every new one is until its first file. It skips and reports them.
 
 ### Added
 
