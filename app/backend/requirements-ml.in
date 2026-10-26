@@ -23,7 +23,7 @@ colbert-ai==0.2.21
 
 faster-whisper==1.1.1
 ctranslate2
-onnxruntime==1.20.1
+onnxruntime==1.31.0
 
 # torch from the PyTorch CPU-only index — avoids dragging the CUDA wheels
 # (nvidia-cusolver, nvidia-cublas, nvidia-cudnn, ...) that the default PyPI
