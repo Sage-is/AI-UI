@@ -68,7 +68,7 @@ tiktoken
 # langchain-core STAYS — it is the interface layer (Document, BaseLoader,
 # BaseRetriever) subclassed across the codebase. Pinned to the version the
 # sprig-side packages expect.
-langchain-core==0.3.86
+langchain-core==1.3.3
 
 ## Vector DB — chromadb is NOT baked into the base rootstock (Bonsai™ slimming).
 ## Its closure (chromadb, onnxruntime, kubernetes, hnswlib, posthog) is
