@@ -42,7 +42,7 @@ sqlalchemy==2.0.38
 alembic==1.14.0
 # Passwords: bcrypt called directly (utils/passwords.py); passlib left in 3.2.1.
 # peewee + peewee-migrate left too: internal/db.py refuses a pre-alembic DB.
-bcrypt==4.3.0
+bcrypt==5.0.0
 pytz
 websocket-client
 # huggingface_hub — rides Sprig™ overlays / wizard ml_packages (8.I.2);
