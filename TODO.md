@@ -168,6 +168,18 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
 
 ## TODO
 
+- [ ] **`media-ffmpeg` Sprig ships GPLv3 binaries with no licence text or source offer** #critical #legal (found 2026-10-31): `scripts/build-sprig-media-ffmpeg.sh` keeps only `ffmpeg` and `ffprobe` from a tar that carries the licence
+  - [ ] [WE] Carry the licence file and a source pointer; the artifact unpacks into `/usr/local/bin`, so choose where they land
+  - [ ] [MANUALLY] Publish a new tag
+
+- [ ] **Tinker.Click integration: two products, one platform** #federation (Alexander, 2026-10-31; proposals until Jose agrees): the decisions live in `AI--Tinker.Click/docs/notes/2026-10-31-integration-decisions.md`
+  - [ ] [WE] Rootstock F2's gateway design names Tinker desktops as a client, as the plan already does
+  - [ ] [WE] AI-UI as a sign-in provider for `tenkts-server`: scope the OIDC piece with the federation identity note
+  - [ ] [WE] `docs/federation.md`: Space theming decides Tinker's look on a box, with Tinker's credit in an About line
+
+- [ ] **`docs/federation.md:132` says Artifacts apps have no network** #docs #privacy (found 2026-10-31): `Artifacts.svelte` sets no CSP, and restored replies can hold real values
+  - [ ] [WE] Test it, then correct the line before the Tinker mini's step 1
+
 - [ ] **Knowledge bases on sage.startr.cloud return nothing** #bug #critical (diagnosed 2026-10-20; fixes and the re-index wait on Alexander's go): all 13 knowledge bases with files answer queries 200 with 0 hits, and adding a file fails 400. Three faults stack
   - [x] [WE] Probe (`scripts/kb-probe.py` plus one read-only SSH pass; 3.2.0 by digest on openco3): `vector_db_ready: false`; grafted are `mock-embedding` (rooted), `rag-loaders` and `calendar`; `vector-chroma` is absent, so `VECTOR_DB_CLIENT` is None
   - [x] [WE] Logs, 72 h: `'NoneType' object has no attribute 'search'` ×26 on queries, `'query'` ×9 on adds (3 knowledge-file adds answered 400); `query_collection` swallows the errors and returns empty results with 200
