@@ -4,7 +4,7 @@ All notable changes to [Sage.is AI-UI](https://github.com/Sage-is/AI-UI) are doc
 
 ---
 
-## [Unreleased]
+## [3.3.0] — 2026-11-06
 
 ### Security
 
