@@ -521,7 +521,6 @@ async def _get_hidden_connection_models(
                     "id": model_id,
                     "name": model.get("name", model_id),
                     "owned_by": "openai",
-                    "openai": model,
                     "connection_type": "external",
                     # Sentinel — see docstring. Dispatch sites resolve via
                     # _try_sage_hidden_id, never index OPENAI_API_BASE_URLS.
@@ -586,7 +585,6 @@ async def get_all_models(request: Request, user: UserModel) -> dict[str, list]:
                             **model,
                             "name": model.get("name", model["id"]),
                             "owned_by": "openai",
-                            "openai": model,
                             "connection_type": model.get("connection_type", "external"),
                             "urlIdx": idx,
                         }

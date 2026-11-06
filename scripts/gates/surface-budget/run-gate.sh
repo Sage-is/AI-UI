@@ -34,7 +34,7 @@ HERE="$(cd "$(dirname "$0")/../../.." && pwd)"
 IMG="${1:-sage-is/ai-ui:develop}"
 SNAP="${SNAPSHOT:-$(ls -d "$HERE"/tools/db_snapshots/*/ 2>/dev/null | sort | tail -1)}"
 NET="${SPRIG_SMOKE_NET:-sage-network}"
-ROOT="sage-budget"; VOL="${ROOT}-data"
+ROOT="sage-budget"; VOL="${ROOT}-data"; MOCK="${ROOT}-mock"
 PORT="${SURFACE_BUDGET_PORT:-8098}"; BASE="http://localhost:${PORT}"
 ADMIN_EMAIL="upgrade-gate@sage.is"; ADMIN_PW="upgrade-gate-pw-1234"
 LEDGER="$HERE/app/cypress/perf-routes.json"
@@ -46,7 +46,7 @@ OWN_TARGET=0
 cleanup(){
   [ "$OWN_TARGET" = "1" ] || return 0
   [ -n "${KEEP:-}" ] && { echo "KEEP=1: leaving $ROOT up at $BASE"; return; }
-  docker rm -f "$ROOT" >/dev/null 2>&1 || true
+  docker rm -f "$ROOT" "$MOCK" >/dev/null 2>&1 || true
   docker volume rm "$VOL" >/dev/null 2>&1 || true
 }
 trap cleanup EXIT
@@ -81,6 +81,21 @@ else
     || { no "admin injection failed"; exit 1; }
 
   docker network inspect "$NET" >/dev/null 2>&1 || docker network create "$NET" >/dev/null
+
+  # Hermetic since 2026-11-05: every connection reads a frozen catalog from a mock
+  # on this network, so `/api/models` no longer grows with live provider catalogs
+  # and no snapshot key leaves the machine.
+  docker rm -f "$MOCK" >/dev/null 2>&1 || true
+  docker run -d --name "$MOCK" --network "$NET" -e MOCK_MODEL_COUNT=100 \
+    -v "$HERE/app/backend/sage_is_ai/rootstock/tests/security/_mock_provider.py:/mock.py:ro" \
+    --entrypoint python3 "$IMG" /mock.py 8099 >/dev/null \
+    && ok "mock provider up: a frozen catalog of 100 models per connection" \
+    || { no "mock provider failed to start"; exit 1; }
+  docker run --rm -v "$VOL:/data" -v "$HERE/scripts/snapshots/point-providers-at-mock.py:/point.py:ro" \
+    --entrypoint python3 "$IMG" /point.py /data/webui.db "http://${MOCK}:8099" >/dev/null \
+    && ok "the copy's connections point at the mock, with no real key" \
+    || { no "pointing the copy's connections at the mock failed"; exit 1; }
+
   docker run -d --name "$ROOT" --network "$NET" -p "${PORT}:8080" \
     -e WEBUI_AUTH=True -e WEBUI_SECRET_KEY=surface-budget-secret \
     -v "$VOL:/app/backend/data" "$IMG" >/dev/null
@@ -147,7 +162,11 @@ echo "== 3. the app-wide floor must not grow =="
 # startr.style before, uncounted here. Raised again to 7,350 the same day for
 # the sheet's Nunito Sans faces (+51 kB decoded), vendored at /fonts: the SPA
 # fetched them from startr.style before, through the sheet's @import, uncounted.
-FLOOR_CEILING="${FLOOR_KB:-7350}"
+# Lowered 7,350 -> 5,900 on 2026-11-05. The gate is hermetic now (the mock catalog
+# above, 100 models per connection), so the floor no longer grows with a provider's
+# live catalog, and the model list lost its nested "openai" copy. The first
+# hermetic run measured 5,780.6 kB decoded; the ceiling keeps the usual ~120 kB.
+FLOOR_CEILING="${FLOOR_KB:-5900}"
 FLOOR=$(jq -r '."notes-empty".decodedKB.median // empty' "$LEDGER")
 if [ -z "$FLOOR" ]; then
   no "the floor gauge (notes-empty) is missing from the ledger — the ceiling check cannot report"
