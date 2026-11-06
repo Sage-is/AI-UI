@@ -4,7 +4,7 @@ from typing import Optional
 from sage_is_ai.internal.db import Base, get_db
 from sage_is_ai.models.users import Users, UserResponse
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 from sqlalchemy import BigInteger, Column, String, Text, JSON
 
 from sage_is_ai.utils.access_control import has_access
@@ -66,6 +66,13 @@ class PromptForm(BaseModel):
     title: str
     content: str
     access_control: Optional[dict] = None
+
+    @field_validator("command")
+    @classmethod
+    def _slashed(cls, command: str) -> str:
+        # Every reader looks a prompt up as "/<command>", so every write stores it
+        # that way; the UI's import strips the slash (migration d4e5f6a7b8c9).
+        return command if command.startswith("/") else f"/{command}"
 
 
 class PromptsTable:

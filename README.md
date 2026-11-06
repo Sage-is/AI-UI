@@ -84,7 +84,7 @@ Sage.is AI-UI runs with sensible defaults. Override with environment variables:
 ## <img src="docs/art/emblems/people.svg" width="32" height="32" alt="" align="absmiddle"> Community
 
 - **Issues:** [Report bugs](https://github.com/Sage-is/AI-UI/issues)
-- **Community Hub:** coming this winter. community.sage.is is not yet public so make sure `ENABLE_COMMUNITY_SHARING` stays off ([docs](./docs/community-hub.md) for now). Browse and share models, prompts, and tools across your Sage instances.
+- **Community Hub:** coming this winter. community.sage.is is not yet public so make sure `ENABLE_COMMUNITY_SHARING` stays off ([docs](./docs/community-hub.md) for now). Browse and share models and prompts across your Sage instances.
 
 ## <img src="docs/art/emblems/seal.svg" width="32" height="32" alt="" align="absmiddle"> License
 

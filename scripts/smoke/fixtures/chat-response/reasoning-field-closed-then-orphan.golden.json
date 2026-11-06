@@ -29,7 +29,7 @@
     "channel": "event",
     "payload": {
       "data": {
-        "content": "<details type=\"reasoning\" done=\"true\" duration=\"1\">\n<summary>Thought for 1 seconds</summary>\n> The user wants summary statistics. The output is clear and accurate.\n</details>\n</think>"
+        "content": "<details type=\"reasoning\" done=\"true\" duration=\"1\">\n<summary>Thought for 1 seconds</summary>\n> The user wants summary statistics. The output is clear and accurate.\n</details>"
       },
       "type": "chat:completion"
     }
@@ -38,7 +38,7 @@
     "channel": "event",
     "payload": {
       "data": {
-        "content": "<details type=\"reasoning\" done=\"true\" duration=\"1\">\n<summary>Thought for 1 seconds</summary>\n> The user wants summary statistics. The output is clear and accurate.\n</details>\n</think>\n\nHere are the results from the simulation."
+        "content": "<details type=\"reasoning\" done=\"true\" duration=\"1\">\n<summary>Thought for 1 seconds</summary>\n> The user wants summary statistics. The output is clear and accurate.\n</details>\nHere are the results from the simulation."
       },
       "type": "chat:completion"
     }
@@ -66,14 +66,14 @@
     "chat_id": "chat-fixture",
     "message_id": "msg-fixture",
     "patch": {
-      "content": "<details type=\"reasoning\" done=\"true\" duration=\"1\">\n<summary>Thought for 1 seconds</summary>\n> The user wants summary statistics. The output is clear and accurate.\n</details>\n</think>\n\nHere are the results from the simulation."
+      "content": "<details type=\"reasoning\" done=\"true\" duration=\"1\">\n<summary>Thought for 1 seconds</summary>\n> The user wants summary statistics. The output is clear and accurate.\n</details>\nHere are the results from the simulation."
     }
   },
   {
     "channel": "event",
     "payload": {
       "data": {
-        "content": "<details type=\"reasoning\" done=\"true\" duration=\"1\">\n<summary>Thought for 1 seconds</summary>\n> The user wants summary statistics. The output is clear and accurate.\n</details>\n</think>\n\nHere are the results from the simulation.",
+        "content": "<details type=\"reasoning\" done=\"true\" duration=\"1\">\n<summary>Thought for 1 seconds</summary>\n> The user wants summary statistics. The output is clear and accurate.\n</details>\nHere are the results from the simulation.",
         "done": true,
         "title": "Fixture chat"
       },

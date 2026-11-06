@@ -15,7 +15,7 @@ The steps underneath `ship` now start with an underscore. They carry no `##` com
 | # | Step | Label | What it does |
 | --- | --- | --- | --- |
 | 1 | `release_preflight` | [WE] | Checks against the outside world. See below |
-| 2 | `release_smoke` | [WE] | Branch, version and clean-tree checks, then builds and smokes native plus amd64 |
+| 2 | `release_smoke` | [WE] | Branch, version and clean-tree checks, then builds and smokes native plus amd64; `surface_budget` stops a release over the SPA floor ceiling |
 | 3 | `release_finish` | [WE] | Merges to master and develop, cuts the annotated tag, pushes all three |
 | 4 | `_it_build_multi_arch_push_GHCR` | [WE] | Multi-arch buildx push of `:X.Y.Z` and `:latest` |
 | 5 | `verify_ghcr_manifest` | [WE] | Asserts the pushed image is present and a real amd64 plus arm64 index |
@@ -99,7 +99,7 @@ The pre-push hook refuses to publish a lightweight `v*` tag. It only judges tags
 
 `make ship` ends by pointing the brew formula at this release in `../homebrew-apps` (its `ai_ui_formula` target); the CLI ships in this release's `cli/` folder. [MANUALLY] Commit and push the tap: `brew upgrade ai-ui` followed by `ai-ui update` then moves a machine to the release. Until you push, `brew upgrade ai-ui` reports the CLI as up to date, and the tap's own checks refuse any other push.
 
-[MANUALLY] Once: put an admin API key for sage.startr.cloud in this repo's `.env` (untracked, synced outside git) as `SAGE_STARTR_CLOUD_ADMIN_KEY=sk-...`. The Makefile loads `.env`, so `make deploy` sees it.
+[MANUALLY] Once: put an admin API key for sage.startr.cloud in the team vault as the item `sage-startr-cloud-admin-key`. `make deploy` reads it through `sage-secret run`, so no copy sits in `.env`.
 
 ```bash
 make deploy    # [WE] SERVER_TAG, every app in deploy/instances.toml
@@ -110,12 +110,25 @@ For each app in `deploy/instances.toml`, in order, `scripts/deploy.py`:
 1. Resolves the multi-arch index digest of `ghcr.io/sage-is/ai-ui:<tag>`. Nobody copies a digest by hand.
 2. Skips the deploy if the app already runs that digest, and only checks it answers.
 3. Refuses an app whose data would not survive a redeploy (no volume, no bind mount) unless it is marked `throwaway`.
-4. Downloads the database first when the app is marked `backup`: sage.startr.cloud, to `~/Backups/ai-ui/sage-startr-cloud/<date>-<old version>.db`. No backup, no deploy.
+4. Downloads the database first when the app is marked `backup`: sage.startr.cloud, to `/Volumes/Somma 02 14TB/Backups/ai-ui/sage-startr-cloud/<date>-<old version>.db.gz.enc`, gzipped and encrypted with the vault key `bw:ai-ui-deploy-db-backup`, with its sha256 beside it. No plaintext copy touches a disk, and the copy is kept only after a decrypt gives back the download. Somma 02 not mounted means no backup, no deploy. The admin key comes from the vault too, through `sage-secret run`.
 5. Runs `cr-deploy deploy-image` by digest, then waits up to 300 s for `/api/config` to report the new version and `/health` to answer 200.
 
 try.sage.is goes first. It is the canary: synthetic data, wiped every 24 h. If it does not come up, the rollout stops and sage.startr.cloud is never touched.
 
 `make deploy APPS=try-sage-is` limits the rollout. `make deploy TAG=3.2.0` deploys another release.
+
+### After the deploy: document reading
+
+A deploy recreates the container, and on a box that is not a try.sage trial the vector store comes back switched off (`docs/sprigs/capabilities.md`, the trap "`vector` has no dispatch"). Any restart does the same: a health-check replacement, a node reboot, or saving the app's settings in CapRover, which redeploys it (2026-10-27). Until that is fixed (board card "Every restart turns document search off"), turn it on after every deploy or restart of sage.startr.cloud, then check that every knowledge base with files answers:
+
+```bash
+# [WE] the admin key reaches only these processes, never a command line
+export SAGE_STARTR_CLOUD_ADMIN_KEY=bw:sage-startr-cloud-admin-key
+sage-secret run -- python3 scripts/kb-reindex.py --vector-on   # runs only the AI Engine's vector bootstrap
+sage-secret run -- python3 scripts/kb-probe.py kbs             # every knowledge base with files should show hits
+```
+
+If the knowledge bases answer with no hits after the store is on, re-index them with `scripts/kb-reindex.py`, never `POST /api/v1/knowledge/reindex`: that route deletes every knowledge base whose `data` is null.
 
 ### Where the production data lives
 

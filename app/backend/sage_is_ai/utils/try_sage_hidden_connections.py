@@ -1,5 +1,10 @@
 """Hidden OpenAI-compatible connection registry for try.sage trial mode.
 
+Outside trial mode the same registry carries ``SAGE_LLM_API_URL`` /
+``SAGE_LLM_API_KEY``: an env-only connection, so a key that came from the
+environment (or from the vault through ``sage-secret run``) never lands in
+the config DB. Trial mode reads the ``TRY_SAGE_LLM_*`` names instead.
+
 Why this module exists
 ----------------------
 
@@ -60,6 +65,9 @@ from typing import Any
 
 from sage_is_ai.env import (
     ENABLE_TRY_SAGE,
+    SAGE_LLM_API_KEY,
+    SAGE_LLM_API_URL,
+    SAGE_LLM_MODELS,
     SRC_LOG_LEVELS,
     TRY_SAGE_LLM_API_KEY,
     TRY_SAGE_LLM_API_URL,
@@ -76,6 +84,13 @@ log.setLevel(SRC_LOG_LEVELS["MAIN"])
 #   - inference resolver in routers/openai.py — recognizes the entry as
 #     "route through hidden registry, not OPENAI_API_BASE_URLS[idx]".
 HIDDEN_CONNECTION_SOURCE = "try_sage_hidden"
+
+
+def _settings() -> tuple[str, str, list[str]]:
+    """URL, key and model allowlist for the mode this process runs in."""
+    if ENABLE_TRY_SAGE:
+        return TRY_SAGE_LLM_API_URL, TRY_SAGE_LLM_API_KEY, TRY_SAGE_LLM_MODELS
+    return SAGE_LLM_API_URL, SAGE_LLM_API_KEY, SAGE_LLM_MODELS
 
 
 def _stable_id(url: str) -> str:
@@ -111,20 +126,31 @@ def _build_hidden_entry(url: str, key: str) -> dict:
 
 
 def register_hidden_connections(app) -> None:
-    """Lifespan-startup hook: install the trial's hidden LLM connection.
+    """Lifespan-startup hook: install the hidden LLM connection.
 
-    No-op when ``ENABLE_TRY_SAGE`` is False or when the URL/key are
-    empty (logs a warning in the latter case so a misconfigured trial
-    is visible in the boot logs without crashing the process).
+    Trial mode reads ``TRY_SAGE_LLM_*`` and warns when the URL or key is
+    empty, so a misconfigured trial is visible in the boot logs without
+    crashing the process. Any other mode reads ``SAGE_LLM_*``; leaving
+    those unset is the normal case and stays silent.
 
     Idempotent: safe to call from both ``lifespan`` and the auto-reset
     routine. The resulting list always reflects current env values.
     """
+    url, key, models = _settings()
+    url, key = (url or "").strip(), (key or "").strip()
+
     if not ENABLE_TRY_SAGE:
-        # Clear any previous registration so toggling try mode off and
-        # restarting actually unregisters the hidden connection (it
-        # should not survive a flag flip across restarts).
-        app.state.try_sage_hidden_connections = []
+        # Rebuilt from the environment on every call, so an unset pair
+        # unregisters whatever an earlier boot installed.
+        app.state.try_sage_hidden_connections = (
+            [_build_hidden_entry(url, key)] if url and key else []
+        )
+        if url and key:
+            log.info(
+                "Registered the env-only LLM connection (id=%s, allowlist=%d models).",
+                _stable_id(url),
+                len(models),
+            )
         return
 
     # Trial mode never wants the open-webui Arena Model surfaced — it's
@@ -133,9 +159,6 @@ def register_hidden_connections(app) -> None:
     # at every boot and reset; if an admin flips it on via the UI mid-
     # session it'll re-disable on the next reset cycle.
     app.state.config.ENABLE_EVALUATION_ARENA_MODELS = False
-
-    url = (TRY_SAGE_LLM_API_URL or "").strip()
-    key = (TRY_SAGE_LLM_API_KEY or "").strip()
 
     if not url or not key:
         log.warning(
@@ -149,7 +172,7 @@ def register_hidden_connections(app) -> None:
     entry = _build_hidden_entry(url, key)
     app.state.try_sage_hidden_connections = [entry]
 
-    allowlist_size = len(TRY_SAGE_LLM_MODELS)
+    allowlist_size = len(models)
     log.info(
         "try.sage registered hidden LLM connection (id=%s, allowlist=%d %s).",
         entry["id"],
@@ -231,7 +254,7 @@ def _matches_allowlist(model_id: str, allowlist: set[str]) -> bool:
 
 
 def filter_models_to_allowlist(models: list[dict], hidden_conn_id: str) -> list[dict]:
-    """Optionally narrow a model list to ``TRY_SAGE_LLM_MODELS``.
+    """Optionally narrow a model list to ``TRY_SAGE_LLM_MODELS`` (trial) or ``SAGE_LLM_MODELS``.
 
     Models served by *other* connections (positive ``urlIdx``, or
     different ``hidden_conn_id``) are passed through unchanged — this
@@ -248,7 +271,7 @@ def filter_models_to_allowlist(models: list[dict], hidden_conn_id: str) -> list[
       ``_matches_allowlist``) so an operator can write `qwen3-32b` and
       have it match Groq's `qwen/qwen3-32b`.
     """
-    allowlist = set(TRY_SAGE_LLM_MODELS or [])
+    allowlist = set(_settings()[2] or [])
 
     # No allowlist → no filtering. Hidden-conn models pass through with
     # the same handling as any other connection.
@@ -308,7 +331,7 @@ def get_hidden_status(app) -> dict:
     than "broken".
     """
     connections = get_hidden_connections(app)
-    model_count = len(TRY_SAGE_LLM_MODELS or [])
+    model_count = len(_settings()[2] or [])
     return {
         "configured": bool(connections),
         "model_count": model_count,

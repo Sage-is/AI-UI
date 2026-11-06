@@ -7,10 +7,10 @@
 
 	import { getOllamaConfig, updateOllamaConfig } from '$lib/apis/ollama';
 	import { getOpenAIConfig, updateOpenAIConfig, getOpenAIModels } from '$lib/apis/openai';
-	import { getModels as _getModels } from '$lib/apis';
+	import { loadModels } from '$lib/apis';
 	import { getConnectionsConfig, setConnectionsConfig } from '$lib/apis/configs';
 
-	import { config, models, settings, user } from '$lib/stores';
+	import { models, user } from '$lib/stores';
 
 	import Switch from '$lib/components/common/Switch.svelte';
 	import Spinner from '$lib/components/common/Spinner.svelte';
@@ -23,12 +23,7 @@
 	const i18n = getContext('i18n');
 
 	const getModels = async () => {
-		const models = await _getModels(
-			localStorage.token,
-			$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null),
-			false,
-			true
-		);
+		const models = await loadModels(true);
 		return models;
 	};
 

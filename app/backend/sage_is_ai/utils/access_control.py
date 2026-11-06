@@ -153,6 +153,27 @@ def has_access(
     )
 
 
+def note_allows(user_id: str, role: str, note, access: str) -> bool:
+    """The one rule for a note: an admin, its owner, or its access control grants
+    `access` ("read" or "write"); no note, no access. The notes router, the
+    live-edit socket and retrieval all ask here, so a note cannot be private in
+    one place and readable in another (2026-11-02)."""
+    return bool(note) and (
+        role == "admin"
+        or user_id == note.user_id
+        or has_access(user_id, type=access, access_control=note.access_control)
+    )
+
+
+def is_restricted(user) -> bool:
+    """Whether model access control applies to this account: every role but admin.
+
+    The old test, ``user.role == "user"``, let facilitator and temporary accounts
+    past every check. One answer here keeps the next role from reopening that door.
+    """
+    return user.role != "admin"
+
+
 # Get all users with access to a resource
 def get_users_with_access(
     type: str = "write", access_control: Optional[dict] = None

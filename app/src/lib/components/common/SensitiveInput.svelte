@@ -1,9 +1,16 @@
+<script context="module" lang="ts">
+	// One id per mounted field: a page with several (OAuth, Documents, Audio)
+	// shared a literal id, so every label pointed at the first input.
+	let mounted = 0;
+</script>
+
 <script lang="ts">
 	import { getContext } from 'svelte';
 	const i18n: any = getContext('i18n');
 	import { settings } from '$lib/stores';
 	import Icon from '$lib/components/Icon.svelte';
 	export let value: string = '';
+	export let id = `sensitive-input-${++mounted}`;
 	export let placeholder = '';
 	export let required = true;
 	export let readOnly = false;
@@ -20,11 +27,11 @@
 </script>
 
 <div class={outerClassName}>
-	<label class="sr-only" for="password-input">{placeholder || $i18n.t('Password')}</label>
+	<label class="sr-only" for={id}>{placeholder || $i18n.t('Password')}</label>
 	<input
 		class={`${inputClassName} ${show ? '' : 'password'} ${($settings?.highContrastMode ?? false) ? 'placeholder:text-gray-700 dark:placeholder:text-gray-100' : ' outline-hidden placeholder:text-gray-300 dark:placeholder:text-gray-700'}`}
 		{placeholder}
-		id="password-input"
+		{id}
 		bind:value
 		required={required && !readOnly}
 		disabled={readOnly}

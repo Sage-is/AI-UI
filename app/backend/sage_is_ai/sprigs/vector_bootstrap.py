@@ -85,7 +85,8 @@ def _try_activate(vector_db: str) -> bool:
     importlib.invalidate_caches()
     try:
         import chromadb  # noqa: F401
-    except ImportError:
+    except Exception as e:  # noqa: BLE001 — a half-loaded numpy raises AttributeError
+        log.warning("chromadb does not import: %r", e)
         return False
     from sage_is_ai.retrieval.vector import factory
 

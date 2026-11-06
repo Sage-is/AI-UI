@@ -8,6 +8,12 @@
 	"[Last] dddd [at] h:mm A": "",
 	"[Today at] h:mm A": "",
 	"[Yesterday at] h:mm A": "",
+	"Document reading is on. Add your file again.": "",
+	"Document reading is still turning on. Admin → Sprigs shows where it stands.": "",
+	"This box cannot read documents yet.": "",
+	"This box cannot read documents yet. Ask your admin to turn on document reading.": "",
+	"Turn on document reading": "",
+	"Turning on document reading…": "",
 	"{{ models }}": "",
 	"{{COMPLETED}} of {{TOTAL}} complete": "{{COMPLETED}} of {{TOTAL}} complete",
 	"{{COUNT}} Available Tools": "",
@@ -15,6 +21,7 @@
 	"{{COUNT}} hidden lines": "",
 	"{{COUNT}} Replies": "",
 	"{{COUNT}} words": "",
+	"{{name}} was uploaded, but its text could not be read: {{error}}": "",
 	"{{user}}'s Chats": "",
 	"{{webUIName}} Backend Required": "",
 	"*Prompt node ID(s) are required for image generation": "",
@@ -488,9 +495,16 @@
 				"ok": "Content-Security-Policy header is set.",
 				"degraded": "No Content-Security-Policy configured. Set CONTENT_SECURITY_POLICY env."
 			},
+			"community_sharing": {
+				"off": "Community sharing is off until the sharing site exists, so the admin switch cannot turn it on."
+			},
 			"dev_reloader": {
 				"ok": "Running normally.",
 				"degraded": "Development reloader is active, watching {{paths}}. One worker only — not a production configuration."
+			},
+			"vector_db": {
+				"ok": "Document search is on.",
+				"degraded": "Document search is off: the vector database client is not running. Knowledge bases answer 503 until it starts."
 			}
 		},
 		"fix": {
@@ -617,6 +631,13 @@
 					"0": "Clear it from the shell that starts the app.",
 					"1": "Restart the app. It will launch with UVICORN_WORKERS instead of the reloader."
 				}
+			},
+			"vector_db_off": {
+				"plain": "Knowledge bases and document search need the vector database client, and it is not running in this process. Searches answer 503 and new files cannot be added until it starts.",
+				"universal": {
+					"0": "Open Admin → Sprigs and graft the vector-chroma Sprig™. When it is already grafted, prune it and graft it again.",
+					"1": "Reload this page. The row turns ok once the client is running; no restart is needed."
+				}
 			}
 		},
 		"library": {
@@ -687,6 +708,7 @@
 	"Discover, download, and explore custom tools": "",
 	"Discover, download, and explore agents": "",
 	"Discover, download, and explore model presets": "",
+	"Dismiss": "",
 	"Display": "",
 	"Display Emoji in Call": "",
 	"Display the username instead of You in the Chat": "",
@@ -1292,6 +1314,7 @@
 	"Sage.is AI uses faster-whisper internally.": "",
 	"Sage.is AI uses SpeechT5 and CMU Arctic speaker embeddings.": "",
 	"Sage.is AI version (v{{OPEN_WEBUI_VERSION}}) is lower than required version (v{{REQUIRED_VERSION}})": "",
+	"Sage is running on {{runtime}}. Run `ai-ui migrate` in Terminal to move it to Colima; your data comes along.": "",
 	"OpenAI": "",
 	"OpenAI API": "",
 	"OpenAI API Config": "",

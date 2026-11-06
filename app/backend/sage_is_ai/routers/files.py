@@ -83,13 +83,25 @@ def has_access_to_file(
 
 
 @router.post("/", response_model=FileModelResponse)
-async def upload_file(
+async def upload_file_route(
     request: Request,
     file: UploadFile = File(...),
     metadata: Optional[dict | str] = Form(None),
     process: bool = Query(True),
-    internal: bool = False,
     user=Depends(get_verified_user),
+):
+    """The HTTP route. `internal`, which skips the upload allowlist, is an argument
+    for server-internal callers of upload_file and is never read from the request."""
+    return await upload_file(request, file, metadata=metadata, process=process, user=user)
+
+
+async def upload_file(
+    request: Request,
+    file: UploadFile,
+    metadata: Optional[dict | str] = None,
+    process: bool = True,
+    internal: bool = False,
+    user=None,
 ):
     log.info(f"file.content_type: {file.content_type}")
 
@@ -546,7 +558,7 @@ async def get_html_file_content_by_id(id: str, user=Depends(get_verified_user)):
 
 
 @router.get("/{id}/content/{file_name}")
-async def get_file_content_by_id(id: str, user=Depends(get_verified_user)):  # noqa: F811
+async def get_file_content_by_id_and_name(id: str, user=Depends(get_verified_user)):
     file = Files.get_file_by_id(id)
 
     if not file:

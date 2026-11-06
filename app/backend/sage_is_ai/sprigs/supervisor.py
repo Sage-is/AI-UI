@@ -45,6 +45,7 @@ import platform
 import socket
 import sys
 import time
+from collections.abc import Mapping
 from pathlib import Path
 
 import requests
@@ -138,6 +139,38 @@ HOST_ARCH = _ARCH_ALIASES.get(_raw_arch, _raw_arch)
 # architecture-neutral. Single home for the list (graft/_build_argv reuse it).
 _BINARY_SERVERS = ("llama-binary", "whisper-binary", "tika-jar", "docling-serve")
 _KNOWN_ARCHES = frozenset({"arm64", "amd64"})
+
+# The environment a Sprig™ child inherits: the names and prefixes below, less
+# anything that looks like a secret. A child reads its own SPRIG_* switches, the
+# offline model caches (HF_*) and the process basics; the Rootstock™'s
+# WEBUI_SECRET_KEY, PRIVACY_KEY, provider keys, passwords and connection URLs
+# stay with the parent. Until 3.3.0 every child got a copy of os.environ.
+CHILD_ENV_NAMES = frozenset(
+    {
+        "PATH", "HOME", "USER", "LOGNAME", "LANG", "LANGUAGE", "TZ", "TMPDIR",
+        "LD_LIBRARY_PATH", "SSL_CERT_FILE", "SSL_CERT_DIR", "REQUESTS_CA_BUNDLE",
+        "OMP_NUM_THREADS", "CUDA_VISIBLE_DEVICES", "JAVA_TOOL_OPTIONS",
+        "OFFLINE_MODE", "TRANSFORMERS_OFFLINE", "SENTENCE_TRANSFORMERS_HOME", "TORCH_HOME",
+        "RAG_EMBEDDING_MODEL_TRUST_REMOTE_CODE",  # read by embedding_server.py
+        "HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY", "ALL_PROXY",
+        "http_proxy", "https_proxy", "no_proxy", "all_proxy",
+    }
+)
+CHILD_ENV_PREFIXES = ("LC_", "PYTHON", "HF_", "SPRIG_")
+_SECRET_MARKERS = (
+    "SECRET", "PASSWORD", "PASSWD", "CREDENTIAL", "_TOKEN", "_API_KEY", "PRIVACY_KEY",
+)
+
+
+def child_environment(environ: Mapping[str, str] | None = None) -> dict[str, str]:
+    """The environment handed to a Sprig™ child: an allowlist of the parent's, never its secrets."""
+    source = os.environ if environ is None else environ
+    return {
+        name: value
+        for name, value in source.items()
+        if (name in CHILD_ENV_NAMES or name.startswith(CHILD_ENV_PREFIXES))
+        and not any(marker in name.upper() for marker in _SECRET_MARKERS)
+    }
 NEUTRAL = object()  # arch sentinel: grafts anywhere (wasm/css/fonts/pure-python)
 
 
@@ -1057,6 +1090,13 @@ class SprigSupervisor:
                     continue
                 try:
                     handle = await self.graft(name, cap)
+                    if cap == "vector":
+                        # An overlay with no process: only ensure_chromadb turns
+                        # the client back on, or every restart left document
+                        # search off until someone ran --vector-on (2026-11-02).
+                        from sage_is_ai.sprigs.vector_bootstrap import ensure_chromadb
+
+                        await ensure_chromadb(self.app)
                     # Server capabilities each own a config slot that must be
                     # re-pointed at the FRESH loopback port after re-spawn.
                     if handle.process is not None:
@@ -1446,7 +1486,9 @@ class SprigSupervisor:
         # offline weight cache BEFORE we disturb anything, so a failed pull leaves the
         # current cultivar intact. The seeded cache makes the ONNX server load with
         # zero chroma-S3 / HuggingFace egress.
-        child_env = None
+        # Every child gets the allowlisted environment (child_environment above),
+        # never the Rootstock™'s secrets; the offline switches ride on top of it.
+        child_env = child_environment()
         if spec.get("delivery") == "oci-artifact":
             from sage_is_ai.env import DATA_DIR
             from sage_is_ai.sprigs import artifact
@@ -1460,12 +1502,13 @@ class SprigSupervisor:
                     f"artifact delivery failed for '{name}': {exc}"
                 ) from exc
 
-            child_env = {
-                **os.environ,
-                "OFFLINE_MODE": "true",
-                "HF_HUB_OFFLINE": "1",
-                "TRANSFORMERS_OFFLINE": "1",
-            }
+            child_env.update(
+                {
+                    "OFFLINE_MODE": "true",
+                    "HF_HUB_OFFLINE": "1",
+                    "TRANSFORMERS_OFFLINE": "1",
+                }
+            )
             if spec.get("server") in _BINARY_SERVERS:
                 # Binary+model cultivar: paths ride in argv, not env.
                 argv = [a.replace("{artifact_dir}", served) for a in argv]
@@ -1484,13 +1527,7 @@ class SprigSupervisor:
         # fails its health check, the except below prunes the new one, leaving
         # zero cultivars of that capability rooted (the honest state).
         if capability in ("embedding", "reranker", "stt"):
-            for other in [
-                n
-                for n, h in list(self._sprigs.items())
-                if n != name and h.capability == capability
-            ]:
-                log.info("top-grafting: pruning prior %s sprig '%s'", capability, other)
-                await self._terminate(other)
+            await self._evict(name, capability)
 
         port = _reserve_loopback_port()
         # Binary sprigs exec the delivered static binary directly; python
@@ -1508,8 +1545,8 @@ class SprigSupervisor:
             model=spec["model"],
             process=await asyncio.create_subprocess_exec(
                 *exec_argv,
-                # env=None for non-oci cultivars => inherit parent env (unchanged);
-                # oci-artifact cultivars get the offline-forcing env built above.
+                # The allowlisted environment built above (child_environment),
+                # with the offline switches added for oci-artifact cultivars.
                 env=child_env,
                 # DEVNULL (not PIPE): we don't capture logs yet, and an unread PIPE
                 # would deadlock the child once its stdout buffer fills.
@@ -1559,6 +1596,11 @@ class SprigSupervisor:
         while time.monotonic() < deadline:
             proc = handle.process
             if proc is not None and proc.returncode is not None:
+                if handle.evicted_by:
+                    raise RuntimeError(
+                        f"sprig '{handle.name}' was pruned while booting: "
+                        f"'{handle.evicted_by}' took over the {handle.capability} capability"
+                    )
                 raise RuntimeError(
                     f"sprig '{handle.name}' exited on boot (rc={proc.returncode})"
                 )
@@ -1572,6 +1614,20 @@ class SprigSupervisor:
                 pass
             await asyncio.sleep(0.25)
         raise TimeoutError(f"sprig '{handle.name}' not healthy within {timeout:.0f}s")
+
+    async def _evict(self, name: str, capability: str) -> None:
+        """Top-graft: terminate every OTHER rooted sprig of this capability.
+
+        Each is marked first, so a cultivar still in its own boot wait reports
+        that it was replaced rather than that it crashed."""
+        for other in [
+            n
+            for n, h in list(self._sprigs.items())
+            if n != name and h.capability == capability
+        ]:
+            log.info("top-grafting: pruning prior %s sprig '%s'", capability, other)
+            self._sprigs[other].evicted_by = name
+            await self._terminate(other)
 
     async def _terminate(self, name: str) -> None:
         handle = self._sprigs.pop(name, None)

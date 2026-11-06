@@ -20,6 +20,7 @@ This directory now separates active reference material from historical audits, p
 - [product-stack.md](product-stack.md) — the stack as it is, redrawn 2026-10-04
 - [bridges.md](bridges.md) — WhatsApp, Telegram, Signal, and Email bridge setup
 - [SECURITY.md](SECURITY.md) — security posture and reporting notes
+- [privacy.md](privacy.md) — the privacy filter: which connections it covers, its key, and rotating that key
 - [CONTRIBUTING.md](CONTRIBUTING.md) — contribution process and expectations
 - [troubleshooting.md](troubleshooting.md) — common local and deployment issues
 
@@ -29,6 +30,7 @@ This directory now separates active reference material from historical audits, p
 - [backend-rewrite-research.md](backend-rewrite-research.md) — backend rewrite options and research notes
 - [docs-drift-plan.md](docs-drift-plan.md) — the 2026-09-26 docs drift pass: steps 1 and 2 done (but for one doc), 3 to 5 open
 - [community-hub.md](community-hub.md) — the community hub winter plan: what exists, what blocks sharing, what ships
+- [network/box-network.md](network/box-network.md) — the box network proposal (2026-11-03): roles, guest passes, vetted hosts, a network floor price; its canvas sits beside it
 - [completed-todos.md](completed-todos.md) — completed roadmap items and stale-task audit trail
 
 ## Archive

@@ -62,7 +62,7 @@ BODY="$(echo "$CFG" | jq --argjson bots "$BOTS" '
   }')"
 
 echo "== register pullbot connections =="
-UPD="$(curl -s -w $'\n%{http_code}' -X POST "$BASE/openai/config/update" -H "$AUTH" -H 'Content-Type: application/json' -d "$BODY")"
+UPD="$(curl -s -w $'\n%{http_code}' -X POST "$BASE/openai/config/update" -H "$AUTH" -H 'Content-Type: application/json' -d @- <<<"$BODY")"   # body holds the key: stdin, not argv
 UCODE="${UPD##*$'\n'}"; UBODY="${UPD%$'\n'*}"
 if [ "$UCODE" = "200" ]; then
   ok "openai/config/update -> 200"

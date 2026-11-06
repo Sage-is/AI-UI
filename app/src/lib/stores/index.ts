@@ -281,6 +281,7 @@ type Document = {
 
 type Config = {
 	license_metadata: any;
+	sage_runtime?: string; // admins only: the runtime `ai-ui` started the box on
 	status: boolean;
 	name: string;
 	version: string;
@@ -302,6 +303,7 @@ type Config = {
 		enable_admin_export: boolean;
 		enable_admin_chat_access: boolean;
 		enable_community_sharing: boolean;
+		community_hub_url?: string;
 		enable_autocomplete_generation: boolean;
 		enable_direct_connections: boolean;
 		enable_version_update_check: boolean;

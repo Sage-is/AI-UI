@@ -1,8 +1,13 @@
 #!/bin/bash
 
-# Source environment variables
+# Source environment variables. Values already in the environment win, as
+# python-dotenv does: `make` hands the container vault-resolved keys with
+# `-e NAME`, while /app/.env still holds their `bw:` stubs.
 if [ -f /app/.env ]; then
+  _preset_env=$(export -p)
   . /app/.env
+  eval "$_preset_env"
+  unset _preset_env
 else
   echo "No .env file found. Using default configuration."
 fi
@@ -41,11 +46,8 @@ setup_rclone() {
     }
   done
 
-  echo "Rclone configuration generated."
-  echo ""
-  echo "*********"
-  cat "$config_dir/rclone.conf"
-  echo "*********"
+  # The remote names only: the file holds each remote's credentials, and this is the container log.
+  echo "Rclone configuration generated for: $(grep '^\[' "$config_dir/rclone.conf" | tr -d '[]' | tr '\n' ' ')"
 }
 
 # Function to perform backup

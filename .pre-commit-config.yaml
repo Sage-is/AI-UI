@@ -115,7 +115,8 @@ repos:
 
       # Normalize trailing whitespace
       - id: trailing-whitespace
-        exclude: ^app/node_modules/
+        # Vendored third-party files stay byte for byte: their integrity hashes pin them.
+        exclude: ^(app/node_modules/|app/static/vendor/)
 
   # ---------------------------------------------------------------------------
   # Outreach Privacy — block private drafts from leaking into the public repo

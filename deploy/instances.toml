@@ -1,6 +1,7 @@
 # Where `make deploy` sends a release, in this order. The first app is the
 # canary: if it does not come up on the new version, the rollout stops there.
-# No secrets here; `admin_key_env` names a variable in .env (the Makefile loads it).
+# No secrets here; `admin_key_env` names a variable `make deploy` resolves from
+# the vault through sage-secret.
 
 [[instance]]
 app = "try-sage-is"

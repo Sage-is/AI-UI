@@ -3,7 +3,7 @@
 # =============================================================================
 # PROJECT ENV SETUP SCRIPT
 # =============================================================================
-# 
+#
 # This script helps set up essential environment variables for any project
 # Focuses on the core Docker/Makefile configuration that every project needs
 # Works from anywhere (resolves repo root from script location)
@@ -138,9 +138,9 @@ EOF
 IMAGE_NAME=$image_name
 GHCR_IMAGE_NAME=$ghcr_image_name
 
-# Container Configuration  
+# Container Configuration
 CONTAINER_NAME=$container_name
-PORT_MAPPING=$port:$port
+PORT_MAPPING=127.0.0.1:$port:$port
 
 # Volume Configuration
 VOLUME_DATA=$volume_data
@@ -202,9 +202,9 @@ show_template() {
 IMAGE_NAME=$image_name
 GHCR_IMAGE_NAME=$ghcr_image_name
 
-# Container Configuration  
+# Container Configuration
 CONTAINER_NAME=$project_name
-PORT_MAPPING=8080:8080
+PORT_MAPPING=127.0.0.1:8080:8080
 
 # Volume Configuration
 VOLUME_DATA=$project_name-data:/app/backend/data
@@ -230,7 +230,7 @@ USAGE:
 
 WHAT IT SETS UP:
     - IMAGE_NAME: Docker image name (org/project-name)
-    - GHCR_IMAGE_NAME: GitHub Container Registry name  
+    - GHCR_IMAGE_NAME: GitHub Container Registry name
     - CONTAINER_NAME: Docker container name
     - PORT_MAPPING: Port mapping for container
     - VOLUME_DATA: Volume mapping for data persistence

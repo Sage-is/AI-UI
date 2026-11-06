@@ -1,12 +1,23 @@
 # Community Hub: winter plan
 
-Updated 2026-10-04.
+Updated 2026-11-03.
+
+## Since 2026-11-03
+
+The share and install paths are rewired. The sections after this one describe the code before that day, so their line numbers are stale.
+
+- One address: `COMMUNITY_HUB_URL` in `app/backend/sage_is_ai/config.py`, default `https://community.sage.is` (decision 8). The browser gets it as `features.community_hub_url`; the no-build agents and prompts pages read it too.
+- One helper: `app/src/lib/utils/community.ts`. `shareToHub` opens the hub page, waits for `'loaded'` (decision 9) from that tab at the hub's origin, then posts the item to that exact origin. Nothing goes to `'*'` or into a URL. `receiveFromHub` listens only while sharing is on, hears only the opener at the hub's origin, and sends `'loaded'` to that origin.
+- The model share's request bin and its dead size guard went with the old handler.
+- No function crosses in either direction: its Share item, its "Discover your next function" link and its install listener are gone.
+- Guard: `app/backend/sage_is_ai/rootstock/tests/security/test_community_share_paths.py` fails on a request-bin URL, a window post to `'*'`, a hardcoded hub address, a share component that skips the helper, or a function share.
+- Still open: the incident's bin check; provenance on shared items, under review as a pub/sub design (Alexander, 2026-11-03). The destination pages stay, and the hub builds them (decision 7).
 
 ## Status
 
-- community.sage.is is the planned sharing site for Sage.is instances (`TODO.md:211`). Coming this winter. No firmer date. No card sets which item types it carries yet; see the ships section.
+- community.sage.is is the planned sharing site for Sage.is instances (`TODO.md` card "Community-share leak + dead wiring"). Coming this winter. No firmer date. No card sets which item types it carries yet; see the ships section.
 - Sharing is off by default until launch. The ENABLE_COMMUNITY_SHARING env default is the string "False" `app/backend/sage_is_ai/config.py:1484-1492`.
-- The off default is a mask, not a fix. Turning the flag on re-arms every broken handler below `TODO.md:214`.
+- The off default is a mask, not a fix. Turning the flag on re-arms every broken handler below `TODO.md` card "Community-share leak + dead wiring".
 - The off default does not reach instances that already saved the setting. A stored DB value beats the env default, and ENABLE_PERSISTENT_CONFIG defaults True `app/backend/sage_is_ai/config.py:157-158, 162-172` (line 168 checks the stored value first).
 - Saving the admin General or Features page writes the flag to the DB `app/backend/sage_is_ai/routers/auths.py:1028-1029`; `app/backend/sage_is_ai/pages/features_panel.py:119-122`.
 - No migration forces it off. An instance whose admin saved settings while the default was on still has sharing on.
@@ -24,7 +35,7 @@ Updated 2026-10-04.
 
 ### Gated share buttons
 
-All five check the flag. Function and Feedbacks were gated 2026-08-15 per `TODO.md:214`.
+All five check the flag. Function and Feedbacks were gated 2026-08-15 per `TODO.md` card "Community-share leak + dead wiring".
 
 - Model menu `app/src/lib/components/workshop/Models/ModelMenu.svelte:82`.
 - Prompt menu `app/src/lib/components/workshop/Prompts/PromptMenu.svelte:43`.
@@ -77,18 +88,18 @@ Real code, and none opens community.sage.is.
 
 ### Security
 
-- [MANUALLY] Incident first: check whether the bin captured traffic; rotate anything a shared system prompt disclosed `TODO.md:216`.
-- [WE] The leak is still in code. Each model Share click sent the full model record, params.system included, as a query string to a public request-bin URL. Scope: try.sage.is (3.0.0) and every deployed instance `app/src/lib/components/workshop/Models.svelte:105, 110-113`; `TODO.md:211-213, 219`.
-- [WE] Dead size guard: :108 tests model.knowledge_base, a field ModelModel lacks, so the query-string branch always runs `app/src/lib/components/workshop/Models.svelte:108`; `app/backend/sage_is_ai/models/models.py:102-115`; `TODO.md:218`.
+- [MANUALLY] Incident first: check whether the bin captured traffic; rotate anything a shared system prompt disclosed `TODO.md` card "Community-share leak + dead wiring".
+- [WE] The leak is still in code. Each model Share click sent the full model record, params.system included, as a query string to a public request-bin URL. Scope: try.sage.is (3.0.0) and every deployed instance `app/src/lib/components/workshop/Models.svelte:105, 110-113`; `TODO.md` card "Community-share leak + dead wiring".
+- [WE] Dead size guard: :108 tests model.knowledge_base, a field ModelModel lacks, so the query-string branch always runs `app/src/lib/components/workshop/Models.svelte:108`; `app/backend/sage_is_ai/models/models.py:102-115`; `TODO.md` card "Community-share leak + dead wiring".
 - No board card yet: even if the large-model branch ran, its postMessage could never fire. :118 compares event.origin (scheme and host only) with the :105 URL, which has a path `app/src/lib/components/workshop/Models.svelte:105, 118, 120`. Today the branch is unreachable anyway because of the dead guard above.
 - No board card yet: the saved-on flag survives on existing instances, and there is no migration `app/backend/sage_is_ai/config.py:162-172`.
 - No board card yet: every share handler posts with targetOrigin '*' `app/src/lib/components/workshop/Models.svelte:120`; `app/src/lib/components/workshop/Prompts.svelte:59`; `app/src/lib/components/chat/ShareChatModal.svelte:49-55`; `app/src/lib/components/admin/Functions.svelte:80`; `app/src/lib/components/admin/Evaluations/Feedbacks.svelte:141`.
 - No board card yet: install listeners trust any message from an allowlisted origin, skip a window.opener check, and JSON.parse it into the form; the functions form holds code the server runs `app/src/routes/(app)/workshop/models/create/+page.svelte:70-86`; `app/src/routes/(app)/workshop/prompts/create/+page.svelte:36-52`; `app/src/routes/(app)/admin/functions/create/+page.svelte:64-74`.
 - No board card yet: install receivers ignore the flag. They always listen and always send 'loaded' `app/src/routes/(app)/workshop/models/create/+page.svelte:70-90`; `app/src/routes/(app)/workshop/prompts/create/+page.svelte:36-57`; `app/src/routes/(app)/admin/functions/create/+page.svelte:64-78`.
-- [WE] Function and tool share types are unsafe `TODO.md:225-227` (details in the ships section).
-- [WE] The execute event runs server-supplied code through new Function in the top frame `app/src/lib/components/chat/Chat.svelte:387`; card `TODO.md:247` picks neuter-in-place `TODO.md:252`; CSP without unsafe-eval closes the browser half `TODO.md:242-243`; the POST /functions/load/url side is still open `TODO.md:564-566`; a listing policy is not the control `charts/sprig-creator-program/TODO.md:61`.
-- [WE] No CSP by default. SecurityHeadersMiddleware sends one only if CONTENT_SECURITY_POLICY is set; it is unset in .env.example, Dockerfile, docker-compose.yaml, distribution.env; diagnostics reports csp_missing `app/backend/sage_is_ai/main.py:1443`; `app/backend/sage_is_ai/utils/security_headers.py:39-58, 188-190`; `app/backend/sage_is_ai/routers/diagnostics.py:601-621`; gate card `TODO.md:233`; policy card `TODO.md:242` (omit unsafe-eval, report-only first); marketplace blocker `TODO.md:568`.
-- [WE] No provenance (source/origin) field, so a bad item cannot be listed and revoked `TODO.md:228`.
+- [WE] Function and tool share types are unsafe `TODO.md` card "Community-share leak + dead wiring" (details in the ships section).
+- [WE] The execute event runs server-supplied code through new Function in the top frame `app/src/lib/components/chat/Chat.svelte:387`; card `TODO.md` card "Neuter the execute event branch, do NOT delete it" picks neuter-in-place `TODO.md` card "Neuter the execute event branch, do NOT delete it"; CSP without unsafe-eval closes the browser half `TODO.md` card "CSP-configured gate"; the POST /functions/load/url side is still open `TODO.md` card "Sprig™ marketplace"; a listing policy is not the control `charts/sprig-creator-program/TODO.md:61`.
+- [WE] No CSP by default. SecurityHeadersMiddleware sends one only if CONTENT_SECURITY_POLICY is set; it is unset in .env.example, Dockerfile, docker-compose.yaml, distribution.env; diagnostics reports csp_missing `app/backend/sage_is_ai/main.py:1443`; `app/backend/sage_is_ai/utils/security_headers.py:39-58, 188-190`; `app/backend/sage_is_ai/routers/diagnostics.py:601-621`; gate card `TODO.md` card "CSP-configured gate"; policy card `TODO.md` card "CSP-configured gate" (omit unsafe-eval, report-only first); marketplace blocker `TODO.md` card "Sprig™ marketplace".
+- [WE] No provenance (source/origin) field, so a bad item cannot be listed and revoked `TODO.md` card "Community-share leak + dead wiring".
 - No board card yet: install is not admin-only for model, prompt, knowledge; a facilitator can grant those permissions to a group with no admin in it `app/backend/sage_is_ai/routers/groups.py:109-126`; `app/backend/sage_is_ai/utils/facilitator.py:34-38`; `charts/sprig-creator-program/TODO.md:34`.
 - No board card yet: base-model shadowing deletes models; bulk import skips review and POST /sync deletes missing functions; prompt commands are a global first-come namespace and install hardcodes access_control: null `charts/sprig-creator-program/TODO.md:36-38`.
 - No board card yet: CORS_ALLOW_ORIGIN defaults '*'; the UTM registration scheme would send every instance's hostname and version to a public site `charts/sprig-creator-program/TODO.md:39`; the previous version of this page (commit `228b958`, lines 101-117).
@@ -96,12 +107,12 @@ Real code, and none opens community.sage.is.
 
 ### Wiring
 
-- [WE] No COMMUNITY_HUB_URL. Hardcoded https://sage.is: 10 in share and browse paths, 3 https://sage.is plus 3 https://www.sage.is in install allowlists, 2 in author links. Board says ~9 `TODO.md:220`.
+- [WE] No COMMUNITY_HUB_URL. Hardcoded https://sage.is: 10 in share and browse paths, 3 https://sage.is plus 3 https://www.sage.is in install allowlists, 2 in author links. Board says ~9 `TODO.md` card "Community-share leak + dead wiring".
   - Share and browse: `Models.svelte:595`; `Prompts.svelte:51, 346`; `Functions.svelte:72, 532`; `ShareChatModal.svelte:40`; `Feedbacks.svelte:134`; `agents_panel.py:336`; `prompts_panel.py:261, 262`.
   - Install: `models/create/+page.svelte:72`; `prompts/create/+page.svelte:38`; `functions/create/+page.svelte:66`. Author links: `ChatPlaceholder.svelte:116`; `Placeholder.svelte:202`.
-- [WE] Destination pages on sage.is: four of five soft-404, so Share toasts success and does nothing `TODO.md:222`.
-- [WE] Handshake word: code uses 'loaded' everywhere, and the previous version of this page (commit `228b958`, line 132) said 'ready' `TODO.md:223`.
-- [WE] Allowlists disagree: models and prompts allow sage.is, www.sage.is, localhost:5173; functions allows localhost:9999; none allows https://community.sage.is `TODO.md:224`; `app/src/routes/(app)/workshop/models/create/+page.svelte:72`; `app/src/routes/(app)/workshop/prompts/create/+page.svelte:38`; `app/src/routes/(app)/admin/functions/create/+page.svelte:66`.
+- [WE] Destination pages on sage.is: four of five soft-404, so Share toasts success and does nothing `TODO.md` card "Community-share leak + dead wiring".
+- [WE] Handshake word: code uses 'loaded' everywhere, and the previous version of this page (commit `228b958`, line 132) said 'ready' `TODO.md` card "Community-share leak + dead wiring".
+- [WE] Allowlists disagree: models and prompts allow sage.is, www.sage.is, localhost:5173; functions allows localhost:9999; none allows https://community.sage.is `TODO.md` card "Community-share leak + dead wiring"; `app/src/routes/(app)/workshop/models/create/+page.svelte:72`; `app/src/routes/(app)/workshop/prompts/create/+page.svelte:38`; `app/src/routes/(app)/admin/functions/create/+page.svelte:66`.
 - No board card yet: Jinja Share links send no data `app/backend/sage_is_ai/pages/agents_panel.py:336`; `app/backend/sage_is_ai/pages/prompts_panel.py:261-262`.
 - No board card yet: install route, knowledge receiver, hub app.
 
@@ -109,28 +120,28 @@ Real code, and none opens community.sage.is.
 
 - Stale board citations: `TODO.md:214` cites `app/backend/sage_is_ai/config.py:1471` (now 1484); `TODO.md:235, 569` cite `app/backend/sage_is_ai/main.py:1473` (now 1443); `TODO.md:236, 570` cite `app/backend/sage_is_ai/routers/diagnostics.py:610` (now 601-621); `TODO.md:576` cites `app/src/lib/components/chat/Chat.svelte:417` (now 419). `charts/sprig-creator-program/TODO.md:29, :47` carry the same stale cites (Chat.svelte 417→419, main.py 1473→1443, diagnostics.py 610→601-621, config.py 1471→1484).
 - Ambiguous, not stale: `TODO.md:217` cites a bare `Models.svelte:105`. The line is still correct, but three files share the name; use `app/src/lib/components/workshop/Models.svelte:105`.
-- Timeline drift: card says '~2 weeks out' (`TODO.md:211`, written 2026-08-15); the flag's code comment says '~2 weeks out' (`app/backend/sage_is_ai/config.py:1488`); the CSP card says 'opens in weeks' (`TODO.md:237`); chart says 'in the coming weeks' (`charts/sprig-creator-program/TODO.md:43`); README now says 'coming this winter' (`README.md:87`). The first four need rewording to 'this winter'.
+- Timeline drift: card says '~2 weeks out' (`TODO.md` card "Community-share leak + dead wiring", written 2026-08-15); the flag's code comment says '~2 weeks out' (`app/backend/sage_is_ai/config.py:1488`); the CSP card says 'opens in weeks' (`TODO.md` card "CSP-configured gate"); chart says 'in the coming weeks' (`charts/sprig-creator-program/TODO.md:43`); README now says 'coming this winter' (`README.md:87`). The first four need rewording to 'this winter'.
 - Docs disagree on this page: `docs/bonsai/sprig-creator-program.md:115` says ignore it; `README.md:76, 87` and `docs/README.md:31` link it; `docs/docs-drift-plan.md:34` cites `TODO.md:191/195`, now 220/224, and `README.md:75`, now 76.
 
 ## What ships first, and what never ships
 
 ### Candidates for the first release (no card sets scope)
 
-- Model and prompt are the only types that have working receivers and are allowed at launch. Function also has a receiver (`app/src/routes/(app)/admin/functions/create/+page.svelte:64-83`), but `TODO.md:225` keeps it out at launch. No card picks the launch types; `TODO.md:225` only rules out function and tool. Chat and feedback shares depend on `TODO.md:222` and open decision 7.
+- Model and prompt are the only types that have working receivers and are allowed at launch. Function also has a receiver (`app/src/routes/(app)/admin/functions/create/+page.svelte:64-83`), but `TODO.md` card "Community-share leak + dead wiring" keeps it out at launch. No card picks the launch types; `TODO.md` card "Community-share leak + dead wiring" only rules out function and tool. Chat and feedback shares depend on `TODO.md` card "Community-share leak + dead wiring" and open decision 7.
 - Knowledge: no receiver is built and no board card holds it. Whether it ships at launch is open decision 12.
-- No card sets community-hub submission scope or its trust boundary. The marketplace slice (`TODO.md:558-559`) is a separate system. See open decision 5.
+- No card sets community-hub submission scope or its trust boundary. The marketplace slice (`TODO.md` card "Sprig™ marketplace") is a separate system. See open decision 5.
 
 ### Never at launch
 
-- Function: unsandboxed RCE, exec server-side and new Function browser-side `TODO.md:226`.
-- Tool: a shared tool with auth_type "session" sends each caller's JWT to the publisher `TODO.md:227`; `charts/sprig-creator-program/TODO.md:35`.
+- Function: unsandboxed RCE, exec server-side and new Function browser-side `TODO.md` card "Community-share leak + dead wiring".
+- Tool: a shared tool with auth_type "session" sends each caller's JWT to the publisher `TODO.md` card "Community-share leak + dead wiring"; `charts/sprig-creator-program/TODO.md:35`.
 - `README.md:87` still advertises tools, and the previous version of this page (commit `228b958`, line 3) advertised tools and functions. Fix the README: drop tools from :87.
 
-The board rule says "at launch" `TODO.md:225`. Whether that becomes permanent is an open decision.
+The board rule says "at launch" `TODO.md` card "Community-share leak + dead wiring". Whether that becomes permanent is an open decision.
 
 ## Install flow (design, not built)
 
-Nothing in this section exists yet, and no board card holds it: not the install route, the exact-origin postMessage or multi-instance support (open decision 6). It records the previous page's intent, not a plan. Only COMMUNITY_HUB_URL (`TODO.md:220`) and the allowlist reconcile (`TODO.md:224`) have cards.
+Nothing in this section exists yet, and no board card holds it: not the install route, the exact-origin postMessage or multi-instance support (open decision 6). It records the previous page's intent, not a plan. Only COMMUNITY_HUB_URL (`TODO.md` card "Community-share leak + dead wiring") and the allowlist reconcile (`TODO.md` card "Community-share leak + dead wiring") have cards.
 
 Nothing in this section exists yet. It records the intended design.
 
@@ -167,12 +178,12 @@ sequenceDiagram
 1. Who runs the incident check and what gets rotated? [MANUALLY]
 2. Existing instances with a saved-on flag: migrate it off, or tell admins?
 3. Function and tool: "not at launch" or "never"?
-4. POST /functions/load/url (`TODO.md:564`) is already admin-only (`app/backend/sage_is_ai/routers/functions.py:82`). Should it get a further gate, such as an off switch or a source allowlist, or do we accept the admin-only risk in writing? (`TODO.md:566`)
+4. POST /functions/load/url (`TODO.md` card "Sprig™ marketplace") is already admin-only (`app/backend/sage_is_ai/routers/functions.py:82`). Should it get a further gate, such as an off switch or a source allowlist, or do we accept the admin-only risk in writing? (`TODO.md` card "Sprig™ marketplace")
 5. Who may install: admin only, or keep workshop permissions and facilitator grants?
 6. Instance registration: send origin and version to the hub, or not?
-7. sage.is destinations (/chats/upload, /leaderboard and the rest): build or drop?
-8. Default for COMMUNITY_HUB_URL (a PersistentConfig per `TODO.md:220`): `https://community.sage.is`?
-9. Handshake word: 'loaded' or 'ready'?
+7. sage.is destinations (/chats/upload, /leaderboard and the rest): build or drop? Decided 2026-11-03: keep; the hub builds them.
+8. Default for COMMUNITY_HUB_URL (a PersistentConfig per `TODO.md` card "Community-share leak + dead wiring"): `https://community.sage.is`? Decided 2026-11-03: yes.
+9. Handshake word: 'loaded' or 'ready'? Decided 2026-11-03: 'loaded'.
 10. CSP: report-only now, then enforce before launch or after?
 11. This page: keep it as the winter plan, and update `docs/bonsai/sprig-creator-program.md:115` and `docs/docs-drift-plan.md:34` to match?
 12. Knowledge sharing, metadata only (hub design `../WEB-Sage-Community-Hub/docs/ARCHITECTURE.md:372`): add a receiver card and ship it at launch, or leave it out? No board card yet.

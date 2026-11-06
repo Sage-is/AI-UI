@@ -32,7 +32,7 @@ command -v jq     >/dev/null || { echo "ERROR: jq not on PATH"; exit 1; }
 
 # Dockerized oras: no host oras, no login state. A throwaway docker-config is
 # minted from gh's token and mounted read-only (oras honors DOCKER_CONFIG).
-ORAS_IMG="${ORAS_IMG:-ghcr.io/oras-project/oras:v1.2.0}"
+. "$(dirname "${BASH_SOURCE[0]}")/lib/oras.sh"
 NETWORK="${NETWORK:-sage-network}"
 . "$(dirname "${BASH_SOURCE[0]}")/lib/mount-tmp.sh"
 AUTH_DIR="$(mount_tmp publish-auth)"

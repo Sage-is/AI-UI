@@ -46,6 +46,13 @@ REPO="$(cd "$(dirname "$0")/../.." && pwd)"
 CYPRESS_ADMIN_EMAIL="${CYPRESS_ADMIN_EMAIL:-$TEST_ADMIN_EMAIL}"
 CYPRESS_ADMIN_PASSWORD="${CYPRESS_ADMIN_PASSWORD:-$TEST_ADMIN_PASSWORD}"
 
+# cypress.config.ts resolves `cypress` from the mounted tree, so the host needs
+# app/node_modules; without it every spec dies in Cypress's loader (2026-10-24).
+[ -d "$REPO/app/node_modules/cypress" ] || {
+  echo "app/node_modules is missing: run  make bun_run CMD=\"install --frozen-lockfile\"  (Docker, lock untouched), then retry" >&2
+  exit 2
+}
+
 docker network inspect "$NET" >/dev/null 2>&1 || docker network create "$NET" >/dev/null
 
 # TARGET_URL mode: skip the fresh boot + TLS sidecar and point Cypress at an

@@ -47,7 +47,7 @@ from sage_is_ai.utils.payload import (
     apply_model_system_prompt_to_body,
 )
 from sage_is_ai.utils.auth import get_admin_user, get_verified_user
-from sage_is_ai.utils.access_control import has_access
+from sage_is_ai.utils.access_control import has_access, is_restricted
 
 from sage_is_ai.diagnostics import (
     EndpointUnreachable,
@@ -541,7 +541,7 @@ async def get_ollama_tags(
                 detail=detail if detail else "Sage.is AI: Server Connection Error",
             )
 
-    if user.role == "user" and not BYPASS_MODEL_ACCESS_CONTROL:
+    if is_restricted(user) and not BYPASS_MODEL_ACCESS_CONTROL:
         models["models"] = await get_filtered_models(models, user)
 
     return models
@@ -1330,12 +1330,23 @@ async def get_ollama_url(request: Request, model: str, url_idx: Optional[int] = 
 
 @router.post("/api/chat")
 @router.post("/api/chat/{url_idx}")
-async def generate_chat_completion(
+async def chat_completions(
     request: Request,
     form_data: dict,
     url_idx: Optional[int] = None,
     user=Depends(get_verified_user),
-    bypass_filter: Optional[bool] = False,
+):
+    """The HTTP route. `bypass_filter` is an argument for server-internal callers
+    of generate_chat_completion and is never read from the request."""
+    return await generate_chat_completion(request, form_data, url_idx, user)
+
+
+async def generate_chat_completion(
+    request: Request,
+    form_data: dict,
+    url_idx: Optional[int] = None,
+    user=None,
+    bypass_filter: bool = False,
 ):
     if BYPASS_MODEL_ACCESS_CONTROL:
         bypass_filter = True
@@ -1372,7 +1383,7 @@ async def generate_chat_completion(
             payload = apply_model_system_prompt_to_body(system, payload, metadata, user)
 
         # Check if user has access to the model
-        if not bypass_filter and user.role == "user":
+        if not bypass_filter and is_restricted(user):
             if not (
                 user.id == model_info.user_id
                 or has_access(
@@ -1478,7 +1489,7 @@ async def generate_openai_completion(
             payload = apply_model_params_to_body_openai(params, payload)
 
         # Check if user has access to the model
-        if user.role == "user":
+        if is_restricted(user):
             if not (
                 user.id == model_info.user_id
                 or has_access(
@@ -1561,7 +1572,7 @@ async def generate_openai_chat_completion(
             payload = apply_model_system_prompt_to_body(system, payload, metadata, user)
 
         # Check if user has access to the model
-        if user.role == "user":
+        if is_restricted(user):
             if not (
                 user.id == model_info.user_id
                 or has_access(
@@ -1656,7 +1667,7 @@ async def get_openai_models(
                 detail=error_detail,
             )
 
-    if user.role == "user" and not BYPASS_MODEL_ACCESS_CONTROL:
+    if is_restricted(user) and not BYPASS_MODEL_ACCESS_CONTROL:
         # Filter models based on user access control
         filtered_models = []
         for model in models:

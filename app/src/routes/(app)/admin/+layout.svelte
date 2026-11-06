@@ -2,6 +2,7 @@
 	import { onMount, getContext } from 'svelte';
 	import { goto } from '$app/navigation';
 	import Icon from '$lib/components/Icon.svelte';
+	import RuntimeNotice from '$lib/components/admin/RuntimeNotice.svelte';
 
 	import { WEBUI_NAME, showSidebar, user } from '$lib/stores';
 		import { page } from '$app/stores';
@@ -104,6 +105,14 @@
 									: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}
 								href="/admin/diagnostics">{$i18n.t('Diagnostics')}</a
 							>
+
+							<!-- A server-rendered page, not a SvelteKit route: reload to leave the SPA. -->
+							<a
+								style="--minw:fit-content; --p:0.4rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+								class="text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white"
+								data-sveltekit-reload
+								href="/pages/admin/privacy">{$i18n.t('Privacy')}</a
+							>
 						{/if}
 					</div>
 				</div>
@@ -111,6 +120,7 @@
 		</nav>
 
 		<div style="--pb:0.2rem; --px:16px; --fx:1 1 0%; --maxh:100%; --ofy:auto">
+			<RuntimeNotice />
 			<slot />
 		</div>
 	</div>

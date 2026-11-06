@@ -315,7 +315,7 @@ _Board section at compression time: `Backlog`._
   - [ ] **Org-level bulk linking**: Admin uploads a CSV (or pulls from Google Workspace / Microsoft Entra via SCIM) with `email,role,group` rows. All those users are pre-provisioned. Same callback linking path. Useful for workshop cohorts and school deployments.
   - [ ] **Invite expiry + revocation**: pre-created invites without a linked oauth_sub after N days surface in admin UI for cleanup.
   - [ ] **Audit log entry** on link event so admins can see "Alice's Google account (sub: google@...) was linked to her invited record on 2026-06-01".
-  - [ ] Depends on the first-time-OAuth UX TODO ([above](#oauth-ux)) landing first so the user-facing experience around "your invite has been received" is coherent.
+  - [ ] Depends on the first-time-OAuth UX TODO ([OAuth UX & Identity Linking](../TODO.md#oauth-ux--identity-linking)) landing first so the user-facing experience around "your invite has been received" is coherent.
 
 
 ## Buff Out the Default First-Run Landing Page

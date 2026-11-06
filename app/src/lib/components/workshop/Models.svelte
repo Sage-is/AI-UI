@@ -11,7 +11,7 @@
 	import { goto } from '$app/navigation';
 	const i18n = getContext('i18n');
 
-	import { WEBUI_NAME, config, mobile, models as _models, settings, user } from '$lib/stores';
+	import { WEBUI_NAME, config, mobile, models as _models, user } from '$lib/stores';
 	import { WEBUI_BASE_URL } from '$lib/constants';
 	import { getBranding, type Branding } from '$lib/apis/configs';
 	import {
@@ -22,7 +22,7 @@
 		updateModelById
 	} from '$lib/apis/models';
 
-	import { getModels } from '$lib/apis';
+	import { loadModels } from '$lib/apis';
 	import { getGroups } from '$lib/apis/groups';
 
 	import ModelMenu from './Models/ModelMenu.svelte';
@@ -31,6 +31,7 @@
 	import Switch from '../common/Switch.svelte';
 	import Spinner from '../common/Spinner.svelte';
 	import { capitalizeFirstLetter, copyToClipboard } from '$lib/utils';
+	import { hubUrl, shareToHub } from '$lib/utils/community';
 	import Icon from '$lib/components/Icon.svelte';
 
 	let shiftKey = false;
@@ -80,12 +81,7 @@
 			toast.success($i18n.t(`Deleted {{name}}`, { name: model.id }));
 		}
 
-		await _models.set(
-			await getModels(
-				localStorage.token,
-				$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
-			)
-		);
+		await _models.set(await loadModels());
 		models = await getWorkshopModels(localStorage.token);
 	};
 
@@ -98,31 +94,12 @@
 		goto('/workshop/models/create');
 	};
 
-	// Handler to share a model to the Sage.is Community
-	const shareModelHandler = async (model) => {
+	// Share a model to the community hub. It used to go to a public request bin as
+	// a URL query, system prompt included, behind a size guard on a field a model
+	// does not have (2026-08-15); the helper sends every model the one safe way.
+	const shareModelHandler = (model) => {
 		toast.success($i18n.t('Redirecting you to the Sage.is Community'));
-
-		const url = 'https://webhook.site/93a1d2e8-5b27-44c4-8493-0f915cad92c5';
-
-		// Check if the model has a large knowledge base
-		const isLarge = model?.knowledge_base && model.knowledge_base.length > 10000;
-
-		if (!isLarge) {
-			// Send small models via URL query param
-			const encoded = encodeURIComponent(JSON.stringify(model));
-			window.open(`${url}/models/create?model=${encoded}`, '_blank');
-		} else {
-			// Use postMessage for large models
-			const tab = await window.open(`${url}/models/create`, '_blank');
-			const messageHandler = (event) => {
-				if (event.origin !== url) return;
-				if (event.data === 'loaded') {
-					tab.postMessage(JSON.stringify(model), '*');
-					window.removeEventListener('message', messageHandler);
-				}
-			};
-			window.addEventListener('message', messageHandler, false);
-		}
+		shareToHub('/models/create', model);
 	};
 
 	const hideModelHandler = async (model) => {
@@ -144,12 +121,7 @@
 			);
 		}
 
-		await _models.set(
-			await getModels(
-				localStorage.token,
-				$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
-			)
-		);
+		await _models.set(await loadModels());
 		models = await getWorkshopModels(localStorage.token);
 	};
 
@@ -479,13 +451,7 @@
 										bind:state={model.is_active}
 										on:change={async (e) => {
 											toggleModelById(localStorage.token, model.id);
-											_models.set(
-												await getModels(
-													localStorage.token,
-													$config?.features?.enable_direct_connections &&
-														($settings?.directConnections ?? null)
-												)
-											);
+											_models.set(await loadModels());
 										}}
 									/>
 								</Tooltip>
@@ -537,13 +503,7 @@
 								}
 							}
 
-							await _models.set(
-								await getModels(
-									localStorage.token,
-									$config?.features?.enable_direct_connections &&
-										($settings?.directConnections ?? null)
-								)
-							);
+							await _models.set(await loadModels());
 							models = await getWorkshopModels(localStorage.token);
 						};
 
@@ -592,7 +552,7 @@
 
 			<a data-cy="agents-community"
 				style="--d:flex; --cur:pointer; --ai:center; --jc:space-between; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --w:100%; --mb:0.5rem; --px:0.8rem; --py:0.4rem; --radius:0.6rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
-				href="https://sage.is/community"
+				href={hubUrl()}
 				target="_blank"
 			>
 				<div style="--as:center">

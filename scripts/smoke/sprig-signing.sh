@@ -23,6 +23,7 @@ HERE="$(cd "$(dirname "$0")/../.." && pwd)"
 DEVKEY="$HERE/scripts/dev-keys/sprig-dev-TEST-ONLY.key"
 DEVPUB="$(sed -n 2p "$HERE/scripts/dev-keys/sprig-dev-TEST-ONLY.pub")"
 . "$(dirname "${BASH_SOURCE[0]}")/../lib/gate.sh"   # PASS/FAIL + ok/no/require
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/oras.sh"   # ORAS_IMG
 
 cleanup(){
   # Leave the shared registry with CLEAN signatures even on an aborted run.
@@ -72,7 +73,7 @@ echo "$R" | grep -qi "signed artifact" \
 echo "== 5. tampered signature is REFUSED =="
 . "$(dirname "${BASH_SOURCE[0]}")/../lib/mount-tmp.sh"
 WORK="$(mount_tmp sprig-signing)"
-docker run --rm --network "$NET" -v "$WORK:/w" -w /w ghcr.io/oras-project/oras:v1.2.0 \
+docker run --rm --network "$NET" -v "$WORK:/w" -w /w "$ORAS_IMG" \
   pull --plain-http "local-registry:5000/sprig-browser-ml:v1" >/dev/null
 TARF=$(cd "$WORK" && ls -- *.tar.zst | head -1)
 # Swap the signed trusted comment -> the global signature must no longer verify.
@@ -82,7 +83,7 @@ TARF=$(cd "$WORK" && ls -- *.tar.zst | head -1)
 # (2026-10-15). A failed push now fails this step instead of passing it blind.
 docker run --rm -v "$WORK:/w" alpine:3.20 sh -c \
   "awk 'NR==3{print \"trusted comment: EVIL tampered comment\"; next} {print}' /w/$TARF.minisig > /w/$TARF.minisig.tmp && mv /w/$TARF.minisig.tmp /w/$TARF.minisig"
-docker run --rm --network "$NET" -v "$WORK:/w" -w /w ghcr.io/oras-project/oras:v1.2.0 \
+docker run --rm --network "$NET" -v "$WORK:/w" -w /w "$ORAS_IMG" \
   push --plain-http "local-registry:5000/sprig-browser-ml:v1" \
   --artifact-type "application/vnd.sage-is.sprig.v1" \
   "$TARF:application/vnd.sage-is.sprig.tar+zstd" \

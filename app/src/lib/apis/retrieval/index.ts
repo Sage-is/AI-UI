@@ -82,6 +82,10 @@ export const updateEmbeddingConfig = async (token: string, payload: EmbeddingMod
 export const getModelsStatus = async (token: string) =>
 	api('/models/status', 'GET', undefined, token, 'getModelsStatus');
 
+/** Any signed-in user: whether the box can read a document now, and what is missing. */
+export const getDocumentReadiness = async (token: string) =>
+	api('/readiness', 'GET', undefined, token, 'getDocumentReadiness');
+
 type ModelDownloadForm = {
 	components: string[];
 };

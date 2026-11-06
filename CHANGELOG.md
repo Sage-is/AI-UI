@@ -4,7 +4,175 @@ All notable changes to [Sage.is AI-UI](https://github.com/Sage-is/AI-UI) are doc
 
 ---
 
-## [Unreleased]
+## [3.3.0] — 2026-11-06
+
+### Security
+
+**A dev run listens on this machine only**
+`make dev` and `make it_run` published port 8080 (and 5173) on every network the machine joined, with the seeded `admin@example.com` and real provider keys behind it. `PORT_MAPPING` now defaults to `127.0.0.1:8080:8080`, the Vite port to `127.0.0.1:5173`, and `setup_env` writes the loopback form. Share a run on purpose with `PORT_MAPPING=8080:8080`. `LOCAL_PORT` reads the host port from either form.
+
+**One chat can no longer surface another chat's real name**
+The privacy filter kept one instance-wide table of stand-ins and their real values, and reversed every reply against all of it. A model that repeated a stand-in it had seen in someone else's conversation handed that person's real address to the wrong chat. Each request now carries only the stand-ins it sent, and a reply reverses those alone. A test replays the leak against 3.2.2 and shows it closed.
+
+**Tool arguments and the preset system prompt pass the filter too**
+A reply's tool-call arguments came back reversed to real values and were resent in clear on the next turn. The model's preset system prompt, with the user's name and location filled in, was added after the filter had run. Both now go through the same request mapper before anything leaves the box.
+
+**A model's reasoning comes back real, and Ollama and direct connections get switches**
+A model's reasoning (`reasoning_content`, `reasoning`, `thinking`) kept its stand-ins, streamed or not, so the saved thinking block showed fakes. It is now reversed on the API path and in the chat's own stream, with its own hold-back buffer. The privacy panel lists each Ollama connection and people's own direct connections with a switch apart from the admin's OpenAI connections, and an admin's switch now wins for a local connection too. Mark an Ollama on a hosted box as external in Admin → Connections. `docs/privacy.md` covers the key: a new `PRIVACY_KEY` alone changes no stand-in already mapped, so rotate it with a map purge.
+
+**Sessions expire, and every session says when it was minted**
+New sign-ins expire after four weeks by default (`JWT_EXPIRES_IN`). A saved `-1`, the old default echoed back by the admin form, moves to `4w` once, with a line in the log; an admin who wants no expiry sets `-1` again afterwards. Every session carries `iat`, the socket applies the same rule as the API, and a session without `iat` is signed out once. A minute of clock leeway keeps a VM clock step from rejecting fresh sessions, which PyJWT 2.10 and later did.
+
+**The API-key endpoint allowlist fails closed**
+A blank entry, such as a trailing comma leaves, matched every path. Blank entries are dropped, and an empty allowlist admits nothing.
+
+**A temporary account cannot extend its own expiry**
+`/api/v1/users/user/info/update` writes only `location`. `temporary` and the other server-owned keys in a client's write are dropped.
+
+**The login redirect stays on this origin**
+A `redirect` parameter that is not a same-origin path lands on `/`, `javascript:` and `//host` forms included.
+
+**Model access checks apply to every role but admin**
+Thirteen checks tested `role == "user"` and let facilitator and temporary accounts past them. One rule, `is_restricted`, replaces them in the model list, the chat routes, the OpenAI and Ollama routers and embeddings. A facilitator now sees and reaches what a user does.
+
+**The direct-connections switch holds**
+With direct connections off in Admin, a `model_item` with `direct: true` answers 403 on `/api/chat/completions`, `/api/chat/completed` and `/api/chat/actions/{id}`. Before, only the settings page read the switch.
+
+**Client flags are ignored**
+`?bypass_filter=true` and `?internal=true` are arguments for server-internal callers only: on the chat routes, the Ollama chat route and the file upload, where `internal` skipped the file-type allowlist.
+
+**The raw `/openai/{path}` proxy is admin-only**
+It forwarded any path to connection 0 with that connection's key, past the privacy filter and model access control, for any signed-in user. Non-admins get 404, and the attempt is logged.
+
+**Knowledge is read only by those who may**
+Chat retrieval and `/api/v1/retrieval/query/*` searched any file or collection a client named. One check at retrieval covers every file, collection and knowledge id, whoever supplied it; `/query/doc` and `/query/collection` answer 403; a client-supplied model's knowledge list is never searched.
+
+**`/cache/{path}` refuses traversal**
+The check was a string prefix, so a sibling folder whose name began the same way was reachable. The path is resolved, symlinks included, and must sit under the cache root.
+
+**Spaces: only the author, the Space's owner or an admin edits or deletes a message**
+Any reader could edit or delete anyone's message, and any facilitator could update or delete any Space. The Space's owner or an admin manages it, and the live-document handler takes the session's user, never a client-sent id.
+
+**Sprig children get an allowlisted environment**
+Every Sprig child inherited the whole environment, `WEBUI_SECRET_KEY` and `PRIVACY_KEY` included. A child now gets `PATH`, `HOME`, the locale and proxy variables, `PYTHON*`, `HF_*` and `SPRIG_*`, and never a name that looks like a secret.
+
+**No secrets in logs**
+The OAuth callback logged the whole token response and user info on a failure; it logs the claim names. An unused API-key sign-in method that logged the key is gone. `restore_backup_start.sh` no longer prints `rclone.conf`.
+
+**Community sharing stays off**
+Until the sharing site exists, the setting defaults off, a saved "on" is written back off at boot, and the admin form can switch it off but never on.
+
+**The in-process ML install moves to sentence-transformers 5.6.0, CPU-only**
+When no Sprig serves the embedding model, the AI Engine wizard installs `requirements-ml.lock`. It pinned sentence-transformers 4.1.0 (CVE-2026-68770, critical) and pillow 12.2.0 (four HIGH). The lock now pins 5.6.0, and pillow left the closure. The lock also carries its package indexes: without them a Linux install took torch from PyPI and pulled 19 unpinned CUDA packages. It now installs 69 pinned, hashed packages, 1.3 GB, with torch `2.12.0+cpu`. `make ml_lock` regenerates it inside the image, and `make wizard_smoke_ml_lock` smokes that path.
+
+**A Space agent answers only members who may use its model**
+An agent reply skipped the model access check, so any Space member could reach a model, and the tool-server key behind it, that they could not chat with. The reply now runs under the access of the member who mentioned the agent, checked before any tool runs. Otherwise the agent stays silent.
+
+**Community share paths are rewired, ready for the hub**
+The model Share sent the whole model, system prompt included, as a URL query to a public request bin. Every share now goes through one helper to one address, `COMMUNITY_HUB_URL` (default `https://community.sage.is`). It posts the item only to that exact origin and only after the hub's handshake, never to any origin and never in a URL. The install pages listen only while sharing is on and only to the hub window that opened them. Functions no longer cross in either direction, because a shared function is code the server runs.
+
+**startr.style comes from the box**
+Every page loaded `https://startr.style/style.css`, a rolling URL that changes under every box at once. The 1.5.0 release is vendored under `app/static/vendor/startr.style/1.5.0/` and linked with its integrity hash, so a page load reaches nothing off-machine. The sheet's own `@import url('/fonts/Nunito-Sans.css')` resolves on the box too: the ten Nunito Sans faces and their sheet are vendored under `app/static/vendor/startr.style/fonts/` and served at `/fonts`, so the pages keep their typeface without reaching Google or startr.style.
+
+**The `execute` event no longer runs code in the browser**
+The chat page ran the code in any `execute` socket event through `new Function`, so a tool or function that emitted one ran script in the reader's session. The page now refuses the event, logs a warning and answers the caller with an error. ESLint's `no-eval`, `no-implied-eval` and `no-new-func` rules keep the pattern out.
+
+**Tool arguments: the gaps the first pass left**
+Arguments are parsed before the filter matches them, so a non-ASCII name that the JSON writes as an escape is caught. Arguments sent as an object pass both ways. A stand-in is no longer written into the saved reply. A reply's real values go back only into the parameters the called tool declares. A streamed API reply holds each call's argument fragments and sends them whole and reversed when the choice finishes, since a stand-in can straddle two fragments.
+
+**`/api/config` reads a dead session as signed out**
+A session token with no `iat`, or one minted before a try.sage.is reset, still earned the signed-in config on `/api/config`. It now applies `is_live_session`, the rule the API and the socket share.
+
+**Live note edits need write access**
+A user who could read a note could join its live session and push edits and saves. Joining needs read access; edits and saves need write. One rule, `note_allows`, serves the notes routes, the socket and retrieval.
+
+**`/process/file` checks the collection and the file**
+Any signed-in user could process a file into any named collection, or process a file they could not read. The route now needs write access to the collection and read access to the file, unless the collection is the file's own, and answers 403 otherwise. A collection name with no record is refused.
+
+**A look back**
+`scripts/rootstock/lookback.py` counts the requests in an audit log that touched each hole this release closes. The only log we hold, 90 requests from April 2025, shows none.
+
+**The runtime base is the Wolfi index of 2026-11-05**
+The runtime stage pins `cgr.dev/chainguard/wolfi-base` by digest. The 2026-10-14 pin had cached `ca-certificates` 20260909-r2, which trivy flags for CVE-2026-111943 (HIGH: Go's `crypto/x509` trusting untrusted intermediates). The 2026-10-24 pin cached three more HIGH findings in `libexpat1` and `py3-pip-wheel`, all fixed upstream. The pin moves forward, so the layer rebuilds without them.
+
+**`make` keeps secrets off the command line, and `.env` can point at the vault**
+The Makefile handed `WEBUI_SECRET_KEY` and the try.sage.is keys to `docker run` as `-e NAME=value`, so `make -n try_sage_start` printed the upstream key. Every secret now passes by name. A value in `.env` may be a vault reference, `bw:ITEM`; with one present, `make` runs the container through `sage-secret`, which puts the real value in the container's environment only. Inside the container, a value already in the environment now wins over `/app/.env`, which still holds the reference. `make deploy` reads the sage.startr.cloud admin key from the vault the same way, and writes its database backup encrypted.
+
+### Fixed
+
+**An upload is refused at once when the box cannot read documents**
+Without the document loaders, an embedding model or the vector store, a file used to upload with nothing read from it, and the person learned why only after the wait. The composer and the knowledge page now ask first (`/api/v1/retrieval/readiness`, open to any signed-in user) and refuse the file at once. A member reads whom to ask. An admin gets a "Turn on document reading" button that runs the setup wizard's install and says when it is done. A file whose text cannot be read after upload now shows an error naming it.
+
+**The artifact panel shows an HTML reply once**
+A reply holding a full HTML page opened in the artifact panel doubled, under a malformed shell. The panel read the page's own style, script and `<html>` tags a second time and wrapped the whole document in another. It now reads bare tags only outside code blocks, and shows a full document as it is.
+
+**A Space agent made since the model list loaded answers**
+An agent whose model was created after AI-UI loaded its model list stayed silent: the mention was posted and nothing came back. The Space now reloads the list once before it gives up (`_agent_model` in `routers/spaces.py`, with tests in `image_unit_tests`).
+
+**try.sage.is: an env-supplied persona password applies to an existing persona**
+`TRY_SAGE_ADMIN_PASSWORD` and its siblings counted only when the persona was first created. After a secret rotation, which ends every persona link, nobody could sign in. The seed now applies an env-supplied password when the row does not match it. Sessions are JWTs, so the change signs nobody out.
+
+**Reindex no longer deletes knowledge bases**
+`POST /api/v1/knowledge/reindex` deleted every knowledge base whose data was null, which every new one is until its first file. It skips and reports them.
+
+**A prompt saved without its slash can be found again**
+Every reader looks a prompt up as `/<command>`, but the create route stored the command as sent, and the UI's import strips the slash. Those prompts could not be fetched, edited or deleted. `PromptForm` adds the slash, and migration `d4e5f6a7b8c9` repairs saved rows whose slashed form is free.
+
+**A model written through the API answers at once**
+The chat path finds a model only in the in-memory index, so a model created, updated, toggled or deleted through the API answered "Model not found" until someone listed models. Every write route now rebuilds the index; a failed rebuild is logged and never fails the write.
+
+**Document search survives a restart**
+The `vector` Sprig is an overlay with no process, and only `ensure_chromadb` turns the client on. A graft, and the supervisor's reconcile at boot, now call it, so document search no longer stays off after every restart. When the client cannot start, the graft says so instead of answering 500 or claiming search is on. `scripts/smoke/sprig-durability.sh` checks `vector_db_ready` after the graft and after a recreation.
+
+**A busy database no longer signs people out**
+A database error while loading the session user read as "session expired" and sent people to sign in again. The lookup reads once more, then answers 503.
+
+**Retrieval keeps its 503**
+Four document routes turned a deliberate 503 into a 400 that read "[ERROR: 503 ...]". They pass it through, and the messages name the Sprig an admin grafts in Admin → Sprigs.
+
+**The answer leaves "Thinking…" as soon as the model ends its thought**
+A model that closed its thinking with a tag the reader did not expect, or wrote its whole reply through the reasoning field with its own end tag inside, had its answer sealed under "Thinking…" until the stream ended. A reasoning block now closes on any reasoning end tag (`</think>`, `</thinking>`, `</reasoning>`, in any case or spacing), mid-stream, on both the tag path and the reasoning field. A stray closing tag after a closed block is dropped, not shown. A closing tag with no opener at the start of a reply folds the text before it into a closed block. A literal tag inside a code fence stays as written. The chat-response oracle gains three field-path streams, and `reasoning_tag_fixture` joins `gauntlet_full`.
+
+**The model list carries each provider's fields once**
+Every external model in `/api/models` carried its provider's entry twice: spread into the model, then nested again as `"openai"`, which nothing reads. OpenRouter alone lists about 450 models, so the copy doubled the heaviest response on every page. The page-size gate now runs hermetic: its connections read a frozen catalog from a mock on the gate's network, so the floor no longer grows with live catalogs and no snapshot key leaves the machine.
+
+**A knowledge base with search off says so**
+With the vector database client off, a knowledge search answered 200 with no hits, and adding a file answered 400. Both answer 503 now and name the Sprig an admin grafts in Admin → Sprigs. Admin → Diagnostics shows a `vector_db` row with the same fix.
+
+**Pruning Tika or Docling puts document reading back**
+The extraction engine stayed aimed at the pruned Sprig's released port, so uploads failed and diagnostics called it unreachable. A prune now restores the engine and URL the server started with, unless an admin has chosen another since.
+
+**A replaced Sprig says it was replaced**
+Grafting a second cultivar of a capability stops the first. A first one still starting reported "exited on boot (rc=-15)", which reads as a crash. It now names the Sprig that took over.
+
+**Four chat-stream fixes**
+A provider's `data: [DONE]` ends the stream, so nothing sent after it reaches the answer. A model switch mid-stream reaches the tool-call and code-interpreter retries. With title generation off, the title a chat shows is the one it saves. The `features.web_search` branch, which called a handler that does not exist and answered 400, is gone.
+
+**Every page loads the model list the same way**
+36 calls passed the session token where the browser's direct connections belong. With direct connections on, those pages asked the admin-only `/api/models/base`: the wrong list for an admin, a 401 for everyone else, and the browser's own models never merged. One `loadModels` helper replaces them.
+
+**Admin screens: code fences, the models panel, secret fields**
+Code typed in a fenced block in the composer showed near white on light grey; it has its own text colour in both themes. Saving the model settings no longer unmounts the admin models panel behind a spinner. Each secret field has its own id, so its screen-reader label names and focuses the right field.
+
+### Added
+
+**Admins on Docker Desktop or OrbStack see how to move to Colima**
+`ai-ui` now tells the container which runtime it started on. On Docker Desktop or OrbStack, the admin panel shows a dismissible line with `ai-ui migrate`, which moves Sage and its data to Colima.
+
+**A loop-lag watchdog**
+When the event loop runs 250 ms late, a thread logs the file and line of the blocked frames, never a value, once per stack per ten minutes, and keeps a daily lag histogram under `data/rootstock/`. `RS_LAG_WATCH=off` disables it. Its first catch: the password check at sign-in holds the loop for about 270 ms.
+
+**A database copy before every update**
+`ai-ui update`, and `ai-ui start` over a running Sage, write a `VACUUM INTO` copy of the database under the volume's `backups/` before the old container goes, and keep the last five. No copy, no update. The sage-box update runs `ai-ui start`, so it is covered.
+
+**Knowledge bases re-index file by file**
+`scripts/kb-reindex.py` sends each file's stored text back through indexing and deletes nothing, where `POST /api/v1/knowledge/reindex` deletes every knowledge base whose data is null. Its `--vector-on` switches the vector store on after a graft or a deploy, which today's code leaves off.
+
+**The Rootstock's Phase 0**
+Ten research notes and an edge-case inventory under `docs/rootstock/research/`, every `path:line` citation checked; the census script with its canary self-test; the line budget and the legacy ratchet under `app/backend/sage_is_ai/rootstock/tests/`; a throwaway test box and an HTTP harness for the security tests.
+
+**A model connection that lives only in the environment**
+`SAGE_LLM_API_URL`, `SAGE_LLM_API_KEY` and the optional `SAGE_LLM_MODELS` register one OpenAI-compatible connection outside trial mode, as `TRY_SAGE_LLM_*` does inside it. The key stays in memory: it never reaches the config table, a database snapshot or an admin screen. Its models count as external, so the privacy filter covers them.
 
 ## [3.2.2] — 2026-10-24
 

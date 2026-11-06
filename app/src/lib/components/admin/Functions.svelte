@@ -3,7 +3,7 @@
 	import fileSaver from 'file-saver';
 	const { saveAs } = fileSaver;
 
-	import { WEBUI_NAME, config, functions, models, settings } from '$lib/stores';
+	import { WEBUI_NAME, functions, models } from '$lib/stores';
 	import { onMount, getContext, tick } from 'svelte';
 
 	import { goto } from '$app/navigation';
@@ -20,7 +20,7 @@
 
 	import Tooltip from '../common/Tooltip.svelte';
 	import ConfirmDialog from '../common/ConfirmDialog.svelte';
-	import { getModels } from '$lib/apis';
+	import { loadModels } from '$lib/apis';
 	import FunctionMenu from './Functions/FunctionMenu.svelte';
 	import Switch from '../common/Switch.svelte';
 	import ValvesModal from '../workshop/common/ValvesModal.svelte';
@@ -61,32 +61,9 @@
 		)
 		.sort((a, b) => a.type.localeCompare(b.type) || a.name.localeCompare(b.name));
 
-	const shareHandler = async (func) => {
-		const item = await getFunctionById(localStorage.token, func.id).catch((error) => {
-			toast.error(`${error}`);
-			return null;
-		});
-
-		toast.success($i18n.t('Redirecting you to Sage.is AI Community'));
-
-		const url = 'https://sage.is';
-
-		const tab = await window.open(`${url}/functions/create`, '_blank');
-
-		// Define the event handler function
-		const messageHandler = (event) => {
-			if (event.origin !== url) return;
-			if (event.data === 'loaded') {
-				tab.postMessage(JSON.stringify(item), '*');
-
-				// Remove the event listener after handling the message
-				window.removeEventListener('message', messageHandler);
-			}
-		};
-
-		window.addEventListener('message', messageHandler, false);
-		console.log(item);
-	};
+	// No community share for functions, in either direction: a shared function is
+	// code the server runs unsandboxed (card "Community-share leak + dead wiring",
+	// "Do not ship `function` or `tool` share types at launch", 2026-11-03).
 
 	const cloneHandler = async (func) => {
 		const _function = await getFunctionById(localStorage.token, func.id).catch((error) => {
@@ -128,14 +105,7 @@
 			toast.success($i18n.t('Function deleted successfully'));
 
 			functions.set(await getFunctions(localStorage.token));
-			models.set(
-				await getModels(
-					localStorage.token,
-					$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null),
-					false,
-					true
-				)
-			);
+			models.set(await loadModels(true));
 		}
 	};
 
@@ -156,14 +126,7 @@
 			}
 
 			functions.set(await getFunctions(localStorage.token));
-			models.set(
-				await getModels(
-					localStorage.token,
-					$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null),
-					false,
-					true
-				)
-			);
+			models.set(await loadModels(true));
 		}
 	};
 
@@ -405,9 +368,6 @@
 						editHandler={() => {
 							goto(`/admin/functions/edit?id=${encodeURIComponent(func.id)}`);
 						}}
-						shareHandler={() => {
-							shareHandler(func);
-						}}
 						cloneHandler={() => {
 							cloneHandler(func);
 						}}
@@ -440,15 +400,7 @@
 							bind:state={func.is_active}
 							on:change={async (e) => {
 								toggleFunctionById(localStorage.token, func.id);
-								models.set(
-									await getModels(
-										localStorage.token,
-										$config?.features?.enable_direct_connections &&
-											($settings?.directConnections ?? null),
-										false,
-										true
-									)
-								);
+								models.set(await loadModels(true));
 							}}
 						/>
 					</Tooltip>
@@ -521,33 +473,6 @@
 	</div>
 </div>
 
-{#if $config?.features.enable_community_sharing}
-	<div style="--my:4rem">
-		<div style="--size:1.2rem; --weight:500; --mb:0.2rem; --line-clamp:1">
-			{$i18n.t('Sage.is AI Community')}
-		</div>
-
-		<a
-			style="--d:flex; --cur:pointer; --ai:center; --jc:space-between; --hvr-bgc:var(--color-gray-50); --hvr-dark-bgc:var(--color-gray-850); --w:100%; --mb:0.5rem; --px:0.8rem; --py:0.4rem; --radius:0.6rem; --tn:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1)"
-			href="https://sage.is/community"
-			target="_blank"
-		>
-			<div style="--as:center">
-				<div style="--weight:600; --line-clamp:1">{$i18n.t('Discover your next function')}</div>
-				<div style="--size:0.8rem; --line-clamp:1">
-					{$i18n.t('Discover, download, and explore custom functions')}
-				</div>
-			</div>
-
-			<div>
-				<div>
-					<Icon name="chevron-right" />
-				</div>
-			</div>
-		</a>
-	</div>
-{/if}
-
 <DeleteConfirmDialog
 	bind:show={showDeleteConfirm}
 	title={$i18n.t('Delete function?')}
@@ -567,14 +492,7 @@
 	id={selectedFunction?.id ?? null}
 	on:save={async () => {
 		await tick();
-		models.set(
-			await getModels(
-				localStorage.token,
-				$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null),
-				false,
-				true
-			)
-		);
+		models.set(await loadModels(true));
 	}}
 />
 
@@ -595,14 +513,7 @@
 
 			toast.success($i18n.t('Functions imported successfully'));
 			functions.set(await getFunctions(localStorage.token));
-			models.set(
-				await getModels(
-					localStorage.token,
-					$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null),
-					false,
-					true
-				)
-			);
+			models.set(await loadModels(true));
 		};
 
 		reader.readAsText(importFiles[0]);

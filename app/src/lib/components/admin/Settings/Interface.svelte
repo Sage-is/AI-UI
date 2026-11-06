@@ -7,7 +7,7 @@
 
 	import { getBackendConfig, getModels, getTaskConfig, updateTaskConfig } from '$lib/apis';
 	import { setDefaultPromptSuggestions } from '$lib/apis/configs';
-	import { config, settings, user } from '$lib/stores';
+	import { config, user } from '$lib/stores';
 	import { createEventDispatcher, onMount, getContext } from 'svelte';
 
 	import { banners as _banners } from '$lib/stores';
@@ -77,7 +77,7 @@
 
 	const init = async () => {
 		workshopModels = await getBaseModels(localStorage.token);
-		baseModels = await getModels(localStorage.token, null, false);
+		baseModels = await getModels();
 
 		models = baseModels.map((m) => {
 			const workshopModel = workshopModels.find((wm) => wm.id === m.id);

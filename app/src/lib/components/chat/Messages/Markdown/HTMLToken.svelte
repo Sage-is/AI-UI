@@ -14,6 +14,11 @@
 	let html: string | null = null;
 
 	$: if (token.type === 'html' && token?.text) {
+		// `html` feeds only the <video> and <audio> branches. The YouTube, iframe,
+		// <status>, <file> and <source_id> branches read raw `token.text` on
+		// purpose: DOMPurify drops <iframe> with its contents and erases the
+		// custom tags, so branching on `html` would break all five. Each raw
+		// branch pins its origin or renders with bare `sandbox`; keep it so.
 		html = DOMPurify.sanitize(token.text);
 	} else {
 		html = null;

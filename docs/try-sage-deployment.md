@@ -31,6 +31,8 @@ make it_build_n_run
 
 `TRY_SAGE_LLM_MODELS` is optional. Empty (the default) exposes the upstream provider's full model list. Set the variable when you want to narrow the trial to a specific subset.
 
+`TRY_SAGE_LLM_API_KEY` can be a vault stub, `bw:ITEM`, instead of the key. `make` then runs the container through `sage-secret`. See [Planned: keys from the vault](#planned-keys-from-the-vault).
+
 ## Environment Variables
 
 Variables marked **secret** must never reach the config DB or any API response. They are read once at process start and held in memory.
@@ -186,9 +188,20 @@ Two seeded agents ship with KBs:
 - `app/backend/sage_is_ai/data/try_sage_agents/sage-startr-style/kb/*.md`
 - `app/backend/sage_is_ai/data/try_sage_agents/astropi-ai-tutor/kb/*.md`
 
-Drop markdown files in those folders and rebuild the image. The seed routine hashes each folder and compares against `TRY_SAGE_KB_INGESTED_VERSION`. When the hash changes, only the affected agent's KB re-ingests. The other agent's embeddings are left alone. The reset cycle skips re-ingestion entirely so resets stay fast.
+Drop markdown files in those folders and rebuild the image. The seed runs at every boot and every reset. It hashes each folder and compares the hash against `TRY_SAGE_KB_INGESTED_VERSION`. A KB re-ingests when its hash changed or its file list is empty; otherwise the seed skips it, so resets stay fast. The other agent's embeddings are left alone.
 
-To force a full re-ingest, set the config key `TRY_SAGE_KB_INGESTED_VERSION` to `{}` via the admin config UI and restart. The seed will see no recorded hashes and re-embed every KB.
+To force a re-ingest without a restart, reset the KB as admin: `POST /api/v1/knowledge/{id}/reset` drops its vector collection and empties its file list. Emptying the file list alone is not enough: the stale collection makes the seed's re-ingest fail silently (seen 2026-10-24). The next reset or boot then re-embeds it; `POST /api/v1/sage/runtime/reset` runs that reset now (it ends every browser session, and the persona links keep working). A restart also re-embeds, but it mints new persona links, so every link already handed out stops working.
+
+### Document reading
+
+Uploads, document search and the seeded KBs need three Sprigs™: `vector-chroma` (the vector store), `rag-loaders` (extraction and chunking) and an embedding cultivar (`multilingual-e5-large`). Without them a PDF still uploads, with nothing extracted, and every search fails with "Embedding model not yet loaded".
+
+1. Check, as admin: `GET /api/v1/retrieval/sprigs/catalog` lists what is grafted, and `GET /api/v1/retrieval/models/status` should show `embedding` and `chromadb` as `ready` and `vector_db_ready` as `true`.
+2. Graft what is missing in Admin → Sprigs, or `POST /api/v1/retrieval/sprigs/graft` with `{"name": "multilingual-e5-large", "capability": "embedding"}`, `{"name": "rag-loaders", "capability": "rag"}` or `{"name": "vector-chroma", "capability": "vector"}`. None needs a restart.
+3. If `vector_db_ready` stays `false` after the `vector-chroma` graft, `POST /api/v1/retrieval/models/download` with `{"components": []}`. With the embedding already ready, it runs only the vector bootstrap, which switches the client on.
+4. Re-ingest the seeded KBs as above, then wait for the next reset.
+
+On 2026-10-24 try.sage.is had only `vector-chroma`. Grafting e5-large (52 s) and `rag-loaders` (7 s) brought back PDF extraction and search, and both seeded KBs were emptied to re-ingest at the next reset.
 
 To add a third agent: drop a `data/try_sage_agents/{slug}.md` file with frontmatter, optionally a `data/try_sage_agents/{slug}/kb/` folder, and add the slug to `_DEFAULT_AGENT_SLUGS` (and `_AGENTS_WITH_KB` if applicable) in `utils/try_sage_seed.py`.
 
@@ -237,7 +250,7 @@ When all values are empty the shim is a no-op. No outbound network calls.
 
 ## CapRover One-Click Deployment
 
-Paste this block into the CapRover app's Environmental Variables panel. Fill in the secrets first.
+Paste this block into the CapRover app's Environmental Variables panel. Fill in the secrets first. The keys go in by hand for now; [Planned: keys from the vault](#planned-keys-from-the-vault) retires that.
 
 ```
 ENABLE_TRY_SAGE=true
@@ -295,6 +308,22 @@ make _pin_server_tag IMAGE_TAG=<X.Y.Z>
 #### Recovery: `make deploy` failed mid-rollout
 
 See [release-runbook.md](release-runbook.md#when-a-deploy-fails). A stuck try.sage.is harms no one: its data resets every 24 h.
+
+### Planned: keys from the vault
+
+Backlog, not built. The card is "The vault as the record for deployed keys" in `TODO.md`.
+
+Today the upstream key reaches try.sage.is by hand. Step 3 of the production deployment pastes it into CapRover's Environmental Variables panel. CapRover holds the only copy, and a rotation is a manual edit there.
+
+Local runs already read keys from the vault. Put `TRY_SAGE_LLM_API_KEY=bw:ITEM` in `.env`, and `make try_sage_start` or `make it_run` resolves the stub through `sage-secret`. The container gets the real key by name, so the key never shows on a command line or in `make -n`. Inside the container, values from the environment win over the stubs in `/app/.env`.
+
+The plan carries this to production, then to every cluster:
+
+1. **try.sage.is.** `make deploy` already runs under `sage-secret run` for the sage.startr.cloud admin key. `scripts/deploy.py` would resolve the `TRY_SAGE_*` stubs the same way and write them to the app's environment through CapRover's API before the rollout. The vault becomes the record. A rotation is a vault edit plus `make deploy`.
+2. **One vault collection per cluster.** Each cluster gets its own collection and its own machine account. The account's credentials live on that cluster, not in this Mac's Keychain, so a cluster reads only its own keys. The box files in `~/.sage-is/boxes/` already hold only `bw:` references.
+3. **Prefixed names.** `bw:ITEM` resolves by name across every item an account can see. An account that sees several clusters needs a prefix per cluster. The Realtor M pilot's `realtor-m-*` items already follow this.
+
+One limit remains after part 1. CapRover still stores the pushed value in its app config. Keeping the key off CapRover's disk needs part 2: the container fetches the key at boot with its cluster's machine account.
 
 ## Troubleshooting
 

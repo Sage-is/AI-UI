@@ -350,6 +350,13 @@ async def get_user_info_by_session_user(user=Depends(get_verified_user)):
 ############################
 
 
+# The `info` keys a signed-in account may write about itself. The rest of
+# `info` is the server's: `temporary` holds a trial account's expiry and claim,
+# `bridge` a chat bridge's identity. Other keys in a client write are dropped
+# (2026-10-23).
+USER_EDITABLE_INFO_KEYS = {"location"}
+
+
 @router.post("/user/info/update", response_model=Optional[dict])
 async def update_user_info_by_session_user(
     form_data: dict, user=Depends(get_verified_user)
@@ -359,7 +366,8 @@ async def update_user_info_by_session_user(
         if user.info is None:
             user.info = {}
 
-        user = Users.update_user_by_id(user.id, {"info": {**user.info, **form_data}})
+        updates = {k: v for k, v in form_data.items() if k in USER_EDITABLE_INFO_KEYS}
+        user = Users.update_user_by_id(user.id, {"info": {**user.info, **updates}})
         if user:
             return user.info
         else:

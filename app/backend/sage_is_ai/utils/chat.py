@@ -41,6 +41,7 @@ from sage_is_ai.utils.plugin import (
     get_function_module_from_cache,
 )
 from sage_is_ai.utils.models import get_all_models, check_model_access
+from sage_is_ai.utils.access_control import is_restricted
 from sage_is_ai.utils.payload import convert_payload_openai_to_ollama
 from sage_is_ai.utils.response import (
     convert_response_ollama_to_openai,
@@ -167,7 +168,9 @@ async def generate_chat_completion(
 
     response = await _generate_chat_completion(request, form_data, user, bypass_filter)
     if getattr(request.state, "privacy_active", False) and isinstance(response, dict):
-        privacy.reverse_completion(response)
+        privacy.reverse_completion(
+            response, privacy.table_for(request), privacy.tool_params_for(request)
+        )
     return response
 
 
@@ -216,7 +219,7 @@ async def _generate_chat_completion(
         )
     else:
         # Check if user has access to the model
-        if not bypass_filter and user.role == "user":
+        if not bypass_filter and is_restricted(user):
             try:
                 check_model_access(user, model)
             except Exception as e:

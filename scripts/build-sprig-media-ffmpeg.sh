@@ -2,10 +2,15 @@
 # build-sprig-media-ffmpeg.sh — package the media-ffmpeg Sprig™ (static ffmpeg
 # + ffprobe, johnvansickle 7.0.2), per host arch.
 #
-# The tar carries ONLY the two static binaries at its root (matching the live
-# hand-built v1 artifact) — artifact.py's app-dir delivery extracts them into
-# /usr/local/bin (sentinel: ffmpeg). No sprig.yaml inside: the target is a
-# shared bin dir and a stray manifest file would pollute it.
+# The tar carries the two static binaries at its root, and since v2 the GPLv3
+# terms they ship under: ffmpeg.GPL-3.0.txt (the builder's GPLv3.txt) and
+# ffmpeg.SOURCE.txt (where the source lives, then the builder's readme with
+# every library version). v1 shipped the binaries alone, which GPLv3 does not
+# allow (card "`media-ffmpeg` Sprig ships GPLv3 binaries", 2026-10-31).
+# artifact.py's app-dir delivery extracts the tar into /usr/local/bin
+# (sentinel: ffmpeg), so the two notes sit beside the binaries they cover
+# (Alexander, 2026-11-03). No sprig.yaml inside: the target is a shared bin
+# dir and a stray manifest would pollute it.
 #
 # Source: johnvansickle.com static builds (fully static — run on any libc).
 # The version is PINNED (old-releases URL) so a rebuild is reproducible; the
@@ -68,17 +73,33 @@ if [ ! -f "$WORK/ffmpeg.tar.xz" ]; then
   fi
 fi
 
-# --- 2. verify publisher md5 + extract the two binaries (dockerized) -----------
+# --- 2. verify publisher md5 + extract the binaries and their licence ----------
 echo "== verifying + extracting =="
 docker run --rm -v "$WORK:/w" alpine sh -ec '
   apk add --no-cache xz >/dev/null
   cd /w
   # .md5 format: "<md5>  <filename>" — rewrite the filename to ours.
   awk "{print \$1\"  ffmpeg.tar.xz\"}" ffmpeg.tar.xz.md5 | md5sum -c -
+  rm -f /w/stage/*
   tar -xJf ffmpeg.tar.xz --strip-components=1 -C /w/stage \
     "ffmpeg-'"$FFMPEG_VERSION"'-'"$ARCH"'-static/ffmpeg" \
-    "ffmpeg-'"$FFMPEG_VERSION"'-'"$ARCH"'-static/ffprobe"
+    "ffmpeg-'"$FFMPEG_VERSION"'-'"$ARCH"'-static/ffprobe" \
+    "ffmpeg-'"$FFMPEG_VERSION"'-'"$ARCH"'-static/GPLv3.txt" \
+    "ffmpeg-'"$FFMPEG_VERSION"'-'"$ARCH"'-static/readme.txt"
   chmod 0755 /w/stage/ffmpeg /w/stage/ffprobe
+  mv /w/stage/GPLv3.txt /w/stage/ffmpeg.GPL-3.0.txt
+  { printf "%s\n" \
+      "ffmpeg and ffprobe '"$FFMPEG_VERSION"' in this folder are unmodified static builds by" \
+      "John Van Sickle (https://johnvansickle.com/ffmpeg/), licensed under the GNU" \
+      "General Public License version 3: ffmpeg.GPL-3.0.txt beside this file." \
+      "" \
+      "FFmpeg source: https://ffmpeg.org/releases/ffmpeg-'"$FFMPEG_VERSION"'.tar.xz" \
+      "Each library the build links, and its version, is listed in the builder'"'"'s" \
+      "readme below; each project publishes its own source." \
+      "" \
+      "----- the builder'"'"'s readme.txt -----"
+    cat /w/stage/readme.txt; } > /w/stage/ffmpeg.SOURCE.txt
+  rm /w/stage/readme.txt
 '
 
 # --- 3. SANITY GATE: the browser voice-note path on the TARGET arch ------------
@@ -94,12 +115,12 @@ docker run --rm --platform "$PLATFORM" -v "$WORK/stage:/s:ro" alpine sh -ec '
   echo "  transcode round-trip OK (opus verified)"
 ' || { echo "SANITY GATE FAILED — ffmpeg transcode broken on $ARCH" >&2; exit 1; }
 
-# --- 4. reproducible pack (binaries only at root, matching the live artifact) --
+# --- 4. reproducible pack (binaries and their GPLv3 notes, at the root) --------
 docker run --rm -v "$WORK/stage:/stage:ro" -v "$OUT_DIR:/out" alpine sh -c \
   "apk add --no-cache tar zstd >/dev/null && \
    tar --sort=name --owner=0 --group=0 --numeric-owner --mtime='UTC 2020-01-01' \
        --use-compress-program='zstd -19 -T0' \
-       -cf /out/$(basename "$OUT") -C /stage ffmpeg ffprobe"
+       -cf /out/$(basename "$OUT") -C /stage ffmpeg ffprobe ffmpeg.GPL-3.0.txt ffmpeg.SOURCE.txt"
 TAR_SHA="$(sha256 "$OUT")"
 
 echo

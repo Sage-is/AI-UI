@@ -287,6 +287,7 @@ from sage_is_ai.config import (
     ENABLE_SPACES,
     ENABLE_NOTES,
     ENABLE_COMMUNITY_SHARING,
+    COMMUNITY_HUB_URL,
     ENABLE_MESSAGE_RATING,
     ENABLE_USER_WEBHOOKS,
     ENABLE_EVALUATION_ARENA_MODELS,
@@ -399,6 +400,7 @@ from sage_is_ai.env import (
     INSTANCE_ID,
     WEBUI_BUILD_HASH,
     DEV_MODE,
+    SAGE_RUNTIME,
     WEBUI_SECRET_KEY,
     WEBUI_SESSION_COOKIE_SAME_SITE,
     WEBUI_SESSION_COOKIE_SECURE,
@@ -433,7 +435,7 @@ from sage_is_ai.utils.chat import (
 )
 from sage_is_ai.utils.embeddings import generate_embeddings
 from sage_is_ai.utils.middleware import process_chat_payload, process_chat_response
-from sage_is_ai.utils.access_control import has_access
+from sage_is_ai.utils.access_control import has_access, is_restricted
 
 from sage_is_ai.utils.auth import (
     get_license_data,
@@ -441,6 +443,7 @@ from sage_is_ai.utils.auth import (
     decode_token,
     get_admin_user,
     get_verified_user,
+    is_live_session,
 )
 from sage_is_ai.utils.plugin import install_tool_and_function_dependencies
 from sage_is_ai.utils.oauth import OAuthManager
@@ -624,6 +627,13 @@ async def lifespan(app: FastAPI):
     app.state.instance_id = INSTANCE_ID
     start_logger()
 
+    # Rootstock F0: log where the event loop stalls (file:line, never values).
+    # RS_LAG_WATCH=off disables it; see utils/loop_watch.py.
+    from sage_is_ai.env import DATA_DIR
+    from sage_is_ai.utils.loop_watch import start_loop_watch
+
+    loop_watch = start_loop_watch(asyncio.get_running_loop(), data_dir=DATA_DIR)
+
     if RESET_CONFIG_ON_START:
         reset_config()
 
@@ -753,6 +763,9 @@ async def lifespan(app: FastAPI):
         asyncio.create_task(ensure_try_sage_vector_backend(app))
 
     yield
+
+    if loop_watch:
+        loop_watch.stop()
 
     # Shutdown Bridge Manager
     if getattr(app.state, "bridge_manager", None):
@@ -937,6 +950,7 @@ app.state.config.BRIDGE_AUTO_CREATE_USERS = BRIDGE_AUTO_CREATE_USERS
 app.state.config.BRIDGE_DEFAULT_USER_ROLE = BRIDGE_DEFAULT_USER_ROLE
 app.state.config.BRIDGE_RATE_LIMIT_PER_MINUTE = BRIDGE_RATE_LIMIT_PER_MINUTE
 app.state.config.ENABLE_COMMUNITY_SHARING = ENABLE_COMMUNITY_SHARING
+app.state.config.COMMUNITY_HUB_URL = COMMUNITY_HUB_URL
 app.state.config.ENABLE_MESSAGE_RATING = ENABLE_MESSAGE_RATING
 app.state.config.ENABLE_USER_WEBHOOKS = ENABLE_USER_WEBHOOKS
 
@@ -1103,7 +1117,7 @@ app.state.config.YOUTUBE_LOADER_PROXY_URL = YOUTUBE_LOADER_PROXY_URL
 def _embedding_not_ready(*args, **kwargs):
     raise HTTPException(
         status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-        detail="Embedding model not yet loaded. Complete setup wizard to download.",
+        detail="Document search is not set up yet: an admin grafts an embedding Sprig™ in Admin → Sprigs.",
     )
 
 
@@ -1670,7 +1684,7 @@ async def get_models(
         )
 
     # Filter out models that the user does not have access to
-    if user.role == "user" and not BYPASS_MODEL_ACCESS_CONTROL:
+    if is_restricted(user) and not BYPASS_MODEL_ACCESS_CONTROL:
         models = get_filtered_models(models, user)
 
     log.debug(
@@ -1716,6 +1730,27 @@ async def embeddings(
     return await generate_embeddings(request, form_data, user)
 
 
+def pop_model_item(request: Request, form_data: dict) -> dict:
+    """The `model_item` a client sent, taken off the body. A direct one (the browser
+    calls the provider itself) is refused while the admin's direct-connections switch
+    is off; until now the switch was read only by /api/config, so it never held."""
+    model_item = form_data.pop("model_item", None) or {}
+    if not isinstance(model_item, dict):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="model_item must be an object",
+        )
+    if (
+        model_item.get("direct", False)
+        and not request.app.state.config.ENABLE_DIRECT_CONNECTIONS
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Direct connections are turned off by the administrator",
+        )
+    return model_item
+
+
 @app.post("/api/chat/completions")
 async def chat_completion(
     request: Request,
@@ -1725,7 +1760,7 @@ async def chat_completion(
     if not request.app.state.MODELS:
         await get_all_models(request, user=user)
 
-    model_item = form_data.pop("model_item", {})
+    model_item = pop_model_item(request, form_data)
     tasks = form_data.pop("background_tasks", None)
 
     metadata = {}
@@ -1739,11 +1774,13 @@ async def chat_completion(
             model_info = Models.get_model_by_id(model_id)
 
             # Check if user has access to the model
-            if not BYPASS_MODEL_ACCESS_CONTROL and user.role == "user":
+            if not BYPASS_MODEL_ACCESS_CONTROL and is_restricted(user):
                 try:
                     check_model_access(user, model)
                 except Exception as e:
-                    raise e
+                    raise HTTPException(
+                        status_code=status.HTTP_403_FORBIDDEN, detail=str(e)
+                    )
         else:
             model = model_item
             model_info = None
@@ -1787,19 +1824,22 @@ async def chat_completion(
 
     except Exception as e:
         log.debug(f"Error processing chat payload: {e}")
+        detail = e.detail if isinstance(e, HTTPException) else str(e)
         if metadata.get("chat_id") and metadata.get("message_id"):
             # Update the chat message with the error
             Chats.upsert_message_to_chat_by_id_and_message_id(
                 metadata["chat_id"],
                 metadata["message_id"],
                 {
-                    "error": {"content": str(e)},
+                    "error": {"content": detail},
                 },
             )
 
+        if isinstance(e, HTTPException):
+            raise  # a refusal keeps its status; the 400 below is for the rest
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e),
+            detail=detail,
         )
 
     try:
@@ -1835,9 +1875,8 @@ generate_chat_completion = chat_completion
 async def chat_completed(
     request: Request, form_data: dict, user=Depends(get_verified_user)
 ):
+    model_item = pop_model_item(request, form_data)
     try:
-        model_item = form_data.pop("model_item", {})
-
         if model_item.get("direct", False):
             request.state.direct = True
             request.state.model = model_item
@@ -1854,9 +1893,8 @@ async def chat_completed(
 async def chat_action(
     request: Request, action_id: str, form_data: dict, user=Depends(get_verified_user)
 ):
+    model_item = pop_model_item(request, form_data)
     try:
-        model_item = form_data.pop("model_item", {})
-
         if model_item.get("direct", False):
             request.state.direct = True
             request.state.model = model_item
@@ -1919,7 +1957,10 @@ async def get_app_config(request: Request):
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid token",
             )
-        if data is not None and "id" in data:
+        # The session rules get_current_user and the socket apply: a dead session
+        # reads as signed out here instead of earning the signed-in config.
+        cutoff = app.state.config.TRY_SAGE_SESSIONS_INVALIDATED_AT
+        if data is not None and "id" in data and is_live_session(data, cutoff):
             user = Users.get_user_by_id(data["id"])
 
     user_count = Users.get_num_users()
@@ -1966,6 +2007,7 @@ async def get_app_config(request: Request):
                     "enable_image_generation": app.state.config.ENABLE_IMAGE_GENERATION,
                     "enable_autocomplete_generation": app.state.config.ENABLE_AUTOCOMPLETE_GENERATION,
                     "enable_community_sharing": app.state.config.ENABLE_COMMUNITY_SHARING,
+                    "community_hub_url": app.state.config.COMMUNITY_HUB_URL,
                     "enable_message_rating": app.state.config.ENABLE_MESSAGE_RATING,
                     "enable_user_webhooks": app.state.config.ENABLE_USER_WEBHOOKS,
                     "enable_admin_export": ENABLE_ADMIN_EXPORT,
@@ -2058,6 +2100,7 @@ async def get_app_config(request: Request):
                 **(
                     {
                         "active_entries": app.state.USER_COUNT,
+                        "sage_runtime": SAGE_RUNTIME,
                     }
                     if user.role == "admin"
                     else {}
@@ -2331,6 +2374,16 @@ if (STATIC_DIR / "assets").exists():
         name="spa-assets",
     )
 
+# The vendored startr.style sheet opens with upstream's `@import url('/fonts/Nunito-Sans.css')`,
+# a host-absolute path, so the box serves the faces there itself: vendored beside the
+# sheet, so a page load still reaches nothing off-machine (pages/shell.py, EGRESS).
+if (STATIC_DIR / "vendor" / "startr.style" / "fonts").exists():
+    app.mount(
+        "/fonts",
+        CachedStaticFiles(directory=STATIC_DIR / "vendor" / "startr.style" / "fonts"),
+        name="vendored-fonts",
+    )
+
 
 # It should be noted that this endpoint is required to be at the root level for
 # web crawlers to find it.
@@ -2521,16 +2574,24 @@ if ENABLE_TRY_SAGE:
         )
 
 
+def cache_path_for(path: str, cache_dir=CACHE_DIR):
+    """The file under the cache root that `path` names, or None when it resolves outside it.
+
+    A string-prefix test let a sibling such as `cache-evil/` through; resolving the
+    path, symlinks included, and asking for the root as an ancestor does not.
+    """
+    root = cache_dir.resolve()
+    file_path = (root / path).resolve()
+    return file_path if file_path.is_relative_to(root) else None
+
+
 @app.get("/cache/{path:path}")
 async def serve_cache_file(
     path: str,
     user=Depends(get_verified_user),
 ):
-    file_path = os.path.abspath(os.path.join(CACHE_DIR, path))
-    # prevent path traversal
-    if not file_path.startswith(os.path.abspath(CACHE_DIR)):
-        raise HTTPException(status_code=404, detail="File not found")
-    if not os.path.isfile(file_path):
+    file_path = cache_path_for(path)
+    if file_path is None or not file_path.is_file():
         raise HTTPException(status_code=404, detail="File not found")
     return FileResponse(file_path)
 

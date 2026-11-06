@@ -41,7 +41,7 @@ from sage_is_ai.utils.misc import (
 )
 
 from sage_is_ai.utils.auth import get_admin_user, get_verified_user
-from sage_is_ai.utils.access_control import has_access
+from sage_is_ai.utils.access_control import has_access, is_restricted
 
 from sage_is_ai.diagnostics import (
     EndpointUnreachable,
@@ -521,7 +521,6 @@ async def _get_hidden_connection_models(
                     "id": model_id,
                     "name": model.get("name", model_id),
                     "owned_by": "openai",
-                    "openai": model,
                     "connection_type": "external",
                     # Sentinel — see docstring. Dispatch sites resolve via
                     # _try_sage_hidden_id, never index OPENAI_API_BASE_URLS.
@@ -586,7 +585,6 @@ async def get_all_models(request: Request, user: UserModel) -> dict[str, list]:
                             **model,
                             "name": model.get("name", model["id"]),
                             "owned_by": "openai",
-                            "openai": model,
                             "connection_type": model.get("connection_type", "external"),
                             "urlIdx": idx,
                         }
@@ -728,7 +726,7 @@ async def get_models(
                 error_detail = f"Unexpected error: {str(e)}"
                 raise HTTPException(status_code=500, detail=error_detail)
 
-    if user.role == "user" and not BYPASS_MODEL_ACCESS_CONTROL:
+    if is_restricted(user) and not BYPASS_MODEL_ACCESS_CONTROL:
         models["data"] = await get_filtered_models(models, user)
 
     return models
@@ -899,11 +897,19 @@ def convert_to_azure_payload(url, payload: dict, api_version: str):
 
 
 @router.post("/chat/completions")
+async def chat_completions(
+    request: Request, form_data: dict, user=Depends(get_verified_user)
+):
+    """The HTTP route. `bypass_filter` is an argument for server-internal callers
+    of generate_chat_completion and is never read from the request."""
+    return await generate_chat_completion(request, form_data, user)
+
+
 async def generate_chat_completion(
     request: Request,
     form_data: dict,
-    user=Depends(get_verified_user),
-    bypass_filter: Optional[bool] = False,
+    user,
+    bypass_filter: bool = False,
 ):
     if BYPASS_MODEL_ACCESS_CONTROL:
         bypass_filter = True
@@ -927,9 +933,16 @@ async def generate_chat_completion(
 
             payload = apply_model_params_to_body_openai(params, payload)
             payload = apply_model_system_prompt_to_body(system, payload, metadata, user)
+            # The system prompt arrives after the privacy filter ran on the
+            # messages, with the user's name and location filled in: it goes
+            # through the same request mapper before anything leaves.
+            if getattr(request.state, "privacy_active", False):
+                from sage_is_ai.privacy import hooks as privacy_hooks
+
+                payload = privacy_hooks.outbound_system(request, payload)
 
         # Check if user has access to the model
-        if not bypass_filter and user.role == "user":
+        if not bypass_filter and is_restricted(user):
             if not (
                 user.id == model_info.user_id
                 or has_access(
@@ -1179,7 +1192,18 @@ async def embeddings(request: Request, form_data: dict, user):
 async def proxy(path: str, request: Request, user=Depends(get_verified_user)):
     """
     Deprecated: proxy all requests to OpenAI Compatible API
+
+    It forwards any path to connection 0 with that connection's key, past the
+    privacy filter and model access control. The SPA's own API modules
+    (app/src/lib/apis/openai/index.ts) call only routes this router declares,
+    and docs/API-examples.md documents no raw /openai path, so there is no
+    path to allow a non-admin: each such request answers 404 and is logged.
     """
+    if is_restricted(user):
+        log.warning(
+            f"raw /openai/{path} ({request.method}) refused: user {user.id} has role {user.role}"
+        )
+        raise HTTPException(status_code=404, detail="Not Found")
 
     body = await request.body()
 

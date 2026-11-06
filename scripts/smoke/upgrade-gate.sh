@@ -199,8 +199,11 @@ if [ "$REAL_TARGET" = "1" ]; then
 else
   echo "  … skipping the embedding server cultivar (needs a real $TARGET_ARCH image to execute)"
 fi
+# 180 s, not 60: since 2026-11-05 a vector graft also turns the client on. Under
+# env-faking the amd64 overlay cannot load, so it falls back to a pinned install
+# (about 60 s here) before it answers "delivered".
 tgt_graft() {
-  curl -s --max-time 60 -X POST "http://localhost:$((PORT+1))/api/v1/retrieval/sprigs/graft" \
+  curl -s --max-time 180 -X POST "http://localhost:$((PORT+1))/api/v1/retrieval/sprigs/graft" \
     -H "$A2" -H 'Content-Type: application/json' -d "{\"name\":\"$1\",\"capability\":\"$2\"}"
 }
 for pair in "${PAIRS[@]}"; do
@@ -218,6 +221,16 @@ for pair in "${PAIRS[@]}"; do
     A2="Authorization: Bearer $T2"
     R=$(tgt_graft "$nm" "$cap")
   fi
+  # Since 2026-11-02 a busy SQLite lock answers 503 "The database is busy; try
+  # again in a moment" instead of "session expired", which the re-sign-in above
+  # no longer catches (2026-11-05, both grafts after vector-chroma). Do what the
+  # answer says, twice at most, and say so.
+  for wait in 5 10; do
+    printf '%s' "$R" | grep -qi 'database is busy' || break
+    echo "  … $nm: database busy; retrying in ${wait}s"
+    sleep "$wait"
+    R=$(tgt_graft "$nm" "$cap")
+  done
   if echo "$R" | jq -e '.delivered==true or .status==true' >/dev/null 2>&1; then
     ok "$nm grafts on $TARGET_ARCH (capability available)"
   elif echo "$R" | grep -q "requires .* and this host is $TARGET_ARCH"; then

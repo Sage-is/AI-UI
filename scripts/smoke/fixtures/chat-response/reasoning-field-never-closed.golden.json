@@ -20,7 +20,7 @@
     "channel": "event",
     "payload": {
       "data": {
-        "content": "<details type=\"reasoning\" done=\"false\">\n<summary>Thinking…</summary>\n> The user wants a comparison. I will keep it short.</thinking> \n</details>"
+        "content": "<details type=\"reasoning\" done=\"true\" duration=\"1\">\n<summary>Thought for 1 seconds</summary>\n> The user wants a comparison. I will keep it short.\n</details>"
       },
       "type": "chat:completion"
     }
@@ -29,7 +29,7 @@
     "channel": "event",
     "payload": {
       "data": {
-        "content": "<details type=\"reasoning\" done=\"false\">\n<summary>Thinking…</summary>\n> The user wants a comparison. I will keep it short.</thinking> RAD and Agile are both iterative.\n</details>"
+        "content": "<details type=\"reasoning\" done=\"true\" duration=\"1\">\n<summary>Thought for 1 seconds</summary>\n> The user wants a comparison. I will keep it short.\n</details>\nRAD and Agile are both iterative."
       },
       "type": "chat:completion"
     }

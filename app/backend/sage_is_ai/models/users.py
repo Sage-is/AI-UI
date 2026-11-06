@@ -1,7 +1,12 @@
+import logging
 import time
 from typing import Optional
 
+from sage_is_ai.env import SRC_LOG_LEVELS
 from sage_is_ai.internal.db import Base, JSONField, get_db
+
+log = logging.getLogger(__name__)
+log.setLevel(SRC_LOG_LEVELS["MODELS"])
 
 
 from sage_is_ai.models.chats import Chats
@@ -148,12 +153,20 @@ class UsersTable:
             else:
                 return None
 
+    def lookup_user_by_id(self, id: str) -> Optional[UserModel]:
+        """The user, or None when no row has that id; a database error raises."""
+        with get_db() as db:
+            user = db.query(User).filter_by(id=id).first()
+            return UserModel.model_validate(user) if user else None
+
     def get_user_by_id(self, id: str) -> Optional[UserModel]:
         try:
-            with get_db() as db:
-                user = db.query(User).filter_by(id=id).first()
-                return UserModel.model_validate(user)
-        except Exception:
+            return self.lookup_user_by_id(id)
+        except Exception as e:
+            # Still None, but no longer silent. get_current_user calls
+            # lookup_user_by_id instead, so a database error there is a 503,
+            # never "session expired".
+            log.warning(f"get_user_by_id({id}) failed: {type(e).__name__}: {e}")
             return None
 
     def get_user_by_api_key(self, api_key: str) -> Optional[UserModel]:

@@ -238,5 +238,17 @@
 				"description_key": "diagnostics.fix.dev_reloader_active.homebrew.1"
 			}
 		]
+	},
+	"vector_db_off": {
+		"plain_english_key": "diagnostics.fix.vector_db_off.plain",
+		"universal_steps": [
+			{
+				"description_key": "diagnostics.fix.vector_db_off.universal.0",
+				"ui_path": "Admin → Sprigs"
+			},
+			{
+				"description_key": "diagnostics.fix.vector_db_off.universal.1"
+			}
+		]
 	}
 }

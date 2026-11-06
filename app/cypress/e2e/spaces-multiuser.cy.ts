@@ -134,13 +134,33 @@ describe('Shared space — non-owner member', () => {
 		cy.visit('/space/' + spaceId);
 		cy.get('#space-container .ProseMirror', { timeout: 20000 }).click().type('@');
 		cy.get('#commands-container', { timeout: 10000 }).should('exist');
-		// Keyboard nav is a KNOWN LIVE BUG: MessageInput.svelte queries the
-		// nonexistent #mentions-container while the real id is
-		// #commands-container — never arrow-key/Enter here, only click.
 		cy.get('#commands-container button')
 			.contains('Admin User')
 			.click();
 		cy.get('#space-container .ProseMirror').contains('Admin').should('exist');
+	});
+
+	it('mention dropdown is selectable by KEYBOARD', () => {
+		// The Space input is chat/MessageInput.svelte: the keys reach Mentions
+		// through the Commands list (#commands-container), so keyboard selection
+		// works and this pins it; the click test above no longer stands in for
+		// it. The participants come back in id order, not creation order (gauntlet
+		// 2026-11-05 drew the member first), so the spec reads the second name.
+		cy.login(memberUser.email, memberUser.password);
+		cy.visit('/space/' + spaceId);
+		cy.get('#space-container .ProseMirror', { timeout: 20000 }).click().type('@');
+		cy.get('#commands-container button', { timeout: 10000 }).should('have.length.at.least', 2);
+		cy.get('#space-container .ProseMirror').type('{downarrow}');
+		cy.get('#commands-container button')
+			.eq(1)
+			.should('have.class', 'selected-command-option-button')
+			.invoke('text')
+			.then((text) => {
+				const name = text.trim().includes('Space Member') ? 'Space Member' : 'Admin User';
+				cy.get('#space-container .ProseMirror').type('{enter}');
+				cy.get('#commands-container').should('not.exist');
+				cy.get('#space-container .ProseMirror').should('contain.text', `@${name}`);
+			});
 	});
 
 	it('admin sees the member message', () => {

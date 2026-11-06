@@ -55,7 +55,8 @@
   <link rel="icon" type="image/png" sizes="96x96" href="/static/icons/favicon-96x96.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="/static/icons/apple-touch-icon.png" />
 
-  <link rel="stylesheet" href="https://startr.style/style.css" />
+  {# startr.style 1.5.0, vendored under app/static/vendor/ and pinned by its hash: never the rolling URL #}
+  <link rel="stylesheet" href="/static/vendor/startr.style/1.5.0/style.css" integrity="sha384-FkECkbET5+CiYC0S6ZEMR/7Fw2/RUYw58TWhsNi/NYKrS7c55s2ZdWOoKZfxaXxC" />
   <style>
     * { box-sizing: border-box; }
     html { background: #000; }
@@ -142,7 +143,7 @@
         {% endfor %}
       </h1>
 
-      <p style="--size:1rem; --opacity:0.85; --maxw:30rem; --lh:1.5; --m:0">
+      <p style="--size:1rem; --op:0.85; --maxw:30rem; --lh:1.5; --m:0">
         {{ tagline }}
       </p>
     </div>
@@ -151,13 +152,13 @@
        ships via email or in-person QR, not from this public surface. #}
     <section data-cy="try-sage-roles"
              style="--d:flex; --fd:column; gap:0.75rem; --ta:left; --bgc:rgb(255 255 255 / 0.08); --p:1.25rem; --radius:0.75rem">
-      <h2 style="--size:0.85rem; --weight:600; --opacity:0.8; --tt:uppercase; --ls:0.05em; --m:0">
+      <h2 style="--size:0.85rem; --weight:600; --op:0.8; --tt:uppercase; --ls:0.05em; --m:0">
         {{ roles_heading }}
       </h2>
       {% for role in roles %}
       <div style="--d:flex; --fd:column; gap:0.2rem">
         <div style="--size:0.95rem; --weight:600">{{ role.title }}</div>
-        <div style="--size:0.85rem; --opacity:0.8; --lh:1.45">{{ role.detail }}</div>
+        <div style="--size:0.85rem; --op:0.8; --lh:1.45">{{ role.detail }}</div>
       </div>
       {% endfor %}
     </section>
@@ -166,7 +167,7 @@
        email — not from a button on this page — so the copy is descriptive. #}
     <section data-cy="try-sage-signin"
              style="--d:flex; --fd:column; gap:0.85rem; --ta:left; --p:1.25rem; --radius:0.75rem; --bgc:rgb(255 255 255 / 0.08)">
-      <h2 style="--size:0.85rem; --weight:600; --opacity:0.8; --tt:uppercase; --ls:0.05em; --m:0">
+      <h2 style="--size:0.85rem; --weight:600; --op:0.8; --tt:uppercase; --ls:0.05em; --m:0">
         {{ signin_heading }}
       </h2>
 
@@ -174,7 +175,7 @@
         <span style="--size:1rem">&#128205;</span>
         <div>
           <div style="--size:0.9rem; --weight:600">{{ in_person_title }}</div>
-          <div style="--size:0.85rem; --opacity:0.8; --lh:1.45">{{ in_person_detail }}</div>
+          <div style="--size:0.85rem; --op:0.8; --lh:1.45">{{ in_person_detail }}</div>
         </div>
       </div>
 
@@ -182,7 +183,7 @@
         <span style="--size:1rem">&#9993;&#65039;</span>
         <div>
           <div style="--size:0.9rem; --weight:600">{{ remote_title }}</div>
-          <div style="--size:0.85rem; --opacity:0.8; --lh:1.45">{{ remote_detail }}</div>
+          <div style="--size:0.85rem; --op:0.8; --lh:1.45">{{ remote_detail }}</div>
         </div>
       </div>
     </section>
@@ -190,12 +191,12 @@
     {# Friendly recovery line — points back to the facilitator, no self-serve
        resend per the trial's invite-only contract. #}
     <footer data-cy="try-sage-footer"
-            style="--size:0.8rem; --opacity:0.65; --lh:1.45; --maxw:30rem; --m:0 auto">
+            style="--size:0.8rem; --op:0.65; --lh:1.45; --maxw:30rem; --m:0 auto">
       {{ lost_link }}
     </footer>
 
     {% if banner_text %}
-    <div style="--size:0.75rem; --opacity:0.55">{{ banner_text }}</div>
+    <div style="--size:0.75rem; --op:0.55">{{ banner_text }}</div>
     {% endif %}
   </main>
   <script defer src="{{ slideshow_src }}"></script>

@@ -33,10 +33,10 @@ Stop and decide each one with Alexander before editing.
 
 > Decided 2026-10-04 (Alexander): item 1, community-hub.md rewritten as the winter plan (the hub is coming this winter); item 2, product-stack.md redrawn from the code, and it names the hub as coming this winter; item 4, README.md:101 points at sage.is/bonsai/ (step 1). Both docs went through a map, write and fact-check workflow, with the last seven findings applied by hand. Item 3 (backend-rewrite-research.md) stays open. Steps 3 to 5 now belong to the tests, UX and docs path with Alexander.
 
-1. **`docs/community-hub.md`**: most of it was never built. Open cards need `COMMUNITY_HUB_URL` (`TODO.md:191`) and an allowlist reconcile (`TODO.md:195`). Choose between cutting it to the parts those cards need and retiring it. It is linked from `README.md:75,87` and `docs/bonsai/sprig-creator-program.md:115`.
+1. **`docs/community-hub.md`**: most of it was never built. Open cards need `COMMUNITY_HUB_URL` (`TODO.md` card "Community-share leak + dead wiring") and an allowlist reconcile (`TODO.md` card "Community-share leak + dead wiring"). Choose between cutting it to the parts those cards need and retiring it. It is linked from `README.md:75,87` and `docs/bonsai/sprig-creator-program.md:115`.
 2. **`docs/product-stack.md`**: the 2025-11 diagram is wrong on the ORM, storage, web search and ML stack. No card needs it. Choose between retiring it and redrawing a short current version. It is linked from `README.md:73` and `docs/README.md:20`.
-3. **`docs/backend-rewrite-research.md`**: keep it; `TODO.md:1099-1102` holds the team review. Fix the two garbles from the uncommitted edit: the `## Why ` heading at :9, and ":27 As I when I completed this research is no Go or Rust…" (proposed: "When I finished this research, no Go or Rust equivalent…existed"). Refresh the counts: 65.4k LOC, 49 deps, 30 routers, and the file line counts. Drop the dead pgvector/psycopg2/Postgres-search claims and footnotes 2–4. Confirm the wording with Alexander, since the edit is his own work in progress.
-4. **`README.md:101` Sprig Spec link**: the BONSAI repos are not pushed yet (`TODO.md:473`), so there is no public URL. Choose from: link `https://bonsai.sage.is` ahead of launch, link the sage.is explainer, or drop the link text until the push lands.
+3. **`docs/backend-rewrite-research.md`**: keep it; `TODO.md` card "Backend Rewrite Research" holds the team review. Fix the two garbles from the uncommitted edit: the `## Why ` heading at :9, and ":27 As I when I completed this research is no Go or Rust…" (proposed: "When I finished this research, no Go or Rust equivalent…existed"). Refresh the counts: 65.4k LOC, 49 deps, 30 routers, and the file line counts. Drop the dead pgvector/psycopg2/Postgres-search claims and footnotes 2–4. Confirm the wording with Alexander, since the edit is his own work in progress.
+4. **`README.md:101` Sprig Spec link**: the BONSAI repos are not pushed yet (`TODO.md` card "Stand up bonsai.sage.is spec hub"), so there is no public URL. Choose from: link `https://bonsai.sage.is` ahead of launch, link the sage.is explainer, or drop the link text until the push lands.
 
 ## Step 3 — Fix facts in living docs [WE]
 
@@ -67,9 +67,9 @@ Fix each item in place; the evidence is in the sweep tables.
 
 ## Step 5 — Board drift [WE, confirm restores with Alexander]
 
-- **`TODO.md:38`**: `default_external` is already ON (`config.py:987`); tick the card.
-- **`TODO.md:581`**: AI-parsed ingestion has shipped (`CHANGELOG.md:526`); tick it.
-- **`TODO.md:1016`, `docs/board-dossiers.md:318`**: the anchor is `#oauth-ux--identity-linking`.
+- **`TODO.md` card "Privacy rules"**: `default_external` is already ON (`config.py:987`); tick the card.
+- **`TODO.md` card "Knowledge Base Improvements"**: AI-parsed ingestion has shipped (`CHANGELOG.md:526`); tick it.
+- **`TODO.md` card "Admin-driven OAuth user pre-link / org-wide provisioning", `docs/board-dossiers.md`**: the anchor is `#oauth-ux--identity-linking`. Fixed in both on 2026-11-02.
 - **`docs/board-dossiers.md:449`**: the card "Demo tenant reset — one task, not three" was deleted without archiving (commit `25589ee`). Ask whether to restore it to TODO.md or stub it in completed-todos.
 - **Dossiers for completed cards** (:71, :503, :509, :515): mark them done or move them.
 - The board already passes the 350-char register rule (max 349), so no register pass is needed.

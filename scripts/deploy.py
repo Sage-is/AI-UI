@@ -6,6 +6,7 @@ The apps, their order and which need a backup live in deploy/instances.toml.
 
 import argparse
 import datetime
+import hashlib
 import json
 import os
 import subprocess
@@ -15,7 +16,13 @@ import urllib.request
 from pathlib import Path
 
 INSTANCES = Path(__file__).resolve().parents[1] / "deploy" / "instances.toml"
-BACKUPS = Path.home() / "Backups" / "ai-ui"
+# Backups land on Somma 02, which Backblaze syncs as it is, so they land
+# encrypted and no plaintext copy touches any disk (card "Production data
+# reaches Backblaze in plaintext", 2026-11-03). The passphrase stays in the vault.
+BACKUPS = Path(os.environ.get("AI_UI_DEPLOY_BACKUPS", "/Volumes/Somma 02 14TB/Backups/ai-ui"))
+BACKUP_KEY = "bw:ai-ui-deploy-db-backup"
+# The recipe every encrypted backup on Somma 02 uses; decrypt with the same line plus -d.
+ENC = "openssl enc -aes-256-cbc -pbkdf2 -iter 600000"
 SQLITE_HEADER = b"SQLite format 3\x00"
 # Cloudflare answers 403 to urllib's default User-Agent.
 HEADERS = {"User-Agent": "sage-ai-ui-deploy"}
@@ -44,21 +51,46 @@ def version_at(url: str) -> str:
         return ""
 
 
+def sealed(script: str, *args: str, data: bytes | None = None) -> bytes:
+    """`sh -c script` with BACKUP_PASS resolved by sage-secret: the passphrase
+    reaches only that shell, never this process or a file."""
+    command = ["sage-secret", "run", "--", "sh", "-c", script, "sh", *args]
+    env = os.environ | {"BACKUP_PASS": BACKUP_KEY}
+    return subprocess.run(command, input=data, env=env, check=True, capture_output=True).stdout
+
+
+def store_encrypted(data: bytes, target: Path) -> None:
+    """Write `data` gzipped and encrypted to `target`, keep it only if it decrypts
+    back to the same bytes, and leave its sha256 beside it."""
+    sealed(f'gzip -c | {ENC} -salt -pass env:BACKUP_PASS -out "$1"', str(target), data=data)
+    digest = hashlib.sha256(data).hexdigest()
+    if hashlib.sha256(sealed(f'{ENC} -d -pass env:BACKUP_PASS -in "$1" | gunzip -c', str(target))).hexdigest() != digest:
+        target.unlink()
+        sys.exit(f"{target.name}: the encrypted copy did not decrypt to the download; no deploy")
+    plain_name = target.name.removesuffix(".gz.enc")
+    target.with_name(f"{plain_name}.sha256").write_text(f"{digest}  {plain_name}\n")
+
+
 def back_up(instance: dict) -> Path:
-    """Download the app's database to ~/Backups; stop the rollout if that fails."""
+    """Download the app's database and store it encrypted on Somma 02; stop the rollout if that fails."""
     app, url, key_env = instance["app"], instance["url"], instance["admin_key_env"]
     key = os.environ.get(key_env)
     if not key:
-        sys.exit(f"{app}: add {key_env}=<admin API key> to .env first; no backup, no deploy")
+        sys.exit(f"{app}: {key_env} is empty; run this through `make deploy`; no backup, no deploy")
+    if not BACKUPS.parent.is_dir():
+        sys.exit(f"{app}: {BACKUPS.parent} is not mounted; no backup, no deploy")
     request = urllib.request.Request(f"{url}/api/v1/utils/db/download", headers=HEADERS | {"Authorization": f"Bearer {key}"})
     with urllib.request.urlopen(request, timeout=600) as r:
         data = r.read()
     if not data.startswith(SQLITE_HEADER):
         sys.exit(f"{app}: the download is not a SQLite database; no deploy")
-    target = BACKUPS / app / f"{datetime.datetime.now():%Y-%m-%d-%H%M}-{version_at(url)}.db"
+    target = BACKUPS / app / f"{datetime.datetime.now():%Y-%m-%d-%H%M}-{version_at(url)}.db.gz.enc"
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_bytes(data)
-    target.chmod(0o600)
+    try:
+        store_encrypted(data, target)
+    except subprocess.CalledProcessError as e:
+        target.unlink(missing_ok=True)
+        sys.exit(f"{app}: encrypting the backup failed: {e.stderr.decode(errors='replace').strip()[:300]}; no deploy")
     return target
 
 

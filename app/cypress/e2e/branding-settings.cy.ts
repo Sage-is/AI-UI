@@ -28,6 +28,16 @@ const FIELDS = [
 /** Branding as the server holds it — the only authority either page renders. */
 const readBranding = () => cy.request('/api/v1/configs/branding').its('body');
 
+/** Click Save and wait for the save request itself. `cy.request` never retries, so
+ *  a read that beats the save re-checks the same stale body for 4 s: on a cold box
+ *  the click landed before hydration and three saves read '' (2026-10-24). Either
+ *  surface: the Svelte page POSTs the API, the no-build page its own panel route. */
+const saveBranding = () => {
+	cy.intercept('POST', /\/api\/v1\/configs\/branding$|\/pages\/admin\/branding\/save$/).as('brandingSave');
+	cy.get('[data-cy="branding-save"]').click();
+	cy.wait('@brandingSave');
+};
+
 const writeBranding = (body: Record<string, string>) =>
 	cy.window().then((win) =>
 		cy.request({
@@ -86,7 +96,7 @@ describe('Admin branding settings', () => {
 
 		cy.get('[data-cy="branding-title"]', { timeout: 30000 }).clear().type(title);
 		cy.get('[data-cy="branding-subtitle"]').clear().type(subtitle);
-		cy.get('[data-cy="branding-save"]').click();
+		saveBranding();
 
 		// Assert the SERVER changed, not that a toast appeared. A save button
 		// that shows a success message without writing anything is the exact
@@ -108,7 +118,7 @@ describe('Admin branding settings', () => {
 			.clear()
 			.type('#123456');
 		cy.get('[data-cy="branding-accent-color-text"]').clear().type('#abcdef');
-		cy.get('[data-cy="branding-save"]').click();
+		saveBranding();
 
 		readBranding().should((body: Record<string, string>) => {
 			expect(body.primary_color).to.eq('#123456');
@@ -154,7 +164,7 @@ describe('Admin branding settings', () => {
 
 		// And it must survive the round trip, so this is a real contract and not
 		// two fields agreeing in the browser and disagreeing on the server.
-		cy.get('[data-cy="branding-save"]').click();
+		saveBranding();
 		readBranding().should((body: Record<string, string>) => {
 			expect(body.primary_color, 'the picker value reached the server').to.eq('#22aa55');
 		});

@@ -2,12 +2,16 @@
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
 	import { prompts } from '$lib/stores';
-	import { onMount, tick, getContext } from 'svelte';
+	import { onMount, onDestroy, tick, getContext } from 'svelte';
 
 	const i18n = getContext('i18n');
 
 	import { createNewPrompt, getPrompts } from '$lib/apis/prompts';
+	import { receiveFromHub } from '$lib/utils/community';
 	import PromptEditor from '$lib/components/workshop/Prompts/PromptEditor.svelte';
+
+	let stopHub = () => {};
+	onDestroy(() => stopHub());
 
 	let prompt: {
 		title: string;
@@ -33,16 +37,7 @@
 	};
 
 	onMount(async () => {
-		window.addEventListener('message', async (event) => {
-			if (
-				!['https://sage.is', 'https://www.sage.is', 'http://localhost:5173'].includes(
-					event.origin
-				)
-			)
-				return;
-			const _prompt = JSON.parse(event.data);
-			console.log('Received prompt via window message:', _prompt);
-
+		stopHub = receiveFromHub((_prompt) => {
 			clone = true;
 			prompt = {
 				title: _prompt.title,
@@ -51,10 +46,6 @@
 				access_control: null
 			};
 		});
-
-		if (window.opener ?? false) {
-			window.opener.postMessage('loaded', '*');
-		}
 
 		if (sessionStorage.prompt) {
 			const _prompt = JSON.parse(sessionStorage.prompt);

@@ -65,5 +65,5 @@ def require_vector_db():
 
         raise HTTPException(
             status_code=503,
-            detail="Vector database not available. Run the AI Engine setup from Settings to install it.",
+            detail="Document search is not set up yet: an admin grafts the vector-chroma Sprig™ in Admin → Sprigs.",
         )

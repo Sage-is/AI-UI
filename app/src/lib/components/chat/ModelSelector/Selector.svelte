@@ -23,7 +23,7 @@
 	} from '$lib/stores';
 	import { toast } from 'svelte-sonner';
 	import { capitalizeFirstLetter, sanitizeResponseContent, splitStream } from '$lib/utils';
-	import { getModels } from '$lib/apis';
+	import { loadModels } from '$lib/apis';
 	import { getBranding, type Branding } from '$lib/apis/configs';
 
 				import Tooltip from '$lib/components/common/Tooltip.svelte';
@@ -273,12 +273,7 @@
 					})
 				);
 
-				models.set(
-					await getModels(
-						localStorage.token,
-						$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
-					)
-				);
+				models.set(await loadModels());
 			} else {
 				toast.error($i18n.t('Download canceled'));
 			}
@@ -335,12 +330,7 @@
 
 		if (res) {
 			toast.success($i18n.t('Model unloaded successfully'));
-			models.set(
-				await getModels(
-					localStorage.token,
-					$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
-				)
-			);
+			models.set(await loadModels());
 		}
 	};
 </script>
@@ -369,12 +359,7 @@
 				? 'dark:placeholder-gray-100 placeholder-gray-800'
 				: 'placeholder-gray-400'}"
 			on:mouseenter={async () => {
-				models.set(
-					await getModels(
-						localStorage.token,
-						$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
-					)
-				);
+				models.set(await loadModels());
 			}}
 		>
 			{#if selectedModel}

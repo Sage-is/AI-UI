@@ -4,12 +4,12 @@
 
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { config, functions, models, settings } from '$lib/stores';
+	import { functions, models } from '$lib/stores';
 	import { updateFunctionById, getFunctions, getFunctionById } from '$lib/apis/functions';
 
 	import FunctionEditor from '$lib/components/admin/Functions/FunctionEditor.svelte';
 	import Spinner from '$lib/components/common/Spinner.svelte';
-	import { getModels } from '$lib/apis';
+	import { loadModels } from '$lib/apis';
 	import { compareVersion, extractFrontmatter } from '$lib/utils';
 	import { WEBUI_VERSION } from '$lib/constants';
 
@@ -48,14 +48,7 @@
 		if (res) {
 			toast.success($i18n.t('Function updated successfully'));
 			functions.set(await getFunctions(localStorage.token));
-			models.set(
-				await getModels(
-					localStorage.token,
-					$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null),
-					false,
-					true
-				)
-			);
+			models.set(await loadModels(true));
 		}
 	};
 

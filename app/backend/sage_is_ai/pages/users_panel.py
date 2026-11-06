@@ -114,7 +114,9 @@ async def _create(
         return f"role must be one of {', '.join(CSV_ROLES)}"
     try:
         await add_user(
-            AddUserForm(name=name, email=email, password=password, role=role), user
+            request,
+            AddUserForm(name=name, email=email, password=password, role=role),
+            user,
         )
     except HTTPException as exc:
         return str(exc.detail)

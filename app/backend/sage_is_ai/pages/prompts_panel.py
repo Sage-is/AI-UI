@@ -258,8 +258,8 @@ async def render_prompts(
         community=bool(
             getattr(request.app.state.config, "ENABLE_COMMUNITY_SHARING", False)
         ),
-        community_url="https://sage.is/community",
-        share_url="https://sage.is/prompts/create",
+        community_url=request.app.state.config.COMMUNITY_HUB_URL,
+        share_url=f"{request.app.state.config.COMMUNITY_HUB_URL}/prompts/create",
         community_heading=_("Sage.is AI Community"),
         community_title=_("Discover your next prompt"),
         community_sub=_("Discover, download, and explore custom prompts"),

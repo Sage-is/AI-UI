@@ -77,12 +77,11 @@
 		if (space) {
 			messages = await getSpaceMessages(localStorage.token, id, 0);
 
-			// Load participants for @mention autocomplete
-			// TODO: Show a user-facing error (toast or inline alert) when participant
-			// loading fails, instead of silently falling back to empty lists.
-			// The fallback keeps the space functional but hides the failure from the user.
+			// Load participants for @mention autocomplete. On failure the space stays
+			// usable with empty lists, and the toast says why mentions are missing.
 			participants = await getSpaceParticipants(localStorage.token, id).catch((err) => {
 				console.error('[Space] Failed to load participants:', err);
+				toast.error($i18n.t('Could not load the members of this space, so @mentions are off.'));
 				return { users: [], agents: [] };
 			});
 

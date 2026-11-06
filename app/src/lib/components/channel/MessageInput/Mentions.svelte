@@ -53,6 +53,9 @@
 </script>
 
 {#if show}
+	<!-- The Commands list's ids on purpose: in a Space this renders inside
+	     chat/MessageInput/Commands.svelte, and chat/MessageInput.svelte routes
+	     the keys to whatever sits in #commands-container. -->
 	<div
 		id="commands-container"
 		style="--pos:absolute; --bottom:100%; --left:0; --right:0; --mb:0.5rem; --maxh:12rem; --ofy:auto; --z:50; --bgc:#fff; --dark-bgc:var(--color-gray-850); --radius:0.75rem; --shadow:5;  --bc:var(--color-gray-200); --dark-bc:var(--color-gray-700); --py:0.25rem"

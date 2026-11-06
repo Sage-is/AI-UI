@@ -36,7 +36,7 @@ sprig_build_defaults(){
   : "${NETWORK:=sage-network}"
   : "${ARTIFACT_TYPE:=application/vnd.sage-is.sprig.v1}"
   : "${LAYER_TYPE:=application/vnd.sage-is.sprig.tar+zstd}"
-  : "${ORAS_IMG:=ghcr.io/oras-project/oras:v1.2.0}"
+  . "$(dirname "${BASH_SOURCE[0]}")/oras.sh"
   return 0
 }
 

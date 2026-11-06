@@ -55,14 +55,15 @@ describe(`Privacy panel (${PANEL})`, () => {
 		cy.get('[data-cy=panel-message]').should('contain', 'confirmation');
 	});
 
-	// The round trip needs a provider. A recording mock (scripts/privacy/
-	// mock_provider.py) registered as a flagged connection provides one on a
-	// dev instance; the gate's fresh instance has none, so these skip there.
+	// The round trip needs a provider: the security tests' recording mock
+	// (rootstock/tests/security/_mock_provider.py; `scripts/rootstock/dev-box.sh
+	// mock` starts it) registered as a flagged connection. PRIVACY_MOCK_REQUESTS
+	// is its /_requests URL. The gate's fresh instance has none, so these skip there.
 	const MOCK_MODEL = Cypress.env('PRIVACY_MOCK_MODEL');
-	const MOCK_CAPTURE = Cypress.env('PRIVACY_MOCK_CAPTURE');
+	const MOCK_REQUESTS = Cypress.env('PRIVACY_MOCK_REQUESTS');
 
 	it('a flagged connection sees only fakes and the reply comes back real', function () {
-		if (!MOCK_MODEL || !MOCK_CAPTURE) this.skip();
+		if (!MOCK_MODEL || !MOCK_REQUESTS) this.skip();
 		const text = 'Call Faye at (613) 555-0187 or faye.silva@example.com about K1A 0B1.';
 		cy.window().then((win) => {
 			const token = win.localStorage.getItem('token');
@@ -74,8 +75,13 @@ describe(`Privacy panel (${PANEL})`, () => {
 			}).then(({ body }) => {
 				expect(body.choices[0].message.content).to.contain(text);
 			});
-			cy.request(MOCK_CAPTURE).then(({ body }) => {
-				const sent = body.messages.find((m: { role: string }) => m.role === 'user').content;
+			cy.request(MOCK_REQUESTS).then(({ body }) => {
+				const chats = body.filter((r: { path: string }) =>
+					r.path.startsWith('/v1/chat/completions')
+				);
+				const sent = chats[chats.length - 1].body.messages.find(
+					(m: { role: string }) => m.role === 'user'
+				).content;
 				expect(sent).to.not.contain('0187');
 				expect(sent).to.not.contain('faye.silva@example.com');
 				expect(sent).to.not.contain('K1A 0B1');

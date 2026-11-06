@@ -55,7 +55,7 @@ from sage_is_ai.models.knowledge import Knowledges
 from sage_is_ai.models.notes import Notes
 
 from sage_is_ai.retrieval.vector.main import GetResult
-from sage_is_ai.utils.access_control import has_access
+from sage_is_ai.utils.access_control import has_access, note_allows
 
 from sage_is_ai.diagnostics import EndpointUnreachable, endpoint_health
 
@@ -528,6 +528,58 @@ def get_reranking_function(reranking_engine, reranking_model, reranking_function
         return lambda sentences, user=None: reranking_function.predict(sentences)
 
 
+def knowledge_allows(user: UserModel, knowledge_base, access: str = "read") -> bool:
+    """The one rule for a knowledge base: its owner, an admin, or `access` through access_control."""
+    return (
+        user.role == "admin"
+        or knowledge_base.user_id == user.id
+        or has_access(user.id, access, knowledge_base.access_control)
+    )
+
+
+def file_allows(user: UserModel, file, access: str = "read") -> bool:
+    """A file follows its owner, then the knowledge base it sits in (routers/files.py, has_access_to_file)."""
+    if user.role == "admin" or file.user_id == user.id:
+        return True
+    knowledge_id = (file.meta or {}).get("collection_name")
+    knowledge_base = Knowledges.get_knowledge_by_id(knowledge_id) if knowledge_id else None
+    return knowledge_base is not None and knowledge_allows(user, knowledge_base, access)
+
+
+def can_write_collection(user: UserModel, collection_name: str) -> bool:
+    """The write twin of can_read_collection, for indexing (/process/file).
+
+    `file-<id>` follows the file's record and a knowledge base its own, both asked
+    for write. A name with no record is refused: only the knowledge and files
+    routers index, always into one of those two, and a cached web-search
+    collection must not take anyone's chunks (2026-11-02).
+    """
+    if user is None:
+        return False
+    if collection_name.startswith("file-"):
+        file = Files.get_file_by_id(collection_name[len("file-") :])
+        return file is not None and file_allows(user, file, "write")
+    knowledge_base = Knowledges.get_knowledge_by_id(collection_name)
+    return knowledge_base is not None and knowledge_allows(user, knowledge_base, "write")
+
+
+def can_read_collection(user: UserModel, collection_name: str) -> bool:
+    """Whether `user` may search a vector collection, whoever named it.
+
+    `file-<id>` follows the file's record and a knowledge base's id follows its record,
+    so an id carried by a shared chat, an agent or a client model is no key. A name with
+    no record (a URL hash from process_web, a legacy document) has no owner to check and
+    passes as before.
+    """
+    if user is None:
+        return False
+    if collection_name.startswith("file-"):
+        file = Files.get_file_by_id(collection_name[len("file-") :])
+        return file is not None and file_allows(user, file)
+    knowledge_base = Knowledges.get_knowledge_by_id(collection_name)
+    return knowledge_base is None or knowledge_allows(user, knowledge_base)
+
+
 def get_sources_from_items(
     request,
     items,
@@ -579,8 +631,9 @@ def get_sources_from_items(
         elif item.get("type") == "note":
             # Note Attached
             note = Notes.get_note_by_id(item.get("id"))
-
-            if user.role == "admin" or has_access(user.id, "read", note.access_control):
+            # The notes router's rule: the owner reads too, and a missing note
+            # attaches nothing instead of crashing on `None.access_control`.
+            if note_allows(user.id, user.role, note, "read"):
                 # User has access to the note
                 query_result = {
                     "documents": [[note.data.get("content", {}).get("md", "")]],
@@ -613,7 +666,7 @@ def get_sources_from_items(
                     }
                 elif item.get("id"):
                     file_object = Files.get_file_by_id(item.get("id"))
-                    if file_object:
+                    if file_object and file_allows(user, file_object):
                         query_result = {
                             "documents": [[file_object.data.get("content", "")]],
                             "metadatas": [
@@ -641,10 +694,7 @@ def get_sources_from_items(
                 # Manual Full Mode Toggle for Collection
                 knowledge_base = Knowledges.get_knowledge_by_id(item.get("id"))
 
-                if knowledge_base and (
-                    user.role == "admin"
-                    or has_access(user.id, "read", knowledge_base.access_control)
-                ):
+                if knowledge_base and knowledge_allows(user, knowledge_base):
                     file_ids = knowledge_base.data.get("file_ids", [])
 
                     documents = []
@@ -690,8 +740,16 @@ def get_sources_from_items(
         # Fallback to collection names and vector search the collections
         if query_result is None and collection_names:
             collection_names = set(collection_names).difference(extracted_collections)
+            denied = {
+                name for name in collection_names if not can_read_collection(user, name)
+            }
+            if denied:
+                log.warning(
+                    f"user {getattr(user, 'id', None)} may not read collections {sorted(denied)}: skipped"
+                )
+                collection_names = collection_names.difference(denied)
             if not collection_names:
-                log.debug(f"skipping {item} as it has already been extracted")
+                log.debug(f"skipping {item}: already extracted, or not readable")
                 continue
 
             try:

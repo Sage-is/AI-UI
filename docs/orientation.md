@@ -250,6 +250,8 @@ app/cypress/support/surfaces.ts        the surface registry — step one of any 
 app/cypress/e2e/upgrade/route-payload.cy.ts   the payload ledger (measurement, not a gate)
 scripts/gates/                         gates that need a container
 docs/no-build-surface-convention.md    the order of work, steps 0 through 9
+docs/rootstock/research/               the Rootstock's Phase 0 survey: ten notes and edge-cases.md
+app/backend/sage_is_ai/rootstock/      the Rootstock core (Django, from F2) and its budget and ratchet tests
 TODO.md                                the board; every finding lands here
 ```
 

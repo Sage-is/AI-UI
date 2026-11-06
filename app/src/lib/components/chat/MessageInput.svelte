@@ -46,6 +46,7 @@
 		getWeekday
 	} from '$lib/utils';
 	import { uploadFile } from '$lib/apis/files';
+	import { documentReadingReady } from '$lib/utils/documentReading';
 	import { generateAutoCompletion } from '$lib/apis';
 	import { deleteFileById } from '$lib/apis/files';
 	import { getBranding, type Branding } from '$lib/apis/configs';
@@ -559,6 +560,11 @@
 			return null;
 		}
 
+		// Said before the upload starts, not after the wait.
+		if (!(await documentReadingReady($_user?.role === 'admin', (k, o) => $i18n.t(k, o)))) {
+			return null;
+		}
+
 		files = [...files, fileItem];
 
 		if (!$temporaryChatEnabled) {
@@ -585,8 +591,14 @@
 					});
 
 					if (uploadedFile.error) {
+						// The file is kept, but the model cannot read it: say so plainly.
 						console.warn('File upload warning:', uploadedFile.error);
-						toast.warning(uploadedFile.error);
+						toast.error(
+							$i18n.t('{{name}} was uploaded, but its text could not be read: {{error}}', {
+								name: fileItem.name,
+								error: uploadedFile.error
+							})
+						);
 					}
 
 					fileItem.status = 'uploaded';

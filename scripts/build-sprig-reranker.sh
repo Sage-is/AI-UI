@@ -41,7 +41,7 @@ sha256() { if command -v sha256sum >/dev/null; then sha256sum "$1" | cut -d' ' -
 # --- preflight ----------------------------------------------------------------
 # oras runs DOCKERIZED (ORAS_IMG below) — no host install needed.
 for c in docker; do command -v "$c" >/dev/null || { echo "ERROR: $c not on PATH" >&2; exit 1; }; done
-ORAS_IMG="${ORAS_IMG:-ghcr.io/oras-project/oras:v1.2.0}"
+. "$(dirname "${BASH_SOURCE[0]}")/lib/oras.sh"
 [ -f "$LLAMA_BIN" ] || { echo "ERROR: static llama-server not at $LLAMA_BIN (extract it from the sprig-embedding-e5-gguf artifact if /tmp was cleaned)" >&2; exit 1; }
 [ -f "$LLAMA_QUANTIZE" ] || { echo "ERROR: llama-quantize not at $LLAMA_QUANTIZE" >&2; exit 1; }
 mkdir -p "$WORK/gguf" "$WORK/stage"
