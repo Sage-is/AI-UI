@@ -29,6 +29,10 @@ class CommunitySharingStaysOff(unittest.TestCase):
         self.assertIs(self.features()["enable_community_sharing"], False)
         self.assertIs(self.admin.get(ADMIN_CONFIG).json()["ENABLE_COMMUNITY_SHARING"], False)
 
+    def test_the_ui_gets_the_one_hub_address(self):
+        # community.ts reads it; the default is decision 8 in docs/community-hub.md (2026-11-03).
+        self.assertEqual(self.features()["community_hub_url"], "https://community.sage.is")
+
     def test_an_admin_cannot_turn_it_on(self):
         config = self.admin.get(ADMIN_CONFIG).json()
         config["ENABLE_COMMUNITY_SHARING"] = True

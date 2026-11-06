@@ -183,6 +183,23 @@ class SessionTokenExpiryAndCutoff(unittest.TestCase):
         self.assertEqual(r.status, 401, f"a session without iat was accepted: HTTP {r.status} {r.text[:120]}")
 
     @unittest.skipUnless(SECRET, "RS_SECRET_KEY (the box's signing key) is needed to forge a token")
+    def test_api_config_ignores_a_session_cookie_without_iat(self):
+        # /api/config reads the cookie itself, outside get_current_user, so it needs the same
+        # rule; `default_models` appears only in the signed-in config (2026-11-02).
+        user = new_user("user", admin_user=self.admin)
+        now = int(time.time())
+
+        def config(token: str) -> dict:
+            r = call("GET", "/api/config", headers={"Cookie": f"token={token}"})
+            self.assertEqual(r.status, 200, r.text[:120])
+            return r.json()
+
+        self.assertIn("default_models", config(forge({"id": user.id, "iat": now - CLOCK_SKEW, "exp": now + 600})),
+                      "the control cookie must read as signed in; is RS_SECRET_KEY the box's key?")
+        self.assertNotIn("default_models", config(forge({"id": user.id, "exp": now + 600})),
+                         "/api/config served the signed-in config to a session without iat")
+
+    @unittest.skipUnless(SECRET, "RS_SECRET_KEY (the box's signing key) is needed to forge a token")
     def test_the_socket_refuses_a_session_token_without_iat(self):
         user = new_user("user", admin_user=self.admin)
         now = int(time.time())

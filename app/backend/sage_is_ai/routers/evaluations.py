@@ -94,7 +94,7 @@ async def delete_all_feedbacks(user=Depends(get_admin_user)):
 
 
 @router.get("/feedbacks/all/export", response_model=list[FeedbackModel])
-async def get_all_feedbacks(user=Depends(get_admin_user)):  # noqa: F811
+async def export_all_feedbacks(user=Depends(get_admin_user)):
     feedbacks = Feedbacks.get_all_feedbacks()
     return feedbacks
 

@@ -143,6 +143,24 @@ def create_session_token(user_id: str, expires_delta: Union[timedelta, None] = N
     return create_token(claims), expires_at
 
 
+def session_user(user_id: str):
+    """The signed-in user behind a live session token, read once more on a
+    database error. A missing row is None, which the caller answers with 401; a
+    database that will not answer twice is a 503. It used to read as "session
+    expired", sending people to sign in again for a busy database (2026-11-02)."""
+    for attempt in (1, 2):
+        try:
+            return Users.lookup_user_by_id(user_id)
+        except Exception as e:
+            log.warning(
+                f"session user lookup failed (try {attempt} of 2): {type(e).__name__}: {e}"
+            )
+    raise HTTPException(
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        detail="The database is busy; try again in a moment.",
+    )
+
+
 def is_live_session(data: dict, cutoff=0) -> bool:
     """Whether decoded session claims still stand; the API and the socket share it.
 
@@ -277,7 +295,7 @@ def get_current_user(
                 detail="Session reset — please sign in again.",
             )
 
-        user = Users.get_user_by_id(data["id"])
+        user = session_user(data["id"])
         if user is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,

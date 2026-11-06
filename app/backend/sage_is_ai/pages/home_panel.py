@@ -11,7 +11,7 @@ server-rendered surfaces and nowhere else — and the signed-in home screen is
 The consequence is that a grafted interface fragment cannot reach the screen a
 person opens first. This page is the fix, and it is deliberately the SMALL fix:
 a new surface beside the existing ones rather than a conversion of `/`.
-`TODO.md:89` warns that the no-build migration is mid-Phase 2 with the wizard
+`TODO.md` ("Frontend — no-build strangler migration") warned that the no-build migration was mid-Phase 2 with the wizard
 still ahead, and that plan keeps the chat core for last. The signed-in `/` IS
 the chat core. Taking it here would invert the sequencing on the hardest surface
 in the product.

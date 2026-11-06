@@ -29,7 +29,7 @@ from sage_is_ai.utils.auth import decode_token, is_live_session
 from sage_is_ai.socket.utils import RedisDict, RedisLock, YdocManager
 from sage_is_ai.tasks import create_task, stop_item_tasks
 from sage_is_ai.utils.redis import get_redis_connection
-from sage_is_ai.utils.access_control import has_access
+from sage_is_ai.utils.access_control import note_allows
 
 
 from sage_is_ai.env import (
@@ -339,16 +339,8 @@ async def join_note(sid, data):
         return
 
     note = Notes.get_note_by_id(data["note_id"])
-    if not note:
-        log.error(f"Note {data['note_id']} not found for user {user.id}")
-        return
-
-    if (
-        user.role != "admin"
-        and user.id != note.user_id
-        and not has_access(user.id, type="read", access_control=note.access_control)
-    ):
-        log.error(f"User {user.id} does not have access to note {data['note_id']}")
+    if not note_allows(user.id, user.role, note, "read"):
+        log.error(f"User {user.id} may not read note {data['note_id']}")
         return
 
     log.debug(f"Joining note {note.id} for user {user.id}")
@@ -391,24 +383,9 @@ async def ydoc_document_join(sid, data):
     try:
         document_id = data["document_id"]
 
-        if document_id.startswith("note:"):
-            note_id = document_id.split(":")[1]
-            note = Notes.get_note_by_id(note_id)
-            if not note:
-                log.error(f"Note {note_id} not found")
-                return
-
-            if (
-                user.get("role") != "admin"
-                and user.get("id") != note.user_id
-                and not has_access(
-                    user.get("id"), type="read", access_control=note.access_control
-                )
-            ):
-                log.error(
-                    f"User {user.get('id')} does not have access to note {note_id}"
-                )
-                return
+        if document_id.startswith("note:") and not note_access(user, document_id, "read"):
+            log.error(f"Session {sid} may not read {document_id}")
+            return
 
         user_id = data.get("user_id", sid)
         user_name = data.get("user_name", "Anonymous")
@@ -460,25 +437,20 @@ async def ydoc_document_join(sid, data):
         await sio.emit("error", {"message": "Failed to join document"}, room=sid)
 
 
+def note_access(user, document_id: str, access: str) -> bool:
+    """`note_allows` for a socket's session user (a dict) and a `note:` document.
+    The join asks for read, the live update and the save for write, so a reader
+    can watch a note but never change it (2026-11-02; the save asked for read)."""
+    note = Notes.get_note_by_id(document_id.split(":", 1)[1])
+    return bool(user) and note_allows(user.get("id"), user.get("role"), note, access)
+
+
 async def document_save_handler(document_id, data, user):
     if document_id.startswith("note:"):
-        note_id = document_id.split(":")[1]
-        note = Notes.get_note_by_id(note_id)
-        if not note:
-            log.error(f"Note {note_id} not found")
+        if not note_access(user, document_id, "write"):
+            log.error(f"User {user and user.get('id')} may not write {document_id}")
             return
-
-        if (
-            user.get("role") != "admin"
-            and user.get("id") != note.user_id
-            and not has_access(
-                user.get("id"), type="read", access_control=note.access_control
-            )
-        ):
-            log.error(f"User {user.get('id')} does not have access to note {note_id}")
-            return
-
-        Notes.update_note_by_id(note_id, NoteUpdateForm(data=data))
+        Notes.update_note_by_id(document_id.split(":", 1)[1], NoteUpdateForm(data=data))
 
 
 @sio.on("ydoc:document:state")
@@ -538,6 +510,11 @@ async def yjs_document_update(sid, data):
             log.warning(f"Session {sid} is not signed in; dropping its update to {document_id}")
             return
         user_id = session_user["id"]
+        # A reader joined to watch: its update is neither kept nor broadcast, or
+        # it would land in every writer's editor and their next save.
+        if document_id.startswith("note:") and not note_access(session_user, document_id, "write"):
+            log.warning(f"User {user_id} may not write {document_id}; dropping its update")
+            return
 
         update = data["update"]  # List of bytes from frontend
 

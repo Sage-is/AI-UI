@@ -28,25 +28,37 @@ TRISTATE = (("default", "instance default"), ("on", "on"), ("off", "off"))
 
 
 def _connections(request: Request, cfg: dict) -> list[dict]:
-    urls = list(request.app.state.config.OPENAI_API_BASE_URLS or [])
-    configs = request.app.state.config.OPENAI_API_CONFIGS or {}
+    """Every connection the filter can cover, keyed as hooks.connection_key keys
+    a model: OpenAI-style by index, Ollama as `ollama:<index>`, and one row for
+    people's own direct connections (2026-11-03)."""
+    state = request.app.state.config
     flags = cfg.get("connections") or {}
+
+    def row(key, name, url, enabled, external):
+        flag = flags.get(key)
+        return {
+            "key": key,
+            "name": name,
+            "url": url,
+            "enabled": enabled,
+            "state": "default" if flag is None else ("on" if flag else "off"),
+            "effective": hooks.connection_filtered(cfg, flag, external),
+        }
+
     rows = []
-    for idx, url in enumerate(urls):
-        api_config = configs.get(str(idx), {}) or {}
-        flag = flags.get(str(idx))
-        rows.append(
-            {
-                "key": str(idx),
-                "name": api_config.get("name") or url,
-                "url": url,
-                "enabled": api_config.get("enable", True),
-                "state": "default" if flag is None else ("on" if flag else "off"),
-                "effective": bool(
-                    cfg.get("default_external") if flag is None else flag
-                ),
-            }
-        )
+    openai_configs = state.OPENAI_API_CONFIGS or {}
+    for idx, url in enumerate(state.OPENAI_API_BASE_URLS or []):
+        c = openai_configs.get(str(idx), {}) or {}
+        external = c.get("connection_type", "external") != "local"
+        rows.append(row(str(idx), c.get("name") or url, url, c.get("enable", True), external))
+    ollama_configs = getattr(state, "OLLAMA_API_CONFIGS", None) or {}
+    for idx, url in enumerate(getattr(state, "OLLAMA_BASE_URLS", None) or []):
+        c = ollama_configs.get(str(idx), ollama_configs.get(url, {})) or {}  # url: legacy key
+        external = c.get("connection_type", "local") != "local"
+        name = f"Ollama: {c.get('name') or url}"
+        rows.append(row(f"ollama:{idx}", name, url, c.get("enable", True), external))
+    if getattr(state, "ENABLE_DIRECT_CONNECTIONS", False):
+        rows.append(row("direct", "People's own direct connections", "", True, True))
     return rows
 
 

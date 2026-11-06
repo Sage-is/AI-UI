@@ -496,12 +496,42 @@ def _check_dev_reloader() -> dict:
     )
 
 
+def _check_community_sharing() -> dict:
+    """Community sharing is forced off at boot until the sharing site exists
+    (config.py), so the admin switch cannot turn it on. Say so where an admin
+    looks, not only in the boot log (2026-11-02)."""
+    return _row("ok", "diagnostics.summary.community_sharing.off")
+
+
+def _check_vector_db() -> dict:
+    """Is the vector database client running in this process?
+
+    Without it every knowledge base answered 200 with zero hits, which reads as
+    "nothing matched" rather than "search is off" (sage.startr.cloud,
+    2026-10-20). The routes answer 503 now; this row says so where an admin
+    looks (2026-11-05)."""
+    from sage_is_ai.config import VECTOR_DB
+    from sage_is_ai.retrieval.vector import factory
+
+    technical = {"vector_db": VECTOR_DB, "client": factory.VECTOR_DB_CLIENT is not None}
+    if technical["client"]:
+        return _row("ok", "diagnostics.summary.vector_db.ok", technical=technical)
+    return _row(
+        "degraded",
+        "diagnostics.summary.vector_db.degraded",
+        issue_type="vector_db_off",
+        technical=technical,
+    )
+
+
 def _boot_status_section() -> dict:
     return {
         "data_dir_writable": _check_data_dir_writable(),
         "secret_key_persisted": _check_webui_secret_key(),
         "alembic_head": _check_alembic_head(),
         "dev_reloader": _check_dev_reloader(),
+        "community_sharing": _check_community_sharing(),
+        "vector_db": _check_vector_db(),
     }
 
 

@@ -1,5 +1,7 @@
+import logging
 from typing import Optional
 
+from sage_is_ai.env import SRC_LOG_LEVELS
 from sage_is_ai.models.models import (
     ModelForm,
     ModelModel,
@@ -19,7 +21,25 @@ from sage_is_ai.utils.access_control import (
 )
 
 
+log = logging.getLogger(__name__)
+log.setLevel(SRC_LOG_LEVELS["MODELS"])
+
 router = APIRouter()
+
+
+async def _reindex(request: Request, user) -> None:
+    """Rebuild app.state.MODELS after a write. The chat path finds a model only
+    there, so a model made through this API answered "Model not found" until
+    someone listed models (2026-11-02). Cheap: the base-models cache spares the
+    provider probes. Every write route below ends here."""
+    from sage_is_ai.utils.models import get_all_models  # lazy, as spaces.py does
+
+    try:
+        await get_all_models(request, user=user)
+    except Exception as e:  # the write landed; a stale index must not fail it
+        log.warning(
+            f"model index refresh failed after a write: {type(e).__name__}: {e}"
+        )
 
 
 ###########################
@@ -83,6 +103,7 @@ async def create_new_model(
     else:
         model = Models.insert_new_model(form_data, user.id)
         if model:
+            await _reindex(request, user)
             return model
         else:
             raise HTTPException(
@@ -120,7 +141,9 @@ async def get_model_by_id(id: str, user=Depends(get_verified_user)):
 
 
 @router.post("/model/toggle", response_model=Optional[ModelResponse])
-async def toggle_model_by_id(id: str, user=Depends(get_verified_user)):
+async def toggle_model_by_id(
+    request: Request, id: str, user=Depends(get_verified_user)
+):
     model = Models.get_model_by_id(id)
     if model:
         if (
@@ -131,6 +154,7 @@ async def toggle_model_by_id(id: str, user=Depends(get_verified_user)):
             model = Models.toggle_model_by_id(id)
 
             if model:
+                await _reindex(request, user)
                 return model
             else:
                 raise HTTPException(
@@ -156,6 +180,7 @@ async def toggle_model_by_id(id: str, user=Depends(get_verified_user)):
 
 @router.post("/model/update", response_model=Optional[ModelModel])
 async def update_model_by_id(
+    request: Request,
     id: str,
     form_data: ModelForm,
     user=Depends(get_verified_user),
@@ -179,6 +204,7 @@ async def update_model_by_id(
         )
 
     model = Models.update_model_by_id(id, form_data)
+    await _reindex(request, user)
     return model
 
 
@@ -188,7 +214,9 @@ async def update_model_by_id(
 
 
 @router.delete("/model/delete", response_model=bool)
-async def delete_model_by_id(id: str, user=Depends(get_verified_user)):
+async def delete_model_by_id(
+    request: Request, id: str, user=Depends(get_verified_user)
+):
     model = Models.get_model_by_id(id)
     if not model:
         raise HTTPException(
@@ -207,10 +235,12 @@ async def delete_model_by_id(id: str, user=Depends(get_verified_user)):
         )
 
     result = Models.delete_model_by_id(id)
+    await _reindex(request, user)
     return result
 
 
 @router.delete("/delete/all", response_model=bool)
-async def delete_all_models(user=Depends(get_admin_user)):
+async def delete_all_models(request: Request, user=Depends(get_admin_user)):
     result = Models.delete_all_models()
+    await _reindex(request, user)
     return result

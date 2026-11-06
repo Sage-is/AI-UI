@@ -287,6 +287,7 @@ from sage_is_ai.config import (
     ENABLE_SPACES,
     ENABLE_NOTES,
     ENABLE_COMMUNITY_SHARING,
+    COMMUNITY_HUB_URL,
     ENABLE_MESSAGE_RATING,
     ENABLE_USER_WEBHOOKS,
     ENABLE_EVALUATION_ARENA_MODELS,
@@ -399,6 +400,7 @@ from sage_is_ai.env import (
     INSTANCE_ID,
     WEBUI_BUILD_HASH,
     DEV_MODE,
+    SAGE_RUNTIME,
     WEBUI_SECRET_KEY,
     WEBUI_SESSION_COOKIE_SAME_SITE,
     WEBUI_SESSION_COOKIE_SECURE,
@@ -441,6 +443,7 @@ from sage_is_ai.utils.auth import (
     decode_token,
     get_admin_user,
     get_verified_user,
+    is_live_session,
 )
 from sage_is_ai.utils.plugin import install_tool_and_function_dependencies
 from sage_is_ai.utils.oauth import OAuthManager
@@ -947,6 +950,7 @@ app.state.config.BRIDGE_AUTO_CREATE_USERS = BRIDGE_AUTO_CREATE_USERS
 app.state.config.BRIDGE_DEFAULT_USER_ROLE = BRIDGE_DEFAULT_USER_ROLE
 app.state.config.BRIDGE_RATE_LIMIT_PER_MINUTE = BRIDGE_RATE_LIMIT_PER_MINUTE
 app.state.config.ENABLE_COMMUNITY_SHARING = ENABLE_COMMUNITY_SHARING
+app.state.config.COMMUNITY_HUB_URL = COMMUNITY_HUB_URL
 app.state.config.ENABLE_MESSAGE_RATING = ENABLE_MESSAGE_RATING
 app.state.config.ENABLE_USER_WEBHOOKS = ENABLE_USER_WEBHOOKS
 
@@ -1113,7 +1117,7 @@ app.state.config.YOUTUBE_LOADER_PROXY_URL = YOUTUBE_LOADER_PROXY_URL
 def _embedding_not_ready(*args, **kwargs):
     raise HTTPException(
         status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-        detail="Embedding model not yet loaded. Complete setup wizard to download.",
+        detail="Document search is not set up yet: an admin grafts an embedding Sprig™ in Admin → Sprigs.",
     )
 
 
@@ -1953,7 +1957,10 @@ async def get_app_config(request: Request):
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid token",
             )
-        if data is not None and "id" in data:
+        # The session rules get_current_user and the socket apply: a dead session
+        # reads as signed out here instead of earning the signed-in config.
+        cutoff = app.state.config.TRY_SAGE_SESSIONS_INVALIDATED_AT
+        if data is not None and "id" in data and is_live_session(data, cutoff):
             user = Users.get_user_by_id(data["id"])
 
     user_count = Users.get_num_users()
@@ -2000,6 +2007,7 @@ async def get_app_config(request: Request):
                     "enable_image_generation": app.state.config.ENABLE_IMAGE_GENERATION,
                     "enable_autocomplete_generation": app.state.config.ENABLE_AUTOCOMPLETE_GENERATION,
                     "enable_community_sharing": app.state.config.ENABLE_COMMUNITY_SHARING,
+                    "community_hub_url": app.state.config.COMMUNITY_HUB_URL,
                     "enable_message_rating": app.state.config.ENABLE_MESSAGE_RATING,
                     "enable_user_webhooks": app.state.config.ENABLE_USER_WEBHOOKS,
                     "enable_admin_export": ENABLE_ADMIN_EXPORT,
@@ -2092,6 +2100,7 @@ async def get_app_config(request: Request):
                 **(
                     {
                         "active_entries": app.state.USER_COUNT,
+                        "sage_runtime": SAGE_RUNTIME,
                     }
                     if user.role == "admin"
                     else {}

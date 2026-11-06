@@ -44,7 +44,7 @@
   </form>
 
   <h2 style="--size:.8rem; --weight:600; --m:1.25rem 0 .4rem">{{ people_label }} ({{ people | length }})</h2>
-  <ul data-cy="users-list" style="--p:0; --list-style:none; --maxh:10rem; --ofy:auto">
+  <ul data-cy="users-list" style="--p:0; --lis:none; --maxh:10rem; --ofy:auto">
     {% for person in people %}
     <li data-cy="users-row" style="--d:flex; --jc:space-between; --ai:center; --p:.3rem .5rem; --br:.35rem; outline:1px solid var(--line); --m:0 0 .25rem; --size:.75rem">
       <span>{{ person.name }} <span style="--op:.65">{{ person.email }}</span></span>

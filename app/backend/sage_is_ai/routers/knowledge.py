@@ -388,12 +388,15 @@ async def add_file_to_knowledge_by_id(
         )
 
     # Add content to the vector database
+    require_vector_db()
     try:
         await process_file(
             request,
             ProcessFileForm(file_id=form_data.file_id, collection_name=id),
             user=user,
         )
+    except HTTPException:
+        raise  # a deliberate status, such as a missing Sprig's 503, keeps its code and words
     except Exception as e:
         log.debug(e)
         raise HTTPException(

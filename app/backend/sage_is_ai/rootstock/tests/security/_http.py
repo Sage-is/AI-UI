@@ -102,6 +102,21 @@ def connect_mock(admin_user: User) -> None:
         raise RuntimeError("mock-echo is not in /api/models; is rs-mock running on sage-network?")
 
 
+def connect_mock_tools(admin_user: User) -> dict:
+    """Make the mock's OpenAPI `echo` the box's one tool server, `server:0`.
+    Returns the tool-server config it replaced, for the caller to put back."""
+    before = admin_user.get("/api/v1/configs/tool_servers").json()
+    r = admin_user.post("/api/v1/configs/tool_servers", {"TOOL_SERVER_CONNECTIONS": [{
+        "url": MOCK_INTERNAL.removesuffix("/v1"), "path": "openapi.json", "auth_type": "bearer",
+        "key": "", "config": {"enable": True, "access_control": None}}]})
+    if r.status != 200:
+        raise RuntimeError(f"connecting the mock's tools failed: HTTP {r.status} {r.text[:200]}")
+    # A server the box could not read is skipped silently, so check it loaded.
+    if not any(t.get("id") == "server:0" for t in admin_user.get("/api/v1/tools/").json() or []):
+        raise RuntimeError("server:0 is not in /api/v1/tools/; is rs-mock running on sage-network?")
+    return before
+
+
 def mock_requests() -> list:
     """Every request the mock provider has seen since the last mock_forget()."""
     req = urllib.request.Request(MOCK_URL + "/_requests", headers={"User-Agent": "sage-rootstock-security-tests"})

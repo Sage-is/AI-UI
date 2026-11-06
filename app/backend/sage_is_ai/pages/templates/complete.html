@@ -8,7 +8,7 @@
 <section data-cy="complete-panel" data-users="{{ counts.users }}"
          data-features="{{ counts.features }}" data-ready="{{ counts.ready }}">
   <p style="--size:.9rem">{{ ready_text }}</p>
-  <ul style="--p:0; --list-style:none; --m:1rem 0">
+  <ul style="--p:0; --lis:none; --m:1rem 0">
     {% for line in lines %}
     <li data-check="{{ line.key }}" style="--d:flex; --ai:center; --g:.5rem; --size:.85rem; --m:0 0 .35rem">
       <span style="--fs:0" aria-hidden="true">{% if line.ok %}&check;{% else %}&circlearrowright;{% endif %}</span>

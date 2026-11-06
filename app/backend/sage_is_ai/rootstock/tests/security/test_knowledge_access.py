@@ -32,8 +32,10 @@ PASSPHRASE = "zebraquilt lanternorchard"
 PRIVATE = {"read": {"group_ids": [], "user_ids": []}, "write": {"group_ids": [], "user_ids": []}}
 
 
-def upload_text(user: User, text: str, name: str = "note.txt"):
-    """A multipart upload of one small text file; returns the file record."""
+def upload_text(user: User, text: str, name: str = "note.txt", *, processed: bool = True):
+    """A multipart upload of one small text file; returns the file record. With
+    `processed=False` a record whose extraction failed (no document reading on
+    the box) is fine: some tests need only the file's id."""
     boundary = f"----rs{uuid.uuid4().hex}"
     body = (
         f"--{boundary}\r\nContent-Disposition: form-data; name=\"file\"; filename=\"{name}\"\r\n"
@@ -41,7 +43,7 @@ def upload_text(user: User, text: str, name: str = "note.txt"):
     ).encode()
     r = call("POST", "/api/v1/files/", user.token, raw=body,
              headers={"Content-Type": f"multipart/form-data; boundary={boundary}"}, timeout=180)
-    if r.status != 200 or (r.json() or {}).get("error"):
+    if r.status != 200 or (processed and (r.json() or {}).get("error")):
         raise RuntimeError(f"upload failed: HTTP {r.status} {r.text[:300]}")
     return r.json()
 

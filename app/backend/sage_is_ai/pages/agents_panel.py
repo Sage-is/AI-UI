@@ -333,7 +333,7 @@ async def render_agents(
         community=bool(
             getattr(request.app.state.config, "ENABLE_COMMUNITY_SHARING", False)
         ),
-        community_url="https://sage.is/community",
+        community_url=request.app.state.config.COMMUNITY_HUB_URL,
         community_heading=_("Sage.is AI Community"),
         community_label=_("Discover your next agent"),
         share_label=_("Share"),
@@ -378,11 +378,11 @@ async def run_action(request: Request, user, agent_id: str, verb: str) -> str:
     _ = translator(request)
 
     async def _toggle():
-        await toggle_model_by_id(id=agent_id, user=user)
+        await toggle_model_by_id(request=request, id=agent_id, user=user)
         return ""
 
     async def _delete():
-        await delete_model_by_id(id=agent_id, user=user)
+        await delete_model_by_id(request=request, id=agent_id, user=user)
         return _("Deleted {{name}}", {"name": agent_id})
 
     async def _form():

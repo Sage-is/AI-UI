@@ -32,6 +32,7 @@ from sage_is_ai.utils.access_control import (
     has_access,
     has_facilitator_access,
     get_users_with_access,
+    is_restricted,
 )
 from sage_is_ai.utils.webhook import post_webhook
 
@@ -312,6 +313,40 @@ async def send_notification(name, webui_url, space, message, active_user_ids):
                     )
 
 
+async def _agent_model(request, model_id, user):
+    """The agent's model row, loading AI-UI's model list first when it lacks the row.
+
+    The list loads once and is kept: on a cold start it is empty, and an agent
+    model made since it loaded is missing from it. Either way the agent would
+    stay silent, so one reload comes first.
+    """
+    models = request.app.state.MODELS or {}
+    if model_id and model_id not in models:
+        from sage_is_ai.utils.models import get_all_models
+
+        await get_all_models(request, user=user)
+        models = request.app.state.MODELS or {}
+    return models.get(model_id) if model_id else None
+
+
+def _may_use(user, model) -> bool:
+    """Whether this member may use the agent's model: the rule a direct chat applies.
+
+    An agent reply runs under the access of the member who mentioned the agent
+    (Alexander, 2026-11-03). It used to pass bypass_filter, so any member could
+    reach a model, and the tool-server key behind it, they could not chat with.
+    """
+    from sage_is_ai.utils.models import check_model_access
+
+    if not is_restricted(user):
+        return True
+    try:
+        check_model_access(user, model)
+    except Exception:
+        return False
+    return True
+
+
 async def generate_agent_response(
     request, space, trigger_message, agent_config, trigger_user
 ):
@@ -320,17 +355,17 @@ async def generate_agent_response(
         app = request.app
         model_id = agent_config.get("model_id")
 
-        # Ensure models are loaded (may be empty on cold start)
-        if not app.state.MODELS:
-            from sage_is_ai.utils.models import get_all_models
-
-            await get_all_models(request, user=trigger_user)
-
-        if not model_id or model_id not in app.state.MODELS:
+        model = await _agent_model(request, model_id, trigger_user)
+        if model is None:
             log.warning(f"Agent model '{model_id}' not found in MODELS")
             return
-
-        model = app.state.MODELS[model_id]
+        # Before anything runs: the payload pipeline below can call the agent's
+        # tool servers ahead of the completion's own access check.
+        if not _may_use(trigger_user, model):
+            log.info(
+                f"Agent '{model_id}' stays silent: {trigger_user.id} may not use it"
+            )
+            return
         agent_name = agent_config.get("name", model.get("name", "Agent"))
         agent_profile_image = agent_config.get(
             "profile_image_url",
@@ -409,9 +444,7 @@ async def generate_agent_response(
         form_data, metadata, _events = await process_chat_payload(
             request, form_data, trigger_user, metadata, model
         )
-        response = await generate_chat_completion(
-            request, form_data, user=trigger_user, bypass_filter=True
-        )
+        response = await generate_chat_completion(request, form_data, user=trigger_user)
 
         # Extract response content
         if isinstance(response, dict):

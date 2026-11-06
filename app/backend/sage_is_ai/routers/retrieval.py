@@ -60,8 +60,8 @@ def _require_text_splitters():
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail=(
-                    "Document chunking requires the rag-loaders Sprig™ — "
-                    "graft it in Admin → Sprigs."
+                    "Document reading is not set up yet: an admin grafts the "
+                    "rag-loaders Sprig™ in Admin → Sprigs."
                 ),
             )
         RecursiveCharacterTextSplitter, TokenTextSplitter = _rc, _tk
@@ -87,6 +87,8 @@ from sage_is_ai.retrieval.web.utils import get_web_loader
 
 from sage_is_ai.retrieval.utils import (
     can_read_collection,
+    can_write_collection,
+    file_allows,
     get_embedding_function,
     get_reranking_function,
     get_model_path,
@@ -425,20 +427,57 @@ async def update_embedding_config(
 ##########################################
 
 
-@router.get("/models/status")
-async def get_models_status(request: Request, user=Depends(get_admin_user)):
+def _embedding_ready(app) -> bool:
+    return app.state.ef is not None or app.state.config.RAG_EMBEDDING_ENGINE in [
+        "openai",
+        "ollama",
+        "azure_openai",
+        "chroma",
+    ]
+
+
+def _vector_db_ready() -> bool:
     from sage_is_ai.retrieval.vector.factory import VECTOR_DB_CLIENT
 
+    return VECTOR_DB_CLIENT is not None
+
+
+def _text_splitters_ready() -> bool:
+    try:
+        _require_text_splitters()
+    except HTTPException:
+        return False
+    return True
+
+
+@router.get("/models/status")
+async def get_models_status(request: Request, user=Depends(get_admin_user)):
     return {
         "status": True,
         "models": request.app.state.MODEL_DOWNLOAD_STATUS,
         "embedding_model": request.app.state.config.RAG_EMBEDDING_MODEL,
         "embedding_engine": request.app.state.config.RAG_EMBEDDING_ENGINE,
-        "embedding_ready": request.app.state.ef is not None
-        or request.app.state.config.RAG_EMBEDDING_ENGINE
-        in ["openai", "ollama", "azure_openai", "chroma"],
-        "vector_db_ready": VECTOR_DB_CLIENT is not None,
+        "embedding_ready": _embedding_ready(request.app),
+        "vector_db_ready": _vector_db_ready(),
     }
+
+
+@router.get("/readiness")
+async def get_document_readiness(request: Request, user=Depends(get_verified_user)):
+    """Whether this box can read a document now, for any signed-in user.
+
+    The composer and the knowledge page ask before an upload starts, so a missing
+    Sprig is said at once; an upload used to answer 200 with nothing extracted and
+    say why only after the wait (card "An upload starts before anyone checks that
+    the box can read it", 2026-11-03). It names what is missing, never settings.
+    With retrieval bypassed, only the loaders are needed.
+    """
+    checks = {"document loaders": _text_splitters_ready()}
+    if not request.app.state.config.BYPASS_EMBEDDING_AND_RETRIEVAL:
+        checks["embedding model"] = _embedding_ready(request.app)
+        checks["vector store"] = _vector_db_ready()
+    missing = [name for name, ok in checks.items() if not ok]
+    return {"ready": not missing, "missing": missing}
 
 
 class ModelDownloadForm(BaseModel):
@@ -1434,14 +1473,22 @@ async def process_file(
     form_data: ProcessFileForm,
     user=Depends(get_verified_user),
 ):
+    # The write twin of F0's read check, before the `try` turns any refusal into
+    # a 400: a collection the caller may write, and, when it is not the file's
+    # own, a file the caller may read, or anyone could copy a stranger's file
+    # into their own knowledge base.
+    file = Files.get_file_by_id(form_data.file_id)
+    collection_name = form_data.collection_name or (f"file-{file.id}" if file else "")
+    if not (
+        file
+        and can_write_collection(user, collection_name)
+        and (collection_name == f"file-{file.id}" or file_allows(user, file))
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=ERROR_MESSAGES.ACCESS_PROHIBITED,
+        )
     try:
-        file = Files.get_file_by_id(form_data.file_id)
-
-        collection_name = form_data.collection_name
-
-        if collection_name is None:
-            collection_name = f"file-{file.id}"
-
         if form_data.content:
             # Update the content in the file
             # Usage: /files/{file_id}/data/content/update, /files/ (audio file upload pipeline)
@@ -1659,6 +1706,8 @@ async def process_file(
         # turned an embedding-endpoint outage into a misleading
         # `400: 'NoneType' object is not iterable` for the operator.
         raise
+    except HTTPException:
+        raise  # a deliberate status, such as a missing Sprig's 503, keeps its code and words
     except Exception as e:
         log.exception(e)
         if "No pandoc was found" in str(e):
@@ -1748,6 +1797,8 @@ def process_youtube_video(
                 },
             },
         }
+    except HTTPException:
+        raise  # a deliberate status, such as a missing Sprig's 503, keeps its code and words
     except Exception as e:
         log.exception(e)
         raise HTTPException(
@@ -1796,6 +1847,8 @@ def process_web(
                 },
             },
         }
+    except HTTPException:
+        raise  # a deliberate status, such as a missing Sprig's 503, keeps its code and words
     except Exception as e:
         log.exception(e)
         raise HTTPException(
@@ -1824,6 +1877,7 @@ def query_doc_handler(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=ERROR_MESSAGES.ACCESS_PROHIBITED,
         )
+    factory.require_vector_db()
     try:
         if request.app.state.config.ENABLE_RAG_HYBRID_SEARCH:
             collection_results = {}
@@ -1872,6 +1926,8 @@ def query_doc_handler(
                 k=form_data.k if form_data.k else request.app.state.config.TOP_K,
                 user=user,
             )
+    except HTTPException:
+        raise  # a deliberate status, such as a missing Sprig's 503, keeps its code and words
     except Exception as e:
         log.exception(e)
         raise HTTPException(
@@ -1901,6 +1957,9 @@ def query_collection_handler(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=ERROR_MESSAGES.ACCESS_PROHIBITED,
         )
+    # query_collection swallows a missing client and answers 200 with no hits,
+    # which reads as "nothing matched" instead of "search is off".
+    factory.require_vector_db()
     try:
         if request.app.state.config.ENABLE_RAG_HYBRID_SEARCH:
             return query_collection_with_hybrid_search(
@@ -1946,6 +2005,8 @@ def query_collection_handler(
                 k=form_data.k if form_data.k else request.app.state.config.TOP_K,
             )
 
+    except HTTPException:
+        raise  # a deliberate status, such as a missing Sprig's 503, keeps its code and words
     except Exception as e:
         log.exception(e)
         raise HTTPException(
