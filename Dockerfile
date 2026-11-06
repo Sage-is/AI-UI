@@ -121,16 +121,18 @@ RUN python -m pip uninstall -y -q setuptools wheel && python -m pip uninstall -y
 # runs unchanged and the bash entrypoint keeps working. Python 3.11 via apk.
 # Digest-pinned against a rolling :latest, so treat every bump as a release:
 #   docker buildx imagetools inspect cgr.dev/chainguard/wolfi-base:latest
-# Pinned: latest as of 2026-10-24 (multi-arch index, amd64+arm64), bumped so the
-# apk layer rebuilds with ca-certificates 20260909-r3: trivy flagged the r2 the
-# 2026-10-14 pin cached (CVE-2026-111943, HIGH). That pin had replaced the
+# Pinned: latest as of 2026-11-05 (multi-arch index, amd64+arm64), bumped so the
+# apk layer rebuilds past three HIGH trivy findings the 2026-10-24 pin cached
+# (libexpat1 and py3-pip-wheel, all fixed upstream). The 2026-10-24 pin had
+# brought ca-certificates 20260909-r3 over the r2 the 2026-10-14 pin cached
+# (CVE-2026-111943, HIGH). That pin had replaced the
 # 2026-09-25 one because a stale base pairs its old crypto libraries with
 # whatever python-3.11 apk serves today: on 2026-10-07 that Python lost sha224.
 # Before that, the 2026-07-02 pin (glibc 2.43) installed a Python whose math
 # module could not load, and the image built fine and died at boot. The import
 # check below fails the build on both.
 # =============================================================================
-FROM cgr.dev/chainguard/wolfi-base@sha256:360896efb0753a5701c48f860e17130c205eae5a264797aa3e7ea126ee2923a7 AS runtime
+FROM cgr.dev/chainguard/wolfi-base@sha256:8acb3a7694eda954b3ad4256aec3291bdd92715d7a8c030abd1a21546337b4e4 AS runtime
 
 ARG USE_CUDA
 ARG USE_OLLAMA
@@ -204,8 +206,8 @@ RUN printf 'import sys, os\nfor _p in ("/usr/local/lib/python3.11/site-packages"
 # Install `uv` for the runtime ML wizard install. Copied from Astral's
 # official image, pinned by its multi-arch index digest (linux/amd64 +
 # linux/arm64), so no curl installer runs and a moved tag cannot change the
-# binary. Keep this in step with the host uv that compiles
-# app/backend/requirements-ml.lock. To bump: read the release's breaking
+# binary. `make ml_lock` compiles app/backend/requirements-ml.lock with this
+# same uv, inside the image. To bump: read the release's breaking
 # changes when crossing a 0.N.0 line, then
 #   docker buildx imagetools inspect ghcr.io/astral-sh/uv:<version>   # index digest
 #   gh attestation verify oci://ghcr.io/astral-sh/uv:<version>@<digest> --owner astral-sh
