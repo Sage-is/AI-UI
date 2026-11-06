@@ -60,8 +60,17 @@ amd64() {
   # fails 20 minutes in (2026-10-24). No buildx yet is the buildx preflight's to
   # report, and a builder that answers nothing is left to the build itself.
   docker buildx version >/dev/null 2>&1 || return 0
-  local platforms
-  platforms="$(docker buildx inspect 2>/dev/null | sed -n 's/^Platforms: *//p' || true)"
+  local info driver platforms
+  info="$(docker buildx inspect 2>/dev/null || true)"
+  # dockerd's own builder (driver docker) on a Rosetta VM builds amd64 through
+  # binfmt but never lists it: buildkit's amd64 probe fails under Rosetta
+  # (2026-11-06). A docker-container builder with no amd64 runs it under its
+  # bundled QEMU, where esbuild dies; that one still stops.
+  driver="$(printf '%s\n' "$info" | sed -n 's/^Driver: *//p')"
+  if [ "${driver%%$'\n'*}" = docker ] && grep -qs '^rosetta: true' "$(colima_yaml "$(socket)")"; then
+    return 0
+  fi
+  platforms="$(printf '%s\n' "$info" | sed -n 's/^Platforms: *//p')"
   case "$platforms" in
     "" | *linux/amd64*) return 0 ;;
   esac
