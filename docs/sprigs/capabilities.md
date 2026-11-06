@@ -40,7 +40,7 @@ Derived from `app/backend/sage_is_ai/sprigs/supervisor.py`, `app/backend/sage_is
 | `calendar` | 1 | nothing — the capability is enabled, then wired | n/a — no process | n/a — nothing to reverse |
 | `code` | 1 | nothing — delivery only | n/a — no process | n/a — nothing to reverse |
 | `dev` | 1 | nothing — delivery only | n/a — no process | n/a — nothing to reverse |
-| `docling` | 1 | `CONTENT_EXTRACTION_ENGINE`, `DOCLING_SERVER_URL` | yes | **no** |
+| `docling` | 1 | `CONTENT_EXTRACTION_ENGINE`, `DOCLING_SERVER_URL` | yes | yes |
 | `embedding` | 5 | `RAG_EMBEDDING_ENGINE`, `RAG_EMBEDDING_MODEL`, `RAG_OPENAI_API_BASE_URL`, `RAG_OPENAI_API_KEY` | yes | yes |
 | `export` | 1 | nothing — delivery only | n/a — no process | n/a — nothing to reverse |
 | `media` | 1 | nothing — delivery only | n/a — no process | n/a — nothing to reverse |
@@ -48,9 +48,9 @@ Derived from `app/backend/sage_is_ai/sprigs/supervisor.py`, `app/backend/sage_is
 | `reranker` | 1 | `RAG_EXTERNAL_RERANKER_API_KEY`, `RAG_EXTERNAL_RERANKER_URL`, `RAG_RERANKING_ENGINE`, `RAG_RERANKING_MODEL` | yes | yes |
 | `stt` | 1 | `STT_ENGINE`, `STT_MODEL`, `STT_OPENAI_API_BASE_URL`, `STT_OPENAI_API_KEY` | yes | yes |
 | `theme` | 2 | `SPRIG_ACTIVE_THEME` | n/a — no process | yes |
-| `tika` | 1 | `CONTENT_EXTRACTION_ENGINE`, `TIKA_SERVER_URL` | yes | **no** |
+| `tika` | 1 | `CONTENT_EXTRACTION_ENGINE`, `TIKA_SERVER_URL` | yes | yes |
 | `ui` | 1 | `SPRIG_ACTIVE_UI` | n/a — no process | yes |
-| `vector` | 1 | nothing — delivery only | n/a — no process | n/a — nothing to reverse |
+| `vector` | 1 | dispatches, no config write found | n/a — no process | n/a — nothing to reverse |
 
 *Survives restart* means the capability re-dispatches in `SprigSupervisor._reconcile`. Without it a respawned child gets a fresh loopback port and the config still names the old one. Capabilities that run no process are marked n/a: `_reconcile` gates its dispatch on `handle.process is not None`, and they rely on the persisted config pointer instead, which does not move.
 
@@ -58,8 +58,7 @@ Derived from `app/backend/sage_is_ai/sprigs/supervisor.py`, `app/backend/sage_is
 
 ## Gaps
 
-- `docling` writes `CONTENT_EXTRACTION_ENGINE`, `DOCLING_SERVER_URL` on graft and reverses nothing on prune. After pruning, those values point at a released port.
-- `tika` writes `CONTENT_EXTRACTION_ENGINE`, `TIKA_SERVER_URL` on graft and reverses nothing on prune. After pruning, those values point at a released port.
+None. Every capability that writes config re-dispatches on restart and reverses on prune.
 
 ## Capabilities in detail
 

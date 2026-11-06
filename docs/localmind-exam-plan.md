@@ -34,8 +34,8 @@ Source: the LocalMind checkout (`app/` 29 modules, ~1.1M). Targets: PDF ingestio
 ## Phase 3 — Connect LocalMind ↔ AI-UI [WE], [MANUALLY] ships first seam
 
 7. Satellite contract: LocalMind keeps local-first KB + team features; AI-UI is the heavy backend. Thinnest seams first:
-   - **STT**: LocalMind POSTs audio to AI-UI's whisper sprig (`/v1/audio/transcriptions`) instead of in-process `mlx-whisper` — deletes ~1G venv weight (pattern exists: `sprigs/stt_dispatch.py`).
-   - **Embeddings/chat overflow**: `ollama.py` client pointed at an AI-UI instance URL for big models; local Ollama stays default.
+   - **STT**: LocalMind POSTs audio to AI-UI's `/api/v1/audio/transcriptions` with a bearer token, not to the whisper Sprig's loopback port, instead of in-process `mlx-whisper` — deletes ~1G venv weight (AI-UI routes it on through `sprigs/stt_dispatch.py`).
+   - **Embeddings/chat overflow**: models through AI-UI's `/api/chat/completions` with a bearer token, not the raw `/ollama/api/*` routes, which skip the privacy filter and leave with the Rootstock; local Ollama stays default.
    - **Docling extraction**: layout-hard PDFs to AI-UI's Docling sprig; keep `pypdf` fast path local.
 8. Auth: API key / per-user token, read-only scopes first; nothing leaves the school network without explicit config.
 9. Ship order: STT first (biggest weight loss, smallest behavior change), then wire + test on the school server.

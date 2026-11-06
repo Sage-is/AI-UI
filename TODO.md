@@ -4,10 +4,9 @@ This file tracks active work only.
 
 > Historical snapshots and completed bulk moved to `docs/completed-todos.md` and `docs/archive/` on 2026-04-09.
 >
-> **Convention** — Sections below map to kanban columns. Inline source-code
-> tags use the same vocabulary so items stay cross-referenced between this
-> file and the codebase. `KANBAN.canvas` auto-generates from this file and
-> inline tags — do not hand-edit it.
+> Done cards move to `docs/completed-todos.md`; open cards untouched for a quarter move to `docs/board-dormant.md` (sweep of 2026-11-03). A card cited by title and missing here is in one of the two.
+>
+> **Convention** — Sections below map to kanban columns. Inline source-code tags use the same vocabulary so items stay cross-referenced between this file and the codebase. `KANBAN.canvas` auto-generates from this file and inline tags — do not hand-edit it.
 >
 > | Column      | Markdown section  | Inline tag  |
 > |-------------|-------------------|-------------|
@@ -15,219 +14,130 @@ This file tracks active work only.
 > | TODO        | `## TODO`         | `# TODO:`   |
 > | In Progress | `## In Progress`  | `# FIXME:`  |
 > | Bugs        | `## Bugs`         | `# BUG:`    |
-- [ ] **Frontend lint is red: 9,622 errors, about 1,519 of them ours** (measured 2026-09-25 with `eslint . -f json`; `make lint` runs it with `--fix`, which rewrites files) #lint
-  - [ ] Ignore third-party trees: `app/static/pyodide` (5,163, gitignored), `app/static/swagger-ui` (2,891), `pages/assets/vendor/` (46)
-  - [ ] Ours: `app/src/lib` 1,385, `app/src/routes` 75, Cypress 55, `vite.config.ts` 4; top rules `no-unused-vars`, `no-unused-expressions`, `no-explicit-any`
-  - [ ] Then make `lint:frontend` a gate (without `--fix` in CI) so it cannot regress; `make ship` does not run it today
-
 > | Done        | `- [x]` items / `## Done` | —   |
 >
-> `# DEPRECATED:` tags should be tracked as TODO items for removal at the
-> stated version.
+> `# DEPRECATED:` tags should be tracked as TODO items for removal at the stated version.
 
 ---
 
 ## In Progress
 
-- [ ] **Security fixes, AI-UI woken for them** #critical #security (Alexander, 2026-10-07; an exception to the Trellis-first pause): from the Dependabot and trivy review of 3.2.0
-  - Plan: `~/.claude/plans/ai-ui-3.2.1-security-bumps.md` (approved 2026-10-14); notes in `CHANGELOG.md` under Unreleased, heading becomes `## [3.2.1]` on the release branch
-  - [x] [WE] FastAPI 0.143.1 + Starlette 1.8.0 pinned on its own: Range header, form limits and multipart DoS closed; `strict_content_type=False` keeps 3.2.0 behaviour (Alexander, 2026-10-14)
-  - [x] [WE] ORAS left the image (was 1.2.0, then 1.3.4 with 4 HIGH Go findings): `sprigs/oci.py` pulls Sprigs; `test_oci.py` pins 12 refusals; a real ghcr.io pull matches the catalog pin
-  - [x] [WE] pypdf 6.20.1 in rag-loaders v2; its gate reads a hand-built PDF through langchain-community 0.3.27's `PyPDFLoader`, arm64 + amd64
-  - [x] [WE] aiohttp 3.14.5, PyJWT 2.15.1, authlib 1.9.1 (CVE-2026-96760 critical, 2026-10-14), requests 2.34.2, Markdown 3.11.1, python-multipart 0.0.32, python-socketio 5.17.0, starlette-compress 1.8.0
-  - [x] [WE] Pillow 12.3.0 in export-document v2; its gate renders CJK + a Pillow image, arm64 + amd64
-  - [x] [WE] Wolfi base digest of 2026-10-14; the build-time check now asserts sha224 and a TLS context; no Python pin
-  - [x] [WE] Less does more: OpenTelemetry 11 pins → 1 (`opentelemetry-api`); SDK, gRPC exporter, grpcio, protobuf ride vector-chroma v3; `app/pyproject.toml` deps emptied (194 phantom alerts); `requirements-ml.txt` deleted
-  - [x] [WE] Catalog: rag-loaders + export-document `v2`, vector-chroma `v3` (both arches, six new pins); older tags stay published for 3.2.0; an old cache re-pulls on first boot
-  - [x] [WE] Small cuts (Alexander, 2026-10-15): pip/setuptools/wheel → uv (`utils/runtime_install.py`); typer CLI and its data-moving pip layout; passlib → bcrypt (`utils/passwords.py`, passlib-made hashes pinned); curl + jq → `utils/localhttp.py`; async-timeout
-  - [x] [WE] Medium cut: peewee → `internal/legacy_db.py` + frozen `legacy_schema.sql`; fresh schema identical to 3.2.0 (233 lines), an 18-migration snapshot gains `chat_share`, a pre-alembic DB is refused with the fix named
-  - [x] [WE] Medium cut: vector-chroma v3 = closure minus what the rootstock ships (46 kept, 41 left out), its gate runs chromadb inside the rootstock, its OpenTelemetry pin read from `requirements.txt`
-  - [x] [WE] Poka-yoke: Dockerfile cuts-stay-cut check (names the package that pulls a cut back); `make in_container_tools` lint, incl. a cut-module import fence cross-checked against the Dockerfile; `make image_unit_tests` (39 tests); `netcurl`
-  - [x] [WE] Gate fixes found on the way: `sign-sprigs.sh` + `sprig_signing` step 5 dodge the krunkit stale-file trap (step 5 had pushed a VALID signature silently); `inject-test-admin.py` off passlib; `upgrade_gate` section 6 re-signs in once
-  - Gates on the final image, 2026-10-15: `image_unit_tests` 39/39, `sprig_durability` 12/12, `sprig_signing` 11/11, `upgrade_gate` 20/20 (trimmed snapshot), `test_db_fresh` + `test_db_upgrade` pass, trivy 0 HIGH/CRITICAL, 16/16 hand checks
-  - Gates on the build before the last refactors: `sprig_smoke` 69/69, `e2e_both` all specs on both surfaces; `make -n patch_release` opens `release/3.2.1`
-  - [x] [WE] Shipped 2026-10-24 (Alexander's go): 13 commits, tag `v3.2.1`, image `sha256:3e2a15c4…` on GHCR, the six new Sprig tags public; the wizard smoke passes on the published image and Sprigs; brew could not take it (card "Each release tag pins the previous server" in Bugs)
-    - The push needed a workaround on the build VM (card "The release push cannot build amd64 on the build VM" in Bugs)
-  - [x] [WE] 3.2.2 shipped 2026-10-24 (Alexander's go) so brew boxes get these fixes: tag `v3.2.2` pins `SERVER_TAG=3.2.2`, image `sha256:388fe4df…`, both smokes pass, `make ship` ran end to end; tap `0878c52` installs 3.2.2
-  - [x] [MANUALLY] Tap formulas' licence: `AGPL-3.0-or-later` (Alexander, 2026-10-24), in `0878c52`
-  - [x] [WE] `make deploy TAG=3.2.2` 2026-10-24, once Alexander refreshed the expired captain login: both hosts on 3.2.2 by digest `sha256:388fe4df…`, `/health` true, no Sprig errors on sage.startr.cloud; its backup (integrity ok, 32 users, 2,184 chats) moved to Somma 02 encrypted
-  - [x] [WE] Free space first (2026-10-23, Alexander's go): Docker Desktop's retired 49 GB disk archived encrypted to the Somma 02 backups, key in the vault, verified, original removed; "Somma 01 Dock Drive" 9.9 → 203 GiB free (`release_preflight` wants 30)
-  - [x] [WE] `make deploy` 2026-10-24: both hosts on 3.2.1 by digest, `/health` true; backup first (185 MB, integrity ok, 32 users, 2,184 chats); sage.startr.cloud grafts `rag-loaders` (delivered), no Sprig errors; `vector-chroma` is not grafted there (card "Knowledge bases on sage.startr.cloud return nothing")
-    - 2026-10-24: the cluster maintenance of 2026-10-15 is over (Alexander)
-  - [x] [WE] try.sage.is checked 2026-10-24 through its public persona links: sign-in works, but it cannot read documents (card "An upload starts before anyone checks that the box can read it" in Bugs); neither host configures an SSO provider, so there is no SSO login to test
-  - [ ] [MANUALLY] Close Dependabot PRs 36, 37, 43, 45 as superseded; PR 44 rides the ML lock card
-  - [ ] [WE] Host-side ORAS: 8 scripts still run `ghcr.io/oras-project/oras:v1.2.0` (`scripts/lib/sprig-build.sh`, `publish-sprigs.sh`, `sign-sprigs.sh` …); `sprig_publish` reaches GHCR through it; move to 1.3.4 by digest
-  - trivy HIGH/CRITICAL on the 3.2.1 image: 6 on 2026-10-14 (ORAS 4, setuptools-vendored 2), 0 on 2026-10-15 after the cuts; `.trivyignore` still holds CVE-2026-34070 (langchain-core)
-  - [x] [WE] ~~The last 4 ORAS findings need an ORAS built on Go ≥ 1.26.9~~: superseded, ORAS left the image
-  - [x] [WE] setuptools 79.0.1's vendored jaraco.context and wheel (2 HIGH): dropped with setuptools itself
-
 _Items currently in progress. Move items here and or use tag source with `# FIXME:` when work begins._
 
-- [ ] **Paused 2026-10-01: Trellis first** (Alexander) #critical: no new AI-UI work until the ISA pilot ships (Trellis plan Amendment 60); bookkeeping and the pending commits only
+- [ ] **Bugs riding in 3.3.0: fourteen small fixes through one re-gate** #bug (picked 2026-11-05 with Alexander; plan `~/.claude/plans/tingly-exploring-peach.md`)
+  - [x] [WE] Chat path, one fixture each: `data: [DONE]` ends the stream; `nonlocal model_id`; the two-message title; the dead `features.web_search` branch; a `◁think▷` fixture case
+  - [x] [WE] Sprigs and routers: pruning Tika or Docling resets the engine; an evicted Sprig says so; three `F811` handler names; knowledge answers a real 503, diagnostics shows `vector_db_ready`
+  - [x] [WE] Svelte: code fences readable in the composer; unique `SensitiveInput` ids; the models panel stays mounted on save; one `loadModels` helper for the 36 token-first `getModels` calls
+  - [x] [WE] Re-pinned `wolfi-base` (scan: 0 HIGH, 0 CRITICAL); `gauntlet_full`, `upgrade_gate` 20/0, `rootstock_test` 90 OK green 2026-11-05; logs `~/.local/share/ai-ui/gates-3.3.0/picks-*`
+  - [x] [WE] Found by `upgrade_gate`: its and `sprig-lifecycle.sh`'s self-heal matched only "session expired"; a busy database answers 503 "try again in a moment" since 2026-11-02; both retry it now
+  - [ ] [MANUALLY] Commit with 3.3.0: run sheet `Plans/ai-ui-3.3.0-release`, its own group
+
+- [ ] **`.env` takes a real key or a `bw:` stub, and an env-only LLM connection keeps the key out of the DB** #security (2026-11-04)
+  - [x] [MANUALLY] OpenRouter dev key in the vault: `openrouter-aiui-dev`
+  - [x] [WE] Makefile: run targets pass secrets by name (`-e NAME`), never by value, and run under `sage-secret` when `.env` holds a `bw:` stub (`VAULT_REFS`, `VAULT`; `PARSE_BY_SHELL` keeps a quoted `WEBUI_SECRET_KEY` the same key); before, `make try_sage_start` printed `TRY_SAGE_LLM_API_KEY` (proven against HEAD), and `dev`/`it_run` print `WEBUI_SECRET_KEY` when set
+  - [x] [WE] `restore_backup_start.sh`: values already in the environment win over `/app/.env`, as python-dotenv does
+  - [x] [WE] `SAGE_LLM_API_URL` / `_KEY` / `_MODELS`: the try-sage memory-only connection, outside trial mode; `test_hidden_connections` (6) joins `image_unit_tests`
+  - [x] [WE] Proven 2026-11-04: a quoted stub resolved through `sage-secret`, the container kept it over `/app/.env`, the connection registered, and OpenRouter `/key` answered 200 with a credit limit
+  - [x] [MANUALLY] Guard autoenv and add the `SAGE_LLM_*` lines to `.env`: done by 2026-11-05 (`~/.bash_profile:24` skips autoenv when `$CLAUDECODE` is set; `.env` holds both lines)
+  - [x] [WE] Fix found by `runtime_tests` 2026-11-05: the bare `export` expanded `VAULT` for every recipe, so with a stub in `.env` no target built where `sage-secret` is missing; `unexport VAULT PARSE_BY_SHELL VAULT_REFS`
+  - [ ] [MANUALLY] Commit with 3.3.0: run sheet `Plans/ai-ui-3.3.0-release`, step 1.3 (the Makefile half rides in 1.8)
+
+- [ ] **Left over from the Trellis-first pause** (moved out of the pause card, 2026-11-02; that card is in `docs/completed-todos.md`)
   - [ ] [MANUALLY] The tap's step-2 commit and push (the ai-ui formula follows AI-UI releases); this board's commit
   - [ ] Parked AI-UI changes Trellis may need later: forward the chatting user's identity to tool servers (`execute_tool_server` sends only the bearer today); AI-UI as identity provider (own card since 2026-10-15, under OAuth UX & Identity Linking)
-  - Exceptions: the 3.2.1 security fixes (2026-10-07); the Rootstock, on `develop` (Alexander, 2026-10-23), where Trellis pilot work preempts Rootstock work and Alexander reviews the exception at each release
 
-- [ ] **Rootstock: a clean-room Django core at about a seventh of today's code, strangled in surface by surface** #rootstock (Alexander, 2026-10-23; rewrite approved 2026-10-24; on `develop`, forward only): plan `~/.claude/plans/ok-so-we-have-kind-platypus.md`; F0 (3.3.0) fixes 18 security bugs where they live
-  - [x] [WE] Phase 0 staging (2026-10-23): census, SQLite probe, ten research notes, edge-case harvest, in `~/.local/share/ai-ui/rootstock-staging/`; still open: the `design.md` caps and the OpenAPI contract
-  - [x] [WE] SQLite probe in the 3.2.0 image (2026-10-23): SQLite 3.54.0, extension loading + FTS5 ok; sqlite-vec 0.1.9 cosine over 50,000 × 384 in ~40 ms; pure-Python fallback 204 ms at 20,000
-  - [x] [WE] Census (2026-10-23, stdlib `census.py`, canary self-test with teeth): 3/7/8 users active in 7/30/90 days; agents in 1,440 of 2,036 chat-model uses; `sources` on 1,678 messages, `error` on 599; arena 4, code execution 0
-  - [x] [WE] Dock drive freed (2026-10-23): 203 GiB free; see the Security fixes card
-  - [x] [MANUALLY] Commit and tag v3.2.1 (Security fixes card): tagged and shipped 2026-10-24, so the seam work can start
-  - [x] [MANUALLY] The adversarial rewrite and its congestion section, approved with the plan (2026-10-24): 18 security bugs fixed at source in F0; congestion fixes in F1; the gateway beside the Django pilot in F2; a go or no-go after F2; new features after F8
-  - [x] [WE] First after the tag, on `develop`: move the staging in, then F0 (3.3.0): the 18 fixes where each bug lives; one HTTP test per card in `rootstock/tests/security/`, each shown to fail on 3.2.1 first; the loop-lag watchdog; look back, rotate, notify
-    - Done 2026-10-24: Phase 0 in (`2f8325c`); the watchdog (`6222e39`); the 18 fixes in `d3db2c8`, `cfd95e5`, `80d115f`, `52885b0`, `bb99576`, with 68 tests under `rootstock/tests/security/` (`make rootstock_test`), each failing on 3.2.2 first; backups before update (`36b9592`); the look-back (`c5395e7`, nothing found)
-    - Exit checks 2026-10-24: `upgrade_gate` 20/20 on the 2026-07-12 snapshot; `gauntlet_full` exit 0 on the final tree (lifecycle 69/69, durability 12/12, signing 11/11, ui-Sprig 22/22, Cypress 48/48 files on both surfaces, surface budget 11/11, image unit tests 40, trivy 0 HIGH/CRITICAL)
-    - The gates caught on the way: the wizard's user add and CSV import called `add_user` with its pre-F0 arguments (`pages/users_panel.py`; two Cypress specs), fixed; `ca-certificates` 20260909-r2 flagged HIGH ×2 (CVE-2026-111943), cleared by moving the wolfi-base pin to 2026-10-24; the SPA floor creep (Bugs card) predates F0
-    - [ ] [MANUALLY] Tell both box owners; release 3.3.0 and deploy it; THEN rotate the backup remote's credentials (urgent half: plaintext nightly backups, the August cluster compromise) and `WEBUI_SECRET_KEY` (`PRIVACY_KEY` gets its own value first), because 3.2.2 still prints the remote config at start and hands the key to Sprig children, so a rotation before the deploy re-leaks the new values; bump the tap formula
-      - Prepared 2026-10-24: `~/.local/share/ai-ui/rotation/rotate-3.3.0-secrets.sh` (dry run, then `--go`; README beside it) mints the box-owned keys into the vault and pushes them with `cr-deploy ensure`; it refuses anything below 3.3.0; the B2 key and the demo's provider keys are created by hand and put into the vault first; try.sage.is persona links die with the rotation, so the seed now applies an env-supplied persona password
+- [ ] **Rootstock: a clean-room Django core at about a seventh of today's code, strangled in surface by surface** #rootstock (Alexander, 2026-10-23; rewrite approved 2026-10-24; on `develop`, forward only): plan `~/.claude/plans/silverbullet/rootstock-platypus.md`; F0 (3.3.0) fixes 18 security bugs where they live
+  - Held 2026-11-03 (Alexander): F1 starts once 3.3.0 ships, one phase per release; the Workshop apps tab stays in F5
+  - [ ] [MANUALLY] Release and deploy 3.3.0 by run sheet `Plans/ai-ui-3.3.0-release` (everything in the tree ships, decided 2026-11-05; gates green 2026-11-05); then the steps below
+    - [ ] [MANUALLY] Tell both box owners (the note says the hole "is closed")
+    - [ ] [MANUALLY] Rotate the backup remote's credentials (urgent half: plaintext nightly backups, the August cluster compromise) and `WEBUI_SECRET_KEY` (`PRIVACY_KEY` gets its own value first)
+    - [ ] [MANUALLY] Bump the tap formula
+    - Why the order: 3.2.2 still prints the remote config at start and hands the key to Sprig children, so a rotation before the deploy re-leaks the new values. Prepared 2026-10-24: `~/.local/share/ai-ui/rotation/rotate-3.3.0-secrets.sh` (dry run, then `--go`; README beside it) mints the box-owned keys into the vault and pushes them with `cr-deploy ensure`; it refuses anything below 3.3.0; the B2 key and the demo's provider keys are created by hand and put into the vault first; try.sage.is persona links die with the rotation, so the seed now applies an env-supplied persona password
   - [ ] [WE] Then `docs/rootstock/design.md`; OpenAPI capture and goldens from the 3.2.1 image; the parity runner
   - [ ] [WE] F1 (3.4.0): the seam, pass-through; the ten congestion fixes (card "Congestion" in Bugs); consistent backups; `make stream_load` with an asyncio mock provider
   - [ ] [WE] F2 (3.5.0): the model gateway, a plain ASGI app in its own process, behind an nginx inside the container; the Workshop agents page on Django; WAL with its own switch; Alexander's go or no-go
   - [ ] [WE] The gateway's byte path moves to Rust (Tinker's `core/src/llm`) only when `stream_load` shows a trigger: gateway CPU over 60% of a core, loop lag p99 over 50 ms, added first-token p95 over 50 ms, or more than 250 streams
-  - [x] [WE] Ten research notes and `edge-cases.md` (347 entries: 189 keep, 128 fix, 30 die) (2026-10-23); `check_cites.py` resolves all 2,213 `path:line` cites; findings folded into the plan; 12 security cards filed in Bugs, 2 existing cards extended
-  - [x] [WE] `test_budget.py` (0/13,000) and `test_legacy_ratchet.py` (52,084 Python, 67,277 frontend, 1,665 pages), each shown to fail on purpose; staging mirrored to `~/.local/share/ai-ui/rootstock-staging/`
   - [ ] [WE] Image diet (decided 2026-10-23: Django squeezed, containers everywhere): 3.2.1 is 390 MB on disk (123–126 MB to download); at F8 must ≤150 MB, target ≤110, stretch ≤75; `image_budget` ratchets down each release; levers measured in the plan (63 MB of `.pyc`, 37 MB `uv`, a doubled 21 MB zstandard, Django trimmed 49→24 MB)
-    - [ ] [WE] Repo weight: 97 MB tracked against Tinker's 19, though the code is about the same size; 63 MB of CJK fonts (PDF export only, already out of the image) move into the export-document Sprig recipe, the 5.5 MB `.xcf` leaves `app/static/icons/`, and a test fails on any new tracked file over 1 MB
+    - [ ] [WE] Repo weight: 97 MB tracked against Tinker's 19, though the code is about the same size
+      - [ ] [MANUALLY] Create both repos in the `Sage.is` org: the agent's Gitea token has no `write:organization`, so creating an org repo answers 403
+      - [ ] [WE] Then upload the fonts and the `.xcf`, have the export-document recipe fetch the fonts by sha256, and drop all of them from git with a pointer note in `app/static/icons/`
   - [ ] [WE] Few libraries (Alexander, 2026-10-23; evidence in the plan): `test_dependencies.py` lists about 12 direct Python packages, about 30 installed by their closure (today 95), no npm package at runtime (today 1,160 build the SPA), vendored pinned files checked by sha256, hash-pinned locks with an `exclude-newer` cool-down
   - [ ] [WE] Install and onboarding: `install_smoke` times a fresh install to the first answer and counts the steps; it fails on any tour, modal or carousel before that answer
   - [ ] [MANUALLY] SSO decision from the `federation/` research note, before F6, where sign-in now moves
   - [ ] [MANUALLY] Sitting 2 of the plan's decision queue: what tool servers receive and direct connections (before F3), Space rules (before F4), the default embedder and the Sprig questions (before F5)
   - Folds in: Workshop apps tab (Backlog), AI-UI as identity provider (OAuth UX), Backend Rewrite Research (superseded)
+  - [x] _11 done steps archived 2026-11-03 → docs/completed-todos.md._
 
 - [ ] **One way to deploy: `cr-deploy` + `make deploy`** #critical: plan Amendment 55, 2026-09-27
-  - [x] [WE] `cr-deploy` in the tap (named `captain` until 2026-09-28; from Trellis `caprover.py`): bind mounts in `apps`, `--verify/--expect/--health`, `rollback`, build-start race fixed, 9 tests
-  - [x] [WE] `make deploy` / `deploy_rollback`, `deploy/instances.toml`, `scripts/deploy.py`; canary verify-only and no-key refusal proven
-  - [x] [WE] Legacy `it_deploy`, `it_*_sage_hosts`, `captain-definition` removed; runbook, try-sage, sage.startr.cloud docs rewritten
-  - [x] [WE] Trellis on `cr-deploy`: dry-run 0 changes, `caprover_deploy_all` + `/crm/health/` green; `scripts/caprover.py` deleted
   - [ ] [MANUALLY] Commit AI-UI, Trellis, homebrew-apps; release `cr-deploy-v0.1.0` (fill the formula sha256) and `offload-v0.7.0`
-  - [x] [MANUALLY] Admin API key on sage.startr.cloud → `SAGE_STARTR_CLOUD_ADMIN_KEY=` in `.env`; Syncthing `sage-ai-data` Up to Date
-  - [x] [WE] `make deploy TAG=3.2.0` 2026-09-27: backup (170 MB, integrity ok, 32 users, 2124 chats), sage.startr.cloud 3.2.0 on openco2; `webui.db` identical on all 3 nodes, no new sync-conflicts
   - [ ] [MANUALLY] Check chats and Spaces on sage.startr.cloud
   - [ ] [WE] Rollback drill on try.sage.is once it has two digest deploys; 2026-09-27 run refused the tag-deployed 3.1.0 by design, message now says how
   - [ ] [MANUALLY] The captain's CapRover version (decided 2026-10-04): read it (`cr-deploy info`, needs your login); below 1.14.2, go to exactly 1.14.2 after host-level copies of `/captain/data` and the app volumes; hold 1.15.x until a release restores its own backups. Evidence: Trellis `crm/docs/decisions/2026-10-04-pilot-hosting-options.md`
-  - [ ] [WE] `cr-deploy` with an expired token and no terminal dies in a traceback (`EOFError` in `getpass`, 2026-09-29); say "token expired, run `cr-deploy info` in a terminal" and exit 1
+  - [x] _7 done steps archived 2026-11-03 → docs/completed-todos.md._
 
 - [ ] **sage.startr.cloud SQLite over Syncthing**: replicas can sync torn; nightly `sqlite3 .backup` into the synced folder, Syncthing ignores live `webui.db`/`-wal`/`-shm`; Postgres later
   - The office Mac is a fourth Syncthing device; Backblaze (unlimited plan) backs up its copy off-site, with the nodes' nightly backups (four nights) beside it (checked 2026-10-15; `OPS-Sage/docs/storage.md`)
   - So a torn live file also reaches the Mac and Backblaze; a nightly `.backup` file would give that chain a clean copy too
 
-- [ ] **Privacy rules**: pseudonymize what leaves for a hosted model, reverse what comes back #critical
-  - [x] 2026-09-16: `sage_is_ai/privacy/` engine (rules, same-shape fakes, reverser, hold-back stream reverser), 9 unit tests; hook at `utils/chat.py` dispatcher + both stream wrappers + tool arguments
-  - [x] `privacy_map` + `privacy_audit` tables (alembic `c2d3e4f5a6b7`), `PRIVACY_CONFIG` persistent config, `metadata.privacy.known` caller hints
-  - [x] Panel `/pages/admin/privacy`: per-connection tristate, detectors, rules, test bench, map with audited reveal / forget / purge; proven end to end against a recording mock provider, streamed and not
-  - [ ] Flip `default_external` to ON next version (decided 2026-09-16)
-  - [x] Cypress spec `privacy-panel.cy.ts`: 4 tests green against the dev container; picked up by the gate's `cypress/e2e/*.cy.ts` glob
-  - [ ] Svelte admin link to the panel (reachable today from the `/pages/` index)
-  - [ ] Ollama/direct connections: per-model override only today; reasoning deltas are not reversed
-  - [ ] `PRIVACY_KEY` env documented; rotation story (a new key orphans old fakes)
-  - [x] Poka-yoke pass on the unreleased diff 2026-09-23: all five reproduced defects fixed and the merge unblocked; 17 privacy unit tests pass, each new one proven to fail at HEAD. Remainder carded under "Privacy & Poka-Yoke"
-
-- [ ] **Spaces Enhancements**: agent context modes, auto-reply TTL, and multi-user — pulled forward 2026-07-30 as unlock #1 for the real-estate engagement. ([dossier](docs/board-dossiers.md))
-  - [x] **Multi-user mechanics VERIFIED by the first Spaces e2e (2026-08-18)**: `spaces-multiuser.cy.ts` 5/5 — admin-created `role:user` member opens the shared space, posts via the socket round-trip, mentions by click, admin sees it.
-    - Membership is `access_control.read/write.user_ids`, set at space create; management UI stays admin/facilitator-gated (the principal is the facilitator).
-    - Found: the mention dropdown lists exactly `read.user_ids` — an unlisted admin is unmentionable (access bypass ≠ participant).
-    - Live-agent variant `live/spaces-live-agent.cy.ts` is opt-in via `CYPRESS_BOT_URL`/`CYPRESS_BOT_KEY` (subdir = excluded from bare `make e2e`).
-  - [ ] Agent context mode: `conversation` (last ~5 messages) and `full` (all recent) — `single` already ships
-    - Decision record 2026-08-18: ship context modes next; bridge adapter at marketplace time; sidecar is packaging. `docs/decisions/2026-08-18-spaces-agent-integration.md`.
-    - Live test rig: pullbots registered on :8099 via `scripts/seed-bot-agents.sh` (`bot9000.Sage-Agent`/`bot9001.Sage-Agent`, key in `.env` `PULLBOT_API_KEY`, never committed).
-  - [x] **Auto-reply opened to the whole space (2026-08-18, Alexander's call)**: any member's un-mentioned post answers an armed agent question — was addressee-only; the VA-answers-for-the-principal workflow needs it. One-condition change at `spaces.py:621`; guards unchanged (@mention wins, 2-message window, one auto-reply per post, no agent-to-agent path). `awaiting_reply_from` still records the addressee for future UI/TTL.
-  - [ ] Optional per-agent TTL for auto-reply expiration
-    <!-- inline: spaces.py:391 -->
-  - [x] **Tools from Spaces (2026-09-17)**: `generate_agent_response` sends the row's `meta.toolIds` through `process_chat_payload`; the CRM agent answers with its tool server while the cache is warm
-  - [x] Cold boot: `generate_agent_response` fills `app.state.TOOL_SERVERS` when empty (2026-09-17); proof at the next restart, tracked on the Trellis board
-  - [ ] **Silverbullet integration into Spaces** — wire the self-hosted Silverbullet PKM/wiki into Spaces. Planning conversation first (architecture, auth, data model), then code.
-  - [ ] **Space theming for creator-led visual differentiation** (2026-06-15): creator-only "Theme" tab in Space settings — accent-color picker + optional logo upload, tinting nav chrome and thread accents
-    - [ ] Identical-looking Spaces cause mis-posts; load-bearing for workshop facilitators and multi-org Rootstocks
-    - [ ] No custom-CSS injection (XSS surface)
-    - [x] Peset themes shipped as sprigs (bio = green, math = blue) so non-technical facilitators can theme without picking colors
-    - [ ] Explore bundling and offering the presets only for spaces
-
-- [x] _Fresh-boot test admin DRY'd (2026-08-17): one canonical credential in `scripts/lib/test-admin.env` (`admin@example.com`/`password`), 4 consumers re-pointed — `sprig-lifecycle.sh` (3 drifted `s8@sage.is` sites), `manual-check.sh`, `run-cypress.sh` (forwards `CYPRESS_ADMIN_*`), `e2e.ts` (env-first) — snapshot-backed gates keep `upgrade-gate@sage.is` on purpose (collision + self-attribution), documented in the env file itself. Verified: throwaway `sprig_smoke` 68/68 (first run 67/68, flake cleared on re-run), branding e2e 7/7 through the modified harness. Archived → docs/completed-todos.md._ #dx
-
-- [ ] **Remove htmx; every consumer moves to startr-swap** (earmarked 2026-08-17): three admin panels still ride the 50.9 KB vendored `htmx.min.js` while the 11.9 KB in-house library carries every page-to-page swap — one engine, not two. #frontend #dx
-  - [x] **Fragment question SETTLED by reading the source (2026-08-17, Alexander's call, verified)**: startr-swap already consumes fragments — `DOMParser.parseFromString(text, 'text/html')` wraps any fragment in a document, and `selectorFor` finds the region by `#id` in it. The panels' htmx `outerHTML` responses (wrapper included) are already the right shape. Today's `data-swap-off` exists only because the panels were never DECLARED as regions — `closest` resolved to the outer region, whose selector isn't in the fragment.
-    - [ ] Mechanics that ARE the migration: mark each panel wrapper `data-swap` (ids stay); htmx buttons become real links or one-button forms (startr-swap claims only `a[href]` and `form`); `hx-vals` JSON becomes hidden inputs.
-    - [ ] Semantic shift to check per panel: htmx `outerHTML` replaces the wrapper element, startr-swap replaces its CHILDREN — server-set attributes on the wrapper itself won't land.
-    - [ ] No fragment fixture exists (`fixtures/swap/` holds full documents only) — add one so the behavior is pinned before the panels lean on it.
+- [ ] **Remove htmx; every consumer moves to startr-swap** (earmarked 2026-08-17): four admin panels still ride the 50.9 KB vendored `htmx.min.js` while the 11.9 KB in-house library carries every page-to-page swap — one engine, not two. #frontend #dx
+  - Scheduled after the ISA pilot ships (Alexander, 2026-11-02): in house, one vendored dependency fewer.
+  - [ ] Mechanics that ARE the migration: mark each panel wrapper `data-swap` (ids stay); htmx buttons become real links or one-button forms (startr-swap claims only `a[href]` and `form`); `hx-vals` JSON becomes hidden inputs.
+  - [ ] Semantic shift to check per panel: htmx `outerHTML` replaces the wrapper element, startr-swap replaces its CHILDREN — server-set attributes on the wrapper itself won't land.
+  - [ ] No fragment fixture exists (`fixtures/swap/` holds full documents only) — add one so the behavior is pinned before the panels lean on it.
   - [ ] Consumers to migrate, each with its e2e spec green after:
     - [ ] Sprigs (`sprigs.html`, `sprigs_panel.py`): Refresh `hx-get`, per-card `hx-post` wire + verb actions, all targeting `#sprigs-panel`/`outerHTML`.
     - [ ] Diagnostics (`diagnostics.html`, `diagnostics_panel.py`): per-row Re-probe `hx-post` carrying `hx-vals` JSON — needs a plain-form equivalent (hidden inputs) — plus Re-probe-all `hx-get`, `#diagnostics-panel`.
     - [ ] Branding (`branding.html`, `branding_panel.py`): save form `hx-post`, `#branding-panel`; its `data-swap-off` becomes a live swap.
-  - [ ] Delete the scaffolding: `vendor/htmx.min.js` plus its section in `vendor/README.md`; the three injection sites `router.py:373`, `:433`, `:1194`.
-  - [ ] Re-word the prose that names htmx: `shell.py:191`, `sprigs_panel.py` and `branding_panel.py` docstrings, `router.py` comments `:497` and `:800`, `pages.css:274`, `color-pair.js` header — note its document-delegation pattern survives the engine change.
+    - [ ] Privacy (`privacy.html`, `privacy_panel.py`): five `hx-post` forms with `hx-target`/`hx-swap`, `#privacy-panel` (found 2026-11-02; it shipped after this card).
+  - [ ] Delete the scaffolding: `vendor/htmx.min.js` plus its section in `vendor/README.md`; the four injection sites `router.py:385`, `:436`, `:490`, `:1267` (re-pointed 2026-11-02).
+  - [ ] Re-word the prose that names htmx: `shell.py:210`, `sprigs_panel.py` and `branding_panel.py` docstrings, `router.py` comments `:566` and `:873`, `pages.css:274`, `color-pair.js` header — note its document-delegation pattern survives the engine change.
   - [ ] Cross-link: deleting the vendor file kills the bulk of the 9,609-error eslint card under Bugs — re-measure and update that card in the same sitting.
   - [ ] Guard rails: `startr_swap_check` still green; the panels' Cypress specs plus `make e2e` green; no third swap idiom — plain HTML first, per doctrine.
+  - [x] _1 done step archived 2026-11-03 → docs/completed-todos.md._
 
-- [x] _Unused-import/local cleanup DONE (2026-08-17): 247 F401 + 36 F841 cleared, both rules enforced in `[tool.ruff.lint]` — the conservative set now runs whole; 214 auto-fixed, the rest read (2 availability probes kept: 1 `noqa` naming the sprig hot-graft rebind, 1 deleted); frozen migration trees (`migrations/versions/`, `internal/migrations/`) per-file-ignored, not edited; middleware's one line deletion (`negative_prompt`, dead since fork) re-pointed all 9 fences and 52 citations −1 in the same change. Archived → docs/completed-todos.md._ #gates
-
-- [x] _Formatting consolidated on `ruff format` (2026-08-17): 87 files reformatted, oracle 12/12 byte-identical, `changelog_panel.py` AST-proven identical against a complexipy +8 artifact (baseline raised with note, not earned); `black --check` deleted from `lint`, `ruff_format_check` wired in; black survives ONLY as the runtime dep behind the `routers/utils.py` format endpoint. Found on the way: `lint`'s frontend half was already red — see Bugs. Archived → docs/completed-todos.md._ #gates
-
-- [x] _`sage-archivo.ttf` subsetting automated (2026-08-17): committed 153 KB binary deleted; the watch Dockerfile now subsets `Archivo-Variable.ttf` at build time (`python3 -m fontTools.subset`, basic-Latin + em-dash, 92 KB, wght/wdth axes verified) via a named `fonts` build context; `WATCH_IMG` bumped `15.18.0-r2` so cached images rebuild themselves. Archived → docs/completed-todos.md._
 ---
 
 ## TODO
 
-- [ ] **`media-ffmpeg` Sprig ships GPLv3 binaries with no licence text or source offer** #critical #legal (found 2026-10-31): `scripts/build-sprig-media-ffmpeg.sh` keeps only `ffmpeg` and `ffprobe` from a tar that carries the licence
-  - [ ] [WE] Carry the licence file and a source pointer; the artifact unpacks into `/usr/local/bin`, so choose where they land
-  - [ ] [MANUALLY] Publish a new tag
+- [ ] **Client-side turns for one-on-one chats: the browser runs the turn, the gateway relays and always finishes the call** #rootstock #perf (Alexander, 2026-11-03): plan section "Client-side turns for one-on-one chats", beside the gateway contract
+  - [x] Answered 2026-11-05 (plan section, "Answers"): 2,000 streams per box; hybrid byte path, direct for own-key, on-device and filter-off box connections; the box finishes the answer; record by setting, drafts ≤5 s old; budgets per user, held per turn
+  - [x] The rest answered 2026-11-05 in three more rounds: plain chat first, a plain-JS island, settings per group, parity first, takeover by missed drafts, money budgets, receipts by source; 2,000 is a design target, not a gate
+  - [x] [WE] Folded into the phase table: F3 shows cost and balance; a new "F3 switch", 3.6.x, ships client-side turns as soon as F3's check holds
+  - [ ] [MANUALLY] Confirm the "as soon as possible" reading in the plan (`Plans/rootstock-platypus` in SilverBullet), or correct it with a `> …` line
 
-- [ ] **Tinker.Click integration: two products, one platform** #federation (Alexander, 2026-10-31; proposals until Jose agrees): the decisions live in `AI--Tinker.Click/docs/notes/2026-10-31-integration-decisions.md`
+- [ ] **`media-ffmpeg` Sprig ships GPLv3 binaries with no licence text or source offer** #critical #legal (found 2026-10-31): `scripts/build-sprig-media-ffmpeg.sh` keeps only `ffmpeg` and `ffprobe` from a tar that carries the licence
+  - [ ] [MANUALLY] Publish a new tag: `TAG=v2` on arm64 and amd64 (the build VM), signed, through `publish-sprigs.sh`
+  - [ ] [WE] Then point the CATALOG's `media-ffmpeg` at `v2` / `v2-amd64` with the published shas
+  - [x] _1 done step archived 2026-11-03 → docs/completed-todos.md._
+
+- [ ] **Tinker.Click integration: two products, one platform** #federation (Alexander, 2026-10-31; proposals until the team agrees): the decisions live in `AI--Tinker.Click/docs/notes/2026-10-31-integration-decisions.md`
   - [ ] [WE] Rootstock F2's gateway design names Tinker desktops as a client, as the plan already does
   - [ ] [WE] AI-UI as a sign-in provider for `tenkts-server`: scope the OIDC piece with the federation identity note
   - [ ] [WE] `docs/federation.md`: Space theming decides Tinker's look on a box, with Tinker's credit in an About line
 
-- [ ] **`docs/federation.md:132` says Artifacts apps have no network** #docs #privacy (found 2026-10-31): `Artifacts.svelte` sets no CSP, and restored replies can hold real values
-  - [ ] [WE] Test it, then correct the line before the Tinker mini's step 1
+- [ ] **TodoScope alignment: what the 2026-11-02 pass left open** #dx: the header table, four list items with no checkbox, the duplicate lint card and the real-estate strays were fixed in place
+  - [ ] [MANUALLY] Check the board in TodoScope; `KANBAN.canvas` was regenerated from `~/bin/TodoScope` (`python3 -m scanner.kanban <repo>`) on 2026-11-02
+  - [ ] [MANUALLY] `.todoscope-exclude.csv`: add `app/backend/sage_is_ai/pages/assets/vendor` (vendored htmx)? Keep `docs` excluded whole, though it holds decision records and runbooks?
+  - [x] _5 done steps archived 2026-11-03 → docs/completed-todos.md._
 
 - [ ] **Knowledge bases on sage.startr.cloud return nothing** #bug #critical (diagnosed 2026-10-20; fixes and the re-index wait on Alexander's go): all 13 knowledge bases with files answer queries 200 with 0 hits, and adding a file fails 400. Three faults stack
-  - [x] [WE] Probe (`scripts/kb-probe.py` plus one read-only SSH pass; 3.2.0 by digest on openco3): `vector_db_ready: false`; grafted are `mock-embedding` (rooted), `rag-loaders` and `calendar`; `vector-chroma` is absent, so `VECTOR_DB_CLIENT` is None
-  - [x] [WE] Logs, 72 h: `'NoneType' object has no attribute 'search'` ×26 on queries, `'query'` ×9 on adds (3 knowledge-file adds answered 400); `query_collection` swallows the errors and returns empty results with 200
-  - [x] [WE] The vector data is gone: `chroma.sqlite3` holds 0 collections against 19 knowledge bases and 2,197 file rows; 654 HNSW directories are orphans, the same count as July on 2.3.2
-  - [x] [WE] Embedding is the mock: `mock-embedding` (sha256-seeded 384-dim noise) re-roots on every boot; 57b6b30 (3.1.0) stopped new mock grafts but moves no instance off it, and diagnostics reports it `ok`
-  - [x] [WE] Not the cause: content extraction. This boot probed no Tika or Docling; their red rows date from 2026-08-10, before 3.2.0 gated the probe. The diagnostics registry keeps stale rows forever (20 dead loopback Sprig ports)
-  - [x] [WE] Saved settings, read through the admin API 2026-10-24: content extraction on the built-in loaders, hybrid search off, chunk size 1500
-  - [x] [WE] 2026-10-24 (Alexander's go), after a fresh backup (integrity ok, moved to Somma 02 encrypted): `vector-chroma` grafted (9 s), then `multilingual-e5-large` in place of minilm (33 s), which replaced `mock-embedding`
-  - [ ] [WE] `vector` has no dispatch: a graft and every deploy leave the vector client off on a box that is not a try.sage trial, so search breaks again at the next deploy; call `vector_bootstrap` from the graft route and `_reconcile` (Rootstock F1, fix 3) #critical
-    - Until then, after every deploy: `scripts/kb-reindex.py --vector-on` (release runbook, "After the deploy: document reading"); on 2026-10-24 it took one AI Engine bootstrap call
-  - [x] [WE] Re-indexed 2026-10-24 file by file with `scripts/kb-reindex.py`, never `/reindex`: 144 of 145 files in 13 knowledge bases; the 6 with null data left as they are; 12 of 13 answer with hits
-    - Warning (2026-10-23): `/reindex` DELETES every knowledge base whose `data` is null or not a dict (`routers/knowledge.py:209-215`); that is 6 of 19 on 2026-10-24. Back up first, and fix or bypass that branch before calling it
-    - Only 1,080 of 2,190 file rows hold stored text (`file.data.content`); all 145 knowledge-base files do (2026-10-24)
-    - The re-index blocked the event loop long enough for the health check to replace the container once (about a minute down, near 09:02 UTC); the new container came up with the vector store off, as the `vector` trap predicts, and `--vector-on` restored it
   - [ ] [WE] The French knowledge base's one file (130,090 characters) is not indexed: embedding it holds the event loop past the health check; index it once F1's uploads-off-the-loop and batched embedding land (Alexander, 2026-10-24: a product fix, no quiet-window gamble, no per-host tuning)
-  - [ ] [WE] On Alexander's go, fixes: diagnostics flags `vector_db_ready: false` and a rooted `mock-embedding`; boot moves an instance off the mock; `query_collection` and the knowledge add path return the real 503; the registry prunes stale rows
+  - [x] [WE] Rides 3.3.0 (picked 2026-11-05): `query/collection`, `query/doc` and the knowledge add path answer the real 503; diagnostics shows a `vector_db` row
+  - [ ] [WE] On Alexander's go: diagnostics flags a rooted `mock-embedding`; boot moves an instance off the mock (pulls an artifact, re-index needed); the registry prunes stale rows (a decision: the panel keeps "Previously configured" on purpose)
   - [ ] [WE] On Alexander's go, a gate: a real PDF into a knowledge base, a query, and a chat with the sources injected; none exists today
   - [ ] [WE] Also seen once in 72 h: a chat background task crashed with `'NoneType' object has no attribute 'find'` in `middleware.py`'s `response_handler`; recheck after the fixes
   - Verify with `scripts/kb-probe.py kbs` under `sage-secret run`: every knowledge base with files returns hits (12 of 13 on 2026-10-24). The admin key is in the vault as `sage-startr-cloud-admin-key` (Agents-edit)
-
-- [ ] **ML lock: sentence-transformers 4.1.0 → 5.6.0** #critical #security (Alexander, 2026-10-14: own card, after 3.2.1): CVE-2026-68770 critical in `app/backend/requirements-ml.lock`, which the AI Engine wizard installs
-  - Dependabot PR 44 proposes 5.6.0; 5.6.0 accepts `transformers>=4.41,<6`, so the 4.57.6 pin can stay
-  - The lock also pins pillow 12.2.0 (4 HIGH, fixed in 12.3.0), aiohttp 3.13.5, requests 2.28.1, urllib3 1.26.13; `ml_packages` sits last on `sys.path`, so base aiohttp and requests win
-  - Deleting the `requirements-ml.txt` tombstone in 3.2.1 closed the Dependabot alert, not the risk
-  - [ ] [WE] Edit `requirements-ml.in`; regenerate with `uv pip compile … --generate-hashes --python-version 3.11` on uv 0.12.24, the image's
-  - [ ] [WE] Retest the wizard install and the embedding, reranking and STT paths on a fresh volume
+  - [x] _9 done steps archived 2026-11-03 → docs/completed-todos.md._
 
 - [ ] **langchain-core out of the base, and gzip for compression** #perf #security (planned 2026-10-15): 15 MB and ~170 ms of boot for six names; plan `~/.claude/plans/langchain-core-out-of-the-base.md`
   - 11 files import `langchain_core` (10 at module level) for `Document`, `BaseLoader`, `BaseRetriever`, `BaseDocumentCompressor`, two callback types; it drags in langsmith and 7 helpers
-  - [ ] [MANUALLY] Decide compression: Starlette `GZipMiddleware` (drops starlette-compress, brotli, zstandard: 28 MB) or keep brotli/zstd; the plan's step 7 measures it first
-  - [ ] [WE] `retrieval/documents.py` + import fence; hybrid classes move to `retrieval/hybrid/`; `.trivyignore` loses CVE-2026-34070
-
-- [ ] **Develop on Colima, Docker Desktop optional** (Alexander, 2026-10-06; switch with the tap's `sage-runtime`) #dx
-  - [x] [WE] Temp folders that get bind-mounted live under `$AI_UI_TMP` (`~/.cache/ai-ui/tmp`, `scripts/lib/mount-tmp.sh`): Colima mounts /tmp and /var/folders empty, and macOS mktemp ignores TMPDIR; `test_db_upgrade` now sees its 155 MB snapshot
-  - [x] [WE] `make review`'s Caddyfile and the Sprig build root (`SPRIG_BUILD_ROOT`) moved under `$HOME`; review answers HTTPS 200 on Colima
-  - [x] [WE] `WATCHFILES_FORCE_POLLING=true` for `make dev` and `review LIVE=1`: Colima relays a save as a metadata change WatchFiles ignores; reload now 1 s, before never
-  - [x] [WE] buildx builder named per context; `trivy image` gets `DOCKER_HOST`; `it_build` 6m25s on an 8 GiB Colima VM
-  - [ ] [WE] Vite HMR in `make dev` on Colima: needs the `dev-svelte` Sprig, so the local registry (`sprig-registry-data`, 6.8 GB) on Colima first
-  - [x] [WE] 2026-10-09: the disk gate measures the runtime in use (Colima's disks, OrbStack, Docker Desktop's `Docker.raw`); amd64 and multi-arch targets stop on a krunkit context with the build-VM route; buildx preflight; `ghcr_login` checks the login helper; Podman only when set; `make runtime_tests` 41
-  - [x] [WE] 2026-10-09: `ai-ui` makes a krunkit VM on Apple Silicon (vz with Rosetta without krunkit, vz alone on Intel) through the tap's shared runtime code; `dev` refuses a `--dir` outside `$HOME`; `--add-host` on start, dev and try
-  - [ ] [WE] `nuke --genesis` warns before removing Colima
-  - [x] [WE] 2026-10-09: docs say Colima by default with Docker Desktop and OrbStack supported (release runbook, troubleshooting, try-sage deployment; the Education docs' quick start and update pages)
+  - [x] [MANUALLY] Compression: gzip only, Starlette's `GZipMiddleware` (Alexander, 2026-11-03); the plan's step 7 still measures the three heaviest responses first
+  - [ ] [WE] `retrieval/documents.py` + import fence; hybrid classes move to `retrieval/hybrid/`; `.trivyignore` loses CVE-2026-34070; then the gzip swap. On its own branch once today's tree is committed: the plan makes it its own minor release, and `retrieval/utils.py` and `routers/retrieval.py` carry 2026-11-02/03 fixes not yet committed
 
 - [ ] **Mac upgrades offer the move to Colima** (Alexander, 2026-10-09) #ux
-  - [x] [WE] `ai-ui migrate [--dry-run]` moves Sage's data from Docker Desktop or OrbStack into Colima (staged copy, verified, source kept); `start` and `update` offer it once, also the krunkit conversion of a vz VM; the answer stays in `~/.sage-is/offers`; 73 CLI tests
-  - [x] [WE] The runtime code is vendored from the tap: `make runtime_sync` copies `lib/sage-runtime.sh` into `cli/lib/`; a test fails on drift
   - [ ] [MANUALLY] Ships with the next AI-UI release; the tap's formula follows through the tap's `ai_ui_formula` target and installs `cli/lib/`
   - [ ] [WE] Prove it on a spare macOS account: today's `ai-ui` on Docker Desktop, upgrade, accept the offer, same data on Colima, no second ask
+  - [x] _2 done steps archived 2026-11-03 → docs/completed-todos.md._
 
 - [ ] **Fabric for work on the captain nodes; first job: backups** #critical: the hourly `APP-backup` cron has backed up nothing since 2025-11-28, and Trellis `/data` gets company mail next (2026-09-29)
   - [ ] [WE] Bug: `pipenv run ./backup.py` (crontab, :53 hourly) crashes on import, first `fabric` then `yaml`: 2,308 tracebacks in `backup_cron.log` (5.9 MB); no `config.yaml` either; retire the line or rebuild
@@ -241,16 +151,11 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [ ] Later tasks: disk and health sweep of the 3 nodes, the OpenCo IR detection scripts, fail2ban
 
 - [ ] **Converge the two deployed instances**: `try-sage-is` vs `sage-startr-cloud` #critical
-  Both run `ghcr.io/sage-is/ai-ui:3.1.0` on the same host (openco2), yet their runtime
-  state differs materially. Surfaced 2026-08-15 during an infrastructure backup audit.
-  - [ ] `try-sage-is` carries **5.4 GB** of sprig-installed `ml_packages` (190 packages);
-        `sage-startr-cloud` carries none. Establish which is intended.
-  - [ ] Storage shapes differ: `try-sage-is` uses a docker volume, `sage-startr-cloud`
-        a bind mount into `/root/Sync`. Pick one.
-  - [x] If both need the same wheels, evaluate a shared read-only wheelhouse volume —
-        feasible since both run on the same node, and pays the 5.4 GB once not twice.
-  - [ ] Mark `ml_packages` and `cache` as regenerable so infrastructure backups can
-        exclude them (they are ~36% of one node's nightly backup today)
+  - Both run `ghcr.io/sage-is/ai-ui:3.1.0` on the same host (openco2), yet their runtime state differs materially. Surfaced 2026-08-15 during an infrastructure backup audit.
+  - [ ] `try-sage-is` carries **5.4 GB** of sprig-installed `ml_packages` (190 packages); `sage-startr-cloud` carries none. Establish which is intended.
+  - [ ] Storage shapes differ: `try-sage-is` uses a docker volume, `sage-startr-cloud` a bind mount into `/root/Sync`. Pick one.
+  - [x] If both need the same wheels, evaluate a shared read-only wheelhouse volume — feasible since both run on the same node, and pays the 5.4 GB once not twice.
+  - [ ] Mark `ml_packages` and `cache` as regenerable so infrastructure backups can exclude them (they are ~36% of one node's nightly backup today)
 
 ### Real-estate segment engagement — first paid deployment (opened 2026-07-30)
 
@@ -262,105 +167,42 @@ _The first paid real-estate deployment of AI-UI, and deliberately the beachhead 
 
 **Chart** — the **Monday 2026-08-10, 13:00** kickoff and product tour is charted separately at [charts/friday-demo/TODO.md](charts/friday-demo/TODO.md): ten decision cards, four on the frontier, decision records under `docs/decisions/`. That chart decides which no-build work rides the pre-demo deploy; it does not reorder the migration.
 
-#### Week one — demo on try.sage.is
-
-- [ ] **Reviewer T's bottom-of-page cutoff**: the `--pos:fixed` 100vh flex-centered layer hid content behind mobile browser chrome and off both scroll ends — reproduced on 3.0.0, fixed 2026-08-03 by migrating the surface. ([dossier](docs/board-dossiers.md))
-  - Fix: server-rendered no-build page (`pages/try_sage_panel.py` + `try-sage.html`, 4.6 KB first response) — normal flow, `100dvh`, safe-area inset, overflow-safe `margin:auto` centering.
-  - `TrySageWelcome.svelte` deleted; anonymous `/` answers server-side only when `ENABLE_TRY_SAGE` is on, other deploys untouched.
-  - Guard-rail `try-sage-welcome.cy.ts` asserts phone-viewport scroll + flag-off inertness; `ENABLE_TRY_SAGE` passthrough added to the e2e + manual-check harnesses.
-- [ ] Turn on Spaces access for Realtor M.
-- [ ] Diagnose the unresponsive Space Agent via `/admin/diagnostics`. Actionable as of 2026-08-03 — the diagnostics page (2.3.3) and how-to-fix modals (2.3.4) are now live on try.sage.is.
-- [ ] **Decide the trial model set and who pays for the tokens.** Undecided as of 2026-07-30 and it gates the instance provisioning below. Note the hidden Groq connection on try.sage.is is uncapped per user, and three people will share this workspace.
-- [ ] **Day-in-the-life walkthrough — staged and labelled as staged**: the proactive beats are outbound-on-a-schedule and **there is no job scheduler** — do not let "does it do that by itself?" get a soft answer.
-  - The Telegram adapter (`bridges/adapters/telegram.py`, the most mature at 505 lines) carries the demo.
-  - The only `scheduler` hits in the backend are the AUTOMATIC1111 diffusion sampler.
-  - [ ] Trigger the beats (weather, stretches, reminders) by hand.
-  - [ ] Say out loud that they are staged, and show the queue on the roadmap.
-
-#### Discovery — before any tooling is designed
-
-- [ ] **Establish rung one of the responsibility ladder.** Nobody knows yet which task comes off his plate first, and the ladder is unbuildable without it. Candidates raised: inbox triage and drafting, listing/client paperwork, follow-up tracking.
-- [ ] **Assess whether documented SOPs exist**; if not, introduce TodoScope as the lightweight starting point. This is the input to everything above.
-- [ ] **Map the real system landscape:** a CRM, the regional MLS, Google Sheets, Airtable, and a great deal of phone/WhatsApp/memory. There is no single system of record, which means the first build is probably capture rather than integration. MLS access is typically licence-restricted — establish early whether we may touch it at all.
-- [ ] **Settle the WhatsApp question**: currently mis-framed as "explore" — the bridge already shipped in 2.0.0, so there is nothing to evaluate.
-  - Shipped: `bridges/adapters/whatsapp.py`, 291 lines, webhook-driven, HMAC-SHA256 verified, full runbook in `docs/bridges.md`.
-  - [ ] Decide (a) whether Spaces already covers the internal case and makes the bridge unnecessary.
-  - [ ] Decide (b) whether it is client-facing.
-    - [ ] If client-facing on his business number: WAHA is unofficial and carries ban risk on the number his livelihood runs through — that risk conversation happens **before** we provision.
-  - [ ] If we do proceed: provision a WAHA sidecar container, a phone number, and a public HTTPS webhook.
-    - try.sage.is is a single-app CapRover deploy with no sidecar beside it, so this is infra provisioning, not a config toggle.
-- [ ] **Establish the brokerage's position on email.** Their shared admin and tech staff own it. Any mail-side integration needs their cooperation and may simply be refused — better to know before it is designed in.
-- [ ] **Replace the floating delivery milestone with a real anchor.** The "4-month" figure was our peer's own arbitrary soon-ish and cannot be met or missed as written.
-
-#### Dedicated instance — after the demo
+#### Moving him off the shared box
 
 - [ ] **Move Realtor M off the shared demo box onto his own AI-UI** (decided 2026-07-30): it ends tenant cleanup, uncapped shared spend, and his data beside strangers'. Since 2026-10-04 it runs on his own Mac (private Trellis board, card "Realtor M's Mac mini").
   - [x] His AI-UI is up on the box, :8080, loopback only (2026-10-20)
   - [ ] [MANUALLY] The Cloudflare Tunnel on a startr.cloud codename host behind Access (decided 2026-10-22; his domain later); then he signs in there, not on try.sage.is
-- [ ] Migration path for anything he creates on try.sage.is between the demo and the cutover.
-- [ ] **The social push escalates this from tidy-up to pre-launch blocker**: before the announcement, migrate Realtor M off the shared box, or cap spend, or both — not covered by any marketplace item. #critical
-  - The push drives open-source self-installers at try.sage.is — the same shared box holding a paying customer's working data.
-  - All three problems above get worse at once: tenant cleanup, uncapped shared spend, and his data sitting beside strangers'.
-  - Spend budgets are item 2 in the `#### Platform unlocks` sequence, which the marketplace quarter slice already depends on.
 
 #### Platform unlocks pulled forward by this engagement
 
 All four were backlog items before 2026-07-30 and are now customer-blocking. **Sequence them; do not run them in parallel.**
 
-- The no-build strangler migration is mid-Phase 2 with the wizard (the hardest surface) still ahead; stalling it half-migrated is the worst available outcome.
-- The external November commitment is signage and materials only, so it imposes **no ship-by date** and must not be used to justify parallelising these.
+Since 2026-10-24 the no-build strangler runs inside the Rootstock card; its phases set the order.
 
-- [ ] **1. Spaces multi-user** — three people (principal, assistant, VA) share one workspace from day one, and our peer's primary success metric is unreachable without it. Highest value, do first. Now under `## In Progress` → _Spaces Enhancements_; mechanics e2e-verified 2026-08-18, remaining work is agent context modes + productization.
-- [ ] **2. Spend budgets per user AND per API key** — required before a customer instance goes live with hosted models and three sharers. See the backlog item; the try.sage uncapped-Groq note there is now a live commercial exposure, not a hypothetical.
-  - 2026-10-24 (Alexander): every provider on every instance has an API spend limit at the provider, so no key runs uncapped; per-user and per-key budgets in the app are still to build
-- [ ] **3. Sprig catalog de-hardcoding (marketplace M1)** — prerequisite for shipping the tooling as autoconfig Sprigs, and therefore for the segment story rather than just this customer. The blocker is the hardcoded Python `CATALOG` in `supervisor.py`.
-- [ ] **4. Job queue** — last on purpose. The demo is staged-and-labelled and November needs no software, so nothing forces real proactive nudges until the configs and features have landed. Promote it when a staged beat has to become a real one.
+The external November commitment is signage and materials only, so it imposes **no ship-by date** and must not be used to justify parallelising these.
 
-### Test suite throughput
-
-- [ ] **Run the e2e suite concurrently** (Alexander, 2026-08-09): `make e2e` is **4m51s for 46 specs / 233 tests** serially against one container, the gate between every change and confidence — its wall-clock is a tax on every iteration. #dx #tooling
-  - [ ] As many specs in parallel as the harness allows.
-  - Cypress supports parallel spec execution; the blocker is shared state rather than the runner.
-  - `scripts/e2e/run-cypress.sh` boots ONE rootstock on one volume, and signup hard-closes after the first admin — two specs racing to seed the same instance is a data race, not a speed-up.
-  - [ ] Shape that works: probably N containers on N volumes with the spec list partitioned — also what lets `e2e_both` stop costing double.
-  - [ ] Measure the serial baseline per spec first — partitioning by duration matters more than by count.
-    - `setup-dialog` 21s, `wizard-welcome` 33s and `setup-navigation` 25s are a third of the run between them.
-
-- [x] _Favicon gate rot fixed (2026-08-09): `sprig-lifecycle.sh:224` asserted a favicon deleted deliberately on 2026-08-02, so `sprig_smoke` sat at 65/66 and the pre-push `gauntlet` refused every push while checking nothing true; now asserts the three icons `app.html` actually links — 68 passed, 0 failed. The lesson: a gate naming a file is a gate that outlives the file. #dx #tech-debt. Archived → docs/completed-todos.md._
-
-- [ ] **Derive the icon check from the markup**: the favicon-gate fix swapped one hardcoded filename for three, which rots the same way — just later. #dx
-  - [ ] Read every `/static/icons/X` out of `app/src` and `site.webmanifest` and assert each is served. Same shape as `scripts/gates/docs-targets.sh`.
-  - [ ] Adding an icon enrols it, deleting one retires it, nothing to remember.
-  - [ ] Cover the two PWA manifest icons (192×192, 512×512) — never checked by any gate; a missing one breaks install silently.
+- [ ] **Platform unlocks, in this order**: Spaces multi-user, spend budgets, the Sprig catalog, the job queue
+  - [ ] **1. Spaces multi-user** — three people (principal, assistant, VA) share one workspace from day one, and our peer's primary success metric is unreachable without it. Highest value, do first. Now under `## In Progress` → _Spaces Enhancements_; mechanics e2e-verified 2026-08-18, remaining work is agent context modes + productization.
+  - [ ] **2. Spend budgets per user AND per API key** — required before a customer instance goes live with hosted models and three sharers. See the backlog item; the try.sage uncapped-Groq note there is now a live commercial exposure, not a hypothetical.
+    - 2026-10-24 (Alexander): every provider on every instance has an API spend limit at the provider, so no key runs uncapped; per-user and per-key budgets in the app are still to build
+  - [ ] **3. Sprig catalog de-hardcoding (marketplace M1)** — prerequisite for shipping the tooling as autoconfig Sprigs, and therefore for the segment story rather than just this customer. The blocker is the hardcoded Python `CATALOG` in `supervisor.py`.
+  - [ ] **4. Job queue** — last on purpose. The demo is staged-and-labelled and November needs no software, so nothing forces real proactive nudges until the configs and features have landed. Promote it when a staged beat has to become a real one.
 
 ### Repo Hygiene & Security
 
-- [ ] **Community-share leak + dead wiring**: fix the leak and the dead wiring the flag currently hides before `ENABLE_COMMUNITY_SHARING` goes back on for the sharing site (~2 weeks out) (Switch 1 of the 2026-08-15 poka-yoke resolution). #security #critical ([dossier](docs/board-dossiers.md))
+- [ ] **Community-share leak + dead wiring**: fix the leak and the dead wiring the flag currently hides before `ENABLE_COMMUNITY_SHARING` goes back on for the sharing site (this winter) (Switch 1 of the 2026-08-15 poka-yoke resolution). #security #critical ([dossier](docs/board-dossiers.md))
   - [ ] Every model Share click sent the full model record — `params.system` included — as a query string to a public request bin, live since the initial commit with the flag defaulted on.
   - [ ] Scope: try.sage.is (3.0.0) and every deployed instance.
-  - [x] Done today: flag default flipped to `False` (`config.py:1471`); the two share buttons that ignored it gated (`FunctionMenu.svelte`, `Feedbacks.svelte`) — a mask, not a fix; flag-on re-arms everything below.
   - [ ] Full evidence in `charts/sprig-creator-program/TODO.md`.
   - [ ] [MANUALLY] Treat as an incident first: check whether the bin captured traffic and rotate anything a shared system prompt disclosed — before any code fix.
-    - [ ] `Models.svelte:105` points at `https://webhook.site/93a1d2e8-5b27-44c4-8493-0f915cad92c5`.
-    - [ ] The size guard at `:108` tests `knowledge_base`, a field a model object does not have, so `isLarge` is always false and the URL-query branch always runs.
-  - [ ] [WE] Replace the webhook.site URL; fix or delete the dead `knowledge_base` guard.
-  - [ ] [WE] Add `COMMUNITY_HUB_URL` as a `PersistentConfig`; replace the ~9 hardcoded `https://sage.is` literals.
-    - [ ] Literals: `Prompts.svelte`, `Models.svelte`, `Functions.svelte`, `ShareChatModal.svelte`, `Feedbacks.svelte`, `prompts_panel.py`, `agents_panel.py`.
-  - [ ] [WE] Build or drop the missing destination pages (`/prompts/create`, `/models/create`, `/functions/create`, `/chats/upload`, `/leaderboard`) — four of five soft-404, so Share toasts success and does nothing.
-  - [ ] [WE] Reconcile the handshake word: doc says the hub posts `ready`, every listener waits for `loaded`.
-  - [ ] [WE] Reconcile the postMessage allowlist: community.sage.is in none of the three; localhost port disagrees 5173 vs 9999.
-  - [ ] [WE] Do not ship `function` or `tool` share types at launch.
-    - [ ] A shared Function is unsandboxed RCE (`exec` server-side, `new Function` browser-side).
-    - [ ] A shared tool with `auth_type: "session"` exfiltrates each caller's JWT to the publisher.
-  - [ ] [WE] Add a `source`/`origin` field to shared items so a bad one can be enumerated and revoked — no incident response without it.
-- [ ] **Repo-wide hidden-artifact allowlist rollout**: Deny dotfiles and dotfolders everywhere in the repo by default; explicitly include only approved shared hidden artifacts so local state cannot drift into git by accident.
-  - _Implemented: `.gitignore` allowlist, contributor approval rule in `CONVENTION.instructions.md`, `!.*.example` template allowlist, included/excluded verification. Archived 2026-08-15._
-  - [ ] Review currently tracked hidden artifacts and remove any that should be excluded going forward
+    - [ ] Check whether the bin captured traffic
+  - [ ] [WE] Add a `source`/`origin` field to shared items so a bad one can be enumerated and revoked; under review as a pub/sub design (Alexander, 2026-11-03).
+  - [x] _10 done steps archived 2026-11-03 → docs/completed-todos.md._
 
 - [ ] **CSP-configured gate**: assert a CSP is set — an unset header and a deliberate omission look identical to the process (charted 2026-08-15 in the poka-yoke pass). #security #critical ([dossier](docs/board-dossiers.md))
   - [ ] `CONTENT_SECURITY_POLICY` is unset in `.env.example`, the `Dockerfile`, `docker-compose.yaml`, and `distribution.env`.
-  - [ ] `SecurityHeadersMiddleware` (`main.py:1473`, `utils/security_headers.py::set_security_headers()`) builds headers purely from env vars.
-  - [ ] `routers/diagnostics.py:610` already grades the absence "degraded" — the system knows and cannot stop anything.
+  - [ ] `SecurityHeadersMiddleware` (`main.py:1468`, `utils/security_headers.py::set_security_headers()`) builds headers purely from env vars.
+  - [ ] `routers/diagnostics.py:602-618` already grades the absence "degraded" — the system knows and cannot stop anything.
   - [ ] Stakes rose twice this month: the marketplace renders third-party listings, and community.sage.is opens in weeks.
   - [ ] Ship a `scripts/gates/` check on the `startr-swap/check.py` `--check`/`--self-test` shape, asserting `distribution.env` sets a policy.
     - [ ] Gate on `Content-Security-Policy-Report-Only`, NOT enforcement — gating on enforcement pressures somebody into shipping an untested policy, and this app has never run one.
@@ -371,19 +213,12 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
     - [ ] Keep `'unsafe-inline'` for now: the branding panel, `pages/assets/*.js`, `sprigs/ui_dispatch.py`, and `SetupDialog.svelte` depend on inline handlers; nonce-based CSP is its own later job.
     - [ ] Acceptance test already wired: `routers/diagnostics.py` flips `csp_missing` off on a stock deploy.
     - [ ] Report-only first, per the parent.
-- [ ] **Neuter the `execute` event branch, do NOT delete it**: `Chat.svelte:382-395` runs server-supplied code through `new Function(...)` in the top frame, unsandboxed (Note 1 of the 2026-08-15 poka-yoke resolution). #security #critical ([dossier](docs/board-dossiers.md))
-  - [ ] Deletion refuted by adversarial verification: it looks dead — nothing in the repo emits `"execute"` — but that was the wrong test; it is public extension-API vocabulary reached through two unfiltered forwarders.
-  - [ ] Forwarder 1: `middleware.py:1782-1784` forwards any event a configured upstream model, Pipe, or stream Filter puts in the SSE body.
-  - [ ] Forwarder 2: `routers/chats.py:522-552` (`EventForm{type,data}`, `get_verified_user` only) forwards any event from a REST client or API key — and `ENABLE_API_KEY_ENDPOINT_RESTRICTIONS` defaults False.
-  - [ ] The CSP child above closes the same hole browser-side — belt-and-braces, do both, ship whichever lands first.
-  - [ ] Keep the arm, refuse to call `new Function`, always invoke `cb` so callers get a response.
-  - [ ] Trap: deleting the branch breaks `__event_emitter__` callers silently and hangs `__event_call__` callers for 60s — the fallthrough `else` never invokes `cb`.
 - [ ] **HTMLToken raw-text invariant — document and gate it, do NOT "fix" the asymmetry** (Note 2 of the 2026-08-15 poka-yoke resolution): branching on `html` silently breaks five features, not three. #security #bonsai ([dossier](docs/board-dossiers.md))
   - [ ] `HTMLToken.svelte:17` computes `html = DOMPurify.sanitize(token.text)`, but the iframe / `<file>` / `<status>` / `<source_id>` branches (lines 55, 72, 87, 105, 123) test raw `token.text` on purpose.
   - [ ] DOMPurify's stock profile removes `<iframe>` with its contents (`ALLOWED_TAGS` omits it, `DEFAULT_FORBID_CONTENTS` includes it) and erases the four custom tags (no hyphen, so the custom-element regex rejects them).
   - [ ] The invariant: every raw-text branch either pins its origin or renders with bare `sandbox` (the generic branch, whose `src` is unvalidated).
     - [ ] YouTube hardcodes `youtube.com/embed/` + an 11-char id regex; file uses a same-origin admin-gated endpoint.
-  - [ ] One comment at line 17 stating why `html` is only for `<video>`/`<audio>`.
+  - [x] One comment at line 17 stating why `html` is only for `<video>`/`<audio>`. Done 2026-11-02.
   - [ ] `scripts/gates/` check on the `startr-swap/check.py` `--check`/`--self-test` shape, keyed on the `src={iframeSrc}` binding (not a line number). ~60 lines, belongs in `gauntlet_fast`.
     - [ ] Assert the generic branch keeps bare `sandbox` and `allow-scripts`+`allow-same-origin` never co-occur.
   - [ ] Trap for the fixer: the line-82 `onload` autosizer is already broken under bare sandbox (opaque-origin `SecurityError`) — exactly the "just make the height work" bait that weakens the sandbox.
@@ -395,12 +230,6 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
   - [ ] The graft path ALREADY fails closed on exactly this check (`artifact.py` refuses to extract on mismatch — it is what caught this); publish needs the same rule in the opposite direction.
   - [ ] Device: in `scripts/publish-sprigs.sh`, hash each artifact and refuse to push any whose digest does not match the catalog pin.
   - [ ] Worth doing before the Sprig marketplace makes publishing routine.
-- [ ] **Coordinated langchain major bump**: bump the langchain/langchain-community/langchain-core trio (rag-loaders Sprig™ side) past 0.3.x to drop the `CVE-2026-34070` suppression.
-  - [ ] `.trivyignore` suppresses `CVE-2026-34070`: path traversal in `langchain_core`'s legacy `load_prompt()`, unreachable in this codebase — see `.trivyignore` comment.
-  - [ ] The fix (`langchain-core==1.2.22`) needs `langchain-core<1.0.0` dropped, which both pinned sprig-side packages require (`langchain==0.3.30`, `langchain-community==0.3.27`, `app/backend/requirements.txt:51-56`).
-  - [ ] Plan and test the coordinated bump, then remove the `.trivyignore` entry.
-
-
 
 ### OAuth UX & Identity Linking
 
@@ -412,225 +241,72 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
   - [ ] Consumers: Trellis (its card "AI-UI is the identity provider", decided 2026-09-17; personas on try.sage.is, amendment 44), the Tinker.Click library server (upstream; needs OIDC client support), community.sage.is
   - [ ] Ties to the federation plan's "identity across boxes" flow, and its open question: how a box proves who it is
 
-- [ ] **OAuth identity linking v1**: let users attach Google/GitHub/Microsoft to existing accounts whose email doesn't match the provider's email; decisions confirmed in plan thread 2026-05-28 ([dossier](docs/board-dossiers.md)).
-  - [ ] The only graceful path today is `OAUTH_MERGE_ACCOUNTS_BY_EMAIL` — silent email-match linking, useless when the local email differs from the provider's.
-    - [ ] Also an account-takeover footgun if email control is weaker than account control.
-  - [ ] Scope: build Patterns A + B, lift the one-provider-per-user schema limit, harden the admin controls with Poka-Yoke devices.
-  - [ ] **Schema lift to multi-provider stacking**: migration ships before any UX work.
-    - [ ] Replace single `oauth_sub TEXT UNIQUE` with per-provider `UNIQUE` columns `google_sub`, `github_sub`, `microsoft_sub` (+ `apple_sub` when Apple lands).
-    - [ ] Generic `oidc` keeps `oauth_sub` as catch-all.
-    - [ ] Rewrite every `user.oauth_sub` callsite to `Users.get_user_by_oauth_sub(provider, sub)`.
-  - [ ] **Pattern A — Settings-driven link/unlink**: Account Settings → "Connected providers" lists each linked provider with an unlink button, plus Connect buttons for the rest.
-    - [ ] OAuth round-trip carries a session-bound `state` token; callback attaches `<provider>_sub` to the already-signed-in user.
-  - [ ] **Pattern B — OAuth-first claim flow with magic-link verify**: no oauth_sub or email match → redirect to `/auth/claim?provider=google&sub=...&temp=<token>` instead of 403 or auto-create.
-    - [ ] User enters their AI-UI email; the magic link attaches the identity.
-    - [ ] No-existing-account branch goes to a separate create flow gated on `ENABLE_OAUTH_SIGNUP` + allowlist policy.
-  - [ ] **Per-provider link mode** (replaces global `OAUTH_MERGE_ACCOUNTS_BY_EMAIL`): each provider gets `<provider>_link_mode`.
-    - [ ] Modes: `silent_merge_by_email` (current behavior), `verify_via_magic_link` (Pattern B pipeline), `disabled` (Pattern A only).
-    - [ ] Fresh-install default: `verify_via_magic_link` if SMTP is configured, else `silent_merge_by_email` with a save-time warning.
-    - [ ] Migration: `OAUTH_MERGE_ACCOUNTS_BY_EMAIL=True` → all providers `silent_merge_by_email`; `=False` → `disabled`.
-    - [ ] Global toggle stays as fallback one major version, then drops.
-  - [ ] **Replace raw 403 with a real status page**: redirect `handle_callback` failures to `/auth/status?reason=<signup_disabled|allowlist_blocked|domain_blocked|role_pending|email_taken>&email=<masked>`.
-    - [ ] Replaces `HTTPException(403, ACCESS_PROHIBITED)` at [utils/oauth.py:508-511](app/backend/sage_is_ai/utils/oauth.py#L508); API surface keeps the 403 for programmatic clients.
-    - [ ] Frontend route renders branded copy + "request approval" CTA (mailto or webhook).
-    - Copy: `signup_disabled` → "no account at <site name>" + "Request access" button.
-    - Copy: `role_pending` → "being reviewed" + existing pending UX; OAuth signup auto-creates awaiting approval — `DEFAULT_USER_ROLE=pending` IS the poka-yoke, don't bypass it.
-    - Copy: `domain_blocked`/`allowlist_blocked` → "not on the allowed list, talk to your admin".
-  - [ ] **Per-provider allowed-domains policy** (replaces global `OAUTH_ALLOWED_DOMAINS`): each provider block gets `<provider>_allowed_domains`.
-    - [ ] Example: Google `@openco.ca` only while GitHub stays open, Microsoft `@school.edu, @school.k12.org`.
-    - [ ] Provider blocks already exist at [config.py:316-700](app/backend/sage_is_ai/config.py#L316); extend with the domain field.
-  - [ ] **Per-user OAuth allowlist**: `oauth_eligible BOOLEAN DEFAULT True` on the user record plus per-provider overrides (`google_allowed`, etc.).
-    - [ ] Lets a workshop lock to the invited cohort even when the domain allowlist matches.
-    - [ ] Default is eligible; restrictive mode is one toggle.
-  - [ ] **Save-time Poka-Yoke on admin OAuth config**:
-    - [ ] Refuse to save `ENABLE_OAUTH_SIGNUP=True` with empty/wildcard allowed-domains without an explicit "I understand this is open registration" confirmation toggle.
-    - [ ] Treat an empty allowed-domains list as "no one" (fail-closed), not "everyone" (fail-open).
-    - [ ] Block enabling Pattern B when SMTP isn't configured — the magic link would never arrive. Inline error: "Configure email first (Settings → Email)."
-    - [ ] Inline preview after each field change: "With current settings, the following can sign up: Google @openco.ca only; GitHub open to allowlisted users only."
-  - [ ] **"Simulate sign-in" admin diagnostic** — highest-leverage Poka-Yoke: admin pastes an email + picks a provider; system shows the end-to-end outcome with no DB changes.
-    - [ ] Outcomes: "Would link to existing user X" / "Would create new pending user" / "Would 403 — not in domain allowlist" / "Would 403 — user not on per-user allowlist".
-    - [ ] Catches misconfiguration before a real user hits it.
-  - [ ] **i18n** all new user-facing copy (status pages, claim flow, settings labels).
-  - [ ] **Audit log** entry on every link/unlink event: `(timestamp, user_id, provider, sub, action, actor)` — admin or user.
-  - [ ] **Migration safety**: migration populates the typed columns from existing `oauth_sub = "google@..."`.
-    - [ ] Old field stays nullable one release for rollback, removed in N+1.
-
 ### Release Wrap-Up
 
-- [x] **3.2.0 — privacy on by default, offline, Space tools** #critical: plan `release-3.2.0-poka-yoke` (audited 2026-09-24)
-  - [x] Preflight regex matches `## [X.Y.Z]` (it matched `# [`, so it would have refused every release); tag built from a worktree with its own revision; `make privacy_tests` in `gauntlet_fast`
-  - [x] `default_external` ON; three off-switches and the two-defaults drift unit-tested; reaches only instances that never saved the panel; CHANGELOG `### Changed` says so
-  - [x] CHANGELOG: offline/PWA entry, privacy text corrected; `PRIVACY_KEY` in `.env.example`; dead plan citations removed from the board and dossiers
-  - [x] `make e2e` refuses an image not built from `HEAD` (it had run the 3.2.0 specs against a five-week-old 3.1.0 image, 47/48 green); `docs_gate` and `ruff_gate` green
-  - [x] Base image bumped to glibc 2.44 (a fresh image died at boot: Python needed 2.44, the pinned base had 2.43); the Dockerfile now imports math, ssl and sqlite3 right after installing Python, so a skew fails the build
-  - [x] Cognitive-complexity gate green by refactoring, not raising: privacy functions split under 15, the chat path back to 357 via a pass-through reverser, the tool runner's body helper; the baseline only follows the `_generate_chat_completion` rename at its unchanged 57
-  - [ ] [MANUALLY] Commit, push `develop`, `make minor_release`, `make bump_release_version`, rename `## [Unreleased]` to `## [3.2.0] — <date>`, commit
-  - [x] [WE] Gates on the release branch (2026-09-25): `gauntlet_fast` (with `privacy_tests`), `distribution_verify`, `it_build` then `e2e` 199/245, 0 failing, 46 pending; `lint` Python green, frontend ESLint 9,622 = the carded baseline, none new
-  - [x] [WE] `make ship` 2026-09-26: preflight, smoke (native + amd64) green; `develop`, `master`, tag `v3.2.0` pushed
-  - [x] GHCR image was missing: build died `input/output error`, the Docker drive had 373 MiB free; preflight now checks host disk (`RELEASE_MIN_BUILD_DISK_GIB`, 30)
-  - [x] [MANUALLY] Freed the Docker drive with `offload drain` (FFPF, ROMs to the 14 TB): 92 GiB free
-  - [x] [WE] Rebuilt from the tag, index `sha256:197883c6…fbb6fc`, revision `e0bb99e5`; manifest 6/6; `SERVER_TAG=3.2.0`; the build's trap exit 128 after a good push fixed
-  - [x] [WE] try.sage.is deployed by digest 2026-09-27; `/api/config` 3.2.0, `/health` 200
-
-- [x] **`make caprover_app_create APP=<name>` wrapper**: covered by `cr-deploy ensure <instance file>` (register, env, volume, domain, HTTPS, DNS), 2026-09-27
-  - [x] Register via `/api/v2/user/apps/appDefinitions/register`.
-  - [x] POST the env-var block.
-  - [x] Set the persistent volume path.
-  - [x] Connect a custom domain.
-
-- [x] **Release build from the tag, re-runnable (3.2.0)**: `_it_build_multi_arch_push_GHCR` builds `v$(IMAGE_TAG)` in a throwaway worktree with the tag's own revision label; a trap removes the worktree, so a failed build re-runs. ([dossier](docs/board-dossiers.md))
-  - [x] _Post-push GHCR manifest verify SHIPPED 2026-07-19 — fixture 3/3, `verify_ghcr_manifest` + `manifest_verify_fixture` gate the SERVER_TAG pin. Sub-essay archived 2026-08-15 → `docs/completed-todos.md`._
-  - [ ] **The release builds whichever branch you are standing on, not the tag (2026-08-11)**: fix — build the tag from a throwaway `git worktree`. #critical
-    - [ ] A worktree build is reproducible from the tag, immune to local edits and branch position.
-    - [ ] `finish_flow` ends on `git checkout develop`; `release_and_push_GHCR` builds on the next line — `org.opencontainers.image.revision` stamps develop's HEAD while `v$(VERSION)` names master's merge commit.
-    - [ ] 3.1.0 trees differed by 7 files, 2845 deletions, so the tag does not reproduce the image; publishing 3.1.0 honestly needed a hand-typed `git checkout master`.
+- [ ] **Release pipeline: what the tag-build card left open** — moved out of the closed 3.2.0 card (now in `docs/completed-todos.md`) on 2026-11-02, so its open work shows on the board
   - [ ] **The 2.3.0 driver recurred verbatim in 3.1.0 (2026-08-10)**: second occurrence of a known, carded failure mode. #critical
     - [ ] 2.3.0: buildx OOMed mid-push — tag on origin with no GHCR image.
     - [ ] 3.1.0: `release_finish` pushed tag `v3.1.0`, then the build failed — tag published, no matching GHCR image, the exact state this card was opened for.
     - [ ] Recovery was hand-driven: `it_build_multi_arch_push_GHCR`, then `verify_ghcr_manifest`, then `_pin_server_tag`.
-  - [x] _Multi-arch `bun install` contention FIXED 3.1.0 (2026-08-10) — `sharing=locked` BuildKit cache mount on bun's cache in `Dockerfile`; 940 tarballs, 21s solo vs 181s contended, second arch reads warm cache in 31s; `ensure_builder --use` fixed, cache wipe now opt-in via `CLEAN_BUILD=1`; reads as a network flake and is not one. Archived → docs/completed-todos.md._
   - [ ] **`wizard_smoke` cold-cache false-fail (2.3.2, 2026-05-29)**: 15-min `INSTALL_TIMEOUT_SEC` too short for ~5 GB wheels + ~2 GB embedding model — evaluate, any removes the failure at the root:
     - [ ] Smoke false-failed on residential bandwidth while uv downloaded and `models/status` showed `error: null`.
     - [ ] `SKIP_SMOKE=1` is NOT poka-yoke; until a root fix ships, a cold-cache false-fail blocks the release — the gate doing its job.
     - [ ] Bake uv wheel cache + embedding model into the smoke image at build time (image grows ~5-7 GB; smoke turns deterministic, runs in minutes).
     - [ ] Move smoke to the staging CapRover app once it exists (datacenter bandwidth; ties into the 2.3.3 staging-smoke design).
     - [ ] Make smoke resumable across container restarts.
-  - [x] _One release door SHIPPED (2026-08-12) — `make ship` is the only public publish path, hotfixes included; internals `_`-prefixed with no `##`; deleted `scripts/release.sh`, `release:` + 5 dead targets; GHCR pair collapsed into `_release_and_push_GHCR`; `docs_gate` caught all 4 stale doc references. Archived → docs/completed-todos.md._
-  - [x] _`release_preflight` SHIPPED (2026-08-12) — 4 outside-world checks before `release_smoke`: `gh auth status`, docker reachable ≥8 GiB (`RELEASE_MIN_DOCKER_GIB`), `v$(RELEASE_VERSION)` not on origin, `## [X.Y.Z]` in CHANGELOG.md; origin-tag check alone catches both 2.3.0 and 3.1.0. Archived → docs/completed-todos.md._
-  - [x] _Lightweight tags unpublishable (2026-08-12) — `scripts/hooks/no-lightweight-tags.sh` on pre-push via `gauntlet_fast`, teeth 4/4, judges only unpushed tags; `v3.1.0` re-cut annotated (`git tag -f -a` + force push, no delete); `v2.0.0` stays lightweight. Archived → docs/completed-todos.md._
-  - [x] _`make help` scans `##` SHIPPED (2026-08-12) — awk scan of `## ` comments, 29 documented targets annotated up to 71; `make help_all` keeps the full 137-name dump; `_`-prefixed targets cannot appear. Archived → docs/completed-todos.md._
-  - [ ] **Both ratchets are unrunnable on a fresh clone (2026-08-12)** `#critical`: `cognitive_complexity` and `chat_path_structure` hard-fail "no baseline" on every clone and CI runner, and `make lint` fails with them.
-    - [ ] `.gitignore:31` excludes `/scripts/gates/*/baseline.json` and none was ever committed.
-    - [x] Bootstrap circularity FIXED (2026-08-17): `--tighten` now seeds all six ceilings from scratch and warns that fences are authored by hand, never generated. Proven live — the chat-path baseline was lost locally and rebuilt through this path (ceilings via `--tighten`, nine fences re-authored from the 2026-08-05 census, gate + relocate + teeth all green).
+  - [ ] **Both ratchets are unrunnable on a fresh clone (2026-08-12)** #critical: `cognitive_complexity` and `chat_path_structure` hard-fail "no baseline" on every clone and CI runner, and `make lint` fails with them.
+    - [ ] `.gitignore:46` excludes `/scripts/gates/*/baseline.json` and none was ever committed.
     - [ ] Baselines stay out of git (Alexander, 2026-08-12); `chat_path_structure_teeth` stays in `gauntlet_fast`.
     - [ ] Remaining: either track the baselines or drop the ratchets from every rollup — a fresh clone still starts fence-less, and ceilings seeded from a regressed tree bless the regression.
-  - [x] _`gauntlet_fast` + one hook mechanism (2026-08-12) — pre-push runs `scan_tree` + `gauntlet_fast`, green in 8.3s; deleted `.githooks/`, which `.gitignore:3` kept out of git so `Makefile:633`'s recommended hooksPath silently disabled all 5 pre-commit stages on a fresh clone; 4 `_teeth` gates now run for the first time. Archived → docs/completed-todos.md._
-  - [x] _`gauntlet_full` runs from clean (2026-08-12) — declared `it_build` on the 12 targets consuming `$(IMAGE_NAME):$(IMAGE_TAG)` instead of reordering, so position carries no meaning; phony, so one build (dry run: build line 14, first consumer 28); `scan_container` joins `gauntlet_full`, NOT `scan`. Archived → docs/completed-todos.md._
-  - [x] _`parity_gate` removed from `gauntlet_full` (2026-08-12) — exits 0 when its multi-gigabyte GGUF artifacts are absent, so it reported success forever and the Korean-probe canary watched nothing; run it on a llama.cpp tag bump; `GATE_STRICT=1` draft dropped. Archived → docs/completed-todos.md._
-  - [x] _Version copies cut 5→3 (2026-08-12) — README heading now a shields badge reading origin's tags (zero writers); `bump_release_version`'s README rewrite removed in the SAME change (a match-less `re.sub` writer silently no-ops); unreachable `$(or $(SERVER_TAG),latest)` arm deleted; SERVER_TAG = PUBLISHED, IMAGE_TAG = BUILT — never compare them. Archived → docs/completed-todos.md._
-  - [x] _Pre-push hooks inert on tag pushes fixed (2026-08-12) — pre-commit skips every hook on a no-new-commit ref range (seen on the `v3.1.0` repair: 8 hooks Skipped, `tags_annotated` among them); `always_run: true` on `scan-tree` + `gauntlet-fast`, proved in sandbox on an empty range. Archived → docs/completed-todos.md._
-  - [x] _`distribution_verify` could not fire, could not pass (2026-08-12) — two mutually-hiding defects: `files:` gate never triggered on a no-content hardlink break, `expected_links` 2 failed sibling-less clones; fixed both, `always_run: true`, into `gauntlet_fast`. Superseded 2026-08-13: hardlink and link counting gone. Archived → docs/completed-todos.md._
   - [ ] **Dependency-CVE scanning belongs on CI loop, not commit hook** (deferred 2026-08-12): keep the hook as lockfile early warning; stop counting it as CVE coverage.
     - [ ] `audit-deps` gates on `files: (bun\.lock|requirements\.txt)$`, so a CVE against an untouched dependency never triggers it — the normal case.
     - [ ] `always_run` is the wrong device (trivy every commit, staleness untouched).
     - [ ] Schedule `make scan_deps` + `scan_container` on a CI runner (see Gitea-vs-Woodpecker).
-  - [x] _`docs_gate` reads doc trees outside the repo (2026-08-12) — roots are DATA in `scripts/gates/docs-targets.roots` (gitignored, tracked `.example`; `~` and `%REPO_SLUG%` expand at run time), absent roots announced not silent; now in `gauntlet_fast` with `docs_gate_teeth`, self-test 6/6 — caught its own vacuous pass first run. Archived → docs/completed-todos.md._
-  - [x] _`distribution_verify`/`distribution_heal` unified on one `DIST_LINK_PRELUDE` (2026-08-12) — two opposite-direction link-count derivations and two open-coded BSD/GNU `stat` fallbacks collapsed; heal fixture still 7/7. Archived → docs/completed-todos.md._
-- [ ] **Tri-repo Jidoka (自働化) + Poka-Yoke (ポカヨケ) for the publish flow**: Bootstrap shipped in 2.3.1; the render layer and commit-hook checks are still open. ([dossier](docs/board-dossiers.md))
-  - [x] **Source of truth** — `distribution.env` hardlinked across all three repos (CLI_VERSION, SERVER_TAG, IMAGE, VOLUME, DATA_MOUNT, WAITLIST_URL). `make distribution_sync`/`distribution_verify` in each repo's Makefile; `release_finish`/`hotfix_finish` gated on verify.
-  - [x] **Bootstrap order** — homebrew-apps (canonical volume + `--tag` on `ai-ui start`/`try`/`update`), AI-UI (Makefile reads `distribution.env` for VOLUME_DATA + IMAGE_TAG defaults), Sage.Education-docs (Makefile reads `distribution.env`, `distribution_sync`/`verify` targets) — all wired.
-  - [x] **Cross-repo workflow doctrine** — homebrew-apps README states `git flow feature start <name>` policy. AI-UI and docs README updates land with the docs-repo install pages.
-  - [ ] **Poka-yoke** — pre-commit hook in each repo refuses commits whose declared image/volume/version conflict with `distribution.env`; installed via `make install_dev`. Wrong values can't reach the index.
-    - [x] _AI-UI hardlink chain self-healing (`make install_hooks`: pre-commit `distribution_verify`, post-checkout/merge/rewrite `distribution_heal`), landed 2.3.3. Archived → docs/completed-todos.md._
-    - [x] **OBSOLETE (2026-08-13)** — no chain to heal. Sibling needs a `distribution_verify` equivalent, not a healer. Reduced to: give homebrew-apps and Sage.Education-docs the same 4-line `cmp` check.
-  - [x] _Hardlink retired 2026-08-13 `#poka-yoke`: ~155 lines of healer/arbitration replaced by 11 — `distribution_sync` copies out, `distribution_verify` asserts byte-equality; no owner declared, divergence reported and reconciled by hand; all three repos now 1 link, sha `69754e40`. Archived → docs/completed-todos.md._
-  - [x] _Three silent failures in the replacement caught 2026-08-14 `#poka-yoke`: `_pin_server_tag` printed success with no match (now asserts result via `grep -qx`), `distribution_verify` passed on zero comparisons (now prints the count), `distribution_sync` skipped absent peers silently (now names each peer). Four lines, proved both directions. Archived → docs/completed-todos.md._
-  - [ ] **Jidoka render layer** — `make sync-from-distribution` in each repo regenerates templated docs/formula/Makefile fragments from `distribution.env`; `release_finish` runs it on the two siblings before tagging and halts with the diff printed if any sibling's working tree turns dirty.
-  - [ ] **Docs render** — Docusaurus install commands and version strings pulled from `distribution.env` (remote-content plugin or build-time include); brew formula caveats and the AI-UI README install section regenerated from the same templates.
-- [ ] **`ai-ui` brew formula self-manages a launchd service**: the `homebrew-apps` formula ships a complete LaunchAgent plist so `brew services start ai-ui` (or `ai-ui start`) brings the container up at login, restarts on crash, and survives shell exit. ([dossier](docs/board-dossiers.md))
-  - [ ] No hand-patching `~/Library/LaunchAgents/*.plist` — stock `cloudflared` proved the trap 2026-05-19.
-    - [ ] Its plist omits the subcommand from `ProgramArguments`, so it exits 1, KeepAlive retries forever, brew shows `error 1`.
-    - [ ] `brew upgrade` silently overwrites the hand-patched fix.
-  - [ ] Bake the plist template into `ai-ui.rb` / `ai-ui@1.rb`'s `service do` block
-    - [ ] Full `ProgramArguments`: binary + `start` subcommand + the container-launch flags
-    - [ ] `KeepAlive { SuccessfulExit=false }`, `RunAtLoad=true`
-    - [ ] `StandardOutPath`/`StandardErrorPath` → `/opt/homebrew/var/log/ai-ui.{log,err.log}`
-  - [ ] `--system` flag (or a sibling `ai-ui-headless` formula) installs a LaunchDaemon under `/Library/LaunchDaemons/` for unattended-reboot uptime; document the tradeoff vs auto-login + LaunchAgent
-  - [ ] `ai-ui start`/`stop`/`update` integrate with `launchctl` (or `brew services`): one command per side, idempotent across re-runs
-  - [ ] Idempotent install/upgrade: `brew upgrade ai-ui` must not duplicate the plist, evict a running service, or leave an orphan plist after `brew uninstall`; `brew services list` always reflects reality
-  - [ ] Pre-flight in `ai-ui start`: refuse to launch when another container holds the configured port or container name; prompt the operator to `ai-ui stop` first
-  - [ ] Smoke: formula `test do` block installs the agent, asserts the service starts, hits `/health`, deregisters cleanly
-- [ ] **Update banner: redirect admins to auto-update config**: replace `UpdateInfoToast.svelte` copy with deployment-shape-aware guidance — messaging only, no backend changes.
-  - [ ] Guidance: auto-deploying installs (CapRover, Portainer, K8s) pick up new tags automatically; brew/manual installs run `ai-ui update --tag X.Y.Z` (shown inline)
-  - [ ] CapRover's existing auto-pull is the structural poka-yoke
-  - [ ] Edit `app/src/lib/components/layout/UpdateInfoToast.svelte`: new copy + inline `<code>` for the command + two links
-  - [ ] Update `app/src/lib/i18n/locales/en-US/translation.json` with new strings; other locales fall back to English until translated
-  - [ ] Create `WEB-Sage.Education-docs/docs/admin/auto-updates.md` (CapRover config + brew alt + Portainer/K8s/other one-paragraph each + Need help? → `support@sage.is`)
-  - [ ] Verify: banner renders with new copy when current < latest for an admin; release-notes link points at the specific tag; docs page renders in Docusaurus dev server
-- [ ] **`make ship` publishes no GitHub release page**: add a `gh release create --verify-tag --latest` step with the CHANGELOG section as notes (v3.0.0 to v3.2.0 were published by hand 2026-09-29)
+  - [x] _1 done step archived 2026-11-03 → docs/completed-todos.md._
 
 ### Privacy & Poka-Yoke #critical
 
 - [ ] **Review & implement Poka-Yoke privacy plan**: Three structural mistake-proofing changes surfaced by panel review
   - [ ] **PK-1 — Local/External model indicator**: Add `is_external` + `provider_label` to model API response; show Local/External badge in model selector, response bubbles, and space agent messages
-  - [ ] **PK-2 — Admin chat access default OFF**: Change `ENABLE_ADMIN_CHAT_ACCESS` default to `False` in `config.py:1378`; add audit log line in `routers/chats.py:86`; add visible banner when admin views a user's chats
+  - [ ] **PK-2 — Admin chat access default OFF**: Change `ENABLE_ADMIN_CHAT_ACCESS` default to `False` in `config.py:1488`; add audit log line in `routers/chats.py:94`; add visible banner when admin views a user's chats
   - [ ] **PK-3 — Workshop external model warning**: Show inline warning when an agent is created with an external-provider base model
   - [ ] Update CHANGELOG.md: document breaking change (admin chat access now opt-in)
   - [ ] Full plan at: `~/agent-planning/plans/poka-yoke-buzzing-sedgewick.md`
 
 - [ ] **Privacy-layer poka-yoke (branch `feature/batter-agents-in-spaces`)**: all five reproduced defects fixed 2026-09-23, merge unblocked; what is left is housekeeping #security
-  - [x] **HANG** fixed 2026-09-23 `privacy/engine.py`: `MAX_SALT = 256` caps the collision loop, then `_tagged()` falls back to `[category-hex]` via new `shapes.hex_for`. Teeth: at HEAD the test spins in `fake`, killed by a 10s watchdog.
-  - [x] **CORRUPTION** fixed 2026-09-23, four layers: `store()` raises on an empty fake, `fake()` downgrades a blank-replacement literal to pseudonym, `rules_from_config` does the same at load, `_pattern()` drops empty keys. Teeth: at HEAD `reverse("hello", {"": "SECRET"})` returned `SECREThSECRETeSECRETlSECRETlSECREToSECRET`.
-  - [x] **500** fixed 2026-09-23: new `FORM_KINDS = ("regex", "literal")` is what `privacy_panel.py:76` whitelists; `rules_from_config` drops a detector naming no built-in; `compiled()` returns a never-matching pattern instead of raising. Teeth: at HEAD the crafted rule survived config load.
-  - [x] **RACE** fixed 2026-09-23 `models/privacy.py`: `PrivacyMaps.insert` catches `IntegrityError` and rolls back — the loser's row is already the row it wanted, so losing is success. Not unit-tested; concurrency needs a harness this suite does not have.
-  - [x] **DRIFT** fixed 2026-09-23: `PRIVACY_KEY` declared in `env.py`, the `"trellis-dev-key"` literal deleted, and `hooks.key()` now raises when both it and `WEBUI_SECRET_KEY` are empty rather than keying pseudonyms on nothing.
   - [ ] **Follow-on found while fixing DRIFT**: this dev instance runs with an empty `WEBUI_SECRET_KEY` (`.env:22` is blank, and PID 1 carries it empty). Harmless while privacy is OFF; with the new guard, switching privacy ON here now fails loudly. Set a real key before enabling. #security
-  - [x] Two of the low five done 2026-09-23: `config()` deep-copies `DEFAULTS` so a caller cannot rewrite the module default; `_pattern()` keys its cache on the table object, not `id()`, so a freed dict's address cannot return under a stale pattern.
-  - [ ] Three low left: `reverse_tool_calls` str-only (`hooks.py`), Spaces `TOOL_SERVERS` check-then-act (`routers/spaces.py:382`), manifest `"id"` comment with no gate (`main.py`). None is request-path; none blocks the merge.
-  - [x] `privacy/test_engine.py` (17 tests) runs only by hand: `python -m unittest sage_is_ai.privacy.test_engine`. No Makefile target, so nothing runs it in CI. Stale by 2026-10-15: `make privacy_tests` (`Makefile:801`) runs it and `test_hooks` inside `gauntlet_fast`.
+  - [ ] Two low left (`reverse_tool_calls` str-only fixed 2026-11-02 with the tool-argument card in Bugs): Spaces `TOOL_SERVERS` check-then-act (`routers/spaces.py:382`), manifest `"id"` comment with no gate (`main.py`). None is request-path; none blocks the merge.
+  - [x] _7 done steps archived 2026-11-03 → docs/completed-todos.md._
 
 ### Pitch & Documentation
 
-- [x] **Federation doc: what may leave a box** (2026-10-15): `docs/federation.md` holds the three rules, the box and the system map, and sorts AI-UI's data, definitions and numbers; linked from `docs/product-stack.md` #docs
-  - Plan: `~/.claude/plans/brokerage-demo-tinker-trellis.md`, section 6; the Trellis and Tinker.Click docs carry the same rules and map
-  - [x] [WE] Rules, box line and Mermaid map verbatim; every path, route and setting checked against this tree
-  - Gaps the doc names: no scan before an Agent, prompt or function export; `/api/usage` returns active user IDs; `API_KEY_ALLOWED_ENDPOINTS` holds for every `sk-` key, not one
-  - The Workshop apps plan is the Backlog card **Workshop apps tab**
+- [ ] **Growth: invite codes and social posts** (Alexander, 2026-11-03): four goals (Tinker makers, AI-UI stars, paid pilots, hub contributors); an AI-UI code books a pilot box, not an account #launch
+  - [ ] [MANUALLY] Order the four goals: one push at a time, so someone answers every reply on launch day
+  - [ ] [MANUALLY] Pilot box terms: who builds and runs each box, the price, how many a month
+  - [ ] [WE] Pilot request form on sage.is with a code field; the lead lands in Trellis with its code as source (TODO.md first in WEB-Sage.is)
+  - [ ] [WE] Codes per channel or per person, so each pilot traces to the post or the person who sent it
+  - [ ] [WE] Post kit from what ships: the privacy test bench, one brew line, a Space agent; captions and alt text, no third-party pixels
+  - [ ] [MANUALLY] Launch posts after the social card upload (card "Homebrew core"): Show HN, r/selfhosted, r/LocalLLaMA, awesome-selfhosted
+  - [ ] [MANUALLY] Tinker sign-up: closed until the waitlist videos ship, then one wave; a proposal until the team agrees (Tinker board)
+  - [ ] [MANUALLY] Review the proposal in SilverBullet: roles, code names, the floor price, the fee band; Tinker's side waits for the team's agreement
+  - [x] _3 done steps archived 2026-11-03 → docs/completed-todos.md._
 
-- [ ] **Pitch — Fix Privacy Absolutes**: Audit `docs/elevator-pitch.md` for unconditional privacy claims
-  - [ ] Replace "nothing phones home" → "nothing leaves your building unless you send it"
-  - [ ] Replace "we don't store data" → "Sage stores nothing; schools may store by default; ephemeral mode is available"
-  - [ ] Add educator-visibility default sentence: "Sage ships with educator visibility on by default. Students can toggle privacy at any time."
-  - [ ] Revise model-transparency claim: "when a user is permitted to inspect an agent, they always see which model it calls"
-  - [ ] Audit remaining absolute claims for similar conditionals
-
-- [ ] **Pitch — Pick Primary Audience**: Decide family pitch vs. org pitch as the launch face
-  - [ ] Choose one audience for the current pitch (family: local/budget-first, or org: sovereignty/compliance)
-  - [ ] Revise opening hook for that audience only
-  - [ ] Confirm cake metaphor stays in the family version only
-  - [ ] Stub a second pitch outline for the other audience
-
-- [ ] **Publish Threat Model**: One public document establishing what Sage defends and what it does not
-  - [ ] Document what Sage-the-company stores (nothing) vs. what schools may store (by default)
-  - [ ] Document residual risks for users of the anonymizing proxy
-  - [ ] Document warrant/subpoena response sequence for school deployments
-  - [ ] Written commitment: no automated behavioral flagging (hate speech, self-harm, etc.) without explicit school opt-in
-  - [ ] Publish to `docs/` and link from README and elevator-pitch
-
-- [ ] **Homebrew core: earn the self-submission bar on AI-UI** (decided 2026-09-30; paused 2026-10-01, Trellis first): 225 stars, 90 forks or 90 watchers; today 9, 2 and 1 #launch
-  - [x] [WE] The `ai-ui` CLI, `nuke-sage` and their 16 tests live in `cli/` (gate `cli_tests`); the tap's `ai_ui_formula` target points the formula at each release (2026-09-30)
+- [ ] **Homebrew core: earn the self-submission bar on AI-UI** (decided 2026-09-30; paused 2026-10-01, Trellis first): 225 stars, 90 forks or 90 watchers; 11, 2 and 1 on 2026-11-02 (`make brew_notability`) #launch
+  - Pause kept 2026-11-03 (Alexander): outside contributors cannot open PRs while the repo is members-only
   - [ ] [MANUALLY] Ship the CLI inside the next AI-UI release, then run the tap's `ai_ui_formula` target; CLI-only `3.2.0_N` revisions end
-  - [x] [WE] Repo page through `gh`: 13 topics, homepage https://sage.is, "let's" fixed in the description (2026-09-30)
-  - [x] [WE] Social card chosen and edited (`docs/art/social/social-c-terminal.svg`, with the sage.is tile); `make social_cards` builds each PNG, which git ignores (2026-09-30)
   - [ ] [MANUALLY] Upload the card: Settings, Social preview (GitHub's API cannot set it)
-  - [x] [WE] Triage, 2026-09-30: #2 closed; 9 stale Dependabot PRs closed with reasons; dependabot.yml watches what ships (bun for app/, backend grouped minor/patch); security updates on
-  - [ ] [MANUALLY] Held PRs: #33 after an image build and e2e (aiohttp HIGH fix); #13 after `npm test` in tools/tw2startr; close #32 #21 #20 #19 #18 once Dependabot opens bun PRs
-  - [ ] [WE] Bump pypdf 4.3.1 to 6.x in `scripts/build-sprig-rag-loaders.sh` (Dependabot cannot read it); no CI runs on PRs yet
+  - [ ] [MANUALLY] 11 live Dependabot PRs: groups #59 #60 after an image build and e2e; majors #57 #58 #39–#42; tw2startr #13 #47 #51 after `npm test`
   - [ ] [MANUALLY] Decide the 7 Sage Notes issues from 2025-11 (#1, #3 to #8): product calls first, then label real starter work
-  - [x] [WE] Members only, 2026-09-30: PR creation limited to collaborators; master pushable by opencoca alone; develop cannot be force-pushed or deleted; josesimas and AnatoliHS raised to write; tobiasmarx9904 stays read (junior)
   - [ ] [MANUALLY] Issues for collaborators only: Settings, General, Features, Issues, Creation allowed by. Pinned 2026-10-01: GraphQL `updateRepository` takes `issueCreationPolicy`, so it can be automated
-  - [x] [WE] Ruleset "Release tags: admins only": only repository admins create, move or delete `v*` tags (2026-09-30)
-  - [ ] [WE] Confirm Dependabot still opens PRs under collaborators-only PRs (its first run after 2026-09-30 22:00 UTC)
-  - [ ] [MANUALLY] New batch #35 to #42 from the old config: after the dependabot.yml push, close the npm and /app pip ones; #36 (backend security) waits for a build and e2e
   - [ ] [WE] Paused while members only: issue templates and 10–15 real `good first issue` + `help wanted` issues
   - [ ] [MANUALLY] "Make Sage yours" workshop: teams fork AI-UI, change something real and run it with `ai-ui dev`; participants self-organize
   - [ ] [WE] Paused while members only: `ai-ui dev --fork` and a fork-and-PR path for outside contributors (forks and stars stay open to all)
   - [ ] [MANUALLY] Launch: an awesome-selfhosted entry "(fork of Open WebUI)" written by hand; a Show HN on "one brew line, no Docker Desktop"; r/selfhosted, r/LocalLLaMA
-  - [ ] [WE] README: a plain star line, and "Watch → Custom → Releases" for release notes
-  - [ ] [WE] A check that prints AI-UI's stars, forks and watchers against the bars
+  - [ ] [MANUALLY] README: a plain star line, and "Watch → Custom → Releases" for release notes. Alexander words it: a line asking for stars meets the no-solicited-stars rule
   - [ ] [MANUALLY] Submit to homebrew-core once one bar clears and `brew audit --new --strict --online` passes; route and rules in homebrew-apps `docs/official-homebrew.md`
+  - [x] _11 done steps archived 2026-11-03 → docs/completed-todos.md._
 
 ### Sprig B1 — finish extraction (audit backlog, sequenced next)
-
-- [ ] **Accelerator-aware Sprigs™ — drop the CPU-only assumption** (captured 2026-07-27): the whole chain currently hardcodes CPU; when GPU support lands, sprigs need alternative variants per accelerator (cuda/rocm/metal) selected the same way arch is today. #bonsai
-  - [ ] `scripts/gates/embedding-parity/build-artifacts.sh` installs torch from the `whl/cpu` index on purpose — the CUDA wheels are ~2GB of unused weight for a CPU gate
-  - [ ] The GGUF cultivars ship CPU builds; `HOST_ARCH` compatibility is a two-value question (`arm64`/`amd64`) with no accelerator dimension
-  - [ ] Widen `compatible` in `/catalog` from arch-match to arch+accelerator-match
-  - [ ] `build-artifacts.sh` takes a torch-flavour argument instead of a pinned CPU index URL
-  - [ ] Plan for the parity gate: its thresholds assume device-stable numerics — `cosine_min >= 0.999` (f16) may not survive a CPU reference vs GPU inference comparison
-    - [ ] Either generate the reference per-accelerator or make the tolerance device-aware
-    - [ ] Do NOT loosen the threshold to paper over a device gap; that is the check that caught the Hangul tokenizer divergence
-- [ ] **Delete the chromadb pip fallback** (end-state of the bootstrap): blocked on prod-registry cutover + one release of soak. `vector_bootstrap.py` already prefers the sprig; the pip path goes cold automatically once prod has a registry. #bonsai
 
 - [ ] **Bring sprig hosting in-house — replace GitHub's package store as primary** (captured 2026-07-06; escalated to NEAR-TERM 2026-07-08 on community pushback over GitHub-only hosting, per Alexander). ([dossier](docs/board-dossiers.md)) #bonsai
   - [ ] GHCR holds the first artifacts, but the specs and the sage.is/sprigs page word it as "current publish target, not the permanent home"
@@ -653,27 +329,13 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
 
 ### Sprig B2 — non-technical clarity (audit backlog; data model before UI)
 
-- [ ] **Catalog schema enrichment**: the CATALOG carries only machine fields, so the admin UI can only show raw keys like `minilm-onnx-inhoused` — prerequisite for a legible UI; the UI can only be as clear as this data. #bonsai
-  - [ ] Add `display_name` + `description` (plain "what this does") to each entry
-  - [ ] Add `size_mb`, `license`, and `tier` (`recommended`|`advanced`|`held`)
-  - [ ] Add `restart_required` (bool, replacing the prose `post_graft_note` inference)
-  - [ ] Add a slot/`replaces` marker for the six mutually-exclusive embedding cultivars
-- [ ] **`/catalog` hygiene**: `GET /catalog` dumps `repo`/`tag`/`insecure`/`binary_sha256` to the browser (`routers/sprigs.py`). Return only presentation fields (security + noise). #bonsai
 - [ ] **Sprigs admin UI redesign** (`app/src/lib/components/admin/Sprigs.svelte`): group cards by capability. #bonsai
   - [ ] Collapse the six embedding cultivars into one "Embedding" choice with a cultivar picker
   - [ ] Disclose consequences BEFORE Graft/Prune: size, restart-required, "replaces X" / "this breaks document search"
-  - [ ] Hide `pid`/`base_url`
+  - [x] Hide `pid`/`base_url` (2026-11-02)
   - [ ] Explain the Sprig/Graft/Prune/Wilted metaphor inline (tooltip or docs link)
   - [ ] Add first-run guidance instead of a wall of 14 cards
 
-- [ ] **Stand up `bonsai.sage.is` spec hub** (2026-06-28; scaffold SHIPPED locally 2026-07-08): implementers spend hours here; polish compounds. ([dossier](docs/board-dossiers.md)) #bonsai
-  - _Shipped locally 2026-07-08: 11ty scaffold, build-time spec fetch, `/sprig-spec/v1/` + `/rootstock-spec/v1/` render, catalog-hub home. Archived 2026-08-15._
-  - [ ] [MANUALLY] `git init` + push `BONSAI/sprig-spec` and `BONSAI/rootstock-spec` BEFORE the hub — no `.git` anywhere in `BONSAI/`, CI clones the spec repos
-    - [ ] The `app-` capability prefix reserved in `sprig-spec/v1.md` (2026-08-15) exists only as one uncommitted copy on this disk
-  - [ ] [MANUALLY] Create `sage-is/bonsai-docs`, push `~/Documents/Projects/GitHub/BONSAI/bonsai-docs/`, Cloudflare Pages project (build `bun run build`, output `dist`) + CNAME `bonsai.sage.is`
-    - [ ] 11ty renders single-page views of the canonical specs pulled from GitHub at build time
-  - [ ] After the hub is live: flip the sage.is/bonsai + sage.is/sprigs spec links from github.com to `bonsai.sage.is/*/v1/`
-  - [ ] Point the `$id` URLs in `sprig-spec/v1.md` and `rootstock-spec/v1.md` at the canonical `bonsai.sage.is` URL once the site is live
 - [ ] **Sprig™ marketplace — simple selling of Sprigs** (captured 2026-07-08; now a PUBLIC commitment): support paid and proprietary Sprigs with selling as simple as Etsy made it for makers. ([dossier](docs/board-dossiers.md)) #bonsai #marketplace
   - [ ] Public commitment: the sage.is/bonsai FAQ says "A Sprig marketplace is on our roadmap to make selling one simple"
   - [ ] Alexander (CTO) was a founding engineer at Etsy (employee #5), named on the page
@@ -702,157 +364,37 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
     - [ ] We do not charge makers to list (present tense, not "ever"); creators earn through contracts we sell direct, not a storefront cut
     - [ ] Cards: `charts/sprig-creator-program/TODO.md`
   - [ ] **Blocker — the `execute` event runs arbitrary JS in the top frame, and a listing policy does not fix it**. #security #critical
-    - [ ] `Chat.svelte:387` passes the `__event_emitter__` `execute` type to `new Function(...)` unsandboxed
     - [ ] `POST /api/v1/functions/load/url` (`routers/functions.py:82`) installs a `main.py` from any GitHub URL today, no marketplace involved
     - [ ] A push that brings thousands of self-installers widens that surface
-    - [ ] Pick one and record it: gate the endpoint, sandbox the event, or accept the risk in writing
+    - [ ] Pick one and record it for the endpoint: gate it or accept the risk in writing. The event half is closed: neutered 2026-11-02
     - [ ] Keeping Functions out of the community lane is correct and cheap but is not the control
-  - [ ] **Blocker — no CSP exists, and enforcing a fresh one the week before a launch breaks the product**. #security #critical
-    - [ ] `SecurityHeadersMiddleware` is wired at `main.py:1473` but `CONTENT_SECURITY_POLICY` is unset in `.env.example`, the Dockerfile, compose, and `distribution.env`
-    - [ ] `routers/diagnostics.py:610` already grades it degraded
-    - [ ] Exceptions to cover: `https://startr.style/style.css` in both frontends (`app/src/app.html:31`, `pages/shell.py:206`), Artifacts srcdoc frames, Pyodide, the WASM sprigs, every inline style
-    - [ ] Ship `Content-Security-Policy-Report-Only` first, collect violations from a real session, then enforce
+  - [ ] **Blocker — no CSP exists, and enforcing a fresh one the week before a launch breaks the product**: tracked on the **CSP-configured gate** card under Repo Hygiene & Security, whose children carry these facts (merged 2026-11-02). #security #critical
   - [ ] **The app pane is the store's actual product, and it is not built** — four gaps. #bonsai
     - [ ] An installed app must open like an Artifact, run, and report progress — not "the assistant can call your API"; `Artifacts.svelte` already supplies the pane
-    - [ ] Not this quarter, but reserve the `app-` prefix now, per the `agent-` precedent in `_notices/2026-07-11-reply-to-scion.md`
-    - [ ] The bridge validates by `event.origin`; a `srcdoc` frame without `allow-same-origin` has an opaque origin, so its postMessage arrives as `"null"` and is rejected at `Chat.svelte:417`
+    - [ ] The bridge validates by `event.origin`; a `srcdoc` frame without `allow-same-origin` has an opaque origin, so its postMessage arrives as `"null"` and is rejected at `Chat.svelte:416`
       - [ ] Validate `event.source === iframeElement.contentWindow` instead
     - [ ] Service workers, localStorage, IndexedDB, and Cache API need a real origin, so a genuine PWA cannot run in a `srcdoc` pane — in-container is the only rung where "PWA-type app" is literally true
     - [ ] Student progress needs a per-user per-sprig state API on the rootstock, not browser storage
-    - [ ] The spec reserves `ui-` and `agent-` but not `app-` — reserve it now
-- [ ] **Incoming: `startr-team` agent framework as a `service-endpoint` Sprig** (midterm; awareness notice from Scion 2026-07-11, no action requested): grafts onto AI-UI as a REMOTE Sprig, never a source dependency. ([dossier](docs/board-dossiers.md)) #bonsai #agents
-  - [ ] Sage-is = science+platform, Startr = tooling+product — the arms-length Graft Union™ settles licensing
-  - [x] Done at the cheap moment: `agent-` capability prefix RESERVED in sprig-spec v1.md with a planned `sage-is/v1/agent` dispatch shape; CHANGELOG [Unreleased] entry added
-  - [ ] Define the contract when the Sprig lands — run lifecycle, streamed events, cancellation, schema at `sprig-spec/schemas/sage-is/v1/agent.json`
-    - [ ] Bidirectional from day one (locked 2026-07-11): a rootstock callback surface so agents work with the operator's data instead of shipping copies
-  - [ ] Wire explicit rootstock dispatch — the "no per-capability dispatch code" guarantee covers only OpenAI-compatible shapes
-  - [ ] Implement `delivery: service-endpoint` (currently unimplemented); both deliveries locked — hosted `service-endpoint` and on-hardware `oci-artifact`, keeping zero-egress intact
-  - [ ] Keep one tiered "Agents" surface, no renames — the locked decisions define the EXTENDED tier (simple agents already ship as workspace Agents and Space agents)
-    - [ ] The model-transparency claim extends to the remote tier
-    - [ ] Job queue + spend budgets are PREREQUISITES: runs live on the queue, budgets gate spend
-  - [ ] Ignore Scion's stale pointer paths: specs live in the BONSAI sibling repos, the graft API is `routers/sprigs.py`, pins live in the supervisor CATALOG
-- [ ] **Bonsai/sprigs pages as markdown + text-graph→SVG diagrams** (captured 2026-07-08): both pages are hand-written njk today — re-author as markdown so content edits stop requiring template surgery. #bonsai #site
-  - [ ] Diagrams from text markup rendered to SVG at build time — mermaid is the baseline candidate, or a custom "simple text graph" markup (TBD, mermaid-style)
-  - [ ] Renderer emits house-styled SVG: startr.style tokens, correct fonts, label collision avoidance
-    - [ ] The Graft Union™ label landing on a connector line is exactly the class of bug a renderer should prevent
-  - [ ] Candidate consumers beyond these two pages: the bonsai.sage.is spec hub and future architecture docs
-
-- [ ] **Reserve `spec.sage.is` DNS** (2026-06-28): Set up the subdomain now without a site behind it. Reason: if Sage.is ever publishes a non-Bonsai spec, that's the canonical URL home. Avoids painting into a corner where every Sage.is spec inherits the Bonsai metaphor in its URL. Per Daniel Stenberg's guardrail in the panel review. #bonsai #dns
-  - [ ] Add `spec.sage.is` CNAME record (parked, no content)
-  - [ ] Document in `docs/` why it's reserved so it doesn't get repurposed casually
-
-- [ ] **Define spec-hub polish punch-list** (2026-06-28): translate Rauno Freiberg's "polish target" principle into a concrete pre-launch checklist for `bonsai.sage.is` — the list IS the bar, ship only when each is true. #bonsai #polish
-  - [ ] Excluded: the `sage.is/bonsai/` explainer does NOT need to hit this bar; content quality is its bar instead
-  - [ ] Scroll-spy nav: current section highlighted, smooth scroll on anchor click, sticky table of contents on long pages
-  - [ ] Code-block copy buttons with success state ("Copied" pill, then fade back)
-  - [ ] Instant search across all specs (Pagefind or equivalent — fully client-side, no JS backend)
-  - [ ] Focus-ring spec — consistent, visible, WCAG-AA accessible across light/dark
-  - [ ] Typography scale + line-length cap (60-80ch); generous vertical rhythm
-  - [ ] Dark-mode handling: `prefers-color-scheme` default + explicit toggle, persisted
-  - [ ] Hover states on every interactive element (links, buttons, code-block actions)
-  - [ ] Animated reveal of nav items on scroll into view (subtle, sub-300ms)
-  - [ ] Cursor-following micro-details on the catalog home — 4ms attention, not pageant moves
-
-### v2.x — Near Term
-
-- [ ] **Auth & Onboarding**: Email notifications and LDAP consolidation
-  - [ ] Outgoing email notifications (reuse bridge SMTP config)
-  - [ ] Consolidate LDAP config into Auth/Integrations tab
-
-- [ ] **Frontend Toolchain Upgrade**: Svelte 5, Vite 6, SvelteKit latest
-  - [ ] Svelte 4 → 5
-  - [ ] Vite 5 → 6
-  - [ ] SvelteKit 2.5 → latest
-
-- [ ] **Podman Compatibility**: Verify builds and document setup
-  - [ ] Test and fix Podman build issues (VM memory, rootless networking)
-  - [ ] Document Podman-specific setup (VM memory bump, `host.containers.internal`)
-  - [ ] Revisit Makefile `CONTAINER_RUNTIME` auto-detection once Podman is a verified alternative
-
-- [ ] **2.4 ML Bundle (signed per-arch × per-accel)**: replace the 2.3.1 transitional ML wizard path (runtime `uv pip install` + `sitecustomize.py`) with signed tarball bundles published on GitHub Releases.
-  - [ ] Wizard pulls via `curl | sha256sum -c | tar -xz`
-  - [ ] `distribution.env` carries `ML_BUNDLE_TAG` + per-variant SHA256s
-  - [ ] Bring CUDA back as a first-class matrix cell
-  - [ ] `requirements-ml.lock` from 2.3.1 is the build input — no thrown-away work
-
-- [ ] **Knowledge Base Improvements**: AI ingestion and admin cleanup
-  - [ ] AI-parsed ingestion mode + admin Documents page cleanup
-  - [ ] Fold engine-specific config under `<details>/<summary>` in the admin page
-
-- [ ] **Codebase Cleanup**: Channel→Space rename, semantic HTML, branding
-  - [ ] Channel → Space DB migration (Alembic rename of tables, columns, enum values)
-  - [ ] Rename `components/channel/` directory → `components/space/`
-  - [ ] Replace wrapper `<div>` elements with semantic custom elements
-  - [ ] Swagger UI: custom styling, branding, auth handling
-  - [ ] CapRover one-click template
-  - [ ] Scrub remaining upstream open-webui references in comments and defaults
-  - [ ] Add migration idempotency guards on all `create_table` / `add_column` calls
-  - [ ] Replace login slideshow images with original or CC/public-domain photos
-
-### v3.0 — Future
-
-- [ ] **Developer Mode**: Single image, dev CLI, HMR
-  - [ ] `ai-ui dev` CLI command: clones repo, mounts source, enables DEV_MODE
-  - [ ] DeveloperStep wizard: informational in prod, celebration with wizard illustration in dev mode
-  - [ ] Node.js + npm installed to data volume on first dev start
-  - [ ] Same image, same container — `DEV_MODE=true` switches to vite HMR + uvicorn reload
-
-- [ ] **Upload & Download UX**: Progress streaming, time estimates, admin viewer
-  - [ ] Download progress streaming to frontend (WebSocket/SSE from backend)
-  - [ ] Admin panel tab for AI Engine download status and progress
-  - [ ] `HF_TOKEN` support for faster authenticated HuggingFace downloads
-  - [ ] Download time estimates based on measured connection speed
-  - [ ] Upload progress bars with percentage and speed meters
-    <!-- inline: ollama.py:1748 -->
-  - [ ] Configurable upload timeouts based on file size (replace hardcoded 240s)
-    <!-- inline: audio.py:598,652,759 ollama.py:1699,1799,1823 -->
-  - [ ] Console/log viewer tab in admin (WebSocket log streaming)
-
-- [ ] **Platform Features**: Workspaces, analytics, search, mobile, a11y
-  - [ ] Sage.is hosted email notification service (for deployments without SMTP)
-  - [ ] Workspace switcher (project-scoped model configs, shared vs private)
-  - [ ] Built-in task tracking (convert chat responses to tasks, due dates, progress)
-  - [ ] Personal analytics dashboard (usage patterns, model preferences)
-  - [ ] Semantic search across all chats and documents
-  - [ ] Mobile-first optimizations (swipe gestures, PWA enhancements)
-  - [ ] Accessibility: screen reader, high contrast, keyboard navigation
+  - [x] _2 done steps archived 2026-11-03 → docs/completed-todos.md._
 
 ### From Codebase (untracked)
-
-- [ ] **Backend Inline TODOs**: Load balancing, type updates, deprecation removal
-  - [ ] Intelligent load balancing for multiple Ollama backends (`ollama.py:1`)
-  - [ ] Update Ollama type support when upstream adds new types (`ollama.py:1378`)
-  - [ ] Handle tool name collisions by prepending toolkit name (`utils/tools.py:109`)
-  - [ ] Replace legacy system message insertion with `add_or_update_system_message` (`middleware.py:1037`)
-  - [ ] Add retries to audio processing requests (`audio.py:1120`)
-  - [ ] Remove deprecated `WEBUI_JWT_SECRET_KEY` fallback at next major version (`env.py:393`)
 
 - [ ] **Frontend Inline TODOs**: UX polish, component upgrades, bug investigation
   - [ ] Filter order handling in model config (`FiltersSelector.svelte:34`)
   - [ ] Voice input auto-stop logic in Knowledge Base (`AddTextContentModal.svelte:21`)
   - [ ] Shortcut support for generate-title button (`ChatItem.svelte:415`)
-  - [ ] User-facing error for Space participant issues (`Space.svelte:81`)
+  - [x] User-facing error for Space participant issues (`Space.svelte:81`): a toast since 2026-11-02
   - [ ] Emoji picker search filtering (`EmojiPickerClean.svelte:47`)
   - [ ] Update RichTextInput Bubble/Floating to v3 (`RichTextInput.svelte:79`)
   - [ ] Note pages feature — multiple pages per note (`NoteEditor.svelte:80`)
   - [ ] Decide native vs custom file handling in notes (`NoteEditor/Chat.svelte:191`)
   - [ ] Investigate Kokoro worker issues (`kokoro.worker.ts:4`)
 
-- [ ] **Audio/TTS UX polish** (surfaced live in dev mode 2026-07-26; the last two ride with the Settings/Admin migration pass):
-  - _Shipped: first-playback loading toast (`ResponseMessage.svelte`); Settings double-load memoized (`Settings/Audio.svelte`). Archived 2026-08-15._
-  - [ ] Opening Settings → Audio RELOADS Kokoro even after playback already loaded it — the Settings main-thread loader and the playback Web Worker (`kokoro.worker.ts`) are separate contexts; share one loader/model so the model loads once per session
-  - [ ] Kokoro voice selector is janky (a type-in input + a list that only opens after you clear the field) → replace with a clean, DRY `<select>`/combobox
-
 ### Frontend — no-build strangler migration (approved 2026-07-25)
 
-> Approved plan: move the AI-UI frontend off the SvelteKit build to
-> server-rendered HTML + vanilla/htmx islands, Svelte-as-biomes, strangler to
-> zero. Three evidenced legs — delete duplicated code (~50%), cut the
-> conversation load (172 req / 7.9 MB / ~19 s → near-instant), turn shared chats
-> into a crawlable distribution surface.
+> Approved plan: move the AI-UI frontend off the SvelteKit build to server-rendered HTML + vanilla/htmx islands (htmx since slated for removal in favour of the in-house startr-swap, 2026-08-17), Svelte-as-biomes, strangler to zero. Three evidenced legs — delete duplicated code (~50%), cut the conversation load (172 req / 7.9 MB / ~19 s → near-instant), turn shared chats into a crawlable distribution surface.
 
-> **HOW TO WORK ON THESE PAGES (as of 2026-07-31).** Never `make it_build` just
-> to look at something.
+> **HOW TO WORK ON THESE PAGES (as of 2026-07-31).** Never `make it_build` just to look at something.
 >
 > | you want to | run |
 > | --- | --- |
@@ -861,58 +403,23 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
 > | judge a page without rebuilding | `make review LIVE=1` |
 > | judge Svelte changes | `make review REBUILD=1` |
 >
-> **Two commands, as of 2026-08-09.** `make dev` runs `uvicorn --reload` and
-> `vite dev` side by side in one container, mounts `pages/`, seeds an admin and
-> grafts the example ui-Sprig™ — everything is live and nothing needs a
-> teardown. `review` boots the BAKED artifact, which is the pass that decides,
-> because a review of your working tree is not a review of what you ship.
-> `dev_run`, `review_live` and `review_rebuild` survive as aliases.
+> **Two commands, as of 2026-08-09.** `make dev` runs `uvicorn --reload` and `vite dev` side by side in one container, mounts `pages/`, seeds an admin and grafts the example ui-Sprig™ — everything is live and nothing needs a teardown. `review` boots the BAKED artifact, which is the pass that decides, because a review of your working tree is not a review of what you ship. `dev_run`, `review_live` and `review_rebuild` survive as aliases.
 >
-> Note `review LIVE=1` does NOT rebuild Svelte — it mounts `pages/` only, and
-> the bundle stays frozen at whatever `it_build` last produced, with no warning.
+> Note `review LIVE=1` does NOT rebuild Svelte — it mounts `pages/` only, and the bundle stays frozen at whatever `it_build` last produced, with no warning.
 >
-> Under `review LIVE=1`: save a `.css`/`.js` under `pages/assets/` and the
-> stylesheet **swaps in place** — no reload, so the page keeps its scroll and any
-> open dialog; save a `.py` and the app **restarts itself in 2.8 s** and the tab
-> reloads. Switching modes is 7 s, because the seeded volume is kept. `/pages/`
-> is an index of every server-rendered page and carries a banner when the
-> reloader is on.
+> Under `review LIVE=1`: save a `.css`/`.js` under `pages/assets/` and the stylesheet **swaps in place** — no reload, so the page keeps its scroll and any open dialog; save a `.py` and the app **restarts itself in 2.8 s** and the tab reloads. Switching modes is 7 s, because the seeded volume is kept. `/pages/` is an index of every server-rendered page and carries a banner when the reloader is on.
 >
-> The gates deliberately have no live mode — `e2e`, `e2e_both` and `wizard_smoke`
-> always boot the baked image, because a guard-rail run against a working tree
-> tests something we do not ship. Full write-up:
-> `docs/no-build-surface-convention.md` → "The dev loop".
-
-- [ ] **Phase Q0 — board hygiene**: TODO.md on TodoScope convention, this plan's tracked TODOs filed, board kept current every phase. #critical
-  - [x] Verify TODO.md structure + `.todoscope-exclude.csv` (both already on-convention)
-  - [x] File the migration epic + tracked TODOs into TODO.md
-  - [ ] Keep the board mirroring reality as each phase's steps land and ship
-    - [x] Reconciled again 2026-07-29 after the branding surface: entry filed with BOTH line-count readings rather than the flattering one.
-    - [x] Reconciled 2026-07-29 after Phases 0–2 landed: 14 stale "uncommitted" markers cleared (every one of them is in `HEAD`; the tree is clean), the error-persistence and toast work filed, Phase 2 split from 3–4 with diagnostics closed and theme/wizard named, and the locale blocker filed rather than left living only in a docstring. Worth noting WHY the drift happened, since it will recur: entries were written at the moment work finished, when it was genuinely uncommitted, and nothing brings the board back after the user commits. The board cannot know — only a pass like this one closes it.
+> The gates deliberately have no live mode — `e2e`, `e2e_both` and `wizard_smoke` always boot the baked image, because a guard-rail run against a working tree tests something we do not ship. Full write-up: `docs/no-build-surface-convention.md` → "The dev loop".
 
 - [ ] **Phase Q — clear the decks**: current-SPA drift fixes, cruft, and perf quick-wins — no migration needed. ([dossier](docs/board-dossiers.md))
-  - [x] Enforce the 8-char password server-side (`auths.py`) — measure-twice e2e verified (200→bug, 400→fixed); committed
-  - [x] Fix `UserUpdateForm` / `SpaceForm` TS↔Pydantic drift — committed
-  - [x] Delete the dead `SUPPORTED_FILE_EXTENSIONS` copy in `constants.ts` (backend 50-entry list is live) — committed
-  - [x] _Permission-tree defaults reconciled (2026-07-27): 4 value disagreements + 1 missing key; enforcement read absent `features.web_search` as denied, so no non-admin ever got the web-search button; added `USER_PERMISSIONS_FEATURES_WEB_SEARCH` (default `True`), Pydantic defaults now derive from the table, `get_permissions()` backfills; `permissions-drift.cy.ts` RED→GREEN, e2e 13/15, `KEEP=1 make upgrade_gate` 20/21 vs a real v1.1.1 snapshot. #security #critical. Archived → docs/completed-todos.md._
   - [ ] **Drop the frontend's permission fallbacks**: the 13 `$user?.permissions?.x?.y ?? true` sites in `src/` are unreachable now that every enforced key ships in the payload. #frontend #tech-debt
     - [ ] A `?? true` can only mask future drift — it renders a control the API will refuse
     - [ ] Delete them; guard-rail asserts a denied permission hides its control
-  - [x] _`| grep -q` under `set -o pipefail` resolved (2026-07-28) — never a product bug: grep's first hit SIGPIPEs the writer, 141 reads as failure, or as "no match" at `upgrade-gate.sh:55`, which reported clean on the exact failure it guards; pipe-free primitives in `scripts/lib/gate.sh`, 12 sites converted, `pipefail_lint` + `pipefail_fixture` shipped; `gauntlet_full` exit 0, `upgrade_gate` 21/21. #critical. Archived → docs/completed-todos.md._
-  - [x] _Cruft sweep (deps): removed unused `chart.js` + `@mediapipe/tasks-vision` and the dead DOMPurify import in `MarkdownInlineTokens.svelte`; bun.lock `Removed: 2`; `it_build` + guard-rails green; fuller depcheck of the other 100+ deps is a separate pass. Archived → docs/completed-todos.md._
-  - [x] _Hyperscript attribute forms (`_`, `script`, `data-script`) stripped by one DOMPurify `uponSanitizeAttribute` hook (`utils/sanitize.ts`, root `+layout.svelte`) covering all 14 `@html` sites; `content-security-sanitizer.cy.ts` measure-twice RED→GREEN. Archived → docs/completed-todos.md._
-  - [x] Perf: `Cache-Control: immutable` on `_app/immutable/*` — measure-twice e2e verified (empty header→immutable); committed
-  - [x] _ML libs off the conversation chunk: the 22 MB WASM was already lazy (audit inferred wrong); deleted dead `@huggingface/transformers` import, kokoro-js dynamic in `chat/Settings/Audio.svelte`; nodes/2 2.70→0.65 MB, app load 5.39→4.12 MB (−24%), 13.4→10.6 MB decoded. Archived → docs/completed-todos.md._
-  - [x] _`/icons/` waste resolved as already-gated: image ships 0 `.xcf` (`.dockerignore`) and 1.3 MB icons total; the audit read a stale host build; the 6 identical 170 KB placeholder PNGs → branding-art task, not perf. Archived → docs/completed-todos.md._
-  - [x] _Markdown-render lazy-load shipped as architecture hardening, measured perf-neutral: katex/mermaid/codemirror were ALREADY lazy (identical 13.41→10.27 MB delta in both builds); real wins = dead `import katex` deleted, `hljs` dynamic in `copyToClipboard`, memoized `{#await import()}` loaders (`Markdown/lazy.ts`); `markdown-render-lazy.cy.ts` green before and after. #perf #frontend. Archived → docs/completed-todos.md._
-  - [x] _Boot waterfall batched into one `Promise.all` wave after settings: three round-trips removed (~19 ms loopback, ~180 ms at 60 ms RTT); `boot-waterfall.cy.ts` RED→GREEN and pins settings-resolves-before-`/api/models`. #perf #frontend. Archived → docs/completed-todos.md._
-  - [x] _Caching pass (2026-07-26): flipped the `ENABLE_BASE_MODELS_CACHE` default with invalidation wired from both provider-config endpoints (~740 ms → ~4.5 ms, ~160×; `models-cache.cy.ts` asserts both halves); `/static` + `/assets` get `public, max-age=604800`; combined: boot data-fetch 821.5→102.5 ms (8×), `/api/models` 768→17 ms; e2e 12/14 (two known leaks); PersistentConfig — an admin's saved choice survives upgrade. #perf. Archived → docs/completed-todos.md._
   - [ ] **`@cached(ttl=MODELS_CACHE_TTL)` never hits — the decorator is inert** (caching pass, 2026-07-26): the knob does nothing and every request stores an entry, so memory grows with request rate. #perf #tech-debt
     - Measured 2026-10-23: `generate_chat_completion` (`routers/openai.py:950`) calls it on every model call, so every answer probes providers live; fixed in Rootstock F1 (card "Congestion" in Bugs)
     - [ ] `routers/openai.py:550` + `routers/ollama.py:378` use bare `aiocache.cached` with no `key_builder`; the default key stringifies the Starlette `Request`, a new object each call, so it never repeats
     - [ ] Proven with `MODELS_CACHE_TTL=60`: five `/api/models` calls 0.74/0.73/0.78/1.70/0.74 s, zero hits
     - [ ] Add a `key_builder` on stable values (user id + provider-config revision) — or delete the decorators; removing a cache that never hits is behaviour-preserving.
-    - [ ] Audit the other bare-`cached` sites: `utils/chat.py`, `utils/models.py` (the `utils/middleware.py` copy was dead, removed 2026-08-06).
   - [ ] **Redis/valkey + multi-worker — the actual concurrency lever** (scoped during the caching pass): `start.sh:233` runs `--workers ${UVICORN_WORKERS:-1}` — a SINGLE-process app today. #perf #architecture
     - [ ] `REDIS_URL`, `WEBSOCKET_MANAGER`, `WEBSOCKET_REDIS_URL`, and a redis-backed `PersistentConfig` exist in code; Dockerfile, compose, and CapRover set none
     - [ ] Raising `UVICORN_WORKERS` breaks websocket fan-out and duplicates every in-process cache per worker
@@ -921,73 +428,16 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
   - [ ] Perf: put HTTP/2 in front — parallel boot fetches pay more once they stop queueing behind HTTP/1.1 connection limits. #perf
   - [ ] Perf: `/api/models` alone is ~770–995 ms of a ~820–1100 ms boot — latency, not payload (investigated 2026-07-26 with an EMPTY model list). #perf
     - [ ] The cost is the slowest provider probe in `get_all_base_models` (`utils/models.py:60-76`, already one `asyncio.gather`)
-    - [ ] `ENABLE_BASE_MODELS_CACHE` defaults `False` (`config.py:994-997`), so every call re-probes every provider
     - [ ] Each lever wants its own guard-rail and before/after
-    - [ ] Backend: default the base-models cache on and/or warm it at startup; bound the per-provider probe timeout.
+    - [ ] Backend: warm the base-models cache at startup; bound the per-provider probe timeout. (Defaulting it on is done.)
     - [ ] Frontend/islands: stop gating `loaded` on it — render the shell, fill the selector when it lands; the admin setup-wizard check (`$models.length === 0`) awaits the promise, not the boot chain.
     - [ ] Pagination is a third, separate lever — only after a payload measures large on a loaded instance (same open question for chat list, tools, prompts, knowledge).
-  - [x] _e2e Poka-Yoke pass (2026-07-27): `make e2e` GREEN 15/15 specs, 30/30 tests; `support/e2e.ts` snapshots the admin-mutable config surface per spec and restores only what changed (leaks logged BY NAME); `stt-not-configured` sets `stt.ENGINE=''` itself; sprigs-panel assertion reads `post_graft_note` from `/catalog`, pinned `retries: 0`. #e2e. Archived → docs/completed-todos.md._
-  - [x] _e2e harness could silently run on the previous run's data (2026-07-29): `|| true` on `docker volume rm` hid a held volume — third instance of a gate whose failure is indistinguishable from success; fix waits for container removal, retries, hard-exits naming the holder; proved able to fire: `FATAL: volume 'sage-e2e-data' survived removal`. #e2e #critical. Archived → docs/completed-todos.md._
-  - [x] _Colour-picker e2e automated after all (Alexander, 2026-07-29): a synthetic `input` event exercises the picker→hex contract — green on both implementations, proved able to fail; SikuliX stays on the roadmap for streaming/scroll surfaces (Phases 3–4), near-worthless for form surfaces. #e2e #frontend. Archived → docs/completed-todos.md._
   - [ ] Guard-rail Cypress spec for every area before it's touched
   - [ ] Modernize or prune the inherited upstream e2e specs: `registration/settings/chat/documents.cy.ts` now COMPILE (import depth `../support`→`../../support` fixed) but FAIL on stale open-webui UI. #e2e #tech-debt
     - [ ] They assume open signup (this fork hard-closes it after the first admin) and the old `Okay, Let's Go!` changelog dismiss (now the setup wizard's "Get Started"/Close via API)
     - [ ] Rewrite to the fork's flows or drop; they sit in a subdir, NOT in the default `make e2e` gate
-- _Phase S — streaming spike: GO SHIPPED 2026-07-27 (Cypress cannot see streaming, so any streaming guard-rail needs a non-proxying driver; every streamed surface gets a human pass before it is called done; the shared-runtime probe HOLDS, 16/16, so Phase 4 is unblocked on runtime grounds). Full entries archived 2026-08-15 → `docs/completed-todos.md`._
+  - [x] _18 done steps archived 2026-11-03 → docs/completed-todos.md._
 
-- [ ] **Version `/themes/active.css`** (deferred 2026-07-26, unblocked 2026-08-01): every full page load spends a render-blocking round-trip on 23 bytes of `/* no theme grafted */`. ([dossier](docs/board-dossiers.md)) #perf #bonsai
-  - [ ] Unblocked: panels moved to Jinja2; `shell.py` needs no templating, and `shell.asset_url()` already version-stamps by release
-  - [ ] Measured on the shipped image: `cache-control: no-cache`, no ETag, no Last-Modified, `If-None-Match` returns 200 not 304, via the static `<link>` at `app.html:21`
-  - [ ] Inject `?v=<active theme name + css mtime>` into the shell's `<link>` at serve time
-  - [ ] Serve the CSS `immutable, max-age=31536000` — a graft changes the token, so pickup is instant with zero revalidation (SvelteKit's `_app/immutable` trick)
-  - [ ] Trap: do NOT key invalidation to deploys — `SPRIG_ACTIVE_THEME` flips at RUNTIME (`routers/sprigs.py:151,305`), so deploy-keyed caching hides a fresh graft until restart
-    - [ ] Rejected: short TTL (grafted theme one load late); ETag-only (saves the 23-byte body, not the round-trip)
-- [x] _Phase 0 — seam + Sprigs pilot SHIPPED (2026-07-27): `/pages` + `/pages/_assets` registered BEFORE the SPA catch-all; the pilot panel measured Svelte 231 vs island 233 vs FRAGMENT 157 lines (−32%), so fragments are the shrinking path and the island was deleted; the template-engine question was answered by the twelve-panel Jinja2 conversion (2026-08-01). Full measurements archived → docs/completed-todos.md._
-
-- _Phase 1 — ui-Sprig contract + cookie bridge SHIPPED 2026-07-27 (`ui_sprig_gate` 22/22; the scripting grant is held by NAME; "no framework sprigs" enforced three ways). Full entry archived 2026-08-15 → `docs/completed-todos.md`. Open spec work extracted below._
-
-- [ ] **ui-Sprig spec follow-through — write the shipped decisions into the spec repo** (extracted 2026-08-15 from the archived Phase S and Phase 1 entries, per the board un-mix) ([dossier](docs/board-dossiers.md)) #sprigs #ui
-  - [ ] **ui-Sprig NAMED SLOTS — decided 2026-08-01, not built** (Alexander, on the workshop-welcome fragment: "I'm not so sure we should have [it] everywhere") #sprigs #ui
-    - [ ] The spec (`sprig-spec/v1.md:137`) promises mounts, slots, or a manifest; the implementation ships ONE unnamed global slot (`shell.py:117`)
-    - [ ] A grafted fragment renders on all fourteen server-rendered pages — fifteen since `/pages/home` (2026-08-09)
-    - [ ] Chosen design: the rootstock declares the slot set, the Sprig's manifest names one, the validator refuses unknown names — fail-closed, same shape as the 22 refusals `make ui_sprig_gate` proves
-    - [ ] AMENDED 2026-08-09 (Alexander): the address is PAGE plus POSITION (`home:top`, `home:aside`, `diagnostics:footer`) — settle that shape before the manifest field is written
-    - [ ] Sequencing: `SPRIG_ACTIVE_UI` is a single pointer, one ui-Sprig live at a time — multi-Sprig first, then slots
-    - [ ] Divergence belongs in `IMPLEMENTATION.md`; test case is `workshop-welcome`
-    - [ ] `shell.py` declares the slot set; `render_page` emits only the named slot
-    - [ ] `sprigs/ui_dispatch.py` validates the name
-    - [ ] `scripts/build-sprig-ui.sh` refuses at build too (deliberately stricter than runtime)
-    - [ ] `ui_sprig_gate` grows a 23rd refusal
-    - [ ] Spec repo: manifest field + version bump; write the risk in — the slot set is a published contract, version it, never rename in place
-  - [ ] Write "no framework sprigs" into the ui-Sprig spec repo — fragments + host runtime only #sprigs #ui
-    - [ ] Carry the THREE mechanisms (grant, inline-and-same-origin, size ceiling)
-    - [ ] Carry the honest note that no static check decides "is this a framework"
-  - [ ] Write the runtime-probe costs into the spec — they are the MECHANISM behind "no framework sprigs" (probe evidence in `docs/completed-todos.md`) #sprigs #ui
-    - [ ] "Externalise the runtime" is not one specifier: `svelte/internal` external with `svelte` bundled builds clean, throws at mount
-    - [ ] Publishing the runtime defeats tree-shaking (27.3 → 95.4 kB unminified)
-- [x] _HOLLOWING shipped as the second migration mode, `/home` first (2026-08-08, Alexander): the route keeps its address and chrome, gives up its content, hosts the server-rendered page via `pageHost.ts` (`SetupDialog.svelte` is the precedent). It costs bytes and must never be cited as a payload win — it buys reach and one implementation. Delete the hollow only when the chat core goes server-rendered. [Record](docs/decisions/2026-08-08-hollowing-a-svelte-route.md). #frontend. Archived → docs/completed-todos.md._
-
-- [x] **The parity gate has three states now, not two** (2026-08-08). `surfaces.ts` was binary — registered means compared, removed means gone. Hollowing adds **hollowed**: one implementation, two addresses, **exempt**. Comparing a hollowed route is the mirror that file already warns about, "a gate whose failure is indistinguishable from success". **The exemption is triggered by hollowing or deletion — a structural fact — never by "parity achieved", which is a judgement**: parity reached once does not mean parity holds, and the gate exists to catch what an author did not think to test _later_, when the no-build page is edited and a control quietly goes. `home-hollow.cy.ts` replaces the comparison and judges the host instead — the fetch happened, server-rendered markup arrived (`page-heading`, the only marker that can prove it, since nothing under `/pages/` can 404), the marketplace slot came with it, exactly one shell arrived, and a failure says so rather than showing an empty box. The `home` entry was registered and retired the same day. #frontend #dx
-
-- [x] _Wired Sprigs™ SHIPPED (2026-08-09), with the rule that now governs every future setting: a WIRE is what the operator decides once, a SETTING is what a person decides — if two people would answer differently it cannot be a wire. `sprigs/wiring.py`, `SPRIG_WIRES`, sixth lifecycle state `enabled`, `/pages/settings/calendar` the first per-user no-build page; verified with two accounts. Records: [wiring](docs/decisions/2026-08-09-wired-sprigs-and-two-layers.md), [starter + calendar](docs/decisions/2026-08-09-home-starter-and-calendar.md). #sprigs #backend. Archived → docs/completed-todos.md._
-
-- [ ] **Sidebar toggles for Home and Calendar, and a landing-page preference** (Alexander, 2026-08-09): two features, one shared settings surface — neither gets tacked onto a page build. ([dossier](docs/board-dossiers.md)) #frontend #ux
-  - [ ] Not blocked on the top nav: the dashboard surfaces now share a `DashboardShell` with one `LINKS` list and Calendar joined it (losing its "Soon" badge and `preventDefault` dead link) — the sidebar is this card
-  - [ ] Per-surface show-in-sidebar toggles, mirroring Spaces. `Sidebar.svelte` hardcodes `/home`, `/notes`, `/workshop` — a change of shape, not a fourth `<a>`
-  - [ ] Per-user landing-page preference (chat vs home vs a chosen Space vs part of Notes): needs persistence + a settings screen; changes what `/` means for a signed-in reader
-  - [ ] Do not hardcode the option list — Notes may be replaced by Silverbullet; read the choices from what the instance has
-- [ ] **Human UX review of the no-build surfaces**: judge before any of them takes over a route (Alexander, 2026-07-28: "it's close but the UX feels a little off"). ([dossier](docs/board-dossiers.md)) #frontend #ux
-  - [ ] `/admin/sprigs` vs `/pages/admin/sprigs` and `/admin/diagnostics` vs `/pages/admin/diagnostics` are both live — same data, same deployment — so judging is the cheapest it will ever be
-  - [ ] A green suite is the WEAKEST evidence here: a 13/13-green autoscroll broke on a real trackpad, and the "Show me how to fix this" button passed every assertion while doing nothing
-  - [ ] `scripts/manual-check.sh` boots a seeded instance with both live (`--graft-ui` for the marketplace slot)
-  - [ ] Judge, not assume:
-    - [ ] top-fixed CSS toasts vs toast library
-    - [ ] `<details>` remedy vs modal
-    - [ ] absolute vs live-relative timestamp
-    - [ ] whole-panel swap vs patch
-    - [ ] branding preview shows SAVED values, not as-you-type
-  - [ ] Branding colour pair now tested both directions — human check narrows to: swatch opens the OS dialog; picking a colour feels immediate
-  - [ ] Run it with someone who has not been building it
 - [ ] **Phases 3–4 — medium surfaces, shell flip, then biomes**: Workshop FIRST, then users, evals, settings tabs, chat list → prune biomes (Functions, then chat core last, gated on the spike memo). That order sorts on 2–6% of the cost (measured 2026-08-02) — reorder it. ([dossier](docs/board-dossiers.md))
   - [ ] **SURVEYED: every migration candidate on one snapshot — the sorting key was wrong** (Alexander, 2026-08-02). #frontend #perf #critical
     - [ ] `cypress/e2e/upgrade/route-payload.cy.ts` 10/10 green on the restored snapshot (51 agents / 32 users / 17 knowledge bases / 8 prompts)
@@ -1002,8 +452,6 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
     - [ ] `/admin/users` moves ahead of knowledge: largest component, the one surface that actually renders its base64 avatars, `users.cy.ts` already guards it
     - [ ] `/notes` is judged off this table: 2,910 lines of editor, not a list — the props-and-forms pattern may not apply
     - [ ] `/workshop/prompts` as warm-up: 635 lines, +121 kB, an afternoon
-  - [x] _Floor part 1 of 3 done 2026-08-02: fonts and icons −934 kB decoded on every SvelteKit route (spread 0.0 kB; floor 7,576.0 → 6,642.5 kB, agents-legacy −1,056, server-rendered pages 0.0). Archivo 652 → 187 kB, Vazirmatn 241 → 111 kB plus a `unicode-range` so it loads only when Persian text is present; icon masters 512 → 256 px at 45,710 bytes. First-visit win only — `/api/models` still never caches. Archived → docs/completed-todos.md._
-  - [x] _Two-sided `unicode-range` guard shipped (`cypress/e2e/font-unicode-range.cy.ts`): structural for too-wide (served stylesheet scopes the face to Arabic), behavioural for too-narrow (Persian text must pull the font), both proved able to fail; trap — the minifier rewrites `U+0600-06FF` as `U+6??`. Archived → docs/completed-todos.md._
   - [ ] **THE FLOOR — parts 2 and 3: `/api/models` is the whole of what is left.** #frontend #perf #critical
     - [ ] The floor stands at 6,642 kB; `/api/models` is 2,304 kB of it and never caches — 741 kB over the wire on every navigation
     - [ ] Fixing the floor helps every route in the product, including the ones the strangler never reaches
@@ -1014,13 +462,7 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
     - [ ] `get_knowledge` calls `Files.get_file_metadatas_by_ids` per knowledge base (the `Models.get_models()` N+1 shape) and prunes dead file ids via `update_knowledge_data_by_id`
     - [ ] So a concurrent read storm can write, and readers silently repair data
     - [ ] Fix AS the knowledge migration, on the "prune, don't port" rule
-  - [ ] **A prompt stored without a leading slash can never be fetched, edited or deleted — and every UI-imported prompt is stored that way** (found 2026-08-02 by the Prompts guard-rail). #backend #critical
-    - [ ] Reproduced against a throwaway container; production snapshot unaffected — all 8 rows carry the slash
-    - [ ] `Prompts.insert_new_prompt` stores `command` verbatim while three readers look up `f"/{command}"` (`routers/prompts.py:99`, `:126`, `:161`)
-    - [ ] `Prompts.svelte`'s import handler strips the leading slash, so imported prompts are permanently undeletable and the UI shows no error
-    - [ ] Normalise at the write points — `insert_new_prompt` and `update_prompt_by_command` — not the three readers
-    - [ ] One-line repair for existing rows lacking the slash
-    - [ ] The no-build panel must NOT port this: it normalises on lookup
+  - [ ] The no-build Prompts panel must not port the slash bug: it normalises on lookup
   - [ ] **Workshop is the next surface, elevated on production numbers** (Alexander, 2026-08-01). #frontend #perf #critical
     - [ ] Worst surface in the product; the only one missing the throughput budget (≤ ~2 MB transferred, first content < 2 s) on every axis
     - [ ] `/workshop/models` 144 requests / 20,520 kB / 6,181 kB transferred / 32 s
@@ -1041,16 +483,11 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
     - [ ] Timing stamped in-browser with `performance.now()` at the click, because `Date.now()` in a Cypress body stamps at queue time
     - [ ] Like-for-like (server page 1 is 24 rows vs the SPA's 51, so count both pages): 22 requests / ~477 kB — 7.6× less wire, 5.7× fewer requests
     - [ ] Also: `Models.get_models()` calls `Users.get_user_by_id()` in its loop — 49 queries for 48 rows
-  - [x] _Parity gate earned its keep 2026-08-02: the Agents empty state dropped the `agents-list` container — invisible to every behavioural spec (`workshop-agents.cy.ts` seeds three agents first), visible to the gate that reads hooks. Fixed by one always-present container, `{% else %}` deleted; parity 8/8, Agents 9/9. Archived → docs/completed-todos.md._
-  - [x] _Startr Swap shipped 2026-08-09: links and forms swap in place via `pages/assets/startr-swap.js` (11,932 B raw / 5,343 gz vs htmx 50,917 / 16,367); `/settings/calendar` hollowed; suite 46 specs / 234 tests / 190 passing / 0 failing / 4m10s; `make startr_swap_check` runs in `gauntlet_full`; record `docs/decisions/2026-08-09-startr-swap-link-swapping.md`. OPEN: startr.style's licence conflict (LICENSE AGPL-3.0 / LICENSE.txt MIT / package.json ISC) blocks publishing, and nobody has reviewed any of it. Archived → docs/completed-todos.md._
   - [ ] **A 166 kB favicon, a 166 kB splash and a 636 kB unsubsetted `Archivo-Variable.ttf` ride every cold page load** (found 2026-08-02 in the workshop top-25). #frontend #perf
-    - [ ] Reopens the line-395 `/icons/` "not perf" call, which judged the file on disk
+    - [ ] Reopens the `/icons/` "not perf" call (the "already-gated" card in this section), which judged the file on disk
     - [ ] Just under 1 MB before anything renders, on the SPA and the server-rendered pages alike — PNG does not compress again on the wire, and a favicon is 16–48 px
     - [ ] Cheap and separable from the migration: resize the icon set to the sizes actually declared
-    - [ ] Subset the font (line 105 already proposes automating the Cypress fixture copy)
-  - [ ] ~~**Agent avatars are uncompressed PNG data URIs inline in the list payload**~~ — REFUTED 2026-08-01 by the snapshot. #frontend #perf
-    - [ ] Only 16 of 324 `model` rows carry a data URI and all agent `meta` totals 868 kB — the third inference (after the 22 MB WASM and the markdown libs) that read perfectly and measured false
-    - [ ] Keep the cheap format fix as its own item: `toDataURL('image/webp', 0.8)` at slot-matched dimensions instead of default PNG at 250×250 (`ModelEditor.svelte:366`)
+    - [ ] Subset the font (the 2026-08-17 `sage-archivo.ttf` subsetting card under In Progress automated the build-time subset; re-measure what each page still loads)
   - [ ] **Avatars: one right size at the encoder plus a serve-time cache behind a cacheable URL — 30× measured, no new dependency beyond Pillow** (DECIDED 2026-08-01, Alexander). #frontend #perf
     - [ ] Decision: migration AND serve-time cache, not encoder-only — the migration's job is getting the blob out of the database row
     - [ ] Three real 250×250 avatars: 106.8 / 97.7 / 95.0 kB as PNG, 21 kB as JPEG, 5.9–7.2 kB at 128 px, 3.6–4.5 kB at 88 px — format alone 5×, format-plus-size 30×
@@ -1069,33 +506,28 @@ All four were backlog items before 2026-07-30 and are now customer-blocking. **S
     - [ ] Do it AS the migration — renaming twice costs two redirect layers
     - [ ] The route, the nav label, the i18n keys, and a redirect from the old path for bookmarks
   - [ ] Count and pin the core biomes as a downward-only ratchet — chat core, rich-text editor, code editor, flow canvas, channels; the count only decreases #biomes #ratchet
-  - [ ] **Mid-term: rebuild the chat core as an htmx flow, not a ported island** (Alexander, 2026-07-27). #frontend
+  - [ ] **Mid-term: rebuild the chat core as a server-rendered fragment flow on startr-swap, not a ported island** (Alexander, 2026-07-27; "htmx" reworded 2026-11-02, since htmx leaves per the Remove htmx card). #frontend
     - [ ] The port is priced at 17,591 lines for a 15–30% cut
-    - [ ] htmx-first has the server own the conversation and send fragments, only the token stream stays vanilla — Phase S proved that half in ~260 lines, abort semantics included
+    - [ ] Fragment-first has the server own the conversation and send fragments, only the token stream stays vanilla — Phase S proved that half in ~260 lines, abort semantics included
     - [ ] A hypothesis with two Phase 0 datapoints; do NOT re-plan the phase order until one fragment surface is migrated and measured
-    - [ ] Phase 1 cookie bridge — fragments need the token off localStorage
     - [ ] The non-proxying browser driver Phase S made a condition
     - [ ] One migrated, measured fragment surface — the datum that settles it
   - [ ] Reimplement the flow canvas (`@xyflow/svelte`) framework-free
   - [ ] Slogan precision: "org-owned" not "user-owned"; keep yjs local-first for the editor #brand
-
-### Founder Bio & Provenance
-
-- [ ] **Etsy / islands provenance — firm up the sources**: make the "employee #4 / built the Etsy Mini / called them islands" bio citable. #brand #provenance
-  - [ ] Public today: #4 (Fred Wilson/USV 2006, via zh.wikipedia); the Etsy Mini is a documented island-shaped widget
-  - [ ] Detail in the `reference_etsy_islands_provenance` memory + the plan's provenance appendix
-  - [ ] Retrieve the archived Fred Wilson / USV 2006 post from archive.org (the usv.com URL now 404s) — locks the #4 primary source
-  - [ ] (Alexander) Confirm true hire order — recollection is possibly earlier than #4 (Stinchcomb joined later; came on ~after Forman, ~with Nuzzolillo)
-  - [ ] Find receipts for Etsy Mini authorship (publicly credited to Etsy collectively)
-  - [ ] Find evidence of internal "islands" vocabulary predating the 2019 public coinage
-
----
+  - [x] _7 done steps archived 2026-11-03 → docs/completed-todos.md._
 
 ## Backlog
 
 _Items deferred to a later planning cycle. Move here from TODO when deprioritized._
 
-- [ ] **Workshop apps tab: Tinker.Click apps run inside the box** (planned 2026-10-15, not built; waits on the Trellis-first pause): storage, ask and connector bridges keep each app's data home #frontend #security
+- [ ] **The vault as the record for deployed keys: try.sage first, then a vault per cluster** #security (Alexander, 2026-11-04)
+  - [x] Plan written up in `docs/try-sage-deployment.md`, "Planned: keys from the vault" (2026-11-04)
+  - [ ] try.sage: its keys are pasted by hand into CapRover's env panel; `make deploy`, already under `sage-secret`, pushes the resolved `TRY_SAGE_*` values through CapRover's API, so a rotation is a vault edit plus a deploy
+  - [ ] Per cluster: one collection and one machine account each, its credentials on that cluster, not this Mac's Keychain; the `sage-box` files in `~/.sage-is/boxes/` already hold only `bw:` references
+  - [ ] Names: `bw:ITEM` resolves by name across all an account sees, so an account that sees several clusters needs prefixed names (`realtor-m-*` does this today)
+
+- [ ] **Workshop apps tab: Tinker.Click apps run inside the box** (planned 2026-10-15, not built; the Trellis-first pause lifted 2026-11-02, and the Rootstock card folds it in): storage, ask and connector bridges keep each app's data home #frontend #security
+  - Kept in F5 2026-11-03 (Alexander): built once, on the no-build pages and the F2 gateway, not in the legacy Svelte app
   - Model calls from apps, Tinker desktops and the library server go through the box's gateway from Rootstock F2 (plan, "The gateway contract")
   - Plan: `~/.claude/plans/brokerage-demo-tinker-trellis.md`, "Later"; rules and map in `docs/federation.md`
   - [ ] [WE] `/workshop/apps` tab behind a `workshop.apps` key in `DEFAULT_USER_PERMISSIONS` (`config.py`) and `WorkshopPermissions` (`routers/users.py`); `permissions-drift.cy.ts` fails if they disagree
@@ -1112,6 +544,7 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - Open: Tinker's look or the host's; Tinker's `LICENSE` (AGPL-3.0) against its README and `Cargo.toml` (MIT); apps that need `fetch` or `browse` stay in Tinker desktop
 
 - [ ] **`telemetry-otel` Sprig: tracing for operators who set `ENABLE_OTEL`** #bonsai (2026-10-14): the 3.2.1 base keeps only `opentelemetry-api`; `ENABLE_OTEL=true` boots untraced with a warning
+  - Parked 2026-11-03 (Alexander): until an operator needs tracing; no box sets `ENABLE_OTEL` today
   - The SDK and gRPC exporter already ride vector-chroma v3; this Sprig would add the HTTP exporter and the instrumentors
   - [ ] [WE] Pip overlay built like vector-chroma v3 (closure minus the rootstock): `opentelemetry-exporter-otlp-proto-http` + the `opentelemetry-instrumentation-*` set at the base's API version (1.45.1 / 0.66b1)
   - [ ] [WE] Decide who owns spans: FastAPI 0.143's native telemetry steps aside when the instrumentor's middleware is present (`_legacy_otel`)
@@ -1119,247 +552,22 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 
 - [ ] **FastAPI's strict JSON Content-Type: turn it on?** #security (3.2.1 kept it off, Alexander 2026-10-14): `strict_content_type=False` in `main.py` parses a body sent with no Content-Type as JSON, as 3.2.0 did; decide after finding which API clients omit the header
 
-- [ ] **Admin notice when Sage runs on Docker Desktop or OrbStack** (Alexander, 2026-10-09: "we may want to add an admin notice") #ux
-  - [ ] [WE] `ai-ui` passes the runtime into the container (an env var such as `SAGE_RUNTIME`)
-  - [ ] [WE] The admin panel shows a dismissible notice with the `ai-ui migrate` line; a server change, so it waits on the pause (decision 60a)
-
-
 - [ ] **LocalMind deep-exam: steal its ingestion/exports/copy, make it an AI-UI satellite** (plan: `docs/localmind-exam-plan.md`; frozen until Trellis/ISA pilot ships)
   - [ ] [WE] Phase 0–1: sample-pack baselines (ingest + export matrices), port proposals for PDF chunking, markdown-IR exporters, `{{Blank}}` copy model
   - [ ] [WE] Phase 2: one small PR per adopted piece behind AI-UI seams, with tests; kill-or-keep on `pandas`/`trafilatura` weight
   - [ ] [WE] Phase 3: satellite contract thinnest-first — STT via whisper sprig (deletes ~1G venv), embeddings/chat overflow, Docling for hard PDFs; read-only API scopes
   - [ ] [MANUALLY] Ship order decision (recommend STT first), then wire + test on the school server
-  - [x] Decided 2026-10-07 (Alexander, interviewed): satellite first, then donations as Sprigs; LocalMind (now "Mike") stays its author's school app and sheds duplicate accounts, KB and admin over time
   - [ ] [MANUALLY] Ask its author for AGPL-3.0 in writing (a `LICENSE` in the author's own commit); nothing is ported before that; the import commit is credited in a `NOTICE`
-  - [ ] Seam correction: models through `/api/chat/completions` with a bearer token, not `/ollama/api/*`: checked 2026-10-23, the raw `/ollama` routes skip the privacy filter, and the Rootstock cuts the Ollama proxy
-  - [ ] Seam correction: speech-to-text through `/api/v1/audio/transcriptions`, not the whisper Sprig's loopback port
-  - [ ] Onboarding rides on the shared collaboration repo (guide + skill pack, installed through the tap); AI-UI gets a real `AGENTS.md` and `CLAUDE.md` stub
+  - [ ] Onboarding rides on the shared collaboration repo (guide + skill pack, installed through the tap)
+  - [x] _4 done steps archived 2026-11-03 → docs/completed-todos.md._
 
-- [ ] **A process for agents whose model is gone** (Alexander, 2026-08-17): when an agent's base model stops resolving — model deleted, connection removed, hosted key dead, capability Sprig pruned — the agent goes silently mute; today nobody is told and nothing suggests a fix. #ux #reliability
-  - [ ] Detect: on agent use (and/or a periodic sweep), check the base model still resolves to a live entry; classify the loss (missing model vs dead connection vs pruned capability).
-  - [ ] Suggest, don't auto-fix: surface it to the agent's OWNER ("this agent can't reach its model — pick a new one") and to an ADMIN (which agents broke, what removed the model), with the plausible remaps offered.
-  - [ ] The live precedent: the unresponsive Space Agent on try.sage.is (`charts/friday-demo/TODO.md`) — this failure class is what that diagnosis keeps finding by hand.
-  - [ ] Fits `/admin/diagnostics`: an `agents_orphaned` check beside the capability probes, with a how-to-fix modal naming the affected agents.
-  - [ ] Decide the nudge channel: in-app banner on the agent, the admin panel, and/or the existing webhook/offline-notify path.
-
-- [ ] **Optimize the board register pass** (Alexander, 2026-08-15): make the weekly pass cheap — or unnecessary at the source. #dx
-  - [ ] A `scripts/gates/` check (the `docs-targets.sh` / `--self-test` shape) refusing commits that add open TODO.md lines >350 ch — stops regrowth where it starts.
-  - [ ] Extract the pass tooling (scout, rewrite contract, token verifier, splice) from `docs/board-register-method.md` into `scripts/` so any repo runs it in one command.
-  - [ ] Decide whether TodoScope itself should flag over-length cards (upstream: `~/bin/TodoScope` `kanban.py`).
-  - [ ] Decide automation: a scheduled weekly agent per repo, or the manual `/todo-scope` cadence.
-
-- [ ] **Share cards beyond try.sage — and the branding problem they run into** (Alexander, 2026-08-03): any default card outside try.sage must be the operator's, not ours ([dossier](docs/board-dossiers.md)). #frontend #brand
-  - [ ] Only `pages/templates/try-sage.html` carries a social card (gated on `WEBUI_URL`, Sage.is-branded 1200×630 JPEG)
-  - [ ] The SPA shell `app/src/app.html` stays unbranded by decision (`try-sage-welcome.cy.ts` asserts it)
-  - [ ] Decide first which surfaces are shareable at all — a pasted `/admin/diagnostics` or `/workshop/agents` link resolves to a login, so a card there advertises the instance's existence
-  - [ ] Weigh (a): operator-supplied `og_image_url` in the branding panel beside the existing seven, zero generation
-  - [ ] Weigh (b): request-time generation from `title`, `subtitle`, `logo_url`, `primary_color`/`accent_color` — the composition `tools/og-card/card.html` does by hand
-  - [ ] Weigh (c): neutral unbranded default, overridden by (a)
-  - [ ] Prerequisite: tags stay absent, never half-emitted, when unconfigured — the try.sage guard-rail invariant
-- [ ] **Version and vendor startr.style — the reasons keep accumulating** (Alexander, 2026-08-01): vendoring a pinned copy answers all four reasons at once and deletes the egress line from `shell.py` ([dossier](docs/board-dossiers.md)). #frontend #perf #startr-style
-  - [ ] Do it after the no-build migration settles, so it pins against a stable surface
-  - [ ] (1) Unversioned URL — SPOF by construction; a `startr.style/style.css` 5xx renders every consumer naked
-  - [ ] (2) No SRI
-  - [ ] (3) An air-gapped Rootstock gets unstyled chrome permanently — zero-egress is a case we sell — and the load is the one off-machine reach on an ordinary page load, telling startr.style someone opened an admin page
-  - [ ] (4) The agents row menu overlays via `--pos:absolute`; with the framework blocked it falls into flow and shoves its neighbours — the bug positioning fixed, reappearing offline
-  - [ ] Reason (4) is new in kind — BEHAVIOUR now depends on the CDN, not just appearance
-- [ ] **startr.style grid breakpoint gap**: neither grid system spans the full breakpoint ladder (found 2026-08-01; Alexander: backlog it, do not patch the framework yet). ([dossier](docs/board-dossiers.md)) #startr-style #docs
-  - [ ] `.grid` takes column counts — `--col-xs` (440px), `--col-sm` (640), `--col-md` (768), `--col-lg` (1024) — with no `--col` base and no `--col-xl`
-  - [ ] The prop system's `--gtc` has base/`-sm`/`-md`/`-lg`/`-xl` but no `-xs`, so a layout wanting both a 440px tier and a 1280px tier must mix the two systems
-  - [ ] Upstream fix: a handful of lines in `src/static/style.css`; one fix serves every consumer — real gap, not a blocker (the agents list went flex-wrap at zero cost)
-  - [ ] Document the 440px `-xs` tier in the `/startr-style` skill prop tables — they list only `-sm`/`-md`/`-lg`/`-xl`/`-pt`
-- [ ] **startr.style 1.x from core changes AI-UI's pages the day it ships** (2026-10-16): AI-UI loads the rolling `/style.css`, so the publish on WEB-startr.style.core/TODO.md lands here at once #startr-style #frontend
-  - [x] 1.4.0 regression, live 2026-10-16: the kit's `button:hover` filled transparent icon buttons solid `--primary` (34 of 50 in the chat shell, 45 of 59 on admin settings); fixed upstream in 1.4.2 (1.4.1 missed Tailwind's preflight; each hover selector now carries its base rule's specificity, so AI-UI's resets win); gate: `bun run probe:hover <url> --login …` in WEB-startr.style.core, 4 s a page (2026-10-17)
-  - [x] `--maxw-sm` works again: the chat column (Message.svelte) and the auth form narrow to their declared widths; intended (regression run 2026-10-17)
-  - [x] tools/tw2startr writes suffix states (`hover:bg-…` → `--bgc-hover`; focus, active, open/checked/aria → `-on`, group-hover → `-in-hover`) and leaves a state with no kit prop as a class; 88 tests pass under `bun test` (2026-10-16)
+- [ ] **startr.style 1.x from core changes AI-UI's pages when the vendored copy is bumped** (2026-10-16; AI-UI pins 1.5.0 since `bb99576`, so a core publish no longer lands here at once) #startr-style #frontend
   - [ ] 206 Svelte files carry `--dark-bgc`/`--dark-c`/`--dark-bc`/`--hvr-dark-bgc`, which no rule reads in the kit or in AI-UI: dark styling from converted `dark:` classes never applies. Decide: kit tokens under `[data-theme="dark"]`, or a kit dark variant
-  - [ ] Silent no-ops props.json catches: `--opacity` ×8 in pages/templates/try-sage.html (lines 145-198; the prop is `--op`), `--list-style` in complete.html:11 (`--lis`)
   - [ ] `--c-hover` and `--bgc-hover` in pages/templates/agents.html:153,158,160 are no-ops today and work once 1.x ships; check the look is still wanted
   - [ ] `--button-hover:var(--primary)` from pages/shell.py:235 starts working: plain `<button>`s hover to the brand primary (`.btn:hover` outranks it)
   - [ ] `--br:1px solid …` as border-right (admin/Settings/Interface.svelte:431/437/444, admin/Settings/Images.svelte:552, workshop/Models/ModelEditor.svelte:583) keeps working in 1.x; move to the 2.0 name when it lands
+  - [x] _4 done steps archived 2026-11-03 → docs/completed-todos.md._
 
-- [ ] **One-click GUI installer + code signing** (captured 2026-07-17): a double-click installer for Sage.is AI-UI (+ its Rootstock™/Sprig™ runtime) for people who won't touch a terminal — not just the `ai-ui` brew CLI. #onboarding
-  - [ ] Load-bearing prerequisite: **software signing**, or the flow dies at the OS "unidentified developer / can't be opened" warning (exactly the audience that bails)
-    - [ ] macOS: Apple Developer ID + **notarization** (+ stapling) of the `.app`/`.dmg`/`.pkg`
-    - [ ] Windows: **Authenticode** (ideally EV) to clear SmartScreen
-  - [ ] Relates to the `ai-ui` brew formula + Developer-Mode onboarding; prior art to mine is Osmantic ODS (item below)
-
-- [ ] **Review Osmantic ODS for onboarding ideas** (captured 2026-07-17): [github.com/Osmantic/ODS](https://github.com/Osmantic/ODS) — "Osmantic Deployment System"; adjacent competitor; onboarding is their strength. #onboarding
-  - [ ] NOT just a wizard: a full local-AI-server orchestrator bundling **Open WebUI** (same lineage as us) + llama-server + LiteLLM + n8n + Whisper + Kokoro + Qdrant + SearXNG + ComfyUI as Docker containers
-  - [ ] Mine:
-    - [ ] Single-command zero-prereq installers (bash + PowerShell) with GPU auto-detect → model selection
-    - [ ] A **bootstrap "first chat in <2 min"** mode (vs. our wizard's up-front model downloads)
-    - [ ] A management dashboard
-    - [ ] **Plug-and-play service folders** that rhyme with Sprigs™
-  - [ ] Our edge stays the slim Rootstock™ + zero-egress Sprig™ runtime + marketplace
-  - [ ] Feeds the one-click-installer item above
-
-- [ ] **Configurable sprigs + sidecar-sprig variant** (captured 2026-07-18): sprigs carry SETTINGS (per-entry schema — e.g. a service `url`) plus a **sidecar sprig** kind that points at an operator-run external service instead of shipping an artifact. #bonsai
-  - [ ] Concrete driver: the Docling *standard* sprig is ~5GB (docling-serve hard-pulls `docling-jobkit[ray,rq,vlm]` → ray/codeflare/kubernetes)
-  - [ ] A sidecar variant (operator runs docling-serve, the sprig just sets `DOCLING_SERVER_URL` from a settings field) is the pragmatic path
-  - [ ] Offer BOTH standard (in-container, zero-egress) + sidecar for tika/docling
-  - [ ] This is the spec's currently-unimplemented `delivery: service-endpoint` shape
-  - [ ] Work:
-    - [ ] (a) per-sprig settings schema + Admin UI field + persistence + dispatch read
-    - [ ] (b) service-endpoint/sidecar delivery that skips the pull and points capability config at the URL (sidecar "graft" = "save URL")
-    - [ ] (c) standard + sidecar catalog entries
-
-- [ ] **Tighten the Vite build**: it eats ~half the image build — full image build measured 3m37s with the Vite frontend stage taking roughly half (captured 2026-07-15 during the 3.0.0 release). #perf
-  - [ ] The cost doubles in `release_smoke` (native + amd64 builds) and the amd64 side pays QEMU tax on top
-  - [ ] Levers, roughly in order of payoff:
-    - [ ] (1) the frontend build output is arch-neutral JS/CSS/wasm — build it ONCE and COPY the same `build/` into both arch images instead of re-running Vite under emulation
-    - [ ] (2) buildx cache mounts for `node_modules` + `.svelte-kit` + Vite's cache dir so unchanged frontends skip the work
-    - [ ] (3) Dockerfile layer ordering so backend-only changes never bust the frontend layer
-  - [ ] Sourcemaps are already off in production builds (6c393d9)
-  - [ ] **NOTE:** vite specific solutions may exist or svelte upgrades
-
-- [ ] **Job queue for long-running processes** (idea captured 2026-07-06): no unified queue, no retry, no concurrency caps, no visible progress. ([dossier](docs/board-dossiers.md))
-  - [ ] Knowledge-base population/reindex, image generation, model downloads, bulk transcription, and big uploads all run as synchronous requests or fire-and-forget threads
-  - [ ] Ad-hoc status today: `MODEL_DOWNLOAD_STATUS` dict, per-request `ThreadPoolExecutor` in audio.py
-  - [ ] Sequenced as unlock #4 (last) for the real-estate engagement 2026-07-30 — the November commitment needs no software; promote when a staged beat must become a real one
-  - [ ] Settle first: DB-backed in-process queue (single-container fit, Bonsai™-friendly) vs redis-backed (already a dep) — lean DB-backed until multi-worker is real
-  - [ ] Build: job table (id/type/owner/state/progress/error) + bounded worker pool + one status endpoint (poll or SSE)
-  - [ ] Surface running jobs in admin diagnostics and the requesting user's UI
-  - [ ] Fold in prior art: the download-watchdog TODO (stalled-download detection) and the upload/download UX memories (progress bars, time estimates)
-- [ ] **Spend/usage budgets per user AND per API key** (idea captured 2026-07-06): a shared API key spends indistinguishably from its owner with no caps. ([dossier](docs/board-dossiers.md))
-  - [ ] Load-bearing for workshops: cost containment on shared instances
-  - [ ] Cap the try.sage trial's hidden Groq connection — uncapped per user
-  - [ ] Sequenced as unlock #2 for the real-estate engagement 2026-07-30: a paying customer's instance goes live with hosted models and three people sharing it
-  - [ ] Two ledgers, per-user and per-key (the key is the accounting unit when shared)
-    - [ ] Request counts + token usage + upstream cost estimates per model/connection
-  - [ ] Enforcement
-    - [ ] Soft cap: warn banner/email
-    - [ ] Hard cap: 429 with a clear "budget exhausted" body
-    - [ ] Admin-settable defaults + per-user overrides
-    - [ ] Monthly reset or rolling window
-  - [ ] Admin UI: usage table sortable by user/key/model
-  - [ ] User UI: own usage + remaining budget + per-key breakdown, so a leaked or greedy shared key is visible and revocable
-  - [ ] Later: Space-level budget as the natural third ledger (Spaces multi-tenancy)
-- [ ] **`e2e_watch`: replace noVNC with WebRTC**: swap the VNC hop for a WebRTC stream — lower latency, no websockify middleman, plays nicer through tunnels. #tests
-  - [ ] `make e2e_watch` serves the interactive Cypress GUI via Xvfb → x11vnc → noVNC (`scripts/e2e/watch/`)
-  - [ ] Same wrapper-image shape; only the transport layers in `scripts/e2e/watch/Dockerfile` + `entrypoint.sh` change
-  - [ ] Decided 2026-07-02 with the P0/P1 Cypress revival
-- [ ] **`sprig-test-cypress` self-test graft prototype gate**: one-shot `transport: none` dev-family Sprig™ that runs the e2e suites against its own rootstock loopback. #tests #bonsai
-  - [ ] Reports into Admin → Diagnostics ("Self-test: N/N ✅")
-  - [ ] Prototype gate first: Electron/Chromium headless closure on the Wolfi base (X11/GTK libs, ~500MB–1GB artifact, per-arch)
-  - [ ] Kills the Cypress-binary CDN pull (north star)
-  - [ ] Greenlight pending after 8.I.4/8.I.5
-
-- [ ] **Apple Sign-In with lazy-JWT client_secret rotation**: add Apple as the fourth OAuth provider; regenerating the client_secret JWT on every login designs out the 6-month Apple JWT expiry footgun. ([dossier](docs/board-dossiers.md))
-  - [ ] ES256 with the `.p8` key is sub-millisecond — no scheduler or persisted JWT state
-  - [ ] Hard prerequisite: Apple Developer Program ($99/year)
-  - [ ] Spike (1-2h): confirm authlib `StarletteOAuth2App.client_secret` is mutable per-request; if cached, inject the Authorization header just-in-time via a `compliance_fix` hook.
-  - [ ] Backend `apple_oauth.py`: JWT generator + P8 parser + config validator that signs a throwaway JWT at save-time, so a bad key fails before sign-in.
-  - [ ] Wire into `OAuthManager.handle_login`/`handle_callback`: regenerate JWT, swap into `client.client_secret`, call authlib as normal.
-  - [ ] Handle Apple's `response_mode=form_post` callback (POST, not GET)
-  - [ ] Capture first-time-only name/email (returning users get only `sub`)
-  - [ ] Admin UI in `OAuthSettings.svelte`: Team ID + Key ID + masked P8 textarea; surface the save-time signing failure as an inline error.
-  - [ ] Frontend: Apple button + icon in the login provider selector.
-  - [ ] Test loop: cloudflared/ngrok tunnel (Apple requires HTTPS, no localhost) + Apple Developer sandbox app.
-- [ ] **Admin-driven OAuth user pre-link / org-wide provisioning**: OAuth admission today is `OAUTH_MERGE_ACCOUNTS_BY_EMAIL` (implicit email-match) or `ENABLE_OAUTH_SIGNUP` (auto-create at `role=pending`); neither covers "invite Alice, she signs in with Google". Two layers, smallest first. ([dossier](docs/board-dossiers.md))
-  - [ ] Admin invites by email: Admin → Users → "Invite" creates a user with a chosen role plus `oauth_only=True`, `linked_provider=null`; first OAuth login links `oauth_sub` to that record — the merge-by-email code path gated on the invite flag, not the global toggle. Closes the raw-403 path.
-  - [ ] Org-level bulk linking: CSV upload or Google Workspace / Microsoft Entra SCIM pull of `email,role,group` rows; same callback linking path. For workshop cohorts and school deployments.
-  - [ ] Invite expiry + revocation: invites with no linked `oauth_sub` after N days surface in the admin UI for cleanup.
-  - [ ] Audit log entry per link event, e.g. "Alice's Google sub linked to her invited record on 2026-06-01".
-  - [ ] Depends on the first-time-OAuth UX TODO ([above](#oauth-ux)) landing first.
-- [ ] **History purge for excluded hidden artifacts**: After the root hidden-artifact allowlist lands and the team reviews scope, run BFG Repo-Cleaner or `git filter-repo`, rotate any exposed secrets, and coordinate clone remediation for anyone with an existing copy of the repo.
-  - [ ] Confirm which previously committed hidden artifacts must be purged from history
-  - [ ] Prepare the team runbook for rewrite, force-push, and clone remediation
-  - [ ] Rotate any credentials exposed by now-excluded hidden artifacts
-
-- [ ] **try.sage Tutorial Video Production**: (Alexander Somma + Izzy Plante) — Content work, not code.
-  - [ ] Pick individual videos from the [working playlist](https://www.youtube.com/playlist?list=PLQ_PIlf6OzqK-mgAzTjmjXE636iqwcZ-u) for each of the 6 default tutorial steps.
-  - [ ] Populate `TRY_SAGE_TUTORIAL_STEPS_JSON` per workshop deployment with the chosen URLs and step descriptions.
-  - [ ] Publish the Custom Sage tutorial content package: three short videos plus a follow-up email with system prompts.
-  - [ ] Keep system-prompt disclosure only in the dedicated system-prompt video. Swap that one video per team session without a codebase release.
-
-- [ ] **Buff Out the Default First-Run Landing Page**: try.sage ships a polished welcome (persona picker, banner, branded imagery, tutorial overlay); a fresh self-hosted install lands on a much thinner page. Port the pieces, minus the trial-only bits. ([dossier](docs/board-dossiers.md))
-  - [ ] Audit today's try.sage welcome (`TrySage*` in `app/src/lib/components/`): copy, imagery, tutorial-step cards, layout, animations.
-  - [ ] Split trial-only (banner countdown, persona switcher, magic-link QR) from any-first-run (welcome card, "what to try first" buttons, tutorial overlay, branded slideshow continuity).
-  - [ ] Design the post-wizard landing: one-card welcome with "Start a chat", "Set up Ollama", "Create a Space", "Invite users" CTAs that link into the real flows.
-  - [ ] Default tutorial overlay (same component as `TrySageTutorial`, new content): where chats go, where data lives, how to add a model, how to invite users.
-  - [ ] Localize copy via i18n.
-  - [ ] Vitest spec: auto-show + dismiss + replay, parallel to the try.sage tutorial spec.
-  - [ ] "Replay welcome" admin escape hatch outside trial mode — sibling to the existing Trial Mode tab.
-- [ ] **Provider logos for remote models**: agents and remote models show no brand icon (a name at most) — ship provider logos as the visual layer on PK-1's `is_external` + `provider_label`. ([dossier](docs/board-dossiers.md))
-  - [ ] Local engines (Ollama, etc.) in the same icon set for consistency
-  - [ ] Map `provider_label` → logo asset: known-provider set (Anthropic, OpenAI, Google, Mistral, Meta, Ollama) plus a neutral fallback for unknowns.
-  - [ ] Render in the model selector, response bubbles, and Space agent messages — the same surfaces PK-1 badges Local/External.
-  - [ ] Icon-only display option for agents with no avatar, so a remote-backed agent still carries a brand mark.
-  - [ ] License-clean marks only: official brand assets where permitted, or simple-icons / public-domain
-    - [ ] Document the source per logo
-    - [ ] Cross-check the slideshow image-licensing discipline from Codebase Cleanup
-- [ ] **Learning Visibility Dashboard**: Mentioned in `the-arsonists-smoke-detector.md`. We need to build this as we are publishing the article soon to the sage.education resource page.
-
-- [ ] **Alex bio update** (Alexander Somma): Add Alex's background to the sage.is/about and sage.education pages — currently only Izzy's story appears. Should include Etsy backend, teaching career, and CTO role.
-
-- [ ] **Docker Image Slimming (Pinned / Paused)**: (Alexander Somma)
-  - _Shipped: hit the ~2.5 GB target (down from 9.7 GB). Archived 2026-08-15._
-  - [ ] Hit the ~1.5GB base-image target after trimming heavy transitive deps
-
-- [ ] **Dockerfile: stop running pip as root**: every `make it_build` prints the root-user pip WARNING from the runtime stage — standalone fix is small.
-  - [ ] The warning: `WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager`
-  - [ ] Fix: switch pip installs into a venv (`python -m venv /opt/venv` then `pip install …` against that venv)
-  - [ ] Or add a non-root build user before the pip step
-  - [ ] Bundled with the broader "non-root container" hardening if/when that lands
-
-- [ ] **CI/CD Pipeline**: Gated releases, scanning, and regression tests
-  - [ ] `make install_dev` — auto-install dev tools via Homebrew
-  - [ ] `make scan_container` — trivy image scanning (post-build)
-  - [ ] `make lint` — eslint + prettier + black rollup
-  - [ ] Gate release finish on passing DB tests and scans
-  - [ ] Support the same gated release flow locally or on CI
-  - [x] Staging: try.sage.is is the canary; `make deploy` stops there if it does not come up (2026-09-27)
-  - [ ] Selenium-driven browser regression tests
-  - [ ] OWASP ZAP DAST via `make scan_dast`
-
-- [ ] **Build System Evaluation**: Consider alternatives to Make
-  - [ ] Evaluate migrating Makefile to a cleaner build tool (Rake, Invoke, or Just)
-
-- [ ] **Auto Reset Mode (Trial Environments)**: Mostly delivered by try.sage. Two gaps remain — see subitems. Reference: `docs/try-sage-deployment.md`.
-  - _Shipped: reset env vars, selective lifespan wipe (chats + files, KBs/accounts persist), banner countdown + warning state, admin extend/reset endpoints with audit lines. Archived 2026-08-15._
-  - [ ] **Post-reset confirmation messaging** — when the auto-reset fires, signed-in users currently see no signal. Add a one-shot toast or banner state: "Trial reset complete — chats and uploads cleared." Drive it from a `try_sage.last_reset_at` timestamp the frontend compares against `localStorage.try_sage_last_seen_reset`.
-  - [ ] **Tests for reset timing and message visibility** — pytest spec for `periodic_try_sage_reset` (mock the clock, assert selective wipe runs at the right tick); Vitest spec for `TrySageBanner` countdown formatting and color-shift threshold.
-
-- [ ] **Full Regression Testing Suite**: End-to-end coverage for core user flows, integrations, and release confidence
-  - [ ] Standardize Svelte unit/integration tests on Vitest, matching current Svelte guidance
-  - [ ] Add jsdom plus `@testing-library/svelte` for component regression coverage where DOM interaction matters
-  - [ ] Cover high-risk Svelte components first: chat composer, microphone/transcription flow, auth forms, settings, and uploads
-  - [ ] Expand the existing Cypress E2E suite to cover the core happy-path and failure-path user journeys
-  - [ ] Define a deterministic test-data strategy for local and CI runs: seeded state where needed, stubs where faster and safer
-  - [ ] Evaluate Playwright for cross-browser smoke coverage and trace-based CI debugging before deciding on dual-stack vs migration
-  - [ ] Gate releases on a tiered regression pipeline: fast Vitest checks first, browser regressions after, smoke coverage on release builds
-  - [ ] Document how to run each regression layer locally and in deployment pipelines
-
-- [ ] **Audio Regression Testing Suite**: Deterministic voice-input coverage across recorder, transcription, and chat-input handoff. ([dossier](docs/board-dossiers.md))
-  - [ ] Define the audio test pyramid: unit logic, component behavior, browser E2E, limited real-device smoke
-  - [ ] Build a golden audio corpus: clean speech, silence, noisy, clipped, accented, low-volume samples
-  - [ ] Feed known audio files as fake microphone input in browser tests; no live human mic in CI
-  - [ ] Auto-grant mic permissions; verify recording state transitions, processing UI, transcript insertion into chat input
-  - [ ] Cover failure paths: permission denied, empty transcript, transcription failure, canceled recording, timeout
-  - [ ] Assert transcripts via normalized text matching where exact punctuation is unstable
-  - [ ] Decide which paths run real backend transcription vs mocked/stubbed responses
-  - [ ] Evaluate Playwright: media permission control, fake mic input, cross-browser smoke, trace debugging
-  - [ ] Keep a small manual/staged real-microphone smoke suite; never a required CI gate
-  - [ ] Document local, CI, and staging runs: browser flags, fixtures, expected assertions
-- [ ] **Backend Rewrite Research**: Evaluate framework options and build contract tests
-  - Superseded 2026-10-23 by the Rootstock card (In Progress): Django, same database, contract = OpenAPI subset + HAR goldens + live A/B
-  - [ ] Review `docs/backend-rewrite-research.md` with team
-  - [ ] Phase -1: Generate contract test suite from OpenAPI spec (private submodule)
-  - [ ] Phase 0 spike: chosen framework + streaming Ollama proxy
-  - [ ] Team decision: Go + PocketBase, Rust + Loco, or Python + Django?
-
-- [ ] **Open WebUI Fork Maintainer Outreach**: Contact the six BSD-3/MIT fork maintainers shortlisted from 32 forks in `docs/outreach/open-webui-forks.md`. No fork runs its own community channel — every README points at the upstream Open WebUI Discord — so Sage.is AI can consolidate the cohort. ([dossier](docs/board-dossiers.md))
-  - [ ] Review the shortlist with the team; prioritize first contacts
-  - [ ] Draft a generic outreach template plus per-fork customization for the top three
-  - [ ] Contact `blascerecer/open-webui` (101 stars, BSD-3, MCP bridge) — direct overlap with Sage.is AI's MCP work
-  - [ ] Contact Public AI Movement (`forpublicai`), hello@publicai.network — strongest mission match, "AI as public infrastructure"
-  - [ ] Contact AMD-affiliated `aigdat/raux` via the GAIA team on LinkedIn — Tier-1 silicon vendor signal
-  - [ ] Contact `AI3clauseBSD/claused-webai` (francoisp / headgasket) — most ideologically aligned, building a federation of "former-open" projects
-  - [ ] Contact `BochaAI/open-webui-Bocha`, info@bochaai.com — vendor MCP integration angle, geographic diversity
-  - [ ] Contact `hasanraiyan/open-webui` (Raiyan Hasan) — indie BSD-3 maintainer with public email
-  - [ ] Decide: Matrix room or Discord for the BSD-3 cohort
-  - [ ] Refresh `docs/outreach/open-webui-forks.csv` every ~6 months
 - [ ] **Finish offload Tier B + native-UI relocations** (2026-06-26): Tier A (cache purge + BuildCruft sweep) plus a manual Movies symlink took host disk from 12% to ~50% available. None of the remaining work blocks Bonsai™. ([dossier](docs/board-dossiers.md))
   - [ ] Tier B `home` from admin shell: `sudo offload --target-home /Users/somma move home --apply`. Reconcile the Music symlink first (points at `/Volumes/Somma 01 Dock Drive/Music`, offload expects `/MovedHome/somma/Music`) — same-volume `mv` + re-symlink, three commands
   - [ ] Tier B `app` (Signal, Obsidian, Steam, Keybase, VSCode, Cursor, Epic, Minecraft) — quit each before firing
@@ -1372,62 +580,40 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 
 ## Bugs
 
-- [ ] **`branding-settings.cy.ts` flakes on a cold box** #test (2026-10-24, once in `gauntlet_full` on `920e944`, 0 of 3 fresh-box reruns): three saves read `''` from `GET /api/v1/configs/branding` inside the 4 s retry window, the save click landing before the Svelte page hydrated
-  - [ ] [WE] `cy.intercept('POST', '/api/v1/configs/branding')` and `cy.wait` on it before `readBranding()`, so the spec waits for the save instead of racing it; the route itself is unchanged since the ruff reformat
+- [ ] **Rootstock F0 leftovers: what the 2026-10-24 security fixes did not cover** #security (gathered 2026-11-02 from closed cards, now in `docs/completed-todos.md`)
+  - [ ] [MANUALLY] Upstream fix, proposed, never edited from here: startr.style publishes an SRI hash beside every versioned file and keeps versioned paths immutable
+  - [ ] [MANUALLY] try.sage.is: left on while only developers can reach it and no demos run (2026-10-23 to 2026-10-30); switch it off before the next demo
+  - [x] _5 done steps archived 2026-11-03 → docs/completed-todos.md._
+
+- [ ] **Every restart turns document search off on a box with vector-chroma, until someone runs `--vector-on`** #bug #critical #sprigs (seen after deploys 2026-10-24, and 2026-10-27 after a plain restart: S04's nginx lock made CapRover redeploy sage.startr.cloud, `vector_db_ready: False`)
+  - Cause: `vector` is a delivered overlay with no process, so neither the boot reconcile (`sprigs/supervisor.py` `_reconcile`, which re-points embedding, reranker, stt, tika, docling) nor the graft route (`routers/sprigs.py` `graft_sprig`) calls `vector_bootstrap.ensure_chromadb`; its step 2 would switch the client on from the overlay already on disk
+  - [x] [MANUALLY] Alexander: pull it into 3.3.0 or keep it for F1: it ships in 3.3.0, with everything in the tree (2026-11-05); the fix is uncommitted in `routers/sprigs.py`, `sprigs/supervisor.py`, `sprigs/vector_bootstrap.py` and `sprigs/test_vector_reactivate.py`; `upgrade_gate` (2026-11-05) caught a graft that answered 500 when the import failed, now fixed
+  - Until it ships: `scripts/kb-reindex.py BASE_URL --vector-on` after every deploy and every restart (release runbook, "After the deploy: document reading")
+  - [ ] [WE] Found 2026-11-05: the prune route has no `vector` branch, so after a prune the client stays on until a restart; decide whether a prune turns search off
+  - [x] _2 done steps archived 2026-11-03 → docs/completed-todos.md._
 - [ ] **The SPA floor crept 539 kB unnoticed between 2026-08-02 and 3.2.2** #perf (found 2026-10-24 by `surface_budget` in `gauntlet_full`): `notes-empty` measures 7,179.9 kB decoded on the 3.2.2 image against the 6,800 kB ceiling set on 2026-08-02 at 6,641 kB; `/api/models` is 2,902 kB decoded on the 2026-07-12 snapshot
-  - [x] [WE] Ceiling raised to 7,300 kB with the reason in `run-gate.sh` (2026-10-24); the F0 build adds 107 kB decoded and 0.5 kB on the wire, the vendored startr.style stylesheet; then to 7,350 the same day for the vendored Nunito Sans faces (+51 kB decoded), which the SPA fetched from startr.style before through the sheet's `@import`
+  - Held 2026-11-03 (Alexander): F1 starts once 3.3.0 ships
+  - Found 2026-11-03: the whole creep is `/api/models`. It went 2,304 kB (08-02), 2,702 (3.1.0, measured 08-17), 2,902 (3.2.2), 2,910 (F0); everything else on the floor fell 60 kB, then rose 151 kB for the vendored stylesheet and fonts
+  - Cause: the gate's container has open egress, and the snapshot's config lists OpenAI, Groq, OpenRouter and HF router with `model_ids: []`, so each run fetches four live catalogs. The floor grows with the calendar, not the code, and production keys leave on every run
+  - Doubled: both merge sites in `routers/openai.py` (`:520-524`, `:586-589`) spread each provider object and nest it again as `"openai"`; nothing in `app/src` or the backend reads `.openai`. OpenRouter alone is 453 models, 810 kB today, up from about 584 kB on 08-02
+  - Headroom on the last run (10-24): 7,339.4 kB against 7,350, so 10.6 kB; OpenRouter has added about 6 models since, so `release_smoke` for 3.3.0 will likely fail here with no code change
+  - [x] [WE] Hermetic gate, code done 2026-11-05: a mock on the gate's network serves a frozen 100-model catalog per connection (`MOCK_MODEL_COUNT`), and `scripts/snapshots/point-providers-at-mock.py` points the copy's connections at it with no real key
+  - [x] [WE] Ran 2026-11-05 in `gauntlet_full`: floor 5,780.6 kB decoded; the ceiling drops 7,350 -> 5,900 kB in `run-gate.sh`
+  - [x] [WE] Drop the nested `"openai"` copy at both merge sites (2026-11-05), with `routers/test_openai_model_list.py` in `image_unit_tests`, green 2026-11-05
   - [ ] [WE] F1: the revision-keyed, ETag'd model list (plan, F1) brings `/api/models` down; re-measure and lower the ceiling with it
-  - [ ] [WE] Propose: `surface_budget` runs in `release_smoke`, not only in `gauntlet_full`, so the floor cannot creep for a quarter again
-- [ ] **Any user can write chunks into any collection through `/api/v1/retrieval/process/file`** #security #bug (2026-10-24, found while fixing knowledge access): the route takes any `collection_name` and indexes the caller's file into it, the write-side twin of the read check F0 added
-  - [ ] [WE] Refuse a collection the caller may not write (owner, write access or admin); one test beside `test_knowledge_access`
-- [ ] **The note item in retrieval checks access but not the note's owner** #security #bug (2026-10-24, found while fixing knowledge access): `get_sources_from_items` admits a note whose `access_control` allows it without asking who owns it
-  - [ ] [WE] Owner or admin or read access, the same rule as knowledge bases
-- [ ] **An API-created model answers "Model not found" until someone lists models** #bug #api (2026-10-24): `app.state.MODELS` is rebuilt only by a listing, so a client that creates an entry and chats with it fails until a `GET /api/models`
-  - [ ] [WE] Refresh the cache on create, update and delete, or look the entry up on a miss
-- [x] **The vendored startr.style sheet imports fonts this box does not serve** #ux (2026-10-24): `@import url('/fonts/Nunito-Sans.css')` at its first line resolves to the SPA's catch-all, so the no-build pages fall back to the system sans-serif; the SPA sets its own fonts
-  - [x] [WE] Done 2026-10-24 (Alexander: "make it so"): `main.py` mounts `/fonts` from `app/static/vendor/startr.style/fonts/`, the sheet and ten woff2 faces (352 KB) copied from Startr/Style `f028648`; the stylesheet and its integrity hash untouched; `test_startr_style_pinned` pins the font sheet and checks the box serves it
-- [ ] **An upload starts before anyone checks that the box can read it** #bug #ux #sprigs (Alexander, 2026-10-24; seen on try.sage.is 3.2.2): with no rag-loaders or embedding Sprig, a PDF uploads with 200 and nothing extracted, and search then fails with "[ERROR: 503: Embedding model not yet loaded. Complete setup wizard to download.]"
-  - [ ] [WE] Check before the upload starts: one readiness answer (rag-loaders grafted, embedding ready, vector DB ready) that any signed-in user may read; the composer and the knowledge page refuse the file at once and say why
-  - [ ] [WE] Help in place: an admin gets one button that grafts what is missing (rag-loaders, the embedding Sprig) and shows progress; a user reads "ask your admin to turn on document reading", never "Complete setup wizard"
-  - [ ] [WE] A processing failure reaches the person plainly: today the upload answers 200 with an `error` field (`routers/files.py:208-216`), shown as a toast only after the wait (`chat/MessageInput.svelte:587-589`)
-  - [ ] [WE] Messages: retrieval stops wrapping the 503 as a 400 "[ERROR: 503: …]" (`routers/retrieval.py:1869-1873`); the texts at `main.py:1103-1110` and `routers/retrieval.py:59-66` name who fixes it and how
-  - [x] [WE] try.sage.is: `multilingual-e5-large` grafted 2026-10-24 (Alexander's go), rooted in 52 s; embedding "ready", queries answer 200 instead of the 503; since when it was missing is unknown (3.1.0 had a full ML stack)
-  - [x] [WE] try.sage.is, 2026-10-24 (Alexander's go): `rag-loaders` grafted (7 s); a three-page PDF now extracts and each search ranks its own page first; both seeded knowledge bases (0 chunks, versions stamped) emptied to re-ingest at the next reset, no restart (`docs/try-sage-deployment.md`, "Document reading")
-  - [x] [WE] try.sage.is's seeded knowledge bases, 2026-10-24: the 15:13 reset did not re-ingest them (an emptied file list leaves a stale collection, and the seed's ingest then fails silently); `POST /api/v1/knowledge/{id}/reset` on both, then a manual trial reset, brought them back: one file each, searches hit (runbook updated)
-  - Found 2026-10-24 by a check through the public persona links: the user-1 link signs in (PyJWT path fine), the PDF stored and was deleted, extraction gave 0 characters, three searches got the 503
-  - Related: card "Knowledge bases on sage.startr.cloud return nothing" (its fixes include the real 503); the diagnostics fix modals' Sprig remedies
+  - [x] _2 done steps archived 2026-11-03 → docs/completed-todos.md._
 - [ ] **Production data reaches Backblaze in plaintext** #security #backup (Alexander, 2026-10-24): the deploy backups now move to Somma 02 encrypted; their siblings stay as they are until each gets a decision
-  - [x] [WE] 2026-10-24: the `make deploy` backups (3.1.0, 3.2.0, 3.2.1) moved to `Somma 02 14TB/Backups/ai-ui/sage-startr-cloud/`, gzipped and encrypted, key `bw:ai-ui-deploy-db-backup`, decrypt verified; mover `~/.local/share/ai-ui/move-deploy-backup.sh`
-  - [ ] [WE] `scripts/deploy.py` writes the encrypted copy to Somma 02 itself, through `sage-secret`, and never a plaintext file
-  - [ ] [WE] `make deploy` reads the admin key as `bw:sage-startr-cloud-admin-key` through `sage-secret run`; `.env` keeps a plaintext copy at mode 600 until then (the vault holds the same value)
+  - [ ] [MANUALLY] Then drop the plaintext `SAGE_STARTR_CLOUD_ADMIN_KEY` from `.env`; the vault holds the same value
   - [ ] [MANUALLY] Sibling: Syncthing mirrors sage.startr.cloud's data folder (`webui.db`, uploads, vectors) to `Somma 01 Dock Drive/Sync/`, which Backblaze backs up as it is
   - [ ] [MANUALLY] Sibling: each node's nightly backup (volumes, database dumps, `captain-config`) rides the same sync to this Mac and Backblaze
   - [ ] [MANUALLY] Sibling: Colima's VM disks, dev volumes included, sit on the same drive
   - [ ] [MANUALLY] Check whether this Mac's Backblaze uses a private encryption key; with one, Backblaze holds only ciphertext for every sibling above
-- [x] **Each release tag pins the previous server, so brew cannot ship it** #bug #release #critical (2026-10-24, the 3.2.1 release): `_pin_server_tag` ran after `release_finish`, so `v3.2.1`'s `distribution.env` said `SERVER_TAG=3.2.0`, and the formula aborts on that mismatch
-  - [x] [WE] `bump_release_version` pins `SERVER_TAG` on the release branch and copies it to the siblings (`96f1fba`); `v3.2.2` carries `SERVER_TAG=3.2.2`
-  - [x] [MANUALLY] Cut 3.2.2 with the pin inside its tag (Alexander's go, 2026-10-24); the tap's check passes and `0878c52` installs it
-  - [x] [WE] The CLI test that named 3.2.0 reads the pin from `distribution.env` instead; it had failed the develop push
-  - Brew installed AI-UI 3.2.0 until `0878c52`: the tap's `check-formulae.sh` had refused the 3.2.1 formula on pre-push
-- [ ] **The release push cannot build amd64 on the build VM** #bug #release (2026-10-24, the 3.2.1 push): the docker-container builder runs amd64 under its bundled QEMU, where esbuild crashes; dockerd's own builder reaches Rosetta, but both arches' `vite build` at once OOM the 10 GiB VM
-  - [x] [WE] `ensure_builder`: use the context's docker driver when dockerd runs the containerd image store, as the build VM does (`96f1fba`)
-  - [x] [WE] `_it_build_multi_arch_push_GHCR`: build each platform alone into the cache, then push both (`96f1fba`); 3.2.2's push ran this way with no OOM
-  - [ ] [WE] `docker-preflight.sh amd64`: refuse a builder that lists no linux/amd64 on a Rosetta VM, before a 20-minute build
-  - 2026-10-24 recovery: build VM restarted, cache warmed per platform, then the push with `BUILDX_BUILDER=colima-build` (`~/.local/share/ai-ui/3.2.1-warm-and-push.sh`)
-- [ ] **`release_smoke` tests new Sprig tags before `sprig_publish` puts them on GHCR** #bug #release (2026-10-24, the 3.2.1 release): `wizard-smoke.sh` grafts from ghcr.io, so a release that bumps a Sprig fails its smoke, and a fail-open trap let `ship` go on
-  - [x] [WE] `wizard-smoke.sh` exits non-zero on FAIL again (`5458562`)
-  - [ ] [WE] Run the smoke container on sage-network with `SPRIG_REGISTRY=local-registry:5000`, as the Sprig gates do, so a release smokes the tags it is about to publish
-  - [x] [WE] 2026-10-24: after `sprig_publish`, the wizard smoke passes on `ghcr.io/sage-is/ai-ui:3.2.1`; the earlier FAIL was rag-loaders v2 missing from GHCR
+  - [x] _3 done steps archived 2026-11-03 → docs/completed-todos.md._
 
-- [ ] **Space agent replies skip the model access check** #security #bug (2026-10-24; found by the guide-and-guard review): `routers/spaces.py:393` passes `bypass_filter=True`, which skips `check_model_access` (`utils/chat.py:219`), so any Space member can trigger an agent row and its tool-server key
-  - [ ] [WE] Check Space membership against the model's access list, or drop `bypass_filter` for agent replies
-  - Not in F0 (2026-10-24): whose access an agent reply runs under, the Space owner's or the member's, is a product decision; the server-internal `bypass_filter` it relies on still works after F0's client-flag fix
-- [x] **The privacy filter's reverse table is shared by the whole instance** #security (2026-10-24; found by the guide-and-guard review): `privacy/mapper.py:28-34` caches every real-to-fake pair, and `hooks.py` restores real values into tool-call arguments
-  - [x] [WE] Fixed at source 2026-10-24 (Rootstock F0), commit d3db2c8; `test_privacy_filter` fails on 3.2.2 and passes
-  - [ ] [WE] Scope the table to the request or conversation; restore real values only into arguments a tool declares it accepts
 - [ ] **Congestion: one event loop carries every request, stream and socket, so streams stall and pages hang** #bug #perf #critical (Alexander, 2026-10-23; measured in the code the same day; plan section "Congestion and the Tinker gateway")
+  - Held 2026-11-03 (Alexander): waits on the Rootstock card's F1
   - Every model call fetches provider model lists live: `routers/openai.py:950` calls the router's `get_all_models`, whose `@cached` (`:555`) never hits, and each call opens a new HTTP session (`:1042`)
-  - Stream frames carry the whole answer so far, one per provider chunk, to every tab (`utils/middleware.py:1935-1941`, `socket/main.py:647-669`): about 5.6 MB per tab for a p90 answer, 43 MB for a p99
+  - Stream frames carry the whole answer so far, one per provider chunk, to every tab (`utils/middleware.py:1945-1951`, `socket/main.py:647-669`): about 5.6 MB per tab for a p90 answer, 43 MB for a p99
   - Uploads run extraction and embedding on the loop (`routers/retrieval.py:1536,1617`); the model list costs about 660 queries per page for role `user` (`main.py:1631`, `utils/access_control.py:145`)
   - Seen 2026-10-24: re-indexing sage.startr.cloud's knowledge bases held the loop so long that `/health` stopped answering and the health check replaced the container once; a 130,090-character file still cannot be indexed there
   - Decided 2026-10-24 (Alexander): indexing speed is a product fix, never per-host tuning or a GPU box: batched embedding calls (default 32, not 1) and uploads off the loop in F1; one embedding service per node through the gateway, vectors cached by model and chunk hash, index jobs with progress in F5
@@ -1437,224 +623,45 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] [WE] Rootstock F1: the ten fixes in the plan (batched embedding calls and the vector store's switch joined 2026-10-24), gated by `make stream_load` at 30 UI streams with uploads: loop lag p99 ≤100 ms, bytes ≤2× the text plus 40 kB, at most 3 blob writes per answer, 0 errors
   - [ ] [WE] Tinker load, hundreds to thousands of streams per box: the model gateway in its own process from Rootstock F2 (Rootstock card)
 
-- [x] **Privacy: tool arguments leak on the follow-up** #security #bug (2026-10-15): with native function calling, the next request resends the arguments `finish_stream` made real (`privacy/hooks.py:159-164`), because `outbound` rewrites only `content` (`hooks.py:105-113`); the provider sees each stand-in beside its real value
-  - [x] [WE] Fixed at source 2026-10-24 (Rootstock F0), commit d3db2c8; `test_privacy_filter` fails on 3.2.2 and passes
-  - Closes in Rootstock F0 (3.3.0), fixed at source (plan, F0 section)
-  - Path: `utils/middleware.py:1966` reverses the arguments in place; `2091-2100` and `345-352` put that same list in `assistant.tool_calls`; `outbound` (`utils/chat.py:209-211`) skips it; `routers/openai.py:1034-1052` posts it.
-  - Ships in v3.2.0: the tag carries the same code on every line above.
-  - Replayed 2026-10-15 on the real hooks and middleware helpers: round 1 carried only stand-ins; the follow-up carried the planted name and email in its tool arguments. `role: tool` content stayed stand-in.
-  - Needs: privacy on for the model (default for external connections since 3.2.0), native function calling (opt-in, `main.py:1769-1778`), the UI's socket stream (`middleware.py:1687`), a stand-in in the arguments.
-  - Each tool round resends every earlier call, up to 10 rounds (`middleware.py:2008`).
-  - API clients on `stream: false` that echo `tool_calls` back leak the same way: `reverse_completion` hands them real arguments (`hooks.py:120-126`).
-  - Clean: prompt-based tools (the default), Spaces (no stream, never native), and later turns, where the UI keeps only the result (`app/src/lib/utils/index.ts:875-895`).
-  - Worst case: the map is instance-wide and stable under `PRIVACY_KEY`, so one leaked pair unmasks that stand-in in every request from this instance.
-  - [ ] [WE] Fix `_rewrite_message` in `privacy/hooks.py`: parse each `tool_calls[].function.arguments`, pseudonymize every string, re-dump; unparsable text goes through `rewrite` whole. Covers API clients too.
-    - [ ] Handle `tool_calls` outside the early `return` at `hooks.py:110`: the middleware's assistant message always has string content (`middleware.py:349`).
-    - [ ] Write into copied calls: the list is the content block's own (`middleware.py:350`), and the UI and DB must keep it real.
-  - [ ] [WE] Unit test in `privacy/test_hooks.py`, run by `make privacy_tests`: a planted name in a tool argument and a tool result reaches the model only as a stand-in.
-    - [ ] Hint a non-ASCII name and an email; call a tool with their stand-ins; `finish_stream`; re-dump as `middleware.py:2056`; return a result naming both; run `outbound` on the follow-up.
-    - [ ] Assert on decoded argument JSON and `role: tool` content: stand-ins only, and the content block keeps the real name. A scratch run (2026-10-15) fails at HEAD and passes with the fix.
-    - [ ] Trap: no substring check on the dumped wire. `json.dumps` writes the name as `é` escapes, so that check passes at HEAD while the name leaks.
-  - [ ] [WE] E2E on the recording mock. It cannot emit a tool call today, so the Privacy rules card's "streamed and not" proof never covered one.
-    - [ ] `scripts/privacy/mock_provider.py`: given `tools` and no `role: tool` message, stream one tool call with the last user message as the tool's first parameter (others are dropped, `middleware.py:553-556`); serve all captures.
-    - [ ] Cypress through the chat UI (the tool loop needs a socket session): native function calling, a tool that returns its input, a literal name rule; the follow-up holds only stand-ins.
-  - [ ] [WE] Card the siblings this trace found:
-    - [x] The reverse table is instance-wide (`models/privacy.py:83`): a surname stand-in in any reply or tool call becomes another chat's real name (replayed: `Okafor` to `Silva`).
-    - [x] The model preset system prompt, with `{{USER_NAME}}` and `{{USER_LOCATION}}` filled in, joins the messages after `outbound` (`routers/openai.py:928-929`).
-    - [ ] `/openai/chat/completions` skips the hook (`routers/openai.py:901`); the streamed API pass-through leaves tool-call deltas fake (`hooks.py:190-193`).
-
-- [x] **Privacy: the reverse table is instance-wide, so one chat's reply can show another chat's real name** #security #bug (2026-10-23, from the tool-argument trace): `reverse_table()` holds every pair on the instance (`privacy/mapper.py:28-33`), and name stand-ins are common surnames (`privacy/shapes.py:153-154`)
-  - [x] [WE] Fixed at source 2026-10-24 (Rootstock F0), commit d3db2c8; `test_privacy_filter` fails on 3.2.2 and passes
-  - Replayed 2026-10-15: a surname stand-in in one chat's reply came back as another chat's real name (`Okafor` to `Silva`)
-  - [ ] [WE] Reverse only the stand-ins the request itself sent; a test plants a name in one user's chat and its stand-in surname in another user's reply
-  - Closes in Rootstock F0 (plan, F0 section)
-
-- [x] **Privacy: the preset system prompt joins after the filter, carrying the user's name and location** #security #bug (2026-10-23, from the tool-argument trace): `apply_model_system_prompt_to_body` fills `{{USER_NAME}}` and `{{USER_LOCATION}}` after `outbound` has run (`routers/openai.py:925-929`)
-  - [x] [WE] Fixed at source 2026-10-24 (Rootstock F0), commit d3db2c8; `test_privacy_filter` fails on 3.2.2 and passes
-  - [ ] [WE] Apply the system prompt before `outbound`; a test with privacy on sees only a stand-in for the user's name in the system message
-  - Closes in Rootstock F0 (plan, F0 section)
-
-- [x] **Knowledge access: chat retrieval and `/query/*` read any file or collection a client names** #security #bug (2026-10-23): a file item with `context: full` returns the whole file with no owner check (`retrieval/utils.py:614-628`); vector search takes any collection id (`:629-634`, `:669-674`, `:682-687`; `routers/retrieval.py:1815-1943`)
-  - [x] [WE] Fixed at source 2026-10-24 (Rootstock F0), commit 52885b0; `test_knowledge_access` fails on 3.2.2 and passes
-  - [ ] [WE] One access check for every file, collection and knowledge id before retrieval, the rule `:644-647` already applies to full-context knowledge; ids leak through shared chats and agents, so an unguessable id is not a control
-  - [ ] [WE] A test: a second user naming the first user's file id, in chat and on `/query/doc`, gets nothing
-  - [ ] [WE] Second path (2026-10-23): a client `model_item` with `direct: true` skips the model lookup (`main.py:1733-1751`), and its `info.meta.knowledge` ids reach vector search unchecked (`utils/middleware.py:1188-1225`); the test sends this body too
-  - Found by the Rootstock Phase 0 knowledge survey
-  - Closes in Rootstock F0, fixed at source: one access check at retrieval for every file, collection and knowledge id, whatever supplied it (plan, F0 section)
-
-- [x] **The raw `/openai/{path}` proxy lends connection 0's key to any verified user** #security #bug (2026-10-23): `routers/openai.py:1178-1236` forwards GET, POST, PUT and DELETE on any path to the first connection with its API key, past the privacy filter and model access control
-  - [x] [WE] Fixed at source 2026-10-24 (Rootstock F0), commit 80d115f; `test_raw_proxy` fails on 3.2.2 and passes
-  - [ ] [WE] Admin-only, or an allowlist of paths; decide whether anything still needs it
-  - Closes in Rootstock F0, fixed at source: non-admins reach only the raw paths the SPA's own API modules call and those `docs/API-examples.md` documents
-
-- [x] **Model access checks apply only to role `user`** #security #bug (2026-10-23): `/api/models` filters and chat checks access only when `user.role == "user"` (`main.py:1673,1742`), so facilitator and temporary accounts reach every model, restricted ones included
-  - [x] [WE] Fixed at source 2026-10-24 (Rootstock F0), commit 80d115f; `test_model_access_roles` fails on 3.2.2 and passes
-  - [ ] [WE] Check every non-admin role; a test per role. The same `role == "user"` test sits at `utils/chat.py:219`, `routers/openai.py:731,932`, `routers/ollama.py:544,1375,1481,1564,1659` and more (13 in all, per the identity survey)
-  - [ ] [WE] Spaces: any facilitator can edit any Space; `update_space_by_id` checks the role, not ownership (`routers/spaces.py:136-150`)
-  - Closes in Rootstock F0, fixed at source: one `is_restricted(user)` helper replaces the 13 role tests
-
-- [x] **Spaces: any reader can edit or delete anyone's message** #security #bug (2026-10-23): message update and delete (`routers/spaces.py:799-830`, `:992-1017`) check only read access to the Space (`_check_space_access`, `:62-74`), never the author; no `write` check exists anywhere in `spaces.py`
-  - [x] [WE] Fixed at source 2026-10-24 (Rootstock F0), commit bb99576; `test_spaces_authorship` fails on 3.2.2 and passes
-  - [ ] [WE] Edit and delete: the author, a Space manager, or an admin; post: `write` access; a test per role
-  - [ ] [WE] Notes live edit: `ydoc:document:update` (`socket/main.py:526-569`) checks nothing and trusts a client-sent `user_id`, so any socket can push edits that other editors' clients then save; check the session user's write access, as the save path does
-  - Closes in Rootstock F0, fixed at source: edits and deletes need the author, the Space's owner or an admin; `ydoc:document:update` takes the session user; who may post does not change
-
-- [x] **Client-set flags skip checks: `?bypass_filter=true` and `?internal=true`** #security #bug (2026-10-23): both are plain request parameters; the first skips model access control on `/openai/chat/completions` (`routers/openai.py:906,932,943`), the second the upload type allowlist (`routers/files.py:91,114`)
-  - [x] [WE] Fixed at source 2026-10-24 (Rootstock F0), commit 80d115f; `test_client_flags` and `test_upload_internal_flag` fails on 3.2.2 and passes
-  - [ ] [WE] Make both server-internal arguments, never request parameters; a test sends each flag as a non-admin and expects the check to hold
-  - Closes in Rootstock F0, fixed at source: both flags are honoured only from server-internal calls
-
-- [x] **A temporary account can extend its own expiry** #security #bug (2026-10-23): `/users/user/info/update` merges any client JSON into `user.info` (`routers/users.py:353-374`), and expiry lives at `user.info.temporary.expires_at` (`utils/auth.py:315-321`; cleanup `models/users.py:424`), so a try.sage persona can stay forever
-  - [x] [WE] Fixed at source 2026-10-24 (Rootstock F0), commit cfd95e5; `test_temporary_account_expiry_self_edit` fails on 3.2.2 and passes
-  - [ ] [WE] An allowlist of user-editable `info` keys; `temporary` is server-only; a test
-  - Closes in Rootstock F0, fixed at source: `/users/user/info/update` merges only an allowlist of user-editable keys
-
-- [x] **`/cache/{path}` guards traversal with a bare string prefix** #security (2026-10-23): `main.py:2529-2531` tests `startswith(abspath(CACHE_DIR))`, which admits a sibling such as `../cache-old/x`; low risk while no such sibling exists
-  - [x] [WE] Fixed at source 2026-10-24 (Rootstock F0), commit 80d115f; `test_cache_path` fails on 3.2.2 and passes
-  - [ ] [WE] `Path.resolve()` then `is_relative_to(CACHE_DIR)`; a test with `../cache-x/f`
-  - Closes in Rootstock F0, fixed at source: `resolve()`, then `is_relative_to` the cache root
-
-- [x] **Pages load startr.style from a rolling URL** #security #supply-chain (2026-10-23): `app/src/app.html:31` and `pages/templates/try-sage.html:58` link `https://startr.style/style.css`, which changes under every box at once and is fetched on every page view, the shape of the 2024 polyfill.io takeover, on our own domain
-  - [x] [WE] Fixed at source 2026-10-24 (Rootstock F0), commit bb99576; `test_startr_style_pinned` fails on 3.2.2 and passes
-  - [ ] [WE] Consumer fix: vendor the immutable `v1.5.0/style.css` and serve it from the box with an `integrity` hash, as Trellis vendors it (`crm/templates/_shell.html:11`, which sets no `integrity` yet)
-  - [ ] [WE] A third site links the same URL: `pages/shell.py:261` (found 2026-10-23)
-  - [ ] [MANUALLY] Upstream fix, proposed, never edited from here: startr.style publishes an SRI hash beside every versioned file and keeps versioned paths immutable
-  - Closes in Rootstock F0, fixed at source: all three pages load the vendored `v1.5.0` copy with SRI
-
-- [x] **Login redirect runs any URL, `javascript:` included** #security #bug (2026-10-23): `app/src/routes/auth/+page.svelte:80,106` sets `window.location.href` to the raw `?redirect=` value, so a crafted sign-in link can run script in the app's origin, where the SPA keeps its token
-  - [x] [WE] Fixed at source 2026-10-24 (Rootstock F0), commit cfd95e5; `test_login_redirect_same_origin` (static)` fails on 3.2.2 and passes
-  - [ ] [WE] Accept only same-origin paths that start with `/` and not `//`; anything else goes to `/`; a test with `javascript:`, `//evil` and `https://evil`
-  - Closes in Rootstock F0, fixed at source: the auth page accepts same-origin paths only
-
-- [x] **Community sharing is still saved ON** #security (2026-10-23): both census databases (production, 2026-07-12 and the 2026-09-27 backup) store `ui.enable_community_sharing: true`; a saved value outranks the flipped default (`config.py:168-170`, `:1484-1492`), and one share handler points at a public request bin
-  - [x] [WE] Fixed at source 2026-10-24 (Rootstock F0), commit bb99576; `test_community_sharing_off` fails on 3.2.2 and passes
-  - [x] [MANUALLY] sage.startr.cloud: switched off in Admin → Interface (Alexander, 2026-10-23)
-  - [ ] [MANUALLY] try.sage.is: left on while only developers can reach it and no demos run (2026-10-23 to 2026-10-30); switch it off before the next demo
-  - The handler sends the whole agent, owner name and email included, to a webhook.site address in the public repo since `bbb4f10` (2026-01-10) (`app/src/lib/components/workshop/Models.svelte:102-126`); the click never reaches our servers, so whoever owns that bin can say whether anything arrived
-  - [ ] [WE] Until the sharing site exists, force the flag off at boot whatever is saved, and say so in diagnostics
-  - Closes in Rootstock F0: saved off and defaulted off until the sharing site exists; the [MANUALLY] switch above still goes first
-
-- [x] **API-key endpoint allowlist fails open on an empty entry** #security #bug (2026-10-23): `utils/auth.py:176-192` keeps `""` from an empty list or a trailing comma, and `"" + "/"` matches every path, which voids the consent-key recipe in `docs/federation.md:95-99`
-  - [x] [WE] Fixed at source 2026-10-24 (Rootstock F0), commit cfd95e5; `test_api_key_allowlist_empty_entry` fails on 3.2.2 and passes
-  - [ ] [WE] Drop empty entries; an empty allowlist denies everything; a test with `""`, `"a,"` and `" , "`
-  - Closes in Rootstock F0, fixed at source: empty entries are dropped, and an empty list denies everything
-
-- [x] **Session tokens: no expiry by default, and the reset cutoff is skipped** #security #bug (2026-10-23): `JWT_EXPIRES_IN` defaults to `-1` (`config.py:288-290`); 5 of 8 session mints omit `iat` (`routers/auths.py:272,527,904`, `routers/magic_links.py:369`, `utils/oauth.py:511`) and 2 omit `exp` (`auths.py:904`, `magic_links.py:369`)
-  - [x] [WE] Fixed at source 2026-10-24 (Rootstock F0), commit cfd95e5; `test_session_token_expiry_and_cutoff` fails on 3.2.2 and passes
-  - [ ] [WE] One mint helper that always sets `iat` and `exp`; the try.sage cutoff (`utils/auth.py:236`) then holds for every token
-  - [ ] [WE] The cutoff guards 1 of 8 decode sites; the sockets (`socket/main.py:267,287,315,336`), `/api/config` (`main.py:1915`) and `routers/auths.py:109` skip it
-  - Closes in Rootstock F0, fixed at source: one mint helper, the cutoff at the socket sites, `JWT_EXPIRES_IN` defaulting to `4w`, and tokens without `iat` refused from 3.3.0
-
-- [x] **Sprig children inherit the whole environment, `WEBUI_SECRET_KEY` included** #security #bug (2026-10-23): `sprigs/supervisor.py:1463-1468` builds `child_env = {**os.environ, …}`, so every grafted child (llama-server, whisper-server, Tika, Docling) can read the session-signing key and every provider key
-  - [x] [WE] Fixed at source 2026-10-24 (Rootstock F0), commit bb99576; `test_sprig_child_env` fails on 3.2.2 and passes
-  - [ ] [WE] Hand children an allowlist (`PATH`, `HOME`, `LANG`, `TZ`, the cultivar's own variables) instead of `os.environ`; a test asserts `WEBUI_SECRET_KEY` and every `*_API_KEY` are absent from `child_env`
-  - Found by the Rootstock Phase 0 Sprigs survey; the Rootstock's service-Sprig facility carries the same allowlist
-  - Closes in Rootstock F0, fixed at source: an environment allowlist; the adapted supervisor inherits it at F5
-
-- [x] **Secrets in logs: an OAuth token response, and a dead API-key method** #security #bug (2026-10-15): `utils/oauth.py:363` logs the whole token response (access, ID and any refresh token) at WARNING when the provider returns no user info; `models/auths.py:151` logs a whole API key at INFO
-  - [x] [WE] Fixed at source 2026-10-24 (Rootstock F0), commit bb99576; `test_secrets_in_logs` fails on 3.2.2 and passes
-  - Closes in Rootstock F0 (3.3.0), fixed at source (plan, F0 section)
-  - `authenticate_user_by_api_key` has no callers: API keys sign in through `utils/auth.py:194` and `286-287`, which log no key. Line 151 fires only if someone wires the method back in.
-  - `utils/oauth.py:368` logs the provider's user info (email, name) at WARNING when `sub` is missing.
-  - [ ] [WE] Delete `authenticate_user_by_api_key`; at `oauth.py:363` log the token's key names, never its values; at `368` log only the claim names.
-  - [ ] [WE] `app/backend/restore_backup_start.sh:46-48` prints the whole generated `rclone.conf`, backup-remote credentials included, to the container log (found 2026-10-23 by the Rootstock ops survey); print the remote name only
-
-- [ ] **A busy database reads as "session expired"** #bug #auth (2026-10-15): `Users.get_user_by_id` (`models/users.py`) returns None on ANY exception, so `get_current_user` answers 401 "Your session has expired or the token is invalid" for a DB error
-  - Seen: `sprig_smoke` 2026-07-19 (5 cascading 401s, papered over by `G()`'s re-sign-in) and `upgrade_gate` section 6 on 2026-10-15; a reduced replay passed on both images, so load or lock timing, not the token
-  - [ ] [WE] Log the swallowed exception (type + message) before returning None, then re-run the heavy gates to name the real error
-  - [ ] [WE] If it is SQLite's busy lock: raise the busy timeout or retry the read once, and stop masking DB errors as auth errors
-
-- [x] **Today's image builds lose `sha224` and `sha3`** #critical (found 2026-10-06 on Colima; not Colima's doing): `hashlib.sha224` raises AttributeError, and `random` logs `_sha512` tracebacks at import
-  - [ ] Cause: the wolfi base is pinned by digest, but `apk` pulls the newest `python-3.11` at build time: 3.11.16-r8 (OpenSSL 3.6.4, good, built 2026-09-25) became 3.11.17-r2 (OpenSSL 4.0.2, broken)
-  - [ ] Proof: Docker Desktop's 2026-09-25 image computes sha224 on Colima; the 2026-10-06 build fails on both runtimes
-  - [x] ~~Fix: pin `python-3.11=3.11.16-r8` (or the next good revision) in the Dockerfile's apk line, then a smoke assert `python3 -c "import hashlib; hashlib.sha224"` in `it_build`~~ superseded by the next two lines
-  - [x] [WE] 2026-10-15, no pin (Wolfi prunes old revisions, so a pin breaks builds later): the 2026-10-14 base gives Python 3.11.17 on OpenSSL 4.0.3, which computes sha224, sha3_256, sha512; `import random` is clean
-  - [x] [WE] The Dockerfile's build-time import check asserts sha224, sha3_256, sha512 and a TLS context (2026-10-15); a base that loses one fails the build
-
-- [ ] **`surface_budget` floor over ceiling since at least 3.1.0**: `notes-empty` decodes 6,978 kB against the 6,800 kB ceiling — and the 2026-08-10 `3.1.0-amd64` image measures 6,978.6, so the regression PREDATES the 2026-08-17 cleanup sitting (A/B run, same snapshot, 0.5 kB apart). #bug #critical
-  - [ ] The gate's own comment records 6,642 kB on 2026-08-02 after the font/icon work — ~336 kB grew back somewhere in 2026-08-02→08-10 and nobody ran `gauntlet_full` across the line.
-  - [ ] Heaviest single item: `/api/models?` at 2,702 kB decoded — snapshot-driven, worth checking against the 08-02 figure first; the rest is `_app/immutable` chunks (top four: 764+606+543+411 kB).
-  - [ ] The ledger (`app/cypress/perf-routes.json`) is untracked and overwritten per run, so there was no baseline to catch the drift — consider committing a dated copy per release.
-  - [ ] Do NOT raise the ceiling to go green; the gate says so itself. Find the 336 kB or earn the raise deliberately.
-
 - [ ] **Branding colors don't reach the page — theme Sprig severs the cascade** (diagnosed live on :8099, 2026-08-17; approach settled with Alexander same day). Config holds `#b2b1fe`/`#9178cc`; the page feels green anyway. Fixes 1–3 shipped 2026-08-17; the rest is open (re-verified 2026-10-05). #bug #frontend
   - [ ] Three stacked sources on :8099: grafted `sprig-theme:workshop-bio` (`/themes/active.css`) sets `--primary/--secondary/--links` as GREEN LITERALS + a green-tinted `--color-gray-N` scale; the layout sets inline purple `--primary/--secondary` (wins those two); stock startr.style derives `--links: var(--primary)`.
     - The inline set moved from `+layout.svelte:565-570` to `applyBrandingColors` (`$lib/utils/branding.ts:25`), called at `+layout.svelte:552`.
   - [ ] Root cause: the Sprig's literal `--links` SEVERS the framework cascade, so inline `--primary` never reaches links; the tinted gray scale covers most surface regardless.
-  - [x] Fix 1 — restore severed props, never duplicate recipes: injection sets `--primary`, `--secondary`, plus `--links: var(--primary)` and `--button-hover: var(--primary)`; the framework's own color-mix recipes re-resolve. No app-side color math. Shipped 2026-08-17 in `c26e223`.
-  - [x] Fix 2 — no-build shell parity: `pages/shell.py` emits the same `:root{}` block from `app.state.config.BRANDING`. Shipped 2026-08-17 inside `2daa3ac` (`shell.py:226-235`); skipped while a theme Sprig is active.
-  - [x] Fix 3 — honest conflict UX, not silent precedence: the branding panel AND `Theme.svelte` show a plain-words warning when a theme Sprig is active, with a one-click prune. ELI5 wording. Shipped: `templates/branding.html:26-32`, `pruneActiveTheme` in `Theme.svelte:42`.
   - [ ] Upstream (first-party) fix: theme Sprigs must author `--links: var(--primary)`, not literals — keeps grafted themes brandable; fix `workshop-bio` + the authoring contract in the sprig spec.
     - Still open 2026-10-05: `scripts/themes/workshop-bio/theme.css:22` sets `--links: #2f7d4f`. The theme lives in this repo.
+    - Checked 2026-11-05: `workshop-math` carries the same literal. The fix is a new signed `v2` theme artifact (`catalog_build TAG=v2`, `sprig_sign`, `sprig_publish`, a new sha pin): the Sprig lane, not an app release
   - [ ] Guard: e2e asserts a saved color reaches BOTH a SPA and a no-build page; the drift class is "one consumer honors config, the other silently doesn't".
   - [ ] Inline `<style>` stays CSP-compatible today (`'unsafe-inline'` kept per the CSP card); note in the policy's exception list when that ships.
   - [ ] Found on the way: the no-build shell never loads `/themes/active.css` — a grafted theme dresses the SPA and NOT the server-rendered panels. Decide whether the shell links it (theme parity) or stays deliberately unthemed; today's fix gates shell colors on `SPRIG_ACTIVE_THEME` so the two surfaces at least agree on who wins.
+  - [x] _3 done steps archived 2026-11-03 → docs/completed-todos.md._
 
-- [ ] **`make lint`'s frontend half is red and always was**: `bun run lint:frontend` (`eslint . --fix`) exits 1 with 9,609 errors (found 2026-08-17 the first time `lint` went otherwise green — the Python half never let it get this far). #bug #dx
+- [ ] **`make lint`'s frontend half is red and always was**: `bun run lint:frontend` (`eslint . --fix`) exits 1 with 9,609 errors (found 2026-08-17 the first time `lint` went otherwise green — the Python half never let it get this far). #bug #dx #lint
+  - Re-measured 2026-09-25 with `eslint . -f json`: 9,622 errors, about 1,519 of them ours; `make lint` runs it with `--fix`, which rewrites files (its own card above the board's columns until 2026-11-02)
+  - [x] Ignore third-party trees: `app/static/pyodide` (5,163, gitignored), `app/static/swagger-ui` (2,891), `pages/assets/vendor/` (46). Done 2026-11-02: `ignorePatterns` in `app/.eslintrc.cjs`
+  - [ ] Ours: `app/src/lib` 1,385, `app/src/routes` 75, Cypress 55, `vite.config.ts` 4; top rules `no-unused-vars`, `no-unused-expressions`, `no-explicit-any`
+  - [ ] Then make `lint:frontend` a gate (without `--fix` in CI) so it cannot regress; `make ship` does not run it today
   - [ ] The bulk is vendored code eslint should never read: `pages/assets/vendor/htmx.min.js` alone contributes thousands; `dev-reload.js` and `startr-swap.js` carry a handful of real `no-unused-vars`.
+    - Corrected by the 2026-09-25 count: `pages/assets/vendor/` holds 46 errors; `app/static/pyodide` and `app/static/swagger-ui` hold the bulk
   - [ ] The vendored no-build assets under `backend/sage_is_ai/pages/assets/` postdate the eslint config — nothing ignores them.
-  - [ ] Fix shape: eslint ignore for `pages/assets/vendor/`, then read the residue honestly.
+  - [ ] Fix shape: eslint ignore for `pages/assets/vendor/` (done 2026-11-02), then read the residue honestly.
   - [ ] Note `--fix` in a LINT target mutates the tree on check — same class of surprise the format gate just retired.
-
-- [ ] **Spaces mention keyboard navigation is dead** (found 2026-08-18 writing the first Spaces e2e). #bug #frontend
-  - [ ] `MessageInput.svelte:740` queries `#mentions-container`; the real container id is `#commands-container` (`Mentions.svelte:57`).
-  - [ ] `MessageInput.svelte:747,:755,:762` query class `selected-mention-option-button`; the rendered class is `selected-command-option-button`.
-  - [ ] Effect: keyboard selection fails; click selection works. `spaces-multiuser.cy.ts` clicks around it on purpose — fix frees the spec to test keyboard flow.
-  - Corrected 2026-10-05: the keys do not fall through to the plain editor. The dropdown renders the commands ids, so keys land in the commands branch (`MessageInput.svelte:772`); ArrowUp/Down drive the hidden Commands list and do nothing. Tab/Enter not checked live.
 
 - [ ] **Channel components carry zero `data-cy` hooks**: the Spaces specs pin on load-bearing raw ids (`#space-container`, `#messages-container`, `#send-message-button`) and the bare ProseMirror class; add hooks next time `app/src/lib/components/channel/` is touched. #dx
 
-- [ ] **Admin models panel tears down on every mutation**: `init()` in [Settings/Models.svelte](app/src/lib/components/admin/Settings/Models.svelte) opens with `models = null` and the whole panel sits inside `{#if models !== null}` — the control just clicked unmounts and a spinner replaces it (found 2026-08-07 by `models-refresh.cy.ts`). #bug
-  - [ ] `init()` is called by upsert, toggle, delete and the model editor as well as by mount — correct on first load, wrong for a mutation.
-  - [ ] Symptom: the user's cursor is left hovering nothing; a populated list flashes to a spinner and back.
-  - [ ] The e2e could not observe a disabled button because the button was not on the page while it was disabled.
-  - [ ] Refresh path already fixed (`init` gained a `blank = true` parameter; `refreshModelsHandler` passes `false`) — the other four call sites still blank.
-  - [ ] Fix the rest: a one-word change each, but each wants a look at what the surrounding handler does after the await.
-
-- [ ] **`getModels` has no token parameter, yet 36 call sites pass one** (recounted 2026-10-05; was 33): `connections` gets a string, the merge no-ops — direct-connection models are silently never merged; where `base` lands truthy, `/api/models/base` returns 200 with the wrong list (found 2026-08-07). #bug ([dossier](docs/board-dossiers.md))
-  - [ ] Signature at [apis/index.ts:52](app/src/lib/apis/index.ts#L52) is `(connections, base, refresh)`; callers spell `getModels(localStorage.token, <directConnections>)`.
-  - [ ] The merge at [index.ts:90](app/src/lib/apis/index.ts#L90) iterates `undefined` and no-ops.
-  - [ ] Worst path: truthy `base` sends the request to `/api/models/base` ([main.py:1667](app/backend/sage_is_ai/main.py#L1667)) — 200 with the wrong list instead of 404ing where someone would notice.
-  - [ ] Fix the 36 remaining call sites. Some call it as `_getModels` (e.g. `SettingsModal.svelte:498`); `Audio.svelte` imports a different `getModels` from `$lib/apis/audio` and is correct. The admin models page is already corrected — `(token, null, true)` → `(null, false, true)`, provably identical since its merge block was a no-op.
-  - [ ] Mechanical fix, but it touches the model list on every surface: own commit + full `make e2e_both`.
-- [ ] **Three names defined twice in the same module; the first of each is unreachable by name**: each site carries a `# noqa: F811` today — gate green, shadowing greppable, not correct (found 2026-08-06 by the newly adopted ruff gate, `F811`; four until 2026-08-17). #bug #gates
-  - [ ] `get_all_feedbacks` at [evaluations.py:97](app/backend/sage_is_ai/routers/evaluations.py#L97) shadows the one at :75.
-  - [ ] `get_file_content_by_id` at [files.py:549](app/backend/sage_is_ai/routers/files.py#L549) shadows :430.
-  - [ ] `get_functions` at [functions.py:48](app/backend/sage_is_ai/routers/functions.py#L48) shadows :38.
-  - [ ] All three are FastAPI handlers, so both routes still serve — the decorator registers by path, and only the Python name collides.
-  - [x] The fourth (`ENABLE_LDAP`, imported at `auths.py:44` and rebound below) went away by accident: `2daa3ac` (2026-08-17, ruff F401) dropped the unused import.
-  - [ ] Drop the now-stale `# noqa: F811` at [auths.py:316](app/backend/sage_is_ai/routers/auths.py#L316) — it suppresses nothing (found 2026-10-05).
-  - [ ] Decide per site: rename the second, or delete the first if it is genuinely dead.
-
-- [ ] **A literal `◁think▷` in streamed content freezes client-visible streaming for the rest of the stream**: `tag_content_handler` keeps a zero-capture-group pattern, so `match.group(1)` raises `IndexError` on every later delta before the emit (found 2026-08-08 by the duplication sweep's dead-code lens, adversarially confirmed). #bug
-  - [ ] Mechanism: for a start tag not shaped `<...>`, `start_tag_pattern = re.escape(start_tag)` — zero capture groups — so when `◁think▷` appears in content, `re.search` matches and `match.group(1)` raises `IndexError`.
-  - [ ] The per-delta try swallows it, but the append already happened — EVERY later delta re-matches and re-raises BEFORE the emit and before the realtime save.
-  - [ ] The reader sees a frozen message until the final done event delivers everything at once, with `◁think▷` rendered as text.
-  - [ ] Kimi-family models emit exactly this tag.
-  - [ ] The tuple is cannot-succeed code that also breaks live streaming — worse than dead.
-  - [ ] No net covers it; extending `reasoning-tag-fixture.py` with a `◁think▷` case is part of the fix.
-  - [ ] Behaviour frozen until the structure work lands.
-
-- [ ] **The two-message title path persists one message and emits another** (found 2026-08-08 by the sweep). #bug
-  - [ ] The `elif len(messages) == 2` arm persists `messages[0].get("content", user_message)` — the FIRST — but emits `message.get("content", user_message)` — the LAST.
-  - [ ] So the stored chat title and the one the reader watches arrive can differ.
-  - [ ] Found while proving the title envelope cannot join the follow-ups/tags task runner.
-  - [ ] A code comment now marks the emit site.
-  - [ ] Frozen; fix belongs to [Unfreeze the ledger].
-
 - [ ] **`response.background()` runs twice for the original streaming response**: `stream_body_handler` awaits it at its tail for every response it drains; `response_handler` awaits it again on the same original after the retry loops — awaiting a Starlette `BackgroundTask` twice runs the wrapped callable twice. #bug
-  - [ ] Found 2026-08-08 during the chat-path weight census, while classifying it as dead code — it is not dead, it is a double-execution.
+  - Found 2026-08-08 during the chat-path weight census, while classifying it as dead code — it is not dead, it is a double-execution.
   - [ ] Continuation responses are spared — only `stream_body_handler` touches those.
-  - [x] Harmless for the built-in providers (verified 2026-10-05): `cleanup_response` (`openai.py:146`, ollama's own copy at `ollama.py:117`) closes an aiohttp response and session, and a second close does nothing; the direct-connection `background()` (`utils/chat.py:126`) wraps its `del` in try/except.
   - [ ] Not verified: pipe functions that set their own background task.
-  - [ ] Deleting the second call is a behaviour change, so it is frozen with the rest.
+  - Harmless today (checked 2026-11-05): the task is `cleanup_response`, which closes the aiohttp response and session and is safe twice; the direct-connection variant is too
+  - [ ] When the chat path moves: move the second call into the `CancelledError` branch, never delete it (on cancel the first call never runs)
+  - [x] _1 done step archived 2026-11-03 → docs/completed-todos.md._
 - [ ] **Six JSON parse sites scrape from the first `{` to the last `}`; the prompt template teaches the model to break it**: the title template (`config.py:1629`) carries a literal example object at `:1640`, so a model that restates the format emits two objects — exactly the input the scrape fails on. #bug ([dossier](docs/board-dossiers.md))
-  - [ ] Found 2026-08-08. Clean and fenced input parse; two objects in one reply do not.
+  - Found 2026-08-08. Clean and fenced input parse; two objects in one reply do not.
   - [ ] These calls run on the task model, which operators set small, and small models restate the format most.
   - [ ] Worst site is RAG queries ([middleware.py:1055](app/backend/sage_is_ai/utils/middleware.py#L1055)): on failure it sets the entire model reply as the retrieval query, silently degrading RAG.
-  - [ ] (1) Set `response_format` on the task calls — `utils/payload.py:346-353` already converts it to Ollama's `format`, and no task call sets it. Behaviour: sequence after the structure work.
+  - [ ] (1) Set `response_format` on the task calls — `utils/payload.py:346-353` already converts it to Ollama's `format`, and no task call sets it. A behaviour change: one at a time, fixture first (the freeze lifted 2026-08-08).
   - [ ] (2) One parser as the floor in a new `utils/llm_json.py` for providers that ignore it — strip fences, try the whole string, scan for balanced objects. New file, moves no citation; can land any time.
-  - [ ] (3) Drop the example object from the template. Behaviour: sequence after the structure work.
+  - [ ] (3) Drop the example object from the template. A behaviour change: one at a time, fixture first (the freeze lifted 2026-08-08).
   - [ ] Trap: a shared helper is NOT the fix — in the restated-format case both objects are valid JSON and both carry the key, so no parser can tell them apart.
   - [ ] The six sites, consolidated 2026-08-08 into one `slice_json_object` helper, behaviour byte-identical (lines restated 2026-10-05):
     - [ ] [808](app/backend/sage_is_ai/utils/middleware.py#L808) tool calling
@@ -1663,97 +670,37 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
     - [ ] [1494](app/backend/sage_is_ai/utils/middleware.py#L1494) follow-ups, through `run_json_task` (called at 1510)
     - [ ] [1554](app/backend/sage_is_ai/utils/middleware.py#L1554) title
     - [ ] [1494](app/backend/sage_is_ai/utils/middleware.py#L1494) tags, through `run_json_task` (called at 1583)
-- [ ] **Mid-stream model switch never reaches retries**: `stream_body_handler` assigns `model_id` at [middleware.py:1786](app/backend/sage_is_ai/utils/middleware.py#L1786) without `nonlocal` — the retries still read the originally requested model while the DB records the selected one. #bug
-  - [ ] Only `content`/`content_blocks` are declared `nonlocal` (at 1749–1750), so the assignment is function-local.
-  - [ ] The retries: tool-call at 2068, code-interpreter at 2163.
-  - [ ] Found 2026-08-04 during the chat-path seam census; fix deferred — behaviour frozen until the structure work lands (`charts/chat-path-restructure`).
-  - [ ] Line numbers restated 2026-08-06 after the three tightening passes.
-
-- [ ] **`features.web_search` is a live `NameError`, not a feature**: [middleware.py:1258](app/backend/sage_is_ai/utils/middleware.py#L1258) calls `chat_web_search_handler`, which does not exist — `POST /api/chat/completions` with `{"features": {"web_search": true}}` returns a 400. #bug ([dossier](docs/board-dossiers.md))
-  - [ ] Found 2026-08-04. The definition arrived commented out in `bbb4f10` and `hasattr` confirms False.
-  - Corrected 2026-10-05: a 400, not a 500. The `except` at `main.py:1773` turns the `NameError` into `HTTP_400_BAD_REQUEST` with the message as detail.
-  - The `noqa` at `middleware.py:1258` cites `TODO.md:601`; the card has moved since. Re-point it when the chat path thaws.
-  - [ ] Unreachable from the UI: `Chat.svelte:1716` gates on `$config?.features?.enable_web_search`, which the backend never emits.
-  - [ ] Reachable from the API: `features` is popped off the request body unvalidated.
-  - [ ] Delete the branch — do NOT wire it up. Decision confirmed 2026-08-06: search moved to OpenAPI tool servers (`TOOL_SERVER_CONNECTIONS` + `utils/try_sage_tool_servers.py`).
-    - [ ] `ENABLE_WEB_SEARCH` exists nowhere in the backend.
-    - [ ] `retrieval/web/` is down to `utils.py`, imported once for `get_web_loader` in `routers/retrieval.py:89`.
-  - [ ] Validate `features` off the request body — every unknown key is silently accepted, which is what makes the branch reachable at all.
-  - [ ] Both fixes are behaviour: sequence after the structure work.
+- [ ] **`features` on a chat request is accepted unvalidated** #bug: every unknown key passes, which is how the dead `web_search` branch was reachable from the API (that branch and its `NameError` were deleted 2026-11-05)
+  - [ ] Validate `features` off the request body in `utils/middleware.py`; a behaviour change, one at a time, fixture first
 - [ ] **`ENABLE_REALTIME_CHAT_SAVE=true` leaves reasoning stuck on "Thinking…" for the whole generation**: the flag changes what the browser receives, and the reasoning close rides the first content delta — the disclosure spins until the terminal `done: True` event. ([dossier](docs/board-dossiers.md)) #bug
-  - [ ] Flag on: text deltas ship raw and the frontend appends `choices[0].delta.content` ([Chat.svelte:1240](app/src/lib/components/chat/Chat.svelte#L1240)).
-  - [ ] Flag off: the frontend replaces serialized blocks ([Chat.svelte:1276](app/src/lib/components/chat/Chat.svelte#L1276)).
-  - [ ] The close rides the first content delta ([middleware.py:1844](app/backend/sage_is_ai/utils/middleware.py#L1844)), so the last serialized snapshot says `done="false"`.
+  - [ ] Flag on: text deltas ship raw and the frontend appends `choices[0].delta.content` ([Chat.svelte:1241](app/src/lib/components/chat/Chat.svelte#L1241)).
+  - [ ] Flag off: the frontend replaces serialized blocks ([Chat.svelte:1275](app/src/lib/components/chat/Chat.svelte#L1275)).
+  - [ ] The content-delta close ([middleware.py:2003](app/backend/sage_is_ai/utils/middleware.py#L2003)) sends no serialized snapshot with the flag on ([middleware.py:2065](app/backend/sage_is_ai/utils/middleware.py#L2065)), so the last one the browser got says `done="false"`.
   - [ ] DB is correct both ways (`done="true" duration="1"`; oracle replay of `reasoning-field-then-content.sse`).
-  - [ ] Found 2026-08-04, chat-path census; behaviour frozen, logged not fixed.
-  - [ ] Same family as the reasoning-block bug below.
-  - [ ] Check whether the flag is set on try.sage.is before deciding severity — if it is, users see this now.
-- [x] **The direct-connections admin toggle is advisory, not enforcing**: no request path checks `ENABLE_DIRECT_CONNECTIONS` — an admin who disables direct connections for data governance has not closed the path; any client posting `model_item: {"direct": true}` walks through. ([dossier](docs/board-dossiers.md)) #bug #security
-  - [x] [WE] Fixed at source 2026-10-24 (Rootstock F0), commit 80d115f; `test_direct_connections_switch` fails on 3.2.2 and passes
-  - [ ] `ENABLE_DIRECT_CONNECTIONS` is read only by `/api/config` ([main.py:1946](app/backend/sage_is_ai/main.py#L1946)) and the admin get/set pair in `routers/configs.py`.
-  - [ ] The chat route branches on `model_item.get("direct", False)` off the request body ([main.py:1718](app/backend/sage_is_ai/main.py#L1718)) and that branch skips `check_model_access`.
-  - [ ] `utils/chat.py` gates only on `request.state.direct`.
-  - Wider than first logged (2026-10-05): `/api/chat/completed` ([main.py:1826](app/backend/sage_is_ai/main.py#L1826)) and `/api/chat/actions/{action_id}` ([main.py:1845](app/backend/sage_is_ai/main.py#L1845)) also take `model_item.direct` off the body.
-  - [ ] Found 2026-08-04, chat-path census; behaviour frozen.
-  - [x] [MANUALLY] Alexander's sign-off: enforce the flag on all three routes — closing it narrows product surface. Signed off with the Rootstock plan, 2026-10-24.
-  - Closes in Rootstock F0: the switch is enforced on all three routes (approved with the plan, 2026-10-24)
-  - [ ] Not an SSRF: `generate_direct_chat_completion` relays `request:chat:completion` to the BROWSER, which makes the call — triage as an open admin toggle, not server-side model access.
-- [ ] **`data: [DONE]` does not terminate the stream loop**: `stream_body_handler` has no case for the sentinel — it fails `json.loads` and is skipped by the `except` at [middleware.py:1926](app/backend/sage_is_ai/utils/middleware.py#L1926); a provider that appends anything after the sentinel gets it rendered. #bug
-  - [ ] Content arriving AFTER `[DONE]` is still parsed, appended to the blocks, emitted to the reader and persisted.
-  - [ ] Harmless with well-behaved providers, which stop sending.
-  - [ ] Pinned in the `done-sentinel-and-noise` oracle golden, which ends with `"Answer survives the noise. trailing after DONE"`.
-  - [ ] Found 2026-08-04 while reading the oracle goldens (chat-path chart); logged not fixed — behaviour frozen.
-
+  - [x] Re-checked 2026-11-04 after the reasoning fix: still true. A flag-on replay of `reasoning-field-then-content.sse` keeps `done="false"` until the final event.
+  - [ ] Flag on breaks two more paths (same replay): `reasoning-tag-inline.sse` shows raw `<think>…</think>` text until the end; after a field close ([middleware.py:1975](app/backend/sage_is_ai/utils/middleware.py#L1975)) the answer freezes at its first fragment, since later `reasoning_content` deltas ship raw.
+  - [ ] Proposed fix: the flag decides only per-delta DB saves; the browser always gets serialized blocks. Pin it with flag-on oracle cases for the three streams (`realtime-save-on` covers only `plain-text.sse`).
+  - Found 2026-08-04, chat-path census. The freeze lifted 2026-08-08; a fix goes one at a time, fixture first.
+  - Same family as the reasoning-block bug below.
+  - [ ] [MANUALLY] Check the flag on try.sage.is before deciding severity. Default `False` ([env.py:331](app/backend/sage_is_ai/env.py#L331)), absent from the docs' CapRover block; `cr-deploy apps try-sage-is` needs the captain password (token expired 2026-11-04).
 - [ ] **A partial tag reaches the reader for one frame**: when a chunk boundary splits a reasoning tag, the loop emits the fragment raw before the next chunk completes it — cosmetic and brief, but visible. #bug
   - [ ] The `reasoning-tag-inline` oracle golden records a first event whose entire content is `<thin`.
-  - [ ] Same family as the chunk-boundary whitespace defect in the reasoning-tag entry below; a tag-aware output buffer would kill both at once.
-  - [ ] Found 2026-08-04 while reading the oracle goldens (chat-path chart); logged not fixed — behaviour frozen, and the fix must re-record the golden deliberately.
+  - Same family as the chunk-boundary whitespace defect in the reasoning-tag entry below; a tag-aware output buffer would kill both at once.
+  - Found 2026-08-04 while reading the oracle goldens (chat-path chart). The freeze lifted 2026-08-08: one behaviour fix at a time, fixture first, and the fix re-records the golden deliberately. Still live 2026-11-05: event 4 also shows `…methods.</think`.
 
-- [ ] **Pruning the Tika or Docling Sprig™ leaves `CONTENT_EXTRACTION_ENGINE` aimed at a released port**: `supervisor.prune()` reverses no dispatch and the router reset skips tika/docling — worst case a pruned tika permanently re-creates the "unreachable" alarm a previous fix killed. ([dossier](docs/board-dossiers.md)) #bug #sprigs
-  - [ ] `supervisor.prune()` ([supervisor.py:1322](app/backend/sage_is_ai/sprigs/supervisor.py#L1322)) reverses no dispatch.
-  - [ ] The router reset ([sprigs.py:275-300](app/backend/sage_is_ai/routers/sprigs.py#L275)) covers five `was_active_*` capabilities (embedding, reranker, stt, theme, ui) — tika and docling are absent.
-  - [ ] `tika_dispatch.py:29` / `docling_dispatch.py:26` set the engine on graft; nothing unsets it (only other writers: `config.py:2117`, `main.py:1047`, `routers/retrieval.py:873`).
-  - [ ] [boot.py:95-99](app/backend/sage_is_ai/diagnostics/boot.py#L95) probes `TIKA_SERVER_URL` whenever the engine is set; neither carries the `sprig-local` sentinel, so the `main.py` restart backstops miss it too.
-  - [ ] Found 2026-08-05 (AIML responder charting); reported mechanically in the Gaps section of `docs/sprigs/capabilities.md`, gated by `make sprig_capabilities_check`.
-  - [ ] Quick fix: two more `was_active_*` resets beside the five in `sprigs.py`.
-  - [ ] Better: a `point_*_off(app, handle)` companion per dispatch module plus one registry read by the graft, boot-reconcile and prune fan-outs — today three hand-maintained copies of one table.
-- [ ] ~~**`models-cache.cy.ts` gates a timing quantity, and it now fails on `HEAD`**~~ (2026-08-04, superseded by "`/api/models` re-probed every provider on every call", FIXED 2026-08-07 and archived in `docs/completed-todos.md` — kept for the record of how the wrong answer looked right) ([dossier](docs/board-dossiers.md)) #tests #bug
-  - Both assertions compare a round-trip against `CACHED_MAX_MS` 250 ms, measured 810/871 ms on `HEAD` and 912/968 ms with an unrelated change reverted.
-  - The machine, not the code, is the variable — the exact flaky-gate failure the `surface_budget` bytes-only doctrine predicts.
-  - Suspected cause of the unreproduced 3-failure run earlier on 2026-08-04.
-- [ ] **Unclosed reasoning block swallows the model's answer** (Alexander, 2026-08-03; demo-blocking): the end-of-stream finalizer shipped 2026-08-04 (`6fc2271`, in v3.1.0 and v3.2.0), so a sealed answer now surfaces at stream end; mid-stream sealing, variant 3 and the no-opener leak remain. #critical #bug ([dossier](docs/board-dossiers.md))
-  - [ ] `tag_content_handler` ([middleware.py:381](app/backend/sage_is_ai/utils/middleware.py#L381)) closes only on its opening pair's exact end tag (`end_tag_pattern`, :451-457); only the finalizer matches loosely.
-  - [ ] The field-path close is guarded on `if value:` ([middleware.py:1866](app/backend/sage_is_ai/utils/middleware.py#L1866)).
-  - [ ] Variant 1, tag drift: any open/close mismatch leaves the block open until the stream ends, where the finalizer now closes it.
-    - [ ] `scripts/smoke/reasoning-tag-fixture.py` fails 26 cases on 2026-10-05: the original 16 across 5 defects (`<thinking>` closed `</think>`, the reverse, `</THINKING>`, `</ thinking>`, never-closes).
-    - The other 10 come from cases added since: nested tags ×3, the two no-opener forms ×3 each, two blocks at chunk=999. The fixture never calls the finalizer, so never-closes overstates the live bug.
-    - [ ] A sixth cosmetic case (space eaten at chunk=7, not chunk=1 or 999) explains the reported "not always".
-  - [ ] Variant 2, field path — the priority, reproduced from Alexander's capture: the literal `</thinking>` plus the whole answer stay sealed, `done="false"`.
-    - [ ] DeepSeek R1 templates pre-fill the opener into the PROMPT; a provider that streams everything through `reasoning` and sends no `content` delta never fires the `if value:` close.
-    - [ ] Confirmed 3 ways 2026-08-04 on live code: chat `171f30b9`, 08:34 UTC, production snapshot on `:8102`; a `deepseek-r1-distill-llama-70b` call with 736 reasoning chars and 0 content; a control that closed.
-    - [ ] Trigger: a UI-built agent whose system prompt asks for `<thinking>` tags on a native-reasoning provider.
-    - Since `6fc2271`: healed at stream end — golden `reasoning-field-never-closed` ends `done="true"` with the answer outside the block. Mid-stream the answer still sits inside "Thinking…" (`done="false"` snapshots).
-  - [ ] Variant 3 (2026-08-06, `qwen3.5:9b` via Ollama, chat `aafdddab`): a bare `</think>` with no opener arrives in the CONTENT stream and renders as text.
-    - [ ] The field path opens AND closes correctly (`done="true"`) first; the field path opens it, the tag path orphans the close.
-    - [ ] Not a regression: pre- and post-tightening replays were byte-identical.
-  - [x] Fix (1): end-of-stream finalizer — close any reasoning block still open when the stream ends and surface its content. Shipped 2026-08-04 in `6fc2271`: `finalize_content_blocks` (middleware.py:110), called at :2206 (normal end) and :2239 (cancel).
-  - [ ] Fix (2): treat an unpaired closing tag as an implicit opening at position zero (tag-path variant).
-    - [ ] Does NOT cover variant 3 — there, DROP an orphan close tag when a reasoning block already closed in the same message.
-  - [ ] Fix (3): widen the close match to any end tag in the list, case-insensitive, `</\s*tag\s*>`.
-    - Done inside the finalizer only (`REASONING_END_TAG_RE`, middleware.py:102, `re.IGNORECASE`); the stream-time `tag_content_handler` still needs the exact tag.
-  - [ ] Remove the `<<thinking>(.*?)>` start-tag strip WITH a fixture case — it eats literal `<<thinking>…>` spans, silently deleting reasoning content.
-    - [ ] NOT dead (proven 2026-08-08 after a session deleted and restored it).
-  - [ ] Extend the fixture to the field path before trusting it; today it mirrors the TAG path only.
-  - [ ] READ FIRST: golden `scripts/smoke/fixtures/chat-response/reasoning-field-closed-then-orphan.sse` (oracle replays 12 streams) FREEZES the variant-3 leak as it is; read it before changing the tag logic.
-    - [ ] Its job is to go RED when fix (2) lands — an implicit open there would mint a second block and swallow the answer.
-    - [ ] Line numbers restated 2026-08-04 (stale by ~93 before the −160 dead-handler deletion); re-derive from the quoted source text, not the number.
+- [ ] **Unclosed reasoning block swallows the model's answer** (Alexander, 2026-08-03; demo-blocking): fixed in the working tree 2026-11-04 on both paths, mid-stream; waits on a live replay and Alexander's commit. #critical #bug ([dossier](docs/board-dossiers.md))
+  - [ ] [MANUALLY] Live replay on `make dev_run`: a `deepseek-r1-distill` agent whose system prompt asks for `<thinking>` tags; the answer must show while it streams. Then `qwen3.5:9b` via Ollama: no bare `</think>` after the block (variant 3).
+  - [ ] [MANUALLY] Commit: `middleware.py`, the two fixtures, the oracle and its 3 changed and 3 new goldens, the Makefile (`reasoning_tag_fixture` joins `gauntlet_full`; teeth move to `reasoning-field-no-end-tag`).
+  - [ ] Known edge: a first text block with a bare `</think>` outside a code fence, and no opener, is read as a pre-filled thought and folded into the block.
+  - [x] _9 done steps archived 2026-11-04 → docs/completed-todos.md._
 - [ ] **Model special tokens reach the reader**: the assistant's rendered answer ended with `<｜end▁of▁sentence｜>`, DeepSeek's EOS token, printed as visible text — nothing in the backend strips model special tokens. #bug
-  - [ ] Found 2026-08-03 in the same capture as the reasoning-tag bug.
+  - Found 2026-08-03 in the same capture as the reasoning-tag bug.
   - [ ] A grep for stop-token or special-token handling across `sage_is_ai` returns nothing.
   - [ ] Every model family has its own set (`<|eot_id|>`, `<|im_end|>`, `<｜end▁of▁sentence｜>`, `<|end_of_text|>`), so the fix belongs at one boundary rather than per-provider.
   - [ ] Worth pairing with the reasoning-tag fix: both are "raw model protocol leaking into prose", both were visible in one screenshot, and both make a demo look unfinished.
+  - [ ] [WE] 3.3.1 (Alexander, 2026-11-05): strip only at the end of the whole answer so far, never mid-answer, on the stream and non-stream paths; a fixture for a token split across chunks and one mentioned mid-answer
 
-- [ ] **The changelog pager spec passes whether the button moves or not** `#critical-gate`: `wizard-changelog.cy.ts` was green against the broken transform version AND the working `margin-left` version — the gap is the environment, not the assertion. #bug
+- [ ] **The changelog pager spec passes whether the button moves or not**: `wizard-changelog.cy.ts` was green against the broken transform version AND the working `margin-left` version — the gap is the environment, not the assertion. #bug #critical-gate
   - [ ] Spec under test: "moves to the other side once the notes run out".
   - [ ] The assertion has teeth against a zero shift: forcing 0 went RED — `expected 0 to be above 367.5`.
   - [ ] What it missed: a transform that applied under the driver but not in the operator's browser.
@@ -1769,20 +716,11 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] Fix: thread a locale from `render_diagnostics(request, user)` (:204) through `_library_entries`, `_row` and `_fix_steps`. `_library_block` and `_ghost_block` went away in the Jinja2 conversion.
   - [ ] `_STATUS_LABEL` (:127) and `_SECTIONS` (:133) are hardcoded English too.
   - [ ] The mechanism is already there; only the plumbing is missing.
+  - [ ] Corrected 2026-11-05: no locale has `diagnostics.*` keys, and `i18n.t()` returns the raw key on a miss, so binding a translator alone shows raw keys; add an en-US fallback in `i18n.t()` and the translations first
 
-- [ ] **`SensitiveInput` hardcodes `id="password-input"`, so a page with two of them mislabels every field but the first**: [SensitiveInput.svelte:27](app/src/lib/components/common/SensitiveInput.svelte#L27) sets a literal `id` — every screen reader announces "Client Secret" for all four fields on `OAuthSettings.svelte`. #bug #a11y
-  - [ ] Line 23 pairs it with `<label class="sr-only" for="password-input">`.
-  - [ ] `OAuthSettings.svelte` mounts four of them — Google secret (:236), GitHub secret (:303), magic-link SMTP password (:397), LDAP password (:737). There is no Microsoft field (corrected 2026-10-05).
-  - [ ] Duplicate IDs are invalid HTML; `for` resolves to the first match, so clicking any label focuses the Google field.
-  - [ ] Fix: default `id` to a generated value and let callers override — the same shape `Switch.svelte` already uses (`export let id = ''`).
-  - [ ] Found while hooking the panel for the no-build migration, not introduced by it.
-
-- [ ] **An evicted Sprig™ is reported as "exited on boot", which is not what happened**: grafting a second cultivar of a capability prunes the first ([supervisor.py:1271-1278](app/backend/sage_is_ai/sprigs/supervisor.py#L1271-L1278)) — the victim is SIGTERMed mid-boot. #bug
-  - [ ] It surfaces as `sprig 'minilm-onnx-inhoused' exited on boot (rc=-15)` — `rc=-15` IS SIGTERM, and the supervisor sent it.
-  - [ ] Hit 2026-07-30 grafting from the wizard mid-download; the wizard now refuses that path, which does not fix the message.
-  - [ ] Two fixes together:
-    - [ ] (1) say what happened — "pruned while booting: 'multilingual-e5-large' took over the embedding capability".
-    - [ ] (2) capture child `stderr` — it is `DEVNULL` ([supervisor.py:1299](app/backend/sage_is_ai/sprigs/supervisor.py#L1299)), so a cultivar that dies for any other reason leaves no evidence.
+- [ ] **A Sprig that dies on boot leaves no evidence: child `stderr` is `DEVNULL`** #bug #sprigs (`sprigs/supervisor.py`, the spawn in `graft`)
+  - [x] An evicted cultivar says so since 2026-11-05: "was pruned while booting: 'X' took over the embedding capability" (`_evict`, `SprigHandle.evicted_by`)
+  - [ ] Capture child stderr to `DATA_DIR/sage-is/sprigs/<name>/child.log` (truncate per spawn, size cap; llama-server is chatty) and append its tail to the boot-failure message (`record_error` cuts at 600 characters)
 
 - [ ] **AI Engine Wizard Embedding Download Has No Stall Watchdog**: when the embedding model fetch from HuggingFace stalls, the wizard sits in `embedding=downloading` indefinitely — a real user has no signal except an idle spinner. #bug
   - [ ] Stall causes: network drop, HF outage, slow link.
@@ -1800,9 +738,8 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 
 - [ ] **Chat Microphone Recording Does Not Populate Message Input**: Recording from the microphone icon in chat does not process speech into the text field used to send messages. Reported 2026-05-11 against a pre-2.3.3 build — reproduce on 3.0.0 first; STT plumbing has changed twice since (whisper Sprig dispatch, wizard cut-over). #critical #bug
   - [ ] Reproduce on 3.0.0; confirm whether capture, transcription, or input binding fails
+  - Traced 2026-11-05: the server path, the response shape and the callbacks are wired. New find: in browser STT mode, cancel still inserts the transcript (`VoiceRecording.svelte:303-310, 407`, `onend` calls `onConfirm`)
   - [ ] Trace recorder output into the chat composer state; fix the handoff
   - [ ] Add regression coverage for microphone-to-input behavior in chat
-
-- [ ] **Code fence in chat renders near invisible**: typed or pasted text inside a code fence shows white on light grey. Reported pre-3.0.0 — reproduce first (new chat, backticks + space to open the fence, type; note the low-contrast combinations), then locate the color source and fix. #bug
 
 ---
