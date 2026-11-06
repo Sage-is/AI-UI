@@ -7,6 +7,7 @@
 	import { deleteSharedChatById, getChatById, shareChatById } from '$lib/apis/chats';
 	import { shareChatWithTargets, getChatShareTargets, getChatsSharedByMe, getChatsSharedWithMe } from '$lib/apis/chat-shares';
 	import { copyToClipboard } from '$lib/utils';
+	import { shareToHub } from '$lib/utils/community';
 
 	import Modal from '../common/Modal.svelte';
 		import ShareTargetPicker from './ShareTargetPicker.svelte';
@@ -37,26 +38,10 @@
 		console.log('share', _chat);
 
 		toast.success($i18n.t('Redirecting you to Sage.is AI Community'));
-		const url = 'https://sage.is';
-		// const url = 'http://localhost:5173';
-
-		const tab = await window.open(`${url}/chats/upload`, '_blank');
-		window.addEventListener(
-			'message',
-			(event) => {
-				if (event.origin !== url) return;
-				if (event.data === 'loaded') {
-					tab.postMessage(
-						JSON.stringify({
-							chat: _chat,
-							models: $models.filter((m) => _chat.models.includes(m.id))
-						}),
-						'*'
-					);
-				}
-			},
-			false
-		);
+		shareToHub('/chats/upload', {
+			chat: _chat,
+			models: $models.filter((m) => _chat.models.includes(m.id))
+		});
 	};
 
 	const shareWithTargets = async () => {

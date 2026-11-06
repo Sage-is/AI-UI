@@ -1,4 +1,6 @@
+import { get } from 'svelte/store';
 import { WEBUI_API_BASE_URL, WEBUI_BASE_URL } from '$lib/constants';
+import { config, settings } from '$lib/stores';
 import { convertOpenApiToToolPayload } from '$lib/utils';
 import { getOpenAIModelsDirect } from './openai';
 
@@ -48,6 +50,19 @@ async function api(url: string, method = 'GET', body?: any, context = '') {
 		throw err.detail || err.message || err;
 	}
 }
+
+// The model list as the app shows it: the server's models, plus the browser's
+// direct connections when the admin allows them. Callers say only whether to
+// re-probe, so none can put a token in the `connections` slot again (36 did,
+// found 2026-08-07, fixed 2026-11-05).
+export const loadModels = async (refresh: boolean = false) =>
+	getModels(
+		(get(config)?.features?.enable_direct_connections &&
+			(get(settings)?.directConnections ?? null)) ||
+			null,
+		false,
+		refresh
+	);
 
 export const getModels = async (
 	connections: Record<string, any> | null = null,

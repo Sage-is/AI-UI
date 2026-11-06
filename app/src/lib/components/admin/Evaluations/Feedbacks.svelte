@@ -10,6 +10,7 @@
 
 	import { onMount, getContext } from 'svelte';
 	import { config } from '$lib/stores';
+	import { shareToHub } from '$lib/utils/community';
 	const i18n = getContext('i18n');
 
 	import { deleteFeedbackById, exportAllFeedbacks, getAllFeedbacks } from '$lib/apis/evaluations';
@@ -131,21 +132,7 @@
 		});
 		console.log(feedbacksToShare);
 
-		const url = 'https://sage.is';
-		const tab = await window.open(`${url}/leaderboard`, '_blank');
-
-		// Define the event handler function
-		const messageHandler = (event) => {
-			if (event.origin !== url) return;
-			if (event.data === 'loaded') {
-				tab.postMessage(JSON.stringify(feedbacksToShare), '*');
-
-				// Remove the event listener after handling the message
-				window.removeEventListener('message', messageHandler);
-			}
-		};
-
-		window.addEventListener('message', messageHandler, false);
+		shareToHub('/leaderboard', feedbacksToShare);
 	};
 
 	const exportHandler = async () => {

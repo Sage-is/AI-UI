@@ -71,6 +71,10 @@ TRY_VOLUME="sage-try-data"
 # the machine's address as the engine sees it (192.168.5.2 in a Colima VM).
 HOST_ENTRY="--add-host=host.docker.internal:host-gateway"
 
+# The runtime Sage runs on, passed to the container: the admin panel shows the
+# `ai-ui migrate` line when it is Docker Desktop or OrbStack (2026-11-03).
+runtime_entry() { echo "SAGE_RUNTIME=$(current_runtime)"; }
+
 # ---------------------------------------------------------------------------
 # Sage project registry (~/.sage-is/)
 # Remembers where you cloned things so you never lose your code.
@@ -350,6 +354,7 @@ cmd_start() {
   docker run -d \
     -p "$port:8080" \
     "$HOST_ENTRY" \
+    -e "$(runtime_entry)" \
     -v "$VOLUME:$DATA_MOUNT" \
     --name "$CONTAINER" \
     "$IMAGE"
@@ -479,6 +484,7 @@ cmd_dev() {
     -p "$port:8080" \
     -p 5173:5173 \
     "$HOST_ENTRY" \
+    -e "$(runtime_entry)" \
     -v "$VOLUME:$DATA_MOUNT" \
     -v "$repo_dir/app/src:/app/src" \
     -v "$repo_dir/app/backend:/app/backend" \
@@ -634,6 +640,7 @@ cmd_try() {
   docker run --rm \
     -p "$port:8080" \
     "$HOST_ENTRY" \
+    -e "$(runtime_entry)" \
     -v "$TRY_VOLUME:$DATA_MOUNT" \
     -e ENABLE_TRY_SAGE=true \
     -e WEBUI_URL="$webui_url" \

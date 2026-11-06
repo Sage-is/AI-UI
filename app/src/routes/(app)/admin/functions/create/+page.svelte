@@ -3,10 +3,10 @@
 	import { onMount, getContext } from 'svelte';
 	import { goto } from '$app/navigation';
 
-	import { config, functions, models, settings } from '$lib/stores';
+	import { functions, models } from '$lib/stores';
 	import { createNewFunction, getFunctions } from '$lib/apis/functions';
 	import FunctionEditor from '$lib/components/admin/Functions/FunctionEditor.svelte';
-	import { getModels } from '$lib/apis';
+	import { loadModels } from '$lib/apis';
 	import { compareVersion, extractFrontmatter } from '$lib/utils';
 	import { WEBUI_VERSION } from '$lib/constants';
 
@@ -47,36 +47,16 @@
 		if (res) {
 			toast.success($i18n.t('Function created successfully'));
 			functions.set(await getFunctions(localStorage.token));
-			models.set(
-				await getModels(
-					localStorage.token,
-					$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null),
-					false,
-					true
-				)
-			);
+			models.set(await loadModels(true));
 
 			await goto('/admin/functions');
 		}
 	};
 
 	onMount(() => {
-		window.addEventListener('message', async (event) => {
-			if (
-				!['https://sage.is', 'https://www.sage.is', 'http://localhost:9999'].includes(
-					event.origin
-				)
-			)
-				return;
-
-			func = JSON.parse(event.data);
-			console.log(func);
-		});
-
-		if (window.opener ?? false) {
-			window.opener.postMessage('loaded', '*');
-		}
-
+		// No install from the community hub: a function is code the server runs
+		// unsandboxed, so only this instance's own clone and import fill the form
+		// (card "Community-share leak + dead wiring", 2026-11-03).
 		if (sessionStorage.function) {
 			func = JSON.parse(sessionStorage.function);
 			sessionStorage.removeItem('function');

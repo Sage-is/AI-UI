@@ -6,11 +6,11 @@
 	const i18n = getContext('i18n');
 
 	import { page } from '$app/stores';
-	import { config, models, settings } from '$lib/stores';
+	import { models } from '$lib/stores';
 
 	import { getModelById, updateModelById } from '$lib/apis/models';
 
-	import { getModels } from '$lib/apis';
+	import { loadModels } from '$lib/apis';
 	import ModelEditorWithChat from '$lib/components/workshop/Models/ModelEditorWithChat.svelte';
 
 	let model = null;
@@ -35,17 +35,12 @@
 
 		if (res) {
 			// Update models store but stay on the page for continued testing
-			await models.set(
-				await getModels(
-					localStorage.token,
-					$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
-				)
-			);
+			await models.set(await loadModels());
 			toast.success($i18n.t('Model updated successfully! You can continue testing in the chat.'));
-			
+
 			// Update the model data to reflect the updated model
 			model = res;
-			
+
 			// Don't navigate away - stay for testing
 			// await goto('/workshop/models');
 		}

@@ -23,9 +23,12 @@ describe('Bare-rootstock degradation UX', () => {
 			},
 			{ force: true }
 		);
-		// The toast must NAME the fix, not just fail. Accept either capability
-		// owner depending on which guard fires first (vector vs loaders).
-		cy.contains(/Sprig|vector|rag-loaders/i, { timeout: 20000 }).should('exist');
+		// The toast must NAME the fix, not just fail. Since 2026-11-03 the composer
+		// asks /retrieval/readiness first, so on a bare rootstock the upload never
+		// starts: an admin is told at once and offered the fix as a button that runs
+		// the wizard's install (lib/utils/documentReading.ts, upload-readiness.cy.ts).
+		cy.contains('This box cannot read documents yet.', { timeout: 20000 }).should('exist');
+		cy.contains('button', 'Turn on document reading').should('exist');
 	});
 
 	it('sprigs panel shows everything Sprouted (nothing silently grafted)', () => {

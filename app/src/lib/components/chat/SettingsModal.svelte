@@ -3,7 +3,7 @@
 	import { toast } from 'svelte-sonner';
 	import { config, models, settings, user } from '$lib/stores';
 	import { updateUserSettings } from '$lib/apis/users';
-	import { getModels as _getModels } from '$lib/apis';
+	import { loadModels } from '$lib/apis';
 	import { goto } from '$app/navigation';
 
 	import Modal from '../common/Modal.svelte';
@@ -495,10 +495,7 @@
 	};
 
 	const getModels = async () => {
-		return await _getModels(
-			localStorage.token,
-			$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
-		);
+		return await loadModels();
 	};
 
 	let selectedTab = 'general';

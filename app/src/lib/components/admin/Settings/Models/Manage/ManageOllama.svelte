@@ -3,7 +3,7 @@
 	import { getContext, onMount } from 'svelte';
 	const i18n = getContext('i18n');
 
-	import { WEBUI_NAME, models, MODEL_DOWNLOAD_POOL, user, config, settings } from '$lib/stores';
+	import { WEBUI_NAME, models, MODEL_DOWNLOAD_POOL, user } from '$lib/stores';
 	import { splitStream } from '$lib/utils';
 
 	import {
@@ -17,7 +17,7 @@
 		getOllamaConfig,
 		getOllamaModels
 	} from '$lib/apis/ollama';
-	import { getModels } from '$lib/apis';
+	import { loadModels } from '$lib/apis';
 
 	import Modal from '$lib/components/common/Modal.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
@@ -236,12 +236,7 @@
 					})
 				);
 
-				models.set(
-					await getModels(
-						localStorage.token,
-						$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
-					)
-				);
+				models.set(await loadModels());
 			} else {
 				toast.error($i18n.t('Download canceled'));
 			}
@@ -400,12 +395,7 @@
 		modelTransferring = false;
 		uploadProgress = null;
 
-		models.set(
-			await getModels(
-				localStorage.token,
-				$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
-			)
-		);
+		models.set(await loadModels());
 	};
 
 	const deleteModelHandler = async () => {
@@ -418,12 +408,7 @@
 		}
 
 		deleteModelTag = '';
-		models.set(
-			await getModels(
-				localStorage.token,
-				$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
-			)
-		);
+		models.set(await loadModels());
 	};
 
 	const cancelModelPullHandler = async (model: string) => {
@@ -522,12 +507,7 @@
 			}
 		}
 
-		models.set(
-			await getModels(
-				localStorage.token,
-				$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
-			)
-		);
+		models.set(await loadModels());
 
 		createModelLoading = false;
 

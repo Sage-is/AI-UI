@@ -7,7 +7,7 @@
 	import { onMount, getContext, tick } from 'svelte';
 	const i18n = getContext('i18n');
 
-	import { WEBUI_NAME, config, mobile, models as _models, settings, user } from '$lib/stores';
+	import { WEBUI_NAME, mobile, models as _models, user } from '$lib/stores';
 	import {
 		createNewModel,
 		deleteAllModels,
@@ -18,7 +18,7 @@
 	import { copyToClipboard } from '$lib/utils';
 	import { page } from '$app/stores';
 
-	import { getModels } from '$lib/apis';
+	import { getModels, loadModels } from '$lib/apis';
 		import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import Switch from '$lib/components/common/Switch.svelte';
 	import Spinner from '$lib/components/common/Spinner.svelte';
@@ -85,10 +85,8 @@
 		}
 
 		workshopModels = await getBaseModels(localStorage.token);
-		// getModels is (connections, base, refresh) — no token parameter. Passing
-		// localStorage.token as arg 1 makes `connections` a string, which is
-		// harmless here only because `for (const idx in undefined)` iterates
-		// nothing. 33 call sites still do it; see the ledger.
+		// The server's models only: a browser's direct connections are not the
+		// admin's to manage, so this list skips loadModels' merge.
 		baseModels = await getModels(null, false, true);
 
 		models = baseModels.map((m) => {
@@ -166,14 +164,9 @@
 				toast.success($i18n.t('Model updated successfully'));
 			}
 		}
-		await init();
+		await init(false);
 
-		_models.set(
-			await getModels(
-				localStorage.token,
-				$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
-			)
-		);
+		_models.set(await loadModels());
 	};
 
 	const toggleModelHandler = async (model) => {
@@ -194,12 +187,7 @@
 		}
 
 		// await init();
-		_models.set(
-			await getModels(
-				localStorage.token,
-				$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
-			)
-		);
+		_models.set(await loadModels());
 	};
 
 	const hideModelHandler = async (model) => {
@@ -285,7 +273,7 @@
 	});
 </script>
 
-<ConfigureModelsModal bind:show={showConfigModal} initHandler={init} />
+<ConfigureModelsModal bind:show={showConfigModal} initHandler={() => init(false)} />
 <ManageModelsModal bind:show={showManageModal} />
 
 {#if models !== null}
@@ -335,6 +323,7 @@
 						<button
 							style="--p:0.2rem; --radius:9999px; --d:flex; --g:0.2rem; --ai:center"
 							type="button"
+							data-cy="models-configure"
 							on:click={() => {
 								showConfigModal = true;
 							}}
@@ -537,14 +526,8 @@
 									}
 								}
 
-								await _models.set(
-									await getModels(
-										localStorage.token,
-										$config?.features?.enable_direct_connections &&
-											($settings?.directConnections ?? null)
-									)
-								);
-								init();
+								await _models.set(await loadModels());
+								init(false);
 							};
 
 							reader.readAsText(importFiles[0]);

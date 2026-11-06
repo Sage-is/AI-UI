@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
-	import { models, settings, user, config } from '$lib/stores';
+	import { models, user } from '$lib/stores';
 	import { createEventDispatcher, onMount, getContext, tick } from 'svelte';
 	import Icon from '$lib/components/Icon.svelte';
 
 	const dispatch = createEventDispatcher();
-	import { getModels } from '$lib/apis';
+	import { loadModels } from '$lib/apis';
 	import { getConfig, updateConfig } from '$lib/apis/evaluations';
 
 	import Switch from '$lib/components/common/Switch.svelte';
@@ -27,12 +27,7 @@
 
 		if (evaluationConfig) {
 			toast.success('Settings saved successfully');
-			models.set(
-				await getModels(
-					localStorage.token,
-					$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
-				)
-			);
+			models.set(await loadModels());
 		}
 	};
 
@@ -41,12 +36,7 @@
 		evaluationConfig.EVALUATION_ARENA_MODELS = [...evaluationConfig.EVALUATION_ARENA_MODELS];
 
 		await submitHandler();
-		models.set(
-			await getModels(
-				localStorage.token,
-				$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
-			)
-		);
+		models.set(await loadModels());
 	};
 
 	const editModelHandler = async (model, modelIdx) => {
@@ -54,12 +44,7 @@
 		evaluationConfig.EVALUATION_ARENA_MODELS = [...evaluationConfig.EVALUATION_ARENA_MODELS];
 
 		await submitHandler();
-		models.set(
-			await getModels(
-				localStorage.token,
-				$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
-			)
-		);
+		models.set(await loadModels());
 	};
 
 	const deleteModelHandler = async (modelIdx) => {
@@ -68,12 +53,7 @@
 		);
 
 		await submitHandler();
-		models.set(
-			await getModels(
-				localStorage.token,
-				$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
-			)
-		);
+		models.set(await loadModels());
 	};
 
 	onMount(async () => {

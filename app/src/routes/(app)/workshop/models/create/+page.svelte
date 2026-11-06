@@ -2,19 +2,22 @@
 	import { v4 as uuidv4 } from 'uuid';
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
-	import { config, models, settings } from '$lib/stores';
+	import { models } from '$lib/stores';
 	import { WEBUI_BASE_URL } from '$lib/constants';
 	import { getBranding, type Branding } from '$lib/apis/configs';
 
-	import { onMount, tick, getContext } from 'svelte';
+	import { onMount, onDestroy, tick, getContext } from 'svelte';
 	import { createNewModel, getModelById } from '$lib/apis/models';
-	import { getModels } from '$lib/apis';
+	import { loadModels } from '$lib/apis';
+	import { receiveFromHub } from '$lib/utils/community';
 
 	import ModelEditorWithChat from '$lib/components/workshop/Models/ModelEditorWithChat.svelte';
 
 	const i18n = getContext('i18n');
 
 	let branding: Branding | null = null;
+	let stopHub = () => {};
+	onDestroy(() => stopHub());
 
 	const onSubmit = async (modelInfo) => {
 		if ($models.find((m) => m.id === modelInfo.id)) {
@@ -47,15 +50,10 @@
 			});
 
 			if (res) {
-				// Update models store 
-				await models.set(
-					await getModels(
-						localStorage.token,
-						$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
-					)
-				);
+				// Update models store
+				await models.set(await loadModels());
 				toast.success($i18n.t('Model created successfully!'));
-				
+
 				// Redirect to edit page to continue working on the model
 				await goto(`/workshop/models/edit?id=${encodeURIComponent(res.id)}`);
 			}
@@ -66,28 +64,10 @@
 
 	onMount(async () => {
 		branding = await getBranding();
-		
-		window.addEventListener('message', async (event) => {
-			if (
-				!['https://sage.is', 'https://www.sage.is', 'http://localhost:5173'].includes(
-					event.origin
-				)
-			) {
-				return;
-			}
 
-			let data = JSON.parse(event.data);
-
-			if (data?.info) {
-				data = data.info;
-			}
-
-			model = data;
+		stopHub = receiveFromHub((data) => {
+			model = data?.info ?? data;
 		});
-
-		if (window.opener ?? false) {
-			window.opener.postMessage('loaded', '*');
-		}
 
 		if (sessionStorage.model) {
 			model = JSON.parse(sessionStorage.model);

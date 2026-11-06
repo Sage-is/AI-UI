@@ -2,7 +2,7 @@
 	import { v4 as uuidv4 } from 'uuid';
 
 	import { toast } from 'svelte-sonner';
-	import { config, models, settings } from '$lib/stores';
+	import { models } from '$lib/stores';
 	import { getContext, onMount, tick } from 'svelte';
 	import type { Writable } from 'svelte/store';
 	import type { i18n as i18nType } from 'i18next';
@@ -11,11 +11,11 @@
 		getPipelineValvesSpec,
 		updatePipelineValves,
 		getPipelines,
-		getModels,
 		getPipelinesList,
 		downloadPipeline,
 		deletePipeline,
-		uploadPipeline
+		uploadPipeline,
+		loadModels
 	} from '$lib/apis';
 
 	import Spinner from '$lib/components/common/Spinner.svelte';
@@ -64,12 +64,7 @@
 			if (res) {
 				toast.success($i18n.t('Valves updated successfully'));
 				setPipelines();
-				models.set(
-					await getModels(
-						localStorage.token,
-						$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
-					)
-				);
+				models.set(await loadModels());
 				saveHandler();
 			}
 		} else {
@@ -131,12 +126,7 @@
 		if (res) {
 			toast.success($i18n.t('Pipeline downloaded successfully'));
 			setPipelines();
-			models.set(
-				await getModels(
-					localStorage.token,
-					$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
-				)
-			);
+			models.set(await loadModels());
 		}
 
 		downloading = false;
@@ -161,12 +151,7 @@
 			if (res) {
 				toast.success($i18n.t('Pipeline downloaded successfully'));
 				setPipelines();
-				models.set(
-					await getModels(
-						localStorage.token,
-						$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
-					)
-				);
+				models.set(await loadModels());
 			}
 		} else {
 			toast.error($i18n.t('No file selected'));
@@ -195,12 +180,7 @@
 		if (res) {
 			toast.success($i18n.t('Pipeline deleted successfully'));
 			setPipelines();
-			models.set(
-				await getModels(
-					localStorage.token,
-					$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
-				)
-			);
+			models.set(await loadModels());
 		}
 	};
 

@@ -737,14 +737,14 @@
 										e = e.detail.event;
 										const isCtrlPressed = e.ctrlKey || e.metaKey; // metaKey is for Cmd key on Mac
 
-										const mentionsContainerElement = document.getElementById('mentions-container');
-
-										if (mentionsContainerElement) {
+										// The open Mentions list renders the Commands list's ids
+										// (Mentions.svelte), so ask our own state, not the DOM.
+										if (showMentions) {
 											if (e.key === 'ArrowUp') {
 												e.preventDefault();
 												mentionsElement.selectUp();
 												const btn = [
-													...document.getElementsByClassName('selected-mention-option-button')
+													...document.getElementsByClassName('selected-command-option-button')
 												]?.at(-1);
 												btn?.scrollIntoView({ block: 'center' });
 											}
@@ -752,14 +752,14 @@
 												e.preventDefault();
 												mentionsElement.selectDown();
 												const btn = [
-													...document.getElementsByClassName('selected-mention-option-button')
+													...document.getElementsByClassName('selected-command-option-button')
 												]?.at(-1);
 												btn?.scrollIntoView({ block: 'center' });
 											}
 											if (e.key === 'Tab' || e.key === 'Enter') {
 												e.preventDefault();
 												const btn = [
-													...document.getElementsByClassName('selected-mention-option-button')
+													...document.getElementsByClassName('selected-command-option-button')
 												]?.at(-1);
 												btn?.click();
 											}

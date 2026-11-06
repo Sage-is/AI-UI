@@ -573,6 +573,13 @@ class RuntimeFlag(Mac):
         self.assertTrue(self.runs("orbstack"))
         self.assertEqual(self.saved_runtime(), "orbstack")
 
+    def test_the_container_learns_its_runtime_for_the_admin_notice(self):
+        self.install("Docker")
+        (self.home / self.DOCKER_SETTINGS).parent.mkdir(parents=True)
+        (self.home / self.DOCKER_SETTINGS).touch()
+        self.ok("start", "--runtime", "docker-desktop")
+        self.assertIn(" -e SAGE_RUNTIME=docker-desktop ", self.runs("desktop-linux")[0])
+
     def test_a_runtime_that_is_not_installed_says_how_to_get_it_or_to_use_colima(self):
         # Docker Desktop, saved by an older start, may since have gone from the Mac.
         self.save_runtime("docker-desktop")
@@ -630,6 +637,7 @@ class ReachTheMac(Mac):
                 runs = self.runs("colima")
                 self.assertEqual(len(runs), 1, self.calls())
                 self.assertIn(f" {HOST_ENTRY} ", runs[0])
+                self.assertIn(" -e SAGE_RUNTIME=colima ", runs[0])  # the admin notice reads it
 
 
 class DevMode(Mac):

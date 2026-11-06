@@ -380,18 +380,15 @@
 					eventConfirmationTitle = data.title;
 					eventConfirmationMessage = data.message;
 				} else if (type === 'execute') {
-					eventCallback = cb;
-
-					try {
-						// Use Function constructor to evaluate code in a safer way
-						const asyncFunction = new Function(`return (async () => { ${data.code} })()`);
-						const result = await asyncFunction(); // Await the result of the async function
-
-						if (cb) {
-							cb(result);
-						}
-					} catch (error) {
-						console.error('Error executing code:', error);
+					// Neutered, never deleted (2026-08-15 poka-yoke, Note 1). This arm ran
+					// `data.code` through `new Function` in the top frame. Any upstream
+					// model, Pipe, stream Filter or REST client can emit the event, so the
+					// code never runs. The arm stays and `cb` always fires: without an
+					// answer, `__event_call__` callers hang for 60s. ESLint's
+					// `no-new-func` keeps the constructor from coming back.
+					console.warn('Refused an execute event: event code never runs here');
+					if (cb) {
+						cb({ error: 'The execute event is disabled on this server.' });
 					}
 				} else if (type === 'input') {
 					eventCallback = cb;

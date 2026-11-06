@@ -75,4 +75,26 @@ describe('admin models refresh', () => {
 		cy.wait('@slowRefresh', { timeout: 30000 });
 		cy.get('[data-cy="models-refresh"]', { timeout: 30000 }).should('be.enabled');
 	});
+
+	it('keeps the panel on the page when the model settings are saved', () => {
+		// Saving re-reads the list. It used to blank it first, which unmounted the
+		// whole panel, the control just used included, behind a page spinner
+		// (fixed 2026-11-05). The judge is the refresh button's own element: a
+		// panel that unmounted and came back renders a new one.
+		cy.intercept('POST', '**/api/v1/configs/models').as('saveConfig');
+		cy.visit(PAGE);
+		cy.get('[data-cy="models-refresh"]', { timeout: 30000 })
+			.should('be.enabled')
+			.then(($button) => {
+				const before = $button[0];
+				cy.get('[data-cy="models-configure"]').click();
+				cy.get('[data-cy="models-configure-save"]', { timeout: 15000 }).click();
+				cy.wait('@saveConfig');
+				// The modal closes in the same update that used to blank the list.
+				cy.get('[data-cy="models-configure-save"]').should('not.exist');
+				cy.wrap(null).should(() => {
+					expect(before.isConnected, 'the same panel, never unmounted').to.be.true;
+				});
+			});
+	});
 });

@@ -13,7 +13,7 @@
 
 	import { getKnowledgeBases } from '$lib/apis/knowledge';
 	import { getFunctions } from '$lib/apis/functions';
-	import { getModels, getToolServersData, getVersionUpdates } from '$lib/apis';
+	import { loadModels, getToolServersData, getVersionUpdates } from '$lib/apis';
 	import { getModelsStatus } from '$lib/apis/retrieval';
 	import { getAllTags } from '$lib/apis/chats';
 	import { getPrompts } from '$lib/apis/prompts';
@@ -118,9 +118,7 @@
 			// each other, so awaiting them in sequence cost four serial round-trips of
 			// boot time for nothing.
 			const [modelList, bannerList, toolList, toolServerData] = await Promise.all([
-				getModels(
-					$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
-				),
+				loadModels(),
 				getBanners(''),
 				getTools(''),
 				getToolServersData($i18n, $settings?.toolServers ?? [])

@@ -29,6 +29,24 @@
 		getContents();
 	}
 
+	// A full document from the model renders as it is. Wrapped in a second
+	// document, it nested <html> inside <body>, under a malformed shell (2026-11-03).
+	// Separate css and js blocks join it before </head> and </body>.
+	const isDocument = (html: string) => /<!doctype html|<html[\s>]/i.test(html);
+	const intoDocument = (html: string, css: string, js: string) => {
+		let doc = html;
+		if (css.trim()) {
+			const style = `<${''}style>${css}</${''}style>`;
+			doc = /<\/head>/i.test(doc) ? doc.replace(/<\/head>/i, `${style}</head>`) : style + doc;
+		}
+		if (js.trim()) {
+			const script = `<${''}script>${js}</${''}script>`;
+			const end = doc.toLowerCase().lastIndexOf('</body>');
+			doc = end === -1 ? doc + script : doc.slice(0, end) + script + doc.slice(end);
+		}
+		return doc;
+	};
+
 	const getContents = () => {
 		contents = [];
 		messages.forEach((message) => {
@@ -60,9 +78,13 @@
 					}
 				});
 
-				const inlineHtml = message.content.match(/<html>[\s\S]*?<\/html>/gi);
-				const inlineCss = message.content.match(/<style>[\s\S]*?<\/style>/gi);
-				const inlineJs = message.content.match(/<script>[\s\S]*?<\/script>/gi);
+				// Bare tags count only outside the code blocks taken above; read
+				// across the whole reply, a block's own page, <style> and <script>
+				// landed twice (2026-11-03).
+				const outside = message.content.replace(/```[\s\S]*?```/g, '');
+				const inlineHtml = outside.match(/<html>[\s\S]*?<\/html>/gi);
+				const inlineCss = outside.match(/<style>[\s\S]*?<\/style>/gi);
+				const inlineJs = outside.match(/<script>[\s\S]*?<\/script>/gi);
 
 				if (inlineHtml) {
 					inlineHtml.forEach((block) => {
@@ -84,7 +106,9 @@
 				}
 
 				if (htmlContent || cssContent || jsContent) {
-					const renderedContent = `
+					const renderedContent = isDocument(htmlContent)
+						? intoDocument(htmlContent, cssContent, jsContent)
+						: `
                         <!DOCTYPE html>
                         <html lang="en">
                         <head>
@@ -311,7 +335,7 @@
 								bind:this={iframeElement}
 								title="Content"
 								srcdoc={contents[selectedContentIdx].content}
-								style="--w:100%; --bw:0; --h:100%; --radius:0"
+								style="--w:100%; --bw:0; --h:100%; --radius:0; --bgc:white"
 								sandbox="allow-scripts allow-downloads{($settings?.iframeSandboxAllowForms ?? false)
 									? ' allow-forms'
 									: ''}{($settings?.iframeSandboxAllowSameOrigin ?? false)

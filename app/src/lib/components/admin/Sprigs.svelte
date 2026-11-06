@@ -194,11 +194,6 @@
 							})}
 						</div>
 					{/if}
-					{#if g}
-						<div class="text-xs text-gray-400 dark:text-gray-500 mt-1 font-mono break-all">
-							{g.base_url}{g.pid ? ` · pid ${g.pid}` : ''}
-						</div>
-					{/if}
 					{#if errors[name]}
 						<div
 							data-cy="sprig-error"

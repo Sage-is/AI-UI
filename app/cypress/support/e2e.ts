@@ -142,6 +142,8 @@ const RESTORED_CONFIG: ConfigSurface[] = [
 	// GET returns exactly the AdminConfig field set POST requires (ENABLE_SPACES,
 	// ENABLE_SIGNUP, DEFAULT_USER_ROLE, ...), so no wrap is needed.
 	{ name: 'admin', read: '/api/v1/auths/admin/config', write: '/api/v1/auths/admin/config' },
+	// ENABLE_DIRECT_CONNECTIONS + ENABLE_BASE_MODELS_CACHE; GET matches POST's shape.
+	{ name: 'connections', read: '/api/v1/configs/connections', write: '/api/v1/configs/connections' },
 	{ name: 'ollama', read: '/ollama/config', write: '/ollama/config/update' },
 	{ name: 'openai', read: '/openai/config', write: '/openai/config/update' },
 	{

@@ -35,6 +35,7 @@
 		updateKnowledgeById
 	} from '$lib/apis/knowledge';
 	import { blobToFile } from '$lib/utils';
+	import { documentReadingReady } from '$lib/utils/documentReading';
 
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import Files from './KnowledgeBase/Files.svelte';
@@ -139,6 +140,11 @@
 
 		if (fileItem.size == 0) {
 			toast.error($i18n.t('You cannot upload an empty file.'));
+			return null;
+		}
+
+		// Said before the upload starts, not after the wait.
+		if (!(await documentReadingReady($user?.role === 'admin', (k, o) => $i18n.t(k, o)))) {
 			return null;
 		}
 

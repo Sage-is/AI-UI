@@ -517,7 +517,9 @@ border-radius: 0.4rem;
 font-size: 0.85rem;
 padding: 0.25em 0.3em;
 
-@apply dark:bg-gray-800 bg-gray-50;
+/* startr.style colours `code` with var(--background) and `pre` #d0d0d0, near
+   white on this gray-50 block; the fence needs its own text colour. */
+@apply dark:bg-gray-800 bg-gray-50 text-gray-800 dark:text-gray-100;
 }
 
 .tiptap pre {
@@ -526,7 +528,7 @@ font-family: 'JetBrainsMono', monospace;
 margin: 1.5rem 0;
 padding: 0.6rem 1rem;
 
-@apply dark:bg-gray-800 bg-gray-50;
+@apply dark:bg-gray-800 bg-gray-50 text-gray-800 dark:text-gray-100;
 }
 
 .tiptap p code {
