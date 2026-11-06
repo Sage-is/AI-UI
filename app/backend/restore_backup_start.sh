@@ -1,8 +1,13 @@
 #!/bin/bash
 
-# Source environment variables
+# Source environment variables. Values already in the environment win, as
+# python-dotenv does: `make` hands the container vault-resolved keys with
+# `-e NAME`, while /app/.env still holds their `bw:` stubs.
 if [ -f /app/.env ]; then
+  _preset_env=$(export -p)
   . /app/.env
+  eval "$_preset_env"
+  unset _preset_env
 else
   echo "No .env file found. Using default configuration."
 fi

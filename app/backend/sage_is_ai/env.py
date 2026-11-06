@@ -117,6 +117,9 @@ TRUSTED_SIGNATURE_KEY = os.environ.get("TRUSTED_SIGNATURE_KEY", "")
 
 ENV = os.environ.get("ENV", "dev")
 DEV_MODE = os.environ.get("DEV_MODE", "false").lower() == "true"
+# The container runtime `ai-ui` started this box on (colima, docker-desktop,
+# orbstack); empty elsewhere. Admins see the `ai-ui migrate` line off Colima.
+SAGE_RUNTIME = os.environ.get("SAGE_RUNTIME", "")
 
 # Directories uvicorn watches for a development restart, space separated.
 #
@@ -709,6 +712,14 @@ def _parse_try_sage_models(raw: str) -> list[str]:
 
 
 TRY_SAGE_LLM_MODELS = _parse_try_sage_models(os.environ.get("TRY_SAGE_LLM_MODELS", ""))
+
+# The same memory-only connection outside trial mode. The key comes from the
+# environment at boot — a real key, or one `sage-secret run` resolved from a
+# `bw:` stub in .env — and never reaches the config DB, so a DB dump or
+# snapshot carries no provider key. Admins do not see it in Connections.
+SAGE_LLM_API_URL = os.environ.get("SAGE_LLM_API_URL", "")
+SAGE_LLM_API_KEY = os.environ.get("SAGE_LLM_API_KEY", "")
+SAGE_LLM_MODELS = _parse_try_sage_models(os.environ.get("SAGE_LLM_MODELS", ""))
 
 # Per-persona seed passwords. Optional — the seed routine generates random
 # passwords and logs them once if any are unset. Personas use magic-link
