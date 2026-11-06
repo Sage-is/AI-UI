@@ -165,6 +165,16 @@ async def graft_sprig(
     # Past the spawn: whatever was wrong before is not wrong now.
     supervisor.clear_error(handle.name)
 
+    # Vector is an overlay with no process: only ensure_chromadb turns the client
+    # on, the same call the boot reconcile makes (supervisor._reconcile). When it
+    # fails, the catalog's "active now" note would be false, so the answer says so.
+    note = entry.get("post_graft_note")
+    if handle.capability == "vector":
+        from sage_is_ai.sprigs.vector_bootstrap import ensure_chromadb
+
+        if not await ensure_chromadb(request.app):
+            note = "Vector DB delivered, but document search did not start. The server log has the reason."
+
     # Reranker server child: point the EXISTING external-reranker dispatch at the
     # grafted loopback /v1/rerank (shared with boot reconcile — no drift).
     if handle.capability == "reranker":
@@ -283,7 +293,7 @@ async def graft_sprig(
             name=handle.name,
             capability=handle.capability,
             delivered=True,
-            warning=entry.get("post_graft_note"),
+            warning=note,
         )
 
     # Point the existing embedding dispatch at the grafted loopback Sprig™. Shared
@@ -353,6 +363,20 @@ async def prune_sprig(
     )
     was_active_ui = h.get("capability") == "ui" and form_data.name == str(
         cfg.SPRIG_ACTIVE_UI or ""
+    )
+    # Tika and Docling select the extraction engine and point its URL at the
+    # child's bare loopback (tika_dispatch, docling_dispatch). Active = both
+    # still say so; an engine the admin chose since then stays.
+    loopback = f"http://127.0.0.1:{h.get('port')}"
+    was_active_tika = (
+        h.get("capability") == "tika"
+        and cfg.CONTENT_EXTRACTION_ENGINE == "tika"
+        and cfg.TIKA_SERVER_URL == loopback
+    )
+    was_active_docling = (
+        h.get("capability") == "docling"
+        and cfg.CONTENT_EXTRACTION_ENGINE == "docling"
+        and cfg.DOCLING_SERVER_URL == loopback
     )
     # Independent of "active": an admin can grant scripting to a Sprig that was
     # never activated, and removing it must still take the grant with it.
@@ -424,6 +448,27 @@ async def prune_sprig(
         cfg.SPRIG_ACTIVE_UI = ""
         log.info("pruned active ui sprig '%s'; fragment removed", form_data.name)
 
+    if was_active_tika or was_active_docling:
+        # Back to what the environment says (the built-in extractor unless the
+        # operator set an engine), so uploads stop POSTing a released port and
+        # the boot probe stops calling it unreachable.
+        from sage_is_ai.config import (
+            CONTENT_EXTRACTION_ENGINE,
+            DOCLING_SERVER_URL,
+            TIKA_SERVER_URL,
+        )
+
+        cfg.CONTENT_EXTRACTION_ENGINE = CONTENT_EXTRACTION_ENGINE.env_value
+        if was_active_tika:
+            cfg.TIKA_SERVER_URL = TIKA_SERVER_URL.env_value
+        else:
+            cfg.DOCLING_SERVER_URL = DOCLING_SERVER_URL.env_value
+        log.info(
+            "pruned active %s sprig '%s'; extraction reset",
+            h.get("capability"),
+            form_data.name,
+        )
+
     had_wires = clear_wires(cfg, form_data.name)
 
     if had_scripting_grant:
@@ -461,6 +506,10 @@ async def prune_sprig(
             "Fragment removed — the page returns to its default layout on reload.",
         ),
         (
+            was_active_tika or was_active_docling,
+            "Document reading reset — uploads go back to the extractor the server started with.",
+        ),
+        (
             had_scripting_grant,
             "Scripting permission revoked with the Sprig™ it was granted to.",
         ),
@@ -479,6 +528,7 @@ async def prune_sprig(
         "stt_reset": was_active_stt,
         "theme_reset": was_active_theme,
         "ui_reset": was_active_ui,
+        "extraction_reset": was_active_tika or was_active_docling,
         "scripting_grant_revoked": had_scripting_grant,
         "wires_cleared": had_wires,
         "error_cleared": error_cleared,

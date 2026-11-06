@@ -23,6 +23,9 @@ class SprigHandle:
     # Explicit state for non-process ("deliver") sprigs; otherwise derived from
     # the child process's liveness in handles().
     state: Optional[str] = None
+    # Set when a top-graft of the same capability terminates this sprig, so its
+    # own boot wait reports the eviction instead of "exited on boot (rc=-15)".
+    evicted_by: Optional[str] = None
 
 
 class GraftRequest(BaseModel):

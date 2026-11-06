@@ -10,6 +10,11 @@
 # (brand-new) container layer, the embedding child re-spawned on a fresh port,
 # and a direct /v1/embeddings call returns a vector.
 #
+# vector-chroma rides along (2026-11-02): an overlay with no process, so nothing
+# re-pointed it, and every restart left document search off until someone ran
+# `kb-reindex.py --vector-on`. It must read `vector_db_ready: true` right after
+# the graft and again after the recreation, with no manual call. Red on 3.2.2.
+#
 # Usage: scripts/smoke/sprig-durability.sh [image]   (default sage-is/ai-ui:develop)
 # Requires: local-registry on sage-network (make sprig_registry). Safe to re-run.
 set -uo pipefail
@@ -47,13 +52,16 @@ TOK=$(curl -s -X POST "$BASE/api/v1/auths/signup" -H 'Content-Type: application/
   -d '{"name":"D","email":"durability@sage.is","password":"durability-pw-123"}' | jq -r '.token // empty')
 AUTH="Authorization: Bearer $TOK"; [ -n "$TOK" ] && ok "admin signup" || { no "signup"; exit 1; }
 G(){ curl -s --max-time 300 -X POST "$BASE/api/v1/retrieval/sprigs/graft" -H "$AUTH" -H 'Content-Type: application/json' -d "{\"name\":\"$1\",\"capability\":\"$2\"}"; }
+VEC(){ curl -s "$BASE/api/v1/retrieval/models/status" -H "$AUTH" | jq -r '.vector_db_ready'; }
 
-echo "== graft: mock-embedding (server child) + media-ffmpeg (deliver overlay) =="
+echo "== graft: mock-embedding (server child) + media-ffmpeg and vector-chroma (deliver overlays) =="
 G mock-embedding embedding | jq -e '.status==true' >/dev/null 2>&1 && ok "mock-embedding grafted" || no "mock graft failed"
 G media-ffmpeg media      | jq -e '.delivered==true' >/dev/null 2>&1 && ok "media-ffmpeg delivered" || no "ffmpeg delivery failed"
+G vector-chroma vector    | jq -e '.delivered==true' >/dev/null 2>&1 && ok "vector-chroma delivered" || no "vector-chroma delivery failed"
 X 'test -x /usr/local/bin/ffmpeg' && ok "ffmpeg binary present pre-recreation" || no "ffmpeg missing pre-recreation"
-X 'cat /app/backend/data/sage-is/sprigs/state.json' 2>/dev/null | jq -e '.grafted | length == 2' >/dev/null 2>&1 \
-  && ok "state.json records both grafts" || no "state.json wrong: $(X 'cat /app/backend/data/sage-is/sprigs/state.json' 2>/dev/null | head -c 200)"
+[ "$(VEC)" = "true" ] && ok "document search on after the graft, no manual call" || no "document search off after the graft (vector_db_ready=$(VEC))"
+X 'cat /app/backend/data/sage-is/sprigs/state.json' 2>/dev/null | jq -e '.grafted | length == 3' >/dev/null 2>&1 \
+  && ok "state.json records all three grafts" || no "state.json wrong: $(X 'cat /app/backend/data/sage-is/sprigs/state.json' 2>/dev/null | head -c 200)"
 X 'ls /app/backend/data/sage-is/sprigs/media-ffmpeg/*.tar.zst' >/dev/null 2>&1 \
   && ok "verified tar cached on the volume" || no "tar not cached on volume"
 
@@ -70,6 +78,7 @@ echo "$CAT" | jq -e '.grafted["mock-embedding"].state=="rooted"' >/dev/null 2>&1
 BURL=$(echo "$CAT" | jq -r '.grafted["mock-embedding"].base_url // empty')
 DIM=$(netcurl -s "${BURL}/embeddings" -H 'Content-Type: application/json' -d '{"input":["vector after full recreation"]}' | jq '.data[0].embedding | length')
 [ "$DIM" = "384" ] && ok "re-spawned embedding serves a 384-dim vector" || no "embedding dead post-restart (dim=$DIM, url=$BURL)"
+[ "$(VEC)" = "true" ] && ok "document search on after the recreation, no --vector-on" || no "document search off after the recreation (vector_db_ready=$(VEC))"
 
 docker start local-registry >/dev/null 2>&1 && REGISTRY_STOPPED=0 && echo "  local-registry restarted"
 

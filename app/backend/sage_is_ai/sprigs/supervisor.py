@@ -1090,6 +1090,13 @@ class SprigSupervisor:
                     continue
                 try:
                     handle = await self.graft(name, cap)
+                    if cap == "vector":
+                        # An overlay with no process: only ensure_chromadb turns
+                        # the client back on, or every restart left document
+                        # search off until someone ran --vector-on (2026-11-02).
+                        from sage_is_ai.sprigs.vector_bootstrap import ensure_chromadb
+
+                        await ensure_chromadb(self.app)
                     # Server capabilities each own a config slot that must be
                     # re-pointed at the FRESH loopback port after re-spawn.
                     if handle.process is not None:
@@ -1520,13 +1527,7 @@ class SprigSupervisor:
         # fails its health check, the except below prunes the new one, leaving
         # zero cultivars of that capability rooted (the honest state).
         if capability in ("embedding", "reranker", "stt"):
-            for other in [
-                n
-                for n, h in list(self._sprigs.items())
-                if n != name and h.capability == capability
-            ]:
-                log.info("top-grafting: pruning prior %s sprig '%s'", capability, other)
-                await self._terminate(other)
+            await self._evict(name, capability)
 
         port = _reserve_loopback_port()
         # Binary sprigs exec the delivered static binary directly; python
@@ -1595,6 +1596,11 @@ class SprigSupervisor:
         while time.monotonic() < deadline:
             proc = handle.process
             if proc is not None and proc.returncode is not None:
+                if handle.evicted_by:
+                    raise RuntimeError(
+                        f"sprig '{handle.name}' was pruned while booting: "
+                        f"'{handle.evicted_by}' took over the {handle.capability} capability"
+                    )
                 raise RuntimeError(
                     f"sprig '{handle.name}' exited on boot (rc={proc.returncode})"
                 )
@@ -1608,6 +1614,20 @@ class SprigSupervisor:
                 pass
             await asyncio.sleep(0.25)
         raise TimeoutError(f"sprig '{handle.name}' not healthy within {timeout:.0f}s")
+
+    async def _evict(self, name: str, capability: str) -> None:
+        """Top-graft: terminate every OTHER rooted sprig of this capability.
+
+        Each is marked first, so a cultivar still in its own boot wait reports
+        that it was replaced rather than that it crashed."""
+        for other in [
+            n
+            for n, h in list(self._sprigs.items())
+            if n != name and h.capability == capability
+        ]:
+            log.info("top-grafting: pruning prior %s sprig '%s'", capability, other)
+            self._sprigs[other].evicted_by = name
+            await self._terminate(other)
 
     async def _terminate(self, name: str) -> None:
         handle = self._sprigs.pop(name, None)
