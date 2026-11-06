@@ -29,7 +29,7 @@ REGISTRY_INTERNAL="${REGISTRY_INTERNAL:-local-registry:5000}"  # oras on sage-ne
 ARTIFACT_TYPE="application/vnd.sage-is.sprig.v1"
 LAYER_TYPE="application/vnd.sage-is.sprig.tar+zstd"
 NET="${NET:-sage-network}"
-ORAS_IMG="ghcr.io/oras-project/oras:v1.2.0"
+. "$(dirname "${BASH_SOURCE[0]}")/lib/oras.sh"
 
 sha256(){ shasum -a 256 "$1" 2>/dev/null | awk '{print $1}' || sha256sum "$1" | awk '{print $1}'; }
 . "$(dirname "${BASH_SOURCE[0]}")/lib/mount-tmp.sh"

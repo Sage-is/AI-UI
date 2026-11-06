@@ -30,6 +30,21 @@ ifneq (,$(wildcard ./.env))
     export
 endif
 
+# A secret in .env is a real value or a vault stub, `KEY=bw:ITEM[/FIELD]`.
+# Containers get secrets by name (`-e NAME`), never by value, so no command
+# line shows one. With a stub in .env the run goes through `sage-secret`,
+# which resolves each stub into docker's environment; real values pass through.
+# Recursive on purpose: a missing sage-secret fails the run, not `make help`.
+VAULT_REFS := $(shell sed -n "s/^\([A-Za-z_][A-Za-z0-9_]*\)=[\"']\{0,1\}bw:.*/\1/p" .env 2>/dev/null)
+VAULT = $(PARSE_BY_SHELL) $(if $(VAULT_REFS),$(if $(shell command -v sage-secret),sage-secret run --env .env --,$(error .env holds vault stubs ($(VAULT_REFS)): brew install sage-is/apps/sage-secret, or put the real values in .env)),)
+# The bare `export` above would expand VAULT for every recipe's environment, so a
+# machine without sage-secret could build nothing. Only the run targets expand it.
+unexport VAULT PARSE_BY_SHELL VAULT_REFS
+# Make exports a quoted .env value with its quotes. The old `-e NAME=$(NAME)`
+# had the shell parse the value; `eval` keeps that parse for the names that
+# used it, so a quoted WEBUI_SECRET_KEY stays the same key.
+PARSE_BY_SHELL = $(foreach v,WEBUI_SECRET_KEY TRY_SAGE_LLM_API_URL TRY_SAGE_LLM_API_KEY,[ -z "$${$(v)+x}" ] || eval "export $(v)=$$$(v)";)
+
 # docker, unless CONTAINER_RUNTIME names another. Podman used to win whenever it
 # was installed, which split images and volumes across two engines.
 CONTAINER_RUNTIME ?= docker
@@ -120,10 +135,14 @@ OCI_LABELS_BASE := --label org.opencontainers.image.source=https://github.com/Sa
               --label org.opencontainers.image.licenses=AGPL-3.0-or-later
 OCI_LABELS := --label org.opencontainers.image.revision=$(OCI_REVISION) $(OCI_LABELS_BASE)
 CONTAINER_NAME ?= $(shell echo $(GIT_REPO_SLUG) | tr '/' '-')
-PORT_MAPPING ?= 8080:8080
-# Host-side port from PORT_MAPPING (`HOST:CONTAINER` → HOST). Reference this
-# in help text and curl URLs so they track when PORT_MAPPING is overridden.
-LOCAL_PORT := $(firstword $(subst :, ,$(PORT_MAPPING)))
+# Loopback by default: a dev run carries a seeded admin and real keys, and a
+# bare `8080:8080` publishes it to every network this machine is on. Set
+# PORT_MAPPING=8080:8080 on purpose to share it.
+PORT_MAPPING ?= 127.0.0.1:8080:8080
+# Host-side port from PORT_MAPPING (`[IP:]HOST:CONTAINER` → HOST, the field
+# before the last). Reference this in help text and curl URLs so they track
+# when PORT_MAPPING is overridden.
+LOCAL_PORT := $(word $(words $(wordlist 2,9,$(subst :, ,$(PORT_MAPPING)))),$(subst :, ,$(PORT_MAPPING)))
 # Default volume comes from distribution.env (VOLUME + DATA_MOUNT). Fresh
 # installs land on `sage-ai-data:/app/backend/data`; existing installs with
 # a `.env` override keep their old volume name via the ?= precedence.
@@ -308,13 +327,14 @@ box_read:  ## one read verb, through the box's read key alone: BOX=name WHAT=pro
 COMMON_RUN_ARGS := --rm -p $(PORT_MAPPING) \
 	--add-host=host.docker.internal:host-gateway \
 	-v $(ENV_FILE) \
+	$(foreach v,$(VAULT_REFS),-e $(v)) \
 	$(if $(SPRIG_REGISTRY),-e SPRIG_REGISTRY=$(SPRIG_REGISTRY),) \
 	$(if $(SPRIG_REGISTRY_INSECURE),-e SPRIG_REGISTRY_INSECURE=$(SPRIG_REGISTRY_INSECURE),) \
 	--name $(CONTAINER_NAME)
 
 # Production run: COMMON + secret-key pass-through + prod volume.
 DOCKER_RUN_ARGS := $(COMMON_RUN_ARGS) \
-	$(if $(WEBUI_SECRET_KEY),-e WEBUI_SECRET_KEY=$(WEBUI_SECRET_KEY),) \
+	$(if $(WEBUI_SECRET_KEY),-e WEBUI_SECRET_KEY,) \
 	-v $(VOLUME_DATA)
 
 # The dev loop gets its OWN volume, `make dev` seeds an administrator, and a user is only made admin when they are the FIRST to sign up. Every one after this lands on DEFAULT_USER_ROLE, which is `pending`. Sharing sage-ai-data with `it_run` meant the seed silently produced a pending account on any volume that had ever been used, and the ui-Sprig graft was then refused with a permissions error.
@@ -334,8 +354,8 @@ VOLUME_DEV_DATA ?= $(or $(DEV_VOLUME),sage-ai-dev-data):$(or $(DATA_MOUNT),/app/
 DEV_RUN_ARGS := $(COMMON_RUN_ARGS) \
 	--network sage-network \
 	-e SPRIG_REGISTRY=$(or $(SPRIG_REGISTRY),local-registry:5000) \
-	-p 5173:5173 \
-	$(if $(WEBUI_SECRET_KEY),-e WEBUI_SECRET_KEY=$(WEBUI_SECRET_KEY),) \
+	-p 127.0.0.1:5173:5173 \
+	$(if $(WEBUI_SECRET_KEY),-e WEBUI_SECRET_KEY,) \
 	-v $(VOLUME_DEV_DATA) \
 	-v $(FRONTEND_SRC) \
 	-v $(STATIC_SRC) \
@@ -401,7 +421,7 @@ it_build_no_cache:  ## Build the image from scratch, no layer cache
 ## It does NOT graft the example ui-Sprig™: one unnamed slot means the fragment
 ## lands on every page. Working on it? DEV_GRAFT_UI=1 make dev
 dev: sprig_registry  ## Everything live: Svelte HMR, Python reload, pages/
-	$(CONTAINER_RUNTIME) run $(DEV_RUN_ARGS) $(IMAGE_NAME):$(IMAGE_TAG) bash -c "/app/backend/restore_backup_start.sh dev"
+	$(VAULT) $(CONTAINER_RUNTIME) run $(DEV_RUN_ARGS) $(IMAGE_NAME):$(IMAGE_TAG) bash -c "/app/backend/restore_backup_start.sh dev"
 
 dev_run: dev
 
@@ -412,16 +432,16 @@ dev_run: dev
 ## a fork); the last line prints it. `make it_stop` stops it.
 dev_bg: sprig_registry  ## dev, detached
 	@$(CONTAINER_RUNTIME) rm -f $(CONTAINER_NAME) >/dev/null 2>&1 || true
-	$(CONTAINER_RUNTIME) run -d $(DEV_RUN_ARGS) $(IMAGE_NAME):$(IMAGE_TAG) bash -c "/app/backend/restore_backup_start.sh dev" >/dev/null
+	$(VAULT) $(CONTAINER_RUNTIME) run -d $(DEV_RUN_ARGS) $(IMAGE_NAME):$(IMAGE_TAG) bash -c "/app/backend/restore_backup_start.sh dev" >/dev/null
 	@for i in $$(seq 1 60); do curl -fsS http://localhost:$(LOCAL_PORT)/health >/dev/null 2>&1 && break; sleep 2; done
 	@echo "ai-ui dev (detached) -> http://localhost:$(LOCAL_PORT)/  (container $(CONTAINER_NAME))"
 
 # Run targets
 it_run:  ## Run the built image
-	$(CONTAINER_RUNTIME) run $(DOCKER_RUN_ARGS) $(IMAGE_NAME):$(IMAGE_TAG)
+	$(VAULT) $(CONTAINER_RUNTIME) run $(DOCKER_RUN_ARGS) $(IMAGE_NAME):$(IMAGE_TAG)
 
 it_run_ghcr:
-	$(CONTAINER_RUNTIME) run $(DOCKER_RUN_ARGS) $(GHCR_IMAGE_NAME):$(IMAGE_TAG)
+	$(VAULT) $(CONTAINER_RUNTIME) run $(DOCKER_RUN_ARGS) $(GHCR_IMAGE_NAME):$(IMAGE_TAG)
 
 # Combined build and run
 it_build_n_run: it_build
@@ -489,8 +509,29 @@ test_db_upgrade:
 # Use this BEFORE pushing :latest to GHCR. The structural alternative
 # (build-time stage that catches conflicts before tagging) lands once we
 # prove this loop is stable.
-wizard_smoke:  ## Install-wizard smoke
+wizard_smoke: sprig_registry  ## Install-wizard smoke, grafting from the local registry
 	@scripts/wizard-smoke.sh $(IMAGE_NAME):$(IMAGE_TAG)
+
+# ml_lock — regenerate app/backend/requirements-ml.lock, the closure the AI
+# Engine wizard installs when no Sprig serves the model. It runs the image's
+# own uv (the Dockerfile pins it), so the lock resolves for the Linux the wizard
+# runs on, and starts from the current lock, so only UPGRADE="pkg ..." moves.
+# --emit-index-url writes the index lines into the lock: the wizard's
+# `uv pip install -r` then takes torch from the CPU index the compile used.
+# A Mac-compiled lock without them pulled 19 unpinned CUDA packages (2026-11-03).
+# wizard_smoke_ml_lock — the wizard smoke on the legacy path, with this tree's
+# lock mounted over the image's: paraphrase-MiniLM-L3-v2 has no cultivar, so the
+# wizard installs the lock and embeds in-process. Run it after `ml_lock`.
+wizard_smoke_ml_lock: sprig_registry  ## Install-wizard smoke on the in-process ML path, with this tree's lock
+	@INSTALL_TIMEOUT_SEC=$${INSTALL_TIMEOUT_SEC:-1500} \
+	 WIZARD_SMOKE_DOCKER_ARGS="-e RAG_EMBEDDING_MODEL=sentence-transformers/paraphrase-MiniLM-L3-v2 -v $(CURDIR)/app/backend/requirements-ml.lock:/app/backend/requirements-ml.lock:ro" \
+	 scripts/wizard-smoke.sh $(IMAGE_NAME):$(IMAGE_TAG)
+
+ml_lock:  ## Regenerate the ML lock in the image; UPGRADE="pkg ..." moves those packages
+	@$(CONTAINER_RUNTIME) run --rm --entrypoint uv -v "$(CURDIR)/app/backend:/w" -w /w $(IMAGE_NAME):$(IMAGE_TAG) \
+		pip compile requirements-ml.in -o requirements-ml.lock --generate-hashes --quiet \
+		--python-version 3.11 --index-strategy first-index --emit-index-url \
+		$(foreach p,$(UPGRADE),--upgrade-package $(p))
 
 # sprig_registry — idempotent: ensures the local OCI registry (dev-machine
 # artifact store for `oras`-delivered Sprigs™) is up on sage-network. Does
@@ -796,12 +837,12 @@ gauntlet: it_build sprig_smoke  # Build + Sprig lifecycle smoke
 # hand-run tools; run them yourself after `--tighten` records a baseline.
 # `chat_path_structure_teeth` DOES belong here: it builds its own sample and
 # proves the structural detectors still fire without needing a baseline at all.
-gauntlet_fast: privacy_tests cut_tests_host cli_tests runtime_tests pipefail_lint pipefail_fixture \
-               in_container_tools ruff_gate docs_gate \
+gauntlet_fast: privacy_tests cut_tests_host cli_tests runtime_tests deploy_tests pipefail_lint pipefail_fixture \
+               in_container_tools ruff_gate docs_gate board_cites startr_props_check tracked_size \
                sprig_capabilities_check startr_swap_check \
                distribution_verify tags_annotated \
                chat_path_structure_teeth sprig_capabilities_teeth \
-               startr_swap_teeth tags_annotated_teeth docs_gate_teeth  # Gate: host-only gates, seconds (pre-push hook)
+               startr_swap_teeth tags_annotated_teeth docs_gate_teeth board_cites_teeth startr_props_teeth tracked_size_teeth  # Gate: host-only gates, seconds (pre-push hook)
 
 # cli_tests — the brew CLI in cli/: runtime choice, nuke, the credential repair.
 # Stand-in docker, colima and open commands; macOS only, seconds.
@@ -846,7 +887,15 @@ cut_tests_host:  # Gate: uv command + localhttp unit tests (host, seconds)
 image_unit_tests: it_build  ## Gate: the 3.2.1 cuts' unit tests, inside the built image
 	@$(CONTAINER_RUNTIME) run --rm --entrypoint python3 $(IMAGE_NAME):$(IMAGE_TAG) -B -m unittest -q \
 		sage_is_ai.utils.test_passwords sage_is_ai.internal.test_legacy_db sage_is_ai.sprigs.test_oci \
-		sage_is_ai.utils.test_runtime_install sage_is_ai.utils.test_localhttp
+		sage_is_ai.utils.test_runtime_install sage_is_ai.utils.test_localhttp sage_is_ai.utils.test_chat_path_guards
+	@# The routers read env.py on import: a throwaway key and database, never the app's.
+	@$(CONTAINER_RUNTIME) run --rm --entrypoint python3 -e WEBUI_SECRET_KEY=unit-test-only \
+		-e DATA_DIR=/tmp -e DATABASE_URL=sqlite:////tmp/unit.db $(IMAGE_NAME):$(IMAGE_TAG) -B -m unittest -q \
+		sage_is_ai.routers.test_spaces_agent_model sage_is_ai.routers.test_spaces_agent_access \
+		sage_is_ai.routers.test_models_reindex sage_is_ai.routers.test_openai_model_list \
+		sage_is_ai.sprigs.test_vector_reactivate sage_is_ai.utils.test_session_user \
+		sage_is_ai.utils.test_hidden_connections sage_is_ai.sprigs.test_prune_and_evict \
+		sage_is_ai.routers.test_vector_db_status
 
 # tags_annotated — refuse to publish a lightweight v* tag.
 #
@@ -881,7 +930,8 @@ tags_annotated_teeth:  # Prove the lightweight-tag gate can fail
 # than no member, because it turns an absence into a green tick. Run it where its
 # own header says it belongs — on a llama.cpp tag bump — with `make parity_gate`.
 gauntlet_full: gauntlet_fast manifest_verify_fixture \
-               reasoning_finalizer_fixture tool_call_accumulator_fixture \
+               reasoning_tag_fixture reasoning_finalizer_fixture \
+               tool_call_accumulator_fixture \
                serialize_blocks_fixture serialize_blocks_fixture_teeth \
                chat_response_oracle chat_response_oracle_teeth \
                gauntlet sprig_durability sprig_signing ui_sprig_gate \
@@ -919,7 +969,9 @@ cross_smoke: it_build_amd64
 # branch name (no IMAGE_TAG to mistype). Builds `sage-is/ai-ui:X.Y.Z`,
 # smokes it natively, then builds + smokes the amd64 variant via Rosetta.
 # Poka-yoke: operator can't smoke against the wrong tag, can't forget
-# either arch, can't skip the rebuild before push.
+# either arch, can't skip the rebuild before push. surface_budget runs here
+# too (Alexander, 2026-11-03): in gauntlet_full alone it let the SPA floor
+# creep 539 kB for a quarter before anyone ran it.
 #
 # Use this AS the last step before `make ship`.
 release_smoke:  # Release gate: version checks + native and amd64 smoke
@@ -956,6 +1008,7 @@ release_smoke:  # Release gate: version checks + native and amd64 smoke
 	@echo ""
 	@$(MAKE) it_build IMAGE_TAG=$(RELEASE_VERSION)
 	@$(MAKE) wizard_smoke IMAGE_TAG=$(RELEASE_VERSION)
+	@$(MAKE) surface_budget IMAGE_TAG=$(RELEASE_VERSION)
 	@$(MAKE) cross_smoke IMAGE_TAG=$(RELEASE_VERSION)
 	@echo ""
 	@echo "=== $(RELEASE_VERSION) smoke-clean on native arch + linux/amd64 ==="
@@ -1072,14 +1125,15 @@ verify_ghcr_manifest:  # Assert the pushed GHCR image is a present, multi-arch (
 manifest_verify_fixture:  # Fixture: exercise verify-image-manifest.sh (good/single-arch/absent)
 	@scripts/smoke/manifest-verify-fixture.sh
 
-# Reproduce the reasoning-tag defects that swallow or leak the model's answer.
-#
-# DELIBERATELY NOT in gauntlet or gauntlet_full. It fails today, by design —
-# it is the reproduction for an open bug, not a gate. Wire it into gauntlet_full
-# in the same commit that fixes the bug, and not before, or every run goes red
-# for a reason nobody is acting on.
-reasoning_tag_fixture:  # Fixture: reasoning blocks that swallow or leak the answer (FAILS until fixed)
-	@python3 scripts/smoke/reasoning-tag-fixture.py
+# Gate: on the tag path, every reasoning block closes and no end tag leaks into
+# the answer: mismatched, uppercase and spaced closes, a pre-filled opener, an
+# orphan close after a closed block, a tag inside a code fence. Imports the real
+# handler, so it runs in the image like its siblings.
+reasoning_tag_fixture: it_build  # Fixture: reasoning blocks that swallow or leak the answer
+	@$(CONTAINER_RUNTIME) run --rm -e WEBUI_SECRET_KEY=fixture \
+	  -v "$$(pwd)/app/backend/sage_is_ai:/app/backend/sage_is_ai:ro" \
+	  -v "$$(pwd)/scripts:/scripts:ro" --entrypoint python3 \
+	  $(IMAGE_NAME):$(IMAGE_TAG) /scripts/smoke/reasoning-tag-fixture.py
 
 # Gate: a stream may never end with a content block left open, and the answer
 # may never be sealed inside one. Drives the shipped finalize_content_blocks
@@ -1255,7 +1309,7 @@ chat_response_oracle_teeth: it_build  # Prove the chat-path oracle fails when be
 	  -v "$$(pwd)/app/backend/sage_is_ai:/app/backend/sage_is_ai:ro" \
 	  -v "$$(pwd)/scripts:/scripts:ro" --entrypoint python3 \
 	  $(IMAGE_NAME):$(IMAGE_TAG) /scripts/smoke/chat-response-oracle.py \
-	  --self-test --case reasoning-field-never-closed
+	  --self-test --case reasoning-field-no-end-tag
 
 # Park a finished or dormant chart: move it under charts/_archive/ (excluded in
 # .todoscope-exclude.csv, so its cards leave the kanban board) and prepend a
@@ -1596,6 +1650,12 @@ trivy_db_update:
 docs_gate:  # Gate: every `make X` named in a scanned document exists
 	@scripts/gates/docs-targets.sh
 
+# brew_notability — where AI-UI stands against homebrew-core's notability bars:
+# 75 stars, 30 forks or 30 watchers, and three times that for a self-submission.
+# One metric is enough. Read-only: one `gh api` call, nothing is changed.
+brew_notability:  ## Print AI-UI's stars, forks and watchers against homebrew-core's bars
+	@gh api "repos/$(GIT_REPO_SLUG)" --jq '"stars \(.stargazers_count), forks \(.forks_count), watchers \(.subscribers_count); self-submission needs 225 stars, 90 forks or 90 watchers (75/30/30 when someone else submits)"'
+
 # social_cards — rebuild the 1280x640 PNG beside each card SVG in docs/art/social.
 # The SVG is the source: edit it by hand or in Inkscape, then run this.
 social_cards:  ## Rebuild the social preview PNGs from their SVGs (docs/art/social)
@@ -1606,6 +1666,31 @@ social_cards:  ## Rebuild the social preview PNGs from their SVGs (docs/art/soci
 
 docs_gate_teeth:  # Prove the doc-target gate can fail
 	@scripts/gates/docs-targets.sh --self-test
+
+# board_cites — no new `TODO.md:NNN` cites outside the board: a board line number
+# moves on every pass, so cite the card's bold title. The ceiling only falls.
+board_cites:  # Gate: TODO.md line citations stay at or under today's count
+	@scripts/gates/board-cites.sh
+
+board_cites_teeth:  # Prove the board-cite gate can fail
+	@scripts/gates/board-cites.sh --self-test
+
+# startr_props_check — a misspelt inline prop on a server-rendered page is
+# silent (`--opacity` set nothing; the kit reads `--op`). Every prop a page sets
+# must be one the vendored kit or the pages' own CSS reads.
+startr_props_check:  # Gate: no page sets a startr.style prop that nothing reads
+	@python3 scripts/gates/startr-props.py
+
+# tracked_size — no new tracked file over 1 MB; the twelve the repo carries are
+# listed in the script, each at its size on 2026-11-03 (Rootstock "Repo weight").
+tracked_size:  # Gate: no new tracked file over 1 MB
+	@python3 scripts/gates/tracked-size.py
+
+tracked_size_teeth:  # Prove the tracked-size gate can fail
+	@python3 scripts/gates/tracked-size.py --self-test
+
+startr_props_teeth:  # Prove the dead-prop gate can fail
+	@python3 scripts/gates/startr-props.py --self-test
 
 # ruff_gate — the Python linter. Nothing else in this repo reads Python
 # semantics: bandit reads security, ruff format reads formatting, and the
@@ -1868,8 +1953,16 @@ _release_and_push_GHCR: release_preflight release_smoke release_finish
 	@echo "Verify: docker pull $(GHCR_IMAGE_NAME):latest"
 	@echo "Next:   make deploy   (try.sage.is first, then sage.startr.cloud)"
 
+# deploy reads the admin key from the vault through sage-secret, so .env's
+# plaintext copy no longer reaches the rollout (2026-11-03); deploy.py writes
+# the database backup to Somma 02 encrypted, never as a plaintext file.
 deploy:  ## Put SERVER_TAG (or TAG=) live: try.sage.is, then sage.startr.cloud after a DB backup (APPS= to pick)
-	@python3 scripts/deploy.py --image $(IMAGE) --tag $(or $(TAG),$(SERVER_TAG)) $(APPS)
+	@SAGE_STARTR_CLOUD_ADMIN_KEY=bw:sage-startr-cloud-admin-key sage-secret run -- \
+		python3 scripts/deploy.py --image $(IMAGE) --tag $(or $(TAG),$(SERVER_TAG)) $(APPS)
+
+# deploy_tests — the deploy backup lands encrypted and decrypt-verified (host, seconds).
+deploy_tests:  # Gate: deploy.py's encrypted backup, with a stand-in sage-secret
+	@cd scripts && python3 -B -m unittest -q test_deploy
 
 deploy_rollback:  ## Run APP= on the version before the current one again
 	@test -n "$(APP)" || { echo "usage: make deploy_rollback APP=<CapRover app, see deploy/instances.toml>"; exit 1; }
@@ -1932,11 +2025,11 @@ try_sage_start:
 	@# operator sees in their shell wins over whatever's in .env. If it's
 	@# unset in the shell environment the backend falls back to
 	@# `http://localhost:8080` (matches PORT_MAPPING above).
-	$(CONTAINER_RUNTIME) run $(TRY_SAGE_DOCKER_RUN_ARGS) \
+	$(VAULT) $(CONTAINER_RUNTIME) run $(TRY_SAGE_DOCKER_RUN_ARGS) \
 		-e ENABLE_TRY_SAGE=true \
 		$(if $(WEBUI_URL),-e WEBUI_URL="$(WEBUI_URL)",) \
-		-e TRY_SAGE_LLM_API_URL="$(TRY_SAGE_LLM_API_URL)" \
-		-e TRY_SAGE_LLM_API_KEY="$(TRY_SAGE_LLM_API_KEY)" \
+		-e TRY_SAGE_LLM_API_URL \
+		-e TRY_SAGE_LLM_API_KEY \
 		-e TRY_SAGE_LLM_MODELS="$(TRY_SAGE_LLM_MODELS)" \
 		-e TRY_SAGE_USER_SEAT_COUNT="$(TRY_SAGE_USER_SEAT_COUNT)" \
 		-e TRY_SAGE_RESET_INTERVAL_HOURS="$(TRY_SAGE_RESET_INTERVAL_HOURS)" \

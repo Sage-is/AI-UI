@@ -55,6 +55,11 @@ if [ -n "$PLATFORM" ]; then
   PLATFORM_FLAG="--platform $PLATFORM"
 fi
 
+# WIZARD_SMOKE_DOCKER_ARGS (optional) — extra `docker run` arguments, word-split.
+# `make wizard_smoke_ml_lock` uses it to take the legacy path, where no Sprig
+# serves the model and the wizard installs app/backend/requirements-ml.lock.
+EXTRA_ARGS="${WIZARD_SMOKE_DOCKER_ARGS:-}"
+
 # Generous because multilingual-e5-large is ~1.1GB plus dependencies. The
 # default suits a native run (~6 min wall time). QEMU emulation can be
 # 3-5x slower — set INSTALL_TIMEOUT_SEC=2700 (45 min) for cross-arch runs.
@@ -109,9 +114,13 @@ docker image inspect "$IMAGE" >/dev/null || fail "image $IMAGE not present local
 docker rm -f "$CONTAINER" >/dev/null 2>&1 || true
 docker volume rm "$VOLUME"  >/dev/null 2>&1 || true
 
-# 2. Boot
+# 2. Boot. On sage-network against the local registry, as the Sprig gates run:
+# grafting from ghcr.io smoked yesterday's Sprigs, so a release that bumps one
+# failed before `sprig_publish` put the new tag there (2026-10-24, 3.2.1).
 echo "[smoke] booting container${PLATFORM:+ ($PLATFORM via QEMU)}"
-docker run -d $PLATFORM_FLAG --name "$CONTAINER" -p "${PORT}:8080" -v "${VOLUME}:/app/backend/data" "$IMAGE" >/dev/null
+docker run -d $PLATFORM_FLAG --name "$CONTAINER" --network "${SPRIG_SMOKE_NET:-sage-network}" \
+  -e SPRIG_REGISTRY="${SPRIG_REGISTRY:-local-registry:5000}" $EXTRA_ARGS \
+  -p "${PORT}:8080" -v "${VOLUME}:/app/backend/data" "$IMAGE" >/dev/null
 
 # 3. Wait for healthcheck
 for i in $(seq 1 30); do

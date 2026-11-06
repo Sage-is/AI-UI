@@ -43,6 +43,7 @@ case "$1 $2" in
   "ps --format")     cat "$STATE/ps" 2>/dev/null ;;
   "--context "*)     [ "$3" = ps ] && cat "$STATE/ps.$2" 2>/dev/null ;;
   "buildx version")  [ -e "$STATE/buildx" ] ;;
+  "buildx inspect")  [ -e "$STATE/platforms" ] && echo "Platforms: $(cat "$STATE/platforms")" ;;
   "info --format")   cat "$STATE/root" 2>/dev/null ;;
   "run "*)           exit 1 ;;
 esac""",
@@ -138,6 +139,19 @@ class Amd64(Stand):
             with self.subTest(sock=sock.parent.name):
                 self.context(sock)
                 self.assertEqual(self.sh(PREFLIGHT, "amd64", "make x"), (0, ""))
+
+    def test_a_rosetta_vm_still_refuses_a_builder_with_no_amd64(self):
+        # The build VM passes the krunkit check, but its builder can still offer
+        # only arm64; the build then dies 20 minutes in (2026-10-24).
+        self.context(self.colima("build", "vz"))
+        (self.state / "buildx").touch()
+        (self.state / "platforms").write_text("linux/arm64, linux/arm64/v8")
+        rc, out = self.sh(PREFLIGHT, "amd64", "make it_build_amd64")
+        self.assertEqual(rc, 1)
+        self.assertIn("lists no linux/amd64", out)
+        self.assertIn("BUILDX_BUILDER=colima-build make it_build_amd64", out)
+        (self.state / "platforms").write_text("linux/arm64, linux/amd64, linux/amd64/v2")
+        self.assertEqual(self.sh(PREFLIGHT, "amd64", "make x"), (0, ""))
 
     def test_a_missing_context_leaves_the_build_to_say_so(self):
         self.assertEqual(self.sh(PREFLIGHT, "amd64", "make x"), (0, ""))

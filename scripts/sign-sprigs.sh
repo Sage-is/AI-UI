@@ -23,7 +23,7 @@ set -euo pipefail
 SRC="${SRC:-localhost:5000}"                          # host-visible (curl)
 SRC_INTERNAL="${SRC_INTERNAL:-local-registry:5000}"   # name on sage-network (oras)
 NET="${NET:-sage-network}"
-ORAS_IMG="ghcr.io/oras-project/oras:v1.2.0"
+. "$(dirname "${BASH_SOURCE[0]}")/lib/oras.sh"
 ALPINE_IMG="alpine:3.20"
 ARTIFACT_TYPE="application/vnd.sage-is.sprig.v1"
 LAYER_TYPE="application/vnd.sage-is.sprig.tar+zstd"

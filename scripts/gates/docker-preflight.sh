@@ -52,8 +52,20 @@ runtime() {
 # krunkit has no Rosetta, so linux/amd64 runs there only under QEMU: slowly, and
 # AI-UI's Vite stage can run out of memory. The build VM is vz with Rosetta.
 amd64() {
-  grep -qs '^vmType: krunkit' "$(colima_yaml "$(socket)")" || return 0
-  echo "$1 needs linux/amd64, which a krunkit VM runs only under QEMU. Use the build VM: sage-runtime build-vm, then DOCKER_CONTEXT=colima-build $1" >&2
+  if grep -qs '^vmType: krunkit' "$(colima_yaml "$(socket)")"; then
+    echo "$1 needs linux/amd64, which a krunkit VM runs only under QEMU. Use the build VM: sage-runtime build-vm, then DOCKER_CONTEXT=colima-build $1" >&2
+    exit 1
+  fi
+  # Even on a Rosetta VM the chosen builder must offer linux/amd64, or the build
+  # fails 20 minutes in (2026-10-24). No buildx yet is the buildx preflight's to
+  # report, and a builder that answers nothing is left to the build itself.
+  docker buildx version >/dev/null 2>&1 || return 0
+  local platforms
+  platforms="$(docker buildx inspect 2>/dev/null | sed -n 's/^Platforms: *//p' || true)"
+  case "$platforms" in
+    "" | *linux/amd64*) return 0 ;;
+  esac
+  echo "$1 needs linux/amd64, and the current builder lists no linux/amd64 (it offers: $platforms). Use the build VM's docker builder: BUILDX_BUILDER=colima-build $1" >&2
   exit 1
 }
 

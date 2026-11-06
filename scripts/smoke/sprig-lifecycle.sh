@@ -15,7 +15,15 @@ PORT="${SPRIG_SMOKE_PORT:-8099}"; BASE="http://localhost:${PORT}"
 . "$(dirname "${BASH_SOURCE[0]}")/../lib/test-admin.env"   # the ONE fresh-boot admin
 . "$(dirname "${BASH_SOURCE[0]}")/../lib/rootstock-net.sh" # netcurl: loopback calls, no curl in the image
 . "$(dirname "${BASH_SOURCE[0]}")/../lib/mount-tmp.sh"
-NETCURL_DIR="$(mount_tmp sprig-lifecycle)"; trap 'rm -rf "$NETCURL_DIR"' EXIT
+NETCURL_DIR="$(mount_tmp sprig-lifecycle)"
+# The box and its volume weigh about 6 GB. Left up, they filled the Docker disk
+# under the next gate (upgrade_gate, 2026-11-05). KEEP=1 keeps them to inspect.
+cleanup(){
+  rm -rf "$NETCURL_DIR"
+  [ -n "${KEEP:-}" ] && { echo "KEEP=1: leaving $ROOT up at $BASE"; return; }
+  docker rm -f "$ROOT" >/dev/null 2>&1 || true; docker volume rm "$VOL" >/dev/null 2>&1 || true
+}
+trap cleanup EXIT
 X(){ docker exec "$ROOT" sh -lc "$1"; }
 
 echo "== fresh 8.I.2 rootstock =="
@@ -48,14 +56,22 @@ reauth(){
 # 600s ceiling: by section 9 the rootstock runs several grafted server children
 # while pulling the biggest artifacts (dev-svelte ~1.1GB) — 300s flaked under load.
 # On an expired-token response, refresh $AUTH once and retry — the refreshed token
-# is global, so the rest of the section rides the fresh session too.
+# is global, so the rest of the section rides the fresh session too. A busy
+# database answers 503 "try again in a moment" since 2026-11-02; wait and retry,
+# twice at most.
 G(){
-  local r
+  local r wait
   r=$(curl -s --max-time 600 -X POST "$BASE/api/v1/retrieval/sprigs/graft" -H "$AUTH" -H 'Content-Type: application/json' -d "{\"name\":\"$1\",\"capability\":\"$2\"}")
   if printf '%s' "$r" | grep -qiE 'session has expired|token is invalid'; then
     reauth
     r=$(curl -s --max-time 600 -X POST "$BASE/api/v1/retrieval/sprigs/graft" -H "$AUTH" -H 'Content-Type: application/json' -d "{\"name\":\"$1\",\"capability\":\"$2\"}")
   fi
+  for wait in 5 10; do
+    printf '%s' "$r" | grep -qi 'database is busy' || break
+    echo "  … $1: database busy; retrying in ${wait}s" >&2
+    sleep "$wait"
+    r=$(curl -s --max-time 600 -X POST "$BASE/api/v1/retrieval/sprigs/graft" -H "$AUTH" -H 'Content-Type: application/json' -d "{\"name\":\"$1\",\"capability\":\"$2\"}")
+  done
   printf '%s' "$r"
 }
 # Authed GET that self-heals on an expired/invalid token, same as G(). Direct
@@ -63,12 +79,17 @@ G(){
 # a stale token returns a 401 body that a bare `jq -e ... >/dev/null` misreads as
 # the asserted-for value being absent. Returns the (possibly re-fetched) body.
 QG(){
-  local r
+  local r wait
   r=$(curl -s -H "$AUTH" "$1")
   if printf '%s' "$r" | grep -qiE 'session has expired|token is invalid'; then
     reauth
     r=$(curl -s -H "$AUTH" "$1")
   fi
+  for wait in 5 10; do
+    printf '%s' "$r" | grep -qi 'database is busy' || break
+    sleep "$wait"
+    r=$(curl -s -H "$AUTH" "$1")
+  done
   printf '%s' "$r"
 }
 PDF(){ curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE/api/v1/utils/pdf" -H "$AUTH" -H 'Content-Type: application/json' -d '{"title":"t","messages":[{"role":"user","content":"hello sprig"}]}'; }
@@ -236,12 +257,19 @@ fetch_has "$BASE/" "[Hh][Tt][Mm][Ll]" && ok "/ serves SPA" || no "SPA broken"
 # gate spent a week failing on the absence of something nobody wanted, which is
 # the worst kind: it blocks every push while checking nothing true.
 #
-# Keep this list in step with the `<link rel="icon">` tags in app.html. An icon
-# that is linked and missing is a broken tab; an icon that is neither is not
-# this gate's business.
-for ICON in favicon-96x96.png favicon.ico apple-touch-icon.png; do
-  [ "$(curl -s -o /dev/null -w '%{http_code}' "$BASE/static/icons/$ICON")" = "200" ] \
-    && ok "favicon $ICON" || no "favicon $ICON missing — app.html links it"
+# So the list is derived, never typed: every `/static/icons/` path in app/src
+# plus every icon the served `/manifest.json` lists. Adding an icon enrols it,
+# deleting one retires it, and there is nothing to keep in step. HTML comments
+# are stripped first, because app.html still names favicon.svg inside one. An
+# empty list fails: a scan that finds nothing must not pass by checking nothing.
+SRC="$(dirname "${BASH_SOURCE[0]}")/../../app/src"
+ICONS=$( { find "$SRC" -type f \( -name '*.html' -o -name '*.svelte' -o -name '*.ts' -o -name '*.js' \) \
+             -exec perl -0pe 's/<!--.*?-->//gs' {} +; curl -s "$BASE/manifest.json"; } \
+         | grep -oE '/static/icons/[A-Za-z0-9._-]+' | sort -u)
+[ -n "$ICONS" ] || no "icon scan found nothing in $SRC or /manifest.json"
+for ICON in $ICONS; do
+  [ "$(curl -s -o /dev/null -w '%{http_code}' "$BASE$ICON")" = "200" ] \
+    && ok "icon $ICON" || no "icon $ICON missing — app/src or /manifest.json names it"
 done
 
 echo ""

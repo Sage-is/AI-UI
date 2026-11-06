@@ -35,7 +35,7 @@ OUT_DIR="${OUT_DIR:-${SPRIG_BUILD_ROOT:-$HOME/.cache/ai-ui/sprig-build}/ui}"
 ARTIFACT_TYPE="application/vnd.sage-is.sprig.v1"
 LAYER_TYPE="application/vnd.sage-is.sprig.tar+zstd"
 # oras runs DOCKERIZED — no host install needed.
-ORAS_IMG="${ORAS_IMG:-ghcr.io/oras-project/oras:v1.2.0}"
+. "$(dirname "${BASH_SOURCE[0]}")/lib/oras.sh"
 command -v docker >/dev/null || { echo "ERROR: docker not on PATH" >&2; exit 1; }
 
 sha256(){ shasum -a 256 "$1" 2>/dev/null | awk '{print $1}' || sha256sum "$1" | awk '{print $1}'; }
