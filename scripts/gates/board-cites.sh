@@ -7,7 +7,8 @@
 # none. Cite the card's bold title instead (docs/board-register-method.md, step
 # 5). CEILING is the count of deliberate cites left that day: notes about stale
 # cites, pointers into Trellis's own board, the frozen chat path. It only moves
-# down. A path before `TODO.md` names another board and is not counted.
+# down. A path before `TODO.md` names another board and is not counted, and
+# this script's own self-test sample is not a cite.
 #
 #   scripts/gates/board-cites.sh              check this checkout
 #   scripts/gates/board-cites.sh --self-test  prove the check can fail
@@ -42,5 +43,5 @@ if [ "${1:-}" = "--self-test" ]; then
     exit 0
 fi
 
-n="$(git -C "$ROOT" grep -h -E "$PATTERN" -- . ':!TODO.md' ':!KANBAN.canvas' | count)"
+n="$(git -C "$ROOT" grep -h -E "$PATTERN" -- . ':!TODO.md' ':!KANBAN.canvas' ':!scripts/gates/board-cites.sh' | count)"
 judge "$n" && echo "board_cites: ok ($n of $CEILING)"
