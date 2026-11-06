@@ -107,6 +107,21 @@ REASONING_END_TAG_RE = re.compile(
 )
 
 
+def split_reasoning_at_end_tag(block):
+    """Cut a reasoning block at the first end tag the model wrote into it.
+
+    Text before the tag stays as reasoning. Returns the text after it, the
+    answer, or None when the block holds no end tag. Leading whitespace of the
+    answer goes; trailing whitespace stays, since more of the answer may follow.
+    """
+    text = block.get("content") or ""
+    match = REASONING_END_TAG_RE.search(text)
+    if not match:
+        return None
+    block["content"] = text[: match.start()].strip()
+    return text[match.end() :].lstrip()
+
+
 def finalize_content_blocks(content_blocks):
     """Close every block left open when a stream ends. Free trapped text.
 
@@ -142,15 +157,11 @@ def finalize_content_blocks(content_blocks):
             continue
 
         if block.get("type") == "reasoning":
-            text = block.get("content") or ""
-            match = REASONING_END_TAG_RE.search(text)
-            if match:
-                # The model closed its own thought inside the reasoning stream.
-                # Everything after that tag is the answer, not the thinking.
-                block["content"] = text[: match.start()].strip()
-                leftover = text[match.end() :].strip()
-                if leftover:
-                    finalized.append({"type": "text", "content": leftover})
+            # The model closed its own thought inside the reasoning stream.
+            # Everything after that tag is the answer, not the thinking.
+            leftover = (split_reasoning_at_end_tag(block) or "").strip()
+            if leftover:
+                finalized.append({"type": "text", "content": leftover})
 
         block["ended_at"] = time.time()
         block["duration"] = int(block["ended_at"] - block["started_at"])
@@ -378,6 +389,85 @@ def convert_content_blocks_to_messages(content_blocks):
     return messages
 
 
+def _start_tag_pattern(start_tag):
+    """`<tag>` also matches `<tag attr="value">`; any other start tag is literal."""
+    if start_tag.startswith("<") and start_tag.endswith(">"):
+        return rf"<{re.escape(start_tag[1:-1])}(\s.*?)?>"
+    return re.escape(start_tag)
+
+
+def _end_tag_pattern(content_type, end_tag):
+    """Reasoning closes on ANY reasoning end tag, the way models actually write
+    them: `<thinking>` closed by `</think>`, `</THINKING>`, `</ thinking>`.
+    Every other block keeps its exact end tag."""
+    if content_type == "reasoning":
+        return rf"(?i:{REASONING_END_TAG_RE.pattern})"
+    return re.escape(end_tag)
+
+
+def _resolve_orphan_reasoning_close(content, content_blocks, tags):
+    """A reasoning end tag in a text block with no opener before it.
+
+    Two causes, told apart by what came before in the message:
+
+      * A reasoning block already closed (qwen3.5 via Ollama closes the field
+        path, then sends a bare `</think>` as content). The tag is debris: drop it.
+      * Nothing came before. The chat template pre-filled the opener into the
+        PROMPT (DeepSeek R1), so the stream begins inside the thought. The text
+        before the tag is reasoning: open it implicitly at position zero.
+
+    Drop is tested first, so the second case can never mint a second block.
+    A tag inside an open code fence is the model writing about tags; it stays.
+    Returns the raw accumulator with the tag (and any implicit reasoning) removed.
+    """
+    block = content_blocks[-1]
+    text = block["content"]
+    match = REASONING_END_TAG_RE.search(text)
+    if not match:
+        return content
+
+    for start_tag, _ in tags:
+        opener = re.search(_start_tag_pattern(start_tag), text)
+        if opener and opener.start() < match.start():
+            return content
+
+    before, after = text[: match.start()], text[match.end() :]
+    if before.count("```") % 2:
+        return content
+
+    cut = content.rfind(match.group(0))
+    closed_before = any(
+        b["type"] == "reasoning" and b.get("ended_at") is not None
+        for b in content_blocks[:-1]
+    )
+    if closed_before:
+        block["content"] = before + after
+        if cut != -1:
+            content = content[:cut] + content[cut + len(match.group(0)) :]
+        return content
+
+    if len(content_blocks) != 1 or not before.strip():
+        return content
+
+    now = time.time()
+    content_blocks[:] = [
+        {
+            "type": "reasoning",
+            "start_tag": "<think>",
+            "end_tag": "</think>",
+            "attributes": {},
+            "content": before.strip(),
+            "started_at": now,
+            "ended_at": now,
+            "duration": 0,
+        },
+        {"type": "text", "content": after.lstrip()},
+    ]
+    if cut != -1:
+        content = content[cut + len(match.group(0)) :]
+    return content
+
+
 def tag_content_handler(content_type, tags, content, content_blocks):
     end_flag = False
 
@@ -393,19 +483,17 @@ def tag_content_handler(content_type, tags, content, content_blocks):
         return attributes
 
     if content_blocks[-1]["type"] == "text":
+        if content_type == "reasoning":
+            content = _resolve_orphan_reasoning_close(content, content_blocks, tags)
+
         for start_tag, end_tag in tags:
-            start_tag_pattern = rf"{re.escape(start_tag)}"
-            if start_tag.startswith("<") and start_tag.endswith(">"):
-                # Match start tag e.g., <tag> or <tag attr="value">
-                # remove both '<' and '>' from start_tag
-                # Match start tag with attributes
-                start_tag_pattern = rf"<{re.escape(start_tag[1:-1])}(\s.*?)?>"
+            start_tag_pattern = _start_tag_pattern(start_tag)
 
             match = re.search(start_tag_pattern, content)
             if match:
                 attr_content = (
-                    match.group(1) if match.group(1) else ""
-                )  # Ensure it's not None
+                    match.group(1) if match.lastindex else ""
+                ) or ""  # Ensure it's not None
                 attributes = extract_attributes(
                     attr_content
                 )  # Extract attributes safely
@@ -439,32 +527,25 @@ def tag_content_handler(content_type, tags, content, content_blocks):
 
                 if after_tag:
                     content_blocks[-1]["content"] = after_tag
-                    tag_content_handler(content_type, tags, after_tag, content_blocks)
+                    # The whole accumulator, not just `after_tag`: when the
+                    # block also closes in this delta, the close below has to
+                    # clean the span out of `content`, or the next delta finds
+                    # the same opener in it and opens the block a second time.
+                    content, content_blocks, _ = tag_content_handler(
+                        content_type, tags, content, content_blocks
+                    )
 
                 break
     elif content_blocks[-1]["type"] == content_type:
         start_tag = content_blocks[-1]["start_tag"]
         end_tag = content_blocks[-1]["end_tag"]
+        end_tag_pattern = _end_tag_pattern(content_type, end_tag)
 
-        if end_tag.startswith("<") and end_tag.endswith(">"):
-            # Match end tag e.g., </tag>
-            end_tag_pattern = rf"{re.escape(end_tag)}"
-        else:
-            # Handle cases where end_tag is just a tag name
-            end_tag_pattern = rf"{re.escape(end_tag)}"
-
-        # Check if the content has the end tag
-        if re.search(end_tag_pattern, content):
+        # The block's own text, not the accumulator: `content` can still hold
+        # an earlier end tag, which would close this block the moment it opens.
+        block_content = content_blocks[-1]["content"]
+        if re.search(end_tag_pattern, block_content):
             end_flag = True
-
-            block_content = content_blocks[-1]["content"]
-            # Strip start and end tags from the content. NOT dead code: with a
-            # bracketed start_tag this builds e.g. `<<think>(.*?)>`, which never
-            # matches the tag itself but DOES eat any literal `<<think>…>` span
-            # inside the body — silently deleting text. Frozen bug, see the
-            # ledger; proven live by the 2026-08-08 verify pass.
-            start_tag_pattern = rf"<{re.escape(start_tag)}(.*?)>"
-            block_content = re.sub(start_tag_pattern, "", block_content).strip()
 
             end_tag_regex = re.compile(end_tag_pattern, re.DOTALL)
             split_content = end_tag_regex.split(block_content, maxsplit=1)
@@ -472,9 +553,11 @@ def tag_content_handler(content_type, tags, content, content_blocks):
             # Content inside the tag
             block_content = split_content[0].strip() if split_content else ""
 
-            # Leftover content (everything after `</tag>`)
+            # Leftover content (everything after `</tag>`). Only the leading
+            # whitespace goes: the next delta continues this text, and a
+            # trailing space cut here glues two words together.
             leftover_content = (
-                split_content[1].strip() if len(split_content) > 1 else ""
+                split_content[-1].lstrip() if len(split_content) > 1 else ""
             )
 
             if block_content:
@@ -506,19 +589,25 @@ def tag_content_handler(content_type, tags, content, content_blocks):
                 )
 
             # Clean processed content
-            start_tag_pattern = rf"{re.escape(start_tag)}"
-            if start_tag.startswith("<") and start_tag.endswith(">"):
-                # Match start tag e.g., <tag> or <tag attr="value">
-                # remove both '<' and '>' from start_tag
-                # Match start tag with attributes
-                start_tag_pattern = rf"<{re.escape(start_tag[1:-1])}(\s.*?)?>"
-
+            before_clean = content
             content = re.sub(
-                rf"{start_tag_pattern}(.|\n)*?{re.escape(end_tag)}",
+                rf"{_start_tag_pattern(start_tag)}(.|\n)*?{end_tag_pattern}",
                 "",
                 content,
+                count=1,
                 flags=re.DOTALL,
             )
+
+            # A second block may open, or an orphan close follow, in the same
+            # delta. Only when the clean moved `content`, so this can't loop.
+            if (
+                leftover_content
+                and content_type != "code_interpreter"
+                and content != before_clean
+            ):
+                content, content_blocks, _ = tag_content_handler(
+                    content_type, tags, content, content_blocks
+                )
 
     return content, content_blocks, end_flag
 
@@ -662,13 +751,7 @@ def append_stream_tail(content, content_blocks, tail):
 
 
 def append_empty_text_block(content_blocks):
-    """Start a fresh text block so later deltas land after a closed block.
-
-    NOTE: two structurally identical pushes live INSIDE tag_content_handler and
-    must stay inline — scripts/smoke/reasoning-tag-fixture.py executes that
-    function standalone with only `re` and `time` in scope, so any new free
-    variable breaks it silently.
-    """
+    """Start a fresh text block so later deltas land after a closed block."""
     content_blocks.append(
         {
             "type": "text",
@@ -1260,11 +1343,6 @@ async def process_chat_payload(request, form_data, user, metadata, model):
                 request, form_data, extra_params, user
             )
 
-        if "web_search" in features and features["web_search"]:
-            form_data = await chat_web_search_handler(  # noqa: F821 — grandfathered, not absolved: frozen NameError, TODO.md:601
-                request, form_data, extra_params, user
-            )
-
         if "image_generation" in features and features["image_generation"]:
             form_data = await chat_image_generation_handler(
                 request, form_data, extra_params, user
@@ -1577,13 +1655,7 @@ async def process_chat_response(
 
                         Chats.update_chat_title_by_id(metadata["chat_id"], title)
 
-                        # NOT `title` — the two-message arm emits the last
-                        # message while persisting the first. Frozen bug.
-                        await emit_event(
-                            event_emitter,
-                            "chat:title",
-                            message.get("content", user_message),
-                        )
+                        await emit_event(event_emitter, "chat:title", title)
 
                 if TASKS.TAGS_GENERATION in tasks and tasks[TASKS.TAGS_GENERATION]:
                     await run_json_task(
@@ -1766,12 +1838,21 @@ async def process_chat_response(
                 async def stream_body_handler(response, form_data):
                     nonlocal content
                     nonlocal content_blocks
+                    # A mid-stream model switch must reach the tool-call and
+                    # code-interpreter retries, which read `model_id` later.
+                    nonlocal model_id
 
                     response_tool_calls = []
                     # Privacy: real values back into the stream, holding back the
                     # tail so a pseudonym split across two chunks is still caught.
                     # A pass-through when privacy does not cover this request.
                     privacy_reverser = privacy.stream_reverser_for(request)
+                    # The reasoning streams beside the answer: its own hold-back buffer.
+                    reasoning_reverser = privacy.stream_reverser_for(request)
+                    # Set once the model ends its thought inside the reasoning
+                    # field; the field's later deltas are the answer.
+                    reasoning_closed_by_model = False
+                    reasoning_tail = ""
 
                     async for line in response.body_iterator:
                         line = line.decode("utf-8") if isinstance(line, bytes) else line
@@ -1787,6 +1868,10 @@ async def process_chat_response(
 
                         # Remove the prefix
                         data = data[len("data:") :].strip()
+
+                        # The provider's end marker: anything after it is noise.
+                        if data == "[DONE]":
+                            break
 
                         try:
                             data = json.loads(data)
@@ -1835,14 +1920,23 @@ async def process_chat_response(
                                         )
 
                                     value = delta.get("content")
-                                    value = privacy_reverser.feed(value)
-
-                                    reasoning_content = (
+                                    raw_reasoning = (
                                         delta.get("reasoning_content")
                                         or delta.get("reasoning")
                                         or delta.get("thinking")
                                     )
-                                    if reasoning_content:
+                                    if reasoning_closed_by_model and raw_reasoning:
+                                        # The model ended its thought inside the
+                                        # field, so the field now carries the answer.
+                                        value = f"{value or ''}{raw_reasoning}"
+                                        raw_reasoning = None
+                                    value = privacy_reverser.feed(value)
+
+                                    # Opens on the raw delta: the reverser may hold a short one back.
+                                    reasoning_content = reasoning_reverser.feed(
+                                        raw_reasoning
+                                    )
+                                    if raw_reasoning:
                                         if (
                                             not content_blocks
                                             or content_blocks[-1]["type"] != "reasoning"
@@ -1858,10 +1952,48 @@ async def process_chat_response(
                                                 "started_at": time.time(),
                                             }
                                             content_blocks.append(reasoning_block)
+                                            reasoning_tail = ""
                                         else:
                                             reasoning_block = content_blocks[-1]
 
                                         reasoning_block["content"] += reasoning_content
+
+                                        # A model that streams everything through
+                                        # the field writes its own end tag there
+                                        # and never sends a content delta, the only
+                                        # other close. Split at the tag now, so the
+                                        # answer streams as text instead of sealed.
+                                        # The raw tail sees a tag split across
+                                        # deltas or held back by the reverser.
+                                        reasoning_tail = (
+                                            reasoning_tail + raw_reasoning
+                                        )[-32:]
+                                        if REASONING_END_TAG_RE.search(reasoning_tail):
+                                            reasoning_tail = ""
+                                            privacy.flush_reasoning(
+                                                reasoning_reverser, content_blocks
+                                            )
+                                            leftover = split_reasoning_at_end_tag(
+                                                reasoning_block
+                                            )
+                                            if leftover is not None:
+                                                reasoning_closed_by_model = True
+                                                reasoning_block["ended_at"] = (
+                                                    time.time()
+                                                )
+                                                reasoning_block["duration"] = int(
+                                                    reasoning_block["ended_at"]
+                                                    - reasoning_block["started_at"]
+                                                )
+                                                if not reasoning_block["content"]:
+                                                    content_blocks.pop()
+                                                content = f"{content}{leftover}"
+                                                content_blocks.append(
+                                                    {
+                                                        "type": "text",
+                                                        "content": leftover,
+                                                    }
+                                                )
 
                                         data = {
                                             "content": serialize_content_blocks(
@@ -1880,6 +2012,10 @@ async def process_chat_response(
                                             == "reasoning_content"
                                         ):
                                             reasoning_block = content_blocks[-1]
+                                            privacy.flush_reasoning(
+                                                reasoning_reverser,
+                                                content_blocks,
+                                            )
                                             reasoning_block["ended_at"] = time.time()
                                             reasoning_block["duration"] = int(
                                                 reasoning_block["ended_at"]
@@ -1946,12 +2082,7 @@ async def process_chat_response(
 
                                 await emit_completion(event_emitter, data)
                         except Exception as e:
-                            # `data: [DONE]` fails json.loads by design; anything
-                            # else is a real parse error worth logging. Neither
-                            # ends the loop — content after the sentinel is still
-                            # processed (frozen bug, see the ledger).
-                            if "data: [DONE]" not in line:
-                                log.debug(f"Error: {e}")
+                            log.debug(f"Error: {e}")
 
                     if content_blocks:
                         # Clean up the last text block
@@ -1966,6 +2097,7 @@ async def process_chat_response(
                                 if not content_blocks:
                                     append_empty_text_block(content_blocks)
 
+                    privacy.flush_reasoning(reasoning_reverser, content_blocks)
                     content = append_stream_tail(
                         content,
                         content_blocks,

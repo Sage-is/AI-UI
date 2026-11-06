@@ -56,7 +56,7 @@
     "channel": "event",
     "payload": {
       "data": {
-        "content": "<details type=\"reasoning\" done=\"true\" duration=\"1\">\n<summary>Thought for 1 seconds</summary>\n> Compare the two methods.\n</details>\nRAD and Agileare both iterative."
+        "content": "<details type=\"reasoning\" done=\"true\" duration=\"1\">\n<summary>Thought for 1 seconds</summary>\n> Compare the two methods.\n</details>\nRAD and Agile are both iterative."
       },
       "type": "chat:completion"
     }
@@ -84,14 +84,14 @@
     "chat_id": "chat-fixture",
     "message_id": "msg-fixture",
     "patch": {
-      "content": "<details type=\"reasoning\" done=\"true\" duration=\"1\">\n<summary>Thought for 1 seconds</summary>\n> Compare the two methods.\n</details>\nRAD and Agileare both iterative."
+      "content": "<details type=\"reasoning\" done=\"true\" duration=\"1\">\n<summary>Thought for 1 seconds</summary>\n> Compare the two methods.\n</details>\nRAD and Agile are both iterative."
     }
   },
   {
     "channel": "event",
     "payload": {
       "data": {
-        "content": "<details type=\"reasoning\" done=\"true\" duration=\"1\">\n<summary>Thought for 1 seconds</summary>\n> Compare the two methods.\n</details>\nRAD and Agileare both iterative.",
+        "content": "<details type=\"reasoning\" done=\"true\" duration=\"1\">\n<summary>Thought for 1 seconds</summary>\n> Compare the two methods.\n</details>\nRAD and Agile are both iterative.",
         "done": true,
         "title": "Fixture chat"
       },

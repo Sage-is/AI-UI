@@ -35,27 +35,18 @@
     }
   },
   {
-    "channel": "event",
-    "payload": {
-      "data": {
-        "content": "Answer survives the noise. trailing after DONE"
-      },
-      "type": "chat:completion"
-    }
-  },
-  {
     "channel": "db",
     "chat_id": "chat-fixture",
     "message_id": "msg-fixture",
     "patch": {
-      "content": "Answer survives the noise. trailing after DONE"
+      "content": "Answer survives the noise."
     }
   },
   {
     "channel": "event",
     "payload": {
       "data": {
-        "content": "Answer survives the noise. trailing after DONE",
+        "content": "Answer survives the noise.",
         "done": true,
         "title": "Fixture chat"
       },

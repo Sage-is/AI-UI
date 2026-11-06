@@ -359,7 +359,30 @@ CASES = [
         "stream": "reasoning-field-never-closed.sse",
         "why": "The production defect from chat 171f30b9: the whole answer "
         "arrives through the reasoning field and no content delta ever comes. "
-        "The end-of-stream finalizer must close the block and free the answer.",
+        "The model's own </thinking> sits in the field, so the block closes "
+        "there, mid-stream, and the answer streams as text.",
+    },
+    {
+        "name": "reasoning-field-no-end-tag",
+        "stream": "reasoning-field-no-end-tag.sse",
+        "why": "Everything through the field, and no end tag anywhere. Only the "
+        "end-of-stream finalizer can close this block, so the teeth target "
+        "disables the finalizer against this case.",
+    },
+    {
+        "name": "reasoning-field-closes-midstream",
+        "stream": "reasoning-field-closes-midstream.sse",
+        "why": "Variant 2 from the TODO.md card 'Unclosed reasoning block "
+        "swallows the model's answer': every delta comes through the field. "
+        "After the model's </thinking>, later field deltas are the answer and "
+        "must render as text before the stream ends, not sealed until the "
+        "finalizer runs.",
+    },
+    {
+        "name": "reasoning-field-end-tag-split",
+        "stream": "reasoning-field-end-tag-split.sse",
+        "why": "The same, with the end tag split across two deltas "
+        "(`</thin` + `king>`). The close must still fire on the second.",
     },
     {
         "name": "reasoning-tag-inline",
@@ -374,13 +397,12 @@ CASES = [
         "aafdddab). The two paths disagree: the provider routes the model's "
         "<think> into the reasoning FIELD, so `content` never sees an opener, "
         "and the field block opens and closes correctly. The model then closes "
-        "the tag the only way it can — in `content` — and the orphan renders as "
-        "text beside a perfectly good reasoning block. Logged at TODO.md:617 as "
-        "the third variant, and FROZEN: this golden records the leak as it is, "
-        "not as it should be. It exists to fail the day someone implements the "
-        "ledger's fix (2), promoting an unpaired close to an implicit open — "
-        "which here would mint a SECOND reasoning block and swallow the answer, "
-        "turning a cosmetic leak into the demo-blocking one.",
+        "the tag the only way it can — in `content`. That orphan rendered as "
+        "text beside a perfectly good reasoning block (variant 3 on the TODO.md "
+        "card 'Unclosed reasoning block swallows the model's answer'). It is "
+        "dropped now, because a reasoning block already closed. The golden "
+        "also guards fix (2), an unpaired close promoted to an implicit open: "
+        "here that would mint a SECOND reasoning block and swallow the answer.",
     },
     {
         "name": "usage-and-error-chunks",
@@ -420,6 +442,14 @@ CASES = [
         "task table wants to fold — check the flag, generate, dig the result "
         "out under a try, persist, emit — plus its four emit sites and the "
         "chat:tags/chat:title/follow_ups payload shapes.",
+    },
+    {
+        "name": "title-two-messages",
+        "stream": "plain-text.sse",
+        "tasks": {"title_generation": False},
+        "why": "Title generation off on a two-message chat: the first message "
+        "becomes the title. The stored title and the emitted chat:title must "
+        "match; until 2026-11-05 the emit sent the last message instead.",
     },
     {
         "name": "cancelled-mid-stream",
