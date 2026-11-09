@@ -1,4 +1,4 @@
-path,reason
+path,reason,mode
 app/node_modules,Third-party JS dependencies
 app/build,Generated Vite/Svelte build output — not source
 app/cypress,End-to-end test runner fixtures and snapshots
@@ -6,4 +6,5 @@ app/static,Compiled and vendored static assets
 docs,Archived planning docs — not active work
 tools/tw2startr,Vendored tooling — not part of this project's TODOs
 app/.svelte-kit,Generated SvelteKit build output — not source
-charts/_archive,Parked and finished charts — kept readable, off the board
+charts/_archive,"Parked and finished charts — kept readable, off the board",
+charts,Navigation plans,hide
