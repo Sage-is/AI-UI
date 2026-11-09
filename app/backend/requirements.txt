@@ -4,18 +4,18 @@
 # (CVE-2026-54283) DoS paths, plus CVE-2026-48710/48817/54282. Starlette 1.8
 # needs Python 3.11+ and anyio 4. FastAPI 0.132+ rejects JSON without a JSON
 # Content-Type; main.py turns that off to keep 3.2.0 behaviour.
-fastapi==0.143.1
-starlette==1.8.0
-uvicorn[standard]==0.35.0
-pydantic==2.11.7
+fastapi==0.162.0
+starlette==1.10.0
+uvicorn[standard]==0.54.0
+pydantic==2.14.3
 itsdangerous
 # CVE-2026-24486 (HIGH): arbitrary file write — fixed in 0.0.22
 # CVE-2026-42561 (HIGH): pre-0.0.27 parser issue — bumped 2026-05-17.
 # CVE-2026-53540 (LOW): negative Content-Length buffers the body — fixed in 0.0.31
-python-multipart==0.0.32
+python-multipart==0.0.33
 
 # CVE-2026-48804 (HIGH): binary attachment DoS — fixed in 5.16.4
-python-socketio==5.17.0
+python-socketio==5.18.1
 cryptography
 
 # CVE-2026-25645 (MEDIUM): temp file reuse in extract_zipped_paths — fixed in 2.33.0
@@ -38,8 +38,8 @@ beautifulsoup4
 # Response decompression stays available via whatever the middleware deps pin.
 httpx[socks,http2]==0.28.1
 
-sqlalchemy==2.0.38
-alembic==1.14.0
+sqlalchemy==2.1.8
+alembic==1.20.1
 # Passwords: bcrypt called directly (utils/passwords.py); passlib left in 3.2.1.
 # peewee + peewee-migrate left too: internal/db.py refuses a pre-alembic DB.
 bcrypt==4.3.0
@@ -50,10 +50,10 @@ websocket-client
 
 redis
 
-pycrdt==0.12.25
+pycrdt==0.14.13
 
 loguru==0.7.3
-asgiref==3.8.1
+asgiref==3.13.0
 
 tiktoken
 
@@ -92,13 +92,13 @@ langchain-core==0.3.86
 # Document processing: pypdf + docx2txt ride the rag-loaders Sprig™ (8.I.2)
 # — they exist only for langchain_community.document_loaders.
 # unstructured + python-pptx — installed at runtime when non-PDF document types are uploaded
-ftfy==6.2.3
+ftfy==6.3.1
 # fpdf2 (+ fontTools + pillow + CJK fonts) rides the export-document Sprig™
 # (8.I.2). CVE pins move into the sprig build: fpdf2==2.8.2, pillow==12.3.0
 # (CVE-2025-48379, CVE-2026-25990, CVE-2026-40192; CVE-2026-59205, 59199,
 # 55380, 54060).
-Markdown==3.11.1
-validators==0.35.0
+Markdown==3.11.3
+validators==0.36.0
 # soundfile — removed (8.I.2): imported nowhere in the codebase (dead dep).
 
 # CVE-2026-32597 (HIGH): accepts unknown crit header extensions — fixed in 2.12.0
@@ -108,7 +108,7 @@ PyJWT[crypto]==2.15.1
 # CVE-2026-27962 (CRITICAL): auth bypass via JWK header — fixed in 1.6.9
 # CVE-2026-96760 (CRITICAL): signature verification bypass — fixed in 1.9.0,
 # with three more advisories published 2026-10-14 (nonce, OctKey, implicit grant)
-authlib==1.9.1
+authlib==1.9.5
 
 # black — installed at runtime if code formatting is needed
 
@@ -134,4 +134,4 @@ ldap3==2.9.1
 # recipe pins them to THIS version. The instrumentors and the HTTP exporter
 # left in 3.2.1. With ENABLE_OTEL=true and no SDK, main.py logs a warning and
 # boots untraced; a telemetry-otel Sprig is on the board.
-opentelemetry-api==1.45.1
+opentelemetry-api==1.45.2
