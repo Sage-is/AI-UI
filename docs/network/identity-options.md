@@ -28,6 +28,8 @@ GUN's author still offers SEA. Login runs the password through PBKDF2 at 100,000
 
 ## Recommendation
 
+_Decided 2026-11-12 (Alexander): Kanidm is not taken. On a box, a sibling app asks AI-UI who a person is, with a one-time code and no separate identity server; see [the charter](../contracts/README.md). The questions about the wider network stay open._
+
 1. The credential is a passkey, synced in each person's password manager. Admins keep a second key.
 2. Kanidm is the team box's OIDC bridge: passkey first, OIDC and LDAP in one binary. Authentik is the fallback, for public audits and built-in forward auth.
 3. Across boxes, each host keeps its own IdP, later AI-UI, and hosts trust each other through [OpenID Federation](https://openid.net/specs/openid-federation-1_0.html), final in 2026. Trust marks can carry the Guarantee. E-mail stays with the host.

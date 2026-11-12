@@ -18,6 +18,7 @@ Sage.is AI-UI is a self-hosted AI workspace, a fork cut from MIT-era Open WebUI.
 - [docs/development-workflow.md](docs/development-workflow.md): styling, testing and the Cypress e2e harness (`make e2e`, `make e2e_both`).
 - [docs/release-runbook.md](docs/release-runbook.md): cutting a release.
 - [docs/federation.md](docs/federation.md): boxes, the privacy filter, the raw proxy routes.
+- [docs/contracts/README.md](docs/contracts/README.md): the charter for AI-UI, Trellis and Tinker.Click: roles, decisions, the four contracts.
 - [docs/file-handling-field-rules.md](docs/file-handling-field-rules.md): rules for delegated edits.
 
 ## Hard rules

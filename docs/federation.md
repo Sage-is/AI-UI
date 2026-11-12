@@ -98,6 +98,8 @@ So limit any `sk-` key you give an outside client:
 - List the paths it may call in `API_KEY_ALLOWED_ENDPOINTS`, comma-separated, for example `/api/models,/api/chat/completions`. A listed path also allows the paths under it.
 - The list holds for every `sk-` key on the instance, not for one key. Give each outside client its own user as well.
 
+**A client with its own filter.** Tinker.Click scrubs text bound for a remote model, but it judges "remote" by the address alone. A `localhost` address counts as this computer and skips the scrub (`is_remote_url` in Tinker's `core/src/privacy/mod.rs`). So a Tinker client pointed at an AI-UI on the same machine sends real values, and AI-UI's filter is the only one on the route. Open in the `gateway` contract (2026-11-12): either Tinker treats an AI-UI address as remote, or AI-UI tells Tinker the route is filtered. Until one lands, the connection a Tinker client uses must have AI-UI's filter on.
+
 ## A team's CRM is a tool server in the same box
 
 A team's CRM runs in the same box as its AI-UI. It registers as an OpenAPI tool server in `TOOL_SERVER_CONNECTIONS`, with a static bearer key. An agent named crm lets users reach it as @crm.
@@ -114,6 +116,8 @@ A street address is a record about a person. A map service learns each place it 
 - Street maps of real addresses wait for a map Sprig that serves tiles, geocoding and routing inside the box. The Sprig catalogue has none yet.
 
 ## Tinker.Click apps in the Workshop: planned, not built
+
+_Superseded 2026-11-12 (Alexander): web Tinker replaces this tab and the Tinker mini below. AI-UI builds no builder of its own; see [contracts/README.md](contracts/README.md). The text stays as the record._
 
 Tinker.Click apps will arrive in the Workshop later. Each app calls three things: storage, ask and connector. The Workshop will give each one a bridge, so an app's data stays home.
 
