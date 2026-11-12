@@ -739,3 +739,24 @@ _Second-pass compression, 2026-08-15._
 _Second-pass compression, 2026-08-15._
 
 - [ ] **Wizard `whisper` status stuck at `pending` after a whisper Sprig™ graft (cosmetic — STT works)**: grafting `whisper-base-ggml` serves STT (`/api/v1/audio/transcriptions` → 200 through the sprig), but `GET /api/v1/retrieval/models/status` keeps `models.whisper != "ready"`. Static analysis says it SHOULD read ready: `point_stt_at` ([sprigs/stt_dispatch.py:40](app/backend/sage_is_ai/sprigs/stt_dispatch.py#L40)) flips it and IS called by the graft route ([routers/sprigs.py:113](app/backend/sage_is_ai/routers/sprigs.py#L113)), single worker, dict seeded ([main.py:1119](app/backend/sage_is_ai/main.py#L1119)), endpoint returns it raw ([retrieval.py:439](app/backend/sage_is_ai/routers/retrieval.py#L439)). Needs LIVE inspection: `KEEP=1 make sprig_smoke`, `curl …/models/status` right after the whisper graft, temp log in `point_stt_at`. Surfaced 2026-07-22 by `sprig_smoke`. #bug
+
+## Workshop apps tab: Tinker.Click apps run inside the box
+
+_Dropped 2026-11-12: web Tinker replaces it (`docs/contracts/README.md`). The card as it stood._
+
+- [ ] **Workshop apps tab: Tinker.Click apps run inside the box** (planned 2026-10-15, not built; the Trellis-first pause lifted 2026-11-02, and the Rootstock card folds it in): storage, ask and connector bridges keep each app's data home #frontend #security
+  - Kept in F5 2026-11-03 (Alexander): built once, on the no-build pages and the F2 gateway, not in the legacy Svelte app
+  - Model calls from apps, Tinker desktops and the library server go through the box's gateway from Rootstock F2 (plan, "The gateway contract")
+  - Plan: `~/.claude/plans/brokerage-demo-tinker-trellis.md`, "Later"; rules and map in `docs/federation.md`
+  - [ ] [WE] `/workshop/apps` tab behind a `workshop.apps` key in `DEFAULT_USER_PERMISSIONS` (`config.py`) and `WorkshopPermissions` (`routers/users.py`); `permissions-drift.cy.ts` fails if they disagree
+  - [ ] [WE] Sandboxed frame like `Artifacts.svelte` (`srcdoc`, `allow-scripts`, no `allow-same-origin`); the host checks `event.source`, since such a frame's messages arrive with origin `"null"`
+  - [ ] [WE] Per-user storage bridge: app state kept on the box per user and app; an opaque frame has no browser storage
+  - [ ] [WE] Ask bridge: model calls through `/api/chat/completions`, so the privacy filter covers them; never the raw `/openai` or `/ollama` routes
+  - [ ] [WE] Connectors as tool servers in `TOOL_SERVER_CONNECTIONS`, as Trellis already is (@crm)
+  - Shares the `event.source` fix and per-user state with the app-pane item on the Sprig marketplace card
+  - New pages ship plain HTML first (`docs/no-build-surface-convention.md`, rule 4)
+  - Tinker mini (reflection, Alexander, 2026-10-20): three steps in `docs/federation.md`, "A Tinker mini"; nothing built yet
+  - [ ] [WE] Step 1, no code: a "Tinker mini" model preset whose system prompt is adapted from Tinker's `system-compact.md` (credited); it answers with one self-contained `html` block, which the Artifacts panel already runs sandboxed
+  - [ ] [WE] Step 2 is this tab: run saved `<!-- tenkts-app … -->` files; only storage, ask and connector cross the bridge; `fetch`, files, `run` and `browse` answer "not available here", as Tinker's iOS host does
+  - [ ] Step 3: one written bridge contract for Tinker desktop, iOS and AI-UI, offered upstream as a pull request
+  - Open: Tinker's look or the host's; Tinker's `LICENSE` (AGPL-3.0) against its README and `Cargo.toml` (MIT); apps that need `fetch` or `browse` stay in Tinker desktop

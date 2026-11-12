@@ -47,10 +47,10 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [ ] Parked AI-UI changes Trellis may need later: forward the chatting user's identity to tool servers (`execute_tool_server` sends only the bearer today); AI-UI as identity provider (own card since 2026-10-15, under OAuth UX & Identity Linking)
 
 - [ ] **Rootstock: a clean-room Django core at about a seventh of today's code, strangled in surface by surface** #rootstock (Alexander, 2026-10-23; rewrite approved 2026-10-24; on `develop`, forward only): plan `~/.claude/plans/silverbullet/rootstock-platypus.md`; F0 (3.3.0) fixes 18 security bugs where they live
-  - Held 2026-11-03 (Alexander): F1 starts once 3.3.0 ships, one phase per release; the Workshop apps tab stays in F5
+  - Held 2026-11-03 (Alexander): F1 starts once 3.3.0 ships, one phase per release; the Workshop apps tab stays in F5; dropped 2026-11-12, web Tinker replaces it
   - [ ] [MANUALLY] Release and deploy 3.3.0 by run sheet `Plans/ai-ui-3.3.0-release` (everything in the tree ships, decided 2026-11-05; gates green 2026-11-05); then the steps below
     - [ ] [MANUALLY] Tell both box owners (the note says the hole "is closed")
-    - [ ] [MANUALLY] Rotate the backup remote's credentials (urgent half: plaintext nightly backups, the August cluster compromise) and `WEBUI_SECRET_KEY` (`PRIVACY_KEY` gets its own value first)
+    - [ ] [MANUALLY] Rotate `WEBUI_SECRET_KEY` and `PRIVACY_KEY` on both apps and the try.sage.is admin password (dry run clean 2026-11-06); the backup remote's B2 key moved to Backlog card "Rotate the B2 key that 3.2.x printed into sage.startr.cloud's start log" (2026-11-06)
     - [ ] [MANUALLY] Bump the tap formula
     - Why the order: 3.2.2 still prints the remote config at start and hands the key to Sprig children, so a rotation before the deploy re-leaks the new values. Prepared 2026-10-24: `~/.local/share/ai-ui/rotation/rotate-3.3.0-secrets.sh` (dry run, then `--go`; README beside it) mints the box-owned keys into the vault and pushes them with `cr-deploy ensure`; it refuses anything below 3.3.0; the B2 key and the demo's provider keys are created by hand and put into the vault first; try.sage.is persona links die with the rotation, so the seed now applies an env-supplied persona password
   - [ ] [WE] Then `docs/rootstock/design.md`; OpenAPI capture and goldens from the 3.2.1 image; the parity runner
@@ -63,9 +63,9 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
       - [ ] [WE] Then upload the fonts and the `.xcf`, have the export-document recipe fetch the fonts by sha256, and drop all of them from git with a pointer note in `app/static/icons/`
   - [ ] [WE] Few libraries (Alexander, 2026-10-23; evidence in the plan): `test_dependencies.py` lists about 12 direct Python packages, about 30 installed by their closure (today 95), no npm package at runtime (today 1,160 build the SPA), vendored pinned files checked by sha256, hash-pinned locks with an `exclude-newer` cool-down
   - [ ] [WE] Install and onboarding: `install_smoke` times a fresh install to the first answer and counts the steps; it fails on any tour, modal or carousel before that answer
-  - [ ] [MANUALLY] SSO decision from the `federation/` research note, before F6, where sign-in now moves
+  - [x] [MANUALLY] SSO decision made 2026-11-12 (Alexander): a one-time code in today's backend, with a ratchet note; the contract hides the later move (card "Platform alignment")
   - [ ] [MANUALLY] Sitting 2 of the plan's decision queue: what tool servers receive and direct connections (before F3), Space rules (before F4), the default embedder and the Sprig questions (before F5)
-  - Folds in: Workshop apps tab (Backlog), AI-UI as identity provider (OAuth UX), Backend Rewrite Research (superseded)
+  - Folds in: Workshop apps tab (dropped 2026-11-12), AI-UI as identity provider (OAuth UX), Backend Rewrite Research (superseded)
   - [x] _11 done steps archived 2026-11-03 → docs/completed-todos.md._
 
 - [ ] **One way to deploy: `cr-deploy` + `make deploy`** #critical: plan Amendment 55, 2026-09-27
@@ -99,6 +99,17 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
 
 ## TODO
 
+- [ ] **3.3.1: try.sage's dummy tools stop calling the box, and Artifacts preview one HTML block at a time** #bug #frontend (Alexander, 2026-11-06; seen live on try.sage.is 3.3.0): resume note `Plans/ai-ui-3.3.1`
+  - [ ] [WE] Dummy tools: a tool server URL containing `dummy-tool` is kept in `TOOL_SERVER_CONNECTIONS` but never contacted: no spec fetch, no `/tool_servers/verify`, no `execute_tool_server`, no browser fetch
+  - Why: the dummy router serves no `openapi.json`, so every tool-cache fill GETs it through the box's public URL, gets 404 and logs an error; no demo user ever saw the tools
+  - [ ] [WE] Its three demo tools reach the chat tools menu from an in-app spec, with no HTTP; a call answers "not available in try mode"; the admin list and the user's tools menu both mark it a placeholder; correct `docs/try-sage-deployment.md`
+  - [ ] [WE] Artifacts: the panel opens on the response's largest HTML block alone, a block's Preview shows that block alone, and CSS and JS blocks still attach. Why: `Artifacts.svelte` joins every HTML block into one page, and Preview selects the whole message
+  - [ ] [WE] Code blocks start collapsed for everyone, the line count rising as the code streams; "Always Collapse Code Blocks" defaults on and becomes the opt-out
+  - [ ] [WE] Found while mapping: the auto-open fires on every streamed token, so a panel closed mid-stream reopens; `AddServerModal.svelte` passes `(token, url)` to `getToolServerData(url)`, so a direct-server verify fetches the token
+  - [ ] [WE] Specs first: two HTML blocks (largest shown, Preview picks), a collapsed block whose count rises, a `dummy-tool` URL that draws no request
+  - [ ] [MANUALLY] Release 3.3.1: `make patch_release`, then section 2 of run sheet `Plans/ai-ui-3.3.0-release`, with `BUILDX_BUILDER=colima-build`
+  - Later: a hint when someone types `dummy-tool` into a tool server URL field, saying it is never contacted
+
 - [ ] **Client-side turns for one-on-one chats: the browser runs the turn, the gateway relays and always finishes the call** #rootstock #perf (Alexander, 2026-11-03): plan section "Client-side turns for one-on-one chats", beside the gateway contract
   - [x] Answered 2026-11-05 (plan section, "Answers"): 2,000 streams per box; hybrid byte path, direct for own-key, on-device and filter-off box connections; the box finishes the answer; record by setting, drafts ≤5 s old; budgets per user, held per turn
   - [x] The rest answered 2026-11-05 in three more rounds: plain chat first, a plain-JS island, settings per group, parity first, takeover by missed drafts, money budgets, receipts by source; 2,000 is a design target, not a gate
@@ -110,9 +121,21 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [ ] [WE] Then point the CATALOG's `media-ffmpeg` at `v2` / `v2-amd64` with the published shas
   - [x] _1 done step archived 2026-11-03 → docs/completed-todos.md._
 
+- [ ] **Platform alignment: four contracts, web Tinker with AI-UI as its node** #federation #auth (Alexander, 2026-11-12): the charter is `docs/contracts/README.md`; nothing runs yet
+  - Feasibility: yes, with the engine on Tinker's server; note `docs/notes/2026-11-12-web-tinker-feasibility.md` in Tinker's planning repo, whose board holds slices 1 to 3 and 5
+  - [x] [WE] Slice 0, no code: point a Tinker client at a local AI-UI as a custom OpenAI-compatible provider (2026-11-12)
+    - Gate: a streamed turn with a `render_ui` tool call completes, and the log shows it passed the privacy filter
+    - Passed once `default_external` was on: `stop = tool_use` in 7.87 s, and two new `privacy_map` rows (email, phone) prove the filter ran; the dev log prints no INFO lines (Bugs card). The open `gateway` term is in `docs/federation.md`
+  - [ ] [WE] Slice 4, one sign-in: interview, `docs/contracts/sign-in.md`, AI-UI's routes, then Trellis and Tinker's server as the two consumers
+    - Gate: on Realtor M's box one sign-in opens AI-UI, Trellis and web Tinker; `/crm/aiui/` shows the contracts green
+  - [ ] [WE] Slice 6: AI-UI forwards Tinker's node protocol at its own address
+    - Gate: the desktop app's "Sage.is AI-UI account" entry opens the same library as the browser
+  - [ ] [WE] `/api/version` lists the contract versions; each sibling checks them and shows the fit
+  - [ ] [MANUALLY] Share the feasibility note with the Tinker team before slice 1's pull request opens
+
 - [ ] **Tinker.Click integration: two products, one platform** #federation (Alexander, 2026-10-31; proposals until the team agrees): the decisions live in `AI--Tinker.Click/docs/notes/2026-10-31-integration-decisions.md`
   - [ ] [WE] Rootstock F2's gateway design names Tinker desktops as a client, as the plan already does
-  - [ ] [WE] AI-UI as a sign-in provider for `tenkts-server`: scope the OIDC piece with the federation identity note
+  - Sign-in for `tenkts-server` moved to the card "Platform alignment" (2026-11-12): a one-time code, no OIDC piece
   - [ ] [WE] `docs/federation.md`: Space theming decides Tinker's look on a box, with Tinker's credit in an About line
 
 - [ ] **TodoScope alignment: what the 2026-11-02 pass left open** #dx: the header table, four list items with no checkbox, the duplicate lint card and the real-estate strays were fixed in place
@@ -234,11 +257,10 @@ The external November commitment is signage and materials only, so it imposes **
 ### OAuth UX & Identity Linking
 
 - [ ] **AI-UI as the single sign-on for our other projects** #auth #federation (Alexander, 2026-10-15; plan after the Brokerage H demo): one AI-UI login opens Trellis, the Tinker.Click library server and later projects, so no project keeps its own user list
-  - [ ] [WE] Plan it after the demo; interview Alexander first; plan file in `~/.claude/plans/`
-  - [ ] Decide first: AI-UI signs sessions with HS256 and `WEBUI_SECRET_KEY` (`utils/auth.py:38`), so any project that verifies them with that key can also mint a session for any user, admin included
-  - [ ] The likely answer: an OpenID Connect (OIDC) provider in AI-UI, one client per project, tokens signed with a private key whose public half (JWKS) is all a project holds
+  - Decided 2026-11-12 (card "Platform alignment", charter `docs/contracts/README.md`): a one-time code, then the sibling asks AI-UI server to server; no OIDC provider
+  - Why siblings hold no key: AI-UI signs sessions with HS256 and `WEBUI_SECRET_KEY` (`utils/auth.py:38`), so any project that verifies them with that key can also mint a session for any user, admin included
   - [ ] Today AI-UI signs people in only as a client: OAuth/OIDC providers (`utils/oauth.py`), LDAP, and the trusted e-mail header (`WEBUI_AUTH_TRUSTED_EMAIL_HEADER`)
-  - [ ] Consumers: Trellis (its card "AI-UI is the identity provider", decided 2026-09-17; personas on try.sage.is, amendment 44), the Tinker.Click library server (upstream; needs OIDC client support), community.sage.is
+  - [ ] Consumers: Trellis (its card "AI-UI is the identity provider", decided 2026-09-17; personas on try.sage.is, amendment 44), the Tinker.Click library server (upstream; a `sign-in` consumer), community.sage.is
   - [ ] Ties to the federation plan's "identity across boxes" flow, and its open question: how a box proves who it is
 
 ### Release Wrap-Up
@@ -520,28 +542,36 @@ The external November commitment is signage and materials only, so it imposes **
 
 _Items deferred to a later planning cycle. Move here from TODO when deprioritized._
 
+- [ ] **Realistic fake details in the privacy filter, starting with email** #privacy (Alexander, 2026-11-12): an opt-in shape on domains we own; today `privacy/shapes.py` makes `p<8 hex>@example.invalid`, which reads as fake
+  - [ ] [MANUALLY] Decide: register one or two domains for stand-ins, or keep a few on hand; each gets a null MX (RFC 7505), so mail sent to a stand-in bounces
+  - [ ] [WE] Specs first: a realistic stand-in still reverses in streamed tool-call arguments, and never equals a real value in the map
+  - [ ] [WE] A panel switch beside the detectors; `example.invalid` stays the default
+  - Found in web Tinker's slice 0 (2026-11-12): phones already read real (`514-555-3668`, same area code), emails do not
+
+- [ ] **Rotate the B2 key that 3.2.x printed into sage.startr.cloud's start log** #ops #security (Alexander, 2026-11-06): deferred to the backup ops work; Syncthing carries the backups meanwhile
+  - Why it can wait: 3.3.0, live on both apps since 2026-11-06, no longer prints the rclone config or hands the environment to Sprig children; the 3.3.0 rotation run leaves `RCLONE_CONFIG_B2_ACCOUNT` and `RCLONE_CONFIG_B2_KEY` as they are. The release card called this the urgent half (the August cluster compromise)
+  - [ ] [MANUALLY] Backblaze: a new application key for the backup bucket with the old key's capabilities; `sage-secret put ai-ui-sage-startr-cloud-b2-key --stdin` (the applicationKey), then the same with `--field account --replace` (the keyID)
+  - [ ] [WE] Re-run `~/.local/share/ai-ui/rotation/rotate-3.3.0-secrets.sh`, dry run then `--go`: items already in the vault are reused, so only the two `RCLONE_CONFIG_B2_*` variables change, with one restart of sage.startr.cloud
+  - [ ] [MANUALLY] Delete the old B2 application key in Backblaze
+
+- [ ] **Sign in with Google and Apple for our services and each Sage box** #auth #ops (Alexander, 2026-11-06): one company address, `identity@sage.is`, owns the provider apps; plan at `~/.claude/plans/silverbullet/sign-in-providers.md`
+  - [x] [WE] `identity@sage.is` made in Stalwart, password in the vault as `mail-identity@sage.is`; an outside probe landed and JMAP reads it (2026-11-06)
+  - [ ] [MANUALLY] Share its INBOX with asomma and iplante (`stalwart.py share-inbox`, command in the plan)
+  - [x] [WE] Google account on that address; project `sage-is-sign-in` in production; client "Realtor M door" behind M's Access (2026-11-06)
+  - [ ] [MANUALLY] An Apple Account on that address; both logins into `Agents`
+  - [ ] Our broker, Dex at `auth.sage.is` and `auth.sage.education`, so Google names us: both deployed 2026-11-07; open: M's door back on Google, education's 302 loop. OPS-Sage `runsheets/auth-broker.md`
+  - [x] Decided 2026-11-06: Startr LLC enrolls with Apple on its D-U-N-S number; Sage.is, its operating name, is the app name
+  - [ ] Decide: whose phone backs both accounts, one client per box or shared
+  - [ ] AI-UI: an Apple provider beside the Google one (signed `.p8` client secret, form-post callback, relay addresses), specs first
+
 - [ ] **The vault as the record for deployed keys: try.sage first, then a vault per cluster** #security (Alexander, 2026-11-04)
   - [x] Plan written up in `docs/try-sage-deployment.md`, "Planned: keys from the vault" (2026-11-04)
   - [ ] try.sage: its keys are pasted by hand into CapRover's env panel; `make deploy`, already under `sage-secret`, pushes the resolved `TRY_SAGE_*` values through CapRover's API, so a rotation is a vault edit plus a deploy
+  - [ ] [MANUALLY] Rotate `TRY_SAGE_LLM_API_KEY` and `TRY_SAGE_TOOL_SERVER_API_KEY`, which 3.2.x handed to Sprig children and the 3.3.0 run left in place (2026-11-06): new keys at the provider and the tool server, `sage-secret put ai-ui-try-sage-is-llm-api-key --stdin` and `ai-ui-try-sage-is-tool-server-key`, then re-run the rotation script
   - [ ] Per cluster: one collection and one machine account each, its credentials on that cluster, not this Mac's Keychain; the `sage-box` files in `~/.sage-is/boxes/` already hold only `bw:` references
   - [ ] Names: `bw:ITEM` resolves by name across all an account sees, so an account that sees several clusters needs prefixed names (`realtor-m-*` does this today)
 
-- [ ] **Workshop apps tab: Tinker.Click apps run inside the box** (planned 2026-10-15, not built; the Trellis-first pause lifted 2026-11-02, and the Rootstock card folds it in): storage, ask and connector bridges keep each app's data home #frontend #security
-  - Kept in F5 2026-11-03 (Alexander): built once, on the no-build pages and the F2 gateway, not in the legacy Svelte app
-  - Model calls from apps, Tinker desktops and the library server go through the box's gateway from Rootstock F2 (plan, "The gateway contract")
-  - Plan: `~/.claude/plans/brokerage-demo-tinker-trellis.md`, "Later"; rules and map in `docs/federation.md`
-  - [ ] [WE] `/workshop/apps` tab behind a `workshop.apps` key in `DEFAULT_USER_PERMISSIONS` (`config.py`) and `WorkshopPermissions` (`routers/users.py`); `permissions-drift.cy.ts` fails if they disagree
-  - [ ] [WE] Sandboxed frame like `Artifacts.svelte` (`srcdoc`, `allow-scripts`, no `allow-same-origin`); the host checks `event.source`, since such a frame's messages arrive with origin `"null"`
-  - [ ] [WE] Per-user storage bridge: app state kept on the box per user and app; an opaque frame has no browser storage
-  - [ ] [WE] Ask bridge: model calls through `/api/chat/completions`, so the privacy filter covers them; never the raw `/openai` or `/ollama` routes
-  - [ ] [WE] Connectors as tool servers in `TOOL_SERVER_CONNECTIONS`, as Trellis already is (@crm)
-  - Shares the `event.source` fix and per-user state with the app-pane item on the Sprig marketplace card
-  - New pages ship plain HTML first (`docs/no-build-surface-convention.md`, rule 4)
-  - Tinker mini (reflection, Alexander, 2026-10-20): three steps in `docs/federation.md`, "A Tinker mini"; nothing built yet
-  - [ ] [WE] Step 1, no code: a "Tinker mini" model preset whose system prompt is adapted from Tinker's `system-compact.md` (credited); it answers with one self-contained `html` block, which the Artifacts panel already runs sandboxed
-  - [ ] [WE] Step 2 is this tab: run saved `<!-- tenkts-app … -->` files; only storage, ask and connector cross the bridge; `fetch`, files, `run` and `browse` answer "not available here", as Tinker's iOS host does
-  - [ ] Step 3: one written bridge contract for Tinker desktop, iOS and AI-UI, offered upstream as a pull request
-  - Open: Tinker's look or the host's; Tinker's `LICENSE` (AGPL-3.0) against its README and `Cargo.toml` (MIT); apps that need `fetch` or `browse` stay in Tinker desktop
+- [x] _Workshop apps tab: Tinker.Click apps run inside the box. Dropped 2026-11-12 (Alexander): web Tinker replaces it (card "Platform alignment"). Archived → docs/board-dossiers.md._
 
 - [ ] **`telemetry-otel` Sprig: tracing for operators who set `ENABLE_OTEL`** #bonsai (2026-10-14): the 3.2.1 base keeps only `opentelemetry-api`; `ENABLE_OTEL=true` boots untraced with a warning
   - Parked 2026-11-03 (Alexander): until an operator needs tracing; no box sets `ENABLE_OTEL` today
@@ -579,6 +609,16 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 ---
 
 ## Bugs
+
+- [ ] **One model ID from two connections: the env-only one can serve it, unfiltered and unseen** #security #privacy (found 2026-11-12, web Tinker slice 0): connection `0` and `SAGE_LLM_API_URL` both list `deepseek/deepseek-v4.1-flash-1017`; the env one served it and made no stand-ins
+  - Inferred, not traced: `app.state.MODELS` keys by ID, so one connection wins; the panel lists no `hidden:<id>` row (`pages/privacy_panel.py` `_connections`), so only `default_external` reaches it
+  - [ ] [WE] Trace which connection wins a shared ID; a spec that fails while an unfiltered twin can win
+  - [ ] Decide: show env-only connections on the panel (read-only on try.sage.is), or filter a shared ID when any of its connections is filtered
+  - The dev volume `sage-ai-dev-data` has `default_external: true` since 2026-11-12
+
+- [ ] **The dev container prints none of AI-UI's own INFO lines** #bug (found 2026-11-12): with `GLOBAL_LOG_LEVEL` unset, `env.py:64-70` picks INFO but skips `basicConfig`, so stdlib loggers stay at WARNING and `privacy: pseudonymized` never shows
+  - Seen: only uvicorn's own INFO lines since start; every app line was ERROR
+  - [ ] [WE] Apply the default level when the variable is unset, with a spec; prod keeps WARNING
 
 - [ ] **Rootstock F0 leftovers: what the 2026-10-24 security fixes did not cover** #security (gathered 2026-11-02 from closed cards, now in `docs/completed-todos.md`)
   - [ ] [MANUALLY] Upstream fix, proposed, never edited from here: startr.style publishes an SRI hash beside every versioned file and keeps versioned paths immutable
