@@ -68,7 +68,7 @@ tiktoken
 # langchain-core STAYS — it is the interface layer (Document, BaseLoader,
 # BaseRetriever) subclassed across the codebase. Pinned to the version the
 # sprig-side packages expect.
-langchain-core==0.3.86
+langchain-core==1.3.3
 
 ## Vector DB — chromadb is NOT baked into the base rootstock (Bonsai™ slimming).
 ## Its closure (chromadb, onnxruntime, kubernetes, hnswlib, posthog) is
@@ -134,4 +134,4 @@ ldap3==2.9.1
 # recipe pins them to THIS version. The instrumentors and the HTTP exporter
 # left in 3.2.1. With ENABLE_OTEL=true and no SDK, main.py logs a warning and
 # boots untraced; a telemetry-otel Sprig is on the board.
-opentelemetry-api==1.45.1
+opentelemetry-api==1.45.2
