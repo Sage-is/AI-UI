@@ -122,7 +122,7 @@ A street address is a record about a person. A map service learns each place it 
 
 ## Tinker.Click apps in the Workshop: planned, not built
 
-_Superseded 2026-11-12 (Alexander): web Tinker replaces this tab and the Tinker mini below. AI-UI builds no builder of its own; see [contracts/README.md](contracts/README.md). The text stays as the record._
+_Superseded 2026-11-12 (Alexander): AI-UI's own bridges and the Tinker mini below are dropped. The tab stays, planned as a frame around web Tinker, and is decided after 2026-11-17. AI-UI builds no builder of its own; see [contracts/README.md](contracts/README.md). The text stays as the record._
 
 Tinker.Click apps will arrive in the Workshop later. Each app calls three things: storage, ask and connector. The Workshop will give each one a bridge, so an app's data stays home.
 
