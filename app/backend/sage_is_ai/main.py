@@ -92,6 +92,7 @@ from sage_is_ai.routers import (
     magic_links,
     sage_dummy_tools,
     sage_runtime,
+    tinker_node,
     memories,
     models,
     knowledge,
@@ -1593,6 +1594,9 @@ app.include_router(
     prefix="/api/v1/sage/runtime",
     tags=["sage-runtime"],
 )
+# Web Tinker's node login. Upstream's path, so at the root; it must come before
+# the SPA mount at "/" and answers its own 404 while ENABLE_TINKER_NODE is off.
+app.include_router(tinker_node.router, tags=["tinker-node"])
 app.include_router(files.router, prefix="/api/v1/files", tags=["files"])
 app.include_router(functions.router, prefix="/api/v1/functions", tags=["functions"])
 app.include_router(

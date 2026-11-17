@@ -100,6 +100,11 @@ So limit any `sk-` key you give an outside client:
 
 **A client with its own filter.** Tinker.Click scrubs text bound for a remote model, but it judges "remote" by the address alone. A `localhost` address counts as this computer and skips the scrub (`is_remote_url` in Tinker's `core/src/privacy/mod.rs`). So a Tinker client pointed at an AI-UI on the same machine sends real values, and AI-UI's filter is the only one on the route. Open in the `gateway` contract (2026-11-12): either Tinker treats an AI-UI address as remote, or AI-UI tells Tinker the route is filtered. Until one lands, the connection a Tinker client uses must have AI-UI's filter on.
 
+**Web Tinker's node login.** With `ENABLE_TINKER_NODE=true`, AI-UI answers `GET /v1/model-login` (`routers/tinker_node.py`, 2026-11-17). Web Tinker makes that call once at start to learn its model. The reply names provider `custom`, the caller's own key, the model `TINKER_NODE_MODEL` (default `tinker-build`) and the base URL `TINKER_NODE_BASE_URL`. Tinker then posts every build to `{base URL}/chat/completions`, so the base URL ends in `/api` and the filter sees each call. Never point it at `/openai` or `/ollama`. An empty base URL means the address Tinker called; set it when a proxy sits between them.
+
+- Off, the route answers 404, before any auth. With no bearer, it answers 401, which Tinker reads as refused.
+- The key belongs to a user of its own, `tinker-node`. With endpoint restrictions on, list `/v1/model-login` beside `/api/chat/completions`.
+
 ## A team's CRM is a tool server in the same box
 
 A team's CRM runs in the same box as its AI-UI. It registers as an OpenAPI tool server in `TOOL_SERVER_CONNECTIONS`, with a static bearer key. An agent named crm lets users reach it as @crm.

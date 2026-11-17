@@ -727,3 +727,19 @@ SAGE_LLM_MODELS = _parse_try_sage_models(os.environ.get("SAGE_LLM_MODELS", ""))
 TRY_SAGE_ADMIN_PASSWORD = os.environ.get("TRY_SAGE_ADMIN_PASSWORD", "")
 TRY_SAGE_FACILITATOR_PASSWORD = os.environ.get("TRY_SAGE_FACILITATOR_PASSWORD", "")
 TRY_SAGE_USER_PASSWORD = os.environ.get("TRY_SAGE_USER_PASSWORD", "")
+
+
+####################################
+# WEB TINKER NODE
+####################################
+# AI-UI answers web Tinker's GET /v1/model-login as its node
+# (routers/tinker_node.py). Env-only, like ENABLE_TRY_SAGE: the flag decides
+# whether the route answers at all, so an admin cannot switch it in the UI.
+#   - TINKER_NODE_BASE_URL: the address web Tinker reaches AI-UI at, plus /api;
+#     it posts builds to {base}/chat/completions. Empty means the address it
+#     called the node at. Never /openai or /ollama: the raw routes skip the
+#     privacy filter.
+#   - TINKER_NODE_MODEL: the model or preset id builds run on.
+ENABLE_TINKER_NODE = os.environ.get("ENABLE_TINKER_NODE", "False").lower() == "true"
+TINKER_NODE_BASE_URL = os.environ.get("TINKER_NODE_BASE_URL", "")
+TINKER_NODE_MODEL = os.environ.get("TINKER_NODE_MODEL", "tinker-build")

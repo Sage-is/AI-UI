@@ -895,7 +895,7 @@ image_unit_tests: it_build  ## Gate: the 3.2.1 cuts' unit tests, inside the buil
 		sage_is_ai.routers.test_models_reindex sage_is_ai.routers.test_openai_model_list \
 		sage_is_ai.sprigs.test_vector_reactivate sage_is_ai.utils.test_session_user \
 		sage_is_ai.utils.test_hidden_connections sage_is_ai.sprigs.test_prune_and_evict \
-		sage_is_ai.routers.test_vector_db_status
+		sage_is_ai.routers.test_vector_db_status sage_is_ai.routers.test_tinker_node
 
 # tags_annotated — refuse to publish a lightweight v* tag.
 #
