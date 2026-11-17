@@ -740,9 +740,9 @@ _Second-pass compression, 2026-08-15._
 
 - [ ] **Wizard `whisper` status stuck at `pending` after a whisper Sprig™ graft (cosmetic — STT works)**: grafting `whisper-base-ggml` serves STT (`/api/v1/audio/transcriptions` → 200 through the sprig), but `GET /api/v1/retrieval/models/status` keeps `models.whisper != "ready"`. Static analysis says it SHOULD read ready: `point_stt_at` ([sprigs/stt_dispatch.py:40](app/backend/sage_is_ai/sprigs/stt_dispatch.py#L40)) flips it and IS called by the graft route ([routers/sprigs.py:113](app/backend/sage_is_ai/routers/sprigs.py#L113)), single worker, dict seeded ([main.py:1119](app/backend/sage_is_ai/main.py#L1119)), endpoint returns it raw ([retrieval.py:439](app/backend/sage_is_ai/routers/retrieval.py#L439)). Needs LIVE inspection: `KEEP=1 make sprig_smoke`, `curl …/models/status` right after the whisper graft, temp log in `point_stt_at`. Surfaced 2026-07-22 by `sprig_smoke`. #bug
 
-## Workshop apps tab: Tinker.Click apps run inside the box
+## Workshop apps tab, first design: AI-UI's own bridges and a Tinker mini
 
-_Dropped 2026-11-12: web Tinker replaces it (`docs/contracts/README.md`). The card as it stood._
+_Dropped 2026-11-12 (Alexander): AI-UI's own bridges and the Tinker mini. The tab stays, planned as a frame around web Tinker: board card "Workshop apps tab: frames web Tinker", charter `docs/contracts/README.md`. The card as it stood._
 
 - [ ] **Workshop apps tab: Tinker.Click apps run inside the box** (planned 2026-10-15, not built; the Trellis-first pause lifted 2026-11-02, and the Rootstock card folds it in): storage, ask and connector bridges keep each app's data home #frontend #security
   - Kept in F5 2026-11-03 (Alexander): built once, on the no-build pages and the F2 gateway, not in the legacy Svelte app

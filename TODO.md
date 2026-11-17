@@ -47,7 +47,7 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [ ] Parked AI-UI changes Trellis may need later: forward the chatting user's identity to tool servers (`execute_tool_server` sends only the bearer today); AI-UI as identity provider (own card since 2026-10-15, under OAuth UX & Identity Linking)
 
 - [ ] **Rootstock: a clean-room Django core at about a seventh of today's code, strangled in surface by surface** #rootstock (Alexander, 2026-10-23; rewrite approved 2026-10-24; on `develop`, forward only): plan `~/.claude/plans/silverbullet/rootstock-platypus.md`; F0 (3.3.0) fixes 18 security bugs where they live
-  - Held 2026-11-03 (Alexander): F1 starts once 3.3.0 ships, one phase per release; the Workshop apps tab stays in F5; dropped 2026-11-12, web Tinker replaces it
+  - Held 2026-11-03 (Alexander): F1 starts once 3.3.0 ships, one phase per release; the Workshop apps tab left F5 on 2026-11-12 and now frames web Tinker (card "Workshop apps tab: frames web Tinker")
   - [ ] [MANUALLY] Release and deploy 3.3.0 by run sheet `Plans/ai-ui-3.3.0-release` (everything in the tree ships, decided 2026-11-05; gates green 2026-11-05); then the steps below
     - [ ] [MANUALLY] Tell both box owners (the note says the hole "is closed")
     - [ ] [MANUALLY] Rotate `WEBUI_SECRET_KEY` and `PRIVACY_KEY` on both apps and the try.sage.is admin password (dry run clean 2026-11-06); the backup remote's B2 key moved to Backlog card "Rotate the B2 key that 3.2.x printed into sage.startr.cloud's start log" (2026-11-06)
@@ -65,7 +65,7 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [ ] [WE] Install and onboarding: `install_smoke` times a fresh install to the first answer and counts the steps; it fails on any tour, modal or carousel before that answer
   - [x] [MANUALLY] SSO decision made 2026-11-12 (Alexander): a one-time code in today's backend, with a ratchet note; the contract hides the later move (card "Platform alignment")
   - [ ] [MANUALLY] Sitting 2 of the plan's decision queue: what tool servers receive and direct connections (before F3), Space rules (before F4), the default embedder and the Sprig questions (before F5)
-  - Folds in: Workshop apps tab (dropped 2026-11-12), AI-UI as identity provider (OAuth UX), Backend Rewrite Research (superseded)
+  - Folds in: AI-UI as identity provider (OAuth UX), Backend Rewrite Research (superseded); the Workshop apps tab is its own card again (2026-11-13)
   - [x] _11 done steps archived 2026-11-03 → docs/completed-todos.md._
 
 - [ ] **One way to deploy: `cr-deploy` + `make deploy`** #critical: plan Amendment 55, 2026-09-27
@@ -121,17 +121,36 @@ _Items currently in progress. Move items here and or use tag source with `# FIXM
   - [ ] [WE] Then point the CATALOG's `media-ffmpeg` at `v2` / `v2-amd64` with the published shas
   - [x] _1 done step archived 2026-11-03 → docs/completed-todos.md._
 
-- [ ] **Platform alignment: four contracts, web Tinker with AI-UI as its node** #federation #auth (Alexander, 2026-11-12): the charter is `docs/contracts/README.md`; nothing runs yet
-  - Feasibility: yes, with the engine on Tinker's server; note `docs/notes/2026-11-12-web-tinker-feasibility.md` in Tinker's planning repo, whose board holds slices 1 to 3 and 5
+- [ ] **Platform alignment: four contracts, web Tinker with AI-UI as its node** #federation #auth (Alexander, 2026-11-12): the charter is `docs/contracts/README.md`; plan `~/.claude/plans/ensure-that-everything-is-splendid-mitten.md`; nothing runs yet
+  - Web Tinker is upstream's second client (`docs/WEB-DESIGN.md`, demo `./run-web.sh`); Sage's reply is `docs/notes/2026-11-12-web-tinker-feasibility.md` in Tinker's planning repo, whose board holds Tinker's share
   - [x] [WE] Slice 0, no code: point a Tinker client at a local AI-UI as a custom OpenAI-compatible provider (2026-11-12)
     - Gate: a streamed turn with a `render_ui` tool call completes, and the log shows it passed the privacy filter
     - Passed once `default_external` was on: `stop = tool_use` in 7.87 s, and two new `privacy_map` rows (email, phone) prove the filter ran; the dev log prints no INFO lines (Bugs card). The open `gateway` term is in `docs/federation.md`
-  - [ ] [WE] Slice 4, one sign-in: interview, `docs/contracts/sign-in.md`, AI-UI's routes, then Trellis and Tinker's server as the two consumers
-    - Gate: on Realtor M's box one sign-in opens AI-UI, Trellis and web Tinker; `/crm/aiui/` shows the contracts green
-  - [ ] [WE] Slice 6: AI-UI forwards Tinker's node protocol at its own address
+  - [x] [WE] Plan session 1, in the workbench: the demo with its model through AI-UI, a scratch stand-in answering `/v1/model-login`; in its own tab, since framing is cut first for 2026-11-17 (run sheet S4)
+    - Gate: a typed sentence renders an app; AI-UI's `privacy_map` gains rows; tokens and seconds noted
+    - Passed 2026-11-13 on model `lia-crm` (the vault's local key gets 403 on the raw model): a card in 12 s; a sheet 87 s to first render, 160 s to last; `privacy_map` 8 to 13; tokens unmeasured, since neither side records usage
+    - Found: a reformatted stand-in is not swapped back (Bugs card); open the demo at `localhost`, since `<id>.widget.127.0.0.1` never resolves
+  - [x] [WE] Plan session 2: the charter, the reply note, three boards and the memory (2026-11-13; read by Alexander 2026-11-15)
+  - [ ] [WE] Plan session 3: AI-UI answers `GET /v1/model-login` as the node, provider `custom`, base URL `<address>/api`; the tab half is the card "Workshop apps tab: frames web Tinker"
+    - Now run sheet S10 (the route, user `tinker-node`, preset `tinker-build`) and S12 (the `tinker-web` container with AI-UI as its node), 2026-11-17; plan `~/.claude/plans/precious-strolling-puzzle.md`
+    - Gate: the demo builds an app with AI-UI as `TENKTS_WEB_NODE`; the route answers 404 when off
+    - [x] [WE] S10 (2026-11-17): `routers/tinker_node.py` behind `ENABLE_TINKER_NODE`, 6 specs in `image_unit_tests`; dev AI-UI has user `tinker-node`, key `bw:local-aiui-tinker-node`, preset `tinker-build`
+  - [ ] [WE] Plan session 6, the `sign-in` contract: interview, then `docs/contracts/sign-in.md` (booked 2026-11-18)
+  - [ ] [WE] Plan session 7: AI-UI's routes for it; Trellis's client (session 8) and Tinker's server (session 9) consume them
+    - Gate: one sign-in opens AI-UI, Trellis and web Tinker; `/crm/aiui/` shows the contracts green
+  - [ ] [WE] AI-UI forwards `/v1/rpc/*` to Tinker's server
     - Gate: the desktop app's "Sage.is AI-UI account" entry opens the same library as the browser
   - [ ] [WE] `/api/version` lists the contract versions; each sibling checks them and shows the fit
-  - [ ] [MANUALLY] Share the feasibility note with the Tinker team before slice 1's pull request opens
+  - [ ] [MANUALLY] Share the reply note with the Tinker team before plan session 4's pull request opens
+  - Realtor M's box (milestone C) waits on upstream's phase 1: a separate domain for built apps, and CSRF defence
+
+- [ ] **Workshop apps tab: frames web Tinker** #federation #frontend (Alexander, 2026-11-12; plan session 3): the tab frames web Tinker at its own address, same-site; the tab is decided after 2026-11-17, and until then web Tinker opens in its own tab
+  - [ ] [MANUALLY] Decide the tab after 2026-11-17 (OPS-Sage run sheet `runsheets/tuesday-brokerage-h.md`, "The Workshop tab")
+  - [ ] [WE] `/workshop/apps` behind a `workshop.apps` key in `DEFAULT_USER_PERMISSIONS` (`config.py`) and `WorkshopPermissions` (`routers/users.py`); `permissions-drift.cy.ts` fails if they disagree
+  - [ ] [WE] The tab frames web Tinker's address, read from one env setting; with it empty the tab's page answers 404, the env gate before the auth dependency
+  - Needs Tinker's `frame-ancestors` setting upstream (plan session 4, booked 2026-11-18) and same-site addresses, since Tinker's cookie is `SameSite=Lax`
+  - Gate: the tab shows web Tinker behind `workshop.apps`; its page answers 404 when off; one image build, since the Svelte Workshop nav changes
+  - First design dropped 2026-11-12 (Alexander): AI-UI's own bridges and a Tinker mini; the card as it stood is in `docs/board-dossiers.md`
 
 - [ ] **Tinker.Click integration: two products, one platform** #federation (Alexander, 2026-10-31; proposals until the team agrees): the decisions live in `AI--Tinker.Click/docs/notes/2026-10-31-integration-decisions.md`
   - [ ] [WE] Rootstock F2's gateway design names Tinker desktops as a client, as the plan already does
@@ -571,8 +590,6 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
   - [ ] Per cluster: one collection and one machine account each, its credentials on that cluster, not this Mac's Keychain; the `sage-box` files in `~/.sage-is/boxes/` already hold only `bw:` references
   - [ ] Names: `bw:ITEM` resolves by name across all an account sees, so an account that sees several clusters needs prefixed names (`realtor-m-*` does this today)
 
-- [x] _Workshop apps tab: Tinker.Click apps run inside the box. Dropped 2026-11-12 (Alexander): web Tinker replaces it (card "Platform alignment"). Archived → docs/board-dossiers.md._
-
 - [ ] **`telemetry-otel` Sprig: tracing for operators who set `ENABLE_OTEL`** #bonsai (2026-10-14): the 3.2.1 base keeps only `opentelemetry-api`; `ENABLE_OTEL=true` boots untraced with a warning
   - Parked 2026-11-03 (Alexander): until an operator needs tracing; no box sets `ENABLE_OTEL` today
   - The SDK and gRPC exporter already ride vector-chroma v3; this Sprig would add the HTTP exporter and the instrumentors
@@ -609,6 +626,11 @@ _Items deferred to a later planning cycle. Move here from TODO when deprioritize
 ---
 
 ## Bugs
+
+- [ ] **The privacy filter misses a stand-in the model reformats** #bug #privacy (found 2026-11-13, plan session 1): the model wrote `tel:4505550163` for the stand-in `450-555-0163`; the visible text came back real, the link kept the fake, and the next call made a stand-in of the stand-in (`4505552202`)
+  - Cause: `privacy/engine.py:175-179` `reverse` matches each fake literally
+  - [ ] [WE] Spec first: a phone stand-in reverses digits-only and in a `tel:` link, and a fake is never pseudonymized again
+  - Nothing private leaked; the built app dials a fake number
 
 - [ ] **One model ID from two connections: the env-only one can serve it, unfiltered and unseen** #security #privacy (found 2026-11-12, web Tinker slice 0): connection `0` and `SAGE_LLM_API_URL` both list `deepseek/deepseek-v4.1-flash-1017`; the env one served it and made no stand-ins
   - Inferred, not traced: `app.state.MODELS` keys by ID, so one connection wins; the panel lists no `hidden:<id>` row (`pages/privacy_panel.py` `_connections`), so only `default_external` reaches it
