@@ -2,7 +2,7 @@
 
 Before the fix, GET, POST, PUT and DELETE on any path went to the first connection with
 its API key (routers/openai.py), past the privacy filter and model access control. The
-SPA's own API modules call only routes the router declares, and docs/API-examples.md
+SPA's own API modules call only routes the router declares, and docs/api-server.md
 documents no raw /openai path, so for non-admins every raw path answers 404 and is
 logged; admins keep the deprecated proxy.
 

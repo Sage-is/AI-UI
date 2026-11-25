@@ -30,6 +30,10 @@ This folder holds historical material that is still worth keeping but should not
 
 - `fixes/kokoro-tts-fix-2025-07-28.md`
 
+## Superseded Guides
+
+- `API-examples.md` — the old API tutorial; its chat and RAG routes do not exist. Replaced on 2026-11-25 by `../api-server.md`.
+
 ## Archived Plans
 
 - `plans/form-button-cleanup-plan.md`

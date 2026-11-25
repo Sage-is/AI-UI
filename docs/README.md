@@ -26,7 +26,7 @@ This directory now separates active reference material from historical audits, p
 
 ## Active Reference Docs
 
-- [API-examples.md](API-examples.md) — API usage examples (older; some routes predate the current API, check against `/docs` on your instance)
+- [api-server.md](api-server.md) — use AI-UI as an API server: keys, chat, streaming, OpenAI SDKs, your documents, and the traps
 - [backend-rewrite-research.md](backend-rewrite-research.md) — backend rewrite options and research notes
 - [docs-drift-plan.md](docs-drift-plan.md) — the 2026-09-26 docs drift pass: steps 1 and 2 done (but for one doc), 3 to 5 open
 - [community-hub.md](community-hub.md) — the community hub winter plan: what exists, what blocks sharing, what ships

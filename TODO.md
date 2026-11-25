@@ -24,6 +24,11 @@ This file tracks active work only.
 
 _Items currently in progress. Move items here and or use tag source with `# FIXME:` when work begins._
 
+- [ ] **An ELI5 guide to AI-UI as an API server, checked against the code** #docs (Alexander, 2026-11-25): `docs/api-server.md` replaces the stale `docs/API-examples.md`
+  - [x] [WE] Fact sheet from the routers: API keys, `/api/chat/completions`, `/api/models`, files and knowledge, the raw proxies and the privacy filter
+  - [x] [WE] Write the guide; point `docs/README.md` at it; move `API-examples.md` to `docs/archive/`; re-point `routers/openai.py`, `test_raw_proxy.py` and two research notes
+  - [ ] [MANUALLY] Try the curl steps against a box with a real key, then commit
+
 - [ ] **Bugs riding in 3.3.0: fourteen small fixes through one re-gate** #bug (picked 2026-11-05 with Alexander; plan `~/.claude/plans/tingly-exploring-peach.md`)
   - [x] [WE] Chat path, one fixture each: `data: [DONE]` ends the stream; `nonlocal model_id`; the two-message title; the dead `features.web_search` branch; a `◁think▷` fixture case
   - [x] [WE] Sprigs and routers: pruning Tika or Docling resets the engine; an evicted Sprig says so; three `F811` handler names; knowledge answers a real 503, diagnostics shows `vector_db_ready`

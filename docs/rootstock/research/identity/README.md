@@ -186,7 +186,7 @@ The screens have no owner in the plan's table: sign-in, join, account, users, gr
 
 **Ops.** About 26 of the plan's 95: `whoami`, `sign_in`, `sign_out`, `sign_up`, `claim`, `password_change`, `user_add`, `user_get`, `user_list`, `user_update`, `user_delete`, `key_make`, `key_list`, `key_revoke`, `group_list`, `group_save`, `group_delete`, `group_members`, `link_make`, `link_list`, `link_revoke`, `link_redeem`, `providers`, `sso_client_save`, `sso_client_list`, `sso_client_delete`. Seven of the plan's 15 fixed-contract routes go here under (a) or (b): `/oauth/<provider>/login` and `/callback`, which providers hold, and the five OIDC endpoints.
 
-**Routes that keep their legacy JSON.** Callers outside the SPA use them today. `POST /api/v1/auths/signin` and its body (`docs/API-examples.md:24-45`), `GET /api/v1/auths/` (Trellis link check, `crm/loop/aiui.py:54` in the Trellis repo), `POST /api/v1/auths/add` and `GET|POST /api/v1/auths/api_key` (Trellis `scripts/aiui_setup.py:80-101`), `POST /api/v1/auths/signup`. Each becomes an alias of an op that returns the same JSON.
+**Routes that keep their legacy JSON.** Callers outside the SPA use them today. `POST /api/v1/auths/signin` and its body (`docs/archive/API-examples.md:24-45`), `GET /api/v1/auths/` (Trellis link check, `crm/loop/aiui.py:54` in the Trellis repo), `POST /api/v1/auths/add` and `GET|POST /api/v1/auths/api_key` (Trellis `scripts/aiui_setup.py:80-101`), `POST /api/v1/auths/signup`. Each becomes an alias of an op that returns the same JSON.
 
 **Identity parity corpus (F0).** Each row runs through `utils/auth.py` and `session.py`. Both must agree on status and user.
 

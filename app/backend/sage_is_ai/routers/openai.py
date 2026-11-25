@@ -1196,7 +1196,7 @@ async def proxy(path: str, request: Request, user=Depends(get_verified_user)):
     It forwards any path to connection 0 with that connection's key, past the
     privacy filter and model access control. The SPA's own API modules
     (app/src/lib/apis/openai/index.ts) call only routes this router declares,
-    and docs/API-examples.md documents no raw /openai path, so there is no
+    and docs/api-server.md documents no raw /openai path, so there is no
     path to allow a non-admin: each such request answers 404 and is logged.
     """
     if is_restricted(user):

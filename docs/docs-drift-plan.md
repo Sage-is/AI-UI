@@ -43,7 +43,7 @@ Stop and decide each one with Alexander before editing.
 Fix each item in place; the evidence is in the sweep tables.
 
 - **`docs/troubleshooting.md`**: image `ghcr.io/sage-is/ai-ui`, volume `sage-ai-data`, port 8080. `AIOHTTP_CLIENT_TIMEOUT` unset means no timeout. The Ollama URL is in the Connections panel.
-- **`docs/API-examples.md`**: the messages endpoint is `/{id}/messages/{message_id}`. Replace `/rag/api/v1/process/doc` with `/api/v1/retrieval/process/file`. Fix the single-quote `$SAGE_EMAIL` bug.
+- **`docs/API-examples.md`**: superseded 2026-11-25. `docs/api-server.md` replaces it, checked against the routers, and the old file sits in `docs/archive/`.
 - **`docs/CONTRIBUTING.md`**: repo `Sage-is/AI-UI`, Discord `discord.gg/3BtwHkXS`, `app/src/lib/i18n/locales`. Replace "powered by Ollama" with any OpenAI-compatible provider plus Ollama.
 - **`docs/SECURITY.md`**: repo link and product name. Semgrep runs through `make scan_sast`, not on every commit.
 - **`docs/development-workflow.md`**: cut the `src/admin/config.yml` / CMS residue (:188-201) and the Django test residue (:433-443). Replace the README section list. Replace "This Week" with the real board sections. `make help_all` lists the gate targets. Add `distribution-chain-verify` to the hook list.
